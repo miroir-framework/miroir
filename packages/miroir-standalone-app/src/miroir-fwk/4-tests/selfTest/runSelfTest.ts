@@ -51,7 +51,7 @@ export function integrationSuiteKey(suiteKey: string): string {
 
 /** The verdict's error when the client finds authentication on (#487 runs without it, decision A5). */
 export const SELF_TEST_NEEDS_AUTHENTICATION_OFF =
-  "self-test runs with authentication off: set server.authentication.enabled to false in the environment";
+  "self-test runs with authentication off: set server.authentication.enabled to false in the environment, or start the server or Electron with --disable-auth";
 
 /**
  * Never throws: a boot or runner error gives a `failed` result carrying the error, so the page never

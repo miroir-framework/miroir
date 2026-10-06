@@ -68,7 +68,11 @@ import {
   ElectronServerDomainControllerProxy,
 } from "./miroir-fwk/4_view/services/ElectronIpcProxy.js";
 import { initializePerformanceConfig } from "./miroir-fwk/4_view/tools/performanceConfig.js";
-import { shouldStartSelfTest } from "./miroir-fwk/4-tests/selfTest/selfTestResult.js";
+import {
+  failedSelfTestResult,
+  publishSelfTestResult,
+  shouldStartSelfTest,
+} from "./miroir-fwk/4-tests/selfTest/selfTestResult.js";
 import { miroirAppStartup } from "./startup.js";
 
 import { resolveWebLogConfigWithMeta, VITE_MIROIR_LOG_CONFIG_VALUES } from "./config/logConfigPresets.js";
@@ -127,6 +131,9 @@ const webMiroirConfig: MiroirConfigClient | undefined =
   typeof __MIROIR_CLIENT_CONFIG__ === "undefined" ? undefined : __MIROIR_CLIENT_CONFIG__;
 
 log.info("web client environment:", webMiroirConfig?.environment?.name, "configuration", webMiroirConfig);
+
+/** #487: whether page load runs the self-test; undefined until the client configuration is known. */
+let selfTestRequested: boolean | undefined;
 
 const miroirActivityTracker = new MiroirActivityTracker();
 const miroirEventService = new MiroirEventService(miroirActivityTracker);
@@ -407,6 +414,7 @@ async function startWebApp(root: Root) {
     );
   }
   const miroirConfigToUse = electronMiroirConfig ?? webMiroirConfig!;
+  selfTestRequested = shouldStartSelfTest(miroirConfigToUse);
   const {
     domainControllerForClient,
     domainControllerForServer: rawDomainControllerForServer,
@@ -447,7 +455,7 @@ async function startWebApp(root: Root) {
 
   // #487: in self-test mode the page runs the miroir app's MiroirTests instead of the application.
   // Loaded on demand: the self-test page and the result grids stay out of the application's bundle.
-  if (shouldStartSelfTest(miroirConfigToUse)) {
+  if (selfTestRequested) {
     const { startSelfTest } = await import("./miroir-fwk/4-tests/selfTest/startSelfTest.js");
     await startSelfTest({
       root,
@@ -465,5 +473,19 @@ async function startWebApp(root: Root) {
 
 if (container) {
   const root = createRoot(container);
-  startWebApp(root);
+  startWebApp(root).catch((error) => {
+    log.error("startWebApp failed", error);
+    // #487: a self-test whose client does not start fails at once, instead of at the driver's timeout.
+    if (selfTestRequested !== false) {
+      const now = new Date();
+      publishSelfTestResult(
+        failedSelfTestResult(`the client did not start: ${error instanceof Error ? error.message : String(error)}`, {
+          environment: webMiroirConfig?.environment?.name,
+          tags: [],
+          startedAt: now,
+          endedAt: now,
+        }),
+      );
+    }
+  });
 }

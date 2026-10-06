@@ -17,10 +17,11 @@ import { environmentRealServerClientConfig, resolveEnvironmentFromFiles } from "
 import {
   REPORT_TESTS_NEED_THE_SANDBOX,
   runIntegrationMiroirTestBatch,
+  runUnitMiroirTestBatch,
 } from "../../../src/miroir-fwk/4-tests/miroirTestBatch.js";
 import { computeSelfTestResult } from "../../../src/miroir-fwk/4-tests/selfTest/selfTestResult.js";
 import { integrationSuiteKey } from "../../../src/miroir-fwk/4-tests/selfTest/runSelfTest.js";
-import { repositoryRoot } from "./selfTestPlatform.js";
+import { miroirActivityTracker, repositoryRoot } from "./selfTestPlatform.js";
 
 /** The miroir app's MiroirTest of the external service wizard Report: tags integ, ui, report. */
 function reportMiroirTest(): MiroirTestDefinition {
@@ -73,5 +74,22 @@ describe("self-test with integ MiroirTests (#487)", () => {
     expect(result.verdict).toBe("passed");
     expect(result.counts).toEqual({ suites: 2, tests: 2, passed: 2, failed: 0, skipped: 0 });
     expect(result.skippedSuites).toEqual([{ suiteKey: "report.x", reason: REPORT_TESTS_NEED_THE_SANDBOX }]);
+  });
+
+  it("records reportTest leaves as skipped in a unit run, and a run of skipped tests only fails", async () => {
+    const report = reportMiroirTest();
+    const resultsBySuiteKey = await runUnitMiroirTestBatch({
+      miroirTests: [report],
+      tracker: miroirActivityTracker,
+      includeComponentTests: false,
+    });
+    const results = Object.values(resultsBySuiteKey).flat();
+    expect(results.length).toBeGreaterThan(0);
+    expect(results.every((result) => result.testResult === "skipped" || result.status === "skipped")).toBe(true);
+
+    const run = { environment: "self-test", tags: ["report"], startedAt: new Date(0), endedAt: new Date(10) };
+    const result = computeSelfTestResult(resultsBySuiteKey, run);
+    expect(result.verdict).toBe("failed");
+    expect(result.error).toBe("no MiroirTest ran for tags report");
   });
 });

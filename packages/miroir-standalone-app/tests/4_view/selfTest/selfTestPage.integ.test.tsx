@@ -15,12 +15,10 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { MiroirContext, type MiroirConfigClient } from "miroir-core";
 import { LocalCacheProvider, MiroirContextReactProvider } from "miroir-react";
 
+import { startSelfTest } from "../../../src/miroir-fwk/4-tests/selfTest/startSelfTest.js";
 import {
   publishSelfTestResult,
   SELF_TEST_RESULT_GLOBAL,
-  startSelfTest,
-} from "../../../src/miroir-fwk/4-tests/selfTest/startSelfTest.js";
-import {
   shouldStartSelfTest,
   type MiroirSelfTestResult,
 } from "../../../src/miroir-fwk/4-tests/selfTest/selfTestResult.js";

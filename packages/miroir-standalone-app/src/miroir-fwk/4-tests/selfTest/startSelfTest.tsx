@@ -11,19 +11,7 @@ import type { DomainControllerInterface, MiroirActivityTrackerInterface, MiroirC
 import type { TestResultData } from "../../4_view/components/Buttons/testResultReport.js";
 import { SelfTestPage } from "../../4_view/pages/SelfTestPage.js";
 import { runSelfTest } from "./runSelfTest.js";
-import { selfTestTags, type MiroirSelfTestResult } from "./selfTestResult.js";
-
-/** The `window` property drivers read the result from. */
-export const SELF_TEST_RESULT_GLOBAL = "__MIROIR_SELF_TEST_RESULT__";
-
-/** Writes the result where drivers read it; Electron gets the final result only. */
-export function publishSelfTestResult(result: MiroirSelfTestResult): void {
-  document.documentElement.dataset.miroirSelfTest = result.verdict;
-  (window as any)[SELF_TEST_RESULT_GLOBAL] = result;
-  if (result.verdict !== "running") {
-    (window as any).electronAPI?.reportSelfTestResult?.(result);
-  }
-}
+import { publishSelfTestResult, selfTestTags, type MiroirSelfTestResult } from "./selfTestResult.js";
 
 export async function startSelfTest(params: {
   root: Root;

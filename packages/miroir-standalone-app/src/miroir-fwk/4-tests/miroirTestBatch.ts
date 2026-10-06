@@ -77,9 +77,10 @@ export type SkippedMiroirTestSuite = { suiteKey: string; reason: string };
 export const REPORT_TESTS_NEED_THE_SANDBOX = "reportTest suites need the component test sandbox";
 
 /**
- * Runs `miroirTests` in unit mode, one suite after the other, in suite order. With
- * `includeComponentTests` false, `reactComponentTest` leaves are recorded as skipped; with it true,
- * the leaves of `runOnDemand` suites are (#303), and the caller prepares the component test sandbox.
+ * Runs `miroirTests` in unit mode, one suite after the other, in suite order. `reportTest` leaves
+ * are recorded as skipped. With `includeComponentTests` false, so are `reactComponentTest` leaves;
+ * with it true, the leaves of `runOnDemand` suites are (#303), and the caller prepares the component
+ * test sandbox.
  */
 export async function runUnitMiroirTestBatch(params: {
   miroirTests: MiroirTestDefinition[];
@@ -102,9 +103,10 @@ export async function runUnitMiroirTestBatch(params: {
       undefined,
       true,
       runMiroirTests,
+      // reportTest leaves run in integration mode only (#330): recorded as skipped here (#487).
       params.includeComponentTests
-        ? { executionMode: "unit", skipRunOnDemandSuites: true }
-        : { executionMode: "unit", excludeMiroirTestTypes: ["reactComponentTest"] },
+        ? { executionMode: "unit", skipRunOnDemandSuites: true, excludeMiroirTestTypes: ["reportTest"] }
+        : { executionMode: "unit", excludeMiroirTestTypes: ["reactComponentTest", "reportTest"] },
     );
 
     resultsBySuiteKey[suiteKey] = generateTestReport(suiteKey, params.tracker.getTestAssertionsResults([]), () => {});

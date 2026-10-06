@@ -810,7 +810,7 @@ Electron, after the same client build and `npm run build -w miroir-standalone-ap
 MIROIR_ENV=self-test npx electron packages/miroir-standalone-app-electron --self-test
 ```
 
-`--self-test[=unit,integ]` turns the self-test on whatever the environment says (tags `unit` by default); `--self-test-timeout=<s>` (900 by default). The window stays hidden; the process prints `{ "renderer": <result> }` and exits 0, 1 or 2 (timeout, renderer crash or load failure).
+`--self-test[=unit,integ]` turns the self-test on whatever the environment says (tags `unit` by default); `--self-test-timeout=<s>` (900 by default). The window stays hidden; the process prints `{ "renderer": <result> }` and exits 0, 1 or 2 (timeout, renderer crash or load failure). The self-test needs authentication off. The `self-test` environments turn it off; on any other environment, a packaged app included, add `--disable-auth`, or the run fails with a message saying so. `--self-test` does not turn authentication off by itself, since the app may hold real data.
 
 ### CI
 

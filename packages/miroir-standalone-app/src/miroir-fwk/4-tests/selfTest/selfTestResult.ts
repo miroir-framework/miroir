@@ -29,6 +29,18 @@ export type MiroirSelfTestResult = {
   error?: string;
 };
 
+/** The `window` property drivers read the result from. */
+export const SELF_TEST_RESULT_GLOBAL = "__MIROIR_SELF_TEST_RESULT__";
+
+/** Writes the result where drivers read it; Electron gets the final result only. */
+export function publishSelfTestResult(result: MiroirSelfTestResult): void {
+  document.documentElement.dataset.miroirSelfTest = result.verdict;
+  (window as any)[SELF_TEST_RESULT_GLOBAL] = result;
+  if (result.verdict !== "running") {
+    (window as any).electronAPI?.reportSelfTestResult?.(result);
+  }
+}
+
 /** Whether page load runs the self-test instead of the application. */
 export function shouldStartSelfTest(miroirConfig: MiroirConfigClient | undefined): boolean {
   return miroirConfig?.selfTest?.enabled === true;
@@ -40,7 +52,7 @@ export function selfTestTags(miroirConfig: MiroirConfigClient): string[] {
   return tags && tags.length > 0 ? [...tags] : ["unit"];
 }
 
-/** The result of a finished run: `passed` when at least one test ran and none failed. */
+/** The result of a finished run: `passed` when at least one test ran (skipped ones do not count) and none failed. */
 export function computeSelfTestResult(
   resultsBySuiteKey: MiroirTestSuiteResultsMap,
   run: { environment: string | undefined; tags: string[]; startedAt: Date; endedAt: Date },
@@ -60,7 +72,7 @@ export function computeSelfTestResult(
           })),
   );
   return {
-    verdict: allResults.length > 0 && failed === 0 ? "passed" : "failed",
+    verdict: passed + failed > 0 && failed === 0 ? "passed" : "failed",
     environment: run.environment,
     tags: run.tags,
     startedAt: run.startedAt.toISOString(),
@@ -68,7 +80,7 @@ export function computeSelfTestResult(
     counts: { suites: Object.keys(resultsBySuiteKey).length, tests: allResults.length, passed, failed, skipped },
     failures,
     ...(skippedSuites.length > 0 ? { skippedSuites } : {}),
-    ...(allResults.length === 0 ? { error: `no MiroirTest ran for tags ${run.tags.join(", ")}` } : {}),
+    ...(passed + failed === 0 ? { error: `no MiroirTest ran for tags ${run.tags.join(", ")}` } : {}),
   };
 }
 

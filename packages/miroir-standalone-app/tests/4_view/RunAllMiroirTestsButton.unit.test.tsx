@@ -190,7 +190,7 @@ describe('RunAllMiroirTestsButton runMode (T2)', () => {
     });
     expect(runUiIntegrationTestSuiteMock).not.toHaveBeenCalled();
     const lastCall = runMiroirTestSuiteMock.mock.calls.at(-1);
-    expect(lastCall?.[lastCall.length - 1]).toEqual({ executionMode: 'unit', skipRunOnDemandSuites: true }); // #303: Run all skips runOnDemand suites
+    expect(lastCall?.[lastCall.length - 1]).toEqual({ executionMode: 'unit', skipRunOnDemandSuites: true, excludeMiroirTestTypes: ['reportTest'] }); // #303: Run all skips runOnDemand suites; #487: reportTest runs in integration mode only
   });
 
   it('runMode integration calls launcher once per launchable suite, not unit path', async () => {
