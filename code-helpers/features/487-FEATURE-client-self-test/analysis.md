@@ -16,7 +16,7 @@ Key sources:
 [`miroir-env/src/environmentState.ts`](../../../packages/miroir-env/src/environmentState.ts),
 [`miroir-standalone-app-electron/src/main.ts`](../../../packages/miroir-standalone-app-electron/src/main.ts)
 
-**Status:** decisions 1 to 8 of the design discussion confirmed by A (2026-10-06); the design choices D1 to D10 below follow from them and are open for review. Implementation: [`tdd-implementation-plan.md`](./tdd-implementation-plan.md).
+**Status:** decisions 1 to 8 of the design discussion and the design choices D1 to D10 below confirmed by A (2026-10-06), including the defaults of § 6. Implementation: [`tdd-implementation-plan.md`](./tdd-implementation-plan.md).
 
 ---
 
@@ -51,7 +51,7 @@ The design discussion settled the product decisions (numbers are A's decisions i
 | A7 | The parameter is `client.selfTest` in the environment file; no URL parameter. |
 | A8 | A GitHub Actions job if feasible (Electron under `xvfb-run`), plus a documented local run. |
 
-The design choices below implement them:
+The design choices below implement them (accepted by A, 2026-10-06):
 
 | Decision | Choice | Serves |
 |---|---|---|
@@ -70,7 +70,7 @@ The design choices below implement them:
 
 ### D1 — Shape of the setting
 
-**Status:** proposed. **Serves:** G1, G4.
+**Status:** Accepted (A, 2026-10-06). **Serves:** G1, G4.
 
 | Option | Mechanism | Pros | Cons |
 |---|---|---|---|
@@ -82,7 +82,7 @@ The design choices below implement them:
 
 ### D2 — Where the run starts
 
-**Status:** proposed. **Serves:** G1, A6.
+**Status:** Accepted (A, 2026-10-06). **Serves:** G1, A6.
 
 | Option | Mechanism | Pros | Cons |
 |---|---|---|---|
@@ -94,7 +94,7 @@ The design choices below implement them:
 
 ### D3 — What boots
 
-**Status:** proposed. **Serves:** G1, A6.
+**Status:** Accepted (A, 2026-10-06). **Serves:** G1, A6.
 
 | Option | Mechanism | Pros | Cons |
 |---|---|---|---|
@@ -106,7 +106,7 @@ The design choices below implement them:
 
 ### D4 — Where the tests come from
 
-**Status:** proposed. **Serves:** G1.
+**Status:** Accepted (A, 2026-10-06). **Serves:** G1.
 
 | Option | Mechanism | Pros | Cons |
 |---|---|---|---|
@@ -117,7 +117,7 @@ The design choices below implement them:
 
 ### D5 — Run code
 
-**Status:** proposed. **Serves:** G1, G4.
+**Status:** Accepted (A, 2026-10-06). **Serves:** G1, G4.
 
 | Option | Mechanism | Pros | Cons |
 |---|---|---|---|
@@ -129,7 +129,7 @@ The design choices below implement them:
 
 ### D6 — Verdict
 
-**Status:** proposed. **Serves:** G2, G3.
+**Status:** Accepted (A, 2026-10-06). **Serves:** G2, G3.
 
 The result, one JSON-serializable object:
 
@@ -152,7 +152,7 @@ type MiroirSelfTestResult = {
 
 ### D7 — `environments/self-test.json`
 
-**Status:** proposed. **Serves:** G1, A5, A6.
+**Status:** Accepted (A, 2026-10-06). **Serves:** G1, A5, A6.
 
 ```json
 {
@@ -176,7 +176,7 @@ type MiroirSelfTestResult = {
 
 ### D8 — Integration tests
 
-**Status:** proposed. **Serves:** G4.
+**Status:** Accepted (A, 2026-10-06). **Serves:** G4.
 
 | Option | Mechanism | Pros | Cons |
 |---|---|---|---|
@@ -187,7 +187,7 @@ type MiroirSelfTestResult = {
 
 ### D9 — Electron `--self-test`
 
-**Status:** proposed. **Serves:** G3.
+**Status:** Accepted (A, 2026-10-06). **Serves:** G3.
 
 - `main.ts` parses `--self-test` (and `--self-test-tags=unit,integ`, `--self-test-timeout=<seconds>`, default 900).
 - The client configuration handed over by `get-client-config` (`miroirIpcHandler.ts:132`) gets `selfTest: { enabled: true, tags }` merged in; the environment's own `client.selfTest` also works without the flag.
@@ -198,7 +198,7 @@ type MiroirSelfTestResult = {
 
 ### D10 — Automated runs
 
-**Status:** proposed. **Serves:** G5.
+**Status:** Accepted (A, 2026-10-06). **Serves:** G5.
 
 | Option | Mechanism | Pros | Cons |
 |---|---|---|---|
@@ -271,7 +271,7 @@ So the default self-test (`tags: ["unit"]`) runs 43 suites. Whether all 43 pass 
 | `fn.transformer.interfaceCheck` | `listReducerToSpreadObject declares an array of object to an object` |
 | `fn.transformer.interfaceWalk` | `listReducerToSpreadObject over a list of strings fails its input` |
 
-The expected values match the parameterized interface types of #449 (PR #475) and the actual ones the older shapes, so a stale build in the container is the first suspect. Slice 0 of the plan rechecks after a fresh build; if they still fail, they are a separate bug, and the self-test would rightly report `failed` until it is fixed.
+The expected values match the parameterized interface types of #449 (PR #475) and the actual ones the older shapes, so a stale build in the container was the first suspect. Slice 0 confirmed it: after `./build-all.sh devBuild` the same command passes 985/985.
 
 ### 4.7 Integration launcher (aligned with D8)
 
@@ -313,7 +313,7 @@ The expected values match the parameterized interface types of #449 (PR #475) an
 | Browser driver and `--serve` | `miroir-standalone-app/scripts/coverage-tour.mjs` |
 | Electron IPC | `preload.ts`, `ipcServerSetup.ts`, `miroirIpcHandler.ts` |
 
-## 6. Open points for review
+## 6. Defaults confirmed with the review (A, 2026-10-06)
 
 1. `tags` default `["unit"]` when absent (D1), rather than "all tags".
 2. miroir as a copy in `self-test.json` (D7): seeding costs a copy of the miroir assets on first start; `live` would avoid it but lets an `integ` run touch tracked files if a test ever targets the environment.

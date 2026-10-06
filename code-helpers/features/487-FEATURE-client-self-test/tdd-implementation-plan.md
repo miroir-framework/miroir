@@ -17,7 +17,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Companion: #486 (health checks; shares Electron `--self-test`, analysis D9)
 Working branch: `claude/487-client-self-test-x9c2x8` (from `_integration` at 9838983)
 
-**Resume note:** plan written 2026-10-06; analysis decisions D1 to D10 open for A's review; no slice started.
+**Resume note:** plan written 2026-10-06; decisions D1 to D10 and their defaults accepted by A 2026-10-06; Slice 0 DONE; next Slice 1 (tracer).
 
 ---
 
@@ -37,7 +37,7 @@ This plan does **not** cover the CLI, server, MCP and Electron main-process prob
 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
-| 0 | Characterize the unit baseline and the Run all contracts | ⬜ pending | `testMiroir --tags unit` baseline; existing Run all tests green |
+| 0 | Characterize the unit baseline and the Run all contracts | ✅ DONE | `testMiroir --tags unit` baseline; existing Run all tests green |
 | 1 | Tracer: `self-test` environment → `runSelfTest` → `passed` | ⬜ pending | `runSelfTest.487.phase1.integ.test.ts` |
 | 2 | The verdict fails when it should | ⬜ pending | `selfTestVerdict.487.phase2.integ.test.ts` |
 | 3 | Page load runs the self-test and publishes the verdict | ⬜ pending | `selfTestPage.487.phase3.integ.test.tsx` |
@@ -51,7 +51,7 @@ This plan does **not** cover the CLI, server, MCP and Electron main-process prob
 
 ## Locked implementation defaults
 
-From the analysis decision record (binding once A confirms; deviations go into the slice's Realization).
+From the analysis decision record, accepted by A 2026-10-06 (binding; deviations go into the slice's Realization).
 
 | Decision | Choice | Serves |
 |---|---|---|
@@ -107,7 +107,7 @@ Electron is not installed in the cloud containers: Electron end-to-end runs happ
 
 ## Slice 0 — Characterize the unit baseline and the Run all contracts
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE (2026-10-06)
 
 **Goal:** know which of the 43 `unit` MiroirTests of the miroir app pass today, so Slice 1 can tell a self-test failure from an existing one, and lock the Run all behaviour before D5 moves its code.
 
@@ -126,10 +126,19 @@ npm run testMiroir -w miroir-core -- --tags unit --mode unit
 RUN_TEST=RunAllMiroirTestsButton.unit npm run testByFile -w miroir-standalone-app -- RunAllMiroirTestsButton.unit
 RUN_TEST=MiroirTestListDisplay.unit npm run testByFile -w miroir-standalone-app -- MiroirTestListDisplay.unit
 npm run testByFile -w miroir-standalone-app -- runAllComponentTests.286.phase6.integ
+npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem MiroirTestListIntegrationLaunch
+MIROIR_ENV=self-test npm run miroir-env -- show   # fails: environment not found
 ```
 
 ### Realization
-_(to fill)_
+
+Run on `_integration` 9838983 plus the docs commit, cloud container, 2026-10-06.
+
+- The 4 failures of the first run (analysis § 4.6) came from a stale `miroir-core` build. After `./build-all.sh devBuild`, `npm run testMiroir -w miroir-core -- --tags unit --mode unit` passes 985/985. No known failure to account for in Slice 1.
+- The first full build stopped at miroir-standalone-app: `node_modules/miroir-app-meta` and `node_modules/miroir-example-github` were missing (node_modules older than #472 and the meta package). Adding the two workspace symlinks fixed it; `./build-all.sh devBuild` then exits 0. This is a container state issue, not a repository change.
+- Safety net green: `RunAllMiroirTestsButton.unit` 4/4, `MiroirTestListDisplay.unit` 7/7, `runAllComponentTests.286.phase6.integ` 3/3, `MiroirTestListIntegrationLaunch` 1/1. The last one needs `--profile` (as its nonreg step `appstack-MiroirTestListIntegrationLaunch` passes it); without it the batch captures no run and the test fails.
+- `MIROIR_ENV=self-test npm run miroir-env -- show` fails with `environment "self-test" not found`, as expected.
+
 
 ---
 
@@ -321,7 +330,7 @@ _(to fill)_
 ```bash
 RUN_TEST=runSelfTestInteg.487.phase6.integ npm run testByFile -w miroir-standalone-app -- runSelfTestInteg.487.phase6.integ
 RUN_TEST=RunAllMiroirTestsButton.unit npm run testByFile -w miroir-standalone-app -- RunAllMiroirTestsButton.unit
-npm run testByFile -w miroir-standalone-app -- MiroirTestListIntegrationLaunch.integ
+npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem MiroirTestListIntegrationLaunch
 npm run nonreg:filesystem -- --runner shared --scope smoke,ui,runners
 npm run nonreg:filesystem -- --runner shared   # full run (slices 4 to 6 since the last one)
 ```
