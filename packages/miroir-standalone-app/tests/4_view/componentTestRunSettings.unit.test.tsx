@@ -150,6 +150,70 @@ describe("component test run settings", () => {
   );
 });
 
+describe("component test run settings: Report suites and the hidden sandbox (PR #496 review)", () => {
+  afterEach(() => {
+    vi.mocked(componentTestsEntry.registerComponentTests).mockClear();
+    ConfigurationService.configurationService.registerReactComponentTestRunner(undefined);
+  });
+
+  it(
+    "without the transformer types setting, only Show test sandbox is shown (Report suites)",
+    () => {
+      const harness = buildAdminViewParamsHarness({});
+      const { unmount } = render(
+        <LocalCacheProvider store={harness.localCache.getInnerStore()}>
+          <MiroirContextReactProvider miroirContext={harness.miroirContext} domainController={harness.domainController}>
+            <ComponentTestSandboxProvider>
+              <ComponentTestRunSettings showTransformerTypesSetting={false} />
+            </ComponentTestSandboxProvider>
+          </MiroirContextReactProvider>
+        </LocalCacheProvider>,
+      );
+      expect(sandboxSwitch()).toBeInTheDocument();
+      expect(screen.queryByRole("checkbox", { name: "Show transformer types in component test runs" })).toBeNull();
+      unmount();
+    },
+    TEST_TIMEOUT,
+  );
+
+  it(
+    "a hidden sandbox is not inert during a run; after it, it is inert and holds no focus",
+    async () => {
+      const { unmount } = renderApp({ componentTestShowSandbox: false });
+      fireEvent.click(screen.getByRole("button", { name: "start run" }));
+      await waitFor(() => expect(typesSwitch()).toBeDisabled());
+      expect(panel()).not.toHaveAttribute("inert");
+
+      // a step focused an input of the case, as `type` does
+      const caseInput = document.createElement("input");
+      screen.getByTestId("component-test-sandbox").appendChild(caseInput);
+      caseInput.focus();
+      expect(document.activeElement).toBe(caseInput);
+
+      fireEvent.click(screen.getByRole("button", { name: "end run" }));
+      await waitFor(() => expect(panel()).toHaveAttribute("inert"));
+      expect(panel().contains(document.activeElement)).toBe(false);
+      unmount();
+    },
+    TEST_TIMEOUT,
+  );
+
+  it(
+    "a shown sandbox is not inert after the run",
+    async () => {
+      const { unmount } = renderApp({ componentTestShowSandbox: true });
+      fireEvent.click(screen.getByRole("button", { name: "start run" }));
+      await waitFor(() => expect(typesSwitch()).toBeDisabled());
+      fireEvent.click(screen.getByRole("button", { name: "end run" }));
+      await waitFor(() => expect(typesSwitch()).toBeEnabled());
+      expect(panel()).toHaveAttribute("data-sandbox-shown", "true");
+      expect(panel()).not.toHaveAttribute("inert");
+      unmount();
+    },
+    TEST_TIMEOUT,
+  );
+});
+
 /** A display without the sandbox provider has nothing to prepare. */
 it("without a sandbox, the run preparation is empty", () => {
   let preparation: ReturnType<typeof useComponentTestRunPreparation> | undefined;

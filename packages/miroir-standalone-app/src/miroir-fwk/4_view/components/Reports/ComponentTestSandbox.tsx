@@ -45,7 +45,8 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI").then((logger:
 // - "Show transformer types": the value the TransformerEditor's switch (#453) starts with in every
 //   case, fixed for the run; a toggle in a case changes only that case, and nothing is saved.
 // - "Show test sandbox": the panel is shown, or rendered off-screen so that the cases still run
-//   out of the user's sight. `setSandboxShown()` changes it at once, during or after a run.
+//   out of the user's sight. `setSandboxShown()` changes it at once, during or after a run. A
+//   hidden panel is inert outside a run, and a run's end takes the focus out of it.
 // While a run is in progress, a banner at the top of the page asks the user to stay on the
 // window: a page that loses focus or goes to the background renders late.
 //
@@ -221,6 +222,9 @@ export const ComponentTestSandbox: React.FC<{
   <div
     data-testid="component-test-sandbox-panel"
     data-sandbox-shown={String(shown)}
+    // Not shown and no run: out of keyboard navigation and focus. Not during a run, whose steps
+    // focus and type into the case.
+    {...(!shown && !running ? { inert: "" } : {})}
     style={{
       display: open ? "block" : "none",
       marginTop: "8px",
@@ -347,8 +351,21 @@ export const ComponentTestSandboxProvider: React.FC<{ children?: React.ReactNode
   const stepDelayMsRef = useRef(0);
   // #453: set when a run starts, fixed for the run, read by the runner when each case is rendered
   const showTransformerTypesRef = useRef(false);
-  // "Show test sandbox": the open panel is shown, or rendered off-screen
-  const [sandboxShown, setSandboxShown] = useState(false);
+  // "Show test sandbox": the open panel is shown, or rendered off-screen; the ref for the run's end
+  const [sandboxShown, setSandboxShownState] = useState(false);
+  const sandboxShownRef = useRef(false);
+  const setSandboxShown = useCallback((shown: boolean) => {
+    sandboxShownRef.current = shown;
+    setSandboxShownState(shown);
+  }, []);
+  /** At the end of a run: a hidden panel keeps no focus, which a step may have left in its case. */
+  const releaseHiddenSandboxFocus = useCallback(() => {
+    const panel = sandboxRef.current?.closest('[data-testid="component-test-sandbox-panel"]');
+    const focused = panel?.ownerDocument.activeElement;
+    if (!sandboxShownRef.current && focused instanceof HTMLElement && panel?.contains(focused)) {
+      focused.blur();
+    }
+  }, []);
   const runControls = useMemo(
     () => ({
       onCaseStart: setTestName,
@@ -392,14 +409,15 @@ export const ComponentTestSandboxProvider: React.FC<{ children?: React.ReactNode
     setRunning(true);
     setOpen(true);
     log.info("component test sandbox ready", options ?? {});
-  }, [closeRegistration, runControls]);
+  }, [closeRegistration, runControls, setSandboxShown]);
 
   const finishComponentTests = useCallback(() => {
     runningRef.current = false;
     setRunning(false);
     onPausedChange(false);
     registrationRef.current?.endRun();
-  }, [onPausedChange]);
+    releaseHiddenSandboxFocus();
+  }, [onPausedChange, releaseHiddenSandboxFocus]);
 
   const prepareReportTests = useCallback(async (session: UiIntegrationReportTestSession) => {
     const { componentTestRunInProgressMessage, isComponentTestRunActive, registerReportTests } =
@@ -430,8 +448,9 @@ export const ComponentTestSandboxProvider: React.FC<{ children?: React.ReactNode
       setRunning(false);
       onPausedChange(false);
       registration.endRun();
+      releaseHiddenSandboxFocus();
     };
-  }, [closeRegistration, runControls, onPausedChange]);
+  }, [closeRegistration, runControls, onPausedChange, releaseHiddenSandboxFocus]);
 
   const onClose = useCallback(() => {
     if (runningRef.current) {
@@ -458,7 +477,7 @@ export const ComponentTestSandboxProvider: React.FC<{ children?: React.ReactNode
 
   const contextValue = useMemo(
     () => ({ prepareComponentTests, finishComponentTests, prepareReportTests, running, setSandboxShown }),
-    [prepareComponentTests, finishComponentTests, prepareReportTests, running],
+    [prepareComponentTests, finishComponentTests, prepareReportTests, running, setSandboxShown],
   );
 
   return (

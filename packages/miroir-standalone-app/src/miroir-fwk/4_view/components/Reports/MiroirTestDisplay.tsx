@@ -3,6 +3,7 @@ import {
   buildUiIntegrationSuiteRegistriesFromMiroirTests,
   classifyMiroirTestSuiteExecutionCapabilities,
   isUiIntegrationLaunchableSuite,
+  miroirTestSuiteMountsReport,
   MiroirLoggerFactory,
   type LoggerInterface,
   type MiroirTestDefinition,
@@ -105,6 +106,11 @@ const MiroirTestDisplayContent = (props: MiroirTestSectionProps) => {
   );
   const hasReactComponentTest = useMemo(
     () => miroirTestDefinitionHasReactComponentTest(instance.definition),
+    [instance.definition],
+  );
+  // #330: its Reports mount in the sandbox, whose "Show test sandbox" setting goes next to the Run button
+  const mountsReport = useMemo(
+    () => instance.definition?.miroirTestType === "miroirTestSuite" && miroirTestSuiteMountsReport(instance.definition),
     [instance.definition],
   );
   const uiExecutionMode = resolveMiroirTestSuiteUiExecutionMode(instance.definition);
@@ -246,6 +252,7 @@ const MiroirTestDisplayContent = (props: MiroirTestSectionProps) => {
                   : "#9e9e9e",
             }}
           />
+          {componentTestSandbox && mountsReport && <ComponentTestRunSettings showTransformerTypesSetting={false} />}
         </>
       )}
 

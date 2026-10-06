@@ -55,27 +55,34 @@ const settingLabelStyle: React.CSSProperties = {
   whiteSpace: "nowrap",
 };
 
-/** The two switches. "Show transformer types" is disabled while a run is in progress. */
-export const ComponentTestRunSettings: React.FC = () => {
+/**
+ * The two switches. "Show transformer types" is disabled while a run is in progress; it is left out
+ * with `showTransformerTypesSetting={false}`, next to the Run button of a Report suite.
+ */
+export const ComponentTestRunSettings: React.FC<{ showTransformerTypesSetting?: boolean }> = ({
+  showTransformerTypesSetting = true,
+}) => {
   const sandbox = useComponentTestSandbox();
   const { showTransformerTypes, showSandbox, saveShowTransformerTypes, saveShowSandbox } =
     useComponentTestRunSettings();
   const running = sandbox?.running ?? false;
   return (
     <>
-      <label
-        style={{ ...settingLabelStyle, opacity: running ? 0.5 : 1 }}
-        title={running ? "Fixed for the component test run in progress" : "The value the TransformerEditor's switch starts with in every case of a run"}
-      >
-        <input
-          type="checkbox"
-          aria-label="Show transformer types in component test runs"
-          checked={showTransformerTypes}
-          disabled={running}
-          onChange={(event) => saveShowTransformerTypes(event.target.checked)}
-        />
-        Show transformer types
-      </label>
+      {showTransformerTypesSetting && (
+        <label
+          style={{ ...settingLabelStyle, opacity: running ? 0.5 : 1 }}
+          title={running ? "Fixed for the component test run in progress" : "The value the TransformerEditor's switch starts with in every case of a run"}
+        >
+          <input
+            type="checkbox"
+            aria-label="Show transformer types in component test runs"
+            checked={showTransformerTypes}
+            disabled={running}
+            onChange={(event) => saveShowTransformerTypes(event.target.checked)}
+          />
+          Show transformer types
+        </label>
+      )}
       <label style={settingLabelStyle} title="Show the component test sandbox; otherwise the cases run off-screen">
         <input
           type="checkbox"
