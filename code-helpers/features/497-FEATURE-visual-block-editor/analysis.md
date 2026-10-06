@@ -396,8 +396,8 @@ Counts in this section were computed by scripts over the repository at commit `0
 
 | # | Proposal | Impact | Effort | Verdict |
 |---|---|---|---|---|
-| 1 | Fix the `boolExpr` `args` nodes in Runner createEntity (§4.1) | high: two menu conditions are always false | low | file now |
-| 2 | Give `indexListBy` and `listReducerToSpreadObject` distinct uuids | medium: one shadows the other in any uuid-keyed store | low | file now |
+| 1 | Fix the `boolExpr` `args` nodes in Runner createEntity (§4.1) | high: two menu conditions are always false | low | filed as #508 |
+| 2 | Give `indexListBy` and `listReducerToSpreadObject` distinct uuids | medium: one shadows the other in any uuid-keyed store | low | filed as #509 |
 | 3 | Make transformer slots explicit in the metadata (D5-c) | medium: one slot rule for blocks, forms and types | medium (core schema change) | file, after #500 |
 | 4 | Generate the transformer unions from the definitions; drop or implement `dataflowSequence` | medium: removes about five hand-kept lists | medium | file, before #502 |
 
