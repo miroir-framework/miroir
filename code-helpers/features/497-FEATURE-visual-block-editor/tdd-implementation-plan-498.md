@@ -14,7 +14,7 @@
 Analysis: [`./analysis.md`](./analysis.md) (parent issue #497) · Issue: https://github.com/miroir-framework/miroir/issues/498
 Working branch: `claude/497-visual-block-editor`
 
-**Resume note:** plan written 2026-10-06; Slices 0 to 3 done 2026-10-06.
+**Resume note:** plan written 2026-10-06; Slices 0 to 4 done 2026-10-06.
 
 ---
 
@@ -36,7 +36,7 @@ This plan does **not** edit blocks (#500), add @dnd-kit (#500), undo (#499), off
 | 1 | Tracer: the TransformerEditor's transformer as blocks | ✅ | `ui.blockEditor` switch case, first `fn.blockModel` cases |
 | 2 | Every transformer in the assets maps to blocks | ✅ | asset sweep with zero JSON blocks, `fn.blockModel` rule cases |
 | 3 | The full read-only block view | ✅ | `ui.blockEditor` cases on the two composite TransformerDefinitions |
-| 4 | Block categories and their Theme colors | ⬜ | `fn.blockModel` category cases, Miroir modelValidation, `ui.blockEditor` |
+| 4 | Block categories and their Theme colors | ✅ | `fn.blockModel` category cases, Miroir modelValidation, `ui.blockEditor` |
 | 5 | Build marking and its ViewParams setting | ⬜ | `ui.blockEditor` marking cases, Admin modelValidation |
 | 6 | JSON view and a view mode that survives folding | ⬜ | `ui.blockEditor` switch cases |
 | 7 | Nonreg, docs, bundle, AC | ⬜ | nonreg steps, bundle guard, AC checklist |
@@ -285,7 +285,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,ui
 
 ## Slice 4 — Block categories and their Theme colors
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -327,6 +327,12 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core,ui
 ```
 
 ### Realization
+
+- 37 TransformerDefinitions reclassified per D3; no definition is `basic` any more. The `TransformersForClassification` enum lists the ten values in use (it lacked `spreadsheet` and `metaModel` before).
+- Theme Entity and EntityVersion: optional `components.blockEditor` {`categoryColors` record, `fallbackColor`}; regenerated types give `MiroirThemeFull…components.blockEditor`. miroir-react exports `defaultBlockEditorColors` and `blockCategoryColor(blockEditor, category)`; both `ThemeColorDefaults.ts` copies fill the defaults; the default and dark Theme instances carry the colors.
+- Palette from the mockup, except `variable` `#c04f15` instead of `#cf5418`: white text on every block color is 4.5:1 or more (4.26 before). Block text is white on both themes, so the dark instance uses the same colors. The D3 categories differ from the mockup's (no separate `param`, operators on their own), so the mockup is a reference for the palette, not the grouping.
+- Tests: `fn.blockModel` 21 of 21 (expected outlines now carry the new categories, plus a `categories` case over eight types); the sweep checks that every category of the corpus and of the 48 definitions has a color in the default Theme; `ui.blockEditor` 9 of 9 checks `data-category` and `data-block-color` on `returnValue`, `filterList` and `boolExpr`; Miroir modelValidation 165 of 165; core typecheck clean, app typecheck adds no error.
+- The `miroir-edit-transformers` skill shows a category instead of `basic` and lists the categories.
 
 ---
 

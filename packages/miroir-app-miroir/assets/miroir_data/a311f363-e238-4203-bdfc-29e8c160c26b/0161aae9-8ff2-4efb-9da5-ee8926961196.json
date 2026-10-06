@@ -33,7 +33,7 @@
               }
             ],
             "expectedValue": [
-              "returnValue [basic] value=\"seize value...\""
+              "returnValue [value] value=\"seize value...\""
             ]
           },
           {
@@ -64,9 +64,9 @@
               }
             ],
             "expectedValue": [
-              "mapList [basic] {runtime} referenceToOuterObject=\"book\"",
-              "  elementTransformer: getFromContext [basic] {runtime} referencePath=[\"book\",\"name\"]",
-              "  applyTo: getFromContext [basic] {runtime} referenceName=\"books\""
+              "mapList [list] {runtime} referenceToOuterObject=\"book\"",
+              "  elementTransformer: getFromContext [variable] {runtime} referencePath=[\"book\",\"name\"]",
+              "  applyTo: getFromContext [variable] {runtime} referenceName=\"books\""
             ]
           }
         ]
@@ -110,13 +110,13 @@
               }
             ],
             "expectedValue": [
-              "case [basic] {runtime}",
-              "  discriminator: getFromContext [basic] {runtime} referenceName=\"kind\"",
+              "case [control] {runtime}",
+              "  discriminator: getFromContext [variable] {runtime} referenceName=\"kind\"",
               "  whens: [list]",
               "    - {object}",
-              "      when: returnValue [basic] value=\"a\"",
-              "      then: returnValue [basic] value=1",
-              "  else: returnValue [basic] value=0"
+              "      when: returnValue [value] value=\"a\"",
+              "      then: returnValue [value] value=1",
+              "  else: returnValue [value] value=0"
             ]
           },
           {
@@ -140,9 +140,9 @@
               }
             ],
             "expectedValue": [
-              "createObject [basic]",
+              "createObject [object]",
               "  definition: {object}",
-              "    name: getFromContext [basic] {runtime} referenceName=\"name\"",
+              "    name: getFromContext [variable] {runtime} referenceName=\"name\"",
               "    kind: \"book\""
             ]
           },
@@ -177,11 +177,11 @@
               }
             ],
             "expectedValue": [
-              "dataflowObject [basic] {runtime} target=\"count\"",
+              "dataflowObject [variable] {runtime} target=\"count\"",
               "  definition: {object}",
-              "    books: getFromContext [basic] {runtime} referenceName=\"books\"",
-              "    count: listLength [basic] {runtime}",
-              "      applyTo: getFromContext [basic] {runtime} referenceName=\"books\""
+              "    books: getFromContext [variable] {runtime} referenceName=\"books\"",
+              "    count: listLength [list] {runtime}",
+              "      applyTo: getFromContext [variable] {runtime} referenceName=\"books\""
             ]
           },
           {
@@ -198,7 +198,7 @@
               }
             ],
             "expectedValue": [
-              "listLength [basic]",
+              "listLength [list]",
               "  applyTo: \"x\""
             ]
           },
@@ -223,10 +223,10 @@
               }
             ],
             "expectedValue": [
-              "listLength [basic]",
+              "listLength [list]",
               "  applyTo: [list]",
               "    - 1",
-              "    - getFromContext [basic] {runtime} referenceName=\"a\""
+              "    - getFromContext [variable] {runtime} referenceName=\"a\""
             ]
           },
           {
@@ -248,8 +248,8 @@
               }
             ],
             "expectedValue": [
-              "listLength [basic] {runtime}",
-              "  applyTo: getFromContext [basic] {runtime} referenceName=\"books\""
+              "listLength [list] {runtime}",
+              "  applyTo: getFromContext [variable] {runtime} referenceName=\"books\""
             ]
           }
         ]
@@ -290,12 +290,12 @@
               }
             ],
             "expectedValue": [
-              "ifThenElse [basic]",
-              "  if: boolExpr [basic] operator=\"==\"",
-              "    left: getFromContext [basic] {runtime} referenceName=\"a\"",
+              "ifThenElse [control]",
+              "  if: boolExpr [operator] operator=\"==\"",
+              "    left: getFromContext [variable] {runtime} referenceName=\"a\"",
               "    right: true",
               "  then: {object}",
-              "    title: getFromContext [basic] {runtime} referenceName=\"title\"",
+              "    title: getFromContext [variable] {runtime} referenceName=\"title\"",
               "    count: 1",
               "  else: null"
             ]
@@ -323,10 +323,10 @@
               }
             ],
             "expectedValue": [
-              "accessDynamicPath [basic] {runtime}",
+              "accessDynamicPath [object] {runtime}",
               "  objectAccessPath: [list]",
               "    - \"books\"",
-              "    - getFromContext [basic] {runtime} referenceName=\"bookId\"",
+              "    - getFromContext [variable] {runtime} referenceName=\"bookId\"",
               "    - \"title\""
             ]
           },
@@ -354,9 +354,9 @@
               }
             ],
             "expectedValue": [
-              "concatLists [basic]",
+              "concatLists [list]",
               "  lists: [list]",
-              "    - getFromContext [basic] {runtime} referenceName=\"a\"",
+              "    - getFromContext [variable] {runtime} referenceName=\"a\"",
               "    - [list]",
               "      - 1",
               "      - 2"
@@ -393,11 +393,11 @@
               }
             ],
             "expectedValue": [
-              "aggregate [basic] {runtime} function=\"count\" groupBy=\"author\"",
-              "  having: boolExpr [basic] operator=\">\"",
-              "    left: getFromContext [basic] {runtime} referenceName=\"count\"",
+              "aggregate [list] {runtime} function=\"count\" groupBy=\"author\"",
+              "  having: boolExpr [operator] operator=\">\"",
+              "    left: getFromContext [variable] {runtime} referenceName=\"count\"",
               "    right: 1",
-              "  applyTo: getFromContext [basic] {runtime} referenceName=\"books\""
+              "  applyTo: getFromContext [variable] {runtime} referenceName=\"books\""
             ]
           }
         ]
@@ -430,7 +430,7 @@
             "expectedValue": [
               "mlsTypeCheck [MLS] {runtime}",
               "  mlSchema: <mlSchema>",
-              "  valueObject: getFromContext [basic] {runtime} referenceName=\"v\""
+              "  valueObject: getFromContext [variable] {runtime} referenceName=\"v\""
             ]
           },
           {
@@ -450,7 +450,7 @@
               }
             ],
             "expectedValue": [
-              "returnValue [basic] value=\"x\"",
+              "returnValue [value] value=\"x\"",
               "  mlSchema: <mlSchema>"
             ]
           },
@@ -479,8 +479,8 @@
             ],
             "expectedValue": [
               "mlsTypeCheck [MLS] {runtime}",
-              "  mlSchema: getFromContext [basic] {runtime} referenceName=\"schema\"",
-              "  valueObject: getFromContext [basic] {runtime} referenceName=\"v\""
+              "  mlSchema: getFromContext [variable] {runtime} referenceName=\"schema\"",
+              "  valueObject: getFromContext [variable] {runtime} referenceName=\"v\""
             ]
           },
           {
@@ -500,7 +500,7 @@
               }
             ],
             "expectedValue": [
-              "returnValue [basic]",
+              "returnValue [value]",
               "  value: quoted {\"transformerType\":\"getFromParameters\",\"referenceName\":\"instanceUuid\"}"
             ]
           },
@@ -530,9 +530,9 @@
               }
             ],
             "expectedValue": [
-              "mapList [basic] {runtime} referenceToOuterObject=\"book\" orderBy=\"name\"",
-              "  elementTransformer: getFromContext [basic] {runtime} referenceName=\"book\"",
-              "  applyTo: getFromContext [basic] {runtime} referenceName=\"books\""
+              "mapList [list] {runtime} referenceToOuterObject=\"book\" orderBy=\"name\"",
+              "  elementTransformer: getFromContext [variable] {runtime} referenceName=\"book\"",
+              "  applyTo: getFromContext [variable] {runtime} referenceName=\"books\""
             ]
           }
         ]
@@ -563,10 +563,10 @@
               }
             ],
             "expectedValue": [
-              "boolExpr [basic] operator=\"&&\"",
+              "boolExpr [operator] operator=\"&&\"",
               "  left: _",
               "  !args: [list]",
-              "    - boolExpr [basic] operator=\"==\"",
+              "    - boolExpr [operator] operator=\"==\"",
               "      left: 1",
               "      right: 2"
             ]
@@ -614,8 +614,110 @@
             ],
             "expectedValue": [
               "[list]",
-              "  - getFromContext [basic] {runtime} referenceName=\"a\"",
+              "  - getFromContext [variable] {runtime} referenceName=\"a\"",
               "  - <json unknownTransformerType>"
+            ]
+          }
+        ]
+      },
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "categories",
+        "miroirTests": [
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "each block has the classification of its TransformerDefinition",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerBlockModel",
+              "export": "transformerBlockOutline"
+            },
+            "arguments": [
+              [
+                {
+                  "transformerType": "mapList",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "x"
+                  },
+                  "referenceToOuterObject": "y",
+                  "elementTransformer": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "x"
+                  }
+                },
+                {
+                  "transformerType": "getObjectValues",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "x"
+                  }
+                },
+                {
+                  "transformerType": "ifThenElse",
+                  "if": true,
+                  "then": 1,
+                  "else": 2
+                },
+                {
+                  "transformerType": "generateUuid"
+                },
+                {
+                  "transformerType": "getFromParameters",
+                  "referenceName": "p"
+                },
+                {
+                  "transformerType": "boolExpr",
+                  "operator": "not",
+                  "left": true
+                },
+                {
+                  "transformerType": "mlsTypeCheck",
+                  "interpolation": "runtime",
+                  "mlSchema": {
+                    "type": "string"
+                  },
+                  "valueObject": "v"
+                },
+                {
+                  "transformerType": "transformer_menu_addItem",
+                  "menuReference": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "x"
+                  },
+                  "menuItemReference": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "x"
+                  }
+                }
+              ]
+            ],
+            "expectedValue": [
+              "[list]",
+              "  - mapList [list] {runtime} referenceToOuterObject=\"y\"",
+              "    elementTransformer: getFromContext [variable] {runtime} referenceName=\"x\"",
+              "    applyTo: getFromContext [variable] {runtime} referenceName=\"x\"",
+              "  - getObjectValues [object] {runtime}",
+              "    applyTo: getFromContext [variable] {runtime} referenceName=\"x\"",
+              "  - ifThenElse [control]",
+              "    if: true",
+              "    then: 1",
+              "    else: 2",
+              "  - generateUuid [value]",
+              "  - getFromParameters [variable] referenceName=\"p\"",
+              "  - boolExpr [operator] operator=\"not\"",
+              "    left: true",
+              "  - mlsTypeCheck [MLS] {runtime} valueObject=\"v\"",
+              "    mlSchema: <mlSchema>",
+              "  - transformer_menu_addItem [metaModel]",
+              "    menuReference: getFromContext [variable] {runtime} referenceName=\"x\"",
+              "    menuItemReference: getFromContext [variable] {runtime} referenceName=\"x\""
             ]
           }
         ]

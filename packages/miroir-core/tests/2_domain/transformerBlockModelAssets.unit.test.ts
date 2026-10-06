@@ -14,6 +14,7 @@ import { applicationTransformerDefinitions } from "../../src/2_domain/Transforme
 // runtime returns without evaluating it.
 //
 // Slice 2: each of them maps to blocks, one block per transformer node, with no JSON block.
+// Slice 4: each category of block has a color in the default Theme.
 // ################################################################################################
 
 const RUN_TEST = process.env.RUN_TEST;
@@ -24,6 +25,10 @@ const shouldRun =
 
 const REPO_ROOT = join(import.meta.dirname, "../../../..");
 const PACKAGES = join(REPO_ROOT, "packages");
+const DEFAULT_THEME = join(
+  PACKAGES,
+  "miroir-app-miroir/assets/miroir_data/bdcf956a-771d-40a1-a878-06e0bf6efd3e/919803c4-979d-4d7c-9cec-e54d37bdac09.json",
+);
 
 type TransformerRoot = { path: (string | number)[]; value: Record<string, unknown> };
 
@@ -153,4 +158,20 @@ describe.runIf(shouldRun)("transformerBlockModelAssets", () => {
       expect(mapped.filter((root) => root.jsonBlocks > 0 || root.transformerBlocks !== root.nodes)).toEqual([]);
     },
   );
+
+  it("every block category has a color in the default Theme", () => {
+    const categoryColors: Record<string, string> =
+      JSON.parse(readFileSync(DEFAULT_THEME, "utf-8")).definition.components?.blockEditor?.categoryColors ?? {};
+    const corpusCategories = corpus.flatMap((entry) =>
+      entry.roots.flatMap((root) => transformerBlockTree(root.value).stats.categories),
+    );
+    const definitionCategories = Object.values(applicationTransformerDefinitions).map(
+      (definition) => definition.classification ?? "unknown",
+    );
+    const withoutColor = [...new Set([...corpusCategories, ...definitionCategories])]
+      .filter((category) => !categoryColors[category])
+      .sort();
+    console.log("transformerBlockModelAssets: categories without a Theme color:", JSON.stringify(withoutColor));
+    expect(withoutColor).toEqual([]);
+  });
 });

@@ -90,6 +90,24 @@
               },
               {
                 "step": "waitForAttribute",
+                "label": "returnValue is a value block",
+                "target": {
+                  "byTestId": "block:transformer"
+                },
+                "attribute": "data-category",
+                "value": "value"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "value blocks have the theme's value color",
+                "target": {
+                  "byTestId": "block:transformer"
+                },
+                "attribute": "data-block-color",
+                "value": "#23824a"
+              },
+              {
+                "step": "waitForAttribute",
                 "label": "Blocks is selected",
                 "target": {
                   "byTestId": "block-view-mode:transformer:blocks"
@@ -156,6 +174,33 @@
                 "attribute": "data-transformer-type",
                 "value": "filterList",
                 "timeout": 3000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "filterList is a list block",
+                "target": {
+                  "byTestId": "block:transformerImplementation.definition"
+                },
+                "attribute": "data-category",
+                "value": "list"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "list blocks have the theme's list color",
+                "target": {
+                  "byTestId": "block:transformerImplementation.definition"
+                },
+                "attribute": "data-block-color",
+                "value": "#2f6fd6"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "boolExpr is an operator block",
+                "target": {
+                  "byTestId": "block:transformerImplementation.definition.predicate"
+                },
+                "attribute": "data-category",
+                "value": "operator"
               },
               {
                 "step": "waitForAttribute",

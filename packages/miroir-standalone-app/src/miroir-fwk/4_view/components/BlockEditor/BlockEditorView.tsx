@@ -3,7 +3,7 @@ import { css } from "@emotion/react";
 import { transformerBlockTree, type BlockNode, type BlockPath, type TransformerBlock } from "miroir-core";
 import React, { useCallback, useMemo, useState } from "react";
 
-import { useMiroirTheme } from "../../contexts/MiroirThemeContext.js";
+import { blockCategoryColor, useMiroirTheme, type BlockEditorColors } from "../../contexts/MiroirThemeContext.js";
 
 // ################################################################################################
 // #498: the read-only block view of a transformer value (analysis #497). The tree comes from the
@@ -39,7 +39,8 @@ interface BlockColors {
   border: string;
   mouth: string;
   field: string;
-  block: string;
+  /** Block colors by category, from the theme's `components.blockEditor`. */
+  blockEditor: BlockEditorColors | undefined;
   onBlock: string;
   literal: string;
 }
@@ -61,7 +62,7 @@ function useBlockColors(): BlockColors {
       border: colors.border ?? "#d0d7de",
       mouth: colors.surfaceVariant ?? surface,
       field: colors.background ?? "#ffffff",
-      block: colors.primary ?? "#4c97ff",
+      blockEditor: currentTheme.components?.blockEditor,
       onBlock: "#ffffff",
       literal: surface,
     };
@@ -158,6 +159,7 @@ const TransformerBlockView = React.memo(function TransformerBlockView(props: {
   const { node, settings } = props;
   const id = blockId(settings.rootLessListKey, node.path);
   const { collapsed, toggleButton, summary } = useCollapse(node, settings, node.rows.length);
+  const color = blockCategoryColor(settings.blockEditor, node.category);
   return (
     <div
       id={id}
@@ -165,13 +167,14 @@ const TransformerBlockView = React.memo(function TransformerBlockView(props: {
       data-block-kind="transformer"
       data-transformer-type={node.transformerType}
       data-category={node.category}
+      data-block-color={color}
       role="group"
       aria-label={node.transformerType}
       css={css({
         display: "inline-flex",
         flexDirection: "column",
         maxWidth: "100%",
-        background: settings.block,
+        background: color,
         color: settings.onBlock,
         border: "1.5px solid rgba(0,0,0,.22)",
         borderRadius: "8px",
