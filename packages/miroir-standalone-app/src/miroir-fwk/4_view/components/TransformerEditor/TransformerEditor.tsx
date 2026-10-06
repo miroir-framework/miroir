@@ -125,7 +125,7 @@ function mismatchedBadgeParts(
     } else if (failure.direction === "output") {
       kinds.add("out").add("declared");
     } else {
-      kinds.add("out");
+      kinds.add("value").add("out");
     }
   }
   return kinds;
@@ -191,6 +191,11 @@ export function transformerTypeBadges(
               ),
             ]
           : []),
+        // a `returnValue` whose value does not fit its mlSchema: `out` is the mlSchema type, so the
+        // value's own type gets a chip, the side to fix
+        ...node.failures
+          .filter((failure) => failure.direction === "value")
+          .map((failure) => part("value", label(failure.given), formatInputOutputTypeLabel(failure.given))),
         part("out", label(node.output), formatInputOutputTypeLabel(node.output)),
       ],
       declaredMatchesActual: node.declared && declaresConstraint(node.declared) ? declaredMatchesActual : undefined,

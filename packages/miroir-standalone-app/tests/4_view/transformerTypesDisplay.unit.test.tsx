@@ -249,6 +249,22 @@ describe("transformerTypesDisplay: badge parts (#470)", () => {
     expect(badge?.parts.find((part) => part.kind === "in")?.title).toContain(bookUuid);
   });
 
+  it("a returnValue whose value does not fit its mlSchema shows the value's type, marked with out", () => {
+    const walk = checkTransformerInterfaceRecursively(
+      {
+        transformerType: "returnValue",
+        interpolation: "runtime",
+        mlSchema: { type: "record", definition: { type: "string" } },
+        value: { a: 1 },
+      },
+      "any",
+    );
+    const badge = badgeAt(transformerTypeBadges(walk, []), ["transformer"]);
+    expect(kinds(badge)).toEqual(["in", "value", "out"]);
+    expect(badge?.parts.find((part) => part.kind === "value")).toMatchObject({ label: "record<number>", mismatch: true });
+    expect(badge?.parts.find((part) => part.kind === "out")).toMatchObject({ label: "record<string>", mismatch: true });
+  });
+
   it("a literal has one value chip", () => {
     const walk = checkTransformerInterfaceRecursively(
       { transformerType: "aggregate", interpolation: "runtime", applyTo: ["a", "b"] },
@@ -338,6 +354,9 @@ describe("transformerTypesDisplay: badges of primitive literals", () => {
       expect(titleRow).toBeTruthy();
       expect(objectBadge).toBeTruthy();
       expect(titleRow?.contains(objectBadge)).toBe(false);
+      // #470: a primitive literal's badge stacks under its label, apart from the input
+      const literalBadge = sandboxElement.querySelector('[data-testid="transformer-type-badge-testField.applyTo"]');
+      expect(literalBadge?.parentElement?.querySelector("input")).toBeNull();
     },
     RUN_TEST_TIMEOUT,
   );

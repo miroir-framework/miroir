@@ -254,8 +254,9 @@ export const TransformerTypeBadgeLine: React.FC<{ badge: TransformerTypeBadge }>
   const pathKey = annotationPathKey(badge.path);
   const secondary = currentTheme.colors.textSecondary || currentTheme.colors.text;
   const isNode = badge.givenLabel !== undefined;
+  // a span, so that the line can also sit inside a label (primitive literals)
   return (
-    <div
+    <span
       data-testid={`transformer-type-badge-${pathKey}`}
       data-transformer-type-status={badge.status}
       data-transformer-type-given={badge.givenLabel}
@@ -306,7 +307,7 @@ export const TransformerTypeBadgeLine: React.FC<{ badge: TransformerTypeBadge }>
           ✓ declared
         </span>
       ) : null}
-    </div>
+    </span>
   );
 };
 

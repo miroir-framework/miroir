@@ -708,22 +708,21 @@ export function MlElementEditor(props: MlElementEditorProps): JSX.Element {
 
   // Enhanced label element with error tooltip for simple types
   const enhancedLabelElement = useMemo(() => {
-    const labelElement = primitiveTypeBadge ? (
-      <>
-        {props.labelElement}
-        <TransformerTypeBadgeLine badge={primitiveTypeBadge} />
-      </>
-    ) : (
-      props.labelElement
-    );
-    if (!labelElement || !hasPathError || !props.displayError) {
+    // For simple types, wrap the label with a span that has a title attribute
+    const labelElement =
+      props.labelElement && hasPathError && props.displayError ? (
+        <span title={props.displayError.errorMessage}>{props.labelElement}</span>
+      ) : (
+        props.labelElement
+      );
+    if (!primitiveTypeBadge) {
       return labelElement ?? <></>;
     }
-
-    // For simple types, wrap the label with a span that has a title attribute
+    // #470: label and badge stack in the label slot, so the badge never sits beside the input
     return (
-      <span title={props.displayError.errorMessage}>
+      <span style={{ display: "inline-flex", flexDirection: "column", alignItems: "flex-start", minWidth: 0 }}>
         {labelElement}
+        <TransformerTypeBadgeLine badge={primitiveTypeBadge} />
       </span>
     );
   }, [props.labelElement, primitiveTypeBadge, hasPathError, props.displayError]);
