@@ -14,7 +14,7 @@
 Analysis: [`./analysis.md`](./analysis.md) (parent issue #497) · Issue: https://github.com/miroir-framework/miroir/issues/498
 Working branch: `claude/497-visual-block-editor`
 
-**Resume note:** plan written 2026-10-06; Slices 0 and 1 done 2026-10-06.
+**Resume note:** plan written 2026-10-06; Slices 0 to 2 done 2026-10-06.
 
 ---
 
@@ -34,7 +34,7 @@ This plan does **not** edit blocks (#500), add @dnd-kit (#500), undo (#499), off
 |---|---|---|---|
 | 0 | Characterize the transformer corpus and the editors | ✅ | `transformerBlockModelAssets.unit.test.ts` (inventory), existing editor suites |
 | 1 | Tracer: the TransformerEditor's transformer as blocks | ✅ | `ui.blockEditor` switch case, first `fn.blockModel` cases |
-| 2 | Every transformer in the assets maps to blocks | ⬜ | asset sweep with zero JSON blocks, `fn.blockModel` rule cases |
+| 2 | Every transformer in the assets maps to blocks | ✅ | asset sweep with zero JSON blocks, `fn.blockModel` rule cases |
 | 3 | The full read-only block view | ⬜ | `ui.blockEditor` cases on the two composite TransformerDefinitions |
 | 4 | Block categories and their Theme colors | ⬜ | `fn.blockModel` category cases, Miroir modelValidation, `ui.blockEditor` |
 | 5 | Build marking and its ViewParams setting | ⬜ | `ui.blockEditor` marking cases, Admin modelValidation |
@@ -194,7 +194,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core,ui
 
 ## Slice 2 — Every transformer in the assets maps to blocks
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -229,6 +229,10 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core
 ```
 
 ### Realization
+
+- The sweep was green at once: the Slice 1 model already drew all 2513 transformer nodes of the 889 roots as blocks, with no JSON block. `fn.blockModel` grew to 20 cases in four sub-suites (`slots`, `structures`, `parameters`, `fallbacks`); 18 passed at once.
+- RED → GREEN: `returnValue.mlSchema` is an inline union, not a reference to an ML schema, so it was drawn as an object block. ML schema parameters are now recognized by reference (`ml*`) or by name (`mlSchema`, `…MlSchema`, per `docs/reference/ml-nomenclature.md`), which also covers `constantAsExtractor.valueMlSchema`; and an ML schema computed by a transformer stays a block instead of hiding it in a chip.
+- `transformerChildren` (`TransformerTreeEdit.ts`) lists only the typed slot children a node can be unwrapped to, while the block model finds transformers anywhere by shape: they do not compute the same thing, so neither uses the other.
 
 ---
 

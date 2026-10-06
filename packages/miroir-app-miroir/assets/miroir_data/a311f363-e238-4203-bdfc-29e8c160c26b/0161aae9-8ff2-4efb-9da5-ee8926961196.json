@@ -5,7 +5,7 @@
   "name": "fn.blockModel",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "A transformer value as a tree of Scratch-style blocks: one block per transformer with its primitive parameters in the header and one row per slot.",
+  "description": "A transformer value as a tree of Scratch-style blocks: one block per transformer with its primitive parameters in the header, one row per slot or structured parameter, ML schemas as chips and unknown transformers as JSON.",
   "tags": [
     "unit",
     "transformer"
@@ -67,6 +67,555 @@
               "mapList [basic] {runtime} referenceToOuterObject=\"book\"",
               "  elementTransformer: getFromContext [basic] {runtime} referencePath=[\"book\",\"name\"]",
               "  applyTo: getFromContext [basic] {runtime} referenceName=\"books\""
+            ]
+          }
+        ]
+      },
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "slots",
+        "miroirTests": [
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "case: the discriminator, each when and then of the whens list, the else",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerBlockModel",
+              "export": "transformerBlockOutline"
+            },
+            "arguments": [
+              {
+                "transformerType": "case",
+                "interpolation": "runtime",
+                "discriminator": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referenceName": "kind"
+                },
+                "whens": [
+                  {
+                    "when": {
+                      "transformerType": "returnValue",
+                      "value": "a"
+                    },
+                    "then": {
+                      "transformerType": "returnValue",
+                      "value": 1
+                    }
+                  }
+                ],
+                "else": {
+                  "transformerType": "returnValue",
+                  "value": 0
+                }
+              }
+            ],
+            "expectedValue": [
+              "case [basic] {runtime}",
+              "  discriminator: getFromContext [basic] {runtime} referenceName=\"kind\"",
+              "  whens: [list]",
+              "    - {object}",
+              "      when: returnValue [basic] value=\"a\"",
+              "      then: returnValue [basic] value=1",
+              "  else: returnValue [basic] value=0"
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "createObject: the definition record holds a transformer and a literal",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerBlockModel",
+              "export": "transformerBlockOutline"
+            },
+            "arguments": [
+              {
+                "transformerType": "createObject",
+                "definition": {
+                  "name": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "name"
+                  },
+                  "kind": "book"
+                }
+              }
+            ],
+            "expectedValue": [
+              "createObject [basic]",
+              "  definition: {object}",
+              "    name: getFromContext [basic] {runtime} referenceName=\"name\"",
+              "    kind: \"book\""
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "dataflowObject: the target in the header, each step of the definition record",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerBlockModel",
+              "export": "transformerBlockOutline"
+            },
+            "arguments": [
+              {
+                "transformerType": "dataflowObject",
+                "interpolation": "runtime",
+                "target": "count",
+                "definition": {
+                  "books": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "books"
+                  },
+                  "count": {
+                    "transformerType": "listLength",
+                    "interpolation": "runtime",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referenceName": "books"
+                    }
+                  }
+                }
+              }
+            ],
+            "expectedValue": [
+              "dataflowObject [basic] {runtime} target=\"count\"",
+              "  definition: {object}",
+              "    books: getFromContext [basic] {runtime} referenceName=\"books\"",
+              "    count: listLength [basic] {runtime}",
+              "      applyTo: getFromContext [basic] {runtime} referenceName=\"books\""
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "applyTo holding a literal",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerBlockModel",
+              "export": "transformerBlockOutline"
+            },
+            "arguments": [
+              {
+                "transformerType": "listLength",
+                "applyTo": "x"
+              }
+            ],
+            "expectedValue": [
+              "listLength [basic]",
+              "  applyTo: \"x\""
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "applyTo holding a list of a literal and a transformer",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerBlockModel",
+              "export": "transformerBlockOutline"
+            },
+            "arguments": [
+              {
+                "transformerType": "listLength",
+                "applyTo": [
+                  1,
+                  {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "a"
+                  }
+                ]
+              }
+            ],
+            "expectedValue": [
+              "listLength [basic]",
+              "  applyTo: [list]",
+              "    - 1",
+              "    - getFromContext [basic] {runtime} referenceName=\"a\""
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "applyTo holding a transformer",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerBlockModel",
+              "export": "transformerBlockOutline"
+            },
+            "arguments": [
+              {
+                "transformerType": "listLength",
+                "interpolation": "runtime",
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referenceName": "books"
+                }
+              }
+            ],
+            "expectedValue": [
+              "listLength [basic] {runtime}",
+              "  applyTo: getFromContext [basic] {runtime} referenceName=\"books\""
+            ]
+          }
+        ]
+      },
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "structures",
+        "miroirTests": [
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "ifThenElse: an object of transformers in then, null in else",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerBlockModel",
+              "export": "transformerBlockOutline"
+            },
+            "arguments": [
+              {
+                "transformerType": "ifThenElse",
+                "if": {
+                  "transformerType": "boolExpr",
+                  "operator": "==",
+                  "left": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "a"
+                  },
+                  "right": true
+                },
+                "then": {
+                  "title": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "title"
+                  },
+                  "count": 1
+                },
+                "else": null
+              }
+            ],
+            "expectedValue": [
+              "ifThenElse [basic]",
+              "  if: boolExpr [basic] operator=\"==\"",
+              "    left: getFromContext [basic] {runtime} referenceName=\"a\"",
+              "    right: true",
+              "  then: {object}",
+              "    title: getFromContext [basic] {runtime} referenceName=\"title\"",
+              "    count: 1",
+              "  else: null"
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "accessDynamicPath: a path mixing strings and a transformer",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerBlockModel",
+              "export": "transformerBlockOutline"
+            },
+            "arguments": [
+              {
+                "transformerType": "accessDynamicPath",
+                "interpolation": "runtime",
+                "objectAccessPath": [
+                  "books",
+                  {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "bookId"
+                  },
+                  "title"
+                ]
+              }
+            ],
+            "expectedValue": [
+              "accessDynamicPath [basic] {runtime}",
+              "  objectAccessPath: [list]",
+              "    - \"books\"",
+              "    - getFromContext [basic] {runtime} referenceName=\"bookId\"",
+              "    - \"title\""
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "concatLists: a transformer and a literal list in lists",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerBlockModel",
+              "export": "transformerBlockOutline"
+            },
+            "arguments": [
+              {
+                "transformerType": "concatLists",
+                "lists": [
+                  {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "a"
+                  },
+                  [
+                    1,
+                    2
+                  ]
+                ]
+              }
+            ],
+            "expectedValue": [
+              "concatLists [basic]",
+              "  lists: [list]",
+              "    - getFromContext [basic] {runtime} referenceName=\"a\"",
+              "    - [list]",
+              "      - 1",
+              "      - 2"
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "aggregate: primitive parameters in the header, the having row before applyTo",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerBlockModel",
+              "export": "transformerBlockOutline"
+            },
+            "arguments": [
+              {
+                "transformerType": "aggregate",
+                "interpolation": "runtime",
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referenceName": "books"
+                },
+                "function": "count",
+                "groupBy": "author",
+                "having": {
+                  "transformerType": "boolExpr",
+                  "operator": ">",
+                  "left": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referenceName": "count"
+                  },
+                  "right": 1
+                }
+              }
+            ],
+            "expectedValue": [
+              "aggregate [basic] {runtime} function=\"count\" groupBy=\"author\"",
+              "  having: boolExpr [basic] operator=\">\"",
+              "    left: getFromContext [basic] {runtime} referenceName=\"count\"",
+              "    right: 1",
+              "  applyTo: getFromContext [basic] {runtime} referenceName=\"books\""
+            ]
+          }
+        ]
+      },
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "parameters",
+        "miroirTests": [
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "mlsTypeCheck: the ML schema as a chip",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerBlockModel",
+              "export": "transformerBlockOutline"
+            },
+            "arguments": [
+              {
+                "transformerType": "mlsTypeCheck",
+                "interpolation": "runtime",
+                "mlSchema": {
+                  "type": "string"
+                },
+                "valueObject": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referenceName": "v"
+                }
+              }
+            ],
+            "expectedValue": [
+              "mlsTypeCheck [MLS] {runtime}",
+              "  mlSchema: <mlSchema>",
+              "  valueObject: getFromContext [basic] {runtime} referenceName=\"v\""
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "returnValue: its mlSchema as a chip",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerBlockModel",
+              "export": "transformerBlockOutline"
+            },
+            "arguments": [
+              {
+                "transformerType": "returnValue",
+                "mlSchema": {
+                  "type": "string"
+                },
+                "value": "x"
+              }
+            ],
+            "expectedValue": [
+              "returnValue [basic] value=\"x\"",
+              "  mlSchema: <mlSchema>"
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "mlsTypeCheck: an ML schema computed by a transformer stays a block",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerBlockModel",
+              "export": "transformerBlockOutline"
+            },
+            "arguments": [
+              {
+                "transformerType": "mlsTypeCheck",
+                "interpolation": "runtime",
+                "mlSchema": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referenceName": "schema"
+                },
+                "valueObject": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referenceName": "v"
+                }
+              }
+            ],
+            "expectedValue": [
+              "mlsTypeCheck [MLS] {runtime}",
+              "  mlSchema: getFromContext [basic] {runtime} referenceName=\"schema\"",
+              "  valueObject: getFromContext [basic] {runtime} referenceName=\"v\""
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "returnValue: a transformer-shaped value is quoted, not a block",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerBlockModel",
+              "export": "transformerBlockOutline"
+            },
+            "arguments": [
+              {
+                "transformerType": "returnValue",
+                "value": {
+                  "transformerType": "getFromParameters",
+                  "referenceName": "instanceUuid"
+                }
+              }
+            ],
+            "expectedValue": [
+              "returnValue [basic]",
+              "  value: quoted {\"transformerType\":\"getFromParameters\",\"referenceName\":\"instanceUuid\"}"
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "mapList: orderBy, declared by the transformer_orderBy extension, in the header",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerBlockModel",
+              "export": "transformerBlockOutline"
+            },
+            "arguments": [
+              {
+                "transformerType": "mapList",
+                "interpolation": "runtime",
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referenceName": "books"
+                },
+                "referenceToOuterObject": "book",
+                "elementTransformer": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referenceName": "book"
+                },
+                "orderBy": "name"
+              }
+            ],
+            "expectedValue": [
+              "mapList [basic] {runtime} referenceToOuterObject=\"book\" orderBy=\"name\"",
+              "  elementTransformer: getFromContext [basic] {runtime} referenceName=\"book\"",
+              "  applyTo: getFromContext [basic] {runtime} referenceName=\"books\""
+            ]
+          }
+        ]
+      },
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "fallbacks",
+        "miroirTests": [
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "boolExpr: the undeclared args flagged, the missing left empty",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerBlockModel",
+              "export": "transformerBlockOutline"
+            },
+            "arguments": [
+              {
+                "transformerType": "boolExpr",
+                "operator": "&&",
+                "args": [
+                  {
+                    "transformerType": "boolExpr",
+                    "operator": "==",
+                    "left": 1,
+                    "right": 2
+                  }
+                ]
+              }
+            ],
+            "expectedValue": [
+              "boolExpr [basic] operator=\"&&\"",
+              "  left: _",
+              "  !args: [list]",
+              "    - boolExpr [basic] operator=\"==\"",
+              "      left: 1",
+              "      right: 2"
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "an unknown transformerType is a JSON block",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerBlockModel",
+              "export": "transformerBlockOutline"
+            },
+            "arguments": [
+              {
+                "transformerType": "unknownTransformer",
+                "interpolation": "runtime",
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referenceName": "a"
+                }
+              }
+            ],
+            "expectedValue": [
+              "<json unknownTransformerType>"
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a list keeps its known transformers as blocks next to a JSON block",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerBlockModel",
+              "export": "transformerBlockOutline"
+            },
+            "arguments": [
+              [
+                {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referenceName": "a"
+                },
+                {
+                  "transformerType": "unknownTransformer"
+                }
+              ]
+            ],
+            "expectedValue": [
+              "[list]",
+              "  - getFromContext [basic] {runtime} referenceName=\"a\"",
+              "  - <json unknownTransformerType>"
             ]
           }
         ]

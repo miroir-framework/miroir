@@ -2,6 +2,7 @@ import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 import { describe, expect, it } from "vitest";
 
+import { transformerBlockTree } from "../../src/2_domain/TransformerBlockModel";
 import { applicationTransformerDefinitions } from "../../src/2_domain/TransformersForRuntime";
 
 // ################################################################################################
@@ -11,6 +12,8 @@ import { applicationTransformerDefinitions } from "../../src/2_domain/Transforme
 // The corpus is every object with a string `transformerType`, except the arguments of
 // functionCallTest cases, `expected*` values, and the content of `returnValue.value`, which the
 // runtime returns without evaluating it.
+//
+// Slice 2: each of them maps to blocks, one block per transformer node, with no JSON block.
 // ################################################################################################
 
 const RUN_TEST = process.env.RUN_TEST;
@@ -132,6 +135,22 @@ describe.runIf(shouldRun)("transformerBlockModelAssets", () => {
         .map((node) => node.transformerType)
         .filter((transformerType) => !applicationTransformerDefinitions[transformerType]);
       expect(unknownTypes).toEqual([]);
+    },
+  );
+
+  it.each(corpus.map((entry) => [entry.file, entry.roots] as const))(
+    "%s: every transformer maps to a block, none to JSON",
+    (_file, roots) => {
+      const mapped = roots.map((root) => {
+        const tree = transformerBlockTree(root.value);
+        return {
+          path: root.path.join("."),
+          nodes: transformerNodes(root.value).length,
+          transformerBlocks: tree.stats.transformerBlocks,
+          jsonBlocks: tree.stats.jsonBlocks,
+        };
+      });
+      expect(mapped.filter((root) => root.jsonBlocks > 0 || root.transformerBlocks !== root.nodes)).toEqual([]);
     },
   );
 });

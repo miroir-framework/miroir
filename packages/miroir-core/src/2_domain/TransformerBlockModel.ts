@@ -38,6 +38,11 @@ const COMMON_ATTRIBUTES = new Set(["transformerType", "interpolation", "label"])
 const APPLY_TO = "applyTo";
 /** Schema references whose target is an ML schema: shown as a chip. */
 const ML_SCHEMA_REFERENCE = /^ml[A-Z]/;
+/**
+ * Parameters named as ML schemas (`mlSchema`, `valueMlSchema`, see docs/reference/ml-nomenclature.md)
+ * whose schema is not a reference: `returnValue.mlSchema` is an inline union, for instance.
+ */
+const ML_SCHEMA_NAME = /^(ml|.+Ml)Schema$/;
 
 function isPlainRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -70,9 +75,20 @@ function referencedNames(schema: MlElement): string[] | undefined {
   }
 }
 
-function isMlSchemaAttribute(schema: MlElement | undefined): boolean {
+function containsTransformer(value: unknown): boolean {
+  if (Array.isArray(value)) {
+    return value.some(containsTransformer);
+  }
+  return isPlainRecord(value) && (isTransformerNode(value) || Object.values(value).some(containsTransformer));
+}
+
+/** An ML schema parameter given as a value, not computed by a transformer. */
+function isMlSchemaValue(name: string, schema: MlElement | undefined, value: unknown): boolean {
   const names = schema ? referencedNames(schema) : undefined;
-  return !!names && names.length > 0 && names.every((name) => ML_SCHEMA_REFERENCE.test(name));
+  const declaredMlSchema =
+    (!!names && names.length > 0 && names.every((reference) => ML_SCHEMA_REFERENCE.test(reference))) ||
+    ML_SCHEMA_NAME.test(name);
+  return declaredMlSchema && !containsTransformer(value);
 }
 
 interface TransformerTypeInfo {
@@ -187,7 +203,7 @@ function transformerBlock(value: TransformerNode, path: BlockPath, context: Buil
     const node: BlockNode =
       value.transformerType === "returnValue" && name === "value"
         ? { kind: "literal", path: attributePath, value: attributeValue, quoted: true }
-        : isMlSchemaAttribute(schema)
+        : isMlSchemaValue(name, schema, attributeValue)
           ? { kind: "mlSchema", path: attributePath, value: attributeValue }
           : blockOf(attributeValue, attributePath, context);
     rows.push({ name, path: attributePath, kind: "value", optional, node });
