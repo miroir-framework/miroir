@@ -67,7 +67,8 @@ class MainWindow {
   private getAppDistPath(): string {
     return app.isPackaged
       ? path.join(process.resourcesPath, "app")
-      : path.join(mainDirname, "../../miroir-standalone-app/dist");
+      : // mainDirname is dist/src of this package (the esbuild bundle, scripts/bundle-main.mjs)
+        path.join(mainDirname, "../../../miroir-standalone-app/dist");
   }
 
   private setupEventHandlers(): void {
