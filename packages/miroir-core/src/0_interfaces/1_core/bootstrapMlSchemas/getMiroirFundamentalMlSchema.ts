@@ -1843,6 +1843,13 @@ export function getMiroirFundamentalMlSchema(
             },
           },
         },
+        miroirSelfTestConfig: {
+          type: "object",
+          definition: {
+            enabled: { type: "boolean" },
+            tags: { type: "array", optional: true, definition: { type: "string" } },
+          },
+        },
         miroirConfigForClientStub: {
           type: "object",
           definition: {
@@ -1925,6 +1932,14 @@ export function getMiroirFundamentalMlSchema(
                 agentBackend: { type: "enum", optional: true, definition: ["cursor", "claude", "none"] },
                 agentModel: { type: "string", optional: true },
                 designerTools: { type: "boolean", optional: true },
+              },
+            },
+            selfTest: {
+              type: "schemaReference",
+              optional: true,
+              definition: {
+                absolutePath: miroirFundamentalMlSchemaUuid,
+                relativePath: "miroirSelfTestConfig",
               },
             },
           },
@@ -2128,6 +2143,14 @@ export function getMiroirFundamentalMlSchema(
               optional: true,
               definition: {
                 mode: { type: "enum", optional: true, definition: ["realServer", "emulatedServer"] },
+                selfTest: {
+                  type: "schemaReference",
+                  optional: true,
+                  definition: {
+                    absolutePath: miroirFundamentalMlSchemaUuid,
+                    relativePath: "miroirSelfTestConfig",
+                  },
+                },
               },
             },
             features: {

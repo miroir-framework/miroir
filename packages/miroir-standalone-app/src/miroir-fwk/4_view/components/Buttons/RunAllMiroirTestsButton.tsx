@@ -4,9 +4,6 @@ import {
   ACTION_OK,
   buildUiIntegrationSuiteRegistriesFromMiroirTests,
   MiroirLoggerFactory,
-  TestFramework,
-  defaultMetaModelEnvironment,
-  runMiroirTests,
   type Action2VoidReturnType,
   type LoggerInterface,
   type MiroirTestDefinition,
@@ -43,7 +40,8 @@ import {
   sortMiroirTestInstances,
 } from '../Reports/miroirTestSuiteKey.js';
 import { setLastUiIntegrationTestRunResult } from '../../../4-tests/uiIntegrationTestRunState.js';
-import { generateTestReport, type TestResultData } from './testResultReport.js';
+import { generateTestReport } from './testResultReport.js';
+import { runUnitMiroirTestBatch, type MiroirTestSuiteResultsMap } from '../../../4-tests/miroirTestBatch.js';
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, 'RunAllMiroirTestsButton');
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
@@ -53,7 +51,7 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName,
   log = logger;
 });
 
-export type MiroirTestSuiteResultsMap = Record<string, TestResultData[]>;
+export type { MiroirTestSuiteResultsMap };
 
 export type RunAllMiroirTestsRunMode = 'unit' | 'integration';
 
@@ -224,46 +222,23 @@ export const RunAllMiroirTestsButton: React.FC<RunAllMiroirTestsButtonProps> = (
   const runnerUuidIndex = useSelectedApplicationRunnerUuidIndex();
 
   const onUnitAction = async (): Promise<Action2VoidReturnType> => {
-    const tracker = miroirContextService.miroirContext.miroirActivityTracker;
-    const sortedInstances = sortMiroirTestInstances(miroirTests);
-    const resultsBySuiteKey: MiroirTestSuiteResultsMap = {};
-
     const componentTestsPrepared =
       includeComponentTests &&
       beforeRun !== undefined &&
-      sortedInstances.some((instance) =>
+      miroirTests.some((instance) =>
         miroirTestDefinitionHasReactComponentTest(instance.definition, { ignoreRunOnDemandSuites: true }),
       );
     if (componentTestsPrepared) {
       await beforeRun();
     }
 
+    let resultsBySuiteKey: MiroirTestSuiteResultsMap;
     try {
-      for (const instance of sortedInstances) {
-        const suiteKey = getMiroirTestSuiteKey(instance);
-        tracker.resetResults();
-
-        await runMiroirTests._runMiroirTestSuite(
-          TestFramework as any,
-          [],
-          instance.definition,
-          undefined,
-          defaultMetaModelEnvironment,
-          tracker,
-          undefined,
-          true,
-          runMiroirTests,
-          // #303: the leaves of `runOnDemand` suites (the render-performance suite) are recorded
-          // as skipped; launching such a suite on its own runs it.
-          includeComponentTests
-            ? { executionMode: 'unit', skipRunOnDemandSuites: true }
-            : { executionMode: 'unit', excludeMiroirTestTypes: ['reactComponentTest'] },
-        );
-
-        const suiteResults = tracker.getTestAssertionsResults([]);
-        resultsBySuiteKey[suiteKey] = generateTestReport(suiteKey, suiteResults, () => {});
-        log.info(`MiroirTest results for ${suiteKey}:`, resultsBySuiteKey[suiteKey]);
-      }
+      resultsBySuiteKey = await runUnitMiroirTestBatch({
+        miroirTests,
+        tracker: miroirContextService.miroirContext.miroirActivityTracker,
+        includeComponentTests,
+      });
     } finally {
       if (componentTestsPrepared) {
         afterRun?.();

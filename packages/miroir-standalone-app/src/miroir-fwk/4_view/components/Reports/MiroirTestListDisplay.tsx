@@ -19,7 +19,7 @@ import {
   RunAllMiroirTestsButton,
   type MiroirTestSuiteResultsMap,
 } from '../Buttons/RunAllMiroirTestsButton.js';
-import type { TestResultData } from '../Buttons/testResultReport.js';
+import { countTestResults, type TestResultData } from '../Buttons/testResultReport.js';
 import { ThemedProgressiveAccordion } from '../Themes/BasicComponents.js';
 import { ComponentTestSandboxProvider, useComponentTestSandbox } from './ComponentTestSandbox.js';
 import { TestResultsGrid } from './TestResultsGrid.js';
@@ -81,24 +81,7 @@ function summarizeSuiteResults(results: TestResultData[]): {
   statusLabel: string;
   statusColor: string;
 } {
-  let passed = 0;
-  let failed = 0;
-  let skipped = 0;
-
-  for (const result of results) {
-    if (result.testResult === 'skipped' || result.status === 'skipped') {
-      skipped++;
-    } else if (
-      result.testResult === 'error' ||
-      result.status === 'error' ||
-      (result.failedAssertions && result.failedAssertions.length > 0)
-    ) {
-      failed++;
-    } else {
-      passed++;
-    }
-  }
-
+  const { passed, failed, skipped } = countTestResults(results);
   const total = results.length;
   const statusLabel =
     failed > 0 ? 'FAILED' : skipped === total && total > 0 ? 'SKIPPED' : 'PASSED';

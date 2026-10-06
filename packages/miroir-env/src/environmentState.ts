@@ -312,7 +312,14 @@ export function environmentRealServerClientConfig(
     miroirConfigType: "client",
     client: { emulateServer: false, serverConfig: { rootApiUrl, storeSectionConfiguration } },
     environment: configEnvironment(resolved),
+    ...selfTestConfig(resolved),
   };
+}
+
+/** #487: the environment's self-test setting, for the client configuration. */
+function selfTestConfig(resolved: ResolvedEnvironment): Pick<MiroirConfigClient, "selfTest"> {
+  const selfTest = resolved.environment.client?.selfTest;
+  return selfTest ? { selfTest } : {};
 }
 
 /**
@@ -341,6 +348,7 @@ export function environmentClientConfig(resolved: ResolvedEnvironment, env: Node
     },
     environment: configEnvironment(resolved),
     ...(resolved.environment.features ? { features: resolved.environment.features } : {}),
+    ...selfTestConfig(resolved),
   };
   return config as MiroirConfigClient;
 }
