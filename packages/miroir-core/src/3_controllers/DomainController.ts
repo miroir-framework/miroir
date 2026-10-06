@@ -3290,13 +3290,13 @@ export class DomainController implements DomainControllerInterface, DomainContro
     resolvedApplicationUuid?: string,
     principal?: AuthPrincipal,
   ): Promise<Action2ReturnType> {
+    // Action type and endpoint only: the event service keeps every log's arguments for ten minutes,
+    // and an initModel action carries a whole model (#487: 8 MB per log, a crashed browser run).
     log.info(
       "DomainController handleApplicationAction",
       domainAction.actionType,
-      "domainAction",
-      JSON.stringify(redactCredentialSecretsFromValue(domainAction), null, 2),
-      "endpoints",
-      JSON.stringify(Object.keys(currentModelEnvironment?.endpointsByUuid || {}), null, 2),
+      "endpoint",
+      (domainAction as { endpoint?: string }).endpoint,
     );
     if (!(domainAction as any).endpoint) {
       return Promise.resolve(

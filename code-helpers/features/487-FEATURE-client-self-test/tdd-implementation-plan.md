@@ -17,7 +17,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Companion: #486 (health checks; shares Electron `--self-test`, analysis D9)
 Working branch: `claude/487-client-self-test-x9c2x8` (from `_integration` at 9838983)
 
-**Resume note:** plan written 2026-10-06; decisions D1 to D10 and their defaults accepted by A 2026-10-06; Slices 0 to 5 DONE (5 awaits its run in Electron, in the Slice 7 workflow); next Slice 6 (integ batch).
+**Resume note:** plan written 2026-10-06; decisions D1 to D10 and their defaults accepted by A 2026-10-06; Slices 0 to 7 DONE; next Slice 8 (nonreg steps, docs, cleanup).
 
 ---
 
@@ -43,8 +43,8 @@ This plan does **not** cover the CLI, server, MCP and Electron main-process prob
 | 3 | Page load runs the self-test and publishes the verdict | ✅ DONE | `selfTestPage.487.phase3.integ.test.tsx` |
 | 4 | Web driver and local run | ✅ DONE | `selfTestDriver.487.phase4.unit.test.ts` + a real `--serve` run |
 | 5 | Electron `--self-test` (renderer half) | ✅ DONE | `electronSelfTest.487.phase5.unit.test.ts` + run on A's machine |
-| 6 | `integ` MiroirTests in self-test mode | ⬜ pending | `runSelfTestInteg.487.phase6.integ.test.ts` |
-| 7 | GitHub Actions workflow | ⬜ pending | green `self-test.yml` run on the branch |
+| 6 | `integ` MiroirTests in self-test mode | ✅ DONE | `runSelfTestInteg.487.phase6.integ.test.ts` |
+| 7 | GitHub Actions workflow | ✅ DONE | green `self-test.yml` run on the branch |
 | 8 | Nonreg steps, docs, cleanup, AC | ⬜ pending | `nonreg:filesystem` + AC checklist |
 
 ---
@@ -344,7 +344,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,tooling
 
 ## Slice 6 — `integ` MiroirTests in self-test mode
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE (2026-10-06; 3 failing integ suites found, see Realization)
 
 **Goal:** `client.selfTest.tags: ["unit", "integ"]` (or `--self-test=unit,integ`) also runs the miroir app's launchable `integ` MiroirTests on `emulatedServer-indexedDb`, run target `ephemeral`, writing only to the browser's IndexedDB.
 
@@ -367,13 +367,18 @@ npm run nonreg:filesystem -- --runner shared   # full run (slices 4 to 6 since t
 ```
 
 ### Realization
-_(to fill)_
+- Deviation from the RED: the batch runs in a browser only (`emulatedServer-indexedDb`); a Node test of it would need the mocks of `miroirTestListIntegrationLaunchMocks`. Its proof is the real run, `npm run selfTest -- --serve` on a new environment `self-test-integ` (`self-test` with tags `unit, integ`). `runSelfTestInteg.487.phase6.integ` checks that environment, the skipped `reportTest` suite (decided before the launcher loads, so it runs in Node) and the result's `skippedSuites`. Case 3 of the plan (stores unchanged) is left to the browser run: the profile writes only to IndexedDB.
+- `runIntegrationMiroirTestBatch` moved from `RunAllMiroirTestsButton` to `miroirTestBatch.ts` with `onSuiteDone`, `skipped`, and two changes Run all also gets: a suite that throws fails that suite (a `failedRunResult` row with the error, an action error as JSON) instead of ending the batch, and a failed run with no failed leaf gets such a row.
+- `runSelfTest`: the unit batch runs the tags other than `integ`, then the integration batch the `integ` suites; integration results are keyed `<suite> (integ)` beside the unit ones. The page lists suites not run.
+- Found on the way: the browser renderer crashed after 15 integ suites, heap 3 GB. A heap snapshot showed 530 of 640 MB in 64 strings of 8 MB: `DomainController.handleApplicationAction` logged `JSON.stringify(domainAction, null, 2)` at info level, which for `initModel` is a whole model, and `MiroirEventService` keeps every log's arguments for ten minutes whatever the level. The log now carries the action type and endpoint only. After it the integ run takes about 65 s.
+- The driver prints the page's progress line and exits 2 with `the page crashed or closed before its verdict` on a renderer crash; Chromium gets `--disable-dev-shm-usage`.
+- Results: `MIROIR_ENV=self-test-integ npm run selfTest -- --serve` gives 59 suites, 1292 passed, **3 failed**, 1 suite not run (`report.connectExternalServiceWizard`), exit 1. The 3 failures are in the browser integ runs themselves, not in the self-test: `action.scenario.externalServiceSync` (assertion `resyncEntityMlSchemaMatchesResponseSchema`), `runner.createEntity` (assertion `checkNumberOfReports` did not run), `runner.deployApplication` (`deleteStore model/data` fails in `handleCompositeAction`). They are left to a follow-up issue; CI runs `self-test` (unit). `runSelfTestInteg.487.phase6.integ` 3/3, `RunAllMiroirTestsButton.unit` 4/4, `MiroirTestListIntegrationLaunch` (emulatedServer-filesystem) 1/1, phases 1 to 3 green.
 
 ---
 
 ## Slice 7 — GitHub Actions workflow
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE (2026-10-06)
 
 **Goal:** the self-test runs in GitHub on demand and on every push to `_integration`, with a red job when the verdict is `failed`.
 
@@ -395,7 +400,10 @@ python scripts/check_dependency_policy.py      # pinned actions rule
 ```
 
 ### Realization
-_(to fill)_
+- Two jobs, `web` and `electron`, each repeating the build lines of `pr-checks.yml`'s bundle job (no composite action: the lists differ by one step and `pr-checks.yml` stays untouched). Node from `.nvmrc`. The Electron job passes `--no-sandbox` (Ubuntu 24.04 runners forbid Chromium's user namespaces) and tees stdout to the uploaded log.
+- The branch was added to the `push` trigger for the first runs (workflow_dispatch needs the file on the default branch); Slice 8 removes it.
+- Run 1: web green; Electron exit 2, `did-fail-load` on `app://miroir/home`: unpackaged, `getAppDistPath` pointed two levels up from `dist/src` instead of three (a bug since the main process is bundled into `dist/src`, unseen because unpackaged runs used the Vite dev server). Fixed in `main.ts`.
+- Run 2 ([37466942953](https://github.com/miroir-framework/miroir/actions/runs/37466942953)): both jobs green; Electron prints `{ renderer: { verdict: "passed", counts: { suites: 43, tests: 985, … }, exitReason: "result" } }`, so the IPC path works end to end.
 
 ---
 

@@ -78,16 +78,28 @@ async function runPage({ url, browser: executablePath, headed, timeoutSeconds })
     const pageErrors = [];
     page.on("pageerror", (error) => pageErrors.push(String(error).split("\n")[0]));
     await page.goto(url).catch((error) => fail(`cannot open ${url}: ${String(error).split("\n")[0]}`));
-    try {
-      await page.waitForFunction(
-        () => ["passed", "failed"].includes(document.documentElement.dataset.miroirSelfTest ?? ""),
-        undefined,
-        { timeout: timeoutSeconds * 1000, polling: 1000 },
-      );
-    } catch {
-      // No verdict before the timeout: the result read below is `running` or absent, exit 2.
+    // Waits for the verdict, printing the page's progress line when it changes.
+    const deadline = Date.now() + timeoutSeconds * 1000;
+    let progress = "";
+    while (Date.now() < deadline) {
+      const state = await page
+        .evaluate(() => ({
+          verdict: document.documentElement.dataset.miroirSelfTest,
+          line: document.querySelector('[data-testid="miroir-self-test-verdict"]')?.textContent ?? "",
+        }))
+        .catch((error) => fail(`the page crashed or closed before its verdict: ${String(error).split("\n")[0]}`));
+      if (state.verdict === "passed" || state.verdict === "failed") {
+        break;
+      }
+      if (state.line && state.line !== progress) {
+        progress = state.line;
+        console.error(`  ${progress}`);
+      }
+      await new Promise((resolve) => setTimeout(resolve, 1000));
     }
-    const result = await page.evaluate(() => window.__MIROIR_SELF_TEST_RESULT__);
+    const result = await page
+      .evaluate(() => window.__MIROIR_SELF_TEST_RESULT__)
+      .catch((error) => fail(`the page crashed or closed before its verdict: ${String(error).split("\n")[0]}`));
     return { result, pageErrors };
   } finally {
     await browser.close();

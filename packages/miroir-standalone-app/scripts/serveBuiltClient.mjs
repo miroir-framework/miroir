@@ -39,8 +39,9 @@ export function requireProductionBuild(app) {
 export async function launchBrowser(executablePath, headed) {
   const launchOptions = {
     headless: !headed,
-    // Chromium refuses to start as root with its sandbox (containers, CI).
-    args: process.getuid?.() === 0 ? ["--no-sandbox"] : [],
+    // Chromium refuses to start as root with its sandbox (containers, CI); containers often have a
+    // small /dev/shm, where a long page run crashes the renderer.
+    args: [...(process.getuid?.() === 0 ? ["--no-sandbox"] : []), "--disable-dev-shm-usage"],
   };
   if (executablePath) {
     return chromium.launch({ ...launchOptions, executablePath });

@@ -5,7 +5,7 @@
 import type { MiroirConfigClient } from "miroir-core";
 
 import { countTestResults } from "../../4_view/components/Buttons/testResultReport.js";
-import type { MiroirTestSuiteResultsMap } from "../miroirTestBatch.js";
+import type { MiroirTestSuiteResultsMap, SkippedMiroirTestSuite } from "../miroirTestBatch.js";
 
 export type MiroirSelfTestVerdict = "running" | "passed" | "failed";
 
@@ -23,6 +23,8 @@ export type MiroirSelfTestResult = {
   durationMs?: number;
   counts?: { suites: number; tests: number; passed: number; failed: number; skipped: number };
   failures?: MiroirSelfTestFailure[];
+  /** Suites selected by the tags that the self-test cannot run (`reportTest` suites, #487 D8). */
+  skippedSuites?: SkippedMiroirTestSuite[];
   /** A boot or runner error: the verdict is `failed`. */
   error?: string;
 };
@@ -42,6 +44,7 @@ export function selfTestTags(miroirConfig: MiroirConfigClient): string[] {
 export function computeSelfTestResult(
   resultsBySuiteKey: MiroirTestSuiteResultsMap,
   run: { environment: string | undefined; tags: string[]; startedAt: Date; endedAt: Date },
+  skippedSuites: SkippedMiroirTestSuite[] = [],
 ): MiroirSelfTestResult {
   const allResults = Object.values(resultsBySuiteKey).flat();
   const { passed, failed, skipped } = countTestResults(allResults);
@@ -64,6 +67,7 @@ export function computeSelfTestResult(
     durationMs: run.endedAt.getTime() - run.startedAt.getTime(),
     counts: { suites: Object.keys(resultsBySuiteKey).length, tests: allResults.length, passed, failed, skipped },
     failures,
+    ...(skippedSuites.length > 0 ? { skippedSuites } : {}),
     ...(allResults.length === 0 ? { error: `no MiroirTest ran for tags ${run.tags.join(", ")}` } : {}),
   };
 }

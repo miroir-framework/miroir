@@ -41,6 +41,11 @@ export const SelfTestPage = ({ result, resultsBySuiteKey }: SelfTestPageProps) =
             {result.error}
           </pre>
         )}
+        {result.skippedSuites?.map((skipped) => (
+          <div key={skipped.suiteKey} data-testid="miroir-self-test-skipped-suite">
+            not run: {skipped.suiteKey} ({skipped.reason})
+          </div>
+        ))}
         <MiroirTestResultsDisplay
           resultsBySuiteKey={resultsBySuiteKey}
           gridType="ag-grid"
