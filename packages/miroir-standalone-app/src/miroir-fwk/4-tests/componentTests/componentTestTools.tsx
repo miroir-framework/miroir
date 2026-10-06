@@ -66,6 +66,7 @@ import {
 } from "miroir-app-miroir";
 
 import { packageName } from "../../../constants.js";
+import { BlockViewModeProvider } from "../../4_view/components/BlockEditor/BlockViewMode.js";
 import { deploymentReportsEntitiesMapping } from "../../4_view/components/Page/deploymentReportsEntitiesMapping.js";
 import { ReportPageContextProvider } from "../../4_view/components/Reports/ReportPageContext.js";
 import { DocumentOutlineContextProvider } from "../../4_view/components/ValueObjectEditor/InstanceEditorOutlineContext.js";
@@ -218,6 +219,8 @@ export interface MlElementEditorProps_Test {
   rawMlSchema: MlElement | undefined;
   /** #453: type badges of the rendered value, at their editor paths. */
   transformerTypeBadges?: TransformerTypeBadge[];
+  /** #498: offer the Blocks / Form / JSON switch on transformer fields, as the TransformerEditor does. */
+  blockViewSwitch?: boolean;
   // isPerformanceTest?: boolean;
 }
 
@@ -318,8 +321,7 @@ export const getMlElementEditorForTest: (pageLabel: string) => React.FC<MlElemen
       // return label ? <label htmlFor={rootLessListKey}>{label}</label> : undefined;
       return label ? <span id={rootLessListKey}>{label}</span> : undefined;
     }, [label]);
-    return (
-      <div>
+    const form = (
         <Formik
           enableReinitialize={true}
           initialValues={{ [testSectionName]: { [name]: initialFormState }}}
@@ -431,8 +433,8 @@ export const getMlElementEditorForTest: (pageLabel: string) => React.FC<MlElemen
             );
           }}
         </Formik>
-      </div>
     );
+    return <div>{props.blockViewSwitch ? <BlockViewModeProvider>{form}</BlockViewModeProvider> : form}</div>;
   };
 
 // ################################################################################################

@@ -22,7 +22,8 @@ export const ThemedLineIconButton: React.FC<ThemedComponentProps> = ({
   className, 
   style,
   onClick,
-  title 
+  title,
+  'data-testid': testId,
 }) => {
   const { currentTheme } = useMiroirTheme();
   
@@ -44,7 +45,7 @@ export const ThemedLineIconButton: React.FC<ThemedComponentProps> = ({
   });
 
   return (
-    <button css={buttonStyles} className={className} style={style} onClick={onClick} title={title}>
+    <button css={buttonStyles} className={className} style={style} onClick={onClick} title={title} data-testid={testId}>
       {children}
     </button>
   );

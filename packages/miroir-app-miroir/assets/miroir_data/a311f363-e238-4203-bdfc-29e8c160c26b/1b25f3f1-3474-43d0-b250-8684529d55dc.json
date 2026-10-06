@@ -150,6 +150,181 @@
                 "present": false
               }
             ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: JSON shows the current transformer as JSON, Form after JSON shows the same values",
+            "steps": [
+              {
+                "step": "change",
+                "label": "edit the returned value in the form",
+                "target": {
+                  "byDisplayValue": "seize value..."
+                },
+                "value": "new value"
+              },
+              {
+                "step": "click",
+                "label": "choose JSON",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:json"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "JSON is selected",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:json"
+                },
+                "attribute": "aria-pressed",
+                "value": "true"
+              },
+              {
+                "step": "expectElement",
+                "label": "the JSON holds the edited value",
+                "target": {
+                  "byText": {
+                    "regex": "\"value\": \"new value\""
+                  }
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "no form field for the value",
+                "target": {
+                  "byDisplayValue": "new value"
+                },
+                "present": false
+              },
+              {
+                "step": "click",
+                "label": "choose Form",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:form"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the form shows the edited value",
+                "target": {
+                  "byDisplayValue": "new value"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "JSON gone",
+                "target": {
+                  "byText": {
+                    "regex": "\"value\": \"new value\""
+                  }
+                },
+                "present": false
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "miroirTestType": "reactComponentTestSuite",
+        "miroirTestLabel": "MlElementEditor",
+        "component": "MlElementEditor",
+        "componentProps": {
+          "label": "Test Label",
+          "name": "testField",
+          "listKey": "ROOT.testField",
+          "rootLessListKey": "testField",
+          "rootLessListKeyArray": [
+            "testField"
+          ],
+          "blockViewSwitch": true,
+          "rawMlSchema": {
+            "type": "object",
+            "definition": {
+              "transformer": {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "coreTransformerForBuildPlusRuntime"
+                }
+              }
+            }
+          },
+          "initialFormState": {
+            "transformer": {
+              "transformerType": "returnValue",
+              "interpolation": "runtime",
+              "value": "kept"
+            }
+          }
+        },
+        "miroirTests": [
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "MlElementEditor: Blocks stays chosen when the enclosing object is folded and unfolded",
+            "steps": [
+              {
+                "step": "click",
+                "label": "choose Blocks",
+                "target": {
+                  "byTestId": "block-view-mode:testField.transformer:blocks"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "root block shown",
+                "target": {
+                  "byTestId": "block:testField.transformer"
+                },
+                "attribute": "data-transformer-type",
+                "value": "returnValue",
+                "timeout": 3000
+              },
+              {
+                "step": "click",
+                "label": "fold the enclosing object",
+                "target": {
+                  "byTestId": "fold-unfold:TESTSECTION.testField"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the transformer field is unmounted",
+                "target": {
+                  "byTestId": "block-view-switch:testField.transformer"
+                },
+                "present": false,
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "unfold every level of the enclosing object",
+                "target": {
+                  "byTestId": "fold-unfold-all:TESTSECTION.testField"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "Blocks is still selected",
+                "target": {
+                  "byTestId": "block-view-mode:testField.transformer:blocks"
+                },
+                "attribute": "aria-pressed",
+                "value": "true",
+                "timeout": 2000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "root block shown again",
+                "target": {
+                  "byTestId": "block:testField.transformer"
+                },
+                "attribute": "data-transformer-type",
+                "value": "returnValue",
+                "timeout": 3000
+              }
+            ]
           }
         ]
       },

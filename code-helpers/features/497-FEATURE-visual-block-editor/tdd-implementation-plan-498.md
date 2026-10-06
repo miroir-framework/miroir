@@ -14,7 +14,7 @@
 Analysis: [`./analysis.md`](./analysis.md) (parent issue #497) · Issue: https://github.com/miroir-framework/miroir/issues/498
 Working branch: `claude/497-visual-block-editor`
 
-**Resume note:** plan written 2026-10-06; Slices 0 to 5 done 2026-10-06.
+**Resume note:** plan written 2026-10-06; Slices 0 to 6 done 2026-10-06.
 
 ---
 
@@ -38,7 +38,7 @@ This plan does **not** edit blocks (#500), add @dnd-kit (#500), undo (#499), off
 | 3 | The full read-only block view | ✅ | `ui.blockEditor` cases on the two composite TransformerDefinitions |
 | 4 | Block categories and their Theme colors | ✅ | `fn.blockModel` category cases, Miroir modelValidation, `ui.blockEditor` |
 | 5 | Build marking and its ViewParams setting | ✅ | `ui.blockEditor` marking cases, Admin modelValidation |
-| 6 | JSON view and a view mode that survives folding | ⬜ | `ui.blockEditor` switch cases |
+| 6 | JSON view and a view mode that survives folding | ✅ | `ui.blockEditor` switch cases |
 | 7 | Nonreg, docs, bundle, AC | ⬜ | nonreg steps, bundle guard, AC checklist |
 
 ---
@@ -385,7 +385,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core,ui
 
 ## Slice 6 — JSON view and a view mode that survives folding
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -417,6 +417,12 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,ui
 ```
 
 ### Realization
+
+- `useMlElementEditorHooks` reads `BlockViewModeContext` for its own Formik path: when it says JSON, `displayAsStructuredElement` starts false and `codeMirrorValue` starts as the value's JSON (the CodeMirror stand-in of tests shows that text; the real editor sets it again at mount). Every field already reads the context in the `MlElementEditor` dispatcher, so this adds no subscription.
+- **Deviation:** the plan folded "the selector" of the TransformerEditor, but the root of a form section cannot fold (`isNodeFolded` returns false for the empty path), so nothing above the TransformerEditor's `transformer` field can unmount it. The fold case runs instead on the `MlElementEditor` test host, which takes a new `blockViewSwitch` prop (wraps the form in `BlockViewModeProvider`), with a transformer field inside an object that is folded and unfolded. This is the shape #503 meets in instance editors.
+- Fold buttons are now addressable: `FoldUnfoldObjectOrArray` takes `reportSectionPathAsString` and carries `data-testid` `fold-unfold:<Formik path>` or `fold-unfold-all:<Formik path>`; `ThemedLineIconButton` forwards `data-testid`.
+- `ui.blockEditor` gains 2 leaves (TransformerEditor: JSON then Form; MlElementEditor: Blocks survives a fold); `EXPECTED_LEAF_COUNT` 124.
+- Known limit: switching from JSON to Form or Blocks while the JSON text is invalid keeps the last valid value and drops the text. The per-field Form/JSON toggle, still shown inside the code editor, is disabled while the text is invalid; the view switch is not, since that validity is state of the form field. #499 revisits this with the shared history.
 
 ---
 

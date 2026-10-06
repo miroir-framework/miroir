@@ -105,6 +105,8 @@ export interface EditorAttribute {
 // ################################################################################################
 export const FoldUnfoldObjectOrArray = (props: {
   listKey: string;
+  /** Formik path of the form section, which with `rootLessListKeyArray` names the button for tests. */
+  reportSectionPathAsString: string;
   rootLessListKeyArray: (string | number)[];
   currentValue: EntityInstance | Array<any>;
   unfoldingDepth?: number; // Optional depth limit for unfolding (default: no limit)
@@ -197,6 +199,10 @@ export const FoldUnfoldObjectOrArray = (props: {
   return (
     <ThemedLineIconButton
       onClick={handleClick}
+      data-testid={`${isInfiniteDepth ? "fold-unfold-all" : "fold-unfold"}:${[
+        props.reportSectionPathAsString,
+        ...props.rootLessListKeyArray,
+      ].join(".")}`}
     >
       {isFolded ? (
         isInfiniteDepth ? (
