@@ -43,7 +43,7 @@ import {
 import { useCurrentModel } from "../../ReduxHooks.js";
 import { useReportPageContext } from '../Reports/ReportPageContext';
 import { TypedValueObjectEditor } from '../Reports/TypedValueObjectEditor';
-import type { TransformerTypeBadge } from '../ValueObjectEditor/MlElementEditorInterface';
+import type { TransformerTypeBadge, TransformerTypeBadgePart } from '../ValueObjectEditor/MlElementEditorInterface';
 import {
   ThemedContainer,
   ThemedFoldableContainer,
@@ -103,9 +103,38 @@ function transformerEditorRootInputType(
 
 type EditorEntity = { uuid: Uuid; name?: string; mlSchema?: unknown };
 
+/** #470: a declared side matches the actual type when it is that type, or constrains nothing. */
+function declaredSideMatches(declared: InputOutputType, actual: InputOutputType): boolean {
+  return declared === "any" || declared === "undefined" || safeStringify(declared) === safeStringify(actual);
+}
+
+/** #470: a declaration whose sides are all `any` / `undefined` says nothing worth a "✓ declared". */
+function declaresConstraint(declared: { input: InputOutputType; output: InputOutputType }): boolean {
+  return [declared.input, declared.output].some((side) => side !== "any" && side !== "undefined");
+}
+
+/** #470: the badge parts a failure of the node involves, so that only they are marked. */
+function mismatchedBadgeParts(
+  node: TransformerInterfaceTreeCompatibility["nodes"][number],
+  consumedKind: "in" | "applyTo",
+): Set<TransformerTypeBadgePart["kind"]> {
+  const kinds = new Set<TransformerTypeBadgePart["kind"]>();
+  for (const failure of node.failures) {
+    if (failure.direction === "input") {
+      kinds.add(consumedKind).add("declared");
+    } else if (failure.direction === "output") {
+      kinds.add("out").add("declared");
+    } else {
+      kinds.add("value").add("out");
+    }
+  }
+  return kinds;
+}
+
 /**
  * #453: one type badge per node of the walk and per literal `applyTo`, at its editor path. Labels
  * name known entities and shorten unknown entity uuids (D18); the title keeps the full types.
+ * #470: each badge lists its chips; the declared types are left out when they are the actual ones.
  */
 export function transformerTypeBadges(
   interfaceWalk: TransformerInterfaceTreeCompatibility,
@@ -118,13 +147,24 @@ export function transformerTypeBadges(
       (failure) =>
         `${failure.direction}: given ${formatInputOutputTypeLabel(failure.given)}, declared ${formatInputOutputTypeLabel(failure.declared)}`,
     );
+    const declaredMatchesActual =
+      node.declared === undefined ||
+      (declaredSideMatches(node.declared.input, node.consumedInput) &&
+        declaredSideMatches(node.declared.output, node.output));
+    const mismatched = mismatchedBadgeParts(node, consumedDiffers ? "applyTo" : "in");
+    const part = (
+      kind: TransformerTypeBadgePart["kind"],
+      partLabel: string,
+      title: string,
+    ): TransformerTypeBadgePart => ({ kind, label: partLabel, title, mismatch: mismatched.has(kind) });
+    const declaredLabel = node.declared
+      ? { input: label(node.declared.input), output: label(node.declared.output) }
+      : undefined;
     return {
       path: ["transformer", ...node.path],
       givenLabel: label(node.givenInput),
       consumedLabel: consumedDiffers ? label(node.consumedInput) : undefined,
-      declaredLabel: node.declared
-        ? { input: label(node.declared.input), output: label(node.declared.output) }
-        : undefined,
+      declaredLabel,
       outputLabel: label(node.output),
       status: transformerNodeTypeStatus(node),
       title: [
@@ -137,6 +177,28 @@ export function transformerTypeBadges(
         `output ${formatInputOutputTypeLabel(node.output)}`,
         ...failures,
       ].join("\n"),
+      parts: [
+        part("in", label(node.givenInput), formatInputOutputTypeLabel(node.givenInput)),
+        ...(consumedDiffers
+          ? [part("applyTo", label(node.consumedInput), formatInputOutputTypeLabel(node.consumedInput))]
+          : []),
+        ...(node.declared && declaredLabel && !declaredMatchesActual
+          ? [
+              part(
+                "declared",
+                `${declaredLabel.input} → ${declaredLabel.output}`,
+                `${formatInputOutputTypeLabel(node.declared.input)} → ${formatInputOutputTypeLabel(node.declared.output)}`,
+              ),
+            ]
+          : []),
+        // a `returnValue` whose value does not fit its mlSchema: `out` is the mlSchema type, so the
+        // value's own type gets a chip, the side to fix
+        ...node.failures
+          .filter((failure) => failure.direction === "value")
+          .map((failure) => part("value", label(failure.given), formatInputOutputTypeLabel(failure.given))),
+        part("out", label(node.output), formatInputOutputTypeLabel(node.output)),
+      ],
+      declaredMatchesActual: node.declared && declaresConstraint(node.declared) ? declaredMatchesActual : undefined,
     };
   });
   const literalBadges = interfaceWalk.literals.map(
@@ -145,6 +207,9 @@ export function transformerTypeBadges(
       outputLabel: label(literal.type),
       status: "unknown",
       title: `value ${formatInputOutputTypeLabel(literal.type)}`,
+      parts: [
+        { kind: "value", label: label(literal.type), title: formatInputOutputTypeLabel(literal.type), mismatch: false },
+      ],
     }),
   );
   return [...nodeBadges, ...literalBadges];

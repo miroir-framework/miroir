@@ -2477,6 +2477,38 @@
                 "timeout": 2000
               },
               {
+                "step": "expectElement",
+                "label": "an in chip",
+                "target": {
+                  "byTestId": "transformer-type-part-transformer-in"
+                },
+                "attribute": {
+                  "name": "data-transformer-type-part-status",
+                  "value": "neutral"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "an out chip",
+                "target": {
+                  "byTestId": "transformer-type-part-transformer-out"
+                },
+                "attribute": {
+                  "name": "data-transformer-type-part-status",
+                  "value": "neutral"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "no declared chip for a declaration of nothing",
+                "target": {
+                  "byTestId": "transformer-type-part-transformer-declared"
+                },
+                "present": false
+              },
+              {
                 "step": "click",
                 "label": "hide the types",
                 "target": {
@@ -2704,6 +2736,26 @@
                   "value": "array<number>"
                 },
                 "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "mapList shows its declared types, which differ from the actual ones",
+                "target": {
+                  "byTestId": "transformer-type-part-transformer-declared"
+                },
+                "attribute": {
+                  "name": "data-transformer-type-part-status",
+                  "value": "neutral"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the constant element has no declared chip",
+                "target": {
+                  "byTestId": "transformer-type-part-transformer.elementTransformer-declared"
+                },
+                "present": false
               }
             ]
           },
@@ -2811,6 +2863,54 @@
                 "attribute": {
                   "name": "data-transformer-type-output",
                   "value": "string"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the applyTo chip is the mismatching input",
+                "target": {
+                  "byTestId": "transformer-type-part-transformer-applyTo"
+                },
+                "attribute": {
+                  "name": "data-transformer-type-part-status",
+                  "value": "mismatch"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the declared chip is the other side of the mismatch",
+                "target": {
+                  "byTestId": "transformer-type-part-transformer-declared"
+                },
+                "attribute": {
+                  "name": "data-transformer-type-part-status",
+                  "value": "mismatch"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the in chip is not part of the mismatch",
+                "target": {
+                  "byTestId": "transformer-type-part-transformer-in"
+                },
+                "attribute": {
+                  "name": "data-transformer-type-part-status",
+                  "value": "neutral"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the out chip is not part of the mismatch",
+                "target": {
+                  "byTestId": "transformer-type-part-transformer-out"
+                },
+                "attribute": {
+                  "name": "data-transformer-type-part-status",
+                  "value": "neutral"
                 },
                 "timeout": 2000
               }

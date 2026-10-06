@@ -9,6 +9,8 @@ import {
   type SelfApplication,
 } from "miroir-core";
 
+import type { BundleSizeMeasurement } from "./bundleSizeHistory";
+
 import selfApplicationMetaJson from "../assets/meta_model/a659d350-dd97-4da9-91de-524fa01745dc/9ff432a9-89a1-460b-a263-1672d084a9e0.json" with { type: "json" };
 import menuDefaultMetaJson from "../assets/meta_model/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/c95bfb70-62bd-4f40-ac2b-04857124f133.json" with { type: "json" };
 import entityBundleSizeMeasurementJson from "../assets/meta_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/90d603f9-58f8-4ac4-b2eb-cb1d718e8b3b.json" with { type: "json" };
@@ -19,9 +21,9 @@ import selfApplicationModelBranchMetaMasterBranchJson from "../assets/meta_model
 export const selfApplicationMeta = selfApplicationMetaJson as SelfApplication;
 export const selfApplicationModelBranchMetaMasterBranch = selfApplicationModelBranchMetaMasterBranchJson;
 export const menuDefaultMeta = menuDefaultMetaJson as Menu;
-export const entityBundleSizeMeasurement = entityBundleSizeMeasurementJson as unknown as Entity;
-export const reportBundleSizeHistory = reportBundleSizeHistoryJson as unknown as Report;
-export const reportBundleSizeMeasurementDetails = reportBundleSizeMeasurementDetailsJson as unknown as Report;
+export const entityBundleSizeMeasurement = entityBundleSizeMeasurementJson as Entity;
+export const reportBundleSizeHistory = reportBundleSizeHistoryJson as Report;
+export const reportBundleSizeMeasurementDetails = reportBundleSizeMeasurementDetailsJson as Report;
 
 /** Init-only ApplicationVersion for unversioned Meta (not shipped as a model asset). */
 export const metaInitApplicationVersion: EntityInstance = {
@@ -74,7 +76,7 @@ export const defaultMetaAppModel: MetaModel = {
  * Fixed BundleSizeMeasurement instances for the report MiroirTests (#473): two web page records and
  * one Electron record, so the tests do not depend on the real history, which grows with every record.
  */
-export const bundleSizeMeasurementSeed = [
+const bundleSizeMeasurementSeedRecords: BundleSizeMeasurement[] = [
   {
     uuid: "ad25f423-a99b-4ede-9fd3-1a705fc0b193",
     parentName: "BundleSizeMeasurement",
@@ -107,7 +109,8 @@ export const bundleSizeMeasurementSeed = [
     baseline: 942479,
     reason: "seed: Electron record",
   },
-] as unknown as EntityInstance[];
+];
+export const bundleSizeMeasurementSeed: EntityInstance[] = bundleSizeMeasurementSeedRecords;
 
 /** TestConfiguration of the Meta report MiroirTests: the Meta model and the fixed measurements above. */
 export const testConfiguration_metaBundleSizeSeed = {

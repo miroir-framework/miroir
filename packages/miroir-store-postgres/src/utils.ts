@@ -58,7 +58,7 @@ export const dataTypesMapping: { [type in string]: DataTypes.AbstractDataTypeCon
   object: DataTypes.JSONB, 
   number: DataTypes.INTEGER, 
   record: DataTypes.JSONB, 
-  string: DataTypes.STRING,
+  string: DataTypes.TEXT, // not STRING: varchar(255) rejects longer values, such as long descriptions
   uuid: DataTypes.STRING,
   date: DataTypes.DATE,
   schemaReference: DataTypes.JSONB, 

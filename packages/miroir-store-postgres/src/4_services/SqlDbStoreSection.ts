@@ -1,5 +1,6 @@
 import {
   ACTION_OK,
+  Action2Error,
   Action2VoidReturnType,
   LoggerInterface,
   Entity,
@@ -12,6 +13,8 @@ import {
   StorageSpaceHandlerInterface,
   Uuid
 } from "miroir-core";
+import { DataTypes } from "sequelize";
+
 import {
   EntityUuidIndexedSequelizeModel,
   fromMiroirPresentModelToSequelizeEntityDefinition,
@@ -126,7 +129,49 @@ export class SqlDbStoreSection
         );
         return result;
       }, {});
-    return Promise.resolve(ACTION_OK);
+    return this.widenLegacyStringColumns();
+  }
+
+  // ##############################################################################################
+  /**
+   * ML strings were stored as varchar(255) before they mapped to TEXT: widen the columns of the
+   * tables created then. Postgres changes varchar to text without rewriting the table.
+   */
+  async widenLegacyStringColumns(): Promise<Action2VoidReturnType> {
+    const textColumnsByTable = new Map<string, Set<string>>();
+    for (const access of Object.values(this.sqlSchemaTableAccess)) {
+      if (access.isExternal) {
+        continue;
+      }
+      const textColumns = Object.entries(access.sequelizeModel.getAttributes())
+        .filter(([, attribute]) => attribute.type instanceof DataTypes.TEXT)
+        .map(([name]) => name);
+      textColumnsByTable.set(access.sequelizeModel.tableName, new Set(textColumns));
+    }
+    try {
+      const [varcharColumns] = await this.sequelize.query(
+        `SELECT table_name, column_name FROM information_schema.columns WHERE table_schema = :schema AND data_type = 'character varying'`,
+        { replacements: { schema: this.schema } },
+      );
+      const queryGenerator = this.sequelize.getQueryInterface().queryGenerator as {
+        quoteIdentifier(identifier: string): string;
+      };
+      for (const { table_name, column_name } of varcharColumns as { table_name: string; column_name: string }[]) {
+        if (!textColumnsByTable.get(table_name)?.has(column_name)) {
+          continue;
+        }
+        log.info(this.logHeader, "widenLegacyStringColumns", table_name, column_name);
+        await this.sequelize.query(
+          `ALTER TABLE ${queryGenerator.quoteIdentifier(this.schema)}.${queryGenerator.quoteIdentifier(table_name)} ALTER COLUMN ${queryGenerator.quoteIdentifier(column_name)} TYPE TEXT`,
+        );
+      }
+    } catch (error) {
+      return new Action2Error(
+        "FailedToOpenStore",
+        `could not widen the varchar string columns of schema ${this.schema}: ${error}`,
+      );
+    }
+    return ACTION_OK;
   }
 
   // ##############################################################################################

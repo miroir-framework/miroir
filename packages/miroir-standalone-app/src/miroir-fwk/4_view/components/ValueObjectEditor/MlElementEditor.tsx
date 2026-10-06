@@ -42,7 +42,7 @@ import { isVitestTestMode } from "../../tools/progressiveRenderConfig.js";
 import { ErrorFallbackComponent } from "../ErrorFallbackComponent.js";
 import { JsonDisplayHelper } from "miroir-react";
 import { useReportPageContext } from "../Reports/ReportPageContext.js";
-import { findPathAnnotation, TransformerTypeBadgeChip } from "../Reports/TransformerTypeAnnotation.js";
+import { findPathAnnotation, TransformerTypeBadgeLine } from "../Reports/TransformerTypeAnnotation.js";
 import {
   ThemedCard,
   ThemedCardContent,
@@ -696,8 +696,8 @@ export function MlElementEditor(props: MlElementEditorProps): JSX.Element {
     });
   }, [props.compatibilityWarnings, props.rootLessListKeyArray]);
 
-  // #453: a primitive literal (an `applyTo: "a"`) has no title row, so its type badge goes after
-  // its label. Objects and arrays show theirs on their title row.
+  // #453: a primitive literal (an `applyTo: "a"`) has no title row, so its type badge goes under
+  // its label (#470). Objects and arrays show theirs under their title row.
   const primitiveTypeBadge = useMemo(
     () =>
       currentValueObjectAtKey !== null && typeof currentValueObjectAtKey === "object"
@@ -708,22 +708,21 @@ export function MlElementEditor(props: MlElementEditorProps): JSX.Element {
 
   // Enhanced label element with error tooltip for simple types
   const enhancedLabelElement = useMemo(() => {
-    const labelElement = primitiveTypeBadge ? (
-      <>
-        {props.labelElement}
-        <TransformerTypeBadgeChip badge={primitiveTypeBadge} />
-      </>
-    ) : (
-      props.labelElement
-    );
-    if (!labelElement || !hasPathError || !props.displayError) {
+    // For simple types, wrap the label with a span that has a title attribute
+    const labelElement =
+      props.labelElement && hasPathError && props.displayError ? (
+        <span title={props.displayError.errorMessage}>{props.labelElement}</span>
+      ) : (
+        props.labelElement
+      );
+    if (!primitiveTypeBadge) {
       return labelElement ?? <></>;
     }
-
-    // For simple types, wrap the label with a span that has a title attribute
+    // #470: label and badge stack in the label slot, so the badge never sits beside the input
     return (
-      <span title={props.displayError.errorMessage}>
+      <span style={{ display: "inline-flex", flexDirection: "column", alignItems: "flex-start", minWidth: 0 }}>
         {labelElement}
+        <TransformerTypeBadgeLine badge={primitiveTypeBadge} />
       </span>
     );
   }, [props.labelElement, primitiveTypeBadge, hasPathError, props.displayError]);
