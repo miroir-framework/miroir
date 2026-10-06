@@ -2413,8 +2413,16 @@
           },
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "TransformerEditor: the type display is off by default and shows no badge",
+            "miroirTestLabel": "TransformerEditor: with the type display off, no badge is shown",
             "steps": [
+              {
+                "step": "setChecked",
+                "label": "hide the types",
+                "target": {
+                  "byTestId": "transformer-editor-show-types-switch"
+                },
+                "checked": false
+              },
               {
                 "step": "expectElement",
                 "label": "types hidden",
@@ -2438,11 +2446,12 @@
             "miroirTestLabel": "TransformerEditor: with the type display on, the default returnValue shows the type of its value",
             "steps": [
               {
-                "step": "click",
+                "step": "setChecked",
                 "label": "show the types",
                 "target": {
                   "byTestId": "transformer-editor-show-types-switch"
-                }
+                },
+                "checked": true
               },
               {
                 "step": "expectElement",
@@ -2509,11 +2518,12 @@
                 "present": false
               },
               {
-                "step": "click",
+                "step": "setChecked",
                 "label": "hide the types",
                 "target": {
                   "byTestId": "transformer-editor-show-types-switch"
-                }
+                },
+                "checked": false
               },
               {
                 "step": "expectElement",
@@ -2568,11 +2578,12 @@
                 "value": "pear"
               },
               {
-                "step": "click",
+                "step": "setChecked",
                 "label": "show the types",
                 "target": {
                   "byTestId": "transformer-editor-show-types-switch"
-                }
+                },
+                "checked": true
               },
               {
                 "step": "expectElement",
@@ -2779,11 +2790,12 @@
                 "checked": false
               },
               {
-                "step": "click",
+                "step": "setChecked",
                 "label": "show the types",
                 "target": {
                   "byTestId": "transformer-editor-show-types-switch"
-                }
+                },
+                "checked": true
               },
               {
                 "step": "expectElement",

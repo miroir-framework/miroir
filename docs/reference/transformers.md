@@ -132,9 +132,11 @@ input, or `any` on a side).
 - Outputs come from the result schema inference (`resolveTransformerResultSchema`), reduced to
   `inputOutput` types. A `returnValue` without `mlSchema` has the type of its `value`; a
   `returnValue` whose `value` does not fit its `mlSchema` is a mismatch.
-- The switch is the ViewParams attribute `showTransformerTypes`. In the Component Test Sandbox,
-  each case starts with the app's value and saves its changes there, so the switch keeps its value
-  from one case to the next and the badges follow a run step by step.
+- The switch is the ViewParams attribute `showTransformerTypes`. In a component test run in the
+  app, every case starts with the run's value instead: the "Show transformer types" setting next to
+  the Run buttons (ViewParams `componentTestShowTransformerTypes`), fixed for the duration of the
+  run. A toggle in a case changes only that case and is not saved, so the cases do not depend on
+  their order or on the app's own setting.
 - Only the parent's `applyTo` constrains a child today (expected types for other places: #454);
   the types are static (actual values per node: #455).
 

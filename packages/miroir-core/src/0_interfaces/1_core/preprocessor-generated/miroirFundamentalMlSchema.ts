@@ -7821,6 +7821,36 @@ export const miroirFundamentalMlSchema = {
             "type": "object",
             "tag": {
               "value": {
+                "defaultLabel": "setChecked",
+                "description": "Sets a checkbox or switch target to checked: clicks it only when its state differs, then waits until it has that state"
+              }
+            },
+            "definition": {
+              "step": {
+                "type": "literal",
+                "definition": "setChecked"
+              },
+              "label": {
+                "type": "string",
+                "optional": true
+              },
+              "target": {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "reactComponentTestTarget",
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                },
+                "context": {}
+              },
+              "checked": {
+                "type": "boolean"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "tag": {
+              "value": {
                 "defaultLabel": "change",
                 "description": "Fires a change event with the given value on the target"
               }
@@ -10024,6 +10054,34 @@ export const miroirFundamentalMlSchema = {
                       "saveAs": {
                         "type": "string",
                         "optional": true
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "setChecked",
+                        "description": "Sets a checkbox or switch target to checked: clicks it only when its state differs, then waits until it has that state"
+                      }
+                    },
+                    "definition": {
+                      "step": {
+                        "type": "literal",
+                        "definition": "setChecked"
+                      },
+                      "label": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "target": {
+                        "type": "schemaReference",
+                        "definition": {
+                          "relativePath": "reactComponentTestTarget"
+                        }
+                      },
+                      "checked": {
+                        "type": "boolean"
                       }
                     }
                   },

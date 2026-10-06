@@ -30,6 +30,10 @@ export const viewParams: MlElement = {
     componentTestStepDelayMs: { type: "number", optional: true },
     /** The TransformerEditor shows the types of every transformer node (#453). Absent: false. */
     showTransformerTypes: { type: "boolean", optional: true },
+    /** A component test run shows the transformer types in every case, set next to its Run button. Absent: false. */
+    componentTestShowTransformerTypes: { type: "boolean", optional: true },
+    /** A component test run shows its sandbox panel; otherwise the cases render off-screen. Absent: false. */
+    componentTestShowSandbox: { type: "boolean", optional: true },
     toolsPage: { type: "object", definition: {} }, // Add toolsPage to the schema
   },
 };
@@ -70,6 +74,10 @@ export interface ViewParamsData {
   componentTestStepDelayMs?: number;
   /** #453: the TransformerEditor shows the types of every transformer node. Absent or false: hidden. */
   showTransformerTypes?: boolean;
+  /** Every case of a component test run starts with the transformer types shown. Absent or false: hidden. */
+  componentTestShowTransformerTypes?: boolean;
+  /** A component test run shows its sandbox panel. Absent or false: the cases render off-screen. */
+  componentTestShowSandbox?: boolean;
   toolsPage?: ToolsPageState;
   generalEditMode?: boolean;
 }
