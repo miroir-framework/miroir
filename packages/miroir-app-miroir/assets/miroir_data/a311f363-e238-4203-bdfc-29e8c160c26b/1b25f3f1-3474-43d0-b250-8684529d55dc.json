@@ -1,0 +1,140 @@
+{
+  "uuid": "1b25f3f1-3474-43d0-b250-8684529d55dc",
+  "parentName": "MiroirTest",
+  "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+  "name": "ui.blockEditor",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "description": "Block view of the TransformerEditor's transformer: the Blocks / Form / JSON switch starts on Form, Blocks draws the transformer as blocks, and Form brings the form editor back.",
+  "tags": [
+    "ui",
+    "editor",
+    "transformer"
+  ],
+  "issue": "498",
+  "definition": {
+    "miroirTestType": "miroirTestSuite",
+    "miroirTestLabel": "ui.blockEditor",
+    "miroirTests": [
+      {
+        "miroirTestType": "reactComponentTestSuite",
+        "miroirTestLabel": "TransformerEditor",
+        "component": "TransformerEditor",
+        "componentProps": {
+          "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+          "entityUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad"
+        },
+        "miroirTests": [
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: the transformer shows the view switch on Form",
+            "steps": [
+              {
+                "step": "waitForAttribute",
+                "label": "Form is selected",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:form"
+                },
+                "attribute": "aria-pressed",
+                "value": "true",
+                "timeout": 2000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "Blocks is not selected",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                },
+                "attribute": "aria-pressed",
+                "value": "false"
+              },
+              {
+                "step": "expectElement",
+                "label": "form editor",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.transformerType"
+                },
+                "value": "returnValue"
+              },
+              {
+                "step": "expectElement",
+                "label": "no block view",
+                "target": {
+                  "byTestId": "block-editor:transformer"
+                },
+                "present": false
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: Blocks shows the transformer as blocks, Form brings the form back",
+            "steps": [
+              {
+                "step": "click",
+                "label": "choose Blocks",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "root block is returnValue",
+                "target": {
+                  "byTestId": "block:transformer"
+                },
+                "attribute": "data-transformer-type",
+                "value": "returnValue",
+                "timeout": 3000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "Blocks is selected",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                },
+                "attribute": "aria-pressed",
+                "value": "true"
+              },
+              {
+                "step": "expectElement",
+                "label": "form editor hidden",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.transformerType"
+                },
+                "present": false
+              },
+              {
+                "step": "click",
+                "label": "choose Form",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:form"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "form editor back",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.transformerType"
+                },
+                "value": "returnValue",
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "block view gone",
+                "target": {
+                  "byTestId": "block-editor:transformer"
+                },
+                "present": false
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

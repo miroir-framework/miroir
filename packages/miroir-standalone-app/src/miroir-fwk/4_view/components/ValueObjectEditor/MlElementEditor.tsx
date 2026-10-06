@@ -1,4 +1,4 @@
-import React, { startTransition, useCallback, useMemo, useState } from "react";
+import React, { startTransition, useCallback, useContext, useMemo, useState } from "react";
 
 import {
   ExpandLess,
@@ -39,6 +39,8 @@ import { useMiroirContextService } from "miroir-react";
 import { RenderPerformanceMetrics } from "../../tools/renderPerformanceMeasure.js";
 import { useComponentTestMode } from "../../tools/ComponentTestModeContext.js";
 import { isVitestTestMode } from "../../tools/progressiveRenderConfig.js";
+import { BlockViewModeContext, isBlockViewRoot } from "../BlockEditor/BlockViewMode.js";
+import { BlockViewSwitch } from "../BlockEditor/BlockViewSwitch.js";
 import { ErrorFallbackComponent } from "../ErrorFallbackComponent.js";
 import { JsonDisplayHelper } from "miroir-react";
 import { useReportPageContext } from "../Reports/ReportPageContext.js";
@@ -423,7 +425,26 @@ let count = 0;
 // #####################################################################################################
 // #####################################################################################################
 // #####################################################################################################
+/**
+ * #498 (analysis #497, D6): the value editor of a field. Under a BlockViewModeContext provider, a
+ * transformer field gets the Blocks / Form / JSON switch; every other field is the form editor.
+ */
 export function MlElementEditor(props: MlElementEditorProps): JSX.Element {
+  const blockViewModes = useContext(BlockViewModeContext);
+  if (!blockViewModes || !isBlockViewRoot(props.typeCheckKeyMap?.[props.rootLessListKey])) {
+    return <MlElementEditorForm {...props} />;
+  }
+  return (
+    <BlockViewSwitch
+      formikPath={[props.reportSectionPathAsString, ...props.rootLessListKeyArray].join(".")}
+      rootLessListKey={props.rootLessListKey}
+    >
+      {(mode) => <MlElementEditorForm key={mode} {...props} />}
+    </BlockViewSwitch>
+  );
+}
+
+function MlElementEditorForm(props: MlElementEditorProps): JSX.Element {
   count++;
   const trackedRender = useTrackedRender(
     editorNavigationKey(props.currentDeploymentUuid, props.currentApplicationSection),

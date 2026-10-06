@@ -1,0 +1,76 @@
+{
+  "uuid": "0161aae9-8ff2-4efb-9da5-ee8926961196",
+  "parentName": "MiroirTest",
+  "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+  "name": "fn.blockModel",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "description": "A transformer value as a tree of Scratch-style blocks: one block per transformer with its primitive parameters in the header and one row per slot.",
+  "tags": [
+    "unit",
+    "transformer"
+  ],
+  "issue": "498",
+  "definition": {
+    "miroirTestType": "miroirTestSuite",
+    "miroirTestLabel": "fn.blockModel",
+    "miroirTests": [
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "transformerBlockOutline",
+        "miroirTests": [
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "returnValue: one block, its primitive value in the header",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerBlockModel",
+              "export": "transformerBlockOutline"
+            },
+            "arguments": [
+              {
+                "transformerType": "returnValue",
+                "value": "seize value..."
+              }
+            ],
+            "expectedValue": [
+              "returnValue [basic] value=\"seize value...\""
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "mapList: the element transformer row, then the applyTo row",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerBlockModel",
+              "export": "transformerBlockOutline"
+            },
+            "arguments": [
+              {
+                "transformerType": "mapList",
+                "interpolation": "runtime",
+                "referenceToOuterObject": "book",
+                "elementTransformer": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "book",
+                    "name"
+                  ]
+                },
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referenceName": "books"
+                }
+              }
+            ],
+            "expectedValue": [
+              "mapList [basic] {runtime} referenceToOuterObject=\"book\"",
+              "  elementTransformer: getFromContext [basic] {runtime} referencePath=[\"book\",\"name\"]",
+              "  applyTo: getFromContext [basic] {runtime} referenceName=\"books\""
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

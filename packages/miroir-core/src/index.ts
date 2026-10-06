@@ -1376,6 +1376,25 @@ export type {
   TransformerTypeChange,
 } from "./0_interfaces/2_domain/TransformerTreeEditInterface.js";
 export {
+  transformerBlockOutline,
+  transformerBlockTree,
+  type TransformerBlockModelOptions,
+} from "./2_domain/TransformerBlockModel.js";
+export type {
+  BlockNode,
+  BlockPath,
+  BlockTree,
+  BlockTreeStats,
+  JsonBlock,
+  ListBlock,
+  LiteralBlock,
+  MlSchemaBlock,
+  ObjectBlock,
+  TransformerBlock,
+  TransformerBlockParameter,
+  TransformerBlockRow,
+} from "./0_interfaces/2_domain/TransformerBlockModelInterface.js";
+export {
   checkTransformerMlSchemaCompatibility,
   formatMlSchemaTypeLabel,
   getDeclaredInputMlSchema,

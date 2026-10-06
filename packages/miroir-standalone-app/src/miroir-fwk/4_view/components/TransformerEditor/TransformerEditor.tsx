@@ -43,6 +43,7 @@ import {
 import { useCurrentModel } from "../../ReduxHooks.js";
 import { useReportPageContext } from '../Reports/ReportPageContext';
 import { TypedValueObjectEditor } from '../Reports/TypedValueObjectEditor';
+import { BlockViewModeProvider } from '../BlockEditor/BlockViewMode.js';
 import type { TransformerTypeBadge, TransformerTypeBadgePart } from '../ValueObjectEditor/MlElementEditorInterface';
 import {
   ThemedContainer,
@@ -324,22 +325,24 @@ const TransformerDefinitionEditor: React.FC<{
           />
         }
       />
-      <TypedValueObjectEditor
-        labelElement={<>Transformer Definition</>}
-        formValueMLSchema={formValueMLSchema}
-        formikValuePathAsString="transformerEditor_transformer_selector"
-        application={application}
-        applicationDeploymentMap={applicationDeploymentMap}
-        deploymentUuid={deploymentUuid}
-        applicationSection={"model"}
-        formLabel={"Transformer Definition Selector"}
-        displaySubmitButton="noDisplay"
-        valueObjectEditMode="create"
-        maxRenderDepth={Infinity}
-        compatibilityWarnings={compatibilityWarnings}
-        transformerTypeRestrictions={transformerTypeRestrictions}
-        transformerTypeBadges={typeBadges}
-      />
+      <BlockViewModeProvider>
+        <TypedValueObjectEditor
+          labelElement={<>Transformer Definition</>}
+          formValueMLSchema={formValueMLSchema}
+          formikValuePathAsString="transformerEditor_transformer_selector"
+          application={application}
+          applicationDeploymentMap={applicationDeploymentMap}
+          deploymentUuid={deploymentUuid}
+          applicationSection={"model"}
+          formLabel={"Transformer Definition Selector"}
+          displaySubmitButton="noDisplay"
+          valueObjectEditMode="create"
+          maxRenderDepth={Infinity}
+          compatibilityWarnings={compatibilityWarnings}
+          transformerTypeRestrictions={transformerTypeRestrictions}
+          transformerTypeBadges={typeBadges}
+        />
+      </BlockViewModeProvider>
     </>
   );
 };

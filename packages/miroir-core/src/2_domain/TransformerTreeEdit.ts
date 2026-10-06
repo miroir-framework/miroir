@@ -415,7 +415,7 @@ export function removeTransformerNode(
 }
 
 /** Schemas of the attributes a transformer type declares, its `extend` clauses included. */
-function declaredAttributeSchemas(
+export function declaredAttributeSchemas(
   transformerType: string,
   modelEnvironment: MiroirModelEnvironment,
   transformerDefinitions: Record<string, TransformerDefinition>,
