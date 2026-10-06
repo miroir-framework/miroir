@@ -17,7 +17,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Companion: #486 (health checks; shares Electron `--self-test`, analysis D9)
 Working branch: `claude/487-client-self-test-x9c2x8` (from `_integration` at 9838983)
 
-**Resume note:** plan written 2026-10-06; decisions D1 to D10 and their defaults accepted by A 2026-10-06; Slices 0 to 3 DONE; next Slice 4 (web driver).
+**Resume note:** plan written 2026-10-06; decisions D1 to D10 and their defaults accepted by A 2026-10-06; Slices 0 to 4 DONE; next Slice 5 (Electron).
 
 ---
 
@@ -41,7 +41,7 @@ This plan does **not** cover the CLI, server, MCP and Electron main-process prob
 | 1 | Tracer: `self-test` environment → `runSelfTest` → `passed` | ✅ DONE | `runSelfTest.487.phase1.integ.test.ts` |
 | 2 | The verdict fails when it should | ✅ DONE | `selfTestVerdict.487.phase2.integ.test.ts` |
 | 3 | Page load runs the self-test and publishes the verdict | ✅ DONE | `selfTestPage.487.phase3.integ.test.tsx` |
-| 4 | Web driver and local run | ⬜ pending | `selfTestDriver.487.phase4.unit.test.ts` + a real `--serve` run |
+| 4 | Web driver and local run | ✅ DONE | `selfTestDriver.487.phase4.unit.test.ts` + a real `--serve` run |
 | 5 | Electron `--self-test` (renderer half) | ⬜ pending | `electronSelfTest.487.phase5.unit.test.ts` + run on A's machine |
 | 6 | `integ` MiroirTests in self-test mode | ⬜ pending | `runSelfTestInteg.487.phase6.integ.test.ts` |
 | 7 | GitHub Actions workflow | ⬜ pending | green `self-test.yml` run on the branch |
@@ -268,7 +268,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,ui
 
 ## Slice 4 — Web driver and local run
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE (2026-10-06)
 
 **Goal:** a maintainer or a CI job runs `npm run selfTest -w miroir-standalone-app -- --serve` and gets the report on stdout with exit 0 (passed), 1 (failed) or 2 (could not run).
 
@@ -293,7 +293,11 @@ MIROIR_ENV=self-test npm run selfTest -w miroir-standalone-app -- --serve   # ex
 ```
 
 ### Realization
-_(to fill)_
+- `scripts/serveBuiltClient.mjs` holds what the coverage tour and the driver share: `startServer({url, name})`, `launchBrowser`, `requireProductionBuild`, `ScriptError`/`fail` (exit 2). `coverage-tour.mjs` imports it and lost its own copies (`TourError` became `ScriptError`).
+- The pure part is `scripts/selfTestDriverCore.mjs` (`parseSelfTestDriverArgs`, `selfTestExitCode`, `selfTestSummaryLines`), so the unit test imports no browser. `self-test.mjs` adds `--out <file>` (the workflow's artifact); stdout carries the JSON then the summary.
+- A URL nothing answers exits 2 (`cannot open <url>`), not with a Node stack trace.
+- The test file is `selfTestDriver.487.phase4.unit.test.ts` in `tests/0_build/`, next to the other tooling tests.
+- Results: `selfTestDriver.487.phase4.unit` 4/4, `coverageTourLoopback.unit` 3/3; `MIROIR_ENV=self-test npm run selfTest -w miroir-standalone-app -- --serve` in a cloud container (Chromium of /opt/pw-browsers): exit 0, `passed`, 985 tests in 43 suites, 0.8 s of tests; `--url https://localhost:3999` exits 2; `npm run lint` clean.
 
 ---
 

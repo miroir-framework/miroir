@@ -22,25 +22,16 @@
  * Exits 1 when a page of the tour could not be reached (the report is written anyway), 2 when the
  * tour cannot run.
  */
-import { execFileSync, spawn } from "node:child_process";
-import { cpSync, existsSync, mkdirSync, mkdtempSync, openSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import https from "node:https";
-import { tmpdir } from "node:os";
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
-import { fileURLToPath, pathToFileURL } from "node:url";
 import { parseArgs } from "node:util";
-
-import { chromium } from "playwright-core";
 
 import { readWorkspaces } from "../vite/bundleReportPlugin.js";
 import { addChunkCoverage, buildCoverageReport, executedMask } from "../vite/coverageCore.js";
+import { distDir, fail, launchBrowser, requireProductionBuild, root, ScriptError, startServer } from "./serveBuiltClient.mjs";
 
 const APP = "miroir-standalone-app";
-const packageDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const root = path.resolve(packageDir, "../..");
-const distDir = path.join(packageDir, "dist");
 const assetsDir = path.join(distDir, "assets");
-const serverDir = path.join(root, "packages/miroir-server");
 const STEP_TIMEOUT = 30_000;
 
 const MIROIR_TESTS_REPORT =
@@ -128,13 +119,10 @@ const { values: options } = parseArgs({
   },
 });
 
-/** A tour that cannot run: its message says what to do. */
-class TourError extends Error {}
-
 try {
   await main();
 } catch (error) {
-  if (!(error instanceof TourError)) {
+  if (!(error instanceof ScriptError)) {
     throw error;
   }
   console.error(`coverage-tour: ${error.message}`);
@@ -142,10 +130,8 @@ try {
 }
 
 async function main() {
-  if (!existsSync(path.join(distDir, "index.html"))) {
-    fail(`no production build in ${path.relative(process.cwd(), distDir)}: run npm run build -w ${APP}`);
-  }
-  const stopServer = options.serve ? await startServer(options.url) : undefined;
+  requireProductionBuild(APP);
+  const stopServer = options.serve ? await startServer({ url: options.url, name: "coverage-tour" }) : undefined;
   try {
     const { tour, coverage } = await runTour(options);
     const report = coverageReport(tour, coverage);
@@ -193,29 +179,6 @@ async function runTour({ url, browser: executablePath, headed, out }) {
     return { tour, coverage: await page.coverage.stopJSCoverage() };
   } finally {
     await browser.close();
-  }
-}
-
-async function launchBrowser(executablePath, headed) {
-  const launchOptions = {
-    headless: !headed,
-    // Chromium refuses to start as root with its sandbox (containers, CI).
-    args: process.getuid?.() === 0 ? ["--no-sandbox"] : [],
-  };
-  if (executablePath) {
-    return chromium.launch({ ...launchOptions, executablePath });
-  }
-  try {
-    return await chromium.launch(launchOptions);
-  } catch {
-    try {
-      return await chromium.launch({ ...launchOptions, channel: "chrome" });
-    } catch {
-      fail(
-        "no browser found: pass --browser <chromium or chrome executable> (or MIROIR_TOUR_BROWSER), " +
-          "or install the one playwright-core expects with: npx playwright-core install chromium",
-      );
-    }
   }
 }
 
@@ -307,78 +270,4 @@ function coverageReportLines(report, out, packagesShown = 25) {
   }
   lines.push("");
   return lines;
-}
-
-/**
- * Starts the server release on the production build, as `npm run run:prod -w miroir-server` does,
- * with authentication off and listening on 127.0.0.1 only; returns the function that stops it.
- * @returns {Promise<() => void>}
- */
-async function startServer(url) {
-  const entry = path.join(serverDir, "release/index.js");
-  if (!existsSync(entry)) {
-    fail("no server release: run npm run build:release -w miroir-server");
-  }
-  if (await answers(url)) {
-    fail(`a server already answers at ${url}: stop it, or run without --serve to tour it`);
-  }
-  cpSync(distDir, path.join(serverDir, "release/client"), { recursive: true });
-  const work = mkdtempSync(path.join(tmpdir(), "miroir-coverage-tour-"));
-  const repoCerts = ["localhost.pem", "localhost-key.pem"].every((file) => existsSync(path.join(root, "certs", file)));
-  const certsDir = repoCerts ? path.join(root, "certs") : selfSignedCertificate(work);
-  const log = path.join(work, "server.log");
-  const logFd = openSync(log, "w");
-  // Authentication is off, so the server listens on 127.0.0.1 only (scripts/loopback-only.mjs).
-  const loopbackOnly = path.join(packageDir, "scripts/loopback-only.mjs");
-  const server = spawn(process.execPath, ["--import", pathToFileURL(loopbackOnly).href, "release/index.js", "--certsdir", certsDir, "--disable-auth"], {
-    cwd: serverDir,
-    env: { ...process.env, NODE_ENV: "production" },
-    stdio: ["ignore", logFd, logFd],
-  });
-  let exited = false;
-  server.on("exit", () => (exited = true));
-  const stop = () => {
-    server.kill();
-    rmSync(work, { recursive: true, force: true });
-  };
-  for (const start = Date.now(); !(await answers(url)); ) {
-    if (exited || Date.now() - start > 120_000) {
-      const tail = readFileSync(log, "utf-8").split("\n").slice(-20).join("\n");
-      stop();
-      fail(`the server did not start at ${url}; end of its log:\n${tail}`);
-    }
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-  }
-  console.log(`  server started at ${url} (production mode, authentication off, 127.0.0.1 only)`);
-  return stop;
-}
-
-/** @returns {string} a directory holding a one-day self-signed certificate for localhost */
-function selfSignedCertificate(work) {
-  const dir = path.join(work, "certs");
-  mkdirSync(dir);
-  execFileSync(
-    "openssl",
-    ["req", "-x509", "-newkey", "rsa:2048", "-nodes", "-days", "1", "-subj", "/CN=localhost",
-      "-addext", "subjectAltName=DNS:localhost", "-keyout", path.join(dir, "localhost-key.pem"), "-out", path.join(dir, "localhost.pem")],
-    { stdio: "ignore" },
-  );
-  return dir;
-}
-
-/** @returns {Promise<boolean>} whether anything answers HTTPS at `url` */
-function answers(url) {
-  return new Promise((resolve) => {
-    const request = https.get(url, { rejectUnauthorized: false, timeout: 5000 }, (response) => {
-      response.resume();
-      resolve(true);
-    });
-    request.on("timeout", () => request.destroy());
-    request.on("error", () => resolve(false));
-  });
-}
-
-/** @returns {never} */
-function fail(message) {
-  throw new TourError(message);
 }
