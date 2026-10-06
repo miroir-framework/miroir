@@ -4,6 +4,7 @@ import {
   getTestbedUuidsForTestSuite,
   runMiroirTests,
   runMiroirTestSuiteInProcess,
+  snapshotTestRunLogs,
   type InProcessExpectFn,
   type IntegrationTestSessionKind,
   type LoggerOptions,
@@ -12,6 +13,7 @@ import {
   type MiroirTestSuite,
   type RealServerTransformerIntegrationSessionOptions,
   type TestbedUuids,
+  type TestRunLogSnapshot,
   type TestSuiteResult,
 } from "miroir-core";
 
@@ -219,6 +221,11 @@ async function runRunnerOrActionIntegrationSuite(
   );
 
   let success = false;
+  // #490: in the browser the bundle is the app's shared tracker: keep this run's events, and
+  // only them, for "Export failed test logs"
+  let runLogs: TestRunLogSnapshot | undefined;
+  const runStartedAt = Date.now();
+  const releaseRunEvents = trackerBundle.miroirEventService.retainEventsFrom(runStartedAt);
   let releaseReportTests: (() => void) | undefined;
   try {
     // #330: the Reports of the suite mount in the app's sandbox, driven by this session
@@ -246,7 +253,13 @@ async function runRunnerOrActionIntegrationSuite(
       trackerBundle.miroirActivityTracker,
       request.suiteKey,
     );
+    runLogs = snapshotTestRunLogs({
+      activities: trackerBundle.miroirActivityTracker.getAllActivities(),
+      events: trackerBundle.miroirEventService.getAllEvents(),
+      since: runStartedAt,
+    });
   } finally {
+    releaseRunEvents();
     try {
       releaseReportTests?.();
     } finally {
@@ -274,6 +287,7 @@ async function runRunnerOrActionIntegrationSuite(
     success,
     inspector: buildInspectorSnapshot(request, sessionKind, runTarget),
     testSuiteResults,
+    runLogs,
   };
 }
 
@@ -314,6 +328,11 @@ async function runTransformerIntegrationSuite(
   });
 
   let success = false;
+  // #490: in the browser the bundle is the app's shared tracker: keep this run's events, and
+  // only them, for "Export failed test logs"
+  let runLogs: TestRunLogSnapshot | undefined;
+  const runStartedAt = Date.now();
+  const releaseRunEvents = trackerBundle.miroirEventService.retainEventsFrom(runStartedAt);
   try {
     const executionEnvironment = await testSession.initSession();
     await runMiroirTestSuiteInProcess({
@@ -334,7 +353,13 @@ async function runTransformerIntegrationSuite(
       trackerBundle.miroirActivityTracker,
       request.suiteKey,
     );
+    runLogs = snapshotTestRunLogs({
+      activities: trackerBundle.miroirActivityTracker.getAllActivities(),
+      events: trackerBundle.miroirEventService.getAllEvents(),
+      since: runStartedAt,
+    });
   } finally {
+    releaseRunEvents();
     await testSession.teardown();
   }
 
@@ -358,6 +383,7 @@ async function runTransformerIntegrationSuite(
     success,
     inspector: buildInspectorSnapshot(request, "transformer", runTarget),
     testSuiteResults,
+    runLogs,
   };
 }
 

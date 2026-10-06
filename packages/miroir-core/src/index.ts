@@ -1461,6 +1461,20 @@ export {
   type RunExportBundle,
 } from "./4_services/runLogExport.js";
 export {
+  buildFailedTestLogsExport,
+  formatLogArg,
+  hasFailedTestResults,
+  isFailedTestResult,
+  snapshotTestRunLogs,
+  stringifyFailedTestLogsExport,
+  suggestedFailedTestLogsFilename,
+  type FailedTestLogEntry,
+  type FailedTestLogLine,
+  type FailedTestLogsExport,
+  type FailedTestLogsExportTestResult,
+  type TestRunLogSnapshot,
+} from "./4_services/failedTestLogsExport.js";
+export {
   PersistenceStoreController,
   PersistenceStoreControllerFactoryReturnType
 } from "./4_services/PersistenceStoreController.js";

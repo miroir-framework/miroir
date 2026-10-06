@@ -125,6 +125,12 @@ export interface MiroirEventServiceInterface {
    * Subscribe to changes in the event list
    */
   subscribe(callback: (events: MiroirEvent[]) => void): () => void;
+
+  /**
+   * Keeps the events of activities started at or after `since` out of the age-based cleanup,
+   * until the returned function is called (#490: a test run longer than the cleanup age).
+   */
+  retainEventsFrom(since: number): () => void;
 }
 
 // ################################################################################################
@@ -149,6 +155,8 @@ export class MiroirEventService implements MiroirEventServiceInterface {
   private sortedEvents: MiroirEvent[] | undefined;
   private notificationPending = false;
   private cleanupInterval: NodeJS.Timeout;
+  // start times passed to retainEventsFrom and not released yet
+  private retainedSince: number[] = [];
 
   // Configuration
   private readonly MAX_AGE_MS = 10 * 60 * 1000; // 10 minutes
@@ -533,13 +541,28 @@ export class MiroirEventService implements MiroirEventServiceInterface {
   }
 
   // ##############################################################################################
+  retainEventsFrom(since: number): () => void {
+    this.retainedSince.push(since);
+    let released = false;
+    return () => {
+      if (released) {
+        return;
+      }
+      released = true;
+      this.retainedSince.splice(this.retainedSince.indexOf(since), 1);
+    };
+  }
+
+  // ##############################################################################################
   private cleanup(): void {
     const now = Date.now();
+    const retainedFrom = this.retainedSince.length > 0 ? Math.min(...this.retainedSince) : Infinity;
     const actionsToRemove: string[] = [];
     this.eventMap.forEach((event, eventId) => {
       if (
         event.activity.status !== "running" &&
-        event.activity.startTime < now - this.MAX_AGE_MS
+        event.activity.startTime < now - this.MAX_AGE_MS &&
+        event.activity.startTime < retainedFrom
       ) {
         actionsToRemove.push(eventId);
       }

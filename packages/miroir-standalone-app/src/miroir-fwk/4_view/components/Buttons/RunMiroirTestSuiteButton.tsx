@@ -8,9 +8,11 @@ import {
   defaultMetaModelEnvironment,
   isUiIntegrationLaunchableSuite,
   runMiroirTests,
+  snapshotTestRunLogs,
   type Action2VoidReturnType,
   type LoggerInterface,
   type MiroirTestDefinition,
+  type TestRunLogSnapshot,
   type TestSuiteListFilter,
 } from "miroir-core";
 
@@ -49,7 +51,12 @@ interface RunMiroirTestSuiteButtonProps {
   miroirTestSuite: MiroirTestDefinition | undefined;
   testSuiteKey: string;
   useSnackBar: boolean;
-  onTestComplete?: (testSuiteKey: string, structuredResults: MiroirTestResultData[]) => void;
+  /** `runLogs` (#490): the activities and events of the run, for "Export failed test logs". */
+  onTestComplete?: (
+    testSuiteKey: string,
+    structuredResults: MiroirTestResultData[],
+    runLogs?: TestRunLogSnapshot,
+  ) => void;
   testFilter?: { testList?: TestSuiteListFilter; match?: RegExp } | undefined;
   label?: string;
   /** D6 — explicit unit vs integration path; required when suite is mixed. */
@@ -141,39 +148,51 @@ export const RunMiroirTestSuiteButton: React.FC<RunMiroirTestSuiteButtonProps> =
       await beforeRun(iterationsOverride !== undefined ? { iterationsOverride } : undefined);
     }
 
+    const { miroirActivityTracker, miroirEventService } = miroirContextService.miroirContext;
+    const runStartedAt = Date.now();
+    // #490: a run longer than the event service's cleanup age keeps the logs of its first tests
+    const releaseRunEvents = miroirEventService.retainEventsFrom(runStartedAt);
     try {
-      miroirContextService.miroirContext.miroirActivityTracker.resetResults();
+      try {
+        miroirActivityTracker.resetResults();
 
-      await runMiroirTests._runMiroirTestSuite(
-        TestFramework as any,
-        [],
-        miroirTestSuite.definition,
-        testFilter,
-        defaultMetaModelEnvironment,
-        miroirContextService.miroirContext.miroirActivityTracker,
-        undefined,
-        true,
-        runMiroirTests,
-        { executionMode: "unit" },
-      );
-    } finally {
-      if (componentTestsPrepared) {
-        afterRun?.();
+        await runMiroirTests._runMiroirTestSuite(
+          TestFramework as any,
+          [],
+          miroirTestSuite.definition,
+          testFilter,
+          defaultMetaModelEnvironment,
+          miroirActivityTracker,
+          undefined,
+          true,
+          runMiroirTests,
+          { executionMode: "unit" },
+        );
+      } finally {
+        if (componentTestsPrepared) {
+          afterRun?.();
+        }
       }
-    }
 
-    const allResults =
-      miroirContextService.miroirContext.miroirActivityTracker.getTestAssertionsResults([]);
-    log.info("MiroirTest results:", allResults);
+      const allResults = miroirActivityTracker.getTestAssertionsResults([]);
+      log.info("MiroirTest results:", allResults);
 
-    const structuredResults: MiroirTestResultData[] = generateTestReport(
-      testSuiteKey,
-      allResults,
-      () => {},
-    );
+      const structuredResults: MiroirTestResultData[] = generateTestReport(
+        testSuiteKey,
+        allResults,
+        () => {},
+      );
 
-    if (onTestComplete) {
-      onTestComplete(testSuiteKey, structuredResults);
+      if (onTestComplete) {
+        const runLogs = snapshotTestRunLogs({
+          activities: miroirActivityTracker.getAllActivities(),
+          events: miroirEventService.getAllEvents(),
+          since: runStartedAt,
+        });
+        onTestComplete(testSuiteKey, structuredResults, runLogs);
+      }
+    } finally {
+      releaseRunEvents();
     }
     return ACTION_OK;
   };
@@ -218,7 +237,7 @@ export const RunMiroirTestSuiteButton: React.FC<RunMiroirTestSuiteButtonProps> =
       : [];
 
     if (onTestComplete) {
-      onTestComplete(testSuiteKey, structuredResults);
+      onTestComplete(testSuiteKey, structuredResults, result.runLogs);
     }
 
     if (!result.success) {
