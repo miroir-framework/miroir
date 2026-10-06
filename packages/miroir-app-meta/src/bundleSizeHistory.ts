@@ -142,7 +142,7 @@ export function newestMeasurement(application: string, dataDir: string): BundleS
 /** The type check errors of an instance against the BundleSizeMeasurement Entity, or undefined when it is valid. */
 export function measurementErrors(instance: BundleSizeMeasurement): unknown {
   const check = checkModelValidationInstance(
-    bundleSizeMeasurementEntityJson.mlSchema as unknown as MlElement,
+    bundleSizeMeasurementEntityJson.mlSchema as MlElement,
     instance,
     instance.uuid,
     defaultMiroirModelEnvironment,
