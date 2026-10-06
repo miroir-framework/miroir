@@ -1,0 +1,468 @@
+<title>Miroir Block Editor Mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: palette column on the left (stacks on top at phone width), three example programs on the right, each with its own Blocks / Form / JSON switch. */
+:root {
+  --bg: #f4f5f8;
+  --surface: #ffffff;
+  --fg: #1b1e25;
+  --muted: #5c6370;
+  --line: #d9dce3;
+  --accent: #2f6fd6;
+  --mouth: #eef0f4;
+  --field: #ffffff;
+  --field-fg: #1b1e25;
+  --field-edge: rgba(0,0,0,.18);
+  --on-block: #ffffff;
+  --literal: #e3e6ec;
+  --literal-edge: #c3c8d2;
+  --literal-fg: #1b1e25;
+  --rt: #1b1e25;
+  --c-list: #2f6fd6;
+  --c-object: #6a4fc9;
+  --c-control: #a8640a;
+  --c-value: #23824a;
+  --c-ctx: #cf5418;
+  --c-param: #bf3c78;
+  --c-mls: #0d7a84;
+  --c-admin: #556070;
+  --c-sheet: #5e7410;
+  --c-meta: #94389a;
+  --c-instance: #b23a3a;
+  --c-model: #7a5a24;
+  --c-store: #46566a;
+  --c-domain: #245f86;
+  --c-query: #1d6e66;
+  --c-other: #5c6370;
+  --font-ui: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #14161b; --surface: #1c1f26; --fg: #e8eaee; --muted: #a2a9b5; --line: #323743; --accent: #7aa7f0;
+    --mouth: #262a33; --field: #f2f3f6; --field-fg: #15171c; --field-edge: rgba(0,0,0,.25);
+    --literal: #353a45; --literal-edge: #4a5160; --literal-fg: #e8eaee; --rt: #f2f3f6;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #14161b; --surface: #1c1f26; --fg: #e8eaee; --muted: #a2a9b5; --line: #323743; --accent: #7aa7f0;
+  --mouth: #262a33; --field: #f2f3f6; --field-fg: #15171c; --field-edge: rgba(0,0,0,.25);
+  --literal: #353a45; --literal-edge: #4a5160; --literal-fg: #e8eaee; --rt: #f2f3f6;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: var(--font-ui); font-size: 15px; line-height: 1.45; padding-inline: 16px; padding-block: 24px 48px; }
+.wrap { max-width: 1320px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+header.top { display: flex; flex-direction: column; gap: 8px; }
+h1 { font-size: 1.7rem; margin: 0; text-wrap: balance; letter-spacing: -.01em; }
+.lede { margin: 0; color: var(--muted); max-width: 70ch; }
+.lede a { color: var(--accent); }
+.controls { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; font-size: .9rem; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--surface); }
+.seg button { font: inherit; border: 0; background: transparent; color: var(--fg); padding: 5px 12px; cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--fg); color: var(--bg); }
+.seg button:focus-visible, .tog:focus-visible, .tabs button:focus-visible, .tool:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.label { font-size: .75rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 700; }
+.main { display: grid; grid-template-columns: 270px minmax(0, 1fr); gap: 20px; align-items: start; }
+@media (max-width: 860px) { .main { grid-template-columns: minmax(0, 1fr); } }
+aside.palette { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 12px); background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 12px; max-height: calc(100vh - 24px); overflow: auto; }
+@media (max-width: 860px) { aside.palette { position: static; max-height: none; } }
+.pal-group { display: flex; flex-direction: column; gap: 6px; }
+.pal-head { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: .9rem; }
+.swatch { width: 12px; height: 12px; border-radius: 3px; background: var(--c); flex: none; }
+.pal-blocks { display: flex; flex-wrap: wrap; gap: 4px; }
+.pal-blocks span { background: var(--c); color: var(--on-block); border-radius: 6px; padding: 1px 7px; font-size: .78rem; }
+.pal-note { font-size: .8rem; color: var(--muted); margin: 0; }
+.tray { border: 2px dashed var(--line); border-radius: 10px; padding: 10px; color: var(--muted); font-size: .82rem; }
+.examples { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+section.example { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.ex-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; align-items: flex-start; }
+.ex-head h2 { margin: 0; font-size: 1.15rem; }
+.ex-head p { margin: 2px 0 0; color: var(--muted); font-size: .85rem; max-width: 70ch; }
+.ex-tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.tabs { display: inline-flex; gap: 2px; background: var(--mouth); border-radius: 8px; padding: 3px; }
+.tabs button { font: inherit; font-size: .85rem; border: 0; background: transparent; color: var(--fg); padding: 4px 12px; border-radius: 6px; cursor: pointer; }
+.tabs button[aria-selected="true"] { background: var(--surface); box-shadow: 0 1px 2px rgba(0,0,0,.12); font-weight: 700; }
+.tool { font: inherit; font-size: .8rem; border: 1px solid var(--line); background: transparent; color: var(--fg); padding: 3px 9px; border-radius: 6px; cursor: pointer; }
+.canvas { overflow-x: auto; padding: 14px 6px 18px; background-image: radial-gradient(var(--line) 1px, transparent 1px); background-size: 18px 18px; border-radius: 8px; }
+.jsonview { overflow: auto; max-height: 560px; font-family: var(--font-mono); font-size: .78rem; background: var(--mouth); border-radius: 8px; padding: 12px; margin: 0; white-space: pre; }
+.formview { color: var(--muted); font-size: .9rem; padding: 18px; background: var(--mouth); border-radius: 8px; }
+
+/* Blocks */
+.blk { --c: var(--c-other); display: inline-flex; flex-direction: column; background: var(--c); color: var(--on-block); border: 1.5px solid rgba(0,0,0,.22); border-radius: 8px; padding-bottom: 6px; vertical-align: top; position: relative; max-width: 100%; }
+.blk.leaf { padding-bottom: 0; }
+.blk-head { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 7px; padding: 5px 10px; min-height: 32px; }
+.blk-name { font-weight: 700; white-space: nowrap; }
+.blk-sub { opacity: .85; font-size: .82rem; }
+.kw { opacity: .85; font-size: .82rem; }
+.tog { font: inherit; border: 0; background: rgba(255,255,255,.18); color: inherit; width: 20px; height: 20px; border-radius: 4px; cursor: pointer; line-height: 1; padding: 0; font-size: .7rem; flex: none; }
+.blk-body { margin-left: 16px; background: var(--mouth); border-radius: 6px 0 0 6px; padding: 7px 8px 7px 8px; display: flex; flex-direction: column; gap: 7px; min-width: 120px; }
+.blk.collapsed > .blk-body { display: none; }
+.blk.collapsed { padding-bottom: 0; }
+.more { font-size: .78rem; opacity: .85; font-style: italic; }
+.slot { display: flex; gap: 8px; align-items: flex-start; min-width: 0; }
+.slot-label { color: var(--muted); font-size: .8rem; padding-top: 7px; white-space: nowrap; min-width: 0; }
+.slot-label.as-var { padding-top: 3px; }
+.slot-content { min-width: 0; }
+
+/* literal object and list blocks */
+.blk.literal { --c: var(--literal); color: var(--literal-fg); border-color: var(--literal-edge); }
+.blk.literal .tog { background: rgba(0,0,0,.08); }
+
+/* Fields inside blocks */
+.fld { font-family: var(--font-mono); font-size: .78rem; background: var(--field); color: var(--field-fg); border: 1px solid var(--field-edge); border-radius: 6px; padding: 1px 7px; max-width: 34ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fld.num { border-radius: 999px; }
+.fld.bool { border-radius: 0; clip-path: polygon(8px 0, calc(100% - 8px) 0, 100% 50%, calc(100% - 8px) 100%, 8px 100%, 0 50%); padding: 1px 12px; border: 0; }
+.fld.enum { background: rgba(0,0,0,.2); color: var(--on-block); border-color: transparent; }
+.blk.literal .fld.enum { background: rgba(0,0,0,.1); color: var(--literal-fg); }
+.fld .mu { color: var(--c-ctx); font-weight: 500; }
+.chip { font-size: .78rem; background: rgba(0,0,0,.22); color: var(--on-block); border-radius: 999px; padding: 1px 8px; white-space: nowrap; }
+.blk.literal .chip { background: rgba(0,0,0,.1); color: var(--literal-fg); }
+
+/* Variable reporters */
+.var { display: inline-flex; align-items: center; gap: 4px; background: var(--c); --c: var(--c-ctx); color: var(--on-block); border: 1.5px solid rgba(0,0,0,.22); border-radius: 999px; padding: 2px 10px; font-weight: 700; font-size: .85rem; white-space: nowrap; position: relative; }
+.var.param { --c: var(--c-param); }
+.var .sep { opacity: .7; font-weight: 400; }
+.var.decl { border-style: solid; box-shadow: inset 0 0 0 2px rgba(255,255,255,.35); }
+
+/* Action command blocks and hats */
+.stack { display: flex; flex-direction: column; align-items: flex-start; }
+.blk.cmd { border-radius: 4px; margin-bottom: 0; }
+.blk.cmd::after { content: ""; position: absolute; left: 18px; bottom: -8px; width: 24px; height: 8px; background: var(--c); border: 1.5px solid rgba(0,0,0,.22); border-top: 0; border-radius: 0 0 6px 6px; z-index: 2; }
+.blk.cmd.last::after { display: none; }
+.blk.hat { border-radius: 22px 22px 6px 6px; padding-top: 6px; }
+.blk.hat.cmdhat::after { content: ""; position: absolute; left: 18px; bottom: -8px; width: 24px; height: 8px; background: var(--c); border: 1.5px solid rgba(0,0,0,.22); border-top: 0; border-radius: 0 0 6px 6px; z-index: 2; }
+.hat-sec { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+
+/* Interpolation marking (A, 2026-10-06): runtime is the unmarked default, build is marked. An absent interpolation evaluates as build (TransformersForRuntime.ts), so it is marked too. */
+.imark { display: none; font-family: var(--font-mono); font-size: .66rem; font-weight: 500; background: var(--rt); color: var(--bg); border-radius: 4px; padding: 0 4px; line-height: 1.5; }
+[data-mark="marker"] .bm > .blk-head > .imark, [data-mark="marker"] .var.bm > .imark { display: inline-block; }
+[data-mark="dash"] .blk.bm, [data-mark="dash"] .var.bm { outline: 2px dashed var(--rt); outline-offset: 1px; }
+
+.legend { display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: .82rem; color: var(--muted); align-items: center; }
+.legend .item { display: inline-flex; gap: 6px; align-items: center; }
+.notes { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px 20px; }
+.notes h2 { margin: 0 0 8px; font-size: 1.1rem; }
+.notes ul { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; max-width: 90ch; }
+code { font-family: var(--font-mono); font-size: .88em; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap" id="app" data-mark="dash">
+  <header class="top">
+    <span class="label">Mockup for #497 · not the real editor</span>
+    <h1>Miroir block editor mockup</h1>
+    <p class="lede">Three real values from <code>miroir-app-miroir</code>, drawn with the choices of grilling rounds 1 to 3 and the review of 2026-10-06: nested blocks, one row per transformer slot, variables as rounded reporters, actions as stacked commands. Blocks are collapsible. Nothing here edits anything. Issue: <a href="https://github.com/miroir-framework/miroir/issues/497">#497</a>.</p>
+    <div class="controls">
+      <span class="label" id="rt-label">Build transformers</span>
+      <div class="seg" role="group" aria-labelledby="rt-label">
+        <button type="button" id="rt-dash" aria-pressed="true">Dashed outline</button>
+        <button type="button" id="rt-marker" aria-pressed="false">Marker</button>
+      </div>
+      <div class="legend" id="legend"></div>
+    </div>
+  </header>
+  <div class="main">
+    <aside class="palette" aria-label="Palette">
+      <span class="label">Palette</span>
+      <p class="pal-note">Computed from the 48 TransformerDefinitions and the Endpoint actions. The "basic" classification holds 37 of the 48 transformers, so this mockup splits it into lists, objects, control and values (a proposal, see the notes).</p>
+      <div id="palette" class="pal-groups" style="display:flex;flex-direction:column;gap:12px"></div>
+      <div class="tray">Tray. A block dragged out of its slot waits here while you edit. Not saved.</div>
+    </aside>
+    <div class="examples" id="examples"></div>
+  </div>
+  <section class="notes">
+    <h2>What to look at</h2>
+    <ul>
+      <li>Block labels are the raw <code>transformerType</code> and attribute names. Sentences such as "map [list] with [function]" come with presentation hints (#507).</li>
+      <li>Runtime is the unmarked default; build transformers carry the mark. A transformer with no <code>interpolation</code> evaluates as build, so it is marked as well. The dashed outline is the default style; the marker is the alternative, chosen with a ViewParams setting in the real editor.</li>
+      <li>Colors: with <code>classification</code> as it is today, 37 of 48 transformers share the "basic" color. The mockup uses a finer split of "basic" (lists, objects, control, values, variables). Keeping it means new <code>classification</code> values on the TransformerDefinitions.</li>
+      <li>The Runner shows its form fields as parameter reporters, its <code>templates</code> as "set" blocks, and its query as one collapsed block.</li>
+      <li>Literal objects and lists (grey) with more than three entries start collapsed.</li>
+    </ul>
+  </section>
+</div>
+
+<script type="application/json" id="data">{"endpoints": {"0faae143-0d7b-4a8a-a950-4fc3df943bde": "QueryEndpoint", "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5": "DomainEndpoint", "71c04f8e-c687-4ea7-9a19-bc98d796c389": "UndoRedoEndpoint", "7947ae40-eb34-4149-887b-15a9021e714e": "ModelEndpoint", "9e404b3c-368c-40cb-be8b-e3c28550c25e": "LocalCacheEndpoint", "a93598b3-19b6-42e8-828c-f02042d212d4": "PersistenceEndpoint", "bbd08cbb-79ff-4539-b91f-7a14f15ac55f": "StoreManagementEndpoint", "ed520de4-55a9-4550-ac50-b1b713b72a89": "InstanceEndpoint"}, "actionEndpoint": {"runBoxedQueryTemplateAction": "QueryEndpoint", "runBoxedQueryAction": "QueryEndpoint", "transactionalInstanceAction": "DomainEndpoint", "compositeActionSequence": "DomainEndpoint", "compositeRunBoxedQueryAction": "DomainEndpoint", "compositeRunBoxedQueryTemplateAction": "DomainEndpoint", "connectExternalService": "DomainEndpoint", "prepareOpenApiDocument": "DomainEndpoint", "probeExternalService": "DomainEndpoint", "setExternalServiceCredential": "DomainEndpoint", "undo": "UndoRedoEndpoint", "redo": "UndoRedoEndpoint", "initModel": "ModelEndpoint", "commit": "ModelEndpoint", "rollback": "ModelEndpoint", "remoteLocalCacheRollback": "ModelEndpoint", "resetModel": "ModelEndpoint", "resetData": "ModelEndpoint", "alterEntityAttribute": "ModelEndpoint", "entity_DuplicateAttribute": "ModelEndpoint", "renameEntity": "ModelEndpoint", "createEntity": "ModelEndpoint", "dropEntity": "ModelEndpoint", "freezeApplicationVersion": "ModelEndpoint", "LocalPersistenceAction_create": "PersistenceEndpoint", "LocalPersistenceAction_read": "PersistenceEndpoint", "LocalPersistenceAction_update": "PersistenceEndpoint", "LocalPersistenceAction_delete": "PersistenceEndpoint", "RestPersistenceAction_create": "PersistenceEndpoint", "RestPersistenceAction_read": "PersistenceEndpoint", "RestPersistenceAction_update": "PersistenceEndpoint", "RestPersistenceAction_delete": "PersistenceEndpoint", "storeManagementAction_createStore": "StoreManagementEndpoint", "storeManagementAction_deleteStore": "StoreManagementEndpoint", "storeManagementAction_resetAndInitApplicationDeployment": "StoreManagementEndpoint", "storeManagementAction_openStore": "StoreManagementEndpoint", "storeManagementAction_closeStore": "StoreManagementEndpoint", "createInstance": "InstanceEndpoint", "deleteInstance": "InstanceEndpoint", "deleteInstanceWithCascade": "InstanceEndpoint", "updateInstance": "InstanceEndpoint", "loadNewInstancesInLocalCache": "InstanceEndpoint", "getInstance": "InstanceEndpoint", "getInstances": "InstanceEndpoint"}, "definitions": [{"name": "listReducerToSpreadObject", "classification": "basic", "impl": "libraryImplementation"}, {"name": "boolExpr", "classification": "basic", "impl": "libraryImplementation"}, {"name": "createObjectFromPairs", "classification": "basic", "impl": "libraryImplementation"}, {"name": "entityDefinition_extractAttributes", "classification": "metaModel", "impl": "transformer"}, {"name": "stringOp", "classification": "basic", "impl": "libraryImplementation"}, {"name": "returnValue", "classification": "basic", "impl": "libraryImplementation"}, {"name": "defaultValueForSchema", "classification": "MLS", "impl": "libraryImplementation"}, {"name": "mapList", "classification": "basic", "impl": "libraryImplementation"}, {"name": "filterList", "classification": "basic", "impl": "libraryImplementation"}, {"name": "ifThenElse", "classification": "basic", "impl": "libraryImplementation"}, {"name": "aggregate", "classification": "basic", "impl": "libraryImplementation"}, {"name": "ansiColumnsToMlSchema", "classification": "basic", "impl": "libraryImplementation"}, {"name": "case", "classification": "basic", "impl": "libraryImplementation"}, {"name": "plus", "classification": "basic", "impl": "libraryImplementation"}, {"name": "pickFromList", "classification": "basic", "impl": "libraryImplementation"}, {"name": "transformer_menu_addItem", "classification": "basic", "impl": "libraryImplementation"}, {"name": "constantAsExtractor", "classification": "basic", "impl": "libraryImplementation"}, {"name": "resolveConditionalSchema", "classification": "MLS", "impl": "libraryImplementation"}, {"name": "object_fromEntries", "classification": "basic", "impl": "libraryImplementation"}, {"name": "mergeIntoObject", "classification": "basic", "impl": "libraryImplementation"}, {"name": "numericOp", "classification": "basic", "impl": "libraryImplementation"}, {"name": "getObjectValues", "classification": "basic", "impl": "libraryImplementation"}, {"name": "find", "classification": "basic", "impl": "libraryImplementation"}, {"name": "indexListBy", "classification": "basic", "impl": "libraryImplementation"}, {"name": "generateUuid", "classification": "basic", "impl": "libraryImplementation"}, {"name": "concatLists", "classification": "basic", "impl": "libraryImplementation"}, {"name": "mlsTypeCheck", "classification": "MLS", "impl": "libraryImplementation"}, {"name": "resolveSchemaReferenceInContext", "classification": "MLS", "impl": "libraryImplementation"}, {"name": "getUniqueValues", "classification": "basic", "impl": "libraryImplementation"}, {"name": "pivot", "classification": "basic", "impl": "libraryImplementation"}, {"name": "getFromParameters", "classification": "basic", "impl": "libraryImplementation"}, {"name": "mustacheStringTemplate", "classification": "basic", "impl": "libraryImplementation"}, {"name": "getObjectEntries", "classification": "basic", "impl": "libraryImplementation"}, {"name": "syncExternalServiceSchema", "classification": "admin", "impl": "libraryImplementation"}, {"name": "sortList", "classification": "basic", "impl": "libraryImplementation"}, {"name": "accessDynamicPath", "classification": "basic", "impl": "libraryImplementation"}, {"name": "getActiveDeployment", "classification": "admin", "impl": "libraryImplementation"}, {"name": "unfoldSchemaOnce", "classification": "MLS", "impl": "libraryImplementation"}, {"name": "listLength", "classification": "basic", "impl": "libraryImplementation"}, {"name": "currentTimestamp", "classification": "basic", "impl": "libraryImplementation"}, {"name": "getFromContext", "classification": "basic", "impl": "libraryImplementation"}, {"name": "unpivot", "classification": "basic", "impl": "libraryImplementation"}, {"name": "spreadSheetToMlSchema", "classification": "spreadsheet", "impl": "transformer"}, {"name": "duplicateApplicationModel", "classification": "admin", "impl": "libraryImplementation"}, {"name": "resolveTransformerResultSchema", "classification": "MLS", "impl": "libraryImplementation"}, {"name": "createObject", "classification": "basic", "impl": "libraryImplementation"}, {"name": "currentDate", "classification": "basic", "impl": "libraryImplementation"}, {"name": "dataflowObject", "classification": "basic", "impl": "libraryImplementation"}], "examples": [{"id": "spreadsheet", "kind": "define", "title": "spreadSheetToMlSchema", "source": "miroir-app-miroir \u00b7 TransformerDefinition e44300e8", "classification": "spreadsheet", "params": ["spreadsheetContents"], "value": {"transformerType": "dataflowObject", "interpolation": "runtime", "target": "schema", "definition": {"firstLine": {"transformerType": "pickFromList", "interpolation": "runtime", "applyTo": {"transformerType": "getFromContext", "interpolation": "runtime", "referenceName": "spreadsheetContents"}, "index": 0}, "attributeNames": {"transformerType": "getObjectValues", "interpolation": "runtime", "applyTo": {"transformerType": "getFromContext", "interpolation": "runtime", "referencePath": ["firstLine"]}}, "splitAttributeDefinitions": {"transformerType": "mapList", "interpolation": "runtime", "applyTo": {"transformerType": "getFromContext", "interpolation": "runtime", "referencePath": ["attributeNames"]}, "referenceToOuterObject": "attributeName", "elementTransformer": {"transformerType": "createObjectFromPairs", "interpolation": "runtime", "applyTo": {"transformerType": "getFromContext", "interpolation": "runtime", "referencePath": ["attributeName"]}, "referenceToOuterObject": "attributeName", "definition": [{"attributeKey": {"transformerType": "getFromContext", "interpolation": "runtime", "referencePath": ["attributeName"]}, "attributeValue": {"transformerType": "returnValue", "value": {"type": "string", "optional": true}}}]}}, "mergedAttributeDefinitions": {"transformerType": "listReducerToSpreadObject", "interpolation": "runtime", "applyTo": {"transformerType": "getFromContext", "interpolation": "runtime", "referencePath": ["splitAttributeDefinitions"]}}, "completeAttributeDefinitions": {"transformerType": "mergeIntoObject", "interpolation": "runtime", "applyTo": {"transformerType": "getFromContext", "interpolation": "runtime", "referenceName": "mergedAttributeDefinitions"}, "referenceToOuterObject": "mergedAttributeDefinitions", "definition": {"transformerType": "returnValue", "mlSchema": {"type": "record", "definition": {"type": "any"}}, "value": {"uuid": {"type": "string", "validations": [{"type": "uuid"}], "tag": {"id": 1, "defaultLabel": "Uuid", "editable": false}}, "parentName": {"type": "string", "optional": true, "tag": {"id": 2, "defaultLabel": "Uuid", "editable": false}}, "parentUuid": {"type": "string", "validations": [{"type": "uuid"}], "tag": {"id": 3, "defaultLabel": "parentUuid", "editable": false}}}}}, "schema": {"transformerType": "createObject", "interpolation": "runtime", "definition": {"type": {"transformerType": "returnValue", "value": "object"}, "definition": {"transformerType": "getFromContext", "interpolation": "runtime", "referencePath": ["completeAttributeDefinitions"]}}}}}, "description": "Transform the contents of a spreadsheet into a ML schema"}, {"id": "extract", "kind": "define", "title": "entityDefinition_extractAttributes", "source": "miroir-app-miroir \u00b7 TransformerDefinition 1bbed895", "classification": "metaModel", "params": ["entityDefinition", "attributeNames"], "value": {"transformerType": "filterList", "applyTo": {"transformerType": "getObjectEntries", "interpolation": "runtime", "applyTo": {"transformerType": "getFromContext", "interpolation": "runtime", "referencePath": ["entityDefinition", "mlSchema", "definition"]}}, "referenceToOuterObject": "attribute", "predicate": {"transformerType": "boolExpr", "interpolation": "runtime", "operator": "isNotNull", "left": {"transformerType": "find", "interpolation": "runtime", "applyTo": {"transformerType": "getFromContext", "interpolation": "runtime", "referencePath": ["attributeNames"]}, "referenceToOuterObject": "attributeName", "predicate": {"transformerType": "boolExpr", "interpolation": "runtime", "operator": "==", "left": {"transformerType": "getFromContext", "interpolation": "runtime", "referencePath": ["attribute", "0"]}, "right": {"transformerType": "getFromContext", "interpolation": "runtime", "referencePath": ["attributeName"]}}}}}, "description": null}, {"id": "runner", "kind": "runner", "title": "Create Entity", "name": "createEntity", "source": "miroir-app-miroir \u00b7 Runner 82f81a25", "formFields": ["application", "addDefaultReports", "addMenuLink", "entity"], "initialFormValues": {"transformerType": "dataflowObject", "target": "result", "definition": {"entityUuid": {"transformerType": "generateUuid"}, "result": {"transformerType": "createObject", "definition": {"application": "31f3a03a-f150-416d-9315-d3a752cb4eb4", "entity": {"transformerType": "createObject", "definition": {"uuid": {"transformerType": "getFromContext", "interpolation": "runtime", "referencePath": ["entityUuid"]}, "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad", "parentName": "Entity", "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd", "name": "", "mlSchema": {"transformerType": "createObject", "definition": {"type": "object", "definition": {"uuid": {"transformerType": "createObject", "definition": {"type": "uuid", "tag": {"transformerType": "createObject", "definition": {"value": {"id": 1, "defaultLabel": "Uuid", "display": {"editable": false}}}}}}, "parentName": {"transformerType": "createObject", "definition": {"type": "string", "optional": true, "tag": {"value": {"id": 2, "defaultLabel": "Entity Name", "display": {"editable": false}}}}}, "parentUuid": {"transformerType": "createObject", "definition": {"type": "uuid", "tag": {"value": {"id": 3, "defaultLabel": "Entity Uuid", "display": {"editable": false}}}}}, "parentDefinitionVersionUuid": {"transformerType": "createObject", "definition": {"type": "uuid", "optional": true, "tag": {"value": {"id": 4, "defaultLabel": "Entity Definition Version Uuid", "display": {"editable": false}}}}}, "name": {"transformerType": "createObject", "definition": {"type": "string", "tag": {"value": {"defaultLabel": "Name", "display": {"editable": true}}}}}}}}}}, "addDefaultReports": true, "addMenuLink": true}}}}, "value": {"actionType": "compositeActionSequence", "actionLabel": "createEntitySequence", "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5", "payload": {"templates": {"listReportUuid": {"transformerType": "generateUuid"}, "detailsReportUuid": {"transformerType": "generateUuid"}}, "actionSequence": [{"actionType": "compositeRunBoxedQueryAction", "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5", "actionLabel": "getMenusForMenuLink", "nameGivenToResult": "menuQueryResult", "payload": {"actionType": "runBoxedQueryAction", "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e", "payload": {"application": {"transformerType": "getFromParameters", "referencePath": ["createEntity", "application"]}, "applicationSection": "model", "query": {"queryType": "boxedQueryWithExtractorCombinerTransformer", "application": {"transformerType": "getFromParameters", "referencePath": ["createEntity", "application"]}, "pageParams": {"currentDeploymentUuid": {"transformerType": "getFromParameters", "interpolation": "build", "referenceName": "testApplicationDeploymentUuid"}}, "extractors": {"menuList": {"extractorOrCombinerType": "extractorInstancesByEntity", "applicationSection": "model", "parentName": "Menu", "parentUuid": "dde4c883-ae6d-47c3-b6df-26bc6e3c1842"}}}}}}, {"actionType": "createEntity", "actionLabel": "Create Entity", "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e", "payload": {"application": {"transformerType": "mustacheStringTemplate", "definition": "{{createEntity.application}}"}, "entities": [{"transformerType": "getFromParameters", "referencePath": ["createEntity", "entity"]}]}}, {"actionType": "createInstance", "actionLabel": "createDefaultReports", "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89", "payload": {"application": {"transformerType": "getFromParameters", "referencePath": ["createEntity", "application"]}, "applicationSection": "model", "objects": {"transformerType": "ifThenElse", "if": {"transformerType": "boolExpr", "operator": "==", "left": {"transformerType": "getFromParameters", "referencePath": ["createEntity", "addDefaultReports"]}, "right": true}, "then": [{"uuid": {"transformerType": "getFromContext", "interpolation": "runtime", "referencePath": ["listReportUuid"]}, "selfApplication": {"transformerType": "getFromParameters", "referencePath": ["createEntity", "application"]}, "parentName": "Report", "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916", "conceptLevel": "Model", "name": {"transformerType": "mustacheStringTemplate", "definition": "{{createEntity.entity.name}}List"}, "defaultLabel": {"transformerType": "mustacheStringTemplate", "definition": "List of {{createEntity.entity.name}}s"}, "definition": {"extractors": {"instanceList": {"extractorOrCombinerType": "extractorInstancesByEntity", "parentName": {"transformerType": "getFromParameters", "referencePath": ["createEntity", "entity", "name"]}, "parentUuid": {"transformerType": "getFromParameters", "referencePath": ["createEntity", "entity", "uuid"]}}}, "section": {"type": "list", "definition": [{"type": "objectListReportSection", "definition": {"parentName": {"transformerType": "getFromParameters", "referencePath": ["createEntity", "entity", "name"]}, "parentUuid": {"transformerType": "getFromParameters", "referencePath": ["createEntity", "entity", "uuid"]}, "fetchedDataReference": "instanceList", "sortByAttribute": "name"}}]}}}, {"uuid": {"transformerType": "getFromContext", "interpolation": "runtime", "referencePath": ["detailsReportUuid"]}, "selfApplication": {"transformerType": "getFromParameters", "referencePath": ["createEntity", "application"]}, "parentName": "Report", "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916", "conceptLevel": "Model", "name": {"transformerType": "mustacheStringTemplate", "definition": "{{createEntity.entity.name}}Details"}, "defaultLabel": {"transformerType": "mustacheStringTemplate", "definition": "Details of {{createEntity.entity.name}}"}, "definition": {"extractorTemplates": {"instance": {"extractorOrCombinerType": "extractorByPrimaryKey", "parentName": {"transformerType": "getFromParameters", "referencePath": ["createEntity", "entity", "name"]}, "parentUuid": {"transformerType": "getFromParameters", "referencePath": ["createEntity", "entity", "uuid"]}, "instanceUuid": {"transformerType": "returnValue", "interpolation": "runtime", "value": {"transformerType": "getFromParameters", "referenceName": "instanceUuid"}}}}, "section": {"type": "list", "definition": [{"type": "objectInstanceReportSection", "definition": {"parentUuid": {"transformerType": "getFromParameters", "referencePath": ["createEntity", "entity", "uuid"]}, "fetchedDataReference": "instance"}}]}}}], "else": []}}}, {"actionType": "updateInstance", "actionLabel": "updateMenuWithEntityLink", "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89", "payload": {"application": {"transformerType": "getFromParameters", "referencePath": ["createEntity", "application"]}, "applicationSection": "model", "objects": {"transformerType": "dataflowObject", "interpolation": "runtime", "target": "99_result", "definition": {"00_firstMenu": {"transformerType": "ifThenElse", "label": "00_firstMenu Check if addMenuLink is true and if there is at least one menu to add the link to", "if": {"transformerType": "boolExpr", "operator": "&&", "args": [{"transformerType": "boolExpr", "operator": "==", "left": {"transformerType": "getFromParameters", "referencePath": ["createEntity", "addMenuLink"]}, "right": true}, {"transformerType": "boolExpr", "operator": ">", "left": {"transformerType": "aggregate", "interpolation": "runtime", "applyTo": {"transformerType": "ifThenElse", "interpolation": "runtime", "if": {"transformerType": "boolExpr", "operator": "==", "left": {"transformerType": "getFromContext", "interpolation": "runtime", "referencePath": ["menuQueryResult", "menuList"]}, "right": null}, "then": [], "else": {"transformerType": "getFromContext", "interpolation": "runtime", "referencePath": ["menuQueryResult", "menuList"]}}}, "right": 0}]}, "then": {"transformerType": "pickFromList", "interpolation": "runtime", "applyTo": {"transformerType": "getFromContext", "interpolation": "runtime", "referencePath": ["menuQueryResult", "menuList"]}, "index": 0}, "else": null}, "01_newMenuItem": {"transformerType": "ifThenElse", "if": {"transformerType": "boolExpr", "operator": "&&", "args": [{"transformerType": "getFromParameters", "referencePath": ["createEntity", "addMenuLink"]}, {"operator": "!=", "left": {"transformerType": "getFromContext", "interpolation": "runtime", "referenceName": "00_firstMenu"}, "right": {"transformerType": "returnValue", "value": null}}]}, "then": {"transformerType": "createObject", "definition": {"miroirMenuItemType": "miroirMenuReportLink", "label": {"transformerType": "mustacheStringTemplate", "definition": "{{createEntity.entity.name}} List"}, "section": "data", "selfApplication": {"transformerType": "getFromParameters", "referencePath": ["createEntity", "application"]}, "reportUuid": {"transformerType": "getFromContext", "interpolation": "runtime", "referenceName": "listReportUuid"}, "icon": "category", "menuItemScope": "data"}}, "else": null}, "02_updatedMenu": {"transformerType": "ifThenElse", "label": "02_updatedMenu", "if": {"transformerType": "boolExpr", "operator": "!=", "left": {"transformerType": "getFromContext", "interpolation": "runtime", "referenceName": "00_firstMenu"}, "right": {"transformerType": "returnValue", "value": null}}, "then": {"transformerType": "transformer_menu_addItem", "interpolation": "runtime", "menuItemReference": {"transformerType": "getFromContext", "interpolation": "runtime", "referenceName": "01_newMenuItem"}, "menuReference": {"transformerType": "getFromContext", "interpolation": "runtime", "referenceName": "00_firstMenu"}, "menuSectionItemInsertionIndex": -1}, "else": null}, "99_result": {"transformerType": "ifThenElse", "if": {"transformerType": "boolExpr", "operator": "!=", "left": {"transformerType": "getFromContext", "interpolation": "runtime", "referencePath": ["02_updatedMenu"]}, "right": {"transformerType": "returnValue", "value": null}}, "then": [{"transformerType": "getFromContext", "interpolation": "runtime", "referencePath": ["02_updatedMenu"]}], "else": []}}}}}, {"actionType": "updateInstance", "actionLabel": "updateEntityWithDetailsReportUuid", "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89", "payload": {"application": {"transformerType": "getFromParameters", "referencePath": ["createEntity", "application"]}, "applicationSection": "model", "objects": {"transformerType": "ifThenElse", "if": {"transformerType": "boolExpr", "operator": "==", "left": {"transformerType": "getFromParameters", "referencePath": ["createEntity", "addDefaultReports"]}, "right": true}, "then": [{"transformerType": "mergeIntoObject", "interpolation": "runtime", "applyTo": {"transformerType": "getFromParameters", "referencePath": ["createEntity", "entity"]}, "definition": {"defaultInstanceDetailsReportUuid": {"transformerType": "getFromContext", "interpolation": "runtime", "referencePath": ["detailsReportUuid"]}}}], "else": []}}}, {"actionType": "commit", "actionLabel": "commit", "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e", "payload": {"application": {"transformerType": "mustacheStringTemplate", "definition": "{{createEntity.application}}"}}}]}}}]}</script>
+<script>
+(function () {
+  const data = JSON.parse(document.getElementById("data").textContent);
+  const CAT = {
+    list: ["mapList","filterList","find","sortList","concatLists","listLength","pickFromList","indexListBy","getUniqueValues","aggregate","listReducerToSpreadObject","pivot","unpivot"],
+    object: ["createObject","createObjectFromPairs","mergeIntoObject","getObjectEntries","getObjectValues","object_fromEntries","accessDynamicPath"],
+    control: ["ifThenElse","case","boolExpr","dataflowObject"],
+    value: ["mustacheStringTemplate","stringOp","numericOp","plus","generateUuid","currentDate","currentTimestamp","returnValue","constantAsExtractor","transformer_menu_addItem"],
+    ctx: ["getFromContext"],
+    param: ["getFromParameters"],
+  };
+  const CAT_LABEL = { list: "Lists", object: "Objects", control: "Control", value: "Values", ctx: "Context variables", param: "Parameters", mls: "MLS", admin: "admin", sheet: "spreadsheet", meta: "metaModel" };
+  const CLASS_TO_CAT = { MLS: "mls", admin: "admin", spreadsheet: "sheet", metaModel: "meta" };
+  const ENDPOINT_CAT = { InstanceEndpoint: "instance", ModelEndpoint: "model", StoreManagementEndpoint: "store", DomainEndpoint: "domain", QueryEndpoint: "query" };
+  const typeCat = {};
+  for (const [cat, names] of Object.entries(CAT)) for (const n of names) typeCat[n] = cat;
+  for (const d of data.definitions) if (!typeCat[d.name]) typeCat[d.name] = CLASS_TO_CAT[d.classification] || "other";
+  const colorOf = (cat) => `var(--c-${cat})`;
+  const HIDDEN = new Set(["transformerType", "interpolation", "label"]);
+  const BINDERS = new Set(["referenceToOuterObject"]);
+
+  function el(tag, cls, text) { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+  const isObj = (v) => v !== null && typeof v === "object" && !Array.isArray(v);
+  const isPrim = (v) => v === null || ["string","number","boolean"].includes(typeof v);
+  const isTransformer = (v) => isObj(v) && typeof v.transformerType === "string";
+  const isAction = (v) => isObj(v) && typeof v.actionType === "string";
+  const isBuild = (v) => (v.interpolation ?? "build") === "build";
+  const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+  function field(v) {
+    if (typeof v === "boolean") return el("span", "fld bool", String(v));
+    if (typeof v === "number") return el("span", "fld num", String(v));
+    if (v === null) return el("span", "fld", "null");
+    const s = String(v);
+    if (UUID.test(s)) { const f = el("span", "fld", s.slice(0, 8) + "…"); f.title = s; return f; }
+    const f = el("span", "fld");
+    f.title = s;
+    const parts = s.split(/(\{\{[^}]*\}\})/);
+    for (const p of parts) {
+      if (/^\{\{.*\}\}$/.test(p)) f.appendChild(el("span", "mu", p)); else if (p) f.appendChild(document.createTextNode(p));
+    }
+    if (!s) f.textContent = " ";
+    return f;
+  }
+
+  function buildMark(head) { head.appendChild(el("span", "imark", "build")); }
+
+  function toggle(blk, startCollapsed, count) {
+    const b = el("button", "tog");
+    b.type = "button";
+    const more = el("span", "more", `${count} ${count === 1 ? "slot" : "slots"} hidden`);
+    const set = (c) => { blk.classList.toggle("collapsed", c); b.textContent = c ? "▸" : "▾"; b.setAttribute("aria-expanded", String(!c)); b.setAttribute("aria-label", c ? "Expand block" : "Collapse block"); more.hidden = !c; };
+    b.addEventListener("click", () => set(!blk.classList.contains("collapsed")));
+    blk._setCollapsed = set;
+    set(startCollapsed);
+    return [b, more];
+  }
+
+  function variable(kind, name, path, marked, decl) {
+    const v = el("span", "var" + (kind === "param" ? " param" : "") + (marked ? " bm" : "") + (decl ? " decl" : ""));
+    const segs = path && path.length ? path.map(String) : [name];
+    segs.forEach((s, i) => { if (i) v.appendChild(el("span", "sep", "›")); v.appendChild(document.createTextNode(s)); });
+    if (marked) v.appendChild(el("span", "imark", "build"));
+    return v;
+  }
+
+  function block(opts) {
+    // opts: cat, name, sub, marked, literal, cmd, hat, headExtras[], rows[[labelNode|string, contentNode]], collapse
+    const b = el("div", "blk" + (opts.literal ? " literal" : "") + (opts.cmd ? " cmd" : "") + (opts.hat ? " hat" : "") + (opts.marked ? " bm" : ""));
+    if (opts.cat) b.style.setProperty("--c", colorOf(opts.cat));
+    const head = el("div", "blk-head");
+    b.appendChild(head);
+    const rows = opts.rows || [];
+    let more = null;
+    if (rows.length) { const [t, m] = toggle(b, !!opts.collapse, rows.length); head.appendChild(t); more = m; }
+    else b.classList.add("leaf");
+    if (opts.name) head.appendChild(el("span", "blk-name", opts.name));
+    if (opts.sub) head.appendChild(el("span", "blk-sub", opts.sub));
+    for (const x of opts.headExtras || []) head.appendChild(x);
+    if (more) head.appendChild(more);
+    if (opts.marked) buildMark(head);
+    if (rows.length) {
+      const body = el("div", "blk-body");
+      for (const [label, content] of rows) {
+        const r = el("div", "slot");
+        if (label instanceof Node) { const l = el("div", "slot-label as-var"); l.appendChild(label); r.appendChild(l); }
+        else if (label != null) r.appendChild(el("div", "slot-label", label));
+        const c = el("div", "slot-content"); c.appendChild(content); r.appendChild(c);
+        body.appendChild(r);
+      }
+      b.appendChild(body);
+    }
+    return b;
+  }
+
+  function kw(text) { return el("span", "kw", text); }
+
+  function render(v, depth) {
+    if (isTransformer(v)) return renderTransformer(v, depth);
+    if (isAction(v)) return renderAction(v, depth);
+    if (Array.isArray(v)) {
+      return block({ literal: true, name: "list", sub: `${v.length} ${v.length === 1 ? "item" : "items"}`, rows: v.map((x, i) => [String(i + 1), render(x, depth + 1)]), collapse: v.length > 3 });
+    }
+    if (isObj(v)) {
+      const entries = Object.entries(v);
+      const extras = [], rows = [];
+      for (const [k, x] of entries) {
+        if (isPrim(x) && entries.length <= 3) { extras.push(kw(k), field(x)); continue; }
+        rows.push([k, isPrim(x) ? field(x) : render(x, depth + 1)]);
+      }
+      return block({ literal: true, name: "object", headExtras: extras, rows, collapse: entries.length > 3 });
+    }
+    return field(v);
+  }
+
+  function renderTransformer(t, depth) {
+    const type = t.transformerType;
+    const marked = isBuild(t);
+    if (type === "getFromContext" || type === "getFromParameters") {
+      const path = t.referencePath || (t.referenceName ? [t.referenceName] : []);
+      return variable(type === "getFromParameters" ? "param" : "ctx", t.referenceName, path, marked, false);
+    }
+    const extras = [], rows = [];
+    for (const [k, x] of Object.entries(t)) {
+      if (HIDDEN.has(k)) continue;
+      if (BINDERS.has(k)) { extras.push(kw("as"), variable("ctx", x, null, false, true)); continue; }
+      if (k === "mlSchema") { extras.push(el("span", "chip", "ML schema · " + (x && x.type ? x.type : "…"))); continue; }
+      if (type === "dataflowObject" && k === "definition" && isObj(x)) {
+        for (const [step, sv] of Object.entries(x)) rows.push([variable("ctx", step, null, false, true), render(sv, depth + 1)]);
+        continue;
+      }
+      if (type === "createObject" && k === "definition" && isObj(x)) {
+        for (const [key, sv] of Object.entries(x)) rows.push([key, isPrim(sv) ? field(sv) : render(sv, depth + 1)]);
+        continue;
+      }
+      if (isPrim(x)) { extras.push(kw(k), k === "operator" || k === "target" ? Object.assign(field(x), { className: "fld enum" }) : field(x)); continue; }
+      rows.push([k, render(x, depth + 1)]);
+    }
+    const collapse = (type === "createObject" && rows.length > 5) || depth > 9;
+    return block({ cat: typeCat[type] || "other", name: type, marked, headExtras: extras, rows, collapse });
+  }
+
+  function endpointCat(a) {
+    const ep = data.endpoints[a.endpoint] || data.actionEndpoint[a.actionType];
+    return [ENDPOINT_CAT[ep] || "other", ep || "?"];
+  }
+
+  function renderAction(a, depth) {
+    const [cat, epName] = endpointCat(a);
+    const extras = [];
+    if (a.actionLabel && a.actionLabel !== a.actionType) extras.push(el("span", "blk-sub", "“" + a.actionLabel + "”"));
+    extras.push(el("span", "chip", epName));
+    if (a.nameGivenToResult) extras.push(kw("result as"), variable("ctx", a.nameGivenToResult, null, false, true));
+    const rows = [];
+    let payload = a.payload || {};
+    if (a.actionType === "compositeRunBoxedQueryAction" && isObj(payload.payload)) payload = payload.payload;
+    for (const [k, x] of Object.entries(payload)) {
+      if (k === "query" && isObj(x)) {
+        const ex = Object.keys(x.extractors || {}).join(", ");
+        const q = block({ cat: "query", name: "query", headExtras: [el("span", "chip", x.queryType || "query"), kw("extractors"), field(ex || "none")] });
+        q.title = "Queries stay one block, edited with the form or JSON view (round 1, decision 10)";
+        rows.push([k, q]);
+        continue;
+      }
+      if (isPrim(x)) { rows.push([k, field(x)]); continue; }
+      rows.push([k, render(x, depth + 1)]);
+    }
+    return block({ cat, name: a.actionType, cmd: true, headExtras: extras, rows, collapse: depth > 0 && rows.length > 4 });
+  }
+
+  function defineBlock(ex) {
+    const cat = CLASS_TO_CAT[ex.classification] || "other";
+    const extras = [];
+    for (const p of ex.params) extras.push(variable("ctx", p, null, false, true));
+    const b = block({ cat, hat: true, name: "define " + ex.title, headExtras: extras, rows: [["returns", render(ex.value, 1)]] });
+    return b;
+  }
+
+  function runnerProgram(ex) {
+    const stack = el("div", "stack");
+    const pills = ex.formFields.map((f) => variable("param", null, [ex.name, f], false, true));
+    const hat = block({ cat: "domain", hat: true, name: "when “" + ex.title + "” runs", headExtras: [kw("form"), ...pills] });
+    hat.classList.add("cmdhat");
+    stack.appendChild(hat);
+    const seq = ex.value;
+    const templates = (seq.payload && seq.payload.templates) || {};
+    for (const [name, t] of Object.entries(templates)) {
+      const b = block({ cat: "ctx", cmd: true, name: "set", headExtras: [variable("ctx", name, null, false, true), kw("to"), render(t, 2)] });
+      stack.appendChild(b);
+    }
+    const actions = (seq.payload && seq.payload.actionSequence) || [];
+    actions.forEach((a) => stack.appendChild(renderAction(a, 1)));
+    const all = stack.querySelectorAll(":scope > .blk.cmd");
+    if (all.length) all[all.length - 1].classList.add("last");
+    return stack;
+  }
+
+  function setAll(root, collapsed) { root.querySelectorAll(".blk").forEach((b) => b._setCollapsed && b._setCollapsed(collapsed)); }
+
+  const exRoot = document.getElementById("examples");
+  for (const ex of data.examples) {
+    const s = el("section", "example");
+    s.id = ex.id;
+    const head = el("div", "ex-head");
+    const left = el("div");
+    left.appendChild(el("h2", null, ex.kind === "runner" ? `Runner “${ex.title}”` : ex.title));
+    const desc = ex.kind === "runner"
+      ? `${ex.source}. A custom Runner: its form, two templates and a sequence of six actions.`
+      : `${ex.source}. A composite TransformerDefinition shown as a define block.`;
+    left.appendChild(el("p", null, desc));
+    head.appendChild(left);
+    const tools = el("div", "ex-tools");
+    const tabs = el("div", "tabs"); tabs.setAttribute("role", "tablist");
+    const views = {};
+    const canvas = el("div", "canvas");
+    canvas.appendChild(ex.kind === "runner" ? runnerProgram(ex) : defineBlock(ex));
+    views.Blocks = canvas;
+    views.Form = el("div", "formview", "The Form view is the existing value editor, unchanged. The Blocks, Form and JSON views edit the same value.");
+    const pre = el("pre", "jsonview"); pre.textContent = JSON.stringify(ex.value, null, 2); views.JSON = pre;
+    const holder = el("div");
+    for (const name of ["Blocks", "Form", "JSON"]) {
+      const b = el("button", null, name); b.type = "button"; b.setAttribute("role", "tab"); b.id = `${ex.id}-tab-${name}`;
+      b.addEventListener("click", () => {
+        tabs.querySelectorAll("button").forEach((x) => x.setAttribute("aria-selected", String(x === b)));
+        holder.replaceChildren(views[name]);
+        expand.hidden = collapse.hidden = name !== "Blocks";
+      });
+      b.setAttribute("aria-selected", String(name === "Blocks"));
+      tabs.appendChild(b);
+    }
+    const expand = el("button", "tool", "Expand all"); expand.type = "button"; expand.addEventListener("click", () => setAll(canvas, false));
+    const collapse = el("button", "tool", "Collapse all"); collapse.type = "button"; collapse.addEventListener("click", () => setAll(canvas, true));
+    tools.append(tabs, expand, collapse);
+    head.appendChild(tools);
+    s.append(head, holder);
+    holder.appendChild(canvas);
+    exRoot.appendChild(s);
+  }
+
+  // Palette
+  const pal = document.getElementById("palette");
+  const groups = {};
+  for (const d of data.definitions) { const c = typeCat[d.name] || "other"; (groups[c] = groups[c] || []).push(d.name); }
+  const order = ["control","list","object","value","ctx","param","mls","sheet","meta","admin","other"];
+  for (const c of order) {
+    if (!groups[c]) continue;
+    const g = el("div", "pal-group"); g.style.setProperty("--c", colorOf(c));
+    const h = el("div", "pal-head"); h.append(el("span", "swatch"), el("span", null, `${CAT_LABEL[c] || c} (${groups[c].length})`));
+    const bl = el("div", "pal-blocks"); groups[c].sort().forEach((n) => bl.appendChild(el("span", null, n)));
+    g.append(h, bl); pal.appendChild(g);
+  }
+  const byEp = {};
+  for (const [act, ep] of Object.entries(data.actionEndpoint)) (byEp[ep] = byEp[ep] || []).push(act);
+  for (const ep of ["InstanceEndpoint","ModelEndpoint","StoreManagementEndpoint","DomainEndpoint","QueryEndpoint"]) {
+    if (!byEp[ep]) continue;
+    const c = ENDPOINT_CAT[ep];
+    const g = el("div", "pal-group"); g.style.setProperty("--c", colorOf(c));
+    const h = el("div", "pal-head"); h.append(el("span", "swatch"), el("span", null, `${ep} (${byEp[ep].length})`));
+    const bl = el("div", "pal-blocks"); byEp[ep].forEach((n) => bl.appendChild(el("span", null, n)));
+    g.append(h, bl); pal.appendChild(g);
+  }
+
+  // Legend
+  const legend = document.getElementById("legend");
+  const li = (node, text) => { const s = el("span", "item"); s.append(node, document.createTextNode(text)); legend.appendChild(s); };
+  li(variable("ctx", "name", null, false, false), "context variable");
+  li(variable("param", "name", null, false, false), "parameter");
+  li(variable("ctx", "name", null, false, true), "declares a name");
+  const lit = el("span", "fld", "text"); li(lit, "inline value");
+
+  // Runtime style switch
+  const app = document.getElementById("app");
+  const bd = document.getElementById("rt-dash"), bm = document.getElementById("rt-marker");
+  const setRt = (m) => { app.dataset.mark = m; bd.setAttribute("aria-pressed", String(m === "dash")); bm.setAttribute("aria-pressed", String(m === "marker")); try { localStorage.setItem("rt", m); } catch (e) {} };
+  bd.addEventListener("click", () => setRt("dash"));
+  bm.addEventListener("click", () => setRt("marker"));
+  try { const m = localStorage.getItem("rt"); if (m === "dash" || m === "marker") setRt(m); } catch (e) {}
+})();
+</script>
