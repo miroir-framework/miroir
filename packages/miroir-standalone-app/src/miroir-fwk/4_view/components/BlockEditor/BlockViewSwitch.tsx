@@ -48,6 +48,11 @@ export function BlockViewSwitch(props: BlockViewSwitchProps) {
     },
     [setFieldValue, props.formikPath, history],
   );
+  const setTray = modes?.setTray;
+  const changeTray = useCallback(
+    (update: (tray: unknown[]) => unknown[]) => setTray?.(props.formikPath, update),
+    [setTray, props.formikPath],
+  );
   const field = (
     <div data-testid={`block-view-switch:${props.rootLessListKey}`}>
       <div css={css({ display: "flex", alignItems: "center", margin: "2px 0 4px" })}>
@@ -74,6 +79,8 @@ export function BlockViewSwitch(props: BlockViewSwitchProps) {
             rootLessListKey={props.rootLessListKey}
             onCommit={commit}
             undoable={history?.covers(props.formikPath) ?? false}
+            tray={modes?.trayOf(props.formikPath)}
+            onTrayChange={modes ? changeTray : undefined}
           />
         </Suspense>
       ) : (

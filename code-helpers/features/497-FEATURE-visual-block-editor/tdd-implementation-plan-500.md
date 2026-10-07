@@ -201,7 +201,7 @@ Palette panel beside the program, grouped by category, entries `block-palette:<t
 
 ## Slice 4 — Tray: move a block out and back
 
-**Status:** ⬜
+**Status:** ✅
 
 ### 4.1 RED
 
@@ -210,6 +210,14 @@ Move the `applyTo` of a `mapList` to the tray: the slot holds its default, the t
 ### 4.2 GREEN
 
 Tray state in `BlockViewModeProvider`; Move to tray menu entry; tray panel with Place (arms the tray block like a palette entry) and Discard.
+
+### Realization
+
+- `BlockViewModeProvider` keeps a tray per Formik path next to the mode (`trayOf`, `setTray`); `BlockViewSwitch` hands it to the block view, which has no tray without a provider.
+- The armed block is a palette type or a tray index (`ArmedBlock`). An insert target or Replace with puts a tray block as it is (no `keepAttributesOnTypeChange`) and takes it out of the tray. Discard disarms an armed tray block, since the indexes shift.
+- Move to tray (`block-action-tray`) removes the block as Remove does: an optional slot is emptied, a required one gets a runtime `returnValue`. The tray item renders the block read-only (the editing context is cleared around it), with ids under `<root>~tray.<n>`.
+- The case places the `applyTo` block with Replace with on the `elementTransformer` block, since a held slot has no insert target.
+- `ui.blockEditing` 10 of 10 (153 → 155 leaves).
 
 ---
 

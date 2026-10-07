@@ -18,6 +18,7 @@ import {
   pathKey,
   useBlockEditing,
   useBlockEditingValue,
+  type TrayUpdate,
 } from "./BlockEditing.js";
 import { BlockPalette } from "./BlockPalette.js";
 
@@ -35,7 +36,8 @@ import { BlockPalette } from "./BlockPalette.js";
 //
 // #500: with a writer, the view edits the value (BlockEditing.tsx); without one it is read-only.
 // Editing shows the palette, an empty row for every absent optional slot, and insert targets in
-// empty slots and at the end of list and record slots.
+// empty slots and at the end of list and record slots. The tray, below the program, shows the
+// blocks moved out read-only, each with Place and Discard.
 // ################################################################################################
 
 export interface BlockEditorViewProps {
@@ -46,6 +48,10 @@ export interface BlockEditorViewProps {
   onCommit?: (newValue: unknown) => void;
   /** An undo history covers the value: edits act at once (#499). */
   undoable?: boolean;
+  /** The blocks moved out of the value, kept by the caller across remounts. */
+  tray?: unknown[];
+  /** Changes the tray: the view has one. */
+  onTrayChange?: (update: TrayUpdate) => void;
 }
 
 type InitialCollapse = "default" | "collapsed" | "expanded";
@@ -428,12 +434,73 @@ const BlockNodeView = React.memo(function BlockNodeView(props: {
   }
 });
 
+/** The tray: each block moved out, read-only, with Place (arms it) and Discard. */
+function BlockTray(props: { settings: BlockSettings; colors: BlockColors }) {
+  const editing = useBlockEditing();
+  const tray = editing?.tray;
+  const trees = useMemo(() => (tray ?? []).map((block) => transformerBlockTree(block).root), [tray]);
+  if (!editing || !tray || tray.length === 0) {
+    return null;
+  }
+  return (
+    <section
+      data-testid="block-tray"
+      aria-label="Tray"
+      css={css({ borderTop: `1px dashed ${props.colors.border}`, marginTop: "6px", padding: "6px 4px" })}
+    >
+      <div css={css({ fontSize: "12px", color: props.colors.textSecondary, marginBottom: "4px" })}>
+        Tray: blocks moved out of the transformer, not saved
+      </div>
+      <div css={css({ display: "flex", flexWrap: "wrap", gap: "10px", alignItems: "flex-start" })}>
+        {trees.map((root, index) => {
+          const placing = editing.armed?.kind === "tray" && editing.armed.index === index;
+          return (
+            <div
+              key={index}
+              data-testid={`block-tray-item:${index}`}
+              css={css({ display: "flex", flexDirection: "column", gap: "4px", alignItems: "flex-start" })}
+            >
+              {/* read-only: a tray block has no menu nor insert target */}
+              <BlockEditingContext.Provider value={undefined}>
+                <BlockNodeView
+                  node={root}
+                  settings={{ ...props.settings, rootLessListKey: `${props.settings.rootLessListKey}~tray.${index}` }}
+                />
+              </BlockEditingContext.Provider>
+              <span css={css({ display: "flex", gap: "4px" })}>
+                <ToolButton
+                  testId={`block-tray-place:${index}`}
+                  label={placing ? "Click an insert target or Replace with to put this block" : "Place this block"}
+                  colors={props.colors}
+                  pressed={placing}
+                  onClick={() => editing.arm(placing ? undefined : { kind: "tray", index })}
+                >
+                  Place
+                </ToolButton>
+                <ToolButton
+                  testId={`block-tray-discard:${index}`}
+                  label="Discard this block"
+                  colors={props.colors}
+                  onClick={() => editing.discardTrayBlock(index)}
+                >
+                  Discard
+                </ToolButton>
+              </span>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
 function ToolButton(props: {
   testId: string;
   label: string;
   colors: BlockColors;
   onClick: () => void;
   disabled?: boolean;
+  pressed?: boolean;
   children: React.ReactNode;
 }) {
   return (
@@ -443,13 +510,14 @@ function ToolButton(props: {
       aria-label={props.label}
       title={props.label}
       disabled={props.disabled}
+      aria-pressed={props.pressed}
       onClick={props.onClick}
       css={css({
         font: "inherit",
         fontSize: "12px",
         padding: "1px 8px",
         cursor: "pointer",
-        border: `1px solid ${props.colors.border}`,
+        border: props.pressed ? `2px solid ${props.colors.text}` : `1px solid ${props.colors.border}`,
         borderRadius: "4px",
         color: props.colors.text,
         backgroundColor: props.colors.literal,
@@ -463,7 +531,13 @@ function ToolButton(props: {
 export const BlockEditorView = React.memo(function BlockEditorView(props: BlockEditorViewProps) {
   const editable = props.onCommit !== undefined;
   const tree = useMemo(() => transformerBlockTree(props.value, { emptyOptionalSlots: editable }), [props.value, editable]);
-  const editing = useBlockEditingValue(props.value, props.onCommit, props.undoable ?? false);
+  const editing = useBlockEditingValue(
+    props.value,
+    props.onCommit,
+    props.undoable ?? false,
+    props.tray,
+    props.onTrayChange,
+  );
   const colors = useBlockColors();
   const buildMarking = useBlockEditorBuildMarking();
   const [fold, setFold] = useState<{ initialCollapse: InitialCollapse; generation: number }>({
@@ -528,6 +602,7 @@ export const BlockEditorView = React.memo(function BlockEditorView(props: BlockE
             <div css={css({ zoom })}>
               <BlockNodeView key={fold.generation} node={tree.root} settings={settings} />
             </div>
+            <BlockTray settings={settings} colors={colors} />
           </div>
         </div>
       </div>

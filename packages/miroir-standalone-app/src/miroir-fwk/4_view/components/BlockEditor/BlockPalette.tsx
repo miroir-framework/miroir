@@ -45,7 +45,7 @@ export const BlockPalette = React.memo(function BlockPalette(props: {
             <div css={css({ fontSize: "11px", color: props.textSecondary, margin: "2px 0" })}>{group.category}</div>
             <div css={css({ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "3px" })}>
               {group.transformerTypes.map((transformerType) => {
-                const armed = editing.armedType === transformerType;
+                const armed = editing.armed?.kind === "type" && editing.armed.transformerType === transformerType;
                 return (
                   <button
                     key={transformerType}
@@ -53,7 +53,7 @@ export const BlockPalette = React.memo(function BlockPalette(props: {
                     data-testid={`block-palette:${transformerType}`}
                     aria-pressed={armed}
                     title={armed ? `${transformerType}: click an insert target or Replace with` : `Choose ${transformerType}`}
-                    onClick={() => editing.arm(armed ? undefined : transformerType)}
+                    onClick={() => editing.arm(armed ? undefined : { kind: "type", transformerType })}
                     css={css({
                       font: "inherit",
                       fontSize: "12px",

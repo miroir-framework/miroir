@@ -654,6 +654,308 @@
                 "value": "{\n  \"transformerType\": \"case\",\n  \"discriminator\": {\n    \"transformerType\": \"returnValue\",\n    \"value\": 0,\n    \"interpolation\": \"runtime\"\n  },\n  \"whens\": [\n    {\n      \"when\": {\n        \"transformerType\": \"getFromContext\",\n        \"interpolation\": \"runtime\"\n      },\n      \"then\": {\n        \"transformerType\": \"returnValue\",\n        \"value\": \"seize value...\",\n        \"interpolation\": \"runtime\"\n      }\n    }\n  ],\n  \"interpolation\": \"runtime\"\n}"
               }
             ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: a block moved to the tray and placed in another slot",
+            "steps": [
+              {
+                "step": "click",
+                "label": "choose Blocks",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                }
+              },
+              {
+                "step": "click",
+                "label": "arm mapList in the palette",
+                "target": {
+                  "byTestId": "block-palette:mapList"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "mapList is armed",
+                "target": {
+                  "byTestId": "block-palette:mapList"
+                },
+                "attribute": "aria-pressed",
+                "value": "true",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "open the node actions of the root block",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Replace with mapList",
+                "target": {
+                  "byTestId": "block-action-replace"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the root block is mapList",
+                "target": {
+                  "byTestId": "block:transformer"
+                },
+                "attribute": "data-transformer-type",
+                "value": "mapList",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "arm getFromContext",
+                "target": {
+                  "byTestId": "block-palette:getFromContext"
+                }
+              },
+              {
+                "step": "click",
+                "label": "put it in the empty applyTo slot",
+                "target": {
+                  "byTestId": "block-insert:transformer.applyTo"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the applyTo block",
+                "target": {
+                  "byTestId": "block:transformer.applyTo"
+                },
+                "attribute": "data-transformer-type",
+                "value": "getFromContext",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "open the node actions of the applyTo block",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer.applyTo"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Move to tray",
+                "target": {
+                  "byTestId": "block-action-tray"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the tray shows the block",
+                "target": {
+                  "byTestId": "block-tray-item:0"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the optional applyTo slot is empty",
+                "target": {
+                  "byTestId": "block-empty:transformer.applyTo"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "Place the tray block",
+                "target": {
+                  "byTestId": "block-tray-place:0"
+                }
+              },
+              {
+                "step": "click",
+                "label": "open the node actions of the elementTransformer block",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer.elementTransformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Replace with the tray block",
+                "target": {
+                  "byTestId": "block-action-replace"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the tray block took the place",
+                "target": {
+                  "byTestId": "block:transformer.elementTransformer"
+                },
+                "attribute": "data-transformer-type",
+                "value": "getFromContext",
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the tray is empty",
+                "target": {
+                  "byTestId": "block-tray-item:0"
+                },
+                "present": false
+              },
+              {
+                "step": "click",
+                "label": "choose JSON",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:json"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the value",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "timeout": 2000,
+                "value": "{\n  \"transformerType\": \"mapList\",\n  \"elementTransformer\": {\n    \"transformerType\": \"getFromContext\",\n    \"interpolation\": \"runtime\"\n  },\n  \"interpolation\": \"runtime\"\n}"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: the tray survives a switch to JSON, and Discard empties it",
+            "steps": [
+              {
+                "step": "click",
+                "label": "choose Blocks",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                }
+              },
+              {
+                "step": "click",
+                "label": "arm mapList in the palette",
+                "target": {
+                  "byTestId": "block-palette:mapList"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "mapList is armed",
+                "target": {
+                  "byTestId": "block-palette:mapList"
+                },
+                "attribute": "aria-pressed",
+                "value": "true",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "open the node actions of the root block",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Replace with mapList",
+                "target": {
+                  "byTestId": "block-action-replace"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the root block is mapList",
+                "target": {
+                  "byTestId": "block:transformer"
+                },
+                "attribute": "data-transformer-type",
+                "value": "mapList",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "arm getFromContext",
+                "target": {
+                  "byTestId": "block-palette:getFromContext"
+                }
+              },
+              {
+                "step": "click",
+                "label": "put it in the empty applyTo slot",
+                "target": {
+                  "byTestId": "block-insert:transformer.applyTo"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the applyTo block",
+                "target": {
+                  "byTestId": "block:transformer.applyTo"
+                },
+                "attribute": "data-transformer-type",
+                "value": "getFromContext",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "open the node actions of the applyTo block",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer.applyTo"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Move to tray",
+                "target": {
+                  "byTestId": "block-action-tray"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the tray shows the block",
+                "target": {
+                  "byTestId": "block-tray-item:0"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "choose JSON",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:json"
+                }
+              },
+              {
+                "step": "click",
+                "label": "choose Blocks again",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the tray block is still there",
+                "target": {
+                  "byTestId": "block:transformer~tray.0"
+                },
+                "attribute": "data-transformer-type",
+                "value": "getFromContext",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "Discard the tray block",
+                "target": {
+                  "byTestId": "block-tray-discard:0"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the tray is empty",
+                "target": {
+                  "byTestId": "block-tray-item:0"
+                },
+                "present": false
+              }
+            ]
           }
         ]
       }

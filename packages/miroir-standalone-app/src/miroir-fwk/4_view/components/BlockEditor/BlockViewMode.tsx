@@ -4,7 +4,8 @@ import React, { createContext, useCallback, useMemo, useState } from "react";
 // ################################################################################################
 // #498 (analysis #497, D6): which view, Blocks, Form or JSON, shows a transformer field of the
 // value editor. The choice is kept by full Formik path in the provider, not in the field's own
-// state, so it survives folding (a folded object unmounts its children) and reordering.
+// state, so it survives folding (a folded object unmounts its children) and reordering. So does
+// the tray of a field's block view (#500), which a switch to Form or JSON unmounts.
 // The value editor offers the switch only under a provider: in #498 the TransformerEditor's.
 // ################################################################################################
 
@@ -13,7 +14,12 @@ export type BlockViewMode = "blocks" | "form" | "json";
 export interface BlockViewModes {
   modeOf: (formikPath: string) => BlockViewMode;
   setMode: (formikPath: string, mode: BlockViewMode) => void;
+  /** The tray of the field's block view (#500): blocks moved out of the value, not saved. */
+  trayOf: (formikPath: string) => unknown[];
+  setTray: (formikPath: string, update: (tray: unknown[]) => unknown[]) => void;
 }
+
+const EMPTY_TRAY: unknown[] = [];
 
 export const BlockViewModeContext = createContext<BlockViewModes | undefined>(undefined);
 
@@ -24,7 +30,14 @@ export function BlockViewModeProvider(props: { children: React.ReactNode }) {
     (formikPath: string, mode: BlockViewMode) => setModes((current) => ({ ...current, [formikPath]: mode })),
     [],
   );
-  const value = useMemo(() => ({ modeOf, setMode }), [modeOf, setMode]);
+  const [trays, setTrays] = useState<Record<string, unknown[]>>({});
+  const trayOf = useCallback((formikPath: string) => trays[formikPath] ?? EMPTY_TRAY, [trays]);
+  const setTray = useCallback(
+    (formikPath: string, update: (tray: unknown[]) => unknown[]) =>
+      setTrays((current) => ({ ...current, [formikPath]: update(current[formikPath] ?? EMPTY_TRAY) })),
+    [],
+  );
+  const value = useMemo(() => ({ modeOf, setMode, trayOf, setTray }), [modeOf, setMode, trayOf, setTray]);
   return <BlockViewModeContext.Provider value={value}>{props.children}</BlockViewModeContext.Provider>;
 }
 
