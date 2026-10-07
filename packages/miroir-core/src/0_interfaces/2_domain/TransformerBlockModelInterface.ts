@@ -36,6 +36,11 @@ export interface TransformerBlock {
   category: string;
   /** As stored: an absent `interpolation` is evaluated as `build`. */
   interpolation?: "build" | "runtime";
+  /**
+   * The step at which the transformer is actually evaluated (#504, analysis D1): `runtime` when it
+   * is a runtime transformer, under a runtime transformer, or under the `templates` of a sequence.
+   */
+  evaluatedAt: "build" | "runtime";
   parameters: TransformerBlockParameter[];
   rows: TransformerBlockRow[];
 }
@@ -72,18 +77,66 @@ export interface MlSchemaBlock {
   value: unknown;
 }
 
-/** A value the block model cannot shape: a transformer whose type has no TransformerDefinition. */
+/**
+ * A value the block model cannot shape: a transformer whose type has no TransformerDefinition, or
+ * an action whose type has no Endpoint action.
+ */
 export interface JsonBlock {
   kind: "json";
   path: BlockPath;
   value: unknown;
-  reason: "unknownTransformerType";
+  reason: "unknownTransformerType" | "unknownActionType";
 }
 
-export type BlockNode = TransformerBlock | ObjectBlock | ListBlock | LiteralBlock | MlSchemaBlock | JsonBlock;
+/**
+ * #504: a step of an action sequence, a command block: its primitive attributes but `actionType`,
+ * `endpoint` and `actionLabel` in the header, one row per other attribute and per attribute of its
+ * `payload`, those its Endpoint action declares first.
+ */
+export interface ActionBlock {
+  kind: "action";
+  path: BlockPath;
+  actionType: string;
+  /** The `actionLabel` of the step. */
+  label?: string;
+  /** The name of the Endpoint declaring the action. */
+  category: string;
+  parameters: TransformerBlockParameter[];
+  rows: TransformerBlockRow[];
+}
+
+/** #504: a `compositeActionSequence`: an action block holding its templates and its stacked steps. */
+export interface SequenceBlock extends Omit<ActionBlock, "kind"> {
+  kind: "sequence";
+  /** The `templates` of the payload, resolved at step runtime, before the steps. */
+  templates: { key: string; path: BlockPath; node: BlockNode }[];
+  /** The `actionSequence` of the payload. */
+  steps: BlockNode[];
+}
+
+/** #504: the payload of a query step, shown as one collapsed block. */
+export interface QueryBlock {
+  kind: "query";
+  path: BlockPath;
+  queryType?: string;
+  value: unknown;
+}
+
+export type BlockNode =
+  | TransformerBlock
+  | ObjectBlock
+  | ListBlock
+  | LiteralBlock
+  | MlSchemaBlock
+  | JsonBlock
+  | ActionBlock
+  | SequenceBlock
+  | QueryBlock;
 
 export interface BlockTreeStats {
   transformerBlocks: number;
+  /** Action blocks, sequences included. */
+  actionBlocks: number;
   jsonBlocks: number;
   /** Categories of the transformer blocks, sorted, each once. */
   categories: string[];

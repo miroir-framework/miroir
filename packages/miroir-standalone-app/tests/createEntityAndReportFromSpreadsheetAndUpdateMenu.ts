@@ -630,9 +630,10 @@ const createEntityAndReportFromSpreadsheetAndUpdateMenu = {
         "testCompositeActionAssertions": [
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "checkEntities",
             "nameGivenToResult": "checkEntityList",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "checkEntities",
               "definition": {
@@ -672,9 +673,10 @@ const createEntityAndReportFromSpreadsheetAndUpdateMenu = {
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "checkEntityDefinitions",
             "nameGivenToResult": "checkEntityDefinitionList",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "checkEntityDefinitions",
               "definition": {
@@ -723,9 +725,10 @@ const createEntityAndReportFromSpreadsheetAndUpdateMenu = {
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "checkReports",
             "nameGivenToResult": "checkReportList",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "checkReports",
               "definition": {
@@ -746,9 +749,10 @@ const createEntityAndReportFromSpreadsheetAndUpdateMenu = {
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "checkMenus",
             "nameGivenToResult": "checkMenuList",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "checkMenus",
               "definition": {

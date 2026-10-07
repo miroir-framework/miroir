@@ -364,7 +364,7 @@
           },
           {
             "miroirTestType": "functionCallTest",
-            "miroirTestLabel": "a composite action sequence is not a root before its blocks exist",
+            "miroirTestLabel": "a composite action sequence is a root",
             "functionRef": {
               "module": "miroir-core/2_domain/BlockViewFields",
               "export": "isBlockViewRoot"
@@ -388,6 +388,179 @@
                 "typePath": [
                   "ref:rootReport"
                 ]
+              }
+            ],
+            "expectedValue": true
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a composite action template is a root",
+            "functionRef": {
+              "module": "miroir-core/2_domain/BlockViewFields",
+              "export": "isBlockViewRoot"
+            },
+            "arguments": [
+              {
+                "rawSchema": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "compositeActionTemplate"
+                  }
+                },
+                "resolvedSchema": {
+                  "type": "any"
+                },
+                "valuePath": [
+                  "definition",
+                  "actions",
+                  0,
+                  "actionImplementation",
+                  "definition"
+                ],
+                "typePath": [
+                  "ref:endpointDefinition"
+                ]
+              }
+            ],
+            "expectedValue": true
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "an any field the type check resolves to a composite action template is a root",
+            "functionRef": {
+              "module": "miroir-core/2_domain/BlockViewFields",
+              "export": "isBlockViewRoot"
+            },
+            "arguments": [
+              {
+                "rawSchema": {
+                  "type": "any",
+                  "tag": {
+                    "value": {
+                      "defaultLabel": "Composite Action Definition",
+                      "display": {
+                        "editable": true
+                      },
+                      "ifThenElseMMLS": {
+                        "mmlsReference": {
+                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          "relativePath": "compositeActionTemplate"
+                        }
+                      }
+                    }
+                  }
+                },
+                "resolvedSchema": {
+                  "type": "any"
+                },
+                "valuePath": [
+                  "definition",
+                  "actions",
+                  0,
+                  "actionImplementation",
+                  "definition"
+                ],
+                "typePath": [
+                  "ref:endpointDefinition"
+                ]
+              }
+            ],
+            "expectedValue": true
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a sequence inside a sequence is not a root",
+            "functionRef": {
+              "module": "miroir-core/2_domain/BlockViewFields",
+              "export": "isBlockViewRoot"
+            },
+            "arguments": [
+              {
+                "rawSchema": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "compositeActionSequence"
+                  }
+                },
+                "resolvedSchema": {
+                  "type": "any"
+                },
+                "valuePath": [
+                  "definition",
+                  "x",
+                  "payload",
+                  "actionSequence",
+                  0
+                ],
+                "typePath": [
+                  "ref:rootReport",
+                  "ref:compositeActionSequenceTemplate",
+                  "payload",
+                  "actionSequence",
+                  0
+                ]
+              }
+            ],
+            "expectedValue": false
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a transformer inside an any field resolved to a sequence is not a root, found through the key map",
+            "functionRef": {
+              "module": "miroir-core/2_domain/BlockViewFields",
+              "export": "isBlockViewRoot"
+            },
+            "arguments": [
+              {
+                "rawSchema": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "coreTransformerForBuildPlusRuntime"
+                  }
+                },
+                "resolvedSchema": {
+                  "type": "any"
+                },
+                "valuePath": [
+                  "implementation",
+                  "payload",
+                  "application"
+                ],
+                "typePath": [
+                  "payload",
+                  "application"
+                ]
+              },
+              {
+                "implementation": {
+                  "rawSchema": {
+                    "type": "any",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Composite Action Definition",
+                        "display": {
+                          "editable": true
+                        },
+                        "ifThenElseMMLS": {
+                          "mmlsReference": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "compositeActionTemplate"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "resolvedSchema": {
+                    "type": "any"
+                  },
+                  "valuePath": [
+                    "implementation"
+                  ],
+                  "typePath": []
+                }
               }
             ],
             "expectedValue": false

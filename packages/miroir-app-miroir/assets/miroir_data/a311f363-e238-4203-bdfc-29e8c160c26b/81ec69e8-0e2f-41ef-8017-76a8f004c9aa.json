@@ -694,9 +694,10 @@
         "testCompositeActionAssertions": [
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "checkNumberOfEntities",
             "nameGivenToResult": "checkNumberOfEntities",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "checkNumberOfEntities",
               "definition": {
@@ -723,9 +724,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "checkEntityList",
             "nameGivenToResult": "checkEntityList",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "checkEntityList",
               "definition": {

@@ -88,7 +88,14 @@ import {
   wrapCandidates,
   wrapTransformerNode,
 } from "../2_domain/TransformerTreeEdit";
-import { transformerBlockOutline, transformerBlockTree, transformerPaletteGroups } from "../2_domain/TransformerBlockModel";
+import {
+  blockOutline,
+  blockTree,
+  transformerBlockOutline,
+  transformerBlockTree,
+  transformerPaletteGroups,
+} from "../2_domain/TransformerBlockModel";
+import { endpointActionRegistryOf, endpointOfActionType } from "../2_domain/EndpointActionRegistry";
 import { transformerSubtreeRuns } from "../2_domain/TransformerSubtreeRun";
 import { transformerDefinitionBodyEnvironment, transformerEnvironmentAt } from "../2_domain/TransformerEnvironmentBindings";
 import { compositeActionEnvironmentAt, runnerEnvironment } from "../2_domain/CompositeActionScope";
@@ -317,7 +324,13 @@ const FUNCTION_CALL_REGISTRY: Record<
   "miroir-core/2_domain/TransformerSubtreeRun": {
     transformerSubtreeRuns: transformerSubtreeRuns as WhitelistedFunction,
   },
+  "miroir-core/2_domain/EndpointActionRegistry": {
+    endpointActionRegistryOf: endpointActionRegistryOf as WhitelistedFunction,
+    endpointOfActionType: endpointOfActionType as WhitelistedFunction,
+  },
   "miroir-core/2_domain/TransformerBlockModel": {
+    blockOutline: blockOutline as WhitelistedFunction,
+    blockTree: blockTree as WhitelistedFunction,
     transformerBlockTree: transformerBlockTree as WhitelistedFunction,
     transformerBlockOutline: transformerBlockOutline as WhitelistedFunction,
     transformerPaletteGroups: transformerPaletteGroups as WhitelistedFunction,

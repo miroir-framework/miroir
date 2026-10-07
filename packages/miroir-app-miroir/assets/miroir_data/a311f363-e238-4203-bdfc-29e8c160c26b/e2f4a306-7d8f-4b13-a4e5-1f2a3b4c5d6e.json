@@ -249,9 +249,10 @@
         "testCompositeActionAssertions": [
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "checkCount",
             "nameGivenToResult": "checkCount",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "checkCount",
               "definition": {
@@ -278,9 +279,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "checkItems",
             "nameGivenToResult": "checkItems",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "checkItems",
               "definition": {
@@ -401,9 +403,10 @@
         "testCompositeActionAssertions": [
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "checkCount",
             "nameGivenToResult": "checkCount",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "checkCount",
               "definition": {
@@ -512,9 +515,10 @@
         "testCompositeActionAssertions": [
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "checkCount",
             "nameGivenToResult": "checkCount",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "checkCount",
               "definition": {
@@ -541,9 +545,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "checkUpdatedItem",
             "nameGivenToResult": "checkUpdatedItem",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "checkUpdatedItem",
               "definition": {
@@ -664,9 +669,10 @@
         "testCompositeActionAssertions": [
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "checkCount",
             "nameGivenToResult": "checkCount",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "checkCount",
               "definition": {
@@ -693,9 +699,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "checkRemainingItems",
             "nameGivenToResult": "checkRemainingItems",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "checkRemainingItems",
               "definition": {

@@ -5,7 +5,7 @@
   "name": "fn.blockModel",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "A transformer value as a tree of Scratch-style blocks: one block per transformer with its primitive parameters in the header, one row per slot or structured parameter, ML schemas as chips and unknown transformers as JSON.",
+  "description": "A transformer value or an action sequence as a tree of Scratch-style blocks: one block per transformer or action, primitive parameters in the header, one row per slot, structured parameter or payload attribute, ML schemas as chips and unknown transformers or actions as JSON.",
   "tags": [
     "unit",
     "transformer"
@@ -114,9 +114,9 @@
               "  discriminator: getFromContext [variable] {runtime} referenceName=\"kind\"",
               "  whens: [list]",
               "    - {object}",
-              "      when: returnValue [value] value=\"a\"",
-              "      then: returnValue [value] value=1",
-              "  else: returnValue [value] value=0"
+              "      when: returnValue [value] @runtime value=\"a\"",
+              "      then: returnValue [value] @runtime value=1",
+              "  else: returnValue [value] @runtime value=0"
             ]
           },
           {
@@ -441,7 +441,7 @@
             ],
             "expectedValue": [
               "aggregate [list] {runtime} function=\"count\" groupBy=\"author\"",
-              "  having: boolExpr [operator] operator=\">\"",
+              "  having: boolExpr [operator] @runtime operator=\">\"",
               "    left: getFromContext [variable] {runtime} referenceName=\"count\"",
               "    right: 1",
               "  applyTo: getFromContext [variable] {runtime} referenceName=\"books\""
@@ -830,6 +830,672 @@
                   "getFromContext"
                 ]
               }
+            ]
+          }
+        ]
+      },
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "action registry",
+        "miroirTests": [
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "createEntity is a ModelEndpoint action",
+            "functionRef": {
+              "module": "miroir-core/2_domain/EndpointActionRegistry",
+              "export": "endpointOfActionType"
+            },
+            "arguments": [
+              {
+                "__miroirEnvironmentRef": "defaultMiroirModelEnvironment"
+              },
+              "createEntity"
+            ],
+            "expectedValue": {
+              "endpointUuid": "7947ae40-eb34-4149-887b-15a9021e714e",
+              "endpointName": "ModelEndpoint"
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "compositeRunTestAssertion is a DomainEndpoint action",
+            "functionRef": {
+              "module": "miroir-core/2_domain/EndpointActionRegistry",
+              "export": "endpointOfActionType"
+            },
+            "arguments": [
+              {
+                "__miroirEnvironmentRef": "defaultMiroirModelEnvironment"
+              },
+              "compositeRunTestAssertion"
+            ],
+            "expectedValue": {
+              "endpointUuid": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+              "endpointName": "DomainEndpoint"
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "an action of an application Endpoint is found",
+            "functionRef": {
+              "module": "miroir-core/2_domain/EndpointActionRegistry",
+              "export": "endpointOfActionType"
+            },
+            "arguments": [
+              {
+                "endpointsByUuid": {},
+                "currentModel": {
+                  "endpoints": [
+                    {
+                      "uuid": "212f2784-5b68-43b2-8ee0-89b1c6fdd0de",
+                      "parentName": "Endpoint",
+                      "parentUuid": "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
+                      "name": "LendingEndpoint",
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "definition": {
+                        "actions": [
+                          {
+                            "actionParameters": {
+                              "actionType": {
+                                "type": "literal",
+                                "definition": "lendDocument"
+                              },
+                              "endpoint": {
+                                "type": "literal",
+                                "definition": "212f2784-5b68-43b2-8ee0-89b1c6fdd0de"
+                              },
+                              "payload": {
+                                "type": "object",
+                                "definition": {
+                                  "document": {
+                                    "type": "string"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              "lendDocument"
+            ],
+            "expectedValue": {
+              "endpointUuid": "212f2784-5b68-43b2-8ee0-89b1c6fdd0de",
+              "endpointName": "LendingEndpoint"
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a Miroir Endpoint wins over an application Endpoint declaring the same action type",
+            "functionRef": {
+              "module": "miroir-core/2_domain/EndpointActionRegistry",
+              "export": "endpointOfActionType"
+            },
+            "arguments": [
+              {
+                "endpointsByUuid": {},
+                "currentModel": {
+                  "endpoints": [
+                    {
+                      "uuid": "212f2784-5b68-43b2-8ee0-89b1c6fdd0de",
+                      "parentName": "Endpoint",
+                      "parentUuid": "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
+                      "name": "LendingEndpoint",
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "definition": {
+                        "actions": [
+                          {
+                            "actionParameters": {
+                              "actionType": {
+                                "type": "literal",
+                                "definition": "createEntity"
+                              },
+                              "endpoint": {
+                                "type": "literal",
+                                "definition": "212f2784-5b68-43b2-8ee0-89b1c6fdd0de"
+                              },
+                              "payload": {
+                                "type": "object",
+                                "definition": {
+                                  "document": {
+                                    "type": "string"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "uuid": "7947ae40-eb34-4149-887b-15a9021e714e",
+                      "parentName": "Endpoint",
+                      "parentUuid": "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
+                      "name": "ModelEndpoint",
+                      "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+                      "definition": {
+                        "actions": [
+                          {
+                            "actionParameters": {
+                              "actionType": {
+                                "type": "literal",
+                                "definition": "createEntity"
+                              },
+                              "endpoint": {
+                                "type": "literal",
+                                "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+                              },
+                              "payload": {
+                                "type": "object",
+                                "definition": {
+                                  "document": {
+                                    "type": "string"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              "createEntity"
+            ],
+            "expectedValue": {
+              "endpointUuid": "7947ae40-eb34-4149-887b-15a9021e714e",
+              "endpointName": "ModelEndpoint"
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "an action type no Endpoint declares has no Endpoint",
+            "functionRef": {
+              "module": "miroir-core/2_domain/EndpointActionRegistry",
+              "export": "endpointOfActionType"
+            },
+            "arguments": [
+              {
+                "__miroirEnvironmentRef": "defaultMiroirModelEnvironment"
+              },
+              "doesNotExist"
+            ],
+            "expectedValue": {
+              "__miroirJsonUndefined": true
+            }
+          }
+        ]
+      },
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "action sequences",
+        "miroirTests": [
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a sequence stacks its steps, each with the rows of its payload",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerBlockModel",
+              "export": "blockOutline"
+            },
+            "arguments": [
+              {
+                "actionType": "compositeActionSequence",
+                "actionLabel": "createBookSequence",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "payload": {
+                  "actionSequence": [
+                    {
+                      "actionType": "createEntity",
+                      "actionLabel": "createBook",
+                      "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                      "payload": {
+                        "application": {
+                          "transformerType": "getFromParameters",
+                          "referencePath": [
+                            "createEntity",
+                            "application"
+                          ]
+                        },
+                        "entities": [
+                          {
+                            "transformerType": "getFromParameters",
+                            "referencePath": [
+                              "createEntity",
+                              "entity"
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "actionType": "createInstance",
+                      "actionLabel": "createBookInstance",
+                      "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                      "payload": {
+                        "application": {
+                          "transformerType": "getFromParameters",
+                          "referencePath": [
+                            "createEntity",
+                            "application"
+                          ]
+                        },
+                        "applicationSection": "data",
+                        "objects": [
+                          {
+                            "uuid": {
+                              "transformerType": "getFromContext",
+                              "interpolation": "runtime",
+                              "referencePath": [
+                                "bookUuid"
+                              ]
+                            },
+                            "name": "Et dans l'éternité je ne m'ennuierai pas"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ],
+            "expectedValue": [
+              "compositeActionSequence [DomainEndpoint] \"createBookSequence\"",
+              "  steps:",
+              "    - createEntity [ModelEndpoint] \"createBook\"",
+              "      application: getFromParameters [variable] referencePath=[\"createEntity\",\"application\"]",
+              "      entities: [list]",
+              "        - getFromParameters [variable] referencePath=[\"createEntity\",\"entity\"]",
+              "    - createInstance [InstanceEndpoint] \"createBookInstance\"",
+              "      application: getFromParameters [variable] referencePath=[\"createEntity\",\"application\"]",
+              "      applicationSection: \"data\"",
+              "      objects: [list]",
+              "        - {object}",
+              "          uuid: getFromContext [variable] {runtime} referencePath=[\"bookUuid\"]",
+              "          name: \"Et dans l'éternité je ne m'ennuierai pas\""
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "the payload of a query step is one query block",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerBlockModel",
+              "export": "blockOutline"
+            },
+            "arguments": [
+              {
+                "actionType": "compositeRunBoxedQueryAction",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "actionLabel": "getBooks",
+                "nameGivenToResult": "books",
+                "payload": {
+                  "actionType": "runBoxedQueryAction",
+                  "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  "payload": {
+                    "application": {
+                      "transformerType": "getFromParameters",
+                      "referencePath": [
+                        "createEntity",
+                        "application"
+                      ]
+                    },
+                    "applicationSection": "data",
+                    "query": {
+                      "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                      "application": {
+                        "transformerType": "getFromParameters",
+                        "referencePath": [
+                          "createEntity",
+                          "application"
+                        ]
+                      },
+                      "pageParams": {},
+                      "queryParams": {},
+                      "contextResults": {},
+                      "extractors": {
+                        "books": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "data",
+                          "parentName": "Book",
+                          "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "expectedValue": [
+              "compositeRunBoxedQueryAction [DomainEndpoint] \"getBooks\" nameGivenToResult=\"books\"",
+              "  payload: <query boxedQueryWithExtractorCombinerTransformer>"
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "an assertion step shows its assertion as payload rows",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerBlockModel",
+              "export": "blockOutline"
+            },
+            "arguments": [
+              {
+                "actionType": "compositeRunTestAssertion",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "actionLabel": "checkBooks",
+                "nameGivenToResult": "checkBooks",
+                "payload": {
+                  "testType": "testAssertion",
+                  "testLabel": "checkBooks",
+                  "definition": {
+                    "resultAccessPath": [
+                      "books",
+                      "books"
+                    ],
+                    "expectedValue": []
+                  }
+                }
+              }
+            ],
+            "expectedValue": [
+              "compositeRunTestAssertion [DomainEndpoint] \"checkBooks\" nameGivenToResult=\"checkBooks\"",
+              "  testType: \"testAssertion\"",
+              "  testLabel: \"checkBooks\"",
+              "  definition: {object}",
+              "    resultAccessPath: [list]",
+              "      - \"books\"",
+              "      - \"books\"",
+              "    expectedValue: [list]"
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "templates are evaluated at runtime, whatever their interpolation",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerBlockModel",
+              "export": "blockOutline"
+            },
+            "arguments": [
+              {
+                "actionType": "compositeActionSequence",
+                "actionLabel": "withTemplates",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "payload": {
+                  "templates": {
+                    "bookUuid": {
+                      "transformerType": "generateUuid"
+                    },
+                    "title": {
+                      "transformerType": "getFromParameters",
+                      "interpolation": "build",
+                      "referencePath": [
+                        "title"
+                      ]
+                    }
+                  },
+                  "actionSequence": [
+                    {
+                      "actionType": "createInstance",
+                      "actionLabel": "createBookInstance",
+                      "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                      "payload": {
+                        "application": {
+                          "transformerType": "getFromParameters",
+                          "referencePath": [
+                            "createEntity",
+                            "application"
+                          ]
+                        },
+                        "applicationSection": "data",
+                        "objects": [
+                          {
+                            "uuid": {
+                              "transformerType": "getFromContext",
+                              "interpolation": "runtime",
+                              "referencePath": [
+                                "bookUuid"
+                              ]
+                            },
+                            "name": "Et dans l'éternité je ne m'ennuierai pas"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ],
+            "expectedValue": [
+              "compositeActionSequence [DomainEndpoint] \"withTemplates\"",
+              "  templates:",
+              "    bookUuid: generateUuid [value] @runtime",
+              "    title: getFromParameters [variable] {build} @runtime referencePath=[\"title\"]",
+              "  steps:",
+              "    - createInstance [InstanceEndpoint] \"createBookInstance\"",
+              "      application: getFromParameters [variable] referencePath=[\"createEntity\",\"application\"]",
+              "      applicationSection: \"data\"",
+              "      objects: [list]",
+              "        - {object}",
+              "          uuid: getFromContext [variable] {runtime} referencePath=[\"bookUuid\"]",
+              "          name: \"Et dans l'éternité je ne m'ennuierai pas\""
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a build transformer in a payload is evaluated at build",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerBlockModel",
+              "export": "blockOutline"
+            },
+            "arguments": [
+              {
+                "actionType": "createEntity",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": {
+                    "transformerType": "getFromParameters",
+                    "interpolation": "build",
+                    "referenceName": "application"
+                  },
+                  "entities": []
+                }
+              }
+            ],
+            "expectedValue": [
+              "createEntity [ModelEndpoint]",
+              "  application: getFromParameters [variable] {build} referenceName=\"application\"",
+              "  entities: [list]"
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "the children of a runtime transformer are evaluated at runtime",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerBlockModel",
+              "export": "blockOutline"
+            },
+            "arguments": [
+              {
+                "actionType": "createInstance",
+                "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                  "applicationSection": "data",
+                  "objects": {
+                    "transformerType": "mapList",
+                    "interpolation": "runtime",
+                    "applyTo": {
+                      "transformerType": "getFromParameters",
+                      "referencePath": [
+                        "books"
+                      ]
+                    },
+                    "elementTransformer": {
+                      "transformerType": "getFromContext",
+                      "referenceName": "defaultInput"
+                    }
+                  }
+                }
+              }
+            ],
+            "expectedValue": [
+              "createInstance [InstanceEndpoint]",
+              "  application: \"5af03c98-fe5e-490b-b08f-e1230971c57f\"",
+              "  applicationSection: \"data\"",
+              "  objects: mapList [list] {runtime}",
+              "    elementTransformer: getFromContext [variable] @runtime referenceName=\"defaultInput\"",
+              "    applyTo: getFromParameters [variable] @runtime referencePath=[\"books\"]"
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "an action type no Endpoint declares is a JSON block",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerBlockModel",
+              "export": "blockOutline"
+            },
+            "arguments": [
+              {
+                "actionType": "compositeActionSequence",
+                "actionLabel": "unknown",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "payload": {
+                  "actionSequence": [
+                    {
+                      "actionType": "doesNotExist",
+                      "payload": {}
+                    }
+                  ]
+                }
+              }
+            ],
+            "expectedValue": [
+              "compositeActionSequence [DomainEndpoint] \"unknown\"",
+              "  steps:",
+              "    - <json unknownActionType>"
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a nested sequence is a sequence block",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerBlockModel",
+              "export": "blockOutline"
+            },
+            "arguments": [
+              {
+                "actionType": "compositeActionSequence",
+                "actionLabel": "outer",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "payload": {
+                  "actionSequence": [
+                    {
+                      "actionType": "compositeActionSequence",
+                      "actionLabel": "inner",
+                      "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                      "payload": {
+                        "actionSequence": [
+                          {
+                            "actionType": "createEntity",
+                            "actionLabel": "createBook",
+                            "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                            "payload": {
+                              "application": {
+                                "transformerType": "getFromParameters",
+                                "referencePath": [
+                                  "createEntity",
+                                  "application"
+                                ]
+                              },
+                              "entities": [
+                                {
+                                  "transformerType": "getFromParameters",
+                                  "referencePath": [
+                                    "createEntity",
+                                    "entity"
+                                  ]
+                                }
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ],
+            "expectedValue": [
+              "compositeActionSequence [DomainEndpoint] \"outer\"",
+              "  steps:",
+              "    - compositeActionSequence [DomainEndpoint] \"inner\"",
+              "      steps:",
+              "        - createEntity [ModelEndpoint] \"createBook\"",
+              "          application: getFromParameters [variable] referencePath=[\"createEntity\",\"application\"]",
+              "          entities: [list]",
+              "            - getFromParameters [variable] referencePath=[\"createEntity\",\"entity\"]"
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "an undeclared payload attribute is flagged",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerBlockModel",
+              "export": "blockOutline"
+            },
+            "arguments": [
+              {
+                "actionType": "createEntity",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                  "entities": [],
+                  "notDeclared": 1
+                }
+              }
+            ],
+            "expectedValue": [
+              "createEntity [ModelEndpoint]",
+              "  application: \"5af03c98-fe5e-490b-b08f-e1230971c57f\"",
+              "  entities: [list]",
+              "  !notDeclared: 1"
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a payload given by a transformer is one block",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerBlockModel",
+              "export": "blockOutline"
+            },
+            "arguments": [
+              {
+                "actionType": "resetModel",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "transformerType": "mergeIntoObject",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "getFromParameters",
+                    "referenceName": "resetModel"
+                  },
+                  "definition": {
+                    "application": {
+                      "transformerType": "getFromParameters",
+                      "referenceName": "application"
+                    }
+                  }
+                }
+              }
+            ],
+            "expectedValue": [
+              "resetModel [ModelEndpoint]",
+              "  payload: mergeIntoObject [object] {runtime}",
+              "    definition: {object}",
+              "      application: getFromParameters [variable] @runtime referenceName=\"application\"",
+              "    applyTo: getFromParameters [variable] @runtime referenceName=\"resetModel\""
             ]
           }
         ]

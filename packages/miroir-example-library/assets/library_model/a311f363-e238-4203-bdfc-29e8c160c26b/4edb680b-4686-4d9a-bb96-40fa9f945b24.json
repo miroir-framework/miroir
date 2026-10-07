@@ -111,9 +111,10 @@
                 "label": "the stored name is the displayed one",
                 "assertion": {
                   "actionType": "compositeRunTestAssertion",
+                  "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
                   "actionLabel": "storedBookName",
                   "nameGivenToResult": "storedBookName",
-                  "testAssertion": {
+                  "payload": {
                     "testType": "testAssertion",
                     "testLabel": "storedBookName",
                     "definition": {
@@ -226,9 +227,10 @@
                 "label": "the store holds the edited name",
                 "assertion": {
                   "actionType": "compositeRunTestAssertion",
+                  "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
                   "actionLabel": "storedBookName",
                   "nameGivenToResult": "storedBookName",
-                  "testAssertion": {
+                  "payload": {
                     "testType": "testAssertion",
                     "testLabel": "storedBookName",
                     "definition": {
@@ -412,9 +414,10 @@
                 "label": "the store holds the other Book's name",
                 "assertion": {
                   "actionType": "compositeRunTestAssertion",
+                  "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
                   "actionLabel": "storedBookName",
                   "nameGivenToResult": "storedBookName",
-                  "testAssertion": {
+                  "payload": {
                     "testType": "testAssertion",
                     "testLabel": "storedBookName",
                     "definition": {
@@ -532,9 +535,10 @@
                 "label": "the store still holds the original year",
                 "assertion": {
                   "actionType": "compositeRunTestAssertion",
+                  "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
                   "actionLabel": "storedBookYear",
                   "nameGivenToResult": "storedBookYear",
-                  "testAssertion": {
+                  "payload": {
                     "testType": "testAssertion",
                     "testLabel": "storedBookYear",
                     "definition": {

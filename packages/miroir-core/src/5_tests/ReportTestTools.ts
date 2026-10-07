@@ -272,7 +272,7 @@ export async function runReportTestExpectActionResultStep(
   context: ReportTestActionContext,
   step: ReportTestExpectActionResultStep,
 ): Promise<ReportTestRunnerResult> {
-  const assertionName = step.assertion.testAssertion.testLabel;
+  const assertionName = step.assertion.payload.testLabel;
   const previous = trackedAssertionOfCurrentTest(context.miroirActivityTracker, assertionName);
   const result = await runOneActionSequence(
     context,

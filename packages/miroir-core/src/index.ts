@@ -1410,6 +1410,9 @@ export {
 } from "./2_domain/TransformerDefinitionRegistry.js";
 export type { TransformerSubtreeRun } from "./0_interfaces/2_domain/TransformerSubtreeRunInterface.js";
 export {
+  blockOutline,
+  blockTree,
+  isBlockAction,
   transformerBlockOutline,
   transformerBlockTree,
   transformerPaletteGroups,
@@ -1417,6 +1420,7 @@ export {
   type TransformerPaletteGroup,
 } from "./2_domain/TransformerBlockModel.js";
 export type {
+  ActionBlock,
   BlockNode,
   BlockPath,
   BlockTree,
@@ -1426,10 +1430,20 @@ export type {
   LiteralBlock,
   MlSchemaBlock,
   ObjectBlock,
+  QueryBlock,
+  SequenceBlock,
   TransformerBlock,
   TransformerBlockParameter,
   TransformerBlockRow,
 } from "./0_interfaces/2_domain/TransformerBlockModelInterface.js";
+export {
+  endpointActionRegistry,
+  endpointActionRegistryOf,
+  endpointActionType,
+  endpointOfActionType,
+  type EndpointActionRegistry,
+  type EndpointActionRegistryEntry,
+} from "./2_domain/EndpointActionRegistry.js";
 export {
   checkTransformerMlSchemaCompatibility,
   formatMlSchemaTypeLabel,
