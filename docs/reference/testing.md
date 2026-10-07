@@ -771,7 +771,7 @@ In the app, "Run Integration Tests" on the suite's display (Miroir Tests page) m
 | Suite | Report | Covers |
 |---|---|---|
 | `report.bookDetails` | Library BookDetails (instance details) | display, store check, edit saved, stored value typed (#333), invalid value not saved |
-| `report.queryDetails` | Miroir QueryDetails (instance details) on the Library Query BookCountByPublisher | only transformer fields have the Blocks / Form / JSON switch; a runtime transformer edited as blocks, saved and committed; undo and redo at the editor root (#503) |
+| `report.queryDetails` | Miroir QueryDetails (instance details) on the Library Query BookCountByPublisher | only transformer fields have the Blocks / Form / JSON switch; a runtime transformer edited as blocks, saved and committed; undo and redo at the editor root; an application transformer is a block of its own (#503) |
 | `report.connectExternalServiceWizard` | Miroir ConnectExternalServiceWizard (multistep), and the home Report's launcher | document by URL, pasted or uploaded, and its errors; refused private URL; custom token kept out of the page; Finish checked in the store |
 
 Tests of the mechanism, in `packages/miroir-standalone-app/tests/4_view/`: `reportTestLauncher.unit` (routing of `testMiroir`), `reportTestActionsIdle.unit` (the wait), `reportTestFailure.integ` (a failed assertion step), `reportTestFakeHttp.integ` (an undeclared request), `reportTestInApp.integ` (the Miroir Tests display drives the wizard).

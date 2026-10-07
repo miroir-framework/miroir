@@ -58,7 +58,7 @@ import { ActionButtonWithSnackbar } from '../Page/ActionButtonWithSnackbar.js';
 import { ThemedStyledButton } from '../Themes/index.js';
 import { FieldValidationProvider, useFieldValidationContext } from '../ValueObjectEditor/FieldValidationContext.js';
 import { MlElementEditor } from '../ValueObjectEditor/MlElementEditor.js';
-import { BlockViewModeRoot } from '../BlockEditor/BlockViewMode.js';
+import { BlockModelEnvironmentContext, BlockViewModeRoot } from '../BlockEditor/BlockViewMode.js';
 import { EditorRootHistory } from '../ValueObjectEditor/EditorRootHistory.js';
 import type { TransformerTypeBadge, TransformerTypeRestriction } from '../ValueObjectEditor/MlElementEditorInterface.js';
 import type { ValueObjectEditMode } from './ReportSectionEntityInstance.js';
@@ -567,7 +567,8 @@ const TypedValueObjectEditorInner: React.FC<TypedValueObjectEditorProps> = ({
   //   mlsTypeCheckResult?.status == "ok" ? mlsTypeCheckResult.resolvedSchema : undefined;
 
   const result = (
-    <>
+    // #503: the block views of the editor know the transformers of the edited application
+    <BlockModelEnvironmentContext.Provider value={currentMiroirModelEnvironment}>
       {typeError && (<span>"typeError: "{typeError}</span>) }
       {validationError && (
         <div style={{
@@ -722,7 +723,7 @@ const TypedValueObjectEditorInner: React.FC<TypedValueObjectEditorProps> = ({
         </form>
         </EditorRootHistory>
       )}
-    </>
+    </BlockModelEnvironmentContext.Provider>
   );
   
   // Track render performance at end of render (ifThenElse)

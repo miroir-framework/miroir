@@ -457,7 +457,7 @@ function textHoldsValue(text: string, value: unknown): boolean {
  */
 export function MlElementEditor(props: MlElementEditorProps): JSX.Element {
   const blockViewModes = useContext(BlockViewModeContext);
-  if (!blockViewModes || !isBlockViewRoot(props.typeCheckKeyMap?.[props.rootLessListKey])) {
+  if (!blockViewModes || !isBlockViewRoot(props.typeCheckKeyMap?.[props.rootLessListKey], props.typeCheckKeyMap)) {
     return <MlElementEditorForm {...props} />;
   }
   return (
@@ -646,7 +646,7 @@ function MlElementEditorForm(props: MlElementEditorProps): JSX.Element {
       }
       setDisplayAsStructuredElement(event.target.checked);
       // #498: on a field with the Blocks / Form / JSON switch, the switch follows this toggle
-      if (blockViewModes && isBlockViewRoot(currentKeyMap)) {
+      if (blockViewModes && isBlockViewRoot(currentKeyMap, props.typeCheckKeyMap)) {
         blockViewModes.setMode(formikRootLessListKey, event.target.checked ? "form" : "json");
       }
     },
@@ -659,6 +659,7 @@ function MlElementEditorForm(props: MlElementEditorProps): JSX.Element {
       setDisplayAsStructuredElement,
       blockViewModes,
       currentKeyMap,
+      props.typeCheckKeyMap,
       formikRootLessListKey,
     ]
   );

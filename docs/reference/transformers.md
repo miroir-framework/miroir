@@ -220,12 +220,12 @@ The history is `ValueHistory` (deep copies of the value at one Formik path) and 
 
 The Blocks / Form / JSON switch is on every transformer field of an instance editor, not only in the TransformerEditor (issue #503): the instances of TransformerDefinition, Query, Report, Runner, Endpoint and MiroirTest, and of any Entity whose ML schema holds a transformer.
 
-- **Which fields.** A field gets the switch when the type check resolved it to a transformer: a field declared as one, or as its template form (`applyTransformer` of a Query or Report combiner), or a union whose value took the transformer branch (a template hole such as `parentUuid` holding a transformer; a plain `parentUuid` gets none). A transformer inside another transformer is shown in that one's blocks and gets no switch of its own. Composite action sequences get their blocks with #504; until then the transformers inside them get no switch either.
-- **No input.** Outside the TransformerEditor there is no current input or root environment: a click on a block header shows no result, root types are `any` and the palette lists no variables.
+- **Which fields.** A field gets the switch when the type check resolved it to a transformer: a field declared as one, or as its template form (`applyTransformer` of a Query or Report combiner), or a union whose value took the transformer branch (a template hole such as `parentUuid` holding a transformer; a plain `parentUuid` gets none). A transformer inside another transformer, a template hole's included, is shown in that one's blocks and gets no switch of its own. Composite action sequences get their blocks with #504; until then the transformers inside them get no switch either.
+- **No input.** Outside the TransformerEditor there is no current input or root environment: a click on a block header shows no result, root types are `any` and the palette lists no variables. The blocks and the palette know the transformers of the edited application (#502 composites), from its model environment.
 - **Read-only editors.** In a read-only editor, the Blocks view shows the transformer and does not edit it.
 - **Undo and redo.** An editable instance editor has Undo and Redo above its form, for the whole instance, whichever field and view made the edit; Ctrl+Z and Ctrl+Y work anywhere in the form. Opening another instance in the same editor starts a new history. The TransformerEditor keeps its own history, as above.
 
-The field rule is `isBlockViewRoot` (`miroir-core/src/2_domain/BlockViewFields.ts`), tested by `fn.blockView.fields`. The Report test `report.queryDetails` edits a Query's runtime transformer as blocks in Miroir's QueryDetails Report, saves it, and undoes and redoes the edit.
+The field rule is `isBlockViewRoot` (`miroir-core/src/2_domain/BlockViewFields.ts`), tested by `fn.blockView.fields` and, on the key map of a real type check, by `blockViewFields.typeCheck.unit.test.ts`. The Report test `report.queryDetails` edits a Query's runtime transformer as blocks in Miroir's QueryDetails Report, saves it, undoes and redoes the edit, and shows a transformer the Library defines as a block of its own.
 
 ---
 

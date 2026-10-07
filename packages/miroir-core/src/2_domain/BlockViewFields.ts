@@ -10,7 +10,9 @@ import type { KeyMapEntry, MlElement } from "../0_interfaces/1_core/preprocessor
 // - a field declared as a union with a transformer branch (template holes such as `parentUuid`,
 //   Report section definitions) is one when the value took the transformer branch:
 //   `chosenUnionBranchRawSchema` is then an object schema with `transformerType`;
-// - a field below a transformer or a sequence has its `ref:` segment in its `typePath`.
+// - a field below a transformer or a sequence has its `ref:` segment in its `typePath`, except
+//   below a union-wrapped transformer: the type check marks the chosen branch with a
+//   `union choice(...)` segment, so the enclosing fields are looked up in the key map.
 // Sequences are block view roots from #504 on; until then they and what they hold get no switch.
 // ################################################################################################
 
@@ -57,20 +59,33 @@ function chosenBranchIsTransformer(entry: KeyMapEntry): boolean {
   );
 }
 
-/** Whether a field of the value editor gets the view switch: see the module comment. */
-export function isBlockViewRoot(entry: KeyMapEntry | undefined): boolean {
-  if (!entry) {
+/** Whether the type check resolved the value of a field to a transformer. */
+function isTransformerField(entry: KeyMapEntry): boolean {
+  return entry.rawSchema?.type === "union"
+    ? chosenBranchIsTransformer(entry)
+    : BLOCK_VIEW_ROOT_SCHEMAS.has(referencedSchemaName(entry.rawSchema) ?? "");
+}
+
+/**
+ * Whether a field of the value editor gets the view switch: see the module comment. `keyMap` is
+ * the key map the entry comes from, keyed by value path joined with ".", for the enclosing fields.
+ */
+export function isBlockViewRoot(entry: KeyMapEntry | undefined, keyMap?: Record<string, KeyMapEntry>): boolean {
+  if (!entry || !isTransformerField(entry)) {
     return false;
   }
-  const isTransformer =
-    entry.rawSchema?.type === "union"
-      ? chosenBranchIsTransformer(entry)
-      : BLOCK_VIEW_ROOT_SCHEMAS.has(referencedSchemaName(entry.rawSchema) ?? "");
-  if (!isTransformer) {
-    return false;
-  }
-  return !entry.typePath.some(
+  const insideEnclosingReference = entry.typePath.some(
     (segment) =>
       typeof segment === "string" && segment.startsWith("ref:") && BLOCK_VIEW_ENCLOSING_SCHEMAS.has(schemaName(segment.slice(4))),
   );
+  if (insideEnclosingReference) {
+    return false;
+  }
+  for (let length = 0; length < entry.valuePath.length; length++) {
+    const enclosing = keyMap?.[entry.valuePath.slice(0, length).join(".")];
+    if (enclosing && isTransformerField(enclosing)) {
+      return false;
+    }
+  }
+  return true;
 }

@@ -426,6 +426,153 @@
           },
           {
             "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a transformer inside a template hole holding a transformer is not a root",
+            "functionRef": {
+              "module": "miroir-core/2_domain/BlockViewFields",
+              "export": "isBlockViewRoot"
+            },
+            "arguments": [
+              {
+                "rawSchema": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "coreTransformerForBuildPlusRuntime"
+                  }
+                },
+                "resolvedSchema": {
+                  "type": "any"
+                },
+                "valuePath": [
+                  "definition",
+                  "parentName",
+                  "applyTo"
+                ],
+                "typePath": [
+                  "ref:rootReport",
+                  "ref:extractorOrCombinerTemplate",
+                  "parentName",
+                  "union choice(aggregate)",
+                  "applyTo"
+                ]
+              },
+              {
+                "definition.parentName": {
+                  "rawSchema": {
+                    "type": "union",
+                    "definition": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_coreTransformerForBuildPlusRuntime"
+                        }
+                      }
+                    ]
+                  },
+                  "resolvedSchema": {
+                    "type": "any"
+                  },
+                  "valuePath": [
+                    "definition",
+                    "parentName"
+                  ],
+                  "typePath": [
+                    "ref:rootReport",
+                    "ref:extractorOrCombinerTemplate",
+                    "parentName"
+                  ],
+                  "chosenUnionBranchRawSchema": {
+                    "type": "object",
+                    "definition": {
+                      "transformerType": {
+                        "type": "literal",
+                        "definition": "getFromParameters"
+                      },
+                      "referenceName": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "expectedValue": false
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a template hole holding a transformer is a root with its key map",
+            "functionRef": {
+              "module": "miroir-core/2_domain/BlockViewFields",
+              "export": "isBlockViewRoot"
+            },
+            "arguments": [
+              {
+                "rawSchema": {
+                  "type": "union",
+                  "definition": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "schemaReference",
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_coreTransformerForBuildPlusRuntime"
+                      }
+                    }
+                  ]
+                },
+                "resolvedSchema": {
+                  "type": "any"
+                },
+                "valuePath": [
+                  "definition",
+                  "parentName"
+                ],
+                "typePath": [
+                  "ref:rootReport",
+                  "ref:extractorOrCombinerTemplate",
+                  "parentName"
+                ],
+                "chosenUnionBranchRawSchema": {
+                  "type": "object",
+                  "definition": {
+                    "transformerType": {
+                      "type": "literal",
+                      "definition": "getFromParameters"
+                    },
+                    "referenceName": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              {
+                "definition": {
+                  "rawSchema": {
+                    "type": "object",
+                    "definition": {}
+                  },
+                  "resolvedSchema": {
+                    "type": "any"
+                  },
+                  "valuePath": [
+                    "definition"
+                  ],
+                  "typePath": [
+                    "ref:rootReport"
+                  ]
+                }
+              }
+            ],
+            "expectedValue": true
+          },
+          {
+            "miroirTestType": "functionCallTest",
             "miroirTestLabel": "a string field is not a root",
             "functionRef": {
               "module": "miroir-core/2_domain/BlockViewFields",

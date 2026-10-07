@@ -58,14 +58,22 @@ export interface BlockDefine {
 export const BlockDefineContext = createContext<BlockDefine | undefined>(undefined);
 
 /**
+ * #503: the model environment of the application an instance editor edits, for its block views.
+ * It gives no input, so a block shows no result of its subtree.
+ */
+export const BlockModelEnvironmentContext = createContext<MiroirModelEnvironment | undefined>(undefined);
+
+/**
  * #502: the model environment of the block view, with its transformer registry: the edited
- * application's under the TransformerEditor, Miroir's elsewhere.
+ * application's under the TransformerEditor or an instance editor (#503), Miroir's elsewhere.
  */
 export function useBlockModelEnvironment(): {
   modelEnvironment: MiroirModelEnvironment;
   transformerDefinitions: TransformerDefinitionRegistry;
 } {
-  const modelEnvironment = useContext(BlockRunInputContext)?.modelEnvironment ?? defaultMiroirModelEnvironment;
+  const runInputEnvironment = useContext(BlockRunInputContext)?.modelEnvironment;
+  const editorEnvironment = useContext(BlockModelEnvironmentContext);
+  const modelEnvironment = runInputEnvironment ?? editorEnvironment ?? defaultMiroirModelEnvironment;
   return useMemo(
     () => ({ modelEnvironment, transformerDefinitions: transformerDefinitionRegistry(modelEnvironment) }),
     [modelEnvironment],
