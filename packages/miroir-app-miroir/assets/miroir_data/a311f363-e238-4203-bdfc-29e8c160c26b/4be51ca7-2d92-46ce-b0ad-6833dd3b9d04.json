@@ -1711,6 +1711,148 @@
                 "timeout": 2000
               }
             ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: a list item moved down its list from its block menu",
+            "steps": [
+              {
+                "step": "click",
+                "label": "choose Blocks",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                }
+              },
+              {
+                "step": "click",
+                "label": "arm + in the palette",
+                "target": {
+                  "byTestId": "block-palette:+"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "+ is armed",
+                "target": {
+                  "byTestId": "block-palette:+"
+                },
+                "attribute": "aria-pressed",
+                "value": "true",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "open the node actions of the root block",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Replace with +",
+                "target": {
+                  "byTestId": "block-action-replace"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the root block is +",
+                "target": {
+                  "byTestId": "block:transformer"
+                },
+                "attribute": "data-transformer-type",
+                "value": "+",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "arm getFromContext",
+                "target": {
+                  "byTestId": "block-palette:getFromContext"
+                }
+              },
+              {
+                "step": "click",
+                "label": "put it in the empty args",
+                "target": {
+                  "byTestId": "block-insert:transformer.args.0"
+                }
+              },
+              {
+                "step": "click",
+                "label": "arm returnValue",
+                "target": {
+                  "byTestId": "block-palette:returnValue"
+                }
+              },
+              {
+                "step": "click",
+                "label": "put it at the end of args",
+                "target": {
+                  "byTestId": "block-insert:transformer.args.1"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the second item",
+                "target": {
+                  "byTestId": "block:transformer.args.1"
+                },
+                "attribute": "data-transformer-type",
+                "value": "returnValue",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "open the node actions of the first item",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer.args.0"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Move down",
+                "target": {
+                  "byTestId": "block-action-move-down"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the returnValue is first",
+                "target": {
+                  "byTestId": "block:transformer.args.0"
+                },
+                "attribute": "data-transformer-type",
+                "value": "returnValue",
+                "timeout": 2000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the getFromContext is second",
+                "target": {
+                  "byTestId": "block:transformer.args.1"
+                },
+                "attribute": "data-transformer-type",
+                "value": "getFromContext",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "choose JSON",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:json"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the value",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "timeout": 2000,
+                "value": "{\n  \"transformerType\": \"+\",\n  \"args\": [\n    {\n      \"transformerType\": \"returnValue\",\n      \"value\": \"seize value...\",\n      \"interpolation\": \"runtime\"\n    },\n    {\n      \"transformerType\": \"getFromContext\",\n      \"interpolation\": \"runtime\"\n    }\n  ],\n  \"interpolation\": \"runtime\"\n}"
+              }
+            ]
           }
         ]
       }

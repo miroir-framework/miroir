@@ -6,6 +6,7 @@ import {
   keepAttributesOnTypeChange,
   moveTransformerNode,
   removeTransformerNode,
+  reorderTransformerNode,
   transformerInsertPositions,
   transformerUnionTypes,
   type BlockPath,
@@ -303,6 +304,18 @@ export function BlockNodeActions(props: { path: BlockPath; blockId: string }) {
       label: `Switch to ${switchedTo}`,
       onClick: () => replace({ ...(node as Record<string, unknown>), interpolation: switchedTo }),
     });
+    // a list item moves up or down its list: the menu equivalent of reordering by drag and drop
+    const list = valueAtPath(editing.root, props.path.slice(0, -1));
+    const index = props.path[props.path.length - 1];
+    if (Array.isArray(list) && typeof index === "number") {
+      const reorder = (toIndex: number) => editing.commit(reorderTransformerNode(editing.root, props.path, toIndex));
+      if (index > 0) {
+        entries.push({ testId: "block-action-move-up", label: "Move up", onClick: () => reorder(index - 1) });
+      }
+      if (index < list.length - 1) {
+        entries.push({ testId: "block-action-move-down", label: "Move down", onClick: () => reorder(index + 1) });
+      }
+    }
     if (editing.tray) {
       entries.push({ testId: "block-action-tray", label: "Move to tray", onClick: () => editing.moveToTray(props.path) });
     }
