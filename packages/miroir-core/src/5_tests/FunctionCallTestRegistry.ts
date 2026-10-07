@@ -39,6 +39,11 @@ import { localizeMlSchemaReferenceContext } from "../1_core/mls/MlsUnfoldSchemaO
 import { resolveQueryTemplateWithExtractorCombinerTransformer } from "../2_domain/Templates";
 import { referencePathAttributeNames, resolveTransformerResultSchema } from "../2_domain/Transformer_ResultSchema";
 import {
+  applicationCompositeTransformerDefinitions,
+  transformerDefinitionRegistryConflicts,
+  transformerDefinitionRegistryOf,
+} from "../2_domain/TransformerDefinitionRegistry";
+import {
   checkTransformerInterfaceCompatibility,
   checkTransformerInterfaceCompatibilityWithInference,
   checkTransformerInterfaceRecursively,
@@ -273,6 +278,11 @@ const FUNCTION_CALL_REGISTRY: Record<
   "miroir-core/2_domain/CompositeActionScope": {
     compositeActionEnvironmentAt: compositeActionEnvironmentAt as WhitelistedFunction,
     runnerEnvironment: runnerEnvironment as WhitelistedFunction,
+  },
+  "miroir-core/2_domain/TransformerDefinitionRegistry": {
+    applicationCompositeTransformerDefinitions: applicationCompositeTransformerDefinitions as WhitelistedFunction,
+    transformerDefinitionRegistryConflicts: transformerDefinitionRegistryConflicts as WhitelistedFunction,
+    transformerDefinitionRegistryOf: transformerDefinitionRegistryOf as WhitelistedFunction,
   },
   "miroir-core/2_domain/TransformerSubtreeRun": {
     transformerSubtreeRuns: transformerSubtreeRuns as WhitelistedFunction,

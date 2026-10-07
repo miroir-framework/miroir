@@ -262,6 +262,7 @@ export declare const miroirTest_fn_transformer_interfaceCheck: any;
 export declare const miroirTest_fn_transformer_interfaceWalk: any;
 export declare const miroirTest_fn_transformer_treeEdit: any;
 export declare const miroirTest_fn_transformer_scope: any;
+export declare const miroirTest_fn_transformer_registry: any;
 export declare const miroirTest_fn_transformer_subtreeRun: any;
 export declare const miroirTest_fn_blockModel: any;
 export declare const miroirTest_fn_transformer_resultSchema: any;

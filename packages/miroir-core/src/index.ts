@@ -1386,6 +1386,13 @@ export type {
   TransformerTypeChange,
 } from "./0_interfaces/2_domain/TransformerTreeEditInterface.js";
 export { transformerSubtreeRuns } from "./2_domain/TransformerSubtreeRun.js";
+export {
+  applicationCompositeTransformerDefinitions,
+  transformerDefinitionRegistry,
+  transformerDefinitionRegistryConflicts,
+  transformerDefinitionRegistryOf,
+  type TransformerDefinitionRegistry,
+} from "./2_domain/TransformerDefinitionRegistry.js";
 export type { TransformerSubtreeRun } from "./0_interfaces/2_domain/TransformerSubtreeRunInterface.js";
 export {
   transformerBlockOutline,

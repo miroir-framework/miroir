@@ -40,7 +40,7 @@ Working branch: `claude/502-block-editor-define-blocks`
 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
-| 0 | Registry; the runtime runs an application composite | ⬜ | `fn.transformer.registry` |
+| 0 | Registry; the runtime runs an application composite | ✅ | `fn.transformer.registry` |
 | 1 | The client model carries the application's TransformerDefinitions | ⬜ | localcache unit tests |
 | 2 | The deployment schema has a branch per application composite | ⬜ | `fn.transformer.registry` union cases |
 | 3 | The editor and the block view read the registry | ⬜ | `ui.blockEditing` composite case |
@@ -75,6 +75,8 @@ Working branch: `claude/502-block-editor-define-blocks`
 RED: new off-page `fn.transformer.registry`: the registry of an environment whose `currentModel` holds a composite has it next to the stock ones; a library implementation or a stock name is left out (conflict reported); `transformer_extended_apply_wrapper` runs a transformer using the composite with a parameter, and fails with `TransformerNotFound` without it. GREEN: `TransformerDefinitionRegistry.ts`, runtime lookup.
 
 Validation: `npm run testMiroir -w miroir-core -- --suites fn.transformer.registry --mode unit`; `npm run test -w miroir-core -- ''`.
+
+**Realization (2026-10-07).** `TransformerDefinitionRegistry.ts` exports `transformerDefinitionRegistry(modelEnvironment)` (kept per model object in a WeakMap), `transformerDefinitionRegistryOf(definitions)`, `applicationCompositeTransformerDefinitions` and `transformerDefinitionRegistryConflicts` (a stock name held by a definition of another uuid; Miroir's own stored stock definitions are not conflicts). `transformer_extended_apply` reads the registry of its environment. `fn.transformer.registry` (`e98bad15-…`, off the page) has 7 cases; the runtime case fails with the static lookup restored. An unknown composite fails as `FailedTransformer` wrapping `TransformerNotFound`.
 
 ## Slice 1 — The client model carries the application's TransformerDefinitions
 
