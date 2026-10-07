@@ -1,0 +1,261 @@
+{
+  "uuid": "ef540605-8176-45bf-af76-c9d240769c7b",
+  "parentName": "MiroirTest",
+  "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+  "name": "ui.valueHistory",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "description": "Undo and redo of the TransformerEditor's transformer: Undo and Redo start disabled, Undo brings back the value before a form edit and Redo the edit, and an edit after an Undo drops what Redo would have restored.",
+  "tags": [
+    "ui",
+    "editor",
+    "transformer"
+  ],
+  "issue": "499",
+  "definition": {
+    "miroirTestType": "miroirTestSuite",
+    "miroirTestLabel": "ui.valueHistory",
+    "miroirTests": [
+      {
+        "miroirTestType": "reactComponentTestSuite",
+        "miroirTestLabel": "TransformerEditor",
+        "component": "TransformerEditor",
+        "componentProps": {
+          "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+          "entityUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad"
+        },
+        "miroirTests": [
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: Undo and Redo are disabled before any edit",
+            "steps": [
+              {
+                "step": "waitForAttribute",
+                "label": "Undo disabled",
+                "target": {
+                  "byTestId": "value-history-undo:transformer"
+                },
+                "attribute": "aria-disabled",
+                "value": "true",
+                "timeout": 2000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "Redo disabled",
+                "target": {
+                  "byTestId": "value-history-redo:transformer"
+                },
+                "attribute": "aria-disabled",
+                "value": "true"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: Undo brings back the value before a form edit, Redo the edit",
+            "steps": [
+              {
+                "step": "change",
+                "label": "edit the returned value in the form",
+                "target": {
+                  "byDisplayValue": "seize value..."
+                },
+                "value": "new value"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "Undo enabled",
+                "target": {
+                  "byTestId": "value-history-undo:transformer"
+                },
+                "attribute": "aria-disabled",
+                "value": "false",
+                "timeout": 2000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "Redo still disabled",
+                "target": {
+                  "byTestId": "value-history-redo:transformer"
+                },
+                "attribute": "aria-disabled",
+                "value": "true"
+              },
+              {
+                "step": "click",
+                "label": "undo",
+                "target": {
+                  "byTestId": "value-history-undo:transformer"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the value before the edit",
+                "target": {
+                  "byDisplayValue": "seize value..."
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the edit is gone",
+                "target": {
+                  "byDisplayValue": "new value"
+                },
+                "present": false
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "nothing more to undo",
+                "target": {
+                  "byTestId": "value-history-undo:transformer"
+                },
+                "attribute": "aria-disabled",
+                "value": "true",
+                "timeout": 2000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "Redo enabled",
+                "target": {
+                  "byTestId": "value-history-redo:transformer"
+                },
+                "attribute": "aria-disabled",
+                "value": "false"
+              },
+              {
+                "step": "click",
+                "label": "redo",
+                "target": {
+                  "byTestId": "value-history-redo:transformer"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the edit is back",
+                "target": {
+                  "byDisplayValue": "new value"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "nothing more to redo",
+                "target": {
+                  "byTestId": "value-history-redo:transformer"
+                },
+                "attribute": "aria-disabled",
+                "value": "true",
+                "timeout": 2000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "Undo enabled again",
+                "target": {
+                  "byTestId": "value-history-undo:transformer"
+                },
+                "attribute": "aria-disabled",
+                "value": "false"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: an edit after an Undo drops what Redo would have restored",
+            "steps": [
+              {
+                "step": "change",
+                "label": "first edit",
+                "target": {
+                  "byDisplayValue": "seize value..."
+                },
+                "value": "first"
+              },
+              {
+                "step": "change",
+                "label": "second edit",
+                "target": {
+                  "byDisplayValue": "first"
+                },
+                "value": "second"
+              },
+              {
+                "step": "click",
+                "label": "undo the second edit",
+                "target": {
+                  "byTestId": "value-history-undo:transformer"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the first edit",
+                "target": {
+                  "byDisplayValue": "first"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "change",
+                "label": "another edit",
+                "target": {
+                  "byDisplayValue": "first"
+                },
+                "value": "third"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "nothing to redo",
+                "target": {
+                  "byTestId": "value-history-redo:transformer"
+                },
+                "attribute": "aria-disabled",
+                "value": "true",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "undo the other edit",
+                "target": {
+                  "byTestId": "value-history-undo:transformer"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the first edit again",
+                "target": {
+                  "byDisplayValue": "first"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "undo the first edit",
+                "target": {
+                  "byTestId": "value-history-undo:transformer"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the starting value",
+                "target": {
+                  "byDisplayValue": "seize value..."
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "nothing more to undo",
+                "target": {
+                  "byTestId": "value-history-undo:transformer"
+                },
+                "attribute": "aria-disabled",
+                "value": "true",
+                "timeout": 2000
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

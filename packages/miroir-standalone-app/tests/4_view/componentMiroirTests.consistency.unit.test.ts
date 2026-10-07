@@ -135,8 +135,8 @@ const schemas: [string, MlElement][] = [
 
 // ################################################################################################
 describe("componentMiroirTests consistency", () => {
-  it("the 11 component test instances pass mlsTypeCheck against the Entity and EntityVersion mlSchemas", () => {
-    expect(componentTestInstances.map((instance) => instance.name)).toHaveLength(11);
+  it("the 12 component test instances pass mlsTypeCheck against the Entity and EntityVersion mlSchemas", () => {
+    expect(componentTestInstances.map((instance) => instance.name)).toHaveLength(12);
     const failures: string[] = [];
     for (const instance of componentTestInstances) {
       for (const [schemaName, schema] of schemas) {
