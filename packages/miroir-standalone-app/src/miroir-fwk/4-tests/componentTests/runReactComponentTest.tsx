@@ -7,6 +7,7 @@ import {
   type LoggerInterface,
   type ReactComponentTestRunner,
   type ReactComponentTestRunnerResult,
+  type ReactComponentTestSuiteContext,
 } from "miroir-core";
 
 import { packageName } from "../../../constants.js";
@@ -207,15 +208,19 @@ export function createReactComponentTestRunner(
     return container;
   };
 
-  const suiteWrapper = (key: string, trackRenders: boolean) => {
+  const suiteWrapper = (key: string, suite: ReactComponentTestSuiteContext) => {
     let wrapper = suiteWrappers.get(key);
     if (!wrapper) {
       // no suite sets a deployment map (analysis T13)
       wrapper = buildComponentTestWrapper({
         applicationDeploymentMap: defaultSelfApplicationDeploymentMap,
-        trackRenders,
+        // #303 T3: render tracking only for a suite that measures renders (other suites: same DOM)
+        trackRenders: !!suite.stepKinds?.includes("measureRendering"),
         // #406: each case starts from the same TransformerEditor state, the app's is left untouched
         isolateToolsPageState: true,
+        // #502: actions on the test local cache, and the suite's own instances
+        wireLocalCacheCompositeAction: suite.wireLocalCacheCompositeAction,
+        localCacheInstances: suite.localCacheInstances,
       });
       suiteWrappers.set(key, wrapper);
     }
@@ -263,8 +268,7 @@ export function createReactComponentTestRunner(
     host.onCaseStart?.(testName);
     try {
       const container = await mountCase(
-        // #303 T3: render tracking only for a suite that measures renders (other suites: same DOM)
-        suiteWrapper(wrapperKey, !!suite.stepKinds?.includes("measureRendering")),
+        suiteWrapper(wrapperKey, suite),
         Component,
         reviveComponentProps({ ...suite.componentProps, ...(leaf.componentProps ?? {}) }),
       );

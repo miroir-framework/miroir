@@ -23,7 +23,7 @@ import type {
 import { Action2Error } from "../../src/0_interfaces/2_domain/DomainElement.js";
 import { ACTION_OK } from "../../src/1_core/constants.js";
 import { PersistenceStoreController } from "../../src/4_services/PersistenceStoreController.js";
-import { entitySelfApplicationVersion } from "miroir-app-miroir";
+import { entityReport, entitySelfApplicationVersion, entityTransformerDefinition } from "miroir-app-miroir";
 
 // ---------------------------------------------------------------------------
 // Minimal test stubs
@@ -217,5 +217,36 @@ describe("PersistenceStoreController section routing", () => {
     expect(result instanceof Action2Error).toBe(true);
     if (!(result instanceof Action2Error)) return;
     expect(result.errorMessage).toMatch(/modelVersion/i);
+  });
+
+  // #502: an application whose model store predates TransformerDefinition in its initialization
+  it("upsertInstance model creates the TransformerDefinition collection on the first save", async () => {
+    const modelStore = new ModelSectionStub("model-store");
+    const created: string[] = [];
+    modelStore.createStorageSpaceForInstancesOfEntity = async (entity: any) => {
+      created.push(entity.uuid);
+      modelStore.stored[entity.uuid] = [];
+      return ACTION_OK;
+    };
+    const controller = new PersistenceStoreController(makeAdminStub("admin"), modelStore, new DataSectionStub("data-store"));
+    const composite = { uuid: "dddddddd-dddd-4ddd-8ddd-dddddddddddd", parentUuid: entityTransformerDefinition.uuid };
+
+    const result = await controller.upsertInstance("model", composite as any);
+
+    expect(result instanceof Action2Error).toBe(false);
+    expect(created).toEqual([entityTransformerDefinition.uuid]);
+    expect(modelStore.upserted[entityTransformerDefinition.uuid]).toEqual([composite]);
+  });
+
+  it("upsertInstance model still refuses another Entity without a collection", async () => {
+    const modelStore = new ModelSectionStub("model-store");
+    const controller = new PersistenceStoreController(makeAdminStub("admin"), modelStore, new DataSectionStub("data-store"));
+
+    const result = await controller.upsertInstance("model", {
+      uuid: "eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee",
+      parentUuid: entityReport.uuid,
+    } as any);
+
+    expect(result instanceof Action2Error).toBe(true);
   });
 });

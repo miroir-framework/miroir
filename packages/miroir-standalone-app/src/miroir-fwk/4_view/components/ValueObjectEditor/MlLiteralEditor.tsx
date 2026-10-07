@@ -15,6 +15,7 @@ import {
   MiroirLoggerFactory,
   removeTransformerNode,
   resolvePathOnObject,
+  transformerDefinitionRegistry,
   transformerTypesAcceptingInput,
   type ApplicationDeploymentMap,
   type Domain2QueryReturnType,
@@ -387,6 +388,11 @@ export const MlLiteralEditor: FC<MlLiteralEditorProps> =  (
     currentApplication,
     applicationDeploymentMap
   );
+  // #502: the stock TransformerDefinitions and the application's composites
+  const transformerDefinitions = useMemo(
+    () => transformerDefinitionRegistry(currentMiroirModelEnvironment),
+    [currentMiroirModelEnvironment],
+  );
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
         getMemoizedReduxDeploymentsStateSelectorMap();
 
@@ -562,9 +568,10 @@ export const MlLiteralEditor: FC<MlLiteralEditorProps> =  (
         ? transformerTypesAcceptingInput(transformerTypeRestriction.input, {
             transformerTypes: currentDiscriminatorValues,
             currentType: typeof currentValue === "string" ? currentValue : undefined,
+            transformerDefinitions,
           })
         : undefined,
-    [transformerTypeRestriction, currentDiscriminatorValues, currentValue],
+    [transformerTypeRestriction, currentDiscriminatorValues, currentValue, transformerDefinitions],
   );
   // Memoize discriminator options for the filterable select
   const discriminatorSelectOptions = useMemo(() => {
@@ -657,6 +664,7 @@ export const MlLiteralEditor: FC<MlLiteralEditorProps> =  (
     const newTree = removeTransformerNode(valueAt(treeRootPath), transformerNodePath.slice(treeRootLength), {
       rootDefault: resetNode,
       slotDefault: resetNode,
+      transformerDefinitions,
     });
     if (onChangeCallback) {
       onChangeCallback(newTree, rootLessListKey);
@@ -668,6 +676,7 @@ export const MlLiteralEditor: FC<MlLiteralEditorProps> =  (
     transformerNodePath,
     currentDiscriminatorValues,
     defaultTransformerNodeForType,
+    transformerDefinitions,
     onChangeCallback,
     rootLessListKey,
     formik,
@@ -833,6 +842,7 @@ export const MlLiteralEditor: FC<MlLiteralEditorProps> =  (
                 onReplaceNode={replaceTransformerNode}
                 onRemoveNode={removeTransformerNodeFromTree}
                 undoable={transformerNodeUndoable}
+                transformerDefinitions={transformerDefinitions}
               />
             )}
             {pendingTypeChange && (

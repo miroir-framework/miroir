@@ -20,6 +20,7 @@ import {
   type Query,
   type Runner,
   type StoredMiroirTheme,
+  type TransformerDefinition,
   type SelfApplication,
   type MiroirTestDefinition
 } from "miroir-core";
@@ -44,7 +45,7 @@ import {
   selectMiroirSelectorQueryParams,
 } from "./LocalCacheSliceSelectors.js";
 import { ReduxStateWithUndoRedo } from "./localCacheReduxSliceInterface.js";
-import { entityMiroirTest, entitySelfApplication, entityTheme } from "miroir-app-miroir";
+import { entityMiroirTest, entitySelfApplication, entityTheme, entityTransformerDefinition } from "miroir-app-miroir";
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "LocalCacheSliceModelSelector");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {log = logger});
@@ -295,6 +296,32 @@ const selectThemesFromReduxState = createSelector(
 );
 
 // ################################################################################################
+// #502: the application's TransformerDefinitions, read like themes (the transformer registry adds
+// the composites to the stock ones).
+const selectTransformerDefinitionsFromReduxState = createSelector(
+  [selectCurrentReduxDeploymentsStateFromReduxState, selectApplicationDeploymentMap, selectMiroirSelectorQueryParams],
+  (
+    reduxState: ReduxDeploymentsState,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+    params: MiroirQueryTemplate
+  ) => {
+    return selectEntityInstancesFromReduxDeploymentsState(
+      reduxState,
+      applicationDeploymentMap,
+      params.queryType == "localCacheEntityInstancesExtractor"
+        ? params.definition.application
+        : params.application,
+      params.queryType == "localCacheEntityInstancesExtractor"
+        ? params.definition.application == selfApplicationMiroir.uuid
+          ? "data"
+          : "model"
+        : undefined,
+      entityTransformerDefinition.uuid
+    );
+  }
+);
+
+// ################################################################################################
 const selectTestsFromReduxState = createSelector(
   [selectCurrentReduxDeploymentsStateFromReduxState, selectApplicationDeploymentMap, selectMiroirSelectorQueryParams],
   (
@@ -416,6 +443,7 @@ export const selectModelForDeploymentFromReduxState: () => (
       selectEndpointsFromReduxState,
       selectTestsFromReduxState,
       selectThemesFromReduxState,
+      selectTransformerDefinitionsFromReduxState,
       // selectMiroirQueryTemplateSelectorParams,
     ],
     (
@@ -431,6 +459,7 @@ export const selectModelForDeploymentFromReduxState: () => (
       endpoints: EntityInstancesUuidIndex,
       tests: EntityInstancesUuidIndex,
       themes: EntityInstancesUuidIndex,
+      transformerDefinitions: EntityInstancesUuidIndex,
       // params: MiroirQueryTemplate
     ) => {
       const application = applications && Object.values(applications).length > 0
@@ -457,7 +486,9 @@ export const selectModelForDeploymentFromReduxState: () => (
         themeVersions: [],
         applicationVersionCrossTransformerDefinitionVersion: [],
         transformerDefinitionVersions: [],
-        transformerDefinitions: [],
+        transformerDefinitions: (transformerDefinitions
+          ? Object.values(transformerDefinitions)
+          : []) as TransformerDefinition[],
         // configuration: (configurations ? Object.values(configurations) : []) as StoreBasedConfiguration[],
         entities: (entities ? Object.values(entities) : []) as Entity[],
         entityVersions: (entityVersions ? Object.values(entityVersions) : []) as EntityVersion[],

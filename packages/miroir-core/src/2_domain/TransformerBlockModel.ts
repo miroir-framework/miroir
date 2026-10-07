@@ -16,7 +16,7 @@ import type {
 } from "../0_interfaces/2_domain/TransformerBlockModelInterface";
 import { defaultMiroirModelEnvironment } from "../1_core/Model";
 import { declaredAttributeSchemas, transformerSlots, transformerUnionTypes } from "./TransformerTreeEdit";
-import { applicationTransformerDefinitions } from "./TransformersForRuntime";
+import { transformerDefinitionRegistry } from "./TransformerDefinitionRegistry";
 
 // ################################################################################################
 // Issue #498 (analysis #497) — a transformer value as a tree of Scratch-style blocks: one block
@@ -244,7 +244,8 @@ function transformerBlock(value: TransformerNode, path: BlockPath, context: Buil
  */
 export function transformerBlockTree(value: unknown, options: TransformerBlockModelOptions = {}): BlockTree {
   const context: BuildContext = {
-    transformerDefinitions: options.transformerDefinitions ?? applicationTransformerDefinitions,
+    // #502: the registry of the model environment, stock definitions and application composites
+    transformerDefinitions: options.transformerDefinitions ?? transformerDefinitionRegistry(options.modelEnvironment ?? defaultMiroirModelEnvironment),
     modelEnvironment: options.modelEnvironment ?? defaultMiroirModelEnvironment,
     emptyOptionalSlots: options.emptyOptionalSlots ?? false,
     stats: { transformerBlocks: 0, jsonBlocks: 0, categories: new Set() },
@@ -323,7 +324,7 @@ export interface TransformerPaletteGroup {
  */
 export function transformerPaletteGroups(
   modelEnvironment: MiroirModelEnvironment = defaultMiroirModelEnvironment,
-  transformerDefinitions: Record<string, TransformerDefinition> = applicationTransformerDefinitions,
+  transformerDefinitions: Record<string, TransformerDefinition> = transformerDefinitionRegistry(modelEnvironment),
 ): TransformerPaletteGroup[] {
   const byCategory = new Map<string, string[]>();
   for (const transformerType of transformerUnionTypes(modelEnvironment)) {

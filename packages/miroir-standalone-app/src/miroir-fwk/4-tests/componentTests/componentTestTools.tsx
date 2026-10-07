@@ -27,6 +27,8 @@ import {
   type ApplicationDeploymentMap,
   type DeploymentUuidToReportsEntitiesMapping,
   type EntityInstance,
+  type ReactComponentTestSuite,
+  type Uuid,
 } from "miroir-core";
 import {
   LocalCache,
@@ -469,6 +471,29 @@ export interface BuildComponentTestWrapperOptions {
   wireLocalCacheCompositeAction?: boolean;
   /** See `MiroirTestProvidersProps.isolateToolsPageState`. Off by default. */
   isolateToolsPageState?: boolean;
+  /**
+   * Instances loaded with the model and data of their application, Miroir or Library (#502):
+   * a suite's `localCacheInstances`. A load of its own would be lost: a rollback replaces the
+   * current state of a deployment with what is loading.
+   */
+  localCacheInstances?: ReactComponentTestSuite["localCacheInstances"];
+}
+
+/** The objects of `localCacheInstances` for `application`, in the shape of `loadNewInstancesInLocalCache`. */
+function extraLocalCacheObjects(
+  localCacheInstances: BuildComponentTestWrapperOptions["localCacheInstances"],
+  application: Uuid,
+) {
+  return (localCacheInstances ?? [])
+    .filter((entry) => entry.application === application)
+    .flatMap((entry) =>
+      entry.objects.map((object) => ({
+        parentName: object.parentName ?? "",
+        parentUuid: object.parentUuid,
+        applicationSection: object.applicationSection,
+        instances: object.instances as EntityInstance[],
+      })),
+    );
 }
 
 export interface ComponentTestWrapper {
@@ -674,6 +699,7 @@ export function buildComponentTestWrapper(
           applicationSection: "data",
           instances: defaultMiroirMetaModel.reports
         },
+        ...extraLocalCacheObjects(options.localCacheInstances, selfApplicationMiroir.uuid),
       ],
     }
   }, applicationDeploymentMap);
@@ -732,7 +758,8 @@ export function buildComponentTestWrapper(
               reportMultistepLaunchPad as EntityInstance,
           ],
         },
-        ...libraryApplicationInstances
+        ...libraryApplicationInstances,
+        ...extraLocalCacheObjects(options.localCacheInstances, selfApplicationLibrary.uuid),
       ],
     }
   }, applicationDeploymentMap);

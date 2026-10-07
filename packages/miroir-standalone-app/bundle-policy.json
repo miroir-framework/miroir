@@ -1,6 +1,6 @@
 {
   "$comment": "Bundle guard (#326), checked by scripts/check_bundle_policy.py against the build's bundle-report.json. See docs/internals/code-splitting.md. defeatedDynamicImports (#337): ReportDisplay.tsx is also imported statically by HomePage, SettingsPage and ReportSectionViewWithEditor, which render a report at once. zod 4 (#375) adds about 23 kB gzipped to the page because zod 4 is larger than zod 3. Baseline raised to 785650 by #472: _integration had grown to about 783 kB since the last reset, and the GitHub example app adds about 2.4 kB (setExternalServiceCredential, multistep finishOpenReport, ExternalServiceClient query parameters). The miroir-app-miroir cap (eagerPackageMaxBytes) raised from 3300000 to 3400000 by #498: the meta-model had grown to about 3.30 MB, and #498 adds the ui.blockEditor component test instance (14 kB, kept in defaultMiroirMetaModel.tests as componentTestInstances.292.phase1 requires), the Theme block colors and the ViewParams setting. #500 to #506 add more component cases; moving component test instances off the page is the alternative (analysis #497, §4.7).",
-  "eagerGzipBaseline": 786868,
+  "eagerGzipBaseline": 803585,
   "eagerGzipTolerance": 0.02,
   "forbiddenEager": [
     "@testing-library/*",

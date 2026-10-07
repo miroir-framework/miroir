@@ -200,7 +200,7 @@ export const coreTransformerForBuildPlusRuntimeNames = Object.keys(miroirCoreTra
   e.replace("transformer_", "coreTransformerForBuildPlusRuntime_")
 );
 
-const coreBuildPlusRuntimeReferenceMap: Record<string, string> = {
+export const coreBuildPlusRuntimeReferenceMap: Record<string, string> = {
   transformer: "coreTransformerForBuildPlusRuntime",
   transformer_returnValue: "coreTransformerForBuildPlusRuntime_returnValue",
   transformer_createObject: "coreTransformerForBuildPlusRuntime_createObject",

@@ -7,11 +7,12 @@ import {
   type BlockPath,
   type TransformerBlock,
 } from "miroir-core";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useContext, useMemo, useState } from "react";
 
 import { blockCategoryColor, useMiroirTheme, type BlockEditorColors } from "../../contexts/MiroirThemeContext.js";
 import type { TransformerTypeBadge } from "../ValueObjectEditor/MlElementEditorInterface.js";
 import { useBlockEditorBuildMarking } from "./BlockEditorDisplay.js";
+import { BlockDefineHeader } from "./BlockDefineHeader.js";
 import { BlockDndContext, useBlockDraggable, useBlockDroppable, useDraggingBlock } from "./BlockDragDrop.js";
 import {
   BlockEditingContext,
@@ -26,6 +27,7 @@ import { BlockInsertTargets } from "./BlockInsertTargets.js";
 import { BlockResult, useBlockRunInput } from "./BlockResult.js";
 import { BlockPalette } from "./BlockPalette.js";
 import { BlockVariablePath } from "./BlockVariablePath.js";
+import { BlockDefineContext, useBlockModelEnvironment } from "./BlockViewMode.js";
 
 // ################################################################################################
 // #498: the read-only block view of a transformer value (analysis #497). The tree comes from the
@@ -47,6 +49,9 @@ import { BlockVariablePath } from "./BlockVariablePath.js";
 // Under the TransformerEditor, a click on a block header runs the block (BlockResult.tsx). Blocks,
 // palette entries and tray blocks can be dragged (BlockDragDrop.tsx). A variable block has a path
 // picker (BlockVariablePath.tsx, #501).
+// #502: the body of a composite TransformerDefinition is shown under its define header
+// (BlockDefineHeader.tsx); its parameters are context names of the body, and the body is evaluated
+// at runtime, so no block of it is marked build.
 // ################################################################################################
 
 export interface BlockEditorViewProps {
@@ -92,7 +97,8 @@ interface BlockColors {
 interface BlockSettings extends BlockColors {
   rootLessListKey: string;
   initialCollapse: InitialCollapse;
-  buildMarking: BlockEditorBuildMarking;
+  /** "none" in a define body (#502), evaluated at runtime. */
+  buildMarking: BlockEditorBuildMarking | "none";
   /** Type badges by block id. */
   typeBadges: Map<string, TransformerTypeBadge> | undefined;
 }
@@ -485,7 +491,11 @@ const BlockNodeView = React.memo(function BlockNodeView(props: {
 function BlockTray(props: { settings: BlockSettings; colors: BlockColors }) {
   const editing = useBlockEditing();
   const tray = editing?.tray;
-  const trees = useMemo(() => (tray ?? []).map((block) => transformerBlockTree(block).root), [tray]);
+  const { modelEnvironment } = useBlockModelEnvironment();
+  const trees = useMemo(
+    () => (tray ?? []).map((block) => transformerBlockTree(block, { modelEnvironment }).root),
+    [tray, modelEnvironment],
+  );
   const draggingBlock = useDraggingBlock();
   const drop = useBlockDroppable("drop:tray", tray ? { kind: "tray" } : undefined);
   if (!editing || !tray || (tray.length === 0 && !draggingBlock)) {
@@ -602,7 +612,19 @@ function ToolButton(props: {
 
 export const BlockEditorView = React.memo(function BlockEditorView(props: BlockEditorViewProps) {
   const editable = props.onCommit !== undefined;
-  const tree = useMemo(() => transformerBlockTree(props.value, { emptyOptionalSlots: editable }), [props.value, editable]);
+  const { modelEnvironment } = useBlockModelEnvironment();
+  const definedBy = useContext(BlockDefineContext);
+  const define = definedBy?.rootLessListKey === props.rootLessListKey ? definedBy : undefined;
+  // the names only: a read flag changes with the body, the scope of the body does not
+  const defineParameterNames = define?.parameters.map((parameter) => parameter.name).join("\u0000");
+  const defineParameters = useMemo(
+    () => defineParameterNames?.split("\u0000").filter((name) => name !== ""),
+    [defineParameterNames],
+  );
+  const tree = useMemo(
+    () => transformerBlockTree(props.value, { emptyOptionalSlots: editable, modelEnvironment }),
+    [props.value, editable, modelEnvironment],
+  );
   const editing = useBlockEditingValue(
     props.value,
     props.onCommit,
@@ -610,9 +632,11 @@ export const BlockEditorView = React.memo(function BlockEditorView(props: BlockE
     props.tray,
     props.onTrayChange,
     useBlockRunInput(),
+    defineParameters,
   );
   const colors = useBlockColors();
-  const buildMarking = useBlockEditorBuildMarking();
+  const viewBuildMarking = useBlockEditorBuildMarking();
+  const buildMarking = define ? "none" : viewBuildMarking;
   const [fold, setFold] = useState<{ initialCollapse: InitialCollapse; generation: number }>({
     initialCollapse: "default",
     generation: 0,
@@ -685,7 +709,14 @@ export const BlockEditorView = React.memo(function BlockEditorView(props: BlockE
             />
             <div css={css({ overflowX: "auto", padding: "8px 4px", minWidth: 0, flexGrow: 1 })}>
               <div css={css({ zoom })}>
-                <BlockNodeView key={fold.generation} node={tree.root} settings={settings} />
+                {define ? (
+                  <div css={css({ display: "inline-flex", flexDirection: "column", alignItems: "flex-start" })}>
+                    <BlockDefineHeader define={define} colors={colors} />
+                    <BlockNodeView key={fold.generation} node={tree.root} settings={settings} />
+                  </div>
+                ) : (
+                  <BlockNodeView key={fold.generation} node={tree.root} settings={settings} />
+                )}
               </div>
               <BlockTray settings={settings} colors={colors} />
             </div>

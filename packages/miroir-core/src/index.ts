@@ -1003,7 +1003,7 @@ export {
   resolveFundamentalSchemaForDeployment,
   clearSchemaCacheForTests,
   type SchemaResolutionMode,
-} from "./1_core/mls/schemaForDeployment.js";
+} from "./2_domain/schemaForDeployment.js";
 export {
   classifySchemaChange,
   computeCombinedSchemaRevision,
@@ -1386,6 +1386,27 @@ export type {
   TransformerTypeChange,
 } from "./0_interfaces/2_domain/TransformerTreeEditInterface.js";
 export { transformerSubtreeRuns } from "./2_domain/TransformerSubtreeRun.js";
+export {
+  addTransformerParameter,
+  compositeParameterSchema,
+  compositeTransformerDefinition,
+  contextNameReadPaths,
+  freeContextNames,
+  removeTransformerParameter,
+  renameContextName,
+  renameTransformerParameter,
+  transformerDefinitionParameters,
+  transformerDefinitionParameterUses,
+} from "./2_domain/TransformerDefinitionEdit.js";
+export {
+  applicationTransformerBranchName,
+  applicationTransformerBranches,
+  applicationCompositeTransformerDefinitions,
+  transformerDefinitionRegistry,
+  transformerDefinitionRegistryConflicts,
+  transformerDefinitionRegistryOf,
+  type TransformerDefinitionRegistry,
+} from "./2_domain/TransformerDefinitionRegistry.js";
 export type { TransformerSubtreeRun } from "./0_interfaces/2_domain/TransformerSubtreeRunInterface.js";
 export {
   transformerBlockOutline,

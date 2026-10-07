@@ -1,5 +1,14 @@
-import type { InputOutputType, KeyMapEntry, MlElement, MlReference } from "miroir-core";
-import React, { createContext, useCallback, useMemo, useState } from "react";
+import {
+  defaultMiroirModelEnvironment,
+  transformerDefinitionRegistry,
+  type InputOutputType,
+  type KeyMapEntry,
+  type MiroirModelEnvironment,
+  type MlElement,
+  type MlReference,
+  type TransformerDefinitionRegistry,
+} from "miroir-core";
+import React, { createContext, useCallback, useContext, useMemo, useState } from "react";
 
 // ################################################################################################
 // #498 (analysis #497, D6): which view, Blocks, Form or JSON, shows a transformer field of the
@@ -22,9 +31,47 @@ export interface BlockRunInput {
   rootInputType?: InputOutputType;
   /** #501: the ML schemas of the application's Entities, by uuid, for the same. */
   entityMlSchemas?: Record<string, MlElement>;
+  /**
+   * #502: the model environment of the edited application: its schema has a branch per composite
+   * TransformerDefinition, and its registry has their definitions.
+   */
+  modelEnvironment?: MiroirModelEnvironment;
 }
 
 export const BlockRunInputContext = createContext<BlockRunInput | undefined>(undefined);
+
+/**
+ * #502: the block view of the body of a composite TransformerDefinition is a "define" block: a
+ * header with its name and parameters, which bind context names in the body. Each change returns
+ * an error message when it is refused.
+ */
+export interface BlockDefine {
+  /** The block view of this field shows the header; the others under the provider do not. */
+  rootLessListKey: string;
+  name: string;
+  /** In order, with whether the body reads each one. */
+  parameters: { name: string; read: boolean }[];
+  addParameter: (name: string) => string | undefined;
+  renameParameter: (from: string, to: string) => string | undefined;
+  removeParameter: (name: string) => string | undefined;
+}
+
+export const BlockDefineContext = createContext<BlockDefine | undefined>(undefined);
+
+/**
+ * #502: the model environment of the block view, with its transformer registry: the edited
+ * application's under the TransformerEditor, Miroir's elsewhere.
+ */
+export function useBlockModelEnvironment(): {
+  modelEnvironment: MiroirModelEnvironment;
+  transformerDefinitions: TransformerDefinitionRegistry;
+} {
+  const modelEnvironment = useContext(BlockRunInputContext)?.modelEnvironment ?? defaultMiroirModelEnvironment;
+  return useMemo(
+    () => ({ modelEnvironment, transformerDefinitions: transformerDefinitionRegistry(modelEnvironment) }),
+    [modelEnvironment],
+  );
+}
 
 export interface BlockViewModes {
   modeOf: (formikPath: string) => BlockViewMode;

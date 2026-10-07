@@ -145,6 +145,7 @@ import {
 } from "./Transformers";
 import { handleTransformer_syncExternalServiceSchema } from "./syncExternalServiceSchema";
 import type { MiroirActivityTrackerInterface } from "../0_interfaces/3_controllers/MiroirActivityTrackerInterface";
+import { transformerDefinitionRegistry } from "./TransformerDefinitionRegistry";
 import { defaultAdminApplicationDeploymentMapNOTGOOD, type ApplicationDeploymentMap } from "../1_core/Deployment";
 
 // Re-export types needed by other modules
@@ -3952,8 +3953,9 @@ export function transformer_extended_apply(
           if (step == "runtime" || ((transformer as any)["interpolation"] ?? "build") == "build") {
             // log.info("transformer_extended_apply interpreting transformer!");
             let preResult;
+            // #502: the stock definitions and the application's composites
             const foundApplicationTransformer =
-              applicationTransformerDefinitions[(transformer as any).transformerType];
+              transformerDefinitionRegistry(modelEnvironment)[(transformer as any).transformerType];
             // log.info(
             //   "transformer_extended_apply foundApplicationTransformer",
             //   foundApplicationTransformer,
