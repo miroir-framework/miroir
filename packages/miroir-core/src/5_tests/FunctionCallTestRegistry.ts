@@ -37,7 +37,7 @@ import {
 import { mlUnion_recursivelyUnfold } from "../1_core/mls/mlUnion_RecursivelyUnfold";
 import { localizeMlSchemaReferenceContext } from "../1_core/mls/MlsUnfoldSchemaOnce";
 import { resolveQueryTemplateWithExtractorCombinerTransformer } from "../2_domain/Templates";
-import { resolveTransformerResultSchema } from "../2_domain/Transformer_ResultSchema";
+import { referencePathAttributeNames, resolveTransformerResultSchema } from "../2_domain/Transformer_ResultSchema";
 import {
   checkTransformerInterfaceCompatibility,
   checkTransformerInterfaceCompatibilityWithInference,
@@ -72,6 +72,8 @@ import {
 } from "../2_domain/TransformerTreeEdit";
 import { transformerBlockOutline, transformerBlockTree, transformerPaletteGroups } from "../2_domain/TransformerBlockModel";
 import { transformerSubtreeRuns } from "../2_domain/TransformerSubtreeRun";
+import { transformerDefinitionBodyEnvironment, transformerEnvironmentAt } from "../2_domain/TransformerEnvironmentBindings";
+import { compositeActionEnvironmentAt, runnerEnvironment } from "../2_domain/CompositeActionScope";
 import {
   checkTransformerMlSchemaCompatibility,
   formatMlSchemaTypeLabel,
@@ -224,6 +226,7 @@ const FUNCTION_CALL_REGISTRY: Record<
       resolveQueryTemplateWithExtractorCombinerTransformer as WhitelistedFunction,
   },
   "miroir-core/2_domain/Transformer_ResultSchema": {
+    referencePathAttributeNames: referencePathAttributeNames as WhitelistedFunction,
     resolveTransformerResultSchema: resolveTransformerResultSchema as WhitelistedFunction,
   },
   "miroir-core/2_domain/TransformerInterfaceCheck": {
@@ -262,6 +265,14 @@ const FUNCTION_CALL_REGISTRY: Record<
     moveTransformerNode: moveTransformerNode as WhitelistedFunction,
     transformerInsertPositions: transformerInsertPositions as WhitelistedFunction,
     reorderTransformerNode: reorderTransformerNode as WhitelistedFunction,
+  },
+  "miroir-core/2_domain/TransformerEnvironmentBindings": {
+    transformerEnvironmentAt: transformerEnvironmentAt as WhitelistedFunction,
+    transformerDefinitionBodyEnvironment: transformerDefinitionBodyEnvironment as WhitelistedFunction,
+  },
+  "miroir-core/2_domain/CompositeActionScope": {
+    compositeActionEnvironmentAt: compositeActionEnvironmentAt as WhitelistedFunction,
+    runnerEnvironment: runnerEnvironment as WhitelistedFunction,
   },
   "miroir-core/2_domain/TransformerSubtreeRun": {
     transformerSubtreeRuns: transformerSubtreeRuns as WhitelistedFunction,

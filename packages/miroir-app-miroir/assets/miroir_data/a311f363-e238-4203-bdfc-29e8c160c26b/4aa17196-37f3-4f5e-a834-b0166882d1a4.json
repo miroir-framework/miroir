@@ -3671,6 +3671,37 @@
           },
           {
             "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "the new entry of a record slot is named as the insert will name it",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "transformerInsertPositions"
+            },
+            "arguments": [
+              {
+                "transformerType": "dataflowObject",
+                "definition": {
+                  "value": {
+                    "transformerType": "returnValue",
+                    "value": "a"
+                  }
+                }
+              }
+            ],
+            "expectedValue": [
+              {
+                "path": [
+                  "definition",
+                  "value2"
+                ],
+                "container": [
+                  "definition"
+                ],
+                "kind": "recordEntry"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
             "miroirTestLabel": "the positions of a transformer come before those of its children",
             "functionRef": {
               "module": "miroir-core/2_domain/TransformerTreeEdit",

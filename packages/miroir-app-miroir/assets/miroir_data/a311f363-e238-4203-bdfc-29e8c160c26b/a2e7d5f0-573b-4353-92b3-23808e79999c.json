@@ -1010,6 +1010,88 @@
           },
           {
             "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "the having of an aggregate runs once per group, with aggregateValue",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerSubtreeRun",
+              "export": "transformerSubtreeRuns"
+            },
+            "arguments": [
+              {
+                "transformerType": "aggregate",
+                "interpolation": "runtime",
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "defaultInput"
+                  ]
+                },
+                "function": "sum",
+                "attribute": "n",
+                "groupBy": "name",
+                "having": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "aggregateValue"
+                  ]
+                }
+              },
+              [
+                "having"
+              ],
+              {
+                "defaultInput": [
+                  {
+                    "name": "a",
+                    "n": 1
+                  },
+                  {
+                    "name": "b",
+                    "n": 2
+                  },
+                  {
+                    "name": "c",
+                    "n": 3
+                  }
+                ]
+              },
+              {
+                "defaultInput": [
+                  {
+                    "name": "a",
+                    "n": 1
+                  },
+                  {
+                    "name": "b",
+                    "n": 2
+                  },
+                  {
+                    "name": "c",
+                    "n": 3
+                  }
+                ]
+              }
+            ],
+            "environmentRef": "defaultMiroirModelEnvironment",
+            "environmentArgumentIndex": 4,
+            "expectedValue": [
+              {
+                "label": "aggregateValue[0]",
+                "value": 1
+              },
+              {
+                "label": "aggregateValue[1]",
+                "value": 2
+              },
+              {
+                "label": "aggregateValue[2]",
+                "value": 3
+              }
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
             "miroirTestLabel": "a path that is not a transformer fails",
             "functionRef": {
               "module": "miroir-core/2_domain/TransformerSubtreeRun",

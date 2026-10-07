@@ -702,8 +702,13 @@ function positionsAlong(
     }
     const containerKey = `${path.join(".")}:new`;
     if (!positions.has(containerKey)) {
+      // a new record entry is named as the insert names it, so its scope (#501) is that of the new entry
       positions.set(containerKey, {
-        path: [...path, isList ? entries.length : "value", ...freshPath(rest)],
+        path: [
+          ...path,
+          isList ? entries.length : freeRecordKey(isPlainRecord(value) ? value : {}, "value"),
+          ...freshPath(rest),
+        ],
         container: path,
         kind: isList ? "listEnd" : "recordEntry",
       });

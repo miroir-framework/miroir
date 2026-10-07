@@ -1,37 +1,21 @@
 import type { CoreTransformerForBuildPlusRuntime } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { defaultTransformerInput, type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
+import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import type { TransformerSubtreeRun } from "../0_interfaces/2_domain/TransformerSubtreeRunInterface";
 import { defaultMiroirModelEnvironment } from "../1_core/Model";
+import {
+  AGGREGATE_VALUE_NAME,
+  outerObjectName,
+  transformerScopeBinding,
+} from "./TransformerScope";
 import { resolveApplyTo_legacy, transformer_extended_apply_wrapper } from "./TransformersForRuntime";
 
 // ################################################################################################
 // Issue #500 — run one node of a transformer tree, as the block view's result bubble does. The
-// context of a node is rebuilt along its path, as the runtime builds it: the binding table below
-// says which slots of which transformer types see more than their parent's context. #501 extends
-// the table (variables and scope).
+// context of a node is rebuilt along its path, as the runtime builds it, from the scope rules of
+// TransformerScope (#501).
 // ################################################################################################
 
 type TransformerNode = { transformerType: string } & Record<string, unknown>;
-
-/**
- * How a slot of a transformer type extends the context of what sits in it:
- * - `eachElement`: the evaluated `applyTo`, a list, is run through once per element, bound to
- *   `referenceToOuterObject` (default `defaultInput`);
- * - `eachElementOrValue`: the same, an object being run through once per value;
- * - `applyTo`: the evaluated `applyTo`, bound once to `referenceToOuterObject`;
- * - `earlierSteps`: each entry of the record sees the results of the entries before it, by name.
- */
-type ContextBinding = "eachElement" | "eachElementOrValue" | "applyTo" | "earlierSteps";
-
-/** Transformer type → slot attribute → binding (TransformersForRuntime handlers of each type). */
-const CONTEXT_BINDINGS: Record<string, Record<string, ContextBinding>> = {
-  mapList: { elementTransformer: "eachElementOrValue" },
-  filterList: { predicate: "eachElement" },
-  find: { predicate: "eachElement" },
-  createObjectFromPairs: { definition: "applyTo" },
-  mergeIntoObject: { definition: "applyTo" },
-  dataflowObject: { definition: "earlierSteps" },
-};
 
 interface RunContext {
   labels: string[];
@@ -55,12 +39,6 @@ function valueAt(value: unknown, path: (string | number)[]): unknown {
       typeof current === "object" && current !== null ? (current as Record<string, unknown>)[segment] : undefined,
     value,
   );
-}
-
-function outerObjectName(node: TransformerNode): string {
-  return typeof node.referenceToOuterObject === "string" && node.referenceToOuterObject.length > 0
-    ? node.referenceToOuterObject
-    : defaultTransformerInput;
 }
 
 /**
@@ -130,7 +108,7 @@ export function transformerSubtreeRuns(
   for (let depth = 0; depth < path.length; depth++) {
     const nodePath = path.slice(0, depth);
     const node = valueAt(root, nodePath);
-    const binding = isTransformerNode(node) ? CONTEXT_BINDINGS[node.transformerType]?.[String(path[depth])] : undefined;
+    const binding = isTransformerNode(node) ? transformerScopeBinding(node, path[depth]) : undefined;
     if (!binding || !isTransformerNode(node)) {
       continue;
     }
@@ -151,6 +129,19 @@ export function transformerSubtreeRuns(
           return elements.map(([label, element]) => ({
             labels: [...run.labels, label],
             context: { ...run.context, [name]: element },
+          }));
+        }
+        case "eachAggregateGroup": {
+          // The groups as the aggregate computes them, before its having filters them.
+          const { having: _having, ...withoutHaving } = node;
+          const rows = apply(withoutHaving, nodePath, run.context);
+          if (!Array.isArray(rows)) {
+            return [{ ...run, ancestorFailure: rows }];
+          }
+          const resultKey = typeof node.function === "string" ? node.function : "aggregate";
+          return rows.map((row, index) => ({
+            labels: [...run.labels, `${AGGREGATE_VALUE_NAME}[${index}]`],
+            context: { ...run.context, [AGGREGATE_VALUE_NAME]: (row as Record<string, unknown>)?.[resultKey] },
           }));
         }
         case "earlierSteps": {
