@@ -1,6 +1,7 @@
 import type React from "react";
 
 import { getMlElementEditorForTest } from "./componentTestTools.js";
+import { SequenceEditorForTest } from "./sequenceEditorForTest.js";
 import { TransformerBlocksForTest } from "./transformerBlocksForTest.js";
 import { TransformerEditorForTest } from "./transformerEditorForTest.js";
 
@@ -29,6 +30,8 @@ export const componentRegistry: ComponentRegistry = {
   MlElementEditor: getMlElementEditorForTest("MlElementEditor.test"),
   // its Formik form has no section root: fields are named from the form values root
   TransformerEditor: { component: TransformerEditorForTest, fieldNamePrefix: "" },
-  // #498: the block view of a stored TransformerDefinition's body, without a form
+  // #498: the block view of a stored TransformerDefinition's body, without a form; #504: or of a Runner's sequence
   TransformerBlocks: TransformerBlocksForTest,
+  // #505: its Formik form has no section root either
+  SequenceEditor: { component: SequenceEditorForTest, fieldNamePrefix: "" },
 };

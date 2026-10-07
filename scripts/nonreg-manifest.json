@@ -1506,6 +1506,44 @@
       }
     },
     {
+      "id": "integ-report.queryDetails",
+      "scopes": ["ui"],
+      "tier": "default",
+      "title": "MiroirTest integ — report.queryDetails (a Query's runtime transformer edited as blocks, saved, undone) (#503)",
+      "requires": "storage",
+      "argv": [
+        "npm",
+        "run",
+        "testMiroir",
+        "-w",
+        "miroir-standalone-app",
+        "--",
+        "--profile",
+        "{profile}",
+        "--suites",
+        "report.queryDetails",
+        "--mode",
+        "integ"
+      ],
+      "shared": {
+        "group": "standalone-app-report-suites",
+        "argv": [
+          "npm",
+          "run",
+          "testMiroir",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--profile",
+          "{profile}",
+          "--mode",
+          "integ",
+          "--shared"
+        ],
+        "suites": ["report.queryDetails"]
+      }
+    },
+    {
       "id": "integ-report.connectExternalServiceWizard",
       "scopes": ["external"],
       "tier": "default",

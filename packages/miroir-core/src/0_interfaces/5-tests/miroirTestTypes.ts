@@ -4,6 +4,7 @@ import type {
   MiroirTestForReport,
   MiroirTestLeaf,
   ReactComponentTestStep,
+  ReactComponentTestSuite,
   ReportTestFakeHttpResponse,
   TestAssertionResult,
 } from "../1_core/preprocessor-generated/miroirFundamentalType";
@@ -59,6 +60,10 @@ export type ReactComponentTestSuiteContext = {
   stepKinds?: ReactComponentTestStep["step"][];
   /** Set when the suite has `runOnDemand: true` (#303 T6): Run all skips its leaves. */
   runOnDemand?: true;
+  /** Set when the suite has `wireLocalCacheCompositeAction: true` (#502): actions run on the test local cache. */
+  wireLocalCacheCompositeAction?: true;
+  /** Instances the suite loads in the test local cache with the application's model and data (#502). */
+  localCacheInstances?: ReactComponentTestSuite["localCacheInstances"];
 };
 
 /**

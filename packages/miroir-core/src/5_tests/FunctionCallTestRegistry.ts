@@ -37,7 +37,25 @@ import {
 import { mlUnion_recursivelyUnfold } from "../1_core/mls/mlUnion_RecursivelyUnfold";
 import { localizeMlSchemaReferenceContext } from "../1_core/mls/MlsUnfoldSchemaOnce";
 import { resolveQueryTemplateWithExtractorCombinerTransformer } from "../2_domain/Templates";
-import { resolveTransformerResultSchema } from "../2_domain/Transformer_ResultSchema";
+import { referencePathAttributeNames, resolveTransformerResultSchema } from "../2_domain/Transformer_ResultSchema";
+import { getApplicationSection } from "../1_core/Model";
+import { isBlockViewRoot, isTestSequenceField } from "../2_domain/BlockViewFields";
+import {
+  addTransformerParameter,
+  compositeTransformerDefinition,
+  contextNameReadPaths,
+  freeContextNames,
+  removeTransformerParameter,
+  renameContextName,
+  renameTransformerParameter,
+  transformerDefinitionParameterUses,
+} from "../2_domain/TransformerDefinitionEdit";
+import {
+  applicationTransformerBranches,
+  applicationCompositeTransformerDefinitions,
+  transformerDefinitionRegistryConflicts,
+  transformerDefinitionRegistryOf,
+} from "../2_domain/TransformerDefinitionRegistry";
 import {
   checkTransformerInterfaceCompatibility,
   checkTransformerInterfaceCompatibilityWithInference,
@@ -51,21 +69,69 @@ import {
   transformerTypesAcceptingInput,
 } from "../2_domain/TransformerInterfaceCheck";
 import {
+  defaultTransformerNode,
   editedAttributes,
   elementParameterReadsOfDefaultInput,
   holdsOneDefault,
+  insertTransformerNode,
   keepAttributesOnTypeChange,
+  moveTransformerNode,
+  reorderTransformerNode,
   parameterReadsOfDefaultInput,
   pipeCandidates,
   pipeTransformerNode,
   removeTransformerNode,
   transformerChildren,
+  transformerInsertPositions,
   transformerSlots,
   unwrapTransformerNode,
   wrapCandidates,
   wrapTransformerNode,
 } from "../2_domain/TransformerTreeEdit";
-import { transformerBlockOutline, transformerBlockTree } from "../2_domain/TransformerBlockModel";
+import {
+  blockOutline,
+  blockTree,
+  transformerBlockOutline,
+  transformerBlockTree,
+  transformerPaletteGroups,
+} from "../2_domain/TransformerBlockModel";
+import { endpointActionRegistryOf, endpointOfActionType } from "../2_domain/EndpointActionRegistry";
+import { transformerSubtreeRuns } from "../2_domain/TransformerSubtreeRun";
+import { transformerDefinitionBodyEnvironment, transformerEnvironmentAt } from "../2_domain/TransformerEnvironmentBindings";
+import { compositeActionEnvironmentAt, runnerEnvironment } from "../2_domain/CompositeActionScope";
+import {
+  actionLabels,
+  actionPaletteGroups,
+  blockEnvironmentAt,
+  blockInsertPositions,
+  defaultActionNode,
+  insertBlockNode,
+  isStepPosition,
+  isValuePosition,
+  moveBlockNode,
+  removeBlockNode,
+  renameBlockKey,
+  renameSequenceName,
+} from "../2_domain/ActionSequenceEdit";
+import {
+  addEndpointAction,
+  addEndpointActionParameter,
+  compositeEndpointAction,
+  endpointActionHat,
+  endpointActionParameterReads,
+  newEndpoint,
+  removeEndpointActionParameter,
+  renameEndpointActionParameter,
+} from "../2_domain/EndpointActionEdit";
+import {
+  addRunnerFormField,
+  newCustomRunner,
+  removeRunnerFormField,
+  renameRunner,
+  renameRunnerFormField,
+  runnerFormFieldReads,
+  runnerHat,
+} from "../2_domain/RunnerHat";
 import {
   checkTransformerMlSchemaCompatibility,
   formatMlSchemaTypeLabel,
@@ -218,6 +284,7 @@ const FUNCTION_CALL_REGISTRY: Record<
       resolveQueryTemplateWithExtractorCombinerTransformer as WhitelistedFunction,
   },
   "miroir-core/2_domain/Transformer_ResultSchema": {
+    referencePathAttributeNames: referencePathAttributeNames as WhitelistedFunction,
     resolveTransformerResultSchema: resolveTransformerResultSchema as WhitelistedFunction,
   },
   "miroir-core/2_domain/TransformerInterfaceCheck": {
@@ -251,10 +318,89 @@ const FUNCTION_CALL_REGISTRY: Record<
     holdsOneDefault: holdsOneDefault as WhitelistedFunction,
     parameterReadsOfDefaultInput: parameterReadsOfDefaultInput as WhitelistedFunction,
     elementParameterReadsOfDefaultInput: elementParameterReadsOfDefaultInput as WhitelistedFunction,
+    defaultTransformerNode: defaultTransformerNode as WhitelistedFunction,
+    insertTransformerNode: insertTransformerNode as WhitelistedFunction,
+    moveTransformerNode: moveTransformerNode as WhitelistedFunction,
+    transformerInsertPositions: transformerInsertPositions as WhitelistedFunction,
+    reorderTransformerNode: reorderTransformerNode as WhitelistedFunction,
+  },
+  "miroir-core/2_domain/TransformerEnvironmentBindings": {
+    transformerEnvironmentAt: transformerEnvironmentAt as WhitelistedFunction,
+    transformerDefinitionBodyEnvironment: transformerDefinitionBodyEnvironment as WhitelistedFunction,
+  },
+  "miroir-core/2_domain/CompositeActionScope": {
+    compositeActionEnvironmentAt: compositeActionEnvironmentAt as WhitelistedFunction,
+    runnerEnvironment: runnerEnvironment as WhitelistedFunction,
+  },
+  "miroir-core/2_domain/TransformerDefinitionRegistry": {
+    applicationCompositeTransformerDefinitions: applicationCompositeTransformerDefinitions as WhitelistedFunction,
+    applicationTransformerBranches: applicationTransformerBranches as WhitelistedFunction,
+    transformerDefinitionRegistryConflicts: transformerDefinitionRegistryConflicts as WhitelistedFunction,
+    transformerDefinitionRegistryOf: transformerDefinitionRegistryOf as WhitelistedFunction,
+  },
+  "miroir-core/1_core/Model": {
+    getApplicationSection: getApplicationSection as WhitelistedFunction,
+  },
+  "miroir-core/2_domain/TransformerDefinitionEdit": {
+    addTransformerParameter: addTransformerParameter as WhitelistedFunction,
+    compositeTransformerDefinition: compositeTransformerDefinition as WhitelistedFunction,
+    contextNameReadPaths: contextNameReadPaths as WhitelistedFunction,
+    freeContextNames: freeContextNames as WhitelistedFunction,
+    removeTransformerParameter: removeTransformerParameter as WhitelistedFunction,
+    renameContextName: renameContextName as WhitelistedFunction,
+    renameTransformerParameter: renameTransformerParameter as WhitelistedFunction,
+    transformerDefinitionParameterUses: transformerDefinitionParameterUses as WhitelistedFunction,
+  },
+  "miroir-core/2_domain/BlockViewFields": {
+    isBlockViewRoot: isBlockViewRoot as WhitelistedFunction,
+    isTestSequenceField: isTestSequenceField as WhitelistedFunction,
+  },
+  "miroir-core/2_domain/TransformerSubtreeRun": {
+    transformerSubtreeRuns: transformerSubtreeRuns as WhitelistedFunction,
+  },
+  "miroir-core/2_domain/EndpointActionRegistry": {
+    endpointActionRegistryOf: endpointActionRegistryOf as WhitelistedFunction,
+    endpointOfActionType: endpointOfActionType as WhitelistedFunction,
+  },
+  "miroir-core/2_domain/ActionSequenceEdit": {
+    actionLabels: actionLabels as WhitelistedFunction,
+    actionPaletteGroups: actionPaletteGroups as WhitelistedFunction,
+    blockEnvironmentAt: blockEnvironmentAt as WhitelistedFunction,
+    blockInsertPositions: blockInsertPositions as WhitelistedFunction,
+    defaultActionNode: defaultActionNode as WhitelistedFunction,
+    insertBlockNode: insertBlockNode as WhitelistedFunction,
+    isStepPosition: isStepPosition as WhitelistedFunction,
+    isValuePosition: isValuePosition as WhitelistedFunction,
+    moveBlockNode: moveBlockNode as WhitelistedFunction,
+    removeBlockNode: removeBlockNode as WhitelistedFunction,
+    renameBlockKey: renameBlockKey as WhitelistedFunction,
+    renameSequenceName: renameSequenceName as WhitelistedFunction,
+  },
+  "miroir-core/2_domain/EndpointActionEdit": {
+    addEndpointAction: addEndpointAction as WhitelistedFunction,
+    addEndpointActionParameter: addEndpointActionParameter as WhitelistedFunction,
+    compositeEndpointAction: compositeEndpointAction as WhitelistedFunction,
+    endpointActionHat: endpointActionHat as WhitelistedFunction,
+    endpointActionParameterReads: endpointActionParameterReads as WhitelistedFunction,
+    newEndpoint: newEndpoint as WhitelistedFunction,
+    removeEndpointActionParameter: removeEndpointActionParameter as WhitelistedFunction,
+    renameEndpointActionParameter: renameEndpointActionParameter as WhitelistedFunction,
+  },
+  "miroir-core/2_domain/RunnerHat": {
+    addRunnerFormField: addRunnerFormField as WhitelistedFunction,
+    newCustomRunner: newCustomRunner as WhitelistedFunction,
+    removeRunnerFormField: removeRunnerFormField as WhitelistedFunction,
+    renameRunner: renameRunner as WhitelistedFunction,
+    renameRunnerFormField: renameRunnerFormField as WhitelistedFunction,
+    runnerFormFieldReads: runnerFormFieldReads as WhitelistedFunction,
+    runnerHat: runnerHat as WhitelistedFunction,
   },
   "miroir-core/2_domain/TransformerBlockModel": {
+    blockOutline: blockOutline as WhitelistedFunction,
+    blockTree: blockTree as WhitelistedFunction,
     transformerBlockTree: transformerBlockTree as WhitelistedFunction,
     transformerBlockOutline: transformerBlockOutline as WhitelistedFunction,
+    transformerPaletteGroups: transformerPaletteGroups as WhitelistedFunction,
   },
   "miroir-core/2_domain/TransformerMlSchemaCheck": {
     checkTransformerMlSchemaCompatibility:

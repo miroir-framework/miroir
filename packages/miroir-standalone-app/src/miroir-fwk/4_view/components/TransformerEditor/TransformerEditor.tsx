@@ -9,11 +9,15 @@ import {
   MiroirLoggerFactory,
   Uuid,
   defaultAdminApplicationDeploymentMapNOTGOOD,
-  defaultMiroirModelEnvironment,
   defaultTransformerInput,
   getInnermostTransformerError,
   noValue,
+  addTransformerParameter,
+  removeTransformerParameter,
+  renameTransformerParameter,
   safeStringify,
+  transformerDefinitionParameterUses,
+  transformerDefinitionRegistry,
   transformerNodeTypeStatus,
   transformer_extended_apply_wrapper,
   type InputOutputType,
@@ -29,7 +33,7 @@ import {
   entityApplicationForAdmin
 } from "miroir-app-admin";
 
-import { Formik, type FormikProps } from 'formik';
+import { Formik, useFormikContext, type FormikProps } from 'formik';
 import {
   type CoreTransformerForBuildPlusRuntime,
   type TransformerDefinition
@@ -40,12 +44,19 @@ import { cleanLevel, lastSubmitButtonClicked } from '../../constants';
 import {
   useTransformer
 } from "../Reports/ReportHooks";
-import { useCurrentModel } from "../../ReduxHooks.js";
+import { useCurrentModelEnvironment } from "../../ReduxHooks.js";
 import { useReportPageContext } from '../Reports/ReportPageContext';
 import { TypedValueObjectEditor } from '../Reports/TypedValueObjectEditor';
-import { BlockViewModeProvider } from '../BlockEditor/BlockViewMode.js';
+import {
+  BlockDefineContext,
+  BlockRunInputContext,
+  BlockViewModeProvider,
+  type BlockDefine,
+  type BlockRunInput,
+} from '../BlockEditor/BlockViewMode.js';
 import { ValueHistory } from '../ValueObjectEditor/ValueHistory.js';
 import { ValueHistoryProvider } from '../ValueObjectEditor/ValueHistoryProvider.js';
+import { ValueHistoryFallbackButtons } from '../ValueObjectEditor/ValueHistoryButtons.js';
 import type { TransformerTypeBadge, TransformerTypeBadgePart } from '../ValueObjectEditor/MlElementEditorInterface';
 import {
   ThemedContainer,
@@ -58,6 +69,7 @@ import {
 } from "../Themes/index";
 import { EntityInstanceSelectorPanel } from './EntityInstanceSelectorPanel';
 import { TransformationResultPanel } from './TransformationResultPanel';
+import { TransformerDefinitionSave } from './TransformerDefinitionSave';
 import {
   formikPath_TransformerEditorInputModeSelector,
   buildInitialTransformerSelectorFromPersistedState,
@@ -221,11 +233,19 @@ export function transformerTypeBadges(
   return [...nodeBadges, ...literalBadges];
 }
 
+/** A refused change of a define header, without the name of the function that refused it. */
+function refusal(error: unknown): string {
+  return (error instanceof Error ? error.message : String(error)).replace(/^\w+: /, "");
+}
+
 /**
  * The transformer definition editor with its "Restrict transformers to the input type" switch.
  * Every transformerType select is restricted to the input of its position while the switch is
  * on; nested mismatches are always marked (#383 D4, D6). The "Show transformer types" switch
  * (#453) puts a type badge on the title row of every node and literal `applyTo`.
+ * #502: a composite TransformerDefinition edited in "defined" mode is a define block, whose header
+ * changes its parameters in a draft of the definition, kept until another one is edited; Save
+ * writes the draft. The undo history covers the body only.
  */
 const TransformerDefinitionEditor: React.FC<{
   formValueMLSchema: MlElement;
@@ -239,6 +259,12 @@ const TransformerDefinitionEditor: React.FC<{
   onRestrictTransformersToInputTypeChange: (checked: boolean) => void;
   /** Undo / redo of the edited transformer (#499). */
   transformerHistory: ValueHistory;
+  /** The input the transformer runs on, as params and context: blocks run their subtree on it (#500). */
+  transformerInput: Record<string, unknown>;
+  /** The edited application's model environment: its composite TransformerDefinitions (#502). */
+  modelEnvironment: MiroirModelEnvironment;
+  /** The TransformerDefinition edited in "defined" mode (#502). */
+  definedTransformer?: TransformerDefinition;
 }> = ({
   formValueMLSchema,
   application,
@@ -250,7 +276,11 @@ const TransformerDefinitionEditor: React.FC<{
   restrictTransformersToInputType,
   onRestrictTransformersToInputTypeChange,
   transformerHistory,
+  transformerInput,
+  modelEnvironment,
+  definedTransformer,
 }) => {
+  const { setFieldValue } = useFormikContext<TransformerEditorFormikValueType>();
   const entityMlSchemas = useMemo(
     () =>
       Object.fromEntries(
@@ -261,10 +291,77 @@ const TransformerDefinitionEditor: React.FC<{
     [entities],
   );
   const rootInputTypeKey = safeStringify(rootInputType);
+  const runInput: BlockRunInput = useMemo(
+    () => ({
+      transformerParams: transformerInput,
+      contextResults: transformerInput,
+      rootInputType,
+      entityMlSchemas,
+      modelEnvironment,
+    }),
+    [transformerInput, rootInputTypeKey, entityMlSchemas, modelEnvironment],
+  );
+  const transformerDefinitions = useMemo(() => transformerDefinitionRegistry(modelEnvironment), [modelEnvironment]);
   const editedTransformerKey = safeStringify(editedTransformer);
+  // #502: the define block of a composite edited in "defined" mode
+  const [definitionDraft, setDefinitionDraft] = useState<TransformerDefinition | undefined>(undefined);
+  const composite =
+    definedTransformer?.transformerImplementation.transformerImplementationType === "transformer"
+      ? definedTransformer
+      : undefined;
+  // The draft's parameters go with the body they were edited on, and coming back to a definition
+  // fetches its body anew: choosing another definition drops the draft, during render (no effect).
+  const [draftedUuid, setDraftedUuid] = useState(composite?.uuid);
+  if (draftedUuid !== composite?.uuid) {
+    setDraftedUuid(composite?.uuid);
+    setDefinitionDraft(undefined);
+  }
+  const definition = composite && definitionDraft?.uuid === composite.uuid ? definitionDraft : composite;
+  const definedWithBody: TransformerDefinition | undefined = useMemo(
+    () =>
+      definition
+        ? {
+            ...definition,
+            transformerImplementation: {
+              transformerImplementationType: "transformer",
+              definition: editedTransformer as CoreTransformerForBuildPlusRuntime,
+            },
+          }
+        : undefined,
+    [definition, editedTransformerKey],
+  );
+  const define: BlockDefine | undefined = useMemo(() => {
+    if (!definedWithBody) {
+      return undefined;
+    }
+    const apply = (change: (current: TransformerDefinition) => TransformerDefinition): string | undefined => {
+      try {
+        const next = change(definedWithBody);
+        setDefinitionDraft(next);
+        if (next.transformerImplementation !== definedWithBody.transformerImplementation) {
+          void setFieldValue(
+            transformerFormikPath,
+            (next.transformerImplementation as { definition: unknown }).definition,
+            false,
+          );
+        }
+        return undefined;
+      } catch (error) {
+        return refusal(error);
+      }
+    };
+    return {
+      rootLessListKey: "transformer",
+      name: definedWithBody.name,
+      parameters: transformerDefinitionParameterUses(definedWithBody),
+      addParameter: (name) => apply((current) => addTransformerParameter(current, name)),
+      renameParameter: (from, to) => apply((current) => renameTransformerParameter(current, from, to)),
+      removeParameter: (name) => apply((current) => removeTransformerParameter(current, name)),
+    };
+  }, [definedWithBody, setFieldValue]);
   const interfaceWalk = useMemo(
-    () => checkTransformerInterfaceRecursively(editedTransformer, rootInputType, { entityMlSchemas }),
-    [editedTransformerKey, rootInputTypeKey, entityMlSchemas],
+    () => checkTransformerInterfaceRecursively(editedTransformer, rootInputType, { entityMlSchemas, transformerDefinitions }),
+    [editedTransformerKey, rootInputTypeKey, entityMlSchemas, transformerDefinitions],
   );
   // Node paths are relative to the transformer, editor paths to its selector.
   const transformerTypeRestrictions = useMemo(
@@ -333,25 +430,39 @@ const TransformerDefinitionEditor: React.FC<{
           />
         }
       />
+      <TransformerDefinitionSave
+        application={application}
+        applicationDeploymentMap={applicationDeploymentMap}
+        modelEnvironment={modelEnvironment}
+        transformerDefinitions={transformerDefinitions}
+        body={editedTransformer}
+        defined={definedWithBody}
+      />
       <ValueHistoryProvider history={transformerHistory} formikPath={transformerFormikPath}>
-        <BlockViewModeProvider>
-          <TypedValueObjectEditor
-            labelElement={<>Transformer Definition</>}
-            formValueMLSchema={formValueMLSchema}
-            formikValuePathAsString="transformerEditor_transformer_selector"
-            application={application}
-            applicationDeploymentMap={applicationDeploymentMap}
-            deploymentUuid={deploymentUuid}
-            applicationSection={"model"}
-            formLabel={"Transformer Definition Selector"}
-            displaySubmitButton="noDisplay"
-            valueObjectEditMode="create"
-            maxRenderDepth={Infinity}
-            compatibilityWarnings={compatibilityWarnings}
-            transformerTypeRestrictions={transformerTypeRestrictions}
-            transformerTypeBadges={typeBadges}
-          />
-        </BlockViewModeProvider>
+        {/* #499: Undo stays reachable when an edit made the transformer fail its type check */}
+        <ValueHistoryFallbackButtons rootLessListKey="transformer" />
+        <BlockRunInputContext.Provider value={runInput}>
+          <BlockDefineContext.Provider value={define}>
+            <BlockViewModeProvider>
+              <TypedValueObjectEditor
+                labelElement={<>Transformer Definition</>}
+                formValueMLSchema={formValueMLSchema}
+                formikValuePathAsString="transformerEditor_transformer_selector"
+                application={application}
+                applicationDeploymentMap={applicationDeploymentMap}
+                deploymentUuid={deploymentUuid}
+                applicationSection={"model"}
+                formLabel={"Transformer Definition Selector"}
+                displaySubmitButton="noDisplay"
+                valueObjectEditMode="create"
+                maxRenderDepth={Infinity}
+                compatibilityWarnings={compatibilityWarnings}
+                transformerTypeRestrictions={transformerTypeRestrictions}
+                transformerTypeBadges={typeBadges}
+              />
+            </BlockViewModeProvider>
+          </BlockDefineContext.Provider>
+        </BlockRunInputContext.Provider>
       </ValueHistoryProvider>
     </>
   );
@@ -606,7 +717,9 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                 : application;
             const editorDeploymentUuid: Uuid =
               applicationDeploymentMap[editorApplication] ?? deploymentUuid;
-            const editorModel = useCurrentModel(editorApplication, applicationDeploymentMap);
+            // #502: the preview and the block view run the editor application's composites
+            const editorModelEnvironment = useCurrentModelEnvironment(editorApplication, applicationDeploymentMap);
+            const editorModel = editorModelEnvironment.currentModel;
             const inputSelectorMode =
               formikContext.values[formikPath_TransformerEditorInputModeSelector].mode;
             const canRenderInputEditor =
@@ -798,11 +911,11 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                 "TransformerEditor", // label
                 currentFormikTransformerDefinition, // transformer
                 "value", // resolveBuildTransformersTo
-                defaultMiroirModelEnvironment,
+                editorModelEnvironment,
                 transformerParams,
                 transformerInput,
               );
-            }, [transformerDefinitionFingerprint, transformationInputFingerprint]);
+            }, [transformerDefinitionFingerprint, transformationInputFingerprint, editorModelEnvironment]);
 
             const innermostError = useMemo(
               () =>
@@ -1052,6 +1165,11 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                         })
                       }
                       transformerHistory={transformerHistory}
+                      transformerInput={transformerInput}
+                      modelEnvironment={editorModelEnvironment}
+                      definedTransformer={
+                        selectorValues.mode === "defined" ? transformerSelector_currentFetchedTransformerDefinition : undefined
+                      }
                     />
                   ) : null}
                 </div>

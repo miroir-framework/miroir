@@ -72,6 +72,7 @@ import {
   entitySelfApplicationVersion,
   entityTestConfiguration,
   entityTheme,
+  entityTransformerDefinition,
   entityVersionEntityVersion,
   entityVersionHistoricalQueryVersion,
   entityVersionApplicationVersionCrossQueryVersion,
@@ -565,4 +566,8 @@ export const appModelInitializeCreateEntityOrder: Entity[] = entitiesInBootstrap
   entityApplicationEvolutionTrace.uuid!,
   entityApplicationEvolutionTraceEvent.uuid!,
   entityApplicationVersionCrossEntityVersion.uuid!,
+]).concat([
+  // #502: an application's composite TransformerDefinitions live in its model section. The
+  // Entity is not in defaultMiroirMetaModel.entities (Miroir's own are data), hence the concat.
+  entityTransformerDefinition as Entity,
 ]);

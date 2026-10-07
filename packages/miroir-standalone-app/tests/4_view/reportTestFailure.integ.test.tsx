@@ -46,7 +46,7 @@ function suiteExpectingWrongName(): MiroirTestSuite {
   ) as MiroirTestForReport;
   for (const step of leaf.steps) {
     if (step.step === "expectActionResult") {
-      step.assertion.testAssertion.definition.expectedValue = { name: wrongName };
+      step.assertion.payload.definition.expectedValue = { name: wrongName };
     }
   }
   reportSuite.miroirTests = [leaf];

@@ -7172,6 +7172,62 @@ export const miroirFundamentalMlSchema = {
               "type": "any"
             }
           },
+          "wireLocalCacheCompositeAction": {
+            "type": "boolean",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Wire composite actions to the local cache",
+                "description": "The component's DomainController runs actions on the test local cache, and the Library application is deployed (#274, #502)"
+              }
+            }
+          },
+          "localCacheInstances": {
+            "type": "array",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Local cache instances",
+                "description": "Instances loaded in the test local cache with the application's model and data, before the suite's cases run (#502)"
+              }
+            },
+            "definition": {
+              "type": "object",
+              "definition": {
+                "application": {
+                  "type": "uuid"
+                },
+                "objects": {
+                  "type": "array",
+                  "definition": {
+                    "type": "object",
+                    "definition": {
+                      "parentName": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "parentUuid": {
+                        "type": "uuid"
+                      },
+                      "applicationSection": {
+                        "type": "enum",
+                        "definition": [
+                          "model",
+                          "data"
+                        ]
+                      },
+                      "instances": {
+                        "type": "array",
+                        "definition": {
+                          "type": "any"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
           "miroirTests": {
             "type": "array",
             "definition": {
@@ -9444,6 +9500,62 @@ export const miroirFundamentalMlSchema = {
                     "optional": true,
                     "definition": {
                       "type": "any"
+                    }
+                  },
+                  "wireLocalCacheCompositeAction": {
+                    "type": "boolean",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Wire composite actions to the local cache",
+                        "description": "The component's DomainController runs actions on the test local cache, and the Library application is deployed (#274, #502)"
+                      }
+                    }
+                  },
+                  "localCacheInstances": {
+                    "type": "array",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Local cache instances",
+                        "description": "Instances loaded in the test local cache with the application's model and data, before the suite's cases run (#502)"
+                      }
+                    },
+                    "definition": {
+                      "type": "object",
+                      "definition": {
+                        "application": {
+                          "type": "uuid"
+                        },
+                        "objects": {
+                          "type": "array",
+                          "definition": {
+                            "type": "object",
+                            "definition": {
+                              "parentName": {
+                                "type": "string",
+                                "optional": true
+                              },
+                              "parentUuid": {
+                                "type": "uuid"
+                              },
+                              "applicationSection": {
+                                "type": "enum",
+                                "definition": [
+                                  "model",
+                                  "data"
+                                ]
+                              },
+                              "instances": {
+                                "type": "array",
+                                "definition": {
+                                  "type": "any"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
                     }
                   },
                   "miroirTests": {
@@ -25124,6 +25236,10 @@ export const miroirFundamentalMlSchema = {
             },
             "definition": "compositeRunTestAssertion"
           },
+          "endpoint": {
+            "type": "literal",
+            "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
+          },
           "actionLabel": {
             "type": "string",
             "optional": true
@@ -25131,7 +25247,7 @@ export const miroirFundamentalMlSchema = {
           "nameGivenToResult": {
             "type": "string"
           },
-          "testAssertion": {
+          "payload": {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
@@ -25212,13 +25328,6 @@ export const miroirFundamentalMlSchema = {
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "domainAction"
-            }
-          },
-          {
-            "type": "schemaReference",
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "compositeRunTestAssertion"
             }
           }
         ]
@@ -25376,6 +25485,38 @@ export const miroirFundamentalMlSchema = {
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "runBoxedQueryTemplateAction"
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false
+                  }
+                },
+                "definition": "compositeRunTestAssertion"
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "nameGivenToResult": {
+                "type": "string"
+              },
+              "payload": {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "testAssertion"
                 }
               }
             }
@@ -39836,6 +39977,38 @@ export const miroirFundamentalMlSchema = {
                     "canBeTemplate": false
                   }
                 },
+                "definition": "compositeRunTestAssertion"
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "nameGivenToResult": {
+                "type": "string"
+              },
+              "payload": {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion"
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false
+                  }
+                },
                 "definition": "connectExternalService"
               },
               "actionLabel": {
@@ -44017,6 +44190,48 @@ export const miroirFundamentalMlSchema = {
           }
         }
       },
+      "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion": {
+        "type": "object",
+        "definition": {
+          "testType": {
+            "type": "literal",
+            "definition": "testAssertion"
+          },
+          "testLabel": {
+            "type": "string"
+          },
+          "definition": {
+            "type": "object",
+            "definition": {
+              "resultAccessPath": {
+                "type": "array",
+                "optional": true,
+                "definition": {
+                  "type": "string"
+                }
+              },
+              "resultTransformer": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_coreTransformerForBuildPlusRuntime"
+                }
+              },
+              "ignoreAttributes": {
+                "type": "array",
+                "optional": true,
+                "definition": {
+                  "type": "string"
+                }
+              },
+              "expectedValue": {
+                "type": "any"
+              }
+            }
+          }
+        }
+      },
       "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance": {
         "type": "object",
         "nonStrict": true,
@@ -45492,13 +45707,6 @@ export const miroirFundamentalMlSchema = {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction"
             }
-          },
-          {
-            "type": "schemaReference",
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeRunTestAssertion"
-            }
           }
         ]
       },
@@ -45873,42 +46081,6 @@ export const miroirFundamentalMlSchema = {
           }
         }
       },
-      "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeRunTestAssertion": {
-        "type": "object",
-        "tag": {
-          "value": {
-            "display": {
-              "displayedAttributeValueWhenFolded": "actionLabel"
-            },
-            "isTemplate": true
-          }
-        },
-        "definition": {
-          "actionType": {
-            "type": "literal",
-            "tag": {
-              "value": {
-                "canBeTemplate": false
-              }
-            },
-            "definition": "compositeRunTestAssertion"
-          },
-          "actionLabel": {
-            "type": "string",
-            "optional": true
-          },
-          "nameGivenToResult": {
-            "type": "string"
-          },
-          "testAssertion": {
-            "type": "schemaReference",
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion"
-            }
-          }
-        }
-      },
       "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_shippingBox": {
         "type": "object",
         "definition": {
@@ -46051,48 +46223,6 @@ export const miroirFundamentalMlSchema = {
             }
           }
         ]
-      },
-      "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion": {
-        "type": "object",
-        "definition": {
-          "testType": {
-            "type": "literal",
-            "definition": "testAssertion"
-          },
-          "testLabel": {
-            "type": "string"
-          },
-          "definition": {
-            "type": "object",
-            "definition": {
-              "resultAccessPath": {
-                "type": "array",
-                "optional": true,
-                "definition": {
-                  "type": "string"
-                }
-              },
-              "resultTransformer": {
-                "type": "schemaReference",
-                "optional": true,
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_coreTransformerForBuildPlusRuntime"
-                }
-              },
-              "ignoreAttributes": {
-                "type": "array",
-                "optional": true,
-                "definition": {
-                  "type": "string"
-                }
-              },
-              "expectedValue": {
-                "type": "any"
-              }
-            }
-          }
-        }
       },
       "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerTemplate": {
         "type": "union",
@@ -46646,6 +46776,38 @@ export const miroirFundamentalMlSchema = {
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryTemplateAction"
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false
+                  }
+                },
+                "definition": "compositeRunTestAssertion"
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "nameGivenToResult": {
+                "type": "string"
+              },
+              "payload": {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion"
                 }
               }
             }

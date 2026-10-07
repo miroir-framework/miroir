@@ -735,7 +735,7 @@ A `reportTest` leaf holds `steps` and may override `instanceUuid`.
 
 - The component test steps and targets (see [MlElementEditor component tests](#mlelementeditor-component-tests)). Report forms name their fields without the `TESTSECTION.` prefix: `{"byRole": "textbox", "fieldName": "name"}`.
 - `compositeAction`: runs an action or a query (`action`, a `compositeActionTemplate`) through the session's DomainController, with the session parameters (`testApplicationUuid`, `testApplicationDeploymentUuid`, …) and the results kept by the earlier steps as parameters. Its result is kept under `nameGivenToResult`, or the action's own.
-- `expectActionResult`: runs a `compositeRunTestAssertion` over the kept results, as a Runner test does. A failure names the step, the assertion and the compared values.
+- `expectActionResult`: runs a `compositeRunTestAssertion` over the kept results, as a Runner test does. A failure names the step, the assertion and the compared values. Since #504 this is a DomainEndpoint action like `compositeRunBoxedQueryAction`: `{ "actionType": "compositeRunTestAssertion", "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5", "actionLabel", "nameGivenToResult", "payload": <testAssertion> }`, the assertion (`testType`, `testLabel`, `definition`) in `payload`. It runs only inside a sequence, so it has no `actionImplementation`.
 
 **Stored values in UI steps (#333).** A component test step reads the session parameters and the results kept so far with a `getFromContext` reference (`referenceName`, or `referencePath` into a kept result), resolved when the step starts; `interpolation` is ignored. References are accepted in the values a step enters or compares (`change.value`, `type.text`, `filterSelect.text`, `selectOption.option`, `renameRecordEntry.newName`, `uploadFile.content`, `waitForAttribute.value`, `expectElement.value` and `values`, anywhere in `expectRenderedValues.expectedValue`) and in the text locators of a target (`byText`, `byDisplayValue`, `byLabelText`, `name`, `byTestId`). Form field names (`field`, `fieldName`, `entry`, `attribute`, `ref`) stay literal. In `expectedValue` a reference resolves to any value. In `uploadFile.content` it resolves to any JSON value, uploaded as its JSON text unless it is a string. One reference may stand for the whole of `expectElement.values`, as an array of strings, numbers or booleans. Elsewhere a reference must resolve to a string, a number or a boolean, because these fields reach the DOM as text; a field that takes text only (`text`, `option`, `newName`, `waitForAttribute.value`, `byTestId`) gets a number or a boolean as text. An unresolved reference fails the step, naming the field and what is missing:
 
@@ -771,6 +771,7 @@ In the app, "Run Integration Tests" on the suite's display (Miroir Tests page) m
 | Suite | Report | Covers |
 |---|---|---|
 | `report.bookDetails` | Library BookDetails (instance details) | display, store check, edit saved, stored value typed (#333), invalid value not saved |
+| `report.queryDetails` | Miroir QueryDetails (instance details) on the Library Query BookCountByPublisher | only transformer fields have the Blocks / Form / JSON switch; a runtime transformer edited as blocks, saved and committed; undo and redo at the editor root; an application transformer is a block of its own (#503) |
 | `report.connectExternalServiceWizard` | Miroir ConnectExternalServiceWizard (multistep), and the home Report's launcher | document by URL, pasted or uploaded, and its errors; refused private URL; custom token kept out of the page; Finish checked in the store |
 
 Tests of the mechanism, in `packages/miroir-standalone-app/tests/4_view/`: `reportTestLauncher.unit` (routing of `testMiroir`), `reportTestActionsIdle.unit` (the wait), `reportTestFailure.integ` (a failed assertion step), `reportTestFakeHttp.integ` (an undeclared request), `reportTestInApp.integ` (the Miroir Tests display drives the wizard).
@@ -986,7 +987,7 @@ Identity under projection uses `resolveProjectionIdentityFields` → `getEntityP
 
 | File | Store / config | Focus |
 |------|----------------|-------|
-| `miroir-component-tests.unit.test.tsx` | In-memory `LocalCache`; no `--profile` | ML editor components, the TransformerEditor and the block view, run from the 12 component MiroirTest instances: 7 per-editor instances (`ui.mlElementEditor.enum`, …), the test pattern, the on-demand render-performance suite (#286, #292, #303), `ui.transformerEditor` (#406), `ui.blockEditor` (#498) and `ui.valueHistory` (#499) |
+| `miroir-component-tests.unit.test.tsx` | In-memory `LocalCache`; no `--profile` | ML editor components, the TransformerEditor and the block view, run from the 13 component MiroirTest instances: 7 per-editor instances (`ui.mlElementEditor.enum`, …), the test pattern, the on-demand render-performance suite (#286, #292, #303), `ui.transformerEditor` (#406), `ui.blockEditor` (#498), `ui.valueHistory` (#499) and `ui.blockEditing` (#500, kept off the page bundle: exported by `miroir-app-miroir` but not listed in `defaultMiroirMetaModel.tests`) |
 | `MiroirTestDisplayIntegrationLaunch.integ.test.tsx` | Node emulated SQL via mocked launcher environment | `MiroirTestDisplay` launches integration and shows the result inspector |
 | `MiroirTestListIntegrationLaunch.integ.test.tsx` | Node emulated SQL via mocked launcher environment | List **Run All Integration Tests** batch for `tr.core` (filtered leaf) |
 | `MlElementEditorReactCodeMirror.test.tsx` | — | CodeMirror sub-editor (currently commented out) |
@@ -1046,7 +1047,7 @@ The root of `definition` is a `miroirTestSuite` whose label is the instance name
 
 | Node | Attribute | Meaning |
 |---|---|---|
-| `reactComponentTestSuite` | `component` | Name of the rendered component in the app's component registry (`componentTests/componentRegistry.ts`). The registry has three entries: `MlElementEditor`, `TransformerEditor` (#406) and `TransformerBlocks` (#498), the block view of a stored TransformerDefinition's body named by `transformerDefinition`, with an optional `buildMarking`. `MlElementEditor` takes `blockViewSwitch: true` to offer the Blocks / Form / JSON switch on transformer fields |
+| `reactComponentTestSuite` | `component` | Name of the rendered component in the app's component registry (`componentTests/componentRegistry.ts`). The registry has three entries: `MlElementEditor`, `TransformerEditor` (#406) and `TransformerBlocks` (#498), the block view of a stored TransformerDefinition's body named by `transformerDefinition`, or of a Miroir Runner's composite action sequence named by `runner` (#504), with an optional `buildMarking`. `MlElementEditor` takes `blockViewSwitch: true` to offer the Blocks / Form / JSON switch on transformer fields |
 | | `componentProps` (optional) | Default props of the leaves |
 | | `skip` (optional) | Skips every leaf of the suite |
 | | `runOnDemand` (optional) | `true`: the suite runs only when asked for. The vitest entry skips it unless `MIROIR_COMPONENT_PERF=1`; Miroir Tests "Run All Unit Tests" records its leaves as skipped; the unit Run button of the instance runs it. Unlike `skip`, the suite still runs when launched on its own (#303) |
@@ -1204,7 +1205,7 @@ The entry `tests/4_view/miroir-component-tests.unit.test.tsx` loads every instan
 **Add or change a case**
 
 1. Edit the instance JSON of the editor: add or change a leaf in its `reactComponentTestSuite`, with the label `<editor>: <case>`.
-2. When a case of a per-editor instance is added, removed, or renamed, update the reduced case list `tests/4_view/issues/292-declarative-react-component-tests/baseline-component-cases.txt` (checked by `componentTestInstances.292.phase1`). For any new leaf, update `EXPECTED_LEAF_COUNT` in the vitest entry (today 141: it counts every leaf of the folder, on-demand ones included), and `EXPECTED_ON_DEMAND_LEAF_COUNT` (today 15) for a leaf under a `runOnDemand` suite.
+2. When a case of a per-editor instance is added, removed, or renamed, update the reduced case list `tests/4_view/issues/292-declarative-react-component-tests/baseline-component-cases.txt` (checked by `componentTestInstances.292.phase1`). For any new leaf, update `EXPECTED_LEAF_COUNT` in the vitest entry (today 194: it counts every leaf of the folder, on-demand ones included), and `EXPECTED_ON_DEMAND_LEAF_COUNT` (today 15) for a leaf under a `runOnDemand` suite.
 3. Rebuild the deployment package and check the instances:
 
 ```bash

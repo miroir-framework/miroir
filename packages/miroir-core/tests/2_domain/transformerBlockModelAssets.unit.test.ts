@@ -2,7 +2,9 @@ import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 import { describe, expect, it } from "vitest";
 
-import { transformerBlockTree } from "../../src/2_domain/TransformerBlockModel";
+import type { MiroirModelEnvironment } from "../../src/0_interfaces/1_core/Transformer";
+import { defaultMiroirModelEnvironment } from "../../src/1_core/Model";
+import { blockTree, transformerBlockTree } from "../../src/2_domain/TransformerBlockModel";
 import { applicationTransformerDefinitions } from "../../src/2_domain/TransformersForRuntime";
 
 // ################################################################################################
@@ -15,6 +17,8 @@ import { applicationTransformerDefinitions } from "../../src/2_domain/Transforme
 //
 // Slice 2: each of them maps to blocks, one block per transformer node, with no JSON block.
 // Slice 4: each category of block has a color in the default Theme.
+// #504: every composite action sequence maps to command blocks, one per sequence and step, with no
+// JSON block: each action type has an Endpoint action among the Endpoints of the assets.
 // ################################################################################################
 
 const RUN_TEST = process.env.RUN_TEST;
@@ -105,12 +109,74 @@ function assetJsonFiles(): string[] {
   return files;
 }
 
-const corpus = assetJsonFiles()
-  .map((file) => ({
-    file: relative(REPO_ROOT, file),
-    roots: transformerRoots(JSON.parse(readFileSync(file, "utf-8"))),
-  }))
+const ENDPOINT_ENTITY_UUID = "3d8da4d4-8f76-4bb4-9212-14869d81c00c";
+const COMPOSITE_ACTION_SEQUENCE = "compositeActionSequence";
+
+type SequenceRoot = { path: (string | number)[]; value: Record<string, unknown> };
+
+function isSequence(value: unknown): value is Record<string, unknown> {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    !Array.isArray(value) &&
+    (value as Record<string, unknown>).actionType === COMPOSITE_ACTION_SEQUENCE
+  );
+}
+
+/** The outermost composite action sequences of a JSON value, in document order. */
+function sequenceRoots(value: unknown, path: (string | number)[] = []): SequenceRoot[] {
+  if (isSequence(value)) {
+    return [{ path, value }];
+  }
+  if (Array.isArray(value)) {
+    return value.flatMap((item, index) => sequenceRoots(item, [...path, index]));
+  }
+  if (typeof value === "object" && value !== null) {
+    return Object.entries(value).flatMap(([key, child]) =>
+      isSkippedKey(key) ? [] : sequenceRoots(child, [...path, key]),
+    );
+  }
+  return [];
+}
+
+/** The number of actions of a sequence: itself and its steps, nested sequences counted with their steps. */
+function actionCount(sequence: Record<string, unknown>): number {
+  const steps = (sequence.payload as { actionSequence?: unknown } | undefined)?.actionSequence;
+  return (
+    1 +
+    (Array.isArray(steps) ? steps : []).reduce<number>(
+      (count, step) => count + (isSequence(step) ? actionCount(step) : 1),
+      0,
+    )
+  );
+}
+
+const files = assetJsonFiles().map((file) => ({
+  file: relative(REPO_ROOT, file),
+  json: JSON.parse(readFileSync(file, "utf-8")),
+}));
+
+const corpus = files
+  .map((entry) => ({ file: entry.file, roots: transformerRoots(entry.json) }))
   .filter((entry) => entry.roots.length > 0);
+
+const sequenceCorpus = files
+  .map((entry) => ({ file: entry.file, roots: sequenceRoots(entry.json) }))
+  .filter((entry) => entry.roots.length > 0);
+
+/** Miroir's environment, with the Endpoints of every package's assets: the Library's included. */
+const assetsModelEnvironment: MiroirModelEnvironment = {
+  ...defaultMiroirModelEnvironment,
+  endpointsByUuid: {
+    ...defaultMiroirModelEnvironment.endpointsByUuid,
+    ...Object.fromEntries(
+      files
+        .map((entry) => entry.json)
+        .filter((json) => json?.parentUuid === ENDPOINT_ENTITY_UUID && typeof json.uuid === "string")
+        .map((json) => [json.uuid, json]),
+    ),
+  },
+};
 
 describe.runIf(shouldRun)("transformerBlockModelAssets", () => {
   it("finds the transformers of the package assets", () => {
@@ -156,6 +222,37 @@ describe.runIf(shouldRun)("transformerBlockModelAssets", () => {
         };
       });
       expect(mapped.filter((root) => root.jsonBlocks > 0 || root.transformerBlocks !== root.nodes)).toEqual([]);
+    },
+  );
+
+  it("finds the composite action sequences of the package assets", () => {
+    console.log(
+      "transformerBlockModelAssets:",
+      JSON.stringify({
+        sequenceFiles: sequenceCorpus.length,
+        sequences: sequenceCorpus.reduce((count, entry) => count + entry.roots.length, 0),
+        actions: sequenceCorpus.reduce(
+          (count, entry) => count + entry.roots.reduce((sum, root) => sum + actionCount(root.value), 0),
+          0,
+        ),
+      }),
+    );
+    expect(sequenceCorpus.length).toBeGreaterThan(0);
+  });
+
+  it.each(sequenceCorpus.map((entry) => [entry.file, entry.roots] as const))(
+    "%s: every action of every sequence maps to a command block, none to JSON",
+    (_file, roots) => {
+      const mapped = roots.map((root) => {
+        const tree = blockTree(root.value, { modelEnvironment: assetsModelEnvironment });
+        return {
+          path: root.path.join("."),
+          actions: actionCount(root.value),
+          actionBlocks: tree.stats.actionBlocks,
+          jsonBlocks: tree.stats.jsonBlocks,
+        };
+      });
+      expect(mapped.filter((root) => root.jsonBlocks > 0 || root.actionBlocks !== root.actions)).toEqual([]);
     },
   );
 

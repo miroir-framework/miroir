@@ -1003,7 +1003,7 @@ export {
   resolveFundamentalSchemaForDeployment,
   clearSchemaCacheForTests,
   type SchemaResolutionMode,
-} from "./1_core/mls/schemaForDeployment.js";
+} from "./2_domain/schemaForDeployment.js";
 export {
   classifySchemaChange,
   computeCombinedSchemaRevision,
@@ -1323,6 +1323,7 @@ export {
 } from "./2_domain/buildOpenApiEndpointSyncComposite.js";
 export {
   isFailedTransformerInterfaceFromDefinition,
+  referencePathAttributeNames,
   resolveTransformerResultSchema,
   type FailedTransformerInterfaceFromDefinition,
   type FailedTransformerInterfaceFromDefinitionFailureKind,
@@ -1357,8 +1358,13 @@ export type {
   TransformerTypesAcceptingInput,
 } from "./0_interfaces/2_domain/TransformerInterfaceCheckInterface.js";
 export {
+  declaredAttributeSchemas,
+  defaultTransformerNode,
   elementParameterReadsOfDefaultInput,
+  insertTransformerNode,
   keepAttributesOnTypeChange,
+  moveTransformerNode,
+  reorderTransformerNode,
   editedAttributes,
   holdsOneDefault,
   parameterReadsOfDefaultInput,
@@ -1366,22 +1372,57 @@ export {
   pipeTransformerNode,
   removeTransformerNode,
   transformerChildren,
+  transformerInsertPositions,
+  transformerSlotAt,
   transformerSlots,
+  transformerUnionTypes,
   unwrapTransformerNode,
   wrapCandidates,
   wrapTransformerNode,
 } from "./2_domain/TransformerTreeEdit.js";
 export type {
+  BlockInsertPosition,
   TransformerChild,
+  TransformerInsertPosition,
   TransformerSlot,
   TransformerTypeChange,
 } from "./0_interfaces/2_domain/TransformerTreeEditInterface.js";
+export { transformerSubtreeRuns } from "./2_domain/TransformerSubtreeRun.js";
+export { isBlockViewRoot, isTestSequenceField } from "./2_domain/BlockViewFields.js";
 export {
+  addTransformerParameter,
+  compositeParameterSchema,
+  compositeTransformerDefinition,
+  contextNameReadPaths,
+  freeContextNames,
+  removeTransformerParameter,
+  renameContextName,
+  renameTransformerParameter,
+  transformerDefinitionParameters,
+  transformerDefinitionParameterUses,
+} from "./2_domain/TransformerDefinitionEdit.js";
+export {
+  applicationTransformerBranchName,
+  applicationTransformerBranches,
+  applicationCompositeTransformerDefinitions,
+  transformerDefinitionRegistry,
+  transformerDefinitionRegistryConflicts,
+  transformerDefinitionRegistryOf,
+  type TransformerDefinitionRegistry,
+} from "./2_domain/TransformerDefinitionRegistry.js";
+export type { TransformerSubtreeRun } from "./0_interfaces/2_domain/TransformerSubtreeRunInterface.js";
+export {
+  blockOutline,
+  blockTree,
+  isBlockAction,
   transformerBlockOutline,
   transformerBlockTree,
+  transformerPaletteGroups,
   type TransformerBlockModelOptions,
+  type TransformerPaletteGroup,
 } from "./2_domain/TransformerBlockModel.js";
 export type {
+  ActionBlock,
   BlockNode,
   BlockPath,
   BlockTree,
@@ -1391,10 +1432,20 @@ export type {
   LiteralBlock,
   MlSchemaBlock,
   ObjectBlock,
+  QueryBlock,
+  SequenceBlock,
   TransformerBlock,
   TransformerBlockParameter,
   TransformerBlockRow,
 } from "./0_interfaces/2_domain/TransformerBlockModelInterface.js";
+export {
+  endpointActionRegistry,
+  endpointActionRegistryOf,
+  endpointActionType,
+  endpointOfActionType,
+  type EndpointActionRegistry,
+  type EndpointActionRegistryEntry,
+} from "./2_domain/EndpointActionRegistry.js";
 export {
   checkTransformerMlSchemaCompatibility,
   formatMlSchemaTypeLabel,
@@ -1411,7 +1462,57 @@ export type {
 export {
   collectTransformerEnvironmentBindings,
   formatTransformerEnvironmentLabel,
+  transformerDefinitionBodyEnvironment,
+  transformerEnvironmentAt,
 } from "./2_domain/TransformerEnvironmentBindings.js";
+export { compositeActionEnvironmentAt, runnerEnvironment } from "./2_domain/CompositeActionScope.js";
+export {
+  actionLabels,
+  actionPaletteGroups,
+  blockEnvironmentAt,
+  blockInsertPositions,
+  defaultActionNode,
+  insertBlockNode,
+  isStepPosition,
+  isValuePosition,
+  moveBlockNode,
+  removeBlockNode,
+  renameBlockKey,
+  renameSequenceName,
+  type ActionPaletteGroup,
+  type BlockEditOptions,
+} from "./2_domain/ActionSequenceEdit.js";
+export {
+  addEndpointAction,
+  addEndpointActionParameter,
+  compositeEndpointAction,
+  endpointActionHat,
+  endpointActionParameterReads,
+  newEndpoint,
+  removeEndpointActionParameter,
+  renameEndpointActionParameter,
+  ENDPOINT_ENTITY_UUID,
+  type EndpointActionHat,
+} from "./2_domain/EndpointActionEdit.js";
+export {
+  addRunnerFormField,
+  newCustomRunner,
+  removeRunnerFormField,
+  renameRunner,
+  renameRunnerFormField,
+  runnerFormFieldReads,
+  runnerHat,
+  RUNNER_FORM_FIELD_TYPES,
+  type RunnerHat,
+  type RunnerHatField,
+} from "./2_domain/RunnerHat.js";
+export {
+  AGGREGATE_VALUE_NAME,
+  TRANSFORMER_SCOPE_RULES,
+  namesBoundBy,
+  transformerScopeBinding,
+  type TransformerScopeBinding,
+} from "./2_domain/TransformerScope.js";
 export type {
   TransformerEnvironment,
   TransformerEnvironmentBinding,

@@ -586,9 +586,10 @@
                 "label": "Finish created the Endpoint and its Report, linked the Report in the Menu, and created no Entity",
                 "assertion": {
                   "actionType": "compositeRunTestAssertion",
+                  "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
                   "actionLabel": "createdByFinish",
                   "nameGivenToResult": "createdByFinish",
-                  "testAssertion": {
+                  "payload": {
                     "testType": "testAssertion",
                     "testLabel": "createdByFinish",
                     "definition": {

@@ -1,0 +1,1165 @@
+{
+  "uuid": "a2e7d5f0-573b-4353-92b3-23808e79999c",
+  "parentName": "MiroirTest",
+  "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+  "name": "fn.transformer.subtreeRun",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "description": "Running one node of a transformer tree in the context its ancestors give it, as the block view's result bubble does: once, or once per element of a list transformer.",
+  "tags": [
+    "unit",
+    "transformer"
+  ],
+  "issue": "500",
+  "definition": {
+    "miroirTestType": "miroirTestSuite",
+    "miroirTestLabel": "fn.transformer.subtreeRun",
+    "miroirTests": [
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "transformerSubtreeRuns",
+        "miroirTests": [
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "the root runs once in the root's context",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerSubtreeRun",
+              "export": "transformerSubtreeRuns"
+            },
+            "arguments": [
+              {
+                "transformerType": "mapList",
+                "interpolation": "runtime",
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "defaultInput"
+                  ]
+                },
+                "elementTransformer": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "defaultInput",
+                    "name"
+                  ]
+                }
+              },
+              [],
+              {
+                "defaultInput": [
+                  {
+                    "name": "a",
+                    "n": 1
+                  },
+                  {
+                    "name": "b",
+                    "n": 2
+                  },
+                  {
+                    "name": "c",
+                    "n": 3
+                  }
+                ]
+              },
+              {
+                "defaultInput": [
+                  {
+                    "name": "a",
+                    "n": 1
+                  },
+                  {
+                    "name": "b",
+                    "n": 2
+                  },
+                  {
+                    "name": "c",
+                    "n": 3
+                  }
+                ]
+              }
+            ],
+            "environmentRef": "defaultMiroirModelEnvironment",
+            "environmentArgumentIndex": 4,
+            "expectedValue": [
+              {
+                "value": [
+                  "a",
+                  "b",
+                  "c"
+                ]
+              }
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a node under applyTo runs in its parent's context",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerSubtreeRun",
+              "export": "transformerSubtreeRuns"
+            },
+            "arguments": [
+              {
+                "transformerType": "mapList",
+                "interpolation": "runtime",
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "defaultInput"
+                  ]
+                },
+                "elementTransformer": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "defaultInput",
+                    "name"
+                  ]
+                }
+              },
+              [
+                "applyTo"
+              ],
+              {
+                "defaultInput": [
+                  {
+                    "name": "a",
+                    "n": 1
+                  },
+                  {
+                    "name": "b",
+                    "n": 2
+                  },
+                  {
+                    "name": "c",
+                    "n": 3
+                  }
+                ]
+              },
+              {
+                "defaultInput": [
+                  {
+                    "name": "a",
+                    "n": 1
+                  },
+                  {
+                    "name": "b",
+                    "n": 2
+                  },
+                  {
+                    "name": "c",
+                    "n": 3
+                  }
+                ]
+              }
+            ],
+            "environmentRef": "defaultMiroirModelEnvironment",
+            "environmentArgumentIndex": 4,
+            "expectedValue": [
+              {
+                "value": [
+                  {
+                    "name": "a",
+                    "n": 1
+                  },
+                  {
+                    "name": "b",
+                    "n": 2
+                  },
+                  {
+                    "name": "c",
+                    "n": 3
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "the element transformer of a mapList runs once per element",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerSubtreeRun",
+              "export": "transformerSubtreeRuns"
+            },
+            "arguments": [
+              {
+                "transformerType": "mapList",
+                "interpolation": "runtime",
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "defaultInput"
+                  ]
+                },
+                "elementTransformer": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "defaultInput",
+                    "name"
+                  ]
+                }
+              },
+              [
+                "elementTransformer"
+              ],
+              {
+                "defaultInput": [
+                  {
+                    "name": "a",
+                    "n": 1
+                  },
+                  {
+                    "name": "b",
+                    "n": 2
+                  },
+                  {
+                    "name": "c",
+                    "n": 3
+                  }
+                ]
+              },
+              {
+                "defaultInput": [
+                  {
+                    "name": "a",
+                    "n": 1
+                  },
+                  {
+                    "name": "b",
+                    "n": 2
+                  },
+                  {
+                    "name": "c",
+                    "n": 3
+                  }
+                ]
+              }
+            ],
+            "environmentRef": "defaultMiroirModelEnvironment",
+            "environmentArgumentIndex": 4,
+            "expectedValue": [
+              {
+                "label": "defaultInput[0]",
+                "value": "a"
+              },
+              {
+                "label": "defaultInput[1]",
+                "value": "b"
+              },
+              {
+                "label": "defaultInput[2]",
+                "value": "c"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "referenceToOuterObject names the element",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerSubtreeRun",
+              "export": "transformerSubtreeRuns"
+            },
+            "arguments": [
+              {
+                "transformerType": "mapList",
+                "interpolation": "runtime",
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "defaultInput"
+                  ]
+                },
+                "elementTransformer": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "book",
+                    "n"
+                  ]
+                },
+                "referenceToOuterObject": "book"
+              },
+              [
+                "elementTransformer"
+              ],
+              {
+                "defaultInput": [
+                  {
+                    "name": "a",
+                    "n": 1
+                  },
+                  {
+                    "name": "b",
+                    "n": 2
+                  },
+                  {
+                    "name": "c",
+                    "n": 3
+                  }
+                ]
+              },
+              {
+                "defaultInput": [
+                  {
+                    "name": "a",
+                    "n": 1
+                  },
+                  {
+                    "name": "b",
+                    "n": 2
+                  },
+                  {
+                    "name": "c",
+                    "n": 3
+                  }
+                ]
+              }
+            ],
+            "environmentRef": "defaultMiroirModelEnvironment",
+            "environmentArgumentIndex": 4,
+            "expectedValue": [
+              {
+                "label": "book[0]",
+                "value": 1
+              },
+              {
+                "label": "book[1]",
+                "value": 2
+              },
+              {
+                "label": "book[2]",
+                "value": 3
+              }
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "the predicate of a filterList runs once per element",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerSubtreeRun",
+              "export": "transformerSubtreeRuns"
+            },
+            "arguments": [
+              {
+                "transformerType": "filterList",
+                "interpolation": "runtime",
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "defaultInput"
+                  ]
+                },
+                "predicate": {
+                  "transformerType": "boolExpr",
+                  "interpolation": "runtime",
+                  "operator": ">",
+                  "left": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referencePath": [
+                      "defaultInput",
+                      "n"
+                    ]
+                  },
+                  "right": 1
+                }
+              },
+              [
+                "predicate"
+              ],
+              {
+                "defaultInput": [
+                  {
+                    "name": "a",
+                    "n": 1
+                  },
+                  {
+                    "name": "b",
+                    "n": 2
+                  },
+                  {
+                    "name": "c",
+                    "n": 3
+                  }
+                ]
+              },
+              {
+                "defaultInput": [
+                  {
+                    "name": "a",
+                    "n": 1
+                  },
+                  {
+                    "name": "b",
+                    "n": 2
+                  },
+                  {
+                    "name": "c",
+                    "n": 3
+                  }
+                ]
+              }
+            ],
+            "environmentRef": "defaultMiroirModelEnvironment",
+            "environmentArgumentIndex": 4,
+            "expectedValue": [
+              {
+                "label": "defaultInput[0]",
+                "value": false
+              },
+              {
+                "label": "defaultInput[1]",
+                "value": true
+              },
+              {
+                "label": "defaultInput[2]",
+                "value": true
+              }
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a node of a list element of a mapList runs once per element of each run of its ancestors",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerSubtreeRun",
+              "export": "transformerSubtreeRuns"
+            },
+            "arguments": [
+              {
+                "transformerType": "mapList",
+                "interpolation": "runtime",
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "defaultInput"
+                  ]
+                },
+                "elementTransformer": {
+                  "transformerType": "mapList",
+                  "interpolation": "runtime",
+                  "referenceToOuterObject": "letter",
+                  "applyTo": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": [
+                      "x",
+                      "y"
+                    ]
+                  },
+                  "elementTransformer": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referencePath": [
+                      "letter"
+                    ]
+                  }
+                }
+              },
+              [
+                "elementTransformer",
+                "elementTransformer"
+              ],
+              {
+                "defaultInput": [
+                  {
+                    "name": "a",
+                    "n": 1
+                  },
+                  {
+                    "name": "b",
+                    "n": 2
+                  },
+                  {
+                    "name": "c",
+                    "n": 3
+                  }
+                ]
+              },
+              {
+                "defaultInput": [
+                  {
+                    "name": "a",
+                    "n": 1
+                  },
+                  {
+                    "name": "b",
+                    "n": 2
+                  },
+                  {
+                    "name": "c",
+                    "n": 3
+                  }
+                ]
+              }
+            ],
+            "environmentRef": "defaultMiroirModelEnvironment",
+            "environmentArgumentIndex": 4,
+            "expectedValue": [
+              {
+                "label": "defaultInput[0], letter[0]",
+                "value": "x"
+              },
+              {
+                "label": "defaultInput[0], letter[1]",
+                "value": "y"
+              },
+              {
+                "label": "defaultInput[1], letter[0]",
+                "value": "x"
+              },
+              {
+                "label": "defaultInput[1], letter[1]",
+                "value": "y"
+              },
+              {
+                "label": "defaultInput[2], letter[0]",
+                "value": "x"
+              },
+              {
+                "label": "defaultInput[2], letter[1]",
+                "value": "y"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "the definition of createObjectFromPairs sees its applyTo",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerSubtreeRun",
+              "export": "transformerSubtreeRuns"
+            },
+            "arguments": [
+              {
+                "transformerType": "createObjectFromPairs",
+                "interpolation": "runtime",
+                "referenceToOuterObject": "pair",
+                "applyTo": {
+                  "transformerType": "returnValue",
+                  "interpolation": "runtime",
+                  "value": {
+                    "key": "k",
+                    "value": 7
+                  }
+                },
+                "definition": [
+                  {
+                    "attributeKey": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "pair",
+                        "key"
+                      ]
+                    },
+                    "attributeValue": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "pair",
+                        "value"
+                      ]
+                    }
+                  }
+                ]
+              },
+              [
+                "definition",
+                0,
+                "attributeValue"
+              ],
+              {
+                "defaultInput": [
+                  {
+                    "name": "a",
+                    "n": 1
+                  },
+                  {
+                    "name": "b",
+                    "n": 2
+                  },
+                  {
+                    "name": "c",
+                    "n": 3
+                  }
+                ]
+              },
+              {
+                "defaultInput": [
+                  {
+                    "name": "a",
+                    "n": 1
+                  },
+                  {
+                    "name": "b",
+                    "n": 2
+                  },
+                  {
+                    "name": "c",
+                    "n": 3
+                  }
+                ]
+              }
+            ],
+            "environmentRef": "defaultMiroirModelEnvironment",
+            "environmentArgumentIndex": 4,
+            "expectedValue": [
+              {
+                "value": 7
+              }
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "the definition of mergeIntoObject sees its applyTo",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerSubtreeRun",
+              "export": "transformerSubtreeRuns"
+            },
+            "arguments": [
+              {
+                "transformerType": "mergeIntoObject",
+                "interpolation": "runtime",
+                "applyTo": {
+                  "transformerType": "returnValue",
+                  "interpolation": "runtime",
+                  "value": {
+                    "x": 1
+                  }
+                },
+                "definition": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "defaultInput",
+                    "x"
+                  ]
+                }
+              },
+              [
+                "definition"
+              ],
+              {
+                "defaultInput": [
+                  {
+                    "name": "a",
+                    "n": 1
+                  },
+                  {
+                    "name": "b",
+                    "n": 2
+                  },
+                  {
+                    "name": "c",
+                    "n": 3
+                  }
+                ]
+              },
+              {
+                "defaultInput": [
+                  {
+                    "name": "a",
+                    "n": 1
+                  },
+                  {
+                    "name": "b",
+                    "n": 2
+                  },
+                  {
+                    "name": "c",
+                    "n": 3
+                  }
+                ]
+              }
+            ],
+            "environmentRef": "defaultMiroirModelEnvironment",
+            "environmentArgumentIndex": 4,
+            "expectedValue": [
+              {
+                "value": 1
+              }
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a dataflowObject step sees the steps before it",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerSubtreeRun",
+              "export": "transformerSubtreeRuns"
+            },
+            "arguments": [
+              {
+                "transformerType": "dataflowObject",
+                "interpolation": "runtime",
+                "definition": {
+                  "first": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": 10
+                  },
+                  "second": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referencePath": [
+                      "first"
+                    ]
+                  },
+                  "third": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": 30
+                  }
+                }
+              },
+              [
+                "definition",
+                "second"
+              ],
+              {
+                "defaultInput": [
+                  {
+                    "name": "a",
+                    "n": 1
+                  },
+                  {
+                    "name": "b",
+                    "n": 2
+                  },
+                  {
+                    "name": "c",
+                    "n": 3
+                  }
+                ]
+              },
+              {
+                "defaultInput": [
+                  {
+                    "name": "a",
+                    "n": 1
+                  },
+                  {
+                    "name": "b",
+                    "n": 2
+                  },
+                  {
+                    "name": "c",
+                    "n": 3
+                  }
+                ]
+              }
+            ],
+            "environmentRef": "defaultMiroirModelEnvironment",
+            "environmentArgumentIndex": 4,
+            "expectedValue": [
+              {
+                "value": 10
+              }
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "the element transformer of a mapList on an object runs once per value",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerSubtreeRun",
+              "export": "transformerSubtreeRuns"
+            },
+            "arguments": [
+              {
+                "transformerType": "mapList",
+                "interpolation": "runtime",
+                "applyTo": {
+                  "transformerType": "returnValue",
+                  "interpolation": "runtime",
+                  "value": {
+                    "x": {
+                      "name": "a"
+                    },
+                    "y": {
+                      "name": "b"
+                    }
+                  }
+                },
+                "elementTransformer": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "defaultInput",
+                    "name"
+                  ]
+                }
+              },
+              [
+                "elementTransformer"
+              ],
+              {
+                "defaultInput": [
+                  {
+                    "name": "a",
+                    "n": 1
+                  },
+                  {
+                    "name": "b",
+                    "n": 2
+                  },
+                  {
+                    "name": "c",
+                    "n": 3
+                  }
+                ]
+              },
+              {
+                "defaultInput": [
+                  {
+                    "name": "a",
+                    "n": 1
+                  },
+                  {
+                    "name": "b",
+                    "n": 2
+                  },
+                  {
+                    "name": "c",
+                    "n": 3
+                  }
+                ]
+              }
+            ],
+            "environmentRef": "defaultMiroirModelEnvironment",
+            "environmentArgumentIndex": 4,
+            "expectedValue": [
+              {
+                "label": "defaultInput.x",
+                "value": "a"
+              },
+              {
+                "label": "defaultInput.y",
+                "value": "b"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "the predicate of a filterList on an object holds the filterList's failure",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerSubtreeRun",
+              "export": "transformerSubtreeRuns"
+            },
+            "arguments": [
+              {
+                "transformerType": "filterList",
+                "interpolation": "runtime",
+                "applyTo": {
+                  "transformerType": "returnValue",
+                  "interpolation": "runtime",
+                  "value": {
+                    "x": 1
+                  }
+                },
+                "predicate": {
+                  "transformerType": "returnValue",
+                  "interpolation": "runtime",
+                  "value": true
+                }
+              },
+              [
+                "predicate"
+              ],
+              {
+                "defaultInput": [
+                  {
+                    "name": "a",
+                    "n": 1
+                  },
+                  {
+                    "name": "b",
+                    "n": 2
+                  },
+                  {
+                    "name": "c",
+                    "n": 3
+                  }
+                ]
+              },
+              {
+                "defaultInput": [
+                  {
+                    "name": "a",
+                    "n": 1
+                  },
+                  {
+                    "name": "b",
+                    "n": 2
+                  },
+                  {
+                    "name": "c",
+                    "n": 3
+                  }
+                ]
+              }
+            ],
+            "environmentRef": "defaultMiroirModelEnvironment",
+            "environmentArgumentIndex": 4,
+            "assertions": [
+              {
+                "label": "one run",
+                "resultAccessPath": [
+                  "length"
+                ],
+                "expectedValue": 1
+              },
+              {
+                "label": "the ancestor's failure",
+                "resultAccessPath": [
+                  0,
+                  "value",
+                  "innerError",
+                  "failureMessage"
+                ],
+                "expectedValue": "filterList: applyTo is not an array, got: object"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "the element transformer of a mapList on a string holds the mapList's failure",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerSubtreeRun",
+              "export": "transformerSubtreeRuns"
+            },
+            "arguments": [
+              {
+                "transformerType": "mapList",
+                "interpolation": "runtime",
+                "applyTo": {
+                  "transformerType": "returnValue",
+                  "interpolation": "runtime",
+                  "value": "abc"
+                },
+                "elementTransformer": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "defaultInput",
+                    "name"
+                  ]
+                }
+              },
+              [
+                "elementTransformer"
+              ],
+              {
+                "defaultInput": [
+                  {
+                    "name": "a",
+                    "n": 1
+                  },
+                  {
+                    "name": "b",
+                    "n": 2
+                  },
+                  {
+                    "name": "c",
+                    "n": 3
+                  }
+                ]
+              },
+              {
+                "defaultInput": [
+                  {
+                    "name": "a",
+                    "n": 1
+                  },
+                  {
+                    "name": "b",
+                    "n": 2
+                  },
+                  {
+                    "name": "c",
+                    "n": 3
+                  }
+                ]
+              }
+            ],
+            "environmentRef": "defaultMiroirModelEnvironment",
+            "environmentArgumentIndex": 4,
+            "assertions": [
+              {
+                "label": "one run",
+                "resultAccessPath": [
+                  "length"
+                ],
+                "expectedValue": 1
+              },
+              {
+                "label": "the ancestor's failure",
+                "resultAccessPath": [
+                  0,
+                  "value",
+                  "innerError",
+                  "failureMessage"
+                ],
+                "expectedValue": "resolved reference is not instanceUuidIndex or object \"abc\""
+              }
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "the having of an aggregate runs once per group, with aggregateValue",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerSubtreeRun",
+              "export": "transformerSubtreeRuns"
+            },
+            "arguments": [
+              {
+                "transformerType": "aggregate",
+                "interpolation": "runtime",
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "defaultInput"
+                  ]
+                },
+                "function": "sum",
+                "attribute": "n",
+                "groupBy": "name",
+                "having": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "aggregateValue"
+                  ]
+                }
+              },
+              [
+                "having"
+              ],
+              {
+                "defaultInput": [
+                  {
+                    "name": "a",
+                    "n": 1
+                  },
+                  {
+                    "name": "b",
+                    "n": 2
+                  },
+                  {
+                    "name": "c",
+                    "n": 3
+                  }
+                ]
+              },
+              {
+                "defaultInput": [
+                  {
+                    "name": "a",
+                    "n": 1
+                  },
+                  {
+                    "name": "b",
+                    "n": 2
+                  },
+                  {
+                    "name": "c",
+                    "n": 3
+                  }
+                ]
+              }
+            ],
+            "environmentRef": "defaultMiroirModelEnvironment",
+            "environmentArgumentIndex": 4,
+            "expectedValue": [
+              {
+                "label": "aggregateValue[0]",
+                "value": 1
+              },
+              {
+                "label": "aggregateValue[1]",
+                "value": 2
+              },
+              {
+                "label": "aggregateValue[2]",
+                "value": 3
+              }
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a path that is not a transformer fails",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerSubtreeRun",
+              "export": "transformerSubtreeRuns"
+            },
+            "arguments": [
+              {
+                "transformerType": "mapList",
+                "interpolation": "runtime",
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "defaultInput"
+                  ]
+                },
+                "elementTransformer": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "defaultInput",
+                    "name"
+                  ]
+                }
+              },
+              [
+                "applyTo",
+                "referencePath"
+              ],
+              {
+                "defaultInput": [
+                  {
+                    "name": "a",
+                    "n": 1
+                  },
+                  {
+                    "name": "b",
+                    "n": 2
+                  },
+                  {
+                    "name": "c",
+                    "n": 3
+                  }
+                ]
+              },
+              {
+                "defaultInput": [
+                  {
+                    "name": "a",
+                    "n": 1
+                  },
+                  {
+                    "name": "b",
+                    "n": 2
+                  },
+                  {
+                    "name": "c",
+                    "n": 3
+                  }
+                ]
+              }
+            ],
+            "environmentRef": "defaultMiroirModelEnvironment",
+            "environmentArgumentIndex": 4,
+            "expectedError": "applyTo.referencePath is not a transformer"
+          }
+        ]
+      }
+    ]
+  }
+}

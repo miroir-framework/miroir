@@ -1,16 +1,41 @@
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
 import {
-  transformerBlockTree,
+  blockTree,
+  isBlockAction,
+  type ActionBlock,
   type BlockEditorBuildMarking,
   type BlockNode,
   type BlockPath,
+  type QueryBlock,
+  type SequenceBlock,
   type TransformerBlock,
+  type TransformerBlockRow,
 } from "miroir-core";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useContext, useMemo, useState } from "react";
 
 import { blockCategoryColor, useMiroirTheme, type BlockEditorColors } from "../../contexts/MiroirThemeContext.js";
+import type { TransformerTypeBadge } from "../ValueObjectEditor/MlElementEditorInterface.js";
 import { useBlockEditorBuildMarking } from "./BlockEditorDisplay.js";
+import { BlockDefineHeader } from "./BlockDefineHeader.js";
+import { BlockDndContext, useBlockDraggable, useBlockDroppable, useDraggingBlock } from "./BlockDragDrop.js";
+import {
+  armedLabel,
+  BlockActionNodeActions,
+  BlockEditingContext,
+  BlockNodeActions,
+  pathKey,
+  useBlockEditing,
+  useBlockEditingValue,
+  type TrayUpdate,
+} from "./BlockEditing.js";
+import { BlockField, BlockKeyField, MlSchemaChip } from "./BlockFields.js";
+import { BlockInsertTargets } from "./BlockInsertTargets.js";
+import { BlockResult, useBlockRunInput } from "./BlockResult.js";
+import { BlockPalette } from "./BlockPalette.js";
+import { BlockVariablePath } from "./BlockVariablePath.js";
+import { BlockRunnerHat } from "./BlockRunnerHat.js";
+import { BlockDefineContext, BlockRunnerContext, useBlockModelEnvironment } from "./BlockViewMode.js";
 
 // ################################################################################################
 // #498: the read-only block view of a transformer value (analysis #497). The tree comes from the
@@ -23,12 +48,45 @@ import { useBlockEditorBuildMarking } from "./BlockEditorDisplay.js";
 //
 // A block keeps its own collapsed state, so folding one renders only that block. "Collapse all"
 // and "Expand all" remount the tree with every block starting in that state.
+//
+// #500: with a writer, the view edits the value (BlockEditing.tsx); without one it is read-only.
+// Editing shows the palette, an empty row for every absent optional slot, and insert targets in
+// empty slots and at the end of list and record slots. The tray, below the program, shows the
+// blocks moved out read-only, each with Place and Discard. Values and ML schemas are edited in
+// place (BlockFields.tsx). With the editor's type badges (#453), a block shows its types as a flag.
+// Under the TransformerEditor, a click on a block header runs the block (BlockResult.tsx). Blocks,
+// palette entries and tray blocks can be dragged (BlockDragDrop.tsx). A variable block has a path
+// picker (BlockVariablePath.tsx, #501).
+// #502: the body of a composite TransformerDefinition is shown under its define header
+// (BlockDefineHeader.tsx); its parameters are context names of the body, and the body is evaluated
+// at runtime, so no block of it is marked build.
+// #504: an action sequence, or a step, shows as stacked command blocks, read-only: one block per
+// action with its payload rows, the templates of a sequence above its steps, and the payload of a
+// query step as one collapsed block. Build transformers are marked by the step at which they are
+// evaluated (`evaluatedAt`), so templates and the children of runtime blocks are not.
+// #505: with a writer, an action sequence is edited as a transformer is: the palette offers the
+// Endpoint actions, a step goes at the end of the steps, an action block has its menu and an
+// editable label, and a literal, object or list below a payload can be replaced by the armed block.
+// A custom Runner's sequence is shown under its "when run" hat (BlockRunnerHat.tsx): its form
+// fields are variables of the sequence, given as the parameter named after the Runner.
 // ################################################################################################
 
 export interface BlockEditorViewProps {
   value: unknown;
   /** Path of the value from the form section root; block ids start with it. */
   rootLessListKey: string;
+  /** Writes a new value: the view edits the value. */
+  onCommit?: (newValue: unknown) => void;
+  /** An undo history covers the value: edits act at once (#499). */
+  undoable?: boolean;
+  /** The blocks moved out of the value, kept by the caller across remounts. */
+  tray?: unknown[];
+  /** Changes the tray: the view has one. */
+  onTrayChange?: (update: TrayUpdate) => void;
+  /** The type badges of the editor (#453): a flag on each block that has one. */
+  typeBadges?: TransformerTypeBadge[];
+  /** #505: the palette offers the test assertion action: the value is a test sequence. */
+  withTestAssertion?: boolean;
 }
 
 type InitialCollapse = "default" | "collapsed" | "expanded";
@@ -58,7 +116,10 @@ interface BlockColors {
 interface BlockSettings extends BlockColors {
   rootLessListKey: string;
   initialCollapse: InitialCollapse;
-  buildMarking: BlockEditorBuildMarking;
+  /** "none" in a define body (#502), evaluated at runtime. */
+  buildMarking: BlockEditorBuildMarking | "none";
+  /** Type badges by block id. */
+  typeBadges: Map<string, TransformerTypeBadge> | undefined;
 }
 
 function useBlockColors(): BlockColors {
@@ -104,14 +165,24 @@ function startsCollapsed(node: BlockNode, initialCollapse: InitialCollapse): boo
 
 function hiddenSummary(node: BlockNode, count: number): string {
   const [one, many] =
-    node.kind === "object" ? ["entry", "entries"] : node.kind === "list" ? ["item", "items"] : ["slot", "slots"];
+    node.kind === "object"
+      ? ["entry", "entries"]
+      : node.kind === "list"
+        ? ["item", "items"]
+        : node.kind === "sequence"
+          ? ["part", "parts"]
+          : ["slot", "slots"];
   return `${count} ${count === 1 ? one : many} hidden`;
 }
 
 /** The fold state of a block, the toggle of its header and the summary shown when folded. */
 function useCollapse(node: BlockNode, settings: BlockSettings, rowCount: number) {
   const [collapsed, setCollapsed] = useState(() => rowCount > 0 && startsCollapsed(node, settings.initialCollapse));
-  const toggle = useCallback(() => setCollapsed((current) => !current), []);
+  // the header runs the block on a click: folding is not a run
+  const toggle = useCallback((event: React.MouseEvent) => {
+    event.stopPropagation();
+    setCollapsed((current) => !current);
+  }, []);
   const id = blockId(settings.rootLessListKey, node.path);
   const toggleButton =
     rowCount > 0 ? (
@@ -141,27 +212,339 @@ function useCollapse(node: BlockNode, settings: BlockSettings, rowCount: number)
   return { collapsed, toggleButton, summary };
 }
 
-const Field = React.memo(function Field(props: { value: unknown; settings: BlockSettings }) {
-  const text = JSON.stringify(props.value);
+const FLAG_COLORS: Record<TransformerTypeBadge["status"], { background: string; color: string }> = {
+  match: { background: "rgba(255,255,255,.25)", color: "inherit" },
+  mismatch: { background: "#c62828", color: "#ffffff" },
+  unknown: { background: "rgba(0,0,0,.2)", color: "inherit" },
+};
+
+/** The type flag of a block: its input and output types, red when they do not fit (#453 badge). */
+function BlockTypeFlag(props: { id: string; badge: TransformerTypeBadge | undefined }) {
+  const { badge } = props;
+  if (!badge) {
+    return null;
+  }
+  const colors = FLAG_COLORS[badge.status];
   return (
     <span
-      title={text}
+      data-testid={`block-flag:${props.id}`}
+      data-status={badge.status}
+      title={badge.title}
       css={css({
-        fontFamily: "monospace",
-        fontSize: "12px",
-        background: props.settings.field,
-        color: props.settings.text,
-        border: `1px solid ${props.settings.border}`,
-        borderRadius: "6px",
-        padding: "0 6px",
-        maxWidth: "40ch",
-        overflow: "hidden",
-        textOverflow: "ellipsis",
+        fontSize: "11px",
+        fontWeight: 500,
+        borderRadius: "4px",
+        padding: "0 4px",
         whiteSpace: "nowrap",
+        background: colors.background,
+        color: colors.color,
       })}
     >
-      {text}
+      {`${badge.status === "mismatch" ? "⚠ " : ""}${badge.givenLabel ?? "?"} → ${badge.outputLabel}`}
     </span>
+  );
+}
+
+/** The blocks that read a name in scope, with a path picker (#501). */
+const VARIABLE_TYPES = new Set(["getFromContext", "getFromParameters"]);
+
+/**
+ * #505: replaces the literal, object or list at `path` by the armed block, where a block can sit
+ * there (below a payload or in a transformer slot); a drop target for dragged blocks as well.
+ */
+function ValueReplaceTarget(props: { path: BlockPath; id: string; color: string }) {
+  const editing = useBlockEditing();
+  const replaceable = editing?.replaceable(props.path) ?? false;
+  const drop = useBlockDroppable(`drop:replace:${props.id}`, replaceable ? { kind: "replace", path: props.path } : undefined);
+  const armed = editing?.armed;
+  if (!editing || !replaceable || !armed || !editing.accepts(armed, props.path)) {
+    return <span ref={drop.setNodeRef} />;
+  }
+  const label = `Replace with ${armedLabel(armed)}`;
+  return (
+    <button
+      ref={drop.setNodeRef}
+      type="button"
+      data-testid={`block-replace:${props.id}`}
+      aria-label={label}
+      title={label}
+      onClick={(event) => {
+        event.stopPropagation();
+        editing.replaceAt(armed, props.path);
+      }}
+      css={css({
+        font: "inherit",
+        fontSize: "12px",
+        height: "20px",
+        padding: "0 6px",
+        marginLeft: "4px",
+        border: `1px dashed ${props.color}`,
+        borderRadius: "6px",
+        background: drop.isOver ? "rgba(25,118,210,.25)" : "transparent",
+        color: "inherit",
+        cursor: "pointer",
+      })}
+    >
+      ⇄
+    </button>
+  );
+}
+
+/** An empty slot: its insert targets when editing, else a dashed box. */
+function EmptySlot(props: { path: BlockPath; settings: BlockSettings }) {
+  const editing = useBlockEditing();
+  const id = blockId(props.settings.rootLessListKey, props.path);
+  const targets = editing?.insertPositions.has(pathKey(props.path));
+  return (
+    <span
+      data-testid={`block-empty:${id}`}
+      css={css(
+        targets
+          ? { display: "inline-flex", gap: "4px" }
+          : {
+              display: "inline-block",
+              width: "48px",
+              height: "20px",
+              border: `1px dashed ${props.settings.border}`,
+              borderRadius: "6px",
+            },
+      )}
+    >
+      {targets && <BlockInsertTargets container={props.path} idOf={(path) => blockId(props.settings.rootLessListKey, path)} color={props.settings.border} />}
+    </span>
+  );
+}
+
+/** The rows of a transformer or action block, in its mouth. */
+function BlockRows(props: { rows: TransformerBlockRow[]; settings: BlockSettings; ownerType: string }) {
+  const { rows, settings } = props;
+  return (
+    <>
+      {rows.map((row) => (
+        <div
+          key={row.name}
+          data-testid={`block-row:${blockId(settings.rootLessListKey, row.path)}`}
+          data-row-kind={row.kind}
+          css={css({ display: "flex", gap: "8px", alignItems: "flex-start", minWidth: 0 })}
+        >
+          <span
+            css={css({
+              color: row.kind === "undeclared" ? "#c62828" : settings.textSecondary,
+              fontSize: "12px",
+              paddingTop: "5px",
+              whiteSpace: "nowrap",
+            })}
+            title={row.kind === "undeclared" ? `${props.ownerType} does not declare ${row.name}` : undefined}
+          >
+            {row.kind === "undeclared" ? `⚠ ${row.name}` : row.name}
+          </span>
+          <span css={css({ minWidth: 0 })}>
+            {row.node ? (
+              <BlockNodeView node={row.node} settings={settings} />
+            ) : (
+              <EmptySlot path={row.path} settings={settings} />
+            )}
+          </span>
+        </div>
+      ))}
+    </>
+  );
+}
+
+/** The mouth of a block: where its rows, templates and steps sit. */
+function mouthCss(settings: BlockSettings) {
+  return css({
+    marginLeft: "16px",
+    background: settings.mouth,
+    color: settings.text,
+    borderRadius: "6px 0 0 6px",
+    padding: "6px 8px",
+    display: "flex",
+    flexDirection: "column",
+    gap: "6px",
+    minWidth: "120px",
+  });
+}
+
+/** The primitive parameters of a block's header. */
+function HeaderParameters(props: { node: TransformerBlock | ActionBlock | SequenceBlock; settings: BlockSettings }) {
+  const { node, settings } = props;
+  return (
+    <>
+      {node.parameters.map((parameter) => (
+        <span
+          key={parameter.name}
+          data-testid={`block-parameter:${blockId(settings.rootLessListKey, [...node.path, parameter.name])}`}
+          data-value={JSON.stringify(parameter.value)}
+          css={css({ display: "inline-flex", gap: "4px", alignItems: "center" })}
+        >
+          <span css={css({ opacity: 0.85, fontSize: "12px" })}>{parameter.name}</span>
+          <BlockField
+            value={parameter.value}
+            path={[...node.path, parameter.name]}
+            id={blockId(settings.rootLessListKey, [...node.path, parameter.name])}
+            colors={settings}
+          />
+        </span>
+      ))}
+    </>
+  );
+}
+
+/**
+ * #504: a command block: an action, or a sequence with its templates and its stacked steps. Its
+ * color is the fallback block color: the categories are Endpoint names, which the Theme has none for.
+ */
+const ActionBlockView = React.memo(function ActionBlockView(props: {
+  node: ActionBlock | SequenceBlock;
+  settings: BlockSettings;
+}) {
+  const { node, settings } = props;
+  const id = blockId(settings.rootLessListKey, node.path);
+  const sequence = node.kind === "sequence" ? node : undefined;
+  const partCount = node.rows.length + (sequence ? sequence.templates.length + sequence.steps.length : 0);
+  const { collapsed, toggleButton, summary } = useCollapse(node, settings, partCount);
+  const color = blockCategoryColor(settings.blockEditor, node.category);
+  const editing = useBlockEditing();
+  // #505: a step is dragged by its header, and takes an armed or dragged action in its place
+  const movable = editing !== undefined && node.path.length > 0;
+  const drag = useBlockDraggable(`drag:block:${id}`, movable ? { kind: "block", path: node.path } : undefined);
+  const drop = useBlockDroppable(`drop:replace:${id}`, movable ? { kind: "replace", path: node.path } : undefined);
+  const payloadPath = [...node.path, "payload"];
+  const idOf = (path: BlockPath) => blockId(settings.rootLessListKey, path);
+  return (
+    <div
+      ref={drop.setNodeRef}
+      id={id}
+      data-testid={`block:${id}`}
+      data-block-kind={node.kind}
+      data-action-type={node.actionType}
+      data-category={node.category}
+      role="group"
+      aria-label={node.actionType}
+      css={css({
+        display: "inline-flex",
+        flexDirection: "column",
+        maxWidth: "100%",
+        background: color,
+        color: settings.onBlock,
+        border: "1.5px solid rgba(0,0,0,.22)",
+        // a command block: square top corners, as stacked in Scratch
+        borderRadius: "2px 2px 8px 8px",
+        paddingBottom: (partCount > 0 || sequence) && !collapsed ? "6px" : 0,
+        verticalAlign: "top",
+        opacity: drag.isDragging ? 0.5 : 1,
+        ...(drop.isOver ? { boxShadow: "0 0 0 3px rgba(25,118,210,.6)" } : {}),
+      })}
+    >
+      <div
+        ref={drag.setNodeRef}
+        {...drag.listeners}
+        data-testid={`block-header:${id}`}
+        css={css({
+          display: "flex",
+          flexWrap: "wrap",
+          alignItems: "center",
+          gap: "4px 7px",
+          padding: "4px 10px",
+          touchAction: editing ? "none" : undefined,
+        })}
+      >
+        {toggleButton}
+        <span css={css({ fontWeight: 700, whiteSpace: "nowrap" })}>{node.actionType}</span>
+        <span css={css({ opacity: 0.85, fontSize: "11px" })}>{node.category}</span>
+        <BlockActionNodeActions path={node.path} blockId={id} />
+        {node.label !== undefined && (
+          <span data-testid={`block-label:${id}`} css={css({ opacity: 0.85, fontSize: "12px" })}>
+            {editing ? (
+              <BlockKeyField entryKey={node.label} path={[...node.path, "actionLabel"]} id={`${id}.actionLabel`} color={settings.onBlock} />
+            ) : (
+              node.label
+            )}
+          </span>
+        )}
+        <HeaderParameters node={node} settings={settings} />
+        {summary}
+      </div>
+      {(partCount > 0 || (sequence && editing)) && !collapsed && (
+        <div css={mouthCss(settings)}>
+          <BlockRows rows={node.rows} settings={settings} ownerType={node.actionType} />
+          {sequence && (sequence.templates.length > 0 || editing) && (
+            <div data-testid={`block-templates:${id}`} css={css({ display: "flex", flexDirection: "column", gap: "4px" })}>
+              <span css={css({ fontSize: "12px", color: settings.textSecondary })}>templates</span>
+              {sequence.templates.map((template) => (
+                <div key={template.key} css={css({ display: "flex", gap: "8px", alignItems: "flex-start", marginLeft: "8px" })}>
+                  <BlockKeyField entryKey={template.key} path={template.path} id={idOf(template.path)} color={settings.textSecondary} />
+                  <BlockNodeView node={template.node} settings={settings} />
+                </div>
+              ))}
+              <span css={css({ display: "flex", gap: "4px", marginLeft: "8px" })}>
+                <BlockInsertTargets container={[...payloadPath, "templates"]} idOf={idOf} color={settings.border} />
+              </span>
+            </div>
+          )}
+          {sequence && (
+            <div
+              data-testid={`block-steps:${id}`}
+              css={css({ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "2px" })}
+            >
+              {sequence.steps.map((step, index) => (
+                <BlockNodeView key={index} node={step} settings={settings} />
+              ))}
+              <BlockInsertTargets container={[...payloadPath, "actionSequence"]} idOf={idOf} color={settings.border} />
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+});
+
+/** #504: the payload of a query step, collapsed; unfolded, its JSON. */
+const QueryBlockView = React.memo(function QueryBlockView(props: { node: QueryBlock; settings: BlockSettings }) {
+  const { node, settings } = props;
+  const id = blockId(settings.rootLessListKey, node.path);
+  // folded by default; Expand all remounts the tree with every block open
+  const [open, setOpen] = useState(settings.initialCollapse === "expanded");
+  return (
+    <div
+      id={id}
+      data-testid={`block:${id}`}
+      data-block-kind="query"
+      data-query-type={node.queryType}
+      css={css({
+        display: "inline-flex",
+        flexDirection: "column",
+        background: settings.literal,
+        color: settings.text,
+        border: `1.5px solid ${settings.border}`,
+        borderRadius: "8px",
+        padding: "2px 8px",
+        maxWidth: "100%",
+      })}
+    >
+      <button
+        type="button"
+        data-testid={`block-collapse:${id}`}
+        aria-expanded={open}
+        onClick={() => setOpen((current) => !current)}
+        css={css({
+          font: "inherit",
+          fontSize: "12px",
+          border: "none",
+          background: "transparent",
+          color: "inherit",
+          cursor: "pointer",
+          textAlign: "left",
+          padding: "2px 0",
+        })}
+      >
+        {`${open ? "▾" : "▸"} query${node.queryType ? ` ${node.queryType}` : ""}`}
+      </button>
+      {open && (
+        <pre css={css({ margin: 0, fontSize: "12px", overflowX: "auto" })}>{JSON.stringify(node.value, null, 2)}</pre>
+      )}
+    </div>
   );
 });
 
@@ -172,12 +555,19 @@ const TransformerBlockView = React.memo(function TransformerBlockView(props: {
   const { node, settings } = props;
   const id = blockId(settings.rootLessListKey, node.path);
   const { collapsed, toggleButton, summary } = useCollapse(node, settings, node.rows.length);
+  const editing = useBlockEditing();
+  const runs = useBlockRunInput() !== undefined && editing !== undefined;
+  const drag = useBlockDraggable(`drag:block:${id}`, editing ? { kind: "block", path: node.path } : undefined);
+  const drop = useBlockDroppable(`drop:replace:${id}`, editing ? { kind: "replace", path: node.path } : undefined);
+  const resultShown = runs && editing?.shownResult === pathKey(node.path);
   const color = blockCategoryColor(settings.blockEditor, node.category);
   // an absent interpolation is evaluated as build (TransformersForRuntime)
   const interpolation = node.interpolation ?? "build";
-  const marking = interpolation === "build" ? settings.buildMarking : "none";
+  // #504: marked by the step at which it is evaluated, which its position can make runtime
+  const marking = node.evaluatedAt === "build" ? settings.buildMarking : "none";
   return (
     <div
+      ref={drop.setNodeRef}
       id={id}
       data-testid={`block:${id}`}
       data-block-kind="transformer"
@@ -185,6 +575,7 @@ const TransformerBlockView = React.memo(function TransformerBlockView(props: {
       data-category={node.category}
       data-block-color={color}
       data-interpolation={interpolation}
+      data-evaluated-at={node.evaluatedAt}
       data-build-marking={marking}
       role="group"
       aria-label={node.transformerType}
@@ -198,12 +589,31 @@ const TransformerBlockView = React.memo(function TransformerBlockView(props: {
         borderRadius: "8px",
         paddingBottom: node.rows.length > 0 && !collapsed ? "6px" : 0,
         verticalAlign: "top",
+        opacity: drag.isDragging ? 0.5 : 1,
         ...(marking === "dashedOutline" ? { outline: `2px dashed ${settings.text}`, outlineOffset: "1px" } : {}),
+        ...(drop.isOver ? { boxShadow: "0 0 0 3px rgba(25,118,210,.6)" } : {}),
       })}
     >
-      <div css={css({ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "4px 7px", padding: "4px 10px" })}>
+      <div
+        ref={drag.setNodeRef}
+        {...drag.listeners}
+        data-testid={`block-header:${id}`}
+        title={runs ? "Click to run this block on the input" : undefined}
+        onClick={runs ? () => editing?.toggleResult(node.path) : undefined}
+        css={css({
+          display: "flex",
+          flexWrap: "wrap",
+          alignItems: "center",
+          gap: "4px 7px",
+          padding: "4px 10px",
+          cursor: runs ? "pointer" : undefined,
+          touchAction: editing ? "none" : undefined,
+        })}
+      >
         {toggleButton}
         <span css={css({ fontWeight: 700, whiteSpace: "nowrap" })}>{node.transformerType}</span>
+        <BlockNodeActions path={node.path} blockId={id} />
+        <BlockTypeFlag id={id} badge={settings.typeBadges?.get(id)} />
         {marking === "marker" && (
           <span
             data-testid={`block-build-marker:${id}`}
@@ -223,69 +633,16 @@ const TransformerBlockView = React.memo(function TransformerBlockView(props: {
           </span>
         )}
         {node.label !== undefined && <span css={css({ opacity: 0.85, fontSize: "12px" })}>{node.label}</span>}
-        {node.parameters.map((parameter) => (
-          <span
-            key={parameter.name}
-            data-testid={`block-parameter:${blockId(settings.rootLessListKey, [...node.path, parameter.name])}`}
-            data-value={JSON.stringify(parameter.value)}
-            css={css({ display: "inline-flex", gap: "4px", alignItems: "center" })}
-          >
-            <span css={css({ opacity: 0.85, fontSize: "12px" })}>{parameter.name}</span>
-            <Field value={parameter.value} settings={settings} />
-          </span>
-        ))}
+        <HeaderParameters node={node} settings={settings} />
+        {editing && VARIABLE_TYPES.has(node.transformerType) && (
+          <BlockVariablePath path={node.path} id={id} colors={settings} />
+        )}
         {summary}
       </div>
+      {resultShown && <BlockResult path={node.path} id={id} colors={settings} />}
       {node.rows.length > 0 && !collapsed && (
-        <div
-          css={css({
-            marginLeft: "16px",
-            background: settings.mouth,
-            color: settings.text,
-            borderRadius: "6px 0 0 6px",
-            padding: "6px 8px",
-            display: "flex",
-            flexDirection: "column",
-            gap: "6px",
-            minWidth: "120px",
-          })}
-        >
-          {node.rows.map((row) => (
-            <div
-              key={row.name}
-              data-testid={`block-row:${blockId(settings.rootLessListKey, row.path)}`}
-              data-row-kind={row.kind}
-              css={css({ display: "flex", gap: "8px", alignItems: "flex-start", minWidth: 0 })}
-            >
-              <span
-                css={css({
-                  color: row.kind === "undeclared" ? "#c62828" : settings.textSecondary,
-                  fontSize: "12px",
-                  paddingTop: "5px",
-                  whiteSpace: "nowrap",
-                })}
-                title={row.kind === "undeclared" ? `${node.transformerType} does not declare ${row.name}` : undefined}
-              >
-                {row.kind === "undeclared" ? `⚠ ${row.name}` : row.name}
-              </span>
-              <span css={css({ minWidth: 0 })}>
-                {row.node ? (
-                  <BlockNodeView node={row.node} settings={settings} />
-                ) : (
-                  <span
-                    data-testid={`block-empty:${blockId(settings.rootLessListKey, row.path)}`}
-                    css={css({
-                      display: "inline-block",
-                      width: "48px",
-                      height: "20px",
-                      border: `1px dashed ${settings.border}`,
-                      borderRadius: "6px",
-                    })}
-                  />
-                )}
-              </span>
-            </div>
-          ))}
+        <div css={mouthCss(settings)}>
+          <BlockRows rows={node.rows} settings={settings} ownerType={node.transformerType} />
         </div>
       )}
     </div>
@@ -300,8 +657,8 @@ const StructureBlockView = React.memo(function StructureBlockView(props: {
   const id = blockId(settings.rootLessListKey, node.path);
   const entries =
     node.kind === "object"
-      ? node.entries.map((entry) => ({ key: entry.key, node: entry.node }))
-      : node.items.map((item, index) => ({ key: String(index), node: item }));
+      ? node.entries.map((entry) => ({ key: entry.key, node: entry.node, record: true }))
+      : node.items.map((item, index) => ({ key: String(index), node: item, record: false }));
   const { collapsed, toggleButton, summary } = useCollapse(node, settings, entries.length);
   return (
     <div
@@ -325,14 +682,29 @@ const StructureBlockView = React.memo(function StructureBlockView(props: {
         {toggleButton}
         {node.kind}
         {summary}
+        <ValueReplaceTarget path={node.path} id={id} color={settings.border} />
       </span>
       {!collapsed &&
         entries.map((entry) => (
           <div key={entry.key} css={css({ display: "flex", gap: "8px", alignItems: "flex-start" })}>
-            <span css={css({ fontSize: "12px", color: settings.textSecondary, paddingTop: "3px" })}>{entry.key}</span>
+            {entry.record ? (
+              <BlockKeyField
+                entryKey={entry.key}
+                path={entry.node.path}
+                id={blockId(settings.rootLessListKey, entry.node.path)}
+                color={settings.textSecondary}
+              />
+            ) : (
+              <span css={css({ fontSize: "12px", color: settings.textSecondary, paddingTop: "3px" })}>{entry.key}</span>
+            )}
             <BlockNodeView node={entry.node} settings={settings} />
           </div>
         ))}
+      {!collapsed && (
+        <span css={css({ display: "flex", gap: "4px" })}>
+          <BlockInsertTargets container={node.path} idOf={(path) => blockId(settings.rootLessListKey, path)} color={settings.border} />
+        </span>
+      )}
     </div>
   );
 });
@@ -356,31 +728,23 @@ const BlockNodeView = React.memo(function BlockNodeView(props: {
           data-block-kind={node.quoted ? "quoted" : "literal"}
           title={node.quoted ? "Returned as is, not evaluated" : undefined}
         >
-          <Field value={node.value} settings={settings} />
+          <BlockField value={node.value} path={node.path} id={id} colors={settings} />
+          {!node.quoted && <ValueReplaceTarget path={node.path} id={id} color={settings.border} />}
         </span>
       );
     case "mlSchema":
-      return (
-        <span
-          data-testid={`block:${id}`}
-          data-block-kind="mlSchema"
-          title={JSON.stringify(node.value, null, 2)}
-          css={css({
-            fontSize: "12px",
-            background: settings.literal,
-            border: `1px solid ${settings.border}`,
-            borderRadius: "999px",
-            padding: "1px 8px",
-          })}
-        >
-          ML schema
-        </span>
-      );
+      return <MlSchemaChip value={node.value} path={node.path} id={id} colors={settings} />;
+    case "action":
+    case "sequence":
+      return <ActionBlockView node={node} settings={settings} />;
+    case "query":
+      return <QueryBlockView node={node} settings={settings} />;
     case "json":
       return (
         <pre
           data-testid={`block:${id}`}
           data-block-kind="json"
+          data-reason={node.reason}
           css={css({ margin: 0, fontSize: "12px", border: `1px solid ${settings.border}`, borderRadius: "6px", padding: "4px" })}
         >
           {JSON.stringify(node.value, null, 2)}
@@ -389,12 +753,102 @@ const BlockNodeView = React.memo(function BlockNodeView(props: {
   }
 });
 
+/** The tray: each block moved out, read-only, with Place (arms it) and Discard; a drop target for blocks. */
+function BlockTray(props: { settings: BlockSettings; colors: BlockColors; what: string }) {
+  const editing = useBlockEditing();
+  const tray = editing?.tray;
+  const { modelEnvironment } = useBlockModelEnvironment();
+  const trees = useMemo(
+    () => (tray ?? []).map((block) => blockTree(block, { modelEnvironment }).root),
+    [tray, modelEnvironment],
+  );
+  const draggingBlock = useDraggingBlock();
+  const drop = useBlockDroppable("drop:tray", tray ? { kind: "tray" } : undefined);
+  if (!editing || !tray || (tray.length === 0 && !draggingBlock)) {
+    return null;
+  }
+  return (
+    <section
+      ref={drop.setNodeRef}
+      data-testid="block-tray"
+      aria-label="Tray"
+      css={css({
+        borderTop: `1px dashed ${props.colors.border}`,
+        marginTop: "6px",
+        padding: "6px 4px",
+        background: drop.isOver ? "rgba(25,118,210,.12)" : undefined,
+      })}
+    >
+      <div css={css({ fontSize: "12px", color: props.colors.textSecondary, marginBottom: "4px" })}>
+        {tray.length === 0
+          ? `Tray: drop a block here to take it out of the ${props.what}`
+          : `Tray: blocks moved out of the ${props.what}, not saved`}
+      </div>
+      <div css={css({ display: "flex", flexWrap: "wrap", gap: "10px", alignItems: "flex-start" })}>
+        {trees.map((root, index) => (
+          <TrayItem key={index} index={index} root={root} settings={props.settings} colors={props.colors} />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function TrayItem(props: { index: number; root: BlockNode; settings: BlockSettings; colors: BlockColors }) {
+  const editing = useBlockEditing();
+  const { index } = props;
+  const drag = useBlockDraggable(`drag:tray:${index}`, { kind: "tray", index });
+  if (!editing) {
+    return null;
+  }
+  const placing = editing.armed?.kind === "tray" && editing.armed.index === index;
+  return (
+    <div
+      data-testid={`block-tray-item:${index}`}
+      css={css({ display: "flex", flexDirection: "column", gap: "4px", alignItems: "flex-start" })}
+    >
+      {/* read-only: a tray block has no menu nor insert target; it is dragged as a whole */}
+      <div ref={drag.setNodeRef} {...drag.listeners} css={css({ touchAction: "none", opacity: drag.isDragging ? 0.5 : 1 })}>
+        <BlockEditingContext.Provider value={undefined}>
+          <BlockNodeView
+            node={props.root}
+            settings={{
+              ...props.settings,
+              rootLessListKey: `${props.settings.rootLessListKey}~tray.${index}`,
+              typeBadges: undefined,
+            }}
+          />
+        </BlockEditingContext.Provider>
+      </div>
+      <span css={css({ display: "flex", gap: "4px" })}>
+        <ToolButton
+          testId={`block-tray-place:${index}`}
+          label={placing ? "Click an insert target or Replace with to put this block" : "Place this block"}
+          colors={props.colors}
+          pressed={placing}
+          onClick={() => editing.arm(placing ? undefined : { kind: "tray", index })}
+        >
+          Place
+        </ToolButton>
+        <ToolButton
+          testId={`block-tray-discard:${index}`}
+          label="Discard this block"
+          colors={props.colors}
+          onClick={() => editing.discardTrayBlock(index)}
+        >
+          Discard
+        </ToolButton>
+      </span>
+    </div>
+  );
+}
+
 function ToolButton(props: {
   testId: string;
   label: string;
   colors: BlockColors;
   onClick: () => void;
   disabled?: boolean;
+  pressed?: boolean;
   children: React.ReactNode;
 }) {
   return (
@@ -404,13 +858,14 @@ function ToolButton(props: {
       aria-label={props.label}
       title={props.label}
       disabled={props.disabled}
+      aria-pressed={props.pressed}
       onClick={props.onClick}
       css={css({
         font: "inherit",
         fontSize: "12px",
         padding: "1px 8px",
         cursor: "pointer",
-        border: `1px solid ${props.colors.border}`,
+        border: props.pressed ? `2px solid ${props.colors.text}` : `1px solid ${props.colors.border}`,
         borderRadius: "4px",
         color: props.colors.text,
         backgroundColor: props.colors.literal,
@@ -422,17 +877,58 @@ function ToolButton(props: {
 }
 
 export const BlockEditorView = React.memo(function BlockEditorView(props: BlockEditorViewProps) {
-  const tree = useMemo(() => transformerBlockTree(props.value), [props.value]);
+  const { modelEnvironment } = useBlockModelEnvironment();
+  const action = useMemo(() => isBlockAction(props.value, modelEnvironment), [props.value, modelEnvironment]);
+  const onCommit = props.onCommit;
+  const editable = onCommit !== undefined;
+  const definedBy = useContext(BlockDefineContext);
+  const define = definedBy?.rootLessListKey === props.rootLessListKey ? definedBy : undefined;
+  const runBy = useContext(BlockRunnerContext);
+  const runner = runBy?.rootLessListKey === props.rootLessListKey ? runBy : undefined;
+  // the names only: a read flag changes with the body, the scope of the body does not; the
+  // parameters of an Endpoint action are attributes of one context name (#506)
+  const defineParameterNames = define?.contextName ?? define?.parameters.map((parameter) => parameter.name).join("\u0000");
+  const defineParameters = useMemo(
+    () => defineParameterNames?.split("\u0000").filter((name) => name !== ""),
+    [defineParameterNames],
+  );
+  const tree = useMemo(
+    () => blockTree(props.value, { emptyOptionalSlots: editable, modelEnvironment }),
+    [props.value, editable, modelEnvironment],
+  );
+  const editing = useBlockEditingValue(
+    props.value,
+    onCommit,
+    props.undoable ?? false,
+    props.tray,
+    props.onTrayChange,
+    useBlockRunInput(),
+    defineParameters,
+    props.withTestAssertion,
+    runner?.name,
+  );
   const colors = useBlockColors();
-  const buildMarking = useBlockEditorBuildMarking();
+  const viewBuildMarking = useBlockEditorBuildMarking();
+  const buildMarking = define ? "none" : viewBuildMarking;
   const [fold, setFold] = useState<{ initialCollapse: InitialCollapse; generation: number }>({
     initialCollapse: "default",
     generation: 0,
   });
   const [zoom, setZoom] = useState(1);
+  const typeBadges = useMemo(
+    () =>
+      props.typeBadges ? new Map(props.typeBadges.map((badge) => [badge.path.map(String).join("."), badge])) : undefined,
+    [props.typeBadges],
+  );
   const settings: BlockSettings = useMemo(
-    () => ({ ...colors, rootLessListKey: props.rootLessListKey, initialCollapse: fold.initialCollapse, buildMarking }),
-    [colors, props.rootLessListKey, fold.initialCollapse, buildMarking],
+    () => ({
+      ...colors,
+      rootLessListKey: props.rootLessListKey,
+      initialCollapse: fold.initialCollapse,
+      buildMarking,
+      typeBadges,
+    }),
+    [colors, props.rootLessListKey, fold.initialCollapse, buildMarking, typeBadges],
   );
   const foldAll = useCallback(
     (initialCollapse: InitialCollapse) =>
@@ -445,41 +941,62 @@ export const BlockEditorView = React.memo(function BlockEditorView(props: BlockE
     [],
   );
   return (
-    <div data-testid={`block-editor:${props.rootLessListKey}`} css={css({ color: colors.text })}>
-      <div css={css({ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "4px", margin: "2px 0 4px" })}>
-        <ToolButton testId="block-expand-all" label="Expand all blocks" colors={colors} onClick={() => foldAll("expanded")}>
-          Expand all
-        </ToolButton>
-        <ToolButton testId="block-collapse-all" label="Collapse all blocks" colors={colors} onClick={() => foldAll("collapsed")}>
-          Collapse all
-        </ToolButton>
-        <ToolButton
-          testId="block-zoom-out"
-          label="Zoom out"
-          colors={colors}
-          disabled={zoom <= ZOOM_MIN}
-          onClick={() => changeZoom(-ZOOM_STEP)}
-        >
-          −
-        </ToolButton>
-        <span data-testid="block-zoom-level" css={css({ fontSize: "12px", minWidth: "4.5ch", textAlign: "center" })}>
-          {`${Math.round(zoom * 100)} %`}
-        </span>
-        <ToolButton
-          testId="block-zoom-in"
-          label="Zoom in"
-          colors={colors}
-          disabled={zoom >= ZOOM_MAX}
-          onClick={() => changeZoom(ZOOM_STEP)}
-        >
-          +
-        </ToolButton>
-      </div>
-      <div css={css({ overflowX: "auto", padding: "8px 4px" })}>
-        <div css={css({ zoom })}>
-          <BlockNodeView key={fold.generation} node={tree.root} settings={settings} />
+    <BlockEditingContext.Provider value={editing}>
+      <BlockDndContext colors={colors}>
+        <div data-testid={`block-editor:${props.rootLessListKey}`} css={css({ color: colors.text })}>
+          <div css={css({ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "4px", margin: "2px 0 4px" })}>
+            <ToolButton testId="block-expand-all" label="Expand all blocks" colors={colors} onClick={() => foldAll("expanded")}>
+              Expand all
+            </ToolButton>
+            <ToolButton testId="block-collapse-all" label="Collapse all blocks" colors={colors} onClick={() => foldAll("collapsed")}>
+              Collapse all
+            </ToolButton>
+            <ToolButton
+              testId="block-zoom-out"
+              label="Zoom out"
+              colors={colors}
+              disabled={zoom <= ZOOM_MIN}
+              onClick={() => changeZoom(-ZOOM_STEP)}
+            >
+              −
+            </ToolButton>
+            <span data-testid="block-zoom-level" css={css({ fontSize: "12px", minWidth: "4.5ch", textAlign: "center" })}>
+              {`${Math.round(zoom * 100)} %`}
+            </span>
+            <ToolButton
+              testId="block-zoom-in"
+              label="Zoom in"
+              colors={colors}
+              disabled={zoom >= ZOOM_MAX}
+              onClick={() => changeZoom(ZOOM_STEP)}
+            >
+              +
+            </ToolButton>
+          </div>
+          <div css={css({ display: "flex", gap: "8px", alignItems: "flex-start" })}>
+            <BlockPalette
+              blockEditor={colors.blockEditor}
+              text={colors.text}
+              textSecondary={colors.textSecondary}
+              border={colors.border}
+            />
+            <div css={css({ overflowX: "auto", padding: "8px 4px", minWidth: 0, flexGrow: 1 })}>
+              <div css={css({ zoom })}>
+                {define || runner ? (
+                  <div css={css({ display: "inline-flex", flexDirection: "column", alignItems: "flex-start" })}>
+                    {define && <BlockDefineHeader define={define} colors={colors} />}
+                    {runner && <BlockRunnerHat runner={runner} colors={colors} />}
+                    <BlockNodeView key={fold.generation} node={tree.root} settings={settings} />
+                  </div>
+                ) : (
+                  <BlockNodeView key={fold.generation} node={tree.root} settings={settings} />
+                )}
+              </div>
+              <BlockTray settings={settings} colors={colors} what={action ? "sequence" : "transformer"} />
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
+      </BlockDndContext>
+    </BlockEditingContext.Provider>
   );
 });

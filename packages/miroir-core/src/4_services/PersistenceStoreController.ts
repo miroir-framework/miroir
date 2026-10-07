@@ -35,7 +35,7 @@ import { cleanLevel } from "./constants";
 import { MiroirLoggerFactory } from "./MiroirLoggerFactory";
 import { summarizeQueryHopResult, trackQueryHop } from "./trackQueryHop";
 
-import { entityCommit, entityEntity } from "miroir-app-miroir";
+import { entityCommit, entityEntity, entityTransformerDefinition } from "miroir-app-miroir";
 import { EntityInstanceWithName } from "../0_interfaces/1_core/Instance";
 import { invalidEntityPrimaryKeyDeclarationError } from "../1_core/Entity/EntityPrimaryKey.js";
 import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
@@ -976,6 +976,17 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
       return currentStore.upsertInstance(resolvedParentUuid, instance);
     }
 
+    if (
+      resolvedParentUuid === entityTransformerDefinition.uuid &&
+      this.getModelEntities().indexOf(resolvedParentUuid) == -1
+    ) {
+      // #502: an application created before TransformerDefinition was in its model initialization
+      // has no collection for its composite TransformerDefinitions; create it on the first save.
+      const created = await this.createModelStorageSpaceForInstancesOfEntity(entityTransformerDefinition as Entity);
+      if (created instanceof Action2Error) {
+        return created;
+      }
+    }
     if (this.getModelEntities().indexOf(resolvedParentUuid) == -1) {
       log.error(
         this.logHeader,

@@ -281,7 +281,19 @@ Fresh app build; the bundle guard passes. The history is on the page (small); th
 - `docs/reference/transformers.md`: "Undo and redo" in the block editor section.
 - `docs/reference/testing.md`: instance and leaf counts.
 
-### 6.4 AC checklist
+### 6.4 Review of the whole diff
+
+Three reviewers (history logic, React integration, keyboard and tests), each finding checked by a fourth agent trying to refute it: 7 confirmed, 2 refuted (Clear leaving the focus on its button; a duplicate). Fixed:
+- an edit that makes the transformer fail its type check replaced the field, with its Undo and Redo buttons and its keyboard scope, by an error: the edit could not be undone. `ValueHistoryFallbackButtons` shows the buttons above the editor while the scope is not on screen (the provider learns it from the scope's ref);
+- JSON text that does not parse is in no history step: Ctrl+Z undid an earlier step and the re-read threw the text away. The code box now handles Ctrl+Z itself while its text is invalid: it drops the text, back to the JSON of the value; Ctrl+Y does nothing then;
+- Ctrl+Z in the filter of an open select, in a CodeMirror panel, or in a record entry name being typed (local text, committed on blur) undid a transformer step: these keep the browser's own undo;
+- a paste, cut or drop right after typing joined the typing step: it is a step of its own;
+- an absent value (a selector branch without the field) was recorded, and undoing to it removed the field: `observe` ignores undefined;
+- Ctrl+Z on a Cyrillic or Greek layout was not matched (`key` is not Latin): the key code is the fallback, as for the browser's own shortcut.
+
+Cases: "Undo stays reachable after an edit that makes the transformer fail its type check", "Ctrl+Z on JSON text that does not parse drops that text, not an earlier step", "Ctrl+Z in the filter of an open select does not undo the transformer", "Ctrl+Z while renaming a record entry does not undo the transformer"; each fails without its fix. The paste, layout and undefined fixes have no case: the steps cannot paste, set a non-Latin key, or switch the selector mode back to "here" with the default transformer.
+
+### 6.5 AC checklist
 
 | Acceptance criterion (#499) | Proof |
 |---|---|
