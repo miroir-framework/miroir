@@ -5,7 +5,7 @@
   "name": "ui.valueHistory",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "Undo and redo of the TransformerEditor's transformer: Undo and Redo start disabled, Undo brings back the value before a form edit and Redo the edit, and an edit after an Undo drops what Redo would have restored.",
+  "description": "Undo and redo of the TransformerEditor's transformer: the Undo and Redo buttons, Ctrl+Z, Ctrl+Y and Ctrl+Shift+Z (not from a dialog), one step per text typed into a field and none for typing that comes back to the previous value, two steps for two choices in one select, the JSON and Blocks views showing what Undo restores, an edit of the JSON text undone, Ctrl+Z right after a Remove, and Clear undone. Without a history, an MlElementEditor still asks before a Remove and before a type change that drops an edited value.",
   "tags": [
     "ui",
     "editor",

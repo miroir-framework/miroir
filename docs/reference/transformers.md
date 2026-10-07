@@ -152,6 +152,8 @@ Every `transformerType` select has a `⋯` menu next to it, for the node it belo
 - **Unwrap** replaces the node by one of its transformer children. With one child it applies at once; with several, the dialog asks which child to keep and names the ones it drops.
 - **Remove…** deletes the node and everything below it, after a confirmation. An optional attribute, an array item or a record entry disappears; the root and a required place get the default `returnValue` of their position.
 
+In the TransformerEditor, where Undo brings back any edit (see [Undo and redo](#undo-and-redo)), Remove and Unwrap ask nothing: Remove acts at once, and Unwrap of a node with several children lists one menu entry per child, "Unwrap: keep then (returnValue)". A `transformerType` change drops the attributes the new type does not take at once too. The other editors keep the confirmations.
+
 With the restriction switch on, Wrap in offers the transformers that accept the input of the node's position, and Pipe into those that accept the node's output.
 
 Changing a node's `transformerType` keeps the attributes the new type declares and accepts, such as `predicate` and `applyTo` from `filterList` to `find`. When the change drops an attribute the user edited, a dialog names the dropped attributes first. It stays quiet when the dropped attributes all hold the values of one node the editor fills in itself: the default of the old type, with or without its optional attributes, or the default of the slot holding the node (issue #447).
@@ -172,6 +174,16 @@ In the TransformerEditor, the transformer has three views: Blocks, Form and JSON
 - Each block folds with the arrow of its header, which then says how many rows are hidden. Literal objects and lists with more than 3 entries and no transformer inside start folded. The toolbar has Expand all, Collapse all and a zoom from 50 % to 150 %.
 
 The block tree is computed by the pure functions `transformerBlockTree` and `transformerBlockOutline` (`miroir-core/src/2_domain/TransformerBlockModel.ts`), tested by the MiroirTest `fn.blockModel`. The platform test `transformerBlockModelAssets.unit.test.ts` checks that every transformer in the package assets maps to blocks and that every category has a Theme color. The view is tested by `ui.blockEditor`. Decisions and the plan of the following steps: [`code-helpers/features/497-FEATURE-visual-block-editor/`](../../code-helpers/features/497-FEATURE-visual-block-editor/analysis.md).
+
+### Undo and redo
+
+In the TransformerEditor, Undo and Redo sit next to the Blocks / Form / JSON switch of the transformer (issue #499). They undo and redo every edit of the transformer, whichever view made it: a form field, the JSON text, a `⋯` menu action, Clear. The other views show the restored value.
+
+- Ctrl+Z (Cmd+Z on macOS) undoes, Ctrl+Y and Ctrl+Shift+Z (Cmd+Shift+Z) redo, when the focus is in the transformer field. In an open menu or dialog, they do nothing to the transformer.
+- Text typed into one field is one step, until the focus leaves the field. Typing that comes back to the previous value adds no step. Every other edit, such as a choice in a select, is a step of its own.
+- The history keeps the last 100 steps. Loading a stored transformer starts a new history.
+
+The history is `ValueHistory` (deep copies of the value at one Formik path) and `ValueHistoryProvider` / `ValueHistoryScope` in `miroir-standalone-app/src/miroir-fwk/4_view/components/ValueObjectEditor/`, tested by `ui.valueHistory`.
 
 ---
 

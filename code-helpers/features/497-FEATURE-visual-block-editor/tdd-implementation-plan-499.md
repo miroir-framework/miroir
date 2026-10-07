@@ -286,7 +286,7 @@ Fresh app build; the bundle guard passes. The history is on the page (small); th
 | Acceptance criterion (#499) | Proof |
 |---|---|
 | In the TransformerEditor, an edit made in any view is undone and redone from any view | `ui.valueHistory` (Form, JSON and Blocks cases) |
-| Undo replaces the #415 confirmations of remove, unwrap and type change; the wrap and pipe dialogs stay | `ui.transformerEditor` cases 3, 16 to 18 (wrap and pipe cases unchanged), `ui.valueHistory` MlElementEditor case |
+| Undo replaces the #415 confirmations of remove, unwrap and type change; the wrap and pipe dialogs stay | `ui.transformerEditor` type change, unwrap and remove cases (the wrap and pipe cases unchanged), `ui.valueHistory` Ctrl+Z after Remove and the two MlElementEditor cases without a history |
 | A `ui.*` MiroirTest case edits, undoes and redoes a transformer | `ui.valueHistory` |
 
 ### Validation
