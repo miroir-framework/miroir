@@ -1,11 +1,12 @@
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
-import { defaultMiroirModelEnvironment, transformerPaletteGroups } from "miroir-core";
+import { transformerPaletteGroups } from "miroir-core";
 import React, { useMemo } from "react";
 
 import { blockCategoryColor, type BlockEditorColors } from "../../contexts/MiroirThemeContext.js";
 import { useBlockDraggable } from "./BlockDragDrop.js";
 import { useBlockEditing, type VariableSource } from "./BlockEditing.js";
+import { useBlockModelEnvironment } from "./BlockViewMode.js";
 
 // ################################################################################################
 // #500: the palette of the block view, beside the program. One entry per transformer type, grouped
@@ -24,7 +25,11 @@ export const BlockPalette = React.memo(function BlockPalette(props: {
   border: string;
 }) {
   const editing = useBlockEditing();
-  const groups = useMemo(() => transformerPaletteGroups(defaultMiroirModelEnvironment), []);
+  const { modelEnvironment, transformerDefinitions } = useBlockModelEnvironment();
+  const groups = useMemo(
+    () => transformerPaletteGroups(modelEnvironment, transformerDefinitions),
+    [modelEnvironment, transformerDefinitions],
+  );
   if (!editing) {
     return null;
   }

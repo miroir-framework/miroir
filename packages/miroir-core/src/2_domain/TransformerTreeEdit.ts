@@ -21,6 +21,7 @@ import {
   applicationTransformerDefinitions,
   getDefaultValueForMlSchemaWithResolutionNonHook,
 } from "./TransformersForRuntime";
+import { transformerDefinitionRegistry } from "./TransformerDefinitionRegistry";
 
 // ################################################################################################
 // Issue #415 — structural edits of a transformer tree: wrap a node in a new transformer, pipe it
@@ -198,7 +199,7 @@ export function defaultTransformerNode(
   transformerType: string,
   modelEnvironment: MiroirModelEnvironment,
   interpolation?: "build" | "runtime",
-  transformerDefinitions: Record<string, TransformerDefinition> = applicationTransformerDefinitions,
+  transformerDefinitions: Record<string, TransformerDefinition> = transformerDefinitionRegistry(modelEnvironment),
 ): Record<string, unknown> {
   const branch = transformerUnionBranches(modelEnvironment).find(
     (candidate) => candidate.transformerType === transformerType,
@@ -848,7 +849,7 @@ export function keepAttributesOnTypeChange(
   oldNode: Record<string, unknown>,
   newNode: Record<string, unknown>,
   modelEnvironment: MiroirModelEnvironment,
-  transformerDefinitions: Record<string, TransformerDefinition> = applicationTransformerDefinitions,
+  transformerDefinitions: Record<string, TransformerDefinition> = transformerDefinitionRegistry(modelEnvironment),
 ): TransformerTypeChange {
   if (!isTransformerNode(newNode)) {
     throw new Error("keepAttributesOnTypeChange: the new node has no transformerType");

@@ -2612,6 +2612,210 @@
             ]
           }
         ]
+      },
+      {
+        "miroirTestType": "reactComponentTestSuite",
+        "miroirTestLabel": "TransformerEditor on an application with a composite",
+        "component": "TransformerEditor",
+        "componentProps": {
+          "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+          "entityUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+        },
+        "wireLocalCacheCompositeAction": true,
+        "localCacheInstances": [
+          {
+            "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+            "objects": [
+              {
+                "parentName": "TransformerDefinition",
+                "parentUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
+                "applicationSection": "model",
+                "instances": [
+                  {
+                    "uuid": "6b0a2f86-1c8e-4b8e-9d55-2f0c4a1e7b31",
+                    "parentName": "TransformerDefinition",
+                    "parentUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
+                    "name": "bookTitle",
+                    "defaultLabel": "bookTitle",
+                    "transformerInterface": {
+                      "transformerParameterSchema": {
+                        "transformerType": {
+                          "type": "literal",
+                          "definition": "bookTitle"
+                        },
+                        "transformerDefinition": {
+                          "type": "object",
+                          "definition": {
+                            "book": {
+                              "type": "schemaReference",
+                              "definition": {
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "coreTransformerForBuildPlusRuntime"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "transformerResultSchema": {
+                        "returns": "mlSchema",
+                        "definition": {
+                          "type": "any"
+                        }
+                      }
+                    },
+                    "transformerImplementation": {
+                      "transformerImplementationType": "transformer",
+                      "definition": {
+                        "transformerType": "getFromContext",
+                        "interpolation": "runtime",
+                        "referenceName": "book"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "miroirTests": [
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: an application composite is in the palette, its block has its parameter slot, and its result runs it",
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "the editor shows the transformer",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                },
+                "timeout": 10000
+              },
+              {
+                "step": "click",
+                "label": "choose Blocks",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                }
+              },
+              {
+                "step": "click",
+                "label": "arm bookTitle in the palette",
+                "target": {
+                  "byTestId": "block-palette:bookTitle"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "bookTitle is armed",
+                "target": {
+                  "byTestId": "block-palette:bookTitle"
+                },
+                "attribute": "aria-pressed",
+                "value": "true",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "open the node actions of the root block",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Replace with bookTitle",
+                "target": {
+                  "byTestId": "block-action-replace"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the root block is bookTitle",
+                "target": {
+                  "byTestId": "block:transformer"
+                },
+                "attribute": "data-transformer-type",
+                "value": "bookTitle",
+                "timeout": 2000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the book parameter is a slot",
+                "target": {
+                  "byTestId": "block:transformer.book"
+                },
+                "attribute": "data-transformer-type",
+                "value": "returnValue",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "open the field book value",
+                "target": {
+                  "byTestId": "block-field:transformer.book.value"
+                }
+              },
+              {
+                "step": "clear",
+                "label": "clear it",
+                "target": {
+                  "byTestId": "block-field-input:transformer.book.value"
+                }
+              },
+              {
+                "step": "type",
+                "label": "type 42{Enter}",
+                "target": {
+                  "byTestId": "block-field-input:transformer.book.value"
+                },
+                "text": "42{Enter}"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the book is 42",
+                "target": {
+                  "byTestId": "block-parameter:transformer.book.value"
+                },
+                "attribute": "data-value",
+                "value": "42",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "run the root block",
+                "target": {
+                  "byTestId": "block-header:transformer"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the bubble shows the value of the composite",
+                "target": {
+                  "byTestId": "block-result-value:transformer"
+                },
+                "attribute": "data-value",
+                "value": "42",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "choose JSON",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:json"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the value",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "timeout": 2000,
+                "value": "{\n  \"transformerType\": \"bookTitle\",\n  \"book\": {\n    \"transformerType\": \"returnValue\",\n    \"value\": 42,\n    \"interpolation\": \"runtime\"\n  },\n  \"interpolation\": \"runtime\"\n}"
+              }
+            ]
+          }
+        ]
       }
     ]
   }

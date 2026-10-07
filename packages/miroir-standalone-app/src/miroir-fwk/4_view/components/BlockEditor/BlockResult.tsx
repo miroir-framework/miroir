@@ -39,7 +39,9 @@ export function BlockResult(props: { path: BlockPath; id: string; colors: { text
       return undefined;
     }
     try {
-      return { runs: transformerSubtreeRuns(root, props.path, input.transformerParams, input.contextResults) };
+      return {
+        runs: transformerSubtreeRuns(root, props.path, input.transformerParams, input.contextResults, input.modelEnvironment),
+      };
     } catch (error) {
       return { error: error instanceof Error ? error.message : String(error) };
     }

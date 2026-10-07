@@ -43,7 +43,7 @@ Working branch: `claude/502-block-editor-define-blocks`
 | 0 | Registry; the runtime runs an application composite | ✅ | `fn.transformer.registry` |
 | 1 | The client model carries the application's TransformerDefinitions | ✅ | localcache unit tests |
 | 2 | The deployment schema has a branch per application composite | ✅ | `fn.transformer.registry` union cases, `schemaForDeployment.unit.test.ts` |
-| 3 | The editor and the block view read the registry | ⬜ | `ui.blockEditing` composite case |
+| 3 | The editor and the block view read the registry | ✅ | `ui.blockEditing` composite case |
 | 4 | Postgres reads the registry | ⬜ | SqlGenerator unit case |
 | 5 | Define block | ⬜ | `fn.blockModel` define cases, `ui.blockEditing` |
 | 6 | Parameters: add, rename, remove | ⬜ | `fn.transformer.treeEdit` rename cases (AC 2) |
@@ -97,6 +97,10 @@ Validation: `npm run testMiroir -w miroir-core -- --suites fn.transformer.regist
 ## Slice 3 — The editor and the block view read the registry
 
 RED: `ui.blockEditing` over the runner option (slice 7's option, built here first): with a composite loaded in the Library model, the palette lists it, a block of it shows its parameters as rows, and its result bubble shows its value. GREEN: the editor environment through `BlockRunInput`; palette, candidates, defaults, block tree, walk, preview and bubble on it.
+
+Validation: `npm run testMiroir -w miroir-standalone-app -- --suites ui.blockEditing --mode unit`; the whole `miroir-component-tests.unit.test.tsx`; `npm run test -w miroir-core -- ''`; `npm run lint`.
+
+**Realization (2026-10-07).** The runner option: `reactComponentTestSuite` has `wireLocalCacheCompositeAction` and `localCacheInstances` (MiroirTest ML schema, types regenerated), the walk passes them in the suite context, and `buildComponentTestWrapper` loads the instances with the Miroir or Library load (a load of their own would be dropped by the rollback). `TransformerEditorForTest` reads the deployment map of the context, which holds the Library when the suite wires the local cache. The editor: the TransformerEditor takes `useCurrentModelEnvironment(editorApplication)` in place of `useCurrentModel` (same hook count in the render callback) and runs its preview on it; `BlockRunInput.modelEnvironment` carries it to the block view, where `useBlockModelEnvironment` gives the environment and its registry to the palette, the block tree, the tray, the result bubble, the defaults, the insert positions, the tree edits and the #249 walk. The node actions (`TransformerNodeActions`, form and blocks) take `transformerDefinitions`; the form's `MlLiteralEditor` passes the registry of its own environment. In core, functions that take a model environment default their definitions to its registry (`transformerBlockTree`, `transformerPaletteGroups`, `defaultTransformerNode`, `keepAttributesOnTypeChange`). Test: suite "TransformerEditor on an application with a composite" in `ui.blockEditing` (Library, `bookTitle` with a transformer parameter `book`): the palette has it, Replace with gives a block whose `book` is a slot, the bubble shows the composite's value, the JSON is the composite node. It failed at the palette before the wiring. 173 component leaves.
 
 ## Slice 4 — Postgres reads the registry
 

@@ -11,6 +11,7 @@ import {
   wrapCandidates,
   wrapTransformerNode,
   type InputOutputType,
+  type TransformerDefinitionRegistry,
 } from "miroir-core";
 
 import {
@@ -54,6 +55,8 @@ export interface TransformerNodeActionsProps {
   undoable?: boolean;
   /** Menu entries before the #415 ones: the block view's Replace with (#500). */
   extraEntries?: TransformerNodeExtraEntry[];
+  /** The TransformerDefinitions of the edited application (#502); the stock ones when absent. */
+  transformerDefinitions?: TransformerDefinitionRegistry;
 }
 
 export interface TransformerNodeExtraEntry {
@@ -90,6 +93,7 @@ export const TransformerNodeActions: React.FC<TransformerNodeActionsProps> = ({
   onRemoveNode,
   undoable = false,
   extraEntries = [],
+  transformerDefinitions,
 }) => {
   const { currentTheme } = useMiroirTheme();
   const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null);
@@ -100,24 +104,26 @@ export const TransformerNodeActions: React.FC<TransformerNodeActionsProps> = ({
   const nodePathKey = nodePath.join(".");
 
   const wrapTypes = useMemo(
-    () => [...wrapCandidates(givenInput ?? "any", { transformerTypes: candidateTypes })].sort(),
-    [candidateTypes, givenInput],
+    () => [...wrapCandidates(givenInput ?? "any", { transformerTypes: candidateTypes, transformerDefinitions })].sort(),
+    [candidateTypes, givenInput, transformerDefinitions],
   );
   const pipeTypes = useMemo(
-    () => [...pipeCandidates(output ?? "any", { transformerTypes: candidateTypes })].sort(),
-    [candidateTypes, output],
+    () => [...pipeCandidates(output ?? "any", { transformerTypes: candidateTypes, transformerDefinitions })].sort(),
+    [candidateTypes, output, transformerDefinitions],
   );
   const dialogTypes = dialog?.kind === "pipe" ? pipeTypes : wrapTypes;
   // Pipe into always uses `applyTo`; Wrap in asks for the slot when there are several.
   const chosenTypeSlots = useMemo(
     () =>
-      dialog?.kind === "wrap" && chosenType ? transformerSlots(chosenType).filter((slot) => !slot.isApplyTo) : [],
-    [dialog, chosenType],
+      dialog?.kind === "wrap" && chosenType
+        ? transformerSlots(chosenType, transformerDefinitions).filter((slot) => !slot.isApplyTo)
+        : [],
+    [dialog, chosenType, transformerDefinitions],
   );
   const slot = chosenTypeSlots.length === 1 ? chosenTypeSlots[0].name : chosenSlot;
   const canConfirm = !!chosenType && (dialog?.kind === "pipe" || !!slot);
   // Unwrap: a child takes the node's place; with several children, the dialog names the dropped ones.
-  const children = useMemo(() => transformerChildren(nodeValue), [nodeValue]);
+  const children = useMemo(() => transformerChildren(nodeValue, transformerDefinitions), [nodeValue, transformerDefinitions]);
   const nodeType =
     typeof nodeValue === "object" && nodeValue !== null && "transformerType" in nodeValue
       ? String((nodeValue as { transformerType: unknown }).transformerType)
@@ -140,7 +146,7 @@ export const TransformerNodeActions: React.FC<TransformerNodeActionsProps> = ({
   };
 
   const unwrap = (childPath: (string | number)[]) => {
-    onReplaceNode(unwrapTransformerNode(nodeValue, childPath));
+    onReplaceNode(unwrapTransformerNode(nodeValue, childPath, transformerDefinitions));
     closeDialog();
   };
 
@@ -193,8 +199,9 @@ export const TransformerNodeActions: React.FC<TransformerNodeActionsProps> = ({
     }
     onReplaceNode(
       dialog.kind === "pipe"
-        ? pipeTransformerNode(nodeValue, newNode)
+        ? pipeTransformerNode(nodeValue, newNode, transformerDefinitions)
         : wrapTransformerNode(nodeValue, newNode, slot, {
+            transformerDefinitions,
             slotDefault: returnValueNode ? { ...returnValueNode, transformerType: "returnValue" } : undefined,
           }),
     );

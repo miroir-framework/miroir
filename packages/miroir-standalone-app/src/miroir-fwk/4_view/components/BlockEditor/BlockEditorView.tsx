@@ -26,6 +26,7 @@ import { BlockInsertTargets } from "./BlockInsertTargets.js";
 import { BlockResult, useBlockRunInput } from "./BlockResult.js";
 import { BlockPalette } from "./BlockPalette.js";
 import { BlockVariablePath } from "./BlockVariablePath.js";
+import { useBlockModelEnvironment } from "./BlockViewMode.js";
 
 // ################################################################################################
 // #498: the read-only block view of a transformer value (analysis #497). The tree comes from the
@@ -485,7 +486,11 @@ const BlockNodeView = React.memo(function BlockNodeView(props: {
 function BlockTray(props: { settings: BlockSettings; colors: BlockColors }) {
   const editing = useBlockEditing();
   const tray = editing?.tray;
-  const trees = useMemo(() => (tray ?? []).map((block) => transformerBlockTree(block).root), [tray]);
+  const { modelEnvironment } = useBlockModelEnvironment();
+  const trees = useMemo(
+    () => (tray ?? []).map((block) => transformerBlockTree(block, { modelEnvironment }).root),
+    [tray, modelEnvironment],
+  );
   const draggingBlock = useDraggingBlock();
   const drop = useBlockDroppable("drop:tray", tray ? { kind: "tray" } : undefined);
   if (!editing || !tray || (tray.length === 0 && !draggingBlock)) {
@@ -602,7 +607,11 @@ function ToolButton(props: {
 
 export const BlockEditorView = React.memo(function BlockEditorView(props: BlockEditorViewProps) {
   const editable = props.onCommit !== undefined;
-  const tree = useMemo(() => transformerBlockTree(props.value, { emptyOptionalSlots: editable }), [props.value, editable]);
+  const { modelEnvironment } = useBlockModelEnvironment();
+  const tree = useMemo(
+    () => transformerBlockTree(props.value, { emptyOptionalSlots: editable, modelEnvironment }),
+    [props.value, editable, modelEnvironment],
+  );
   const editing = useBlockEditingValue(
     props.value,
     props.onCommit,

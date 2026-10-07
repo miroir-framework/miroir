@@ -1,7 +1,6 @@
 import {
   checkTransformerInterfaceRecursively,
   collectTransformerEnvironmentBindings,
-  defaultMiroirModelEnvironment,
   defaultTransformerNode,
   insertTransformerNode,
   keepAttributesOnTypeChange,
@@ -14,14 +13,16 @@ import {
   transformerUnionTypes,
   type BlockPath,
   type CoreTransformerForBuildPlusRuntime,
+  type MiroirModelEnvironment,
   type MlElement,
+  type TransformerDefinitionRegistry,
   type TransformerEnvironment,
   type TransformerInsertPosition,
   type TransformerTypeChange,
 } from "miroir-core";
 import React, { createContext, useCallback, useContext, useMemo, useState } from "react";
 
-import type { BlockRunInput } from "./BlockViewMode.js";
+import { useBlockModelEnvironment, type BlockRunInput } from "./BlockViewMode.js";
 import {
   TransformerNodeActions,
   TransformerTypeChangeDialog,
@@ -51,6 +52,8 @@ export interface BlockEditing {
   candidateTypes: string[];
   /** The node the block view creates for a type: its default, `runtime` throughout. */
   defaultNodeForType: (transformerType: string) => Record<string, unknown> | undefined;
+  /** The TransformerDefinitions of the edited application: stock ones and its composites (#502). */
+  transformerDefinitions: TransformerDefinitionRegistry;
   /** What the next insert or Replace with puts: a palette type or a tray block. */
   armed: ArmedBlock | undefined;
   arm: (armed: ArmedBlock | undefined) => void;
@@ -147,9 +150,13 @@ export function withValueAtPath(root: unknown, path: BlockPath, value: unknown):
   return { ...base, [head]: withValueAtPath(base[head], rest, value) };
 }
 
-function defaultNodeForType(transformerType: string): Record<string, unknown> | undefined {
+function defaultNodeForType(
+  transformerType: string,
+  modelEnvironment: MiroirModelEnvironment,
+  transformerDefinitions: TransformerDefinitionRegistry,
+): Record<string, unknown> | undefined {
   try {
-    return defaultTransformerNode(transformerType, defaultMiroirModelEnvironment, "runtime");
+    return defaultTransformerNode(transformerType, modelEnvironment, "runtime", transformerDefinitions);
   } catch {
     return undefined;
   }
@@ -209,7 +216,13 @@ export function useBlockEditingValue(
     }),
     [runInput],
   );
-  const candidateTypes = useMemo(() => [...transformerUnionTypes(defaultMiroirModelEnvironment)].sort(), []);
+  // #502: the edited application's environment, whose registry has its composite TransformerDefinitions
+  const { modelEnvironment, transformerDefinitions } = useBlockModelEnvironment();
+  const defaultNode = useCallback(
+    (transformerType: string) => defaultNodeForType(transformerType, modelEnvironment, transformerDefinitions),
+    [modelEnvironment, transformerDefinitions],
+  );
+  const candidateTypes = useMemo(() => [...transformerUnionTypes(modelEnvironment)].sort(), [modelEnvironment]);
   const [armed, arm] = useState<ArmedBlock | undefined>(undefined);
   const [shownResult, setShownResult] = useState<string | undefined>(undefined);
   const toggleResult = useCallback(
@@ -219,13 +232,13 @@ export function useBlockEditingValue(
   const insertPositions = useMemo(() => {
     const byContainer = new Map<string, TransformerInsertPosition[]>();
     if (commit) {
-      for (const position of transformerInsertPositions(root)) {
+      for (const position of transformerInsertPositions(root, transformerDefinitions)) {
         const key = pathKey(position.container);
         byContainer.set(key, [...(byContainer.get(key) ?? []), position]);
       }
     }
     return byContainer;
-  }, [root, commit]);
+  }, [root, commit, transformerDefinitions]);
   // every name visible at a block or an insert position, for the palette's variables
   const variables = useMemo((): TransformerEnvironment => {
     const environments = [
@@ -250,9 +263,10 @@ export function useBlockEditingValue(
     const walk = checkTransformerInterfaceRecursively(root, runInput?.rootInputType ?? "any", {
       entityMlSchemas: runInput?.entityMlSchemas,
       withContext: true,
+      transformerDefinitions,
     });
     return new Map(walk.nodes.map((node) => [pathKey(node.path), node.context ?? {}]));
-  }, [root, commit, runInput]);
+  }, [root, commit, runInput, transformerDefinitions]);
   const attributesAt = useCallback(
     (path: BlockPath, referencePath: string[]) => {
       const context = contextSchemas.get(pathKey(path));
@@ -263,7 +277,7 @@ export function useBlockEditingValue(
   const nodeOf = useCallback(
     (source: ArmedBlock): Record<string, unknown> | undefined => {
       if (source.kind === "type") {
-        return defaultNodeForType(source.transformerType);
+        return defaultNode(source.transformerType);
       }
       if (source.kind === "variable") {
         return variableNode(source.source, source.name);
@@ -271,7 +285,7 @@ export function useBlockEditingValue(
       const trayBlock = tray?.[source.index];
       return isRecord(trayBlock) ? trayBlock : undefined;
     },
-    [tray],
+    [tray, defaultNode],
   );
   // a put block leaves the tray; the indexes of the others shift, so nothing stays armed
   const consume = useCallback(
@@ -289,10 +303,10 @@ export function useBlockEditingValue(
       if (!commit || !node || !accepts(source, path)) {
         return;
       }
-      commit(insertTransformerNode(root, path, node, { slotDefault: defaultNodeForType("returnValue") }));
+      commit(insertTransformerNode(root, path, node, { slotDefault: defaultNode("returnValue"), transformerDefinitions }));
       consume(source);
     },
-    [root, commit, nodeOf, accepts, consume],
+    [root, commit, nodeOf, accepts, consume, defaultNode, transformerDefinitions],
   );
   const replaceAt = useCallback(
     (source: ArmedBlock, path: BlockPath): TransformerTypeChange | undefined => {
@@ -306,34 +320,39 @@ export function useBlockEditingValue(
         return undefined;
       }
       const oldNode = valueAtPath(root, path);
-      const change = keepAttributesOnTypeChange(isRecord(oldNode) ? oldNode : {}, node, defaultMiroirModelEnvironment);
+      const change = keepAttributesOnTypeChange(
+        isRecord(oldNode) ? oldNode : {},
+        node,
+        modelEnvironment,
+        transformerDefinitions,
+      );
       if (undoable || change.dropped.length === 0) {
         commit(withValueAtPath(root, path, change.node));
         return undefined;
       }
       return change;
     },
-    [root, commit, undoable, nodeOf, accepts, consume],
+    [root, commit, undoable, nodeOf, accepts, consume, modelEnvironment, transformerDefinitions],
   );
   const moveBlock = useCallback(
     (from: BlockPath, to: BlockPath) => {
       if (!commit) {
         return;
       }
-      commit(moveTransformerNode(root, from, to, { slotDefault: defaultNodeForType("returnValue") }));
+      commit(moveTransformerNode(root, from, to, { slotDefault: defaultNode("returnValue"), transformerDefinitions }));
     },
-    [root, commit],
+    [root, commit, defaultNode, transformerDefinitions],
   );
   const moveToTray = useCallback(
     (path: BlockPath) => {
       if (!commit || !changeTray) {
         return;
       }
-      const returnValue = defaultNodeForType("returnValue");
+      const returnValue = defaultNode("returnValue");
       changeTray((current) => [...current, valueAtPath(root, path)]);
-      commit(removeTransformerNode(root, path, { rootDefault: returnValue, slotDefault: returnValue }));
+      commit(removeTransformerNode(root, path, { rootDefault: returnValue, slotDefault: returnValue, transformerDefinitions }));
     },
-    [root, commit, changeTray],
+    [root, commit, changeTray, defaultNode, transformerDefinitions],
   );
   const discardTrayBlock = useCallback(
     (index: number) => {
@@ -351,7 +370,8 @@ export function useBlockEditingValue(
             commit,
             undoable,
             candidateTypes,
-            defaultNodeForType,
+            defaultNodeForType: defaultNode,
+            transformerDefinitions,
             armed,
             arm,
             nodeOf,
@@ -375,6 +395,8 @@ export function useBlockEditingValue(
       commit,
       undoable,
       candidateTypes,
+      defaultNode,
+      transformerDefinitions,
       armed,
       nodeOf,
       rootEnvironment,
@@ -410,7 +432,13 @@ export function BlockNodeActions(props: { path: BlockPath; blockId: string }) {
       return;
     }
     const returnValue = editing.defaultNodeForType("returnValue");
-    editing.commit(removeTransformerNode(editing.root, props.path, { rootDefault: returnValue, slotDefault: returnValue }));
+    editing.commit(
+      removeTransformerNode(editing.root, props.path, {
+        rootDefault: returnValue,
+        slotDefault: returnValue,
+        transformerDefinitions: editing.transformerDefinitions,
+      }),
+    );
   }, [editing, props.path]);
   // a palette type that would drop attributes of the block, without an undo history, asks first
   const [pendingChange, setPendingChange] = useState<TransformerTypeChange | undefined>(undefined);
@@ -467,6 +495,7 @@ export function BlockNodeActions(props: { path: BlockPath; blockId: string }) {
         onRemoveNode={remove}
         undoable={editing.undoable}
         extraEntries={extraEntries}
+        transformerDefinitions={editing.transformerDefinitions}
       />
       {pendingChange && (
         <TransformerTypeChangeDialog

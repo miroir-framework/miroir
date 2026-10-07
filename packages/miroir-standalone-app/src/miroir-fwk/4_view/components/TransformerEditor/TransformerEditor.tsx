@@ -9,11 +9,11 @@ import {
   MiroirLoggerFactory,
   Uuid,
   defaultAdminApplicationDeploymentMapNOTGOOD,
-  defaultMiroirModelEnvironment,
   defaultTransformerInput,
   getInnermostTransformerError,
   noValue,
   safeStringify,
+  transformerDefinitionRegistry,
   transformerNodeTypeStatus,
   transformer_extended_apply_wrapper,
   type InputOutputType,
@@ -40,7 +40,7 @@ import { cleanLevel, lastSubmitButtonClicked } from '../../constants';
 import {
   useTransformer
 } from "../Reports/ReportHooks";
-import { useCurrentModel } from "../../ReduxHooks.js";
+import { useCurrentModelEnvironment } from "../../ReduxHooks.js";
 import { useReportPageContext } from '../Reports/ReportPageContext';
 import { TypedValueObjectEditor } from '../Reports/TypedValueObjectEditor';
 import { BlockRunInputContext, BlockViewModeProvider, type BlockRunInput } from '../BlockEditor/BlockViewMode.js';
@@ -242,6 +242,8 @@ const TransformerDefinitionEditor: React.FC<{
   transformerHistory: ValueHistory;
   /** The input the transformer runs on, as params and context: blocks run their subtree on it (#500). */
   transformerInput: Record<string, unknown>;
+  /** The edited application's model environment: its composite TransformerDefinitions (#502). */
+  modelEnvironment: MiroirModelEnvironment;
 }> = ({
   formValueMLSchema,
   application,
@@ -254,6 +256,7 @@ const TransformerDefinitionEditor: React.FC<{
   onRestrictTransformersToInputTypeChange,
   transformerHistory,
   transformerInput,
+  modelEnvironment,
 }) => {
   const entityMlSchemas = useMemo(
     () =>
@@ -266,13 +269,20 @@ const TransformerDefinitionEditor: React.FC<{
   );
   const rootInputTypeKey = safeStringify(rootInputType);
   const runInput: BlockRunInput = useMemo(
-    () => ({ transformerParams: transformerInput, contextResults: transformerInput, rootInputType, entityMlSchemas }),
-    [transformerInput, rootInputTypeKey, entityMlSchemas],
+    () => ({
+      transformerParams: transformerInput,
+      contextResults: transformerInput,
+      rootInputType,
+      entityMlSchemas,
+      modelEnvironment,
+    }),
+    [transformerInput, rootInputTypeKey, entityMlSchemas, modelEnvironment],
   );
+  const transformerDefinitions = useMemo(() => transformerDefinitionRegistry(modelEnvironment), [modelEnvironment]);
   const editedTransformerKey = safeStringify(editedTransformer);
   const interfaceWalk = useMemo(
-    () => checkTransformerInterfaceRecursively(editedTransformer, rootInputType, { entityMlSchemas }),
-    [editedTransformerKey, rootInputTypeKey, entityMlSchemas],
+    () => checkTransformerInterfaceRecursively(editedTransformer, rootInputType, { entityMlSchemas, transformerDefinitions }),
+    [editedTransformerKey, rootInputTypeKey, entityMlSchemas, transformerDefinitions],
   );
   // Node paths are relative to the transformer, editor paths to its selector.
   const transformerTypeRestrictions = useMemo(
@@ -618,7 +628,9 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                 : application;
             const editorDeploymentUuid: Uuid =
               applicationDeploymentMap[editorApplication] ?? deploymentUuid;
-            const editorModel = useCurrentModel(editorApplication, applicationDeploymentMap);
+            // #502: the preview and the block view run the editor application's composites
+            const editorModelEnvironment = useCurrentModelEnvironment(editorApplication, applicationDeploymentMap);
+            const editorModel = editorModelEnvironment.currentModel;
             const inputSelectorMode =
               formikContext.values[formikPath_TransformerEditorInputModeSelector].mode;
             const canRenderInputEditor =
@@ -810,11 +822,11 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                 "TransformerEditor", // label
                 currentFormikTransformerDefinition, // transformer
                 "value", // resolveBuildTransformersTo
-                defaultMiroirModelEnvironment,
+                editorModelEnvironment,
                 transformerParams,
                 transformerInput,
               );
-            }, [transformerDefinitionFingerprint, transformationInputFingerprint]);
+            }, [transformerDefinitionFingerprint, transformationInputFingerprint, editorModelEnvironment]);
 
             const innermostError = useMemo(
               () =>
@@ -1065,6 +1077,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                       }
                       transformerHistory={transformerHistory}
                       transformerInput={transformerInput}
+                      modelEnvironment={editorModelEnvironment}
                     />
                   ) : null}
                 </div>
