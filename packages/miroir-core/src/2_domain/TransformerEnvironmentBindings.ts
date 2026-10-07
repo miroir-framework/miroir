@@ -1,11 +1,9 @@
 import type { CoreTransformerForBuildPlusRuntime } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { defaultTransformerInput } from "../0_interfaces/1_core/Transformer";
+import { namesBoundBy, transformerScopeBinding } from "./TransformerScope";
 
 type TypedTransformer = CoreTransformerForBuildPlusRuntime & { transformerType: string };
 
 const SKIP_WALK_KEYS = new Set(["transformerType", "interpolation", "mlSchema"]);
-const LIST_ELEMENT_SLOTS = new Set(["elementTransformer", "predicate"]);
-const LIST_COMBINATORS = new Set(["mapList", "filterList", "find"]);
 
 export interface TransformerEnvironment {
   contextNames: string[];
@@ -31,43 +29,15 @@ function isPlainObject(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-function isDefinitionRecord(value: unknown): value is Record<string, unknown> {
-  return isPlainObject(value) && !isTypedTransformer(value);
-}
-
 function uniqueSorted(names: string[]): string[] {
   return [...new Set(names.filter((name) => name.length > 0))].sort();
 }
 
-function withContextName(env: TransformerEnvironment, name: string): TransformerEnvironment {
+function withContextNames(env: TransformerEnvironment, names: string[]): TransformerEnvironment {
   return {
-    contextNames: uniqueSorted([...env.contextNames, name]),
+    contextNames: uniqueSorted([...env.contextNames, ...names]),
     parameterNames: [...env.parameterNames],
   };
-}
-
-function outerObjectName(record: Record<string, unknown>): string {
-  return typeof record.referenceToOuterObject === "string" && record.referenceToOuterObject.length > 0
-    ? record.referenceToOuterObject
-    : defaultTransformerInput;
-}
-
-function childEnvironment(
-  parentType: string,
-  record: Record<string, unknown>,
-  slotKey: string,
-  env: TransformerEnvironment,
-): TransformerEnvironment {
-  if (LIST_COMBINATORS.has(parentType) && LIST_ELEMENT_SLOTS.has(slotKey)) {
-    return withContextName(env, outerObjectName(record));
-  }
-  if (
-    parentType === "createObjectFromPairs" &&
-    (slotKey === "definition" || slotKey === "attributeValue" || slotKey === "attributeKey")
-  ) {
-    return withContextName(env, outerObjectName(record));
-  }
-  return env;
 }
 
 function pushBinding(
@@ -133,63 +103,37 @@ function walkEnvironment(
   }
 
   const record = transformer as unknown as Record<string, unknown>;
-  const handledKeys = new Set<string>(SKIP_WALK_KEYS);
 
-  if (isDefinitionRecord(record.definition)) {
-    if (transformer.transformerType === "dataflowObject") {
-      let stepEnv = env;
-      for (const [stepName, step] of Object.entries(record.definition)) {
-        if (!isTypedTransformer(step)) {
-          continue;
-        }
-        walkEnvironment(step, [...path, "definition", stepName], stepEnv, bindings);
-        stepEnv = withContextName(stepEnv, stepName);
-      }
-    } else {
-      for (const [stepName, step] of Object.entries(record.definition)) {
-        if (!isTypedTransformer(step)) {
-          continue;
-        }
-        walkEnvironment(step, [...path, "definition", stepName], env, bindings);
-      }
-    }
-    handledKeys.add("definition");
-  } else if (isTypedTransformer(record.definition)) {
-    const overlayEnv =
-      transformer.transformerType === "mergeIntoObject"
-        ? withContextName(env, outerObjectName(record))
-        : env;
-    walkEnvironment(record.definition, [...path, "definition"], overlayEnv, bindings);
-    handledKeys.add("definition");
-  }
-
-  const walkSlot = (value: unknown, childPath: (string | number)[], slotKey: string): void => {
+  // Below a slot, transformers sit directly, in lists or in plain records, all in the slot's scope.
+  const walkSlot = (value: unknown, childPath: (string | number)[], slotEnv: TransformerEnvironment): void => {
     if (isTypedTransformer(value)) {
-      walkEnvironment(
-        value,
-        childPath,
-        childEnvironment(transformer.transformerType, record, slotKey, env),
-        bindings,
-      );
+      walkEnvironment(value, childPath, slotEnv, bindings);
       return;
     }
     if (Array.isArray(value)) {
       for (const [index, item] of value.entries()) {
-        walkSlot(item, [...childPath, index], slotKey);
+        walkSlot(item, [...childPath, index], slotEnv);
       }
       return;
     }
     if (isPlainObject(value)) {
       for (const [nestedKey, nested] of Object.entries(value)) {
-        walkSlot(nested, [...childPath, nestedKey], nestedKey);
+        walkSlot(nested, [...childPath, nestedKey], slotEnv);
       }
     }
   };
 
   for (const [key, value] of Object.entries(record)) {
-    if (handledKeys.has(key)) {
+    if (SKIP_WALK_KEYS.has(key)) {
       continue;
     }
-    walkSlot(value, [...path, key], key);
+    const binding = transformerScopeBinding(transformer, key);
+    if (binding === "earlierSteps" && isPlainObject(value) && !isTypedTransformer(value)) {
+      for (const [stepName, step] of Object.entries(value)) {
+        walkSlot(step, [...path, key, stepName], withContextNames(env, namesBoundBy(transformer, binding, stepName)));
+      }
+      continue;
+    }
+    walkSlot(value, [...path, key], binding ? withContextNames(env, namesBoundBy(transformer, binding, undefined)) : env);
   }
 }
