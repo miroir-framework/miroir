@@ -94,6 +94,7 @@ export { default as testConfiguration_libraryDocumentSeed } from "./assets/libra
 export { default as miroirTest_runner_mcp_lendDocument } from "./assets/library_model/a311f363-e238-4203-bdfc-29e8c160c26b/a6fc85c8-83ad-4c8f-a6e0-6f9d17713159.json" with { type: "json" };
 export { default as miroirTest_multistepReports_274 } from "./assets/library_model/a311f363-e238-4203-bdfc-29e8c160c26b/9931f827-a3ce-435f-bf07-4dac430d81d1.json" with { type: "json" };
 export { default as miroirTest_report_bookDetails } from "./assets/library_model/a311f363-e238-4203-bdfc-29e8c160c26b/4edb680b-4686-4d9a-bb96-40fa9f945b24.json" with { type: "json" };
+export { default as miroirTest_report_queryDetails } from "./assets/library_model/a311f363-e238-4203-bdfc-29e8c160c26b/3480cd1e-f110-4c91-8456-b7c39c37a337.json" with { type: "json" };
 export { default as testConfiguration_libraryBookDetailsSeed } from "./assets/library_model/675ccd46-7dd3-400b-a2bd-1319c39e11da/3123740d-2398-458f-82e6-4f1294866e39.json" with { type: "json" };
 
 export {

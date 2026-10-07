@@ -265,6 +265,7 @@ export declare const miroirTest_fn_transformer_scope: any;
 export declare const miroirTest_fn_transformer_registry: any;
 export declare const miroirTest_fn_transformer_subtreeRun: any;
 export declare const miroirTest_fn_blockModel: any;
+export declare const miroirTest_fn_blockView_fields: any;
 export declare const miroirTest_fn_transformer_resultSchema: any;
 export declare const miroirTest_tr_unfoldSchemaOnce: any;
 export declare const miroirTest_action_domainController_dataCrud: any;

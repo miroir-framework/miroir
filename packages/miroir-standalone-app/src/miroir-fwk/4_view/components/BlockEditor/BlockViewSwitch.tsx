@@ -16,6 +16,7 @@ import { BlockViewModeContext, type BlockViewMode } from "./BlockViewMode.js";
 // view, and the field is the history's scope: Ctrl+Z and Ctrl+Y work inside it.
 // #500: the block view edits the field: it writes the whole value once per edit. The type badges
 // of the form (#453) are flags on its blocks.
+// #503: in a read-only editor, the block view is read-only.
 // ################################################################################################
 
 const BlockEditorView = lazy(async () => ({ default: (await import("./BlockEditorView.js")).BlockEditorView }));
@@ -31,6 +32,8 @@ export interface BlockViewSwitchProps {
   formikPath: string;
   /** Path of the field from the form section root: the ids of its blocks start with it. */
   rootLessListKey: string;
+  /** The editor is read-only: the block view shows the value and does not edit it (#503). */
+  readOnly?: boolean;
   /** The type badges of the editor (#453), shown as flags on the blocks. */
   transformerTypeBadges?: TransformerTypeBadge[];
   /** The form editor of the field, in Form or JSON mode. */
@@ -81,10 +84,10 @@ export function BlockViewSwitch(props: BlockViewSwitchProps) {
           <BlockEditorView
             value={getIn(formik.values, props.formikPath)}
             rootLessListKey={props.rootLessListKey}
-            onCommit={commit}
+            onCommit={props.readOnly ? undefined : commit}
             undoable={history?.covers(props.formikPath) ?? false}
             tray={modes?.trayOf(props.formikPath)}
-            onTrayChange={modes ? changeTray : undefined}
+            onTrayChange={modes && !props.readOnly ? changeTray : undefined}
             typeBadges={props.transformerTypeBadges}
           />
         </Suspense>

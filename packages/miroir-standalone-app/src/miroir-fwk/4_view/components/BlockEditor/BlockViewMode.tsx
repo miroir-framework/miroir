@@ -2,10 +2,8 @@ import {
   defaultMiroirModelEnvironment,
   transformerDefinitionRegistry,
   type InputOutputType,
-  type KeyMapEntry,
   type MiroirModelEnvironment,
   type MlElement,
-  type MlReference,
   type TransformerDefinitionRegistry,
 } from "miroir-core";
 import React, { createContext, useCallback, useContext, useMemo, useState } from "react";
@@ -15,7 +13,8 @@ import React, { createContext, useCallback, useContext, useMemo, useState } from
 // value editor. The choice is kept by full Formik path in the provider, not in the field's own
 // state, so it survives folding (a folded object unmounts its children) and reordering. So does
 // the tray of a field's block view (#500), which a switch to Form or JSON unmounts.
-// The value editor offers the switch only under a provider: in #498 the TransformerEditor's.
+// The value editor offers the switch only under a provider: every TypedValueObjectEditor root has
+// one (#503), the TransformerEditor's included.
 // ################################################################################################
 
 export type BlockViewMode = "blocks" | "form" | "json";
@@ -59,14 +58,22 @@ export interface BlockDefine {
 export const BlockDefineContext = createContext<BlockDefine | undefined>(undefined);
 
 /**
+ * #503: the model environment of the application an instance editor edits, for its block views.
+ * It gives no input, so a block shows no result of its subtree.
+ */
+export const BlockModelEnvironmentContext = createContext<MiroirModelEnvironment | undefined>(undefined);
+
+/**
  * #502: the model environment of the block view, with its transformer registry: the edited
- * application's under the TransformerEditor, Miroir's elsewhere.
+ * application's under the TransformerEditor or an instance editor (#503), Miroir's elsewhere.
  */
 export function useBlockModelEnvironment(): {
   modelEnvironment: MiroirModelEnvironment;
   transformerDefinitions: TransformerDefinitionRegistry;
 } {
-  const modelEnvironment = useContext(BlockRunInputContext)?.modelEnvironment ?? defaultMiroirModelEnvironment;
+  const runInputEnvironment = useContext(BlockRunInputContext)?.modelEnvironment;
+  const editorEnvironment = useContext(BlockModelEnvironmentContext);
+  const modelEnvironment = runInputEnvironment ?? editorEnvironment ?? defaultMiroirModelEnvironment;
   return useMemo(
     () => ({ modelEnvironment, transformerDefinitions: transformerDefinitionRegistry(modelEnvironment) }),
     [modelEnvironment],
@@ -103,29 +110,11 @@ export function BlockViewModeProvider(props: { children: React.ReactNode }) {
   return <BlockViewModeContext.Provider value={value}>{props.children}</BlockViewModeContext.Provider>;
 }
 
-/** Schemas whose values the block view shows: transformers and composite action sequences. */
-const BLOCK_VIEW_SCHEMAS = new Set([
-  "coreTransformerForBuildPlusRuntime",
-  "coreTransformerForBuildPlusRuntimeWithoutArray",
-  "compositeActionSequence",
-  "compositeActionSequenceTemplate",
-  "compositeActionTemplate",
-]);
-
 /**
- * Whether a field of the value editor gets the view switch: its declared schema is a reference to
- * a transformer or a composite action sequence, and no enclosing field is one (nested transformers
- * carry a `ref:` segment of such a schema in their type path).
+ * #503: the view modes of an editor root: its own, unless an enclosing editor (the
+ * TransformerEditor) already keeps them, so that a field has one mode wherever it is rendered.
  */
-export function isBlockViewRoot(keyMapEntry: KeyMapEntry | undefined): boolean {
-  if (keyMapEntry?.rawSchema?.type !== "schemaReference") {
-    return false;
-  }
-  const relativePath = (keyMapEntry.rawSchema as MlReference).definition?.relativePath;
-  if (!relativePath || !BLOCK_VIEW_SCHEMAS.has(relativePath)) {
-    return false;
-  }
-  return !keyMapEntry.typePath.some(
-    (segment) => typeof segment === "string" && segment.startsWith("ref:") && BLOCK_VIEW_SCHEMAS.has(segment.slice(4)),
-  );
+export function BlockViewModeRoot(props: { children: React.ReactNode }) {
+  const enclosing = useContext(BlockViewModeContext);
+  return enclosing ? <>{props.children}</> : <BlockViewModeProvider>{props.children}</BlockViewModeProvider>;
 }
