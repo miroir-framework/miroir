@@ -2307,6 +2307,271 @@
                 "value": "{\n  \"transformerType\": \"ifThenElse\",\n  \"interpolation\": \"runtime\",\n  \"if\": {\n    \"transformerType\": \"mapList\",\n    \"interpolation\": \"runtime\",\n    \"referenceToOuterObject\": \"book\",\n    \"applyTo\": {\n      \"transformerType\": \"getFromContext\",\n      \"interpolation\": \"runtime\",\n      \"referenceName\": \"defaultInput\"\n    },\n    \"elementTransformer\": {\n      \"transformerType\": \"+\",\n      \"interpolation\": \"runtime\",\n      \"args\": [\n        {\n          \"transformerType\": \"getFromContext\",\n          \"interpolation\": \"runtime\",\n          \"referenceName\": \"book\"\n        }\n      ]\n    }\n  }\n}"
               }
             ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: a variable block with a path picked from the schema evaluates to the attribute",
+            "steps": [
+              {
+                "step": "click",
+                "label": "choose JSON",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:json"
+                }
+              },
+              {
+                "step": "change",
+                "label": "a dataflowObject with a typed step book",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "value": "{\n  \"transformerType\": \"dataflowObject\",\n  \"interpolation\": \"runtime\",\n  \"definition\": {\n    \"book\": {\n      \"transformerType\": \"returnValue\",\n      \"value\": {\n        \"title\": \"Dune\",\n        \"year\": 1965\n      },\n      \"interpolation\": \"runtime\",\n      \"mlSchema\": {\n        \"type\": \"object\",\n        \"definition\": {\n          \"title\": {\n            \"type\": \"string\"\n          },\n          \"year\": {\n            \"type\": \"number\"\n          }\n        }\n      }\n    }\n  }\n}"
+              },
+              {
+                "step": "click",
+                "label": "choose Blocks",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                }
+              },
+              {
+                "step": "click",
+                "label": "arm the variable book",
+                "target": {
+                  "byTestId": "block-palette-variable:context:book"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "book is armed",
+                "target": {
+                  "byTestId": "block-palette-variable:context:book"
+                },
+                "attribute": "aria-pressed",
+                "value": "true",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "put book in a new step",
+                "target": {
+                  "byTestId": "block-insert:transformer.definition.value"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the new step reads book",
+                "target": {
+                  "byTestId": "block:transformer.definition.value"
+                },
+                "attribute": "data-transformer-type",
+                "value": "getFromContext",
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the schema is known: no free text",
+                "target": {
+                  "byTestId": "block-path-text:transformer.definition.value"
+                },
+                "present": false
+              },
+              {
+                "step": "change",
+                "label": "pick the attribute title",
+                "target": {
+                  "byTestId": "block-path-add:transformer.definition.value"
+                },
+                "value": "title"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the block reads book.title",
+                "target": {
+                  "byTestId": "block-path:transformer.definition.value"
+                },
+                "attribute": "data-path",
+                "value": "[\"book\",\"title\"]",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "run the new step",
+                "target": {
+                  "byTestId": "block-header:transformer.definition.value"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the bubble shows the title",
+                "target": {
+                  "byTestId": "block-result-value:transformer.definition.value"
+                },
+                "attribute": "data-value",
+                "value": "\"Dune\"",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "choose JSON",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:json"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the step reads book.title",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "timeout": 2000,
+                "value": "{\n  \"transformerType\": \"dataflowObject\",\n  \"interpolation\": \"runtime\",\n  \"definition\": {\n    \"book\": {\n      \"transformerType\": \"returnValue\",\n      \"value\": {\n        \"title\": \"Dune\",\n        \"year\": 1965\n      },\n      \"interpolation\": \"runtime\",\n      \"mlSchema\": {\n        \"type\": \"object\",\n        \"definition\": {\n          \"title\": {\n            \"type\": \"string\"\n          },\n          \"year\": {\n            \"type\": \"number\"\n          }\n        }\n      }\n    },\n    \"value\": {\n      \"transformerType\": \"getFromContext\",\n      \"interpolation\": \"runtime\",\n      \"referencePath\": [\n        \"book\",\n        \"title\"\n      ]\n    }\n  }\n}"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: a variable path is typed where the schema has no attributes, and its last attribute dropped",
+            "steps": [
+              {
+                "step": "click",
+                "label": "choose JSON",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:json"
+                }
+              },
+              {
+                "step": "change",
+                "label": "a dataflowObject with an untyped step book",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "value": "{\n  \"transformerType\": \"dataflowObject\",\n  \"interpolation\": \"runtime\",\n  \"definition\": {\n    \"book\": {\n      \"transformerType\": \"returnValue\",\n      \"value\": {\n        \"title\": \"Dune\",\n        \"year\": 1965\n      },\n      \"interpolation\": \"runtime\"\n    }\n  }\n}"
+              },
+              {
+                "step": "click",
+                "label": "choose Blocks",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                }
+              },
+              {
+                "step": "click",
+                "label": "arm the variable book",
+                "target": {
+                  "byTestId": "block-palette-variable:context:book"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "book is armed",
+                "target": {
+                  "byTestId": "block-palette-variable:context:book"
+                },
+                "attribute": "aria-pressed",
+                "value": "true",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "put book in a new step",
+                "target": {
+                  "byTestId": "block-insert:transformer.definition.value"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the new step reads book",
+                "target": {
+                  "byTestId": "block:transformer.definition.value"
+                },
+                "attribute": "data-transformer-type",
+                "value": "getFromContext",
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the schema is not known: no attribute list",
+                "target": {
+                  "byTestId": "block-path-add:transformer.definition.value"
+                },
+                "present": false
+              },
+              {
+                "step": "type",
+                "label": "type title",
+                "target": {
+                  "byTestId": "block-path-text:transformer.definition.value"
+                },
+                "text": "title{Enter}"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the block reads book.title",
+                "target": {
+                  "byTestId": "block-path:transformer.definition.value"
+                },
+                "attribute": "data-path",
+                "value": "[\"book\",\"title\"]",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "choose JSON",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:json"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the step reads book.title",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "timeout": 2000,
+                "value": "{\n  \"transformerType\": \"dataflowObject\",\n  \"interpolation\": \"runtime\",\n  \"definition\": {\n    \"book\": {\n      \"transformerType\": \"returnValue\",\n      \"value\": {\n        \"title\": \"Dune\",\n        \"year\": 1965\n      },\n      \"interpolation\": \"runtime\"\n    },\n    \"value\": {\n      \"transformerType\": \"getFromContext\",\n      \"interpolation\": \"runtime\",\n      \"referencePath\": [\n        \"book\",\n        \"title\"\n      ]\n    }\n  }\n}"
+              },
+              {
+                "step": "click",
+                "label": "choose Blocks again",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                }
+              },
+              {
+                "step": "click",
+                "label": "drop title",
+                "target": {
+                  "byTestId": "block-path-pop:transformer.definition.value"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the block reads book",
+                "target": {
+                  "byTestId": "block-path:transformer.definition.value"
+                },
+                "attribute": "data-path",
+                "value": "[\"book\"]",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "choose JSON again",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:json"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "one segment is a referenceName again",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "timeout": 2000,
+                "value": "{\n  \"transformerType\": \"dataflowObject\",\n  \"interpolation\": \"runtime\",\n  \"definition\": {\n    \"book\": {\n      \"transformerType\": \"returnValue\",\n      \"value\": {\n        \"title\": \"Dune\",\n        \"year\": 1965\n      },\n      \"interpolation\": \"runtime\"\n    },\n    \"value\": {\n      \"transformerType\": \"getFromContext\",\n      \"interpolation\": \"runtime\",\n      \"referenceName\": \"book\"\n    }\n  }\n}"
+              }
+            ]
           }
         ]
       }

@@ -1,6 +1,7 @@
 import type {
   InputOutputObject,
   InputOutputType,
+  MlElement,
 } from "../1_core/preprocessor-generated/miroirFundamentalType";
 
 /**
@@ -38,6 +39,8 @@ export interface TransformerInterfaceNodeReport {
   declared: InputOutputObject | undefined;
   output: InputOutputType;
   failures: TransformerInterfaceMismatch[];
+  /** #501: the ML schemas of the context names the node sees, with the walk option `withContext`. */
+  context?: Record<string, MlElement>;
 }
 
 /** #453: a literal `applyTo` value of a typed node, at its own path, with the type of its value. */

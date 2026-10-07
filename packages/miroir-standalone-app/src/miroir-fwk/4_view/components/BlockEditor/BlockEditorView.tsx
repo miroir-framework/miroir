@@ -25,6 +25,7 @@ import { BlockField, MlSchemaChip } from "./BlockFields.js";
 import { BlockInsertTargets } from "./BlockInsertTargets.js";
 import { BlockResult, useBlockRunInput } from "./BlockResult.js";
 import { BlockPalette } from "./BlockPalette.js";
+import { BlockVariablePath } from "./BlockVariablePath.js";
 
 // ################################################################################################
 // #498: the read-only block view of a transformer value (analysis #497). The tree comes from the
@@ -44,7 +45,8 @@ import { BlockPalette } from "./BlockPalette.js";
 // blocks moved out read-only, each with Place and Discard. Values and ML schemas are edited in
 // place (BlockFields.tsx). With the editor's type badges (#453), a block shows its types as a flag.
 // Under the TransformerEditor, a click on a block header runs the block (BlockResult.tsx). Blocks,
-// palette entries and tray blocks can be dragged (BlockDragDrop.tsx).
+// palette entries and tray blocks can be dragged (BlockDragDrop.tsx). A variable block has a path
+// picker (BlockVariablePath.tsx, #501).
 // ################################################################################################
 
 export interface BlockEditorViewProps {
@@ -212,6 +214,9 @@ function BlockTypeFlag(props: { id: string; badge: TransformerTypeBadge | undefi
   );
 }
 
+/** The blocks that read a name in scope, with a path picker (#501). */
+const VARIABLE_TYPES = new Set(["getFromContext", "getFromParameters"]);
+
 /** An empty slot: its insert targets when editing, else a dashed box. */
 function EmptySlot(props: { path: BlockPath; settings: BlockSettings }) {
   const editing = useBlockEditing();
@@ -336,6 +341,9 @@ const TransformerBlockView = React.memo(function TransformerBlockView(props: {
             />
           </span>
         ))}
+        {editing && VARIABLE_TYPES.has(node.transformerType) && (
+          <BlockVariablePath path={node.path} id={id} colors={settings} />
+        )}
         {summary}
       </div>
       {resultShown && <BlockResult path={node.path} id={id} colors={settings} />}
@@ -595,22 +603,13 @@ function ToolButton(props: {
 export const BlockEditorView = React.memo(function BlockEditorView(props: BlockEditorViewProps) {
   const editable = props.onCommit !== undefined;
   const tree = useMemo(() => transformerBlockTree(props.value, { emptyOptionalSlots: editable }), [props.value, editable]);
-  // the names the editor's input gives the root, when it runs blocks (#501)
-  const runInput = useBlockRunInput();
-  const rootEnvironment = useMemo(
-    () => ({
-      contextNames: Object.keys(runInput?.contextResults ?? {}),
-      parameterNames: Object.keys(runInput?.transformerParams ?? {}),
-    }),
-    [runInput],
-  );
   const editing = useBlockEditingValue(
     props.value,
     props.onCommit,
     props.undoable ?? false,
     props.tray,
     props.onTrayChange,
-    rootEnvironment,
+    useBlockRunInput(),
   );
   const colors = useBlockColors();
   const buildMarking = useBlockEditorBuildMarking();

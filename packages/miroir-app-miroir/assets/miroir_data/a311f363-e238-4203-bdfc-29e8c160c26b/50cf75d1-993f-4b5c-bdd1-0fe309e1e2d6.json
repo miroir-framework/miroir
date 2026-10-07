@@ -2865,6 +2865,823 @@
             }
           }
         ]
+      },
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "referencePathAttributeNames",
+        "miroirTests": [
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a name bound to an object schema gives its attributes",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "referencePathAttributeNames"
+            },
+            "arguments": [
+              {
+                "book": {
+                  "type": "object",
+                  "definition": {
+                    "title": {
+                      "type": "string"
+                    },
+                    "year": {
+                      "type": "number"
+                    },
+                    "author": {
+                      "type": "object",
+                      "definition": {
+                        "name": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                },
+                "books": {
+                  "type": "array",
+                  "definition": {
+                    "type": "object",
+                    "definition": {
+                      "title": {
+                        "type": "string"
+                      },
+                      "year": {
+                        "type": "number"
+                      },
+                      "author": {
+                        "type": "object",
+                        "definition": {
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "shelves": {
+                  "type": "record",
+                  "definition": {
+                    "type": "object",
+                    "definition": {
+                      "title": {
+                        "type": "string"
+                      },
+                      "year": {
+                        "type": "number"
+                      },
+                      "author": {
+                        "type": "object",
+                        "definition": {
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "count": {
+                  "type": "number"
+                },
+                "loose": {
+                  "type": "object",
+                  "definition": {}
+                }
+              },
+              [
+                "book"
+              ]
+            ],
+            "expectedValue": [
+              "title",
+              "year",
+              "author"
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a path into a nested object gives the nested attributes",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "referencePathAttributeNames"
+            },
+            "arguments": [
+              {
+                "book": {
+                  "type": "object",
+                  "definition": {
+                    "title": {
+                      "type": "string"
+                    },
+                    "year": {
+                      "type": "number"
+                    },
+                    "author": {
+                      "type": "object",
+                      "definition": {
+                        "name": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                },
+                "books": {
+                  "type": "array",
+                  "definition": {
+                    "type": "object",
+                    "definition": {
+                      "title": {
+                        "type": "string"
+                      },
+                      "year": {
+                        "type": "number"
+                      },
+                      "author": {
+                        "type": "object",
+                        "definition": {
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "shelves": {
+                  "type": "record",
+                  "definition": {
+                    "type": "object",
+                    "definition": {
+                      "title": {
+                        "type": "string"
+                      },
+                      "year": {
+                        "type": "number"
+                      },
+                      "author": {
+                        "type": "object",
+                        "definition": {
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "count": {
+                  "type": "number"
+                },
+                "loose": {
+                  "type": "object",
+                  "definition": {}
+                }
+              },
+              [
+                "book",
+                "author"
+              ]
+            ],
+            "expectedValue": [
+              "name"
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a list is crossed by an index",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "referencePathAttributeNames"
+            },
+            "arguments": [
+              {
+                "book": {
+                  "type": "object",
+                  "definition": {
+                    "title": {
+                      "type": "string"
+                    },
+                    "year": {
+                      "type": "number"
+                    },
+                    "author": {
+                      "type": "object",
+                      "definition": {
+                        "name": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                },
+                "books": {
+                  "type": "array",
+                  "definition": {
+                    "type": "object",
+                    "definition": {
+                      "title": {
+                        "type": "string"
+                      },
+                      "year": {
+                        "type": "number"
+                      },
+                      "author": {
+                        "type": "object",
+                        "definition": {
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "shelves": {
+                  "type": "record",
+                  "definition": {
+                    "type": "object",
+                    "definition": {
+                      "title": {
+                        "type": "string"
+                      },
+                      "year": {
+                        "type": "number"
+                      },
+                      "author": {
+                        "type": "object",
+                        "definition": {
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "count": {
+                  "type": "number"
+                },
+                "loose": {
+                  "type": "object",
+                  "definition": {}
+                }
+              },
+              [
+                "books",
+                0
+              ]
+            ],
+            "expectedValue": [
+              "title",
+              "year",
+              "author"
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a record is crossed by a key",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "referencePathAttributeNames"
+            },
+            "arguments": [
+              {
+                "book": {
+                  "type": "object",
+                  "definition": {
+                    "title": {
+                      "type": "string"
+                    },
+                    "year": {
+                      "type": "number"
+                    },
+                    "author": {
+                      "type": "object",
+                      "definition": {
+                        "name": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                },
+                "books": {
+                  "type": "array",
+                  "definition": {
+                    "type": "object",
+                    "definition": {
+                      "title": {
+                        "type": "string"
+                      },
+                      "year": {
+                        "type": "number"
+                      },
+                      "author": {
+                        "type": "object",
+                        "definition": {
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "shelves": {
+                  "type": "record",
+                  "definition": {
+                    "type": "object",
+                    "definition": {
+                      "title": {
+                        "type": "string"
+                      },
+                      "year": {
+                        "type": "number"
+                      },
+                      "author": {
+                        "type": "object",
+                        "definition": {
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "count": {
+                  "type": "number"
+                },
+                "loose": {
+                  "type": "object",
+                  "definition": {}
+                }
+              },
+              [
+                "shelves",
+                "fiction"
+              ]
+            ],
+            "expectedValue": [
+              "title",
+              "year",
+              "author"
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a scalar has no attributes",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "referencePathAttributeNames"
+            },
+            "arguments": [
+              {
+                "book": {
+                  "type": "object",
+                  "definition": {
+                    "title": {
+                      "type": "string"
+                    },
+                    "year": {
+                      "type": "number"
+                    },
+                    "author": {
+                      "type": "object",
+                      "definition": {
+                        "name": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                },
+                "books": {
+                  "type": "array",
+                  "definition": {
+                    "type": "object",
+                    "definition": {
+                      "title": {
+                        "type": "string"
+                      },
+                      "year": {
+                        "type": "number"
+                      },
+                      "author": {
+                        "type": "object",
+                        "definition": {
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "shelves": {
+                  "type": "record",
+                  "definition": {
+                    "type": "object",
+                    "definition": {
+                      "title": {
+                        "type": "string"
+                      },
+                      "year": {
+                        "type": "number"
+                      },
+                      "author": {
+                        "type": "object",
+                        "definition": {
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "count": {
+                  "type": "number"
+                },
+                "loose": {
+                  "type": "object",
+                  "definition": {}
+                }
+              },
+              [
+                "count"
+              ]
+            ],
+            "expectedValue": {
+              "__miroirJsonUndefined": true
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "an object without declared attributes has none",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "referencePathAttributeNames"
+            },
+            "arguments": [
+              {
+                "book": {
+                  "type": "object",
+                  "definition": {
+                    "title": {
+                      "type": "string"
+                    },
+                    "year": {
+                      "type": "number"
+                    },
+                    "author": {
+                      "type": "object",
+                      "definition": {
+                        "name": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                },
+                "books": {
+                  "type": "array",
+                  "definition": {
+                    "type": "object",
+                    "definition": {
+                      "title": {
+                        "type": "string"
+                      },
+                      "year": {
+                        "type": "number"
+                      },
+                      "author": {
+                        "type": "object",
+                        "definition": {
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "shelves": {
+                  "type": "record",
+                  "definition": {
+                    "type": "object",
+                    "definition": {
+                      "title": {
+                        "type": "string"
+                      },
+                      "year": {
+                        "type": "number"
+                      },
+                      "author": {
+                        "type": "object",
+                        "definition": {
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "count": {
+                  "type": "number"
+                },
+                "loose": {
+                  "type": "object",
+                  "definition": {}
+                }
+              },
+              [
+                "loose"
+              ]
+            ],
+            "expectedValue": {
+              "__miroirJsonUndefined": true
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "an unknown name has none",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "referencePathAttributeNames"
+            },
+            "arguments": [
+              {
+                "book": {
+                  "type": "object",
+                  "definition": {
+                    "title": {
+                      "type": "string"
+                    },
+                    "year": {
+                      "type": "number"
+                    },
+                    "author": {
+                      "type": "object",
+                      "definition": {
+                        "name": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                },
+                "books": {
+                  "type": "array",
+                  "definition": {
+                    "type": "object",
+                    "definition": {
+                      "title": {
+                        "type": "string"
+                      },
+                      "year": {
+                        "type": "number"
+                      },
+                      "author": {
+                        "type": "object",
+                        "definition": {
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "shelves": {
+                  "type": "record",
+                  "definition": {
+                    "type": "object",
+                    "definition": {
+                      "title": {
+                        "type": "string"
+                      },
+                      "year": {
+                        "type": "number"
+                      },
+                      "author": {
+                        "type": "object",
+                        "definition": {
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "count": {
+                  "type": "number"
+                },
+                "loose": {
+                  "type": "object",
+                  "definition": {}
+                }
+              },
+              [
+                "unknown"
+              ]
+            ],
+            "expectedValue": {
+              "__miroirJsonUndefined": true
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a path past a scalar has none",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "referencePathAttributeNames"
+            },
+            "arguments": [
+              {
+                "book": {
+                  "type": "object",
+                  "definition": {
+                    "title": {
+                      "type": "string"
+                    },
+                    "year": {
+                      "type": "number"
+                    },
+                    "author": {
+                      "type": "object",
+                      "definition": {
+                        "name": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                },
+                "books": {
+                  "type": "array",
+                  "definition": {
+                    "type": "object",
+                    "definition": {
+                      "title": {
+                        "type": "string"
+                      },
+                      "year": {
+                        "type": "number"
+                      },
+                      "author": {
+                        "type": "object",
+                        "definition": {
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "shelves": {
+                  "type": "record",
+                  "definition": {
+                    "type": "object",
+                    "definition": {
+                      "title": {
+                        "type": "string"
+                      },
+                      "year": {
+                        "type": "number"
+                      },
+                      "author": {
+                        "type": "object",
+                        "definition": {
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "count": {
+                  "type": "number"
+                },
+                "loose": {
+                  "type": "object",
+                  "definition": {}
+                }
+              },
+              [
+                "book",
+                "title",
+                "length"
+              ]
+            ],
+            "expectedValue": {
+              "__miroirJsonUndefined": true
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "the interface walk reports the schemas a node sees, with withContext",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+              "export": "checkTransformerInterfaceRecursively"
+            },
+            "arguments": [
+              {
+                "transformerType": "dataflowObject",
+                "interpolation": "runtime",
+                "definition": {
+                  "book": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": {
+                      "title": "Dune",
+                      "year": 1965
+                    },
+                    "mlSchema": {
+                      "type": "object",
+                      "definition": {
+                        "title": {
+                          "type": "string"
+                        },
+                        "year": {
+                          "type": "number"
+                        },
+                        "author": {
+                          "type": "object",
+                          "definition": {
+                            "name": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "value": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referencePath": [
+                      "book",
+                      "title"
+                    ]
+                  }
+                }
+              },
+              "any",
+              {
+                "withContext": true
+              }
+            ],
+            "assertions": [
+              {
+                "label": "the second step sees the first",
+                "resultAccessPath": [
+                  "nodes",
+                  2,
+                  "context",
+                  "book"
+                ],
+                "expectedValue": {
+                  "type": "object",
+                  "definition": {
+                    "title": {
+                      "type": "string"
+                    },
+                    "year": {
+                      "type": "number"
+                    },
+                    "author": {
+                      "type": "object",
+                      "definition": {
+                        "name": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "label": "the first step does not see itself",
+                "resultAccessPath": [
+                  "nodes",
+                  1,
+                  "context",
+                  "defaultInput",
+                  "type"
+                ],
+                "expectedValue": "any"
+              }
+            ]
+          }
+        ]
       }
     ]
   }

@@ -754,6 +754,45 @@ function resolveCaseBranchSchemas(
 }
 
 /**
+ * #501: the attribute names of the value a reference path reads, from the ML schemas of the
+ * context: those of the object schema at the end of `referencePath`, `undefined` when the schema
+ * is not known there or is not an object with declared attributes. A list or record is crossed by
+ * any segment.
+ */
+export function referencePathAttributeNames(
+  context: TransformerResultSchemaContext,
+  referencePath: (string | number)[],
+): string[] | undefined {
+  if (referencePath.length === 0) {
+    return undefined;
+  }
+  let current: MlElement | undefined = context[String(referencePath[0])];
+  for (const segment of referencePath.slice(1)) {
+    if (current === undefined) {
+      return undefined;
+    }
+    const definition: unknown = (current as { definition?: unknown }).definition;
+    switch (current.type) {
+      case "object":
+        current = typeof definition === "object" && definition !== null
+          ? (definition as Record<string, MlElement>)[String(segment)]
+          : undefined;
+        break;
+      case "array":
+      case "record":
+        current = definition as MlElement | undefined;
+        break;
+      default:
+        return undefined;
+    }
+  }
+  const attributes: unknown = (current as { definition?: unknown } | undefined)?.definition;
+  return current?.type === "object" && typeof attributes === "object" && attributes !== null && Object.keys(attributes).length > 0
+    ? Object.keys(attributes)
+    : undefined;
+}
+
+/**
  * @description
  * This function, given a transformer, a context for used references and the set of existing transformer definitions,
  * returns the expected ML schema for the transformer result.

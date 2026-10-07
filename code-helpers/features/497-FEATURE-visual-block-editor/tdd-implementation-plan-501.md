@@ -33,7 +33,7 @@ This plan does not add define blocks (#502) nor the block view of action sequenc
 | 1 | Names in scope at a position of a transformer | ✅ | `fn.transformer.scope` transformer cases |
 | 2 | Names in scope in a composite action sequence | ✅ | `fn.transformer.scope` sequence cases |
 | 3 | Variable blocks in the palette | ✅ | `ui.blockEditing` variable cases |
-| 4 | The path picker of a variable block | ⬜ | `ui.blockEditing` path case (AC 2) |
+| 4 | The path picker of a variable block | ✅ | `ui.blockEditing` path case (AC 2) |
 | 5 | Unbound Runner references, nonreg, docs, AC | ⬜ | issue filed, nonreg, AC checklist |
 
 ---
@@ -82,6 +82,8 @@ RED: `ui.blockEditing` "a context variable from the palette goes only where it i
 ## Slice 4 — The path picker
 
 RED: `ui.blockEditing` "a variable block with a path picked from the schema evaluates to the attribute" (AC 2): dataflowObject with a typed step, a new entry, the step as variable, the attribute from the picker, the result bubble shows the value; and free text where the schema has no attributes.
+
+**Realization (2026-10-07).** The #249 walk takes `withContext` and then puts on each node report the ML schemas of the context names it sees (`TransformerInterfaceNodeReport.context`). `referencePathAttributeNames(context, referencePath)` (Transformer_ResultSchema) gives the attributes of the object schema at the end of a path, crossing lists and records, `undefined` otherwise. `BlockRunInput` carries the TransformerEditor's `rootInputType` and `entityMlSchemas`; `useBlockEditingValue` takes the run input, derives the root names from it, walks the edited value with `withContext` and exposes `attributesAt(path, referencePath)`. `BlockVariablePath` sits in the header of getFromContext and getFromParameters blocks: a select of the attributes when the schema is known (`block-path-add:<id>`), a text field otherwise (`block-path-text:<id>`, Enter adds), and a button that drops the last attribute (`block-path-pop:<id>`); `block-path:<id>` carries the path as `data-path`. Parameter schemas are not known, so getFromParameters blocks always get the text field. 9 `fn.transformer.scope` cases (34 in all) and 2 `ui.blockEditing` cases (171 component leaves); the schema case fails when `attributesAt` returns nothing.
 
 ## Slice 5 — Unbound Runner references, nonreg, docs, AC
 

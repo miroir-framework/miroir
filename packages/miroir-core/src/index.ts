@@ -1323,6 +1323,7 @@ export {
 } from "./2_domain/buildOpenApiEndpointSyncComposite.js";
 export {
   isFailedTransformerInterfaceFromDefinition,
+  referencePathAttributeNames,
   resolveTransformerResultSchema,
   type FailedTransformerInterfaceFromDefinition,
   type FailedTransformerInterfaceFromDefinitionFailureKind,

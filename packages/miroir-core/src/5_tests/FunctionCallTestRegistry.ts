@@ -37,7 +37,7 @@ import {
 import { mlUnion_recursivelyUnfold } from "../1_core/mls/mlUnion_RecursivelyUnfold";
 import { localizeMlSchemaReferenceContext } from "../1_core/mls/MlsUnfoldSchemaOnce";
 import { resolveQueryTemplateWithExtractorCombinerTransformer } from "../2_domain/Templates";
-import { resolveTransformerResultSchema } from "../2_domain/Transformer_ResultSchema";
+import { referencePathAttributeNames, resolveTransformerResultSchema } from "../2_domain/Transformer_ResultSchema";
 import {
   checkTransformerInterfaceCompatibility,
   checkTransformerInterfaceCompatibilityWithInference,
@@ -226,6 +226,7 @@ const FUNCTION_CALL_REGISTRY: Record<
       resolveQueryTemplateWithExtractorCombinerTransformer as WhitelistedFunction,
   },
   "miroir-core/2_domain/Transformer_ResultSchema": {
+    referencePathAttributeNames: referencePathAttributeNames as WhitelistedFunction,
     resolveTransformerResultSchema: resolveTransformerResultSchema as WhitelistedFunction,
   },
   "miroir-core/2_domain/TransformerInterfaceCheck": {

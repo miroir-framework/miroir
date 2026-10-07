@@ -255,10 +255,6 @@ const TransformerDefinitionEditor: React.FC<{
   transformerHistory,
   transformerInput,
 }) => {
-  const runInput: BlockRunInput = useMemo(
-    () => ({ transformerParams: transformerInput, contextResults: transformerInput }),
-    [transformerInput],
-  );
   const entityMlSchemas = useMemo(
     () =>
       Object.fromEntries(
@@ -269,6 +265,10 @@ const TransformerDefinitionEditor: React.FC<{
     [entities],
   );
   const rootInputTypeKey = safeStringify(rootInputType);
+  const runInput: BlockRunInput = useMemo(
+    () => ({ transformerParams: transformerInput, contextResults: transformerInput, rootInputType, entityMlSchemas }),
+    [transformerInput, rootInputTypeKey, entityMlSchemas],
+  );
   const editedTransformerKey = safeStringify(editedTransformer);
   const interfaceWalk = useMemo(
     () => checkTransformerInterfaceRecursively(editedTransformer, rootInputType, { entityMlSchemas }),

@@ -1,4 +1,4 @@
-import type { KeyMapEntry, MlReference } from "miroir-core";
+import type { InputOutputType, KeyMapEntry, MlElement, MlReference } from "miroir-core";
 import React, { createContext, useCallback, useMemo, useState } from "react";
 
 // ################################################################################################
@@ -18,6 +18,10 @@ export type BlockViewMode = "blocks" | "form" | "json";
 export interface BlockRunInput {
   transformerParams: Record<string, unknown>;
   contextResults: Record<string, unknown>;
+  /** #501: the type of the input, for the schemas a variable path picker offers. */
+  rootInputType?: InputOutputType;
+  /** #501: the ML schemas of the application's Entities, by uuid, for the same. */
+  entityMlSchemas?: Record<string, MlElement>;
 }
 
 export const BlockRunInputContext = createContext<BlockRunInput | undefined>(undefined);

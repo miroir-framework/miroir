@@ -1,10 +1,12 @@
 import {
+  checkTransformerInterfaceRecursively,
   collectTransformerEnvironmentBindings,
   defaultMiroirModelEnvironment,
   defaultTransformerNode,
   insertTransformerNode,
   keepAttributesOnTypeChange,
   moveTransformerNode,
+  referencePathAttributeNames,
   removeTransformerNode,
   reorderTransformerNode,
   transformerEnvironmentAt,
@@ -12,12 +14,14 @@ import {
   transformerUnionTypes,
   type BlockPath,
   type CoreTransformerForBuildPlusRuntime,
+  type MlElement,
   type TransformerEnvironment,
   type TransformerInsertPosition,
   type TransformerTypeChange,
 } from "miroir-core";
 import React, { createContext, useCallback, useContext, useMemo, useState } from "react";
 
+import type { BlockRunInput } from "./BlockViewMode.js";
 import {
   TransformerNodeActions,
   TransformerTypeChangeDialog,
@@ -31,7 +35,8 @@ import {
 //
 // A palette click arms a transformer type or a variable (#501), Place arms a tray block; an insert
 // target or Replace with in a block menu then puts a new block of that type, the variable or the
-// tray block, and disarms it. A variable goes only where its name is visible.
+// tray block, and disarms it. A variable goes only where its name is visible. A variable block
+// reads a path: its attributes come from the ML schemas the #249 walk gives the names it sees.
 // The tray holds the blocks moved out of the value; it is not saved and not in the undo history.
 // ################################################################################################
 
@@ -57,6 +62,11 @@ export interface BlockEditing {
   variables: TransformerEnvironment;
   /** Whether `source` may go at `path`: a variable only where its name is visible. */
   accepts: (source: ArmedBlock, path: BlockPath) => boolean;
+  /**
+   * The attributes of the value `referencePath` reads from the block at `path`, a getFromContext,
+   * when its schema is known (#501).
+   */
+  attributesAt: (path: BlockPath, referencePath: string[]) => string[] | undefined;
   /** The insert positions of the value by the path of their container (see `pathKey`). */
   insertPositions: Map<string, TransformerInsertPosition[]>;
   /** Puts a block of the palette or the tray at `path`, an insert position, and disarms. */
@@ -162,11 +172,27 @@ function namesOf(environment: TransformerEnvironment, source: VariableSource): s
   return source === "context" ? environment.contextNames : environment.parameterNames;
 }
 
-const NO_NAMES: TransformerEnvironment = { contextNames: [], parameterNames: [] };
+/** The path a variable block reads: `referencePath`, else its `referenceName` alone. */
+export function referencePathOf(node: unknown): string[] {
+  if (!isRecord(node)) {
+    return [];
+  }
+  if (Array.isArray(node.referencePath)) {
+    return node.referencePath.map(String);
+  }
+  return typeof node.referenceName === "string" && node.referenceName.length > 0 ? [node.referenceName] : [];
+}
+
+/** A variable block reading `referencePath`: one segment is a `referenceName`, more a `referencePath`. */
+export function withReferencePath(node: Record<string, unknown>, referencePath: string[]): Record<string, unknown> {
+  const { referenceName: _name, referencePath: _path, ...rest } = node;
+  return referencePath.length === 1 ? { ...rest, referenceName: referencePath[0] } : { ...rest, referencePath };
+}
 
 /**
  * The editing context of a block view whose value is written by `commit`, with the tray `tray`
- * changed by `changeTray`.
+ * changed by `changeTray`. The editor's run input, when it runs blocks, gives the names and the
+ * input type of the root.
  */
 export function useBlockEditingValue(
   root: unknown,
@@ -174,8 +200,15 @@ export function useBlockEditingValue(
   undoable: boolean,
   tray?: unknown[],
   changeTray?: (update: TrayUpdate) => void,
-  rootEnvironment: TransformerEnvironment = NO_NAMES,
+  runInput?: BlockRunInput,
 ): BlockEditing | undefined {
+  const rootEnvironment = useMemo(
+    (): TransformerEnvironment => ({
+      contextNames: Object.keys(runInput?.contextResults ?? {}),
+      parameterNames: Object.keys(runInput?.transformerParams ?? {}),
+    }),
+    [runInput],
+  );
   const candidateTypes = useMemo(() => [...transformerUnionTypes(defaultMiroirModelEnvironment)].sort(), []);
   const [armed, arm] = useState<ArmedBlock | undefined>(undefined);
   const [shownResult, setShownResult] = useState<string | undefined>(undefined);
@@ -208,6 +241,24 @@ export function useBlockEditingValue(
       source.kind !== "variable" ||
       namesOf(transformerEnvironmentAt(root, path, rootEnvironment), source.source).includes(source.name),
     [root, rootEnvironment],
+  );
+  // the ML schemas of the context names each block sees, by `pathKey`
+  const contextSchemas = useMemo(() => {
+    if (!commit) {
+      return new Map<string, Record<string, MlElement>>();
+    }
+    const walk = checkTransformerInterfaceRecursively(root, runInput?.rootInputType ?? "any", {
+      entityMlSchemas: runInput?.entityMlSchemas,
+      withContext: true,
+    });
+    return new Map(walk.nodes.map((node) => [pathKey(node.path), node.context ?? {}]));
+  }, [root, commit, runInput]);
+  const attributesAt = useCallback(
+    (path: BlockPath, referencePath: string[]) => {
+      const context = contextSchemas.get(pathKey(path));
+      return context ? referencePathAttributeNames(context, referencePath) : undefined;
+    },
+    [contextSchemas],
   );
   const nodeOf = useCallback(
     (source: ArmedBlock): Record<string, unknown> | undefined => {
@@ -307,6 +358,7 @@ export function useBlockEditingValue(
             rootEnvironment,
             variables,
             accepts,
+            attributesAt,
             insertPositions,
             insertAt,
             replaceAt,
@@ -328,6 +380,7 @@ export function useBlockEditingValue(
       rootEnvironment,
       variables,
       accepts,
+      attributesAt,
       insertPositions,
       insertAt,
       replaceAt,
