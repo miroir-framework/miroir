@@ -19,6 +19,10 @@ function InsertTarget(props: { position: TransformerInsertPosition; id: string; 
     return null;
   }
   const armed = editing.armed;
+  // an armed variable shows only the targets where its name is visible
+  if (armed && !editing.accepts(armed, props.position.path)) {
+    return null;
+  }
   const label = armed
     ? `Put ${armedLabel(armed)} here`
     : "Choose a block in the palette or the tray, then click here to put it, or drop a block here";

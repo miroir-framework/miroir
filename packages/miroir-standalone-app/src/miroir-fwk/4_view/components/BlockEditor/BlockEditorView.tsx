@@ -595,12 +595,22 @@ function ToolButton(props: {
 export const BlockEditorView = React.memo(function BlockEditorView(props: BlockEditorViewProps) {
   const editable = props.onCommit !== undefined;
   const tree = useMemo(() => transformerBlockTree(props.value, { emptyOptionalSlots: editable }), [props.value, editable]);
+  // the names the editor's input gives the root, when it runs blocks (#501)
+  const runInput = useBlockRunInput();
+  const rootEnvironment = useMemo(
+    () => ({
+      contextNames: Object.keys(runInput?.contextResults ?? {}),
+      parameterNames: Object.keys(runInput?.transformerParams ?? {}),
+    }),
+    [runInput],
+  );
   const editing = useBlockEditingValue(
     props.value,
     props.onCommit,
     props.undoable ?? false,
     props.tray,
     props.onTrayChange,
+    rootEnvironment,
   );
   const colors = useBlockColors();
   const buildMarking = useBlockEditorBuildMarking();

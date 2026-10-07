@@ -2048,6 +2048,265 @@
                 "value": "{\n  \"transformerType\": \"+\",\n  \"args\": [\n    {\n      \"transformerType\": \"returnValue\",\n      \"value\": \"seize value...\",\n      \"interpolation\": \"runtime\"\n    },\n    {\n      \"transformerType\": \"getFromContext\",\n      \"interpolation\": \"runtime\"\n    }\n  ],\n  \"interpolation\": \"runtime\"\n}"
               }
             ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: the palette lists the names in scope, by context and parameters",
+            "steps": [
+              {
+                "step": "click",
+                "label": "choose JSON",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:json"
+                }
+              },
+              {
+                "step": "change",
+                "label": "a dataflowObject with two steps",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "value": "{\n  \"transformerType\": \"dataflowObject\",\n  \"interpolation\": \"runtime\",\n  \"definition\": {\n    \"first\": {\n      \"transformerType\": \"returnValue\",\n      \"value\": 1,\n      \"interpolation\": \"runtime\"\n    },\n    \"second\": {\n      \"transformerType\": \"returnValue\",\n      \"value\": 2,\n      \"interpolation\": \"runtime\"\n    }\n  }\n}"
+              },
+              {
+                "step": "click",
+                "label": "choose Blocks",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the editor's input is a context name",
+                "target": {
+                  "byTestId": "block-palette-variable:context:defaultInput"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the step first is a context name",
+                "target": {
+                  "byTestId": "block-palette-variable:context:first"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the editor's input is a parameter",
+                "target": {
+                  "byTestId": "block-palette-variable:parameters:defaultInput"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "a step is not a parameter",
+                "target": {
+                  "byTestId": "block-palette-variable:parameters:first"
+                },
+                "present": false
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: a variable replaces only a block where its name is visible",
+            "steps": [
+              {
+                "step": "click",
+                "label": "choose JSON",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:json"
+                }
+              },
+              {
+                "step": "change",
+                "label": "a dataflowObject with two steps",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "value": "{\n  \"transformerType\": \"dataflowObject\",\n  \"interpolation\": \"runtime\",\n  \"definition\": {\n    \"first\": {\n      \"transformerType\": \"returnValue\",\n      \"value\": 1,\n      \"interpolation\": \"runtime\"\n    },\n    \"second\": {\n      \"transformerType\": \"returnValue\",\n      \"value\": 2,\n      \"interpolation\": \"runtime\"\n    }\n  }\n}"
+              },
+              {
+                "step": "click",
+                "label": "choose Blocks",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                }
+              },
+              {
+                "step": "click",
+                "label": "arm the variable first",
+                "target": {
+                  "byTestId": "block-palette-variable:context:first"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "first is armed",
+                "target": {
+                  "byTestId": "block-palette-variable:context:first"
+                },
+                "attribute": "aria-pressed",
+                "value": "true",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "open the node actions of the step first",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer.definition.first"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "first does not see itself: no Replace with",
+                "target": {
+                  "byTestId": "block-action-replace"
+                },
+                "present": false
+              },
+              {
+                "step": "keyboard",
+                "label": "close the menu",
+                "keys": "{Escape}"
+              },
+              {
+                "step": "click",
+                "label": "open the node actions of the step second",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer.definition.second"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Replace with context first",
+                "target": {
+                  "byTestId": "block-action-replace"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "second reads first",
+                "target": {
+                  "byTestId": "block:transformer.definition.second"
+                },
+                "attribute": "data-transformer-type",
+                "value": "getFromContext",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "choose JSON again",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:json"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the value",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "timeout": 2000,
+                "value": "{\n  \"transformerType\": \"dataflowObject\",\n  \"interpolation\": \"runtime\",\n  \"definition\": {\n    \"first\": {\n      \"transformerType\": \"returnValue\",\n      \"value\": 1,\n      \"interpolation\": \"runtime\"\n    },\n    \"second\": {\n      \"transformerType\": \"getFromContext\",\n      \"interpolation\": \"runtime\",\n      \"referenceName\": \"first\"\n    }\n  }\n}"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: an armed variable shows only the insert targets where it is visible",
+            "steps": [
+              {
+                "step": "click",
+                "label": "choose JSON",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:json"
+                }
+              },
+              {
+                "step": "change",
+                "label": "a mapList binding book, in an ifThenElse",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "value": "{\n  \"transformerType\": \"ifThenElse\",\n  \"interpolation\": \"runtime\",\n  \"if\": {\n    \"transformerType\": \"mapList\",\n    \"interpolation\": \"runtime\",\n    \"referenceToOuterObject\": \"book\",\n    \"applyTo\": {\n      \"transformerType\": \"getFromContext\",\n      \"interpolation\": \"runtime\",\n      \"referenceName\": \"defaultInput\"\n    },\n    \"elementTransformer\": {\n      \"transformerType\": \"+\",\n      \"interpolation\": \"runtime\",\n      \"args\": []\n    }\n  }\n}"
+              },
+              {
+                "step": "click",
+                "label": "choose Blocks",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                }
+              },
+              {
+                "step": "click",
+                "label": "arm the variable book",
+                "target": {
+                  "byTestId": "block-palette-variable:context:book"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "book is armed",
+                "target": {
+                  "byTestId": "block-palette-variable:context:book"
+                },
+                "attribute": "aria-pressed",
+                "value": "true",
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "book is not visible in then",
+                "target": {
+                  "byTestId": "block-insert:transformer.then"
+                },
+                "present": false
+              },
+              {
+                "step": "click",
+                "label": "put book in the args of the element transformer",
+                "target": {
+                  "byTestId": "block-insert:transformer.if.elementTransformer.args.0"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the variable block",
+                "target": {
+                  "byTestId": "block:transformer.if.elementTransformer.args.0"
+                },
+                "attribute": "data-transformer-type",
+                "value": "getFromContext",
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "with nothing armed, then is a target again",
+                "target": {
+                  "byTestId": "block-insert:transformer.then"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "choose JSON",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:json"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the value",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "timeout": 2000,
+                "value": "{\n  \"transformerType\": \"ifThenElse\",\n  \"interpolation\": \"runtime\",\n  \"if\": {\n    \"transformerType\": \"mapList\",\n    \"interpolation\": \"runtime\",\n    \"referenceToOuterObject\": \"book\",\n    \"applyTo\": {\n      \"transformerType\": \"getFromContext\",\n      \"interpolation\": \"runtime\",\n      \"referenceName\": \"defaultInput\"\n    },\n    \"elementTransformer\": {\n      \"transformerType\": \"+\",\n      \"interpolation\": \"runtime\",\n      \"args\": [\n        {\n          \"transformerType\": \"getFromContext\",\n          \"interpolation\": \"runtime\",\n          \"referenceName\": \"book\"\n        }\n      ]\n    }\n  }\n}"
+              }
+            ]
           }
         ]
       }

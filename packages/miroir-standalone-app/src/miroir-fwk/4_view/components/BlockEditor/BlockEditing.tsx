@@ -1,4 +1,5 @@
 import {
+  collectTransformerEnvironmentBindings,
   defaultMiroirModelEnvironment,
   defaultTransformerNode,
   insertTransformerNode,
@@ -6,9 +7,12 @@ import {
   moveTransformerNode,
   removeTransformerNode,
   reorderTransformerNode,
+  transformerEnvironmentAt,
   transformerInsertPositions,
   transformerUnionTypes,
   type BlockPath,
+  type CoreTransformerForBuildPlusRuntime,
+  type TransformerEnvironment,
   type TransformerInsertPosition,
   type TransformerTypeChange,
 } from "miroir-core";
@@ -25,8 +29,9 @@ import {
 // computes the new value with the miroir-core TransformerTreeEdit functions and writes it once, so
 // one edit is one undo step (#499). The nodes the block view creates are `runtime` (analysis D2).
 //
-// A palette click arms a transformer type, Place arms a tray block; an insert target or Replace
-// with in a block menu then puts a new block of that type, or the tray block, and disarms it.
+// A palette click arms a transformer type or a variable (#501), Place arms a tray block; an insert
+// target or Replace with in a block menu then puts a new block of that type, the variable or the
+// tray block, and disarms it. A variable goes only where its name is visible.
 // The tray holds the blocks moved out of the value; it is not saved and not in the undo history.
 // ################################################################################################
 
@@ -44,8 +49,14 @@ export interface BlockEditing {
   /** What the next insert or Replace with puts: a palette type or a tray block. */
   armed: ArmedBlock | undefined;
   arm: (armed: ArmedBlock | undefined) => void;
-  /** The node a palette type or a tray block puts. */
+  /** The node a palette type, a variable or a tray block puts. */
   nodeOf: (source: ArmedBlock) => Record<string, unknown> | undefined;
+  /** The names visible at the root of the value: the editor's input, when it runs blocks. */
+  rootEnvironment: TransformerEnvironment;
+  /** The names visible at one block or insert position of the value at least (#501). */
+  variables: TransformerEnvironment;
+  /** Whether `source` may go at `path`: a variable only where its name is visible. */
+  accepts: (source: ArmedBlock, path: BlockPath) => boolean;
   /** The insert positions of the value by the path of their container (see `pathKey`). */
   insertPositions: Map<string, TransformerInsertPosition[]>;
   /** Puts a block of the palette or the tray at `path`, an insert position, and disarms. */
@@ -68,11 +79,24 @@ export interface BlockEditing {
   toggleResult: (path: BlockPath) => void;
 }
 
-export type ArmedBlock = { kind: "type"; transformerType: string } | { kind: "tray"; index: number };
+/** A name in scope: a context name reads with getFromContext, a parameter with getFromParameters. */
+export type VariableSource = "context" | "parameters";
+
+export type ArmedBlock =
+  | { kind: "type"; transformerType: string }
+  | { kind: "tray"; index: number }
+  | { kind: "variable"; source: VariableSource; name: string };
 
 /** How a menu or a target names the armed block. */
 export function armedLabel(armed: ArmedBlock): string {
-  return armed.kind === "type" ? armed.transformerType : `tray block ${armed.index + 1}`;
+  switch (armed.kind) {
+    case "type":
+      return armed.transformerType;
+    case "tray":
+      return `tray block ${armed.index + 1}`;
+    case "variable":
+      return `${armed.source === "context" ? "context" : "parameter"} ${armed.name}`;
+  }
 }
 
 /** A change of the tray of a block view. */
@@ -125,6 +149,21 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
+/** The block a variable puts: a runtime read of its name. */
+export function variableNode(source: VariableSource, name: string): Record<string, unknown> {
+  return {
+    transformerType: source === "context" ? "getFromContext" : "getFromParameters",
+    interpolation: "runtime",
+    referenceName: name,
+  };
+}
+
+function namesOf(environment: TransformerEnvironment, source: VariableSource): string[] {
+  return source === "context" ? environment.contextNames : environment.parameterNames;
+}
+
+const NO_NAMES: TransformerEnvironment = { contextNames: [], parameterNames: [] };
+
 /**
  * The editing context of a block view whose value is written by `commit`, with the tray `tray`
  * changed by `changeTray`.
@@ -135,6 +174,7 @@ export function useBlockEditingValue(
   undoable: boolean,
   tray?: unknown[],
   changeTray?: (update: TrayUpdate) => void,
+  rootEnvironment: TransformerEnvironment = NO_NAMES,
 ): BlockEditing | undefined {
   const candidateTypes = useMemo(() => [...transformerUnionTypes(defaultMiroirModelEnvironment)].sort(), []);
   const [armed, arm] = useState<ArmedBlock | undefined>(undefined);
@@ -153,10 +193,29 @@ export function useBlockEditingValue(
     }
     return byContainer;
   }, [root, commit]);
+  // every name visible at a block or an insert position, for the palette's variables
+  const variables = useMemo((): TransformerEnvironment => {
+    const environments = [
+      ...collectTransformerEnvironmentBindings(root as CoreTransformerForBuildPlusRuntime, rootEnvironment),
+      ...[...insertPositions.values()].flat().map((position) => transformerEnvironmentAt(root, position.path, rootEnvironment)),
+    ];
+    const union = (pick: (environment: TransformerEnvironment) => string[]) =>
+      [...new Set([...pick(rootEnvironment), ...environments.flatMap(pick)])].sort();
+    return { contextNames: union((environment) => environment.contextNames), parameterNames: union((environment) => environment.parameterNames) };
+  }, [root, insertPositions, rootEnvironment]);
+  const accepts = useCallback(
+    (source: ArmedBlock, path: BlockPath) =>
+      source.kind !== "variable" ||
+      namesOf(transformerEnvironmentAt(root, path, rootEnvironment), source.source).includes(source.name),
+    [root, rootEnvironment],
+  );
   const nodeOf = useCallback(
     (source: ArmedBlock): Record<string, unknown> | undefined => {
       if (source.kind === "type") {
         return defaultNodeForType(source.transformerType);
+      }
+      if (source.kind === "variable") {
+        return variableNode(source.source, source.name);
       }
       const trayBlock = tray?.[source.index];
       return isRecord(trayBlock) ? trayBlock : undefined;
@@ -176,22 +235,22 @@ export function useBlockEditingValue(
   const insertAt = useCallback(
     (source: ArmedBlock, path: BlockPath) => {
       const node = nodeOf(source);
-      if (!commit || !node) {
+      if (!commit || !node || !accepts(source, path)) {
         return;
       }
       commit(insertTransformerNode(root, path, node, { slotDefault: defaultNodeForType("returnValue") }));
       consume(source);
     },
-    [root, commit, nodeOf, consume],
+    [root, commit, nodeOf, accepts, consume],
   );
   const replaceAt = useCallback(
     (source: ArmedBlock, path: BlockPath): TransformerTypeChange | undefined => {
       const node = nodeOf(source);
-      if (!commit || !node) {
+      if (!commit || !node || !accepts(source, path)) {
         return undefined;
       }
       consume(source);
-      if (source.kind === "tray") {
+      if (source.kind !== "type") {
         commit(withValueAtPath(root, path, node));
         return undefined;
       }
@@ -203,7 +262,7 @@ export function useBlockEditingValue(
       }
       return change;
     },
-    [root, commit, undoable, nodeOf, consume],
+    [root, commit, undoable, nodeOf, accepts, consume],
   );
   const moveBlock = useCallback(
     (from: BlockPath, to: BlockPath) => {
@@ -245,6 +304,9 @@ export function useBlockEditingValue(
             armed,
             arm,
             nodeOf,
+            rootEnvironment,
+            variables,
+            accepts,
             insertPositions,
             insertAt,
             replaceAt,
@@ -263,6 +325,9 @@ export function useBlockEditingValue(
       candidateTypes,
       armed,
       nodeOf,
+      rootEnvironment,
+      variables,
+      accepts,
       insertPositions,
       insertAt,
       replaceAt,
@@ -302,7 +367,7 @@ export function BlockNodeActions(props: { path: BlockPath; blockId: string }) {
     }
     const entries: TransformerNodeExtraEntry[] = [];
     const armed = editing.armed;
-    if (armed && editing.nodeOf(armed)) {
+    if (armed && editing.nodeOf(armed) && editing.accepts(armed, props.path)) {
       entries.push({
         testId: "block-action-replace",
         label: `Replace with ${armedLabel(armed)}`,

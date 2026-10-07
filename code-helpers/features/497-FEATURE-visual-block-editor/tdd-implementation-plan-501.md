@@ -32,7 +32,7 @@ This plan does not add define blocks (#502) nor the block view of action sequenc
 | 0 | One table of scope rules; `aggregate.having` | ✅ | `fn.transformer.subtreeRun`, TransformerEnvironmentBindings unit tests |
 | 1 | Names in scope at a position of a transformer | ✅ | `fn.transformer.scope` transformer cases |
 | 2 | Names in scope in a composite action sequence | ✅ | `fn.transformer.scope` sequence cases |
-| 3 | Variable blocks in the palette | ⬜ | `ui.blockEditing` variable cases |
+| 3 | Variable blocks in the palette | ✅ | `ui.blockEditing` variable cases |
 | 4 | The path picker of a variable block | ⬜ | `ui.blockEditing` path case (AC 2) |
 | 5 | Unbound Runner references, nonreg, docs, AC | ⬜ | issue filed, nonreg, AC checklist |
 
@@ -76,6 +76,8 @@ RED: suite `compositeActionEnvironmentAt`: a template sees the templates before 
 ## Slice 3 — Variable blocks in the palette
 
 RED: `ui.blockEditing` "a context variable from the palette goes only where it is visible": a mapList, arm `defaultInput` … and the element name, the targets offered, the node written.
+
+**Realization (2026-10-07).** `ArmedBlock` gains `{kind: "variable", source, name}`; `BlockEditing` gains `rootEnvironment` (the keys of the TransformerEditor's run input, as context and parameters), `variables` (the names visible at a block or insert position at least, from `collectTransformerEnvironmentBindings` and `transformerEnvironmentAt`) and `accepts(source, path)`. Insert targets and Replace with hide where an armed variable is not visible, and `insertAt` / `replaceAt` refuse it there, which covers drops. A variable replaces a block whole, as a tray block does. Palette groups `block-palette-variables:<context|parameters>`, entries `block-palette-variable:<source>:<name>`, colored as the `variable` category. Three `ui.blockEditing` cases (169 component leaves); the target case fails with the filter removed.
 
 ## Slice 4 — The path picker
 
