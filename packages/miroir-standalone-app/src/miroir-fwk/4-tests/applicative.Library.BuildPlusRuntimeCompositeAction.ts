@@ -871,9 +871,10 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
               // checkEntities
               {
                 actionType: "compositeRunTestAssertion",
+                endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
                 actionLabel: "checkEntities",
                 nameGivenToResult: "checkEntityList",
-                testAssertion: {
+                payload: {
                   testType: "testAssertion",
                   testLabel: "checkEntities",
                   definition: {
@@ -919,9 +920,10 @@ export function getTestSuitesForBuildPlusRuntimeCompositeAction(miroirConfig: an
               // checkEntityDefinitions
               {
                 actionType: "compositeRunTestAssertion",
+                endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
                 actionLabel: "checkEntityDefinitions",
                 nameGivenToResult: "checkEntityDefinitionList",
-                testAssertion: {
+                payload: {
                   testType: "testAssertion",
                   testLabel: "checkEntityDefinitions",
                   definition: {

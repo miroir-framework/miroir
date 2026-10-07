@@ -91,7 +91,7 @@ function expectLeafAssertionsPassed(
   const trackedTest = testLabel ? findTrackedTest(trackedRoot, testLabel) : undefined;
   for (const assertion of leaf.testCompositeActionAssertions ?? []) {
     // the tracker records an assertion under its testLabel
-    const assertionName = assertion.testAssertion.testLabel;
+    const assertionName = assertion.payload.testLabel;
     const tracked =
       trackedTest?.testAssertionsResults?.[assertionName] ??
       findTrackedAssertionByName(trackedRoot, assertionName);

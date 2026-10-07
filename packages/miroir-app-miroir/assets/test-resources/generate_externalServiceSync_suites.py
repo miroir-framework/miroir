@@ -455,9 +455,10 @@ def main() -> None:
                     "testCompositeActionAssertions": [
                         {
                             "actionType": "compositeRunTestAssertion",
+                            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
                             "actionLabel": "spotifyPlaylistLanded",
                             "nameGivenToResult": "spotifyPlaylistLanded",
-                            "testAssertion": {
+                            "payload": {
                                 "testType": "testAssertion",
                                 "testLabel": "spotifyPlaylistLanded",
                                 "definition": {
@@ -488,9 +489,10 @@ def main() -> None:
                         },
                         {
                             "actionType": "compositeRunTestAssertion",
+                            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
                             "actionLabel": "spotifyPlaylistHttpSource",
                             "nameGivenToResult": "spotifyPlaylistHttpSource",
-                            "testAssertion": {
+                            "payload": {
                                 "testType": "testAssertion",
                                 "testLabel": "spotifyPlaylistHttpSource",
                                 "definition": {
@@ -507,9 +509,10 @@ def main() -> None:
                         },
                         {
                             "actionType": "compositeRunTestAssertion",
+                            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
                             "actionLabel": "getPlaylistOperationLanded",
                             "nameGivenToResult": "getPlaylistOperationLanded",
-                            "testAssertion": {
+                            "payload": {
                                 "testType": "testAssertion",
                                 "testLabel": "getPlaylistOperationLanded",
                                 "definition": {

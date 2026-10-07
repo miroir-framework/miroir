@@ -243,9 +243,10 @@ const runnerTestParams: Record<string, RunnerTestParams> = {
       {
         // Verify all 3 entities were installed (Author, Country, pg_namespace)
         actionType: "compositeRunTestAssertion",
+        endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
         actionLabel: "checkNumberOfEntities",
         nameGivenToResult: "checkNumberOfEntities",
-        testAssertion: {
+        payload: {
           testType: "testAssertion",
           testLabel: "checkNumberOfEntities",
           definition: {
@@ -266,9 +267,10 @@ const runnerTestParams: Record<string, RunnerTestParams> = {
       {
         // Verify pg_namespace returns non-empty results (at least pg_catalog and public namespaces)
         actionType: "compositeRunTestAssertion",
+        endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
         actionLabel: "checkPgNamespaceNotEmpty",
         nameGivenToResult: "checkPgNamespaceNotEmpty",
-        testAssertion: {
+        payload: {
           testType: "testAssertion",
           testLabel: "checkPgNamespaceNotEmpty",
           definition: {

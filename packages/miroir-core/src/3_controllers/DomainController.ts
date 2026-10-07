@@ -77,7 +77,7 @@ import {
   ModelActionResetModel,
   RunBoxedQueryAction,
   RunBoxedQueryTemplateAction,
-  TestAssertion,
+  CompositeRunTestAssertion,
   TestBuildPlusRuntimeCompositeAction,
   TestBuildPlusRuntimeCompositeActionSuite,
   TestCompositeAction,
@@ -5281,12 +5281,7 @@ export class DomainController implements DomainControllerInterface, DomainContro
 
   // ##############################################################################################
   private handleTestCompositeActionAssertion(
-    currentAction: {
-      actionType: "compositeRunTestAssertion";
-      actionLabel?: string | undefined;
-      nameGivenToResult: string;
-      testAssertion: TestAssertion;
-    },
+    currentAction: CompositeRunTestAssertion,
     modelEnvironment: MiroirModelEnvironment,
     localContext: Record<string, any>,
     actionResult: Action2ReturnType | undefined,
@@ -5298,15 +5293,15 @@ export class DomainController implements DomainControllerInterface, DomainContro
     }
     let valueToTest: any = undefined;
     try {
-      // this.miroirContext.miroirActivityTracker.setTestAssertion(currentAction.testAssertion.testLabel);
+      // this.miroirContext.miroirActivityTracker.setTestAssertion(currentAction.payload.testLabel);
 
       // TODO: shall there be an interpretation at all?
-      const prePreValueToTest = currentAction.testAssertion.definition.resultTransformer
+      const prePreValueToTest = currentAction.payload.definition.resultTransformer
         ? transformer_extended_apply(
             "runtime",
             [],
             undefined /**WHAT?? */,
-            currentAction.testAssertion.definition.resultTransformer,
+            currentAction.payload.definition.resultTransformer,
             "value",
             modelEnvironment,
             localContext,
@@ -5322,7 +5317,7 @@ export class DomainController implements DomainControllerInterface, DomainContro
         return new Action2Error(
           "FailedToResolveTemplate",
           "handleTestCompositeActionAssertion error resolving template ",
-          [currentAction.testAssertion.testLabel],
+          [currentAction.payload.testLabel],
           prePreValueToTest as any,
         );
       } else {
@@ -5335,11 +5330,11 @@ export class DomainController implements DomainControllerInterface, DomainContro
       if (typeof prePreValueToTest === "object") {
         const preValueToTest =  resolvePathOnObject(
           prePreValueToTest,
-          currentAction.testAssertion.definition.resultAccessPath ?? [],
+          currentAction.payload.definition.resultAccessPath ?? [],
         );
         // #220 / #217 — skinny Entity expectations ignore present-model fields now carried on Entity
         const assertionIgnoreAttributes = [
-          ...(currentAction.testAssertion.definition.ignoreAttributes ?? []),
+          ...(currentAction.payload.definition.ignoreAttributes ?? []),
           ...ENTITY_PRESENT_MODEL_DEFINITION_FIELDS,
         ];
   
@@ -5360,22 +5355,22 @@ export class DomainController implements DomainControllerInterface, DomainContro
         valueToTest = prePreValueToTest;
       }
       const assertionIgnoreAttributes = [
-        ...(currentAction.testAssertion.definition.ignoreAttributes ?? []),
+        ...(currentAction.payload.definition.ignoreAttributes ?? []),
         ...ENTITY_PRESENT_MODEL_DEFINITION_FIELDS,
       ];
-      const expectedValue = typeof currentAction.testAssertion.definition.expectedValue === "object"?
-      Array.isArray(currentAction.testAssertion.definition.expectedValue)
+      const expectedValue = typeof currentAction.payload.definition.expectedValue === "object"?
+      Array.isArray(currentAction.payload.definition.expectedValue)
         ? ignorePostgresExtraAttributesOnList(
-            currentAction.testAssertion.definition.expectedValue,
+            currentAction.payload.definition.expectedValue,
             assertionIgnoreAttributes,
           )
         : ignorePostgresExtraAttributesOnObject(
-            currentAction.testAssertion.definition.expectedValue,
+            currentAction.payload.definition.expectedValue,
             assertionIgnoreAttributes,
-          ):currentAction.testAssertion.definition.expectedValue;
+          ):currentAction.payload.definition.expectedValue;
       log.debug(
         "handleTestCompositeActionAssertion compositeRunTestAssertion to handle",
-        JSON.stringify(currentAction.testAssertion, null, 2),
+        JSON.stringify(currentAction.payload, null, 2),
         "ignoreAttributes",
         assertionIgnoreAttributes,
         "expectedValue",
@@ -5387,10 +5382,10 @@ export class DomainController implements DomainControllerInterface, DomainContro
         ConfigurationService.configurationService.testImplementation
           .expect(valueToTest, currentAction.nameGivenToResult)
           .toEqual(expectedValue);
-        // .toEqual(currentAction.testAssertion.definition.expectedValue);
+        // .toEqual(currentAction.payload.definition.expectedValue);
         log.info(
           "assertion",
-          currentAction.testAssertion.testLabel,
+          currentAction.payload.testLabel,
           "ok",
         );
         actionResult = {
@@ -5398,32 +5393,32 @@ export class DomainController implements DomainControllerInterface, DomainContro
           returnedDomainElement: undefined,
         };
         // TestSuiteContext.setTestAssertionResult({
-        //   assertionName: currentAction.testAssertion.testLabel,
+        //   assertionName: currentAction.payload.testLabel,
         //   assertionResult: "ok",
-        //   // assertionExpectedValue: compositeRunTestAssertion.testAssertion.definition.expectedValue,
+        //   // assertionExpectedValue: compositeRunTestAssertion.payload.definition.expectedValue,
         //   // assertionActualValue: valueToTest,
         // });
         // Set test result in MiroirActivityTracker for TestLogService
         this.miroirContext.miroirActivityTracker.setTestAssertionResult(
           this.miroirContext.miroirActivityTracker.getCurrentTestAssertionPath(),
           {
-            assertionName: currentAction.testAssertion.testLabel,
+            assertionName: currentAction.payload.testLabel,
             assertionResult: "ok",
           },
         );
       } catch (error) {
         log.info(
           "assertion",
-          currentAction.testAssertion.testLabel,
+          currentAction.payload.testLabel,
           "fail",
         );
         // Set test result in MiroirActivityTracker for TestLogService
         this.miroirContext.miroirActivityTracker.setTestAssertionResult(
           this.miroirContext.miroirActivityTracker.getCurrentTestAssertionPath(),
           {
-            assertionName: currentAction.testAssertion.testLabel,
+            assertionName: currentAction.payload.testLabel,
             assertionResult: "error",
-            assertionExpectedValue: currentAction.testAssertion.definition.expectedValue,
+            assertionExpectedValue: currentAction.payload.definition.expectedValue,
             assertionActualValue: valueToTest,
           },
         );
@@ -5434,17 +5429,17 @@ export class DomainController implements DomainControllerInterface, DomainContro
       log.error("handleTestCompositeActionAssertion compositeRunTestAssertion error", error);
       // TODO: 2 try catch blocks, one for the expect, one for the rest
       // TestSuiteContext.setTestAssertionResult({
-      //   assertionName: currentAction.testAssertion.testLabel,
+      //   assertionName: currentAction.payload.testLabel,
       //   assertionResult: "error",
       //   // TODO: set error message
-      //   // assertionExpectedValue: compositeRunTestAssertion.testAssertion.definition.expectedValue,
+      //   // assertionExpectedValue: compositeRunTestAssertion.payload.definition.expectedValue,
       //   // assertionActualValue: valueToTest,
       // });
       // Set test result in MiroirActivityTracker for TestLogService
       this.miroirContext.miroirActivityTracker.setTestAssertionResult(
         this.miroirContext.miroirActivityTracker.getCurrentTestAssertionPath(),
         {
-          assertionName: currentAction.testAssertion.testLabel,
+          assertionName: currentAction.payload.testLabel,
           assertionResult: "error",
         },
       );

@@ -3206,6 +3206,8 @@ export function getMiroirFundamentalMlSchema(
         compositeActionDefinition: ((getEndpointActions(domainEndpointVersionV1) ?? []).find(
           (a: any) => a.actionParameters?.actionType?.definition == "compositeActionSequence",
         ) as any)?.actionParameters.payload.definition.actionSequence.definition,
+        // #504 (analysis #497, D10): a DomainEndpoint action like compositeRunBoxedQueryAction,
+        // with its assertion in `payload`; the sequence loops run it with the sequence's context
         compositeRunTestAssertion: {
           type: "object",
           tag: {
@@ -3215,31 +3217,9 @@ export function getMiroirFundamentalMlSchema(
               },
             },
           },
-          definition: {
-            actionType: {
-              type: "literal",
-              tag: {
-                value: {
-                  canBeTemplate: false,
-                },
-              },
-              definition: "compositeRunTestAssertion",
-            },
-            actionLabel: {
-              type: "string",
-              optional: true,
-            },
-            nameGivenToResult: {
-              type: "string",
-            },
-            testAssertion: {
-              type: "schemaReference",
-              definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                relativePath: "testAssertion",
-              },
-            },
-          },
+          definition: (getEndpointActions(domainEndpointVersionV1) ?? []).find(
+            (a: any) => a.actionParameters?.actionType?.definition == "compositeRunTestAssertion",
+          )?.actionParameters,
         },
         compositeActionSequence: {
           type: "object",
@@ -3270,13 +3250,7 @@ export function getMiroirFundamentalMlSchema(
             //     relativePath: "compositeActionSequence",
             //   },
             // },
-            {
-              type: "schemaReference",
-              definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                relativePath: "compositeRunTestAssertion",
-              },
-            },
+            // #504: compositeRunTestAssertion is a DomainEndpoint action, in domainAction
           ],
         },
         // ################################################################################
