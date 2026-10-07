@@ -28,7 +28,10 @@ const transformerDefinitionsByName: Record<string, TransformerDefinition> = Obje
 );
 
 const runnersByName: Record<string, unknown> = Object.fromEntries(
-  Object.values(RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY).map((runner) => [runner.name, runner]),
+  Object.values(RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY as Record<string, { name: string }>).map((runner) => [
+    runner.name,
+    runner,
+  ]),
 );
 
 export interface TransformerBlocksForTestProps {

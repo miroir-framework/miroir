@@ -427,7 +427,8 @@ const ActionBlockView = React.memo(function ActionBlockView(props: {
 const QueryBlockView = React.memo(function QueryBlockView(props: { node: QueryBlock; settings: BlockSettings }) {
   const { node, settings } = props;
   const id = blockId(settings.rootLessListKey, node.path);
-  const [open, setOpen] = useState(false);
+  // folded by default; Expand all remounts the tree with every block open
+  const [open, setOpen] = useState(settings.initialCollapse === "expanded");
   return (
     <div
       id={id}

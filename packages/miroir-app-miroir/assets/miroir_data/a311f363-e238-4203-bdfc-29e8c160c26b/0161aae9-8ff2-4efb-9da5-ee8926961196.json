@@ -1462,6 +1462,41 @@
               "  entities: [list]",
               "  !notDeclared: 1"
             ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a payload given by a transformer is one block",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerBlockModel",
+              "export": "blockOutline"
+            },
+            "arguments": [
+              {
+                "actionType": "resetModel",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "transformerType": "mergeIntoObject",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "getFromParameters",
+                    "referenceName": "resetModel"
+                  },
+                  "definition": {
+                    "application": {
+                      "transformerType": "getFromParameters",
+                      "referenceName": "application"
+                    }
+                  }
+                }
+              }
+            ],
+            "expectedValue": [
+              "resetModel [ModelEndpoint]",
+              "  payload: mergeIntoObject [object] {runtime}",
+              "    definition: {object}",
+              "      application: getFromParameters [variable] @runtime referenceName=\"application\"",
+              "    applyTo: getFromParameters [variable] @runtime referenceName=\"resetModel\""
+            ]
           }
         ]
       }

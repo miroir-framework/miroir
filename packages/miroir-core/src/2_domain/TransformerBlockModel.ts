@@ -350,7 +350,8 @@ function actionBlock(value: Record<string, unknown>, path: BlockPath, context: B
   const payloadPath = [...path, "payload"];
   const payload = value.payload;
   const hasPayload = Object.prototype.hasOwnProperty.call(value, "payload");
-  if (actionType === COMPOSITE_ACTION_SEQUENCE && isPlainRecord(payload)) {
+  // a payload computed by a transformer (`getFromParameters`, `mergeIntoObject`) is one block
+  if (actionType === COMPOSITE_ACTION_SEQUENCE && isPlainRecord(payload) && !isTransformerNode(payload)) {
     const templates = isPlainRecord(payload.templates) ? payload.templates : {};
     const steps = Array.isArray(payload.actionSequence) ? payload.actionSequence : [];
     const block: SequenceBlock = {
@@ -390,7 +391,7 @@ function actionBlock(value: Record<string, unknown>, path: BlockPath, context: B
             node: { kind: "query", path: payloadPath, ...queryTypeOf(payload), value: payload },
           },
         ]
-      : isPlainRecord(payload)
+      : isPlainRecord(payload) && !isTransformerNode(payload)
         ? attributeRows(payload, payloadPath, declaredObjectAttributes(actionParameters.payload), new Set(), context)
         : [{ name: "payload", path: payloadPath, kind: "value", optional: false, node: blockOf(payload, payloadPath, context) }];
   const block: ActionBlock = { kind: "action", ...header, rows: [...rows, ...payloadRows] };
