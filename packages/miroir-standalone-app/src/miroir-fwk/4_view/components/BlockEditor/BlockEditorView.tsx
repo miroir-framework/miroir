@@ -885,8 +885,9 @@ export const BlockEditorView = React.memo(function BlockEditorView(props: BlockE
   const define = definedBy?.rootLessListKey === props.rootLessListKey ? definedBy : undefined;
   const runBy = useContext(BlockRunnerContext);
   const runner = runBy?.rootLessListKey === props.rootLessListKey ? runBy : undefined;
-  // the names only: a read flag changes with the body, the scope of the body does not
-  const defineParameterNames = define?.parameters.map((parameter) => parameter.name).join("\u0000");
+  // the names only: a read flag changes with the body, the scope of the body does not; the
+  // parameters of an Endpoint action are attributes of one context name (#506)
+  const defineParameterNames = define?.contextName ?? define?.parameters.map((parameter) => parameter.name).join("\u0000");
   const defineParameters = useMemo(
     () => defineParameterNames?.split("\u0000").filter((name) => name !== ""),
     [defineParameterNames],

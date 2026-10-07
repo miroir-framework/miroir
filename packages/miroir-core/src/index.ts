@@ -1483,6 +1483,18 @@ export {
   type BlockEditOptions,
 } from "./2_domain/ActionSequenceEdit.js";
 export {
+  addEndpointAction,
+  addEndpointActionParameter,
+  compositeEndpointAction,
+  endpointActionHat,
+  endpointActionParameterReads,
+  newEndpoint,
+  removeEndpointActionParameter,
+  renameEndpointActionParameter,
+  ENDPOINT_ENTITY_UUID,
+  type EndpointActionHat,
+} from "./2_domain/EndpointActionEdit.js";
+export {
   addRunnerFormField,
   newCustomRunner,
   removeRunnerFormField,

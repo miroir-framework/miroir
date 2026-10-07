@@ -8,7 +8,14 @@ import { useMiroirTheme } from "../../contexts/MiroirThemeContext.js";
 import type { TransformerTypeBadge } from "../ValueObjectEditor/MlElementEditorInterface.js";
 import { switchButtonCss, ValueHistoryButtons } from "../ValueObjectEditor/ValueHistoryButtons.js";
 import { ValueHistoryContext, ValueHistoryScope } from "../ValueObjectEditor/ValueHistoryProvider.js";
-import { BlockRunnerContext, BlockViewModeContext, type BlockRunner, type BlockViewMode } from "./BlockViewMode.js";
+import { useBlockDefineOfEndpointAction } from "./BlockEndpointAction.js";
+import {
+  BlockDefineContext,
+  BlockRunnerContext,
+  BlockViewModeContext,
+  type BlockRunner,
+  type BlockViewMode,
+} from "./BlockViewMode.js";
 
 // ################################################################################################
 // #498: the Blocks / Form / JSON switch of a transformer field, and the view it selects. The block
@@ -21,6 +28,9 @@ import { BlockRunnerContext, BlockViewModeContext, type BlockRunner, type BlockV
 // #505: the `compositeActionSequence` of a custom Runner shows its "when run" hat, its form fields
 // read from the Runner value around the field: they are edited in `formMLSchema` there. A test
 // sequence offers the assertion action in its palette.
+// #506: the `actionImplementation.definition` of a composite Endpoint action is a define block: its
+// header lists the action's parameters, read from `payload` in the body. A parameter change writes
+// the whole action around the field, in one edit.
 // ################################################################################################
 
 const BlockEditorView = lazy(async () => ({ default: (await import("./BlockEditorView.js")).BlockEditorView }));
@@ -75,6 +85,28 @@ export function BlockViewSwitch(props: BlockViewSwitchProps) {
     return hat ? { rootLessListKey: props.rootLessListKey, ...hat } : undefined;
   }, [runnerValue, props.rootLessListKey]);
   const runner = enclosingRunner?.rootLessListKey === props.rootLessListKey ? enclosingRunner : instanceRunner;
+  // #506: the composite Endpoint action whose body this field is, unless an enclosing editor shows its header
+  const enclosingDefine = useContext(BlockDefineContext);
+  const actionPath =
+    segments[segments.length - 1] === "definition" && segments[segments.length - 2] === "actionImplementation"
+      ? segments.slice(0, -2).join(".")
+      : undefined;
+  const actionValue = actionPath === undefined ? undefined : actionPath === "" ? formik.values : getIn(formik.values, actionPath);
+  const { setValues } = formik;
+  const setAction = useCallback(
+    (action: Record<string, unknown>) => {
+      if (actionPath === "") {
+        setValues(action, false);
+      } else if (actionPath !== undefined) {
+        setFieldValue(actionPath, action, false);
+      }
+      history?.restoreFocus();
+    },
+    [actionPath, setValues, setFieldValue, history],
+  );
+  const instanceDefine = useBlockDefineOfEndpointAction(actionValue, setAction, props.rootLessListKey);
+  const define =
+    enclosingDefine?.rootLessListKey === props.rootLessListKey ? enclosingDefine : (instanceDefine ?? enclosingDefine);
   const setTray = modes?.setTray;
   const changeTray = useCallback(
     (update: (tray: unknown[]) => unknown[]) => setTray?.(props.formikPath, update),
@@ -101,18 +133,20 @@ export function BlockViewSwitch(props: BlockViewSwitchProps) {
       </div>
       {mode === "blocks" ? (
         <Suspense fallback={<span>Loading block editor...</span>}>
-          <BlockRunnerContext.Provider value={runner}>
-            <BlockEditorView
-              value={getIn(formik.values, props.formikPath)}
-              rootLessListKey={props.rootLessListKey}
-              onCommit={props.readOnly ? undefined : commit}
-              undoable={history?.covers(props.formikPath) ?? false}
-              tray={modes?.trayOf(props.formikPath)}
-              onTrayChange={modes && !props.readOnly ? changeTray : undefined}
-              typeBadges={props.transformerTypeBadges}
-              withTestAssertion={props.withTestAssertion}
-            />
-          </BlockRunnerContext.Provider>
+          <BlockDefineContext.Provider value={define}>
+            <BlockRunnerContext.Provider value={runner}>
+              <BlockEditorView
+                value={getIn(formik.values, props.formikPath)}
+                rootLessListKey={props.rootLessListKey}
+                onCommit={props.readOnly ? undefined : commit}
+                undoable={history?.covers(props.formikPath) ?? false}
+                tray={modes?.trayOf(props.formikPath)}
+                onTrayChange={modes && !props.readOnly ? changeTray : undefined}
+                typeBadges={props.transformerTypeBadges}
+                withTestAssertion={props.withTestAssertion}
+              />
+            </BlockRunnerContext.Provider>
+          </BlockDefineContext.Provider>
         </Suspense>
       ) : (
         props.children(mode)

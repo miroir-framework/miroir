@@ -5,14 +5,16 @@ import {
   type TransformerDefinition,
 } from "miroir-core";
 import {
+  modelEndpointV1,
   RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY,
   transformer_metaModel_entityDefinition_extractAttributes_json,
 } from "miroir-app-miroir";
 import React, { lazy, Suspense, useCallback, useState } from "react";
 
 import { BlockEditorDisplayContext } from "../../4_view/components/BlockEditor/BlockEditorDisplay.js";
+import { useBlockDefineOfEndpointAction } from "../../4_view/components/BlockEditor/BlockEndpointAction.js";
 import { useBlockRunnerOf } from "../../4_view/components/BlockEditor/BlockRunnerHat.js";
-import { BlockRunnerContext } from "../../4_view/components/BlockEditor/BlockViewMode.js";
+import { BlockDefineContext, BlockRunnerContext } from "../../4_view/components/BlockEditor/BlockViewMode.js";
 
 // ################################################################################################
 // The block view of a stored TransformerDefinition's body, for the declarative component tests
@@ -24,6 +26,8 @@ import { BlockRunnerContext } from "../../4_view/components/BlockEditor/BlockVie
 // #505: with `editable`, the block view edits a copy of the value, with a tray; the edited value is
 // the `data-value` of `block-value`. A Runner's sequence is shown under its "when run" hat, whose
 // form fields are edited with the sequence when it is editable.
+// #506: with `endpointAction`, the body of a composite action of ModelEndpoint, under its define
+// header; editable, the edited action is the `data-value` of `block-action-value`.
 // ################################################################################################
 
 const BlockEditorView = lazy(async () => ({
@@ -38,6 +42,13 @@ const transformerDefinitionsByName: Record<string, TransformerDefinition> = Obje
 );
 
 const SEQUENCE_KEY = "definition.compositeActionSequence";
+const ACTION_BODY_KEY = "actionImplementation.definition";
+
+const modelEndpointActionsByType: Record<string, Record<string, unknown>> = Object.fromEntries(
+  (modelEndpointV1.definition.actions as { actionParameters: { actionType?: { definition?: unknown } } }[]).map(
+    (action) => [String(action.actionParameters.actionType?.definition), action as Record<string, unknown>],
+  ),
+);
 
 const runnersByName: Record<string, unknown> = Object.fromEntries(
   Object.values(RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY as Record<string, { name: string }>).map((runner) => [
@@ -55,12 +66,21 @@ export interface TransformerBlocksForTestProps {
   buildMarking?: BlockEditorBuildMarking;
   /** #505: the block view edits the value; edits act at once, as under an undo history. */
   editable?: boolean;
+  /** #506: the action type of a composite action of ModelEndpoint: its body is shown instead. */
+  endpointAction?: string;
 }
 
 /** The value shown and the path of its blocks, with the Runner around it, or why there is none. */
 function shownValue(
   props: TransformerBlocksForTestProps,
-): { value: unknown; rootLessListKey: string; runner?: Record<string, unknown> } | string {
+): { value: unknown; rootLessListKey: string; runner?: Record<string, unknown>; action?: Record<string, unknown> } | string {
+  if (props.endpointAction !== undefined) {
+    const action = modelEndpointActionsByType[props.endpointAction];
+    const implementation = action?.actionImplementation as { definition?: unknown } | undefined;
+    return implementation?.definition !== undefined
+      ? { value: implementation.definition, rootLessListKey: ACTION_BODY_KEY, action }
+      : `No action ${props.endpointAction} with a composite implementation in ModelEndpoint`;
+  }
   if (props.runner !== undefined) {
     const runner = runnersByName[props.runner] as { definition?: { compositeActionSequence?: unknown } } | undefined;
     return runner?.definition?.compositeActionSequence !== undefined
@@ -86,7 +106,9 @@ export function TransformerBlocksForTest(props: TransformerBlocksForTestProps) {
   }
   const view = (
     <Suspense fallback={<span>Loading block editor...</span>}>
-      {props.editable ? (
+      {shown.action ? (
+        <EndpointActionBlocks action={shown.action} editable={props.editable ?? false} />
+      ) : props.editable ? (
         shown.runner ? (
           <EditableRunner runner={shown.runner} />
         ) : (
@@ -109,6 +131,33 @@ export function TransformerBlocksForTest(props: TransformerBlocksForTestProps) {
 function readOnlyHat(runner: Record<string, unknown> | undefined) {
   const hat = runnerHat(runner);
   return hat ? { rootLessListKey: SEQUENCE_KEY, ...hat } : undefined;
+}
+
+const noEdit = () => undefined;
+
+/** A composite Endpoint action's body under its define header: both are written to the action value. */
+function EndpointActionBlocks(props: { action: Record<string, unknown>; editable: boolean }) {
+  const [action, setAction] = useState(props.action);
+  const define = useBlockDefineOfEndpointAction(action, props.editable ? setAction : noEdit, ACTION_BODY_KEY);
+  const setBody = useCallback(
+    (body: unknown) =>
+      setAction((current) => ({
+        ...current,
+        actionImplementation: { ...(current.actionImplementation as Record<string, unknown>), definition: body },
+      })),
+    [],
+  );
+  const body = (action.actionImplementation as Record<string, unknown>).definition;
+  return (
+    <BlockDefineContext.Provider value={define}>
+      <span data-testid="block-action-value" data-value={JSON.stringify(action)} hidden />
+      {props.editable ? (
+        <EditableBlocks value={body} rootLessListKey={ACTION_BODY_KEY} onCommit={setBody} />
+      ) : (
+        <BlockEditorView value={body} rootLessListKey={ACTION_BODY_KEY} />
+      )}
+    </BlockDefineContext.Provider>
+  );
 }
 
 /** A Runner's sequence edited with its hat: both are written to the Runner value. */

@@ -4341,6 +4341,28 @@
                     }
                   }
                 ]
+              },
+              {
+                "parentName": "SelfApplication",
+                "parentUuid": "a659d350-dd97-4da9-91de-524fa01745dc",
+                "applicationSection": "model",
+                "instances": [
+                  {
+                    "uuid": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "parentName": "SelfApplication",
+                    "parentUuid": "a659d350-dd97-4da9-91de-524fa01745dc",
+                    "name": "Library",
+                    "defaultLabel": "The Library selfApplication.",
+                    "description": "The model and data of the Library selfApplication.",
+                    "homePageUrl": {
+                      "label": "Library Home Page",
+                      "section": "data",
+                      "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "reportUuid": "9c0cdb97-9537-4ee2-8053-a6ece3e0afe8"
+                    },
+                    "versioningMode": "unversioned"
+                  }
+                ]
               }
             ]
           }
@@ -4684,15 +4706,6 @@
                 }
               },
               {
-                "step": "waitForAttribute",
-                "label": "create Action is not offered yet",
-                "target": {
-                  "byTestId": "sequence-editor-create-action"
-                },
-                "attribute": "disabled",
-                "value": ""
-              },
-              {
                 "step": "type",
                 "label": "name the Runner",
                 "target": {
@@ -5012,6 +5025,1322 @@
                 "label": "and not the renamed one",
                 "target": {
                   "byTestId": "block-runner-field:pubName"
+                },
+                "present": false
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "SequenceEditor on the Library: #506 a sequence saved as an action of a new Endpoint is a block of another sequence, which runs it",
+            "steps": [
+              {
+                "step": "change",
+                "label": "choose the Runner addPlainPublisher",
+                "target": {
+                  "byTestId": "sequence-editor-runner"
+                },
+                "value": "c2a0f505-5e0a-4c5d-9b1e-505000000001"
+              },
+              {
+                "step": "click",
+                "label": "show the sequence as blocks",
+                "target": {
+                  "byTestId": "block-view-mode:definition.compositeActionSequence:blocks"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "its hat",
+                "target": {
+                  "byTestId": "block-runner-hat"
+                },
+                "attribute": "data-name",
+                "value": "addPlainPublisher",
+                "timeout": 5000
+              },
+              {
+                "step": "click",
+                "label": "add a form field",
+                "target": {
+                  "byTestId": "block-runner-add"
+                }
+              },
+              {
+                "step": "type",
+                "label": "name it publisherName",
+                "target": {
+                  "byTestId": "block-runner-new"
+                },
+                "text": "publisherName{Enter}"
+              },
+              {
+                "step": "click",
+                "label": "unfold the literal object, folded as long",
+                "target": {
+                  "byTestId": "block-expand-all"
+                }
+              },
+              {
+                "step": "click",
+                "label": "choose the form field publisherName",
+                "target": {
+                  "byTestId": "block-runner-variable:publisherName"
+                }
+              },
+              {
+                "step": "click",
+                "label": "replace the name of the Publisher",
+                "target": {
+                  "byTestId": "block-replace:definition.compositeActionSequence.payload.actionSequence.0.payload.objects.0.name"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the name reads the form field",
+                "target": {
+                  "byTestId": "block:definition.compositeActionSequence.payload.actionSequence.0.payload.objects.0.name"
+                },
+                "attribute": "data-transformer-type",
+                "value": "getFromParameters"
+              },
+              {
+                "step": "click",
+                "label": "choose generateUuid",
+                "target": {
+                  "byTestId": "block-palette:generateUuid"
+                }
+              },
+              {
+                "step": "click",
+                "label": "replace the uuid of the Publisher",
+                "target": {
+                  "byTestId": "block-replace:definition.compositeActionSequence.payload.actionSequence.0.payload.objects.0.uuid"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the uuid is generated",
+                "target": {
+                  "byTestId": "block:definition.compositeActionSequence.payload.actionSequence.0.payload.objects.0.uuid"
+                },
+                "attribute": "data-transformer-type",
+                "value": "generateUuid"
+              },
+              {
+                "step": "click",
+                "label": "Save…",
+                "target": {
+                  "byTestId": "sequence-editor-save-as"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the save dialog",
+                "target": {
+                  "byTestId": "sequence-editor-save-dialog"
+                }
+              },
+              {
+                "step": "click",
+                "label": "no Runner",
+                "target": {
+                  "byTestId": "sequence-editor-create-runner"
+                }
+              },
+              {
+                "step": "click",
+                "label": "create Action",
+                "target": {
+                  "byTestId": "sequence-editor-create-action"
+                }
+              },
+              {
+                "step": "clear",
+                "label": "clear the name of the copy",
+                "target": {
+                  "byTestId": "sequence-editor-runner-name"
+                }
+              },
+              {
+                "step": "type",
+                "label": "name the action",
+                "target": {
+                  "byTestId": "sequence-editor-runner-name"
+                },
+                "text": "addNamedPublisher"
+              },
+              {
+                "step": "change",
+                "label": "in a new Endpoint",
+                "target": {
+                  "byTestId": "sequence-editor-endpoint"
+                },
+                "value": "new"
+              },
+              {
+                "step": "type",
+                "label": "name the Endpoint",
+                "target": {
+                  "byTestId": "sequence-editor-endpoint-name"
+                },
+                "text": "PublisherEndpoint"
+              },
+              {
+                "step": "click",
+                "label": "save",
+                "target": {
+                  "byTestId": "sequence-editor-save-confirm"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "no error",
+                "target": {
+                  "byTestId": "sequence-editor-save-error"
+                },
+                "present": false,
+                "timeout": 3000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the action is saved",
+                "target": {
+                  "byTestId": "sequence-editor-save-status"
+                },
+                "attribute": "data-status",
+                "value": "saved",
+                "timeout": 5000
+              },
+              {
+                "step": "expectElement",
+                "label": "the dialog is closed",
+                "target": {
+                  "byTestId": "sequence-editor-save-dialog"
+                },
+                "present": false,
+                "timeout": 5000
+              },
+              {
+                "step": "change",
+                "label": "start a new sequence",
+                "target": {
+                  "byTestId": "sequence-editor-runner"
+                },
+                "value": "new"
+              },
+              {
+                "step": "click",
+                "label": "show it as blocks",
+                "target": {
+                  "byTestId": "block-view-mode:definition.compositeActionSequence:blocks"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the hat of a new Runner",
+                "target": {
+                  "byTestId": "block-runner-hat"
+                },
+                "attribute": "data-name",
+                "value": "newRunner",
+                "timeout": 5000
+              },
+              {
+                "step": "click",
+                "label": "choose the new action in the palette",
+                "target": {
+                  "byTestId": "block-palette-action:addNamedPublisher"
+                }
+              },
+              {
+                "step": "click",
+                "label": "put it as the first step",
+                "target": {
+                  "byTestId": "block-insert:definition.compositeActionSequence.payload.actionSequence.0"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the first step calls it",
+                "target": {
+                  "byTestId": "block:definition.compositeActionSequence.payload.actionSequence.0"
+                },
+                "attribute": "data-action-type",
+                "value": "addNamedPublisher"
+              },
+              {
+                "step": "click",
+                "label": "edit its parameter publisherName",
+                "target": {
+                  "byTestId": "block-field:definition.compositeActionSequence.payload.actionSequence.0.payload.publisherName"
+                }
+              },
+              {
+                "step": "clear",
+                "label": "clear it",
+                "target": {
+                  "byTestId": "block-field-input:definition.compositeActionSequence.payload.actionSequence.0.payload.publisherName"
+                }
+              },
+              {
+                "step": "type",
+                "label": "type Endpoint Publisher",
+                "target": {
+                  "byTestId": "block-field-input:definition.compositeActionSequence.payload.actionSequence.0.payload.publisherName"
+                },
+                "text": "Endpoint Publisher{Enter}"
+              },
+              {
+                "step": "click",
+                "label": "Save…",
+                "target": {
+                  "byTestId": "sequence-editor-save-as"
+                }
+              },
+              {
+                "step": "type",
+                "label": "name the Runner",
+                "target": {
+                  "byTestId": "sequence-editor-runner-name"
+                },
+                "text": "publishThroughTheEndpoint"
+              },
+              {
+                "step": "click",
+                "label": "save",
+                "target": {
+                  "byTestId": "sequence-editor-save-confirm"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the Runner is saved",
+                "target": {
+                  "byTestId": "sequence-editor-save-status"
+                },
+                "attribute": "data-status",
+                "value": "saved",
+                "timeout": 5000
+              },
+              {
+                "step": "expectElement",
+                "label": "the Runner can be run",
+                "target": {
+                  "byTestId": "sequence-editor-run"
+                },
+                "timeout": 5000
+              },
+              {
+                "step": "expectElement",
+                "label": "no Publisher has the name yet",
+                "target": {
+                  "byTestId": "sequence-editor-watched:Endpoint Publisher"
+                },
+                "present": false
+              },
+              {
+                "step": "click",
+                "label": "run it",
+                "target": {
+                  "byTestId": "typed-value-object-editor-submit"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the action created the Publisher",
+                "target": {
+                  "byTestId": "sequence-editor-watched:Endpoint Publisher"
+                },
+                "timeout": 8000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "SequenceEditor on the Library: #506 with both switches on, an action Runner calls the new action",
+            "steps": [
+              {
+                "step": "change",
+                "label": "choose the Runner addPlainPublisher",
+                "target": {
+                  "byTestId": "sequence-editor-runner"
+                },
+                "value": "c2a0f505-5e0a-4c5d-9b1e-505000000001"
+              },
+              {
+                "step": "click",
+                "label": "show the sequence as blocks",
+                "target": {
+                  "byTestId": "block-view-mode:definition.compositeActionSequence:blocks"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "its hat",
+                "target": {
+                  "byTestId": "block-runner-hat"
+                },
+                "attribute": "data-name",
+                "value": "addPlainPublisher",
+                "timeout": 5000
+              },
+              {
+                "step": "click",
+                "label": "add a form field",
+                "target": {
+                  "byTestId": "block-runner-add"
+                }
+              },
+              {
+                "step": "type",
+                "label": "name it publisherName",
+                "target": {
+                  "byTestId": "block-runner-new"
+                },
+                "text": "publisherName{Enter}"
+              },
+              {
+                "step": "click",
+                "label": "unfold the literal object, folded as long",
+                "target": {
+                  "byTestId": "block-expand-all"
+                }
+              },
+              {
+                "step": "click",
+                "label": "choose the form field publisherName",
+                "target": {
+                  "byTestId": "block-runner-variable:publisherName"
+                }
+              },
+              {
+                "step": "click",
+                "label": "replace the name of the Publisher",
+                "target": {
+                  "byTestId": "block-replace:definition.compositeActionSequence.payload.actionSequence.0.payload.objects.0.name"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the name reads the form field",
+                "target": {
+                  "byTestId": "block:definition.compositeActionSequence.payload.actionSequence.0.payload.objects.0.name"
+                },
+                "attribute": "data-transformer-type",
+                "value": "getFromParameters"
+              },
+              {
+                "step": "click",
+                "label": "choose generateUuid",
+                "target": {
+                  "byTestId": "block-palette:generateUuid"
+                }
+              },
+              {
+                "step": "click",
+                "label": "replace the uuid of the Publisher",
+                "target": {
+                  "byTestId": "block-replace:definition.compositeActionSequence.payload.actionSequence.0.payload.objects.0.uuid"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the uuid is generated",
+                "target": {
+                  "byTestId": "block:definition.compositeActionSequence.payload.actionSequence.0.payload.objects.0.uuid"
+                },
+                "attribute": "data-transformer-type",
+                "value": "generateUuid"
+              },
+              {
+                "step": "click",
+                "label": "Save…",
+                "target": {
+                  "byTestId": "sequence-editor-save-as"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the save dialog",
+                "target": {
+                  "byTestId": "sequence-editor-save-dialog"
+                }
+              },
+              {
+                "step": "click",
+                "label": "create Action",
+                "target": {
+                  "byTestId": "sequence-editor-create-action"
+                }
+              },
+              {
+                "step": "clear",
+                "label": "clear the name of the copy",
+                "target": {
+                  "byTestId": "sequence-editor-runner-name"
+                }
+              },
+              {
+                "step": "type",
+                "label": "name the action",
+                "target": {
+                  "byTestId": "sequence-editor-runner-name"
+                },
+                "text": "addRunnerPublisher"
+              },
+              {
+                "step": "change",
+                "label": "in a new Endpoint",
+                "target": {
+                  "byTestId": "sequence-editor-endpoint"
+                },
+                "value": "new"
+              },
+              {
+                "step": "type",
+                "label": "name the Endpoint",
+                "target": {
+                  "byTestId": "sequence-editor-endpoint-name"
+                },
+                "text": "RunnerEndpoint"
+              },
+              {
+                "step": "click",
+                "label": "save",
+                "target": {
+                  "byTestId": "sequence-editor-save-confirm"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "no error",
+                "target": {
+                  "byTestId": "sequence-editor-save-error"
+                },
+                "present": false,
+                "timeout": 3000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the action is saved",
+                "target": {
+                  "byTestId": "sequence-editor-save-status"
+                },
+                "attribute": "data-status",
+                "value": "saved",
+                "timeout": 5000
+              },
+              {
+                "step": "expectElement",
+                "label": "the dialog is closed",
+                "target": {
+                  "byTestId": "sequence-editor-save-dialog"
+                },
+                "present": false,
+                "timeout": 5000
+              },
+              {
+                "step": "expectElement",
+                "label": "the action Runner can be run",
+                "target": {
+                  "byTestId": "sequence-editor-run"
+                },
+                "timeout": 5000
+              },
+              {
+                "step": "expectElement",
+                "label": "its form is the payload of the action",
+                "target": {
+                  "byRole": "textbox",
+                  "fieldName": "addRunnerPublisher.payload.publisherName"
+                },
+                "timeout": 5000
+              },
+              {
+                "step": "change",
+                "label": "fill it",
+                "target": {
+                  "byRole": "textbox",
+                  "fieldName": "addRunnerPublisher.payload.publisherName"
+                },
+                "value": "Runner Publisher"
+              },
+              {
+                "step": "click",
+                "label": "run it",
+                "target": {
+                  "byTestId": "typed-value-object-editor-submit"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the action created the Publisher",
+                "target": {
+                  "byTestId": "sequence-editor-watched:Runner Publisher"
+                },
+                "timeout": 8000
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "miroirTestType": "reactComponentTestSuite",
+        "miroirTestLabel": "an Endpoint action",
+        "component": "TransformerBlocks",
+        "componentProps": {
+          "endpointAction": "entity_DuplicateAttribute"
+        },
+        "miroirTests": [
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "an Endpoint action: entity_DuplicateAttribute is a define block with its parameters and steps, and its value is unchanged",
+            "steps": [
+              {
+                "step": "waitForAttribute",
+                "label": "the define block names the action",
+                "target": {
+                  "byTestId": "block-define"
+                },
+                "attribute": "data-name",
+                "value": "entity_DuplicateAttribute",
+                "timeout": 3000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "application is read",
+                "target": {
+                  "byTestId": "block-define-parameter:application"
+                },
+                "attribute": "data-read",
+                "value": "true"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "sourceEntityUuid is read",
+                "target": {
+                  "byTestId": "block-define-parameter:sourceEntityUuid"
+                },
+                "attribute": "data-read",
+                "value": "true"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "columns is read",
+                "target": {
+                  "byTestId": "block-define-parameter:columns"
+                },
+                "attribute": "data-read",
+                "value": "true"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "transactional is not read",
+                "target": {
+                  "byTestId": "block-define-parameter:transactional"
+                },
+                "attribute": "data-read",
+                "value": "false"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "sourceEntityName is not read",
+                "target": {
+                  "byTestId": "block-define-parameter:sourceEntityName"
+                },
+                "attribute": "data-read",
+                "value": "false"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the first step looks the source Entity up",
+                "target": {
+                  "byTestId": "block:actionImplementation.definition.payload.actionSequence.0"
+                },
+                "attribute": "data-action-type",
+                "value": "compositeRunBoxedQueryAction"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the third step alters the target Entity",
+                "target": {
+                  "byTestId": "block:actionImplementation.definition.payload.actionSequence.2"
+                },
+                "attribute": "data-action-type",
+                "value": "alterEntityAttribute"
+              },
+              {
+                "step": "expectElement",
+                "label": "read-only: no parameter is added",
+                "target": {
+                  "byTestId": "block-define-add"
+                },
+                "present": false
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the action round-trips",
+                "target": {
+                  "byTestId": "block-action-value"
+                },
+                "attribute": "data-value",
+                "value": "{\"actionParameters\":{\"actionType\":{\"type\":\"literal\",\"tag\":{\"value\":{\"canBeTemplate\":false}},\"definition\":\"entity_DuplicateAttribute\"},\"actionLabel\":{\"type\":\"string\",\"optional\":true},\"endpoint\":{\"type\":\"literal\",\"definition\":\"7947ae40-eb34-4149-887b-15a9021e714e\"},\"payload\":{\"type\":\"object\",\"definition\":{\"application\":{\"type\":\"uuid\",\"tag\":{\"value\":{\"canBeTemplate\":true,\"defaultLabel\":\"Application\",\"foreignKeyParams\":{\"targetApplicationUuid\":\"55af124e-8c05-4bae-a3ef-0933d41daa92\",\"targetEntity\":\"25d935e7-9e93-42c2-aade-0472b883492b\",\"targetEntityOrderInstancesBy\":\"name\"},\"display\":{\"editable\":false}}}},\"transactional\":{\"type\":\"boolean\",\"optional\":true},\"columns\":{\"type\":\"array\",\"optional\":true,\"definition\":{\"type\":\"string\",\"description\":\"the columns to be duplicated\"}},\"sourceEntityName\":{\"type\":\"string\",\"optional\":true},\"sourceEntityUuid\":{\"type\":\"uuid\"},\"targetEntityName\":{\"type\":\"string\",\"optional\":true},\"targetEntityUuid\":{\"type\":\"uuid\"}}}},\"actionImplementation\":{\"actionImplementationType\":\"compositeActionTemplate\",\"definition\":{\"actionType\":\"compositeActionSequence\",\"endpoint\":\"7947ae40-eb34-4149-887b-15a9021e714e\",\"payload\":{\"actionSequence\":[{\"actionType\":\"compositeRunBoxedQueryAction\",\"endpoint\":\"1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5\",\"actionLabel\":\"sourceEntityLookup\",\"nameGivenToResult\":\"sourceEntity\",\"payload\":{\"actionType\":\"runBoxedQueryAction\",\"endpoint\":\"9e404b3c-368c-40cb-be8b-e3c28550c25e\",\"payload\":{\"application\":{\"transformerType\":\"getFromContext\",\"interpolation\":\"runtime\",\"referencePath\":[\"payload\",\"application\"]},\"applicationSection\":\"model\",\"queryExecutionStrategy\":\"storage\",\"query\":{\"queryType\":\"boxedQueryWithExtractorCombinerTransformer\",\"application\":{\"transformerType\":\"getFromContext\",\"interpolation\":\"runtime\",\"referencePath\":[\"payload\",\"application\"]},\"extractors\":{\"entities\":{\"extractorOrCombinerType\":\"extractorByPrimaryKey\",\"applicationSection\":\"model\",\"parentName\":\"Entity\",\"parentUuid\":\"16dbfe28-e1d7-4f20-9ba4-c1a9873202ad\",\"instanceUuid\":{\"transformerType\":\"getFromContext\",\"interpolation\":\"runtime\",\"referencePath\":[\"payload\",\"sourceEntityUuid\"]}}}}}}},{\"actionType\":\"compositeRunBoxedQueryAction\",\"endpoint\":\"1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5\",\"actionLabel\":\"targetEntityLookup\",\"nameGivenToResult\":\"targetEntity\",\"payload\":{\"actionType\":\"runBoxedQueryAction\",\"endpoint\":\"9e404b3c-368c-40cb-be8b-e3c28550c25e\",\"payload\":{\"application\":{\"transformerType\":\"getFromContext\",\"interpolation\":\"runtime\",\"referencePath\":[\"payload\",\"application\"]},\"applicationSection\":\"model\",\"queryExecutionStrategy\":\"storage\",\"query\":{\"queryType\":\"boxedQueryWithExtractorCombinerTransformer\",\"application\":{\"transformerType\":\"getFromContext\",\"interpolation\":\"runtime\",\"referencePath\":[\"payload\",\"application\"]},\"extractors\":{\"entities\":{\"extractorOrCombinerType\":\"extractorByPrimaryKey\",\"applicationSection\":\"model\",\"parentName\":\"Entity\",\"parentUuid\":\"16dbfe28-e1d7-4f20-9ba4-c1a9873202ad\",\"instanceUuid\":{\"transformerType\":\"getFromContext\",\"interpolation\":\"runtime\",\"referencePath\":[\"payload\",\"targetEntityUuid\"]}}}}}}},{\"actionType\":\"alterEntityAttribute\",\"endpoint\":\"7947ae40-eb34-4149-887b-15a9021e714e\",\"actionLabel\":\"duplicateAttributes\",\"payload\":{\"application\":{\"transformerType\":\"getFromContext\",\"interpolation\":\"runtime\",\"referencePath\":[\"payload\",\"application\"]},\"entityName\":{\"transformerType\":\"getFromContext\",\"interpolation\":\"runtime\",\"referencePath\":[\"targetEntity\",\"entities\",\"name\"]},\"entityUuid\":{\"transformerType\":\"getFromContext\",\"interpolation\":\"runtime\",\"referencePath\":[\"payload\",\"targetEntityUuid\"]},\"addColumns\":{\"transformerType\":\"mapList\",\"interpolation\":\"runtime\",\"applyTo\":{\"transformerType\":\"entityDefinition_extractAttributes\",\"interpolation\":\"runtime\",\"entityDefinition\":{\"transformerType\":\"getFromContext\",\"interpolation\":\"runtime\",\"referencePath\":[\"sourceEntity\",\"entities\"]},\"attributeNames\":{\"transformerType\":\"getFromContext\",\"interpolation\":\"runtime\",\"referencePath\":[\"payload\",\"columns\"]}},\"referenceToOuterObject\":\"attribute\",\"elementTransformer\":{\"transformerType\":\"createObject\",\"interpolation\":\"runtime\",\"definition\":{\"name\":{\"transformerType\":\"getFromContext\",\"interpolation\":\"runtime\",\"referencePath\":[\"attribute\",\"0\"]},\"definition\":{\"transformerType\":\"getFromContext\",\"interpolation\":\"runtime\",\"referencePath\":[\"attribute\",\"1\"]}}}}}}]}}}}"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "miroirTestType": "reactComponentTestSuite",
+        "miroirTestLabel": "an Endpoint action edited",
+        "component": "TransformerBlocks",
+        "componentProps": {
+          "endpointAction": "entity_DuplicateAttribute",
+          "editable": true
+        },
+        "miroirTests": [
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "an Endpoint action edited: shown in an editable view, its value is unchanged",
+            "steps": [
+              {
+                "step": "waitForAttribute",
+                "label": "the define block names the action",
+                "target": {
+                  "byTestId": "block-define"
+                },
+                "attribute": "data-name",
+                "value": "entity_DuplicateAttribute",
+                "timeout": 3000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "application is read",
+                "target": {
+                  "byTestId": "block-define-parameter:application"
+                },
+                "attribute": "data-read",
+                "value": "true"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "sourceEntityUuid is read",
+                "target": {
+                  "byTestId": "block-define-parameter:sourceEntityUuid"
+                },
+                "attribute": "data-read",
+                "value": "true"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "columns is read",
+                "target": {
+                  "byTestId": "block-define-parameter:columns"
+                },
+                "attribute": "data-read",
+                "value": "true"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "transactional is not read",
+                "target": {
+                  "byTestId": "block-define-parameter:transactional"
+                },
+                "attribute": "data-read",
+                "value": "false"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "sourceEntityName is not read",
+                "target": {
+                  "byTestId": "block-define-parameter:sourceEntityName"
+                },
+                "attribute": "data-read",
+                "value": "false"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the action round-trips",
+                "target": {
+                  "byTestId": "block-action-value"
+                },
+                "attribute": "data-value",
+                "value": "{\"actionParameters\":{\"actionType\":{\"type\":\"literal\",\"tag\":{\"value\":{\"canBeTemplate\":false}},\"definition\":\"entity_DuplicateAttribute\"},\"actionLabel\":{\"type\":\"string\",\"optional\":true},\"endpoint\":{\"type\":\"literal\",\"definition\":\"7947ae40-eb34-4149-887b-15a9021e714e\"},\"payload\":{\"type\":\"object\",\"definition\":{\"application\":{\"type\":\"uuid\",\"tag\":{\"value\":{\"canBeTemplate\":true,\"defaultLabel\":\"Application\",\"foreignKeyParams\":{\"targetApplicationUuid\":\"55af124e-8c05-4bae-a3ef-0933d41daa92\",\"targetEntity\":\"25d935e7-9e93-42c2-aade-0472b883492b\",\"targetEntityOrderInstancesBy\":\"name\"},\"display\":{\"editable\":false}}}},\"transactional\":{\"type\":\"boolean\",\"optional\":true},\"columns\":{\"type\":\"array\",\"optional\":true,\"definition\":{\"type\":\"string\",\"description\":\"the columns to be duplicated\"}},\"sourceEntityName\":{\"type\":\"string\",\"optional\":true},\"sourceEntityUuid\":{\"type\":\"uuid\"},\"targetEntityName\":{\"type\":\"string\",\"optional\":true},\"targetEntityUuid\":{\"type\":\"uuid\"}}}},\"actionImplementation\":{\"actionImplementationType\":\"compositeActionTemplate\",\"definition\":{\"actionType\":\"compositeActionSequence\",\"endpoint\":\"7947ae40-eb34-4149-887b-15a9021e714e\",\"payload\":{\"actionSequence\":[{\"actionType\":\"compositeRunBoxedQueryAction\",\"endpoint\":\"1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5\",\"actionLabel\":\"sourceEntityLookup\",\"nameGivenToResult\":\"sourceEntity\",\"payload\":{\"actionType\":\"runBoxedQueryAction\",\"endpoint\":\"9e404b3c-368c-40cb-be8b-e3c28550c25e\",\"payload\":{\"application\":{\"transformerType\":\"getFromContext\",\"interpolation\":\"runtime\",\"referencePath\":[\"payload\",\"application\"]},\"applicationSection\":\"model\",\"queryExecutionStrategy\":\"storage\",\"query\":{\"queryType\":\"boxedQueryWithExtractorCombinerTransformer\",\"application\":{\"transformerType\":\"getFromContext\",\"interpolation\":\"runtime\",\"referencePath\":[\"payload\",\"application\"]},\"extractors\":{\"entities\":{\"extractorOrCombinerType\":\"extractorByPrimaryKey\",\"applicationSection\":\"model\",\"parentName\":\"Entity\",\"parentUuid\":\"16dbfe28-e1d7-4f20-9ba4-c1a9873202ad\",\"instanceUuid\":{\"transformerType\":\"getFromContext\",\"interpolation\":\"runtime\",\"referencePath\":[\"payload\",\"sourceEntityUuid\"]}}}}}}},{\"actionType\":\"compositeRunBoxedQueryAction\",\"endpoint\":\"1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5\",\"actionLabel\":\"targetEntityLookup\",\"nameGivenToResult\":\"targetEntity\",\"payload\":{\"actionType\":\"runBoxedQueryAction\",\"endpoint\":\"9e404b3c-368c-40cb-be8b-e3c28550c25e\",\"payload\":{\"application\":{\"transformerType\":\"getFromContext\",\"interpolation\":\"runtime\",\"referencePath\":[\"payload\",\"application\"]},\"applicationSection\":\"model\",\"queryExecutionStrategy\":\"storage\",\"query\":{\"queryType\":\"boxedQueryWithExtractorCombinerTransformer\",\"application\":{\"transformerType\":\"getFromContext\",\"interpolation\":\"runtime\",\"referencePath\":[\"payload\",\"application\"]},\"extractors\":{\"entities\":{\"extractorOrCombinerType\":\"extractorByPrimaryKey\",\"applicationSection\":\"model\",\"parentName\":\"Entity\",\"parentUuid\":\"16dbfe28-e1d7-4f20-9ba4-c1a9873202ad\",\"instanceUuid\":{\"transformerType\":\"getFromContext\",\"interpolation\":\"runtime\",\"referencePath\":[\"payload\",\"targetEntityUuid\"]}}}}}}},{\"actionType\":\"alterEntityAttribute\",\"endpoint\":\"7947ae40-eb34-4149-887b-15a9021e714e\",\"actionLabel\":\"duplicateAttributes\",\"payload\":{\"application\":{\"transformerType\":\"getFromContext\",\"interpolation\":\"runtime\",\"referencePath\":[\"payload\",\"application\"]},\"entityName\":{\"transformerType\":\"getFromContext\",\"interpolation\":\"runtime\",\"referencePath\":[\"targetEntity\",\"entities\",\"name\"]},\"entityUuid\":{\"transformerType\":\"getFromContext\",\"interpolation\":\"runtime\",\"referencePath\":[\"payload\",\"targetEntityUuid\"]},\"addColumns\":{\"transformerType\":\"mapList\",\"interpolation\":\"runtime\",\"applyTo\":{\"transformerType\":\"entityDefinition_extractAttributes\",\"interpolation\":\"runtime\",\"entityDefinition\":{\"transformerType\":\"getFromContext\",\"interpolation\":\"runtime\",\"referencePath\":[\"sourceEntity\",\"entities\"]},\"attributeNames\":{\"transformerType\":\"getFromContext\",\"interpolation\":\"runtime\",\"referencePath\":[\"payload\",\"columns\"]}},\"referenceToOuterObject\":\"attribute\",\"elementTransformer\":{\"transformerType\":\"createObject\",\"interpolation\":\"runtime\",\"definition\":{\"name\":{\"transformerType\":\"getFromContext\",\"interpolation\":\"runtime\",\"referencePath\":[\"attribute\",\"0\"]},\"definition\":{\"transformerType\":\"getFromContext\",\"interpolation\":\"runtime\",\"referencePath\":[\"attribute\",\"1\"]}}}}}}]}}}}"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "an Endpoint action edited: a parameter replaces a block with a read of the payload",
+            "steps": [
+              {
+                "step": "waitForAttribute",
+                "label": "the define block names the action",
+                "target": {
+                  "byTestId": "block-define"
+                },
+                "attribute": "data-name",
+                "value": "entity_DuplicateAttribute",
+                "timeout": 3000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "targetEntityName is not read",
+                "target": {
+                  "byTestId": "block-define-parameter:targetEntityName"
+                },
+                "attribute": "data-read",
+                "value": "false"
+              },
+              {
+                "step": "click",
+                "label": "choose targetEntityName",
+                "target": {
+                  "byTestId": "block-define-variable:targetEntityName"
+                }
+              },
+              {
+                "step": "click",
+                "label": "open the node actions of entityName",
+                "target": {
+                  "byLabelText": "Transformer node actions actionImplementation.definition.payload.actionSequence.2.payload.entityName"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Replace with parameter targetEntityName",
+                "target": {
+                  "byTestId": "block-action-replace"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "entityName reads the payload",
+                "target": {
+                  "byTestId": "block:actionImplementation.definition.payload.actionSequence.2.payload.entityName"
+                },
+                "attribute": "data-transformer-type",
+                "value": "getFromContext"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "targetEntityName is read now",
+                "target": {
+                  "byTestId": "block-define-parameter:targetEntityName"
+                },
+                "attribute": "data-read",
+                "value": "true"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "an Endpoint action edited: a renamed parameter: its reads follow, a read one is not removed, an unread one is",
+            "steps": [
+              {
+                "step": "waitForAttribute",
+                "label": "the define block names the action",
+                "target": {
+                  "byTestId": "block-define"
+                },
+                "attribute": "data-name",
+                "value": "entity_DuplicateAttribute",
+                "timeout": 3000
+              },
+              {
+                "step": "click",
+                "label": "rename sourceEntityUuid",
+                "target": {
+                  "byTestId": "block-define-rename:sourceEntityUuid"
+                }
+              },
+              {
+                "step": "clear",
+                "label": "clear the name",
+                "target": {
+                  "byTestId": "block-define-name:sourceEntityUuid"
+                }
+              },
+              {
+                "step": "type",
+                "label": "name it sourceUuid",
+                "target": {
+                  "byTestId": "block-define-name:sourceEntityUuid"
+                },
+                "text": "sourceUuid{Enter}"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "sourceUuid is read",
+                "target": {
+                  "byTestId": "block-define-parameter:sourceUuid"
+                },
+                "attribute": "data-read",
+                "value": "true"
+              },
+              {
+                "step": "expectElement",
+                "label": "the old name is gone",
+                "target": {
+                  "byTestId": "block-define-parameter:sourceEntityUuid"
+                },
+                "present": false
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "a read parameter cannot be removed",
+                "target": {
+                  "byTestId": "block-define-remove:sourceUuid"
+                },
+                "attribute": "disabled",
+                "value": ""
+              },
+              {
+                "step": "click",
+                "label": "remove sourceEntityName",
+                "target": {
+                  "byTestId": "block-define-remove:sourceEntityName"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "sourceEntityName is gone",
+                "target": {
+                  "byTestId": "block-define-parameter:sourceEntityName"
+                },
+                "present": false
+              },
+              {
+                "step": "click",
+                "label": "add a parameter",
+                "target": {
+                  "byTestId": "block-define-add"
+                }
+              },
+              {
+                "step": "type",
+                "label": "name it application, taken",
+                "target": {
+                  "byTestId": "block-define-new"
+                },
+                "text": "application{Enter}"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "a taken name is refused",
+                "target": {
+                  "byTestId": "block-define-error"
+                },
+                "attribute": "data-testid",
+                "value": "block-define-error"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "miroirTestType": "reactComponentTestSuite",
+        "miroirTestLabel": "an Endpoint action in an instance editor",
+        "component": "MlElementEditor",
+        "componentProps": {
+          "label": "Test Label",
+          "name": "testField",
+          "listKey": "ROOT.testField",
+          "rootLessListKey": "testField",
+          "rootLessListKeyArray": [
+            "testField"
+          ],
+          "blockViewSwitch": true,
+          "rawMlSchema": {
+            "type": "object",
+            "definition": {
+              "action": {
+                "type": "object",
+                "definition": {
+                  "actionParameters": {
+                    "type": "any"
+                  },
+                  "actionImplementation": {
+                    "type": "union",
+                    "optional": true,
+                    "discriminator": "actionImplementationType",
+                    "definition": [
+                      {
+                        "type": "object",
+                        "definition": {
+                          "actionImplementationType": {
+                            "type": "literal",
+                            "definition": "libraryImplementation"
+                          },
+                          "inMemoryImplementationFunctionName": {
+                            "type": "string"
+                          },
+                          "sqlImplementationFunctionName": {
+                            "type": "string",
+                            "optional": true
+                          }
+                        }
+                      },
+                      {
+                        "type": "object",
+                        "definition": {
+                          "actionImplementationType": {
+                            "type": "literal",
+                            "definition": "compositeActionTemplate"
+                          },
+                          "definition": {
+                            "type": "any",
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Composite Action Definition",
+                                "display": {
+                                  "editable": true
+                                },
+                                "ifThenElseMMLS": {
+                                  "mmlsReference": {
+                                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                    "relativePath": "compositeActionTemplate"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "initialFormState": {
+            "action": {
+              "actionParameters": {
+                "actionType": {
+                  "type": "literal",
+                  "tag": {
+                    "value": {
+                      "canBeTemplate": false
+                    }
+                  },
+                  "definition": "entity_DuplicateAttribute"
+                },
+                "actionLabel": {
+                  "type": "string",
+                  "optional": true
+                },
+                "endpoint": {
+                  "type": "literal",
+                  "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+                },
+                "payload": {
+                  "type": "object",
+                  "definition": {
+                    "application": {
+                      "type": "uuid",
+                      "tag": {
+                        "value": {
+                          "canBeTemplate": true,
+                          "defaultLabel": "Application",
+                          "foreignKeyParams": {
+                            "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+                            "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                            "targetEntityOrderInstancesBy": "name"
+                          },
+                          "display": {
+                            "editable": false
+                          }
+                        }
+                      }
+                    },
+                    "transactional": {
+                      "type": "boolean",
+                      "optional": true
+                    },
+                    "columns": {
+                      "type": "array",
+                      "optional": true,
+                      "definition": {
+                        "type": "string",
+                        "description": "the columns to be duplicated"
+                      }
+                    },
+                    "sourceEntityName": {
+                      "type": "string",
+                      "optional": true
+                    },
+                    "sourceEntityUuid": {
+                      "type": "uuid"
+                    },
+                    "targetEntityName": {
+                      "type": "string",
+                      "optional": true
+                    },
+                    "targetEntityUuid": {
+                      "type": "uuid"
+                    }
+                  }
+                }
+              },
+              "actionImplementation": {
+                "actionImplementationType": "compositeActionTemplate",
+                "definition": {
+                  "actionType": "compositeActionSequence",
+                  "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                  "payload": {
+                    "actionSequence": [
+                      {
+                        "actionType": "compositeRunBoxedQueryAction",
+                        "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                        "actionLabel": "sourceEntityLookup",
+                        "nameGivenToResult": "sourceEntity",
+                        "payload": {
+                          "actionType": "runBoxedQueryAction",
+                          "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                          "payload": {
+                            "application": {
+                              "transformerType": "getFromContext",
+                              "interpolation": "runtime",
+                              "referencePath": [
+                                "payload",
+                                "application"
+                              ]
+                            },
+                            "applicationSection": "model",
+                            "queryExecutionStrategy": "storage",
+                            "query": {
+                              "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                              "application": {
+                                "transformerType": "getFromContext",
+                                "interpolation": "runtime",
+                                "referencePath": [
+                                  "payload",
+                                  "application"
+                                ]
+                              },
+                              "extractors": {
+                                "entities": {
+                                  "extractorOrCombinerType": "extractorByPrimaryKey",
+                                  "applicationSection": "model",
+                                  "parentName": "Entity",
+                                  "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                                  "instanceUuid": {
+                                    "transformerType": "getFromContext",
+                                    "interpolation": "runtime",
+                                    "referencePath": [
+                                      "payload",
+                                      "sourceEntityUuid"
+                                    ]
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "actionType": "compositeRunBoxedQueryAction",
+                        "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                        "actionLabel": "targetEntityLookup",
+                        "nameGivenToResult": "targetEntity",
+                        "payload": {
+                          "actionType": "runBoxedQueryAction",
+                          "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                          "payload": {
+                            "application": {
+                              "transformerType": "getFromContext",
+                              "interpolation": "runtime",
+                              "referencePath": [
+                                "payload",
+                                "application"
+                              ]
+                            },
+                            "applicationSection": "model",
+                            "queryExecutionStrategy": "storage",
+                            "query": {
+                              "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                              "application": {
+                                "transformerType": "getFromContext",
+                                "interpolation": "runtime",
+                                "referencePath": [
+                                  "payload",
+                                  "application"
+                                ]
+                              },
+                              "extractors": {
+                                "entities": {
+                                  "extractorOrCombinerType": "extractorByPrimaryKey",
+                                  "applicationSection": "model",
+                                  "parentName": "Entity",
+                                  "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                                  "instanceUuid": {
+                                    "transformerType": "getFromContext",
+                                    "interpolation": "runtime",
+                                    "referencePath": [
+                                      "payload",
+                                      "targetEntityUuid"
+                                    ]
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "actionType": "alterEntityAttribute",
+                        "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                        "actionLabel": "duplicateAttributes",
+                        "payload": {
+                          "application": {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referencePath": [
+                              "payload",
+                              "application"
+                            ]
+                          },
+                          "entityName": {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referencePath": [
+                              "targetEntity",
+                              "entities",
+                              "name"
+                            ]
+                          },
+                          "entityUuid": {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referencePath": [
+                              "payload",
+                              "targetEntityUuid"
+                            ]
+                          },
+                          "addColumns": {
+                            "transformerType": "mapList",
+                            "interpolation": "runtime",
+                            "applyTo": {
+                              "transformerType": "entityDefinition_extractAttributes",
+                              "interpolation": "runtime",
+                              "entityDefinition": {
+                                "transformerType": "getFromContext",
+                                "interpolation": "runtime",
+                                "referencePath": [
+                                  "sourceEntity",
+                                  "entities"
+                                ]
+                              },
+                              "attributeNames": {
+                                "transformerType": "getFromContext",
+                                "interpolation": "runtime",
+                                "referencePath": [
+                                  "payload",
+                                  "columns"
+                                ]
+                              }
+                            },
+                            "referenceToOuterObject": "attribute",
+                            "elementTransformer": {
+                              "transformerType": "createObject",
+                              "interpolation": "runtime",
+                              "definition": {
+                                "name": {
+                                  "transformerType": "getFromContext",
+                                  "interpolation": "runtime",
+                                  "referencePath": [
+                                    "attribute",
+                                    "0"
+                                  ]
+                                },
+                                "definition": {
+                                  "transformerType": "getFromContext",
+                                  "interpolation": "runtime",
+                                  "referencePath": [
+                                    "attribute",
+                                    "1"
+                                  ]
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "miroirTests": [
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "an Endpoint action in an instance editor: the body of a composite action shows its define block; a rename writes the action",
+            "steps": [
+              {
+                "step": "click",
+                "label": "choose Blocks",
+                "target": {
+                  "byTestId": "block-view-mode:testField.action.actionImplementation.definition:blocks"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the define block names the action",
+                "target": {
+                  "byTestId": "block-define"
+                },
+                "attribute": "data-name",
+                "value": "entity_DuplicateAttribute",
+                "timeout": 3000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "sourceEntityUuid is read",
+                "target": {
+                  "byTestId": "block-define-parameter:sourceEntityUuid"
+                },
+                "attribute": "data-read",
+                "value": "true"
+              },
+              {
+                "step": "click",
+                "label": "rename sourceEntityUuid",
+                "target": {
+                  "byTestId": "block-define-rename:sourceEntityUuid"
+                }
+              },
+              {
+                "step": "clear",
+                "label": "clear the name",
+                "target": {
+                  "byTestId": "block-define-name:sourceEntityUuid"
+                }
+              },
+              {
+                "step": "type",
+                "label": "name it sourceUuid",
+                "target": {
+                  "byTestId": "block-define-name:sourceEntityUuid"
+                },
+                "text": "sourceUuid{Enter}"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the action has sourceUuid, read by its body",
+                "target": {
+                  "byTestId": "block-define-parameter:sourceUuid"
+                },
+                "attribute": "data-read",
+                "value": "true"
+              },
+              {
+                "step": "expectElement",
+                "label": "the old name is gone",
+                "target": {
+                  "byTestId": "block-define-parameter:sourceEntityUuid"
                 },
                 "present": false
               }

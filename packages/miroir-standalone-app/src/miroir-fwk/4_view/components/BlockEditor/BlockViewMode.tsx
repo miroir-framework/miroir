@@ -43,11 +43,15 @@ export const BlockRunInputContext = createContext<BlockRunInput | undefined>(und
  * #502: the block view of the body of a composite TransformerDefinition is a "define" block: a
  * header with its name and parameters, which bind context names in the body. Each change returns
  * an error message when it is refused.
+ * #506: the body of a composite Endpoint action is one too: its parameters are the attributes of
+ * the context name `payload`, read as `["payload", parameter]`.
  */
 export interface BlockDefine {
   /** The block view of this field shows the header; the others under the provider do not. */
   rootLessListKey: string;
   name: string;
+  /** #506: the context name the parameters are attributes of; absent: each parameter is a context name. */
+  contextName?: string;
   /** In order, with whether the body reads each one. */
   parameters: { name: string; read: boolean }[];
   addParameter: (name: string) => string | undefined;

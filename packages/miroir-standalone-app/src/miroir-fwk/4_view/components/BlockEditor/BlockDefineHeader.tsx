@@ -4,7 +4,7 @@ import React, { useState } from "react";
 
 import { blockCategoryColor, type BlockEditorColors } from "../../contexts/MiroirThemeContext.js";
 import { useBlockDraggable } from "./BlockDragDrop.js";
-import { useBlockEditing } from "./BlockEditing.js";
+import { useBlockEditing, type ArmedBlock } from "./BlockEditing.js";
 import type { BlockDefine } from "./BlockViewMode.js";
 
 // ################################################################################################
@@ -13,6 +13,8 @@ import type { BlockDefine } from "./BlockViewMode.js";
 // arms it and a drag takes it, as the palette's context variables. The header adds, renames and
 // removes parameters; a rename rewrites the reads of the body, and a parameter the body reads
 // cannot be removed.
+// #506: the header of a composite Endpoint action's body: its action type and the attributes of its
+// payload, read as `["payload", parameter]`.
 // ################################################################################################
 
 export interface BlockDefineHeaderColors {
@@ -93,11 +95,16 @@ function DefineParameter(props: {
   const { name } = parameter;
   const editing = useBlockEditing();
   const [renaming, setRenaming] = useState(false);
-  const { setNodeRef, listeners } = useBlockDraggable(
-    `drag:define:${name}`,
-    editing ? { kind: "variable", source: "context", name } : undefined,
-  );
-  const armed = editing?.armed?.kind === "variable" && editing.armed.source === "context" && editing.armed.name === name;
+  // #506: an Endpoint action's parameter is read as `["payload", name]`
+  const variable: ArmedBlock = define.contextName
+    ? { kind: "variable", source: "context", name: define.contextName, path: [define.contextName, name] }
+    : { kind: "variable", source: "context", name };
+  const { setNodeRef, listeners } = useBlockDraggable(`drag:define:${name}`, editing ? variable : undefined);
+  const armed =
+    editing?.armed?.kind === "variable" &&
+    editing.armed.source === "context" &&
+    editing.armed.name === variable.name &&
+    (editing.armed.path ?? []).join("\u0000") === (variable.path ?? []).join("\u0000");
   return (
     <span
       data-testid={`block-define-parameter:${name}`}
@@ -122,7 +129,7 @@ function DefineParameter(props: {
           data-testid={`block-define-variable:${name}`}
           aria-pressed={editing ? armed : undefined}
           title={armed ? `${name}: click an insert target of the body` : `The parameter ${name}: choose it to read it in the body`}
-          onClick={editing ? () => editing.arm(armed ? undefined : { kind: "variable", source: "context", name }) : undefined}
+          onClick={editing ? () => editing.arm(armed ? undefined : variable) : undefined}
           css={css({
             font: "inherit",
             fontSize: "12px",
