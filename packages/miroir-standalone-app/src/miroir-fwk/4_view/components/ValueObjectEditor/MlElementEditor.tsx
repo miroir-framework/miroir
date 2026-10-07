@@ -1,3 +1,4 @@
+import equal from "fast-deep-equal";
 import React, { startTransition, useCallback, useContext, useMemo, useState } from "react";
 
 import {
@@ -424,6 +425,24 @@ function mlElementToTooltipText(el: any, depth: number = 1): string {
 
 let count = 0;
 
+/** The JSON text of a value in the code box; undefined for a value JSON cannot hold (a BigInt). */
+function jsonText(value: unknown): string | undefined {
+  try {
+    return JSON.stringify(value, null, 2);
+  } catch {
+    return undefined;
+  }
+}
+
+/** Whether `text` is the JSON of `value`, whatever its layout. */
+function textHoldsValue(text: string, value: unknown): boolean {
+  try {
+    return equal(JSON.parse(text), value);
+  } catch {
+    return false;
+  }
+}
+
 // #####################################################################################################
 // #####################################################################################################
 // #####################################################################################################
@@ -681,6 +700,25 @@ function MlElementEditorForm(props: MlElementEditorProps): JSX.Element {
     !localResolvedElementMlSchemaBasedOnValue || // same as props.hasTypeError?
     !displayAsStructuredElement
   ;
+
+  // #499: while the code box is shown, its text follows the changes of the value made elsewhere (an
+  // undo, a redo): derived state, adjusted while rendering. The trigger is a change of content, since
+  // an undo writes fresh copies of every part of the value; the text is re-read only when it does
+  // not already hold the value, so that the text being typed keeps its layout.
+  const [codeTextSource, setCodeTextSource] = useState<unknown>(currentValueObjectAtKey);
+  if (
+    resolvedTypeIsObjectOrArrayOrAny &&
+    displayAsCodeEditor &&
+    codeTextSource !== currentValueObjectAtKey &&
+    !equal(codeTextSource, currentValueObjectAtKey)
+  ) {
+    setCodeTextSource(currentValueObjectAtKey);
+    const text = jsonText(currentValueObjectAtKey);
+    if (text !== undefined && !textHoldsValue(codeMirrorValue, currentValueObjectAtKey)) {
+      setCodeMirrorValue(text);
+      setCodeMirrorIsValidJson(true);
+    }
+  }
 
   const hideSubMlEditor = useMemo(
     () =>
@@ -2139,6 +2177,9 @@ function MlElementEditorForm(props: MlElementEditorProps): JSX.Element {
     resolvedTypeIsObjectOrArrayOrAny,
     displayAsCodeEditor,
     currentValueObjectAtKey,
+    // #499: the code box's own state, which changes without the value (invalid JSON, a re-read)
+    codeMirrorValue,
+    codeMirrorIsValidJson,
   ]);
   // #303 T2: a union is rendered by the MlElementEditor of its declared (union) schema, which
   // also renders the resolved branch and the union type selector: it reports as MlUnionEditor.

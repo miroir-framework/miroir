@@ -33,7 +33,7 @@ This plan does **not** edit blocks (#500) or put a history at every `TypedValueO
 | 0 | Baseline of the editor suites | ✅ | existing `ui.transformerEditor`, `ui.blockEditor`, `ui.mlElementEditor.*` |
 | 1 | Tracer: Undo and Redo buttons on a form edit | ✅ | `ui.valueHistory` TransformerEditor cases |
 | 2 | Keyboard shortcuts and one step per typed field | ✅ | `ui.valueHistory` `type` + `keyboard` cases |
-| 3 | Every view: JSON re-reads its text, Blocks follow | ⬜ | `ui.valueHistory` JSON and Blocks cases |
+| 3 | Every view: JSON re-reads its text, Blocks follow | ✅ | `ui.valueHistory` JSON and Blocks cases |
 | 4 | Undo replaces the remove, unwrap and type-change confirmations | ⬜ | updated `ui.transformerEditor` cases, `ui.valueHistory` MlElementEditor case |
 | 5 | Clear can be undone; loading a stored transformer resets the history | ⬜ | `ui.valueHistory` Clear case |
 | 6 | Nonreg, docs, bundle, AC | ⬜ | nonreg, bundle guard, AC checklist |
@@ -52,7 +52,7 @@ From the analysis (§6.1, D7) and the issue. Deviations go into the slice's Real
 | Where it lives | `ValueObjectEditor/ValueHistory.ts` (the stack, no React) and `ValueHistoryProvider.tsx` (observation, contexts, the keyboard container); the TransformerEditor owns the `ValueHistory` object, so its load effect and Clear can reach it | G2 |
 | Buttons | Undo and Redo in the Blocks / Form / JSON switch row of the watched field | G2 |
 | Keyboard | Handled on a `ValueHistoryScope`, the element of the watched field (the switch row and its view): Ctrl/Cmd+Z undo, Ctrl+Y and Ctrl/Cmd+Shift+Z redo, matched on `key`, default prevented; events from portals (menus, dialogs) and events a code editor already handled are ignored; CodeMirror's own history and history keymap off under a history; the scope takes the focus back when an edit unmounted the focused element | G2 |
-| JSON box | Re-reads its text when the value at its path changes from outside and the text does not already hold it (derived state in `useMlElementEditorHooks`, no new effect); the test stand-in becomes an editable textarea | G2 |
+| JSON box | Re-reads its text when the value at its path changes from outside and the text does not already hold it (derived state in `MlElementEditorForm` while its code box is shown, no new effect); the test stand-in becomes an editable textarea | G2 |
 | Confirmations | Under a history covering the node: Remove acts at once, a type change drops attributes at once, Unwrap lists one menu entry per child; without a history (other editors) the dialogs stay | G2 |
 | Reset | Loading a stored transformer ("defined" mode) resets the history to the loaded value | G2 |
 | Contexts | `ValueHistoryContext` (stable: watched path, `covers`, `undo`, `redo`, `markTyped`, `closeGroup`, `restoreFocus`) and `ValueHistoryStatusContext` (`canUndo`, `canRedo`), so only the buttons re-render when the status changes | G2 |
@@ -180,7 +180,7 @@ As Slice 1.
 
 ## Slice 3 — Every view: JSON re-reads its text, Blocks follow
 
-**Status:** ⬜
+**Status:** ✅ DONE
 
 ### 3.1 RED
 
@@ -198,6 +198,14 @@ As Slice 1.
 ### Validation
 
 As Slice 1, plus `ui.blockEditor`, `ui.mlElementEditor.any`, `.allTypesPattern`, `.simpleType` and `componentTestMode.286.phase4`.
+
+### Realization
+
+- RED: the two JSON cases failed on the text after Undo (the stand-in already a textarea); the Blocks case passed from the start, since blocks are drawn from the value.
+- The re-read did not reach the screen at first: `MlElementEditorForm` returns a `useMemo` of its output whose dependencies list the value but not the code box state, so a render that changed only `codeMirrorValue` (a re-read, or invalid JSON typed in the box) showed the previous text. `codeMirrorValue` and `codeMirrorIsValidJson` are now dependencies. Without them, the JSON-text case fails, and so does a fourth case, "Undo after an invalid JSON text brings back the JSON of the restored value" (the textarea goes back to the old text as soon as invalid JSON is typed into it).
+- `ui.valueHistory` 12 of 12 (137 leaves); `ui.blockEditor` 14, `ui.mlElementEditor.any` 17, `.allTypesPattern` 6, `.simpleType` 14, `ui.transformerEditor` 28 and `componentTestMode.286.phase4` 2 pass.
+- The stand-in keeps the `codeMirrorValue:` label: the existing cases find the JSON by its text, which the textarea holds.
+- Moving the CodeMirror hooks before the early returns fixed its 4 `react-hooks/rules-of-hooks` violations, so their suppressions are gone.
 
 ---
 

@@ -578,6 +578,283 @@
                 "timeout": 2000
               }
             ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: the JSON view shows what Undo and Redo restore",
+            "steps": [
+              {
+                "step": "change",
+                "label": "edit the returned value in the form",
+                "target": {
+                  "byDisplayValue": "seize value..."
+                },
+                "value": "new value"
+              },
+              {
+                "step": "click",
+                "label": "choose JSON",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:json"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the JSON holds the edit",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "value": "{\n  \"transformerType\": \"returnValue\",\n  \"mlSchema\": {\n    \"type\": \"string\"\n  },\n  \"value\": \"new value\"\n}",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "undo",
+                "target": {
+                  "byTestId": "value-history-undo:transformer"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the JSON holds the value before the edit",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "value": "{\n  \"transformerType\": \"returnValue\",\n  \"mlSchema\": {\n    \"type\": \"string\"\n  },\n  \"value\": \"seize value...\"\n}",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "redo",
+                "target": {
+                  "byTestId": "value-history-redo:transformer"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the JSON holds the edit again",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "value": "{\n  \"transformerType\": \"returnValue\",\n  \"mlSchema\": {\n    \"type\": \"string\"\n  },\n  \"value\": \"new value\"\n}",
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: an edit of the JSON text can be undone, in the JSON view and in the form",
+            "steps": [
+              {
+                "step": "click",
+                "label": "choose JSON",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:json"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the JSON holds the value",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "value": "{\n  \"transformerType\": \"returnValue\",\n  \"mlSchema\": {\n    \"type\": \"string\"\n  },\n  \"value\": \"seize value...\"\n}",
+                "timeout": 2000
+              },
+              {
+                "step": "change",
+                "label": "edit the JSON text",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "value": "{\n  \"transformerType\": \"returnValue\",\n  \"mlSchema\": {\n    \"type\": \"string\"\n  },\n  \"value\": \"from JSON\"\n}"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "Undo enabled",
+                "target": {
+                  "byTestId": "value-history-undo:transformer"
+                },
+                "attribute": "aria-disabled",
+                "value": "false",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "undo",
+                "target": {
+                  "byTestId": "value-history-undo:transformer"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the JSON text before the edit",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "value": "{\n  \"transformerType\": \"returnValue\",\n  \"mlSchema\": {\n    \"type\": \"string\"\n  },\n  \"value\": \"seize value...\"\n}",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "redo",
+                "target": {
+                  "byTestId": "value-history-redo:transformer"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the JSON text edit again",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "value": "{\n  \"transformerType\": \"returnValue\",\n  \"mlSchema\": {\n    \"type\": \"string\"\n  },\n  \"value\": \"from JSON\"\n}",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "choose Form",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:form"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the form shows the JSON edit",
+                "target": {
+                  "byDisplayValue": "from JSON"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "undo in the form",
+                "target": {
+                  "byTestId": "value-history-undo:transformer"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the form shows the value before the JSON edit",
+                "target": {
+                  "byDisplayValue": "seize value..."
+                },
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: Undo after an invalid JSON text brings back the JSON of the restored value",
+            "steps": [
+              {
+                "step": "change",
+                "label": "edit the returned value in the form",
+                "target": {
+                  "byDisplayValue": "seize value..."
+                },
+                "value": "new value"
+              },
+              {
+                "step": "click",
+                "label": "choose JSON",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:json"
+                }
+              },
+              {
+                "step": "change",
+                "label": "make the JSON text invalid",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "value": "{ \"transformerType\": "
+              },
+              {
+                "step": "expectElement",
+                "label": "the invalid text stays",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "value": "{ \"transformerType\": ",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "undo the form edit",
+                "target": {
+                  "byTestId": "value-history-undo:transformer"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the JSON of the value before the form edit",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "value": "{\n  \"transformerType\": \"returnValue\",\n  \"mlSchema\": {\n    \"type\": \"string\"\n  },\n  \"value\": \"seize value...\"\n}",
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: the Blocks view shows what Undo restores",
+            "steps": [
+              {
+                "step": "change",
+                "label": "edit the returned value in the form",
+                "target": {
+                  "byDisplayValue": "seize value..."
+                },
+                "value": "new value"
+              },
+              {
+                "step": "click",
+                "label": "choose Blocks",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the value block holds the edit",
+                "target": {
+                  "byText": "\"new value\""
+                },
+                "timeout": 3000
+              },
+              {
+                "step": "click",
+                "label": "undo",
+                "target": {
+                  "byTestId": "value-history-undo:transformer"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the value block holds the value before the edit",
+                "target": {
+                  "byText": "\"seize value...\""
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "redo",
+                "target": {
+                  "byTestId": "value-history-redo:transformer"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the value block holds the edit again",
+                "target": {
+                  "byText": "\"new value\""
+                },
+                "timeout": 2000
+              }
+            ]
           }
         ]
       }

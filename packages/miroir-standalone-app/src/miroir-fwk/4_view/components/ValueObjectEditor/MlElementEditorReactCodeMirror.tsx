@@ -64,40 +64,11 @@ export const MlElementEditorReactCodeMirror: React.FC<MlElementEditorReactCodeMi
   const valueHistory = useContext(ValueHistoryContext);
   const undoable = valueHistory?.covers(formikRootLessListKey) ?? false;
 
-  if (props.isUnderTest) {
-    // For testing purposes, return a simple div with the value
-    return (
-      <ThemedBox border="1px solid red" padding="10px">
-        codeMirrorValue: <pre>{codeMirrorValue}</pre>
-      </ThemedBox>
-    );
-  }
-
-  // If readOnly, render a themed code block instead of the editor
-  if (readOnly) {
-    return (
-      <span>
-        <span>{mlSchemaTooltip ?? <></>}</span>
-        <ThemedSpan
-          style={{
-            border: '2px solid green',
-            borderRadius: '4px',
-            padding: '2px',
-            minWidth: '40ch',
-            position: 'relative',
-            display: !hidden && !insideAny ? 'inline-block' : 'none'
-          }}
-        >
-          {props.displayAsStructuredElementSwitch && (
-            <ThemedSpan style={{ marginBottom: "10px" }}>{displayAsStructuredElementSwitch}</ThemedSpan>
-          )}
-          <ThemedCodeBlock>{codeMirrorValue}</ThemedCodeBlock>
-        </ThemedSpan>
-      </span>
-    );
-  }
-
+  // #499: hooks before the early returns; the stand-in and the read-only box show the text as is
   useEffect(() => {
+    if (props.isUnderTest || readOnly) {
+      return;
+    }
     if (initialValue) {
       setCodeMirrorValue(initialValue);
       try {
@@ -158,6 +129,47 @@ export const MlElementEditorReactCodeMirror: React.FC<MlElementEditorReactCodeMi
       setCodeMirrorIsValidJson(false);
     }
   }, [codeMirrorValue, setCodeMirrorValue, setCodeMirrorIsValidJson]);
+
+  if (props.isUnderTest) {
+    // For testing purposes, a plain text box in place of CodeMirror (#56), editable like it (#499)
+    return (
+      <ThemedBox border="1px solid red" padding="10px">
+        codeMirrorValue:{" "}
+        <textarea
+          data-testid={`code-editor:${formikRootLessListKey}`}
+          value={codeMirrorValue}
+          readOnly={readOnly}
+          onChange={(event) => handleChange(event.target.value)}
+          rows={codeMirrorValue.split("\n").length}
+          style={{ display: "block", width: "100%", fontFamily: "monospace" }}
+        />
+      </ThemedBox>
+    );
+  }
+
+  // If readOnly, render a themed code block instead of the editor
+  if (readOnly) {
+    return (
+      <span>
+        <span>{mlSchemaTooltip ?? <></>}</span>
+        <ThemedSpan
+          style={{
+            border: '2px solid green',
+            borderRadius: '4px',
+            padding: '2px',
+            minWidth: '40ch',
+            position: 'relative',
+            display: !hidden && !insideAny ? 'inline-block' : 'none'
+          }}
+        >
+          {props.displayAsStructuredElementSwitch && (
+            <ThemedSpan style={{ marginBottom: "10px" }}>{displayAsStructuredElementSwitch}</ThemedSpan>
+          )}
+          <ThemedCodeBlock>{codeMirrorValue}</ThemedCodeBlock>
+        </ThemedSpan>
+      </span>
+    );
+  }
 
   // Calculate the width based on the longest line in the text
   const editorWidth = `${Math.max(...(codeMirrorValue?.split('\n').map(line => line.length) || [0])) + 3}ch`;
