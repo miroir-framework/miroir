@@ -27,6 +27,25 @@ export interface TransformerBlockRow {
   node: BlockNode | undefined;
 }
 
+/**
+ * #507: a piece of the title of a block, from the label template of its presentation: words, or
+ * an attribute of the block (`[applyTo]`), shown as a chip.
+ */
+export type BlockTitleSegment = { text: string } | { attribute: string };
+
+/**
+ * #507: the presentation hints of a TransformerDefinition or an Endpoint action, as a block reads
+ * them. Colors stay in the Theme (analysis #497, D11): `colorCategory` is a key of its block
+ * editor colors, `colorByTheme` a color per Theme id, used first.
+ */
+export interface BlockPresentation {
+  /** The header as a sentence, in place of the type name. */
+  title?: BlockTitleSegment[];
+  icon?: string;
+  colorCategory?: string;
+  colorByTheme?: Record<string, string>;
+}
+
 export interface TransformerBlock {
   kind: "transformer";
   path: BlockPath;
@@ -34,6 +53,8 @@ export interface TransformerBlock {
   label?: string;
   /** The TransformerDefinition's `classification`, `unknown` when it has none. */
   category: string;
+  /** #507: the presentation hints of the TransformerDefinition, when it has any. */
+  presentation?: BlockPresentation;
   /** As stored: an absent `interpolation` is evaluated as `build`. */
   interpolation?: "build" | "runtime";
   /**
@@ -101,6 +122,8 @@ export interface ActionBlock {
   label?: string;
   /** The name of the Endpoint declaring the action. */
   category: string;
+  /** #507: the presentation hints of the Endpoint action, when it has any. */
+  presentation?: BlockPresentation;
   parameters: TransformerBlockParameter[];
   rows: TransformerBlockRow[];
 }
