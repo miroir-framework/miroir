@@ -5,7 +5,8 @@ import { transformerEnvironmentAt, type TransformerEnvironment } from "./Transfo
 // DomainController.handleCompositeActionTemplate and resolveCompositeActionTemplate bind them:
 // - a template sees the parameters, as parameters and as context, and the templates before it;
 // - a runtime node of an action sees the parameters as parameters, and as context the parameters,
-//   the context the caller gives, the templates and the results of the earlier actions;
+//   the context the caller gives, the templates and the results of the earlier actions (by
+//   `actionLabel`, or `nameGivenToResult` for a boxed query);
 // - a build node (no interpolation, or build) is evaluated while the sequence resolves: it sees
 //   the parameters and the templates as parameters, and no context;
 // - a nested sequence starts with no templates and no earlier results of its parent;
@@ -17,7 +18,11 @@ import { transformerEnvironmentAt, type TransformerEnvironment } from "./Transfo
 
 type ActionRecord = Record<string, unknown>;
 
-/** The actions that bind their result under `nameGivenToResult` as well. */
+/**
+ * The actions that bind their result under `nameGivenToResult` only. The test path
+ * (handleCompositeAction) binds a boxed query under its `actionLabel` too, the Runner path
+ * (handleCompositeActionTemplate) does not: only the name both bind is offered.
+ */
 const NAMED_RESULT_ACTION_TYPES = new Set(["compositeRunBoxedQueryAction", "compositeRunBoxedQueryTemplateAction"]);
 
 interface SequenceScope {
@@ -62,14 +67,10 @@ function resultNamesOf(action: unknown): string[] {
   if (!isRecord(action) || action.actionType === "compositeRunTestAssertion") {
     return [];
   }
-  const names: string[] = [];
-  if (typeof action.actionLabel === "string" && action.actionLabel.length > 0) {
-    names.push(action.actionLabel);
+  if (NAMED_RESULT_ACTION_TYPES.has(String(action.actionType))) {
+    return typeof action.nameGivenToResult === "string" ? [action.nameGivenToResult] : [];
   }
-  if (NAMED_RESULT_ACTION_TYPES.has(String(action.actionType)) && typeof action.nameGivenToResult === "string") {
-    names.push(action.nameGivenToResult);
-  }
-  return names;
+  return typeof action.actionLabel === "string" && action.actionLabel.length > 0 ? [action.actionLabel] : [];
 }
 
 /**

@@ -172,15 +172,15 @@ function namesOf(environment: TransformerEnvironment, source: VariableSource): s
   return source === "context" ? environment.contextNames : environment.parameterNames;
 }
 
-/** The path a variable block reads: `referencePath`, else its `referenceName` alone. */
+/** The path a variable block reads, as the runtime reads it: a non-empty `referenceName` first. */
 export function referencePathOf(node: unknown): string[] {
   if (!isRecord(node)) {
     return [];
   }
-  if (Array.isArray(node.referencePath)) {
-    return node.referencePath.map(String);
+  if (typeof node.referenceName === "string" && node.referenceName.length > 0) {
+    return [node.referenceName];
   }
-  return typeof node.referenceName === "string" && node.referenceName.length > 0 ? [node.referenceName] : [];
+  return Array.isArray(node.referencePath) ? node.referencePath.map(String) : [];
 }
 
 /** A variable block reading `referencePath`: one segment is a `referenceName`, more a `referencePath`. */

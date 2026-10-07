@@ -1208,7 +1208,7 @@
           },
           {
             "miroirTestType": "functionCallTest",
-            "miroirTestLabel": "an action sees earlier results by actionLabel and nameGivenToResult, not test assertions",
+            "miroirTestLabel": "an action sees earlier results by actionLabel, a boxed query's by nameGivenToResult only, not test assertions",
             "functionRef": {
               "module": "miroir-core/2_domain/CompositeActionScope",
               "export": "compositeActionEnvironmentAt"
@@ -1399,7 +1399,6 @@
                 "entity",
                 "entityDefinition",
                 "inner",
-                "queryBooks",
                 "runnerForm"
               ],
               "parameterNames": [
@@ -1795,7 +1794,6 @@
                 "entity",
                 "entityDefinition",
                 "inner",
-                "queryBooks",
                 "runnerForm"
               ],
               "parameterNames": [
@@ -1998,7 +1996,6 @@
                 "entity",
                 "entityDefinition",
                 "inner",
-                "queryBooks",
                 "runnerForm"
               ],
               "parameterNames": [

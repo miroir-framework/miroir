@@ -2572,6 +2572,44 @@
                 "value": "{\n  \"transformerType\": \"dataflowObject\",\n  \"interpolation\": \"runtime\",\n  \"definition\": {\n    \"book\": {\n      \"transformerType\": \"returnValue\",\n      \"value\": {\n        \"title\": \"Dune\",\n        \"year\": 1965\n      },\n      \"interpolation\": \"runtime\"\n    },\n    \"value\": {\n      \"transformerType\": \"getFromContext\",\n      \"interpolation\": \"runtime\",\n      \"referenceName\": \"book\"\n    }\n  }\n}"
               }
             ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: the path picker edits the name the block reads: referenceName before referencePath",
+            "steps": [
+              {
+                "step": "click",
+                "label": "choose JSON",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:json"
+                }
+              },
+              {
+                "step": "change",
+                "label": "a block with both reference fields",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "value": "{\n  \"transformerType\": \"dataflowObject\",\n  \"interpolation\": \"runtime\",\n  \"definition\": {\n    \"book\": {\n      \"transformerType\": \"returnValue\",\n      \"value\": {\n        \"title\": \"Dune\",\n        \"year\": 1965\n      },\n      \"interpolation\": \"runtime\"\n    },\n    \"value\": {\n      \"transformerType\": \"getFromContext\",\n      \"interpolation\": \"runtime\",\n      \"referenceName\": \"book\",\n      \"referencePath\": [\n        \"other\"\n      ]\n    }\n  }\n}"
+              },
+              {
+                "step": "click",
+                "label": "choose Blocks",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the picker shows referenceName, as the runtime reads it",
+                "target": {
+                  "byTestId": "block-path:transformer.definition.value"
+                },
+                "attribute": "data-path",
+                "value": "[\"book\"]",
+                "timeout": 2000
+              }
+            ]
           }
         ]
       }
