@@ -38,7 +38,7 @@
     "@anthropic-ai/sdk": "0.128.0",
     "@bufbuild/protobuf": "1.10.0",
     "@connectrpc/connect": "1.7.0",
-    "@connectrpc/connect-node": "1.7.0",
+    "@connectrpc/connect-node": "2.2.0",
     "@connectrpc/connect-web": "1.7.0",
     "@copilotkit/runtime": "1.74.0",
     "@cursor/sdk": "1.0.32",
