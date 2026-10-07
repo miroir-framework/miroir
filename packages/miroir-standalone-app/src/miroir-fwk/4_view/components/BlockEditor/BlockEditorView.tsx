@@ -263,7 +263,8 @@ const TransformerBlockView = React.memo(function TransformerBlockView(props: {
   const color = blockCategoryColor(settings.blockEditor, node.category);
   // an absent interpolation is evaluated as build (TransformersForRuntime)
   const interpolation = node.interpolation ?? "build";
-  const marking = interpolation === "build" ? settings.buildMarking : "none";
+  // #504: marked by the step at which it is evaluated, which its position can make runtime
+  const marking = node.evaluatedAt === "build" ? settings.buildMarking : "none";
   return (
     <div
       ref={drop.setNodeRef}
@@ -274,6 +275,7 @@ const TransformerBlockView = React.memo(function TransformerBlockView(props: {
       data-category={node.category}
       data-block-color={color}
       data-interpolation={interpolation}
+      data-evaluated-at={node.evaluatedAt}
       data-build-marking={marking}
       role="group"
       aria-label={node.transformerType}
@@ -475,13 +477,16 @@ const BlockNodeView = React.memo(function BlockNodeView(props: {
     case "mlSchema":
       return <MlSchemaChip value={node.value} path={node.path} id={id} colors={settings} />;
     case "json":
+    case "action":
+    case "sequence":
+    case "query":
       return (
         <pre
           data-testid={`block:${id}`}
-          data-block-kind="json"
+          data-block-kind={node.kind}
           css={css({ margin: 0, fontSize: "12px", border: `1px solid ${settings.border}`, borderRadius: "6px", padding: "4px" })}
         >
-          {JSON.stringify(node.value, null, 2)}
+          {JSON.stringify("value" in node ? node.value : node, null, 2)}
         </pre>
       );
   }

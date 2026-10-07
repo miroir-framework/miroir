@@ -45,9 +45,9 @@ Working branch: `claude/504-block-editor-action-sequences`
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
 | 0 | This plan | ✅ | — |
-| 1 | `compositeRunTestAssertion` is a DomainEndpoint action (D10) | ⬜ | core unit tests, action and runner MiroirTests, nonreg |
-| 2 | Action registry (D12) | ⬜ | `fn.blockModel` "action registry" cases |
-| 3 | Sequence block model; marks by evaluation step | ⬜ | `fn.blockModel` "action sequences" cases |
+| 1 | `compositeRunTestAssertion` is a DomainEndpoint action (D10) | ✅ | core unit tests, action and runner MiroirTests, nonreg |
+| 2 | Action registry (D12) | ✅ | `fn.blockModel` "action registry" cases |
+| 3 | Sequence block model; marks by evaluation step | ✅ | `fn.blockModel` "action sequences" cases |
 | 4 | Corpus sweep over every sequence (AC 1) | ⬜ | `transformerBlockModelAssets.unit.test.ts` |
 | 5 | Sequence fields get the switch; read-only stacked blocks (AC 2) | ⬜ | `fn.blockView.fields`, `ui.blockEditor` createEntity Runner |
 | 6 | Docs, nonreg, PR | ⬜ | nonreg |
@@ -77,15 +77,21 @@ GREEN: Endpoint action; schema derived; explicit branch removed; `devBuild`; mig
 
 Validation: `npm run devBuild -w miroir-core`; `npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json` and the standalone-app; `npm run test -w miroir-core -- ''`; `npm run testMiroir -w miroir-standalone-app -- --suites action.domainController.dataCrud --mode integration` and one runner suite; report.queryDetails.
 
+**Realization:** `scripts/migrate_504_test_assertion.py` migrated 191 assertions in 23 files (`--check` reports 0 left). The DomainController, `ReportTestTools`, `RunnerTestTools` and 5 TS builders read `payload`. `ActionImplementations.unit.test.ts` lists the action in the DomainEndpoint inventory and accepts it as the one action without implementation (it runs only inside a sequence). Full filesystem nonreg (shared runner): 102 passed, 5 failed: the 4 MiroirTestDisplay/ListDisplay steps of #510, and the tracked-assets guard, tripped by a commit made during the run.
+
 ## Slice 2 — Action registry
 
 RED: `fn.blockModel` "action registry": `createEntity` comes from ModelEndpoint, `compositeRunTestAssertion` from DomainEndpoint, an application Endpoint action is found, an unknown type is absent.
 GREEN: `EndpointActionRegistry.ts`, registered for fn cases.
 
+**Realization:** `endpointActionRegistryOf(endpoints)`, `endpointActionRegistry(modelEnvironment)` (kept per `endpointsByUuid` and `currentModel`), `endpointOfActionType(modelEnvironment, actionType)`. Miroir's Endpoints are put first, so they win whatever the order of the environment. 5 `fn.blockModel` "action registry" cases.
+
 ## Slice 3 — Sequence block model
 
 RED: `fn.blockModel` "action sequences" outlines: a sequence of two steps; payload slots with transformer blocks; a query step is one query block; an assertion step; templates are runtime (not marked); a build `getFromParameters` in a payload is build; a child of a runtime transformer is runtime; an unknown action type is a JSON block; a nested sequence.
 GREEN: `blockTree`, sequence/action/query nodes in `TransformerBlockModelInterface.ts`, outline lines.
+
+**Realization:** `blockTree`, `blockOutline`, `isBlockAction`; `evaluatedAt` on every transformer block, `@runtime` in the outline when the position, not the attribute, makes it runtime. 9 "action sequences" cases. Two #498 cases changed for the same reason (`case` and `aggregate` children of a runtime block now read `@runtime`). The view marks by `evaluatedAt` and shows the new kinds as JSON until slice 5.
 
 ## Slice 4 — Corpus sweep
 

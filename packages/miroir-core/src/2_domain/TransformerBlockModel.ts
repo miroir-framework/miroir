@@ -6,15 +6,18 @@ import type {
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import type {
+  ActionBlock,
   BlockNode,
   BlockPath,
   BlockTree,
   BlockTreeStats,
+  SequenceBlock,
   TransformerBlock,
   TransformerBlockParameter,
   TransformerBlockRow,
 } from "../0_interfaces/2_domain/TransformerBlockModelInterface";
 import { defaultMiroirModelEnvironment } from "../1_core/Model";
+import { endpointActionRegistry, type EndpointActionRegistry, type EndpointActionRegistryEntry } from "./EndpointActionRegistry";
 import { declaredAttributeSchemas, transformerSlots, transformerUnionTypes } from "./TransformerTreeEdit";
 import { transformerDefinitionRegistry } from "./TransformerDefinitionRegistry";
 
@@ -24,6 +27,13 @@ import { transformerDefinitionRegistry } from "./TransformerDefinitionRegistry";
 // structured attribute. Slots come from the TransformerDefinition (`transformerSlots`); any other
 // object with a string `transformerType` is a block too (analysis D5), except inside the `value`
 // of a `returnValue`, which the runtime returns without evaluating it.
+//
+// #504: an action sequence is a stack of command blocks (`blockTree`). A step is looked up by its
+// `actionType` in the Endpoint actions of the model environment (EndpointActionRegistry.ts): its
+// rows are its attributes and those of its `payload`, the declared ones first. The payload of a
+// query step is one collapsed block. A transformer block tells the step at which it is evaluated
+// (`evaluatedAt`, analysis D1): runtime when it is a runtime transformer, under one, or under the
+// `templates` of a sequence, which are resolved at step runtime.
 // ################################################################################################
 
 type TransformerNode = { transformerType: string } & Record<string, unknown>;
@@ -37,6 +47,11 @@ export interface TransformerBlockModelOptions {
 
 /** Attributes every transformer has: shown in the header or as the build marking, never as rows. */
 const COMMON_ATTRIBUTES = new Set(["transformerType", "interpolation", "label"]);
+/** Attributes every action has: shown as the block's type, category and label, never as rows. */
+const ACTION_HEADER_ATTRIBUTES = new Set(["actionType", "endpoint", "actionLabel"]);
+const COMPOSITE_ACTION_SEQUENCE = "compositeActionSequence";
+/** The steps whose payload is a query, shown as one block. */
+const QUERY_ACTION_TYPES = new Set(["compositeRunBoxedQueryAction", "compositeRunBoxedQueryTemplateAction"]);
 const APPLY_TO = "applyTo";
 /** Schema references whose target is an ML schema: shown as a chip. */
 const ML_SCHEMA_REFERENCE = /^ml[A-Z]/;
@@ -143,28 +158,43 @@ interface BuildContext {
   transformerDefinitions: Record<string, TransformerDefinition>;
   modelEnvironment: MiroirModelEnvironment;
   emptyOptionalSlots: boolean;
-  stats: { transformerBlocks: number; jsonBlocks: number; categories: Set<string> };
+  /** #504: the Endpoint actions, in a tree built from an action: nested sequences are blocks. */
+  actions?: EndpointActionRegistry;
+  stats: { transformerBlocks: number; actionBlocks: number; jsonBlocks: number; categories: Set<string> };
 }
 
-/** The block of any evaluated value: a transformer, a plain object or array, or a primitive. */
-function blockOf(value: unknown, path: BlockPath, context: BuildContext): BlockNode {
+function isSequenceValue(value: unknown): value is Record<string, unknown> {
+  return isPlainRecord(value) && value.actionType === COMPOSITE_ACTION_SEQUENCE;
+}
+
+/**
+ * The block of any evaluated value: a transformer, a plain object or array, or a primitive.
+ * `runtime`: the value is evaluated at step runtime, whatever the `interpolation` of its transformers.
+ */
+function blockOf(value: unknown, path: BlockPath, context: BuildContext, runtime = false): BlockNode {
+  if (context.actions && isSequenceValue(value)) {
+    return actionBlock(value, path, context);
+  }
   if (isTransformerNode(value)) {
-    return transformerBlock(value, path, context);
+    return transformerBlock(value, path, context, runtime);
   }
   if (Array.isArray(value)) {
-    return { kind: "list", path, items: value.map((item, index) => blockOf(item, [...path, index], context)) };
+    return { kind: "list", path, items: value.map((item, index) => blockOf(item, [...path, index], context, runtime)) };
   }
   if (isPlainRecord(value)) {
     return {
       kind: "object",
       path,
-      entries: Object.entries(value).map(([key, entry]) => ({ key, node: blockOf(entry, [...path, key], context) })),
+      entries: Object.entries(value).map(([key, entry]) => ({
+        key,
+        node: blockOf(entry, [...path, key], context, runtime),
+      })),
     };
   }
   return { kind: "literal", path, value };
 }
 
-function transformerBlock(value: TransformerNode, path: BlockPath, context: BuildContext): BlockNode {
+function transformerBlock(value: TransformerNode, path: BlockPath, context: BuildContext, runtime: boolean): BlockNode {
   const info = transformerTypeInfo(value.transformerType, context.transformerDefinitions, context.modelEnvironment);
   if (!info) {
     context.stats.jsonBlocks++;
@@ -172,6 +202,9 @@ function transformerBlock(value: TransformerNode, path: BlockPath, context: Buil
   }
   context.stats.transformerBlocks++;
   context.stats.categories.add(info.category);
+  // a node below a runtime node is returned unevaluated at step build (TransformersForRuntime)
+  const evaluatedAt = runtime || value.interpolation === "runtime" ? "runtime" : "build";
+  const below = evaluatedAt === "runtime";
   const parameters: TransformerBlockParameter[] = [];
   const rows: TransformerBlockRow[] = [];
   const declared = new Set(info.attributes.map(([name]) => name));
@@ -191,7 +224,7 @@ function transformerBlock(value: TransformerNode, path: BlockPath, context: Buil
           path: attributePath,
           kind: "slot",
           optional,
-          node: present ? blockOf(attributeValue, attributePath, context) : undefined,
+          node: present ? blockOf(attributeValue, attributePath, context, below) : undefined,
         });
       }
       continue;
@@ -208,7 +241,7 @@ function transformerBlock(value: TransformerNode, path: BlockPath, context: Buil
         ? { kind: "literal", path: attributePath, value: attributeValue, quoted: true }
         : isMlSchemaValue(name, schema, attributeValue)
           ? { kind: "mlSchema", path: attributePath, value: attributeValue }
-          : blockOf(attributeValue, attributePath, context);
+          : blockOf(attributeValue, attributePath, context, below);
     rows.push({ name, path: attributePath, kind: "value", optional, node });
   }
   for (const [name, attributeValue] of Object.entries(value)) {
@@ -221,7 +254,7 @@ function transformerBlock(value: TransformerNode, path: BlockPath, context: Buil
       path: attributePath,
       kind: "undeclared",
       optional: true,
-      node: blockOf(attributeValue, attributePath, context),
+      node: blockOf(attributeValue, attributePath, context, below),
     });
   }
   return {
@@ -233,9 +266,142 @@ function transformerBlock(value: TransformerNode, path: BlockPath, context: Buil
     ...(value.interpolation === "build" || value.interpolation === "runtime"
       ? { interpolation: value.interpolation }
       : {}),
+    evaluatedAt,
     parameters,
     rows,
   };
+}
+
+/** The attribute names an ML schema declares when it is an inline object, `undefined` otherwise. */
+function declaredObjectAttributes(schema: unknown): string[] | undefined {
+  return isPlainRecord(schema) && schema.type === "object" && isPlainRecord(schema.definition)
+    ? Object.keys(schema.definition)
+    : undefined;
+}
+
+/**
+ * The rows of the attributes of `record` but `skipped`, those of `declared` first in their order,
+ * then the others, flagged undeclared. With no `declared` list, every attribute is declared.
+ */
+function attributeRows(
+  record: Record<string, unknown>,
+  recordPath: BlockPath,
+  declared: string[] | undefined,
+  skipped: Set<string>,
+  context: BuildContext,
+  parameters?: TransformerBlockParameter[],
+): TransformerBlockRow[] {
+  const names = Object.keys(record).filter((name) => !skipped.has(name));
+  const ordered = declared
+    ? [...declared.filter((name) => names.includes(name)), ...names.filter((name) => !declared.includes(name))]
+    : names;
+  const rows: TransformerBlockRow[] = [];
+  for (const name of ordered) {
+    const attributeValue = record[name];
+    if (parameters && isPrimitive(attributeValue)) {
+      parameters.push({ name, value: attributeValue });
+      continue;
+    }
+    const attributePath = [...recordPath, name];
+    rows.push({
+      name,
+      path: attributePath,
+      kind: !declared || declared.includes(name) ? "value" : "undeclared",
+      optional: true,
+      node: blockOf(attributeValue, attributePath, context),
+    });
+  }
+  return rows;
+}
+
+/** The block of a step: an action or a nested sequence; a JSON block when no Endpoint declares its type. */
+function stepBlock(value: unknown, path: BlockPath, context: BuildContext): BlockNode {
+  if (!isPlainRecord(value) || typeof value.actionType !== "string") {
+    return blockOf(value, path, context);
+  }
+  return actionBlock(value, path, context);
+}
+
+function actionBlock(value: Record<string, unknown>, path: BlockPath, context: BuildContext): BlockNode {
+  const actionType = value.actionType as string;
+  const entry: EndpointActionRegistryEntry | undefined = context.actions?.[actionType];
+  if (!entry) {
+    context.stats.jsonBlocks++;
+    return { kind: "json", path, value, reason: "unknownActionType" };
+  }
+  context.stats.actionBlocks++;
+  const actionParameters = ((entry.action as any).actionParameters ?? {}) as Record<string, unknown>;
+  const parameters: TransformerBlockParameter[] = [];
+  const rows = attributeRows(
+    value,
+    path,
+    Object.keys(actionParameters),
+    new Set([...ACTION_HEADER_ATTRIBUTES, "payload"]),
+    context,
+    parameters,
+  );
+  const header = {
+    path,
+    actionType,
+    ...(typeof value.actionLabel === "string" ? { label: value.actionLabel } : {}),
+    category: entry.endpointName,
+    parameters,
+  };
+  const payloadPath = [...path, "payload"];
+  const payload = value.payload;
+  const hasPayload = Object.prototype.hasOwnProperty.call(value, "payload");
+  if (actionType === COMPOSITE_ACTION_SEQUENCE && isPlainRecord(payload)) {
+    const templates = isPlainRecord(payload.templates) ? payload.templates : {};
+    const steps = Array.isArray(payload.actionSequence) ? payload.actionSequence : [];
+    const block: SequenceBlock = {
+      kind: "sequence",
+      ...header,
+      rows: [
+        ...rows,
+        ...attributeRows(
+          payload,
+          payloadPath,
+          declaredObjectAttributes(actionParameters.payload),
+          new Set([
+            ...(isPlainRecord(payload.templates) ? ["templates"] : []),
+            ...(Array.isArray(payload.actionSequence) ? ["actionSequence"] : []),
+          ]),
+          context,
+        ),
+      ],
+      // templates are resolved at step runtime (ResolveCompositeActionTemplate)
+      templates: Object.entries(templates).map(([key, template]) => {
+        const templatePath = [...payloadPath, "templates", key];
+        return { key, path: templatePath, node: blockOf(template, templatePath, context, true) };
+      }),
+      steps: steps.map((step, index) => stepBlock(step, [...payloadPath, "actionSequence", index], context)),
+    };
+    return block;
+  }
+  const payloadRows: TransformerBlockRow[] = !hasPayload
+    ? []
+    : QUERY_ACTION_TYPES.has(actionType)
+      ? [
+          {
+            name: "payload",
+            path: payloadPath,
+            kind: "value",
+            optional: false,
+            node: { kind: "query", path: payloadPath, ...queryTypeOf(payload), value: payload },
+          },
+        ]
+      : isPlainRecord(payload)
+        ? attributeRows(payload, payloadPath, declaredObjectAttributes(actionParameters.payload), new Set(), context)
+        : [{ name: "payload", path: payloadPath, kind: "value", optional: false, node: blockOf(payload, payloadPath, context) }];
+  const block: ActionBlock = { kind: "action", ...header, rows: [...rows, ...payloadRows] };
+  return block;
+}
+
+/** The `queryType` of a query step's payload: a run query action, whose own payload holds the query. */
+function queryTypeOf(payload: unknown): { queryType?: string } {
+  const runAction = isPlainRecord(payload) && isPlainRecord(payload.payload) ? payload.payload : undefined;
+  const query = isPlainRecord(runAction?.query) ? runAction.query : undefined;
+  return typeof query?.queryType === "string" ? { queryType: query.queryType } : {};
 }
 
 /**
@@ -243,20 +409,49 @@ function transformerBlock(value: TransformerNode, path: BlockPath, context: Buil
  * become JSON blocks, counted in `stats.jsonBlocks`.
  */
 export function transformerBlockTree(value: unknown, options: TransformerBlockModelOptions = {}): BlockTree {
+  return buildBlockTree(value, options, false);
+}
+
+function buildBlockTree(value: unknown, options: TransformerBlockModelOptions, action: boolean): BlockTree {
+  const modelEnvironment = options.modelEnvironment ?? defaultMiroirModelEnvironment;
   const context: BuildContext = {
     // #502: the registry of the model environment, stock definitions and application composites
-    transformerDefinitions: options.transformerDefinitions ?? transformerDefinitionRegistry(options.modelEnvironment ?? defaultMiroirModelEnvironment),
-    modelEnvironment: options.modelEnvironment ?? defaultMiroirModelEnvironment,
+    transformerDefinitions: options.transformerDefinitions ?? transformerDefinitionRegistry(modelEnvironment),
+    modelEnvironment,
     emptyOptionalSlots: options.emptyOptionalSlots ?? false,
-    stats: { transformerBlocks: 0, jsonBlocks: 0, categories: new Set() },
+    ...(action ? { actions: endpointActionRegistry(modelEnvironment) } : {}),
+    stats: { transformerBlocks: 0, actionBlocks: 0, jsonBlocks: 0, categories: new Set() },
   };
-  const root = blockOf(value, [], context);
+  const root = action ? stepBlock(value, [], context) : blockOf(value, [], context);
   const stats: BlockTreeStats = {
     transformerBlocks: context.stats.transformerBlocks,
+    actionBlocks: context.stats.actionBlocks,
     jsonBlocks: context.stats.jsonBlocks,
     categories: [...context.stats.categories].sort(),
   };
   return { root, stats };
+}
+
+/**
+ * Whether `value` is an action, mapped with the action rules by `blockTree`: a sequence, or a value
+ * whose `actionType` an Endpoint of the model environment declares.
+ */
+export function isBlockAction(value: unknown, modelEnvironment: MiroirModelEnvironment = defaultMiroirModelEnvironment): boolean {
+  return (
+    isPlainRecord(value) &&
+    !isTransformerNode(value) &&
+    typeof value.actionType === "string" &&
+    (value.actionType === COMPOSITE_ACTION_SEQUENCE ||
+      Object.hasOwn(endpointActionRegistry(modelEnvironment), value.actionType))
+  );
+}
+
+/**
+ * #504: the block tree of a value: an action sequence, or a step, maps to command blocks (an action
+ * whose type no Endpoint declares is a JSON block); any other value maps as a transformer.
+ */
+export function blockTree(value: unknown, options: TransformerBlockModelOptions = {}): BlockTree {
+  return buildBlockTree(value, options, isBlockAction(value, options.modelEnvironment));
 }
 
 function headerOf(node: BlockNode): string {
@@ -266,8 +461,19 @@ function headerOf(node: BlockNode): string {
         `${node.transformerType} [${node.category}]`,
         ...(node.label === undefined ? [] : [JSON.stringify(node.label)]),
         ...(node.interpolation === undefined ? [] : [`{${node.interpolation}}`]),
+        // evaluated at runtime by its position, not by its own attribute
+        ...(node.evaluatedAt === "runtime" && node.interpolation !== "runtime" ? ["@runtime"] : []),
         ...node.parameters.map((parameter) => `${parameter.name}=${JSON.stringify(parameter.value)}`),
       ].join(" ");
+    case "action":
+    case "sequence":
+      return [
+        `${node.actionType} [${node.category}]`,
+        ...(node.label === undefined ? [] : [JSON.stringify(node.label)]),
+        ...node.parameters.map((parameter) => `${parameter.name}=${JSON.stringify(parameter.value)}`),
+      ].join(" ");
+    case "query":
+      return node.queryType === undefined ? "<query>" : `<query ${node.queryType}>`;
     case "object":
       return "{object}";
     case "list":
@@ -281,17 +487,32 @@ function headerOf(node: BlockNode): string {
   }
 }
 
+function rowLines(rows: TransformerBlockRow[], indent: string): string[] {
+  return rows.flatMap((row) => {
+    const name = `${row.kind === "undeclared" ? "!" : ""}${row.name}: `;
+    return row.node ? outlineLines(row.node, name, indent) : [`${indent}${name}_`];
+  });
+}
+
 function outlineLines(node: BlockNode, prefix: string, indent: string): string[] {
   const head = `${indent}${prefix}${headerOf(node)}`;
   const inner = `${indent}  `;
   switch (node.kind) {
     case "transformer":
+    case "action":
+      return [head, ...rowLines(node.rows, inner)];
+    case "sequence":
       return [
         head,
-        ...node.rows.flatMap((row) => {
-          const name = `${row.kind === "undeclared" ? "!" : ""}${row.name}: `;
-          return row.node ? outlineLines(row.node, name, inner) : [`${inner}${name}_`];
-        }),
+        ...rowLines(node.rows, inner),
+        ...(node.templates.length === 0
+          ? []
+          : [
+              `${inner}templates:`,
+              ...node.templates.flatMap((template) => outlineLines(template.node, `${template.key}: `, `${inner}  `)),
+            ]),
+        `${inner}steps:`,
+        ...node.steps.flatMap((step) => outlineLines(step, "- ", `${inner}  `)),
       ];
     case "object":
       return [head, ...node.entries.flatMap((entry) => outlineLines(entry.node, `${entry.key}: `, inner))];
@@ -305,10 +526,19 @@ function outlineLines(node: BlockNode, prefix: string, indent: string): string[]
 /**
  * The block tree of a transformer value as text, one line per block or row, indented by depth:
  * `mapList [list]`, then `  elementTransformer: getFromContext [variable] {runtime} referenceName="x"`.
- * An empty slot reads `_`, an undeclared attribute starts with `!`.
+ * An empty slot reads `_`, an undeclared attribute starts with `!`; `@runtime` marks a transformer
+ * evaluated at runtime by its position (#504).
  */
 export function transformerBlockOutline(value: unknown, options: TransformerBlockModelOptions = {}): string[] {
   return outlineLines(transformerBlockTree(value, options).root, "", "");
+}
+
+/**
+ * #504: the outline of `blockTree`. A sequence lists its `templates:` and its `steps:`, each step
+ * as `- createEntity [ModelEndpoint] "label"`, with the rows of its attributes and payload.
+ */
+export function blockOutline(value: unknown, options: TransformerBlockModelOptions = {}): string[] {
+  return outlineLines(blockTree(value, options).root, "", "");
 }
 
 /** A palette group: the transformer types of one classification (#500). */
