@@ -101,3 +101,12 @@ export function BlockViewModeProvider(props: { children: React.ReactNode }) {
   const value = useMemo(() => ({ modeOf, setMode, trayOf, setTray }), [modeOf, setMode, trayOf, setTray]);
   return <BlockViewModeContext.Provider value={value}>{props.children}</BlockViewModeContext.Provider>;
 }
+
+/**
+ * #503: the view modes of an editor root: its own, unless an enclosing editor (the
+ * TransformerEditor) already keeps them, so that a field has one mode wherever it is rendered.
+ */
+export function BlockViewModeRoot(props: { children: React.ReactNode }) {
+  const enclosing = useContext(BlockViewModeContext);
+  return enclosing ? <>{props.children}</> : <BlockViewModeProvider>{props.children}</BlockViewModeProvider>;
+}

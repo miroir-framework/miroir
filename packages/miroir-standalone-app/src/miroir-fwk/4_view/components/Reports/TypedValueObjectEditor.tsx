@@ -58,6 +58,8 @@ import { ActionButtonWithSnackbar } from '../Page/ActionButtonWithSnackbar.js';
 import { ThemedStyledButton } from '../Themes/index.js';
 import { FieldValidationProvider, useFieldValidationContext } from '../ValueObjectEditor/FieldValidationContext.js';
 import { MlElementEditor } from '../ValueObjectEditor/MlElementEditor.js';
+import { BlockViewModeRoot } from '../BlockEditor/BlockViewMode.js';
+import { EditorRootHistory } from '../ValueObjectEditor/EditorRootHistory.js';
 import type { TransformerTypeBadge, TransformerTypeRestriction } from '../ValueObjectEditor/MlElementEditorInterface.js';
 import type { ValueObjectEditMode } from './ReportSectionEntityInstance.js';
 
@@ -131,7 +133,10 @@ export interface TypedValueObjectEditorProps {
 export const TypedValueObjectEditor: React.FC<TypedValueObjectEditorProps> = (props) => {
   return (
     <FieldValidationProvider>
-      <TypedValueObjectEditorInner {...props} />
+      {/* #503: every transformer field of the editor gets the Blocks / Form / JSON switch */}
+      <BlockViewModeRoot>
+        <TypedValueObjectEditorInner {...props} />
+      </BlockViewModeRoot>
     </FieldValidationProvider>
   );
 };
@@ -637,6 +642,8 @@ const TypedValueObjectEditorInner: React.FC<TypedValueObjectEditorProps> = ({
       ) : (
         // Editable mode: wrap in form
         // TODO: is form actually needed here, since we have formik context already?
+        // #503: undo and redo of the edited value, at the editor root
+        <EditorRootHistory formikPath={formikValuePathAsString ?? ""}>
         <form
           id={"form." + formLabel}
           onSubmit={onSubmit}
@@ -713,6 +720,7 @@ const TypedValueObjectEditorInner: React.FC<TypedValueObjectEditorProps> = ({
             />
           </ErrorBoundary>
         </form>
+        </EditorRootHistory>
       )}
     </>
   );

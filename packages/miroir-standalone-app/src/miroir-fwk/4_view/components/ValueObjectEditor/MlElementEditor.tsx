@@ -464,6 +464,7 @@ export function MlElementEditor(props: MlElementEditorProps): JSX.Element {
     <BlockViewSwitch
       formikPath={[props.reportSectionPathAsString, ...props.rootLessListKeyArray].join(".")}
       rootLessListKey={props.rootLessListKey}
+      readOnly={props.readOnly}
       transformerTypeBadges={props.transformerTypeBadges}
     >
       {(mode) => <MlElementEditorForm key={mode} {...props} />}
