@@ -7,6 +7,9 @@
   "parentDefinitionVersionUuid": "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
   "parentName": "TransformerDefinition",
   "classification": "variable",
+  "presentation": {
+    "labelTemplate": "compute [definition] and return [target]"
+  },
   "transformerInterface": {
     "inputOutput": {
       "input": "object",

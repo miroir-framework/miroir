@@ -7,6 +7,9 @@
   "parentDefinitionVersionUuid": "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
   "parentName": "TransformerDefinition",
   "classification": "control",
+  "presentation": {
+    "labelTemplate": "if [if] then [then] else [else]"
+  },
   "transformerInterface": {
     "inputOutput": {
       "input": "any",

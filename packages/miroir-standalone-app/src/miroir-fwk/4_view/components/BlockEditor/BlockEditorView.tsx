@@ -7,6 +7,7 @@ import {
   type BlockEditorBuildMarking,
   type BlockNode,
   type BlockPath,
+  type BlockPresentation,
   type QueryBlock,
   type SequenceBlock,
   type TransformerBlock,
@@ -16,6 +17,7 @@ import React, { useCallback, useContext, useMemo, useState } from "react";
 
 import { blockCategoryColor, useMiroirTheme, type BlockEditorColors } from "../../contexts/MiroirThemeContext.js";
 import type { TransformerTypeBadge } from "../ValueObjectEditor/MlElementEditorInterface.js";
+import { ThemedIcon } from "../Themes/index.js";
 import { useBlockEditorBuildMarking } from "./BlockEditorDisplay.js";
 import { BlockDefineHeader } from "./BlockDefineHeader.js";
 import { BlockDndContext, useBlockDraggable, useBlockDroppable, useDraggingBlock } from "./BlockDragDrop.js";
@@ -111,6 +113,8 @@ interface BlockColors {
   blockEditor: BlockEditorColors | undefined;
   onBlock: string;
   literal: string;
+  /** The id of the current Theme, the key of a `colorByTheme` hint (#507). */
+  themeId: string;
 }
 
 interface BlockSettings extends BlockColors {
@@ -137,6 +141,7 @@ function useBlockColors(): BlockColors {
       blockEditor: currentTheme.components?.blockEditor,
       onBlock: "#ffffff",
       literal: surface,
+      themeId: currentTheme.id,
     };
   }, [currentTheme]);
 }
@@ -366,6 +371,84 @@ function mouthCss(settings: BlockSettings) {
   });
 }
 
+/**
+ * #507: the color of a block: its hint's color for the current Theme, else the Theme's color for
+ * its hint's category, else for its own category.
+ */
+function blockColor(settings: BlockSettings, category: string, presentation: BlockPresentation | undefined): string {
+  return (
+    presentation?.colorByTheme?.[settings.themeId] ??
+    blockCategoryColor(settings.blockEditor, presentation?.colorCategory ?? category)
+  );
+}
+
+/**
+ * #507: the title of a block header: the sentence of its label template, an attribute as a chip
+ * (the value of a header parameter, else the attribute's name), with its icon; without a template,
+ * its type name. `data-title` reads the sentence with `[attribute]` for each chip.
+ */
+function BlockTitle(props: {
+  id: string;
+  typeName: string;
+  node: TransformerBlock | ActionBlock | SequenceBlock;
+  settings: BlockSettings;
+}) {
+  const { id, typeName, node, settings } = props;
+  const presentation = node.presentation;
+  const icon = presentation?.icon ? (
+    <span data-testid={`block-icon:${id}`} data-icon={presentation.icon} css={css({ display: "inline-flex" })}>
+      <ThemedIcon icon={presentation.icon} size="sm" />
+    </span>
+  ) : null;
+  const title = presentation?.title;
+  if (!title) {
+    return (
+      <>
+        {icon}
+        <span data-testid={`block-title:${id}`} data-title={typeName} css={css({ fontWeight: 700, whiteSpace: "nowrap" })}>
+          {typeName}
+        </span>
+      </>
+    );
+  }
+  const text = title.map((segment) => ("text" in segment ? segment.text : `[${segment.attribute}]`)).join("");
+  return (
+    <>
+      {icon}
+      <span
+        data-testid={`block-title:${id}`}
+        data-title={text}
+        title={typeName}
+        css={css({ fontWeight: 700, display: "inline-flex", flexWrap: "wrap", alignItems: "center", gap: "0 4px" })}
+      >
+        {title.map((segment, index) => {
+          if ("text" in segment) {
+            return <span key={index}>{segment.text.trim()}</span>;
+          }
+          const parameter = node.parameters.find((candidate) => candidate.name === segment.attribute);
+          return (
+            <span
+              key={index}
+              data-testid={`block-title-attribute:${id}:${segment.attribute}`}
+              data-value={parameter === undefined ? segment.attribute : String(parameter.value)}
+              css={css({
+                fontWeight: 500,
+                fontSize: "12px",
+                borderRadius: "10px",
+                padding: "0 6px",
+                background: "rgba(255,255,255,.22)",
+                border: `1px solid ${settings.onBlock}`,
+              })}
+            >
+              {parameter === undefined ? segment.attribute : String(parameter.value)}
+            </span>
+          );
+        })}
+      </span>
+    </>
+  );
+}
+
 /** The primitive parameters of a block's header. */
 function HeaderParameters(props: { node: TransformerBlock | ActionBlock | SequenceBlock; settings: BlockSettings }) {
   const { node, settings } = props;
@@ -404,7 +487,7 @@ const ActionBlockView = React.memo(function ActionBlockView(props: {
   const sequence = node.kind === "sequence" ? node : undefined;
   const partCount = node.rows.length + (sequence ? sequence.templates.length + sequence.steps.length : 0);
   const { collapsed, toggleButton, summary } = useCollapse(node, settings, partCount);
-  const color = blockCategoryColor(settings.blockEditor, node.category);
+  const color = blockColor(settings, node.category, node.presentation);
   const editing = useBlockEditing();
   // #505: a step is dragged by its header, and takes an armed or dragged action in its place
   const movable = editing !== undefined && node.path.length > 0;
@@ -451,7 +534,7 @@ const ActionBlockView = React.memo(function ActionBlockView(props: {
         })}
       >
         {toggleButton}
-        <span css={css({ fontWeight: 700, whiteSpace: "nowrap" })}>{node.actionType}</span>
+        <BlockTitle id={id} typeName={node.actionType} node={node} settings={settings} />
         <span css={css({ opacity: 0.85, fontSize: "11px" })}>{node.category}</span>
         <BlockActionNodeActions path={node.path} blockId={id} />
         {node.label !== undefined && (
@@ -560,7 +643,7 @@ const TransformerBlockView = React.memo(function TransformerBlockView(props: {
   const drag = useBlockDraggable(`drag:block:${id}`, editing ? { kind: "block", path: node.path } : undefined);
   const drop = useBlockDroppable(`drop:replace:${id}`, editing ? { kind: "replace", path: node.path } : undefined);
   const resultShown = runs && editing?.shownResult === pathKey(node.path);
-  const color = blockCategoryColor(settings.blockEditor, node.category);
+  const color = blockColor(settings, node.category, node.presentation);
   // an absent interpolation is evaluated as build (TransformersForRuntime)
   const interpolation = node.interpolation ?? "build";
   // #504: marked by the step at which it is evaluated, which its position can make runtime
@@ -611,7 +694,7 @@ const TransformerBlockView = React.memo(function TransformerBlockView(props: {
         })}
       >
         {toggleButton}
-        <span css={css({ fontWeight: 700, whiteSpace: "nowrap" })}>{node.transformerType}</span>
+        <BlockTitle id={id} typeName={node.transformerType} node={node} settings={settings} />
         <BlockNodeActions path={node.path} blockId={id} />
         <BlockTypeFlag id={id} badge={settings.typeBadges?.get(id)} />
         {marking === "marker" && (
