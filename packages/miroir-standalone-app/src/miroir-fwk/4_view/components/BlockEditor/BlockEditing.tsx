@@ -16,6 +16,7 @@ import {
   moveBlockNode,
   referencePathAttributeNames,
   removeBlockNode,
+  renameBlockKey,
   reorderTransformerNode,
   transformerUnionTypes,
   type ActionPaletteGroup,
@@ -30,7 +31,7 @@ import {
 } from "miroir-core";
 import React, { createContext, useCallback, useContext, useMemo, useState } from "react";
 
-import { useBlockModelEnvironment, type BlockRunInput } from "./BlockViewMode.js";
+import { BlockActionDefaultsContext, useBlockModelEnvironment, type BlockRunInput } from "./BlockViewMode.js";
 import {
   TransformerNodeActions,
   TransformerTypeChangeDialog,
@@ -88,6 +89,8 @@ export interface BlockEditing {
   replaceable: (path: BlockPath) => boolean;
   /** #505: removes the block at `path`: a step or an attribute goes, a required slot gets its default. */
   removeAt: (path: BlockPath) => void;
+  /** #505: renames the record entry at `path`; returns why when it is refused. */
+  renameKey: (path: BlockPath, to: string) => string | undefined;
   /**
    * The attributes of the value `referencePath` reads from the block at `path`, a getFromContext,
    * when its schema is known (#501).
@@ -261,6 +264,7 @@ export function useBlockEditingValue(
   );
   const candidateTypes = useMemo(() => [...transformerUnionTypes(modelEnvironment)].sort(), [modelEnvironment]);
   const actionRoot = useMemo(() => isBlockAction(root, modelEnvironment), [root, modelEnvironment]);
+  const actionDefaults = useContext(BlockActionDefaultsContext);
   const actionGroups = useMemo(
     () => (actionRoot ? actionPaletteGroups(modelEnvironment, { withTestAssertion }) : []),
     [actionRoot, modelEnvironment, withTestAssertion],
@@ -340,7 +344,7 @@ export function useBlockEditingValue(
       }
       if (source.kind === "action") {
         try {
-          return defaultActionNode(source.actionType, modelEnvironment, actionLabels(root));
+          return defaultActionNode(source.actionType, modelEnvironment, actionLabels(root), actionDefaults);
         } catch {
           return undefined;
         }
@@ -351,7 +355,7 @@ export function useBlockEditingValue(
       const trayBlock = tray?.[source.index];
       return isRecord(trayBlock) ? trayBlock : undefined;
     },
-    [root, tray, defaultNode, modelEnvironment],
+    [root, tray, defaultNode, modelEnvironment, actionDefaults],
   );
   // every block menu asks for the armed block's node: it is computed once per arming and value
   const armedNode = useMemo(() => (armed ? newNodeOf(armed) : undefined), [armed, newNodeOf]);
@@ -416,6 +420,17 @@ export function useBlockEditingValue(
     },
     [root, commit, editOptions],
   );
+  const renameKey = useCallback(
+    (path: BlockPath, to: string): string | undefined => {
+      try {
+        commit?.(renameBlockKey(root, path, to));
+        return undefined;
+      } catch (error) {
+        return error instanceof Error ? error.message : String(error);
+      }
+    },
+    [root, commit],
+  );
   const removeAt = useCallback(
     (path: BlockPath) => {
       const returnValue = defaultNode("returnValue");
@@ -461,6 +476,7 @@ export function useBlockEditingValue(
             accepts,
             replaceable,
             removeAt,
+            renameKey,
             attributesAt,
             insertPositions,
             insertAt,
@@ -488,6 +504,7 @@ export function useBlockEditingValue(
       accepts,
       replaceable,
       removeAt,
+      renameKey,
       attributesAt,
       insertPositions,
       insertAt,

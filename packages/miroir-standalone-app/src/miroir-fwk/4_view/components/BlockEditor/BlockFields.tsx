@@ -247,3 +247,82 @@ export const MlSchemaChip = React.memo(function MlSchemaChip(props: {
     </>
   );
 });
+
+/**
+ * #505: the key of a record entry: renamed in place when the view edits its value (Enter applies,
+ * Escape cancels); a refused name stays in the input, marked invalid with the reason as its title.
+ */
+export const BlockKeyField = React.memo(function BlockKeyField(props: {
+  entryKey: string;
+  path: BlockPath;
+  id: string;
+  color: string;
+}) {
+  const editing = useBlockEditing();
+  const [draft, setDraft] = useState<string | undefined>(undefined);
+  const [refused, setRefused] = useState<string | undefined>(undefined);
+  const keyCss = css({ fontSize: "12px", color: props.color, paddingTop: "3px" });
+  if (!editing) {
+    return <span css={keyCss}>{props.entryKey}</span>;
+  }
+  if (draft === undefined) {
+    return (
+      <span
+        role="button"
+        tabIndex={0}
+        data-testid={`block-key:${props.id}`}
+        title={`${props.entryKey}: click to rename`}
+        onClick={(event) => {
+          event.stopPropagation();
+          setDraft(props.entryKey);
+        }}
+        onKeyDown={(event) => {
+          if (event.key === "Enter") {
+            event.preventDefault();
+            setDraft(props.entryKey);
+          }
+        }}
+        css={[keyCss, css({ cursor: "text" })]}
+      >
+        {props.entryKey}
+      </span>
+    );
+  }
+  const close = () => {
+    setDraft(undefined);
+    setRefused(undefined);
+  };
+  return (
+    <input
+      data-testid={`block-key-input:${props.id}`}
+      data-own-undo
+      aria-label={`Key of ${props.id}`}
+      aria-invalid={refused !== undefined}
+      title={refused}
+      autoFocus
+      value={draft}
+      size={Math.max(4, Math.min(30, draft.length + 1))}
+      onChange={(event) => {
+        setDraft(event.target.value);
+        setRefused(undefined);
+      }}
+      onKeyDown={(event) => {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          const error = editing.renameKey(props.path, draft.trim());
+          if (error) {
+            setRefused(error);
+          } else {
+            close();
+          }
+        } else if (event.key === "Escape") {
+          event.preventDefault();
+          event.stopPropagation();
+          close();
+        }
+      }}
+      onClick={(event) => event.stopPropagation()}
+      css={css({ font: "inherit", fontSize: "12px", outline: refused ? "2px solid #c62828" : undefined })}
+    />
+  );
+});

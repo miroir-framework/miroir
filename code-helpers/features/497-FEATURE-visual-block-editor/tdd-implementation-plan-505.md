@@ -48,7 +48,7 @@ Working branch: `claude/505-block-editor-edit-sequences`
 | 2 | Runner hat and form fields (core) | ✅ | `fn.blockModel` "runner hat" cases |
 | 3 | Editing sequences in the block view | ✅ | `ui.blockEditor` "editing a Runner sequence" |
 | 4 | The "when run" hat in the block view | ✅ | `ui.blockEditor` hat cases |
-| 5 | Sequence editor, Save as Runner, Run (AC 1, AC 2) | ⬜ | `ui.blockEditing` "SequenceEditor on the Library" |
+| 5 | Sequence editor, Save as Runner, Run (AC 1, AC 2) | ✅ | `ui.blockEditing` "SequenceEditor on the Library" |
 | 6 | Docs, nonreg, PR | ⬜ | nonreg |
 
 ---
@@ -103,6 +103,8 @@ GREEN: `BlockRunnerHat`, `BlockRunnerContext`, detection in `BlockViewSwitch`.
 
 RED: `ui.blockEditing` suite "SequenceEditor on the Library" (wired local cache): AC 1 (add a form field, put createInstance, its object's name from the form field, Save… with create Runner, run it with a name, the Publisher is created); AC 2 (an existing custom Runner chosen, edited with blocks, Save, run, the instance created reflects the edit).
 GREEN: `SequenceEditor`, `RunnerSave`, Tools page, registry entry.
+
+**Realization (2026-10-07):** `components/SequenceEditor/SequenceEditor.tsx` lists the custom Runners of the application (`sequence-editor-runner`, or a new one), edits the chosen Runner's sequence in the block view with its hat (`BlockRunnerContext`, field edits on a draft Runner), saves it (`sequence-editor-save-runner`, updateInstance) or saves it as a new Runner (`sequence-editor-save-as`: a dialog with create Runner, and create Action disabled until #506; a taken name is refused; `renameRunner` then `newCustomRunner`, createInstance) and runs it (`StoredRunnerView`). `saveInstanceFromUI.ts` is the createInstance / updateInstance shared with `TransformerDefinitionSave` (a model-section instance goes through a transaction). `BlockActionDefaultsContext` gives `defaultActionNode` the `application` of a new action's payload. `renameBlockKey` (core, 2 `fn.blockModel` cases) and `BlockKeyField` rename object keys in place. A wired component suite also loads the Miroir Endpoints into the test cache, so the palette has actions. The Tools page (`TransformerBuilderPage`) shows the editor below the transformer editor. 2 cases in "SequenceEditor on the Library" (AC 1, AC 2); 3 `fn.blockModel` cases; fn.blockModel 71/71; `EXPECTED_LEAF_COUNT` 193.
 
 ## Slice 6 — Docs, nonreg, PR
 

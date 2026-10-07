@@ -3328,6 +3328,616 @@
             ]
           }
         ]
+      },
+      {
+        "miroirTestType": "reactComponentTestSuite",
+        "miroirTestLabel": "SequenceEditor on the Library",
+        "component": "SequenceEditor",
+        "componentProps": {
+          "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+          "watchedEntityUuid": "a027c379-8468-43a5-ba4d-bf618be25cab"
+        },
+        "wireLocalCacheCompositeAction": true,
+        "localCacheInstances": [
+          {
+            "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+            "objects": [
+              {
+                "parentName": "Runner",
+                "parentUuid": "e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd",
+                "applicationSection": "model",
+                "instances": [
+                  {
+                    "uuid": "c2a0f505-5e0a-4c5d-9b1e-505000000001",
+                    "parentName": "Runner",
+                    "parentUuid": "e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd",
+                    "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "name": "addPlainPublisher",
+                    "defaultLabel": "Add a plain Publisher",
+                    "definition": {
+                      "runnerType": "customRunner",
+                      "formMLSchema": {
+                        "formMLSchemaType": "mlSchema",
+                        "mlSchema": {
+                          "type": "object",
+                          "definition": {}
+                        }
+                      },
+                      "compositeActionSequence": {
+                        "actionType": "compositeActionSequence",
+                        "actionLabel": "addPlainPublisher",
+                        "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                        "payload": {
+                          "actionSequence": [
+                            {
+                              "actionType": "createInstance",
+                              "actionLabel": "createPublisher",
+                              "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                              "payload": {
+                                "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                                "applicationSection": "data",
+                                "objects": [
+                                  {
+                                    "uuid": "c2a0f505-5e0a-4c5d-9b1e-505000000002",
+                                    "parentName": "Publisher",
+                                    "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
+                                    "name": "Plain Publisher"
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "miroirTests": [
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "SequenceEditor on the Library: a new sequence built with blocks, saved as a Runner, creates its instance when run",
+            "steps": [
+              {
+                "step": "click",
+                "label": "show the sequence as blocks",
+                "target": {
+                  "byTestId": "block-view-mode:definition.compositeActionSequence:blocks"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "a new sequence is under the hat of a new Runner",
+                "target": {
+                  "byTestId": "block-runner-hat"
+                },
+                "attribute": "data-name",
+                "value": "newRunner",
+                "timeout": 5000
+              },
+              {
+                "step": "click",
+                "label": "add a form field",
+                "target": {
+                  "byTestId": "block-runner-add"
+                }
+              },
+              {
+                "step": "type",
+                "label": "name it publisherName",
+                "target": {
+                  "byTestId": "block-runner-new"
+                },
+                "text": "publisherName{Enter}"
+              },
+              {
+                "step": "expectElement",
+                "label": "the form field publisherName",
+                "target": {
+                  "byTestId": "block-runner-field:publisherName"
+                }
+              },
+              {
+                "step": "click",
+                "label": "choose createInstance",
+                "target": {
+                  "byTestId": "block-palette-action:createInstance"
+                }
+              },
+              {
+                "step": "click",
+                "label": "put it as the first step",
+                "target": {
+                  "byTestId": "block-insert:definition.compositeActionSequence.payload.actionSequence.0"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the first step creates an instance",
+                "target": {
+                  "byTestId": "block:definition.compositeActionSequence.payload.actionSequence.0"
+                },
+                "attribute": "data-action-type",
+                "value": "createInstance"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "of the edited application",
+                "target": {
+                  "byTestId": "block:definition.compositeActionSequence.payload.actionSequence.0.payload.application"
+                },
+                "attribute": "data-block-kind",
+                "value": "literal"
+              },
+              {
+                "step": "click",
+                "label": "choose createObject",
+                "target": {
+                  "byTestId": "block-palette:createObject"
+                }
+              },
+              {
+                "step": "click",
+                "label": "put it in the objects",
+                "target": {
+                  "byTestId": "block-insert:definition.compositeActionSequence.payload.actionSequence.0.payload.objects.0"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the object is built by createObject",
+                "target": {
+                  "byTestId": "block:definition.compositeActionSequence.payload.actionSequence.0.payload.objects.0"
+                },
+                "attribute": "data-transformer-type",
+                "value": "createObject"
+              },
+              {
+                "step": "click",
+                "label": "choose generateUuid",
+                "target": {
+                  "byTestId": "block-palette:generateUuid"
+                }
+              },
+              {
+                "step": "click",
+                "label": "put it in a new entry of the object",
+                "target": {
+                  "byTestId": "block-insert:definition.compositeActionSequence.payload.actionSequence.0.payload.objects.0.definition.value"
+                }
+              },
+              {
+                "step": "click",
+                "label": "rename the new entry",
+                "target": {
+                  "byTestId": "block-key:definition.compositeActionSequence.payload.actionSequence.0.payload.objects.0.definition.value"
+                }
+              },
+              {
+                "step": "clear",
+                "label": "clear its key",
+                "target": {
+                  "byTestId": "block-key-input:definition.compositeActionSequence.payload.actionSequence.0.payload.objects.0.definition.value"
+                }
+              },
+              {
+                "step": "type",
+                "label": "name it uuid",
+                "target": {
+                  "byTestId": "block-key-input:definition.compositeActionSequence.payload.actionSequence.0.payload.objects.0.definition.value"
+                },
+                "text": "uuid{Enter}"
+              },
+              {
+                "step": "expectElement",
+                "label": "the entry uuid",
+                "target": {
+                  "byTestId": "block:definition.compositeActionSequence.payload.actionSequence.0.payload.objects.0.definition.uuid"
+                }
+              },
+              {
+                "step": "click",
+                "label": "choose returnValue",
+                "target": {
+                  "byTestId": "block-palette:returnValue"
+                }
+              },
+              {
+                "step": "click",
+                "label": "put it in a new entry of the object",
+                "target": {
+                  "byTestId": "block-insert:definition.compositeActionSequence.payload.actionSequence.0.payload.objects.0.definition.value"
+                }
+              },
+              {
+                "step": "click",
+                "label": "rename the new entry",
+                "target": {
+                  "byTestId": "block-key:definition.compositeActionSequence.payload.actionSequence.0.payload.objects.0.definition.value"
+                }
+              },
+              {
+                "step": "clear",
+                "label": "clear its key",
+                "target": {
+                  "byTestId": "block-key-input:definition.compositeActionSequence.payload.actionSequence.0.payload.objects.0.definition.value"
+                }
+              },
+              {
+                "step": "type",
+                "label": "name it parentName",
+                "target": {
+                  "byTestId": "block-key-input:definition.compositeActionSequence.payload.actionSequence.0.payload.objects.0.definition.value"
+                },
+                "text": "parentName{Enter}"
+              },
+              {
+                "step": "expectElement",
+                "label": "the entry parentName",
+                "target": {
+                  "byTestId": "block:definition.compositeActionSequence.payload.actionSequence.0.payload.objects.0.definition.parentName"
+                }
+              },
+              {
+                "step": "click",
+                "label": "edit the value of parentName",
+                "target": {
+                  "byTestId": "block-field:definition.compositeActionSequence.payload.actionSequence.0.payload.objects.0.definition.parentName.value"
+                }
+              },
+              {
+                "step": "clear",
+                "label": "clear it",
+                "target": {
+                  "byTestId": "block-field-input:definition.compositeActionSequence.payload.actionSequence.0.payload.objects.0.definition.parentName.value"
+                }
+              },
+              {
+                "step": "type",
+                "label": "type Publisher",
+                "target": {
+                  "byTestId": "block-field-input:definition.compositeActionSequence.payload.actionSequence.0.payload.objects.0.definition.parentName.value"
+                },
+                "text": "Publisher{Enter}"
+              },
+              {
+                "step": "click",
+                "label": "choose returnValue",
+                "target": {
+                  "byTestId": "block-palette:returnValue"
+                }
+              },
+              {
+                "step": "click",
+                "label": "put it in a new entry of the object",
+                "target": {
+                  "byTestId": "block-insert:definition.compositeActionSequence.payload.actionSequence.0.payload.objects.0.definition.value"
+                }
+              },
+              {
+                "step": "click",
+                "label": "rename the new entry",
+                "target": {
+                  "byTestId": "block-key:definition.compositeActionSequence.payload.actionSequence.0.payload.objects.0.definition.value"
+                }
+              },
+              {
+                "step": "clear",
+                "label": "clear its key",
+                "target": {
+                  "byTestId": "block-key-input:definition.compositeActionSequence.payload.actionSequence.0.payload.objects.0.definition.value"
+                }
+              },
+              {
+                "step": "type",
+                "label": "name it parentUuid",
+                "target": {
+                  "byTestId": "block-key-input:definition.compositeActionSequence.payload.actionSequence.0.payload.objects.0.definition.value"
+                },
+                "text": "parentUuid{Enter}"
+              },
+              {
+                "step": "expectElement",
+                "label": "the entry parentUuid",
+                "target": {
+                  "byTestId": "block:definition.compositeActionSequence.payload.actionSequence.0.payload.objects.0.definition.parentUuid"
+                }
+              },
+              {
+                "step": "click",
+                "label": "edit the value of parentUuid",
+                "target": {
+                  "byTestId": "block-field:definition.compositeActionSequence.payload.actionSequence.0.payload.objects.0.definition.parentUuid.value"
+                }
+              },
+              {
+                "step": "clear",
+                "label": "clear it",
+                "target": {
+                  "byTestId": "block-field-input:definition.compositeActionSequence.payload.actionSequence.0.payload.objects.0.definition.parentUuid.value"
+                }
+              },
+              {
+                "step": "type",
+                "label": "type a027c379-8468-43a5-ba4d-bf618be25cab",
+                "target": {
+                  "byTestId": "block-field-input:definition.compositeActionSequence.payload.actionSequence.0.payload.objects.0.definition.parentUuid.value"
+                },
+                "text": "a027c379-8468-43a5-ba4d-bf618be25cab{Enter}"
+              },
+              {
+                "step": "click",
+                "label": "choose the form field publisherName",
+                "target": {
+                  "byTestId": "block-runner-variable:publisherName"
+                }
+              },
+              {
+                "step": "click",
+                "label": "put it in a new entry of the object",
+                "target": {
+                  "byTestId": "block-insert:definition.compositeActionSequence.payload.actionSequence.0.payload.objects.0.definition.value"
+                }
+              },
+              {
+                "step": "click",
+                "label": "rename the new entry",
+                "target": {
+                  "byTestId": "block-key:definition.compositeActionSequence.payload.actionSequence.0.payload.objects.0.definition.value"
+                }
+              },
+              {
+                "step": "clear",
+                "label": "clear its key",
+                "target": {
+                  "byTestId": "block-key-input:definition.compositeActionSequence.payload.actionSequence.0.payload.objects.0.definition.value"
+                }
+              },
+              {
+                "step": "type",
+                "label": "name it name",
+                "target": {
+                  "byTestId": "block-key-input:definition.compositeActionSequence.payload.actionSequence.0.payload.objects.0.definition.value"
+                },
+                "text": "name{Enter}"
+              },
+              {
+                "step": "expectElement",
+                "label": "the entry name",
+                "target": {
+                  "byTestId": "block:definition.compositeActionSequence.payload.actionSequence.0.payload.objects.0.definition.name"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the hat sees the read",
+                "target": {
+                  "byTestId": "block-runner-field:publisherName"
+                },
+                "attribute": "data-read",
+                "value": "true"
+              },
+              {
+                "step": "click",
+                "label": "Save…",
+                "target": {
+                  "byTestId": "sequence-editor-save-as"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the save dialog",
+                "target": {
+                  "byTestId": "sequence-editor-save-dialog"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "create Action is not offered yet",
+                "target": {
+                  "byTestId": "sequence-editor-create-action"
+                },
+                "attribute": "disabled",
+                "value": ""
+              },
+              {
+                "step": "type",
+                "label": "name the Runner",
+                "target": {
+                  "byTestId": "sequence-editor-runner-name"
+                },
+                "text": "addPublisher"
+              },
+              {
+                "step": "type",
+                "label": "label it",
+                "target": {
+                  "byTestId": "sequence-editor-runner-label"
+                },
+                "text": "Add a Publisher"
+              },
+              {
+                "step": "click",
+                "label": "save",
+                "target": {
+                  "byTestId": "sequence-editor-save-confirm"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the Runner is saved",
+                "target": {
+                  "byTestId": "sequence-editor-save-status"
+                },
+                "attribute": "data-status",
+                "value": "saved",
+                "timeout": 5000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the hat has the Runner's name",
+                "target": {
+                  "byTestId": "block-runner-hat"
+                },
+                "attribute": "data-name",
+                "value": "addPublisher",
+                "timeout": 5000
+              },
+              {
+                "step": "expectElement",
+                "label": "the Runner can be run",
+                "target": {
+                  "byTestId": "sequence-editor-run"
+                },
+                "timeout": 5000
+              },
+              {
+                "step": "expectElement",
+                "label": "its form field",
+                "target": {
+                  "byRole": "textbox",
+                  "fieldName": "addPublisher.publisherName"
+                },
+                "timeout": 5000
+              },
+              {
+                "step": "change",
+                "label": "fill its form",
+                "target": {
+                  "byRole": "textbox",
+                  "fieldName": "addPublisher.publisherName"
+                },
+                "value": "Typed Publisher"
+              },
+              {
+                "step": "click",
+                "label": "run it",
+                "target": {
+                  "byTestId": "typed-value-object-editor-submit"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the run created the Publisher",
+                "target": {
+                  "byTestId": "sequence-editor-watched:Typed Publisher"
+                },
+                "timeout": 8000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "SequenceEditor on the Library: a Runner edited with blocks and saved still runs, with the edit",
+            "steps": [
+              {
+                "step": "change",
+                "label": "choose the Runner addPlainPublisher",
+                "target": {
+                  "byTestId": "sequence-editor-runner"
+                },
+                "value": "c2a0f505-5e0a-4c5d-9b1e-505000000001"
+              },
+              {
+                "step": "click",
+                "label": "show the sequence as blocks",
+                "target": {
+                  "byTestId": "block-view-mode:definition.compositeActionSequence:blocks"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "its hat",
+                "target": {
+                  "byTestId": "block-runner-hat"
+                },
+                "attribute": "data-name",
+                "value": "addPlainPublisher",
+                "timeout": 5000
+              },
+              {
+                "step": "click",
+                "label": "unfold the literal object, folded as long",
+                "target": {
+                  "byTestId": "block-expand-all"
+                }
+              },
+              {
+                "step": "click",
+                "label": "edit the name of its Publisher",
+                "target": {
+                  "byTestId": "block-field:definition.compositeActionSequence.payload.actionSequence.0.payload.objects.0.name"
+                }
+              },
+              {
+                "step": "clear",
+                "label": "clear it",
+                "target": {
+                  "byTestId": "block-field-input:definition.compositeActionSequence.payload.actionSequence.0.payload.objects.0.name"
+                }
+              },
+              {
+                "step": "type",
+                "label": "name it Edited Publisher",
+                "target": {
+                  "byTestId": "block-field-input:definition.compositeActionSequence.payload.actionSequence.0.payload.objects.0.name"
+                },
+                "text": "Edited Publisher{Enter}"
+              },
+              {
+                "step": "click",
+                "label": "save the Runner",
+                "target": {
+                  "byTestId": "sequence-editor-save-runner"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "it is saved",
+                "target": {
+                  "byTestId": "sequence-editor-save-status"
+                },
+                "attribute": "data-status",
+                "value": "saved",
+                "timeout": 5000
+              },
+              {
+                "step": "expectElement",
+                "label": "no Publisher has the new name yet",
+                "target": {
+                  "byTestId": "sequence-editor-watched:Edited Publisher"
+                },
+                "present": false
+              },
+              {
+                "step": "click",
+                "label": "run it",
+                "target": {
+                  "byTestId": "typed-value-object-editor-submit"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the run created the edited Publisher",
+                "target": {
+                  "byTestId": "sequence-editor-watched:Edited Publisher"
+                },
+                "timeout": 8000
+              },
+              {
+                "step": "expectElement",
+                "label": "not the old one",
+                "target": {
+                  "byTestId": "sequence-editor-watched:Plain Publisher"
+                },
+                "present": false
+              }
+            ]
+          }
+        ]
       }
     ]
   }

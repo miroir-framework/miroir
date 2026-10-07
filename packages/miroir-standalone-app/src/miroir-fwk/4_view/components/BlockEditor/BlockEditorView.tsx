@@ -29,7 +29,7 @@ import {
   useBlockEditingValue,
   type TrayUpdate,
 } from "./BlockEditing.js";
-import { BlockField, MlSchemaChip } from "./BlockFields.js";
+import { BlockField, BlockKeyField, MlSchemaChip } from "./BlockFields.js";
 import { BlockInsertTargets } from "./BlockInsertTargets.js";
 import { BlockResult, useBlockRunInput } from "./BlockResult.js";
 import { BlockPalette } from "./BlockPalette.js";
@@ -474,9 +474,7 @@ const ActionBlockView = React.memo(function ActionBlockView(props: {
               <span css={css({ fontSize: "12px", color: settings.textSecondary })}>templates</span>
               {sequence.templates.map((template) => (
                 <div key={template.key} css={css({ display: "flex", gap: "8px", alignItems: "flex-start", marginLeft: "8px" })}>
-                  <span css={css({ fontSize: "12px", color: settings.textSecondary, paddingTop: "5px" })}>
-                    {template.key}
-                  </span>
+                  <BlockKeyField entryKey={template.key} path={template.path} id={idOf(template.path)} color={settings.textSecondary} />
                   <BlockNodeView node={template.node} settings={settings} />
                 </div>
               ))}
@@ -659,8 +657,8 @@ const StructureBlockView = React.memo(function StructureBlockView(props: {
   const id = blockId(settings.rootLessListKey, node.path);
   const entries =
     node.kind === "object"
-      ? node.entries.map((entry) => ({ key: entry.key, node: entry.node }))
-      : node.items.map((item, index) => ({ key: String(index), node: item }));
+      ? node.entries.map((entry) => ({ key: entry.key, node: entry.node, record: true }))
+      : node.items.map((item, index) => ({ key: String(index), node: item, record: false }));
   const { collapsed, toggleButton, summary } = useCollapse(node, settings, entries.length);
   return (
     <div
@@ -689,7 +687,16 @@ const StructureBlockView = React.memo(function StructureBlockView(props: {
       {!collapsed &&
         entries.map((entry) => (
           <div key={entry.key} css={css({ display: "flex", gap: "8px", alignItems: "flex-start" })}>
-            <span css={css({ fontSize: "12px", color: settings.textSecondary, paddingTop: "3px" })}>{entry.key}</span>
+            {entry.record ? (
+              <BlockKeyField
+                entryKey={entry.key}
+                path={entry.node.path}
+                id={blockId(settings.rootLessListKey, entry.node.path)}
+                color={settings.textSecondary}
+              />
+            ) : (
+              <span css={css({ fontSize: "12px", color: settings.textSecondary, paddingTop: "3px" })}>{entry.key}</span>
+            )}
             <BlockNodeView node={entry.node} settings={settings} />
           </div>
         ))}

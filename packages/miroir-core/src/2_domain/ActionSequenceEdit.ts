@@ -404,12 +404,14 @@ function isFailure(value: unknown): boolean {
 /**
  * The step a palette action puts (#505): its `actionType`, the `endpoint` declaring it, its
  * `actionLabel` (the type, numbered when `takenLabels` has it: results are bound by label) and the
- * default of its payload schema.
+ * default of its payload schema. `parameters` are what the defaults of the schema read, as
+ * `applicationUuid` for the `application` of an instance action.
  */
 export function defaultActionNode(
   actionType: string,
   modelEnvironment: MiroirModelEnvironment = defaultMiroirModelEnvironment,
   takenLabels: string[] = [],
+  parameters: Record<string, unknown> = {},
 ): Record<string, unknown> {
   const entry = endpointActionRegistry(modelEnvironment)[actionType];
   if (!entry) {
@@ -431,8 +433,8 @@ export function defaultActionNode(
         undefined,
         undefined,
         modelEnvironment,
-        {},
-        {},
+        parameters,
+        parameters,
       );
     } catch {
       payload = payloadSchema.type === "object" ? {} : undefined;
@@ -494,4 +496,32 @@ export function blockEnvironmentAt(
   return isBlockAction(root, modelEnvironment)
     ? compositeActionEnvironmentAt(root, path, rootEnvironment)
     : transformerEnvironmentAt(root, path, rootEnvironment);
+}
+
+/**
+ * `root` with the entry at `path` of a record renamed `to`, in place (#505): a block view names the
+ * entries it adds `value`, `template`… and the user names them. Refused when `to` is empty or taken.
+ */
+export function renameBlockKey(root: unknown, path: Path, to: string): unknown {
+  if (path.length === 0) {
+    throw new Error("renameBlockKey: the root has no key");
+  }
+  const from = String(path[path.length - 1]);
+  const containerPath = path.slice(0, -1);
+  const container = valueAt(root, containerPath);
+  if (!isPlainRecord(container) || !Object.prototype.hasOwnProperty.call(container, from)) {
+    throw new Error(`renameBlockKey: no entry ${from} to rename`);
+  }
+  if (to === from) {
+    return root;
+  }
+  if (to.length === 0) {
+    throw new Error("a key cannot be empty");
+  }
+  if (Object.prototype.hasOwnProperty.call(container, to)) {
+    throw new Error(`the key ${to} is taken`);
+  }
+  return updateAt(root, containerPath, () =>
+    Object.fromEntries(Object.entries(container).map(([key, value]) => [key === from ? to : key, value])),
+  );
 }

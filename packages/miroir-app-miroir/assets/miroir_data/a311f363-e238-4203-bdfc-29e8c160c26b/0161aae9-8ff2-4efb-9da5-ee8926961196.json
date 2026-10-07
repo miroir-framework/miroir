@@ -2590,6 +2590,152 @@
               "  parentUuid: _",
               "  applicationSection: _"
             ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a new createInstance takes the edited application from its parameters",
+            "functionRef": {
+              "module": "miroir-core/2_domain/ActionSequenceEdit",
+              "export": "defaultActionNode"
+            },
+            "arguments": [
+              "createInstance",
+              {
+                "__miroirEnvironmentRef": "defaultMiroirModelEnvironment"
+              },
+              [],
+              {
+                "applicationUuid": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+              }
+            ],
+            "assertions": [
+              {
+                "label": "application",
+                "resultAccessPath": [
+                  "payload",
+                  "application"
+                ],
+                "expectedValue": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a new entry of a record is renamed in place",
+            "functionRef": {
+              "module": "miroir-core/2_domain/ActionSequenceEdit",
+              "export": "renameBlockKey"
+            },
+            "arguments": [
+              {
+                "actionType": "createInstance",
+                "actionLabel": "createPublisher",
+                "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                  "objects": [
+                    {
+                      "transformerType": "createObject",
+                      "interpolation": "runtime",
+                      "definition": {
+                        "uuid": {
+                          "transformerType": "generateUuid",
+                          "interpolation": "runtime"
+                        },
+                        "value": {
+                          "transformerType": "getFromParameters",
+                          "interpolation": "runtime",
+                          "referencePath": [
+                            "addPublisher",
+                            "name"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              [
+                "payload",
+                "objects",
+                0,
+                "definition",
+                "value"
+              ],
+              "name"
+            ],
+            "assertions": [
+              {
+                "label": "the keys, in their order",
+                "resultAccessPath": [
+                  "payload",
+                  "objects",
+                  0,
+                  "definition"
+                ],
+                "expectedValue": {
+                  "uuid": {
+                    "transformerType": "generateUuid",
+                    "interpolation": "runtime"
+                  },
+                  "name": {
+                    "transformerType": "getFromParameters",
+                    "interpolation": "runtime",
+                    "referencePath": [
+                      "addPublisher",
+                      "name"
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a taken key is refused",
+            "functionRef": {
+              "module": "miroir-core/2_domain/ActionSequenceEdit",
+              "export": "renameBlockKey"
+            },
+            "arguments": [
+              {
+                "actionType": "createInstance",
+                "actionLabel": "createPublisher",
+                "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                  "objects": [
+                    {
+                      "transformerType": "createObject",
+                      "interpolation": "runtime",
+                      "definition": {
+                        "uuid": {
+                          "transformerType": "generateUuid",
+                          "interpolation": "runtime"
+                        },
+                        "value": {
+                          "transformerType": "getFromParameters",
+                          "interpolation": "runtime",
+                          "referencePath": [
+                            "addPublisher",
+                            "name"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              [
+                "payload",
+                "objects",
+                0,
+                "definition",
+                "value"
+              ],
+              "uuid"
+            ],
+            "expectedError": "the key uuid is taken"
           }
         ]
       },

@@ -110,6 +110,7 @@ import {
   isValuePosition,
   moveBlockNode,
   removeBlockNode,
+  renameBlockKey,
 } from "../2_domain/ActionSequenceEdit";
 import {
   addRunnerFormField,
@@ -361,6 +362,7 @@ const FUNCTION_CALL_REGISTRY: Record<
     isValuePosition: isValuePosition as WhitelistedFunction,
     moveBlockNode: moveBlockNode as WhitelistedFunction,
     removeBlockNode: removeBlockNode as WhitelistedFunction,
+    renameBlockKey: renameBlockKey as WhitelistedFunction,
   },
   "miroir-core/2_domain/RunnerHat": {
     addRunnerFormField: addRunnerFormField as WhitelistedFunction,

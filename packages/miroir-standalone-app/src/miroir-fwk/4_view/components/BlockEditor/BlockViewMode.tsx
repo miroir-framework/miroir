@@ -77,6 +77,12 @@ export interface BlockRunner {
 export const BlockRunnerContext = createContext<BlockRunner | undefined>(undefined);
 
 /**
+ * #505: the parameters the defaults of a new action read, as `applicationUuid`: the sequence
+ * editor gives its application, so a new instance action acts on it.
+ */
+export const BlockActionDefaultsContext = createContext<Record<string, unknown> | undefined>(undefined);
+
+/**
  * #503: the model environment of the application an instance editor edits, for its block views.
  * It gives no input, so a block shows no result of its subtree.
  */
