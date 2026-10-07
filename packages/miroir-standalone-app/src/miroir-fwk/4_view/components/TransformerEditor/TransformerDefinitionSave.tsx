@@ -93,6 +93,19 @@ export function TransformerDefinitionSave(props: TransformerDefinitionSaveProps)
     }
   };
 
+  /** The composite `build` returns, or undefined with the reason it refused shown. */
+  const built = (name: string, build: () => TransformerDefinition): TransformerDefinition | undefined => {
+    try {
+      return build();
+    } catch (error) {
+      setSaveStatus({
+        status: "error",
+        message: `${name} was not saved: ${error instanceof Error ? error.message : String(error)}`,
+      });
+      return undefined;
+    }
+  };
+
   const saveAs = async () => {
     const newName = name.trim();
     if (newName.length === 0) {
@@ -103,14 +116,16 @@ export function TransformerDefinitionSave(props: TransformerDefinitionSaveProps)
       setSaveStatus({ status: "error", message: `${newName} is already a transformer: choose another name` });
       return;
     }
-    const definition = compositeTransformerDefinition({
-      uuid: uuidv4(),
-      name: newName,
-      body: props.body,
-      parameters: props.defined ? transformerDefinitionParameters(props.defined) : undefined,
-      transformerDefinitions: props.transformerDefinitions,
-    });
-    if (await save(definition, "createInstance")) {
+    const definition = built(newName, () =>
+      compositeTransformerDefinition({
+        uuid: uuidv4(),
+        name: newName,
+        body: props.body,
+        parameters: props.defined ? transformerDefinitionParameters(props.defined) : undefined,
+        transformerDefinitions: props.transformerDefinitions,
+      }),
+    );
+    if (definition && (await save(definition, "createInstance"))) {
       setNaming(false);
       setName("");
     }
@@ -121,13 +136,18 @@ export function TransformerDefinitionSave(props: TransformerDefinitionSaveProps)
     if (!defined) {
       return;
     }
-    const rebuilt = compositeTransformerDefinition({
-      uuid: defined.uuid,
-      name: defined.name,
-      body: props.body,
-      parameters: transformerDefinitionParameters(defined),
-      transformerDefinitions: props.transformerDefinitions,
-    });
+    const rebuilt = built(defined.name, () =>
+      compositeTransformerDefinition({
+        uuid: defined.uuid,
+        name: defined.name,
+        body: props.body,
+        parameters: transformerDefinitionParameters(defined),
+        transformerDefinitions: props.transformerDefinitions,
+      }),
+    );
+    if (!rebuilt) {
+      return;
+    }
     await save(
       {
         ...defined,

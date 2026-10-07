@@ -309,6 +309,13 @@ const TransformerDefinitionEditor: React.FC<{
     definedTransformer?.transformerImplementation.transformerImplementationType === "transformer"
       ? definedTransformer
       : undefined;
+  // The draft's parameters go with the body they were edited on, and coming back to a definition
+  // fetches its body anew: choosing another definition drops the draft, during render (no effect).
+  const [draftedUuid, setDraftedUuid] = useState(composite?.uuid);
+  if (draftedUuid !== composite?.uuid) {
+    setDraftedUuid(composite?.uuid);
+    setDefinitionDraft(undefined);
+  }
   const definition = composite && definitionDraft?.uuid === composite.uuid ? definitionDraft : composite;
   const definedWithBody: TransformerDefinition | undefined = useMemo(
     () =>

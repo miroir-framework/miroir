@@ -14,11 +14,17 @@ import { applicationTransformerDefinitions } from "./TransformersForRuntime";
 // read by `getFromContext` blocks. A parameter is renamed with the reads that see it; a name
 // bound inside the body (a `mapList` element, a dataflow step, ...) shadows it and keeps its
 // reads. A transformer is saved as a composite whose parameters are the names it reads free.
+// A `mustacheStringTemplate` interpolated at runtime reads the context too, through its tags.
 // ################################################################################################
 
 type Path = (string | number)[];
 
 const ENTITY_TRANSFORMER_DEFINITION = "a557419d-a288-4fb8-8a1e-971c86c113b8";
+/**
+ * The fields every transformer node has besides its parameters: a parameter of the same name
+ * would replace them in the composite's node schema (`transformerInterfaceFromDefinition`).
+ */
+const RESERVED_PARAMETER_NAMES = ["transformerType", "interpolation", "label"];
 /** The uuid of the fundamental ML schema, where the transformer union lives. */
 const MIROIR_FUNDAMENTAL_ML_SCHEMA = "fe9b7d99-f216-44de-bb6e-60e1a1ebb739";
 
@@ -53,7 +59,33 @@ function readName(node: Record<string, unknown>): string | undefined {
   return Array.isArray(node.referencePath) && node.referencePath.length > 0 ? String(node.referencePath[0]) : undefined;
 }
 
-/** The paths of the `getFromContext` nodes of `body`, the value of a `returnValue` excepted. */
+/**
+ * A mustache tag and the name it reads first: `{{name}}`, `{{name.path}}`, `{{{name}}}`, `{{&name}}`
+ * and the section tags `{{#name}}`, `{{^name}}`, `{{/name}}`. Comments, partials, delimiter
+ * changes and `{{.}}` read no context name.
+ */
+const MUSTACHE_TAG = /\{\{(\s*)(\{|&|#|\^|\/)?(\s*)([^\s.{}!>=#^/&][^\s.{}]*)/g;
+
+function isRuntimeTemplate(node: Record<string, unknown>): node is Record<string, unknown> & { definition: string } {
+  return node.transformerType === "mustacheStringTemplate" && node.interpolation === "runtime" && typeof node.definition === "string";
+}
+
+function mustacheNames(template: string): string[] {
+  return [...new Set([...template.matchAll(MUSTACHE_TAG)].map((match) => match[4]))];
+}
+
+function renameMustacheName(template: string, from: string, to: string): string {
+  return template.replace(
+    MUSTACHE_TAG,
+    (tag, before: string, sigil: string | undefined, after: string, name: string) =>
+      name === from ? `{{${before}${sigil ?? ""}${after}${to}` : tag,
+  );
+}
+
+/**
+ * The context reads of `body`, the value of a `returnValue` excepted: its `getFromContext` nodes
+ * and the tags of its runtime `mustacheStringTemplate` nodes, at the path of the node.
+ */
 function contextReads(body: unknown): { path: Path; name: string }[] {
   const reads: { path: Path; name: string }[] = [];
   const visit = (value: unknown, path: Path) => {
@@ -69,6 +101,9 @@ function contextReads(body: unknown): { path: Path; name: string }[] {
       if (name !== undefined) {
         reads.push({ path, name });
       }
+    }
+    if (isRuntimeTemplate(value)) {
+      mustacheNames(value.definition).forEach((name) => reads.push({ path, name }));
     }
     for (const [key, child] of Object.entries(value)) {
       if (isTransformerNode(value) && value.transformerType === "returnValue" && key === "value") {
@@ -122,8 +157,9 @@ function valueAt(root: unknown, path: Path): unknown {
 export function renameContextName(body: unknown, from: string, to: string): unknown {
   return contextNameReadPaths(body, from).reduce((result, path) => {
     const node = valueAt(result, path) as Record<string, unknown>;
-    const renamed =
-      typeof node.referenceName === "string" && node.referenceName.length > 0
+    const renamed = isRuntimeTemplate(node)
+      ? { ...node, definition: renameMustacheName(node.definition, from, to) }
+      : typeof node.referenceName === "string" && node.referenceName.length > 0
         ? { ...node, referenceName: to }
         : { ...node, referencePath: [to, ...(node.referencePath as unknown[]).slice(1)] };
     return withValueAt(result, path, renamed);
@@ -186,6 +222,12 @@ function checkComposite(definition: TransformerDefinition, operation: string): v
   }
 }
 
+function checkParameterName(name: string, operation: string): void {
+  if (RESERVED_PARAMETER_NAMES.includes(name)) {
+    throw new Error(`${operation}: "${name}" is a field of every transformer and cannot name a parameter`);
+  }
+}
+
 /** `definition` with a new parameter `name` (by default a slot taking any value), last. */
 export function addTransformerParameter(
   definition: TransformerDefinition,
@@ -193,6 +235,7 @@ export function addTransformerParameter(
   schema: MlElement = compositeParameterSchema,
 ): TransformerDefinition {
   checkComposite(definition, "addTransformerParameter");
+  checkParameterName(name, "addTransformerParameter");
   const parameters = transformerDefinitionParameters(definition);
   if (name.length === 0 || Object.hasOwn(parameters, name)) {
     throw new Error(`addTransformerParameter: ${definition.name} already has a parameter named "${name}"`);
@@ -202,7 +245,8 @@ export function addTransformerParameter(
 
 /**
  * `definition` with its parameter `from` named `to`, in place, and the reads of `from` in the body
- * that see the parameter reading `to`. A read under a binding of the same name is left as is.
+ * that see the parameter reading `to`. A read under a binding of `from` is left as is; a read under
+ * a binding of `to` would see that binding, so the rename is refused.
  */
 export function renameTransformerParameter(definition: TransformerDefinition, from: string, to: string): TransformerDefinition {
   checkComposite(definition, "renameTransformerParameter");
@@ -213,11 +257,19 @@ export function renameTransformerParameter(definition: TransformerDefinition, fr
   if (from === to) {
     return definition;
   }
+  checkParameterName(to, "renameTransformerParameter");
   if (to.length === 0 || Object.hasOwn(parameters, to)) {
     throw new Error(`renameTransformerParameter: ${definition.name} already has a parameter named "${to}"`);
   }
+  const body = bodyOf(definition);
+  const captured = contextNameReadPaths(body, from).filter((path) => isShadowed(body, path, to));
+  if (captured.length > 0) {
+    throw new Error(
+      `renameTransformerParameter: the body of ${definition.name} binds "${to}" where it reads "${from}", at ${captured.map((path) => path.join(".") || "root").join(", ")}`,
+    );
+  }
   const renamed = Object.fromEntries(Object.entries(parameters).map(([name, schema]) => [name === from ? to : name, schema]));
-  return withBody(withParameters(definition, renamed), renameContextName(bodyOf(definition), from, to));
+  return withBody(withParameters(definition, renamed), renameContextName(body, from, to));
 }
 
 /** `definition` without its parameter `name`; refused while the body reads it. */
@@ -240,7 +292,8 @@ export function removeTransformerParameter(definition: TransformerDefinition, na
 /**
  * A composite TransformerDefinition named `name` running `body`. Its parameters are `parameters`,
  * or else the names `body` reads free, each a slot taking any value; its result schema is the one
- * #88 infers from `body` with the parameters' schemas, `any` when it cannot.
+ * #88 infers from `body` with the parameters' value schemas (`any` for a slot), else with every
+ * parameter `any`, else `any`.
  */
 export function compositeTransformerDefinition(params: {
   uuid: string;
@@ -252,11 +305,18 @@ export function compositeTransformerDefinition(params: {
 }): TransformerDefinition {
   const parameters =
     params.parameters ?? Object.fromEntries(freeContextNames(params.body).map((name) => [name, compositeParameterSchema]));
-  const inferred = resolveTransformerResultSchema(
-    params.body as CoreTransformerForBuildPlusRuntime,
-    Object.fromEntries(Object.keys(parameters).map((name) => [name, { type: "any" }])) as TransformerResultSchemaContext,
-    params.transformerDefinitions ?? applicationTransformerDefinitions,
-  );
+  Object.keys(parameters).forEach((name) => checkParameterName(name, "compositeTransformerDefinition"));
+  const slot = JSON.stringify(compositeParameterSchema);
+  const infer = (valueSchema: (schema: MlElement) => MlElement) =>
+    resolveTransformerResultSchema(
+      params.body as CoreTransformerForBuildPlusRuntime,
+      Object.fromEntries(
+        Object.entries(parameters).map(([name, schema]) => [name, valueSchema(schema)]),
+      ) as TransformerResultSchemaContext,
+      params.transformerDefinitions ?? applicationTransformerDefinitions,
+    );
+  const typed = infer((schema) => (JSON.stringify(schema) === slot ? { type: "any" } : schema));
+  const inferred = isFailedTransformerInterfaceFromDefinition(typed) ? infer(() => ({ type: "any" })) : typed;
   const resultSchema: MlElement = isFailedTransformerInterfaceFromDefinition(inferred) ? { type: "any" } : inferred;
   return {
     uuid: params.uuid,

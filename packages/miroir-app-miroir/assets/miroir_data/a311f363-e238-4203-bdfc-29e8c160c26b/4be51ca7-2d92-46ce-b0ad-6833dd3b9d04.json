@@ -2671,6 +2671,47 @@
                         "referenceName": "book"
                       }
                     }
+                  },
+                  {
+                    "uuid": "8e3c1d27-4b5a-4f6e-9c8d-7a1b2c3d4e5f",
+                    "parentName": "TransformerDefinition",
+                    "parentUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
+                    "name": "bookAuthor",
+                    "defaultLabel": "bookAuthor",
+                    "transformerInterface": {
+                      "transformerParameterSchema": {
+                        "transformerType": {
+                          "type": "literal",
+                          "definition": "bookAuthor"
+                        },
+                        "transformerDefinition": {
+                          "type": "object",
+                          "definition": {
+                            "book": {
+                              "type": "schemaReference",
+                              "definition": {
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "coreTransformerForBuildPlusRuntime"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "transformerResultSchema": {
+                        "returns": "mlSchema",
+                        "definition": {
+                          "type": "any"
+                        }
+                      }
+                    },
+                    "transformerImplementation": {
+                      "transformerImplementationType": "transformer",
+                      "definition": {
+                        "transformerType": "getFromContext",
+                        "interpolation": "runtime",
+                        "referenceName": "book"
+                      }
+                    }
                   }
                 ]
               }
@@ -3120,6 +3161,169 @@
                 },
                 "timeout": 2000,
                 "value": "{\n  \"transformerType\": \"getFromContext\",\n  \"interpolation\": \"runtime\",\n  \"referenceName\": \"volume\"\n}"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor on an application with a composite: an unsaved parameter rename is dropped when another definition is chosen",
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "the editor shows the transformer",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                },
+                "timeout": 10000
+              },
+              {
+                "step": "selectOption",
+                "label": "edit a defined transformer",
+                "field": "transformerEditor_transformer_selector.mode",
+                "option": "defined"
+              },
+              {
+                "step": "openSelect",
+                "label": "open the TransformerDefinitions for bookAuthor",
+                "field": "transformerEditor_transformer_selector.transformerUuid"
+              },
+              {
+                "step": "filterSelect",
+                "label": "filter bookAuthor",
+                "field": "transformerEditor_transformer_selector.transformerUuid",
+                "text": "bookAuthor"
+              },
+              {
+                "step": "keyboard",
+                "label": "choose bookAuthor",
+                "keys": "{Enter}"
+              },
+              {
+                "step": "expectElement",
+                "label": "the editor shows the body of bookAuthor",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                },
+                "timeout": 5000
+              },
+              {
+                "step": "click",
+                "label": "choose Blocks",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the define block of bookAuthor",
+                "target": {
+                  "byTestId": "block-define"
+                },
+                "attribute": "data-name",
+                "value": "bookAuthor",
+                "timeout": 5000
+              },
+              {
+                "step": "click",
+                "label": "rename book",
+                "target": {
+                  "byTestId": "block-define-rename:book"
+                }
+              },
+              {
+                "step": "clear",
+                "label": "clear the name",
+                "target": {
+                  "byTestId": "block-define-name:book"
+                }
+              },
+              {
+                "step": "type",
+                "label": "name it volume, unsaved",
+                "target": {
+                  "byTestId": "block-define-name:book"
+                },
+                "text": "volume{Enter}"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "its body reads volume",
+                "target": {
+                  "byTestId": "block-define-parameter:volume"
+                },
+                "attribute": "data-read",
+                "value": "true",
+                "timeout": 2000
+              },
+              {
+                "step": "openSelect",
+                "label": "open the TransformerDefinitions for bookTitle",
+                "field": "transformerEditor_transformer_selector.transformerUuid"
+              },
+              {
+                "step": "filterSelect",
+                "label": "filter bookTitle",
+                "field": "transformerEditor_transformer_selector.transformerUuid",
+                "text": "bookTitle"
+              },
+              {
+                "step": "keyboard",
+                "label": "choose bookTitle",
+                "keys": "{Enter}"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the define block of bookTitle",
+                "target": {
+                  "byTestId": "block-define"
+                },
+                "attribute": "data-name",
+                "value": "bookTitle",
+                "timeout": 5000
+              },
+              {
+                "step": "openSelect",
+                "label": "open the TransformerDefinitions for bookAuthor",
+                "field": "transformerEditor_transformer_selector.transformerUuid"
+              },
+              {
+                "step": "filterSelect",
+                "label": "filter bookAuthor",
+                "field": "transformerEditor_transformer_selector.transformerUuid",
+                "text": "bookAuthor"
+              },
+              {
+                "step": "keyboard",
+                "label": "choose bookAuthor",
+                "keys": "{Enter}"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the define block of bookAuthor again",
+                "target": {
+                  "byTestId": "block-define"
+                },
+                "attribute": "data-name",
+                "value": "bookAuthor",
+                "timeout": 5000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "its parameter is book again, read by its fetched body",
+                "target": {
+                  "byTestId": "block-define-parameter:book"
+                },
+                "attribute": "data-read",
+                "value": "true",
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the unsaved volume is gone",
+                "target": {
+                  "byTestId": "block-define-parameter:volume"
+                },
+                "present": false
               }
             ]
           }
