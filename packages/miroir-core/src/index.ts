@@ -1387,6 +1387,17 @@ export type {
 } from "./0_interfaces/2_domain/TransformerTreeEditInterface.js";
 export { transformerSubtreeRuns } from "./2_domain/TransformerSubtreeRun.js";
 export {
+  addTransformerParameter,
+  compositeParameterSchema,
+  compositeTransformerDefinition,
+  contextNameReadPaths,
+  freeContextNames,
+  removeTransformerParameter,
+  renameContextName,
+  renameTransformerParameter,
+  transformerDefinitionParameters,
+} from "./2_domain/TransformerDefinitionEdit.js";
+export {
   applicationTransformerBranchName,
   applicationTransformerBranches,
   applicationCompositeTransformerDefinitions,

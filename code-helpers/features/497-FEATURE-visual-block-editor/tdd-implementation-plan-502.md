@@ -44,9 +44,9 @@ Working branch: `claude/502-block-editor-define-blocks`
 | 1 | The client model carries the application's TransformerDefinitions | ✅ | localcache unit tests |
 | 2 | The deployment schema has a branch per application composite | ✅ | `fn.transformer.registry` union cases, `schemaForDeployment.unit.test.ts` |
 | 3 | The editor and the block view read the registry | ✅ | `ui.blockEditing` composite case |
-| 4 | Postgres reads the registry | ⬜ | SqlGenerator unit case |
+| 4 | Postgres reads the registry | ➡️ moved to the server issue (A, 2026-10-07) | — |
 | 5 | Define block | ⬜ | `fn.blockModel` define cases, `ui.blockEditing` |
-| 6 | Parameters: add, rename, remove | ⬜ | `fn.transformer.treeEdit` rename cases (AC 2) |
+| 6 | Parameters: add, rename, remove | 🟡 core done, header UI open | `fn.transformer.registry` "define block parameters" (AC 2) |
 | 7 | Save as TransformerDefinition; palette; use (runner option) | ⬜ | `ui.blockEditing` save case (AC 1) |
 | 8 | Docs, nonreg, AC | ⬜ | nonreg, AC checklist |
 
@@ -62,7 +62,7 @@ Working branch: `claude/502-block-editor-define-blocks`
 | Union | `buildExtendedSchema` also adds one branch per application composite to `coreTransformerForBuildPlusRuntime` (and its `WithoutArray` twin): an object with the literal `transformerType`, optional `interpolation` and `label`, and the parameters of `transformerParameterSchema.transformerDefinition`. Deployments resolve their schema in `"auto"` mode already (`resolveFundamentalSchemaForDeployment`), so the form, the transformerType select, `transformerUnionTypes`, the palette and `defaultTransformerNode` follow. | D9, issue "the form … accepts registry types" |
 | Editor | The TransformerEditor takes `useCurrentModelEnvironment(editorApplication, map)`; `BlockRunInput` carries it, and the block view, the walk, the preview and the result bubble use it and its registry instead of the defaults. | D9 |
 | Postgres | `sqlStringForRuntimeTransformer` reads `transformerDefinitions` from an optional trailing argument (default: the stock map), passed down by the helpers; `sqlStringForQuery` and `sqlStringForExtractor` give the registry of their `modelEnvironment`. DomainController forwards `currentModel` to the persistence store (the saga methods already take it). | D9 |
-| Server | **Out of this issue.** miroir-server runs every action with `defaultMiroirModelEnvironment`; giving it a per-application environment changes every entry point. Filed as a separate issue; until it lands, a saved composite runs in the client's local cache and in Postgres only where the client's environment reaches the store. | D9 (scope cut, to confirm with A) |
+| Server | **Out of this issue.** miroir-server runs every action with `defaultMiroirModelEnvironment`; giving it a per-application environment changes every entry point. Filed as a separate issue; until it lands, a saved composite runs in the client's local cache and in Postgres only where the client's environment reaches the store. | D9 (scope cut, A chose "Separate issue" on 2026-10-07, with slice 4) |
 | Define block | A composite TransformerDefinition value gets a `define` block: header `define <name>` with one chip per parameter; body = the block of `transformerImplementation.definition`. Every node of the body is evaluated at runtime: no build mark inside a define body (analysis D1-b). Shown wherever the value editor shows a TransformerDefinition (its Report's instance editor) and in the TransformerEditor's "defined" mode. | issue bullet 1 |
 | Parameters | `renameTransformerParameter(definition, from, to)` renames the key in `transformerParameterSchema.transformerDefinition.definition` and rewrites every `getFromContext` reading `from` (by `referenceName`, or `referencePath[0]`) where `from` is the parameter, not a name bound below it (`transformerEnvironmentAt` shadowing: a `referenceToOuterObject`, a dataflow step or `aggregateValue` of that name). Add gives a parameter of type `any`; remove refuses while the body reads it. | issue bullet 2, AC 2 |
 | Save | "Save as TransformerDefinition" in the TransformerEditor: a dialog asks the name; the parameters are the free context names the transformer reads (not bound inside it), typed from the editor's input type for `defaultInput`, `any` otherwise; `transformerResultSchema` from #88 (`resolveTransformerResultSchema`). The instance is created in the editor application's model section with a `transactionalInstanceAction` `createInstance`, then `commit`. | issue bullet 3 |
@@ -106,6 +106,8 @@ Validation: `npm run testMiroir -w miroir-standalone-app -- --suites ui.blockEdi
 
 RED: SqlGenerator unit case: a runtime transformer using an application composite translates with the registry and fails with `QueryNotExecutable` without it. GREEN: the trailing argument and the DomainController forwarding.
 
+**Moved out (2026-10-07).** A chose to leave the server side out of #502; the Postgres translation of composites goes with it into the server issue, as both need the application's model where the store runs. Today the SqlGenerator refuses an application composite with `QueryNotExecutable` ("transformerType not found in applicationTransformerDefinitions"), which is the explicit error the issue asks for.
+
 ## Slice 5 — Define block
 
 RED: `fn.blockModel` "a composite TransformerDefinition is a define block with its parameters and its body"; `ui.blockEditing` "the defined mode shows the define block, no build mark in the body". GREEN: block model and view.
@@ -113,6 +115,8 @@ RED: `fn.blockModel` "a composite TransformerDefinition is a define block with i
 ## Slice 6 — Parameters
 
 RED: `fn.transformer.treeEdit` `renameTransformerParameter`: references follow, a shadowed name does not, `referencePath` heads follow (AC 2); add and remove. GREEN: the functions and the header actions.
+
+**Realization, core (2026-10-07).** `2_domain/TransformerDefinitionEdit.ts`: `contextNameReadPaths`, `freeContextNames`, `renameContextName`, `transformerDefinitionParameters`, `addTransformerParameter`, `renameTransformerParameter` (in place, so the parameter order is kept), `removeTransformerParameter` (refused while read) and slice 7's `compositeTransformerDefinition`. A read is a `getFromContext` outside a `returnValue`'s `value`; it sees the parameter unless `transformerEnvironmentAt` binds the same name above it. The cases are in `fn.transformer.registry`, suite "define block parameters" (registered under `miroir-core/2_domain/TransformerDefinitionEdit`), not in `fn.transformer.treeEdit`, as they edit a TransformerDefinition rather than a tree. Turning `isShadowed` off fails 2 of them.
 
 ## Slice 7 — Save as TransformerDefinition
 

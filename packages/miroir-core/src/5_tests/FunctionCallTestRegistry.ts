@@ -39,6 +39,15 @@ import { localizeMlSchemaReferenceContext } from "../1_core/mls/MlsUnfoldSchemaO
 import { resolveQueryTemplateWithExtractorCombinerTransformer } from "../2_domain/Templates";
 import { referencePathAttributeNames, resolveTransformerResultSchema } from "../2_domain/Transformer_ResultSchema";
 import {
+  addTransformerParameter,
+  compositeTransformerDefinition,
+  contextNameReadPaths,
+  freeContextNames,
+  removeTransformerParameter,
+  renameContextName,
+  renameTransformerParameter,
+} from "../2_domain/TransformerDefinitionEdit";
+import {
   applicationTransformerBranches,
   applicationCompositeTransformerDefinitions,
   transformerDefinitionRegistryConflicts,
@@ -285,6 +294,15 @@ const FUNCTION_CALL_REGISTRY: Record<
     applicationTransformerBranches: applicationTransformerBranches as WhitelistedFunction,
     transformerDefinitionRegistryConflicts: transformerDefinitionRegistryConflicts as WhitelistedFunction,
     transformerDefinitionRegistryOf: transformerDefinitionRegistryOf as WhitelistedFunction,
+  },
+  "miroir-core/2_domain/TransformerDefinitionEdit": {
+    addTransformerParameter: addTransformerParameter as WhitelistedFunction,
+    compositeTransformerDefinition: compositeTransformerDefinition as WhitelistedFunction,
+    contextNameReadPaths: contextNameReadPaths as WhitelistedFunction,
+    freeContextNames: freeContextNames as WhitelistedFunction,
+    removeTransformerParameter: removeTransformerParameter as WhitelistedFunction,
+    renameContextName: renameContextName as WhitelistedFunction,
+    renameTransformerParameter: renameTransformerParameter as WhitelistedFunction,
   },
   "miroir-core/2_domain/TransformerSubtreeRun": {
     transformerSubtreeRuns: transformerSubtreeRuns as WhitelistedFunction,
