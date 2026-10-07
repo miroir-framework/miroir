@@ -44,7 +44,7 @@ Working branch: `claude/506-block-editor-endpoint-actions`
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
 | 0 | This plan | ✅ | — |
-| 1 | Composite Endpoint actions and their hat (core) | ⬜ | `fn.blockModel` "endpoint actions" |
+| 1 | Composite Endpoint actions and their hat (core) | ✅ | `fn.blockModel` "endpoint actions" |
 | 2 | The define hat of an Endpoint action in the block view (AC 2) | ⬜ | `ui.blockEditing` "an Endpoint action" |
 | 3 | Save as Action, the palette, a run (AC 1) | ⬜ | `ui.blockEditing` "SequenceEditor on the Library" |
 | 4 | Docs, nonreg, PR | ⬜ | nonreg |
@@ -69,6 +69,8 @@ Working branch: `claude/506-block-editor-endpoint-actions`
 
 RED: `fn.blockModel` suite "endpoint actions": the hat of `entity_DuplicateAttribute` (name, parameters, read flags); a parameter added, renamed (reads follow, quoted values stay), a read one refused on remove; an action from a Runner sequence (fields to parameters, reads to `payload`); a taken action type refused; an action appended to an Endpoint; a new Endpoint.
 GREEN: `2_domain/EndpointActionEdit.ts`, registry entries.
+
+**Realization (✅):** `EndpointActionEdit.ts` has `endpointActionHat`, `endpointActionParameterReads`, `add/rename/removeEndpointActionParameter`, `compositeEndpointAction`, `addEndpointAction` and `newEndpoint`, registered in `FunctionCallTestRegistry` and exported from the index. A read is a `getFromContext` / `getFromParameters` whose `referenceName` or `referencePath` starts with the prefix; the `value` of a `returnValue` is quoted and skipped, as in `RunnerHat`. The suite "endpoint actions" (15 cases) in `fn.blockModel` embeds `entity_DuplicateAttribute` as found in ModelEndpoint: 7 parameters, 4 read (`application`, `columns`, `sourceEntityUuid`, `targetEntityUuid`). `npm run testMiroir -w miroir-core -- --suites fn.blockModel --mode unit`: 94/94; core typecheck clean.
 
 ## Slice 2 — The define hat of an Endpoint action (AC 2)
 

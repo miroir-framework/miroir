@@ -114,6 +114,16 @@ import {
   renameSequenceName,
 } from "../2_domain/ActionSequenceEdit";
 import {
+  addEndpointAction,
+  addEndpointActionParameter,
+  compositeEndpointAction,
+  endpointActionHat,
+  endpointActionParameterReads,
+  newEndpoint,
+  removeEndpointActionParameter,
+  renameEndpointActionParameter,
+} from "../2_domain/EndpointActionEdit";
+import {
   addRunnerFormField,
   newCustomRunner,
   removeRunnerFormField,
@@ -365,6 +375,16 @@ const FUNCTION_CALL_REGISTRY: Record<
     removeBlockNode: removeBlockNode as WhitelistedFunction,
     renameBlockKey: renameBlockKey as WhitelistedFunction,
     renameSequenceName: renameSequenceName as WhitelistedFunction,
+  },
+  "miroir-core/2_domain/EndpointActionEdit": {
+    addEndpointAction: addEndpointAction as WhitelistedFunction,
+    addEndpointActionParameter: addEndpointActionParameter as WhitelistedFunction,
+    compositeEndpointAction: compositeEndpointAction as WhitelistedFunction,
+    endpointActionHat: endpointActionHat as WhitelistedFunction,
+    endpointActionParameterReads: endpointActionParameterReads as WhitelistedFunction,
+    newEndpoint: newEndpoint as WhitelistedFunction,
+    removeEndpointActionParameter: removeEndpointActionParameter as WhitelistedFunction,
+    renameEndpointActionParameter: renameEndpointActionParameter as WhitelistedFunction,
   },
   "miroir-core/2_domain/RunnerHat": {
     addRunnerFormField: addRunnerFormField as WhitelistedFunction,
