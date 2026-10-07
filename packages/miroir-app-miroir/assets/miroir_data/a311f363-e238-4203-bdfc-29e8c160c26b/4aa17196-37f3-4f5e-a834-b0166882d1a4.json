@@ -2556,7 +2556,7 @@
           },
           {
             "miroirTestType": "functionCallTest",
-            "miroirTestLabel": "with runtime, the nested transformers of mapList get it too",
+            "miroirTestLabel": "with runtime, the nested transformer of mapList gets it too",
             "functionRef": {
               "module": "miroir-core/2_domain/TransformerTreeEdit",
               "export": "defaultTransformerNode"
@@ -2570,11 +2570,6 @@
             "expectedValue": {
               "transformerType": "mapList",
               "interpolation": "runtime",
-              "applyTo": {
-                "transformerType": "returnValue",
-                "value": 0,
-                "interpolation": "runtime"
-              },
               "elementTransformer": {
                 "transformerType": "returnValue",
                 "value": 0,
@@ -2584,7 +2579,7 @@
           },
           {
             "miroirTestType": "functionCallTest",
-            "miroirTestLabel": "case starts with no when",
+            "miroirTestLabel": "case starts with no when and no else",
             "functionRef": {
               "module": "miroir-core/2_domain/TransformerTreeEdit",
               "export": "defaultTransformerNode"
@@ -2603,11 +2598,26 @@
                 "value": 0,
                 "interpolation": "runtime"
               },
-              "whens": [],
-              "else": {
+              "whens": []
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "optional slots stay absent",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "defaultTransformerNode"
+            },
+            "arguments": [
+              "ifThenElse"
+            ],
+            "environmentRef": "defaultMiroirModelEnvironment",
+            "environmentArgumentIndex": 1,
+            "expectedValue": {
+              "transformerType": "ifThenElse",
+              "if": {
                 "transformerType": "returnValue",
-                "value": 0,
-                "interpolation": "runtime"
+                "value": 0
               }
             }
           },

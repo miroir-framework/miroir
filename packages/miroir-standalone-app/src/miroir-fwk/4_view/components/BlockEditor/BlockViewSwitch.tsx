@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
 import { getIn, useFormikContext } from "formik";
-import React, { lazy, Suspense, useContext } from "react";
+import React, { lazy, Suspense, useCallback, useContext } from "react";
 
 import { useMiroirTheme } from "../../contexts/MiroirThemeContext.js";
 import { switchButtonCss, ValueHistoryButtons } from "../ValueObjectEditor/ValueHistoryButtons.js";
@@ -13,6 +13,7 @@ import { BlockViewModeContext, type BlockViewMode } from "./BlockViewMode.js";
 // view loads with its first use, not with the page.
 // #499: when an undo history watches the field, Undo and Redo sit next to the switch, whatever the
 // view, and the field is the history's scope: Ctrl+Z and Ctrl+Y work inside it.
+// #500: the block view edits the field: it writes the whole value once per edit.
 // ################################################################################################
 
 const BlockEditorView = lazy(async () => ({ default: (await import("./BlockEditorView.js")).BlockEditorView }));
@@ -39,6 +40,14 @@ export function BlockViewSwitch(props: BlockViewSwitchProps) {
   const formik = useFormikContext<Record<string, unknown>>();
   const mode = modes?.modeOf(props.formikPath) ?? "form";
   const watched = history?.formikPath === props.formikPath;
+  const { setFieldValue } = formik;
+  const commit = useCallback(
+    (newValue: unknown) => {
+      setFieldValue(props.formikPath, newValue, false);
+      history?.restoreFocus();
+    },
+    [setFieldValue, props.formikPath, history],
+  );
   const field = (
     <div data-testid={`block-view-switch:${props.rootLessListKey}`}>
       <div css={css({ display: "flex", alignItems: "center", margin: "2px 0 4px" })}>
@@ -60,7 +69,12 @@ export function BlockViewSwitch(props: BlockViewSwitchProps) {
       </div>
       {mode === "blocks" ? (
         <Suspense fallback={<span>Loading block editor...</span>}>
-          <BlockEditorView value={getIn(formik.values, props.formikPath)} rootLessListKey={props.rootLessListKey} />
+          <BlockEditorView
+            value={getIn(formik.values, props.formikPath)}
+            rootLessListKey={props.rootLessListKey}
+            onCommit={commit}
+            undoable={history?.covers(props.formikPath) ?? false}
+          />
         </Suspense>
       ) : (
         props.children(mode)

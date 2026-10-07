@@ -1372,6 +1372,7 @@ export {
   removeTransformerNode,
   transformerChildren,
   transformerSlots,
+  transformerUnionTypes,
   unwrapTransformerNode,
   wrapCandidates,
   wrapTransformerNode,

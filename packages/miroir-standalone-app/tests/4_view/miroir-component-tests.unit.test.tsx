@@ -73,14 +73,15 @@ const MIROIR_TEST_DATA_FOLDER = join(
  * the keyboard shortcuts and undo steps; 4 leaves, the JSON and Blocks views; 3 leaves, the node
  * actions with and without a history; 1 leaf, Clear; 4 leaves, a value failing its type check,
  * JSON text that does not parse, a select filter and a record entry name), plus the block editing
- * instance `ui.blockEditing`, kept off the page bundle (#500: 1 leaf, the Blocks view it starts from).
+ * instance `ui.blockEditing`, kept off the page bundle (#500: 1 leaf, the Blocks view it starts from;
+ * 5 leaves, wrap, unwrap and remove from a block menu, and the same wrap from the form).
  *
  * `EXPECTED_LEAF_COUNT` counts every leaf of the folder, on-demand ones included (it checks the
  * folder content, not what the run executes); `EXPECTED_ON_DEMAND_LEAF_COUNT` is the part under a
  * `runOnDemand` suite, skipped unless `MIROIR_COMPONENT_PERF=1`.
  */
 const EXPECTED_INSTANCE_COUNT = 13;
-const EXPECTED_LEAF_COUNT = 146;
+const EXPECTED_LEAF_COUNT = 151;
 const EXPECTED_ON_DEMAND_LEAF_COUNT = 15;
 
 /** On-demand suites (`runOnDemand: true`) run only with this environment variable set to `1`. */

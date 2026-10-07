@@ -166,6 +166,28 @@ export function pipeCandidates(
 /** The schema of the transformer union where a transformer position's values come from. */
 const TRANSFORMER_UNION = "coreTransformerForBuildPlusRuntime";
 
+/** The branches of the transformer union: each transformer type with the schema name of its branch. */
+function transformerUnionBranches(modelEnvironment: MiroirModelEnvironment): { transformerType: string; schemaName: string }[] {
+  const context: Record<string, MlElement> =
+    (modelEnvironment.miroirFundamentalMlSchema.definition as MlReference | undefined)?.context ?? {};
+  const union = context[TRANSFORMER_UNION];
+  if (union?.type !== "union") {
+    return [];
+  }
+  return (union.definition as MlElement[]).flatMap((member) => {
+    const schemaName = (member as MlReference).definition?.relativePath;
+    const transformerTypeSchema = schemaName ? (context[schemaName] as MlObject | undefined)?.definition?.transformerType : undefined;
+    return schemaName && transformerTypeSchema?.type === "literal"
+      ? [{ transformerType: String(transformerTypeSchema.definition), schemaName }]
+      : [];
+  });
+}
+
+/** The transformer types a transformer position accepts: those of the transformer union (#500). */
+export function transformerUnionTypes(modelEnvironment: MiroirModelEnvironment): string[] {
+  return transformerUnionBranches(modelEnvironment).map((branch) => branch.transformerType);
+}
+
 /**
  * The node of `transformerType` with its default values: the default of its branch of the
  * transformer union, as the form builds it for a type change. With `interpolation`, the node and
@@ -177,17 +199,9 @@ export function defaultTransformerNode(
   interpolation?: "build" | "runtime",
   transformerDefinitions: Record<string, TransformerDefinition> = applicationTransformerDefinitions,
 ): Record<string, unknown> {
-  const context: Record<string, MlElement> = (modelEnvironment.miroirFundamentalMlSchema.definition as MlReference | undefined)?.context ?? {};
-  const union = context[TRANSFORMER_UNION];
-  const branch =
-    union?.type === "union"
-      ? (union.definition as MlElement[])
-          .map((member) => (member as MlReference).definition?.relativePath)
-          .find((name) => {
-            const transformerTypeSchema = name ? (context[name] as MlObject | undefined)?.definition?.transformerType : undefined;
-            return transformerTypeSchema?.type === "literal" && transformerTypeSchema.definition === transformerType;
-          })
-      : undefined;
+  const branch = transformerUnionBranches(modelEnvironment).find(
+    (candidate) => candidate.transformerType === transformerType,
+  )?.schemaName;
   if (!branch) {
     throw new Error(`defaultTransformerNode: ${transformerType} is not a transformer type of ${TRANSFORMER_UNION}`);
   }

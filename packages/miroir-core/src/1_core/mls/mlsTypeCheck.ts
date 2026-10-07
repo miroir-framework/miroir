@@ -179,14 +179,15 @@ export function resolveObjectExtendClauseAndDefinition<T extends MiroirModelEnvi
     const resolvedDefinition = Object.fromEntries(
       Object.entries(mlObject.definition)
         .filter((e: [string, MlElement]) => e[1].type == "schemaReference")
-        .map((e) => [
-          e[0],
-          resolveMlSchemaReferenceInContext(
+        .map((e) => {
+          const resolved = resolveMlSchemaReferenceInContext(
             e[1] as MlReference,
             { ...relativeReferenceMlContext, ...((e[1] as MlReference).context ?? {}) },
             modelEnvironment,
-          ),
-        ]),
+          );
+          // an optional reference stays optional once resolved (#500: defaults skip optional attributes)
+          return [e[0], e[1].optional && !resolved.optional ? { ...resolved, optional: true } : resolved];
+        }),
     );
     if (extension.type == "object") {
       return {

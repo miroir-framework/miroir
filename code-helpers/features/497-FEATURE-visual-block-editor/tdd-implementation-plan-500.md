@@ -32,7 +32,7 @@ This plan does not add variable blocks or scope checks (#501), define blocks (#5
 |---|---|---|---|
 | 0 | A home for the cases, off the page bundle | ✅ | `componentTestInstances.292.phase1`, counts |
 | 1 | Pure defaults and insert, move, reorder | ✅ | `fn.transformer.treeEdit` |
-| 2 | Tracer: the #415 node menu on a block | ⬜ | `ui.blockEditing` wrap, unwrap, remove |
+| 2 | Tracer: the #415 node menu on a block | ✅ | `ui.blockEditing` wrap, unwrap, remove |
 | 3 | Palette and insert into a slot | ⬜ | `ui.blockEditing` build from the palette |
 | 4 | Tray: move a block out and back | ⬜ | `ui.blockEditing` tray cases |
 | 5 | Inline literals and the ML schema popover | ⬜ | `ui.blockEditing` literal cases |
@@ -153,7 +153,7 @@ npm run test -w miroir-core -- ''
 
 ## Slice 2 — Tracer: the #415 node menu on a block
 
-**Status:** ⬜
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -168,6 +168,13 @@ In the Blocks view, a developer opens a block's menu, wraps the block in `mapLis
 ### 2.2 GREEN
 
 `BlockViewSwitch` passes `onCommit(newRoot)`, `undoable`, candidate types and the default builder to `BlockEditorView`; the transformer header renders `TransformerNodeActions` (`block-menu:<id>` trigger); the default builder is `defaultTransformerNode(type, {interpolation: "runtime"})`.
+
+### Realization
+
+- `BlockEditing.tsx` holds the editing context (root, commit, undoable, candidate types from the new `transformerUnionTypes`, the runtime default builder) and `BlockNodeActions`, the #415 `TransformerNodeActions` on a block header. The button keeps the form's label (`Transformer node actions <block id>`), so cases address a node the same way in both views; the planned `block-menu:<id>` test id is not needed.
+- The form comparison uses `ifThenElse`: with the starting input the form offers no `mapList` at the root (the #383 input restriction), while the block menu does not filter yet.
+- **Core fix found by the comparison:** `defaultTransformerNode` filled the optional slots (`then`, `else`, `applyTo`) that the form leaves out. `resolveObjectExtendClauseAndDefinition` (`mlsTypeCheck.ts`) resolved the schema references of an object with `extend` and dropped their `optional`; it now keeps it. Defaults built from an unfolded branch (the form) were not affected; type checks pass either way. The default cases of `fn.transformer.treeEdit` follow (mapList without `applyTo`, case without `else`, one more case for `ifThenElse`).
+- `ui.blockEditing` 6 of 6 (146 → 151 leaves). miroir-core unit tests 2770 pass. `ui.blockEditor` 13, `ui.valueHistory` 21, `ui.transformerEditor` 27 pass (plus the leaf count, updated after).
 
 ---
 

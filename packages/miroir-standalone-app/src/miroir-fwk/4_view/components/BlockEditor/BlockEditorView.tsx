@@ -11,6 +11,7 @@ import React, { useCallback, useMemo, useState } from "react";
 
 import { blockCategoryColor, useMiroirTheme, type BlockEditorColors } from "../../contexts/MiroirThemeContext.js";
 import { useBlockEditorBuildMarking } from "./BlockEditorDisplay.js";
+import { BlockEditingContext, BlockNodeActions, useBlockEditingValue } from "./BlockEditing.js";
 
 // ################################################################################################
 // #498: the read-only block view of a transformer value (analysis #497). The tree comes from the
@@ -23,12 +24,18 @@ import { useBlockEditorBuildMarking } from "./BlockEditorDisplay.js";
 //
 // A block keeps its own collapsed state, so folding one renders only that block. "Collapse all"
 // and "Expand all" remount the tree with every block starting in that state.
+//
+// #500: with a writer, the view edits the value (BlockEditing.tsx); without one it is read-only.
 // ################################################################################################
 
 export interface BlockEditorViewProps {
   value: unknown;
   /** Path of the value from the form section root; block ids start with it. */
   rootLessListKey: string;
+  /** Writes a new value: the view edits the value. */
+  onCommit?: (newValue: unknown) => void;
+  /** An undo history covers the value: edits act at once (#499). */
+  undoable?: boolean;
 }
 
 type InitialCollapse = "default" | "collapsed" | "expanded";
@@ -204,6 +211,7 @@ const TransformerBlockView = React.memo(function TransformerBlockView(props: {
       <div css={css({ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "4px 7px", padding: "4px 10px" })}>
         {toggleButton}
         <span css={css({ fontWeight: 700, whiteSpace: "nowrap" })}>{node.transformerType}</span>
+        <BlockNodeActions path={node.path} blockId={id} />
         {marking === "marker" && (
           <span
             data-testid={`block-build-marker:${id}`}
@@ -423,6 +431,7 @@ function ToolButton(props: {
 
 export const BlockEditorView = React.memo(function BlockEditorView(props: BlockEditorViewProps) {
   const tree = useMemo(() => transformerBlockTree(props.value), [props.value]);
+  const editing = useBlockEditingValue(props.value, props.onCommit, props.undoable ?? false);
   const colors = useBlockColors();
   const buildMarking = useBlockEditorBuildMarking();
   const [fold, setFold] = useState<{ initialCollapse: InitialCollapse; generation: number }>({
@@ -445,41 +454,43 @@ export const BlockEditorView = React.memo(function BlockEditorView(props: BlockE
     [],
   );
   return (
-    <div data-testid={`block-editor:${props.rootLessListKey}`} css={css({ color: colors.text })}>
-      <div css={css({ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "4px", margin: "2px 0 4px" })}>
-        <ToolButton testId="block-expand-all" label="Expand all blocks" colors={colors} onClick={() => foldAll("expanded")}>
-          Expand all
-        </ToolButton>
-        <ToolButton testId="block-collapse-all" label="Collapse all blocks" colors={colors} onClick={() => foldAll("collapsed")}>
-          Collapse all
-        </ToolButton>
-        <ToolButton
-          testId="block-zoom-out"
-          label="Zoom out"
-          colors={colors}
-          disabled={zoom <= ZOOM_MIN}
-          onClick={() => changeZoom(-ZOOM_STEP)}
-        >
-          −
-        </ToolButton>
-        <span data-testid="block-zoom-level" css={css({ fontSize: "12px", minWidth: "4.5ch", textAlign: "center" })}>
-          {`${Math.round(zoom * 100)} %`}
-        </span>
-        <ToolButton
-          testId="block-zoom-in"
-          label="Zoom in"
-          colors={colors}
-          disabled={zoom >= ZOOM_MAX}
-          onClick={() => changeZoom(ZOOM_STEP)}
-        >
-          +
-        </ToolButton>
-      </div>
-      <div css={css({ overflowX: "auto", padding: "8px 4px" })}>
-        <div css={css({ zoom })}>
-          <BlockNodeView key={fold.generation} node={tree.root} settings={settings} />
+    <BlockEditingContext.Provider value={editing}>
+      <div data-testid={`block-editor:${props.rootLessListKey}`} css={css({ color: colors.text })}>
+        <div css={css({ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "4px", margin: "2px 0 4px" })}>
+          <ToolButton testId="block-expand-all" label="Expand all blocks" colors={colors} onClick={() => foldAll("expanded")}>
+            Expand all
+          </ToolButton>
+          <ToolButton testId="block-collapse-all" label="Collapse all blocks" colors={colors} onClick={() => foldAll("collapsed")}>
+            Collapse all
+          </ToolButton>
+          <ToolButton
+            testId="block-zoom-out"
+            label="Zoom out"
+            colors={colors}
+            disabled={zoom <= ZOOM_MIN}
+            onClick={() => changeZoom(-ZOOM_STEP)}
+          >
+            −
+          </ToolButton>
+          <span data-testid="block-zoom-level" css={css({ fontSize: "12px", minWidth: "4.5ch", textAlign: "center" })}>
+            {`${Math.round(zoom * 100)} %`}
+          </span>
+          <ToolButton
+            testId="block-zoom-in"
+            label="Zoom in"
+            colors={colors}
+            disabled={zoom >= ZOOM_MAX}
+            onClick={() => changeZoom(ZOOM_STEP)}
+          >
+            +
+          </ToolButton>
+        </div>
+        <div css={css({ overflowX: "auto", padding: "8px 4px" })}>
+          <div css={css({ zoom })}>
+            <BlockNodeView key={fold.generation} node={tree.root} settings={settings} />
+          </div>
         </div>
       </div>
-    </div>
+    </BlockEditingContext.Provider>
   );
 });

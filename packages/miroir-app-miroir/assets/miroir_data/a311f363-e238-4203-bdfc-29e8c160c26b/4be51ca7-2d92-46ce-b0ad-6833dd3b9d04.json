@@ -47,6 +47,405 @@
                 "timeout": 2000
               }
             ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: Wrap in from a block menu writes what the form writes, with runtime on the new nodes",
+            "steps": [
+              {
+                "step": "click",
+                "label": "choose Blocks",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                }
+              },
+              {
+                "step": "click",
+                "label": "open the node actions of the root block",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Wrap in…",
+                "target": {
+                  "byTestId": "transformer-node-action-wrap"
+                }
+              },
+              {
+                "step": "selectOption",
+                "label": "ifThenElse",
+                "field": "transformer-node-dialog-type",
+                "option": "ifThenElse"
+              },
+              {
+                "step": "selectOption",
+                "label": "slot then",
+                "field": "transformer-node-dialog-slot",
+                "option": "then"
+              },
+              {
+                "step": "click",
+                "label": "wrap",
+                "target": {
+                  "byTestId": "transformer-node-dialog-confirm"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the root block is ifThenElse",
+                "target": {
+                  "byTestId": "block:transformer"
+                },
+                "attribute": "data-transformer-type",
+                "value": "ifThenElse",
+                "timeout": 2000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the wrapped block",
+                "target": {
+                  "byTestId": "block:transformer.then"
+                },
+                "attribute": "data-transformer-type",
+                "value": "returnValue",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "choose JSON",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:json"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the value",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "timeout": 2000,
+                "value": "{\n  \"transformerType\": \"ifThenElse\",\n  \"if\": {\n    \"transformerType\": \"returnValue\",\n    \"value\": 0,\n    \"interpolation\": \"runtime\"\n  },\n  \"interpolation\": \"runtime\",\n  \"then\": {\n    \"transformerType\": \"returnValue\",\n    \"mlSchema\": {\n      \"type\": \"string\"\n    },\n    \"value\": \"seize value...\"\n  }\n}"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: Wrap in from the form, for comparison with the block menu",
+            "steps": [
+              {
+                "step": "click",
+                "label": "open the node actions of the root field",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Wrap in…",
+                "target": {
+                  "byTestId": "transformer-node-action-wrap"
+                }
+              },
+              {
+                "step": "selectOption",
+                "label": "ifThenElse",
+                "field": "transformer-node-dialog-type",
+                "option": "ifThenElse"
+              },
+              {
+                "step": "selectOption",
+                "label": "slot then",
+                "field": "transformer-node-dialog-slot",
+                "option": "then"
+              },
+              {
+                "step": "click",
+                "label": "wrap",
+                "target": {
+                  "byTestId": "transformer-node-dialog-confirm"
+                }
+              },
+              {
+                "step": "click",
+                "label": "choose JSON",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:json"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the value",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "timeout": 2000,
+                "value": "{\n  \"transformerType\": \"ifThenElse\",\n  \"if\": {\n    \"transformerType\": \"returnValue\",\n    \"value\": 0\n  },\n  \"then\": {\n    \"transformerType\": \"returnValue\",\n    \"mlSchema\": {\n      \"type\": \"string\"\n    },\n    \"value\": \"seize value...\"\n  }\n}"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: Wrap in mapList from a block menu, where the form offers no mapList for this input",
+            "steps": [
+              {
+                "step": "click",
+                "label": "choose Blocks",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                }
+              },
+              {
+                "step": "click",
+                "label": "open the node actions of the root block",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Wrap in…",
+                "target": {
+                  "byTestId": "transformer-node-action-wrap"
+                }
+              },
+              {
+                "step": "selectOption",
+                "label": "mapList",
+                "field": "transformer-node-dialog-type",
+                "option": "mapList"
+              },
+              {
+                "step": "click",
+                "label": "wrap",
+                "target": {
+                  "byTestId": "transformer-node-dialog-confirm"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the root block is mapList",
+                "target": {
+                  "byTestId": "block:transformer"
+                },
+                "attribute": "data-transformer-type",
+                "value": "mapList",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "choose JSON",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:json"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the value",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "timeout": 2000,
+                "value": "{\n  \"transformerType\": \"mapList\",\n  \"elementTransformer\": {\n    \"transformerType\": \"returnValue\",\n    \"mlSchema\": {\n      \"type\": \"string\"\n    },\n    \"value\": \"seize value...\"\n  },\n  \"interpolation\": \"runtime\"\n}"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: Unwrap from a block menu keeps the only child",
+            "steps": [
+              {
+                "step": "click",
+                "label": "choose Blocks",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                }
+              },
+              {
+                "step": "click",
+                "label": "open the node actions of the root block",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Wrap in…",
+                "target": {
+                  "byTestId": "transformer-node-action-wrap"
+                }
+              },
+              {
+                "step": "selectOption",
+                "label": "mapList",
+                "field": "transformer-node-dialog-type",
+                "option": "mapList"
+              },
+              {
+                "step": "click",
+                "label": "wrap",
+                "target": {
+                  "byTestId": "transformer-node-dialog-confirm"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the root block is mapList",
+                "target": {
+                  "byTestId": "block:transformer"
+                },
+                "attribute": "data-transformer-type",
+                "value": "mapList",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "open the node actions of the root block again",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Unwrap",
+                "target": {
+                  "byTestId": "transformer-node-action-unwrap"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the root block is returnValue again",
+                "target": {
+                  "byTestId": "block:transformer"
+                },
+                "attribute": "data-transformer-type",
+                "value": "returnValue",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "choose JSON",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:json"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the starting value",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "timeout": 2000,
+                "value": "{\n  \"transformerType\": \"returnValue\",\n  \"mlSchema\": {\n    \"type\": \"string\"\n  },\n  \"value\": \"seize value...\"\n}"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: Remove from a block menu puts a runtime returnValue in a required slot, and Undo brings the block back",
+            "steps": [
+              {
+                "step": "click",
+                "label": "choose Blocks",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                }
+              },
+              {
+                "step": "click",
+                "label": "open the node actions of the root block",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Wrap in…",
+                "target": {
+                  "byTestId": "transformer-node-action-wrap"
+                }
+              },
+              {
+                "step": "selectOption",
+                "label": "mapList",
+                "field": "transformer-node-dialog-type",
+                "option": "mapList"
+              },
+              {
+                "step": "click",
+                "label": "wrap",
+                "target": {
+                  "byTestId": "transformer-node-dialog-confirm"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the wrapped block",
+                "target": {
+                  "byTestId": "block:transformer.elementTransformer"
+                },
+                "attribute": "data-transformer-type",
+                "value": "returnValue",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "open the node actions of the wrapped block",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer.elementTransformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Remove",
+                "target": {
+                  "byTestId": "transformer-node-action-remove"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "a runtime block took its place",
+                "target": {
+                  "byTestId": "block:transformer.elementTransformer"
+                },
+                "attribute": "data-interpolation",
+                "value": "runtime",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "choose JSON",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:json"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the value after Remove",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "timeout": 2000,
+                "value": "{\n  \"transformerType\": \"mapList\",\n  \"elementTransformer\": {\n    \"transformerType\": \"returnValue\",\n    \"value\": \"seize value...\",\n    \"interpolation\": \"runtime\"\n  },\n  \"interpolation\": \"runtime\"\n}"
+              },
+              {
+                "step": "click",
+                "label": "undo",
+                "target": {
+                  "byTestId": "value-history-undo:transformer"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the value before Remove",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "timeout": 2000,
+                "value": "{\n  \"transformerType\": \"mapList\",\n  \"elementTransformer\": {\n    \"transformerType\": \"returnValue\",\n    \"mlSchema\": {\n      \"type\": \"string\"\n    },\n    \"value\": \"seize value...\"\n  },\n  \"interpolation\": \"runtime\"\n}"
+              }
+            ]
           }
         ]
       }
