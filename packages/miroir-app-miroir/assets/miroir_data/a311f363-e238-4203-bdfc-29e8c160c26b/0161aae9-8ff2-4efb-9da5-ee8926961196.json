@@ -6685,6 +6685,612 @@
                 ]
               }
             }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "the parameters read by the tags of a mustache template",
+            "functionRef": {
+              "module": "miroir-core/2_domain/EndpointActionEdit",
+              "export": "endpointActionParameterReads"
+            },
+            "arguments": [
+              {
+                "actionParameters": {
+                  "actionType": {
+                    "type": "literal",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": false
+                      }
+                    },
+                    "definition": "addPublisher"
+                  },
+                  "actionLabel": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "endpoint": {
+                    "type": "literal",
+                    "definition": "6b1f0d3c-4a2e-4b7f-9c1d-2e3f4a5b6c7d"
+                  },
+                  "payload": {
+                    "type": "object",
+                    "definition": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "country": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "actionImplementation": {
+                  "actionImplementationType": "compositeActionTemplate",
+                  "definition": {
+                    "actionType": "compositeActionSequence",
+                    "endpoint": "6b1f0d3c-4a2e-4b7f-9c1d-2e3f4a5b6c7d",
+                    "payload": {
+                      "actionSequence": [
+                        {
+                          "actionType": "createInstance",
+                          "actionLabel": "createPublisher",
+                          "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                          "payload": {
+                            "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                            "applicationSection": "data",
+                            "objects": [
+                              {
+                                "name": {
+                                  "transformerType": "mustacheStringTemplate",
+                                  "interpolation": "runtime",
+                                  "definition": "{{payload.name}} ({{ payload.country }})"
+                                },
+                                "note": {
+                                  "transformerType": "returnValue",
+                                  "value": "x"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            ],
+            "expectedValue": [
+              "name",
+              "country"
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a renamed parameter: the tags of a mustache template follow",
+            "functionRef": {
+              "module": "miroir-core/2_domain/EndpointActionEdit",
+              "export": "renameEndpointActionParameter"
+            },
+            "arguments": [
+              {
+                "actionParameters": {
+                  "actionType": {
+                    "type": "literal",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": false
+                      }
+                    },
+                    "definition": "addPublisher"
+                  },
+                  "actionLabel": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "endpoint": {
+                    "type": "literal",
+                    "definition": "6b1f0d3c-4a2e-4b7f-9c1d-2e3f4a5b6c7d"
+                  },
+                  "payload": {
+                    "type": "object",
+                    "definition": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "country": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "actionImplementation": {
+                  "actionImplementationType": "compositeActionTemplate",
+                  "definition": {
+                    "actionType": "compositeActionSequence",
+                    "endpoint": "6b1f0d3c-4a2e-4b7f-9c1d-2e3f4a5b6c7d",
+                    "payload": {
+                      "actionSequence": [
+                        {
+                          "actionType": "createInstance",
+                          "actionLabel": "createPublisher",
+                          "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                          "payload": {
+                            "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                            "applicationSection": "data",
+                            "objects": [
+                              {
+                                "name": {
+                                  "transformerType": "mustacheStringTemplate",
+                                  "interpolation": "runtime",
+                                  "definition": "{{payload.name}} ({{ payload.country }})"
+                                },
+                                "note": {
+                                  "transformerType": "returnValue",
+                                  "value": "x"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              },
+              "country",
+              "publisherCountry"
+            ],
+            "assertions": [
+              {
+                "label": "the template reads publisherCountry",
+                "resultAccessPath": [
+                  "actionImplementation",
+                  "definition"
+                ],
+                "expectedValue": {
+                  "actionType": "compositeActionSequence",
+                  "endpoint": "6b1f0d3c-4a2e-4b7f-9c1d-2e3f4a5b6c7d",
+                  "payload": {
+                    "actionSequence": [
+                      {
+                        "actionType": "createInstance",
+                        "actionLabel": "createPublisher",
+                        "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                        "payload": {
+                          "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                          "applicationSection": "data",
+                          "objects": [
+                            {
+                              "name": {
+                                "transformerType": "mustacheStringTemplate",
+                                "interpolation": "runtime",
+                                "definition": "{{payload.name}} ({{ payload.publisherCountry }})"
+                              },
+                              "note": {
+                                "transformerType": "returnValue",
+                                "value": "x"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a parameter read by a mustache template cannot be removed",
+            "functionRef": {
+              "module": "miroir-core/2_domain/EndpointActionEdit",
+              "export": "removeEndpointActionParameter"
+            },
+            "arguments": [
+              {
+                "actionParameters": {
+                  "actionType": {
+                    "type": "literal",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": false
+                      }
+                    },
+                    "definition": "addPublisher"
+                  },
+                  "actionLabel": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "endpoint": {
+                    "type": "literal",
+                    "definition": "6b1f0d3c-4a2e-4b7f-9c1d-2e3f4a5b6c7d"
+                  },
+                  "payload": {
+                    "type": "object",
+                    "definition": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "country": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "actionImplementation": {
+                  "actionImplementationType": "compositeActionTemplate",
+                  "definition": {
+                    "actionType": "compositeActionSequence",
+                    "endpoint": "6b1f0d3c-4a2e-4b7f-9c1d-2e3f4a5b6c7d",
+                    "payload": {
+                      "actionSequence": [
+                        {
+                          "actionType": "createInstance",
+                          "actionLabel": "createPublisher",
+                          "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                          "payload": {
+                            "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                            "applicationSection": "data",
+                            "objects": [
+                              {
+                                "name": {
+                                  "transformerType": "mustacheStringTemplate",
+                                  "interpolation": "runtime",
+                                  "definition": "{{payload.name}} ({{ payload.country }})"
+                                },
+                                "note": {
+                                  "transformerType": "returnValue",
+                                  "value": "x"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              },
+              "country"
+            ],
+            "expectedError": "the action reads country: remove its reads first"
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a renamed parameter: a read of a mapList element named payload is not a read of the parameter",
+            "functionRef": {
+              "module": "miroir-core/2_domain/EndpointActionEdit",
+              "export": "renameEndpointActionParameter"
+            },
+            "arguments": [
+              {
+                "actionParameters": {
+                  "actionType": {
+                    "type": "literal",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": false
+                      }
+                    },
+                    "definition": "addPublisher"
+                  },
+                  "actionLabel": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "endpoint": {
+                    "type": "literal",
+                    "definition": "6b1f0d3c-4a2e-4b7f-9c1d-2e3f4a5b6c7d"
+                  },
+                  "payload": {
+                    "type": "object",
+                    "definition": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "country": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "actionImplementation": {
+                  "actionImplementationType": "compositeActionTemplate",
+                  "definition": {
+                    "actionType": "compositeActionSequence",
+                    "endpoint": "6b1f0d3c-4a2e-4b7f-9c1d-2e3f4a5b6c7d",
+                    "payload": {
+                      "actionSequence": [
+                        {
+                          "actionType": "createInstance",
+                          "actionLabel": "createPublisher",
+                          "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                          "payload": {
+                            "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                            "applicationSection": "data",
+                            "objects": [
+                              {
+                                "name": {
+                                  "transformerType": "mapList",
+                                  "interpolation": "runtime",
+                                  "referenceToOuterObject": "payload",
+                                  "applyTo": {
+                                    "transformerType": "getFromContext",
+                                    "interpolation": "runtime",
+                                    "referencePath": [
+                                      "payload",
+                                      "name"
+                                    ]
+                                  },
+                                  "elementTransformer": {
+                                    "transformerType": "getFromContext",
+                                    "interpolation": "runtime",
+                                    "referencePath": [
+                                      "payload",
+                                      "name"
+                                    ]
+                                  }
+                                },
+                                "note": {
+                                  "transformerType": "returnValue",
+                                  "value": "x"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              },
+              "name",
+              "publisherName"
+            ],
+            "assertions": [
+              {
+                "label": "applyTo follows, the element read is kept",
+                "resultAccessPath": [
+                  "actionImplementation",
+                  "definition"
+                ],
+                "expectedValue": {
+                  "actionType": "compositeActionSequence",
+                  "endpoint": "6b1f0d3c-4a2e-4b7f-9c1d-2e3f4a5b6c7d",
+                  "payload": {
+                    "actionSequence": [
+                      {
+                        "actionType": "createInstance",
+                        "actionLabel": "createPublisher",
+                        "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                        "payload": {
+                          "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                          "applicationSection": "data",
+                          "objects": [
+                            {
+                              "name": {
+                                "transformerType": "mapList",
+                                "interpolation": "runtime",
+                                "referenceToOuterObject": "payload",
+                                "applyTo": {
+                                  "transformerType": "getFromContext",
+                                  "interpolation": "runtime",
+                                  "referencePath": [
+                                    "payload",
+                                    "publisherName"
+                                  ]
+                                },
+                                "elementTransformer": {
+                                  "transformerType": "getFromContext",
+                                  "interpolation": "runtime",
+                                  "referencePath": [
+                                    "payload",
+                                    "name"
+                                  ]
+                                }
+                              },
+                              "note": {
+                                "transformerType": "returnValue",
+                                "value": "x"
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "an action from a Runner sequence: the tags of a template read the payload, the reads of a mapList element named like the Runner are kept",
+            "functionRef": {
+              "module": "miroir-core/2_domain/EndpointActionEdit",
+              "export": "compositeEndpointAction"
+            },
+            "arguments": [
+              {
+                "actionType": "addPublisher",
+                "endpointUuid": "6b1f0d3c-4a2e-4b7f-9c1d-2e3f4a5b6c7d",
+                "sequence": {
+                  "actionType": "compositeActionSequence",
+                  "actionLabel": "addPublisher",
+                  "endpoint": "6b1f0d3c-4a2e-4b7f-9c1d-2e3f4a5b6c7d",
+                  "payload": {
+                    "actionSequence": [
+                      {
+                        "actionType": "createInstance",
+                        "actionLabel": "createPublisher",
+                        "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                        "payload": {
+                          "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                          "applicationSection": "data",
+                          "objects": [
+                            {
+                              "name": {
+                                "transformerType": "mustacheStringTemplate",
+                                "interpolation": "build",
+                                "definition": "{{addPublisher.name}}!"
+                              },
+                              "country": {
+                                "transformerType": "getFromParameters",
+                                "interpolation": "runtime",
+                                "referencePath": [
+                                  "otherRunner",
+                                  "country"
+                                ]
+                              },
+                              "note": {
+                                "transformerType": "returnValue",
+                                "value": {
+                                  "transformerType": "getFromParameters",
+                                  "interpolation": "runtime",
+                                  "referencePath": [
+                                    "addPublisher",
+                                    "country"
+                                  ]
+                                }
+                              },
+                              "aliases": {
+                                "transformerType": "mapList",
+                                "interpolation": "runtime",
+                                "referenceToOuterObject": "addPublisher",
+                                "applyTo": {
+                                  "transformerType": "getFromParameters",
+                                  "interpolation": "runtime",
+                                  "referencePath": [
+                                    "addPublisher",
+                                    "aliases"
+                                  ]
+                                },
+                                "elementTransformer": {
+                                  "transformerType": "mustacheStringTemplate",
+                                  "interpolation": "runtime",
+                                  "definition": "{{addPublisher.name}}"
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                "runnerName": "addPublisher",
+                "fields": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "country": {
+                    "type": "string"
+                  }
+                }
+              }
+            ],
+            "expectedValue": {
+              "actionParameters": {
+                "actionType": {
+                  "type": "literal",
+                  "tag": {
+                    "value": {
+                      "canBeTemplate": false
+                    }
+                  },
+                  "definition": "addPublisher"
+                },
+                "actionLabel": {
+                  "type": "string",
+                  "optional": true
+                },
+                "endpoint": {
+                  "type": "literal",
+                  "definition": "6b1f0d3c-4a2e-4b7f-9c1d-2e3f4a5b6c7d"
+                },
+                "payload": {
+                  "type": "object",
+                  "definition": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "country": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "actionImplementation": {
+                "actionImplementationType": "compositeActionTemplate",
+                "definition": {
+                  "actionType": "compositeActionSequence",
+                  "actionLabel": "addPublisher",
+                  "endpoint": "6b1f0d3c-4a2e-4b7f-9c1d-2e3f4a5b6c7d",
+                  "payload": {
+                    "actionSequence": [
+                      {
+                        "actionType": "createInstance",
+                        "actionLabel": "createPublisher",
+                        "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                        "payload": {
+                          "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                          "applicationSection": "data",
+                          "objects": [
+                            {
+                              "name": {
+                                "transformerType": "mustacheStringTemplate",
+                                "interpolation": "build",
+                                "definition": "{{payload.name}}!"
+                              },
+                              "country": {
+                                "transformerType": "getFromParameters",
+                                "interpolation": "runtime",
+                                "referencePath": [
+                                  "otherRunner",
+                                  "country"
+                                ]
+                              },
+                              "note": {
+                                "transformerType": "returnValue",
+                                "value": {
+                                  "transformerType": "getFromParameters",
+                                  "interpolation": "runtime",
+                                  "referencePath": [
+                                    "addPublisher",
+                                    "country"
+                                  ]
+                                }
+                              },
+                              "aliases": {
+                                "transformerType": "mapList",
+                                "interpolation": "runtime",
+                                "referenceToOuterObject": "addPublisher",
+                                "applyTo": {
+                                  "transformerType": "getFromContext",
+                                  "interpolation": "runtime",
+                                  "referencePath": [
+                                    "payload",
+                                    "aliases"
+                                  ]
+                                },
+                                "elementTransformer": {
+                                  "transformerType": "mustacheStringTemplate",
+                                  "interpolation": "runtime",
+                                  "definition": "{{addPublisher.name}}"
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
           }
         ]
       }

@@ -1,5 +1,6 @@
 import type { MlElement } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { EndpointActionRegistry } from "./EndpointActionRegistry";
+import { transformerEnvironmentAt } from "./TransformerEnvironmentBindings";
 
 // ################################################################################################
 // Issue #506 (analysis #497, G9) — composite Endpoint actions built and edited with blocks.
@@ -11,6 +12,8 @@ import type { EndpointActionRegistry } from "./EndpointActionRegistry";
 // - A sequence of the sequence editor becomes an action: the Runner's form fields become its
 //   parameters, and the reads of `[runner, field]` become reads of `["payload", field]`.
 // - Action types are global across Endpoints, so a new action type must be free in the registry.
+// - A `mustacheStringTemplate` reads by its tags (`{{payload.p}}`); a name bound in the body (a
+//   `mapList` element named `payload`, ...) hides the context's `payload` from the reads under it.
 // ################################################################################################
 
 type Path = (string | number)[];
@@ -19,6 +22,7 @@ export const ENDPOINT_ENTITY_UUID = "3d8da4d4-8f76-4bb4-9212-14869d81c00c";
 const PAYLOAD = "payload";
 const NAME = /^[A-Za-z_][A-Za-z0-9_]*$/;
 const READ_TYPES = new Set(["getFromParameters", "getFromContext"]);
+const NO_NAMES = { contextNames: [], parameterNames: [] };
 
 export interface EndpointActionHat {
   /** The action type. */
@@ -45,27 +49,103 @@ function updateAt(value: unknown, path: Path, update: (current: unknown) => unkn
   return { ...base, [head]: updateAt(base[head], rest, update) };
 }
 
-/** The reads in `value` whose path starts with `prefix` (`referenceName` counts as a one-segment path); quoted values are not read. */
-function readPaths(value: unknown, prefix: string[], path: Path = []): { path: Path; segments: unknown[] }[] {
+/**
+ * A mustache tag and the path it reads: `{{name.path}}`, `{{{name}}}`, `{{&name}}` and the section
+ * tags `{{#name}}`, `{{^name}}`, `{{/name}}`. Comments, partials, delimiter changes and `{{.}}`
+ * read nothing.
+ */
+const MUSTACHE_TAG = /\{\{(\s*)(\{|&|#|\^|\/)?(\s*)([^\s.{}!>=#^/&][^\s{}]*)/g;
+
+function isTemplate(node: Record<string, unknown>): node is Record<string, unknown> & { definition: string } {
+  return node.transformerType === "mustacheStringTemplate" && typeof node.definition === "string";
+}
+
+function startsWith(segments: unknown[], prefix: string[]): boolean {
+  return prefix.every((segment, index) => segments[index] === segment);
+}
+
+/**
+ * A node of `value` that reads: a `getFromParameters` or `getFromContext` node (`referenceName`
+ * counts as a one-segment path) or a `mustacheStringTemplate`, by its tags. `context` when it
+ * reads the context at runtime, where a name bound around it (a `mapList` element, ...) hides the
+ * name of the body's context.
+ */
+type Read = { path: Path; segments: unknown[][]; context: boolean };
+
+/** The reading nodes of `value`; quoted values are not read. */
+function reads(value: unknown, path: Path = []): Read[] {
   if (Array.isArray(value)) {
-    return value.flatMap((item, index) => readPaths(item, prefix, [...path, index]));
+    return value.flatMap((item, index) => reads(item, [...path, index]));
   }
   if (!isRecord(value)) {
     return [];
   }
-  const segments: unknown[] | undefined = !READ_TYPES.has(String(value.transformerType))
-    ? undefined
-    : typeof value.referenceName === "string" && value.referenceName.length > 0
-      ? [value.referenceName]
-      : Array.isArray(value.referencePath)
-        ? value.referencePath
-        : undefined;
-  const own =
-    segments && prefix.every((segment, index) => segments[index] === segment) ? [{ path, segments }] : [];
+  const own: Read[] = [];
+  if (READ_TYPES.has(String(value.transformerType))) {
+    const segments =
+      typeof value.referenceName === "string" && value.referenceName.length > 0
+        ? [value.referenceName]
+        : Array.isArray(value.referencePath)
+          ? value.referencePath
+          : undefined;
+    if (segments) {
+      own.push({ path, segments: [segments], context: value.transformerType === "getFromContext" });
+    }
+  }
+  if (isTemplate(value)) {
+    own.push({
+      path,
+      segments: [...value.definition.matchAll(MUSTACHE_TAG)].map((match) => match[4].split(".")),
+      context: value.interpolation === "runtime",
+    });
+  }
   const nested = Object.entries(value)
     .filter(([key]) => !(value.transformerType === "returnValue" && key === "value"))
-    .flatMap(([key, entry]) => readPaths(entry, prefix, [...path, key]));
+    .flatMap(([key, entry]) => reads(entry, [...path, key]));
   return [...own, ...nested];
+}
+
+/** The reads in `body` of paths starting with `prefix`, but the context reads where a name bound in `body` hides `prefix[0]`. */
+function readsOf(body: unknown, prefix: string[]): Read[] {
+  return reads(body)
+    .map((read) => ({ ...read, segments: read.segments.filter((segments) => startsWith(segments, prefix)) }))
+    .filter(
+      (read) =>
+        read.segments.length > 0 &&
+        !(read.context && transformerEnvironmentAt(body, read.path, NO_NAMES).contextNames.includes(prefix[0])),
+    );
+}
+
+/**
+ * `body` with the reads of `readsOf(body, prefix)` reading `rewrite(segments)`; their nodes read
+ * the context when `toContext`.
+ */
+function rewriteReads(body: unknown, prefix: string[], rewrite: (segments: unknown[]) => unknown[], toContext: boolean): unknown {
+  return readsOf(body, prefix).reduce(
+    (current, read) =>
+      updateAt(current, read.path, (node) => {
+        const record = node as Record<string, unknown>;
+        if (isTemplate(record)) {
+          return {
+            ...record,
+            definition: record.definition.replace(
+              MUSTACHE_TAG,
+              (tag, before: string, sigil: string | undefined, after: string, name: string) =>
+                startsWith(name.split("."), prefix)
+                  ? `{{${before}${sigil ?? ""}${after}${rewrite(name.split(".")).join(".")}`
+                  : tag,
+            ),
+          };
+        }
+        const { referenceName: _name, referencePath: _path, ...rest } = record;
+        return {
+          ...rest,
+          ...(toContext ? { transformerType: "getFromContext" } : {}),
+          referencePath: rewrite(read.segments[0]),
+        };
+      }),
+    body,
+  );
 }
 
 function compositeBody(action: unknown): unknown {
@@ -93,8 +173,8 @@ function payloadParameters(action: unknown): Record<string, MlElement> | undefin
 export function endpointActionParameterReads(action: unknown): string[] {
   return [
     ...new Set(
-      readPaths(compositeBody(action), [PAYLOAD])
-        .map((read) => read.segments[1])
+      readsOf(compositeBody(action), [PAYLOAD])
+        .flatMap((read) => read.segments.map((segments) => segments[1]))
         .filter((segment): segment is string => typeof segment === "string"),
     ),
   ];
@@ -160,12 +240,11 @@ export function renameEndpointActionParameter(action: unknown, from: string, to:
     action,
     Object.fromEntries(Object.entries(parameters).map(([name, schema]) => [name === from ? to : name, schema])),
   );
-  const body = readPaths(compositeBody(action), [PAYLOAD, from]).reduce(
-    (current, read) =>
-      updateAt(current, [...read.path, "referencePath"], () =>
-        read.segments.map((segment, index) => (index === 1 ? to : segment)),
-      ),
+  const body = rewriteReads(
     compositeBody(action),
+    [PAYLOAD, from],
+    (segments) => segments.map((segment, index) => (index === 1 ? to : segment)),
+    false,
   );
   return updateAt(renamed, ["actionImplementation", "definition"], () => body) as Record<string, unknown>;
 }
@@ -203,14 +282,7 @@ export function compositeEndpointAction(params: {
   if (params.registry && Object.hasOwn(params.registry, params.actionType)) {
     throw new Error(`the action ${params.actionType} exists in the Endpoint ${params.registry[params.actionType].endpointName}`);
   }
-  const body = readPaths(params.sequence, [params.runnerName]).reduce(
-    (current, read) =>
-      updateAt(current, read.path, (node) => {
-        const { referenceName: _name, referencePath: _path, ...rest } = node as Record<string, unknown>;
-        return { ...rest, transformerType: "getFromContext", referencePath: [PAYLOAD, ...read.segments.slice(1)] };
-      }),
-    params.sequence,
-  );
+  const body = rewriteReads(params.sequence, [params.runnerName], (segments) => [PAYLOAD, ...segments.slice(1)], true);
   return {
     actionParameters: {
       actionType: { type: "literal", tag: { value: { canBeTemplate: false } }, definition: params.actionType },

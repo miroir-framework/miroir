@@ -97,3 +97,12 @@ Cases (in "SequenceEditor on the Library"): AC 1, the Runner addPlainPublisher g
 `docs/reference/transformers.md` (composite Endpoint actions); nonreg filesystem shared runner; PR into `_integration` with `Closes #506`.
 
 **Realization (✅):** the section "Composite Endpoint actions: define blocks and Save as Action" in `docs/reference/transformers.md`. Pre-push gate clean (3039 core unit tests). `nonreg:filesystem --runner shared`: 103 passed, 4 failed, the MiroirTestDisplay steps of #510, failing the same way on `_integration`.
+
+## Review of PR #524
+
+Three findings, all fixed:
+- **Template reads.** The reads of a parameter missed the tags of a `mustacheStringTemplate` (`{{newRunner.publisherName}}`), so a conversion left them reading the Runner and a rename left them reading the old name. A template now reads by its tags, at build or runtime (both see the payload: the build parameters of a composite action hold the action, and its context too); conversion and rename rewrite the tags, the read flags and the removal check count them.
+- **Shadowed `payload`.** A name bound in the body (`referenceToOuterObject: "payload"` of a `mapList`, a dataflow step, …) hides the parameters from the runtime reads under it. The reads, the rename and the conversion (for the Runner's name) skip those, through `transformerEnvironmentAt` (#501). Build reads (`getFromParameters`, build templates) are not hidden.
+- **Retry after a failed Runner.** With both switches on, a Runner that failed after its action was saved could not be retried: the action type was then taken. `SequenceEditor` remembers the action it saved; a save under the same name creates only the Runner.
+
+Five `fn.blockModel` cases ("endpoint actions": template reads, rename and removal; a `mapList` element named `payload`; a conversion with a build template and an element named like the Runner). `fn.blockModel` 99/99, `ui.blockEditing` 54/54, 3044 core unit tests.

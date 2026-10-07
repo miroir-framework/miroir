@@ -312,6 +312,8 @@ function SequenceEditorForm(
   const [saveStatus, setSaveStatus] = useState<SaveStatus>(undefined);
   const [saving, setSaving] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
+  // the action saved by the dialog, so a retry after its Runner failed saves the Runner only
+  const [savedAction, setSavedAction] = useState<{ name: string; endpointUuid: Uuid } | undefined>(undefined);
 
   /** Saves `instance`; the saved message names it `what`. */
   const save = async (
@@ -395,7 +397,7 @@ function SequenceEditorForm(
       definition: { runnerType: "actionRunner", endpoint: endpointUuid, action: name },
     };
     if (!(await save(actionRunner, "createInstance", `Action ${name} and its Runner`))) {
-      return "the action was saved, its Runner was not";
+      return "the action was saved, its Runner was not: save again to create the Runner";
     }
     props.onActionRunnerCreated(actionRunner.uuid);
     return undefined;
@@ -408,10 +410,14 @@ function SequenceEditorForm(
     if (request.createRunner && props.runnerNames.includes(request.name)) {
       return `a Runner named ${request.name} exists: choose another name`;
     }
-    const created = await createAction(request.name, request.endpoint);
+    const created =
+      request.createRunner && savedAction?.name === request.name
+        ? savedAction
+        : await createAction(request.name, request.endpoint);
     if (typeof created === "string") {
       return created;
     }
+    setSavedAction({ name: request.name, endpointUuid: created.endpointUuid });
     return request.createRunner ? createActionRunner(request.name, request.label, created.endpointUuid) : undefined;
   };
 
