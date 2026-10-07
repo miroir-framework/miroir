@@ -35,6 +35,13 @@ export {
 
 export { CodeBlock_ReadOnly } from "./components/CodeBlock_ReadOnly.js";
 
+// Block editor colors (#498)
+export {
+  blockCategoryColor,
+  defaultBlockEditorColors,
+  type BlockEditorColors,
+} from "./components/Themes/BlockEditorColors.js";
+
 // Feedback glow (#438)
 export {
   acquireFeedbackGlowStyles,

@@ -986,7 +986,7 @@ Identity under projection uses `resolveProjectionIdentityFields` → `getEntityP
 
 | File | Store / config | Focus |
 |------|----------------|-------|
-| `miroir-component-tests.unit.test.tsx` | In-memory `LocalCache`; no `--profile` | ML editor components and the TransformerEditor, run from the 10 component MiroirTest instances: 7 per-editor instances (`ui.mlElementEditor.enum`, …), the test pattern, the on-demand render-performance suite (#286, #292, #303) and `ui.transformerEditor` (#406) |
+| `miroir-component-tests.unit.test.tsx` | In-memory `LocalCache`; no `--profile` | ML editor components, the TransformerEditor and the block view, run from the 11 component MiroirTest instances: 7 per-editor instances (`ui.mlElementEditor.enum`, …), the test pattern, the on-demand render-performance suite (#286, #292, #303), `ui.transformerEditor` (#406) and `ui.blockEditor` (#498) |
 | `MiroirTestDisplayIntegrationLaunch.integ.test.tsx` | Node emulated SQL via mocked launcher environment | `MiroirTestDisplay` launches integration and shows the result inspector |
 | `MiroirTestListIntegrationLaunch.integ.test.tsx` | Node emulated SQL via mocked launcher environment | List **Run All Integration Tests** batch for `tr.core` (filtered leaf) |
 | `MlElementEditorReactCodeMirror.test.tsx` | — | CodeMirror sub-editor (currently commented out) |
@@ -1046,7 +1046,7 @@ The root of `definition` is a `miroirTestSuite` whose label is the instance name
 
 | Node | Attribute | Meaning |
 |---|---|---|
-| `reactComponentTestSuite` | `component` | Name of the rendered component in the app's component registry (`componentTests/componentRegistry.ts`). The registry has two entries, `MlElementEditor` and `TransformerEditor` (#406) |
+| `reactComponentTestSuite` | `component` | Name of the rendered component in the app's component registry (`componentTests/componentRegistry.ts`). The registry has three entries: `MlElementEditor`, `TransformerEditor` (#406) and `TransformerBlocks` (#498), the block view of a stored TransformerDefinition's body named by `transformerDefinition`, with an optional `buildMarking`. `MlElementEditor` takes `blockViewSwitch: true` to offer the Blocks / Form / JSON switch on transformer fields |
 | | `componentProps` (optional) | Default props of the leaves |
 | | `skip` (optional) | Skips every leaf of the suite |
 | | `runOnDemand` (optional) | `true`: the suite runs only when asked for. The vitest entry skips it unless `MIROIR_COMPONENT_PERF=1`; Miroir Tests "Run All Unit Tests" records its leaves as skipped; the unit Run button of the instance runs it. Unlike `skip`, the suite still runs when launched on its own (#303) |
@@ -1204,7 +1204,7 @@ The entry `tests/4_view/miroir-component-tests.unit.test.tsx` loads every instan
 **Add or change a case**
 
 1. Edit the instance JSON of the editor: add or change a leaf in its `reactComponentTestSuite`, with the label `<editor>: <case>`.
-2. When a case of a per-editor instance is added, removed, or renamed, update the reduced case list `tests/4_view/issues/292-declarative-react-component-tests/baseline-component-cases.txt` (checked by `componentTestInstances.292.phase1`). For any new leaf, update `EXPECTED_LEAF_COUNT` in the vitest entry (today 95: it counts every leaf of the folder, on-demand ones included), and `EXPECTED_ON_DEMAND_LEAF_COUNT` (today 15) for a leaf under a `runOnDemand` suite.
+2. When a case of a per-editor instance is added, removed, or renamed, update the reduced case list `tests/4_view/issues/292-declarative-react-component-tests/baseline-component-cases.txt` (checked by `componentTestInstances.292.phase1`). For any new leaf, update `EXPECTED_LEAF_COUNT` in the vitest entry (today 125: it counts every leaf of the folder, on-demand ones included), and `EXPECTED_ON_DEMAND_LEAF_COUNT` (today 15) for a leaf under a `runOnDemand` suite.
 3. Rebuild the deployment package and check the instances:
 
 ```bash
@@ -1214,7 +1214,7 @@ npm run testByFile -w miroir-standalone-app -- componentMiroirTests.consistency
 npm run testByFile -w miroir-standalone-app -- miroir-component-tests -t "<editor>"
 ```
 
-A new instance also needs its export and declaration in `miroir-app-miroir` (`index.ts`, `index.d.ts`), its entry in `defaultMiroirMetaModel.tests` (`src/Model.ts`), and the instance counts of the vitest entry (`EXPECTED_INSTANCE_COUNT`, today 10) and `componentMiroirTests.consistency` (10), plus its name and uuid in `laterComponentInstances` of `componentTestInstances.292.phase1`. A component other than `MlElementEditor` needs an entry in `componentTests/componentRegistry.ts`: the component, or `{component, fieldNamePrefix}` when its form fields are not under `TESTSECTION.` (the `field` of the steps is relative to that prefix; the TransformerEditor's is `""`). The runner gives each case a context whose `toolsPageState` starts empty and is not written to `sessionStorage`, so a TransformerEditor case does not see the previous case's state, nor touch the app's. A new step kind needs a schema change (the `reactComponentTestStep` union in the MiroirTest Entity and EntityVersion, then `npm run devBuild -w miroir-core`) and a handler in `runComponentTestSteps.ts`.
+A new instance also needs its export and declaration in `miroir-app-miroir` (`index.ts`, `index.d.ts`), its entry in `defaultMiroirMetaModel.tests` (`src/Model.ts`), and the instance counts of the vitest entry (`EXPECTED_INSTANCE_COUNT`, today 11) and `componentMiroirTests.consistency` (11), plus its name and uuid in `laterComponentInstances` of `componentTestInstances.292.phase1`. A component other than `MlElementEditor` needs an entry in `componentTests/componentRegistry.ts`: the component, or `{component, fieldNamePrefix}` when its form fields are not under `TESTSECTION.` (the `field` of the steps is relative to that prefix; the TransformerEditor's is `""`). The runner gives each case a context whose `toolsPageState` starts empty and is not written to `sessionStorage`, so a TransformerEditor case does not see the previous case's state, nor touch the app's. A new step kind needs a schema change (the `reactComponentTestStep` union in the MiroirTest Entity and EntityVersion, then `npm run devBuild -w miroir-core`) and a handler in `runComponentTestSteps.ts`.
 
 To check that a new case asserts something, change one value of its `expectedValue` or `expectElement` check, run it, and see it fail with the message above.
 

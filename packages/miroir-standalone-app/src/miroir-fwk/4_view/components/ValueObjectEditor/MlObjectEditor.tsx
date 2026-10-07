@@ -1439,12 +1439,14 @@ export function MlObjectEditor(props: MlObjectEditorProps) {
           <span id={rootLessListKey + "head"} key={rootLessListKey + "head"}>
             <FoldUnfoldObjectOrArray
               listKey={listKey}
+              reportSectionPathAsString={reportSectionPathAsString}
               rootLessListKeyArray={rootLessListKeyArray}
               currentValue={currentValueObjectAtKey}
               unfoldingDepth={unfoldingDepth}
             ></FoldUnfoldObjectOrArray>
             <FoldUnfoldObjectOrArray
               listKey={listKey}
+              reportSectionPathAsString={reportSectionPathAsString}
               rootLessListKeyArray={rootLessListKeyArray}
               currentValue={currentValueObjectAtKey}
               unfoldingDepth={Infinity}

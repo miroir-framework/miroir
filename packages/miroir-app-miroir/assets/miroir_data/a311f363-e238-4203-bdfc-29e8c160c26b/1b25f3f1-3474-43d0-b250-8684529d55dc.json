@@ -1,0 +1,808 @@
+{
+  "uuid": "1b25f3f1-3474-43d0-b250-8684529d55dc",
+  "parentName": "MiroirTest",
+  "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+  "name": "ui.blockEditor",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "description": "Block view of transformers: the TransformerEditor's Blocks / Form / JSON switch starts on Form, Blocks draws the transformer as blocks and Form brings the form back; the blocks of a stored TransformerDefinition show slots, parameters, object and list blocks and ML schema chips, collapse one by one or all at once, and zoom.",
+  "tags": [
+    "ui",
+    "editor",
+    "transformer"
+  ],
+  "issue": "498",
+  "definition": {
+    "miroirTestType": "miroirTestSuite",
+    "miroirTestLabel": "ui.blockEditor",
+    "miroirTests": [
+      {
+        "miroirTestType": "reactComponentTestSuite",
+        "miroirTestLabel": "TransformerEditor",
+        "component": "TransformerEditor",
+        "componentProps": {
+          "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+          "entityUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad"
+        },
+        "miroirTests": [
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: the transformer shows the view switch on Form",
+            "steps": [
+              {
+                "step": "waitForAttribute",
+                "label": "Form is selected",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:form"
+                },
+                "attribute": "aria-pressed",
+                "value": "true",
+                "timeout": 2000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "Blocks is not selected",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                },
+                "attribute": "aria-pressed",
+                "value": "false"
+              },
+              {
+                "step": "expectElement",
+                "label": "form editor",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.transformerType"
+                },
+                "value": "returnValue"
+              },
+              {
+                "step": "expectElement",
+                "label": "no block view",
+                "target": {
+                  "byTestId": "block-editor:transformer"
+                },
+                "present": false
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: Blocks shows the transformer as blocks, Form brings the form back",
+            "steps": [
+              {
+                "step": "click",
+                "label": "choose Blocks",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "root block is returnValue",
+                "target": {
+                  "byTestId": "block:transformer"
+                },
+                "attribute": "data-transformer-type",
+                "value": "returnValue",
+                "timeout": 3000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "returnValue is a value block",
+                "target": {
+                  "byTestId": "block:transformer"
+                },
+                "attribute": "data-category",
+                "value": "value"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "value blocks have the theme's value color",
+                "target": {
+                  "byTestId": "block:transformer"
+                },
+                "attribute": "data-block-color",
+                "value": "#23824a"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "Blocks is selected",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                },
+                "attribute": "aria-pressed",
+                "value": "true"
+              },
+              {
+                "step": "expectElement",
+                "label": "form editor hidden",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.transformerType"
+                },
+                "present": false
+              },
+              {
+                "step": "click",
+                "label": "choose Form",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:form"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "form editor back",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.transformerType"
+                },
+                "value": "returnValue",
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "block view gone",
+                "target": {
+                  "byTestId": "block-editor:transformer"
+                },
+                "present": false
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: JSON shows the current transformer as JSON, Form after JSON shows the same values",
+            "steps": [
+              {
+                "step": "change",
+                "label": "edit the returned value in the form",
+                "target": {
+                  "byDisplayValue": "seize value..."
+                },
+                "value": "new value"
+              },
+              {
+                "step": "click",
+                "label": "choose JSON",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:json"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "JSON is selected",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:json"
+                },
+                "attribute": "aria-pressed",
+                "value": "true"
+              },
+              {
+                "step": "expectElement",
+                "label": "the JSON holds the edited value",
+                "target": {
+                  "byText": {
+                    "regex": "\"value\": \"new value\""
+                  }
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "no form field for the value",
+                "target": {
+                  "byDisplayValue": "new value"
+                },
+                "present": false
+              },
+              {
+                "step": "click",
+                "label": "choose Form",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:form"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the form shows the edited value",
+                "target": {
+                  "byDisplayValue": "new value"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "JSON gone",
+                "target": {
+                  "byText": {
+                    "regex": "\"value\": \"new value\""
+                  }
+                },
+                "present": false
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: turning the field's structured view off selects JSON in the view switch",
+            "steps": [
+              {
+                "step": "waitForAttribute",
+                "label": "Form is selected",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:form"
+                },
+                "attribute": "aria-pressed",
+                "value": "true",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "turn the field's structured view off",
+                "target": {
+                  "byTestId": "display-as-structured-element:transformer"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the view switch says JSON",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:json"
+                },
+                "attribute": "aria-pressed",
+                "value": "true",
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the JSON holds the value",
+                "target": {
+                  "byText": {
+                    "regex": "\"value\": \"seize value...\""
+                  }
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "no form field for the value",
+                "target": {
+                  "byDisplayValue": "seize value..."
+                },
+                "present": false
+              },
+              {
+                "step": "click",
+                "label": "choose Form",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:form"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the form is back",
+                "target": {
+                  "byDisplayValue": "seize value..."
+                },
+                "timeout": 2000
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "miroirTestType": "reactComponentTestSuite",
+        "miroirTestLabel": "MlElementEditor",
+        "component": "MlElementEditor",
+        "componentProps": {
+          "label": "Test Label",
+          "name": "testField",
+          "listKey": "ROOT.testField",
+          "rootLessListKey": "testField",
+          "rootLessListKeyArray": [
+            "testField"
+          ],
+          "blockViewSwitch": true,
+          "rawMlSchema": {
+            "type": "object",
+            "definition": {
+              "transformer": {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "coreTransformerForBuildPlusRuntime"
+                }
+              }
+            }
+          },
+          "initialFormState": {
+            "transformer": {
+              "transformerType": "returnValue",
+              "interpolation": "runtime",
+              "value": "kept"
+            }
+          }
+        },
+        "miroirTests": [
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "MlElementEditor: Blocks stays chosen when the enclosing object is folded and unfolded",
+            "steps": [
+              {
+                "step": "click",
+                "label": "choose Blocks",
+                "target": {
+                  "byTestId": "block-view-mode:testField.transformer:blocks"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "root block shown",
+                "target": {
+                  "byTestId": "block:testField.transformer"
+                },
+                "attribute": "data-transformer-type",
+                "value": "returnValue",
+                "timeout": 3000
+              },
+              {
+                "step": "click",
+                "label": "fold the enclosing object",
+                "target": {
+                  "byTestId": "fold-unfold:TESTSECTION.testField"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the transformer field is unmounted",
+                "target": {
+                  "byTestId": "block-view-switch:testField.transformer"
+                },
+                "present": false,
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "unfold every level of the enclosing object",
+                "target": {
+                  "byTestId": "fold-unfold-all:TESTSECTION.testField"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "Blocks is still selected",
+                "target": {
+                  "byTestId": "block-view-mode:testField.transformer:blocks"
+                },
+                "attribute": "aria-pressed",
+                "value": "true",
+                "timeout": 2000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "root block shown again",
+                "target": {
+                  "byTestId": "block:testField.transformer"
+                },
+                "attribute": "data-transformer-type",
+                "value": "returnValue",
+                "timeout": 3000
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "miroirTestType": "reactComponentTestSuite",
+        "miroirTestLabel": "TransformerBlocks",
+        "component": "TransformerBlocks",
+        "componentProps": {
+          "transformerDefinition": "entityDefinition_extractAttributes"
+        },
+        "miroirTests": [
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerBlocks: entityDefinition_extractAttributes is a filterList block with its predicate and applyTo rows",
+            "steps": [
+              {
+                "step": "waitForAttribute",
+                "label": "root block is filterList",
+                "target": {
+                  "byTestId": "block:transformerImplementation.definition"
+                },
+                "attribute": "data-transformer-type",
+                "value": "filterList",
+                "timeout": 3000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "filterList is a list block",
+                "target": {
+                  "byTestId": "block:transformerImplementation.definition"
+                },
+                "attribute": "data-category",
+                "value": "list"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "list blocks have the theme's list color",
+                "target": {
+                  "byTestId": "block:transformerImplementation.definition"
+                },
+                "attribute": "data-block-color",
+                "value": "#2f6fd6"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "boolExpr is an operator block",
+                "target": {
+                  "byTestId": "block:transformerImplementation.definition.predicate"
+                },
+                "attribute": "data-category",
+                "value": "operator"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "referenceToOuterObject in the header",
+                "target": {
+                  "byTestId": "block-parameter:transformerImplementation.definition.referenceToOuterObject"
+                },
+                "attribute": "data-value",
+                "value": "\"attribute\""
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "a header value has its full text as a tooltip",
+                "target": {
+                  "byText": "\"attribute\""
+                },
+                "attribute": "title",
+                "value": "\"attribute\""
+              },
+              {
+                "step": "expectElement",
+                "label": "predicate row",
+                "target": {
+                  "byTestId": "block-row:transformerImplementation.definition.predicate"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "applyTo row",
+                "target": {
+                  "byTestId": "block-row:transformerImplementation.definition.applyTo"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "predicate is a boolExpr block",
+                "target": {
+                  "byTestId": "block:transformerImplementation.definition.predicate"
+                },
+                "attribute": "data-transformer-type",
+                "value": "boolExpr"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "a block has the id of the form card at its path",
+                "target": {
+                  "byTestId": "block:transformerImplementation.definition.applyTo.applyTo"
+                },
+                "attribute": "id",
+                "value": "transformerImplementation.definition.applyTo.applyTo"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerBlocks: collapsing a block hides its rows and says how many",
+            "steps": [
+              {
+                "step": "click",
+                "label": "collapse the root",
+                "target": {
+                  "byTestId": "block-collapse:transformerImplementation.definition"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the root is collapsed",
+                "target": {
+                  "byTestId": "block-collapse:transformerImplementation.definition"
+                },
+                "attribute": "aria-expanded",
+                "value": "false",
+                "timeout": 3000
+              },
+              {
+                "step": "expectElement",
+                "label": "predicate row hidden",
+                "target": {
+                  "byTestId": "block-row:transformerImplementation.definition.predicate"
+                },
+                "present": false
+              },
+              {
+                "step": "expectElement",
+                "label": "summary",
+                "target": {
+                  "byText": "2 slots hidden"
+                }
+              },
+              {
+                "step": "click",
+                "label": "expand the root",
+                "target": {
+                  "byTestId": "block-collapse:transformerImplementation.definition"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "predicate row back",
+                "target": {
+                  "byTestId": "block-row:transformerImplementation.definition.predicate"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "summary gone",
+                "target": {
+                  "byText": "2 slots hidden"
+                },
+                "present": false
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerBlocks: collapse all and expand all",
+            "steps": [
+              {
+                "step": "click",
+                "label": "collapse all",
+                "target": {
+                  "byTestId": "block-collapse-all"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the root is collapsed",
+                "target": {
+                  "byTestId": "block-collapse:transformerImplementation.definition"
+                },
+                "attribute": "aria-expanded",
+                "value": "false",
+                "timeout": 3000
+              },
+              {
+                "step": "expectElement",
+                "label": "predicate row hidden",
+                "target": {
+                  "byTestId": "block-row:transformerImplementation.definition.predicate"
+                },
+                "present": false
+              },
+              {
+                "step": "click",
+                "label": "expand all",
+                "target": {
+                  "byTestId": "block-expand-all"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "a nested block is expanded",
+                "target": {
+                  "byTestId": "block-collapse:transformerImplementation.definition.predicate.left"
+                },
+                "attribute": "aria-expanded",
+                "value": "true"
+              },
+              {
+                "step": "expectElement",
+                "label": "nested predicate row shown",
+                "target": {
+                  "byTestId": "block-row:transformerImplementation.definition.predicate.left.predicate"
+                }
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerBlocks: zooming out and in changes the zoom level",
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "zoom starts at 100 %",
+                "target": {
+                  "byText": "100 %"
+                },
+                "timeout": 3000
+              },
+              {
+                "step": "click",
+                "label": "zoom out",
+                "target": {
+                  "byTestId": "block-zoom-out"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "zoom at 90 %",
+                "target": {
+                  "byText": "90 %"
+                }
+              },
+              {
+                "step": "click",
+                "label": "zoom in",
+                "target": {
+                  "byTestId": "block-zoom-in"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "zoom back at 100 %",
+                "target": {
+                  "byText": "100 %"
+                }
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerBlocks: spreadSheetToMlSchema shows object and list blocks and an ML schema chip",
+            "componentProps": {
+              "transformerDefinition": "spreadSheetToMlSchema"
+            },
+            "steps": [
+              {
+                "step": "waitForAttribute",
+                "label": "root block is dataflowObject",
+                "target": {
+                  "byTestId": "block:transformerImplementation.definition"
+                },
+                "attribute": "data-transformer-type",
+                "value": "dataflowObject",
+                "timeout": 3000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the steps of the dataflow are an object block",
+                "target": {
+                  "byTestId": "block:transformerImplementation.definition.definition"
+                },
+                "attribute": "data-block-kind",
+                "value": "object"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the createObject definition is an object block",
+                "target": {
+                  "byTestId": "block:transformerImplementation.definition.definition.schema.definition"
+                },
+                "attribute": "data-block-kind",
+                "value": "object"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the createObjectFromPairs definition is a list block",
+                "target": {
+                  "byTestId": "block:transformerImplementation.definition.definition.splitAttributeDefinitions.elementTransformer.definition"
+                },
+                "attribute": "data-block-kind",
+                "value": "list"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the returnValue mlSchema is a chip",
+                "target": {
+                  "byTestId": "block:transformerImplementation.definition.definition.completeAttributeDefinitions.definition.mlSchema"
+                },
+                "attribute": "data-block-kind",
+                "value": "mlSchema"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the returnValue value is quoted",
+                "target": {
+                  "byTestId": "block:transformerImplementation.definition.definition.completeAttributeDefinitions.definition.value"
+                },
+                "attribute": "data-block-kind",
+                "value": "quoted"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerBlocks: build blocks have a dashed outline by default, runtime blocks no mark",
+            "steps": [
+              {
+                "step": "waitForAttribute",
+                "label": "filterList without interpolation is build",
+                "target": {
+                  "byTestId": "block:transformerImplementation.definition"
+                },
+                "attribute": "data-interpolation",
+                "value": "build",
+                "timeout": 3000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the build block has a dashed outline",
+                "target": {
+                  "byTestId": "block:transformerImplementation.definition"
+                },
+                "attribute": "data-build-marking",
+                "value": "dashedOutline"
+              },
+              {
+                "step": "expectElement",
+                "label": "no build marker",
+                "target": {
+                  "byTestId": "block-build-marker:transformerImplementation.definition"
+                },
+                "present": false
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the predicate is runtime",
+                "target": {
+                  "byTestId": "block:transformerImplementation.definition.predicate"
+                },
+                "attribute": "data-interpolation",
+                "value": "runtime"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the runtime block has no mark",
+                "target": {
+                  "byTestId": "block:transformerImplementation.definition.predicate"
+                },
+                "attribute": "data-build-marking",
+                "value": "none"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerBlocks: with the marker setting, build blocks show a build marker instead",
+            "componentProps": {
+              "transformerDefinition": "entityDefinition_extractAttributes",
+              "buildMarking": "marker"
+            },
+            "steps": [
+              {
+                "step": "waitForAttribute",
+                "label": "the build block is marked with a marker",
+                "target": {
+                  "byTestId": "block:transformerImplementation.definition"
+                },
+                "attribute": "data-build-marking",
+                "value": "marker",
+                "timeout": 3000
+              },
+              {
+                "step": "expectElement",
+                "label": "build marker",
+                "target": {
+                  "byTestId": "block-build-marker:transformerImplementation.definition"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "no marker on the runtime predicate",
+                "target": {
+                  "byTestId": "block-build-marker:transformerImplementation.definition.predicate"
+                },
+                "present": false
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

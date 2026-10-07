@@ -22,7 +22,7 @@ The simplest library transformer - returns a constant value.
   "parentUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
   "parentDefinitionVersionUuid": "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
   "parentName": "TransformerDefinition",
-  "classification": "basic",
+  "classification": "value",
   "transformerInterface": {
     "inputOutput": {
       "input": "any",
@@ -218,7 +218,7 @@ A transformer with multiple operators (enum transformerType) and inner transform
   "parentUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
   "parentDefinitionVersionUuid": "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
   "parentName": "TransformerDefinition",
-  "classification": "basic",
+  "classification": "control",
   "transformerInterface": {
     "inputOutput": {
       "input": "any",

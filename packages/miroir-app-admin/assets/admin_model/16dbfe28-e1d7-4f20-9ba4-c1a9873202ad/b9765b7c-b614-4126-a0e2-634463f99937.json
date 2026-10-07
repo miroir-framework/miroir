@@ -198,6 +198,24 @@
             }
           }
         }
+      },
+      "blockEditorBuildMarking": {
+        "type": "enum",
+        "optional": true,
+        "definition": [
+          "dashedOutline",
+          "marker"
+        ],
+        "tag": {
+          "value": {
+            "id": 18,
+            "defaultLabel": "Build marking in the block editor",
+            "description": "How the block editor marks build transformers, runtime ones being unmarked: a dashed outline or a \"build\" marker. Absent: dashed outline.",
+            "display": {
+              "editable": true
+            }
+          }
+        }
       }
     }
   }
