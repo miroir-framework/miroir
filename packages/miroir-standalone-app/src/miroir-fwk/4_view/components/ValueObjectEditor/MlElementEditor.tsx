@@ -19,6 +19,7 @@ import {
   EntityInstance,
   EntityInstanceWithName,
   getDefaultValueForMlSchemaWithResolutionNonHook,
+  isBlockViewRoot,
   mlsToMls_Summary,
   LoggerInterface,
   MiroirLoggerFactory,
@@ -40,7 +41,7 @@ import { useMiroirContextService } from "miroir-react";
 import { RenderPerformanceMetrics } from "../../tools/renderPerformanceMeasure.js";
 import { useComponentTestMode } from "../../tools/ComponentTestModeContext.js";
 import { isVitestTestMode } from "../../tools/progressiveRenderConfig.js";
-import { BlockViewModeContext, isBlockViewRoot } from "../BlockEditor/BlockViewMode.js";
+import { BlockViewModeContext } from "../BlockEditor/BlockViewMode.js";
 import { BlockViewSwitch } from "../BlockEditor/BlockViewSwitch.js";
 import { ErrorFallbackComponent } from "../ErrorFallbackComponent.js";
 import { JsonDisplayHelper } from "miroir-react";
