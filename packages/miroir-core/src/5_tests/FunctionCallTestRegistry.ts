@@ -51,21 +51,27 @@ import {
   transformerTypesAcceptingInput,
 } from "../2_domain/TransformerInterfaceCheck";
 import {
+  defaultTransformerNode,
   editedAttributes,
   elementParameterReadsOfDefaultInput,
   holdsOneDefault,
+  insertTransformerNode,
   keepAttributesOnTypeChange,
+  moveTransformerNode,
+  reorderTransformerNode,
   parameterReadsOfDefaultInput,
   pipeCandidates,
   pipeTransformerNode,
   removeTransformerNode,
   transformerChildren,
+  transformerInsertPositions,
   transformerSlots,
   unwrapTransformerNode,
   wrapCandidates,
   wrapTransformerNode,
 } from "../2_domain/TransformerTreeEdit";
-import { transformerBlockOutline, transformerBlockTree } from "../2_domain/TransformerBlockModel";
+import { transformerBlockOutline, transformerBlockTree, transformerPaletteGroups } from "../2_domain/TransformerBlockModel";
+import { transformerSubtreeRuns } from "../2_domain/TransformerSubtreeRun";
 import {
   checkTransformerMlSchemaCompatibility,
   formatMlSchemaTypeLabel,
@@ -251,10 +257,19 @@ const FUNCTION_CALL_REGISTRY: Record<
     holdsOneDefault: holdsOneDefault as WhitelistedFunction,
     parameterReadsOfDefaultInput: parameterReadsOfDefaultInput as WhitelistedFunction,
     elementParameterReadsOfDefaultInput: elementParameterReadsOfDefaultInput as WhitelistedFunction,
+    defaultTransformerNode: defaultTransformerNode as WhitelistedFunction,
+    insertTransformerNode: insertTransformerNode as WhitelistedFunction,
+    moveTransformerNode: moveTransformerNode as WhitelistedFunction,
+    transformerInsertPositions: transformerInsertPositions as WhitelistedFunction,
+    reorderTransformerNode: reorderTransformerNode as WhitelistedFunction,
+  },
+  "miroir-core/2_domain/TransformerSubtreeRun": {
+    transformerSubtreeRuns: transformerSubtreeRuns as WhitelistedFunction,
   },
   "miroir-core/2_domain/TransformerBlockModel": {
     transformerBlockTree: transformerBlockTree as WhitelistedFunction,
     transformerBlockOutline: transformerBlockOutline as WhitelistedFunction,
+    transformerPaletteGroups: transformerPaletteGroups as WhitelistedFunction,
   },
   "miroir-core/2_domain/TransformerMlSchemaCheck": {
     checkTransformerMlSchemaCompatibility:

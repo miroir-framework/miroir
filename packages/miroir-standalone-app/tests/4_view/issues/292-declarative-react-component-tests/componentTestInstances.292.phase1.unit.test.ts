@@ -70,6 +70,15 @@ const laterComponentInstances: Record<string, string> = {
   "ui.valueHistory": "ef540605-8176-45bf-af76-c9d240769c7b",
 };
 
+/**
+ * Component test instances kept off the page bundle (#500): exported by the deployment package but
+ * not listed in `defaultMiroirMetaModel.tests`, so the page does not ship them. The schema check of
+ * `componentMiroirTests.consistency` covers them like every instance of the folder.
+ */
+const offPageComponentInstances: Record<string, string> = {
+  "ui.blockEditing": "4be51ca7-2d92-46ce-b0ad-6833dd3b9d04",
+};
+
 /** The attributes of `miroirTestForReactComponent` since #292 M1. */
 const REACT_COMPONENT_LEAF_ATTRIBUTES = ["miroirTestType", "miroirTestLabel", "skip", "componentProps", "steps"];
 
@@ -122,9 +131,15 @@ describe("per-editor component test MiroirTest instances", () => {
         .filter((instance) => Object.values(laterComponentInstances).includes(instance.uuid))
         .map((instance) => [instance.name, instance.uuid]),
     ).toEqual(Object.entries(laterComponentInstances));
+    expect(
+      allInstances
+        .filter((instance) => Object.values(offPageComponentInstances).includes(instance.uuid))
+        .map((instance) => [instance.name, instance.uuid]),
+    ).toEqual(Object.entries(offPageComponentInstances));
     const otherComponentInstances = allInstances
       .filter((instance) => !Object.values(expectedInstances).includes(instance.uuid))
       .filter((instance) => !Object.values(laterComponentInstances).includes(instance.uuid))
+      .filter((instance) => !Object.values(offPageComponentInstances).includes(instance.uuid))
       .filter((instance) => componentLeafLabels(instance.definition).length > 0)
       .map((instance) => instance.name);
     expect(otherComponentInstances).toEqual([]);
@@ -212,6 +227,10 @@ describe("per-editor component test MiroirTest instances", () => {
     for (const [name, uuid] of Object.entries(laterComponentInstances)) {
       expect(exports[exportName(name)]?.uuid, name).toBe(uuid);
       expect(testUuids).toContain(uuid);
+    }
+    for (const [name, uuid] of Object.entries(offPageComponentInstances)) {
+      expect(exports[exportName(name)]?.uuid, name).toBe(uuid);
+      expect(testUuids, name).not.toContain(uuid);
     }
   });
 });

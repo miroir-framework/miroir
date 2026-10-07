@@ -190,7 +190,8 @@ export function historyCommand(event: React.KeyboardEvent): "undo" | "redo" | un
 
 /**
  * Whether a key goes to the text of a field that is not the value: the filter of an open select,
- * or a CodeMirror panel (search). The browser's own undo applies there.
+ * a CodeMirror panel (search), or an element marked `data-own-undo`, such as an inline field of the
+ * block view (#500), which writes the value when it commits. The browser's own undo applies there.
  */
 export function editsOwnText(target: EventTarget | null): boolean {
   const element = target as HTMLElement | null;
@@ -199,7 +200,8 @@ export function editsOwnText(target: EventTarget | null): boolean {
   }
   return (
     (element.getAttribute("role") === "combobox" && element.getAttribute("aria-expanded") === "true") ||
-    element.closest(".cm-panels") !== null
+    element.closest(".cm-panels") !== null ||
+    element.closest("[data-own-undo]") !== null
   );
 }
 
@@ -239,7 +241,8 @@ export function ValueHistoryScope(props: { children: React.ReactNode }) {
   );
   const handleInput = useCallback(
     (event: React.FormEvent) => {
-      if (!history || !fromInside(event) || !isTextField(event.target)) {
+      // a field with its own undo writes the value once, when it commits
+      if (!history || !fromInside(event) || !isTextField(event.target) || editsOwnText(event.target)) {
         return;
       }
       const kind = textInputKind(event.nativeEvent);

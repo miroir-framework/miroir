@@ -31,6 +31,7 @@ import { useMiroirTheme } from "../../contexts/MiroirThemeContext";
 // new value of the node.
 // #499: under an undo history, Remove and Unwrap act at once (Undo brings the node back); Unwrap
 // of a node with several children lists one menu entry per child.
+// #500: the block view adds its own entries before these (Replace with the armed palette type).
 // ################################################################################################
 
 export interface TransformerNodeActionsProps {
@@ -51,6 +52,14 @@ export interface TransformerNodeActionsProps {
   onRemoveNode: () => void;
   /** An undo history covers the node (#499): edits act at once, without a confirmation. */
   undoable?: boolean;
+  /** Menu entries before the #415 ones: the block view's Replace with (#500). */
+  extraEntries?: TransformerNodeExtraEntry[];
+}
+
+export interface TransformerNodeExtraEntry {
+  testId: string;
+  label: string;
+  onClick: () => void;
 }
 
 type NewNodeAction = "wrap" | "pipe";
@@ -80,6 +89,7 @@ export const TransformerNodeActions: React.FC<TransformerNodeActionsProps> = ({
   onReplaceNode,
   onRemoveNode,
   undoable = false,
+  extraEntries = [],
 }) => {
   const { currentTheme } = useMiroirTheme();
   const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null);
@@ -229,6 +239,18 @@ export const TransformerNodeActions: React.FC<TransformerNodeActionsProps> = ({
         </span>
       )}
       <Menu anchorEl={menuAnchor} open={menuAnchor !== null} onClose={() => setMenuAnchor(null)}>
+        {extraEntries.map((entry) => (
+          <ThemedMenuItem
+            key={entry.testId}
+            data-testid={entry.testId}
+            onClick={() => {
+              setMenuAnchor(null);
+              entry.onClick();
+            }}
+          >
+            {entry.label}
+          </ThemedMenuItem>
+        ))}
         <ThemedMenuItem
           data-testid="transformer-node-action-wrap"
           disabled={wrapTypes.length === 0}

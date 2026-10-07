@@ -1,0 +1,2056 @@
+{
+  "uuid": "4be51ca7-2d92-46ce-b0ad-6833dd3b9d04",
+  "parentName": "MiroirTest",
+  "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+  "name": "ui.blockEditing",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "description": "Editing a transformer with blocks in the TransformerEditor's Blocks view.",
+  "tags": [
+    "ui",
+    "editor",
+    "transformer"
+  ],
+  "issue": "500",
+  "definition": {
+    "miroirTestType": "miroirTestSuite",
+    "miroirTestLabel": "ui.blockEditing",
+    "miroirTests": [
+      {
+        "miroirTestType": "reactComponentTestSuite",
+        "miroirTestLabel": "TransformerEditor",
+        "component": "TransformerEditor",
+        "componentProps": {
+          "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+          "entityUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad"
+        },
+        "miroirTests": [
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: the Blocks view of the starting transformer is one returnValue block",
+            "steps": [
+              {
+                "step": "click",
+                "label": "choose Blocks",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the root block",
+                "target": {
+                  "byTestId": "block:transformer"
+                },
+                "attribute": "data-transformer-type",
+                "value": "returnValue",
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: Wrap in from a block menu writes what the form writes, with runtime on the new nodes",
+            "steps": [
+              {
+                "step": "click",
+                "label": "choose Blocks",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                }
+              },
+              {
+                "step": "click",
+                "label": "open the node actions of the root block",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Wrap in…",
+                "target": {
+                  "byTestId": "transformer-node-action-wrap"
+                }
+              },
+              {
+                "step": "selectOption",
+                "label": "ifThenElse",
+                "field": "transformer-node-dialog-type",
+                "option": "ifThenElse"
+              },
+              {
+                "step": "selectOption",
+                "label": "slot then",
+                "field": "transformer-node-dialog-slot",
+                "option": "then"
+              },
+              {
+                "step": "click",
+                "label": "wrap",
+                "target": {
+                  "byTestId": "transformer-node-dialog-confirm"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the root block is ifThenElse",
+                "target": {
+                  "byTestId": "block:transformer"
+                },
+                "attribute": "data-transformer-type",
+                "value": "ifThenElse",
+                "timeout": 2000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the wrapped block",
+                "target": {
+                  "byTestId": "block:transformer.then"
+                },
+                "attribute": "data-transformer-type",
+                "value": "returnValue",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "choose JSON",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:json"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the value",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "timeout": 2000,
+                "value": "{\n  \"transformerType\": \"ifThenElse\",\n  \"if\": {\n    \"transformerType\": \"returnValue\",\n    \"value\": 0,\n    \"interpolation\": \"runtime\"\n  },\n  \"interpolation\": \"runtime\",\n  \"then\": {\n    \"transformerType\": \"returnValue\",\n    \"mlSchema\": {\n      \"type\": \"string\"\n    },\n    \"value\": \"seize value...\"\n  }\n}"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: Wrap in from the form, for comparison with the block menu",
+            "steps": [
+              {
+                "step": "click",
+                "label": "open the node actions of the root field",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Wrap in…",
+                "target": {
+                  "byTestId": "transformer-node-action-wrap"
+                }
+              },
+              {
+                "step": "selectOption",
+                "label": "ifThenElse",
+                "field": "transformer-node-dialog-type",
+                "option": "ifThenElse"
+              },
+              {
+                "step": "selectOption",
+                "label": "slot then",
+                "field": "transformer-node-dialog-slot",
+                "option": "then"
+              },
+              {
+                "step": "click",
+                "label": "wrap",
+                "target": {
+                  "byTestId": "transformer-node-dialog-confirm"
+                }
+              },
+              {
+                "step": "click",
+                "label": "choose JSON",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:json"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the value",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "timeout": 2000,
+                "value": "{\n  \"transformerType\": \"ifThenElse\",\n  \"if\": {\n    \"transformerType\": \"returnValue\",\n    \"value\": 0\n  },\n  \"then\": {\n    \"transformerType\": \"returnValue\",\n    \"mlSchema\": {\n      \"type\": \"string\"\n    },\n    \"value\": \"seize value...\"\n  }\n}"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: Wrap in mapList from a block menu, where the form offers no mapList for this input",
+            "steps": [
+              {
+                "step": "click",
+                "label": "choose Blocks",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                }
+              },
+              {
+                "step": "click",
+                "label": "open the node actions of the root block",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Wrap in…",
+                "target": {
+                  "byTestId": "transformer-node-action-wrap"
+                }
+              },
+              {
+                "step": "selectOption",
+                "label": "mapList",
+                "field": "transformer-node-dialog-type",
+                "option": "mapList"
+              },
+              {
+                "step": "click",
+                "label": "wrap",
+                "target": {
+                  "byTestId": "transformer-node-dialog-confirm"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the root block is mapList",
+                "target": {
+                  "byTestId": "block:transformer"
+                },
+                "attribute": "data-transformer-type",
+                "value": "mapList",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "choose JSON",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:json"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the value",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "timeout": 2000,
+                "value": "{\n  \"transformerType\": \"mapList\",\n  \"elementTransformer\": {\n    \"transformerType\": \"returnValue\",\n    \"mlSchema\": {\n      \"type\": \"string\"\n    },\n    \"value\": \"seize value...\"\n  },\n  \"interpolation\": \"runtime\"\n}"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: Unwrap from a block menu keeps the only child",
+            "steps": [
+              {
+                "step": "click",
+                "label": "choose Blocks",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                }
+              },
+              {
+                "step": "click",
+                "label": "open the node actions of the root block",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Wrap in…",
+                "target": {
+                  "byTestId": "transformer-node-action-wrap"
+                }
+              },
+              {
+                "step": "selectOption",
+                "label": "mapList",
+                "field": "transformer-node-dialog-type",
+                "option": "mapList"
+              },
+              {
+                "step": "click",
+                "label": "wrap",
+                "target": {
+                  "byTestId": "transformer-node-dialog-confirm"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the root block is mapList",
+                "target": {
+                  "byTestId": "block:transformer"
+                },
+                "attribute": "data-transformer-type",
+                "value": "mapList",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "open the node actions of the root block again",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Unwrap",
+                "target": {
+                  "byTestId": "transformer-node-action-unwrap"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the root block is returnValue again",
+                "target": {
+                  "byTestId": "block:transformer"
+                },
+                "attribute": "data-transformer-type",
+                "value": "returnValue",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "choose JSON",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:json"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the starting value",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "timeout": 2000,
+                "value": "{\n  \"transformerType\": \"returnValue\",\n  \"mlSchema\": {\n    \"type\": \"string\"\n  },\n  \"value\": \"seize value...\"\n}"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: Remove from a block menu puts a runtime returnValue in a required slot, and Undo brings the block back",
+            "steps": [
+              {
+                "step": "click",
+                "label": "choose Blocks",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                }
+              },
+              {
+                "step": "click",
+                "label": "open the node actions of the root block",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Wrap in…",
+                "target": {
+                  "byTestId": "transformer-node-action-wrap"
+                }
+              },
+              {
+                "step": "selectOption",
+                "label": "mapList",
+                "field": "transformer-node-dialog-type",
+                "option": "mapList"
+              },
+              {
+                "step": "click",
+                "label": "wrap",
+                "target": {
+                  "byTestId": "transformer-node-dialog-confirm"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the wrapped block",
+                "target": {
+                  "byTestId": "block:transformer.elementTransformer"
+                },
+                "attribute": "data-transformer-type",
+                "value": "returnValue",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "open the node actions of the wrapped block",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer.elementTransformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Remove",
+                "target": {
+                  "byTestId": "transformer-node-action-remove"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "a runtime block took its place",
+                "target": {
+                  "byTestId": "block:transformer.elementTransformer"
+                },
+                "attribute": "data-interpolation",
+                "value": "runtime",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "choose JSON",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:json"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the value after Remove",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "timeout": 2000,
+                "value": "{\n  \"transformerType\": \"mapList\",\n  \"elementTransformer\": {\n    \"transformerType\": \"returnValue\",\n    \"value\": \"seize value...\",\n    \"interpolation\": \"runtime\"\n  },\n  \"interpolation\": \"runtime\"\n}"
+              },
+              {
+                "step": "click",
+                "label": "undo",
+                "target": {
+                  "byTestId": "value-history-undo:transformer"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the value before Remove",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "timeout": 2000,
+                "value": "{\n  \"transformerType\": \"mapList\",\n  \"elementTransformer\": {\n    \"transformerType\": \"returnValue\",\n    \"mlSchema\": {\n      \"type\": \"string\"\n    },\n    \"value\": \"seize value...\"\n  },\n  \"interpolation\": \"runtime\"\n}"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: build a mapList of a getFromContext from the palette",
+            "steps": [
+              {
+                "step": "click",
+                "label": "choose Blocks",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                }
+              },
+              {
+                "step": "click",
+                "label": "arm mapList in the palette",
+                "target": {
+                  "byTestId": "block-palette:mapList"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "mapList is armed",
+                "target": {
+                  "byTestId": "block-palette:mapList"
+                },
+                "attribute": "aria-pressed",
+                "value": "true",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "open the node actions of the root block",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Replace with mapList",
+                "target": {
+                  "byTestId": "block-action-replace"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the root block is mapList",
+                "target": {
+                  "byTestId": "block:transformer"
+                },
+                "attribute": "data-transformer-type",
+                "value": "mapList",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "arm getFromContext",
+                "target": {
+                  "byTestId": "block-palette:getFromContext"
+                }
+              },
+              {
+                "step": "click",
+                "label": "put it in the empty applyTo slot",
+                "target": {
+                  "byTestId": "block-insert:transformer.applyTo"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the applyTo block",
+                "target": {
+                  "byTestId": "block:transformer.applyTo"
+                },
+                "attribute": "data-transformer-type",
+                "value": "getFromContext",
+                "timeout": 2000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the palette is disarmed",
+                "target": {
+                  "byTestId": "block-palette:getFromContext"
+                },
+                "attribute": "aria-pressed",
+                "value": "false",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "choose JSON",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:json"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the value",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "timeout": 2000,
+                "value": "{\n  \"transformerType\": \"mapList\",\n  \"elementTransformer\": {\n    \"transformerType\": \"returnValue\",\n    \"value\": 0,\n    \"interpolation\": \"runtime\"\n  },\n  \"interpolation\": \"runtime\",\n  \"applyTo\": {\n    \"transformerType\": \"getFromContext\",\n    \"interpolation\": \"runtime\"\n  }\n}"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: a new when at the end of the whens of a case gets a returnValue as its then",
+            "steps": [
+              {
+                "step": "click",
+                "label": "choose Blocks",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                }
+              },
+              {
+                "step": "click",
+                "label": "arm case in the palette",
+                "target": {
+                  "byTestId": "block-palette:case"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "case is armed",
+                "target": {
+                  "byTestId": "block-palette:case"
+                },
+                "attribute": "aria-pressed",
+                "value": "true",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "open the node actions of the root block",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Replace with case",
+                "target": {
+                  "byTestId": "block-action-replace"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the root block is case",
+                "target": {
+                  "byTestId": "block:transformer"
+                },
+                "attribute": "data-transformer-type",
+                "value": "case",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "arm getFromContext",
+                "target": {
+                  "byTestId": "block-palette:getFromContext"
+                }
+              },
+              {
+                "step": "click",
+                "label": "put it at the end of whens",
+                "target": {
+                  "byTestId": "block-insert:transformer.whens.0.when"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the when block",
+                "target": {
+                  "byTestId": "block:transformer.whens.0.when"
+                },
+                "attribute": "data-transformer-type",
+                "value": "getFromContext",
+                "timeout": 2000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the then block",
+                "target": {
+                  "byTestId": "block:transformer.whens.0.then"
+                },
+                "attribute": "data-transformer-type",
+                "value": "returnValue",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "choose JSON",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:json"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the value",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "timeout": 2000,
+                "value": "{\n  \"transformerType\": \"case\",\n  \"discriminator\": {\n    \"transformerType\": \"returnValue\",\n    \"value\": 0,\n    \"interpolation\": \"runtime\"\n  },\n  \"whens\": [\n    {\n      \"when\": {\n        \"transformerType\": \"getFromContext\",\n        \"interpolation\": \"runtime\"\n      },\n      \"then\": {\n        \"transformerType\": \"returnValue\",\n        \"value\": \"seize value...\",\n        \"interpolation\": \"runtime\"\n      }\n    }\n  ],\n  \"interpolation\": \"runtime\"\n}"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: a block moved to the tray and placed in another slot",
+            "steps": [
+              {
+                "step": "click",
+                "label": "choose Blocks",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                }
+              },
+              {
+                "step": "click",
+                "label": "arm mapList in the palette",
+                "target": {
+                  "byTestId": "block-palette:mapList"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "mapList is armed",
+                "target": {
+                  "byTestId": "block-palette:mapList"
+                },
+                "attribute": "aria-pressed",
+                "value": "true",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "open the node actions of the root block",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Replace with mapList",
+                "target": {
+                  "byTestId": "block-action-replace"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the root block is mapList",
+                "target": {
+                  "byTestId": "block:transformer"
+                },
+                "attribute": "data-transformer-type",
+                "value": "mapList",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "arm getFromContext",
+                "target": {
+                  "byTestId": "block-palette:getFromContext"
+                }
+              },
+              {
+                "step": "click",
+                "label": "put it in the empty applyTo slot",
+                "target": {
+                  "byTestId": "block-insert:transformer.applyTo"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the applyTo block",
+                "target": {
+                  "byTestId": "block:transformer.applyTo"
+                },
+                "attribute": "data-transformer-type",
+                "value": "getFromContext",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "open the node actions of the applyTo block",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer.applyTo"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Move to tray",
+                "target": {
+                  "byTestId": "block-action-tray"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the tray shows the block",
+                "target": {
+                  "byTestId": "block-tray-item:0"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the optional applyTo slot is empty",
+                "target": {
+                  "byTestId": "block-empty:transformer.applyTo"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "Place the tray block",
+                "target": {
+                  "byTestId": "block-tray-place:0"
+                }
+              },
+              {
+                "step": "click",
+                "label": "open the node actions of the elementTransformer block",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer.elementTransformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Replace with the tray block",
+                "target": {
+                  "byTestId": "block-action-replace"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the tray block took the place",
+                "target": {
+                  "byTestId": "block:transformer.elementTransformer"
+                },
+                "attribute": "data-transformer-type",
+                "value": "getFromContext",
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the tray is empty",
+                "target": {
+                  "byTestId": "block-tray-item:0"
+                },
+                "present": false
+              },
+              {
+                "step": "click",
+                "label": "choose JSON",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:json"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the value",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "timeout": 2000,
+                "value": "{\n  \"transformerType\": \"mapList\",\n  \"elementTransformer\": {\n    \"transformerType\": \"getFromContext\",\n    \"interpolation\": \"runtime\"\n  },\n  \"interpolation\": \"runtime\"\n}"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: the tray survives a switch to JSON, and Discard empties it",
+            "steps": [
+              {
+                "step": "click",
+                "label": "choose Blocks",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                }
+              },
+              {
+                "step": "click",
+                "label": "arm mapList in the palette",
+                "target": {
+                  "byTestId": "block-palette:mapList"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "mapList is armed",
+                "target": {
+                  "byTestId": "block-palette:mapList"
+                },
+                "attribute": "aria-pressed",
+                "value": "true",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "open the node actions of the root block",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Replace with mapList",
+                "target": {
+                  "byTestId": "block-action-replace"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the root block is mapList",
+                "target": {
+                  "byTestId": "block:transformer"
+                },
+                "attribute": "data-transformer-type",
+                "value": "mapList",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "arm getFromContext",
+                "target": {
+                  "byTestId": "block-palette:getFromContext"
+                }
+              },
+              {
+                "step": "click",
+                "label": "put it in the empty applyTo slot",
+                "target": {
+                  "byTestId": "block-insert:transformer.applyTo"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the applyTo block",
+                "target": {
+                  "byTestId": "block:transformer.applyTo"
+                },
+                "attribute": "data-transformer-type",
+                "value": "getFromContext",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "open the node actions of the applyTo block",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer.applyTo"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Move to tray",
+                "target": {
+                  "byTestId": "block-action-tray"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the tray shows the block",
+                "target": {
+                  "byTestId": "block-tray-item:0"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "choose JSON",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:json"
+                }
+              },
+              {
+                "step": "click",
+                "label": "choose Blocks again",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the tray block is still there",
+                "target": {
+                  "byTestId": "block:transformer~tray.0"
+                },
+                "attribute": "data-transformer-type",
+                "value": "getFromContext",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "Discard the tray block",
+                "target": {
+                  "byTestId": "block-tray-discard:0"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the tray is empty",
+                "target": {
+                  "byTestId": "block-tray-item:0"
+                },
+                "present": false
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: a value edited in place: Enter writes it, Escape cancels",
+            "steps": [
+              {
+                "step": "click",
+                "label": "choose Blocks",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                }
+              },
+              {
+                "step": "click",
+                "label": "open the field value",
+                "target": {
+                  "byTestId": "block-field:transformer.value"
+                }
+              },
+              {
+                "step": "clear",
+                "label": "clear it",
+                "target": {
+                  "byTestId": "block-field-input:transformer.value"
+                }
+              },
+              {
+                "step": "type",
+                "label": "type hello{Enter}",
+                "target": {
+                  "byTestId": "block-field-input:transformer.value"
+                },
+                "text": "hello{Enter}"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the value is the typed string",
+                "target": {
+                  "byTestId": "block-parameter:transformer.value"
+                },
+                "attribute": "data-value",
+                "value": "\"hello\"",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "open the field value again",
+                "target": {
+                  "byTestId": "block-field:transformer.value"
+                }
+              },
+              {
+                "step": "clear",
+                "label": "clear it",
+                "target": {
+                  "byTestId": "block-field-input:transformer.value"
+                }
+              },
+              {
+                "step": "type",
+                "label": "type nope",
+                "target": {
+                  "byTestId": "block-field-input:transformer.value"
+                },
+                "text": "nope"
+              },
+              {
+                "step": "keyboard",
+                "label": "Escape",
+                "keys": "{Escape}"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the value did not change",
+                "target": {
+                  "byTestId": "block-parameter:transformer.value"
+                },
+                "attribute": "data-value",
+                "value": "\"hello\"",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "choose JSON",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:json"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the value",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "timeout": 2000,
+                "value": "{\n  \"transformerType\": \"returnValue\",\n  \"mlSchema\": {\n    \"type\": \"string\"\n  },\n  \"value\": \"hello\"\n}"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: a number field stays a number, and Ctrl+Z inside a field undoes its text, not the transformer",
+            "steps": [
+              {
+                "step": "click",
+                "label": "choose Blocks",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                }
+              },
+              {
+                "step": "click",
+                "label": "open the node actions of the root block",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Wrap in…",
+                "target": {
+                  "byTestId": "transformer-node-action-wrap"
+                }
+              },
+              {
+                "step": "selectOption",
+                "label": "ifThenElse",
+                "field": "transformer-node-dialog-type",
+                "option": "ifThenElse"
+              },
+              {
+                "step": "selectOption",
+                "label": "slot then",
+                "field": "transformer-node-dialog-slot",
+                "option": "then"
+              },
+              {
+                "step": "click",
+                "label": "wrap",
+                "target": {
+                  "byTestId": "transformer-node-dialog-confirm"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the root block is ifThenElse",
+                "target": {
+                  "byTestId": "block:transformer"
+                },
+                "attribute": "data-transformer-type",
+                "value": "ifThenElse",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "open the field if.value",
+                "target": {
+                  "byTestId": "block-field:transformer.if.value"
+                }
+              },
+              {
+                "step": "clear",
+                "label": "clear it",
+                "target": {
+                  "byTestId": "block-field-input:transformer.if.value"
+                }
+              },
+              {
+                "step": "type",
+                "label": "type 42",
+                "target": {
+                  "byTestId": "block-field-input:transformer.if.value"
+                },
+                "text": "42"
+              },
+              {
+                "step": "keyboard",
+                "label": "Ctrl+Z in the field",
+                "keys": "{Control>}z{/Control}"
+              },
+              {
+                "step": "keyboard",
+                "label": "Enter",
+                "keys": "{Enter}"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the value is the number 42",
+                "target": {
+                  "byTestId": "block-parameter:transformer.if.value"
+                },
+                "attribute": "data-value",
+                "value": "42",
+                "timeout": 2000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the root block is still ifThenElse",
+                "target": {
+                  "byTestId": "block:transformer"
+                },
+                "attribute": "data-transformer-type",
+                "value": "ifThenElse",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "choose JSON",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:json"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the value",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "timeout": 2000,
+                "value": "{\n  \"transformerType\": \"ifThenElse\",\n  \"if\": {\n    \"transformerType\": \"returnValue\",\n    \"value\": 42,\n    \"interpolation\": \"runtime\"\n  },\n  \"interpolation\": \"runtime\",\n  \"then\": {\n    \"transformerType\": \"returnValue\",\n    \"mlSchema\": {\n      \"type\": \"string\"\n    },\n    \"value\": \"seize value...\"\n  }\n}"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: an ML schema edited in its popover",
+            "steps": [
+              {
+                "step": "click",
+                "label": "choose Blocks",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                }
+              },
+              {
+                "step": "click",
+                "label": "open the ML schema",
+                "target": {
+                  "byTestId": "block:transformer.mlSchema"
+                }
+              },
+              {
+                "step": "change",
+                "label": "a number schema",
+                "target": {
+                  "byTestId": "block-mlschema-input:transformer.mlSchema"
+                },
+                "value": "{\"type\": \"number\"}"
+              },
+              {
+                "step": "click",
+                "label": "Save",
+                "target": {
+                  "byTestId": "block-mlschema-save:transformer.mlSchema"
+                }
+              },
+              {
+                "step": "click",
+                "label": "choose JSON",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:json"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the value",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "timeout": 2000,
+                "value": "{\n  \"transformerType\": \"returnValue\",\n  \"mlSchema\": {\n    \"type\": \"number\"\n  },\n  \"value\": \"seize value...\"\n}"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: a block switched from build to runtime and back",
+            "steps": [
+              {
+                "step": "click",
+                "label": "choose Blocks",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "a block with no interpolation is marked as build",
+                "target": {
+                  "byTestId": "block:transformer"
+                },
+                "attribute": "data-build-marking",
+                "value": "dashedOutline",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "open the node actions of the root block",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Switch to runtime",
+                "target": {
+                  "byTestId": "block-action-interpolation"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the block is runtime",
+                "target": {
+                  "byTestId": "block:transformer"
+                },
+                "attribute": "data-interpolation",
+                "value": "runtime",
+                "timeout": 2000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the build marking is gone",
+                "target": {
+                  "byTestId": "block:transformer"
+                },
+                "attribute": "data-build-marking",
+                "value": "none",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "choose JSON",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:json"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the value",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "timeout": 2000,
+                "value": "{\n  \"transformerType\": \"returnValue\",\n  \"mlSchema\": {\n    \"type\": \"string\"\n  },\n  \"value\": \"seize value...\",\n  \"interpolation\": \"runtime\"\n}"
+              },
+              {
+                "step": "click",
+                "label": "choose Blocks again",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                }
+              },
+              {
+                "step": "click",
+                "label": "open the node actions of the root block again",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Switch to build",
+                "target": {
+                  "byTestId": "block-action-interpolation"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the block is marked as build again",
+                "target": {
+                  "byTestId": "block:transformer"
+                },
+                "attribute": "data-build-marking",
+                "value": "dashedOutline",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "choose JSON again",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:json"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the value",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "timeout": 2000,
+                "value": "{\n  \"transformerType\": \"returnValue\",\n  \"mlSchema\": {\n    \"type\": \"string\"\n  },\n  \"value\": \"seize value...\",\n  \"interpolation\": \"build\"\n}"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: with the types shown, a mapList on a single object is flagged and kept",
+            "steps": [
+              {
+                "step": "setChecked",
+                "label": "show the types",
+                "target": {
+                  "byTestId": "transformer-editor-show-types-switch"
+                },
+                "checked": true
+              },
+              {
+                "step": "click",
+                "label": "choose Blocks",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the starting returnValue has a flag; it declares no input type",
+                "target": {
+                  "byTestId": "block-flag:transformer"
+                },
+                "attribute": "data-status",
+                "value": "unknown",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "arm mapList in the palette",
+                "target": {
+                  "byTestId": "block-palette:mapList"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "mapList is armed",
+                "target": {
+                  "byTestId": "block-palette:mapList"
+                },
+                "attribute": "aria-pressed",
+                "value": "true",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "open the node actions of the root block",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Replace with mapList",
+                "target": {
+                  "byTestId": "block-action-replace"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the root block is mapList",
+                "target": {
+                  "byTestId": "block:transformer"
+                },
+                "attribute": "data-transformer-type",
+                "value": "mapList",
+                "timeout": 2000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "mapList does not take a single object",
+                "target": {
+                  "byTestId": "block-flag:transformer"
+                },
+                "attribute": "data-status",
+                "value": "mismatch",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "choose JSON",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:json"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the value is kept",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "timeout": 2000,
+                "value": "{\n  \"transformerType\": \"mapList\",\n  \"elementTransformer\": {\n    \"transformerType\": \"returnValue\",\n    \"value\": 0,\n    \"interpolation\": \"runtime\"\n  },\n  \"interpolation\": \"runtime\"\n}"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: with the types hidden, blocks have no flag",
+            "steps": [
+              {
+                "step": "setChecked",
+                "label": "hide the types",
+                "target": {
+                  "byTestId": "transformer-editor-show-types-switch"
+                },
+                "checked": false
+              },
+              {
+                "step": "click",
+                "label": "choose Blocks",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the root block",
+                "target": {
+                  "byTestId": "block:transformer"
+                },
+                "attribute": "data-transformer-type",
+                "value": "returnValue",
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "no flag",
+                "target": {
+                  "byTestId": "block-flag:transformer"
+                },
+                "present": false
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: a click on a block header shows its result on the input",
+            "steps": [
+              {
+                "step": "toggleUnionTypeSelector",
+                "label": "show the input type",
+                "field": "transformerEditor_inputModeSelector.input"
+              },
+              {
+                "step": "selectOption",
+                "label": "input is a list",
+                "field": "transformerEditor_inputModeSelector.input",
+                "select": "unionType",
+                "option": "array"
+              },
+              {
+                "step": "click",
+                "label": "add a second item",
+                "target": {
+                  "byRole": "button",
+                  "name": "input.add"
+                }
+              },
+              {
+                "step": "change",
+                "label": "first item",
+                "target": {
+                  "byRole": "textbox",
+                  "fieldName": "transformerEditor_inputModeSelector.input.0"
+                },
+                "value": "apple"
+              },
+              {
+                "step": "change",
+                "label": "second item",
+                "target": {
+                  "byRole": "textbox",
+                  "fieldName": "transformerEditor_inputModeSelector.input.1"
+                },
+                "value": "pear"
+              },
+              {
+                "step": "click",
+                "label": "choose Blocks",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                }
+              },
+              {
+                "step": "click",
+                "label": "run the root block",
+                "target": {
+                  "byTestId": "block-header:transformer"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the bubble shows the value",
+                "target": {
+                  "byTestId": "block-result-value:transformer"
+                },
+                "attribute": "data-value",
+                "value": "\"seize value...\"",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "click the header again",
+                "target": {
+                  "byTestId": "block-header:transformer"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the bubble is closed",
+                "target": {
+                  "byTestId": "block-result:transformer"
+                },
+                "present": false
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: the element transformer of a mapList shows one value per element, and one alone when chosen",
+            "steps": [
+              {
+                "step": "toggleUnionTypeSelector",
+                "label": "show the input type",
+                "field": "transformerEditor_inputModeSelector.input"
+              },
+              {
+                "step": "selectOption",
+                "label": "input is a list",
+                "field": "transformerEditor_inputModeSelector.input",
+                "select": "unionType",
+                "option": "array"
+              },
+              {
+                "step": "click",
+                "label": "add a second item",
+                "target": {
+                  "byRole": "button",
+                  "name": "input.add"
+                }
+              },
+              {
+                "step": "change",
+                "label": "first item",
+                "target": {
+                  "byRole": "textbox",
+                  "fieldName": "transformerEditor_inputModeSelector.input.0"
+                },
+                "value": "apple"
+              },
+              {
+                "step": "change",
+                "label": "second item",
+                "target": {
+                  "byRole": "textbox",
+                  "fieldName": "transformerEditor_inputModeSelector.input.1"
+                },
+                "value": "pear"
+              },
+              {
+                "step": "selectOption",
+                "label": "root mapList",
+                "field": "transformerEditor_transformer_selector.transformer.transformerType",
+                "option": "mapList"
+              },
+              {
+                "step": "selectOption",
+                "label": "element getFromContext",
+                "field": "transformerEditor_transformer_selector.transformer.elementTransformer.transformerType",
+                "option": "getFromContext"
+              },
+              {
+                "step": "clickObjectButton",
+                "label": "add the element referenceName",
+                "field": "transformerEditor_transformer_selector.transformer.elementTransformer",
+                "action": "addOptionalAttribute",
+                "attribute": "referenceName"
+              },
+              {
+                "step": "change",
+                "label": "the element reads defaultInput",
+                "target": {
+                  "byRole": "textbox",
+                  "fieldName": "transformerEditor_transformer_selector.transformer.elementTransformer.referenceName"
+                },
+                "value": "defaultInput"
+              },
+              {
+                "step": "click",
+                "label": "choose Blocks",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                }
+              },
+              {
+                "step": "click",
+                "label": "run the element block",
+                "target": {
+                  "byTestId": "block-header:transformer.elementTransformer"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "one run per element",
+                "target": {
+                  "byTestId": "block-result:transformer.elementTransformer"
+                },
+                "attribute": "data-run-count",
+                "value": "2",
+                "timeout": 2000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the first element",
+                "target": {
+                  "byTestId": "block-result-value:transformer.elementTransformer:defaultInput[0]"
+                },
+                "attribute": "data-value",
+                "value": "\"apple\"",
+                "timeout": 2000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the second element",
+                "target": {
+                  "byTestId": "block-result-value:transformer.elementTransformer:defaultInput[1]"
+                },
+                "attribute": "data-value",
+                "value": "\"pear\"",
+                "timeout": 2000
+              },
+              {
+                "step": "change",
+                "label": "choose the second element",
+                "target": {
+                  "byTestId": "block-result-select:transformer.elementTransformer"
+                },
+                "value": "defaultInput[1]"
+              },
+              {
+                "step": "expectElement",
+                "label": "the first element is hidden",
+                "target": {
+                  "byTestId": "block-result-value:transformer.elementTransformer:defaultInput[0]"
+                },
+                "present": false
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the second element alone",
+                "target": {
+                  "byTestId": "block-result-value:transformer.elementTransformer:defaultInput[1]"
+                },
+                "attribute": "data-value",
+                "value": "\"pear\"",
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: a chosen element that leaves the input gives way to all runs",
+            "steps": [
+              {
+                "step": "toggleUnionTypeSelector",
+                "label": "show the input type",
+                "field": "transformerEditor_inputModeSelector.input"
+              },
+              {
+                "step": "selectOption",
+                "label": "input is a list",
+                "field": "transformerEditor_inputModeSelector.input",
+                "select": "unionType",
+                "option": "array"
+              },
+              {
+                "step": "click",
+                "label": "add a second item",
+                "target": {
+                  "byRole": "button",
+                  "name": "input.add"
+                }
+              },
+              {
+                "step": "change",
+                "label": "first item",
+                "target": {
+                  "byRole": "textbox",
+                  "fieldName": "transformerEditor_inputModeSelector.input.0"
+                },
+                "value": "apple"
+              },
+              {
+                "step": "change",
+                "label": "second item",
+                "target": {
+                  "byRole": "textbox",
+                  "fieldName": "transformerEditor_inputModeSelector.input.1"
+                },
+                "value": "pear"
+              },
+              {
+                "step": "selectOption",
+                "label": "root mapList",
+                "field": "transformerEditor_transformer_selector.transformer.transformerType",
+                "option": "mapList"
+              },
+              {
+                "step": "selectOption",
+                "label": "element getFromContext",
+                "field": "transformerEditor_transformer_selector.transformer.elementTransformer.transformerType",
+                "option": "getFromContext"
+              },
+              {
+                "step": "clickObjectButton",
+                "label": "add the element referenceName",
+                "field": "transformerEditor_transformer_selector.transformer.elementTransformer",
+                "action": "addOptionalAttribute",
+                "attribute": "referenceName"
+              },
+              {
+                "step": "change",
+                "label": "the element reads defaultInput",
+                "target": {
+                  "byRole": "textbox",
+                  "fieldName": "transformerEditor_transformer_selector.transformer.elementTransformer.referenceName"
+                },
+                "value": "defaultInput"
+              },
+              {
+                "step": "click",
+                "label": "choose Blocks",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                }
+              },
+              {
+                "step": "click",
+                "label": "run the element block",
+                "target": {
+                  "byTestId": "block-header:transformer.elementTransformer"
+                }
+              },
+              {
+                "step": "change",
+                "label": "choose the second element",
+                "target": {
+                  "byTestId": "block-result-select:transformer.elementTransformer"
+                },
+                "value": "defaultInput[1]"
+              },
+              {
+                "step": "expectElement",
+                "label": "the first element is hidden",
+                "target": {
+                  "byTestId": "block-result-value:transformer.elementTransformer:defaultInput[0]"
+                },
+                "present": false
+              },
+              {
+                "step": "clickArrayButton",
+                "label": "remove the second input item",
+                "field": "transformerEditor_inputModeSelector.input",
+                "action": "delete",
+                "index": 1
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "one run left",
+                "target": {
+                  "byTestId": "block-result:transformer.elementTransformer"
+                },
+                "attribute": "data-run-count",
+                "value": "1",
+                "timeout": 2000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the first element shows",
+                "target": {
+                  "byTestId": "block-result-value:transformer.elementTransformer:defaultInput[0]"
+                },
+                "attribute": "data-value",
+                "value": "\"apple\"",
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: a value edited in place under a record key holding a dot",
+            "steps": [
+              {
+                "step": "click",
+                "label": "choose JSON",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:json"
+                }
+              },
+              {
+                "step": "change",
+                "label": "a dataflowObject with the step a.b",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "value": "{\n  \"transformerType\": \"dataflowObject\",\n  \"interpolation\": \"runtime\",\n  \"definition\": {\n    \"a.b\": {\n      \"transformerType\": \"returnValue\",\n      \"value\": \"x\",\n      \"interpolation\": \"runtime\"\n    }\n  }\n}"
+              },
+              {
+                "step": "click",
+                "label": "choose Blocks",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                }
+              },
+              {
+                "step": "click",
+                "label": "open the field a.b value",
+                "target": {
+                  "byTestId": "block-field:transformer.definition.a.b.value"
+                }
+              },
+              {
+                "step": "clear",
+                "label": "clear it",
+                "target": {
+                  "byTestId": "block-field-input:transformer.definition.a.b.value"
+                }
+              },
+              {
+                "step": "type",
+                "label": "type y{Enter}",
+                "target": {
+                  "byTestId": "block-field-input:transformer.definition.a.b.value"
+                },
+                "text": "y{Enter}"
+              },
+              {
+                "step": "click",
+                "label": "choose JSON again",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:json"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the step a.b holds the new value, no step a is added",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "timeout": 2000,
+                "value": "{\n  \"transformerType\": \"dataflowObject\",\n  \"interpolation\": \"runtime\",\n  \"definition\": {\n    \"a.b\": {\n      \"transformerType\": \"returnValue\",\n      \"value\": \"y\",\n      \"interpolation\": \"runtime\"\n    }\n  }\n}"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: a list item moved down its list from its block menu",
+            "steps": [
+              {
+                "step": "click",
+                "label": "choose Blocks",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                }
+              },
+              {
+                "step": "click",
+                "label": "arm + in the palette",
+                "target": {
+                  "byTestId": "block-palette:+"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "+ is armed",
+                "target": {
+                  "byTestId": "block-palette:+"
+                },
+                "attribute": "aria-pressed",
+                "value": "true",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "open the node actions of the root block",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Replace with +",
+                "target": {
+                  "byTestId": "block-action-replace"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the root block is +",
+                "target": {
+                  "byTestId": "block:transformer"
+                },
+                "attribute": "data-transformer-type",
+                "value": "+",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "arm getFromContext",
+                "target": {
+                  "byTestId": "block-palette:getFromContext"
+                }
+              },
+              {
+                "step": "click",
+                "label": "put it in the empty args",
+                "target": {
+                  "byTestId": "block-insert:transformer.args.0"
+                }
+              },
+              {
+                "step": "click",
+                "label": "arm returnValue",
+                "target": {
+                  "byTestId": "block-palette:returnValue"
+                }
+              },
+              {
+                "step": "click",
+                "label": "put it at the end of args",
+                "target": {
+                  "byTestId": "block-insert:transformer.args.1"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the second item",
+                "target": {
+                  "byTestId": "block:transformer.args.1"
+                },
+                "attribute": "data-transformer-type",
+                "value": "returnValue",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "open the node actions of the first item",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer.args.0"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Move down",
+                "target": {
+                  "byTestId": "block-action-move-down"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the returnValue is first",
+                "target": {
+                  "byTestId": "block:transformer.args.0"
+                },
+                "attribute": "data-transformer-type",
+                "value": "returnValue",
+                "timeout": 2000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the getFromContext is second",
+                "target": {
+                  "byTestId": "block:transformer.args.1"
+                },
+                "attribute": "data-transformer-type",
+                "value": "getFromContext",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "choose JSON",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:json"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the value",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "timeout": 2000,
+                "value": "{\n  \"transformerType\": \"+\",\n  \"args\": [\n    {\n      \"transformerType\": \"returnValue\",\n      \"value\": \"seize value...\",\n      \"interpolation\": \"runtime\"\n    },\n    {\n      \"transformerType\": \"getFromContext\",\n      \"interpolation\": \"runtime\"\n    }\n  ],\n  \"interpolation\": \"runtime\"\n}"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

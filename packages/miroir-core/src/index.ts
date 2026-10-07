@@ -1357,8 +1357,13 @@ export type {
   TransformerTypesAcceptingInput,
 } from "./0_interfaces/2_domain/TransformerInterfaceCheckInterface.js";
 export {
+  declaredAttributeSchemas,
+  defaultTransformerNode,
   elementParameterReadsOfDefaultInput,
+  insertTransformerNode,
   keepAttributesOnTypeChange,
+  moveTransformerNode,
+  reorderTransformerNode,
   editedAttributes,
   holdsOneDefault,
   parameterReadsOfDefaultInput,
@@ -1366,20 +1371,27 @@ export {
   pipeTransformerNode,
   removeTransformerNode,
   transformerChildren,
+  transformerInsertPositions,
   transformerSlots,
+  transformerUnionTypes,
   unwrapTransformerNode,
   wrapCandidates,
   wrapTransformerNode,
 } from "./2_domain/TransformerTreeEdit.js";
 export type {
   TransformerChild,
+  TransformerInsertPosition,
   TransformerSlot,
   TransformerTypeChange,
 } from "./0_interfaces/2_domain/TransformerTreeEditInterface.js";
+export { transformerSubtreeRuns } from "./2_domain/TransformerSubtreeRun.js";
+export type { TransformerSubtreeRun } from "./0_interfaces/2_domain/TransformerSubtreeRunInterface.js";
 export {
   transformerBlockOutline,
   transformerBlockTree,
+  transformerPaletteGroups,
   type TransformerBlockModelOptions,
+  type TransformerPaletteGroup,
 } from "./2_domain/TransformerBlockModel.js";
 export type {
   BlockNode,

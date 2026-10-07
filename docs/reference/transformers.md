@@ -164,7 +164,7 @@ The tree operations are pure functions in `miroir-core/src/2_domain/TransformerT
 
 ### Showing a transformer as blocks
 
-In the TransformerEditor, the transformer has three views: Blocks, Form and JSON (issue #498). Form is the default. The view chosen for a field is kept while the editor is open, even when an enclosing object is folded. The block view is read-only for now; editing with blocks comes with #500.
+In the TransformerEditor, the transformer has three views: Blocks, Form and JSON (issue #498). Form is the default. The view chosen for a field is kept while the editor is open, even when an enclosing object is folded. The Blocks view also edits the transformer (issue #500, see Editing with blocks below).
 
 - Each transformer is a block. Its header shows the transformer type, its label and its primitive parameters, such as `referenceToOuterObject`. Each place that holds a transformer (`applyTo`, `predicate`, `elementTransformer`, …) is a row inside the block.
 - A literal object or list is an object or list block with one row per entry, and the transformers inside it are blocks too. An ML schema parameter is a chip labelled "ML schema". The `value` of a `returnValue` is shown quoted, since it is returned as is, never evaluated.
@@ -174,6 +174,22 @@ In the TransformerEditor, the transformer has three views: Blocks, Form and JSON
 - Each block folds with the arrow of its header, which then says how many rows are hidden. Literal objects and lists with more than 3 entries and no transformer inside start folded. The toolbar has Expand all, Collapse all and a zoom from 50 % to 150 %.
 
 The block tree is computed by the pure functions `transformerBlockTree` and `transformerBlockOutline` (`miroir-core/src/2_domain/TransformerBlockModel.ts`), tested by the MiroirTest `fn.blockModel`. The platform test `transformerBlockModelAssets.unit.test.ts` checks that every transformer in the package assets maps to blocks and that every category has a Theme color. The view is tested by `ui.blockEditor`. Decisions and the plan of the following steps: [`code-helpers/features/497-FEATURE-visual-block-editor/`](../../code-helpers/features/497-FEATURE-visual-block-editor/analysis.md).
+
+### Editing with blocks
+
+In the Blocks view of the TransformerEditor, every edit writes the whole transformer once, so Undo takes it back in one step (issue #500). Each drag has a click or menu equivalent.
+
+- **Palette.** Beside the program, the palette lists the transformer types, grouped by classification and colored like their blocks. A click arms a type (a second click disarms it). A transformer type with no TransformerDefinition is not offered.
+- **Insert targets.** An empty slot, the end of a list slot (`args`, `whens`) and a new entry of a record slot (`definition` of `dataflowObject`) show a dashed target. A click puts the armed block there. A new item of a list of pairs (`whens[]`) gets a runtime `returnValue` in its other required slot.
+- **Block menu.** The `⋯` button of a block has the #415 actions (Wrap in, Pipe into, Unwrap, Remove) and: Replace with the armed type (it keeps the attributes the new type takes), Switch to runtime / Switch to build, Move up / Move down for a list item, and Move to tray.
+- **Tray.** A block moved to the tray leaves its slot: an optional slot is emptied, a required one gets a runtime `returnValue`. The tray sits below the program and is not saved; it survives a switch to Form or JSON. Place arms a tray block like a palette type, Discard drops it.
+- **Values.** A primitive value or parameter opens an input on click or Enter. Enter or leaving the field writes it, Escape cancels. A string stays a string; any other value is read as JSON, so a number stays a number. An ML schema chip opens its JSON text in a popover. Ctrl+Z inside these fields undoes their text, not the transformer.
+- **Runtime by default.** Every node the Blocks view creates gets `interpolation: "runtime"`. The Form view leaves the attribute out (absent means build), so the same edit in both views differs only there.
+- **Type flags.** With Show transformer types on, each block shows its input and output types, in red with ⚠ when they do not fit. A block that does not fit is kept as written.
+- **Result bubble.** A click on a block header runs that block on the editor's input and shows the result. Under `mapList`, `filterList` or `find`, the block runs once per element; a select shows one element alone. `createObjectFromPairs` and `mergeIntoObject` give their `definition` the evaluated `applyTo`, and a `dataflowObject` step sees the steps before it.
+- **Drag and drop.** Palette entries, tray blocks and blocks (by their header) can be dragged onto an insert target, onto a block (to replace it with a palette type or a tray block) or onto the tray. A drag starts after a short move, so a click keeps its meaning.
+
+The edits are pure functions of `TransformerTreeEdit.ts` (`insertTransformerNode`, `moveTransformerNode`, `reorderTransformerNode`, `transformerInsertPositions`, `defaultTransformerNode`), tested by `fn.transformer.treeEdit`; the palette groups are `transformerPaletteGroups` (`fn.blockModel`); the bubble runs `transformerSubtreeRuns` (`miroir-core/src/2_domain/TransformerSubtreeRun.ts`, `fn.transformer.subtreeRun`). The view is tested by `ui.blockEditing`, which is kept off the page bundle.
 
 ### Undo and redo
 
