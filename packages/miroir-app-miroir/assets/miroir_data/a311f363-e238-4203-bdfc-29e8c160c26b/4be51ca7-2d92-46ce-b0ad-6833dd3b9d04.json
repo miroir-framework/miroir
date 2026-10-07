@@ -2680,7 +2680,7 @@
         "miroirTests": [
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "TransformerEditor: an application composite is in the palette, its block has its parameter slot, and its result runs it",
+            "miroirTestLabel": "TransformerEditor on an application with a composite: an application composite is in the palette, its block has its parameter slot, and its result runs it",
             "steps": [
               {
                 "step": "expectElement",
@@ -2817,7 +2817,7 @@
           },
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "TransformerEditor: a transformer saved as a TransformerDefinition is in the palette, and a transformer using it runs it",
+            "miroirTestLabel": "TransformerEditor on an application with a composite: a transformer saved as a TransformerDefinition is in the palette, and a transformer using it runs it",
             "steps": [
               {
                 "step": "expectElement",
@@ -2981,7 +2981,7 @@
           },
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "TransformerEditor: a composite in defined mode is a define block; renaming its parameter renames its reads, and Save keeps it",
+            "miroirTestLabel": "TransformerEditor on an application with a composite: a composite in defined mode is a define block; renaming its parameter renames its reads, and Save keeps it",
             "steps": [
               {
                 "step": "expectElement",

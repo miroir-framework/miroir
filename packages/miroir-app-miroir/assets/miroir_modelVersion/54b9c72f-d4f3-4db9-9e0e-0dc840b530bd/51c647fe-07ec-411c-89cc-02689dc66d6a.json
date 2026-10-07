@@ -501,6 +501,62 @@
                   "type": "any"
                 }
               },
+              "wireLocalCacheCompositeAction": {
+                "type": "boolean",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Wire composite actions to the local cache",
+                    "description": "The component's DomainController runs actions on the test local cache, and the Library application is deployed (#274, #502)"
+                  }
+                }
+              },
+              "localCacheInstances": {
+                "type": "array",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Local cache instances",
+                    "description": "Instances loaded in the test local cache with the application's model and data, before the suite's cases run (#502)"
+                  }
+                },
+                "definition": {
+                  "type": "object",
+                  "definition": {
+                    "application": {
+                      "type": "uuid"
+                    },
+                    "objects": {
+                      "type": "array",
+                      "definition": {
+                        "type": "object",
+                        "definition": {
+                          "parentName": {
+                            "type": "string",
+                            "optional": true
+                          },
+                          "parentUuid": {
+                            "type": "uuid"
+                          },
+                          "applicationSection": {
+                            "type": "enum",
+                            "definition": [
+                              "model",
+                              "data"
+                            ]
+                          },
+                          "instances": {
+                            "type": "array",
+                            "definition": {
+                              "type": "any"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
               "miroirTests": {
                 "type": "array",
                 "definition": {
