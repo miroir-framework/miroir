@@ -123,7 +123,7 @@ const EditableAttributeName: FC<{
       // #499: while the name is being edited, Ctrl+Z and Ctrl+Y undo its text with the browser's
       // own undo, not a step of the value history, which has not seen the name yet
       const command = historyCommand(event);
-      if (command && isEditing && (command === "redo" || localValue !== initialValue)) {
+      if (command && isEditing) {
         event.stopPropagation();
         return;
       }
@@ -135,7 +135,7 @@ const EditableAttributeName: FC<{
         setIsEditing(false);
       }
     },
-    [handleCommit, initialValue, isEditing, localValue]
+    [handleCommit, initialValue, isEditing]
   );
 
   // Update local value if the initial value changes (external update)

@@ -11,7 +11,7 @@ import {
   ThemedCodeBlock,
 } from "../Themes/index";
 import { getIn, useFormikContext } from "formik";
-import { historyCommand, ValueHistoryContext } from "./ValueHistoryProvider.js";
+import { editsOwnText, historyCommand, ValueHistoryContext } from "./ValueHistoryProvider.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MlElementEditorReactCodeMirror");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
@@ -125,9 +125,12 @@ export const MlElementEditorReactCodeMirror: React.FC<MlElementEditorReactCodeMi
 
   // #499: text that is not valid JSON is not in the value yet, so no history step holds it: Ctrl+Z
   // drops it, back to the JSON of the value, and Ctrl+Y does nothing. With valid text, both keys go
-  // to the history.
+  // to the history. Keys of the search panel stay with its own text.
   const handleUncommittedKeys = useCallback(
     (event: React.KeyboardEvent) => {
+      if (event.defaultPrevented || editsOwnText(event.target)) {
+        return;
+      }
       const command = undoable && !codeMirrorIsValidJson ? historyCommand(event) : undefined;
       if (!command) {
         return;

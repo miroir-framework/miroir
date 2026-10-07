@@ -192,7 +192,7 @@ export function historyCommand(event: React.KeyboardEvent): "undo" | "redo" | un
  * Whether a key goes to the text of a field that is not the value: the filter of an open select,
  * or a CodeMirror panel (search). The browser's own undo applies there.
  */
-function editsOwnText(target: EventTarget | null): boolean {
+export function editsOwnText(target: EventTarget | null): boolean {
   const element = target as HTMLElement | null;
   if (!element || typeof element.getAttribute !== "function") {
     return false;

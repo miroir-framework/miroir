@@ -181,7 +181,7 @@ In the TransformerEditor, Undo and Redo sit next to the Blocks / Form / JSON swi
 
 - Ctrl+Z (Cmd+Z on macOS) undoes, Ctrl+Y and Ctrl+Shift+Z (Cmd+Shift+Z) redo, when the focus is in the transformer field. In an open menu or dialog, they do nothing to the transformer.
 - Text typed into one field is one step, until the focus leaves the field. Typing that comes back to the previous value adds no step. A paste, a cut, a drop and every other edit, such as a choice in a select, is a step of its own.
-- Text that is not part of the transformer yet keeps the browser's own undo: the filter of an open select, a record entry name being typed. In the JSON view, text that does not parse is not in the transformer either: Ctrl+Z drops it and shows the JSON of the transformer again.
+- Text that is not part of the transformer yet keeps the browser's own undo: the filter of an open select, the search panel of the JSON view, a record entry name being typed. In the JSON view, text that does not parse is not in the transformer either: Ctrl+Z drops it and shows the JSON of the transformer again.
 - When an edit makes the transformer fail its type check, the editor shows an error in place of the transformer; Undo and Redo then sit above the editor, so the edit can still be undone.
 - The history keeps the last 100 steps. Loading a stored transformer starts a new history.
 
