@@ -1,0 +1,55 @@
+{
+  "uuid": "4be51ca7-2d92-46ce-b0ad-6833dd3b9d04",
+  "parentName": "MiroirTest",
+  "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+  "name": "ui.blockEditing",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "description": "Editing a transformer with blocks in the TransformerEditor's Blocks view.",
+  "tags": [
+    "ui",
+    "editor",
+    "transformer"
+  ],
+  "issue": "500",
+  "definition": {
+    "miroirTestType": "miroirTestSuite",
+    "miroirTestLabel": "ui.blockEditing",
+    "miroirTests": [
+      {
+        "miroirTestType": "reactComponentTestSuite",
+        "miroirTestLabel": "TransformerEditor",
+        "component": "TransformerEditor",
+        "componentProps": {
+          "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+          "entityUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad"
+        },
+        "miroirTests": [
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: the Blocks view of the starting transformer is one returnValue block",
+            "steps": [
+              {
+                "step": "click",
+                "label": "choose Blocks",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the root block",
+                "target": {
+                  "byTestId": "block:transformer"
+                },
+                "attribute": "data-transformer-type",
+                "value": "returnValue",
+                "timeout": 2000
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
