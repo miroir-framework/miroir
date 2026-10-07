@@ -1,5 +1,5 @@
 import { getIn, useFormikContext } from "formik";
-import React, { createContext, useCallback, useContext, useMemo, useRef } from "react";
+import React, { createContext, useCallback, useContext, useMemo, useRef, useState } from "react";
 
 import type { ValueHistory } from "./ValueHistory.js";
 
@@ -37,12 +37,21 @@ export interface ValueHistoryActions {
 export interface ValueHistoryStatus {
   canUndo: boolean;
   canRedo: boolean;
+  /**
+   * Whether the scope of the watched field is on screen. It is not when the value fails its type
+   * check (the editor shows an error in place of the field): the buttons are then shown outside it.
+   */
+  scopeShown: boolean;
 }
 
 /** Stable while the provider's history and path stay the same. */
 export const ValueHistoryContext = createContext<ValueHistoryActions | undefined>(undefined);
 /** Changes only when undo or redo becomes possible or impossible. */
-export const ValueHistoryStatusContext = createContext<ValueHistoryStatus>({ canUndo: false, canRedo: false });
+export const ValueHistoryStatusContext = createContext<ValueHistoryStatus>({
+  canUndo: false,
+  canRedo: false,
+  scopeShown: false,
+});
 
 export interface ValueHistoryProviderProps {
   history: ValueHistory;
@@ -58,6 +67,7 @@ export function ValueHistoryProvider(props: ValueHistoryProviderProps) {
   // the text field the change being rendered was typed into, used once
   const typedInto = useRef<EventTarget | undefined>(undefined);
   const scopeElement = useRef<HTMLElement | null>(null);
+  const [scopeShown, setScopeShown] = useState(false);
 
   const typed = typedInto.current;
   typedInto.current = undefined;
@@ -101,12 +111,16 @@ export function ValueHistoryProvider(props: ValueHistoryProviderProps) {
       restoreFocus,
       setScopeElement: (element: HTMLElement | null) => {
         scopeElement.current = element;
+        setScopeShown(element !== null);
       },
     }),
     [formikPath, history, undo, redo, restoreFocus],
   );
   const { canUndo, canRedo } = history;
-  const status = useMemo<ValueHistoryStatus>(() => ({ canUndo, canRedo }), [canUndo, canRedo]);
+  const status = useMemo<ValueHistoryStatus>(
+    () => ({ canUndo, canRedo, scopeShown }),
+    [canUndo, canRedo, scopeShown],
+  );
 
   return (
     <ValueHistoryContext.Provider value={actions}>
@@ -133,22 +147,60 @@ function isTextField(target: EventTarget | null): target is HTMLElement {
   return element.tagName === "INPUT" && TEXT_INPUT_TYPES.has((element as HTMLInputElement).type);
 }
 
-/** Typing or deleting text; a checkbox or a select fires `input` events with no `inputType`. */
-function isTypingEvent(event: Event): boolean {
+/** Text changes that are not typing: each one is a step of its own. */
+const NOT_TYPED = new Set([
+  "insertFromPaste",
+  "insertFromPasteAsQuotation",
+  "insertFromDrop",
+  "insertFromYank",
+  "deleteByCut",
+  "deleteByDrag",
+]);
+
+/**
+ * Whether an `input` event types or deletes text: "typed", a paste, cut or drop: "pasted", else
+ * undefined (a checkbox or a select fires `input` events with no `inputType`; a native undo has
+ * the type `historyUndo`).
+ */
+function textInputKind(event: Event): "typed" | "pasted" | undefined {
   const inputType = (event as InputEvent).inputType;
-  return typeof inputType === "string" && (inputType.startsWith("insert") || inputType.startsWith("delete"));
+  if (typeof inputType !== "string" || !(inputType.startsWith("insert") || inputType.startsWith("delete"))) {
+    return undefined;
+  }
+  return NOT_TYPED.has(inputType) ? "pasted" : "typed";
 }
 
-function historyCommand(event: React.KeyboardEvent): "undo" | "redo" | undefined {
+/** The virtual key codes of Z and Y, for layouts whose letters are not Latin (Cyrillic, Greek…). */
+const KEY_CODE_LETTERS: Record<number, string> = { 89: "y", 90: "z" };
+
+/** The history command of a key: Ctrl/Cmd+Z undoes, Ctrl+Y and Ctrl/Cmd+Shift+Z redo. */
+export function historyCommand(event: React.KeyboardEvent): "undo" | "redo" | undefined {
   if (!(event.ctrlKey || event.metaKey) || event.altKey) {
     return undefined;
   }
-  // `key`, not `code`: the Z key of an AZERTY keyboard has the code KeyW
+  // `key` first: the Z key of an AZERTY keyboard has the code KeyW; the key code for the others,
+  // as the browser's own undo shortcut does
   const key = event.key.toLowerCase();
-  if (key === "z") {
+  const letter = /^[a-z]$/.test(key) ? key : KEY_CODE_LETTERS[event.nativeEvent.keyCode];
+  if (letter === "z") {
     return event.shiftKey ? "redo" : "undo";
   }
-  return key === "y" && !event.shiftKey ? "redo" : undefined;
+  return letter === "y" && !event.shiftKey ? "redo" : undefined;
+}
+
+/**
+ * Whether a key goes to the text of a field that is not the value: the filter of an open select,
+ * or a CodeMirror panel (search). The browser's own undo applies there.
+ */
+function editsOwnText(target: EventTarget | null): boolean {
+  const element = target as HTMLElement | null;
+  if (!element || typeof element.getAttribute !== "function") {
+    return false;
+  }
+  return (
+    (element.getAttribute("role") === "combobox" && element.getAttribute("aria-expanded") === "true") ||
+    element.closest(".cm-panels") !== null
+  );
 }
 
 /** Whether a React event comes from inside the element, not from a portal (menu, dialog) below it. */
@@ -171,7 +223,7 @@ export function ValueHistoryScope(props: { children: React.ReactNode }) {
         return;
       }
       const command = historyCommand(event);
-      if (!command) {
+      if (!command || editsOwnText(event.target)) {
         return;
       }
       // also stops the browser's own undo of the focused field, which would bypass the history
@@ -187,8 +239,14 @@ export function ValueHistoryScope(props: { children: React.ReactNode }) {
   );
   const handleInput = useCallback(
     (event: React.FormEvent) => {
-      if (history && fromInside(event) && isTextField(event.target) && isTypingEvent(event.nativeEvent)) {
+      if (!history || !fromInside(event) || !isTextField(event.target)) {
+        return;
+      }
+      const kind = textInputKind(event.nativeEvent);
+      if (kind === "typed") {
         history.markTyped(event.target);
+      } else if (kind === "pasted") {
+        history.closeGroup();
       }
     },
     [history],

@@ -46,6 +46,7 @@ import { TypedValueObjectEditor } from '../Reports/TypedValueObjectEditor';
 import { BlockViewModeProvider } from '../BlockEditor/BlockViewMode.js';
 import { ValueHistory } from '../ValueObjectEditor/ValueHistory.js';
 import { ValueHistoryProvider } from '../ValueObjectEditor/ValueHistoryProvider.js';
+import { ValueHistoryFallbackButtons } from '../ValueObjectEditor/ValueHistoryButtons.js';
 import type { TransformerTypeBadge, TransformerTypeBadgePart } from '../ValueObjectEditor/MlElementEditorInterface';
 import {
   ThemedContainer,
@@ -334,6 +335,8 @@ const TransformerDefinitionEditor: React.FC<{
         }
       />
       <ValueHistoryProvider history={transformerHistory} formikPath={transformerFormikPath}>
+        {/* #499: Undo stays reachable when an edit made the transformer fail its type check */}
+        <ValueHistoryFallbackButtons rootLessListKey="transformer" />
         <BlockViewModeProvider>
           <TypedValueObjectEditor
             labelElement={<>Transformer Definition</>}

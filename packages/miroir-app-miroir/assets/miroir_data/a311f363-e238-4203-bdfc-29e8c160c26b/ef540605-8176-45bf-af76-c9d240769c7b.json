@@ -978,6 +978,230 @@
                 "timeout": 2000
               }
             ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: Undo stays reachable after an edit that makes the transformer fail its type check",
+            "steps": [
+              {
+                "step": "click",
+                "label": "choose JSON",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:json"
+                }
+              },
+              {
+                "step": "change",
+                "label": "rename value to valu in the JSON text",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "value": "{\n  \"transformerType\": \"returnValue\",\n  \"mlSchema\": {\n    \"type\": \"string\"\n  },\n  \"valu\": \"seize value...\"\n}"
+              },
+              {
+                "step": "expectElement",
+                "label": "the transformer field is replaced by an error",
+                "target": {
+                  "byTestId": "block-view-switch:transformer"
+                },
+                "present": false,
+                "timeout": 2000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "Undo is still on screen and enabled",
+                "target": {
+                  "byTestId": "value-history-undo:transformer"
+                },
+                "attribute": "aria-disabled",
+                "value": "false",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "undo",
+                "target": {
+                  "byTestId": "value-history-undo:transformer"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the JSON view is back with the value before the edit",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "value": "{\n  \"transformerType\": \"returnValue\",\n  \"mlSchema\": {\n    \"type\": \"string\"\n  },\n  \"value\": \"seize value...\"\n}",
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: Ctrl+Z on JSON text that does not parse drops that text, not an earlier step",
+            "steps": [
+              {
+                "step": "change",
+                "label": "edit the returned value in the form",
+                "target": {
+                  "byDisplayValue": "seize value..."
+                },
+                "value": "new value"
+              },
+              {
+                "step": "click",
+                "label": "choose JSON",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:json"
+                }
+              },
+              {
+                "step": "type",
+                "label": "type a stray character at the end",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "text": "x"
+              },
+              {
+                "step": "expectElement",
+                "label": "the text does not parse",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "value": "{\n  \"transformerType\": \"returnValue\",\n  \"mlSchema\": {\n    \"type\": \"string\"\n  },\n  \"value\": \"new value\"\n}x",
+                "timeout": 2000
+              },
+              {
+                "step": "keyboard",
+                "label": "Ctrl+Z",
+                "keys": "{Control>}z{/Control}"
+              },
+              {
+                "step": "expectElement",
+                "label": "the JSON of the value, with the form edit kept",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "value": "{\n  \"transformerType\": \"returnValue\",\n  \"mlSchema\": {\n    \"type\": \"string\"\n  },\n  \"value\": \"new value\"\n}",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "undo the form edit",
+                "target": {
+                  "byTestId": "value-history-undo:transformer"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the value before the form edit",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "value": "{\n  \"transformerType\": \"returnValue\",\n  \"mlSchema\": {\n    \"type\": \"string\"\n  },\n  \"value\": \"seize value...\"\n}",
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: Ctrl+Z in the filter of an open select does not undo the transformer",
+            "steps": [
+              {
+                "step": "change",
+                "label": "edit the returned value",
+                "target": {
+                  "byDisplayValue": "seize value..."
+                },
+                "value": "edited"
+              },
+              {
+                "step": "type",
+                "label": "type in the transformer type filter",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.transformerType"
+                },
+                "text": "map"
+              },
+              {
+                "step": "keyboard",
+                "label": "Ctrl+Z in the filter",
+                "keys": "{Control>}z{/Control}"
+              },
+              {
+                "step": "keyboard",
+                "label": "close the list",
+                "keys": "{Escape}"
+              },
+              {
+                "step": "expectElement",
+                "label": "the edit stays",
+                "target": {
+                  "byDisplayValue": "edited"
+                },
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: Ctrl+Z while renaming a record entry does not undo the transformer",
+            "steps": [
+              {
+                "step": "click",
+                "label": "choose JSON",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:json"
+                }
+              },
+              {
+                "step": "change",
+                "label": "make the returned value an object",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "value": "{\n  \"transformerType\": \"returnValue\",\n  \"mlSchema\": {\n    \"type\": \"string\"\n  },\n  \"value\": {\n    \"a\": \"x\"\n  }\n}"
+              },
+              {
+                "step": "click",
+                "label": "choose Form",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:form"
+                }
+              },
+              {
+                "step": "type",
+                "label": "type in the entry name",
+                "target": {
+                  "widget": "recordEntryName",
+                  "field": "transformerEditor_transformer_selector.transformer.value",
+                  "entry": "a"
+                },
+                "text": "b"
+              },
+              {
+                "step": "keyboard",
+                "label": "Ctrl+Z in the entry name",
+                "keys": "{Control>}z{/Control}"
+              },
+              {
+                "step": "expectElement",
+                "label": "the object value stays",
+                "target": {
+                  "byDisplayValue": "x"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the value before the JSON edit is not back",
+                "target": {
+                  "byDisplayValue": "seize value..."
+                },
+                "present": false
+              }
+            ]
           }
         ]
       },

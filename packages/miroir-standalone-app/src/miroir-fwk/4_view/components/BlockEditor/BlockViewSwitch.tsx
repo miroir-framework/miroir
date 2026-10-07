@@ -4,11 +4,8 @@ import { getIn, useFormikContext } from "formik";
 import React, { lazy, Suspense, useContext } from "react";
 
 import { useMiroirTheme } from "../../contexts/MiroirThemeContext.js";
-import {
-  ValueHistoryContext,
-  ValueHistoryScope,
-  ValueHistoryStatusContext,
-} from "../ValueObjectEditor/ValueHistoryProvider.js";
+import { switchButtonCss, ValueHistoryButtons } from "../ValueObjectEditor/ValueHistoryButtons.js";
+import { ValueHistoryContext, ValueHistoryScope } from "../ValueObjectEditor/ValueHistoryProvider.js";
 import { BlockViewModeContext, type BlockViewMode } from "./BlockViewMode.js";
 
 // ################################################################################################
@@ -25,57 +22,6 @@ const MODES: { mode: BlockViewMode; label: string }[] = [
   { mode: "form", label: "Form" },
   { mode: "json", label: "JSON" },
 ];
-
-type Theme = ReturnType<typeof useMiroirTheme>["currentTheme"];
-
-function switchButtonCss(theme: Theme, selected: boolean) {
-  return css({
-    font: "inherit",
-    fontSize: "12px",
-    padding: "1px 8px",
-    cursor: "pointer",
-    border: `1px solid ${theme.colors.border}`,
-    borderRadius: "4px",
-    color: selected ? theme.colors.background : theme.colors.text,
-    backgroundColor: selected ? theme.colors.primary : theme.colors.surface,
-    "&:disabled": { cursor: "default", opacity: 0.5 },
-  });
-}
-
-function ValueHistoryButtons(props: { rootLessListKey: string }) {
-  const history = useContext(ValueHistoryContext);
-  const { canUndo, canRedo } = useContext(ValueHistoryStatusContext);
-  const { currentTheme } = useMiroirTheme();
-  if (!history) {
-    return null;
-  }
-  return (
-    <div role="group" aria-label="History" css={css({ display: "inline-flex", gap: "2px", marginLeft: "8px" })}>
-      <button
-        type="button"
-        disabled={!canUndo}
-        aria-disabled={!canUndo}
-        title="Undo (Ctrl+Z)"
-        data-testid={`value-history-undo:${props.rootLessListKey}`}
-        onClick={history.undo}
-        css={switchButtonCss(currentTheme, false)}
-      >
-        ↶ Undo
-      </button>
-      <button
-        type="button"
-        disabled={!canRedo}
-        aria-disabled={!canRedo}
-        title="Redo (Ctrl+Y)"
-        data-testid={`value-history-redo:${props.rootLessListKey}`}
-        onClick={history.redo}
-        css={switchButtonCss(currentTheme, false)}
-      >
-        ↷ Redo
-      </button>
-    </div>
-  );
-}
 
 export interface BlockViewSwitchProps {
   /** Path of the field in the Formik values. */

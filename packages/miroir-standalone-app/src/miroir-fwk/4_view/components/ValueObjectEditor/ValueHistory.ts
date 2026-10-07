@@ -43,7 +43,9 @@ export class ValueHistory {
    * Returns whether an entry was added or extended.
    */
   observe(value: unknown, typedInto?: EventTarget): boolean {
-    if (value === this.lastObserved) {
+    // an absent value (a selector branch without the field) is no step: undoing to it would remove
+    // the field, and its Undo and Redo buttons with it
+    if (value === undefined || value === this.lastObserved) {
       return false;
     }
     this.lastObserved = value;

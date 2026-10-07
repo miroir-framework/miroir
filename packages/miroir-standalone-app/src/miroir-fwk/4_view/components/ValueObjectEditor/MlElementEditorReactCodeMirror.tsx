@@ -10,8 +10,8 @@ import {
   ThemedSpan,
   ThemedCodeBlock,
 } from "../Themes/index";
-import { useFormikContext } from "formik";
-import { ValueHistoryContext } from "./ValueHistoryProvider.js";
+import { getIn, useFormikContext } from "formik";
+import { historyCommand, ValueHistoryContext } from "./ValueHistoryProvider.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MlElementEditorReactCodeMirror");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
@@ -97,11 +97,18 @@ export const MlElementEditorReactCodeMirror: React.FC<MlElementEditorReactCodeMi
   const handleChange = useCallback(
     (value: string, viewUpdate?: CodeMirrorUpdate) => {
       // #499: typing makes one undo step. CodeMirror may get text without DOM `input` events
-      // (EditContext), so its own transactions say whether the change was typed.
-      if (
-        undoable &&
-        viewUpdate?.transactions.some((transaction) => transaction.isUserEvent("input") || transaction.isUserEvent("delete"))
-      ) {
+      // (EditContext), so its own transactions say whether the change was typed; a paste, a drop
+      // or a cut is a step of its own.
+      const transactions = viewUpdate?.transactions ?? [];
+      const pasted = transactions.some((transaction) =>
+        ["input.paste", "input.drop", "delete.cut"].some((event) => transaction.isUserEvent(event)),
+      );
+      const typed = transactions.some(
+        (transaction) => transaction.isUserEvent("input") || transaction.isUserEvent("delete"),
+      );
+      if (undoable && pasted) {
+        valueHistory?.closeGroup();
+      } else if (undoable && typed && viewUpdate) {
         valueHistory?.markTyped(viewUpdate.view.contentDOM);
       }
       try {
@@ -114,6 +121,25 @@ export const MlElementEditorReactCodeMirror: React.FC<MlElementEditorReactCodeMi
       setCodeMirrorValue(value);
     },
     [setCodeMirrorIsValidJson, setCodeMirrorValue, formikContext, formikRootLessListKey, undoable, valueHistory]
+  );
+
+  // #499: text that is not valid JSON is not in the value yet, so no history step holds it: Ctrl+Z
+  // drops it, back to the JSON of the value, and Ctrl+Y does nothing. With valid text, both keys go
+  // to the history.
+  const handleUncommittedKeys = useCallback(
+    (event: React.KeyboardEvent) => {
+      const command = undoable && !codeMirrorIsValidJson ? historyCommand(event) : undefined;
+      if (!command) {
+        return;
+      }
+      event.preventDefault();
+      event.stopPropagation();
+      if (command === "undo") {
+        setCodeMirrorValue(JSON.stringify(getIn(formikContext.values, formikRootLessListKey), null, 2));
+        setCodeMirrorIsValidJson(true);
+      }
+    },
+    [undoable, codeMirrorIsValidJson, setCodeMirrorValue, setCodeMirrorIsValidJson, formikContext, formikRootLessListKey],
   );
 
   const handleCheck = useCallback(() => {
@@ -140,6 +166,7 @@ export const MlElementEditorReactCodeMirror: React.FC<MlElementEditorReactCodeMi
           value={codeMirrorValue}
           readOnly={readOnly}
           onChange={(event) => handleChange(event.target.value)}
+          onKeyDown={handleUncommittedKeys}
           rows={codeMirrorValue.split("\n").length}
           style={{ display: "block", width: "100%", fontFamily: "monospace" }}
         />
@@ -176,7 +203,7 @@ export const MlElementEditorReactCodeMirror: React.FC<MlElementEditorReactCodeMi
   // const editorWidth = `${Math.max(...(codeMirrorValue?.split('\n').map(line => line.length) || [0])) + 1}em`;
 
   return (
-    <span>
+    <span onKeyDown={handleUncommittedKeys}>
       {/* <ThemedOnScreenHelper label="MlElementEditorReactCodeMirror" data={{
         hidden: hidden,
         insideAny: insideAny,
