@@ -31,7 +31,7 @@ This plan does not add define blocks (#502) nor the block view of action sequenc
 |---|---|---|---|
 | 0 | One table of scope rules; `aggregate.having` | ✅ | `fn.transformer.subtreeRun`, TransformerEnvironmentBindings unit tests |
 | 1 | Names in scope at a position of a transformer | ✅ | `fn.transformer.scope` transformer cases |
-| 2 | Names in scope in a composite action sequence | ⬜ | `fn.transformer.scope` sequence cases |
+| 2 | Names in scope in a composite action sequence | ✅ | `fn.transformer.scope` sequence cases |
 | 3 | Variable blocks in the palette | ⬜ | `ui.blockEditing` variable cases |
 | 4 | The path picker of a variable block | ⬜ | `ui.blockEditing` path case (AC 2) |
 | 5 | Unbound Runner references, nonreg, docs, AC | ⬜ | issue filed, nonreg, AC checklist |
@@ -70,6 +70,8 @@ RED: new off-page instance `fn.transformer.scope`, suite `transformerEnvironment
 ## Slice 2 — Names in scope in a composite action sequence
 
 RED: suite `compositeActionEnvironmentAt`: a template sees the templates before it; an action sees parameters, templates and earlier results by `actionLabel` and `nameGivenToResult`; a build node sees templates as parameters and no context; a nested sequence starts afresh; a runtime transformer of a boxed query sees its query parameters, extractors and earlier runtime transformers; `runnerEnvironment`; `transformerDefinitionBodyEnvironment` on `entityDefinition_extractAttributes`. GREEN: the functions.
+
+**Realization (2026-10-07).** `CompositeActionScope.ts` exports `compositeActionEnvironmentAt` and `runnerEnvironment`; `transformerDefinitionBodyEnvironment` sits in `TransformerEnvironmentBindings.ts`. Inside an action or a query, the rest of the path goes through `transformerEnvironmentAt`, so the transformer rules apply there unchanged. A query is recognised by a `query` key holding `queryParams`, `extractors` or `runtimeTransformers`. The caller's context (a test's `actionContext`) reaches nested sequences, as on the test path; the Runner path gives none. The definition-body case uses a minimal interface rather than the `entityDefinition_extractAttributes` instance. 13 cases, 25 in `fn.transformer.scope`.
 
 ## Slice 3 — Variable blocks in the palette
 

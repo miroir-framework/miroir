@@ -1423,8 +1423,10 @@ export type {
 export {
   collectTransformerEnvironmentBindings,
   formatTransformerEnvironmentLabel,
+  transformerDefinitionBodyEnvironment,
   transformerEnvironmentAt,
 } from "./2_domain/TransformerEnvironmentBindings.js";
+export { compositeActionEnvironmentAt, runnerEnvironment } from "./2_domain/CompositeActionScope.js";
 export {
   AGGREGATE_VALUE_NAME,
   TRANSFORMER_SCOPE_RULES,

@@ -101,6 +101,21 @@ export function transformerEnvironmentAt(
   };
 }
 
+/**
+ * The names the body of a composite TransformerDefinition sees (#501): its parameters, evaluated
+ * by value and bound in the context (`transformer_extended_apply`). Its parameters are the
+ * caller's, unknown here.
+ */
+export function transformerDefinitionBodyEnvironment(definition: {
+  transformerInterface?: { transformerParameterSchema?: { transformerDefinition?: { definition?: unknown } } };
+}): TransformerEnvironment {
+  const parameters = definition.transformerInterface?.transformerParameterSchema?.transformerDefinition?.definition;
+  return {
+    contextNames: uniqueSorted(isPlainObject(parameters) ? Object.keys(parameters) : []),
+    parameterNames: [],
+  };
+}
+
 export function formatTransformerEnvironmentLabel(
   binding: TransformerEnvironmentBinding,
 ): string {
