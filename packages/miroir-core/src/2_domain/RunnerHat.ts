@@ -208,6 +208,8 @@ export function newCustomRunner(params: {
   defaultLabel?: string;
   sequence: unknown;
   fields?: Record<string, MlElement>;
+  /** The whole form of the Runner, a transformer form included; `fields` is ignored when given. */
+  formMLSchema?: unknown;
 }): Record<string, unknown> {
   return {
     uuid: params.uuid,
@@ -218,15 +220,18 @@ export function newCustomRunner(params: {
     defaultLabel: params.defaultLabel && params.defaultLabel.length > 0 ? params.defaultLabel : params.name,
     definition: {
       runnerType: "customRunner",
-      formMLSchema: { formMLSchemaType: "mlSchema", mlSchema: { type: "object", definition: params.fields ?? {} } },
+      formMLSchema: params.formMLSchema ?? {
+        formMLSchemaType: "mlSchema",
+        mlSchema: { type: "object", definition: params.fields ?? {} },
+      },
       compositeActionSequence: params.sequence,
     },
   };
 }
 
 /**
- * `runner` named `name`, its sequence's reads of the form rewritten: the form values are given
- * under the Runner's name, so a read of `[old name, …]` becomes `[name, …]`.
+ * `runner` named `name`, the reads of its form values rewritten in its sequence and its form: the
+ * values are given under the Runner's name, so a read of `[old name, …]` or of `old name` follows.
  */
 export function renameRunner(runner: unknown, name: string): Record<string, unknown> {
   const definition = customRunnerDefinition(runner);
@@ -236,18 +241,31 @@ export function renameRunner(runner: unknown, name: string): Record<string, unkn
   if (!FIELD_NAME.test(name)) {
     throw new Error(`"${name}" is not a Runner name: use letters, digits and _, not starting with a digit`);
   }
-  const reads = formReadPaths(definition.compositeActionSequence, runner.name);
-  const sequence = reads.reduce(
-    (current, path) =>
-      updateAt(current, [...path, "referencePath"], (referencePath) =>
-        (referencePath as unknown[]).map((segment, index) => (index === 0 ? name : segment)),
-      ),
-    definition.compositeActionSequence,
-  );
-  return { ...runner, name, definition: { ...definition, compositeActionSequence: sequence } };
+  const from = runner.name;
+  const renamed = (value: unknown) =>
+    formReadPaths(value, from).reduce(
+      (current, path) =>
+        updateAt(current, path, (read) => {
+          const node = read as Record<string, unknown>;
+          return node.referenceName === from
+            ? { ...node, referenceName: name }
+            : { ...node, referencePath: (node.referencePath as unknown[]).map((segment, index) => (index === 0 ? name : segment)) };
+        }),
+      value,
+    );
+  return {
+    ...runner,
+    name,
+    definition: {
+      ...definition,
+      // a form given by a transformer reads the values of the form under the Runner's name too
+      formMLSchema: renamed(definition.formMLSchema),
+      compositeActionSequence: renamed(definition.compositeActionSequence),
+    },
+  };
 }
 
-/** The paths of the reads of the whole form `[runnerName, …]` in `value`, quoted values aside. */
+/** The paths of the reads of the form, `[runnerName, …]` or `runnerName`, in `value`, quoted values aside. */
 function formReadPaths(value: unknown, runnerName: string, path: Path = []): Path[] {
   if (Array.isArray(value)) {
     return value.flatMap((item, index) => formReadPaths(item, runnerName, [...path, index]));
@@ -256,7 +274,8 @@ function formReadPaths(value: unknown, runnerName: string, path: Path = []): Pat
     return [];
   }
   const own =
-    READ_TYPES.has(String(value.transformerType)) && Array.isArray(value.referencePath) && value.referencePath[0] === runnerName
+    READ_TYPES.has(String(value.transformerType)) &&
+    (value.referenceName === runnerName || (Array.isArray(value.referencePath) && value.referencePath[0] === runnerName))
       ? [path]
       : [];
   const nested = Object.entries(value)

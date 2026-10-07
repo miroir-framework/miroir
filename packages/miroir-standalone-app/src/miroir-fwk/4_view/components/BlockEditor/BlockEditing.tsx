@@ -16,7 +16,7 @@ import {
   moveBlockNode,
   referencePathAttributeNames,
   removeBlockNode,
-  renameBlockKey,
+  renameSequenceName,
   reorderTransformerNode,
   transformerUnionTypes,
   type ActionPaletteGroup,
@@ -416,14 +416,18 @@ export function useBlockEditingValue(
       if (!commit) {
         return;
       }
-      commit(moveBlockNode(root, from, to, editOptions));
+      try {
+        commit(moveBlockNode(root, from, to, editOptions));
+      } catch {
+        // an action dropped where a transformer goes, or the reverse, leaves the value as it is
+      }
     },
     [root, commit, editOptions],
   );
   const renameKey = useCallback(
     (path: BlockPath, to: string): string | undefined => {
       try {
-        commit?.(renameBlockKey(root, path, to));
+        commit?.(renameSequenceName(root, path, to));
         return undefined;
       } catch (error) {
         return error instanceof Error ? error.message : String(error);

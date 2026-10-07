@@ -3435,7 +3435,7 @@
                 "step": "expectElement",
                 "label": "its label can be edited",
                 "target": {
-                  "byTestId": "block-field:definition.compositeActionSequence.payload.actionSequence.6.actionLabel"
+                  "byTestId": "block-key:definition.compositeActionSequence.payload.actionSequence.6.actionLabel"
                 }
               },
               {
@@ -4881,6 +4881,137 @@
                 "label": "not the old one",
                 "target": {
                   "byTestId": "sequence-editor-watched:Plain Publisher"
+                },
+                "present": false
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "SequenceEditor on the Library: Undo of a form field rename restores the field and its reads together",
+            "steps": [
+              {
+                "step": "click",
+                "label": "show the sequence as blocks",
+                "target": {
+                  "byTestId": "block-view-mode:definition.compositeActionSequence:blocks"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "a new sequence is under the hat of a new Runner",
+                "target": {
+                  "byTestId": "block-runner-hat"
+                },
+                "attribute": "data-name",
+                "value": "newRunner",
+                "timeout": 5000
+              },
+              {
+                "step": "click",
+                "label": "add a form field",
+                "target": {
+                  "byTestId": "block-runner-add"
+                }
+              },
+              {
+                "step": "type",
+                "label": "name it publisherName",
+                "target": {
+                  "byTestId": "block-runner-new"
+                },
+                "text": "publisherName{Enter}"
+              },
+              {
+                "step": "click",
+                "label": "choose createInstance",
+                "target": {
+                  "byTestId": "block-palette-action:createInstance"
+                }
+              },
+              {
+                "step": "click",
+                "label": "put it as the first step",
+                "target": {
+                  "byTestId": "block-insert:definition.compositeActionSequence.payload.actionSequence.0"
+                }
+              },
+              {
+                "step": "click",
+                "label": "choose the form field publisherName",
+                "target": {
+                  "byTestId": "block-runner-variable:publisherName"
+                }
+              },
+              {
+                "step": "click",
+                "label": "read it as the application section",
+                "target": {
+                  "byTestId": "block-replace:definition.compositeActionSequence.payload.actionSequence.0.payload.applicationSection"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the hat sees the read",
+                "target": {
+                  "byTestId": "block-runner-field:publisherName"
+                },
+                "attribute": "data-read",
+                "value": "true"
+              },
+              {
+                "step": "click",
+                "label": "rename the form field",
+                "target": {
+                  "byTestId": "block-runner-rename:publisherName"
+                }
+              },
+              {
+                "step": "clear",
+                "label": "clear its name",
+                "target": {
+                  "byTestId": "block-runner-name:publisherName"
+                }
+              },
+              {
+                "step": "type",
+                "label": "name it pubName",
+                "target": {
+                  "byTestId": "block-runner-name:publisherName"
+                },
+                "text": "pubName{Enter}"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the renamed field is read",
+                "target": {
+                  "byTestId": "block-runner-field:pubName"
+                },
+                "attribute": "data-read",
+                "value": "true"
+              },
+              {
+                "step": "click",
+                "label": "undo",
+                "target": {
+                  "byTestId": "value-history-undo:"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the form has its field back",
+                "target": {
+                  "byTestId": "block-runner-field:publisherName"
+                },
+                "attribute": "data-read",
+                "value": "true",
+                "timeout": 5000
+              },
+              {
+                "step": "expectElement",
+                "label": "and not the renamed one",
+                "target": {
+                  "byTestId": "block-runner-field:pubName"
                 },
                 "present": false
               }

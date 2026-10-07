@@ -2736,6 +2736,514 @@
               "uuid"
             ],
             "expectedError": "the key uuid is taken"
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a step does not move into a payload slot",
+            "functionRef": {
+              "module": "miroir-core/2_domain/ActionSequenceEdit",
+              "export": "moveBlockNode"
+            },
+            "arguments": [
+              {
+                "actionType": "compositeActionSequence",
+                "actionLabel": "refresh",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "payload": {
+                  "actionSequence": [
+                    {
+                      "actionType": "rollback",
+                      "actionLabel": "rollbackLibrary",
+                      "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                      "payload": {
+                        "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                      }
+                    },
+                    {
+                      "actionType": "commit",
+                      "actionLabel": "commitLibrary",
+                      "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                      "payload": {
+                        "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                      }
+                    }
+                  ]
+                }
+              },
+              [
+                "payload",
+                "actionSequence",
+                0
+              ],
+              [
+                "payload",
+                "actionSequence",
+                1,
+                "payload",
+                "objects",
+                0
+              ]
+            ],
+            "expectedError": "an action moves only to a step of a sequence"
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a payload transformer does not move to a step",
+            "functionRef": {
+              "module": "miroir-core/2_domain/ActionSequenceEdit",
+              "export": "moveBlockNode"
+            },
+            "arguments": [
+              {
+                "actionType": "compositeActionSequence",
+                "actionLabel": "addPublisher",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "payload": {
+                  "templates": {
+                    "publisherUuid": {
+                      "transformerType": "generateUuid",
+                      "interpolation": "runtime"
+                    }
+                  },
+                  "actionSequence": [
+                    {
+                      "actionType": "createInstance",
+                      "actionLabel": "createPublisher",
+                      "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                      "payload": {
+                        "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                        "objects": [
+                          {
+                            "name": {
+                              "transformerType": "getFromParameters",
+                              "interpolation": "runtime",
+                              "referencePath": [
+                                "addPublisher",
+                                "name"
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "actionType": "commit",
+                      "actionLabel": "commitLibrary",
+                      "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                      "payload": {
+                        "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                      }
+                    }
+                  ]
+                }
+              },
+              [
+                "payload",
+                "actionSequence",
+                0,
+                "payload",
+                "objects",
+                0,
+                "name"
+              ],
+              [
+                "payload",
+                "actionSequence",
+                2
+              ]
+            ],
+            "expectedError": "only an action goes at a step of a sequence"
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a step label renamed: the reads of its result follow, quoted values stay",
+            "functionRef": {
+              "module": "miroir-core/2_domain/ActionSequenceEdit",
+              "export": "renameSequenceName"
+            },
+            "arguments": [
+              {
+                "actionType": "compositeActionSequence",
+                "actionLabel": "addBook",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "payload": {
+                  "templates": {
+                    "bookUuid": {
+                      "transformerType": "generateUuid",
+                      "interpolation": "runtime"
+                    }
+                  },
+                  "actionSequence": [
+                    {
+                      "actionType": "createInstance",
+                      "actionLabel": "createPublisher",
+                      "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                      "payload": {
+                        "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                        "objects": [
+                          {
+                            "name": {
+                              "transformerType": "getFromParameters",
+                              "interpolation": "runtime",
+                              "referencePath": [
+                                "addPublisher",
+                                "name"
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "actionType": "createInstance",
+                      "actionLabel": "createBook",
+                      "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                      "payload": {
+                        "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                        "objects": [
+                          {
+                            "publisher": {
+                              "transformerType": "getFromContext",
+                              "interpolation": "runtime",
+                              "referencePath": [
+                                "createPublisher",
+                                "uuid"
+                              ]
+                            },
+                            "uuid": {
+                              "transformerType": "getFromContext",
+                              "interpolation": "runtime",
+                              "referenceName": "bookUuid"
+                            },
+                            "note": {
+                              "transformerType": "returnValue",
+                              "value": {
+                                "transformerType": "getFromContext",
+                                "interpolation": "runtime",
+                                "referenceName": "createPublisher"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              [
+                "payload",
+                "actionSequence",
+                0,
+                "actionLabel"
+              ],
+              "newPublisher"
+            ],
+            "expectedValue": {
+              "actionType": "compositeActionSequence",
+              "actionLabel": "addBook",
+              "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+              "payload": {
+                "templates": {
+                  "bookUuid": {
+                    "transformerType": "generateUuid",
+                    "interpolation": "runtime"
+                  }
+                },
+                "actionSequence": [
+                  {
+                    "actionType": "createInstance",
+                    "actionLabel": "newPublisher",
+                    "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                    "payload": {
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "objects": [
+                        {
+                          "name": {
+                            "transformerType": "getFromParameters",
+                            "interpolation": "runtime",
+                            "referencePath": [
+                              "addPublisher",
+                              "name"
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "actionType": "createInstance",
+                    "actionLabel": "createBook",
+                    "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                    "payload": {
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "objects": [
+                        {
+                          "publisher": {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referencePath": [
+                              "newPublisher",
+                              "uuid"
+                            ]
+                          },
+                          "uuid": {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referenceName": "bookUuid"
+                          },
+                          "note": {
+                            "transformerType": "returnValue",
+                            "value": {
+                              "transformerType": "getFromContext",
+                              "interpolation": "runtime",
+                              "referenceName": "createPublisher"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a step label taken by another action is refused",
+            "functionRef": {
+              "module": "miroir-core/2_domain/ActionSequenceEdit",
+              "export": "renameSequenceName"
+            },
+            "arguments": [
+              {
+                "actionType": "compositeActionSequence",
+                "actionLabel": "addBook",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "payload": {
+                  "templates": {
+                    "bookUuid": {
+                      "transformerType": "generateUuid",
+                      "interpolation": "runtime"
+                    }
+                  },
+                  "actionSequence": [
+                    {
+                      "actionType": "createInstance",
+                      "actionLabel": "createPublisher",
+                      "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                      "payload": {
+                        "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                        "objects": [
+                          {
+                            "name": {
+                              "transformerType": "getFromParameters",
+                              "interpolation": "runtime",
+                              "referencePath": [
+                                "addPublisher",
+                                "name"
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "actionType": "createInstance",
+                      "actionLabel": "createBook",
+                      "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                      "payload": {
+                        "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                        "objects": [
+                          {
+                            "publisher": {
+                              "transformerType": "getFromContext",
+                              "interpolation": "runtime",
+                              "referencePath": [
+                                "createPublisher",
+                                "uuid"
+                              ]
+                            },
+                            "uuid": {
+                              "transformerType": "getFromContext",
+                              "interpolation": "runtime",
+                              "referenceName": "bookUuid"
+                            },
+                            "note": {
+                              "transformerType": "returnValue",
+                              "value": {
+                                "transformerType": "getFromContext",
+                                "interpolation": "runtime",
+                                "referenceName": "createPublisher"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              [
+                "payload",
+                "actionSequence",
+                0,
+                "actionLabel"
+              ],
+              "createBook"
+            ],
+            "expectedError": "the label createBook is taken"
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a template renamed: its reads follow",
+            "functionRef": {
+              "module": "miroir-core/2_domain/ActionSequenceEdit",
+              "export": "renameSequenceName"
+            },
+            "arguments": [
+              {
+                "actionType": "compositeActionSequence",
+                "actionLabel": "addBook",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "payload": {
+                  "templates": {
+                    "bookUuid": {
+                      "transformerType": "generateUuid",
+                      "interpolation": "runtime"
+                    }
+                  },
+                  "actionSequence": [
+                    {
+                      "actionType": "createInstance",
+                      "actionLabel": "createPublisher",
+                      "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                      "payload": {
+                        "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                        "objects": [
+                          {
+                            "name": {
+                              "transformerType": "getFromParameters",
+                              "interpolation": "runtime",
+                              "referencePath": [
+                                "addPublisher",
+                                "name"
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "actionType": "createInstance",
+                      "actionLabel": "createBook",
+                      "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                      "payload": {
+                        "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                        "objects": [
+                          {
+                            "publisher": {
+                              "transformerType": "getFromContext",
+                              "interpolation": "runtime",
+                              "referencePath": [
+                                "createPublisher",
+                                "uuid"
+                              ]
+                            },
+                            "uuid": {
+                              "transformerType": "getFromContext",
+                              "interpolation": "runtime",
+                              "referenceName": "bookUuid"
+                            },
+                            "note": {
+                              "transformerType": "returnValue",
+                              "value": {
+                                "transformerType": "getFromContext",
+                                "interpolation": "runtime",
+                                "referenceName": "createPublisher"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              [
+                "payload",
+                "templates",
+                "bookUuid"
+              ],
+              "newUuid"
+            ],
+            "expectedValue": {
+              "actionType": "compositeActionSequence",
+              "actionLabel": "addBook",
+              "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+              "payload": {
+                "templates": {
+                  "newUuid": {
+                    "transformerType": "generateUuid",
+                    "interpolation": "runtime"
+                  }
+                },
+                "actionSequence": [
+                  {
+                    "actionType": "createInstance",
+                    "actionLabel": "createPublisher",
+                    "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                    "payload": {
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "objects": [
+                        {
+                          "name": {
+                            "transformerType": "getFromParameters",
+                            "interpolation": "runtime",
+                            "referencePath": [
+                              "addPublisher",
+                              "name"
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "actionType": "createInstance",
+                    "actionLabel": "createBook",
+                    "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                    "payload": {
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "objects": [
+                        {
+                          "publisher": {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referencePath": [
+                              "createPublisher",
+                              "uuid"
+                            ]
+                          },
+                          "uuid": {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referenceName": "newUuid"
+                          },
+                          "note": {
+                            "transformerType": "returnValue",
+                            "value": {
+                              "transformerType": "getFromContext",
+                              "interpolation": "runtime",
+                              "referenceName": "createPublisher"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
           }
         ]
       },
@@ -3775,6 +4283,352 @@
                 }
               }
             }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a renamed Runner: a read of the whole form follows",
+            "functionRef": {
+              "module": "miroir-core/2_domain/RunnerHat",
+              "export": "renameRunner"
+            },
+            "arguments": [
+              {
+                "uuid": "3f1f7a0e-2a3b-4c5d-8e9f-0a1b2c3d4e5f",
+                "parentName": "Runner",
+                "parentUuid": "e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd",
+                "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                "name": "addPublisher",
+                "defaultLabel": "Add a publisher",
+                "definition": {
+                  "runnerType": "customRunner",
+                  "formMLSchema": {
+                    "formMLSchemaType": "mlSchema",
+                    "mlSchema": {
+                      "type": "object",
+                      "definition": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "country": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "compositeActionSequence": {
+                    "actionType": "compositeActionSequence",
+                    "actionLabel": "addPublisher",
+                    "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                    "payload": {
+                      "actionSequence": [
+                        {
+                          "actionType": "createInstance",
+                          "actionLabel": "createPublisher",
+                          "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                          "payload": {
+                            "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                            "applicationSection": "data",
+                            "objects": [
+                              {
+                                "transformerType": "getFromParameters",
+                                "interpolation": "runtime",
+                                "referenceName": "addPublisher"
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              },
+              "newPublisher"
+            ],
+            "assertions": [
+              {
+                "label": "the read",
+                "resultAccessPath": [
+                  "definition",
+                  "compositeActionSequence",
+                  "payload",
+                  "actionSequence",
+                  0,
+                  "payload",
+                  "objects",
+                  0
+                ],
+                "expectedValue": {
+                  "transformerType": "getFromParameters",
+                  "interpolation": "runtime",
+                  "referenceName": "newPublisher"
+                }
+              }
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a renamed Runner: the reads of its form given by a transformer follow",
+            "functionRef": {
+              "module": "miroir-core/2_domain/RunnerHat",
+              "export": "renameRunner"
+            },
+            "arguments": [
+              {
+                "uuid": "3f1f7a0e-2a3b-4c5d-8e9f-0a1b2c3d4e5f",
+                "parentName": "Runner",
+                "parentUuid": "e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd",
+                "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                "name": "addPublisher",
+                "defaultLabel": "Add a publisher",
+                "definition": {
+                  "runnerType": "customRunner",
+                  "formMLSchema": {
+                    "formMLSchemaType": "transformer",
+                    "initialFormValues": {
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                    },
+                    "transformer": {
+                      "type": "object",
+                      "definition": {
+                        "application": {
+                          "type": "uuid"
+                        },
+                        "entity": {
+                          "type": "uuid",
+                          "tag": {
+                            "value": {
+                              "defaultLabel": {
+                                "transformerType": "getFromParameters",
+                                "interpolation": "runtime",
+                                "referencePath": [
+                                  "addPublisher",
+                                  "application"
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "compositeActionSequence": {
+                    "actionType": "compositeActionSequence",
+                    "actionLabel": "addPublisher",
+                    "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                    "payload": {
+                      "actionSequence": [
+                        {
+                          "actionType": "createInstance",
+                          "actionLabel": "createPublisher",
+                          "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                          "payload": {
+                            "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                            "applicationSection": "data",
+                            "objects": [
+                              {
+                                "name": {
+                                  "transformerType": "getFromParameters",
+                                  "interpolation": "runtime",
+                                  "referencePath": [
+                                    "addPublisher",
+                                    "name"
+                                  ]
+                                },
+                                "country": {
+                                  "transformerType": "getFromParameters",
+                                  "interpolation": "runtime",
+                                  "referencePath": [
+                                    "otherRunner",
+                                    "country"
+                                  ]
+                                },
+                                "note": {
+                                  "transformerType": "returnValue",
+                                  "value": {
+                                    "transformerType": "getFromParameters",
+                                    "interpolation": "runtime",
+                                    "referencePath": [
+                                      "addPublisher",
+                                      "country"
+                                    ]
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              },
+              "newPublisher"
+            ],
+            "assertions": [
+              {
+                "label": "the form read",
+                "resultAccessPath": [
+                  "definition",
+                  "formMLSchema",
+                  "transformer",
+                  "definition",
+                  "entity",
+                  "tag",
+                  "value",
+                  "defaultLabel"
+                ],
+                "expectedValue": {
+                  "transformerType": "getFromParameters",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "newPublisher",
+                    "application"
+                  ]
+                }
+              },
+              {
+                "label": "the form keeps its initial values",
+                "resultAccessPath": [
+                  "definition",
+                  "formMLSchema",
+                  "initialFormValues"
+                ],
+                "expectedValue": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                }
+              }
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a new custom Runner keeps a given form, a transformer form included",
+            "functionRef": {
+              "module": "miroir-core/2_domain/RunnerHat",
+              "export": "newCustomRunner"
+            },
+            "arguments": [
+              {
+                "uuid": "3f1f7a0e-2a3b-4c5d-8e9f-0a1b2c3d4e5f",
+                "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                "name": "addPublisher",
+                "sequence": {
+                  "actionType": "compositeActionSequence",
+                  "actionLabel": "addPublisher",
+                  "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                  "payload": {
+                    "actionSequence": [
+                      {
+                        "actionType": "createInstance",
+                        "actionLabel": "createPublisher",
+                        "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                        "payload": {
+                          "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                          "applicationSection": "data",
+                          "objects": [
+                            {
+                              "name": {
+                                "transformerType": "getFromParameters",
+                                "interpolation": "runtime",
+                                "referencePath": [
+                                  "addPublisher",
+                                  "name"
+                                ]
+                              },
+                              "country": {
+                                "transformerType": "getFromParameters",
+                                "interpolation": "runtime",
+                                "referencePath": [
+                                  "otherRunner",
+                                  "country"
+                                ]
+                              },
+                              "note": {
+                                "transformerType": "returnValue",
+                                "value": {
+                                  "transformerType": "getFromParameters",
+                                  "interpolation": "runtime",
+                                  "referencePath": [
+                                    "addPublisher",
+                                    "country"
+                                  ]
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                },
+                "formMLSchema": {
+                  "formMLSchemaType": "transformer",
+                  "initialFormValues": {
+                    "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                  },
+                  "transformer": {
+                    "type": "object",
+                    "definition": {
+                      "application": {
+                        "type": "uuid"
+                      },
+                      "entity": {
+                        "type": "uuid",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": {
+                              "transformerType": "getFromParameters",
+                              "interpolation": "runtime",
+                              "referencePath": [
+                                "addPublisher",
+                                "application"
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "assertions": [
+              {
+                "label": "the form",
+                "resultAccessPath": [
+                  "definition",
+                  "formMLSchema"
+                ],
+                "expectedValue": {
+                  "formMLSchemaType": "transformer",
+                  "initialFormValues": {
+                    "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                  },
+                  "transformer": {
+                    "type": "object",
+                    "definition": {
+                      "application": {
+                        "type": "uuid"
+                      },
+                      "entity": {
+                        "type": "uuid",
+                        "tag": {
+                          "value": {
+                            "defaultLabel": {
+                              "transformerType": "getFromParameters",
+                              "interpolation": "runtime",
+                              "referencePath": [
+                                "addPublisher",
+                                "application"
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ]
           }
         ]
       }

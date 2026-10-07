@@ -457,7 +457,7 @@ const ActionBlockView = React.memo(function ActionBlockView(props: {
         {node.label !== undefined && (
           <span data-testid={`block-label:${id}`} css={css({ opacity: 0.85, fontSize: "12px" })}>
             {editing ? (
-              <BlockField value={node.label} path={[...node.path, "actionLabel"]} id={`${id}.actionLabel`} colors={settings} />
+              <BlockKeyField entryKey={node.label} path={[...node.path, "actionLabel"]} id={`${id}.actionLabel`} color={settings.onBlock} />
             ) : (
               node.label
             )}

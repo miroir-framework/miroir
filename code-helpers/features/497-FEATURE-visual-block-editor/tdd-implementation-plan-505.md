@@ -108,6 +108,8 @@ GREEN: `SequenceEditor`, `RunnerSave`, Tools page, registry entry.
 
 **Deviation (PR #523, bundle guard):** the slice 3 and 4 suites ("editing a Runner sequence", "the when run hat", "a Runner in an instance editor") were written in `ui.blockEditor`, which ships with the page; they took miroir-app-miroir to 3431305 bytes, over its 3400000 cap. They moved to `ui.blockEditing`, which is off the page (#500), so the cap stays as it is. Their RED lines above still say `ui.blockEditor`.
 
+**Review fixes (PR #523, Greptile):** the Tools page keys the sequence editor by application, so another application starts it afresh. The Runner's form is in the edited value next to the sequence (hidden in the Form view: `MlElementEditor` now renders nothing for `display.hidden`), so one Undo restores a renamed field and its reads; a created Runner remounts the editor, which starts a new history. `renameRunner` also follows reads of the whole form (`referenceName`) and the reads in the form itself, and Save as keeps the whole form (`newCustomRunner` `formMLSchema`), a transformer form included. `renameSequenceName` renames a step label (a taken one refused) or a template key with their reads in the sequence; the label is a `BlockKeyField`. `moveBlockNode` refuses a step moved where a transformer goes and the reverse. 8 `fn.blockModel` cases, 1 `ui.blockEditing` case (Undo of a field rename); fn.blockModel 79/79; `EXPECTED_LEAF_COUNT` 194.
+
 ## Slice 6 — Docs, nonreg, PR
 
 `docs/reference/transformers.md` (editing sequences, the hat, the sequence editor); nonreg filesystem shared runner; PR into `_integration` with `Closes #505`.

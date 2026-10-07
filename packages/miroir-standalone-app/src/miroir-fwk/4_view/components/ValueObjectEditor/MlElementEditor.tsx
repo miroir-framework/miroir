@@ -1060,8 +1060,7 @@ function MlElementEditorForm(props: MlElementEditorProps): JSX.Element {
       if (localResolvedElementMlSchemaBasedOnValue.tag?.value?.display?.hidden) {
         const hidden: CoreTransformerForBuildPlusRuntime = localResolvedElementMlSchemaBasedOnValue.tag?.value?.display?.hidden;
         if (typeof hidden === "boolean" && hidden === true) {
-          // return <></>;
-          return <>hidden 2</>;
+          return <></>;
         }
         const newContext = {
           valueObject: currentValueObjectAtKey,
@@ -1082,8 +1081,7 @@ function MlElementEditorForm(props: MlElementEditorProps): JSX.Element {
           );
         if (hiddenTransformerResult === true) {
           log.info("MlElementEditor Hiding element due to hidden transformer result:", props.rootLessListKey, hidden, newContext);
-          // return <></>;
-          return <>hidden 3</>;
+          return <></>;
         }
       }
       // Handle RAW "any" type

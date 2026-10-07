@@ -350,6 +350,12 @@ export function moveBlockNode(root: unknown, from: Path, to: Path, options: Bloc
   if (node === undefined) {
     throw new Error(`moveBlockNode: nothing at ${from.join(".")}`);
   }
+  // an action goes to a step and nothing else does: checked before anything is removed
+  if (isStepPosition(root, from) !== isStepPosition(root, to)) {
+    throw new Error(
+      isStepPosition(root, from) ? "an action moves only to a step of a sequence" : "only an action goes at a step of a sequence",
+    );
+  }
   const removed = removeBlockNode(root, from, options);
   const listPath = from.slice(0, -1);
   const fromIndex = Number(from[from.length - 1]);
@@ -524,4 +530,74 @@ export function renameBlockKey(root: unknown, path: Path, to: string): unknown {
   return updateAt(root, containerPath, () =>
     Object.fromEntries(Object.entries(container).map(([key, value]) => [key === from ? to : key, value])),
   );
+}
+
+/** The paths of the reads of `name` (`referenceName`, or the first segment of `referencePath`) in `value`; quoted values are not read. */
+function nameReadPaths(value: unknown, name: string, path: Path = []): Path[] {
+  if (Array.isArray(value)) {
+    return value.flatMap((item, index) => nameReadPaths(item, name, [...path, index]));
+  }
+  if (!isPlainRecord(value)) {
+    return [];
+  }
+  const own =
+    (value.transformerType === "getFromContext" || value.transformerType === "getFromParameters") &&
+    (value.referenceName === name || (Array.isArray(value.referencePath) && value.referencePath[0] === name))
+      ? [path]
+      : [];
+  const nested = Object.entries(value)
+    .filter(([key]) => !(value.transformerType === "returnValue" && key === "value"))
+    .flatMap(([key, entry]) => nameReadPaths(entry, name, [...path, key]));
+  return [...own, ...nested];
+}
+
+/** `value` with its reads of `from` reading `to`. */
+function renameReads(value: unknown, from: string, to: string): unknown {
+  return nameReadPaths(value, from).reduce(
+    (current, path) =>
+      updateAt(current, path, (read) => {
+        const node = read as ActionRecord;
+        return node.referenceName === from
+          ? { ...node, referenceName: to }
+          : { ...node, referencePath: (node.referencePath as unknown[]).map((segment, index) => (index === 0 ? to : segment)) };
+      }),
+    value,
+  );
+}
+
+/**
+ * `root` with the name at `path` changed to `to`, its reads following it (#505): the `actionLabel`
+ * of a step (its result is bound under it) or a `templates` key of a sequence, whose reads in that
+ * sequence are rewritten; any other record key as `renameBlockKey`. A step label taken by another
+ * action, or an empty name, is refused.
+ */
+export function renameSequenceName(root: unknown, path: Path, to: string): unknown {
+  const last = path[path.length - 1];
+  if (last === "actionLabel" && isStepPosition(root, path.slice(0, -1))) {
+    const from = valueAt(root, path);
+    if (to === from) {
+      return root;
+    }
+    if (to.length === 0) {
+      throw new Error("an action label cannot be empty");
+    }
+    if (actionLabels(root).includes(to)) {
+      throw new Error(`the label ${to} is taken`);
+    }
+    const sequencePath = path.slice(0, -4);
+    const labelled = updateAt(root, path, () => to);
+    return typeof from === "string" ? updateAt(labelled, sequencePath, (sequence) => renameReads(sequence, from, to)) : labelled;
+  }
+  const renamed = renameBlockKey(root, path, to);
+  const sequencePath = path.slice(0, -3);
+  const owner = valueAt(root, sequencePath);
+  const isTemplateKey =
+    path.length >= 3 &&
+    path[path.length - 2] === "templates" &&
+    path[path.length - 3] === "payload" &&
+    isPlainRecord(owner) &&
+    owner.actionType === COMPOSITE_ACTION_SEQUENCE;
+  return isTemplateKey && renamed !== root
+    ? updateAt(renamed, sequencePath, (sequence) => renameReads(sequence, String(last), to))
+    : renamed;
 }

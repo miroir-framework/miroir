@@ -47,17 +47,25 @@ import {
 const RUNNER_ENTITY_UUID = "e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd";
 const NEW_SEQUENCE = "new";
 const FORMIK_ROOT = "sequenceEditor";
-const SEQUENCE_FIELD = `${FORMIK_ROOT}.definition.compositeActionSequence`;
+const DEFINITION_FIELD = `${FORMIK_ROOT}.definition`;
 const SEQUENCE_KEY = "definition.compositeActionSequence";
 const DOMAIN_ENDPOINT = "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5";
 
-/** The value editor sees the sequence only, at the path a Runner holds it. */
+/**
+ * The value editor sees the sequence, at the path a Runner holds it, and keeps the Runner's form
+ * next to it, hidden: a form field renamed in the hat and its reads in the sequence change in one
+ * value, so one Undo restores both. The Runner's uuid, hidden too, makes another Runner (a new one
+ * saved from the dialog) a new starting point of the history.
+ */
+const HIDDEN = { tag: { value: { display: { hidden: true } } } };
 const SEQUENCE_FORM_SCHEMA: MlElement = {
   type: "object",
   definition: {
+    uuid: { type: "string", optional: true, ...HIDDEN },
     definition: {
       type: "object",
       definition: {
+        formMLSchema: { type: "any", optional: true, ...HIDDEN },
         compositeActionSequence: {
           type: "schemaReference",
           definition: {
@@ -97,13 +105,13 @@ function newSequenceRunner(application: Uuid): RunnerValue {
   }) as RunnerValue;
 }
 
-function formOf(runner: RunnerValue) {
-  return { [FORMIK_ROOT]: { definition: { compositeActionSequence: runner.definition.compositeActionSequence } } };
+function editedValueOf(runner: RunnerValue) {
+  const { formMLSchema, compositeActionSequence } = runner.definition;
+  return { uuid: runner.uuid, definition: { formMLSchema, compositeActionSequence } };
 }
 
-function formFields(runner: Record<string, unknown>): Record<string, MlElement> {
-  const definition = runner.definition as { formMLSchema?: { mlSchema?: { definition?: Record<string, MlElement> } } };
-  return definition.formMLSchema?.mlSchema?.definition ?? {};
+function formOf(runner: RunnerValue) {
+  return { [FORMIK_ROOT]: editedValueOf(runner) };
 }
 
 export interface SequenceEditorProps {
@@ -131,20 +139,23 @@ export function SequenceEditor(props: SequenceEditorProps) {
     [runnerIndex],
   );
   const [selected, setSelected] = useState<string>(NEW_SEQUENCE);
-  // the edited Runner but its sequence, which the form holds; a new choice remounts the form
+  // the edited Runner but its form and sequence, which Formik holds; a new choice remounts the
+  // form, which starts a new history
   const [draft, setDraft] = useState<RunnerValue>(() => newSequenceRunner(application));
   const [form, setForm] = useState(() => ({ generation: 0, initialValues: formOf(draft) }));
+  const edit = useCallback((uuid: string, runner: RunnerValue) => {
+    setSelected(uuid);
+    setDraft(runner);
+    setForm((current) => ({ generation: current.generation + 1, initialValues: formOf(runner) }));
+  }, []);
   const choose = useCallback(
     (uuid: string) => {
       const runner = uuid === NEW_SEQUENCE ? newSequenceRunner(application) : customRunners.find((each) => each.uuid === uuid);
-      if (!runner) {
-        return;
+      if (runner) {
+        edit(uuid, runner);
       }
-      setSelected(uuid);
-      setDraft(runner);
-      setForm((current) => ({ generation: current.generation + 1, initialValues: formOf(runner) }));
     },
-    [application, customRunners],
+    [application, customRunners, edit],
   );
   const actionDefaults = useMemo(() => ({ applicationUuid: application }), [application]);
   const { currentTheme } = useMiroirTheme();
@@ -181,7 +192,6 @@ export function SequenceEditor(props: SequenceEditorProps) {
           <SequenceEditorForm
             {...props}
             draft={draft}
-            setDraft={setDraft}
             stored={selected !== NEW_SEQUENCE}
             runnerNames={customRunners.map((runner) => runner.name)}
             onCreated={(runner) => {
@@ -210,29 +220,27 @@ type SaveStatus = { status: "saved" | "error"; message: string } | undefined;
 function SequenceEditorForm(
   props: SequenceEditorProps & {
     draft: RunnerValue;
-    setDraft: (runner: RunnerValue) => void;
     /** The draft is a stored Runner: "Save <name>" updates it. */
     stored: boolean;
     runnerNames: string[];
     onCreated: (runner: RunnerValue) => void;
   },
 ) {
-  const { application, applicationDeploymentMap, deploymentUuid, draft, setDraft } = props;
+  const { application, applicationDeploymentMap, deploymentUuid, draft } = props;
   const formik = useFormikContext<Record<string, unknown>>();
   const { setFieldValue } = formik;
-  const sequence = getIn(formik.values, SEQUENCE_FIELD);
+  const edited = getIn(formik.values, DEFINITION_FIELD) as Record<string, unknown>;
   const runner = useMemo(
-    (): RunnerValue => ({ ...draft, definition: { ...draft.definition, compositeActionSequence: sequence } }),
-    [draft, sequence],
+    (): RunnerValue => ({ ...draft, definition: { ...draft.definition, ...edited } }),
+    [draft, edited],
   );
-  // a hat change writes the Runner (its form) and its sequence (the reads it rewrites)
+  // a hat change writes the form and the sequence (the reads it rewrites) in one value
   const setRunner = useCallback(
     (changed: Record<string, unknown>) => {
-      const changedRunner = changed as RunnerValue;
-      setDraft(changedRunner);
-      setFieldValue(SEQUENCE_FIELD, changedRunner.definition.compositeActionSequence, false);
+      const { formMLSchema, compositeActionSequence } = (changed as RunnerValue).definition;
+      setFieldValue(DEFINITION_FIELD, { formMLSchema, compositeActionSequence }, false);
     },
-    [setDraft, setFieldValue],
+    [setFieldValue],
   );
   const hat = useBlockRunnerOf(runner, setRunner, SEQUENCE_KEY);
   const domainController = useDomainControllerService();
@@ -263,7 +271,7 @@ function SequenceEditorForm(
     return true;
   };
 
-  /** "create Runner" of the save dialog: the draft named `name`, its reads of the form renamed with it. */
+  /** "create Runner" of the save dialog: the draft named `name`, its reads of the form renamed with it, its form kept. */
   const createRunner = async (name: string, label: string): Promise<string | undefined> => {
     if (props.runnerNames.includes(name)) {
       return `a Runner named ${name} exists: choose another name`;
@@ -277,7 +285,7 @@ function SequenceEditorForm(
         name,
         defaultLabel: label,
         sequence: (renamed.definition as Record<string, unknown>).compositeActionSequence,
-        fields: formFields(renamed),
+        formMLSchema: (renamed.definition as Record<string, unknown>).formMLSchema,
       }) as RunnerValue;
     } catch (error) {
       return error instanceof Error ? error.message : String(error);
@@ -285,7 +293,8 @@ function SequenceEditorForm(
     if (!(await save(created, "createInstance"))) {
       return "the Runner was not saved";
     }
-    setFieldValue(SEQUENCE_FIELD, created.definition.compositeActionSequence, false);
+    // the view stays as it is; its history starts again from the new Runner
+    setFieldValue(FORMIK_ROOT, editedValueOf(created), false);
     props.onCreated(created);
     return undefined;
   };

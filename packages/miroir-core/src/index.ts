@@ -1478,6 +1478,7 @@ export {
   moveBlockNode,
   removeBlockNode,
   renameBlockKey,
+  renameSequenceName,
   type ActionPaletteGroup,
   type BlockEditOptions,
 } from "./2_domain/ActionSequenceEdit.js";
