@@ -10,6 +10,7 @@ import {
 import React, { useCallback, useMemo, useState } from "react";
 
 import { blockCategoryColor, useMiroirTheme, type BlockEditorColors } from "../../contexts/MiroirThemeContext.js";
+import type { TransformerTypeBadge } from "../ValueObjectEditor/MlElementEditorInterface.js";
 import { useBlockEditorBuildMarking } from "./BlockEditorDisplay.js";
 import {
   BlockEditingContext,
@@ -39,7 +40,7 @@ import { BlockPalette } from "./BlockPalette.js";
 // Editing shows the palette, an empty row for every absent optional slot, and insert targets in
 // empty slots and at the end of list and record slots. The tray, below the program, shows the
 // blocks moved out read-only, each with Place and Discard. Values and ML schemas are edited in
-// place (BlockFields.tsx).
+// place (BlockFields.tsx). With the editor's type badges (#453), a block shows its types as a flag.
 // ################################################################################################
 
 export interface BlockEditorViewProps {
@@ -54,6 +55,8 @@ export interface BlockEditorViewProps {
   tray?: unknown[];
   /** Changes the tray: the view has one. */
   onTrayChange?: (update: TrayUpdate) => void;
+  /** The type badges of the editor (#453): a flag on each block that has one. */
+  typeBadges?: TransformerTypeBadge[];
 }
 
 type InitialCollapse = "default" | "collapsed" | "expanded";
@@ -84,6 +87,8 @@ interface BlockSettings extends BlockColors {
   rootLessListKey: string;
   initialCollapse: InitialCollapse;
   buildMarking: BlockEditorBuildMarking;
+  /** Type badges by block id. */
+  typeBadges: Map<string, TransformerTypeBadge> | undefined;
 }
 
 function useBlockColors(): BlockColors {
@@ -166,6 +171,39 @@ function useCollapse(node: BlockNode, settings: BlockSettings, rowCount: number)
   return { collapsed, toggleButton, summary };
 }
 
+const FLAG_COLORS: Record<TransformerTypeBadge["status"], { background: string; color: string }> = {
+  match: { background: "rgba(255,255,255,.25)", color: "inherit" },
+  mismatch: { background: "#c62828", color: "#ffffff" },
+  unknown: { background: "rgba(0,0,0,.2)", color: "inherit" },
+};
+
+/** The type flag of a block: its input and output types, red when they do not fit (#453 badge). */
+function BlockTypeFlag(props: { id: string; badge: TransformerTypeBadge | undefined }) {
+  const { badge } = props;
+  if (!badge) {
+    return null;
+  }
+  const colors = FLAG_COLORS[badge.status];
+  return (
+    <span
+      data-testid={`block-flag:${props.id}`}
+      data-status={badge.status}
+      title={badge.title}
+      css={css({
+        fontSize: "11px",
+        fontWeight: 500,
+        borderRadius: "4px",
+        padding: "0 4px",
+        whiteSpace: "nowrap",
+        background: colors.background,
+        color: colors.color,
+      })}
+    >
+      {`${badge.status === "mismatch" ? "⚠ " : ""}${badge.givenLabel ?? "?"} → ${badge.outputLabel}`}
+    </span>
+  );
+}
+
 /** An empty slot: its insert targets when editing, else a dashed box. */
 function EmptySlot(props: { path: BlockPath; settings: BlockSettings }) {
   const editing = useBlockEditing();
@@ -231,6 +269,7 @@ const TransformerBlockView = React.memo(function TransformerBlockView(props: {
         {toggleButton}
         <span css={css({ fontWeight: 700, whiteSpace: "nowrap" })}>{node.transformerType}</span>
         <BlockNodeActions path={node.path} blockId={id} />
+        <BlockTypeFlag id={id} badge={settings.typeBadges?.get(id)} />
         {marking === "marker" && (
           <span
             data-testid={`block-build-marker:${id}`}
@@ -432,7 +471,11 @@ function BlockTray(props: { settings: BlockSettings; colors: BlockColors }) {
               <BlockEditingContext.Provider value={undefined}>
                 <BlockNodeView
                   node={root}
-                  settings={{ ...props.settings, rootLessListKey: `${props.settings.rootLessListKey}~tray.${index}` }}
+                  settings={{
+                    ...props.settings,
+                    rootLessListKey: `${props.settings.rootLessListKey}~tray.${index}`,
+                    typeBadges: undefined,
+                  }}
                 />
               </BlockEditingContext.Provider>
               <span css={css({ display: "flex", gap: "4px" })}>
@@ -513,9 +556,20 @@ export const BlockEditorView = React.memo(function BlockEditorView(props: BlockE
     generation: 0,
   });
   const [zoom, setZoom] = useState(1);
+  const typeBadges = useMemo(
+    () =>
+      props.typeBadges ? new Map(props.typeBadges.map((badge) => [badge.path.map(String).join("."), badge])) : undefined,
+    [props.typeBadges],
+  );
   const settings: BlockSettings = useMemo(
-    () => ({ ...colors, rootLessListKey: props.rootLessListKey, initialCollapse: fold.initialCollapse, buildMarking }),
-    [colors, props.rootLessListKey, fold.initialCollapse, buildMarking],
+    () => ({
+      ...colors,
+      rootLessListKey: props.rootLessListKey,
+      initialCollapse: fold.initialCollapse,
+      buildMarking,
+      typeBadges,
+    }),
+    [colors, props.rootLessListKey, fold.initialCollapse, buildMarking, typeBadges],
   );
   const foldAll = useCallback(
     (initialCollapse: InitialCollapse) =>

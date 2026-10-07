@@ -1349,6 +1349,143 @@
                 "value": "{\n  \"transformerType\": \"returnValue\",\n  \"mlSchema\": {\n    \"type\": \"string\"\n  },\n  \"value\": \"seize value...\",\n  \"interpolation\": \"build\"\n}"
               }
             ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: with the types shown, a mapList on a single object is flagged and kept",
+            "steps": [
+              {
+                "step": "setChecked",
+                "label": "show the types",
+                "target": {
+                  "byTestId": "transformer-editor-show-types-switch"
+                },
+                "checked": true
+              },
+              {
+                "step": "click",
+                "label": "choose Blocks",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the starting returnValue has a flag; it declares no input type",
+                "target": {
+                  "byTestId": "block-flag:transformer"
+                },
+                "attribute": "data-status",
+                "value": "unknown",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "arm mapList in the palette",
+                "target": {
+                  "byTestId": "block-palette:mapList"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "mapList is armed",
+                "target": {
+                  "byTestId": "block-palette:mapList"
+                },
+                "attribute": "aria-pressed",
+                "value": "true",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "open the node actions of the root block",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Replace with mapList",
+                "target": {
+                  "byTestId": "block-action-replace"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the root block is mapList",
+                "target": {
+                  "byTestId": "block:transformer"
+                },
+                "attribute": "data-transformer-type",
+                "value": "mapList",
+                "timeout": 2000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "mapList does not take a single object",
+                "target": {
+                  "byTestId": "block-flag:transformer"
+                },
+                "attribute": "data-status",
+                "value": "mismatch",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "choose JSON",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:json"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the value is kept",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "timeout": 2000,
+                "value": "{\n  \"transformerType\": \"mapList\",\n  \"elementTransformer\": {\n    \"transformerType\": \"returnValue\",\n    \"value\": 0,\n    \"interpolation\": \"runtime\"\n  },\n  \"interpolation\": \"runtime\"\n}"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: with the types hidden, blocks have no flag",
+            "steps": [
+              {
+                "step": "setChecked",
+                "label": "hide the types",
+                "target": {
+                  "byTestId": "transformer-editor-show-types-switch"
+                },
+                "checked": false
+              },
+              {
+                "step": "click",
+                "label": "choose Blocks",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the root block",
+                "target": {
+                  "byTestId": "block:transformer"
+                },
+                "attribute": "data-transformer-type",
+                "value": "returnValue",
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "no flag",
+                "target": {
+                  "byTestId": "block-flag:transformer"
+                },
+                "present": false
+              }
+            ]
           }
         ]
       }

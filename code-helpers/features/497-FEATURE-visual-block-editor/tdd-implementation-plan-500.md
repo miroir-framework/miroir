@@ -263,7 +263,7 @@ A block with no `interpolation` (shown as build) switched to runtime: the JSON t
 
 ## Slice 7 — Type flags on blocks
 
-**Status:** ⬜
+**Status:** ✅
 
 ### 7.1 RED
 
@@ -272,6 +272,12 @@ With "Show transformer types" on, a `mapList` placed where the input is a single
 ### 7.2 GREEN
 
 `BlockViewSwitch` passes the badges; the header shows the flag.
+
+### Realization
+
+- `MlElementEditor` hands its `transformerTypeBadges` to `BlockViewSwitch`, which hands them to the block view; badges are looked up by block id, which is the badge path joined. The flag (`block-flag:<id>`, `data-status`) reads `given → output`, red with ⚠ on a mismatch, and its title is the badge's full text.
+- The starting `returnValue` declares no input type, so its status is `unknown`, not `match`; the case checks that a flag is there, then the mismatch after Replace with `mapList`.
+- `ui.blockEditing` 16 of 16 (159 → 161 leaves); `ui.blockEditor`, `ui.valueHistory`, `ui.transformerEditor` 60 pass.
 
 ---
 
