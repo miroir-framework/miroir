@@ -2,8 +2,13 @@
 import { css } from "@emotion/react";
 import { Formik, getIn, useFormikContext } from "formik";
 import {
+  addEndpointAction,
+  compositeEndpointAction,
+  ENDPOINT_ENTITY_UUID,
+  endpointActionRegistry,
   getApplicationSection,
   newCustomRunner,
+  newEndpoint,
   renameRunner,
   type ApplicationDeploymentMap,
   type ApplicationSection,
@@ -39,9 +44,11 @@ import {
 // sequence of a custom Runner of the editor application, or a new sequence, in the value editor
 // (Blocks / Form / JSON, with undo), under the Runner's "when run" hat, where its form fields are
 // added, renamed and removed. "Save <name>" updates the chosen Runner. "Save…" opens the dialog of
-// a new sequence: "create Runner" creates a Runner of the application, named and labelled there;
-// "create Action" (an Endpoint action, #506) is not offered yet. A saved Runner runs below the
-// editor, with its form.
+// a new sequence: "create Runner" creates a Runner of the application, named and labelled there.
+// A saved Runner runs below the editor, with its form.
+// #506: "create Action" creates a composite Endpoint action from the sequence, in an Endpoint of
+// the application or a new one: the Runner's form fields are its payload parameters. With both
+// switches on, the new Runner is an action Runner calling the new action, which runs below.
 // ################################################################################################
 
 const RUNNER_ENTITY_UUID = "e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd";
@@ -110,6 +117,23 @@ function editedValueOf(runner: RunnerValue) {
   return { uuid: runner.uuid, definition: { formMLSchema, compositeActionSequence } };
 }
 
+type EndpointValue = Record<string, unknown> & { uuid: Uuid; name: string; definition: { actions: unknown[] } };
+
+/** An Endpoint declaring actions: an external service declares none, and takes no new one. */
+function isEndpointWithActions(instance: unknown): instance is EndpointValue {
+  if (typeof instance !== "object" || instance === null) {
+    return false;
+  }
+  const { uuid, name, definition } = instance as Record<string, unknown>;
+  return (
+    typeof uuid === "string" &&
+    typeof name === "string" &&
+    typeof definition === "object" &&
+    definition !== null &&
+    Array.isArray((definition as Record<string, unknown>).actions)
+  );
+}
+
 function formOf(runner: RunnerValue) {
   return { [FORMIK_ROOT]: editedValueOf(runner) };
 }
@@ -138,13 +162,33 @@ export function SequenceEditor(props: SequenceEditorProps) {
         .sort((a, b) => a.name.localeCompare(b.name)),
     [runnerIndex],
   );
+  const endpointSection = getApplicationSection(application, ENDPOINT_ENTITY_UUID) as ApplicationSection;
+  const endpointExtractor = useMemo(
+    (): LocalCacheExtractor => ({
+      queryType: "localCacheEntityInstancesExtractor",
+      definition: { application, applicationSection: endpointSection, entityUuid: ENDPOINT_ENTITY_UUID },
+    }),
+    [application, endpointSection],
+  );
+  const endpointIndex = useEntityInstanceUuidIndexFromLocalCache(endpointExtractor, applicationDeploymentMap);
+  const endpoints = useMemo(
+    () =>
+      Object.values(endpointIndex ?? {})
+        .filter(isEndpointWithActions)
+        .sort((a, b) => a.name.localeCompare(b.name)),
+    [endpointIndex],
+  );
   const [selected, setSelected] = useState<string>(NEW_SEQUENCE);
+  // #506: the action Runner the save dialog created last, run below until another sequence is chosen
+  const [actionRunner, setActionRunner] = useState<Uuid | undefined>(undefined);
+  const runnerToRun = actionRunner ?? (selected !== NEW_SEQUENCE ? selected : undefined);
   // the edited Runner but its form and sequence, which Formik holds; a new choice remounts the
   // form, which starts a new history
   const [draft, setDraft] = useState<RunnerValue>(() => newSequenceRunner(application));
   const [form, setForm] = useState(() => ({ generation: 0, initialValues: formOf(draft) }));
   const edit = useCallback((uuid: string, runner: RunnerValue) => {
     setSelected(uuid);
+    setActionRunner(undefined);
     setDraft(runner);
     setForm((current) => ({ generation: current.generation + 1, initialValues: formOf(runner) }));
   }, []);
@@ -194,20 +238,23 @@ export function SequenceEditor(props: SequenceEditorProps) {
             draft={draft}
             stored={selected !== NEW_SEQUENCE}
             runnerNames={customRunners.map((runner) => runner.name)}
+            endpoints={endpoints}
             onCreated={(runner) => {
               setSelected(runner.uuid);
               setDraft(runner);
+              setActionRunner(undefined);
             }}
+            onActionRunnerCreated={setActionRunner}
           />
         </BlockActionDefaultsContext.Provider>
       </Formik>
-      {selected !== NEW_SEQUENCE && (
+      {runnerToRun !== undefined && (
         <div data-testid="sequence-editor-run" css={css({ borderTop: `1px solid ${currentTheme.colors.border}`, paddingTop: "8px" })}>
           <StoredRunnerView
-            key={selected}
+            key={runnerToRun}
             applicationUuid={application}
             applicationDeploymentMap={applicationDeploymentMap}
-            runnerUuid={selected}
+            runnerUuid={runnerToRun}
           />
         </div>
       )}
@@ -217,13 +264,29 @@ export function SequenceEditor(props: SequenceEditorProps) {
 
 type SaveStatus = { status: "saved" | "error"; message: string } | undefined;
 
+/** #506: the Endpoint of a new action: one of the application's, or a new one named here. */
+type ActionEndpointChoice = { uuid: Uuid } | { newName: string };
+
+/** What the save dialog asks for. */
+interface SequenceSaveRequest {
+  createRunner: boolean;
+  createAction: boolean;
+  /** The name of the Runner, and the action type of the action. */
+  name: string;
+  label: string;
+  endpoint: ActionEndpointChoice;
+}
+
 function SequenceEditorForm(
   props: SequenceEditorProps & {
     draft: RunnerValue;
     /** The draft is a stored Runner: "Save <name>" updates it. */
     stored: boolean;
     runnerNames: string[];
+    /** #506: the Endpoints of the application a new action can go in. */
+    endpoints: EndpointValue[];
     onCreated: (runner: RunnerValue) => void;
+    onActionRunnerCreated: (uuid: Uuid) => void;
   },
 ) {
   const { application, applicationDeploymentMap, deploymentUuid, draft } = props;
@@ -250,13 +313,18 @@ function SequenceEditorForm(
   const [saving, setSaving] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  const save = async (instance: RunnerValue, actionType: "createInstance" | "updateInstance") => {
+  /** Saves `instance`; the saved message names it `what`. */
+  const save = async (
+    instance: Record<string, unknown> & { uuid: Uuid; name: string },
+    actionType: "createInstance" | "updateInstance",
+    what: string = `Runner ${instance.name}`,
+  ) => {
     setSaving(true);
     const result = await saveInstanceFromUI(domainController, {
       application,
       applicationDeploymentMap,
       modelEnvironment,
-      instance: instance as RunnerValue & { parentUuid: Uuid },
+      instance: instance as typeof instance & { parentUuid: Uuid },
       actionType,
     });
     setSaving(false);
@@ -266,9 +334,85 @@ function SequenceEditorForm(
     }
     setSaveStatus({
       status: "saved",
-      message: `Runner ${instance.name} saved${result.applicationSection === "model" ? ", to commit with the model" : ""}`,
+      message: `${what} saved${result.applicationSection === "model" ? ", to commit with the model" : ""}`,
     });
     return true;
+  };
+
+  /**
+   * #506: "create Action" of the save dialog: the action `actionType` from the edited sequence, its
+   * form fields as parameters, in the chosen Endpoint or a new one. Returns the uuid of its
+   * Endpoint, or why it was not created.
+   */
+  const createAction = async (actionType: string, choice: ActionEndpointChoice): Promise<{ endpointUuid: Uuid } | string> => {
+    const form = runner.definition.formMLSchema as { formMLSchemaType?: string; mlSchema?: MlElement } | undefined;
+    const fields = form?.formMLSchemaType === "mlSchema" && form.mlSchema?.type === "object" ? form.mlSchema.definition : undefined;
+    if (!fields) {
+      return "the form of the sequence is computed: an action needs form fields declared one by one";
+    }
+    const existing = "uuid" in choice ? props.endpoints.find((endpoint) => endpoint.uuid === choice.uuid) : undefined;
+    if ("uuid" in choice && !existing) {
+      return "the chosen Endpoint is not in the application any more";
+    }
+    if ("newName" in choice && props.endpoints.some((endpoint) => endpoint.name === choice.newName)) {
+      return `an Endpoint named ${choice.newName} exists: choose it in the list`;
+    }
+    const endpointUuid = existing?.uuid ?? uuidv4();
+    let endpoint: Record<string, unknown> & { uuid: Uuid; name: string };
+    try {
+      const action = compositeEndpointAction({
+        actionType,
+        endpointUuid,
+        sequence: runner.definition.compositeActionSequence,
+        runnerName: runner.name,
+        fields: fields as Record<string, MlElement>,
+        registry: endpointActionRegistry(modelEnvironment),
+      });
+      endpoint = (
+        existing
+          ? addEndpointAction(existing, action)
+          : newEndpoint({ uuid: endpointUuid, application, name: "newName" in choice ? choice.newName : "", actions: [action] })
+      ) as typeof endpoint;
+    } catch (error) {
+      return error instanceof Error ? error.message : String(error);
+    }
+    const what = `Action ${actionType} of the Endpoint ${endpoint.name}`;
+    if (!(await save(endpoint, existing ? "updateInstance" : "createInstance", what))) {
+      return "the action was not saved";
+    }
+    return { endpointUuid };
+  };
+
+  /** #506: with both switches on, the new Runner calls the new action. */
+  const createActionRunner = async (name: string, label: string, endpointUuid: Uuid): Promise<string | undefined> => {
+    const actionRunner = {
+      uuid: uuidv4(),
+      parentName: "Runner",
+      parentUuid: RUNNER_ENTITY_UUID,
+      application,
+      name,
+      defaultLabel: label.length > 0 ? label : name,
+      definition: { runnerType: "actionRunner", endpoint: endpointUuid, action: name },
+    };
+    if (!(await save(actionRunner, "createInstance", `Action ${name} and its Runner`))) {
+      return "the action was saved, its Runner was not";
+    }
+    props.onActionRunnerCreated(actionRunner.uuid);
+    return undefined;
+  };
+
+  const saveAs = async (request: SequenceSaveRequest): Promise<string | undefined> => {
+    if (!request.createAction) {
+      return createRunner(request.name, request.label);
+    }
+    if (request.createRunner && props.runnerNames.includes(request.name)) {
+      return `a Runner named ${request.name} exists: choose another name`;
+    }
+    const created = await createAction(request.name, request.endpoint);
+    if (typeof created === "string") {
+      return created;
+    }
+    return request.createRunner ? createActionRunner(request.name, request.label, created.endpointUuid) : undefined;
   };
 
   /** "create Runner" of the save dialog: the draft named `name`, its reads of the form renamed with it, its form kept. */
@@ -333,9 +477,10 @@ function SequenceEditorForm(
         <SequenceSaveDialog
           initialName={props.stored ? `${draft.name}Copy` : ""}
           saving={saving}
+          endpoints={props.endpoints}
           onCancel={() => setDialogOpen(false)}
-          onCreateRunner={async (name, label) => {
-            const error = await createRunner(name, label);
+          onSave={async (request) => {
+            const error = await saveAs(request);
             if (!error) {
               setDialogOpen(false);
             }
@@ -362,20 +507,27 @@ function SequenceEditorForm(
   );
 }
 
+const NEW_ENDPOINT = "new";
+
 /**
  * The save dialog of a new sequence: "create Runner" (on) creates a Runner named and labelled
- * here; "create Action" (an Endpoint action) comes with #506.
+ * here; "create Action" (#506) creates an Endpoint action of that name, in the Endpoint chosen
+ * here or a new one named here.
  */
 function SequenceSaveDialog(props: {
   initialName: string;
   saving: boolean;
+  endpoints: EndpointValue[];
   onCancel: () => void;
-  onCreateRunner: (name: string, label: string) => Promise<string | undefined>;
+  onSave: (request: SequenceSaveRequest) => Promise<string | undefined>;
 }) {
   const { currentTheme } = useMiroirTheme();
   const [createRunner, setCreateRunner] = useState(true);
+  const [createAction, setCreateAction] = useState(false);
   const [name, setName] = useState(props.initialName);
   const [label, setLabel] = useState("");
+  const [endpoint, setEndpoint] = useState<string>(props.endpoints[0]?.uuid ?? NEW_ENDPOINT);
+  const [endpointName, setEndpointName] = useState("");
   const [error, setError] = useState<string | undefined>(undefined);
   const inputCss = css({
     font: "inherit",
@@ -388,10 +540,22 @@ function SequenceSaveDialog(props: {
   const confirm = async () => {
     const trimmed = name.trim();
     if (trimmed.length === 0) {
-      setError("Give the Runner a name");
+      setError(createAction ? "Give the action a name" : "Give the Runner a name");
       return;
     }
-    setError(await props.onCreateRunner(trimmed, label.trim()));
+    if (createAction && endpoint === NEW_ENDPOINT && endpointName.trim().length === 0) {
+      setError("Give the new Endpoint a name");
+      return;
+    }
+    setError(
+      await props.onSave({
+        createRunner,
+        createAction,
+        name: trimmed,
+        label: label.trim(),
+        endpoint: endpoint === NEW_ENDPOINT ? { newName: endpointName.trim() } : { uuid: endpoint },
+      }),
+    );
   };
   return (
     <ThemedDialog open={true} onClose={props.onCancel} disableEnforceFocus data-testid="sequence-editor-save-dialog" aria-label="Save the sequence">
@@ -412,10 +576,10 @@ function SequenceSaveDialog(props: {
           <ThemedLabeledEditor
             labelElement={<ThemedLabel>create Action</ThemedLabel>}
             editor={
-              <span title="An Endpoint action from a sequence comes with issue #506">
+              <span title={createRunner ? "An Endpoint action, called by the new Runner" : "An Endpoint action, its parameters the form fields"}>
                 <ThemedSwitch
-                  checked={false}
-                  disabled
+                  checked={createAction}
+                  onChange={(event) => setCreateAction(event.target.checked)}
                   size="small"
                   inputProps={{ "data-testid": "sequence-editor-create-action" } as React.InputHTMLAttributes<HTMLInputElement>}
                 />
@@ -424,11 +588,11 @@ function SequenceSaveDialog(props: {
           />
           <input
             data-testid="sequence-editor-runner-name"
-            aria-label="Name of the Runner"
+            aria-label={createAction ? "Name of the action" : "Name of the Runner"}
             placeholder="name"
             autoFocus
             value={name}
-            disabled={!createRunner}
+            disabled={!createRunner && !createAction}
             onChange={(event) => {
               setName(event.target.value);
               setError(undefined);
@@ -444,6 +608,45 @@ function SequenceSaveDialog(props: {
             onChange={(event) => setLabel(event.target.value)}
             css={inputCss}
           />
+          {createAction && (
+            <ThemedLabeledEditor
+              labelElement={<ThemedLabel>in the Endpoint</ThemedLabel>}
+              editor={
+                <span css={css({ display: "inline-flex", gap: "8px" })}>
+                  <select
+                    data-testid="sequence-editor-endpoint"
+                    aria-label="The Endpoint of the action"
+                    value={endpoint}
+                    onChange={(event) => {
+                      setEndpoint(event.target.value);
+                      setError(undefined);
+                    }}
+                    css={inputCss}
+                  >
+                    {props.endpoints.map((each) => (
+                      <option key={each.uuid} value={each.uuid}>
+                        {each.name}
+                      </option>
+                    ))}
+                    <option value={NEW_ENDPOINT}>New Endpoint</option>
+                  </select>
+                  {endpoint === NEW_ENDPOINT && (
+                    <input
+                      data-testid="sequence-editor-endpoint-name"
+                      aria-label="Name of the new Endpoint"
+                      placeholder="Endpoint name"
+                      value={endpointName}
+                      onChange={(event) => {
+                        setEndpointName(event.target.value);
+                        setError(undefined);
+                      }}
+                      css={inputCss}
+                    />
+                  )}
+                </span>
+              }
+            />
+          )}
           {error && (
             <span role="alert" data-testid="sequence-editor-save-error" css={css({ color: currentTheme.colors.error ?? "#c62828", fontSize: "13px" })}>
               {error}
@@ -458,7 +661,7 @@ function SequenceSaveDialog(props: {
         <ThemedStyledButton
           type="button"
           variant="contained"
-          disabled={!createRunner || props.saving}
+          disabled={(!createRunner && !createAction) || props.saving}
           onClick={() => void confirm()}
           data-testid="sequence-editor-save-confirm"
         >

@@ -3210,6 +3210,11 @@ export class DomainController implements DomainControllerInterface, DomainContro
         } else {
           applicationUuid = staticApplicationUuid;
         }
+        // #506: an Endpoint created in the open model transaction is not persisted yet; the
+        // model environment of the caller, read from the local cache, knows its application
+        if (applicationUuid === undefined && endpointUuid) {
+          applicationUuid = currentModelEnvironment?.endpointsByUuid?.[endpointUuid]?.application;
+        }
         log.debug(
           "DomainController handleAction",
           domainAction.actionType,

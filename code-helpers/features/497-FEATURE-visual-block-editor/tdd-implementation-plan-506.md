@@ -46,7 +46,7 @@ Working branch: `claude/506-block-editor-endpoint-actions`
 | 0 | This plan | ✅ | — |
 | 1 | Composite Endpoint actions and their hat (core) | ✅ | `fn.blockModel` "endpoint actions" |
 | 2 | The define hat of an Endpoint action in the block view (AC 2) | ✅ | `ui.blockEditing` "an Endpoint action" |
-| 3 | Save as Action, the palette, a run (AC 1) | ⬜ | `ui.blockEditing` "SequenceEditor on the Library" |
+| 3 | Save as Action, the palette, a run (AC 1) | ✅ | `ui.blockEditing` "SequenceEditor on the Library" |
 | 4 | Docs, nonreg, PR | ⬜ | nonreg |
 
 ---
@@ -83,6 +83,14 @@ GREEN: `BlockDefine` read paths and context names, the hat for actions, detectio
 
 RED: `ui.blockEditing` "SequenceEditor on the Library": a sequence creating a Publisher from a form field saved with "create Action" in a new Endpoint; a new sequence finds the action in the palette under that Endpoint, puts it with a name in its payload, is saved as a Runner and run: the Publisher is created. Both switches on give an `actionRunner`.
 GREEN: `SequenceSaveDialog` "create Action", `SequenceEditor` saves.
+
+**Realization (✅):** the dialog's "create Action" switch is on offer. With it, the name is the action type, and an Endpoint select lists the application's Endpoints that declare actions, then "New Endpoint" with a name field. `SequenceEditor` reads the Endpoints from the local cache, builds the action with `compositeEndpointAction` (the Runner's `mlSchema` form fields as parameters; a computed form is refused), appends it with `addEndpointAction` or creates the Endpoint with `newEndpoint`, and saves it with `saveInstanceFromUI` (the model section, in the open transaction). With both switches on, an `actionRunner` named like the action calls it and runs below the editor until another sequence is chosen.
+
+Two findings, both fixed:
+- **Running an action of an uncommitted Endpoint.** `DomainController.handleAction` found the application of an Endpoint through the static map or the persisted Endpoint instance, so a new Endpoint fell through to `handleMiroirAction` ("unknown action"). The caller's model environment, read from the local cache, knows it: `handleAction` now takes the application from `currentModelEnvironment.endpointsByUuid` when nothing else gives it.
+- **The action schema in the test cache.** The deployment schema adds an application's Endpoint actions only when the model names its application (`currentModel.applicationUuid`, from the SelfApplication instance). The "SequenceEditor on the Library" suite now puts the Library's SelfApplication instance in the cache, as the app has it; without it a step calling the new action failed the type check.
+
+Cases (in "SequenceEditor on the Library"): AC 1, the Runner addPlainPublisher gets a form field read for the Publisher's name and a generated uuid, is saved as the action `addNamedPublisher` of a new Endpoint, and a new sequence takes it from the palette, sets its parameter, is saved as a Runner and run: the Publisher is created. Both switches: the action Runner's form is the action's payload; filled and run, it creates the Publisher. The cases of the suite share their store, hence the generated uuid and distinct names. The #505 step "create Action is not offered yet" is gone. `ui.blockEditing` 54/54; leaf count 201.
 
 ## Slice 4 — Docs, nonreg, PR
 
