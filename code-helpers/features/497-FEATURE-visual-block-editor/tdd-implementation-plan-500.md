@@ -283,7 +283,7 @@ With "Show transformer types" on, a `mapList` placed where the input is a single
 
 ## Slice 8 — Run a subtree: the result bubble
 
-**Status:** ⬜
+**Status:** ✅
 
 ### 8.1 RED
 
@@ -293,6 +293,14 @@ With "Show transformer types" on, a `mapList` placed where the input is a single
 ### 8.2 GREEN
 
 `TransformerSubtreeRun.ts` in `miroir-core/src/2_domain` with its binding table; `block-result:<id>` bubble.
+
+### Realization
+
+- `transformerSubtreeRuns(root, path, transformerParams, contextResults, modelEnvironment)` walks the path and applies the binding table `CONTEXT_BINDINGS` (type → slot attribute → `eachElement`, `applyTo` or `earlierSteps`), read from the runtime handlers: mapList, filterList and find run their element slot once per element (mapList also over the values of an object), createObjectFromPairs and mergeIntoObject bind their evaluated `applyTo` once (createObjectFromPairs with no `applyTo` binds `{}`, as its handler does), dataflowObject steps see the steps before them. Each run is labelled with the names it binds (`defaultInput[1]`, `book[0], letter[1]`). The node runs at step `runtime` with `resolveBuildTransformersTo: "value"`, as the TransformerEditor runs the whole transformer.
+- `fn.transformer.subtreeRun` (new instance `a2e7d5f0-…`, exported off the page like `fn.transformer.treeEdit`): 10 cases, nested mapList included.
+- The TransformerEditor provides `BlockRunInputContext` (its input, as params and context, the same object it runs the transformer on); without it, blocks do not run. A click on a block header (`block-header:<id>`) opens or closes its bubble (`block-result:<id>`, one at a time); the fold button no longer reaches the header. Runs with labels get a select (`block-result-select:<id>`), each value is `block-result-value:<id>:<label>` with its JSON in `data-value`; a failure is shown red.
+- The memo of the run input lives in `TransformerDefinitionEditor`, not in the Formik render callback, which would add one more suppressed `rules-of-hooks` violation.
+- `ui.blockEditing` 18 of 18 (161 → 163 leaves); miroir-core unit tests 2802 pass.
 
 ---
 

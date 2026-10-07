@@ -1384,6 +1384,8 @@ export type {
   TransformerSlot,
   TransformerTypeChange,
 } from "./0_interfaces/2_domain/TransformerTreeEditInterface.js";
+export { transformerSubtreeRuns } from "./2_domain/TransformerSubtreeRun.js";
+export type { TransformerSubtreeRun } from "./0_interfaces/2_domain/TransformerSubtreeRunInterface.js";
 export {
   transformerBlockOutline,
   transformerBlockTree,

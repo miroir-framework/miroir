@@ -71,6 +71,7 @@ import {
   wrapTransformerNode,
 } from "../2_domain/TransformerTreeEdit";
 import { transformerBlockOutline, transformerBlockTree, transformerPaletteGroups } from "../2_domain/TransformerBlockModel";
+import { transformerSubtreeRuns } from "../2_domain/TransformerSubtreeRun";
 import {
   checkTransformerMlSchemaCompatibility,
   formatMlSchemaTypeLabel,
@@ -261,6 +262,9 @@ const FUNCTION_CALL_REGISTRY: Record<
     moveTransformerNode: moveTransformerNode as WhitelistedFunction,
     transformerInsertPositions: transformerInsertPositions as WhitelistedFunction,
     reorderTransformerNode: reorderTransformerNode as WhitelistedFunction,
+  },
+  "miroir-core/2_domain/TransformerSubtreeRun": {
+    transformerSubtreeRuns: transformerSubtreeRuns as WhitelistedFunction,
   },
   "miroir-core/2_domain/TransformerBlockModel": {
     transformerBlockTree: transformerBlockTree as WhitelistedFunction,

@@ -261,6 +261,7 @@ export declare const miroirTest_fn_tools_pathsAndMerges: any;
 export declare const miroirTest_fn_transformer_interfaceCheck: any;
 export declare const miroirTest_fn_transformer_interfaceWalk: any;
 export declare const miroirTest_fn_transformer_treeEdit: any;
+export declare const miroirTest_fn_transformer_subtreeRun: any;
 export declare const miroirTest_fn_blockModel: any;
 export declare const miroirTest_fn_transformer_resultSchema: any;
 export declare const miroirTest_tr_unfoldSchemaOnce: any;

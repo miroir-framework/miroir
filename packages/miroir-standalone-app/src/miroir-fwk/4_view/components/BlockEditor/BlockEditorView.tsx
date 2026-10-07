@@ -22,6 +22,7 @@ import {
   type TrayUpdate,
 } from "./BlockEditing.js";
 import { BlockField, MlSchemaChip } from "./BlockFields.js";
+import { BlockResult, useBlockRunInput } from "./BlockResult.js";
 import { BlockPalette } from "./BlockPalette.js";
 
 // ################################################################################################
@@ -41,6 +42,7 @@ import { BlockPalette } from "./BlockPalette.js";
 // empty slots and at the end of list and record slots. The tray, below the program, shows the
 // blocks moved out read-only, each with Place and Discard. Values and ML schemas are edited in
 // place (BlockFields.tsx). With the editor's type badges (#453), a block shows its types as a flag.
+// Under the TransformerEditor, a click on a block header runs the block (BlockResult.tsx).
 // ################################################################################################
 
 export interface BlockEditorViewProps {
@@ -141,7 +143,11 @@ function hiddenSummary(node: BlockNode, count: number): string {
 /** The fold state of a block, the toggle of its header and the summary shown when folded. */
 function useCollapse(node: BlockNode, settings: BlockSettings, rowCount: number) {
   const [collapsed, setCollapsed] = useState(() => rowCount > 0 && startsCollapsed(node, settings.initialCollapse));
-  const toggle = useCallback(() => setCollapsed((current) => !current), []);
+  // the header runs the block on a click: folding is not a run
+  const toggle = useCallback((event: React.MouseEvent) => {
+    event.stopPropagation();
+    setCollapsed((current) => !current);
+  }, []);
   const id = blockId(settings.rootLessListKey, node.path);
   const toggleButton =
     rowCount > 0 ? (
@@ -236,6 +242,9 @@ const TransformerBlockView = React.memo(function TransformerBlockView(props: {
   const { node, settings } = props;
   const id = blockId(settings.rootLessListKey, node.path);
   const { collapsed, toggleButton, summary } = useCollapse(node, settings, node.rows.length);
+  const editing = useBlockEditing();
+  const runs = useBlockRunInput() !== undefined && editing !== undefined;
+  const resultShown = runs && editing?.shownResult === pathKey(node.path);
   const color = blockCategoryColor(settings.blockEditor, node.category);
   // an absent interpolation is evaluated as build (TransformersForRuntime)
   const interpolation = node.interpolation ?? "build";
@@ -265,7 +274,19 @@ const TransformerBlockView = React.memo(function TransformerBlockView(props: {
         ...(marking === "dashedOutline" ? { outline: `2px dashed ${settings.text}`, outlineOffset: "1px" } : {}),
       })}
     >
-      <div css={css({ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "4px 7px", padding: "4px 10px" })}>
+      <div
+        data-testid={`block-header:${id}`}
+        title={runs ? "Click to run this block on the input" : undefined}
+        onClick={runs ? () => editing?.toggleResult(node.path) : undefined}
+        css={css({
+          display: "flex",
+          flexWrap: "wrap",
+          alignItems: "center",
+          gap: "4px 7px",
+          padding: "4px 10px",
+          cursor: runs ? "pointer" : undefined,
+        })}
+      >
         {toggleButton}
         <span css={css({ fontWeight: 700, whiteSpace: "nowrap" })}>{node.transformerType}</span>
         <BlockNodeActions path={node.path} blockId={id} />
@@ -307,6 +328,7 @@ const TransformerBlockView = React.memo(function TransformerBlockView(props: {
         ))}
         {summary}
       </div>
+      {resultShown && <BlockResult path={node.path} id={id} colors={settings} />}
       {node.rows.length > 0 && !collapsed && (
         <div
           css={css({

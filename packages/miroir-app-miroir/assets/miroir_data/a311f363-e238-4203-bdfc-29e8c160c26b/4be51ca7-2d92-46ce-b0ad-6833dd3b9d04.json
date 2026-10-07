@@ -1486,6 +1486,231 @@
                 "present": false
               }
             ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: a click on a block header shows its result on the input",
+            "steps": [
+              {
+                "step": "toggleUnionTypeSelector",
+                "label": "show the input type",
+                "field": "transformerEditor_inputModeSelector.input"
+              },
+              {
+                "step": "selectOption",
+                "label": "input is a list",
+                "field": "transformerEditor_inputModeSelector.input",
+                "select": "unionType",
+                "option": "array"
+              },
+              {
+                "step": "click",
+                "label": "add a second item",
+                "target": {
+                  "byRole": "button",
+                  "name": "input.add"
+                }
+              },
+              {
+                "step": "change",
+                "label": "first item",
+                "target": {
+                  "byRole": "textbox",
+                  "fieldName": "transformerEditor_inputModeSelector.input.0"
+                },
+                "value": "apple"
+              },
+              {
+                "step": "change",
+                "label": "second item",
+                "target": {
+                  "byRole": "textbox",
+                  "fieldName": "transformerEditor_inputModeSelector.input.1"
+                },
+                "value": "pear"
+              },
+              {
+                "step": "click",
+                "label": "choose Blocks",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                }
+              },
+              {
+                "step": "click",
+                "label": "run the root block",
+                "target": {
+                  "byTestId": "block-header:transformer"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the bubble shows the value",
+                "target": {
+                  "byTestId": "block-result-value:transformer"
+                },
+                "attribute": "data-value",
+                "value": "\"seize value...\"",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "click the header again",
+                "target": {
+                  "byTestId": "block-header:transformer"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the bubble is closed",
+                "target": {
+                  "byTestId": "block-result:transformer"
+                },
+                "present": false
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: the element transformer of a mapList shows one value per element, and one alone when chosen",
+            "steps": [
+              {
+                "step": "toggleUnionTypeSelector",
+                "label": "show the input type",
+                "field": "transformerEditor_inputModeSelector.input"
+              },
+              {
+                "step": "selectOption",
+                "label": "input is a list",
+                "field": "transformerEditor_inputModeSelector.input",
+                "select": "unionType",
+                "option": "array"
+              },
+              {
+                "step": "click",
+                "label": "add a second item",
+                "target": {
+                  "byRole": "button",
+                  "name": "input.add"
+                }
+              },
+              {
+                "step": "change",
+                "label": "first item",
+                "target": {
+                  "byRole": "textbox",
+                  "fieldName": "transformerEditor_inputModeSelector.input.0"
+                },
+                "value": "apple"
+              },
+              {
+                "step": "change",
+                "label": "second item",
+                "target": {
+                  "byRole": "textbox",
+                  "fieldName": "transformerEditor_inputModeSelector.input.1"
+                },
+                "value": "pear"
+              },
+              {
+                "step": "selectOption",
+                "label": "root mapList",
+                "field": "transformerEditor_transformer_selector.transformer.transformerType",
+                "option": "mapList"
+              },
+              {
+                "step": "selectOption",
+                "label": "element getFromContext",
+                "field": "transformerEditor_transformer_selector.transformer.elementTransformer.transformerType",
+                "option": "getFromContext"
+              },
+              {
+                "step": "clickObjectButton",
+                "label": "add the element referenceName",
+                "field": "transformerEditor_transformer_selector.transformer.elementTransformer",
+                "action": "addOptionalAttribute",
+                "attribute": "referenceName"
+              },
+              {
+                "step": "change",
+                "label": "the element reads defaultInput",
+                "target": {
+                  "byRole": "textbox",
+                  "fieldName": "transformerEditor_transformer_selector.transformer.elementTransformer.referenceName"
+                },
+                "value": "defaultInput"
+              },
+              {
+                "step": "click",
+                "label": "choose Blocks",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                }
+              },
+              {
+                "step": "click",
+                "label": "run the element block",
+                "target": {
+                  "byTestId": "block-header:transformer.elementTransformer"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "one run per element",
+                "target": {
+                  "byTestId": "block-result:transformer.elementTransformer"
+                },
+                "attribute": "data-run-count",
+                "value": "2",
+                "timeout": 2000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the first element",
+                "target": {
+                  "byTestId": "block-result-value:transformer.elementTransformer:defaultInput[0]"
+                },
+                "attribute": "data-value",
+                "value": "\"apple\"",
+                "timeout": 2000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the second element",
+                "target": {
+                  "byTestId": "block-result-value:transformer.elementTransformer:defaultInput[1]"
+                },
+                "attribute": "data-value",
+                "value": "\"pear\"",
+                "timeout": 2000
+              },
+              {
+                "step": "change",
+                "label": "choose the second element",
+                "target": {
+                  "byTestId": "block-result-select:transformer.elementTransformer"
+                },
+                "value": "defaultInput[1]"
+              },
+              {
+                "step": "expectElement",
+                "label": "the first element is hidden",
+                "target": {
+                  "byTestId": "block-result-value:transformer.elementTransformer:defaultInput[0]"
+                },
+                "present": false
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the second element alone",
+                "target": {
+                  "byTestId": "block-result-value:transformer.elementTransformer:defaultInput[1]"
+                },
+                "attribute": "data-value",
+                "value": "\"pear\"",
+                "timeout": 2000
+              }
+            ]
           }
         ]
       }

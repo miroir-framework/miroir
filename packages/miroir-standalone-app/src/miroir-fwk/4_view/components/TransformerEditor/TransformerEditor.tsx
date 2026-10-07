@@ -43,7 +43,7 @@ import {
 import { useCurrentModel } from "../../ReduxHooks.js";
 import { useReportPageContext } from '../Reports/ReportPageContext';
 import { TypedValueObjectEditor } from '../Reports/TypedValueObjectEditor';
-import { BlockViewModeProvider } from '../BlockEditor/BlockViewMode.js';
+import { BlockRunInputContext, BlockViewModeProvider, type BlockRunInput } from '../BlockEditor/BlockViewMode.js';
 import { ValueHistory } from '../ValueObjectEditor/ValueHistory.js';
 import { ValueHistoryProvider } from '../ValueObjectEditor/ValueHistoryProvider.js';
 import { ValueHistoryFallbackButtons } from '../ValueObjectEditor/ValueHistoryButtons.js';
@@ -240,6 +240,8 @@ const TransformerDefinitionEditor: React.FC<{
   onRestrictTransformersToInputTypeChange: (checked: boolean) => void;
   /** Undo / redo of the edited transformer (#499). */
   transformerHistory: ValueHistory;
+  /** The input the transformer runs on, as params and context: blocks run their subtree on it (#500). */
+  transformerInput: Record<string, unknown>;
 }> = ({
   formValueMLSchema,
   application,
@@ -251,7 +253,12 @@ const TransformerDefinitionEditor: React.FC<{
   restrictTransformersToInputType,
   onRestrictTransformersToInputTypeChange,
   transformerHistory,
+  transformerInput,
 }) => {
+  const runInput: BlockRunInput = useMemo(
+    () => ({ transformerParams: transformerInput, contextResults: transformerInput }),
+    [transformerInput],
+  );
   const entityMlSchemas = useMemo(
     () =>
       Object.fromEntries(
@@ -337,24 +344,26 @@ const TransformerDefinitionEditor: React.FC<{
       <ValueHistoryProvider history={transformerHistory} formikPath={transformerFormikPath}>
         {/* #499: Undo stays reachable when an edit made the transformer fail its type check */}
         <ValueHistoryFallbackButtons rootLessListKey="transformer" />
-        <BlockViewModeProvider>
-          <TypedValueObjectEditor
-            labelElement={<>Transformer Definition</>}
-            formValueMLSchema={formValueMLSchema}
-            formikValuePathAsString="transformerEditor_transformer_selector"
-            application={application}
-            applicationDeploymentMap={applicationDeploymentMap}
-            deploymentUuid={deploymentUuid}
-            applicationSection={"model"}
-            formLabel={"Transformer Definition Selector"}
-            displaySubmitButton="noDisplay"
-            valueObjectEditMode="create"
-            maxRenderDepth={Infinity}
-            compatibilityWarnings={compatibilityWarnings}
-            transformerTypeRestrictions={transformerTypeRestrictions}
-            transformerTypeBadges={typeBadges}
-          />
-        </BlockViewModeProvider>
+        <BlockRunInputContext.Provider value={runInput}>
+          <BlockViewModeProvider>
+            <TypedValueObjectEditor
+              labelElement={<>Transformer Definition</>}
+              formValueMLSchema={formValueMLSchema}
+              formikValuePathAsString="transformerEditor_transformer_selector"
+              application={application}
+              applicationDeploymentMap={applicationDeploymentMap}
+              deploymentUuid={deploymentUuid}
+              applicationSection={"model"}
+              formLabel={"Transformer Definition Selector"}
+              displaySubmitButton="noDisplay"
+              valueObjectEditMode="create"
+              maxRenderDepth={Infinity}
+              compatibilityWarnings={compatibilityWarnings}
+              transformerTypeRestrictions={transformerTypeRestrictions}
+              transformerTypeBadges={typeBadges}
+            />
+          </BlockViewModeProvider>
+        </BlockRunInputContext.Provider>
       </ValueHistoryProvider>
     </>
   );
@@ -1055,6 +1064,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                         })
                       }
                       transformerHistory={transformerHistory}
+                      transformerInput={transformerInput}
                     />
                   ) : null}
                 </div>

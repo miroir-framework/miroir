@@ -11,6 +11,17 @@ import React, { createContext, useCallback, useMemo, useState } from "react";
 
 export type BlockViewMode = "blocks" | "form" | "json";
 
+/**
+ * #500: the input a transformer of the block view runs on, as the TransformerEditor runs it: a
+ * block shows the result of its subtree only under this context.
+ */
+export interface BlockRunInput {
+  transformerParams: Record<string, unknown>;
+  contextResults: Record<string, unknown>;
+}
+
+export const BlockRunInputContext = createContext<BlockRunInput | undefined>(undefined);
+
 export interface BlockViewModes {
   modeOf: (formikPath: string) => BlockViewMode;
   setMode: (formikPath: string, mode: BlockViewMode) => void;

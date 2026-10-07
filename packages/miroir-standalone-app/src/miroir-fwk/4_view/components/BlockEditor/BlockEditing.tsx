@@ -55,6 +55,9 @@ export interface BlockEditing {
   /** Moves the block at `path` to the tray; its slot gets its default. */
   moveToTray: (path: BlockPath) => void;
   discardTrayBlock: (index: number) => void;
+  /** The block whose result bubble is open, by `pathKey`. */
+  shownResult: string | undefined;
+  toggleResult: (path: BlockPath) => void;
 }
 
 export type ArmedBlock = { kind: "type"; transformerType: string } | { kind: "tray"; index: number };
@@ -112,6 +115,11 @@ export function useBlockEditingValue(
 ): BlockEditing | undefined {
   const candidateTypes = useMemo(() => [...transformerUnionTypes(defaultMiroirModelEnvironment)].sort(), []);
   const [armed, arm] = useState<ArmedBlock | undefined>(undefined);
+  const [shownResult, setShownResult] = useState<string | undefined>(undefined);
+  const toggleResult = useCallback(
+    (path: BlockPath) => setShownResult((current) => (current === pathKey(path) ? undefined : pathKey(path))),
+    [],
+  );
   const insertPositions = useMemo(() => {
     const byContainer = new Map<string, TransformerInsertPosition[]>();
     if (commit) {
@@ -183,6 +191,8 @@ export function useBlockEditingValue(
             tray: changeTray ? (tray ?? []) : undefined,
             moveToTray,
             discardTrayBlock,
+            shownResult,
+            toggleResult,
           }
         : undefined,
     [
@@ -199,6 +209,8 @@ export function useBlockEditingValue(
       changeTray,
       moveToTray,
       discardTrayBlock,
+      shownResult,
+      toggleResult,
     ],
   );
 }
