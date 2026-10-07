@@ -20,6 +20,7 @@ import {
   useBlockEditingValue,
   type TrayUpdate,
 } from "./BlockEditing.js";
+import { BlockField, MlSchemaChip } from "./BlockFields.js";
 import { BlockPalette } from "./BlockPalette.js";
 
 // ################################################################################################
@@ -37,7 +38,8 @@ import { BlockPalette } from "./BlockPalette.js";
 // #500: with a writer, the view edits the value (BlockEditing.tsx); without one it is read-only.
 // Editing shows the palette, an empty row for every absent optional slot, and insert targets in
 // empty slots and at the end of list and record slots. The tray, below the program, shows the
-// blocks moved out read-only, each with Place and Discard.
+// blocks moved out read-only, each with Place and Discard. Values and ML schemas are edited in
+// place (BlockFields.tsx).
 // ################################################################################################
 
 export interface BlockEditorViewProps {
@@ -164,30 +166,6 @@ function useCollapse(node: BlockNode, settings: BlockSettings, rowCount: number)
   return { collapsed, toggleButton, summary };
 }
 
-const Field = React.memo(function Field(props: { value: unknown; settings: BlockSettings }) {
-  const text = JSON.stringify(props.value);
-  return (
-    <span
-      title={text}
-      css={css({
-        fontFamily: "monospace",
-        fontSize: "12px",
-        background: props.settings.field,
-        color: props.settings.text,
-        border: `1px solid ${props.settings.border}`,
-        borderRadius: "6px",
-        padding: "0 6px",
-        maxWidth: "40ch",
-        overflow: "hidden",
-        textOverflow: "ellipsis",
-        whiteSpace: "nowrap",
-      })}
-    >
-      {text}
-    </span>
-  );
-});
-
 /** An empty slot: its insert targets when editing, else a dashed box. */
 function EmptySlot(props: { path: BlockPath; settings: BlockSettings }) {
   const editing = useBlockEditing();
@@ -280,7 +258,12 @@ const TransformerBlockView = React.memo(function TransformerBlockView(props: {
             css={css({ display: "inline-flex", gap: "4px", alignItems: "center" })}
           >
             <span css={css({ opacity: 0.85, fontSize: "12px" })}>{parameter.name}</span>
-            <Field value={parameter.value} settings={settings} />
+            <BlockField
+              value={parameter.value}
+              path={[...node.path, parameter.name]}
+              id={blockId(settings.rootLessListKey, [...node.path, parameter.name])}
+              colors={settings}
+            />
           </span>
         ))}
         {summary}
@@ -401,26 +384,11 @@ const BlockNodeView = React.memo(function BlockNodeView(props: {
           data-block-kind={node.quoted ? "quoted" : "literal"}
           title={node.quoted ? "Returned as is, not evaluated" : undefined}
         >
-          <Field value={node.value} settings={settings} />
+          <BlockField value={node.value} path={node.path} id={id} colors={settings} />
         </span>
       );
     case "mlSchema":
-      return (
-        <span
-          data-testid={`block:${id}`}
-          data-block-kind="mlSchema"
-          title={JSON.stringify(node.value, null, 2)}
-          css={css({
-            fontSize: "12px",
-            background: settings.literal,
-            border: `1px solid ${settings.border}`,
-            borderRadius: "999px",
-            padding: "1px 8px",
-          })}
-        >
-          ML schema
-        </span>
-      );
+      return <MlSchemaChip value={node.value} path={node.path} id={id} colors={settings} />;
     case "json":
       return (
         <pre

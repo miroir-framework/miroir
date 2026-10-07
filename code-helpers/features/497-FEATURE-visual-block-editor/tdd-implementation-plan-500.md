@@ -223,7 +223,7 @@ Tray state in `BlockViewModeProvider`; Move to tray menu entry; tray panel with 
 
 ## Slice 5 — Inline literals and the ML schema popover
 
-**Status:** ⬜
+**Status:** ✅
 
 ### 5.1 RED
 
@@ -232,6 +232,13 @@ Edit the `value` of a `returnValue` inline (Enter commits, Escape cancels, a num
 ### 5.2 GREEN
 
 `Field` becomes editable under a writer (`block-field-input:<id>`, `data-own-undo`); `editsOwnText` honours `data-own-undo`; popover on the chip.
+
+### Realization
+
+- `BlockFields.tsx`: `BlockField` (header parameters and literal blocks) opens on click or Enter (`block-field:<id>`) into an input (`block-field-input:<id>`); Enter or blur writes, Escape cancels, an unchanged value writes nothing. A string field stays a string; any other field is parsed as JSON, so a number stays a number, and text that does not parse keeps the input open, marked invalid. `MlSchemaChip` opens a MUI Popover with the schema's JSON text (`block-mlschema-input:<id>`, Save and Cancel).
+- `editsOwnText` honours `data-own-undo`, and `ValueHistoryScope` no longer marks typing in such a field as a typing group: the field writes the value once, when it commits. Mutation check: without the `data-own-undo` test, the Ctrl+Z case fails (the wrap is undone).
+- The `value` of the starting `returnValue` is a header parameter (a primitive), so the first case covers parameter editing.
+- `ui.blockEditing` 13 of 13 (155 → 158 leaves); `ui.blockEditor`, `ui.valueHistory`, `ui.transformerEditor` 60 pass.
 
 ---
 

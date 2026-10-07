@@ -956,6 +956,279 @@
                 "present": false
               }
             ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: a value edited in place: Enter writes it, Escape cancels",
+            "steps": [
+              {
+                "step": "click",
+                "label": "choose Blocks",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                }
+              },
+              {
+                "step": "click",
+                "label": "open the field value",
+                "target": {
+                  "byTestId": "block-field:transformer.value"
+                }
+              },
+              {
+                "step": "clear",
+                "label": "clear it",
+                "target": {
+                  "byTestId": "block-field-input:transformer.value"
+                }
+              },
+              {
+                "step": "type",
+                "label": "type hello{Enter}",
+                "target": {
+                  "byTestId": "block-field-input:transformer.value"
+                },
+                "text": "hello{Enter}"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the value is the typed string",
+                "target": {
+                  "byTestId": "block-parameter:transformer.value"
+                },
+                "attribute": "data-value",
+                "value": "\"hello\"",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "open the field value again",
+                "target": {
+                  "byTestId": "block-field:transformer.value"
+                }
+              },
+              {
+                "step": "clear",
+                "label": "clear it",
+                "target": {
+                  "byTestId": "block-field-input:transformer.value"
+                }
+              },
+              {
+                "step": "type",
+                "label": "type nope",
+                "target": {
+                  "byTestId": "block-field-input:transformer.value"
+                },
+                "text": "nope"
+              },
+              {
+                "step": "keyboard",
+                "label": "Escape",
+                "keys": "{Escape}"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the value did not change",
+                "target": {
+                  "byTestId": "block-parameter:transformer.value"
+                },
+                "attribute": "data-value",
+                "value": "\"hello\"",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "choose JSON",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:json"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the value",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "timeout": 2000,
+                "value": "{\n  \"transformerType\": \"returnValue\",\n  \"mlSchema\": {\n    \"type\": \"string\"\n  },\n  \"value\": \"hello\"\n}"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: a number field stays a number, and Ctrl+Z inside a field undoes its text, not the transformer",
+            "steps": [
+              {
+                "step": "click",
+                "label": "choose Blocks",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                }
+              },
+              {
+                "step": "click",
+                "label": "open the node actions of the root block",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Wrap in…",
+                "target": {
+                  "byTestId": "transformer-node-action-wrap"
+                }
+              },
+              {
+                "step": "selectOption",
+                "label": "ifThenElse",
+                "field": "transformer-node-dialog-type",
+                "option": "ifThenElse"
+              },
+              {
+                "step": "selectOption",
+                "label": "slot then",
+                "field": "transformer-node-dialog-slot",
+                "option": "then"
+              },
+              {
+                "step": "click",
+                "label": "wrap",
+                "target": {
+                  "byTestId": "transformer-node-dialog-confirm"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the root block is ifThenElse",
+                "target": {
+                  "byTestId": "block:transformer"
+                },
+                "attribute": "data-transformer-type",
+                "value": "ifThenElse",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "open the field if.value",
+                "target": {
+                  "byTestId": "block-field:transformer.if.value"
+                }
+              },
+              {
+                "step": "clear",
+                "label": "clear it",
+                "target": {
+                  "byTestId": "block-field-input:transformer.if.value"
+                }
+              },
+              {
+                "step": "type",
+                "label": "type 42",
+                "target": {
+                  "byTestId": "block-field-input:transformer.if.value"
+                },
+                "text": "42"
+              },
+              {
+                "step": "keyboard",
+                "label": "Ctrl+Z in the field",
+                "keys": "{Control>}z{/Control}"
+              },
+              {
+                "step": "keyboard",
+                "label": "Enter",
+                "keys": "{Enter}"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the value is the number 42",
+                "target": {
+                  "byTestId": "block-parameter:transformer.if.value"
+                },
+                "attribute": "data-value",
+                "value": "42",
+                "timeout": 2000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the root block is still ifThenElse",
+                "target": {
+                  "byTestId": "block:transformer"
+                },
+                "attribute": "data-transformer-type",
+                "value": "ifThenElse",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "choose JSON",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:json"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the value",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "timeout": 2000,
+                "value": "{\n  \"transformerType\": \"ifThenElse\",\n  \"if\": {\n    \"transformerType\": \"returnValue\",\n    \"value\": 42,\n    \"interpolation\": \"runtime\"\n  },\n  \"interpolation\": \"runtime\",\n  \"then\": {\n    \"transformerType\": \"returnValue\",\n    \"mlSchema\": {\n      \"type\": \"string\"\n    },\n    \"value\": \"seize value...\"\n  }\n}"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: an ML schema edited in its popover",
+            "steps": [
+              {
+                "step": "click",
+                "label": "choose Blocks",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                }
+              },
+              {
+                "step": "click",
+                "label": "open the ML schema",
+                "target": {
+                  "byTestId": "block:transformer.mlSchema"
+                }
+              },
+              {
+                "step": "change",
+                "label": "a number schema",
+                "target": {
+                  "byTestId": "block-mlschema-input:transformer.mlSchema"
+                },
+                "value": "{\"type\": \"number\"}"
+              },
+              {
+                "step": "click",
+                "label": "Save",
+                "target": {
+                  "byTestId": "block-mlschema-save:transformer.mlSchema"
+                }
+              },
+              {
+                "step": "click",
+                "label": "choose JSON",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:json"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the value",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "timeout": 2000,
+                "value": "{\n  \"transformerType\": \"returnValue\",\n  \"mlSchema\": {\n    \"type\": \"number\"\n  },\n  \"value\": \"seize value...\"\n}"
+              }
+            ]
           }
         ]
       }
