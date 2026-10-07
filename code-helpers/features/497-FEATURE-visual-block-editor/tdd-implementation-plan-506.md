@@ -47,7 +47,7 @@ Working branch: `claude/506-block-editor-endpoint-actions`
 | 1 | Composite Endpoint actions and their hat (core) | ✅ | `fn.blockModel` "endpoint actions" |
 | 2 | The define hat of an Endpoint action in the block view (AC 2) | ✅ | `ui.blockEditing` "an Endpoint action" |
 | 3 | Save as Action, the palette, a run (AC 1) | ✅ | `ui.blockEditing` "SequenceEditor on the Library" |
-| 4 | Docs, nonreg, PR | ⬜ | nonreg |
+| 4 | Docs, nonreg, PR | ✅ | nonreg |
 
 ---
 
@@ -95,3 +95,5 @@ Cases (in "SequenceEditor on the Library"): AC 1, the Runner addPlainPublisher g
 ## Slice 4 — Docs, nonreg, PR
 
 `docs/reference/transformers.md` (composite Endpoint actions); nonreg filesystem shared runner; PR into `_integration` with `Closes #506`.
+
+**Realization (✅):** the section "Composite Endpoint actions: define blocks and Save as Action" in `docs/reference/transformers.md`. Pre-push gate clean (3039 core unit tests). `nonreg:filesystem --runner shared`: 103 passed, 4 failed, the MiroirTestDisplay steps of #510, failing the same way on `_integration`.
