@@ -48,7 +48,7 @@ Working branch: `claude/504-block-editor-action-sequences`
 | 1 | `compositeRunTestAssertion` is a DomainEndpoint action (D10) | ✅ | core unit tests, action and runner MiroirTests, nonreg |
 | 2 | Action registry (D12) | ✅ | `fn.blockModel` "action registry" cases |
 | 3 | Sequence block model; marks by evaluation step | ✅ | `fn.blockModel` "action sequences" cases |
-| 4 | Corpus sweep over every sequence (AC 1) | ⬜ | `transformerBlockModelAssets.unit.test.ts` |
+| 4 | Corpus sweep over every sequence (AC 1) | ✅ | `transformerBlockModelAssets.unit.test.ts` |
 | 5 | Sequence fields get the switch; read-only stacked blocks (AC 2) | ⬜ | `fn.blockView.fields`, `ui.blockEditor` createEntity Runner |
 | 6 | Docs, nonreg, PR | ⬜ | nonreg |
 
@@ -97,6 +97,8 @@ GREEN: `blockTree`, sequence/action/query nodes in `TransformerBlockModelInterfa
 
 RED: the sweep visits every sequence of the assets (67 in 26 files at the analysis; recounted) and expects no `unknownActionType` block.
 GREEN: whatever slice 3 missed.
+
+**Realization:** 66 sequences in 26 files, 384 actions (the analysis counted 67: one sits in a skipped `expected*` value). The sweep's environment adds the Endpoints of every package's assets, so the Library's `lendDocument` and `returnDocument` steps are found. Nothing was missed by slice 3.
 
 ## Slice 5 — Sequence fields and the view
 
