@@ -1,6 +1,6 @@
 {
   "$comment": "Bundle guard (#326), checked by scripts/check_bundle_policy.py against the build's bundle-report.json. See docs/internals/code-splitting.md. The npm minor/patch group (#358) added a2ui and MCP middleware, yauzl and standardwebhooks; they load with miroir-ai on demand since #370. zod 4 (#375) adds about 90 kB gzipped at start; openai 7 dropped agentkeepalive, form-data-encoder, formdata-node and humanize-ms. express 5 lowers the start size to 942 kB gzipped.",
-  "eagerGzipBaseline": 942479,
+  "eagerGzipBaseline": 962736,
   "eagerGzipTolerance": 0.02,
   "forbiddenEager": [
     "@testing-library/*",
@@ -130,9 +130,6 @@
     "@copilotkit/license-verifier",
     "@copilotkit/runtime",
     "@copilotkit/shared",
-    "@dnd-kit/accessibility",
-    "@dnd-kit/core",
-    "@dnd-kit/utilities",
     "@ewoudenberg/difflib",
     "@graphql-yoga/subscription",
     "@hono/node-server",

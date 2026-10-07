@@ -1,0 +1,20 @@
+{
+  "uuid": "5c1536e3-fded-49f7-9989-97416b411b16",
+  "parentName": "BundleSizeMeasurement",
+  "parentUuid": "90d603f9-58f8-4ac4-b2eb-cb1d718e8b3b",
+  "application": "miroir-standalone-app-electron",
+  "measuredAt": "2026-10-07T08:18:13.278Z",
+  "eagerGzipBytes": 962736,
+  "baseline": 962736,
+  "previousBaseline": 942479,
+  "baselineChange": 20257,
+  "reason": "#500 block editing: miroir-core tree edit and subtree run functions, their fn MiroirTests and ui.blockEditing in miroir-app-miroir, loaded eagerly by the Electron main process (plus the #498 and #499 additions, which stayed under the 2 % tolerance)",
+  "gitCommit": "c39da4e7c287d9621bdf6b83067e8c92c7533129",
+  "gitBranch": "claude/500-block-editor-editing",
+  "miroirVersion": "0.5.0-rc.1",
+  "eagerChunks": 8,
+  "eagerRawBytes": 5272432,
+  "totalChunks": 42,
+  "totalRawBytes": 15478477,
+  "totalGzipBytes": 3342647
+}
