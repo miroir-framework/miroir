@@ -31,7 +31,7 @@ This plan does not add variable blocks or scope checks (#501), define blocks (#5
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
 | 0 | A home for the cases, off the page bundle | ✅ | `componentTestInstances.292.phase1`, counts |
-| 1 | Pure defaults and insert, move, reorder | ⬜ | `fn.transformer.treeEdit`, `fn.transformer.defaultNode` |
+| 1 | Pure defaults and insert, move, reorder | ✅ | `fn.transformer.treeEdit` |
 | 2 | Tracer: the #415 node menu on a block | ⬜ | `ui.blockEditing` wrap, unwrap, remove |
 | 3 | Palette and insert into a slot | ⬜ | `ui.blockEditing` build from the palette |
 | 4 | Tray: move a block out and back | ⬜ | `ui.blockEditing` tray cases |
@@ -124,7 +124,7 @@ npm run testByFile -w miroir-standalone-app -- componentMiroirTests.consistency 
 
 ## Slice 1 — Pure defaults and insert, move, reorder
 
-**Status:** ⬜
+**Status:** ✅ DONE
 
 ### 1.1 RED
 
@@ -142,6 +142,12 @@ npm run devBuild -w miroir-core
 npm run testMiroir -w miroir-core -- --suites fn.transformer.treeEdit,fn.transformer.defaultNode --mode unit
 npm run test -w miroir-core -- ''
 ```
+
+### Realization
+
+- The `defaultTransformerNode` cases went into `fn.transformer.treeEdit` with the others, not a new instance: the function lives in `TransformerTreeEdit.ts`. Its signature is `(transformerType, modelEnvironment, interpolation?)` so the cases can inject the environment.
+- `insertTransformerNode(root, path, node, {slotDefault})` takes the concrete position: a list position inserts before the item there, a taken record key gets a number suffix, an attribute is replaced. `moveTransformerNode(root, from, to, {slotDefault})` reads `to` as a position before the move and shifts it when the removed item came earlier in the same list. The required-sibling fill of `wrapTransformerNode` became `fillRequiredItemSiblings`, shared with insert.
+- 27 new cases (5 default, 10 insert, 8 move, 4 reorder): `fn.transformer.treeEdit` 102 of 102. Mutating the key suffix and the index shift fails 4 of them. miroir-core unit tests 2764 pass.
 
 ---
 

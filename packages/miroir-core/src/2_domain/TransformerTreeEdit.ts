@@ -16,7 +16,10 @@ import type {
 import { mlsTypeCheck } from "../1_core/mls/mlsTypeCheck";
 import { resolveMlSchemaReferenceInContext } from "../1_core/mls/mlsResolveSchemaReferenceInContext";
 import { LIST_ELEMENT_SLOTS, transformerTypesAcceptingInput } from "./TransformerInterfaceCheck";
-import { applicationTransformerDefinitions } from "./TransformersForRuntime";
+import {
+  applicationTransformerDefinitions,
+  getDefaultValueForMlSchemaWithResolutionNonHook,
+} from "./TransformersForRuntime";
 
 // ################################################################################################
 // Issue #415 — structural edits of a transformer tree: wrap a node in a new transformer, pipe it
@@ -160,6 +163,70 @@ export function pipeCandidates(
     .offered;
 }
 
+/** The schema of the transformer union where a transformer position's values come from. */
+const TRANSFORMER_UNION = "coreTransformerForBuildPlusRuntime";
+
+/**
+ * The node of `transformerType` with its default values: the default of its branch of the
+ * transformer union, as the form builds it for a type change. With `interpolation`, the node and
+ * every transformer of its slots get it (#500 D2: the nodes the block view creates are explicit).
+ */
+export function defaultTransformerNode(
+  transformerType: string,
+  modelEnvironment: MiroirModelEnvironment,
+  interpolation?: "build" | "runtime",
+  transformerDefinitions: Record<string, TransformerDefinition> = applicationTransformerDefinitions,
+): Record<string, unknown> {
+  const context: Record<string, MlElement> = (modelEnvironment.miroirFundamentalMlSchema.definition as MlReference | undefined)?.context ?? {};
+  const union = context[TRANSFORMER_UNION];
+  const branch =
+    union?.type === "union"
+      ? (union.definition as MlElement[])
+          .map((member) => (member as MlReference).definition?.relativePath)
+          .find((name) => {
+            const transformerTypeSchema = name ? (context[name] as MlObject | undefined)?.definition?.transformerType : undefined;
+            return transformerTypeSchema?.type === "literal" && transformerTypeSchema.definition === transformerType;
+          })
+      : undefined;
+  if (!branch) {
+    throw new Error(`defaultTransformerNode: ${transformerType} is not a transformer type of ${TRANSFORMER_UNION}`);
+  }
+  const node = {
+    ...getDefaultValueForMlSchemaWithResolutionNonHook(
+      "build",
+      { type: "schemaReference", definition: { absolutePath: modelEnvironment.miroirFundamentalMlSchema.uuid, relativePath: branch } },
+      undefined,
+      "",
+      undefined,
+      [],
+      false,
+      undefined,
+      undefined,
+      undefined,
+      modelEnvironment,
+      {},
+      {},
+    ),
+    transformerType,
+  };
+  return interpolation ? withInterpolation(node, interpolation, transformerDefinitions) : node;
+}
+
+/** `node` and the transformers of its slots, at any depth, with `interpolation`. */
+function withInterpolation(
+  node: TransformerNode,
+  interpolation: "build" | "runtime",
+  transformerDefinitions: Record<string, TransformerDefinition>,
+): TransformerNode {
+  return transformerChildren(node, transformerDefinitions).reduce(
+    (result, child) =>
+      updateAt(result, child.path, (childNode) =>
+        withInterpolation(childNode as TransformerNode, interpolation, transformerDefinitions),
+      ) as TransformerNode,
+    { ...node, interpolation } as TransformerNode,
+  );
+}
+
 /** Put `node` at `template` inside `value`, keeping the first item of an existing array. */
 function placeAt(value: unknown, template: string[], node: unknown, recordKey: string): unknown {
   const [head, ...rest] = template;
@@ -225,25 +292,53 @@ export function wrapTransformerNode(
   if (itemPrefixLength === 0) {
     return wrapped;
   }
-  const itemPrefix = target.template.slice(0, itemPrefixLength);
-  const itemPath = target.template.slice(0, itemPrefixLength - 1);
-  const siblingSlots = transformerSlots(enclosingNode.transformerType, transformerDefinitions).filter(
+  const relativePath = target.template.map((segment) => (segment === ARRAY_ITEM ? 0 : segment));
+  return fillRequiredItemSiblings(
+    wrapped,
+    enclosingNode.transformerType,
+    relativePath,
+    target,
+    itemPrefixLength,
+    options.slotDefault,
+    transformerDefinitions,
+    "wrapTransformerNode",
+  ) as Record<string, unknown>;
+}
+
+/**
+ * `owner` (a transformer of `ownerType`) where the array item of `slot` holding `relativePath` gets
+ * `slotDefault` in its other required slots that are still empty (`whens[].then` next to
+ * `whens[].when`). `itemPrefixLength` is the length of the slot template up to that item.
+ */
+function fillRequiredItemSiblings(
+  owner: unknown,
+  ownerType: string,
+  relativePath: (string | number)[],
+  slot: TransformerSlot,
+  itemPrefixLength: number,
+  slotDefault: unknown,
+  transformerDefinitions: Record<string, TransformerDefinition>,
+  functionName: string,
+): unknown {
+  const itemPrefix = slot.template.slice(0, itemPrefixLength);
+  const itemPath = relativePath.slice(0, itemPrefixLength);
+  const siblingSlots = transformerSlots(ownerType, transformerDefinitions).filter(
     (candidate) =>
-      candidate.name !== target.name &&
+      candidate.name !== slot.name &&
       !candidate.optional &&
       slotName(candidate.template.slice(0, itemPrefixLength)) === slotName(itemPrefix) &&
       !candidate.template.slice(itemPrefixLength).some((segment) => segment === ARRAY_ITEM || segment === RECORD_VALUE),
   );
   return siblingSlots.reduce((result, sibling) => {
-    const siblingPath = [...itemPath, 0, ...sibling.template.slice(itemPrefixLength)];
+    const siblingPath = [...itemPath, ...sibling.template.slice(itemPrefixLength)];
     if (valueAt(result, siblingPath) !== undefined) {
       return result;
     }
-    if (options.slotDefault === undefined) {
-      throw new Error(`wrapTransformerNode: ${sibling.name} is required and no slotDefault was given`);
+    if (slotDefault === undefined) {
+      throw new Error(`${functionName}: ${sibling.name} is required and no slotDefault was given`);
     }
-    return updateAt(result, siblingPath, () => options.slotDefault) as Record<string, unknown>;
-  }, wrapped);
+    return updateAt(result, siblingPath, () => slotDefault);
+  }, owner);
 }
 
 /** Put `node` in the `applyTo` of `enclosingNode` (Pipe into, D14). */
@@ -365,16 +460,7 @@ function slotAtPath(
   path: (string | number)[],
   transformerDefinitions: Record<string, TransformerDefinition>,
 ): TransformerSlot | undefined {
-  for (let ownerLength = path.length - 1; ownerLength >= 0; ownerLength--) {
-    const owner = valueAt(root, path.slice(0, ownerLength));
-    if (isTransformerNode(owner)) {
-      const relativePath = path.slice(ownerLength);
-      return transformerSlots(owner.transformerType, transformerDefinitions).find((slot) =>
-        matchesTemplate(slot.template, relativePath),
-      );
-    }
-  }
-  return undefined;
+  return slotPositionAtPath(root, path, transformerDefinitions)?.slot;
 }
 
 /**
@@ -411,6 +497,164 @@ export function removeTransformerNode(
       return kept;
     }
     return { ...record, [key]: options.slotDefault };
+  });
+}
+
+/** The nearest transformer above `path` with the slot `path` is a position of. */
+function slotPositionAtPath(
+  root: unknown,
+  path: (string | number)[],
+  transformerDefinitions: Record<string, TransformerDefinition>,
+): { ownerLength: number; owner: TransformerNode; slot: TransformerSlot } | undefined {
+  for (let ownerLength = path.length - 1; ownerLength >= 0; ownerLength--) {
+    const owner = valueAt(root, path.slice(0, ownerLength));
+    if (isTransformerNode(owner)) {
+      const relativePath = path.slice(ownerLength);
+      const slot = transformerSlots(owner.transformerType, transformerDefinitions).find((candidate) =>
+        matchesTemplate(candidate.template, relativePath),
+      );
+      return slot ? { ownerLength, owner, slot } : undefined;
+    }
+  }
+  return undefined;
+}
+
+/** `base`, or `base2`, `base3`… : the first key `record` does not hold yet. */
+function freeRecordKey(record: Record<string, unknown>, base: string): string {
+  if (!(base in record)) {
+    return base;
+  }
+  let suffix = 2;
+  while (`${base}${suffix}` in record) {
+    suffix++;
+  }
+  return `${base}${suffix}`;
+}
+
+/** `value` with `node` put at `relativePath`, which follows `template`; arrays and records are created. */
+function putAlong(value: unknown, relativePath: (string | number)[], template: string[], node: unknown): unknown {
+  const [segment, ...restPath] = relativePath;
+  const [kind, ...restTemplate] = template;
+  if (kind === ARRAY_ITEM) {
+    const array = Array.isArray(value) ? value : [];
+    const index = Number(segment);
+    if (!Number.isInteger(index) || index < 0 || index > array.length) {
+      throw new Error(`insertTransformerNode: no position ${String(segment)} in a list of ${array.length}`);
+    }
+    if (restPath.length === 0) {
+      return [...array.slice(0, index), node, ...array.slice(index)];
+    }
+    const copy = [...array];
+    copy[index] = putAlong(array[index], restPath, restTemplate, node);
+    return copy;
+  }
+  const record = isPlainRecord(value) ? value : {};
+  const key = kind === RECORD_VALUE && restPath.length === 0 ? freeRecordKey(record, String(segment)) : String(segment);
+  return { ...record, [key]: restPath.length === 0 ? node : putAlong(record[key], restPath, restTemplate, node) };
+}
+
+/**
+ * Put `node` at `path` of `root`, a position of a slot (#500): a list position is inserted before
+ * the item there (the list length appends), a record key that is taken gets a number suffix, an
+ * attribute is set, replacing what it held. A new array item gets `slotDefault` in its other
+ * required slots. A missing root gets `node`.
+ */
+export function insertTransformerNode(
+  root: unknown,
+  path: (string | number)[],
+  node: unknown,
+  options: {
+    slotDefault?: unknown;
+    transformerDefinitions?: Record<string, TransformerDefinition>;
+  } = {},
+): unknown {
+  if (path.length === 0) {
+    if (root !== undefined) {
+      throw new Error("insertTransformerNode: the root is taken");
+    }
+    return node;
+  }
+  const transformerDefinitions = options.transformerDefinitions ?? applicationTransformerDefinitions;
+  const position = slotPositionAtPath(root, path, transformerDefinitions);
+  if (!position) {
+    throw new Error(`insertTransformerNode: ${path.join(".")} is not a slot of a transformer`);
+  }
+  const { ownerLength, owner, slot } = position;
+  const relativePath = path.slice(ownerLength);
+  const placed = putAlong(owner, relativePath, slot.template, node);
+  const lastItem = slot.template.lastIndexOf(ARRAY_ITEM);
+  const filled =
+    lastItem >= 0 && lastItem < slot.template.length - 1
+      ? fillRequiredItemSiblings(
+          placed,
+          owner.transformerType,
+          relativePath,
+          slot,
+          lastItem + 1,
+          options.slotDefault,
+          transformerDefinitions,
+          "insertTransformerNode",
+        )
+      : placed;
+  return updateAt(root, path.slice(0, ownerLength), () => filled);
+}
+
+function isPrefixOf(prefix: (string | number)[], path: (string | number)[]): boolean {
+  return prefix.length <= path.length && prefix.every((segment, index) => String(segment) === String(path[index]));
+}
+
+/**
+ * Move the subtree at `from` of `root` to the slot position `to` (#500), in one value: `from` is
+ * removed as `removeTransformerNode` does (a required slot gets `slotDefault`), then the subtree is
+ * inserted as `insertTransformerNode` does, at the position `to` names before the move.
+ */
+export function moveTransformerNode(
+  root: unknown,
+  from: (string | number)[],
+  to: (string | number)[],
+  options: {
+    slotDefault?: unknown;
+    transformerDefinitions?: Record<string, TransformerDefinition>;
+  } = {},
+): unknown {
+  if (from.length === 0) {
+    throw new Error("moveTransformerNode: the root cannot move");
+  }
+  if (isPrefixOf(from, to)) {
+    throw new Error("moveTransformerNode: a node cannot move into itself");
+  }
+  const node = valueAt(root, from);
+  if (node === undefined) {
+    throw new Error(`moveTransformerNode: nothing at ${from.join(".")}`);
+  }
+  const removed = removeTransformerNode(root, from, options);
+  // removing a list item shifts the later items of that list
+  const listPath = from.slice(0, -1);
+  const fromIndex = Number(from[from.length - 1]);
+  const shifts =
+    Array.isArray(valueAt(root, listPath)) &&
+    to.length > listPath.length &&
+    isPrefixOf(listPath, to) &&
+    Number(to[listPath.length]) > fromIndex;
+  const target = shifts
+    ? [...listPath, Number(to[listPath.length]) - 1, ...to.slice(listPath.length + 1)]
+    : to;
+  return insertTransformerNode(removed, target, node, options);
+}
+
+/** Move the list item at `path` of `root` so that it ends at `toIndex` of its list (#500). */
+export function reorderTransformerNode(root: unknown, path: (string | number)[], toIndex: number): unknown {
+  const list = valueAt(root, path.slice(0, -1));
+  const fromIndex = Number(path[path.length - 1]);
+  if (!Array.isArray(list) || !Number.isInteger(fromIndex) || fromIndex < 0 || fromIndex >= list.length) {
+    throw new Error(`reorderTransformerNode: ${path.join(".")} is not a list item`);
+  }
+  if (!Number.isInteger(toIndex) || toIndex < 0 || toIndex >= list.length) {
+    throw new Error(`reorderTransformerNode: no position ${toIndex} in a list of ${list.length}`);
+  }
+  return updateAt(root, path.slice(0, -1), () => {
+    const rest = list.filter((_, index) => index !== fromIndex);
+    return [...rest.slice(0, toIndex), list[fromIndex], ...rest.slice(toIndex)];
   });
 }
 

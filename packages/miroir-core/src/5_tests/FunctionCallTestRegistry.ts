@@ -51,10 +51,14 @@ import {
   transformerTypesAcceptingInput,
 } from "../2_domain/TransformerInterfaceCheck";
 import {
+  defaultTransformerNode,
   editedAttributes,
   elementParameterReadsOfDefaultInput,
   holdsOneDefault,
+  insertTransformerNode,
   keepAttributesOnTypeChange,
+  moveTransformerNode,
+  reorderTransformerNode,
   parameterReadsOfDefaultInput,
   pipeCandidates,
   pipeTransformerNode,
@@ -251,6 +255,10 @@ const FUNCTION_CALL_REGISTRY: Record<
     holdsOneDefault: holdsOneDefault as WhitelistedFunction,
     parameterReadsOfDefaultInput: parameterReadsOfDefaultInput as WhitelistedFunction,
     elementParameterReadsOfDefaultInput: elementParameterReadsOfDefaultInput as WhitelistedFunction,
+    defaultTransformerNode: defaultTransformerNode as WhitelistedFunction,
+    insertTransformerNode: insertTransformerNode as WhitelistedFunction,
+    moveTransformerNode: moveTransformerNode as WhitelistedFunction,
+    reorderTransformerNode: reorderTransformerNode as WhitelistedFunction,
   },
   "miroir-core/2_domain/TransformerBlockModel": {
     transformerBlockTree: transformerBlockTree as WhitelistedFunction,
