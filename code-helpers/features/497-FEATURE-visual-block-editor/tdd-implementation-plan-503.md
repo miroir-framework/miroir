@@ -35,11 +35,11 @@ The Blocks / Form / JSON switch appears on every transformer field of the generi
 | # | Slice | Status |
 |---|---|---|
 | 0 | This plan | ✅ |
-| 1 | Predicate: template references, union-wrapped slots by chosen branch, transformers only as roots (fn cases) | |
-| 2 | Mode provider at every `TypedValueObjectEditor` root; read-only block view in read-only editors | |
-| 3 | History at every editable root | |
-| 4 | AC 1 and 2: `report.queryDetails` | |
-| 5 | Docs, nonreg, PR | |
+| 1 | Predicate: template references, union-wrapped slots by chosen branch, transformers only as roots (fn cases) | ✅ |
+| 2 | Mode provider at every `TypedValueObjectEditor` root; read-only block view in read-only editors | ✅ |
+| 3 | History at every editable root | ✅ |
+| 4 | AC 1 and 2: `report.queryDetails` | ✅ |
+| 5 | Docs, nonreg, PR | ✅ |
 
 ## Slice 1 — Predicate
 
@@ -59,3 +59,10 @@ GREEN: `EditorRootHistory` in `ValueObjectEditor/`: provider, buttons (`value-hi
 ## Slice 4 — AC
 
 RED/GREEN: `report.queryDetails` suite on Miroir's QueryDetails Report (`4bbf3894-…`), Library section `model`, Query `BookCountByPublisher` (`6176dcdf-…`): the `name` field has no switch (AC 2); `definition.runtimeTransformers.00_BookCountByPublisher` has one; Blocks; edit the `groupBy` list (or the `applyTo` reference) in place; submit; commit; read the stored Query: the edit is there (AC 1).
+
+## Realization
+
+- Slice 1: `fn.blockView.fields`, 13 cases (generator `scratchpad/503/gen_fields.py`, not kept). `BlockViewMode.tsx` lost its own predicate.
+- Slices 2–3: `BlockViewModeRoot` (a provider unless one is above) and `EditorRootHistory` (`ValueObjectEditor/`) wrap every `TypedValueObjectEditor`; the history resets during render when the edited uuid changes (no effect). The component tests stay green (163 passed): they mount `MlElementEditor` or the TransformerEditor, which keep their own provider and history.
+- Slice 4: the Library testbed of the Report tests had no Query, so `libraryBookDetailsSeed` (`3123740d-…`) now seeds BookCountByPublisher in `testbedModel.storedQueries`; its generator `make_report_test_configuration.py` (#330) also had a pre-#344 package path. `aggregate.groupBy` is a primitive parameter of its block, so the test edits the whole list in one field (`[[` types a `[` with user-event). Mutation check: with the old `groupBy` as the expected stored value, the save leaf fails at its `expectActionResult`.
+- Slice 5: nonreg step `integ-report.queryDetails` (scope `ui`, shared group `standalone-app-report-suites`); docs in `docs/reference/transformers.md` (Blocks in every instance editor) and the Report tests table of `docs/reference/testing.md`.
