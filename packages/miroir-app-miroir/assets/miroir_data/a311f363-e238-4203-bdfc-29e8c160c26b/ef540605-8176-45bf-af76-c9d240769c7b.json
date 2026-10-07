@@ -933,6 +933,51 @@
                 "timeout": 2000
               }
             ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: Clear shows the default transformer, Undo brings the edit back",
+            "steps": [
+              {
+                "step": "change",
+                "label": "edit the returned value",
+                "target": {
+                  "byDisplayValue": "seize value..."
+                },
+                "value": "edited"
+              },
+              {
+                "step": "click",
+                "label": "Clear",
+                "target": {
+                  "byRole": "button",
+                  "name": "Clear"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the default transformer",
+                "target": {
+                  "byDisplayValue": "seize value..."
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "undo",
+                "target": {
+                  "byTestId": "value-history-undo:transformer"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the edit is back",
+                "target": {
+                  "byDisplayValue": "edited"
+                },
+                "timeout": 2000
+              }
+            ]
           }
         ]
       },

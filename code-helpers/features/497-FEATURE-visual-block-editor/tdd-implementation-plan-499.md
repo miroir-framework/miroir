@@ -35,7 +35,7 @@ This plan does **not** edit blocks (#500) or put a history at every `TypedValueO
 | 2 | Keyboard shortcuts and one step per typed field | ✅ | `ui.valueHistory` `type` + `keyboard` cases |
 | 3 | Every view: JSON re-reads its text, Blocks follow | ✅ | `ui.valueHistory` JSON and Blocks cases |
 | 4 | Undo replaces the remove, unwrap and type-change confirmations | ✅ | updated `ui.transformerEditor` cases, `ui.valueHistory` MlElementEditor case |
-| 5 | Clear can be undone; loading a stored transformer resets the history | ⬜ | `ui.valueHistory` Clear case |
+| 5 | Clear can be undone; loading a stored transformer resets the history | ✅ | `ui.valueHistory` Clear case |
 | 6 | Nonreg, docs, bundle, AC | ⬜ | nonreg, bundle guard, AC checklist |
 
 ---
@@ -239,7 +239,7 @@ As Slice 1, plus the `ui.transformerEditor` suite description updated.
 
 ## Slice 5 — Clear can be undone; loading a stored transformer resets the history
 
-**Status:** ⬜
+**Status:** ✅ DONE
 
 ### 5.1 RED
 
@@ -255,6 +255,12 @@ The reset has no component case: the component-test store holds no TransformerDe
 ### Validation
 
 As Slice 1.
+
+### Realization
+
+- RED: Clear changed only the persisted state, so the form kept the edit. GREEN: Clear also writes a `structuredClone` of the default transformer through Formik's `innerRef`.
+- The "defined" load effect calls `transformerHistory.reset` with the loaded transformer before writing it; no case yet (see above).
+- `ui.valueHistory` 16 of 16 (141 leaves).
 
 ---
 

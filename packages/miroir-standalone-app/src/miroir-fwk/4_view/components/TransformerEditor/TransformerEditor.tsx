@@ -375,6 +375,8 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
   // Ref for debouncing transformer definition updates when mode='here'
   const transformerUpdateTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
   const latestFormValuesRef = React.useRef<TransformerEditorFormikValueType | null>(null);
+  // #499: Clear writes to the form through it
+  const formikRef = React.useRef<FormikProps<TransformerEditorFormikValueType> | null>(null);
 
   // Get persisted state from context
   const persistedState = context.toolsPageState.transformerEditor;
@@ -429,6 +431,12 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
     context.updateTransformerEditorState({
       currentTransformerDefinition: DEFAULT_TRANSFORMER_EDITOR_TRANSFORMER,
     });
+    // #499: also in the form, where Undo can bring the edit back; a copy, so that the form never
+    // holds the shared default object
+    void formikRef.current?.setFieldValue(
+      transformerFormikPath,
+      structuredClone(DEFAULT_TRANSFORMER_EDITOR_TRANSFORMER),
+    );
     // Clear previous transformation outputs
     // setTransformationResult(null);
     // setTransformationError(null);
@@ -562,6 +570,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
       {/* <div style={{ display: "flex", gap: "20px" }}> */}
       {/* left Pane: Transformer Definition Editor */}
       <Formik
+        innerRef={formikRef}
         enableReinitialize={true}
         initialValues={initialFormValues as any}
         onSubmit={async (values, { setSubmitting, setErrors }) => {
@@ -651,6 +660,10 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                   "TransformerEditor: updating context with stored transformer definition:",
                   transformerSelector_currentFetchedTransformerDefinition.transformerImplementation
                     ?.definition
+                );
+                // #499: a loaded transformer starts a new undo history
+                transformerHistory.reset(
+                  transformerSelector_currentFetchedTransformerDefinition.transformerImplementation?.definition,
                 );
                 formikContext.setFieldValue(
                   "transformerEditor_transformer_selector.transformer",
