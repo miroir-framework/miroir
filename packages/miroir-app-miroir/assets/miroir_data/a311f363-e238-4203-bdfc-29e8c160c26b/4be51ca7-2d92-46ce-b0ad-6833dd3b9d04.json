@@ -446,6 +446,214 @@
                 "value": "{\n  \"transformerType\": \"mapList\",\n  \"elementTransformer\": {\n    \"transformerType\": \"returnValue\",\n    \"mlSchema\": {\n      \"type\": \"string\"\n    },\n    \"value\": \"seize value...\"\n  },\n  \"interpolation\": \"runtime\"\n}"
               }
             ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: build a mapList of a getFromContext from the palette",
+            "steps": [
+              {
+                "step": "click",
+                "label": "choose Blocks",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                }
+              },
+              {
+                "step": "click",
+                "label": "arm mapList in the palette",
+                "target": {
+                  "byTestId": "block-palette:mapList"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "mapList is armed",
+                "target": {
+                  "byTestId": "block-palette:mapList"
+                },
+                "attribute": "aria-pressed",
+                "value": "true",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "open the node actions of the root block",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Replace with mapList",
+                "target": {
+                  "byTestId": "block-action-replace"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the root block is mapList",
+                "target": {
+                  "byTestId": "block:transformer"
+                },
+                "attribute": "data-transformer-type",
+                "value": "mapList",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "arm getFromContext",
+                "target": {
+                  "byTestId": "block-palette:getFromContext"
+                }
+              },
+              {
+                "step": "click",
+                "label": "put it in the empty applyTo slot",
+                "target": {
+                  "byTestId": "block-insert:transformer.applyTo"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the applyTo block",
+                "target": {
+                  "byTestId": "block:transformer.applyTo"
+                },
+                "attribute": "data-transformer-type",
+                "value": "getFromContext",
+                "timeout": 2000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the palette is disarmed",
+                "target": {
+                  "byTestId": "block-palette:getFromContext"
+                },
+                "attribute": "aria-pressed",
+                "value": "false",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "choose JSON",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:json"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the value",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "timeout": 2000,
+                "value": "{\n  \"transformerType\": \"mapList\",\n  \"elementTransformer\": {\n    \"transformerType\": \"returnValue\",\n    \"value\": 0,\n    \"interpolation\": \"runtime\"\n  },\n  \"interpolation\": \"runtime\",\n  \"applyTo\": {\n    \"transformerType\": \"getFromContext\",\n    \"interpolation\": \"runtime\"\n  }\n}"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: a new when at the end of the whens of a case gets a returnValue as its then",
+            "steps": [
+              {
+                "step": "click",
+                "label": "choose Blocks",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                }
+              },
+              {
+                "step": "click",
+                "label": "arm case in the palette",
+                "target": {
+                  "byTestId": "block-palette:case"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "case is armed",
+                "target": {
+                  "byTestId": "block-palette:case"
+                },
+                "attribute": "aria-pressed",
+                "value": "true",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "open the node actions of the root block",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Replace with case",
+                "target": {
+                  "byTestId": "block-action-replace"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the root block is case",
+                "target": {
+                  "byTestId": "block:transformer"
+                },
+                "attribute": "data-transformer-type",
+                "value": "case",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "arm getFromContext",
+                "target": {
+                  "byTestId": "block-palette:getFromContext"
+                }
+              },
+              {
+                "step": "click",
+                "label": "put it at the end of whens",
+                "target": {
+                  "byTestId": "block-insert:transformer.whens.0.when"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the when block",
+                "target": {
+                  "byTestId": "block:transformer.whens.0.when"
+                },
+                "attribute": "data-transformer-type",
+                "value": "getFromContext",
+                "timeout": 2000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the then block",
+                "target": {
+                  "byTestId": "block:transformer.whens.0.then"
+                },
+                "attribute": "data-transformer-type",
+                "value": "returnValue",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "choose JSON",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:json"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the value",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "timeout": 2000,
+                "value": "{\n  \"transformerType\": \"case\",\n  \"discriminator\": {\n    \"transformerType\": \"returnValue\",\n    \"value\": 0,\n    \"interpolation\": \"runtime\"\n  },\n  \"whens\": [\n    {\n      \"when\": {\n        \"transformerType\": \"getFromContext\",\n        \"interpolation\": \"runtime\"\n      },\n      \"then\": {\n        \"transformerType\": \"returnValue\",\n        \"value\": \"seize value...\",\n        \"interpolation\": \"runtime\"\n      }\n    }\n  ],\n  \"interpolation\": \"runtime\"\n}"
+              }
+            ]
           }
         ]
       }

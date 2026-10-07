@@ -180,7 +180,7 @@ In the Blocks view, a developer opens a block's menu, wraps the block in `mapLis
 
 ## Slice 3 — Palette and insert into a slot
 
-**Status:** ⬜
+**Status:** ✅
 
 ### 3.1 RED
 
@@ -189,6 +189,13 @@ Build `mapList` of a `getFromContext` from an empty editor through the palette: 
 ### 3.2 GREEN
 
 Palette panel beside the program, grouped by category, entries `block-palette:<type>` (click arms the type, keyboard Enter too); `block-insert:<row id>` on empty slots and list ends (opens a type picker when nothing is armed); Replace with in the block menu.
+
+### Realization
+
+- Two pure functions in miroir-core, each with `fn.*` cases: `transformerInsertPositions` (`TransformerTreeEdit.ts`, 7 cases in `fn.transformer.treeEdit`) lists every empty slot, one new item per list slot and one new entry per record slot, each with the path `insertTransformerNode` takes and the container the view shows it in; `transformerPaletteGroups` (`TransformerBlockModel.ts`, 1 case in `fn.blockModel`) groups the union types by classification and leaves out `dataflowSequence`, which has no TransformerDefinition and would be a JSON block. `transformerBlockTree` takes `emptyOptionalSlots` (2 cases), so an absent optional slot is a row where a block can go.
+- Insert targets are addressed by the position they fill, `block-insert:<id of the insert path>` (`transformer.whens.0.when`), rather than by row: a list slot and its end target would share a row id. A target is disabled while nothing is armed, instead of opening a type picker: the palette is the picker. Both palette entries and targets are buttons, so Enter works.
+- Replace with is an `extraEntries` entry of `TransformerNodeActions` (`block-action-replace`) and keeps the attributes the new type takes (`keepAttributesOnTypeChange`); without an undo history it asks first when attributes would go, with the form's type change dialog. An insert or a replace disarms the palette.
+- `ui.blockEditing` 8 of 8 (151 → 153 leaves); `fn.blockModel` and `fn.transformer.treeEdit` 134 pass; `ui.blockEditor`, `ui.valueHistory`, `ui.transformerEditor` pass with the editing view's extra rows.
 
 ---
 

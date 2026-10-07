@@ -64,12 +64,13 @@ import {
   pipeTransformerNode,
   removeTransformerNode,
   transformerChildren,
+  transformerInsertPositions,
   transformerSlots,
   unwrapTransformerNode,
   wrapCandidates,
   wrapTransformerNode,
 } from "../2_domain/TransformerTreeEdit";
-import { transformerBlockOutline, transformerBlockTree } from "../2_domain/TransformerBlockModel";
+import { transformerBlockOutline, transformerBlockTree, transformerPaletteGroups } from "../2_domain/TransformerBlockModel";
 import {
   checkTransformerMlSchemaCompatibility,
   formatMlSchemaTypeLabel,
@@ -258,11 +259,13 @@ const FUNCTION_CALL_REGISTRY: Record<
     defaultTransformerNode: defaultTransformerNode as WhitelistedFunction,
     insertTransformerNode: insertTransformerNode as WhitelistedFunction,
     moveTransformerNode: moveTransformerNode as WhitelistedFunction,
+    transformerInsertPositions: transformerInsertPositions as WhitelistedFunction,
     reorderTransformerNode: reorderTransformerNode as WhitelistedFunction,
   },
   "miroir-core/2_domain/TransformerBlockModel": {
     transformerBlockTree: transformerBlockTree as WhitelistedFunction,
     transformerBlockOutline: transformerBlockOutline as WhitelistedFunction,
+    transformerPaletteGroups: transformerPaletteGroups as WhitelistedFunction,
   },
   "miroir-core/2_domain/TransformerMlSchemaCheck": {
     checkTransformerMlSchemaCompatibility:

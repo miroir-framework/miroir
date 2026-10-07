@@ -15,7 +15,7 @@ import type {
   TransformerBlockRow,
 } from "../0_interfaces/2_domain/TransformerBlockModelInterface";
 import { defaultMiroirModelEnvironment } from "../1_core/Model";
-import { declaredAttributeSchemas, transformerSlots } from "./TransformerTreeEdit";
+import { declaredAttributeSchemas, transformerSlots, transformerUnionTypes } from "./TransformerTreeEdit";
 import { applicationTransformerDefinitions } from "./TransformersForRuntime";
 
 // ################################################################################################
@@ -31,6 +31,8 @@ type TransformerNode = { transformerType: string } & Record<string, unknown>;
 export interface TransformerBlockModelOptions {
   transformerDefinitions?: Record<string, TransformerDefinition>;
   modelEnvironment?: MiroirModelEnvironment;
+  /** Absent optional slots get an empty row too: where an editor can put a block (#500). */
+  emptyOptionalSlots?: boolean;
 }
 
 /** Attributes every transformer has: shown in the header or as the build marking, never as rows. */
@@ -140,6 +142,7 @@ function transformerTypeInfo(
 interface BuildContext {
   transformerDefinitions: Record<string, TransformerDefinition>;
   modelEnvironment: MiroirModelEnvironment;
+  emptyOptionalSlots: boolean;
   stats: { transformerBlocks: number; jsonBlocks: number; categories: Set<string> };
 }
 
@@ -182,7 +185,7 @@ function transformerBlock(value: TransformerNode, path: BlockPath, context: Buil
     const attributePath = [...path, name];
     const optional = !!schema?.optional;
     if (info.slotAttributes.has(name)) {
-      if (present || !optional) {
+      if (present || !optional || context.emptyOptionalSlots) {
         rows.push({
           name,
           path: attributePath,
@@ -243,6 +246,7 @@ export function transformerBlockTree(value: unknown, options: TransformerBlockMo
   const context: BuildContext = {
     transformerDefinitions: options.transformerDefinitions ?? applicationTransformerDefinitions,
     modelEnvironment: options.modelEnvironment ?? defaultMiroirModelEnvironment,
+    emptyOptionalSlots: options.emptyOptionalSlots ?? false,
     stats: { transformerBlocks: 0, jsonBlocks: 0, categories: new Set() },
   };
   const root = blockOf(value, [], context);
@@ -304,4 +308,33 @@ function outlineLines(node: BlockNode, prefix: string, indent: string): string[]
  */
 export function transformerBlockOutline(value: unknown, options: TransformerBlockModelOptions = {}): string[] {
   return outlineLines(transformerBlockTree(value, options).root, "", "");
+}
+
+/** A palette group: the transformer types of one classification (#500). */
+export interface TransformerPaletteGroup {
+  category: string;
+  transformerTypes: string[];
+}
+
+/**
+ * The block palette (#500): the transformer types a transformer position accepts, grouped by the
+ * classification of their TransformerDefinition, both sorted by name. A type with no definition
+ * is left out: it would be a JSON block.
+ */
+export function transformerPaletteGroups(
+  modelEnvironment: MiroirModelEnvironment = defaultMiroirModelEnvironment,
+  transformerDefinitions: Record<string, TransformerDefinition> = applicationTransformerDefinitions,
+): TransformerPaletteGroup[] {
+  const byCategory = new Map<string, string[]>();
+  for (const transformerType of transformerUnionTypes(modelEnvironment)) {
+    const definition = transformerDefinitions[transformerType];
+    if (!definition) {
+      continue;
+    }
+    const category = definition.classification ?? "unknown";
+    byCategory.set(category, [...(byCategory.get(category) ?? []), transformerType]);
+  }
+  return [...byCategory.entries()]
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([category, transformerTypes]) => ({ category, transformerTypes: [...transformerTypes].sort() }));
 }

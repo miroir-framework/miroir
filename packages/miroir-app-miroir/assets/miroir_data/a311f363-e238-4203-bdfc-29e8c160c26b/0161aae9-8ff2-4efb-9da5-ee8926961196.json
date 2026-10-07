@@ -251,6 +251,53 @@
               "listLength [list] {runtime}",
               "  applyTo: getFromContext [variable] {runtime} referenceName=\"books\""
             ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "ifThenElse: absent optional slots have no row",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerBlockModel",
+              "export": "transformerBlockOutline"
+            },
+            "arguments": [
+              {
+                "transformerType": "ifThenElse",
+                "if": {
+                  "transformerType": "returnValue",
+                  "value": true
+                }
+              }
+            ],
+            "expectedValue": [
+              "ifThenElse [control]",
+              "  if: returnValue [value] value=true"
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "ifThenElse: with emptyOptionalSlots, absent optional slots are empty rows",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerBlockModel",
+              "export": "transformerBlockOutline"
+            },
+            "arguments": [
+              {
+                "transformerType": "ifThenElse",
+                "if": {
+                  "transformerType": "returnValue",
+                  "value": true
+                }
+              },
+              {
+                "emptyOptionalSlots": true
+              }
+            ],
+            "expectedValue": [
+              "ifThenElse [control]",
+              "  if: returnValue [value] value=true",
+              "  then: _",
+              "  else: _"
+            ]
           }
         ]
       },
@@ -718,6 +765,71 @@
               "  - transformer_menu_addItem [metaModel]",
               "    menuReference: getFromContext [variable] {runtime} referenceName=\"x\"",
               "    menuItemReference: getFromContext [variable] {runtime} referenceName=\"x\""
+            ]
+          }
+        ]
+      },
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "palette",
+        "miroirTests": [
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "transformer types grouped by classification, sorted; a type with no definition is left out",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerBlockModel",
+              "export": "transformerPaletteGroups"
+            },
+            "environmentRef": "defaultMiroirModelEnvironment",
+            "environmentArgumentIndex": 0,
+            "arguments": [
+              {
+                "returnValue": {
+                  "classification": "value"
+                },
+                "mapList": {
+                  "classification": "list"
+                },
+                "getFromContext": {
+                  "classification": "variable"
+                },
+                "ifThenElse": {
+                  "classification": "control"
+                },
+                "case": {}
+              }
+            ],
+            "expectedValue": [
+              {
+                "category": "control",
+                "transformerTypes": [
+                  "ifThenElse"
+                ]
+              },
+              {
+                "category": "list",
+                "transformerTypes": [
+                  "mapList"
+                ]
+              },
+              {
+                "category": "unknown",
+                "transformerTypes": [
+                  "case"
+                ]
+              },
+              {
+                "category": "value",
+                "transformerTypes": [
+                  "returnValue"
+                ]
+              },
+              {
+                "category": "variable",
+                "transformerTypes": [
+                  "getFromContext"
+                ]
+              }
             ]
           }
         ]

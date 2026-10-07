@@ -11,7 +11,15 @@ import React, { useCallback, useMemo, useState } from "react";
 
 import { blockCategoryColor, useMiroirTheme, type BlockEditorColors } from "../../contexts/MiroirThemeContext.js";
 import { useBlockEditorBuildMarking } from "./BlockEditorDisplay.js";
-import { BlockEditingContext, BlockNodeActions, useBlockEditingValue } from "./BlockEditing.js";
+import {
+  BlockEditingContext,
+  BlockInsertTargets,
+  BlockNodeActions,
+  pathKey,
+  useBlockEditing,
+  useBlockEditingValue,
+} from "./BlockEditing.js";
+import { BlockPalette } from "./BlockPalette.js";
 
 // ################################################################################################
 // #498: the read-only block view of a transformer value (analysis #497). The tree comes from the
@@ -26,6 +34,8 @@ import { BlockEditingContext, BlockNodeActions, useBlockEditingValue } from "./B
 // and "Expand all" remount the tree with every block starting in that state.
 //
 // #500: with a writer, the view edits the value (BlockEditing.tsx); without one it is read-only.
+// Editing shows the palette, an empty row for every absent optional slot, and insert targets in
+// empty slots and at the end of list and record slots.
 // ################################################################################################
 
 export interface BlockEditorViewProps {
@@ -172,6 +182,31 @@ const Field = React.memo(function Field(props: { value: unknown; settings: Block
   );
 });
 
+/** An empty slot: its insert targets when editing, else a dashed box. */
+function EmptySlot(props: { path: BlockPath; settings: BlockSettings }) {
+  const editing = useBlockEditing();
+  const id = blockId(props.settings.rootLessListKey, props.path);
+  const targets = editing?.insertPositions.has(pathKey(props.path));
+  return (
+    <span
+      data-testid={`block-empty:${id}`}
+      css={css(
+        targets
+          ? { display: "inline-flex", gap: "4px" }
+          : {
+              display: "inline-block",
+              width: "48px",
+              height: "20px",
+              border: `1px dashed ${props.settings.border}`,
+              borderRadius: "6px",
+            },
+      )}
+    >
+      {targets && <BlockInsertTargets container={props.path} idOf={(path) => blockId(props.settings.rootLessListKey, path)} color={props.settings.border} />}
+    </span>
+  );
+}
+
 const TransformerBlockView = React.memo(function TransformerBlockView(props: {
   node: TransformerBlock;
   settings: BlockSettings;
@@ -280,16 +315,7 @@ const TransformerBlockView = React.memo(function TransformerBlockView(props: {
                 {row.node ? (
                   <BlockNodeView node={row.node} settings={settings} />
                 ) : (
-                  <span
-                    data-testid={`block-empty:${blockId(settings.rootLessListKey, row.path)}`}
-                    css={css({
-                      display: "inline-block",
-                      width: "48px",
-                      height: "20px",
-                      border: `1px dashed ${settings.border}`,
-                      borderRadius: "6px",
-                    })}
-                  />
+                  <EmptySlot path={row.path} settings={settings} />
                 )}
               </span>
             </div>
@@ -341,6 +367,11 @@ const StructureBlockView = React.memo(function StructureBlockView(props: {
             <BlockNodeView node={entry.node} settings={settings} />
           </div>
         ))}
+      {!collapsed && (
+        <span css={css({ display: "flex", gap: "4px" })}>
+          <BlockInsertTargets container={node.path} idOf={(path) => blockId(settings.rootLessListKey, path)} color={settings.border} />
+        </span>
+      )}
     </div>
   );
 });
@@ -430,7 +461,8 @@ function ToolButton(props: {
 }
 
 export const BlockEditorView = React.memo(function BlockEditorView(props: BlockEditorViewProps) {
-  const tree = useMemo(() => transformerBlockTree(props.value), [props.value]);
+  const editable = props.onCommit !== undefined;
+  const tree = useMemo(() => transformerBlockTree(props.value, { emptyOptionalSlots: editable }), [props.value, editable]);
   const editing = useBlockEditingValue(props.value, props.onCommit, props.undoable ?? false);
   const colors = useBlockColors();
   const buildMarking = useBlockEditorBuildMarking();
@@ -485,9 +517,17 @@ export const BlockEditorView = React.memo(function BlockEditorView(props: BlockE
             +
           </ToolButton>
         </div>
-        <div css={css({ overflowX: "auto", padding: "8px 4px" })}>
-          <div css={css({ zoom })}>
-            <BlockNodeView key={fold.generation} node={tree.root} settings={settings} />
+        <div css={css({ display: "flex", gap: "8px", alignItems: "flex-start" })}>
+          <BlockPalette
+            blockEditor={colors.blockEditor}
+            text={colors.text}
+            textSecondary={colors.textSecondary}
+            border={colors.border}
+          />
+          <div css={css({ overflowX: "auto", padding: "8px 4px", minWidth: 0, flexGrow: 1 })}>
+            <div css={css({ zoom })}>
+              <BlockNodeView key={fold.generation} node={tree.root} settings={settings} />
+            </div>
           </div>
         </div>
       </div>

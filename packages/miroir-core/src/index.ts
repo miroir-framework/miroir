@@ -1371,6 +1371,7 @@ export {
   pipeTransformerNode,
   removeTransformerNode,
   transformerChildren,
+  transformerInsertPositions,
   transformerSlots,
   transformerUnionTypes,
   unwrapTransformerNode,
@@ -1379,13 +1380,16 @@ export {
 } from "./2_domain/TransformerTreeEdit.js";
 export type {
   TransformerChild,
+  TransformerInsertPosition,
   TransformerSlot,
   TransformerTypeChange,
 } from "./0_interfaces/2_domain/TransformerTreeEditInterface.js";
 export {
   transformerBlockOutline,
   transformerBlockTree,
+  transformerPaletteGroups,
   type TransformerBlockModelOptions,
+  type TransformerPaletteGroup,
 } from "./2_domain/TransformerBlockModel.js";
 export type {
   BlockNode,

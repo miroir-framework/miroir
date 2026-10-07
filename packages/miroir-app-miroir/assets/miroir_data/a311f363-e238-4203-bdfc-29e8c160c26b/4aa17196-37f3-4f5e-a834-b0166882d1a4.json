@@ -5,7 +5,7 @@
   "name": "fn.transformer.treeEdit",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "Structural edits of a transformer tree: slots of a transformer type, the default node of a type, wrap, pipe into, unwrap, remove, insert at a slot position, move, reorder, the attributes kept on a type change, and which of them the user edited.",
+  "description": "Structural edits of a transformer tree: slots of a transformer type, the default node of a type, wrap, pipe into, unwrap, remove, insert at a slot position, the insert positions of a tree, move, reorder, the attributes kept on a type change, and which of them the user edited.",
   "tags": [
     "unit",
     "transformer"
@@ -3459,6 +3459,275 @@
               ]
             ],
             "expectedError": "the root cannot move"
+          }
+        ]
+      },
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "transformerInsertPositions",
+        "miroirTests": [
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "the absent optional slots of ifThenElse",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "transformerInsertPositions"
+            },
+            "arguments": [
+              {
+                "transformerType": "ifThenElse",
+                "if": {
+                  "transformerType": "returnValue",
+                  "value": "a"
+                }
+              }
+            ],
+            "expectedValue": [
+              {
+                "path": [
+                  "then"
+                ],
+                "container": [
+                  "then"
+                ],
+                "kind": "slot"
+              },
+              {
+                "path": [
+                  "else"
+                ],
+                "container": [
+                  "else"
+                ],
+                "kind": "slot"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a list slot gets a new item at its end",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "transformerInsertPositions"
+            },
+            "arguments": [
+              {
+                "transformerType": "+",
+                "args": [
+                  {
+                    "transformerType": "returnValue",
+                    "value": "a"
+                  },
+                  {
+                    "transformerType": "returnValue",
+                    "value": "b"
+                  }
+                ]
+              }
+            ],
+            "expectedValue": [
+              {
+                "path": [
+                  "args",
+                  2
+                ],
+                "container": [
+                  "args"
+                ],
+                "kind": "listEnd"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a new when of a case goes in its first item slot",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "transformerInsertPositions"
+            },
+            "arguments": [
+              {
+                "transformerType": "case",
+                "discriminator": {
+                  "transformerType": "returnValue",
+                  "value": "a"
+                },
+                "whens": []
+              }
+            ],
+            "expectedValue": [
+              {
+                "path": [
+                  "whens",
+                  0,
+                  "when"
+                ],
+                "container": [
+                  "whens"
+                ],
+                "kind": "listEnd"
+              },
+              {
+                "path": [
+                  "else"
+                ],
+                "container": [
+                  "else"
+                ],
+                "kind": "slot"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a list item missing a slot has it as a position",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "transformerInsertPositions"
+            },
+            "arguments": [
+              {
+                "transformerType": "case",
+                "discriminator": {
+                  "transformerType": "returnValue",
+                  "value": "a"
+                },
+                "whens": [
+                  {
+                    "when": {
+                      "transformerType": "returnValue",
+                      "value": "b"
+                    }
+                  }
+                ]
+              }
+            ],
+            "expectedValue": [
+              {
+                "path": [
+                  "whens",
+                  1,
+                  "when"
+                ],
+                "container": [
+                  "whens"
+                ],
+                "kind": "listEnd"
+              },
+              {
+                "path": [
+                  "whens",
+                  0,
+                  "then"
+                ],
+                "container": [
+                  "whens",
+                  0,
+                  "then"
+                ],
+                "kind": "slot"
+              },
+              {
+                "path": [
+                  "else"
+                ],
+                "container": [
+                  "else"
+                ],
+                "kind": "slot"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a record slot gets a new entry named value",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "transformerInsertPositions"
+            },
+            "arguments": [
+              {
+                "transformerType": "dataflowObject",
+                "definition": {
+                  "a": {
+                    "transformerType": "returnValue",
+                    "value": "a"
+                  }
+                }
+              }
+            ],
+            "expectedValue": [
+              {
+                "path": [
+                  "definition",
+                  "value"
+                ],
+                "container": [
+                  "definition"
+                ],
+                "kind": "recordEntry"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "the positions of a transformer come before those of its children",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "transformerInsertPositions"
+            },
+            "arguments": [
+              {
+                "transformerType": "mapList",
+                "elementTransformer": {
+                  "transformerType": "+",
+                  "args": [
+                    {
+                      "transformerType": "returnValue",
+                      "value": "a"
+                    }
+                  ]
+                }
+              }
+            ],
+            "expectedValue": [
+              {
+                "path": [
+                  "applyTo"
+                ],
+                "container": [
+                  "applyTo"
+                ],
+                "kind": "slot"
+              },
+              {
+                "path": [
+                  "elementTransformer",
+                  "args",
+                  1
+                ],
+                "container": [
+                  "elementTransformer",
+                  "args"
+                ],
+                "kind": "listEnd"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a transformer with no slot has no position",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerTreeEdit",
+              "export": "transformerInsertPositions"
+            },
+            "arguments": [
+              {
+                "transformerType": "returnValue",
+                "value": "a"
+              }
+            ],
+            "expectedValue": []
           }
         ]
       },

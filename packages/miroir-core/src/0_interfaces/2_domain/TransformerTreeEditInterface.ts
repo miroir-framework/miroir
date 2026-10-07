@@ -24,3 +24,15 @@ export interface TransformerTypeChange {
   node: Record<string, unknown>;
   dropped: string[];
 }
+
+/**
+ * A position of a tree where `insertTransformerNode` puts a new node (#500): an empty slot, the
+ * end of a list slot or a new entry of a record slot.
+ */
+export interface TransformerInsertPosition {
+  /** The path to give `insertTransformerNode`. */
+  path: (string | number)[];
+  /** Where the editor shows the position: the empty slot, or the list or record it adds to. */
+  container: (string | number)[];
+  kind: "slot" | "listEnd" | "recordEntry";
+}

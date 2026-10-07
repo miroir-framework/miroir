@@ -10,6 +10,7 @@ import type {
 import { defaultTransformerInput, type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import type {
   TransformerChild,
+  TransformerInsertPosition,
   TransformerSlot,
   TransformerTypeChange,
 } from "../0_interfaces/2_domain/TransformerTreeEditInterface";
@@ -670,6 +671,75 @@ export function reorderTransformerNode(root: unknown, path: (string | number)[],
     const rest = list.filter((_, index) => index !== fromIndex);
     return [...rest.slice(0, toIndex), list[fromIndex], ...rest.slice(toIndex)];
   });
+}
+
+/** A fresh path along `template`: a new list starts at 0, a new record entry is named `value`. */
+function freshPath(template: string[]): (string | number)[] {
+  return template.map((segment) => (segment === ARRAY_ITEM ? 0 : segment === RECORD_VALUE ? "value" : segment));
+}
+
+/** The insert positions of `value` along `template`, at `path`; one new item or entry per list or record. */
+function positionsAlong(
+  value: unknown,
+  template: string[],
+  path: (string | number)[],
+  positions: Map<string, TransformerInsertPosition>,
+): void {
+  if (template.length === 0) {
+    if (value === undefined) {
+      positions.set(path.join("."), { path, container: path, kind: "slot" });
+    }
+    return;
+  }
+  const [head, ...rest] = template;
+  if (head === ARRAY_ITEM || head === RECORD_VALUE) {
+    const isList = head === ARRAY_ITEM;
+    const entries: [string | number, unknown][] = isList
+      ? (Array.isArray(value) ? value : []).map((item, index) => [index, item])
+      : Object.entries(isPlainRecord(value) ? value : {});
+    for (const [key, item] of entries) {
+      positionsAlong(item, rest, [...path, key], positions);
+    }
+    const containerKey = `${path.join(".")}:new`;
+    if (!positions.has(containerKey)) {
+      positions.set(containerKey, {
+        path: [...path, isList ? entries.length : "value", ...freshPath(rest)],
+        container: path,
+        kind: isList ? "listEnd" : "recordEntry",
+      });
+    }
+    return;
+  }
+  positionsAlong(isPlainRecord(value) ? value[head] : undefined, rest, [...path, head], positions);
+}
+
+/**
+ * Where a new node can go in `root` (#500): the root when there is none, every empty slot of
+ * every transformer, one new item per list slot and one new entry per record slot. A transformer's
+ * positions come in slot order, before those of its children. A list of item slots (`whens[].when`,
+ * `whens[].then`) gets its new item in the first.
+ */
+export function transformerInsertPositions(
+  root: unknown,
+  transformerDefinitions: Record<string, TransformerDefinition> = applicationTransformerDefinitions,
+): TransformerInsertPosition[] {
+  if (root === undefined) {
+    return [{ path: [], container: [], kind: "slot" }];
+  }
+  const positions = new Map<string, TransformerInsertPosition>();
+  const visit = (node: unknown, path: (string | number)[]) => {
+    if (!isTransformerNode(node)) {
+      return;
+    }
+    for (const slot of transformerSlots(node.transformerType, transformerDefinitions)) {
+      positionsAlong(node, slot.template, path, positions);
+    }
+    for (const child of transformerChildren(node, transformerDefinitions)) {
+      visit(valueAt(node, child.path), [...path, ...child.path]);
+    }
+  };
+  visit(root, []);
+  return [...positions.values()];
 }
 
 /** Schemas of the attributes a transformer type declares, its `extend` clauses included. */
