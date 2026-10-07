@@ -343,6 +343,7 @@ export { default as miroirTest_ui_mlElementEditor_allTypesPattern } from "./asse
 export { default as miroirTest_ui_mlElementEditor_renderPerformance } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/2da30877-d248-44bd-9786-5c091b1bc8fc.json" with { type: "json" };
 export { default as miroirTest_ui_transformerEditor } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/ce3f9603-824e-41da-9c6c-27ace3b01678.json" with { type: "json" };
 export { default as miroirTest_ui_blockEditor } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/1b25f3f1-3474-43d0-b250-8684529d55dc.json" with { type: "json" };
+export { default as miroirTest_ui_valueHistory } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/ef540605-8176-45bf-af76-c9d240769c7b.json" with { type: "json" };
 
 // ################################################################################################
 // Miroir Data - TestConfiguration (parentUuid = entityTestConfiguration = 675ccd46)

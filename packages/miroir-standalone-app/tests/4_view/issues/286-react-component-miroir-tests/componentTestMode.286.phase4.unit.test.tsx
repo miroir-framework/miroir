@@ -8,7 +8,7 @@
  * their `import.meta.env` with a literal at transform time, and `vi.resetModules()` does not
  * transform them again (checked with a probe test: `isVitestTestMode()` stayed `true`). With the context `{ progressiveRenderDisabled: true,
  * codeMirrorPlaceholder: true }`, an object schema renders with no progressive-reveal placeholder
- * and, in code editor mode, the `<pre>codeMirrorValue:` box. Without the context it renders the
+ * and, in code editor mode, the `codeMirrorValue:` text box (a textarea since #499). Without the context it renders the
  * placeholders and the real CodeMirror editor chrome.
  *
  * Run:
@@ -123,7 +123,7 @@ describe("ComponentTestModeContext outside vitest test mode", () => {
     switchRootToCodeEditor(container);
 
     expect(container.textContent ?? "").toContain("codeMirrorValue:");
-    expect(container.querySelector("pre")).not.toBeNull();
+    expect(container.querySelector('textarea[data-testid^="code-editor:"]')).not.toBeNull();
     expect(container.querySelector('[aria-label="Format JSON"]')).toBeNull();
   });
 

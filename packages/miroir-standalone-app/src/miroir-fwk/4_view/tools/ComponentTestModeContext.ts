@@ -4,7 +4,7 @@ import { createContext, useContext } from "react";
 // Component test mode (#286, analysis §5.4).
 //
 // The editors fork on test mode in two places: `useViewportReveal` (progressive reveal) and
-// `MlElementEditor` (`isUnderTest`, which renders a `<pre>` box instead of CodeMirror). Under
+// `MlElementEditor` (`isUnderTest`, which renders a textarea instead of CodeMirror). Under
 // vitest both forks read `VITE_TEST_MODE`. In the app, the component test sandbox sets this
 // context so that the component under test renders the same DOM as under vitest, without
 // changing the rest of the app.
@@ -13,7 +13,7 @@ import { createContext, useContext } from "react";
 export interface ComponentTestMode {
   /** Reveal progressively rendered sections at once, as under vitest. */
   progressiveRenderDisabled: boolean;
-  /** Render the `<pre>codeMirrorValue:` box instead of a real CodeMirror, as under vitest. */
+  /** Render the `codeMirrorValue:` textarea instead of a real CodeMirror, as under vitest. */
   codeMirrorPlaceholder: boolean;
 }
 

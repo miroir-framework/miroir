@@ -29,6 +29,8 @@ import { useMiroirTheme } from "../../contexts/MiroirThemeContext";
 // Issue #415 — the action menu of a transformer node, next to its `transformerType` select:
 // structural edits computed by the miroir-core TransformerTreeEdit functions, written back as one
 // new value of the node.
+// #499: under an undo history, Remove and Unwrap act at once (Undo brings the node back); Unwrap
+// of a node with several children lists one menu entry per child.
 // ################################################################################################
 
 export interface TransformerNodeActionsProps {
@@ -47,6 +49,8 @@ export interface TransformerNodeActionsProps {
   onReplaceNode: (newNode: unknown) => void;
   /** Removes the node and its subtree from the edited tree (#415 Remove). */
   onRemoveNode: () => void;
+  /** An undo history covers the node (#499): edits act at once, without a confirmation. */
+  undoable?: boolean;
 }
 
 type NewNodeAction = "wrap" | "pipe";
@@ -75,6 +79,7 @@ export const TransformerNodeActions: React.FC<TransformerNodeActionsProps> = ({
   defaultNodeForType,
   onReplaceNode,
   onRemoveNode,
+  undoable = false,
 }) => {
   const { currentTheme } = useMiroirTheme();
   const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null);
@@ -136,6 +141,16 @@ export const TransformerNodeActions: React.FC<TransformerNodeActionsProps> = ({
       return;
     }
     setDialog({ kind: "unwrap" });
+  };
+
+  const removeNow = () => {
+    setMenuAnchor(null);
+    onRemoveNode();
+  };
+
+  const unwrapNow = (childPath: (string | number)[]) => {
+    setMenuAnchor(null);
+    unwrap(childPath);
   };
 
   const confirmRemove = () => {
@@ -228,15 +243,30 @@ export const TransformerNodeActions: React.FC<TransformerNodeActionsProps> = ({
         >
           Pipe into…
         </ThemedMenuItem>
+        {undoable && children.length > 1 ? (
+          children.map((child) => (
+            <ThemedMenuItem
+              key={childKey(child.path)}
+              data-testid={`transformer-node-action-unwrap:${childKey(child.path)}`}
+              onClick={() => unwrapNow(child.path)}
+            >
+              Unwrap: keep {childKey(child.path)} ({child.transformerType})
+            </ThemedMenuItem>
+          ))
+        ) : (
+          <ThemedMenuItem
+            data-testid="transformer-node-action-unwrap"
+            disabled={children.length === 0}
+            onClick={startUnwrap}
+          >
+            {children.length > 1 ? "Unwrap…" : "Unwrap"}
+          </ThemedMenuItem>
+        )}
         <ThemedMenuItem
-          data-testid="transformer-node-action-unwrap"
-          disabled={children.length === 0}
-          onClick={startUnwrap}
+          data-testid="transformer-node-action-remove"
+          onClick={undoable ? removeNow : () => openDialog({ kind: "remove" })}
         >
-          {children.length > 1 ? "Unwrap…" : "Unwrap"}
-        </ThemedMenuItem>
-        <ThemedMenuItem data-testid="transformer-node-action-remove" onClick={() => openDialog({ kind: "remove" })}>
-          Remove…
+          {undoable ? "Remove" : "Remove…"}
         </ThemedMenuItem>
       </Menu>
       {dialog?.kind === "remove" && (

@@ -69,6 +69,7 @@ import { FoldUnfoldAllObjectAttributesOrArrayItems, FoldUnfoldObjectOrArray, MlE
 import { getFoldedDisplayValue, useMlElementEditorHooks } from "./MlElementEditorHooks";
 import { TransformerTypeBadge, TransformerTypeRestriction, MlObjectEditorProps } from "./MlElementEditorInterface";
 import { emptyContainerMarker, isPlainObjectValue } from "./renderedValueMarkers";
+import { historyCommand } from "./ValueHistoryProvider.js";
 import {
   findPathAnnotation,
   TransformerTitleRowAnnotations,
@@ -119,6 +120,13 @@ const EditableAttributeName: FC<{
 
   const handleKeyDown = useCallback(
     (event: React.KeyboardEvent) => {
+      // #499: while the name is being edited, Ctrl+Z and Ctrl+Y undo its text with the browser's
+      // own undo, not a step of the value history, which has not seen the name yet
+      const command = historyCommand(event);
+      if (command && isEditing) {
+        event.stopPropagation();
+        return;
+      }
       if (event.key === "Enter") {
         event.preventDefault();
         handleCommit();
@@ -127,7 +135,7 @@ const EditableAttributeName: FC<{
         setIsEditing(false);
       }
     },
-    [handleCommit, initialValue]
+    [handleCommit, initialValue, isEditing]
   );
 
   // Update local value if the initial value changes (external update)
