@@ -46,8 +46,8 @@ Working branch: `claude/505-block-editor-edit-sequences`
 | 0 | This plan | ✅ | — |
 | 1 | Sequence edits, default actions, action palette (core) | ✅ | `fn.blockModel` "sequence editing" cases |
 | 2 | Runner hat and form fields (core) | ✅ | `fn.blockModel` "runner hat" cases |
-| 3 | Editing sequences in the block view | ✅ | `ui.blockEditor` "editing a Runner sequence" |
-| 4 | The "when run" hat in the block view | ✅ | `ui.blockEditor` hat cases |
+| 3 | Editing sequences in the block view | ✅ | `ui.blockEditing` "editing a Runner sequence" |
+| 4 | The "when run" hat in the block view | ✅ | `ui.blockEditing` hat cases |
 | 5 | Sequence editor, Save as Runner, Run (AC 1, AC 2) | ✅ | `ui.blockEditing` "SequenceEditor on the Library" |
 | 6 | Docs, nonreg, PR | ⬜ | nonreg |
 
@@ -105,6 +105,8 @@ RED: `ui.blockEditing` suite "SequenceEditor on the Library" (wired local cache)
 GREEN: `SequenceEditor`, `RunnerSave`, Tools page, registry entry.
 
 **Realization (2026-10-07):** `components/SequenceEditor/SequenceEditor.tsx` lists the custom Runners of the application (`sequence-editor-runner`, or a new one), edits the chosen Runner's sequence in the block view with its hat (`BlockRunnerContext`, field edits on a draft Runner), saves it (`sequence-editor-save-runner`, updateInstance) or saves it as a new Runner (`sequence-editor-save-as`: a dialog with create Runner, and create Action disabled until #506; a taken name is refused; `renameRunner` then `newCustomRunner`, createInstance) and runs it (`StoredRunnerView`). `saveInstanceFromUI.ts` is the createInstance / updateInstance shared with `TransformerDefinitionSave` (a model-section instance goes through a transaction). `BlockActionDefaultsContext` gives `defaultActionNode` the `application` of a new action's payload. `renameBlockKey` (core, 2 `fn.blockModel` cases) and `BlockKeyField` rename object keys in place. A wired component suite also loads the Miroir Endpoints into the test cache, so the palette has actions. The Tools page (`TransformerBuilderPage`) shows the editor below the transformer editor. 2 cases in "SequenceEditor on the Library" (AC 1, AC 2); 3 `fn.blockModel` cases; fn.blockModel 71/71; `EXPECTED_LEAF_COUNT` 193.
+
+**Deviation (PR #523, bundle guard):** the slice 3 and 4 suites ("editing a Runner sequence", "the when run hat", "a Runner in an instance editor") were written in `ui.blockEditor`, which ships with the page; they took miroir-app-miroir to 3431305 bytes, over its 3400000 cap. They moved to `ui.blockEditing`, which is off the page (#500), so the cap stays as it is. Their RED lines above still say `ui.blockEditor`.
 
 ## Slice 6 — Docs, nonreg, PR
 

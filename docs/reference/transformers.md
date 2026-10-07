@@ -251,7 +251,7 @@ The Blocks view edits an action sequence as it edits a transformer (issue #505):
 - **Keys.** The key of a record entry (an object, the `definition` of `createObject`, a template) is renamed in place: a new entry is named `value` (`template` for a template) until it is.
 - **Variables.** The names a sequence binds (its templates, the results of its earlier steps) are the variables of the palette, offered where they are visible (`compositeActionEnvironmentAt`).
 
-The edits are `blockInsertPositions`, `insertBlockNode`, `removeBlockNode`, `moveBlockNode`, `renameBlockKey`, `defaultActionNode` and `actionPaletteGroups` (`miroir-core/src/2_domain/ActionSequenceEdit.ts`), tested by `fn.blockModel` ("sequence editing"). The view is tested by the `ui.blockEditor` suite "editing a Runner sequence".
+The edits are `blockInsertPositions`, `insertBlockNode`, `removeBlockNode`, `moveBlockNode`, `renameBlockKey`, `defaultActionNode` and `actionPaletteGroups` (`miroir-core/src/2_domain/ActionSequenceEdit.ts`), tested by `fn.blockModel` ("sequence editing"). The view is tested by the `ui.blockEditing` suite "editing a Runner sequence".
 
 ### Runners: the "when run" hat and the sequence editor
 
@@ -260,7 +260,7 @@ A custom Runner's sequence shows under a "when run" hat: the Runner's label and 
 - **Form fields.** A field chip arms a runtime read of it, a drag takes it, as the palette's variables. In an instance editor of a Runner, the fields are shown, not edited: they are edited in `formMLSchema`. In the sequence editor, `+ field` adds one (a name and a type: string, number, boolean or uuid), ✎ renames one and rewrites the reads of the sequence, and × removes one the sequence does not read.
 - **Sequence editor.** The Tools page has a sequence editor below the TransformerEditor. It edits a new sequence, or the sequence of a custom Runner of the editor application, with the Blocks / Form / JSON switch and Undo. `Save <name>` updates the chosen Runner. `Save…` opens the save dialog of a new sequence: "create Runner" creates a Runner of the application, named and labelled there (the reads of the form follow the new name); "create Action" is off until issue #506. The Runner is saved in the application's section for Runners, in a transaction for a model section, which the user commits as any other model change. A saved Runner runs below the editor, with its form.
 
-The hat's functions are `runnerHat`, `addRunnerFormField`, `renameRunnerFormField`, `removeRunnerFormField`, `renameRunner` and `newCustomRunner` (`miroir-core/src/2_domain/RunnerHat.ts`), tested by `fn.blockModel` ("runner hat"). The view is tested by the `ui.blockEditor` suites "the when run hat" and "a Runner in an instance editor", and the sequence editor by the `ui.blockEditing` suite "SequenceEditor on the Library": a new sequence built with blocks, saved as a Runner, creates a Publisher when run (AC 1); a stored Runner edited with blocks and saved runs with the edit (AC 2).
+The hat's functions are `runnerHat`, `addRunnerFormField`, `renameRunnerFormField`, `removeRunnerFormField`, `renameRunner` and `newCustomRunner` (`miroir-core/src/2_domain/RunnerHat.ts`), tested by `fn.blockModel` ("runner hat"). The view is tested by the `ui.blockEditing` suites "the when run hat" and "a Runner in an instance editor", and the sequence editor by the `ui.blockEditing` suite "SequenceEditor on the Library": a new sequence built with blocks, saved as a Runner, creates a Publisher when run (AC 1); a stored Runner edited with blocks and saved runs with the edit (AC 2).
 
 ---
 
