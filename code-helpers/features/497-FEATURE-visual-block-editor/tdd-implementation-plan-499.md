@@ -34,7 +34,7 @@ This plan does **not** edit blocks (#500) or put a history at every `TypedValueO
 | 1 | Tracer: Undo and Redo buttons on a form edit | ✅ | `ui.valueHistory` TransformerEditor cases |
 | 2 | Keyboard shortcuts and one step per typed field | ✅ | `ui.valueHistory` `type` + `keyboard` cases |
 | 3 | Every view: JSON re-reads its text, Blocks follow | ✅ | `ui.valueHistory` JSON and Blocks cases |
-| 4 | Undo replaces the remove, unwrap and type-change confirmations | ⬜ | updated `ui.transformerEditor` cases, `ui.valueHistory` MlElementEditor case |
+| 4 | Undo replaces the remove, unwrap and type-change confirmations | ✅ | updated `ui.transformerEditor` cases, `ui.valueHistory` MlElementEditor case |
 | 5 | Clear can be undone; loading a stored transformer resets the history | ⬜ | `ui.valueHistory` Clear case |
 | 6 | Nonreg, docs, bundle, AC | ⬜ | nonreg, bundle guard, AC checklist |
 
@@ -211,7 +211,7 @@ As Slice 1, plus `ui.blockEditor`, `ui.mlElementEditor.any`, `.allTypesPattern`,
 
 ## Slice 4 — Undo replaces the remove, unwrap and type-change confirmations
 
-**Status:** ⬜
+**Status:** ✅ DONE
 
 ### 4.1 RED
 
@@ -226,6 +226,14 @@ As Slice 1, plus `ui.blockEditor`, `ui.mlElementEditor.any`, `.allTypesPattern`,
 ### Validation
 
 As Slice 1, plus the `ui.transformerEditor` suite description updated.
+
+### Realization
+
+- RED: the four rewritten `ui.transformerEditor` cases and the Ctrl+Z case failed (dialogs still asked); the MlElementEditor case passed from the start, as it should.
+- `TransformerNodeActions` takes `undoable`: Remove (no ellipsis) acts at once; with two children or more, Unwrap becomes one entry per child, `transformer-node-action-unwrap:<child path>` "Unwrap: keep <child> (<type>)". `MlLiteralEditor` computes it from `ValueHistoryContext.covers` and also skips `TransformerTypeChangeDialog` when it is set.
+- `replaceTransformerNode` and the Remove callback call `restoreFocus`: Remove unmounts the node with its ⋯ button and its menu, so the focus fell to the page. The Ctrl+Z case fails without it.
+- Without a history, a second MlElementEditor case checks the type-change dialog. The Unwrap dialog keeps no component case: the MlElementEditor sandbox does not reach the selects of a dialog (a portal outside its sandbox, field names prefixed), so the case could not drive Wrap in to build an `ifThenElse`.
+- `ui.valueHistory` 15 of 15 (140 leaves), `ui.transformerEditor` 28 of 28.
 
 ---
 

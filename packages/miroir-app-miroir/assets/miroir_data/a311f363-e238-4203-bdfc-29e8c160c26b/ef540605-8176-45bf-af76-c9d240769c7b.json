@@ -855,6 +855,199 @@
                 "timeout": 2000
               }
             ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: Ctrl+Z right after a Remove brings the node back",
+            "steps": [
+              {
+                "step": "click",
+                "label": "open the root node actions",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Wrap in",
+                "target": {
+                  "byTestId": "transformer-node-action-wrap"
+                }
+              },
+              {
+                "step": "selectOption",
+                "label": "enclosing ifThenElse",
+                "field": "transformer-node-dialog-type",
+                "option": "ifThenElse"
+              },
+              {
+                "step": "selectOption",
+                "label": "slot then",
+                "field": "transformer-node-dialog-slot",
+                "option": "then"
+              },
+              {
+                "step": "click",
+                "label": "confirm the wrap",
+                "target": {
+                  "byTestId": "transformer-node-dialog-confirm"
+                }
+              },
+              {
+                "step": "click",
+                "label": "open the then node actions",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer.then"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Remove",
+                "target": {
+                  "byTestId": "transformer-node-action-remove"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "then is gone",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.then.transformerType"
+                },
+                "present": false,
+                "timeout": 2000
+              },
+              {
+                "step": "keyboard",
+                "label": "Ctrl+Z",
+                "keys": "{Control>}z{/Control}"
+              },
+              {
+                "step": "expectElement",
+                "label": "then is back",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.then.transformerType"
+                },
+                "value": "returnValue",
+                "timeout": 2000
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "miroirTestType": "reactComponentTestSuite",
+        "miroirTestLabel": "MlElementEditor",
+        "component": "MlElementEditor",
+        "componentProps": {
+          "label": "Test Label",
+          "name": "testField",
+          "listKey": "ROOT.testField",
+          "rootLessListKey": "testField",
+          "rootLessListKeyArray": [
+            "testField"
+          ],
+          "rawMlSchema": {
+            "type": "object",
+            "definition": {
+              "transformer": {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "coreTransformerForBuildPlusRuntime"
+                }
+              }
+            }
+          },
+          "initialFormState": {
+            "transformer": {
+              "transformerType": "returnValue",
+              "interpolation": "runtime",
+              "value": "kept"
+            }
+          }
+        },
+        "miroirTests": [
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "MlElementEditor: without an undo history, Remove asks for a confirmation",
+            "steps": [
+              {
+                "step": "click",
+                "label": "open the node actions",
+                "target": {
+                  "byLabelText": "Transformer node actions testField.transformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Remove…",
+                "target": {
+                  "byTestId": "transformer-node-action-remove"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the confirmation",
+                "target": {
+                  "byTestId": "transformer-node-dialog-removed"
+                },
+                "containsHtml": "Removes returnValue",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "cancel",
+                "target": {
+                  "byTestId": "transformer-node-dialog-cancel"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the value is kept",
+                "target": {
+                  "byDisplayValue": "kept"
+                },
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "MlElementEditor: without an undo history, a type change dropping an edited value asks first",
+            "steps": [
+              {
+                "step": "selectOption",
+                "label": "transformer type",
+                "field": "testField.transformer.transformerType",
+                "option": "getObjectValues"
+              },
+              {
+                "step": "expectElement",
+                "label": "the dropped value is named",
+                "target": {
+                  "byTestId": "transformer-node-dialog-dropped"
+                },
+                "containsHtml": "getObjectValues does not take: value.",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "cancel",
+                "target": {
+                  "byTestId": "transformer-node-dialog-cancel"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the value is kept",
+                "target": {
+                  "byDisplayValue": "kept"
+                },
+                "timeout": 2000
+              }
+            ]
           }
         ]
       }
