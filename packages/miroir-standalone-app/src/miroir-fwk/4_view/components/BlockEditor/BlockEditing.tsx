@@ -4,11 +4,13 @@ import {
   defaultTransformerNode,
   insertTransformerNode,
   keepAttributesOnTypeChange,
+  moveTransformerNode,
   removeTransformerNode,
   transformerInsertPositions,
   transformerUnionTypes,
   type BlockPath,
   type TransformerInsertPosition,
+  type TransformerTypeChange,
 } from "miroir-core";
 import React, { createContext, useCallback, useContext, useMemo, useState } from "react";
 
@@ -42,14 +44,20 @@ export interface BlockEditing {
   /** What the next insert or Replace with puts: a palette type or a tray block. */
   armed: ArmedBlock | undefined;
   arm: (armed: ArmedBlock | undefined) => void;
-  /** The node the armed block puts. */
-  armedNode: () => Record<string, unknown> | undefined;
-  /** Disarms, and takes an armed tray block out of the tray: it was put. */
-  consumeArmed: () => void;
+  /** The node a palette type or a tray block puts. */
+  nodeOf: (source: ArmedBlock) => Record<string, unknown> | undefined;
   /** The insert positions of the value by the path of their container (see `pathKey`). */
   insertPositions: Map<string, TransformerInsertPosition[]>;
-  /** Puts the armed block at `path`, an insert position. */
-  insertArmedAt: (path: BlockPath) => void;
+  /** Puts a block of the palette or the tray at `path`, an insert position, and disarms. */
+  insertAt: (source: ArmedBlock, path: BlockPath) => void;
+  /**
+   * Puts a block of the palette or the tray in place of the block at `path`, and disarms. A palette
+   * type keeps the attributes it takes; without an undo history, a change that drops some is not
+   * written but returned, for a confirmation.
+   */
+  replaceAt: (source: ArmedBlock, path: BlockPath) => TransformerTypeChange | undefined;
+  /** Moves the block at `from` to `to`, an insert position (drag and drop). */
+  moveBlock: (from: BlockPath, to: BlockPath) => void;
   /** The blocks moved out of the value; undefined: the view has no tray. */
   tray: unknown[] | undefined;
   /** Moves the block at `path` to the tray; its slot gets its default. */
@@ -130,29 +138,66 @@ export function useBlockEditingValue(
     }
     return byContainer;
   }, [root, commit]);
-  const armedNode = useCallback((): Record<string, unknown> | undefined => {
-    if (armed?.kind === "type") {
-      return defaultNodeForType(armed.transformerType);
-    }
-    const trayBlock = armed?.kind === "tray" ? tray?.[armed.index] : undefined;
-    return isRecord(trayBlock) ? trayBlock : undefined;
-  }, [armed, tray]);
-  const consumeArmed = useCallback(() => {
-    if (armed?.kind === "tray") {
-      changeTray?.((current) => current.filter((_, index) => index !== armed.index));
-    }
-    arm(undefined);
-  }, [armed, changeTray]);
-  const insertArmedAt = useCallback(
-    (path: BlockPath) => {
-      const node = armedNode();
+  const nodeOf = useCallback(
+    (source: ArmedBlock): Record<string, unknown> | undefined => {
+      if (source.kind === "type") {
+        return defaultNodeForType(source.transformerType);
+      }
+      const trayBlock = tray?.[source.index];
+      return isRecord(trayBlock) ? trayBlock : undefined;
+    },
+    [tray],
+  );
+  // a put block leaves the tray; the indexes of the others shift, so nothing stays armed
+  const consume = useCallback(
+    (source: ArmedBlock) => {
+      if (source.kind === "tray") {
+        changeTray?.((current) => current.filter((_, index) => index !== source.index));
+      }
+      arm(undefined);
+    },
+    [changeTray],
+  );
+  const insertAt = useCallback(
+    (source: ArmedBlock, path: BlockPath) => {
+      const node = nodeOf(source);
       if (!commit || !node) {
         return;
       }
       commit(insertTransformerNode(root, path, node, { slotDefault: defaultNodeForType("returnValue") }));
-      consumeArmed();
+      consume(source);
     },
-    [root, commit, armedNode, consumeArmed],
+    [root, commit, nodeOf, consume],
+  );
+  const replaceAt = useCallback(
+    (source: ArmedBlock, path: BlockPath): TransformerTypeChange | undefined => {
+      const node = nodeOf(source);
+      if (!commit || !node) {
+        return undefined;
+      }
+      consume(source);
+      if (source.kind === "tray") {
+        commit(withValueAtPath(root, path, node));
+        return undefined;
+      }
+      const oldNode = valueAtPath(root, path);
+      const change = keepAttributesOnTypeChange(isRecord(oldNode) ? oldNode : {}, node, defaultMiroirModelEnvironment);
+      if (undoable || change.dropped.length === 0) {
+        commit(withValueAtPath(root, path, change.node));
+        return undefined;
+      }
+      return change;
+    },
+    [root, commit, undoable, nodeOf, consume],
+  );
+  const moveBlock = useCallback(
+    (from: BlockPath, to: BlockPath) => {
+      if (!commit) {
+        return;
+      }
+      commit(moveTransformerNode(root, from, to, { slotDefault: defaultNodeForType("returnValue") }));
+    },
+    [root, commit],
   );
   const moveToTray = useCallback(
     (path: BlockPath) => {
@@ -184,10 +229,11 @@ export function useBlockEditingValue(
             defaultNodeForType,
             armed,
             arm,
-            armedNode,
-            consumeArmed,
+            nodeOf,
             insertPositions,
-            insertArmedAt,
+            insertAt,
+            replaceAt,
+            moveBlock,
             tray: changeTray ? (tray ?? []) : undefined,
             moveToTray,
             discardTrayBlock,
@@ -201,10 +247,11 @@ export function useBlockEditingValue(
       undoable,
       candidateTypes,
       armed,
-      armedNode,
-      consumeArmed,
+      nodeOf,
       insertPositions,
-      insertArmedAt,
+      insertAt,
+      replaceAt,
+      moveBlock,
       tray,
       changeTray,
       moveToTray,
@@ -212,54 +259,6 @@ export function useBlockEditingValue(
       shownResult,
       toggleResult,
     ],
-  );
-}
-
-/** The insert targets of the positions in `container`: a click puts a block of the armed type. */
-export function BlockInsertTargets(props: { container: BlockPath; idOf: (path: BlockPath) => string; color: string }) {
-  const editing = useBlockEditing();
-  const positions = editing?.insertPositions.get(pathKey(props.container));
-  if (!editing || !positions) {
-    return null;
-  }
-  return (
-    <>
-      {positions.map((position) => {
-        const label = editing.armed
-          ? `Put ${armedLabel(editing.armed)} here`
-          : "Choose a block in the palette or the tray, then click here to put it";
-        return (
-          <button
-            key={pathKey(position.path)}
-            type="button"
-            data-testid={`block-insert:${props.idOf(position.path)}`}
-            data-insert-kind={position.kind}
-            aria-label={label}
-            title={label}
-            disabled={!editing.armed}
-            onClick={(event) => {
-              event.stopPropagation();
-              editing.insertArmedAt(position.path);
-            }}
-            style={{
-              font: "inherit",
-              fontSize: "12px",
-              minWidth: "48px",
-              height: "20px",
-              padding: "0 6px",
-              border: `1px dashed ${props.color}`,
-              borderRadius: "6px",
-              background: "transparent",
-              color: "inherit",
-              cursor: editing.armed ? "pointer" : "default",
-              opacity: editing.armed ? 1 : 0.6,
-            }}
-          >
-            {position.kind === "slot" ? "" : "+"}
-          </button>
-        );
-      })}
-    </>
   );
 }
 
@@ -280,33 +279,20 @@ export function BlockNodeActions(props: { path: BlockPath; blockId: string }) {
     const returnValue = editing.defaultNodeForType("returnValue");
     editing.commit(removeTransformerNode(editing.root, props.path, { rootDefault: returnValue, slotDefault: returnValue }));
   }, [editing, props.path]);
-  // Replace with a palette type keeps the attributes the new type takes, as a form type change
-  // does; a tray block takes the place as it is
-  const [pendingChange, setPendingChange] = useState<{ node: unknown; dropped: string[] } | undefined>(undefined);
+  // a palette type that would drop attributes of the block, without an undo history, asks first
+  const [pendingChange, setPendingChange] = useState<TransformerTypeChange | undefined>(undefined);
   const extraEntries = useMemo((): TransformerNodeExtraEntry[] => {
     if (!editing) {
       return [];
     }
     const entries: TransformerNodeExtraEntry[] = [];
     const armed = editing.armed;
-    const newNode = editing.armedNode();
-    if (armed && newNode) {
-      const replaceWithArmed = () => {
-        if (armed.kind === "tray") {
-          replace(newNode);
-          editing.consumeArmed();
-          return;
-        }
-        const oldNode = valueAtPath(editing.root, props.path) as Record<string, unknown>;
-        const change = keepAttributesOnTypeChange(oldNode, newNode, defaultMiroirModelEnvironment);
-        editing.consumeArmed();
-        if (editing.undoable || change.dropped.length === 0) {
-          replace(change.node);
-          return;
-        }
-        setPendingChange(change);
-      };
-      entries.push({ testId: "block-action-replace", label: `Replace with ${armedLabel(armed)}`, onClick: replaceWithArmed });
+    if (armed && editing.nodeOf(armed)) {
+      entries.push({
+        testId: "block-action-replace",
+        label: `Replace with ${armedLabel(armed)}`,
+        onClick: () => setPendingChange(editing.replaceAt(armed, props.path)),
+      });
     }
     // an absent interpolation is evaluated as build (analysis D2): the switch writes it
     const node = valueAtPath(editing.root, props.path);

@@ -306,9 +306,17 @@ With "Show transformer types" on, a `mapList` placed where the input is a single
 
 ## Slice 9 — Drag and drop with @dnd-kit
 
-**Status:** ⬜
+**Status:** ✅
 
 `npm install @dnd-kit/core@6.3.1 -w miroir-standalone-app --save-exact`; draggable blocks, palette entries and tray items; droppable slots and list positions; the drop calls the same functions as the menus. Validation: standalone-app build, bundle guard (lazy lists of both policies), `check_dependency_policy.py`, the `ui.*` suites. Drag tests wait for #485.
+
+### Realization
+
+- `@dnd-kit/core` 6.3.1 installed as A approved (with `@dnd-kit/accessibility` and `@dnd-kit/utilities`), all three in the `lazy` list of both bundle policies; `BlockDragDrop.tsx` is imported by the lazy block view only.
+- Drag sources: palette entries, tray blocks, transformer blocks (by their header). Drop targets: insert targets, transformer blocks (Replace with, for palette and tray sources) and the tray (shown while a block is dragged, even empty). `applyBlockDrop` calls the editing functions the menus call: `insertAt`, `replaceAt`, `moveBlock` (`moveTransformerNode`), `moveToTray`. To share them, the put functions of `BlockEditing` now take their source (`ArmedBlock`) instead of reading the armed one; insert targets moved to `BlockInsertTargets.tsx`.
+- A drag starts after 6 px of pointer movement, so a click on a palette entry, a header (run) or a tray block keeps its meaning; nested blocks resolve to the innermost droppable under the pointer.
+- Not tested here: happy-dom cannot drag, and the drop functions are the menu ones, which the `ui.blockEditing` cases cover. Drag cases wait for #485 (Playwright).
+- Validation: `check_dependency_policy.py` passes; standalone-app build and `check_bundle_policy.py`: 0 violations, page 800,219 bytes gzipped against the 786,868 baseline (+1.7 %, within the 2 % tolerance); `ui.blockEditing`, `ui.blockEditor`, `ui.valueHistory`, `ui.transformerEditor` 78 pass.
 
 ---
 

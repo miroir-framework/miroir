@@ -12,9 +12,9 @@ import React, { useCallback, useMemo, useState } from "react";
 import { blockCategoryColor, useMiroirTheme, type BlockEditorColors } from "../../contexts/MiroirThemeContext.js";
 import type { TransformerTypeBadge } from "../ValueObjectEditor/MlElementEditorInterface.js";
 import { useBlockEditorBuildMarking } from "./BlockEditorDisplay.js";
+import { BlockDndContext, useBlockDraggable, useBlockDroppable, useDraggingBlock } from "./BlockDragDrop.js";
 import {
   BlockEditingContext,
-  BlockInsertTargets,
   BlockNodeActions,
   pathKey,
   useBlockEditing,
@@ -22,6 +22,7 @@ import {
   type TrayUpdate,
 } from "./BlockEditing.js";
 import { BlockField, MlSchemaChip } from "./BlockFields.js";
+import { BlockInsertTargets } from "./BlockInsertTargets.js";
 import { BlockResult, useBlockRunInput } from "./BlockResult.js";
 import { BlockPalette } from "./BlockPalette.js";
 
@@ -42,7 +43,8 @@ import { BlockPalette } from "./BlockPalette.js";
 // empty slots and at the end of list and record slots. The tray, below the program, shows the
 // blocks moved out read-only, each with Place and Discard. Values and ML schemas are edited in
 // place (BlockFields.tsx). With the editor's type badges (#453), a block shows its types as a flag.
-// Under the TransformerEditor, a click on a block header runs the block (BlockResult.tsx).
+// Under the TransformerEditor, a click on a block header runs the block (BlockResult.tsx). Blocks,
+// palette entries and tray blocks can be dragged (BlockDragDrop.tsx).
 // ################################################################################################
 
 export interface BlockEditorViewProps {
@@ -244,6 +246,8 @@ const TransformerBlockView = React.memo(function TransformerBlockView(props: {
   const { collapsed, toggleButton, summary } = useCollapse(node, settings, node.rows.length);
   const editing = useBlockEditing();
   const runs = useBlockRunInput() !== undefined && editing !== undefined;
+  const drag = useBlockDraggable(`drag:block:${id}`, editing ? { kind: "block", path: node.path } : undefined);
+  const drop = useBlockDroppable(`drop:replace:${id}`, editing ? { kind: "replace", path: node.path } : undefined);
   const resultShown = runs && editing?.shownResult === pathKey(node.path);
   const color = blockCategoryColor(settings.blockEditor, node.category);
   // an absent interpolation is evaluated as build (TransformersForRuntime)
@@ -251,6 +255,7 @@ const TransformerBlockView = React.memo(function TransformerBlockView(props: {
   const marking = interpolation === "build" ? settings.buildMarking : "none";
   return (
     <div
+      ref={drop.setNodeRef}
       id={id}
       data-testid={`block:${id}`}
       data-block-kind="transformer"
@@ -271,10 +276,14 @@ const TransformerBlockView = React.memo(function TransformerBlockView(props: {
         borderRadius: "8px",
         paddingBottom: node.rows.length > 0 && !collapsed ? "6px" : 0,
         verticalAlign: "top",
+        opacity: drag.isDragging ? 0.5 : 1,
         ...(marking === "dashedOutline" ? { outline: `2px dashed ${settings.text}`, outlineOffset: "1px" } : {}),
+        ...(drop.isOver ? { boxShadow: "0 0 0 3px rgba(25,118,210,.6)" } : {}),
       })}
     >
       <div
+        ref={drag.setNodeRef}
+        {...drag.listeners}
         data-testid={`block-header:${id}`}
         title={runs ? "Click to run this block on the input" : undefined}
         onClick={runs ? () => editing?.toggleResult(node.path) : undefined}
@@ -285,6 +294,7 @@ const TransformerBlockView = React.memo(function TransformerBlockView(props: {
           gap: "4px 7px",
           padding: "4px 10px",
           cursor: runs ? "pointer" : undefined,
+          touchAction: editing ? "none" : undefined,
         })}
       >
         {toggleButton}
@@ -463,67 +473,88 @@ const BlockNodeView = React.memo(function BlockNodeView(props: {
   }
 });
 
-/** The tray: each block moved out, read-only, with Place (arms it) and Discard. */
+/** The tray: each block moved out, read-only, with Place (arms it) and Discard; a drop target for blocks. */
 function BlockTray(props: { settings: BlockSettings; colors: BlockColors }) {
   const editing = useBlockEditing();
   const tray = editing?.tray;
   const trees = useMemo(() => (tray ?? []).map((block) => transformerBlockTree(block).root), [tray]);
-  if (!editing || !tray || tray.length === 0) {
+  const draggingBlock = useDraggingBlock();
+  const drop = useBlockDroppable("drop:tray", tray ? { kind: "tray" } : undefined);
+  if (!editing || !tray || (tray.length === 0 && !draggingBlock)) {
     return null;
   }
   return (
     <section
+      ref={drop.setNodeRef}
       data-testid="block-tray"
       aria-label="Tray"
-      css={css({ borderTop: `1px dashed ${props.colors.border}`, marginTop: "6px", padding: "6px 4px" })}
+      css={css({
+        borderTop: `1px dashed ${props.colors.border}`,
+        marginTop: "6px",
+        padding: "6px 4px",
+        background: drop.isOver ? "rgba(25,118,210,.12)" : undefined,
+      })}
     >
       <div css={css({ fontSize: "12px", color: props.colors.textSecondary, marginBottom: "4px" })}>
-        Tray: blocks moved out of the transformer, not saved
+        {tray.length === 0
+          ? "Tray: drop a block here to take it out of the transformer"
+          : "Tray: blocks moved out of the transformer, not saved"}
       </div>
       <div css={css({ display: "flex", flexWrap: "wrap", gap: "10px", alignItems: "flex-start" })}>
-        {trees.map((root, index) => {
-          const placing = editing.armed?.kind === "tray" && editing.armed.index === index;
-          return (
-            <div
-              key={index}
-              data-testid={`block-tray-item:${index}`}
-              css={css({ display: "flex", flexDirection: "column", gap: "4px", alignItems: "flex-start" })}
-            >
-              {/* read-only: a tray block has no menu nor insert target */}
-              <BlockEditingContext.Provider value={undefined}>
-                <BlockNodeView
-                  node={root}
-                  settings={{
-                    ...props.settings,
-                    rootLessListKey: `${props.settings.rootLessListKey}~tray.${index}`,
-                    typeBadges: undefined,
-                  }}
-                />
-              </BlockEditingContext.Provider>
-              <span css={css({ display: "flex", gap: "4px" })}>
-                <ToolButton
-                  testId={`block-tray-place:${index}`}
-                  label={placing ? "Click an insert target or Replace with to put this block" : "Place this block"}
-                  colors={props.colors}
-                  pressed={placing}
-                  onClick={() => editing.arm(placing ? undefined : { kind: "tray", index })}
-                >
-                  Place
-                </ToolButton>
-                <ToolButton
-                  testId={`block-tray-discard:${index}`}
-                  label="Discard this block"
-                  colors={props.colors}
-                  onClick={() => editing.discardTrayBlock(index)}
-                >
-                  Discard
-                </ToolButton>
-              </span>
-            </div>
-          );
-        })}
+        {trees.map((root, index) => (
+          <TrayItem key={index} index={index} root={root} settings={props.settings} colors={props.colors} />
+        ))}
       </div>
     </section>
+  );
+}
+
+function TrayItem(props: { index: number; root: BlockNode; settings: BlockSettings; colors: BlockColors }) {
+  const editing = useBlockEditing();
+  const { index } = props;
+  const drag = useBlockDraggable(`drag:tray:${index}`, { kind: "tray", index });
+  if (!editing) {
+    return null;
+  }
+  const placing = editing.armed?.kind === "tray" && editing.armed.index === index;
+  return (
+    <div
+      data-testid={`block-tray-item:${index}`}
+      css={css({ display: "flex", flexDirection: "column", gap: "4px", alignItems: "flex-start" })}
+    >
+      {/* read-only: a tray block has no menu nor insert target; it is dragged as a whole */}
+      <div ref={drag.setNodeRef} {...drag.listeners} css={css({ touchAction: "none", opacity: drag.isDragging ? 0.5 : 1 })}>
+        <BlockEditingContext.Provider value={undefined}>
+          <BlockNodeView
+            node={props.root}
+            settings={{
+              ...props.settings,
+              rootLessListKey: `${props.settings.rootLessListKey}~tray.${index}`,
+              typeBadges: undefined,
+            }}
+          />
+        </BlockEditingContext.Provider>
+      </div>
+      <span css={css({ display: "flex", gap: "4px" })}>
+        <ToolButton
+          testId={`block-tray-place:${index}`}
+          label={placing ? "Click an insert target or Replace with to put this block" : "Place this block"}
+          colors={props.colors}
+          pressed={placing}
+          onClick={() => editing.arm(placing ? undefined : { kind: "tray", index })}
+        >
+          Place
+        </ToolButton>
+        <ToolButton
+          testId={`block-tray-discard:${index}`}
+          label="Discard this block"
+          colors={props.colors}
+          onClick={() => editing.discardTrayBlock(index)}
+        >
+          Discard
+        </ToolButton>
+      </span>
+    </div>
   );
 }
 
@@ -605,51 +636,53 @@ export const BlockEditorView = React.memo(function BlockEditorView(props: BlockE
   );
   return (
     <BlockEditingContext.Provider value={editing}>
-      <div data-testid={`block-editor:${props.rootLessListKey}`} css={css({ color: colors.text })}>
-        <div css={css({ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "4px", margin: "2px 0 4px" })}>
-          <ToolButton testId="block-expand-all" label="Expand all blocks" colors={colors} onClick={() => foldAll("expanded")}>
-            Expand all
-          </ToolButton>
-          <ToolButton testId="block-collapse-all" label="Collapse all blocks" colors={colors} onClick={() => foldAll("collapsed")}>
-            Collapse all
-          </ToolButton>
-          <ToolButton
-            testId="block-zoom-out"
-            label="Zoom out"
-            colors={colors}
-            disabled={zoom <= ZOOM_MIN}
-            onClick={() => changeZoom(-ZOOM_STEP)}
-          >
-            −
-          </ToolButton>
-          <span data-testid="block-zoom-level" css={css({ fontSize: "12px", minWidth: "4.5ch", textAlign: "center" })}>
-            {`${Math.round(zoom * 100)} %`}
-          </span>
-          <ToolButton
-            testId="block-zoom-in"
-            label="Zoom in"
-            colors={colors}
-            disabled={zoom >= ZOOM_MAX}
-            onClick={() => changeZoom(ZOOM_STEP)}
-          >
-            +
-          </ToolButton>
-        </div>
-        <div css={css({ display: "flex", gap: "8px", alignItems: "flex-start" })}>
-          <BlockPalette
-            blockEditor={colors.blockEditor}
-            text={colors.text}
-            textSecondary={colors.textSecondary}
-            border={colors.border}
-          />
-          <div css={css({ overflowX: "auto", padding: "8px 4px", minWidth: 0, flexGrow: 1 })}>
-            <div css={css({ zoom })}>
-              <BlockNodeView key={fold.generation} node={tree.root} settings={settings} />
+      <BlockDndContext colors={colors}>
+        <div data-testid={`block-editor:${props.rootLessListKey}`} css={css({ color: colors.text })}>
+          <div css={css({ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "4px", margin: "2px 0 4px" })}>
+            <ToolButton testId="block-expand-all" label="Expand all blocks" colors={colors} onClick={() => foldAll("expanded")}>
+              Expand all
+            </ToolButton>
+            <ToolButton testId="block-collapse-all" label="Collapse all blocks" colors={colors} onClick={() => foldAll("collapsed")}>
+              Collapse all
+            </ToolButton>
+            <ToolButton
+              testId="block-zoom-out"
+              label="Zoom out"
+              colors={colors}
+              disabled={zoom <= ZOOM_MIN}
+              onClick={() => changeZoom(-ZOOM_STEP)}
+            >
+              −
+            </ToolButton>
+            <span data-testid="block-zoom-level" css={css({ fontSize: "12px", minWidth: "4.5ch", textAlign: "center" })}>
+              {`${Math.round(zoom * 100)} %`}
+            </span>
+            <ToolButton
+              testId="block-zoom-in"
+              label="Zoom in"
+              colors={colors}
+              disabled={zoom >= ZOOM_MAX}
+              onClick={() => changeZoom(ZOOM_STEP)}
+            >
+              +
+            </ToolButton>
+          </div>
+          <div css={css({ display: "flex", gap: "8px", alignItems: "flex-start" })}>
+            <BlockPalette
+              blockEditor={colors.blockEditor}
+              text={colors.text}
+              textSecondary={colors.textSecondary}
+              border={colors.border}
+            />
+            <div css={css({ overflowX: "auto", padding: "8px 4px", minWidth: 0, flexGrow: 1 })}>
+              <div css={css({ zoom })}>
+                <BlockNodeView key={fold.generation} node={tree.root} settings={settings} />
+              </div>
+              <BlockTray settings={settings} colors={colors} />
             </div>
-            <BlockTray settings={settings} colors={colors} />
           </div>
         </div>
-      </div>
+      </BlockDndContext>
     </BlockEditingContext.Provider>
   );
 });
