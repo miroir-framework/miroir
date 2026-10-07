@@ -1515,6 +1515,147 @@
           },
           {
             "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "the define header: each parameter in order, with whether the body reads it",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerDefinitionEdit",
+              "export": "transformerDefinitionParameterUses"
+            },
+            "arguments": [
+              {
+                "uuid": "3f0f6a4e-2b1c-4d8e-9a7b-5c6d7e8f9a0b",
+                "parentName": "TransformerDefinition",
+                "parentUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
+                "name": "describe",
+                "defaultLabel": "describe",
+                "transformerInterface": {
+                  "transformerParameterSchema": {
+                    "transformerType": {
+                      "type": "literal",
+                      "definition": "describe"
+                    },
+                    "transformerDefinition": {
+                      "type": "object",
+                      "definition": {
+                        "book": {
+                          "type": "union",
+                          "definition": [
+                            {
+                              "type": "schemaReference",
+                              "definition": {
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "coreTransformerForBuildPlusRuntime"
+                              }
+                            },
+                            {
+                              "type": "any"
+                            }
+                          ]
+                        },
+                        "books": {
+                          "type": "union",
+                          "definition": [
+                            {
+                              "type": "schemaReference",
+                              "definition": {
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "coreTransformerForBuildPlusRuntime"
+                              }
+                            },
+                            {
+                              "type": "any"
+                            }
+                          ]
+                        },
+                        "author": {
+                          "type": "union",
+                          "definition": [
+                            {
+                              "type": "schemaReference",
+                              "definition": {
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "coreTransformerForBuildPlusRuntime"
+                              }
+                            },
+                            {
+                              "type": "any"
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  },
+                  "transformerResultSchema": {
+                    "returns": "mlSchema",
+                    "definition": {
+                      "type": "any"
+                    }
+                  }
+                },
+                "transformerImplementation": {
+                  "transformerImplementationType": "transformer",
+                  "definition": {
+                    "transformerType": "createObject",
+                    "interpolation": "runtime",
+                    "definition": {
+                      "title": {
+                        "transformerType": "getFromContext",
+                        "interpolation": "runtime",
+                        "referencePath": [
+                          "book",
+                          "title"
+                        ]
+                      },
+                      "whole": {
+                        "transformerType": "getFromContext",
+                        "interpolation": "runtime",
+                        "referenceName": "book"
+                      },
+                      "kept": {
+                        "transformerType": "returnValue",
+                        "interpolation": "runtime",
+                        "value": {
+                          "transformerType": "getFromContext",
+                          "interpolation": "runtime",
+                          "referenceName": "book"
+                        }
+                      },
+                      "each": {
+                        "transformerType": "mapList",
+                        "interpolation": "runtime",
+                        "applyTo": {
+                          "transformerType": "getFromContext",
+                          "interpolation": "runtime",
+                          "referenceName": "books"
+                        },
+                        "referenceToOuterObject": "book",
+                        "elementTransformer": {
+                          "transformerType": "getFromContext",
+                          "interpolation": "runtime",
+                          "referenceName": "book"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "expectedValue": [
+              {
+                "name": "book",
+                "read": true
+              },
+              {
+                "name": "books",
+                "read": true
+              },
+              {
+                "name": "author",
+                "read": false
+              }
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
             "miroirTestLabel": "a transformer saved as a composite: its free names are its parameters, its result schema is inferred",
             "functionRef": {
               "module": "miroir-core/2_domain/TransformerDefinitionEdit",
@@ -1597,6 +1738,32 @@
                 }
               }
             ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "an application's TransformerDefinitions are in its model, where Save as puts them",
+            "functionRef": {
+              "module": "miroir-core/1_core/Model",
+              "export": "getApplicationSection"
+            },
+            "arguments": [
+              "5af03c98-fe5e-490b-b08f-e1230971c57f",
+              "a557419d-a288-4fb8-8a1e-971c86c113b8"
+            ],
+            "expectedValue": "model"
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "Miroir's TransformerDefinitions are in its data",
+            "functionRef": {
+              "module": "miroir-core/1_core/Model",
+              "export": "getApplicationSection"
+            },
+            "arguments": [
+              "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+              "a557419d-a288-4fb8-8a1e-971c86c113b8"
+            ],
+            "expectedValue": "data"
           }
         ]
       }

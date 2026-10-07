@@ -45,9 +45,9 @@ Working branch: `claude/502-block-editor-define-blocks`
 | 2 | The deployment schema has a branch per application composite | ✅ | `fn.transformer.registry` union cases, `schemaForDeployment.unit.test.ts` |
 | 3 | The editor and the block view read the registry | ✅ | `ui.blockEditing` composite case |
 | 4 | Postgres reads the registry | ➡️ moved to the server issue (A, 2026-10-07) | — |
-| 5 | Define block | ⬜ | `fn.blockModel` define cases, `ui.blockEditing` |
-| 6 | Parameters: add, rename, remove | 🟡 core done, header UI open | `fn.transformer.registry` "define block parameters" (AC 2) |
-| 7 | Save as TransformerDefinition; palette; use (runner option) | ⬜ | `ui.blockEditing` save case (AC 1) |
+| 5 | Define block | ✅ | `fn.transformer.registry` header case, `ui.blockEditing` defined-mode case |
+| 6 | Parameters: add, rename, remove | ✅ | `fn.transformer.registry` "define block parameters" (AC 2), `ui.blockEditing` rename |
+| 7 | Save as TransformerDefinition; palette; use (runner option) | ✅ | `ui.blockEditing` save case (AC 1) |
 | 8 | Docs, nonreg, AC | ⬜ | nonreg, AC checklist |
 
 ---
@@ -122,6 +122,12 @@ RED: `fn.transformer.treeEdit` `renameTransformerParameter`: references follow, 
 
 RED: `ui.blockEditing` (AC 1): build a transformer, save it as `bookTitle`, find it in the palette, use it in another transformer, the result bubble shows the expected value. GREEN: the Save dialog and action.
 
+**Realization, slices 5 to 7 (2026-10-07).** The define header: `BlockDefineContext` (`BlockViewMode.tsx`) carries the name, the parameters with their read flags (`transformerDefinitionParameterUses`) and the add, rename and remove changes; `BlockEditorView` shows `BlockDefineHeader` above the root block of the field it names, adds the parameters to the context names of the root (the palette, the insert targets and Replace with offer them), and marks no block build. A header parameter is armed or dragged like a palette variable. The TransformerEditor's `TransformerDefinitionEditor` gives the context in "defined" mode for a composite: a draft of the definition, keyed by uuid, holds the parameter changes; a rename also writes the body. `TransformerDefinitionSave.tsx`: Save as TransformerDefinition (name typed in place, `compositeTransformerDefinition`, `createInstance` in a `transactionalInstanceAction` for a model section) and, in defined mode, Save `<name>` (`updateInstance`, result schema inferred again). The define header is shown in the TransformerEditor only, not in the Report instance editor of a TransformerDefinition (left out: its parameters are in a sibling field of the form).
+
+Two bugs found on the way, both in defined mode for an application: `getApplicationSection` sent an application's TransformerDefinitions to the data section, as the TransformerDefinition Entity is not in the meta-model's entity list, so the transformer select listed none and `useTransformer` fetched none (now `model`, `fn.transformer.registry` cases); `useTransformer` built its query once, without `transformerUuid` and `application` in the memo dependencies, so a transformer chosen after mount was never fetched. Tests: `ui.blockEditing` suite "TransformerEditor on an application with a composite", cases "a transformer saved as a TransformerDefinition is in the palette, and a transformer using it runs it" (AC 1) and "a composite in defined mode is a define block; renaming its parameter renames its reads, and Save keeps it". 175 component leaves.
+
 ## Slice 8 — Docs, nonreg, AC
 
 `docs/reference/transformers.md` gets define blocks, Save and the registry; file the server issue; `nonreg:filesystem`, Postgres nonreg for slice 4; AC check.
+
+**Realization (2026-10-07).** Docs: "Composite TransformerDefinitions: define blocks and Save" in `docs/reference/transformers.md`. The server side and the Postgres translation of composites are #519.

@@ -209,6 +209,9 @@ export function getApplicationSection(
   if (applicationUuid == selfApplicationMiroir.uuid) {
     return metaMetaModelEntityUuids.includes(entityUuid) ? "model" : "data";
   }
+  // #502: an application's TransformerDefinitions are in its model (Library's library_model), as
+  // the local cache reads them, though the Entity is not in the meta-model's entity list
+  if (entityUuid === entityTransformerDefinition.uuid) return "model";
   return metaModelEntityUuids.includes(entityUuid) ? "model" : "data";
 }
 

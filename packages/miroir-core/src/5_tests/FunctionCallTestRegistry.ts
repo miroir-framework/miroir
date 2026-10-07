@@ -38,6 +38,7 @@ import { mlUnion_recursivelyUnfold } from "../1_core/mls/mlUnion_RecursivelyUnfo
 import { localizeMlSchemaReferenceContext } from "../1_core/mls/MlsUnfoldSchemaOnce";
 import { resolveQueryTemplateWithExtractorCombinerTransformer } from "../2_domain/Templates";
 import { referencePathAttributeNames, resolveTransformerResultSchema } from "../2_domain/Transformer_ResultSchema";
+import { getApplicationSection } from "../1_core/Model";
 import {
   addTransformerParameter,
   compositeTransformerDefinition,
@@ -46,6 +47,7 @@ import {
   removeTransformerParameter,
   renameContextName,
   renameTransformerParameter,
+  transformerDefinitionParameterUses,
 } from "../2_domain/TransformerDefinitionEdit";
 import {
   applicationTransformerBranches,
@@ -295,6 +297,9 @@ const FUNCTION_CALL_REGISTRY: Record<
     transformerDefinitionRegistryConflicts: transformerDefinitionRegistryConflicts as WhitelistedFunction,
     transformerDefinitionRegistryOf: transformerDefinitionRegistryOf as WhitelistedFunction,
   },
+  "miroir-core/1_core/Model": {
+    getApplicationSection: getApplicationSection as WhitelistedFunction,
+  },
   "miroir-core/2_domain/TransformerDefinitionEdit": {
     addTransformerParameter: addTransformerParameter as WhitelistedFunction,
     compositeTransformerDefinition: compositeTransformerDefinition as WhitelistedFunction,
@@ -303,6 +308,7 @@ const FUNCTION_CALL_REGISTRY: Record<
     removeTransformerParameter: removeTransformerParameter as WhitelistedFunction,
     renameContextName: renameContextName as WhitelistedFunction,
     renameTransformerParameter: renameTransformerParameter as WhitelistedFunction,
+    transformerDefinitionParameterUses: transformerDefinitionParameterUses as WhitelistedFunction,
   },
   "miroir-core/2_domain/TransformerSubtreeRun": {
     transformerSubtreeRuns: transformerSubtreeRuns as WhitelistedFunction,

@@ -138,6 +138,18 @@ export function transformerDefinitionParameters(definition: TransformerDefinitio
   >;
 }
 
+/**
+ * The header of the define block of a composite: its parameters in order, each with whether its
+ * body reads it (a parameter it reads cannot be removed).
+ */
+export function transformerDefinitionParameterUses(definition: TransformerDefinition): { name: string; read: boolean }[] {
+  const body = bodyOf(definition);
+  return Object.keys(transformerDefinitionParameters(definition)).map((name) => ({
+    name,
+    read: contextNameReadPaths(body, name).length > 0,
+  }));
+}
+
 function withParameters(definition: TransformerDefinition, parameters: Record<string, MlElement>): TransformerDefinition {
   const parameterSchema = definition.transformerInterface.transformerParameterSchema;
   return {

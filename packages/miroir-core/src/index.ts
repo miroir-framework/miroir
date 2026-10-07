@@ -1396,6 +1396,7 @@ export {
   renameContextName,
   renameTransformerParameter,
   transformerDefinitionParameters,
+  transformerDefinitionParameterUses,
 } from "./2_domain/TransformerDefinitionEdit.js";
 export {
   applicationTransformerBranchName,

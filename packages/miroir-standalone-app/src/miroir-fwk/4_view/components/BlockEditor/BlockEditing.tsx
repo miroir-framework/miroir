@@ -199,7 +199,7 @@ export function withReferencePath(node: Record<string, unknown>, referencePath: 
 /**
  * The editing context of a block view whose value is written by `commit`, with the tray `tray`
  * changed by `changeTray`. The editor's run input, when it runs blocks, gives the names and the
- * input type of the root.
+ * input type of the root. #502: the parameters of a define block are context names of its body.
  */
 export function useBlockEditingValue(
   root: unknown,
@@ -208,13 +208,14 @@ export function useBlockEditingValue(
   tray?: unknown[],
   changeTray?: (update: TrayUpdate) => void,
   runInput?: BlockRunInput,
+  defineParameters?: string[],
 ): BlockEditing | undefined {
   const rootEnvironment = useMemo(
     (): TransformerEnvironment => ({
-      contextNames: Object.keys(runInput?.contextResults ?? {}),
+      contextNames: [...new Set([...Object.keys(runInput?.contextResults ?? {}), ...(defineParameters ?? [])])],
       parameterNames: Object.keys(runInput?.transformerParams ?? {}),
     }),
-    [runInput],
+    [runInput, defineParameters],
   );
   // #502: the edited application's environment, whose registry has its composite TransformerDefinitions
   const { modelEnvironment, transformerDefinitions } = useBlockModelEnvironment();
