@@ -244,7 +244,7 @@ Edit the `value` of a `returnValue` inline (Enter commits, Escape cancels, a num
 
 ## Slice 6 — Build / runtime switch
 
-**Status:** ⬜
+**Status:** ✅
 
 ### 6.1 RED
 
@@ -253,6 +253,11 @@ A block with no `interpolation` (shown as build) switched to runtime: the JSON t
 ### 6.2 GREEN
 
 `block-action-interpolation:<id>` menu entry.
+
+### Realization
+
+- The entry is `block-action-interpolation` (the menu belongs to one block, so its entries need no id, as for `block-action-replace` and `block-action-tray`). It reads "Switch to runtime" on a build block or one with no `interpolation`, "Switch to build" on a runtime block, and writes the attribute on that node only, not its subtree.
+- `ui.blockEditing` 14 of 14 (158 → 159 leaves).
 
 ---
 

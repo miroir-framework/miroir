@@ -296,6 +296,15 @@ export function BlockNodeActions(props: { path: BlockPath; blockId: string }) {
       };
       entries.push({ testId: "block-action-replace", label: `Replace with ${armedLabel(armed)}`, onClick: replaceWithArmed });
     }
+    // an absent interpolation is evaluated as build (analysis D2): the switch writes it
+    const node = valueAtPath(editing.root, props.path);
+    const interpolation = isRecord(node) && node.interpolation === "runtime" ? "runtime" : "build";
+    const switchedTo = interpolation === "runtime" ? "build" : "runtime";
+    entries.push({
+      testId: "block-action-interpolation",
+      label: `Switch to ${switchedTo}`,
+      onClick: () => replace({ ...(node as Record<string, unknown>), interpolation: switchedTo }),
+    });
     if (editing.tray) {
       entries.push({ testId: "block-action-tray", label: "Move to tray", onClick: () => editing.moveToTray(props.path) });
     }

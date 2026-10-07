@@ -1229,6 +1229,126 @@
                 "value": "{\n  \"transformerType\": \"returnValue\",\n  \"mlSchema\": {\n    \"type\": \"number\"\n  },\n  \"value\": \"seize value...\"\n}"
               }
             ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: a block switched from build to runtime and back",
+            "steps": [
+              {
+                "step": "click",
+                "label": "choose Blocks",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "a block with no interpolation is marked as build",
+                "target": {
+                  "byTestId": "block:transformer"
+                },
+                "attribute": "data-build-marking",
+                "value": "dashedOutline",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "open the node actions of the root block",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Switch to runtime",
+                "target": {
+                  "byTestId": "block-action-interpolation"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the block is runtime",
+                "target": {
+                  "byTestId": "block:transformer"
+                },
+                "attribute": "data-interpolation",
+                "value": "runtime",
+                "timeout": 2000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the build marking is gone",
+                "target": {
+                  "byTestId": "block:transformer"
+                },
+                "attribute": "data-build-marking",
+                "value": "none",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "choose JSON",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:json"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the value",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "timeout": 2000,
+                "value": "{\n  \"transformerType\": \"returnValue\",\n  \"mlSchema\": {\n    \"type\": \"string\"\n  },\n  \"value\": \"seize value...\",\n  \"interpolation\": \"runtime\"\n}"
+              },
+              {
+                "step": "click",
+                "label": "choose Blocks again",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                }
+              },
+              {
+                "step": "click",
+                "label": "open the node actions of the root block again",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Switch to build",
+                "target": {
+                  "byTestId": "block-action-interpolation"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the block is marked as build again",
+                "target": {
+                  "byTestId": "block:transformer"
+                },
+                "attribute": "data-build-marking",
+                "value": "dashedOutline",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "choose JSON again",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:json"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the value",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "timeout": 2000,
+                "value": "{\n  \"transformerType\": \"returnValue\",\n  \"mlSchema\": {\n    \"type\": \"string\"\n  },\n  \"value\": \"seize value...\",\n  \"interpolation\": \"build\"\n}"
+              }
+            ]
           }
         ]
       }
