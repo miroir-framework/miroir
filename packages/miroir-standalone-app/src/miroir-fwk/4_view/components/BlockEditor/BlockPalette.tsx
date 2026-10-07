@@ -16,6 +16,8 @@ import { useBlockModelEnvironment } from "./BlockViewMode.js";
 // #501: below the types, the variables: the names visible somewhere in the value, in two groups,
 // Context (getFromContext) and Parameters (getFromParameters). An armed variable is offered only
 // where its name is visible.
+// #505: when the value is an action sequence, the Endpoint actions come first, grouped by Endpoint;
+// an armed action goes at a step of a sequence.
 // ################################################################################################
 
 export const BlockPalette = React.memo(function BlockPalette(props: {
@@ -48,6 +50,27 @@ export const BlockPalette = React.memo(function BlockPalette(props: {
         flexShrink: 0,
       })}
     >
+      {editing.actionGroups.map((group) => (
+        <div
+          key={group.endpointUuid}
+          role="group"
+          aria-label={group.endpointName}
+          data-testid={`block-palette-actions:${group.endpointName}`}
+        >
+          <div css={css({ fontSize: "11px", color: props.textSecondary, margin: "2px 0" })}>{group.endpointName}</div>
+          <div css={css({ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "3px" })}>
+            {group.actionTypes.map((actionType) => (
+              <ActionEntry
+                key={actionType}
+                actionType={actionType}
+                endpointName={group.endpointName}
+                color={blockCategoryColor(props.blockEditor, group.endpointName)}
+                text={props.text}
+              />
+            ))}
+          </div>
+        </div>
+      ))}
       {groups.map((group) => {
         const color = blockCategoryColor(props.blockEditor, group.category);
         return (
@@ -164,6 +187,43 @@ function PaletteEntry(props: { transformerType: string; color: string; text: str
       })}
     >
       {transformerType}
+    </button>
+  );
+}
+
+function ActionEntry(props: { actionType: string; endpointName: string; color: string; text: string }) {
+  const editing = useBlockEditing();
+  const { actionType } = props;
+  const { setNodeRef, listeners } = useBlockDraggable(`drag:action:${actionType}`, { kind: "action", actionType });
+  if (!editing) {
+    return null;
+  }
+  const armed = editing.armed?.kind === "action" && editing.armed.actionType === actionType;
+  return (
+    <button
+      ref={setNodeRef}
+      {...listeners}
+      type="button"
+      data-testid={`block-palette-action:${actionType}`}
+      data-endpoint={props.endpointName}
+      aria-pressed={armed}
+      title={armed ? `${actionType}: click a step target or Replace with` : `Choose the ${props.endpointName} action ${actionType}`}
+      onClick={() => editing.arm(armed ? undefined : { kind: "action", actionType })}
+      css={css({
+        font: "inherit",
+        fontSize: "12px",
+        fontWeight: 700,
+        padding: "1px 8px",
+        border: armed ? `2px solid ${props.text}` : "1.5px solid rgba(0,0,0,.22)",
+        borderRadius: "2px 2px 6px 6px",
+        background: props.color,
+        color: "#ffffff",
+        cursor: "pointer",
+        whiteSpace: "nowrap",
+        touchAction: "none",
+      })}
+    >
+      {actionType}
     </button>
   );
 }

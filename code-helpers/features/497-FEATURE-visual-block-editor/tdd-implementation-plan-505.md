@@ -46,7 +46,7 @@ Working branch: `claude/505-block-editor-edit-sequences`
 | 0 | This plan | ✅ | — |
 | 1 | Sequence edits, default actions, action palette (core) | ✅ | `fn.blockModel` "sequence editing" cases |
 | 2 | Runner hat and form fields (core) | ✅ | `fn.blockModel` "runner hat" cases |
-| 3 | Editing sequences in the block view | ⬜ | `ui.blockEditor` "editing a Runner sequence" |
+| 3 | Editing sequences in the block view | ✅ | `ui.blockEditor` "editing a Runner sequence" |
 | 4 | The "when run" hat in the block view | ⬜ | `ui.blockEditor` hat cases |
 | 5 | Sequence editor, Save as Runner, Run (AC 1, AC 2) | ⬜ | `ui.blockEditing` "SequenceEditor on the Library" |
 | 6 | Docs, nonreg, PR | ⬜ | nonreg |
@@ -89,6 +89,8 @@ GREEN: `RunnerHat.ts`.
 
 RED: `ui.blockEditor` suite "editing a Runner sequence" (TransformerBlocks `editable`): the action palette lists createInstance under InstanceEndpoint and no assertion; a createInstance put at the end of the steps; a step moved up and removed from its menu; a transformer from the palette in an empty payload slot; a literal of a payload replaced by a variable.
 GREEN: `BlockEditing` on the generic edits, action armed blocks, `ActionNodeActions`, palette section, value replace targets, editable labels.
+
+**Realization (2026-10-07):** `BlockEditing` uses `blockInsertPositions`, `insertBlockNode`, `moveBlockNode`, `removeBlockNode` and `blockEnvironmentAt` for both kinds of value; `ArmedBlock` has an `action` kind (`defaultActionNode`, labels kept free); `accepts` puts an action only at a step and nothing else there; `replaceable` (`isValuePosition`) gives literals, objects and lists below a payload a `block-replace:` target (also a drop target). `BlockActionNodeActions` (`block-actions:<id>`): Replace with, Move up, Move down, Move to tray, Remove. Action labels are `BlockField`s. The palette lists the Endpoint actions first (`block-palette-action:<type>`, `data-endpoint`), with the assertion only when `withTestAssertion` is given to `BlockEditorView`. The tray shows any block (`blockTree`). `TransformerBlocks` takes `editable` (value as `block-value`'s `data-value`). 6 cases in "editing a Runner sequence"; ui.blockEditor and ui.blockEditing 55/55; `EXPECTED_LEAF_COUNT` 186.
 
 ## Slice 4 — The "when run" hat
 

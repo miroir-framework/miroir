@@ -3,7 +3,7 @@ import {
   RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY,
   transformer_metaModel_entityDefinition_extractAttributes_json,
 } from "miroir-app-miroir";
-import React, { lazy, Suspense } from "react";
+import React, { lazy, Suspense, useCallback, useState } from "react";
 
 import { BlockEditorDisplayContext } from "../../4_view/components/BlockEditor/BlockEditorDisplay.js";
 
@@ -14,6 +14,8 @@ import { BlockEditorDisplayContext } from "../../4_view/components/BlockEditor/B
 // as in the value editor. `buildMarking` stands for the ViewParams setting of the same name.
 // #504: with `runner`, the block view of a Miroir Runner's composite action sequence instead,
 // read-only, its blocks with the ids of the Runner form's cards (`definition.compositeActionSequence…`).
+// #505: with `editable`, the block view edits a copy of the value, with a tray; the edited value is
+// the `data-value` of `block-value`.
 // ################################################################################################
 
 const BlockEditorView = lazy(async () => ({
@@ -41,6 +43,8 @@ export interface TransformerBlocksForTestProps {
   runner?: string;
   /** How build transformers are marked; absent: as the ViewParams say (dashed outline by default). */
   buildMarking?: BlockEditorBuildMarking;
+  /** #505: the block view edits the value; edits act at once, as under an undo history. */
+  editable?: boolean;
 }
 
 /** The value shown and the path of its blocks, or why there is none. */
@@ -66,12 +70,35 @@ export function TransformerBlocksForTest(props: TransformerBlocksForTestProps) {
   }
   const view = (
     <Suspense fallback={<span>Loading block editor...</span>}>
-      <BlockEditorView value={shown.value} rootLessListKey={shown.rootLessListKey} />
+      {props.editable ? (
+        <EditableBlocks value={shown.value} rootLessListKey={shown.rootLessListKey} />
+      ) : (
+        <BlockEditorView value={shown.value} rootLessListKey={shown.rootLessListKey} />
+      )}
     </Suspense>
   );
   return props.buildMarking ? (
     <BlockEditorDisplayContext.Provider value={{ buildMarking: props.buildMarking }}>{view}</BlockEditorDisplayContext.Provider>
   ) : (
     view
+  );
+}
+
+function EditableBlocks(props: { value: unknown; rootLessListKey: string }) {
+  const [value, setValue] = useState(props.value);
+  const [tray, setTray] = useState<unknown[]>([]);
+  const changeTray = useCallback((update: (current: unknown[]) => unknown[]) => setTray(update), []);
+  return (
+    <>
+      <span data-testid="block-value" data-value={JSON.stringify(value)} hidden />
+      <BlockEditorView
+        value={value}
+        rootLessListKey={props.rootLessListKey}
+        onCommit={setValue}
+        undoable
+        tray={tray}
+        onTrayChange={changeTray}
+      />
+    </>
   );
 }

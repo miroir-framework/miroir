@@ -3,7 +3,6 @@ import { css } from "@emotion/react";
 import {
   blockTree,
   isBlockAction,
-  transformerBlockTree,
   type ActionBlock,
   type BlockEditorBuildMarking,
   type BlockNode,
@@ -21,6 +20,8 @@ import { useBlockEditorBuildMarking } from "./BlockEditorDisplay.js";
 import { BlockDefineHeader } from "./BlockDefineHeader.js";
 import { BlockDndContext, useBlockDraggable, useBlockDroppable, useDraggingBlock } from "./BlockDragDrop.js";
 import {
+  armedLabel,
+  BlockActionNodeActions,
   BlockEditingContext,
   BlockNodeActions,
   pathKey,
@@ -62,6 +63,9 @@ import { BlockDefineContext, useBlockModelEnvironment } from "./BlockViewMode.js
 // action with its payload rows, the templates of a sequence above its steps, and the payload of a
 // query step as one collapsed block. Build transformers are marked by the step at which they are
 // evaluated (`evaluatedAt`), so templates and the children of runtime blocks are not.
+// #505: with a writer, an action sequence is edited as a transformer is: the palette offers the
+// Endpoint actions, a step goes at the end of the steps, an action block has its menu and an
+// editable label, and a literal, object or list below a payload can be replaced by the armed block.
 // ################################################################################################
 
 export interface BlockEditorViewProps {
@@ -78,6 +82,8 @@ export interface BlockEditorViewProps {
   onTrayChange?: (update: TrayUpdate) => void;
   /** The type badges of the editor (#453): a flag on each block that has one. */
   typeBadges?: TransformerTypeBadge[];
+  /** #505: the palette offers the test assertion action: the value is a test sequence. */
+  withTestAssertion?: boolean;
 }
 
 type InitialCollapse = "default" | "collapsed" | "expanded";
@@ -239,6 +245,48 @@ function BlockTypeFlag(props: { id: string; badge: TransformerTypeBadge | undefi
 /** The blocks that read a name in scope, with a path picker (#501). */
 const VARIABLE_TYPES = new Set(["getFromContext", "getFromParameters"]);
 
+/**
+ * #505: replaces the literal, object or list at `path` by the armed block, where a block can sit
+ * there (below a payload or in a transformer slot); a drop target for dragged blocks as well.
+ */
+function ValueReplaceTarget(props: { path: BlockPath; id: string; color: string }) {
+  const editing = useBlockEditing();
+  const replaceable = editing?.replaceable(props.path) ?? false;
+  const drop = useBlockDroppable(`drop:replace:${props.id}`, replaceable ? { kind: "replace", path: props.path } : undefined);
+  const armed = editing?.armed;
+  if (!editing || !replaceable || !armed || !editing.accepts(armed, props.path)) {
+    return <span ref={drop.setNodeRef} />;
+  }
+  const label = `Replace with ${armedLabel(armed)}`;
+  return (
+    <button
+      ref={drop.setNodeRef}
+      type="button"
+      data-testid={`block-replace:${props.id}`}
+      aria-label={label}
+      title={label}
+      onClick={(event) => {
+        event.stopPropagation();
+        editing.replaceAt(armed, props.path);
+      }}
+      css={css({
+        font: "inherit",
+        fontSize: "12px",
+        height: "20px",
+        padding: "0 6px",
+        marginLeft: "4px",
+        border: `1px dashed ${props.color}`,
+        borderRadius: "6px",
+        background: drop.isOver ? "rgba(25,118,210,.25)" : "transparent",
+        color: "inherit",
+        cursor: "pointer",
+      })}
+    >
+      ⇄
+    </button>
+  );
+}
+
 /** An empty slot: its insert targets when editing, else a dashed box. */
 function EmptySlot(props: { path: BlockPath; settings: BlockSettings }) {
   const editing = useBlockEditing();
@@ -354,8 +402,16 @@ const ActionBlockView = React.memo(function ActionBlockView(props: {
   const partCount = node.rows.length + (sequence ? sequence.templates.length + sequence.steps.length : 0);
   const { collapsed, toggleButton, summary } = useCollapse(node, settings, partCount);
   const color = blockCategoryColor(settings.blockEditor, node.category);
+  const editing = useBlockEditing();
+  // #505: a step is dragged by its header, and takes an armed or dragged action in its place
+  const movable = editing !== undefined && node.path.length > 0;
+  const drag = useBlockDraggable(`drag:block:${id}`, movable ? { kind: "block", path: node.path } : undefined);
+  const drop = useBlockDroppable(`drop:replace:${id}`, movable ? { kind: "replace", path: node.path } : undefined);
+  const payloadPath = [...node.path, "payload"];
+  const idOf = (path: BlockPath) => blockId(settings.rootLessListKey, path);
   return (
     <div
+      ref={drop.setNodeRef}
       id={id}
       data-testid={`block:${id}`}
       data-block-kind={node.kind}
@@ -372,29 +428,45 @@ const ActionBlockView = React.memo(function ActionBlockView(props: {
         border: "1.5px solid rgba(0,0,0,.22)",
         // a command block: square top corners, as stacked in Scratch
         borderRadius: "2px 2px 8px 8px",
-        paddingBottom: partCount > 0 && !collapsed ? "6px" : 0,
+        paddingBottom: (partCount > 0 || sequence) && !collapsed ? "6px" : 0,
         verticalAlign: "top",
+        opacity: drag.isDragging ? 0.5 : 1,
+        ...(drop.isOver ? { boxShadow: "0 0 0 3px rgba(25,118,210,.6)" } : {}),
       })}
     >
       <div
+        ref={drag.setNodeRef}
+        {...drag.listeners}
         data-testid={`block-header:${id}`}
-        css={css({ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "4px 7px", padding: "4px 10px" })}
+        css={css({
+          display: "flex",
+          flexWrap: "wrap",
+          alignItems: "center",
+          gap: "4px 7px",
+          padding: "4px 10px",
+          touchAction: editing ? "none" : undefined,
+        })}
       >
         {toggleButton}
         <span css={css({ fontWeight: 700, whiteSpace: "nowrap" })}>{node.actionType}</span>
         <span css={css({ opacity: 0.85, fontSize: "11px" })}>{node.category}</span>
+        <BlockActionNodeActions path={node.path} blockId={id} />
         {node.label !== undefined && (
           <span data-testid={`block-label:${id}`} css={css({ opacity: 0.85, fontSize: "12px" })}>
-            {node.label}
+            {editing ? (
+              <BlockField value={node.label} path={[...node.path, "actionLabel"]} id={`${id}.actionLabel`} colors={settings} />
+            ) : (
+              node.label
+            )}
           </span>
         )}
         <HeaderParameters node={node} settings={settings} />
         {summary}
       </div>
-      {partCount > 0 && !collapsed && (
+      {(partCount > 0 || (sequence && editing)) && !collapsed && (
         <div css={mouthCss(settings)}>
           <BlockRows rows={node.rows} settings={settings} ownerType={node.actionType} />
-          {sequence && sequence.templates.length > 0 && (
+          {sequence && (sequence.templates.length > 0 || editing) && (
             <div data-testid={`block-templates:${id}`} css={css({ display: "flex", flexDirection: "column", gap: "4px" })}>
               <span css={css({ fontSize: "12px", color: settings.textSecondary })}>templates</span>
               {sequence.templates.map((template) => (
@@ -405,6 +477,9 @@ const ActionBlockView = React.memo(function ActionBlockView(props: {
                   <BlockNodeView node={template.node} settings={settings} />
                 </div>
               ))}
+              <span css={css({ display: "flex", gap: "4px", marginLeft: "8px" })}>
+                <BlockInsertTargets container={[...payloadPath, "templates"]} idOf={idOf} color={settings.border} />
+              </span>
             </div>
           )}
           {sequence && (
@@ -415,6 +490,7 @@ const ActionBlockView = React.memo(function ActionBlockView(props: {
               {sequence.steps.map((step, index) => (
                 <BlockNodeView key={index} node={step} settings={settings} />
               ))}
+              <BlockInsertTargets container={[...payloadPath, "actionSequence"]} idOf={idOf} color={settings.border} />
             </div>
           )}
         </div>
@@ -605,6 +681,7 @@ const StructureBlockView = React.memo(function StructureBlockView(props: {
         {toggleButton}
         {node.kind}
         {summary}
+        <ValueReplaceTarget path={node.path} id={id} color={settings.border} />
       </span>
       {!collapsed &&
         entries.map((entry) => (
@@ -642,6 +719,7 @@ const BlockNodeView = React.memo(function BlockNodeView(props: {
           title={node.quoted ? "Returned as is, not evaluated" : undefined}
         >
           <BlockField value={node.value} path={node.path} id={id} colors={settings} />
+          {!node.quoted && <ValueReplaceTarget path={node.path} id={id} color={settings.border} />}
         </span>
       );
     case "mlSchema":
@@ -666,12 +744,12 @@ const BlockNodeView = React.memo(function BlockNodeView(props: {
 });
 
 /** The tray: each block moved out, read-only, with Place (arms it) and Discard; a drop target for blocks. */
-function BlockTray(props: { settings: BlockSettings; colors: BlockColors }) {
+function BlockTray(props: { settings: BlockSettings; colors: BlockColors; what: string }) {
   const editing = useBlockEditing();
   const tray = editing?.tray;
   const { modelEnvironment } = useBlockModelEnvironment();
   const trees = useMemo(
-    () => (tray ?? []).map((block) => transformerBlockTree(block, { modelEnvironment }).root),
+    () => (tray ?? []).map((block) => blockTree(block, { modelEnvironment }).root),
     [tray, modelEnvironment],
   );
   const draggingBlock = useDraggingBlock();
@@ -693,8 +771,8 @@ function BlockTray(props: { settings: BlockSettings; colors: BlockColors }) {
     >
       <div css={css({ fontSize: "12px", color: props.colors.textSecondary, marginBottom: "4px" })}>
         {tray.length === 0
-          ? "Tray: drop a block here to take it out of the transformer"
-          : "Tray: blocks moved out of the transformer, not saved"}
+          ? `Tray: drop a block here to take it out of the ${props.what}`
+          : `Tray: blocks moved out of the ${props.what}, not saved`}
       </div>
       <div css={css({ display: "flex", flexWrap: "wrap", gap: "10px", alignItems: "flex-start" })}>
         {trees.map((root, index) => (
@@ -790,9 +868,8 @@ function ToolButton(props: {
 
 export const BlockEditorView = React.memo(function BlockEditorView(props: BlockEditorViewProps) {
   const { modelEnvironment } = useBlockModelEnvironment();
-  // #504: action sequences are read-only
   const action = useMemo(() => isBlockAction(props.value, modelEnvironment), [props.value, modelEnvironment]);
-  const onCommit = action ? undefined : props.onCommit;
+  const onCommit = props.onCommit;
   const editable = onCommit !== undefined;
   const definedBy = useContext(BlockDefineContext);
   const define = definedBy?.rootLessListKey === props.rootLessListKey ? definedBy : undefined;
@@ -810,10 +887,11 @@ export const BlockEditorView = React.memo(function BlockEditorView(props: BlockE
     props.value,
     onCommit,
     props.undoable ?? false,
-    action ? undefined : props.tray,
-    action ? undefined : props.onTrayChange,
+    props.tray,
+    props.onTrayChange,
     useBlockRunInput(),
     defineParameters,
+    props.withTestAssertion,
   );
   const colors = useBlockColors();
   const viewBuildMarking = useBlockEditorBuildMarking();
@@ -899,7 +977,7 @@ export const BlockEditorView = React.memo(function BlockEditorView(props: BlockE
                   <BlockNodeView key={fold.generation} node={tree.root} settings={settings} />
                 )}
               </div>
-              <BlockTray settings={settings} colors={colors} />
+              <BlockTray settings={settings} colors={colors} what={action ? "sequence" : "transformer"} />
             </div>
           </div>
         </div>
