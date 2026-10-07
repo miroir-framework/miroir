@@ -5,7 +5,7 @@
   "name": "ui.blockEditor",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "Block view of transformers: the TransformerEditor's Blocks / Form / JSON switch starts on Form, Blocks draws the transformer as blocks and Form brings the form back; the blocks of a stored TransformerDefinition show slots, parameters, object and list blocks and ML schema chips, collapse one by one or all at once, and zoom.",
+  "description": "Block view of transformers: the TransformerEditor's Blocks / Form / JSON switch starts on Form, Blocks draws the transformer as blocks and Form brings the form back; the blocks of a stored TransformerDefinition show slots, parameters, object and list blocks and ML schema chips, collapse one by one or all at once, and zoom; a Runner's composite action sequence shows as read-only stacked command blocks, a query step as one block, build transformers marked where they are evaluated at build.",
   "tags": [
     "ui",
     "editor",
@@ -796,6 +796,241 @@
                 "label": "no marker on the runtime predicate",
                 "target": {
                   "byTestId": "block-build-marker:transformerImplementation.definition.predicate"
+                },
+                "present": false
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "miroirTestType": "reactComponentTestSuite",
+        "miroirTestLabel": "createEntity Runner",
+        "component": "TransformerBlocks",
+        "componentProps": {
+          "runner": "createEntity"
+        },
+        "miroirTests": [
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "createEntity Runner: the createEntity Runner sequence is a stack of command blocks",
+            "steps": [
+              {
+                "step": "waitForAttribute",
+                "label": "the root is a sequence block",
+                "target": {
+                  "byTestId": "block:definition.compositeActionSequence"
+                },
+                "attribute": "data-block-kind",
+                "value": "sequence",
+                "timeout": 3000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the sequence is a DomainEndpoint action",
+                "target": {
+                  "byTestId": "block:definition.compositeActionSequence"
+                },
+                "attribute": "data-category",
+                "value": "DomainEndpoint"
+              },
+              {
+                "step": "expectElement",
+                "label": "its steps are stacked",
+                "target": {
+                  "byTestId": "block-steps:definition.compositeActionSequence"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "first step: the menu query",
+                "target": {
+                  "byTestId": "block:definition.compositeActionSequence.payload.actionSequence.0"
+                },
+                "attribute": "data-action-type",
+                "value": "compositeRunBoxedQueryAction"
+              },
+              {
+                "step": "expectElement",
+                "label": "its label in the header",
+                "target": {
+                  "byText": "getMenusForMenuLink"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "nameGivenToResult in the header",
+                "target": {
+                  "byTestId": "block-parameter:definition.compositeActionSequence.payload.actionSequence.0.nameGivenToResult"
+                },
+                "attribute": "data-value",
+                "value": "\"menuQueryResult\""
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "second step: createEntity",
+                "target": {
+                  "byTestId": "block:definition.compositeActionSequence.payload.actionSequence.1"
+                },
+                "attribute": "data-action-type",
+                "value": "createEntity"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "createEntity is a ModelEndpoint action",
+                "target": {
+                  "byTestId": "block:definition.compositeActionSequence.payload.actionSequence.1"
+                },
+                "attribute": "data-category",
+                "value": "ModelEndpoint"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "third step: createInstance",
+                "target": {
+                  "byTestId": "block:definition.compositeActionSequence.payload.actionSequence.2"
+                },
+                "attribute": "data-action-type",
+                "value": "createInstance"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "last step: commit",
+                "target": {
+                  "byTestId": "block:definition.compositeActionSequence.payload.actionSequence.5"
+                },
+                "attribute": "data-action-type",
+                "value": "commit"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "createEntity Runner: a query step is one query block, payload slots hold transformer blocks",
+            "steps": [
+              {
+                "step": "waitForAttribute",
+                "label": "the payload of the query step is a query block",
+                "target": {
+                  "byTestId": "block:definition.compositeActionSequence.payload.actionSequence.0.payload"
+                },
+                "attribute": "data-block-kind",
+                "value": "query",
+                "timeout": 3000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the query block names its query type",
+                "target": {
+                  "byTestId": "block:definition.compositeActionSequence.payload.actionSequence.0.payload"
+                },
+                "attribute": "data-query-type",
+                "value": "boxedQueryWithExtractorCombinerTransformer"
+              },
+              {
+                "step": "expectElement",
+                "label": "the query is folded: its extractors are not blocks",
+                "target": {
+                  "byTestId": "block:definition.compositeActionSequence.payload.actionSequence.0.payload.payload.query.extractors"
+                },
+                "present": false
+              },
+              {
+                "step": "expectElement",
+                "label": "createEntity has an application row",
+                "target": {
+                  "byTestId": "block-row:definition.compositeActionSequence.payload.actionSequence.1.payload.application"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the application slot holds a transformer block",
+                "target": {
+                  "byTestId": "block:definition.compositeActionSequence.payload.actionSequence.1.payload.application"
+                },
+                "attribute": "data-transformer-type",
+                "value": "mustacheStringTemplate"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the entities slot holds a list",
+                "target": {
+                  "byTestId": "block:definition.compositeActionSequence.payload.actionSequence.1.payload.entities"
+                },
+                "attribute": "data-block-kind",
+                "value": "list"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "createEntity Runner: build transformers are marked where they are evaluated at build, templates are not",
+            "steps": [
+              {
+                "step": "waitForAttribute",
+                "label": "a payload transformer with no interpolation is evaluated at build",
+                "target": {
+                  "byTestId": "block:definition.compositeActionSequence.payload.actionSequence.1.payload.application"
+                },
+                "attribute": "data-evaluated-at",
+                "value": "build",
+                "timeout": 3000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "so it is marked",
+                "target": {
+                  "byTestId": "block:definition.compositeActionSequence.payload.actionSequence.1.payload.application"
+                },
+                "attribute": "data-build-marking",
+                "value": "dashedOutline"
+              },
+              {
+                "step": "expectElement",
+                "label": "the templates are shown above the steps",
+                "target": {
+                  "byTestId": "block-templates:definition.compositeActionSequence"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "a template with no interpolation is evaluated at runtime",
+                "target": {
+                  "byTestId": "block:definition.compositeActionSequence.payload.templates.listReportUuid"
+                },
+                "attribute": "data-evaluated-at",
+                "value": "runtime"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "so it is not marked",
+                "target": {
+                  "byTestId": "block:definition.compositeActionSequence.payload.templates.listReportUuid"
+                },
+                "attribute": "data-build-marking",
+                "value": "none"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "createEntity Runner: an action sequence is read-only",
+            "steps": [
+              {
+                "step": "waitForAttribute",
+                "label": "the sequence is shown",
+                "target": {
+                  "byTestId": "block:definition.compositeActionSequence"
+                },
+                "attribute": "data-block-kind",
+                "value": "sequence",
+                "timeout": 3000
+              },
+              {
+                "step": "expectElement",
+                "label": "no palette",
+                "target": {
+                  "byTestId": "block-palette"
                 },
                 "present": false
               }

@@ -49,7 +49,7 @@ Working branch: `claude/504-block-editor-action-sequences`
 | 2 | Action registry (D12) | ✅ | `fn.blockModel` "action registry" cases |
 | 3 | Sequence block model; marks by evaluation step | ✅ | `fn.blockModel` "action sequences" cases |
 | 4 | Corpus sweep over every sequence (AC 1) | ✅ | `transformerBlockModelAssets.unit.test.ts` |
-| 5 | Sequence fields get the switch; read-only stacked blocks (AC 2) | ⬜ | `fn.blockView.fields`, `ui.blockEditor` createEntity Runner |
+| 5 | Sequence fields get the switch; read-only stacked blocks (AC 2) | ✅ | `fn.blockView.fields`, `ui.blockEditor` createEntity Runner |
 | 6 | Docs, nonreg, PR | ⬜ | nonreg |
 
 ---
@@ -104,6 +104,8 @@ GREEN: whatever slice 3 missed.
 
 RED: `fn.blockView.fields` sequence cases flip to roots (and their nested transformers stay non-roots); `ui.blockEditor` "createEntity Runner": the stacked command blocks with their action types, the query block, a payload transformer block, build marks.
 GREEN: predicate, read-only sequence rendering in `BlockEditorView`, `TransformerBlocks` `runner` prop.
+
+**Realization:** `isBlockViewRoot` takes the three sequence schemas, a union branch referencing one, and an `any` field whose `ifThenElseMMLS` tag names one; a field below any of them is no root. `fn.blockView.fields`: the sequence case flipped, 4 cases added. `BlockEditorView` maps the value with `blockTree`; an action value is read-only (no writer, palette, tray). Command blocks have square top corners and the Theme's fallback color (Endpoint names have no Theme color); a sequence shows its templates, then its stacked steps; a query block unfolds to its JSON. `TransformerBlocks` takes `runner` (kept `transformerDefinition`); `ui.blockEditor` suite "createEntity Runner", 4 leaves (`EXPECTED_LEAF_COUNT` 180). A real type check of the createEntity Runner or ModelEndpoint fails today (deep payload unions), so the key map is not there to switch on in the Runner form: the predicate is covered by the hand-built `fn.blockView.fields` entries.
 
 ## Slice 6 — Docs, nonreg, PR
 

@@ -1,11 +1,17 @@
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
 import {
+  blockTree,
+  isBlockAction,
   transformerBlockTree,
+  type ActionBlock,
   type BlockEditorBuildMarking,
   type BlockNode,
   type BlockPath,
+  type QueryBlock,
+  type SequenceBlock,
   type TransformerBlock,
+  type TransformerBlockRow,
 } from "miroir-core";
 import React, { useCallback, useContext, useMemo, useState } from "react";
 
@@ -52,6 +58,10 @@ import { BlockDefineContext, useBlockModelEnvironment } from "./BlockViewMode.js
 // #502: the body of a composite TransformerDefinition is shown under its define header
 // (BlockDefineHeader.tsx); its parameters are context names of the body, and the body is evaluated
 // at runtime, so no block of it is marked build.
+// #504: an action sequence, or a step, shows as stacked command blocks, read-only: one block per
+// action with its payload rows, the templates of a sequence above its steps, and the payload of a
+// query step as one collapsed block. Build transformers are marked by the step at which they are
+// evaluated (`evaluatedAt`), so templates and the children of runtime blocks are not.
 // ################################################################################################
 
 export interface BlockEditorViewProps {
@@ -146,7 +156,13 @@ function startsCollapsed(node: BlockNode, initialCollapse: InitialCollapse): boo
 
 function hiddenSummary(node: BlockNode, count: number): string {
   const [one, many] =
-    node.kind === "object" ? ["entry", "entries"] : node.kind === "list" ? ["item", "items"] : ["slot", "slots"];
+    node.kind === "object"
+      ? ["entry", "entries"]
+      : node.kind === "list"
+        ? ["item", "items"]
+        : node.kind === "sequence"
+          ? ["part", "parts"]
+          : ["slot", "slots"];
   return `${count} ${count === 1 ? one : many} hidden`;
 }
 
@@ -248,6 +264,212 @@ function EmptySlot(props: { path: BlockPath; settings: BlockSettings }) {
   );
 }
 
+/** The rows of a transformer or action block, in its mouth. */
+function BlockRows(props: { rows: TransformerBlockRow[]; settings: BlockSettings; ownerType: string }) {
+  const { rows, settings } = props;
+  return (
+    <>
+      {rows.map((row) => (
+        <div
+          key={row.name}
+          data-testid={`block-row:${blockId(settings.rootLessListKey, row.path)}`}
+          data-row-kind={row.kind}
+          css={css({ display: "flex", gap: "8px", alignItems: "flex-start", minWidth: 0 })}
+        >
+          <span
+            css={css({
+              color: row.kind === "undeclared" ? "#c62828" : settings.textSecondary,
+              fontSize: "12px",
+              paddingTop: "5px",
+              whiteSpace: "nowrap",
+            })}
+            title={row.kind === "undeclared" ? `${props.ownerType} does not declare ${row.name}` : undefined}
+          >
+            {row.kind === "undeclared" ? `⚠ ${row.name}` : row.name}
+          </span>
+          <span css={css({ minWidth: 0 })}>
+            {row.node ? (
+              <BlockNodeView node={row.node} settings={settings} />
+            ) : (
+              <EmptySlot path={row.path} settings={settings} />
+            )}
+          </span>
+        </div>
+      ))}
+    </>
+  );
+}
+
+/** The mouth of a block: where its rows, templates and steps sit. */
+function mouthCss(settings: BlockSettings) {
+  return css({
+    marginLeft: "16px",
+    background: settings.mouth,
+    color: settings.text,
+    borderRadius: "6px 0 0 6px",
+    padding: "6px 8px",
+    display: "flex",
+    flexDirection: "column",
+    gap: "6px",
+    minWidth: "120px",
+  });
+}
+
+/** The primitive parameters of a block's header. */
+function HeaderParameters(props: { node: TransformerBlock | ActionBlock | SequenceBlock; settings: BlockSettings }) {
+  const { node, settings } = props;
+  return (
+    <>
+      {node.parameters.map((parameter) => (
+        <span
+          key={parameter.name}
+          data-testid={`block-parameter:${blockId(settings.rootLessListKey, [...node.path, parameter.name])}`}
+          data-value={JSON.stringify(parameter.value)}
+          css={css({ display: "inline-flex", gap: "4px", alignItems: "center" })}
+        >
+          <span css={css({ opacity: 0.85, fontSize: "12px" })}>{parameter.name}</span>
+          <BlockField
+            value={parameter.value}
+            path={[...node.path, parameter.name]}
+            id={blockId(settings.rootLessListKey, [...node.path, parameter.name])}
+            colors={settings}
+          />
+        </span>
+      ))}
+    </>
+  );
+}
+
+/**
+ * #504: a command block: an action, or a sequence with its templates and its stacked steps. Its
+ * color is the fallback block color: the categories are Endpoint names, which the Theme has none for.
+ */
+const ActionBlockView = React.memo(function ActionBlockView(props: {
+  node: ActionBlock | SequenceBlock;
+  settings: BlockSettings;
+}) {
+  const { node, settings } = props;
+  const id = blockId(settings.rootLessListKey, node.path);
+  const sequence = node.kind === "sequence" ? node : undefined;
+  const partCount = node.rows.length + (sequence ? sequence.templates.length + sequence.steps.length : 0);
+  const { collapsed, toggleButton, summary } = useCollapse(node, settings, partCount);
+  const color = blockCategoryColor(settings.blockEditor, node.category);
+  return (
+    <div
+      id={id}
+      data-testid={`block:${id}`}
+      data-block-kind={node.kind}
+      data-action-type={node.actionType}
+      data-category={node.category}
+      role="group"
+      aria-label={node.actionType}
+      css={css({
+        display: "inline-flex",
+        flexDirection: "column",
+        maxWidth: "100%",
+        background: color,
+        color: settings.onBlock,
+        border: "1.5px solid rgba(0,0,0,.22)",
+        // a command block: square top corners, as stacked in Scratch
+        borderRadius: "2px 2px 8px 8px",
+        paddingBottom: partCount > 0 && !collapsed ? "6px" : 0,
+        verticalAlign: "top",
+      })}
+    >
+      <div
+        data-testid={`block-header:${id}`}
+        css={css({ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "4px 7px", padding: "4px 10px" })}
+      >
+        {toggleButton}
+        <span css={css({ fontWeight: 700, whiteSpace: "nowrap" })}>{node.actionType}</span>
+        <span css={css({ opacity: 0.85, fontSize: "11px" })}>{node.category}</span>
+        {node.label !== undefined && (
+          <span data-testid={`block-label:${id}`} css={css({ opacity: 0.85, fontSize: "12px" })}>
+            {node.label}
+          </span>
+        )}
+        <HeaderParameters node={node} settings={settings} />
+        {summary}
+      </div>
+      {partCount > 0 && !collapsed && (
+        <div css={mouthCss(settings)}>
+          <BlockRows rows={node.rows} settings={settings} ownerType={node.actionType} />
+          {sequence && sequence.templates.length > 0 && (
+            <div data-testid={`block-templates:${id}`} css={css({ display: "flex", flexDirection: "column", gap: "4px" })}>
+              <span css={css({ fontSize: "12px", color: settings.textSecondary })}>templates</span>
+              {sequence.templates.map((template) => (
+                <div key={template.key} css={css({ display: "flex", gap: "8px", alignItems: "flex-start", marginLeft: "8px" })}>
+                  <span css={css({ fontSize: "12px", color: settings.textSecondary, paddingTop: "5px" })}>
+                    {template.key}
+                  </span>
+                  <BlockNodeView node={template.node} settings={settings} />
+                </div>
+              ))}
+            </div>
+          )}
+          {sequence && (
+            <div
+              data-testid={`block-steps:${id}`}
+              css={css({ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "2px" })}
+            >
+              {sequence.steps.map((step, index) => (
+                <BlockNodeView key={index} node={step} settings={settings} />
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+});
+
+/** #504: the payload of a query step, collapsed; unfolded, its JSON. */
+const QueryBlockView = React.memo(function QueryBlockView(props: { node: QueryBlock; settings: BlockSettings }) {
+  const { node, settings } = props;
+  const id = blockId(settings.rootLessListKey, node.path);
+  const [open, setOpen] = useState(false);
+  return (
+    <div
+      id={id}
+      data-testid={`block:${id}`}
+      data-block-kind="query"
+      data-query-type={node.queryType}
+      css={css({
+        display: "inline-flex",
+        flexDirection: "column",
+        background: settings.literal,
+        color: settings.text,
+        border: `1.5px solid ${settings.border}`,
+        borderRadius: "8px",
+        padding: "2px 8px",
+        maxWidth: "100%",
+      })}
+    >
+      <button
+        type="button"
+        data-testid={`block-collapse:${id}`}
+        aria-expanded={open}
+        onClick={() => setOpen((current) => !current)}
+        css={css({
+          font: "inherit",
+          fontSize: "12px",
+          border: "none",
+          background: "transparent",
+          color: "inherit",
+          cursor: "pointer",
+          textAlign: "left",
+          padding: "2px 0",
+        })}
+      >
+        {`${open ? "▾" : "▸"} query${node.queryType ? ` ${node.queryType}` : ""}`}
+      </button>
+      {open && (
+        <pre css={css({ margin: 0, fontSize: "12px", overflowX: "auto" })}>{JSON.stringify(node.value, null, 2)}</pre>
+      )}
+    </div>
+  );
+});
+
 const TransformerBlockView = React.memo(function TransformerBlockView(props: {
   node: TransformerBlock;
   settings: BlockSettings;
@@ -333,22 +555,7 @@ const TransformerBlockView = React.memo(function TransformerBlockView(props: {
           </span>
         )}
         {node.label !== undefined && <span css={css({ opacity: 0.85, fontSize: "12px" })}>{node.label}</span>}
-        {node.parameters.map((parameter) => (
-          <span
-            key={parameter.name}
-            data-testid={`block-parameter:${blockId(settings.rootLessListKey, [...node.path, parameter.name])}`}
-            data-value={JSON.stringify(parameter.value)}
-            css={css({ display: "inline-flex", gap: "4px", alignItems: "center" })}
-          >
-            <span css={css({ opacity: 0.85, fontSize: "12px" })}>{parameter.name}</span>
-            <BlockField
-              value={parameter.value}
-              path={[...node.path, parameter.name]}
-              id={blockId(settings.rootLessListKey, [...node.path, parameter.name])}
-              colors={settings}
-            />
-          </span>
-        ))}
+        <HeaderParameters node={node} settings={settings} />
         {editing && VARIABLE_TYPES.has(node.transformerType) && (
           <BlockVariablePath path={node.path} id={id} colors={settings} />
         )}
@@ -356,46 +563,8 @@ const TransformerBlockView = React.memo(function TransformerBlockView(props: {
       </div>
       {resultShown && <BlockResult path={node.path} id={id} colors={settings} />}
       {node.rows.length > 0 && !collapsed && (
-        <div
-          css={css({
-            marginLeft: "16px",
-            background: settings.mouth,
-            color: settings.text,
-            borderRadius: "6px 0 0 6px",
-            padding: "6px 8px",
-            display: "flex",
-            flexDirection: "column",
-            gap: "6px",
-            minWidth: "120px",
-          })}
-        >
-          {node.rows.map((row) => (
-            <div
-              key={row.name}
-              data-testid={`block-row:${blockId(settings.rootLessListKey, row.path)}`}
-              data-row-kind={row.kind}
-              css={css({ display: "flex", gap: "8px", alignItems: "flex-start", minWidth: 0 })}
-            >
-              <span
-                css={css({
-                  color: row.kind === "undeclared" ? "#c62828" : settings.textSecondary,
-                  fontSize: "12px",
-                  paddingTop: "5px",
-                  whiteSpace: "nowrap",
-                })}
-                title={row.kind === "undeclared" ? `${node.transformerType} does not declare ${row.name}` : undefined}
-              >
-                {row.kind === "undeclared" ? `⚠ ${row.name}` : row.name}
-              </span>
-              <span css={css({ minWidth: 0 })}>
-                {row.node ? (
-                  <BlockNodeView node={row.node} settings={settings} />
-                ) : (
-                  <EmptySlot path={row.path} settings={settings} />
-                )}
-              </span>
-            </div>
-          ))}
+        <div css={mouthCss(settings)}>
+          <BlockRows rows={node.rows} settings={settings} ownerType={node.transformerType} />
         </div>
       )}
     </div>
@@ -476,17 +645,20 @@ const BlockNodeView = React.memo(function BlockNodeView(props: {
       );
     case "mlSchema":
       return <MlSchemaChip value={node.value} path={node.path} id={id} colors={settings} />;
-    case "json":
     case "action":
     case "sequence":
+      return <ActionBlockView node={node} settings={settings} />;
     case "query":
+      return <QueryBlockView node={node} settings={settings} />;
+    case "json":
       return (
         <pre
           data-testid={`block:${id}`}
-          data-block-kind={node.kind}
+          data-block-kind="json"
+          data-reason={node.reason}
           css={css({ margin: 0, fontSize: "12px", border: `1px solid ${settings.border}`, borderRadius: "6px", padding: "4px" })}
         >
-          {JSON.stringify("value" in node ? node.value : node, null, 2)}
+          {JSON.stringify(node.value, null, 2)}
         </pre>
       );
   }
@@ -616,8 +788,11 @@ function ToolButton(props: {
 }
 
 export const BlockEditorView = React.memo(function BlockEditorView(props: BlockEditorViewProps) {
-  const editable = props.onCommit !== undefined;
   const { modelEnvironment } = useBlockModelEnvironment();
+  // #504: action sequences are read-only
+  const action = useMemo(() => isBlockAction(props.value, modelEnvironment), [props.value, modelEnvironment]);
+  const onCommit = action ? undefined : props.onCommit;
+  const editable = onCommit !== undefined;
   const definedBy = useContext(BlockDefineContext);
   const define = definedBy?.rootLessListKey === props.rootLessListKey ? definedBy : undefined;
   // the names only: a read flag changes with the body, the scope of the body does not
@@ -627,15 +802,15 @@ export const BlockEditorView = React.memo(function BlockEditorView(props: BlockE
     [defineParameterNames],
   );
   const tree = useMemo(
-    () => transformerBlockTree(props.value, { emptyOptionalSlots: editable, modelEnvironment }),
+    () => blockTree(props.value, { emptyOptionalSlots: editable, modelEnvironment }),
     [props.value, editable, modelEnvironment],
   );
   const editing = useBlockEditingValue(
     props.value,
-    props.onCommit,
+    onCommit,
     props.undoable ?? false,
-    props.tray,
-    props.onTrayChange,
+    action ? undefined : props.tray,
+    action ? undefined : props.onTrayChange,
     useBlockRunInput(),
     defineParameters,
   );
