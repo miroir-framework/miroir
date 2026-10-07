@@ -14,6 +14,12 @@ import {
   miroirFundamentalMlSchema,
   resolveFundamentalSchemaForDeployment,
   type MetaModel,
+  type MiroirModelEnvironment,
+  type TransformerDefinition,
+  computeCombinedSchemaRevision,
+  defaultMetaModelEnvironment,
+  defaultTransformerNode,
+  transformerUnionTypes,
   LIBRARY_TMP,
 } from "miroir-core";
 
@@ -443,4 +449,109 @@ describe("resolveFundamentalSchemaForDeployment (Phase 200 — cold-path perform
     expect(rebuiltSchema).not.toBe(warmSchema);
     expect(elapsed).toBeLessThan(6_000);
   }, 120_000);
+});
+
+// ################################################################################################
+// #502: an application's composite TransformerDefinitions are branches of the transformer union of
+// its deployment schema, so the form, the transformerType select, the palette and the default node
+// of a type change know them.
+describe("getMiroirFundamentalSchemaForDeployment (#502 — application composite transformers)", () => {
+  const libraryDeploymentUuid = deployment_Library_DO_NO_USE.uuid;
+  const bookTitle = {
+    uuid: "6b0a2f86-1c8e-4b8e-9d55-2f0c4a1e7b31",
+    parentName: "TransformerDefinition",
+    parentUuid: "a557419d-a288-4fb8-8a1e-971c86c113b8",
+    name: "bookTitle",
+    transformerInterface: {
+      transformerParameterSchema: {
+        transformerType: { type: "literal", definition: "bookTitle" },
+        transformerDefinition: { type: "object", definition: { prefix: { type: "string" } } },
+      },
+      transformerResultSchema: { type: "string" },
+    },
+    transformerImplementation: {
+      transformerImplementationType: "transformer",
+      definition: { transformerType: "getFromContext", interpolation: "runtime", referenceName: "prefix" },
+    },
+  } as unknown as TransformerDefinition;
+  const modelWith = (model: MetaModel, transformerDefinitions: TransformerDefinition[]): MetaModel => ({
+    ...model,
+    endpoints: [],
+    transformerDefinitions,
+  });
+  const environmentOf = (model: MetaModel): MiroirModelEnvironment => ({
+    ...defaultMetaModelEnvironment,
+    currentModel: model,
+    miroirFundamentalMlSchema: getMiroirFundamentalSchemaForDeployment(libraryDeploymentUuid, model),
+  });
+
+  beforeEach(() => {
+    clearSchemaCacheForTests();
+  });
+
+  it("a composite is a branch of both transformer unions, with its parameters", () => {
+    const schema = getMiroirFundamentalSchemaForDeployment(
+      libraryDeploymentUuid,
+      modelWith(defaultLibraryAppModel as MetaModel, [bookTitle]),
+    ) as any;
+    expect(schema).not.toBe(miroirFundamentalMlSchema);
+    const context = schema.definition.context;
+    const branchNames = ["coreTransformerForBuildPlusRuntime", "coreTransformerForBuildPlusRuntimeWithoutArray"].map(
+      (union) =>
+        context[union].definition
+          .map((member: any) => member.definition?.relativePath)
+          .filter((relativePath: string | undefined) => relativePath && context[relativePath]?.definition?.transformerType?.definition === "bookTitle"),
+    );
+    expect(branchNames).toEqual([["applicationTransformerForBuildPlusRuntime_bookTitle"], ["applicationTransformerForBuildPlusRuntime_bookTitle"]]);
+    expect(context.applicationTransformerForBuildPlusRuntime_bookTitle.definition.prefix).toEqual({ type: "string" });
+  });
+
+  it("the transformer types and the default node of a type change include the composite", () => {
+    const environment = environmentOf(modelWith(defaultLibraryAppModel as MetaModel, [bookTitle]));
+    expect(transformerUnionTypes(environment)).toContain("bookTitle");
+    expect(defaultTransformerNode("bookTitle", environment, "runtime")).toMatchObject({
+      transformerType: "bookTitle",
+      interpolation: "runtime",
+      prefix: "",
+    });
+  });
+
+  it("a library implementation or a stock name adds no branch", () => {
+    const libraryImplementation = {
+      ...bookTitle,
+      transformerImplementation: { transformerImplementationType: "libraryImplementation", inMemoryImplementationFunctionName: "x" },
+    } as unknown as TransformerDefinition;
+    const stockName = {
+      ...bookTitle,
+      name: "mapList",
+      transformerInterface: {
+        ...bookTitle.transformerInterface,
+        transformerParameterSchema: {
+          ...bookTitle.transformerInterface.transformerParameterSchema,
+          transformerType: { type: "literal", definition: "mapList" },
+        },
+      },
+    } as unknown as TransformerDefinition;
+    const schema = getMiroirFundamentalSchemaForDeployment(
+      libraryDeploymentUuid,
+      modelWith(defaultLibraryAppModel as MetaModel, [libraryImplementation, stockName]),
+    );
+    expect(schema).toBe(miroirFundamentalMlSchema);
+  });
+
+  it("the Miroir meta-model keeps the static schema", () => {
+    const schema = getMiroirFundamentalSchemaForDeployment(
+      deployment_Miroir.uuid,
+      modelWith(defaultMiroirMetaModel as unknown as MetaModel, [bookTitle]),
+    );
+    expect(schema).toBe(miroirFundamentalMlSchema);
+  });
+
+  it("adding a composite changes the schema revision", () => {
+    const without = modelWith(defaultLibraryAppModel as MetaModel, []);
+    const withComposite = modelWith(defaultLibraryAppModel as MetaModel, [bookTitle]);
+    expect(computeCombinedSchemaRevision(libraryDeploymentUuid, withComposite)).not.toBe(
+      computeCombinedSchemaRevision(libraryDeploymentUuid, without),
+    );
+  });
 });

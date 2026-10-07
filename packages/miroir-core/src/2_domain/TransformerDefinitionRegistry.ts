@@ -1,8 +1,11 @@
 import type {
   MetaModel,
+  MlElement,
   TransformerDefinition,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
+import { coreBuildPlusRuntimeReferenceMap } from "./Transformers";
+import { transformerInterfaceFromDefinition } from "./Transformer_tools";
 import { applicationTransformerDefinitions } from "./TransformersForRuntime";
 
 // ################################################################################################
@@ -73,4 +76,25 @@ export function transformerDefinitionRegistryConflicts(definitions: TransformerD
         applicationTransformerDefinitions[definition.name].uuid !== definition.uuid,
     )
     .map((definition) => definition.name);
+}
+
+/** The schema name of the transformer union branch of the application composite `name`. */
+export function applicationTransformerBranchName(name: string): string {
+  return `applicationTransformerForBuildPlusRuntime_${name}`;
+}
+
+/**
+ * The branches the application composites add to the transformer union of a deployment schema,
+ * by schema name: built like the stock branches (`miroirCoreTransformersForBuildPlusRuntime`),
+ * with the optional `interpolation` and `label` of every transformer and the composite's parameters.
+ */
+export function applicationTransformerBranches(
+  definitions: TransformerDefinition[] | undefined,
+): Record<string, MlElement> {
+  return Object.fromEntries(
+    applicationCompositeTransformerDefinitions(definitions).map((definition) => [
+      applicationTransformerBranchName(definition.name),
+      transformerInterfaceFromDefinition(definition, "coreBuildPlusRuntime", coreBuildPlusRuntimeReferenceMap, true),
+    ]),
+  );
 }

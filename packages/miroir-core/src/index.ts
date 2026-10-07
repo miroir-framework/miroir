@@ -1003,7 +1003,7 @@ export {
   resolveFundamentalSchemaForDeployment,
   clearSchemaCacheForTests,
   type SchemaResolutionMode,
-} from "./1_core/mls/schemaForDeployment.js";
+} from "./2_domain/schemaForDeployment.js";
 export {
   classifySchemaChange,
   computeCombinedSchemaRevision,
@@ -1387,6 +1387,8 @@ export type {
 } from "./0_interfaces/2_domain/TransformerTreeEditInterface.js";
 export { transformerSubtreeRuns } from "./2_domain/TransformerSubtreeRun.js";
 export {
+  applicationTransformerBranchName,
+  applicationTransformerBranches,
   applicationCompositeTransformerDefinitions,
   transformerDefinitionRegistry,
   transformerDefinitionRegistryConflicts,

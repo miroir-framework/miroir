@@ -39,9 +39,9 @@ import {
 } from "miroir-app-miroir";
 
 import { deployment_Miroir } from "miroir-app-admin";
+import { miroirFundamentalMlSchema } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalMlSchema";
 import { Uuid } from "../0_interfaces/1_core/EntityVersion";
 import type { DeploymentUuidToReportsEntities } from "../0_interfaces/1_core/Model";
-import { resolveFundamentalSchemaForDeployment } from "./mls/schemaForDeployment";
 
 import {
   Entity,
@@ -120,21 +120,13 @@ const defaultEndpointsByUuid: Record<Uuid, EndpointDefinition> = {
 };
 
 export const defaultMetaModelEnvironment: MiroirModelEnvironment = {
-  miroirFundamentalMlSchema: resolveFundamentalSchemaForDeployment(
-    deployment_Miroir.uuid,
-    defaultMiroirMetaModel,
-    "static",
-  ),
+  miroirFundamentalMlSchema: miroirFundamentalMlSchema as MlSchema,
   miroirMetaModel: defaultMiroirMetaModel,
   endpointsByUuid: defaultEndpointsByUuid,
   currentModel: defaultMiroirMetaModel,
 };
 export const defaultMiroirModelEnvironment: MiroirModelEnvironment = {
-  miroirFundamentalMlSchema: resolveFundamentalSchemaForDeployment(
-    deployment_Miroir.uuid,
-    defaultMiroirMetaModel,
-    "static",
-  ),
+  miroirFundamentalMlSchema: miroirFundamentalMlSchema as MlSchema,
   miroirMetaModel: defaultMiroirMetaModel,
   endpointsByUuid: defaultEndpointsByUuid,
   deploymentUuid: deployment_Miroir.uuid,

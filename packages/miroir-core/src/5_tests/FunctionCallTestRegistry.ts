@@ -39,6 +39,7 @@ import { localizeMlSchemaReferenceContext } from "../1_core/mls/MlsUnfoldSchemaO
 import { resolveQueryTemplateWithExtractorCombinerTransformer } from "../2_domain/Templates";
 import { referencePathAttributeNames, resolveTransformerResultSchema } from "../2_domain/Transformer_ResultSchema";
 import {
+  applicationTransformerBranches,
   applicationCompositeTransformerDefinitions,
   transformerDefinitionRegistryConflicts,
   transformerDefinitionRegistryOf,
@@ -281,6 +282,7 @@ const FUNCTION_CALL_REGISTRY: Record<
   },
   "miroir-core/2_domain/TransformerDefinitionRegistry": {
     applicationCompositeTransformerDefinitions: applicationCompositeTransformerDefinitions as WhitelistedFunction,
+    applicationTransformerBranches: applicationTransformerBranches as WhitelistedFunction,
     transformerDefinitionRegistryConflicts: transformerDefinitionRegistryConflicts as WhitelistedFunction,
     transformerDefinitionRegistryOf: transformerDefinitionRegistryOf as WhitelistedFunction,
   },

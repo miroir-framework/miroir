@@ -42,7 +42,7 @@ Working branch: `claude/502-block-editor-define-blocks`
 |---|---|---|---|
 | 0 | Registry; the runtime runs an application composite | ✅ | `fn.transformer.registry` |
 | 1 | The client model carries the application's TransformerDefinitions | ✅ | localcache unit tests |
-| 2 | The deployment schema has a branch per application composite | ⬜ | `fn.transformer.registry` union cases |
+| 2 | The deployment schema has a branch per application composite | ✅ | `fn.transformer.registry` union cases, `schemaForDeployment.unit.test.ts` |
 | 3 | The editor and the block view read the registry | ⬜ | `ui.blockEditing` composite case |
 | 4 | Postgres reads the registry | ⬜ | SqlGenerator unit case |
 | 5 | Define block | ⬜ | `fn.blockModel` define cases, `ui.blockEditing` |
@@ -89,6 +89,10 @@ Validation: `npx vitest run` in `packages/miroir-localcache-redux` and `packages
 ## Slice 2 — The deployment schema has a branch per application composite
 
 RED: `fn.transformer.registry` cases on `resolveFundamentalSchemaForDeployment` / `transformerUnionTypes`: the composite is a branch with its parameters; `defaultTransformerNode` gives its default node. GREEN: `buildExtendedSchema`.
+
+Validation: `npm run testMiroir -w miroir-core -- --suites fn.transformer.registry --mode unit`; `npx vitest run tests/1_core/schemaForDeployment.unit.test.ts` in miroir-core; `npm run lint`.
+
+**Realization (2026-10-07).** `applicationTransformerBranches(definitions)` (registry module) builds one branch per application composite, named `applicationTransformerForBuildPlusRuntime_<name>`, with `transformerInterfaceFromDefinition` as the stock branches are. `buildExtendedSchema` adds them to the context and to both transformer unions (`coreTransformerForBuildPlusRuntime` and its `WithoutArray` twin), for any application but Miroir, with or without app endpoints. The app schema revision now fingerprints the TransformerDefinitions (uuid, name, interface, implementation type), so saving a composite reloads the schema. `schemaForDeployment.ts` moved from `1_core/mls/` to `2_domain/` (`git mv`): it now reads the registry, and the layer rule forbids 1_core from importing 2_domain; its only 1_core caller, `Model.ts`, asked for the static schema and now takes `miroirFundamentalMlSchema` directly. Tests: 2 `fn.transformer.registry` cases (9 in all) and 5 `schemaForDeployment.unit.test.ts` cases (branch in both unions with its parameters; `transformerUnionTypes` and `defaultTransformerNode`; no branch for a library implementation or a stock name; Miroir stays static; the revision changes); the 3 positive cases failed before the change.
 
 ## Slice 3 — The editor and the block view read the registry
 
