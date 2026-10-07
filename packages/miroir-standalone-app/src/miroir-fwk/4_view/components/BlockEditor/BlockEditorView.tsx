@@ -15,7 +15,12 @@ import {
 } from "miroir-core";
 import React, { useCallback, useContext, useMemo, useState } from "react";
 
-import { blockCategoryColor, useMiroirTheme, type BlockEditorColors } from "../../contexts/MiroirThemeContext.js";
+import {
+  blockCategoryColor,
+  defaultBlockEditorColors,
+  useMiroirTheme,
+  type BlockEditorColors,
+} from "../../contexts/MiroirThemeContext.js";
 import type { TransformerTypeBadge } from "../ValueObjectEditor/MlElementEditorInterface.js";
 import { ThemedIcon } from "../Themes/index.js";
 import { useBlockEditorBuildMarking } from "./BlockEditorDisplay.js";
@@ -371,14 +376,23 @@ function mouthCss(settings: BlockSettings) {
   });
 }
 
+/** Whether the Theme, or the default block colors, give `category` a color of its own. */
+function hasCategoryColor(blockEditor: BlockEditorColors | undefined, category: string): boolean {
+  return blockEditor?.categoryColors?.[category] !== undefined || defaultBlockEditorColors.categoryColors[category] !== undefined;
+}
+
 /**
  * #507: the color of a block: its hint's color for the current Theme, else the Theme's color for
- * its hint's category, else for its own category.
+ * its hint's category when the Theme has one, else for its own category.
  */
 function blockColor(settings: BlockSettings, category: string, presentation: BlockPresentation | undefined): string {
+  const hinted = presentation?.colorCategory;
   return (
     presentation?.colorByTheme?.[settings.themeId] ??
-    blockCategoryColor(settings.blockEditor, presentation?.colorCategory ?? category)
+    blockCategoryColor(
+      settings.blockEditor,
+      hinted !== undefined && hasCategoryColor(settings.blockEditor, hinted) ? hinted : category,
+    )
   );
 }
 
