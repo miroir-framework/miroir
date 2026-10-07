@@ -50,7 +50,7 @@ Working branch: `claude/504-block-editor-action-sequences`
 | 3 | Sequence block model; marks by evaluation step | ✅ | `fn.blockModel` "action sequences" cases |
 | 4 | Corpus sweep over every sequence (AC 1) | ✅ | `transformerBlockModelAssets.unit.test.ts` |
 | 5 | Sequence fields get the switch; read-only stacked blocks (AC 2) | ✅ | `fn.blockView.fields`, `ui.blockEditor` createEntity Runner |
-| 6 | Docs, nonreg, PR | ⬜ | nonreg |
+| 6 | Docs, nonreg, PR | ✅ | nonreg |
 
 ---
 
@@ -110,3 +110,5 @@ GREEN: predicate, read-only sequence rendering in `BlockEditorView`, `Transforme
 ## Slice 6 — Docs, nonreg, PR
 
 `docs/reference/transformers.md` (blocks section), `docs/reference/testing.md` and the action docs for the assertion shape; nonreg filesystem shared runner; PR into `_integration` with `Closes #504`.
+
+**Realization:** transformers.md gets "Action sequences as blocks" and the marking rule by position; testing.md the assertion's shape and the `runner` prop. Pre-push gate green. Filesystem nonreg (shared runner): 103 passed, 4 failed, all the MiroirTestDisplay/ListDisplay steps of #510.
