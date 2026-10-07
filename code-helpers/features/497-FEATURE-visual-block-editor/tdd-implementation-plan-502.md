@@ -41,7 +41,7 @@ Working branch: `claude/502-block-editor-define-blocks`
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
 | 0 | Registry; the runtime runs an application composite | ✅ | `fn.transformer.registry` |
-| 1 | The client model carries the application's TransformerDefinitions | ⬜ | localcache unit tests |
+| 1 | The client model carries the application's TransformerDefinitions | ✅ | localcache unit tests |
 | 2 | The deployment schema has a branch per application composite | ⬜ | `fn.transformer.registry` union cases |
 | 3 | The editor and the block view read the registry | ⬜ | `ui.blockEditing` composite case |
 | 4 | Postgres reads the registry | ⬜ | SqlGenerator unit case |
@@ -81,6 +81,10 @@ Validation: `npm run testMiroir -w miroir-core -- --suites fn.transformer.regist
 ## Slice 1 — The client model carries the application's TransformerDefinitions
 
 RED: localcache-redux and localcache-zustand model selector tests: a deployment whose model section holds a TransformerDefinition gives it in `transformerDefinitions`. GREEN: the selectors.
+
+Validation: `npx vitest run` in `packages/miroir-localcache-redux` and `packages/miroir-localcache-zustand`; their `tsc`.
+
+**Realization (2026-10-07).** Both packages get `selectTransformerDefinitionsFromReduxState`, read like the themes (`data` section for Miroir, `model` otherwise), and `selectModelForDeploymentFromReduxState` fills `transformerDefinitions` with it. `selectModelForDeployment.transformerDefinitions.unit.test.ts` (2 cases per package) failed before the change. The 6 custom `idAttribute` failures of the redux `LocalCache.unit.test.ts` fail on `_integration` too.
 
 ## Slice 2 — The deployment schema has a branch per application composite
 
