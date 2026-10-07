@@ -48,7 +48,9 @@ export function BlockResult(props: { path: BlockPath; id: string; colors: { text
     return null;
   }
   const runs = "runs" in outcome ? outcome.runs : [];
-  const shown = chosen === ALL ? runs : runs.filter((run) => run.label === chosen);
+  // A run chosen before the input or the transformer changed may be gone: all runs show then.
+  const selected = runs.some((run) => run.label === chosen) ? chosen : ALL;
+  const shown = selected === ALL ? runs : runs.filter((run) => run.label === selected);
   const labelled = runs.some((run) => run.label !== undefined);
   return (
     <div
@@ -74,7 +76,7 @@ export function BlockResult(props: { path: BlockPath; id: string; colors: { text
         <select
           data-testid={`block-result-select:${props.id}`}
           aria-label="Shown runs"
-          value={chosen}
+          value={selected}
           onChange={(event) => setChosen(event.target.value)}
           css={css({ font: "inherit", fontSize: "12px", marginBottom: "4px" })}
         >

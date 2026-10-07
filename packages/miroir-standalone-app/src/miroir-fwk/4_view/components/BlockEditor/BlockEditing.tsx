@@ -1,4 +1,3 @@
-import { getIn, setIn } from "formik";
 import {
   defaultMiroirModelEnvironment,
   defaultTransformerNode,
@@ -85,18 +84,33 @@ export function useBlockEditing(): BlockEditing | undefined {
   return useContext(BlockEditingContext);
 }
 
+/** A key of `path` that keeps its segments apart: a record key may hold a dot. */
 export function pathKey(path: BlockPath): string {
-  return path.map(String).join(".");
+  return JSON.stringify(path.map(String));
 }
 
-/** The value at `path` of `root`; the root itself for the empty path. */
+/** The value at `path` of `root`; the root itself for the empty path. Each segment is one key. */
 export function valueAtPath(root: unknown, path: BlockPath): unknown {
-  return path.length === 0 ? root : getIn(root, pathKey(path));
+  return path.reduce<unknown>(
+    (current, segment) =>
+      typeof current === "object" && current !== null ? (current as Record<string, unknown>)[segment] : undefined,
+    root,
+  );
 }
 
-/** `root` with `value` at `path`; `value` itself for the empty path. */
+/** A copy of `root` with `value` at `path`; `value` itself for the empty path. Each segment is one key. */
 export function withValueAtPath(root: unknown, path: BlockPath, value: unknown): unknown {
-  return path.length === 0 ? value : setIn(root, pathKey(path), value);
+  if (path.length === 0) {
+    return value;
+  }
+  const [head, ...rest] = path;
+  if (Array.isArray(root)) {
+    const copy = [...root];
+    copy[Number(head)] = withValueAtPath(root[Number(head)], rest, value);
+    return copy;
+  }
+  const base = isRecord(root) ? root : {};
+  return { ...base, [head]: withValueAtPath(base[head], rest, value) };
 }
 
 function defaultNodeForType(transformerType: string): Record<string, unknown> | undefined {

@@ -15,16 +15,17 @@ type TransformerNode = { transformerType: string } & Record<string, unknown>;
 
 /**
  * How a slot of a transformer type extends the context of what sits in it:
- * - `eachElement`: the evaluated `applyTo` is run through once per element (or object value),
- *   bound to `referenceToOuterObject` (default `defaultInput`);
+ * - `eachElement`: the evaluated `applyTo`, a list, is run through once per element, bound to
+ *   `referenceToOuterObject` (default `defaultInput`);
+ * - `eachElementOrValue`: the same, an object being run through once per value;
  * - `applyTo`: the evaluated `applyTo`, bound once to `referenceToOuterObject`;
  * - `earlierSteps`: each entry of the record sees the results of the entries before it, by name.
  */
-type ContextBinding = "eachElement" | "applyTo" | "earlierSteps";
+type ContextBinding = "eachElement" | "eachElementOrValue" | "applyTo" | "earlierSteps";
 
 /** Transformer type → slot attribute → binding (TransformersForRuntime handlers of each type). */
 const CONTEXT_BINDINGS: Record<string, Record<string, ContextBinding>> = {
-  mapList: { elementTransformer: "eachElement" },
+  mapList: { elementTransformer: "eachElementOrValue" },
   filterList: { predicate: "eachElement" },
   find: { predicate: "eachElement" },
   createObjectFromPairs: { definition: "applyTo" },
@@ -35,6 +36,8 @@ const CONTEXT_BINDINGS: Record<string, Record<string, ContextBinding>> = {
 interface RunContext {
   labels: string[];
   context: Record<string, unknown>;
+  /** The result of an ancestor that cannot run its slot on its `applyTo`: the run holds it. */
+  ancestorFailure?: unknown;
 }
 
 function isTransformerNode(value: unknown): value is TransformerNode {
@@ -61,10 +64,30 @@ function outerObjectName(node: TransformerNode): string {
 }
 
 /**
+ * The elements an `eachElement` / `eachElementOrValue` ancestor runs its slot on, labelled with the
+ * name it binds and the element's index or key; `undefined` when the runtime rejects `list`.
+ */
+function elementsOf(
+  list: unknown,
+  binding: "eachElement" | "eachElementOrValue",
+  name: string,
+): [string, unknown][] | undefined {
+  if (Array.isArray(list)) {
+    return list.map((element, index) => [`${name}[${index}]`, element]);
+  }
+  if (binding === "eachElementOrValue" && typeof list === "object" && list !== null) {
+    return Object.entries(list).map(([key, element]) => [`${name}.${key}`, element]);
+  }
+  return undefined;
+}
+
+/**
  * The runs of the node at `path` of `root` (#500): once in the root's context, or once per
  * context its ancestors give it, `transformerParams` and `contextResults` being those of the root.
  * An ancestor that runs its slot once per element gives one run per element, labelled with the
- * name it binds and the element's index or key. A run whose evaluation fails holds the failure.
+ * name it binds and the element's index or key. A run whose evaluation fails holds the failure;
+ * when an ancestor cannot run its slot on its `applyTo` (`filterList` on an object, `mapList` on a
+ * string), the one run holds that ancestor's own failure.
  */
 export function transformerSubtreeRuns(
   root: unknown,
@@ -113,16 +136,18 @@ export function transformerSubtreeRuns(
     }
     const name = outerObjectName(node);
     runs = runs.flatMap((run): RunContext[] => {
+      if (run.ancestorFailure !== undefined) {
+        return [run];
+      }
       switch (binding) {
         case "applyTo":
           return [{ labels: run.labels, context: { ...run.context, [name]: applyTo(node, nodePath, run.context) } }];
-        case "eachElement": {
-          const list = applyTo(node, nodePath, run.context);
-          const elements: [string, unknown][] = Array.isArray(list)
-            ? list.map((element, index) => [`${name}[${index}]`, element])
-            : typeof list === "object" && list !== null
-              ? Object.entries(list).map(([key, element]) => [`${name}.${key}`, element])
-              : [];
+        case "eachElement":
+        case "eachElementOrValue": {
+          const elements = elementsOf(applyTo(node, nodePath, run.context), binding, name);
+          if (elements === undefined) {
+            return [{ ...run, ancestorFailure: apply(node, nodePath, run.context) }];
+          }
           return elements.map(([label, element]) => ({
             labels: [...run.labels, label],
             context: { ...run.context, [name]: element },
@@ -144,6 +169,6 @@ export function transformerSubtreeRuns(
   }
   return runs.map((run) => ({
     ...(run.labels.length > 0 ? { label: run.labels.join(", ") } : {}),
-    value: apply(target, path, run.context),
+    value: run.ancestorFailure !== undefined ? run.ancestorFailure : apply(target, path, run.context),
   }));
 }

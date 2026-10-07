@@ -1714,6 +1714,201 @@
           },
           {
             "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: a chosen element that leaves the input gives way to all runs",
+            "steps": [
+              {
+                "step": "toggleUnionTypeSelector",
+                "label": "show the input type",
+                "field": "transformerEditor_inputModeSelector.input"
+              },
+              {
+                "step": "selectOption",
+                "label": "input is a list",
+                "field": "transformerEditor_inputModeSelector.input",
+                "select": "unionType",
+                "option": "array"
+              },
+              {
+                "step": "click",
+                "label": "add a second item",
+                "target": {
+                  "byRole": "button",
+                  "name": "input.add"
+                }
+              },
+              {
+                "step": "change",
+                "label": "first item",
+                "target": {
+                  "byRole": "textbox",
+                  "fieldName": "transformerEditor_inputModeSelector.input.0"
+                },
+                "value": "apple"
+              },
+              {
+                "step": "change",
+                "label": "second item",
+                "target": {
+                  "byRole": "textbox",
+                  "fieldName": "transformerEditor_inputModeSelector.input.1"
+                },
+                "value": "pear"
+              },
+              {
+                "step": "selectOption",
+                "label": "root mapList",
+                "field": "transformerEditor_transformer_selector.transformer.transformerType",
+                "option": "mapList"
+              },
+              {
+                "step": "selectOption",
+                "label": "element getFromContext",
+                "field": "transformerEditor_transformer_selector.transformer.elementTransformer.transformerType",
+                "option": "getFromContext"
+              },
+              {
+                "step": "clickObjectButton",
+                "label": "add the element referenceName",
+                "field": "transformerEditor_transformer_selector.transformer.elementTransformer",
+                "action": "addOptionalAttribute",
+                "attribute": "referenceName"
+              },
+              {
+                "step": "change",
+                "label": "the element reads defaultInput",
+                "target": {
+                  "byRole": "textbox",
+                  "fieldName": "transformerEditor_transformer_selector.transformer.elementTransformer.referenceName"
+                },
+                "value": "defaultInput"
+              },
+              {
+                "step": "click",
+                "label": "choose Blocks",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                }
+              },
+              {
+                "step": "click",
+                "label": "run the element block",
+                "target": {
+                  "byTestId": "block-header:transformer.elementTransformer"
+                }
+              },
+              {
+                "step": "change",
+                "label": "choose the second element",
+                "target": {
+                  "byTestId": "block-result-select:transformer.elementTransformer"
+                },
+                "value": "defaultInput[1]"
+              },
+              {
+                "step": "expectElement",
+                "label": "the first element is hidden",
+                "target": {
+                  "byTestId": "block-result-value:transformer.elementTransformer:defaultInput[0]"
+                },
+                "present": false
+              },
+              {
+                "step": "clickArrayButton",
+                "label": "remove the second input item",
+                "field": "transformerEditor_inputModeSelector.input",
+                "action": "delete",
+                "index": 1
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "one run left",
+                "target": {
+                  "byTestId": "block-result:transformer.elementTransformer"
+                },
+                "attribute": "data-run-count",
+                "value": "1",
+                "timeout": 2000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the first element shows",
+                "target": {
+                  "byTestId": "block-result-value:transformer.elementTransformer:defaultInput[0]"
+                },
+                "attribute": "data-value",
+                "value": "\"apple\"",
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: a value edited in place under a record key holding a dot",
+            "steps": [
+              {
+                "step": "click",
+                "label": "choose JSON",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:json"
+                }
+              },
+              {
+                "step": "change",
+                "label": "a dataflowObject with the step a.b",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "value": "{\n  \"transformerType\": \"dataflowObject\",\n  \"interpolation\": \"runtime\",\n  \"definition\": {\n    \"a.b\": {\n      \"transformerType\": \"returnValue\",\n      \"value\": \"x\",\n      \"interpolation\": \"runtime\"\n    }\n  }\n}"
+              },
+              {
+                "step": "click",
+                "label": "choose Blocks",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                }
+              },
+              {
+                "step": "click",
+                "label": "open the field a.b value",
+                "target": {
+                  "byTestId": "block-field:transformer.definition.a.b.value"
+                }
+              },
+              {
+                "step": "clear",
+                "label": "clear it",
+                "target": {
+                  "byTestId": "block-field-input:transformer.definition.a.b.value"
+                }
+              },
+              {
+                "step": "type",
+                "label": "type y{Enter}",
+                "target": {
+                  "byTestId": "block-field-input:transformer.definition.a.b.value"
+                },
+                "text": "y{Enter}"
+              },
+              {
+                "step": "click",
+                "label": "choose JSON again",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:json"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the step a.b holds the new value, no step a is added",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "timeout": 2000,
+                "value": "{\n  \"transformerType\": \"dataflowObject\",\n  \"interpolation\": \"runtime\",\n  \"definition\": {\n    \"a.b\": {\n      \"transformerType\": \"returnValue\",\n      \"value\": \"y\",\n      \"interpolation\": \"runtime\"\n    }\n  }\n}"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
             "miroirTestLabel": "TransformerEditor: a list item moved down its list from its block menu",
             "steps": [
               {
