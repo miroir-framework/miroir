@@ -34,7 +34,8 @@ import { BlockInsertTargets } from "./BlockInsertTargets.js";
 import { BlockResult, useBlockRunInput } from "./BlockResult.js";
 import { BlockPalette } from "./BlockPalette.js";
 import { BlockVariablePath } from "./BlockVariablePath.js";
-import { BlockDefineContext, useBlockModelEnvironment } from "./BlockViewMode.js";
+import { BlockRunnerHat } from "./BlockRunnerHat.js";
+import { BlockDefineContext, BlockRunnerContext, useBlockModelEnvironment } from "./BlockViewMode.js";
 
 // ################################################################################################
 // #498: the read-only block view of a transformer value (analysis #497). The tree comes from the
@@ -66,6 +67,8 @@ import { BlockDefineContext, useBlockModelEnvironment } from "./BlockViewMode.js
 // #505: with a writer, an action sequence is edited as a transformer is: the palette offers the
 // Endpoint actions, a step goes at the end of the steps, an action block has its menu and an
 // editable label, and a literal, object or list below a payload can be replaced by the armed block.
+// A custom Runner's sequence is shown under its "when run" hat (BlockRunnerHat.tsx): its form
+// fields are variables of the sequence, given as the parameter named after the Runner.
 // ################################################################################################
 
 export interface BlockEditorViewProps {
@@ -873,6 +876,8 @@ export const BlockEditorView = React.memo(function BlockEditorView(props: BlockE
   const editable = onCommit !== undefined;
   const definedBy = useContext(BlockDefineContext);
   const define = definedBy?.rootLessListKey === props.rootLessListKey ? definedBy : undefined;
+  const runBy = useContext(BlockRunnerContext);
+  const runner = runBy?.rootLessListKey === props.rootLessListKey ? runBy : undefined;
   // the names only: a read flag changes with the body, the scope of the body does not
   const defineParameterNames = define?.parameters.map((parameter) => parameter.name).join("\u0000");
   const defineParameters = useMemo(
@@ -892,6 +897,7 @@ export const BlockEditorView = React.memo(function BlockEditorView(props: BlockE
     useBlockRunInput(),
     defineParameters,
     props.withTestAssertion,
+    runner?.name,
   );
   const colors = useBlockColors();
   const viewBuildMarking = useBlockEditorBuildMarking();
@@ -968,9 +974,10 @@ export const BlockEditorView = React.memo(function BlockEditorView(props: BlockE
             />
             <div css={css({ overflowX: "auto", padding: "8px 4px", minWidth: 0, flexGrow: 1 })}>
               <div css={css({ zoom })}>
-                {define ? (
+                {define || runner ? (
                   <div css={css({ display: "inline-flex", flexDirection: "column", alignItems: "flex-start" })}>
-                    <BlockDefineHeader define={define} colors={colors} />
+                    {define && <BlockDefineHeader define={define} colors={colors} />}
+                    {runner && <BlockRunnerHat runner={runner} colors={colors} />}
                     <BlockNodeView key={fold.generation} node={tree.root} settings={settings} />
                   </div>
                 ) : (

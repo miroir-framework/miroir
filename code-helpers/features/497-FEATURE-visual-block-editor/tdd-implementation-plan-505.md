@@ -47,7 +47,7 @@ Working branch: `claude/505-block-editor-edit-sequences`
 | 1 | Sequence edits, default actions, action palette (core) | ✅ | `fn.blockModel` "sequence editing" cases |
 | 2 | Runner hat and form fields (core) | ✅ | `fn.blockModel` "runner hat" cases |
 | 3 | Editing sequences in the block view | ✅ | `ui.blockEditor` "editing a Runner sequence" |
-| 4 | The "when run" hat in the block view | ⬜ | `ui.blockEditor` hat cases |
+| 4 | The "when run" hat in the block view | ✅ | `ui.blockEditor` hat cases |
 | 5 | Sequence editor, Save as Runner, Run (AC 1, AC 2) | ⬜ | `ui.blockEditing` "SequenceEditor on the Library" |
 | 6 | Docs, nonreg, PR | ⬜ | nonreg |
 
@@ -96,6 +96,8 @@ GREEN: `BlockEditing` on the generic edits, action armed blocks, `ActionNodeActi
 
 RED: `ui.blockEditor`: the createEntity Runner shows its hat with its form fields; a form field armed replaces a literal with `getFromParameters [createEntity, field]`; the instance editor of a Runner shows the hat (field read from its `customRunner` value).
 GREEN: `BlockRunnerHat`, `BlockRunnerContext`, detection in `BlockViewSwitch`.
+
+**Realization (2026-10-07):** `BlockRunnerContext` (`BlockViewMode.tsx`) gives the hat of the block view at its `rootLessListKey`; `BlockRunnerHat.tsx` shows it (`block-runner-hat`, `block-runner-field:<f>` with `data-read`, `data-type`) and `useBlockRunnerOf(runner, setRunner, key)` adds the field changes with the RunnerHat functions. A field chip arms a variable with a `path` `[runner, field]`, put as `getFromParameters` `referencePath`, runtime; the Runner name is a parameter of the sequence's root environment. `BlockViewSwitch` finds the Runner around a `definition.compositeActionSequence` field in the Formik values and shows its hat, fields read-only, unless an enclosing editor provides one. `isTestSequenceField` (core, 2 `fn.blockView.fields` cases) gives `withTestAssertion` from MlElementEditor. The armed block's node is computed once per arming: every block menu asks for it. 5 cases ("the when run hat", "a Runner in an instance editor") and two steps on the read-only Runner; `EXPECTED_LEAF_COUNT` 191.
 
 ## Slice 5 — Sequence editor, Save as Runner, Run
 

@@ -122,7 +122,7 @@ export type ArmedBlock =
   | { kind: "type"; transformerType: string }
   | { kind: "action"; actionType: string }
   | { kind: "tray"; index: number }
-  | { kind: "variable"; source: VariableSource; name: string };
+  | { kind: "variable"; source: VariableSource; name: string; path?: string[] };
 
 /** How a menu or a target names the armed block. */
 export function armedLabel(armed: ArmedBlock): string {
@@ -134,7 +134,9 @@ export function armedLabel(armed: ArmedBlock): string {
     case "tray":
       return `tray block ${armed.index + 1}`;
     case "variable":
-      return `${armed.source === "context" ? "context" : "parameter"} ${armed.name}`;
+      return armed.path
+        ? `form field ${armed.path.slice(1).join(".")}`
+        : `${armed.source === "context" ? "context" : "parameter"} ${armed.name}`;
   }
 }
 
@@ -197,12 +199,12 @@ function isActionValue(value: unknown): boolean {
   return isRecord(value) && typeof value.actionType === "string" && typeof value.transformerType !== "string";
 }
 
-/** The block a variable puts: a runtime read of its name. */
-export function variableNode(source: VariableSource, name: string): Record<string, unknown> {
+/** The block a variable puts: a runtime read of its name, or of `path` from it (a Runner's form field, #505). */
+export function variableNode(source: VariableSource, name: string, path?: string[]): Record<string, unknown> {
   return {
     transformerType: source === "context" ? "getFromContext" : "getFromParameters",
     interpolation: "runtime",
-    referenceName: name,
+    ...(path && path.length > 1 ? { referencePath: path } : { referenceName: name }),
   };
 }
 
@@ -241,13 +243,15 @@ export function useBlockEditingValue(
   runInput?: BlockRunInput,
   defineParameters?: string[],
   withTestAssertion?: boolean,
+  runnerName?: string,
 ): BlockEditing | undefined {
+  // #505: a Runner gives its form values to its sequence as the parameter named after it
   const rootEnvironment = useMemo(
     (): TransformerEnvironment => ({
       contextNames: [...new Set([...Object.keys(runInput?.contextResults ?? {}), ...(defineParameters ?? [])])],
-      parameterNames: Object.keys(runInput?.transformerParams ?? {}),
+      parameterNames: [...new Set([...Object.keys(runInput?.transformerParams ?? {}), ...(runnerName ? [runnerName] : [])])],
     }),
-    [runInput, defineParameters],
+    [runInput, defineParameters, runnerName],
   );
   // #502: the edited application's environment, whose registry has its composite TransformerDefinitions
   const { modelEnvironment, transformerDefinitions } = useBlockModelEnvironment();
@@ -329,7 +333,7 @@ export function useBlockEditingValue(
     },
     [contextSchemas],
   );
-  const nodeOf = useCallback(
+  const newNodeOf = useCallback(
     (source: ArmedBlock): Record<string, unknown> | undefined => {
       if (source.kind === "type") {
         return defaultNode(source.transformerType);
@@ -342,12 +346,18 @@ export function useBlockEditingValue(
         }
       }
       if (source.kind === "variable") {
-        return variableNode(source.source, source.name);
+        return variableNode(source.source, source.name, source.path);
       }
       const trayBlock = tray?.[source.index];
       return isRecord(trayBlock) ? trayBlock : undefined;
     },
     [root, tray, defaultNode, modelEnvironment],
+  );
+  // every block menu asks for the armed block's node: it is computed once per arming and value
+  const armedNode = useMemo(() => (armed ? newNodeOf(armed) : undefined), [armed, newNodeOf]);
+  const nodeOf = useCallback(
+    (source: ArmedBlock) => (source === armed ? armedNode : newNodeOf(source)),
+    [armed, armedNode, newNodeOf],
   );
   // a put block leaves the tray; the indexes of the others shift, so nothing stays armed
   const consume = useCallback(

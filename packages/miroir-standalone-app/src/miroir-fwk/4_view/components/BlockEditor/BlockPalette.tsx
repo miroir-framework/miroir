@@ -123,7 +123,8 @@ function VariableEntry(props: { source: VariableSource; name: string; color: str
   if (!editing) {
     return null;
   }
-  const armed = editing.armed?.kind === "variable" && editing.armed.source === source && editing.armed.name === name;
+  const armed =
+    editing.armed?.kind === "variable" && editing.armed.source === source && editing.armed.name === name && !editing.armed.path;
   return (
     <button
       ref={setNodeRef}

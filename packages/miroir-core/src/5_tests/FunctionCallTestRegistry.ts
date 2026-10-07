@@ -39,7 +39,7 @@ import { localizeMlSchemaReferenceContext } from "../1_core/mls/MlsUnfoldSchemaO
 import { resolveQueryTemplateWithExtractorCombinerTransformer } from "../2_domain/Templates";
 import { referencePathAttributeNames, resolveTransformerResultSchema } from "../2_domain/Transformer_ResultSchema";
 import { getApplicationSection } from "../1_core/Model";
-import { isBlockViewRoot } from "../2_domain/BlockViewFields";
+import { isBlockViewRoot, isTestSequenceField } from "../2_domain/BlockViewFields";
 import {
   addTransformerParameter,
   compositeTransformerDefinition,
@@ -341,6 +341,7 @@ const FUNCTION_CALL_REGISTRY: Record<
   },
   "miroir-core/2_domain/BlockViewFields": {
     isBlockViewRoot: isBlockViewRoot as WhitelistedFunction,
+    isTestSequenceField: isTestSequenceField as WhitelistedFunction,
   },
   "miroir-core/2_domain/TransformerSubtreeRun": {
     transformerSubtreeRuns: transformerSubtreeRuns as WhitelistedFunction,

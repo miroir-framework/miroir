@@ -1050,6 +1050,21 @@
                   "byTestId": "block-palette"
                 },
                 "present": false
+              },
+              {
+                "step": "expectElement",
+                "label": "the hat is shown",
+                "target": {
+                  "byTestId": "block-runner-hat"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "its fields are not edited",
+                "target": {
+                  "byTestId": "block-runner-add"
+                },
+                "present": false
               }
             ]
           }
@@ -1467,6 +1482,538 @@
                   "byTestId": "block-insert:definition.compositeActionSequence.payload.actionSequence.7"
                 },
                 "present": false
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "miroirTestType": "reactComponentTestSuite",
+        "miroirTestLabel": "the when run hat",
+        "component": "TransformerBlocks",
+        "componentProps": {
+          "runner": "createEntity",
+          "editable": true
+        },
+        "miroirTests": [
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "the when run hat: the createEntity Runner shows its hat with its form fields",
+            "steps": [
+              {
+                "step": "waitForAttribute",
+                "label": "the hat names the Runner",
+                "target": {
+                  "byTestId": "block-runner-hat"
+                },
+                "attribute": "data-name",
+                "value": "createEntity",
+                "timeout": 3000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "its label",
+                "target": {
+                  "byTestId": "block-runner-label"
+                },
+                "attribute": "data-testid",
+                "value": "block-runner-label"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the application field is a uuid",
+                "target": {
+                  "byTestId": "block-runner-field:application"
+                },
+                "attribute": "data-type",
+                "value": "uuid"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the sequence reads it",
+                "target": {
+                  "byTestId": "block-runner-field:application"
+                },
+                "attribute": "data-read",
+                "value": "true"
+              },
+              {
+                "step": "expectElement",
+                "label": "the entity field",
+                "target": {
+                  "byTestId": "block-runner-field:entity"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "a field can be added",
+                "target": {
+                  "byTestId": "block-runner-add"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "a read field cannot be removed",
+                "target": {
+                  "byTestId": "block-runner-remove:application"
+                },
+                "attribute": "disabled",
+                "value": ""
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "the when run hat: a form field replaces a literal with a read of it",
+            "steps": [
+              {
+                "step": "waitForAttribute",
+                "label": "the hat names the Runner",
+                "target": {
+                  "byTestId": "block-runner-hat"
+                },
+                "attribute": "data-name",
+                "value": "createEntity",
+                "timeout": 3000
+              },
+              {
+                "step": "click",
+                "label": "choose createInstance in the palette",
+                "target": {
+                  "byTestId": "block-palette-action:createInstance"
+                }
+              },
+              {
+                "step": "click",
+                "label": "put it at the end of the steps",
+                "target": {
+                  "byTestId": "block-insert:definition.compositeActionSequence.payload.actionSequence.6"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "a seventh step: createInstance",
+                "target": {
+                  "byTestId": "block:definition.compositeActionSequence.payload.actionSequence.6"
+                },
+                "attribute": "data-action-type",
+                "value": "createInstance"
+              },
+              {
+                "step": "click",
+                "label": "choose the application field",
+                "target": {
+                  "byTestId": "block-runner-variable:application"
+                }
+              },
+              {
+                "step": "click",
+                "label": "replace the applicationSection literal",
+                "target": {
+                  "byTestId": "block-replace:definition.compositeActionSequence.payload.actionSequence.6.payload.applicationSection"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "applicationSection reads a parameter",
+                "target": {
+                  "byTestId": "block:definition.compositeActionSequence.payload.actionSequence.6.payload.applicationSection"
+                },
+                "attribute": "data-transformer-type",
+                "value": "getFromParameters"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "the when run hat: a new form field, read by the sequence, renamed with its reads",
+            "steps": [
+              {
+                "step": "waitForAttribute",
+                "label": "the hat names the Runner",
+                "target": {
+                  "byTestId": "block-runner-hat"
+                },
+                "attribute": "data-name",
+                "value": "createEntity",
+                "timeout": 3000
+              },
+              {
+                "step": "click",
+                "label": "choose createInstance in the palette",
+                "target": {
+                  "byTestId": "block-palette-action:createInstance"
+                }
+              },
+              {
+                "step": "click",
+                "label": "put it at the end of the steps",
+                "target": {
+                  "byTestId": "block-insert:definition.compositeActionSequence.payload.actionSequence.6"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "a seventh step: createInstance",
+                "target": {
+                  "byTestId": "block:definition.compositeActionSequence.payload.actionSequence.6"
+                },
+                "attribute": "data-action-type",
+                "value": "createInstance"
+              },
+              {
+                "step": "click",
+                "label": "add a field",
+                "target": {
+                  "byTestId": "block-runner-add"
+                }
+              },
+              {
+                "step": "type",
+                "label": "name it sectionName",
+                "target": {
+                  "byTestId": "block-runner-new"
+                },
+                "text": "sectionName{Enter}"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the new field is a string",
+                "target": {
+                  "byTestId": "block-runner-field:sectionName"
+                },
+                "attribute": "data-type",
+                "value": "string"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "nothing reads it yet",
+                "target": {
+                  "byTestId": "block-runner-field:sectionName"
+                },
+                "attribute": "data-read",
+                "value": "false"
+              },
+              {
+                "step": "click",
+                "label": "choose it",
+                "target": {
+                  "byTestId": "block-runner-variable:sectionName"
+                }
+              },
+              {
+                "step": "click",
+                "label": "replace the applicationSection literal",
+                "target": {
+                  "byTestId": "block-replace:definition.compositeActionSequence.payload.actionSequence.6.payload.applicationSection"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the sequence reads it now",
+                "target": {
+                  "byTestId": "block-runner-field:sectionName"
+                },
+                "attribute": "data-read",
+                "value": "true"
+              },
+              {
+                "step": "click",
+                "label": "rename it",
+                "target": {
+                  "byTestId": "block-runner-rename:sectionName"
+                }
+              },
+              {
+                "step": "clear",
+                "label": "clear the name",
+                "target": {
+                  "byTestId": "block-runner-name:sectionName"
+                }
+              },
+              {
+                "step": "type",
+                "label": "name it section",
+                "target": {
+                  "byTestId": "block-runner-name:sectionName"
+                },
+                "text": "section{Enter}"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the renamed field is still read",
+                "target": {
+                  "byTestId": "block-runner-field:section"
+                },
+                "attribute": "data-read",
+                "value": "true"
+              },
+              {
+                "step": "expectElement",
+                "label": "the old name is gone",
+                "target": {
+                  "byTestId": "block-runner-field:sectionName"
+                },
+                "present": false
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "the when run hat: an unread form field is removed, a taken name refused",
+            "steps": [
+              {
+                "step": "waitForAttribute",
+                "label": "the hat names the Runner",
+                "target": {
+                  "byTestId": "block-runner-hat"
+                },
+                "attribute": "data-name",
+                "value": "createEntity",
+                "timeout": 3000
+              },
+              {
+                "step": "click",
+                "label": "add a field",
+                "target": {
+                  "byTestId": "block-runner-add"
+                }
+              },
+              {
+                "step": "type",
+                "label": "name it application",
+                "target": {
+                  "byTestId": "block-runner-new"
+                },
+                "text": "application{Enter}"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "refused: the form has it",
+                "target": {
+                  "byTestId": "block-runner-error"
+                },
+                "attribute": "role",
+                "value": "alert"
+              },
+              {
+                "step": "clear",
+                "label": "clear the name",
+                "target": {
+                  "byTestId": "block-runner-new"
+                }
+              },
+              {
+                "step": "type",
+                "label": "name it note",
+                "target": {
+                  "byTestId": "block-runner-new"
+                },
+                "text": "note{Enter}"
+              },
+              {
+                "step": "expectElement",
+                "label": "the field note",
+                "target": {
+                  "byTestId": "block-runner-field:note"
+                }
+              },
+              {
+                "step": "click",
+                "label": "remove it",
+                "target": {
+                  "byTestId": "block-runner-remove:note"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "it is gone",
+                "target": {
+                  "byTestId": "block-runner-field:note"
+                },
+                "present": false
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "miroirTestType": "reactComponentTestSuite",
+        "miroirTestLabel": "a Runner in an instance editor",
+        "component": "MlElementEditor",
+        "componentProps": {
+          "label": "Test Label",
+          "name": "testField",
+          "listKey": "ROOT.testField",
+          "rootLessListKey": "testField",
+          "rootLessListKeyArray": [
+            "testField"
+          ],
+          "blockViewSwitch": true,
+          "rawMlSchema": {
+            "type": "object",
+            "definition": {
+              "runner": {
+                "type": "object",
+                "definition": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "defaultLabel": {
+                    "type": "string"
+                  },
+                  "definition": {
+                    "type": "object",
+                    "definition": {
+                      "runnerType": {
+                        "type": "string"
+                      },
+                      "formMLSchema": {
+                        "type": "any"
+                      },
+                      "compositeActionSequence": {
+                        "type": "schemaReference",
+                        "definition": {
+                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          "relativePath": "compositeActionSequenceTemplate"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "initialFormState": {
+            "runner": {
+              "name": "publish",
+              "defaultLabel": "Publish",
+              "definition": {
+                "runnerType": "customRunner",
+                "formMLSchema": {
+                  "formMLSchemaType": "mlSchema",
+                  "mlSchema": {
+                    "type": "object",
+                    "definition": {
+                      "publisherName": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "compositeActionSequence": {
+                  "actionType": "compositeActionSequence",
+                  "actionLabel": "publish",
+                  "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                  "payload": {
+                    "actionSequence": [
+                      {
+                        "actionType": "createInstance",
+                        "actionLabel": "createPublisher",
+                        "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                        "payload": {
+                          "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                          "applicationSection": "data",
+                          "objects": [
+                            {
+                              "parentName": "Publisher",
+                              "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
+                              "uuid": "8d1b4f3e-505a-4c0e-9d5e-000000000505",
+                              "name": {
+                                "transformerType": "getFromParameters",
+                                "interpolation": "runtime",
+                                "referencePath": [
+                                  "publish",
+                                  "publisherName"
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "miroirTests": [
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "a Runner in an instance editor: the sequence of a custom Runner shows its hat, its fields read-only",
+            "steps": [
+              {
+                "step": "click",
+                "label": "choose Blocks",
+                "target": {
+                  "byTestId": "block-view-mode:testField.runner.definition.compositeActionSequence:blocks"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the hat names the Runner",
+                "target": {
+                  "byTestId": "block-runner-hat"
+                },
+                "attribute": "data-name",
+                "value": "publish",
+                "timeout": 3000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the sequence reads publisherName",
+                "target": {
+                  "byTestId": "block-runner-field:publisherName"
+                },
+                "attribute": "data-read",
+                "value": "true"
+              },
+              {
+                "step": "expectElement",
+                "label": "fields are edited in the form schema, not here",
+                "target": {
+                  "byTestId": "block-runner-add"
+                },
+                "present": false
+              },
+              {
+                "step": "expectElement",
+                "label": "the palette offers actions",
+                "target": {
+                  "byTestId": "block-palette-action:createInstance"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "no assertion in a Runner",
+                "target": {
+                  "byTestId": "block-palette-action:compositeRunTestAssertion"
+                },
+                "present": false
+              },
+              {
+                "step": "click",
+                "label": "choose publisherName",
+                "target": {
+                  "byTestId": "block-runner-variable:publisherName"
+                }
+              },
+              {
+                "step": "click",
+                "label": "replace the applicationSection literal",
+                "target": {
+                  "byTestId": "block-replace:testField.runner.definition.compositeActionSequence.payload.actionSequence.0.payload.applicationSection"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "applicationSection reads the form field",
+                "target": {
+                  "byTestId": "block:testField.runner.definition.compositeActionSequence.payload.actionSequence.0.payload.applicationSection"
+                },
+                "attribute": "data-transformer-type",
+                "value": "getFromParameters"
               }
             ]
           }

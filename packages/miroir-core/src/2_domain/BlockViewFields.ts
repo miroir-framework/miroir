@@ -16,6 +16,8 @@ import type { KeyMapEntry, MlElement } from "../0_interfaces/1_core/preprocessor
 // #504: a composite action sequence is a root too, shown as read-only command blocks: a field
 // declared as one of the three sequence schemas, or an `any` field the type check resolves to one
 // (`ifThenElseMMLS`, as Endpoint `actionImplementation.definition`).
+// #505: a field declared `compositeActionSequence` holds a test sequence (MiroirTest, Test): its
+// block palette offers the assertion action, which Runner and Endpoint sequences refuse.
 // ################################################################################################
 
 /** Transformer schemas: their values are block view roots. */
@@ -108,4 +110,14 @@ export function isBlockViewRoot(entry: KeyMapEntry | undefined, keyMap?: Record<
     }
   }
   return true;
+}
+
+/** Whether a field holds a test sequence (#505): one declared, or resolved to, `compositeActionSequence`. */
+export function isTestSequenceField(entry: KeyMapEntry | undefined): boolean {
+  return (
+    entry !== undefined &&
+    [referencedSchemaName(entry.rawSchema), referencedSchemaName(entry.chosenUnionBranchRawSchema), ifThenElseSchemaName(entry.rawSchema)].includes(
+      "compositeActionSequence",
+    )
+  );
 }

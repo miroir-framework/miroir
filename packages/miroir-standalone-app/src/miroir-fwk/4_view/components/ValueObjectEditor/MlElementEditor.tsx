@@ -20,6 +20,7 @@ import {
   EntityInstanceWithName,
   getDefaultValueForMlSchemaWithResolutionNonHook,
   isBlockViewRoot,
+  isTestSequenceField,
   mlsToMls_Summary,
   LoggerInterface,
   MiroirLoggerFactory,
@@ -466,6 +467,7 @@ export function MlElementEditor(props: MlElementEditorProps): JSX.Element {
       rootLessListKey={props.rootLessListKey}
       readOnly={props.readOnly}
       transformerTypeBadges={props.transformerTypeBadges}
+      withTestAssertion={isTestSequenceField(props.typeCheckKeyMap?.[props.rootLessListKey])}
     >
       {(mode) => <MlElementEditorForm key={mode} {...props} />}
     </BlockViewSwitch>
