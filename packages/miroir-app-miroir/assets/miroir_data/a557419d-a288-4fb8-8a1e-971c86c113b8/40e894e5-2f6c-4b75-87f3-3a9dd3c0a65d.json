@@ -7,6 +7,9 @@
   "parentDefinitionVersionUuid": "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
   "parentName": "TransformerDefinition",
   "classification": "list",
+  "presentation": {
+    "labelTemplate": "keep from [applyTo] where [predicate]"
+  },
   "transformerInterface": {
     "inputOutput": {
       "input": "array",

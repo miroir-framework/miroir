@@ -90,6 +90,7 @@ import {
 } from "../2_domain/TransformerTreeEdit";
 import {
   blockOutline,
+  blockTitleSegments,
   blockTree,
   transformerBlockOutline,
   transformerBlockTree,
@@ -397,6 +398,7 @@ const FUNCTION_CALL_REGISTRY: Record<
   },
   "miroir-core/2_domain/TransformerBlockModel": {
     blockOutline: blockOutline as WhitelistedFunction,
+    blockTitleSegments: blockTitleSegments as WhitelistedFunction,
     blockTree: blockTree as WhitelistedFunction,
     transformerBlockTree: transformerBlockTree as WhitelistedFunction,
     transformerBlockOutline: transformerBlockOutline as WhitelistedFunction,

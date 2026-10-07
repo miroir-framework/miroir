@@ -166,7 +166,7 @@ The tree operations are pure functions in `miroir-core/src/2_domain/TransformerT
 
 In the TransformerEditor, the transformer has three views: Blocks, Form and JSON (issue #498). Form is the default. The view chosen for a field is kept while the editor is open, even when an enclosing object is folded. The Blocks view also edits the transformer (issue #500, see Editing with blocks below).
 
-- Each transformer is a block. Its header shows the transformer type, its label and its primitive parameters, such as `referenceToOuterObject`. Each place that holds a transformer (`applyTo`, `predicate`, `elementTransformer`, …) is a row inside the block.
+- Each transformer is a block. Its header shows the transformer type (or the sentence of its label template, see Presentation hints), its label and its primitive parameters, such as `referenceToOuterObject`. Each place that holds a transformer (`applyTo`, `predicate`, `elementTransformer`, …) is a row inside the block.
 - A literal object or list is an object or list block with one row per entry, and the transformers inside it are blocks too. An ML schema parameter is a chip labelled "ML schema". The `value` of a `returnValue` is shown quoted, since it is returned as is, never evaluated.
 - A key that the TransformerDefinition does not declare is a red row marked ⚠. A `transformerType` with no TransformerDefinition is shown as JSON.
 - A block's color comes from the `classification` of its TransformerDefinition: list, object, control, value, variable, operator, MLS, metaModel, admin or spreadsheet. The colors are the `components.blockEditor` attribute of the Theme: `categoryColors`, and `fallbackColor` for a category without a color. The dark Theme has its own colors.
@@ -271,6 +271,19 @@ An Endpoint action implemented by a `compositeActionTemplate` is a composite act
 - **In the palette.** A new action is in the palette at once, under its Endpoint, and a sequence using it runs before the model is committed: `DomainController.handleAction` takes the application of an Endpoint it cannot find in the static map or the persisted stores from the caller's model environment.
 
 The functions are `endpointActionHat`, `endpointActionParameterReads`, `addEndpointActionParameter`, `renameEndpointActionParameter`, `removeEndpointActionParameter`, `compositeEndpointAction`, `addEndpointAction` and `newEndpoint` (`miroir-core/src/2_domain/EndpointActionEdit.ts`), tested by `fn.blockModel` ("endpoint actions"). The define block is tested by the `ui.blockEditing` suites "an Endpoint action" (`entity_DuplicateAttribute` round-trips unchanged, AC 2), "an Endpoint action edited" and "an Endpoint action in an instance editor"; Save as Action by the #506 cases of "SequenceEditor on the Library" (a new action in a new Endpoint, used by another sequence that runs it, AC 1; both switches give an action Runner).
+
+### Presentation hints
+
+A TransformerDefinition and an Endpoint action can carry an optional `presentation` attribute (issue #507), so that blocks read like Scratch sentences. Its schema is `blockPresentationHints` in the fundamental ML schema. Without it, a block shows its type name.
+
+- `labelTemplate`: the block header as a sentence, such as `"map [applyTo] with [elementTransformer]"`. A `[name]` naming an attribute of the block is a chip: the value of a header parameter (the `target` of a `dataflowObject`), else the attribute's name. A `[name]` that is not an attribute stays text, so a typo shows. The type name becomes the header's tooltip. `mapList`, `filterList`, `ifThenElse` and `dataflowObject` have templates.
+- `icon`: an icon name, as for an Entity, shown before the header.
+- `category`: a key of the Theme's `components.blockEditor.categoryColors` that gives the block its color instead of its classification. The palette still groups by classification.
+- `colorByTheme`: a color per Theme id (`default`, `dark`, …), used before the category, for a block no category fits.
+
+A hint never holds a single raw color: light and dark Themes need different colors, so colors stay in the Theme (analysis #497, D11).
+
+The model function is `blockTitleSegments`, and blocks carry their hints as `presentation` (`TransformerBlockModel.ts`), tested by `fn.blockModel` ("presentation hints"). The headers are tested by the `ui.blockEditing` suites "presentation hints" and "presentation hints of a dataflow". The platform test `BlockPresentationHints.unit.test.ts` parses every TransformerDefinition and Endpoint action asset with its schema, and checks that a raw `color` is refused.
 
 ---
 

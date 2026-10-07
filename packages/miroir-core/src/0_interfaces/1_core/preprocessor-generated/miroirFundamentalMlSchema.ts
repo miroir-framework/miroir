@@ -5848,6 +5848,66 @@ export const miroirFundamentalMlSchema = {
           }
         }
       },
+      "blockPresentationHints": {
+        "type": "object",
+        "definition": {
+          "labelTemplate": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Label template",
+                "description": "The block header as a sentence: words, and [attribute] for an attribute of the block, e.g. \"map [applyTo] with [elementTransformer]\".",
+                "display": {
+                  "editable": true
+                }
+              }
+            }
+          },
+          "icon": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Icon",
+                "description": "An icon name, as for an Entity.",
+                "display": {
+                  "editable": true
+                }
+              }
+            }
+          },
+          "category": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Color category",
+                "description": "A key of the Theme's block editor colors (components.blockEditor.categoryColors) giving the block its color, instead of its classification.",
+                "display": {
+                  "editable": true
+                }
+              }
+            }
+          },
+          "colorByTheme": {
+            "type": "record",
+            "optional": true,
+            "definition": {
+              "type": "string"
+            },
+            "tag": {
+              "value": {
+                "defaultLabel": "Color by Theme",
+                "description": "A color per Theme id, for a block no category fits; it comes before the category.",
+                "display": {
+                  "editable": true
+                }
+              }
+            }
+          }
+        }
+      },
       "transformerDefinition": {
         "type": "object",
         "extend": {
@@ -5870,6 +5930,20 @@ export const miroirFundamentalMlSchema = {
                   "editable": true
                 }
               }
+            }
+          },
+          "presentation": {
+            "type": "schemaReference",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Presentation",
+                "description": "Block editor hints: a label template, an icon, a color."
+              }
+            },
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "blockPresentationHints"
             }
           },
           "runnableAsSql": {
@@ -26153,6 +26227,20 @@ export const miroirFundamentalMlSchema = {
               }
             }
           },
+          "presentation": {
+            "type": "schemaReference",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Presentation",
+                "description": "Block editor hints: a label template, an icon, a color."
+              }
+            },
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "blockPresentationHints"
+            }
+          },
           "logPhase": {
             "type": "enum",
             "optional": true,
@@ -26459,6 +26547,20 @@ export const miroirFundamentalMlSchema = {
                                 "defaultLabel": "Autocommit from UI",
                                 "description": "When true, the action is followed by a commit when it is sent from the UI"
                               }
+                            }
+                          },
+                          "presentation": {
+                            "type": "schemaReference",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Presentation",
+                                "description": "Block editor hints: a label template, an icon, a color."
+                              }
+                            },
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "blockPresentationHints"
                             }
                           },
                           "logPhase": {

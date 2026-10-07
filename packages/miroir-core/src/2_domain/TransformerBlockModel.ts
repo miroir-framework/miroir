@@ -9,6 +9,8 @@ import type {
   ActionBlock,
   BlockNode,
   BlockPath,
+  BlockPresentation,
+  BlockTitleSegment,
   BlockTree,
   BlockTreeStats,
   SequenceBlock,
@@ -108,8 +110,66 @@ function isMlSchemaValue(name: string, schema: MlElement | undefined, value: unk
   return declaredMlSchema && !containsTransformer(value);
 }
 
+/** An attribute in a label template: `[name]`. */
+const TEMPLATE_ATTRIBUTE = /\[([A-Za-z_][A-Za-z0-9_]*)\]/g;
+
+/**
+ * #507: the title of a block from a label template: its words, and a chip for each `[name]`
+ * naming one of `attributes`. Any other `[name]` stays text, so a typo shows.
+ */
+export function blockTitleSegments(template: string, attributes: Iterable<string>): BlockTitleSegment[] {
+  const known = new Set(attributes);
+  const segments: BlockTitleSegment[] = [];
+  const pushText = (text: string) => {
+    if (text.length === 0) {
+      return;
+    }
+    const last = segments[segments.length - 1];
+    if (last && "text" in last) {
+      segments[segments.length - 1] = { text: last.text + text };
+      return;
+    }
+    segments.push({ text });
+  };
+  let position = 0;
+  for (const match of template.matchAll(TEMPLATE_ATTRIBUTE)) {
+    pushText(template.slice(position, match.index));
+    if (known.has(match[1])) {
+      segments.push({ attribute: match[1] });
+    } else {
+      pushText(match[0]);
+    }
+    position = (match.index ?? 0) + match[0].length;
+  }
+  pushText(template.slice(position));
+  return segments;
+}
+
+/** #507: the presentation of a block from the hints stored with its definition; `undefined` without hints. */
+function blockPresentation(hints: unknown, attributes: Iterable<string>): BlockPresentation | undefined {
+  if (!isPlainRecord(hints)) {
+    return undefined;
+  }
+  const presentation: BlockPresentation = {
+    ...(typeof hints.labelTemplate === "string" && hints.labelTemplate.trim().length > 0
+      ? { title: blockTitleSegments(hints.labelTemplate, attributes) }
+      : {}),
+    ...(typeof hints.icon === "string" && hints.icon.length > 0 ? { icon: hints.icon } : {}),
+    ...(typeof hints.category === "string" && hints.category.length > 0 ? { colorCategory: hints.category } : {}),
+    ...(isPlainRecord(hints.colorByTheme)
+      ? {
+          colorByTheme: Object.fromEntries(
+            Object.entries(hints.colorByTheme).filter((entry): entry is [string, string] => typeof entry[1] === "string"),
+          ),
+        }
+      : {}),
+  };
+  return Object.keys(presentation).length > 0 ? presentation : undefined;
+}
+
 interface TransformerTypeInfo {
   category: string;
+  presentation?: BlockPresentation;
   /** Declared attributes, the definition's own first, in declaration order, then its extensions. */
   attributes: [string, MlElement][];
   slotAttributes: Set<string>;
@@ -143,9 +203,12 @@ function transformerTypeInfo(
   const own = Object.keys(ownSchema?.definition ?? {});
   const declared = declaredAttributeSchemas(transformerType, modelEnvironment, transformerDefinitions);
   const order = [...own, ...Object.keys(declared).filter((name) => !own.includes(name))];
+  const attributes = order.filter((name) => !COMMON_ATTRIBUTES.has(name));
+  const presentation = blockPresentation(definition.presentation, attributes);
   const info: TransformerTypeInfo = {
     category: definition.classification ?? "unknown",
-    attributes: order.filter((name) => !COMMON_ATTRIBUTES.has(name)).map((name) => [name, declared[name]]),
+    ...(presentation ? { presentation } : {}),
+    attributes: attributes.map((name) => [name, declared[name]]),
     slotAttributes: new Set(
       transformerSlots(transformerType, transformerDefinitions).map((slot) => slot.template[0]),
     ),
@@ -263,6 +326,7 @@ function transformerBlock(value: TransformerNode, path: BlockPath, context: Buil
     transformerType: value.transformerType,
     ...(typeof value.label === "string" ? { label: value.label } : {}),
     category: info.category,
+    ...(info.presentation ? { presentation: info.presentation } : {}),
     ...(value.interpolation === "build" || value.interpolation === "runtime"
       ? { interpolation: value.interpolation }
       : {}),
@@ -340,11 +404,16 @@ function actionBlock(value: Record<string, unknown>, path: BlockPath, context: B
     context,
     parameters,
   );
+  const presentation = blockPresentation((entry.action as { presentation?: unknown }).presentation, [
+    ...Object.keys(actionParameters),
+    ...(declaredObjectAttributes(actionParameters.payload) ?? []),
+  ]);
   const header = {
     path,
     actionType,
     ...(typeof value.actionLabel === "string" ? { label: value.actionLabel } : {}),
     category: entry.endpointName,
+    ...(presentation ? { presentation } : {}),
     parameters,
   };
   const payloadPath = [...path, "payload"];

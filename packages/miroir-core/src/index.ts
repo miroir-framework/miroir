@@ -458,6 +458,8 @@ export {
   TestSuiteResult,
   testSuiteResult,
   TestSuitesResults,
+  BlockPresentationHints,
+  blockPresentationHints,
   TransformerDefinition,
   transformerDefinition,
   TransactionalInstanceAction,
@@ -1413,6 +1415,7 @@ export {
 export type { TransformerSubtreeRun } from "./0_interfaces/2_domain/TransformerSubtreeRunInterface.js";
 export {
   blockOutline,
+  blockTitleSegments,
   blockTree,
   isBlockAction,
   transformerBlockOutline,
@@ -1425,6 +1428,8 @@ export type {
   ActionBlock,
   BlockNode,
   BlockPath,
+  BlockPresentation,
+  BlockTitleSegment,
   BlockTree,
   BlockTreeStats,
   JsonBlock,
