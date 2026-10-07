@@ -1,0 +1,1101 @@
+{
+  "uuid": "ef540605-8176-45bf-af76-c9d240769c7b",
+  "parentName": "MiroirTest",
+  "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+  "name": "ui.valueHistory",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "description": "Undo and redo of the TransformerEditor's transformer: the Undo and Redo buttons, Ctrl+Z, Ctrl+Y and Ctrl+Shift+Z (not from a dialog), one step per text typed into a field and none for typing that comes back to the previous value, two steps for two choices in one select, the JSON and Blocks views showing what Undo restores, an edit of the JSON text undone, Ctrl+Z right after a Remove and Clear undone, while an MlElementEditor without a history still asks before a Remove and before a type change that drops an edited value.",
+  "tags": [
+    "ui",
+    "editor",
+    "transformer"
+  ],
+  "issue": "499",
+  "definition": {
+    "miroirTestType": "miroirTestSuite",
+    "miroirTestLabel": "ui.valueHistory",
+    "miroirTests": [
+      {
+        "miroirTestType": "reactComponentTestSuite",
+        "miroirTestLabel": "TransformerEditor",
+        "component": "TransformerEditor",
+        "componentProps": {
+          "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+          "entityUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad"
+        },
+        "miroirTests": [
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: Undo and Redo are disabled before any edit",
+            "steps": [
+              {
+                "step": "waitForAttribute",
+                "label": "Undo disabled",
+                "target": {
+                  "byTestId": "value-history-undo:transformer"
+                },
+                "attribute": "aria-disabled",
+                "value": "true",
+                "timeout": 2000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "Redo disabled",
+                "target": {
+                  "byTestId": "value-history-redo:transformer"
+                },
+                "attribute": "aria-disabled",
+                "value": "true"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: Undo brings back the value before a form edit, Redo the edit",
+            "steps": [
+              {
+                "step": "change",
+                "label": "edit the returned value in the form",
+                "target": {
+                  "byDisplayValue": "seize value..."
+                },
+                "value": "new value"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "Undo enabled",
+                "target": {
+                  "byTestId": "value-history-undo:transformer"
+                },
+                "attribute": "aria-disabled",
+                "value": "false",
+                "timeout": 2000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "Redo still disabled",
+                "target": {
+                  "byTestId": "value-history-redo:transformer"
+                },
+                "attribute": "aria-disabled",
+                "value": "true"
+              },
+              {
+                "step": "click",
+                "label": "undo",
+                "target": {
+                  "byTestId": "value-history-undo:transformer"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the value before the edit",
+                "target": {
+                  "byDisplayValue": "seize value..."
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the edit is gone",
+                "target": {
+                  "byDisplayValue": "new value"
+                },
+                "present": false
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "nothing more to undo",
+                "target": {
+                  "byTestId": "value-history-undo:transformer"
+                },
+                "attribute": "aria-disabled",
+                "value": "true",
+                "timeout": 2000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "Redo enabled",
+                "target": {
+                  "byTestId": "value-history-redo:transformer"
+                },
+                "attribute": "aria-disabled",
+                "value": "false"
+              },
+              {
+                "step": "click",
+                "label": "redo",
+                "target": {
+                  "byTestId": "value-history-redo:transformer"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the edit is back",
+                "target": {
+                  "byDisplayValue": "new value"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "nothing more to redo",
+                "target": {
+                  "byTestId": "value-history-redo:transformer"
+                },
+                "attribute": "aria-disabled",
+                "value": "true",
+                "timeout": 2000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "Undo enabled again",
+                "target": {
+                  "byTestId": "value-history-undo:transformer"
+                },
+                "attribute": "aria-disabled",
+                "value": "false"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: an edit after an Undo drops what Redo would have restored",
+            "steps": [
+              {
+                "step": "change",
+                "label": "first edit",
+                "target": {
+                  "byDisplayValue": "seize value..."
+                },
+                "value": "first"
+              },
+              {
+                "step": "change",
+                "label": "second edit",
+                "target": {
+                  "byDisplayValue": "first"
+                },
+                "value": "second"
+              },
+              {
+                "step": "click",
+                "label": "undo the second edit",
+                "target": {
+                  "byTestId": "value-history-undo:transformer"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the first edit",
+                "target": {
+                  "byDisplayValue": "first"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "change",
+                "label": "another edit",
+                "target": {
+                  "byDisplayValue": "first"
+                },
+                "value": "third"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "nothing to redo",
+                "target": {
+                  "byTestId": "value-history-redo:transformer"
+                },
+                "attribute": "aria-disabled",
+                "value": "true",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "undo the other edit",
+                "target": {
+                  "byTestId": "value-history-undo:transformer"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the first edit again",
+                "target": {
+                  "byDisplayValue": "first"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "undo the first edit",
+                "target": {
+                  "byTestId": "value-history-undo:transformer"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the starting value",
+                "target": {
+                  "byDisplayValue": "seize value..."
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "nothing more to undo",
+                "target": {
+                  "byTestId": "value-history-undo:transformer"
+                },
+                "attribute": "aria-disabled",
+                "value": "true",
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: typing in a field is one step, Ctrl+Z undoes it, Ctrl+Y and Ctrl+Shift+Z redo it",
+            "steps": [
+              {
+                "step": "click",
+                "label": "pick the returned value field",
+                "target": {
+                  "byDisplayValue": "seize value..."
+                },
+                "saveAs": "valueInput"
+              },
+              {
+                "step": "clear",
+                "label": "clear the field",
+                "target": {
+                  "ref": "valueInput"
+                }
+              },
+              {
+                "step": "type",
+                "label": "type a new value",
+                "target": {
+                  "ref": "valueInput"
+                },
+                "text": "typed"
+              },
+              {
+                "step": "expectElement",
+                "label": "the typed value",
+                "target": {
+                  "byDisplayValue": "typed"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "keyboard",
+                "label": "Ctrl+Z",
+                "keys": "{Control>}z{/Control}"
+              },
+              {
+                "step": "expectElement",
+                "label": "the value before clearing and typing, in one step",
+                "target": {
+                  "byDisplayValue": "seize value..."
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "nothing more to undo",
+                "target": {
+                  "byTestId": "value-history-undo:transformer"
+                },
+                "attribute": "aria-disabled",
+                "value": "true",
+                "timeout": 2000
+              },
+              {
+                "step": "keyboard",
+                "label": "Ctrl+Y",
+                "keys": "{Control>}y{/Control}"
+              },
+              {
+                "step": "expectElement",
+                "label": "the typed value is back",
+                "target": {
+                  "byDisplayValue": "typed"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "keyboard",
+                "label": "Ctrl+Z again",
+                "keys": "{Control>}z{/Control}"
+              },
+              {
+                "step": "expectElement",
+                "label": "the value before typing again",
+                "target": {
+                  "byDisplayValue": "seize value..."
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "keyboard",
+                "label": "Ctrl+Shift+Z",
+                "keys": "{Control>}{Shift>}z{/Shift}{/Control}"
+              },
+              {
+                "step": "expectElement",
+                "label": "the typed value is back again",
+                "target": {
+                  "byDisplayValue": "typed"
+                },
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: typing again after leaving the field is another step",
+            "steps": [
+              {
+                "step": "click",
+                "label": "pick the returned value field",
+                "target": {
+                  "byDisplayValue": "seize value..."
+                },
+                "saveAs": "valueInput"
+              },
+              {
+                "step": "type",
+                "label": "type at the end",
+                "target": {
+                  "ref": "valueInput"
+                },
+                "text": " one"
+              },
+              {
+                "step": "keyboard",
+                "label": "leave the field",
+                "keys": "{Tab}"
+              },
+              {
+                "step": "type",
+                "label": "type at the end again",
+                "target": {
+                  "ref": "valueInput"
+                },
+                "text": " two"
+              },
+              {
+                "step": "expectElement",
+                "label": "both typings",
+                "target": {
+                  "byDisplayValue": "seize value... one two"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "keyboard",
+                "label": "Ctrl+Z",
+                "keys": "{Control>}z{/Control}"
+              },
+              {
+                "step": "expectElement",
+                "label": "the first typing only",
+                "target": {
+                  "byDisplayValue": "seize value... one"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "keyboard",
+                "label": "Ctrl+Z again",
+                "keys": "{Control>}z{/Control}"
+              },
+              {
+                "step": "expectElement",
+                "label": "the starting value",
+                "target": {
+                  "byDisplayValue": "seize value..."
+                },
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: typing a character and deleting it adds no step",
+            "steps": [
+              {
+                "step": "click",
+                "label": "pick the returned value field",
+                "target": {
+                  "byDisplayValue": "seize value..."
+                },
+                "saveAs": "valueInput"
+              },
+              {
+                "step": "type",
+                "label": "type a character",
+                "target": {
+                  "ref": "valueInput"
+                },
+                "text": "x"
+              },
+              {
+                "step": "expectElement",
+                "label": "the typed character",
+                "target": {
+                  "byDisplayValue": "seize value...x"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "keyboard",
+                "label": "delete it",
+                "keys": "{Backspace}"
+              },
+              {
+                "step": "expectElement",
+                "label": "the starting value",
+                "target": {
+                  "byDisplayValue": "seize value..."
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "nothing to undo",
+                "target": {
+                  "byTestId": "value-history-undo:transformer"
+                },
+                "attribute": "aria-disabled",
+                "value": "true",
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: two choices in one select are two steps",
+            "steps": [
+              {
+                "step": "clickObjectButton",
+                "label": "add interpolation",
+                "field": "transformerEditor_transformer_selector.transformer",
+                "action": "addOptionalAttribute",
+                "attribute": "interpolation"
+              },
+              {
+                "step": "selectOption",
+                "label": "interpolation at runtime",
+                "field": "transformerEditor_transformer_selector.transformer.interpolation",
+                "option": "runtime"
+              },
+              {
+                "step": "selectOption",
+                "label": "interpolation at build",
+                "field": "transformerEditor_transformer_selector.transformer.interpolation",
+                "option": "build"
+              },
+              {
+                "step": "click",
+                "label": "undo",
+                "target": {
+                  "byTestId": "value-history-undo:transformer"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "back to runtime, not to the value before both choices",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.interpolation"
+                },
+                "value": "runtime",
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: Ctrl+Z in a dialog does not undo the transformer",
+            "steps": [
+              {
+                "step": "change",
+                "label": "edit the returned value",
+                "target": {
+                  "byDisplayValue": "seize value..."
+                },
+                "value": "edited"
+              },
+              {
+                "step": "click",
+                "label": "open the root node actions",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Wrap in",
+                "target": {
+                  "byTestId": "transformer-node-action-wrap"
+                }
+              },
+              {
+                "step": "selectOption",
+                "label": "choose ifThenElse in the dialog",
+                "field": "transformer-node-dialog-type",
+                "option": "ifThenElse"
+              },
+              {
+                "step": "keyboard",
+                "label": "Ctrl+Z in the dialog",
+                "keys": "{Control>}z{/Control}"
+              },
+              {
+                "step": "expectElement",
+                "label": "the edit stays",
+                "target": {
+                  "byDisplayValue": "edited"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "cancel the wrap",
+                "target": {
+                  "byTestId": "transformer-node-dialog-cancel"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the edit is still there",
+                "target": {
+                  "byDisplayValue": "edited"
+                },
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: the JSON view shows what Undo and Redo restore",
+            "steps": [
+              {
+                "step": "change",
+                "label": "edit the returned value in the form",
+                "target": {
+                  "byDisplayValue": "seize value..."
+                },
+                "value": "new value"
+              },
+              {
+                "step": "click",
+                "label": "choose JSON",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:json"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the JSON holds the edit",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "value": "{\n  \"transformerType\": \"returnValue\",\n  \"mlSchema\": {\n    \"type\": \"string\"\n  },\n  \"value\": \"new value\"\n}",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "undo",
+                "target": {
+                  "byTestId": "value-history-undo:transformer"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the JSON holds the value before the edit",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "value": "{\n  \"transformerType\": \"returnValue\",\n  \"mlSchema\": {\n    \"type\": \"string\"\n  },\n  \"value\": \"seize value...\"\n}",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "redo",
+                "target": {
+                  "byTestId": "value-history-redo:transformer"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the JSON holds the edit again",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "value": "{\n  \"transformerType\": \"returnValue\",\n  \"mlSchema\": {\n    \"type\": \"string\"\n  },\n  \"value\": \"new value\"\n}",
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: an edit of the JSON text can be undone, in the JSON view and in the form",
+            "steps": [
+              {
+                "step": "click",
+                "label": "choose JSON",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:json"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the JSON holds the value",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "value": "{\n  \"transformerType\": \"returnValue\",\n  \"mlSchema\": {\n    \"type\": \"string\"\n  },\n  \"value\": \"seize value...\"\n}",
+                "timeout": 2000
+              },
+              {
+                "step": "change",
+                "label": "edit the JSON text",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "value": "{\n  \"transformerType\": \"returnValue\",\n  \"mlSchema\": {\n    \"type\": \"string\"\n  },\n  \"value\": \"from JSON\"\n}"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "Undo enabled",
+                "target": {
+                  "byTestId": "value-history-undo:transformer"
+                },
+                "attribute": "aria-disabled",
+                "value": "false",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "undo",
+                "target": {
+                  "byTestId": "value-history-undo:transformer"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the JSON text before the edit",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "value": "{\n  \"transformerType\": \"returnValue\",\n  \"mlSchema\": {\n    \"type\": \"string\"\n  },\n  \"value\": \"seize value...\"\n}",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "redo",
+                "target": {
+                  "byTestId": "value-history-redo:transformer"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the JSON text edit again",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "value": "{\n  \"transformerType\": \"returnValue\",\n  \"mlSchema\": {\n    \"type\": \"string\"\n  },\n  \"value\": \"from JSON\"\n}",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "choose Form",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:form"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the form shows the JSON edit",
+                "target": {
+                  "byDisplayValue": "from JSON"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "undo in the form",
+                "target": {
+                  "byTestId": "value-history-undo:transformer"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the form shows the value before the JSON edit",
+                "target": {
+                  "byDisplayValue": "seize value..."
+                },
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: Undo after an invalid JSON text brings back the JSON of the restored value",
+            "steps": [
+              {
+                "step": "change",
+                "label": "edit the returned value in the form",
+                "target": {
+                  "byDisplayValue": "seize value..."
+                },
+                "value": "new value"
+              },
+              {
+                "step": "click",
+                "label": "choose JSON",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:json"
+                }
+              },
+              {
+                "step": "change",
+                "label": "make the JSON text invalid",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "value": "{ \"transformerType\": "
+              },
+              {
+                "step": "expectElement",
+                "label": "the invalid text stays",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "value": "{ \"transformerType\": ",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "undo the form edit",
+                "target": {
+                  "byTestId": "value-history-undo:transformer"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the JSON of the value before the form edit",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "value": "{\n  \"transformerType\": \"returnValue\",\n  \"mlSchema\": {\n    \"type\": \"string\"\n  },\n  \"value\": \"seize value...\"\n}",
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: the Blocks view shows what Undo restores",
+            "steps": [
+              {
+                "step": "change",
+                "label": "edit the returned value in the form",
+                "target": {
+                  "byDisplayValue": "seize value..."
+                },
+                "value": "new value"
+              },
+              {
+                "step": "click",
+                "label": "choose Blocks",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the value block holds the edit",
+                "target": {
+                  "byText": "\"new value\""
+                },
+                "timeout": 3000
+              },
+              {
+                "step": "click",
+                "label": "undo",
+                "target": {
+                  "byTestId": "value-history-undo:transformer"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the value block holds the value before the edit",
+                "target": {
+                  "byText": "\"seize value...\""
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "redo",
+                "target": {
+                  "byTestId": "value-history-redo:transformer"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the value block holds the edit again",
+                "target": {
+                  "byText": "\"new value\""
+                },
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: Ctrl+Z right after a Remove brings the node back",
+            "steps": [
+              {
+                "step": "click",
+                "label": "open the root node actions",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Wrap in",
+                "target": {
+                  "byTestId": "transformer-node-action-wrap"
+                }
+              },
+              {
+                "step": "selectOption",
+                "label": "enclosing ifThenElse",
+                "field": "transformer-node-dialog-type",
+                "option": "ifThenElse"
+              },
+              {
+                "step": "selectOption",
+                "label": "slot then",
+                "field": "transformer-node-dialog-slot",
+                "option": "then"
+              },
+              {
+                "step": "click",
+                "label": "confirm the wrap",
+                "target": {
+                  "byTestId": "transformer-node-dialog-confirm"
+                }
+              },
+              {
+                "step": "click",
+                "label": "open the then node actions",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer.then"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Remove",
+                "target": {
+                  "byTestId": "transformer-node-action-remove"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "then is gone",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.then.transformerType"
+                },
+                "present": false,
+                "timeout": 2000
+              },
+              {
+                "step": "keyboard",
+                "label": "Ctrl+Z",
+                "keys": "{Control>}z{/Control}"
+              },
+              {
+                "step": "expectElement",
+                "label": "then is back",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.then.transformerType"
+                },
+                "value": "returnValue",
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: Clear shows the default transformer, Undo brings the edit back",
+            "steps": [
+              {
+                "step": "change",
+                "label": "edit the returned value",
+                "target": {
+                  "byDisplayValue": "seize value..."
+                },
+                "value": "edited"
+              },
+              {
+                "step": "click",
+                "label": "Clear",
+                "target": {
+                  "byRole": "button",
+                  "name": "Clear"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the default transformer",
+                "target": {
+                  "byDisplayValue": "seize value..."
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "undo",
+                "target": {
+                  "byTestId": "value-history-undo:transformer"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the edit is back",
+                "target": {
+                  "byDisplayValue": "edited"
+                },
+                "timeout": 2000
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "miroirTestType": "reactComponentTestSuite",
+        "miroirTestLabel": "MlElementEditor",
+        "component": "MlElementEditor",
+        "componentProps": {
+          "label": "Test Label",
+          "name": "testField",
+          "listKey": "ROOT.testField",
+          "rootLessListKey": "testField",
+          "rootLessListKeyArray": [
+            "testField"
+          ],
+          "rawMlSchema": {
+            "type": "object",
+            "definition": {
+              "transformer": {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "coreTransformerForBuildPlusRuntime"
+                }
+              }
+            }
+          },
+          "initialFormState": {
+            "transformer": {
+              "transformerType": "returnValue",
+              "interpolation": "runtime",
+              "value": "kept"
+            }
+          }
+        },
+        "miroirTests": [
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "MlElementEditor: without an undo history, Remove asks for a confirmation",
+            "steps": [
+              {
+                "step": "click",
+                "label": "open the node actions",
+                "target": {
+                  "byLabelText": "Transformer node actions testField.transformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Remove…",
+                "target": {
+                  "byTestId": "transformer-node-action-remove"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the confirmation",
+                "target": {
+                  "byTestId": "transformer-node-dialog-removed"
+                },
+                "containsHtml": "Removes returnValue",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "cancel",
+                "target": {
+                  "byTestId": "transformer-node-dialog-cancel"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the value is kept",
+                "target": {
+                  "byDisplayValue": "kept"
+                },
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "MlElementEditor: without an undo history, a type change dropping an edited value asks first",
+            "steps": [
+              {
+                "step": "selectOption",
+                "label": "transformer type",
+                "field": "testField.transformer.transformerType",
+                "option": "getObjectValues"
+              },
+              {
+                "step": "expectElement",
+                "label": "the dropped value is named",
+                "target": {
+                  "byTestId": "transformer-node-dialog-dropped"
+                },
+                "containsHtml": "getObjectValues does not take: value.",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "cancel",
+                "target": {
+                  "byTestId": "transformer-node-dialog-cancel"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the value is kept",
+                "target": {
+                  "byDisplayValue": "kept"
+                },
+                "timeout": 2000
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

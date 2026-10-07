@@ -3,6 +3,7 @@ import {
   buildUiIntegrationSuiteRegistriesFromMiroirTests,
   classifyMiroirTestSuiteExecutionCapabilities,
   isUiIntegrationLaunchableSuite,
+  miroirTestSuiteMountsReport,
   MiroirLoggerFactory,
   type LoggerInterface,
   type MiroirTestDefinition,
@@ -12,6 +13,7 @@ import {
 
 import { packageName } from "../../../../constants.js";
 import {
+  miroirTestDefinitionHasReactComponentTest,
   miroirTestDefinitionHasStepKind,
   resolveUiIntegrationRunnerSuiteKey,
   resolveMiroirTestSuiteUiExecutionMode,
@@ -25,6 +27,7 @@ import {
   type MiroirTestResultData,
 } from "../Buttons/RunMiroirTestSuiteButton.js";
 import { ThemedEditableInput, ThemedLabel } from "../Themes/index.js";
+import { ComponentTestRunSettings, useComponentTestRunPreparation } from "./ComponentTestRunSettings.js";
 import { ComponentTestSandboxProvider, useComponentTestSandbox } from "./ComponentTestSandbox.js";
 import { TestExecutionPanel } from "./TestExecutionPanel.js";
 import { UiIntegrationTestRunControls } from "./UiIntegrationTestRunControls.js";
@@ -84,6 +87,8 @@ export const MiroirTestDisplay = (props: MiroirTestSectionProps) => (
 const MiroirTestDisplayContent = (props: MiroirTestSectionProps) => {
   const { miroirTest: instance, testLabel, style, useSnackBar = true, onTestComplete } = props;
   const componentTestSandbox = useComponentTestSandbox();
+  // the sandbox's run start and end, the start taking the settings next to the Run button
+  const componentTestRun = useComponentTestRunPreparation();
   const [miroirTestResultsData, setMiroirTestResultsData] = useState<TestResultDataAndSelect[]>([]);
   const [testSelectionState, setTestSelectionsState] = useState<TestSelectionState | undefined>(
     undefined,
@@ -97,6 +102,15 @@ const MiroirTestDisplayContent = (props: MiroirTestSectionProps) => {
   );
   const hasMeasureRenderingStep = useMemo(
     () => miroirTestDefinitionHasStepKind(instance.definition, "measureRendering"),
+    [instance.definition],
+  );
+  const hasReactComponentTest = useMemo(
+    () => miroirTestDefinitionHasReactComponentTest(instance.definition),
+    [instance.definition],
+  );
+  // #330: its Reports mount in the sandbox, whose "Show test sandbox" setting goes next to the Run button
+  const mountsReport = useMemo(
+    () => instance.definition?.miroirTestType === "miroirTestSuite" && miroirTestSuiteMountsReport(instance.definition),
     [instance.definition],
   );
   const uiExecutionMode = resolveMiroirTestSuiteUiExecutionMode(instance.definition);
@@ -182,14 +196,15 @@ const MiroirTestDisplayContent = (props: MiroirTestSectionProps) => {
             testFilter={currentTestFilter}
             onTestComplete={handleTestComplete}
             runMode="unit"
-            beforeRun={componentTestSandbox?.prepareComponentTests}
-            afterRun={componentTestSandbox?.finishComponentTests}
+            beforeRun={componentTestRun.prepareComponentTests}
+            afterRun={componentTestRun.finishComponentTests}
             iterationsOverride={
               hasMeasureRenderingStep ? parseIterationsOverride(iterationsFieldValue) : undefined
             }
             label={`Run ${testLabel} Unit Tests`}
             style={runButtonStyle}
           />
+          {componentTestSandbox && hasReactComponentTest && <ComponentTestRunSettings />}
           {hasMeasureRenderingStep && (
             <>
               <ThemedLabel>Iterations</ThemedLabel>
@@ -219,7 +234,7 @@ const MiroirTestDisplayContent = (props: MiroirTestSectionProps) => {
             runMode="integration"
             integrationProfileName={integrationPreferences.profileName}
             integrationRunTargetMode={integrationPreferences.runTargetMode}
-            prepareReportTests={componentTestSandbox?.prepareReportTests}
+            prepareReportTests={componentTestRun.prepareReportTests}
             label={`Run ${testLabel} Integration Tests`}
             disabled={!integrationUiSupported || !integrationProfileBrowserLaunchable}
             title={
@@ -237,6 +252,7 @@ const MiroirTestDisplayContent = (props: MiroirTestSectionProps) => {
                   : "#9e9e9e",
             }}
           />
+          {componentTestSandbox && mountsReport && <ComponentTestRunSettings showTransformerTypesSetting={false} />}
         </>
       )}
 

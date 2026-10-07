@@ -7821,6 +7821,36 @@ export const miroirFundamentalMlSchema = {
             "type": "object",
             "tag": {
               "value": {
+                "defaultLabel": "setChecked",
+                "description": "Sets a checkbox or switch target to checked: clicks it only when its state differs, then waits until it has that state"
+              }
+            },
+            "definition": {
+              "step": {
+                "type": "literal",
+                "definition": "setChecked"
+              },
+              "label": {
+                "type": "string",
+                "optional": true
+              },
+              "target": {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "reactComponentTestTarget",
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                },
+                "context": {}
+              },
+              "checked": {
+                "type": "boolean"
+              }
+            }
+          },
+          {
+            "type": "object",
+            "tag": {
+              "value": {
                 "defaultLabel": "change",
                 "description": "Fires a change event with the given value on the target"
               }
@@ -10024,6 +10054,34 @@ export const miroirFundamentalMlSchema = {
                       "saveAs": {
                         "type": "string",
                         "optional": true
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "setChecked",
+                        "description": "Sets a checkbox or switch target to checked: clicks it only when its state differs, then waits until it has that state"
+                      }
+                    },
+                    "definition": {
+                      "step": {
+                        "type": "literal",
+                        "definition": "setChecked"
+                      },
+                      "label": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "target": {
+                        "type": "schemaReference",
+                        "definition": {
+                          "relativePath": "reactComponentTestTarget"
+                        }
+                      },
+                      "checked": {
+                        "type": "boolean"
                       }
                     }
                   },
@@ -29108,6 +29166,57 @@ export const miroirFundamentalMlSchema = {
                         }
                       }
                     }
+                  },
+                  "blockEditor": {
+                    "type": "object",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Block Editor",
+                        "description": "Colors of the block editor's blocks, by category (#498)."
+                      }
+                    },
+                    "definition": {
+                      "categoryColors": {
+                        "type": "record",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Block Category Colors",
+                            "description": "Block color by category: the classification of a TransformerDefinition (list, object, control, value, variable, operator, MLS, admin, spreadsheet, metaModel)."
+                          }
+                        },
+                        "definition": {
+                          "type": "string",
+                          "optional": true,
+                          "tag": {
+                            "value": {
+                              "defaultLabel": "Block Category Color",
+                              "display": {
+                                "string": {
+                                  "format": "color"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "fallbackColor": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Block Fallback Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            },
+                            "description": "Color of the blocks whose category has no color."
+                          }
+                        }
+                      }
+                    }
                   }
                 }
               },
@@ -31473,6 +31582,56 @@ export const miroirFundamentalMlSchema = {
                           "value": {
                             "defaultLabel": "Feedback Glow Intensity",
                             "description": "Scales the halo size: 1 is thin, default 2.5, clamped to 0.5-5."
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "blockEditor": {
+                    "type": "object",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Block Editor",
+                        "description": "Colors of the block editor's blocks, by category (#498)."
+                      }
+                    },
+                    "definition": {
+                      "categoryColors": {
+                        "type": "record",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Block Category Colors",
+                            "description": "Block color by category: the classification of a TransformerDefinition (list, object, control, value, variable, operator, MLS, admin, spreadsheet, metaModel)."
+                          }
+                        },
+                        "definition": {
+                          "type": "string",
+                          "optional": true,
+                          "tag": {
+                            "value": {
+                              "defaultLabel": "Block Category Color",
+                              "display": {
+                                "string": {
+                                  "format": "color"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "fallbackColor": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Block Fallback Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            },
+                            "description": "Color of the blocks whose category has no color."
                           }
                         }
                       }

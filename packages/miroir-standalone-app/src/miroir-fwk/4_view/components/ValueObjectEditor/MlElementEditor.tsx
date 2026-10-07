@@ -1,4 +1,5 @@
-import React, { startTransition, useCallback, useMemo, useState } from "react";
+import equal from "fast-deep-equal";
+import React, { startTransition, useCallback, useContext, useMemo, useState } from "react";
 
 import {
   ExpandLess,
@@ -39,6 +40,8 @@ import { useMiroirContextService } from "miroir-react";
 import { RenderPerformanceMetrics } from "../../tools/renderPerformanceMeasure.js";
 import { useComponentTestMode } from "../../tools/ComponentTestModeContext.js";
 import { isVitestTestMode } from "../../tools/progressiveRenderConfig.js";
+import { BlockViewModeContext, isBlockViewRoot } from "../BlockEditor/BlockViewMode.js";
+import { BlockViewSwitch } from "../BlockEditor/BlockViewSwitch.js";
 import { ErrorFallbackComponent } from "../ErrorFallbackComponent.js";
 import { JsonDisplayHelper } from "miroir-react";
 import { useReportPageContext } from "../Reports/ReportPageContext.js";
@@ -103,6 +106,8 @@ export interface EditorAttribute {
 // ################################################################################################
 export const FoldUnfoldObjectOrArray = (props: {
   listKey: string;
+  /** Formik path of the form section, which with `rootLessListKeyArray` names the button for tests. */
+  reportSectionPathAsString: string;
   rootLessListKeyArray: (string | number)[];
   currentValue: EntityInstance | Array<any>;
   unfoldingDepth?: number; // Optional depth limit for unfolding (default: no limit)
@@ -195,6 +200,10 @@ export const FoldUnfoldObjectOrArray = (props: {
   return (
     <ThemedLineIconButton
       onClick={handleClick}
+      data-testid={`${isInfiniteDepth ? "fold-unfold-all" : "fold-unfold"}:${[
+        props.reportSectionPathAsString,
+        ...props.rootLessListKeyArray,
+      ].join(".")}`}
     >
       {isFolded ? (
         isInfiniteDepth ? (
@@ -416,6 +425,24 @@ function mlElementToTooltipText(el: any, depth: number = 1): string {
 
 let count = 0;
 
+/** The JSON text of a value in the code box; undefined for a value JSON cannot hold (a BigInt). */
+function jsonText(value: unknown): string | undefined {
+  try {
+    return JSON.stringify(value, null, 2);
+  } catch {
+    return undefined;
+  }
+}
+
+/** Whether `text` is the JSON of `value`, whatever its layout. */
+function textHoldsValue(text: string, value: unknown): boolean {
+  try {
+    return equal(JSON.parse(text), value);
+  } catch {
+    return false;
+  }
+}
+
 // #####################################################################################################
 // #####################################################################################################
 // #####################################################################################################
@@ -423,7 +450,26 @@ let count = 0;
 // #####################################################################################################
 // #####################################################################################################
 // #####################################################################################################
+/**
+ * #498 (analysis #497, D6): the value editor of a field. Under a BlockViewModeContext provider, a
+ * transformer field gets the Blocks / Form / JSON switch; every other field is the form editor.
+ */
 export function MlElementEditor(props: MlElementEditorProps): JSX.Element {
+  const blockViewModes = useContext(BlockViewModeContext);
+  if (!blockViewModes || !isBlockViewRoot(props.typeCheckKeyMap?.[props.rootLessListKey])) {
+    return <MlElementEditorForm {...props} />;
+  }
+  return (
+    <BlockViewSwitch
+      formikPath={[props.reportSectionPathAsString, ...props.rootLessListKeyArray].join(".")}
+      rootLessListKey={props.rootLessListKey}
+    >
+      {(mode) => <MlElementEditorForm key={mode} {...props} />}
+    </BlockViewSwitch>
+  );
+}
+
+function MlElementEditorForm(props: MlElementEditorProps): JSX.Element {
   count++;
   const trackedRender = useTrackedRender(
     editorNavigationKey(props.currentDeploymentUuid, props.currentApplicationSection),
@@ -436,6 +482,7 @@ export function MlElementEditor(props: MlElementEditorProps): JSX.Element {
   const componentKey = `MlElementEditor-${props.rootLessListKey || 'ROOT'}`;
 
   const currentKeyMap = props.typeCheckKeyMap?.[props.rootLessListKey];
+  const blockViewModes = useContext(BlockViewModeContext);
   const {
     // general use
     context,
@@ -595,6 +642,10 @@ export function MlElementEditor(props: MlElementEditorProps): JSX.Element {
         setCodeMirrorValue(JSON.stringify(currentValueObjectAtKey, null, 2));
       }
       setDisplayAsStructuredElement(event.target.checked);
+      // #498: on a field with the Blocks / Form / JSON switch, the switch follows this toggle
+      if (blockViewModes && isBlockViewRoot(currentKeyMap)) {
+        blockViewModes.setMode(formikRootLessListKey, event.target.checked ? "form" : "json");
+      }
     },
     [
       currentValueObjectAtKey,
@@ -603,6 +654,9 @@ export function MlElementEditor(props: MlElementEditorProps): JSX.Element {
       props.rootLessListKey,
       setCodeMirrorValue,
       setDisplayAsStructuredElement,
+      blockViewModes,
+      currentKeyMap,
+      formikRootLessListKey,
     ]
   );
   
@@ -623,6 +677,7 @@ export function MlElementEditor(props: MlElementEditorProps): JSX.Element {
             checked={displayAsStructuredElement}
             id={`displayAsStructuredElementSwitch-${props.rootLessListKey}`}
             name={`displayAsStructuredElementSwitch-${props.rootLessListKey}`}
+            data-testid={`display-as-structured-element:${props.rootLessListKey}`}
             onChange={handleDisplayAsStructuredElementSwitchChange}
             disabled={!codeMirrorIsValidJson}
           />
@@ -645,6 +700,25 @@ export function MlElementEditor(props: MlElementEditorProps): JSX.Element {
     !localResolvedElementMlSchemaBasedOnValue || // same as props.hasTypeError?
     !displayAsStructuredElement
   ;
+
+  // #499: while the code box is shown, its text follows the changes of the value made elsewhere (an
+  // undo, a redo): derived state, adjusted while rendering. The trigger is a change of content, since
+  // an undo writes fresh copies of every part of the value; the text is re-read only when it does
+  // not already hold the value, so that the text being typed keeps its layout.
+  const [codeTextSource, setCodeTextSource] = useState<unknown>(currentValueObjectAtKey);
+  if (
+    resolvedTypeIsObjectOrArrayOrAny &&
+    displayAsCodeEditor &&
+    codeTextSource !== currentValueObjectAtKey &&
+    !equal(codeTextSource, currentValueObjectAtKey)
+  ) {
+    setCodeTextSource(currentValueObjectAtKey);
+    const text = jsonText(currentValueObjectAtKey);
+    if (text !== undefined && !textHoldsValue(codeMirrorValue, currentValueObjectAtKey)) {
+      setCodeMirrorValue(text);
+      setCodeMirrorIsValidJson(true);
+    }
+  }
 
   const hideSubMlEditor = useMemo(
     () =>
@@ -2103,6 +2177,9 @@ export function MlElementEditor(props: MlElementEditorProps): JSX.Element {
     resolvedTypeIsObjectOrArrayOrAny,
     displayAsCodeEditor,
     currentValueObjectAtKey,
+    // #499: the code box's own state, which changes without the value (invalid JSON, a re-read)
+    codeMirrorValue,
+    codeMirrorIsValidJson,
   ]);
   // #303 T2: a union is rendered by the MlElementEditor of its declared (union) schema, which
   // also renders the resolved branch and the union type selector: it reports as MlUnionEditor.

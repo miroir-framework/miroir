@@ -43,6 +43,9 @@ import {
 import { useCurrentModel } from "../../ReduxHooks.js";
 import { useReportPageContext } from '../Reports/ReportPageContext';
 import { TypedValueObjectEditor } from '../Reports/TypedValueObjectEditor';
+import { BlockViewModeProvider } from '../BlockEditor/BlockViewMode.js';
+import { ValueHistory } from '../ValueObjectEditor/ValueHistory.js';
+import { ValueHistoryProvider } from '../ValueObjectEditor/ValueHistoryProvider.js';
 import type { TransformerTypeBadge, TransformerTypeBadgePart } from '../ValueObjectEditor/MlElementEditorInterface';
 import {
   ThemedContainer,
@@ -76,6 +79,9 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
 ).then((logger: LoggerInterface) => {
   log = logger;
 });
+
+/** The edited transformer in the Formik values: the value the undo history watches (#499). */
+const transformerFormikPath = "transformerEditor_transformer_selector.transformer";
 
 // ################################################################################################
 // ################################################################################################
@@ -231,6 +237,8 @@ const TransformerDefinitionEditor: React.FC<{
   entities?: EditorEntity[];
   restrictTransformersToInputType: boolean;
   onRestrictTransformersToInputTypeChange: (checked: boolean) => void;
+  /** Undo / redo of the edited transformer (#499). */
+  transformerHistory: ValueHistory;
 }> = ({
   formValueMLSchema,
   application,
@@ -241,6 +249,7 @@ const TransformerDefinitionEditor: React.FC<{
   entities,
   restrictTransformersToInputType,
   onRestrictTransformersToInputTypeChange,
+  transformerHistory,
 }) => {
   const entityMlSchemas = useMemo(
     () =>
@@ -324,22 +333,26 @@ const TransformerDefinitionEditor: React.FC<{
           />
         }
       />
-      <TypedValueObjectEditor
-        labelElement={<>Transformer Definition</>}
-        formValueMLSchema={formValueMLSchema}
-        formikValuePathAsString="transformerEditor_transformer_selector"
-        application={application}
-        applicationDeploymentMap={applicationDeploymentMap}
-        deploymentUuid={deploymentUuid}
-        applicationSection={"model"}
-        formLabel={"Transformer Definition Selector"}
-        displaySubmitButton="noDisplay"
-        valueObjectEditMode="create"
-        maxRenderDepth={Infinity}
-        compatibilityWarnings={compatibilityWarnings}
-        transformerTypeRestrictions={transformerTypeRestrictions}
-        transformerTypeBadges={typeBadges}
-      />
+      <ValueHistoryProvider history={transformerHistory} formikPath={transformerFormikPath}>
+        <BlockViewModeProvider>
+          <TypedValueObjectEditor
+            labelElement={<>Transformer Definition</>}
+            formValueMLSchema={formValueMLSchema}
+            formikValuePathAsString="transformerEditor_transformer_selector"
+            application={application}
+            applicationDeploymentMap={applicationDeploymentMap}
+            deploymentUuid={deploymentUuid}
+            applicationSection={"model"}
+            formLabel={"Transformer Definition Selector"}
+            displaySubmitButton="noDisplay"
+            valueObjectEditMode="create"
+            maxRenderDepth={Infinity}
+            compatibilityWarnings={compatibilityWarnings}
+            transformerTypeRestrictions={transformerTypeRestrictions}
+            transformerTypeBadges={typeBadges}
+          />
+        </BlockViewModeProvider>
+      </ValueHistoryProvider>
     </>
   );
 };
@@ -362,6 +375,8 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
   // Ref for debouncing transformer definition updates when mode='here'
   const transformerUpdateTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
   const latestFormValuesRef = React.useRef<TransformerEditorFormikValueType | null>(null);
+  // #499: Clear writes to the form through it
+  const formikRef = React.useRef<FormikProps<TransformerEditorFormikValueType> | null>(null);
 
   // Get persisted state from context
   const persistedState = context.toolsPageState.transformerEditor;
@@ -416,6 +431,12 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
     context.updateTransformerEditorState({
       currentTransformerDefinition: DEFAULT_TRANSFORMER_EDITOR_TRANSFORMER,
     });
+    // #499: also in the form, where Undo can bring the edit back; a copy, so that the form never
+    // holds the shared default object
+    void formikRef.current?.setFieldValue(
+      transformerFormikPath,
+      structuredClone(DEFAULT_TRANSFORMER_EDITOR_TRANSFORMER),
+    );
     // Clear previous transformation outputs
     // setTransformationResult(null);
     // setTransformationError(null);
@@ -477,6 +498,11 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
       },
     };
   }, []); // Mount-only: read persistedState on first render; remount on navigation gets fresh state
+
+  // #499: undo / redo of the edited transformer, starting from its initial value
+  const [transformerHistory] = useState(
+    () => new ValueHistory(initialFormValues.transformerEditor_transformer_selector.transformer),
+  );
 
   useEffect(() => {
     return () => {
@@ -544,6 +570,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
       {/* <div style={{ display: "flex", gap: "20px" }}> */}
       {/* left Pane: Transformer Definition Editor */}
       <Formik
+        innerRef={formikRef}
         enableReinitialize={true}
         initialValues={initialFormValues as any}
         onSubmit={async (values, { setSubmitting, setErrors }) => {
@@ -633,6 +660,10 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                   "TransformerEditor: updating context with stored transformer definition:",
                   transformerSelector_currentFetchedTransformerDefinition.transformerImplementation
                     ?.definition
+                );
+                // #499: a loaded transformer starts a new undo history
+                transformerHistory.reset(
+                  transformerSelector_currentFetchedTransformerDefinition.transformerImplementation?.definition,
                 );
                 formikContext.setFieldValue(
                   "transformerEditor_transformer_selector.transformer",
@@ -1020,6 +1051,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                           restrictTransformersToInputType: checked,
                         })
                       }
+                      transformerHistory={transformerHistory}
                     />
                   ) : null}
                 </div>

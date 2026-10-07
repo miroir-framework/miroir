@@ -1,12 +1,13 @@
 /**
- * The TransformerEditor's "Show transformer types" switch keeps its value across the cases of a
- * Component Test Sandbox run (#453 D2).
+ * The TransformerEditor's "Show transformer types" switch in a Component Test Sandbox run: every
+ * case starts with the run's value, set before the run next to its Run button, and a toggle in a
+ * case stays in that case (#453, replaced: the value no longer goes from one case to the next nor
+ * to the app's ViewParams, so that the cases do not depend on their order or on the app).
  *
- * - Runner: with a host giving `showTransformerTypes` / `saveShowTransformerTypes`, each case of
- *   the real TransformerEditor starts with the host's value, and a toggle in a case is saved
- *   through the host, so the next case starts with it.
- * - Sandbox: the host it registers reads the app's ViewParams `showTransformerTypes`; a save from
- *   a case is the host value at once and an `updateInstance` of the ViewParams instance.
+ * - Runner: with a host giving `showTransformerTypes`, each case of the real TransformerEditor
+ *   starts with the host's value, and a toggle in a case does not reach the next case.
+ * - Sandbox: the host it registers gives the value passed to `prepareComponentTests`, for the
+ *   whole run, and a run saves nothing in ViewParams.
  * - Editor switch: a toggle shows at once; a later ViewParams change made elsewhere replaces it.
  * - Primitive literals: an `applyTo: "a"` has no title row, its badge follows its label.
  * - Badge parts (#470): one chip per part, the declared types only when they differ from the actual
@@ -26,19 +27,11 @@ import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vite
 import {
   checkTransformerInterfaceRecursively,
   ConfigurationService,
-  defaultSelfApplicationDeploymentMap,
-  MiroirActivityTracker,
-  MiroirContext,
-  MiroirEventService,
-  PersistenceStoreControllerManager,
-  type DomainControllerInterface,
-  type LocalCacheInterface,
   type MiroirTestForReactComponent,
   type ReactComponentTestStep,
   type ReactComponentTestSuiteContext,
 } from "miroir-core";
-import { LocalCache, LocalCacheProvider, MiroirContextReactProvider, PersistenceReduxSaga } from "miroir-react";
-import { adminSelfApplication, defaultAdminViewParams, entityViewParams } from "miroir-app-admin";
+import { LocalCacheProvider, MiroirContextReactProvider } from "miroir-react";
 
 vi.mock("../../src/miroir-fwk/4-tests/componentTests/index", async (importOriginal) => {
   const actual = await importOriginal<typeof import("../../src/miroir-fwk/4-tests/componentTests/index")>();
@@ -57,6 +50,7 @@ import {
 import { transformerTypeBadges } from "../../src/miroir-fwk/4_view/components/TransformerEditor/TransformerEditor";
 import { useShowTransformerTypes } from "../../src/miroir-fwk/4_view/components/TransformerEditor/TransformerTypesDisplay";
 import type { TransformerTypeBadge } from "../../src/miroir-fwk/4_view/components/ValueObjectEditor/MlElementEditorInterface";
+import { buildAdminViewParamsHarness, loadViewParams } from "../helpers/adminViewParamsHarness";
 
 const RUN_TEST_TIMEOUT = 120_000;
 const switchTarget = { byTestId: "transformer-editor-show-types-switch" };
@@ -95,18 +89,9 @@ describe("transformerTypesDisplay: the switch value through the runner's host", 
   });
 
   it(
-    "a case starts with the host value, and a toggle in a case is the value of the next one",
+    "every case starts with the host value, and a toggle in a case does not reach the next one",
     async () => {
-      let hostValue = true;
-      const saved: boolean[] = [];
-      runner = createReactComponentTestRunner({
-        sandboxElement,
-        showTransformerTypes: () => hostValue,
-        saveShowTransformerTypes: (value) => {
-          hostValue = value;
-          saved.push(value);
-        },
-      });
+      runner = createReactComponentTestRunner({ sandboxElement, showTransformerTypes: () => true });
 
       const first = await runner({
         testNamePath: [...transformerEditorSuite.suitePath, "first case"],
@@ -120,17 +105,37 @@ describe("transformerTypesDisplay: the switch value through the runner's host", 
         suite: transformerEditorSuite,
       });
       expect(first).toEqual({ status: "ok" });
-      expect(saved).toEqual([false]);
 
       const second = await runner({
         testNamePath: [...transformerEditorSuite.suitePath, "second case"],
         leaf: leaf("second case", [
-          { step: "expectElement", label: "starts off", target: switchTarget, checked: false },
-          { step: "expectElement", label: "no root badge", target: rootBadgeTarget, present: false },
+          { step: "expectElement", label: "starts on again", target: switchTarget, checked: true },
+          { step: "expectElement", label: "root badge shown", target: rootBadgeTarget, timeout: 2000 },
         ]),
         suite: transformerEditorSuite,
       });
       expect(second).toEqual({ status: "ok" });
+    },
+    RUN_TEST_TIMEOUT,
+  );
+
+  it(
+    "setChecked sets the switch whatever its starting value, and leaves it alone when it already has the value",
+    async () => {
+      runner = createReactComponentTestRunner({ sandboxElement, showTransformerTypes: () => true });
+      const result = await runner({
+        testNamePath: [...transformerEditorSuite.suitePath, "first case"],
+        leaf: leaf("first case", [
+          { step: "setChecked", label: "types off", target: switchTarget, checked: false },
+          { step: "setChecked", label: "types off again", target: switchTarget, checked: false },
+          { step: "expectElement", label: "still off", target: switchTarget, checked: false },
+          { step: "expectElement", label: "no root badge", target: rootBadgeTarget, present: false },
+          { step: "setChecked", label: "types on", target: switchTarget, checked: true },
+          { step: "expectElement", label: "root badge shown", target: rootBadgeTarget, timeout: 2000 },
+        ]),
+        suite: transformerEditorSuite,
+      });
+      expect(result).toEqual({ status: "ok" });
     },
     RUN_TEST_TIMEOUT,
   );
@@ -363,80 +368,28 @@ describe("transformerTypesDisplay: badges of primitive literals", () => {
 });
 
 // ################################################################################################
-/** Puts the Admin ViewParams with `showTransformerTypes` in the local cache, as a save landing. */
-function loadViewParams(localCache: LocalCacheInterface, showTransformerTypes: boolean) {
-  // no rollback: a rollback of the admin application drops the ViewParams instance just loaded
-  const loadResult = localCache.handleLocalCacheAction(
-    {
-      actionType: "loadNewInstancesInLocalCache",
-      endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-      payload: {
-        application: adminSelfApplication.uuid,
-        objects: [
-          {
-            parentName: entityViewParams.name,
-            parentUuid: entityViewParams.uuid,
-            applicationSection: "data",
-            instances: [{ ...defaultAdminViewParams, showTransformerTypes }],
-          },
-        ],
-      },
-    } as any,
-    defaultSelfApplicationDeploymentMap,
-  );
-  if (loadResult.status !== "ok") {
-    throw new Error(`harness: loading ViewParams failed: ${JSON.stringify(loadResult)}`);
-  }
-}
-
-function buildAppHarness(showTransformerTypes: boolean) {
-  const miroirActivityTracker = new MiroirActivityTracker();
-  const miroirEventService = new MiroirEventService(miroirActivityTracker);
-  const miroirContext = new MiroirContext(miroirActivityTracker, miroirEventService, undefined as any);
-  const persistenceSaga = new PersistenceReduxSaga({
-    persistenceStoreAccessMode: "remote",
-    localPersistenceStoreControllerManager: new PersistenceStoreControllerManager(
-      ConfigurationService.configurationService.adminStoreFactoryRegister,
-      ConfigurationService.configurationService.StoreSectionFactoryRegister,
-    ),
-    remotePersistenceStoreRestClient: undefined as any,
-  });
-  const localCache: LocalCacheInterface = new LocalCache(persistenceSaga);
-  loadViewParams(localCache, showTransformerTypes);
-  return { miroirContext, localCache };
-}
-
-const handledActions: any[] = [];
-const domainController = {
-  handleActionFromUI: async (action: any) => {
-    handledActions.push(action);
-    return { status: "ok" };
-  },
-} as unknown as DomainControllerInterface;
-
 const PrepareButton: React.FC = () => {
   const sandbox = useComponentTestSandbox();
   return (
-    <button type="button" onClick={() => void sandbox?.prepareComponentTests()}>
+    <button type="button" onClick={() => void sandbox?.prepareComponentTests({ showTransformerTypes: true })}>
       prepare
     </button>
   );
 };
 
-describe("transformerTypesDisplay: the sandbox host and the app's ViewParams", () => {
+describe("transformerTypesDisplay: the sandbox host", () => {
   afterEach(() => {
     vi.mocked(componentTestsEntry.registerComponentTests).mockClear();
     ConfigurationService.configurationService.registerReactComponentTestRunner(undefined);
-    handledActions.length = 0;
   });
 
   it(
-    "the host reads ViewParams showTransformerTypes, and a save from a case is the host value at once and a ViewParams update",
+    "the host gives the value passed to prepareComponentTests, whatever ViewParams holds, and saves nothing",
     async () => {
-      const harness = buildAppHarness(true);
+      const harness = buildAdminViewParamsHarness({ showTransformerTypes: false });
       const { unmount } = render(
         <LocalCacheProvider store={harness.localCache.getInnerStore()}>
-          <MiroirContextReactProvider miroirContext={harness.miroirContext} domainController={domainController}>
+          <MiroirContextReactProvider miroirContext={harness.miroirContext} domainController={harness.domainController}>
             <ComponentTestSandboxProvider>
               <PrepareButton />
             </ComponentTestSandboxProvider>
@@ -446,18 +399,12 @@ describe("transformerTypesDisplay: the sandbox host and the app's ViewParams", (
       fireEvent.click(screen.getByRole("button", { name: "prepare" }));
       await waitFor(() => expect(componentTestsEntry.registerComponentTests).toHaveBeenCalled());
       const host = vi.mocked(componentTestsEntry.registerComponentTests).mock.calls[0][0];
-      await waitFor(() => expect(host.showTransformerTypes?.()).toBe(true));
-
-      host.saveShowTransformerTypes?.(false);
-      expect(host.showTransformerTypes?.()).toBe(false);
-      await waitFor(() => expect(handledActions).toHaveLength(1));
-      expect(handledActions[0]).toMatchObject({
-        actionType: "updateInstance",
-        payload: {
-          application: adminSelfApplication.uuid,
-          objects: [{ uuid: defaultAdminViewParams.uuid, showTransformerTypes: false }],
-        },
-      });
+      expect(host.showTransformerTypes?.()).toBe(true);
+      expect("saveShowTransformerTypes" in host).toBe(false);
+      loadViewParams(harness.localCache, { showTransformerTypes: true }); // changed in the app meanwhile
+      loadViewParams(harness.localCache, { showTransformerTypes: false });
+      expect(host.showTransformerTypes?.()).toBe(true);
+      expect(harness.handledActions).toEqual([]);
       unmount();
     },
     RUN_TEST_TIMEOUT,
@@ -475,17 +422,13 @@ const SwitchProbe: React.FC = () => {
 };
 
 describe("transformerTypesDisplay: the editor's switch and the app's ViewParams", () => {
-  afterEach(() => {
-    handledActions.length = 0;
-  });
-
   it(
     "a toggle shows at once, and a later ViewParams change made elsewhere replaces it",
     async () => {
-      const harness = buildAppHarness(false);
+      const harness = buildAdminViewParamsHarness({ showTransformerTypes: false });
       const { unmount } = render(
         <LocalCacheProvider store={harness.localCache.getInnerStore()}>
-          <MiroirContextReactProvider miroirContext={harness.miroirContext} domainController={domainController}>
+          <MiroirContextReactProvider miroirContext={harness.miroirContext} domainController={harness.domainController}>
             <SwitchProbe />
           </MiroirContextReactProvider>
         </LocalCacheProvider>,
@@ -493,11 +436,11 @@ describe("transformerTypesDisplay: the editor's switch and the app's ViewParams"
       await waitFor(() => screen.getByRole("button", { name: "types off" }));
       fireEvent.click(screen.getByRole("button", { name: "types off" }));
       await waitFor(() => screen.getByRole("button", { name: "types on" }));
-      await waitFor(() => expect(handledActions).toHaveLength(1));
+      await waitFor(() => expect(harness.handledActions).toHaveLength(1));
 
-      loadViewParams(harness.localCache, true); // the save lands
+      loadViewParams(harness.localCache, { showTransformerTypes: true }); // the save lands
       await waitFor(() => screen.getByRole("button", { name: "types on" }));
-      loadViewParams(harness.localCache, false); // changed in the ViewParams report
+      loadViewParams(harness.localCache, { showTransformerTypes: false }); // changed in the ViewParams report
       await waitFor(() => screen.getByRole("button", { name: "types off" }));
       unmount();
     },

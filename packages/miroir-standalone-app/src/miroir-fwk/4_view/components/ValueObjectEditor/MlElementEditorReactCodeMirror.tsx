@@ -1,6 +1,6 @@
 import type { ReactCodeMirrorProps } from "@uiw/react-codemirror";
 import { LoggerInterface, MiroirLoggerFactory } from "miroir-core";
-import React, { lazy, Suspense, useCallback, useEffect } from "react";
+import React, { lazy, Suspense, useCallback, useContext, useEffect } from "react";
 import { packageName } from "../../../../constants";
 import { cleanLevel } from "../../constants";
 import { MlElementEditorReactCodeMirrorProps } from "./MlElementEditorInterface";
@@ -11,6 +11,7 @@ import {
   ThemedCodeBlock,
 } from "../Themes/index";
 import { useFormikContext } from "formik";
+import { ValueHistoryContext } from "./ValueHistoryProvider.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MlElementEditorReactCodeMirror");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
@@ -18,6 +19,15 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
 ).then((logger: LoggerInterface) => {
   log = logger;
 });
+
+/** The part of CodeMirror's `ViewUpdate` that `handleChange` reads. */
+interface CodeMirrorUpdate {
+  view: { contentDOM: HTMLElement };
+  transactions: readonly { isUserEvent: (event: string) => boolean }[];
+}
+
+/** #499: under an undo history, Ctrl+Z goes to the history, so CodeMirror keeps no history of its own. */
+const basicSetupWithoutHistory = { history: false, historyKeymap: false };
 
 // CodeMirror loads with the first code editor, not with the page (#337).
 const JavaScriptCodeMirror = lazy(async () => {
@@ -51,12 +61,88 @@ export const MlElementEditorReactCodeMirror: React.FC<MlElementEditorReactCodeMi
   } = props;
 
   const formikContext = useFormikContext<any>();
+  const valueHistory = useContext(ValueHistoryContext);
+  const undoable = valueHistory?.covers(formikRootLessListKey) ?? false;
+
+  // #499: hooks before the early returns; the stand-in and the read-only box show the text as is
+  useEffect(() => {
+    if (props.isUnderTest || readOnly) {
+      return;
+    }
+    if (initialValue) {
+      setCodeMirrorValue(initialValue);
+      try {
+        JSON.parse(initialValue);
+        setCodeMirrorIsValidJson(true);
+      } catch {
+        setCodeMirrorIsValidJson(false);
+      }
+    } else {
+      setCodeMirrorValue("");
+      setCodeMirrorIsValidJson(false);
+    }
+  }, []);
+
+  const handleFormat = useCallback(() => {
+    try {
+      const parsed = JSON.parse(codeMirrorValue);
+      const formatted = JSON.stringify(parsed, null, 2);
+      setCodeMirrorValue(formatted);
+      setCodeMirrorIsValidJson(true);
+    } catch {
+      setCodeMirrorIsValidJson(false);
+    }
+  }, [codeMirrorValue, setCodeMirrorValue, setCodeMirrorIsValidJson]);
+
+  const handleChange = useCallback(
+    (value: string, viewUpdate?: CodeMirrorUpdate) => {
+      // #499: typing makes one undo step. CodeMirror may get text without DOM `input` events
+      // (EditContext), so its own transactions say whether the change was typed.
+      if (
+        undoable &&
+        viewUpdate?.transactions.some((transaction) => transaction.isUserEvent("input") || transaction.isUserEvent("delete"))
+      ) {
+        valueHistory?.markTyped(viewUpdate.view.contentDOM);
+      }
+      try {
+        const objectValue = JSON.parse(value);
+        setCodeMirrorIsValidJson(true);
+        formikContext.setFieldValue(formikRootLessListKey, objectValue);
+      } catch {
+        setCodeMirrorIsValidJson(false);
+      }
+      setCodeMirrorValue(value);
+    },
+    [setCodeMirrorIsValidJson, setCodeMirrorValue, formikContext, formikRootLessListKey, undoable, valueHistory]
+  );
+
+  const handleCheck = useCallback(() => {
+    try {
+      const parsed = JSON.parse(codeMirrorValue);
+      log.info(
+        "handleCheck Parsed CodeMirror value:",
+        JSON.stringify(parsed, null, 2)
+      );
+      setCodeMirrorValue(JSON.stringify(parsed, null, 2));
+      setCodeMirrorIsValidJson(true);
+    } catch {
+      setCodeMirrorIsValidJson(false);
+    }
+  }, [codeMirrorValue, setCodeMirrorValue, setCodeMirrorIsValidJson]);
 
   if (props.isUnderTest) {
-    // For testing purposes, return a simple div with the value
+    // For testing purposes, a plain text box in place of CodeMirror (#56), editable like it (#499)
     return (
       <ThemedBox border="1px solid red" padding="10px">
-        codeMirrorValue: <pre>{codeMirrorValue}</pre>
+        codeMirrorValue:{" "}
+        <textarea
+          data-testid={`code-editor:${formikRootLessListKey}`}
+          value={codeMirrorValue}
+          readOnly={readOnly}
+          onChange={(event) => handleChange(event.target.value)}
+          rows={codeMirrorValue.split("\n").length}
+          style={{ display: "block", width: "100%", fontFamily: "monospace" }}
+        />
       </ThemedBox>
     );
   }
@@ -84,64 +170,6 @@ export const MlElementEditorReactCodeMirror: React.FC<MlElementEditorReactCodeMi
       </span>
     );
   }
-
-  useEffect(() => {
-    if (initialValue) {
-      setCodeMirrorValue(initialValue);
-      try {
-        JSON.parse(initialValue);
-        setCodeMirrorIsValidJson(true);
-      } catch {
-        setCodeMirrorIsValidJson(false);
-      }
-    } else {
-      setCodeMirrorValue("");
-      setCodeMirrorIsValidJson(false);
-    }
-  }, []);
-
-  const handleFormat = useCallback(() => {
-    try {
-      const parsed = JSON.parse(codeMirrorValue);
-      const formatted = JSON.stringify(parsed, null, 2);
-      setCodeMirrorValue(formatted);
-      setCodeMirrorIsValidJson(true);
-    } catch {
-      setCodeMirrorIsValidJson(false);
-    }
-  }, [codeMirrorValue, setCodeMirrorValue, setCodeMirrorIsValidJson]);
-
-  const handleChange = useCallback(
-    (value: string) => {
-      // log.info(
-      //   "handleChange CodeMirror value changed:",
-      //   value
-      // );
-      try {
-        const objectValue = JSON.parse(value);
-        setCodeMirrorIsValidJson(true);
-        formikContext.setFieldValue(formikRootLessListKey, objectValue);
-      } catch {
-        setCodeMirrorIsValidJson(false);
-      }
-      setCodeMirrorValue(value);
-    },
-    [setCodeMirrorIsValidJson, setCodeMirrorValue, formikContext, formikRootLessListKey]
-  );
-
-  const handleCheck = useCallback(() => {
-    try {
-      const parsed = JSON.parse(codeMirrorValue);
-      log.info(
-        "handleCheck Parsed CodeMirror value:",
-        JSON.stringify(parsed, null, 2)
-      );
-      setCodeMirrorValue(JSON.stringify(parsed, null, 2));
-      setCodeMirrorIsValidJson(true);
-    } catch {
-      setCodeMirrorIsValidJson(false);
-    }
-  }, [codeMirrorValue, setCodeMirrorValue, setCodeMirrorIsValidJson]);
 
   // Calculate the width based on the longest line in the text
   const editorWidth = `${Math.max(...(codeMirrorValue?.split('\n').map(line => line.length) || [0])) + 3}ch`;
@@ -220,6 +248,7 @@ export const MlElementEditorReactCodeMirror: React.FC<MlElementEditorReactCodeMi
           <JavaScriptCodeMirror
             value={codeMirrorValue}
             onChange={handleChange}
+            basicSetup={undoable ? basicSetupWithoutHistory : undefined}
             style={{ overflowY: "auto", width: editorWidth }}
           />
         </Suspense>

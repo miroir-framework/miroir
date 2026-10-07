@@ -5,7 +5,7 @@
   "name": "ui.transformerEditor",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "TransformerEditor on the Miroir application: renders the default transformer and its result, edits it, chooses a transformer type, switches the input type restriction off, builds nested transformers (mapList to strings and objects, mapList with a getFromContext element, a reduce of a mapList, a list from an object), wraps transformers in new ones at any level with the input type filter, pipes them into new ones, unwraps and removes them, keeps what fits on a type change and asks only before dropping edited values, hints at getFromParameters reads after a wrap, and runs a getFromContext on one Entity instance, then on all of them wrapped in mapList, and shows the input, declared and output types of every node, matched or mismatched, behind a switch.",
+  "description": "TransformerEditor on the Miroir application: renders the default transformer and its result, edits it, chooses a transformer type, switches the input type restriction off, builds nested transformers (mapList to strings and objects, mapList with a getFromContext element, a reduce of a mapList, a list from an object), wraps transformers in new ones at any level with the input type filter, pipes them into new ones, unwraps and removes them at once (Undo brings them back), keeps what fits on a type change and drops the rest at once, hints at getFromParameters reads after a wrap, and runs a getFromContext on one Entity instance, then on all of them wrapped in mapList, and shows the input, declared and output types of every node, matched or mismatched, behind a switch.",
   "tags": [
     "ui",
     "editor",
@@ -134,7 +134,7 @@
           },
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "TransformerEditor: choosing getObjectValues after editing the returned value asks before dropping it, then returns the values of the input",
+            "miroirTestLabel": "TransformerEditor: choosing getObjectValues after editing the returned value drops it at once, Undo brings it back",
             "steps": [
               {
                 "step": "change",
@@ -152,23 +152,41 @@
               },
               {
                 "step": "expectElement",
-                "label": "the dropped attributes are named",
+                "label": "root is getObjectValues",
                 "target": {
-                  "byTestId": "transformer-node-dialog-dropped"
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.transformerType"
                 },
-                "containsHtml": "getObjectValues does not take: mlSchema, value.",
+                "value": "getObjectValues",
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "no dialog",
+                "target": {
+                  "byTestId": "transformer-node-dialog"
+                },
+                "present": false
+              },
+              {
+                "step": "expectElement",
+                "label": "result: the input value",
+                "target": {
+                  "byText": "put your input here..."
+                },
+                "count": 1,
                 "timeout": 2000
               },
               {
                 "step": "click",
-                "label": "cancel the type change",
+                "label": "undo",
                 "target": {
-                  "byTestId": "transformer-node-dialog-cancel"
+                  "byTestId": "value-history-undo:transformer"
                 }
               },
               {
                 "step": "expectElement",
-                "label": "root is still returnValue",
+                "label": "root is returnValue again",
                 "target": {
                   "widget": "combobox",
                   "field": "transformerEditor_transformer_selector.transformer.transformerType"
@@ -178,31 +196,10 @@
               },
               {
                 "step": "expectElement",
-                "label": "returned value kept",
+                "label": "the edited value is back",
                 "target": {
                   "byDisplayValue": "my value"
-                }
-              },
-              {
-                "step": "selectOption",
-                "label": "transformer type again",
-                "field": "transformerEditor_transformer_selector.transformer.transformerType",
-                "option": "getObjectValues"
-              },
-              {
-                "step": "click",
-                "label": "confirm the type change",
-                "target": {
-                  "byTestId": "transformer-node-dialog-confirm"
-                }
-              },
-              {
-                "step": "expectElement",
-                "label": "result: the input value",
-                "target": {
-                  "byText": "put your input here..."
                 },
-                "count": 1,
                 "timeout": 2000
               }
             ]
@@ -1601,7 +1598,7 @@
           },
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "TransformerEditor: unwrapping an ifThenElse asks which child to keep and names the others",
+            "miroirTestLabel": "TransformerEditor: unwrapping an ifThenElse offers one entry per child and keeps the chosen one",
             "steps": [
               {
                 "step": "click",
@@ -1654,32 +1651,25 @@
                 }
               },
               {
-                "step": "click",
-                "label": "Unwrap",
+                "step": "expectElement",
+                "label": "no single Unwrap entry",
                 "target": {
                   "byTestId": "transformer-node-action-unwrap"
-                }
-              },
-              {
-                "step": "selectOption",
-                "label": "keep then",
-                "field": "transformer-node-dialog-child",
-                "option": "then"
+                },
+                "present": false
               },
               {
                 "step": "expectElement",
-                "label": "the dropped children are named",
+                "label": "an entry for the if child",
                 "target": {
-                  "byText": {
-                    "regex": "^Also removes: if \\("
-                  }
+                  "byTestId": "transformer-node-action-unwrap:if"
                 }
               },
               {
                 "step": "click",
-                "label": "confirm the unwrap",
+                "label": "keep then",
                 "target": {
-                  "byTestId": "transformer-node-dialog-confirm"
+                  "byTestId": "transformer-node-action-unwrap:then"
                 }
               },
               {
@@ -1698,12 +1688,37 @@
                 "target": {
                   "byDisplayValue": "seize value..."
                 }
+              },
+              {
+                "step": "expectElement",
+                "label": "no dialog",
+                "target": {
+                  "byTestId": "transformer-node-dialog"
+                },
+                "present": false
+              },
+              {
+                "step": "click",
+                "label": "undo",
+                "target": {
+                  "byTestId": "value-history-undo:transformer"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "root is ifThenElse again",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.transformerType"
+                },
+                "value": "ifThenElse",
+                "timeout": 2000
               }
             ]
           },
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "TransformerEditor: removing an optional transformer deletes it, after a confirmation",
+            "miroirTestLabel": "TransformerEditor: removing an optional transformer deletes it at once, Undo brings it back",
             "steps": [
               {
                 "step": "click",
@@ -1763,42 +1778,12 @@
                 }
               },
               {
-                "step": "click",
-                "label": "cancel the removal",
-                "target": {
-                  "byTestId": "transformer-node-dialog-cancel"
-                }
-              },
-              {
                 "step": "expectElement",
-                "label": "cancel keeps then",
+                "label": "no dialog",
                 "target": {
-                  "widget": "combobox",
-                  "field": "transformerEditor_transformer_selector.transformer.then.transformerType"
+                  "byTestId": "transformer-node-dialog"
                 },
-                "value": "returnValue",
-                "timeout": 2000
-              },
-              {
-                "step": "click",
-                "label": "open the transformer.then node actions to remove it",
-                "target": {
-                  "byLabelText": "Transformer node actions transformer.then"
-                }
-              },
-              {
-                "step": "click",
-                "label": "Remove",
-                "target": {
-                  "byTestId": "transformer-node-action-remove"
-                }
-              },
-              {
-                "step": "click",
-                "label": "confirm the removal",
-                "target": {
-                  "byTestId": "transformer-node-dialog-confirm"
-                }
+                "present": false
               },
               {
                 "step": "expectElement",
@@ -1818,6 +1803,23 @@
                   "field": "transformerEditor_transformer_selector.transformer.transformerType"
                 },
                 "value": "ifThenElse",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "undo",
+                "target": {
+                  "byTestId": "value-history-undo:transformer"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "then is back",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.then.transformerType"
+                },
+                "value": "returnValue",
                 "timeout": 2000
               }
             ]
@@ -1936,13 +1938,6 @@
                 }
               },
               {
-                "step": "click",
-                "label": "confirm the removal",
-                "target": {
-                  "byTestId": "transformer-node-dialog-confirm"
-                }
-              },
-              {
                 "step": "expectElement",
                 "label": "the element transformer is reset",
                 "target": {
@@ -1987,13 +1982,6 @@
                 }
               },
               {
-                "step": "click",
-                "label": "confirm the removal",
-                "target": {
-                  "byTestId": "transformer-node-dialog-confirm"
-                }
-              },
-              {
                 "step": "expectElement",
                 "label": "the root is reset",
                 "target": {
@@ -2011,6 +1999,33 @@
                   "field": "transformerEditor_transformer_selector.transformer.elementTransformer.transformerType"
                 },
                 "present": false,
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "undo the removal of the root",
+                "target": {
+                  "byTestId": "value-history-undo:transformer"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the root is mapList again",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.transformerType"
+                },
+                "value": "mapList",
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "with its reset element transformer",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.elementTransformer.transformerType"
+                },
+                "value": "returnValue",
                 "timeout": 2000
               }
             ]
@@ -2413,8 +2428,16 @@
           },
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "TransformerEditor: the type display is off by default and shows no badge",
+            "miroirTestLabel": "TransformerEditor: with the type display off, no badge is shown",
             "steps": [
+              {
+                "step": "setChecked",
+                "label": "hide the types",
+                "target": {
+                  "byTestId": "transformer-editor-show-types-switch"
+                },
+                "checked": false
+              },
               {
                 "step": "expectElement",
                 "label": "types hidden",
@@ -2438,11 +2461,12 @@
             "miroirTestLabel": "TransformerEditor: with the type display on, the default returnValue shows the type of its value",
             "steps": [
               {
-                "step": "click",
+                "step": "setChecked",
                 "label": "show the types",
                 "target": {
                   "byTestId": "transformer-editor-show-types-switch"
-                }
+                },
+                "checked": true
               },
               {
                 "step": "expectElement",
@@ -2509,11 +2533,12 @@
                 "present": false
               },
               {
-                "step": "click",
+                "step": "setChecked",
                 "label": "hide the types",
                 "target": {
                   "byTestId": "transformer-editor-show-types-switch"
-                }
+                },
+                "checked": false
               },
               {
                 "step": "expectElement",
@@ -2568,11 +2593,12 @@
                 "value": "pear"
               },
               {
-                "step": "click",
+                "step": "setChecked",
                 "label": "show the types",
                 "target": {
                   "byTestId": "transformer-editor-show-types-switch"
-                }
+                },
+                "checked": true
               },
               {
                 "step": "expectElement",
@@ -2779,11 +2805,12 @@
                 "checked": false
               },
               {
-                "step": "click",
+                "step": "setChecked",
                 "label": "show the types",
                 "target": {
                   "byTestId": "transformer-editor-show-types-switch"
-                }
+                },
+                "checked": true
               },
               {
                 "step": "expectElement",

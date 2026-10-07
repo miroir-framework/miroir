@@ -65,6 +65,7 @@ import {
   wrapCandidates,
   wrapTransformerNode,
 } from "../2_domain/TransformerTreeEdit";
+import { transformerBlockOutline, transformerBlockTree } from "../2_domain/TransformerBlockModel";
 import {
   checkTransformerMlSchemaCompatibility,
   formatMlSchemaTypeLabel,
@@ -250,6 +251,10 @@ const FUNCTION_CALL_REGISTRY: Record<
     holdsOneDefault: holdsOneDefault as WhitelistedFunction,
     parameterReadsOfDefaultInput: parameterReadsOfDefaultInput as WhitelistedFunction,
     elementParameterReadsOfDefaultInput: elementParameterReadsOfDefaultInput as WhitelistedFunction,
+  },
+  "miroir-core/2_domain/TransformerBlockModel": {
+    transformerBlockTree: transformerBlockTree as WhitelistedFunction,
+    transformerBlockOutline: transformerBlockOutline as WhitelistedFunction,
   },
   "miroir-core/2_domain/TransformerMlSchemaCheck": {
     checkTransformerMlSchemaCompatibility:
