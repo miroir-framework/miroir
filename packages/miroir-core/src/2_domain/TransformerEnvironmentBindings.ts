@@ -69,6 +69,38 @@ export function collectTransformerEnvironmentBindings(
   return bindings;
 }
 
+function valueAt(value: unknown, path: (string | number)[]): unknown {
+  return path.reduce<unknown>(
+    (current, segment) =>
+      typeof current === "object" && current !== null ? (current as Record<string, unknown>)[segment] : undefined,
+    value,
+  );
+}
+
+/**
+ * The names visible at `path` of `root` (#501), whether a node sits there or not: an empty or
+ * default-filled slot, a new list item or record entry. Each transformer along the path adds the
+ * names its slot binds (TransformerScope); the parameters stay those of the root.
+ */
+export function transformerEnvironmentAt(
+  root: unknown,
+  path: (string | number)[],
+  rootEnvironment: TransformerEnvironment,
+): TransformerEnvironment {
+  const names: string[] = [];
+  for (let depth = 0; depth < path.length; depth++) {
+    const node = valueAt(root, path.slice(0, depth));
+    const binding = isTypedTransformer(node) ? transformerScopeBinding(node, path[depth]) : undefined;
+    if (binding && isTypedTransformer(node)) {
+      names.push(...namesBoundBy(node, binding, path[depth + 1]));
+    }
+  }
+  return {
+    contextNames: uniqueSorted([...rootEnvironment.contextNames, ...names]),
+    parameterNames: uniqueSorted(rootEnvironment.parameterNames),
+  };
+}
+
 export function formatTransformerEnvironmentLabel(
   binding: TransformerEnvironmentBinding,
 ): string {

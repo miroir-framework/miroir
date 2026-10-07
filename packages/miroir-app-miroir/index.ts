@@ -310,6 +310,7 @@ export { default as miroirTest_fn_tools_pathsAndMerges } from "./assets/miroir_d
 export { default as miroirTest_fn_transformer_interfaceCheck } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/c9f0a3e1-7b2d-4e6a-8f1c-5d3b9a7e2c84.json" with { type: "json" };
 export { default as miroirTest_fn_transformer_interfaceWalk } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/0a6912c2-e061-476b-bd54-849e7366684b.json" with { type: "json" };
 export { default as miroirTest_fn_transformer_treeEdit } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/4aa17196-37f3-4f5e-a834-b0166882d1a4.json" with { type: "json" };
+export { default as miroirTest_fn_transformer_scope } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/50cf75d1-993f-4b5c-bdd1-0fe309e1e2d6.json" with { type: "json" }; // off the page: not in defaultMiroirMetaModel.tests
 export { default as miroirTest_fn_transformer_subtreeRun } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/a2e7d5f0-573b-4353-92b3-23808e79999c.json" with { type: "json" }; // off the page: not in defaultMiroirMetaModel.tests
 export { default as miroirTest_fn_blockModel } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/0161aae9-8ff2-4efb-9da5-ee8926961196.json" with { type: "json" };
 export { default as miroirTest_fn_transformer_resultSchema } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/0d3bd258-a8f9-4a0c-8cd9-bcf5607b50ad.json" with { type: "json" };

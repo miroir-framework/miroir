@@ -1423,7 +1423,15 @@ export type {
 export {
   collectTransformerEnvironmentBindings,
   formatTransformerEnvironmentLabel,
+  transformerEnvironmentAt,
 } from "./2_domain/TransformerEnvironmentBindings.js";
+export {
+  AGGREGATE_VALUE_NAME,
+  TRANSFORMER_SCOPE_RULES,
+  namesBoundBy,
+  transformerScopeBinding,
+  type TransformerScopeBinding,
+} from "./2_domain/TransformerScope.js";
 export type {
   TransformerEnvironment,
   TransformerEnvironmentBinding,

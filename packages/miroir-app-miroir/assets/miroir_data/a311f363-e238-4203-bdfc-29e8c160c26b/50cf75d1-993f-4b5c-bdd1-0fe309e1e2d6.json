@@ -1,0 +1,622 @@
+{
+  "uuid": "50cf75d1-993f-4b5c-bdd1-0fe309e1e2d6",
+  "parentName": "MiroirTest",
+  "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+  "name": "fn.transformer.scope",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "description": "The context and parameter names visible at a position of a transformer or of a composite action sequence, whether a node sits there or not.",
+  "tags": [
+    "unit",
+    "transformer"
+  ],
+  "issue": "501",
+  "definition": {
+    "miroirTestType": "miroirTestSuite",
+    "miroirTestLabel": "fn.transformer.scope",
+    "miroirTests": [
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "transformerEnvironmentAt",
+        "miroirTests": [
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "the root sees the root names",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerEnvironmentBindings",
+              "export": "transformerEnvironmentAt"
+            },
+            "arguments": [
+              {
+                "transformerType": "mapList",
+                "interpolation": "runtime",
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "defaultInput"
+                  ]
+                },
+                "elementTransformer": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "defaultInput",
+                    "name"
+                  ]
+                }
+              },
+              [],
+              {
+                "contextNames": [
+                  "defaultInput"
+                ],
+                "parameterNames": [
+                  "defaultInput"
+                ]
+              }
+            ],
+            "expectedValue": {
+              "contextNames": [
+                "defaultInput"
+              ],
+              "parameterNames": [
+                "defaultInput"
+              ]
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "the applyTo of a mapList sees its parent's names",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerEnvironmentBindings",
+              "export": "transformerEnvironmentAt"
+            },
+            "arguments": [
+              {
+                "transformerType": "mapList",
+                "interpolation": "runtime",
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "defaultInput"
+                  ]
+                },
+                "elementTransformer": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "defaultInput",
+                    "name"
+                  ]
+                }
+              },
+              [
+                "applyTo"
+              ],
+              {
+                "contextNames": [
+                  "defaultInput"
+                ],
+                "parameterNames": [
+                  "defaultInput"
+                ]
+              }
+            ],
+            "expectedValue": {
+              "contextNames": [
+                "defaultInput"
+              ],
+              "parameterNames": [
+                "defaultInput"
+              ]
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "the element transformer of a mapList sees the element as defaultInput",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerEnvironmentBindings",
+              "export": "transformerEnvironmentAt"
+            },
+            "arguments": [
+              {
+                "transformerType": "mapList",
+                "interpolation": "runtime",
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "defaultInput"
+                  ]
+                },
+                "elementTransformer": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "defaultInput",
+                    "name"
+                  ]
+                }
+              },
+              [
+                "elementTransformer"
+              ],
+              {
+                "contextNames": [
+                  "defaultInput"
+                ],
+                "parameterNames": [
+                  "defaultInput"
+                ]
+              }
+            ],
+            "expectedValue": {
+              "contextNames": [
+                "defaultInput"
+              ],
+              "parameterNames": [
+                "defaultInput"
+              ]
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "referenceToOuterObject names the element",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerEnvironmentBindings",
+              "export": "transformerEnvironmentAt"
+            },
+            "arguments": [
+              {
+                "transformerType": "mapList",
+                "interpolation": "runtime",
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "defaultInput"
+                  ]
+                },
+                "elementTransformer": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "defaultInput",
+                    "name"
+                  ]
+                },
+                "referenceToOuterObject": "book"
+              },
+              [
+                "elementTransformer"
+              ],
+              {
+                "contextNames": [
+                  "defaultInput"
+                ],
+                "parameterNames": [
+                  "defaultInput"
+                ]
+              }
+            ],
+            "expectedValue": {
+              "contextNames": [
+                "book",
+                "defaultInput"
+              ],
+              "parameterNames": [
+                "defaultInput"
+              ]
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "the predicate of a filterList sees the element",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerEnvironmentBindings",
+              "export": "transformerEnvironmentAt"
+            },
+            "arguments": [
+              {
+                "transformerType": "filterList",
+                "interpolation": "runtime",
+                "referenceToOuterObject": "book",
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "defaultInput"
+                  ]
+                },
+                "predicate": {
+                  "transformerType": "returnValue",
+                  "interpolation": "runtime",
+                  "value": true
+                }
+              },
+              [
+                "predicate"
+              ],
+              {
+                "contextNames": [
+                  "defaultInput"
+                ],
+                "parameterNames": [
+                  "defaultInput"
+                ]
+              }
+            ],
+            "expectedValue": {
+              "contextNames": [
+                "book",
+                "defaultInput"
+              ],
+              "parameterNames": [
+                "defaultInput"
+              ]
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a dataflowObject step sees the steps before it, not itself nor those after it",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerEnvironmentBindings",
+              "export": "transformerEnvironmentAt"
+            },
+            "arguments": [
+              {
+                "transformerType": "dataflowObject",
+                "interpolation": "runtime",
+                "definition": {
+                  "first": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": 1
+                  },
+                  "second": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": 2
+                  },
+                  "third": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": 3
+                  }
+                }
+              },
+              [
+                "definition",
+                "second"
+              ],
+              {
+                "contextNames": [
+                  "defaultInput"
+                ],
+                "parameterNames": [
+                  "defaultInput"
+                ]
+              }
+            ],
+            "expectedValue": {
+              "contextNames": [
+                "defaultInput",
+                "first"
+              ],
+              "parameterNames": [
+                "defaultInput"
+              ]
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a new dataflowObject step sees every step",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerEnvironmentBindings",
+              "export": "transformerEnvironmentAt"
+            },
+            "arguments": [
+              {
+                "transformerType": "dataflowObject",
+                "interpolation": "runtime",
+                "definition": {
+                  "first": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": 1
+                  },
+                  "second": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": 2
+                  }
+                }
+              },
+              [
+                "definition",
+                "value"
+              ],
+              {
+                "contextNames": [
+                  "defaultInput"
+                ],
+                "parameterNames": [
+                  "defaultInput"
+                ]
+              }
+            ],
+            "expectedValue": {
+              "contextNames": [
+                "defaultInput",
+                "first",
+                "second"
+              ],
+              "parameterNames": [
+                "defaultInput"
+              ]
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "an empty optional slot sees its parent's names",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerEnvironmentBindings",
+              "export": "transformerEnvironmentAt"
+            },
+            "arguments": [
+              {
+                "transformerType": "ifThenElse",
+                "interpolation": "runtime",
+                "if": {
+                  "transformerType": "returnValue",
+                  "interpolation": "runtime",
+                  "value": true
+                }
+              },
+              [
+                "then"
+              ],
+              {
+                "contextNames": [
+                  "defaultInput"
+                ],
+                "parameterNames": [
+                  "defaultInput"
+                ]
+              }
+            ],
+            "expectedValue": {
+              "contextNames": [
+                "defaultInput"
+              ],
+              "parameterNames": [
+                "defaultInput"
+              ]
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a node deep in the definition of createObjectFromPairs sees its applyTo",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerEnvironmentBindings",
+              "export": "transformerEnvironmentAt"
+            },
+            "arguments": [
+              {
+                "transformerType": "createObjectFromPairs",
+                "interpolation": "runtime",
+                "referenceToOuterObject": "pair",
+                "applyTo": {
+                  "transformerType": "returnValue",
+                  "interpolation": "runtime",
+                  "value": {
+                    "k": 1
+                  }
+                },
+                "definition": [
+                  {
+                    "attributeKey": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "value": "a"
+                    },
+                    "attributeValue": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "pair",
+                        "k"
+                      ]
+                    }
+                  }
+                ]
+              },
+              [
+                "definition",
+                0,
+                "attributeValue"
+              ],
+              {
+                "contextNames": [
+                  "defaultInput"
+                ],
+                "parameterNames": [
+                  "defaultInput"
+                ]
+              }
+            ],
+            "expectedValue": {
+              "contextNames": [
+                "defaultInput",
+                "pair"
+              ],
+              "parameterNames": [
+                "defaultInput"
+              ]
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "the having of an aggregate sees aggregateValue",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerEnvironmentBindings",
+              "export": "transformerEnvironmentAt"
+            },
+            "arguments": [
+              {
+                "transformerType": "aggregate",
+                "interpolation": "runtime",
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "defaultInput"
+                  ]
+                },
+                "having": {
+                  "transformerType": "returnValue",
+                  "interpolation": "runtime",
+                  "value": true
+                }
+              },
+              [
+                "having"
+              ],
+              {
+                "contextNames": [
+                  "defaultInput"
+                ],
+                "parameterNames": [
+                  "defaultInput"
+                ]
+              }
+            ],
+            "expectedValue": {
+              "contextNames": [
+                "aggregateValue",
+                "defaultInput"
+              ],
+              "parameterNames": [
+                "defaultInput"
+              ]
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "names add up along the path",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerEnvironmentBindings",
+              "export": "transformerEnvironmentAt"
+            },
+            "arguments": [
+              {
+                "transformerType": "mapList",
+                "interpolation": "runtime",
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "defaultInput"
+                  ]
+                },
+                "elementTransformer": {
+                  "transformerType": "dataflowObject",
+                  "interpolation": "runtime",
+                  "definition": {
+                    "title": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "book",
+                        "title"
+                      ]
+                    },
+                    "upper": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "value": 0
+                    }
+                  }
+                },
+                "referenceToOuterObject": "book"
+              },
+              [
+                "elementTransformer",
+                "definition",
+                "upper"
+              ],
+              {
+                "contextNames": [
+                  "defaultInput"
+                ],
+                "parameterNames": [
+                  "defaultInput"
+                ]
+              }
+            ],
+            "expectedValue": {
+              "contextNames": [
+                "book",
+                "defaultInput",
+                "title"
+              ],
+              "parameterNames": [
+                "defaultInput"
+              ]
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "parameters do not change along the path",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerEnvironmentBindings",
+              "export": "transformerEnvironmentAt"
+            },
+            "arguments": [
+              {
+                "transformerType": "mapList",
+                "interpolation": "runtime",
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "defaultInput"
+                  ]
+                },
+                "elementTransformer": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "defaultInput",
+                    "name"
+                  ]
+                }
+              },
+              [
+                "elementTransformer"
+              ],
+              {
+                "contextNames": [
+                  "defaultInput"
+                ],
+                "parameterNames": [
+                  "pageSize"
+                ]
+              }
+            ],
+            "expectedValue": {
+              "contextNames": [
+                "defaultInput"
+              ],
+              "parameterNames": [
+                "pageSize"
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

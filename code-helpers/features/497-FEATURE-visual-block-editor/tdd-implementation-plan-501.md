@@ -30,7 +30,7 @@ This plan does not add define blocks (#502) nor the block view of action sequenc
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
 | 0 | One table of scope rules; `aggregate.having` | ✅ | `fn.transformer.subtreeRun`, TransformerEnvironmentBindings unit tests |
-| 1 | Names in scope at a position of a transformer | ⬜ | `fn.transformer.scope` transformer cases |
+| 1 | Names in scope at a position of a transformer | ✅ | `fn.transformer.scope` transformer cases |
 | 2 | Names in scope in a composite action sequence | ⬜ | `fn.transformer.scope` sequence cases |
 | 3 | Variable blocks in the palette | ⬜ | `ui.blockEditing` variable cases |
 | 4 | The path picker of a variable block | ⬜ | `ui.blockEditing` path case (AC 2) |
@@ -64,6 +64,8 @@ Validation: `npm run testMiroir -w miroir-core -- --suites fn.transformer.subtre
 ## Slice 1 — Names in scope at a position of a transformer
 
 RED: new off-page instance `fn.transformer.scope`, suite `transformerEnvironmentAt`: the element slot of mapList (outer name, custom name), the predicate of filterList, a dataflowObject step (earlier steps only), an empty optional slot, the definition of createObjectFromPairs, the having of aggregate, a path inside a returnValue (no transformer: the enclosing node's names), the root. GREEN: `transformerEnvironmentAt`.
+
+**Realization (2026-10-07).** `transformerEnvironmentAt` sits in `TransformerEnvironmentBindings.ts`, beside the `TransformerEnvironment` type, and is whitelisted under `miroir-core/2_domain/TransformerEnvironmentBindings`. `fn.transformer.scope` (`50cf75d1-…`, off the page like `fn.transformer.subtreeRun`) has 12 cases; miroir-core exports the function and the scope table. A new `dataflowObject` entry (a key not yet in the record, as the insert position `definition.value`) sees every step.
 
 ## Slice 2 — Names in scope in a composite action sequence
 
