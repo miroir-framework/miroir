@@ -33,14 +33,14 @@ This plan does not add variable blocks or scope checks (#501), define blocks (#5
 | 0 | A home for the cases, off the page bundle | ✅ | `componentTestInstances.292.phase1`, counts |
 | 1 | Pure defaults and insert, move, reorder | ✅ | `fn.transformer.treeEdit` |
 | 2 | Tracer: the #415 node menu on a block | ✅ | `ui.blockEditing` wrap, unwrap, remove |
-| 3 | Palette and insert into a slot | ⬜ | `ui.blockEditing` build from the palette |
-| 4 | Tray: move a block out and back | ⬜ | `ui.blockEditing` tray cases |
-| 5 | Inline literals and the ML schema popover | ⬜ | `ui.blockEditing` literal cases |
-| 6 | Build / runtime switch | ⬜ | `ui.blockEditing` interpolation case |
-| 7 | Type flags on blocks | ⬜ | `ui.blockEditing` mismatch case |
-| 8 | Run a subtree: the result bubble | ⬜ | `fn.transformer.subtreeRun`, `ui.blockEditing` bubble cases |
-| 9 | Drag and drop with @dnd-kit | ⬜ | build, bundle guard, dependency policy |
-| 10 | Nonreg, docs, bundle, AC | ⬜ | nonreg, AC checklist |
+| 3 | Palette and insert into a slot | ✅ | `ui.blockEditing` build from the palette |
+| 4 | Tray: move a block out and back | ✅ | `ui.blockEditing` tray cases |
+| 5 | Inline literals and the ML schema popover | ✅ | `ui.blockEditing` literal cases |
+| 6 | Build / runtime switch | ✅ | `ui.blockEditing` interpolation case |
+| 7 | Type flags on blocks | ✅ | `ui.blockEditing` mismatch case |
+| 8 | Run a subtree: the result bubble | ✅ | `fn.transformer.subtreeRun`, `ui.blockEditing` bubble cases |
+| 9 | Drag and drop with @dnd-kit | ✅ | build, bundle guard, dependency policy |
+| 10 | Nonreg, docs, bundle, AC | ✅ | nonreg, AC checklist |
 
 ---
 
@@ -322,6 +322,13 @@ With "Show transformer types" on, a `mapList` placed where the input is a single
 
 ## Slice 10 — Nonreg, docs, bundle, AC
 
-**Status:** ⬜
+**Status:** ✅
 
 `docs/reference/transformers.md` (editing with blocks), nonreg step for `ui.blockEditing`, `nonreg:filesystem`, bundle guard, AC checklist.
+
+### Realization
+
+- `docs/reference/transformers.md` has an "Editing with blocks" section. No new nonreg step: `ui.blockEditing` runs in `appstack-miroir-component-tests` (its entry loads every instance of the folder) and `fn.transformer.subtreeRun` in `unit-miroir-core`.
+- The AC check found no menu equivalent of reordering by drag: Move up / Move down entries for list items (`reorderTransformerNode`), with one case (163 → 164 leaves).
+- Issue text vs result: the cases are in `ui.blockEditing` (off the page) rather than `ui.blockEditor`; the ML schema popover edits JSON text rather than embedding the form editor; drag cases wait for #485.
+- Pre-push gate green. `nonreg:filesystem --runner shared`: 102 of 106 pass; the 4 failures (MiroirTestDisplay and MiroirTestListDisplay, unit and appstack, "useDomainControllerService must be used within a MiroirContextReactProvider") already fail on `_integration`.
