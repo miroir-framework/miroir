@@ -4,14 +4,18 @@ import { getIn, useFormikContext } from "formik";
 import React, { lazy, Suspense, useContext } from "react";
 
 import { useMiroirTheme } from "../../contexts/MiroirThemeContext.js";
-import { ValueHistoryContext, ValueHistoryStatusContext } from "../ValueObjectEditor/ValueHistoryProvider.js";
+import {
+  ValueHistoryContext,
+  ValueHistoryScope,
+  ValueHistoryStatusContext,
+} from "../ValueObjectEditor/ValueHistoryProvider.js";
 import { BlockViewModeContext, type BlockViewMode } from "./BlockViewMode.js";
 
 // ################################################################################################
 // #498: the Blocks / Form / JSON switch of a transformer field, and the view it selects. The block
 // view loads with its first use, not with the page.
 // #499: when an undo history watches the field, Undo and Redo sit next to the switch, whatever the
-// view.
+// view, and the field is the history's scope: Ctrl+Z and Ctrl+Y work inside it.
 // ################################################################################################
 
 const BlockEditorView = lazy(async () => ({ default: (await import("./BlockEditorView.js")).BlockEditorView }));
@@ -88,7 +92,8 @@ export function BlockViewSwitch(props: BlockViewSwitchProps) {
   const { currentTheme } = useMiroirTheme();
   const formik = useFormikContext<Record<string, unknown>>();
   const mode = modes?.modeOf(props.formikPath) ?? "form";
-  return (
+  const watched = history?.formikPath === props.formikPath;
+  const field = (
     <div data-testid={`block-view-switch:${props.rootLessListKey}`}>
       <div css={css({ display: "flex", alignItems: "center", margin: "2px 0 4px" })}>
         <div role="group" aria-label={`View of ${props.rootLessListKey}`} css={css({ display: "inline-flex", gap: "2px" })}>
@@ -105,7 +110,7 @@ export function BlockViewSwitch(props: BlockViewSwitchProps) {
             </button>
           ))}
         </div>
-        {history?.formikPath === props.formikPath && <ValueHistoryButtons rootLessListKey={props.rootLessListKey} />}
+        {watched && <ValueHistoryButtons rootLessListKey={props.rootLessListKey} />}
       </div>
       {mode === "blocks" ? (
         <Suspense fallback={<span>Loading block editor...</span>}>
@@ -116,4 +121,5 @@ export function BlockViewSwitch(props: BlockViewSwitchProps) {
       )}
     </div>
   );
+  return watched ? <ValueHistoryScope>{field}</ValueHistoryScope> : field;
 }

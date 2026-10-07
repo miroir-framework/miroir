@@ -52,6 +52,13 @@ export class ValueHistory {
     }
     this.entries.splice(this.index + 1);
     if (typedInto !== undefined && typedInto === this.openGroup && this.index > 0) {
+      if (equal(value, this.entries[this.index - 1])) {
+        // the typing undid itself: a step would change nothing
+        this.entries.splice(this.index);
+        this.index -= 1;
+        this.openGroup = undefined;
+        return true;
+      }
       this.entries[this.index] = snapshot(value);
       return true;
     }

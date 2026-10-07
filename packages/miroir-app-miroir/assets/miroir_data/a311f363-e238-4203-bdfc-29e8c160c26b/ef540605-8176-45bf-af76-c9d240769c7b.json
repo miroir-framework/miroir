@@ -253,6 +253,331 @@
                 "timeout": 2000
               }
             ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: typing in a field is one step, Ctrl+Z undoes it, Ctrl+Y and Ctrl+Shift+Z redo it",
+            "steps": [
+              {
+                "step": "click",
+                "label": "pick the returned value field",
+                "target": {
+                  "byDisplayValue": "seize value..."
+                },
+                "saveAs": "valueInput"
+              },
+              {
+                "step": "clear",
+                "label": "clear the field",
+                "target": {
+                  "ref": "valueInput"
+                }
+              },
+              {
+                "step": "type",
+                "label": "type a new value",
+                "target": {
+                  "ref": "valueInput"
+                },
+                "text": "typed"
+              },
+              {
+                "step": "expectElement",
+                "label": "the typed value",
+                "target": {
+                  "byDisplayValue": "typed"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "keyboard",
+                "label": "Ctrl+Z",
+                "keys": "{Control>}z{/Control}"
+              },
+              {
+                "step": "expectElement",
+                "label": "the value before clearing and typing, in one step",
+                "target": {
+                  "byDisplayValue": "seize value..."
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "nothing more to undo",
+                "target": {
+                  "byTestId": "value-history-undo:transformer"
+                },
+                "attribute": "aria-disabled",
+                "value": "true",
+                "timeout": 2000
+              },
+              {
+                "step": "keyboard",
+                "label": "Ctrl+Y",
+                "keys": "{Control>}y{/Control}"
+              },
+              {
+                "step": "expectElement",
+                "label": "the typed value is back",
+                "target": {
+                  "byDisplayValue": "typed"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "keyboard",
+                "label": "Ctrl+Z again",
+                "keys": "{Control>}z{/Control}"
+              },
+              {
+                "step": "expectElement",
+                "label": "the value before typing again",
+                "target": {
+                  "byDisplayValue": "seize value..."
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "keyboard",
+                "label": "Ctrl+Shift+Z",
+                "keys": "{Control>}{Shift>}z{/Shift}{/Control}"
+              },
+              {
+                "step": "expectElement",
+                "label": "the typed value is back again",
+                "target": {
+                  "byDisplayValue": "typed"
+                },
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: typing again after leaving the field is another step",
+            "steps": [
+              {
+                "step": "click",
+                "label": "pick the returned value field",
+                "target": {
+                  "byDisplayValue": "seize value..."
+                },
+                "saveAs": "valueInput"
+              },
+              {
+                "step": "type",
+                "label": "type at the end",
+                "target": {
+                  "ref": "valueInput"
+                },
+                "text": " one"
+              },
+              {
+                "step": "keyboard",
+                "label": "leave the field",
+                "keys": "{Tab}"
+              },
+              {
+                "step": "type",
+                "label": "type at the end again",
+                "target": {
+                  "ref": "valueInput"
+                },
+                "text": " two"
+              },
+              {
+                "step": "expectElement",
+                "label": "both typings",
+                "target": {
+                  "byDisplayValue": "seize value... one two"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "keyboard",
+                "label": "Ctrl+Z",
+                "keys": "{Control>}z{/Control}"
+              },
+              {
+                "step": "expectElement",
+                "label": "the first typing only",
+                "target": {
+                  "byDisplayValue": "seize value... one"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "keyboard",
+                "label": "Ctrl+Z again",
+                "keys": "{Control>}z{/Control}"
+              },
+              {
+                "step": "expectElement",
+                "label": "the starting value",
+                "target": {
+                  "byDisplayValue": "seize value..."
+                },
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: typing a character and deleting it adds no step",
+            "steps": [
+              {
+                "step": "click",
+                "label": "pick the returned value field",
+                "target": {
+                  "byDisplayValue": "seize value..."
+                },
+                "saveAs": "valueInput"
+              },
+              {
+                "step": "type",
+                "label": "type a character",
+                "target": {
+                  "ref": "valueInput"
+                },
+                "text": "x"
+              },
+              {
+                "step": "expectElement",
+                "label": "the typed character",
+                "target": {
+                  "byDisplayValue": "seize value...x"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "keyboard",
+                "label": "delete it",
+                "keys": "{Backspace}"
+              },
+              {
+                "step": "expectElement",
+                "label": "the starting value",
+                "target": {
+                  "byDisplayValue": "seize value..."
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "nothing to undo",
+                "target": {
+                  "byTestId": "value-history-undo:transformer"
+                },
+                "attribute": "aria-disabled",
+                "value": "true",
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: two choices in one select are two steps",
+            "steps": [
+              {
+                "step": "clickObjectButton",
+                "label": "add interpolation",
+                "field": "transformerEditor_transformer_selector.transformer",
+                "action": "addOptionalAttribute",
+                "attribute": "interpolation"
+              },
+              {
+                "step": "selectOption",
+                "label": "interpolation at runtime",
+                "field": "transformerEditor_transformer_selector.transformer.interpolation",
+                "option": "runtime"
+              },
+              {
+                "step": "selectOption",
+                "label": "interpolation at build",
+                "field": "transformerEditor_transformer_selector.transformer.interpolation",
+                "option": "build"
+              },
+              {
+                "step": "click",
+                "label": "undo",
+                "target": {
+                  "byTestId": "value-history-undo:transformer"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "back to runtime, not to the value before both choices",
+                "target": {
+                  "widget": "combobox",
+                  "field": "transformerEditor_transformer_selector.transformer.interpolation"
+                },
+                "value": "runtime",
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: Ctrl+Z in a dialog does not undo the transformer",
+            "steps": [
+              {
+                "step": "change",
+                "label": "edit the returned value",
+                "target": {
+                  "byDisplayValue": "seize value..."
+                },
+                "value": "edited"
+              },
+              {
+                "step": "click",
+                "label": "open the root node actions",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Wrap in",
+                "target": {
+                  "byTestId": "transformer-node-action-wrap"
+                }
+              },
+              {
+                "step": "selectOption",
+                "label": "choose ifThenElse in the dialog",
+                "field": "transformer-node-dialog-type",
+                "option": "ifThenElse"
+              },
+              {
+                "step": "keyboard",
+                "label": "Ctrl+Z in the dialog",
+                "keys": "{Control>}z{/Control}"
+              },
+              {
+                "step": "expectElement",
+                "label": "the edit stays",
+                "target": {
+                  "byDisplayValue": "edited"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "cancel the wrap",
+                "target": {
+                  "byTestId": "transformer-node-dialog-cancel"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the edit is still there",
+                "target": {
+                  "byDisplayValue": "edited"
+                },
+                "timeout": 2000
+              }
+            ]
           }
         ]
       }

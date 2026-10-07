@@ -1,6 +1,6 @@
 import type { ReactCodeMirrorProps } from "@uiw/react-codemirror";
 import { LoggerInterface, MiroirLoggerFactory } from "miroir-core";
-import React, { lazy, Suspense, useCallback, useEffect } from "react";
+import React, { lazy, Suspense, useCallback, useContext, useEffect } from "react";
 import { packageName } from "../../../../constants";
 import { cleanLevel } from "../../constants";
 import { MlElementEditorReactCodeMirrorProps } from "./MlElementEditorInterface";
@@ -11,6 +11,7 @@ import {
   ThemedCodeBlock,
 } from "../Themes/index";
 import { useFormikContext } from "formik";
+import { ValueHistoryContext } from "./ValueHistoryProvider.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MlElementEditorReactCodeMirror");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
@@ -18,6 +19,15 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
 ).then((logger: LoggerInterface) => {
   log = logger;
 });
+
+/** The part of CodeMirror's `ViewUpdate` that `handleChange` reads. */
+interface CodeMirrorUpdate {
+  view: { contentDOM: HTMLElement };
+  transactions: readonly { isUserEvent: (event: string) => boolean }[];
+}
+
+/** #499: under an undo history, Ctrl+Z goes to the history, so CodeMirror keeps no history of its own. */
+const basicSetupWithoutHistory = { history: false, historyKeymap: false };
 
 // CodeMirror loads with the first code editor, not with the page (#337).
 const JavaScriptCodeMirror = lazy(async () => {
@@ -51,6 +61,8 @@ export const MlElementEditorReactCodeMirror: React.FC<MlElementEditorReactCodeMi
   } = props;
 
   const formikContext = useFormikContext<any>();
+  const valueHistory = useContext(ValueHistoryContext);
+  const undoable = valueHistory?.covers(formikRootLessListKey) ?? false;
 
   if (props.isUnderTest) {
     // For testing purposes, return a simple div with the value
@@ -112,11 +124,15 @@ export const MlElementEditorReactCodeMirror: React.FC<MlElementEditorReactCodeMi
   }, [codeMirrorValue, setCodeMirrorValue, setCodeMirrorIsValidJson]);
 
   const handleChange = useCallback(
-    (value: string) => {
-      // log.info(
-      //   "handleChange CodeMirror value changed:",
-      //   value
-      // );
+    (value: string, viewUpdate?: CodeMirrorUpdate) => {
+      // #499: typing makes one undo step. CodeMirror may get text without DOM `input` events
+      // (EditContext), so its own transactions say whether the change was typed.
+      if (
+        undoable &&
+        viewUpdate?.transactions.some((transaction) => transaction.isUserEvent("input") || transaction.isUserEvent("delete"))
+      ) {
+        valueHistory?.markTyped(viewUpdate.view.contentDOM);
+      }
       try {
         const objectValue = JSON.parse(value);
         setCodeMirrorIsValidJson(true);
@@ -126,7 +142,7 @@ export const MlElementEditorReactCodeMirror: React.FC<MlElementEditorReactCodeMi
       }
       setCodeMirrorValue(value);
     },
-    [setCodeMirrorIsValidJson, setCodeMirrorValue, formikContext, formikRootLessListKey]
+    [setCodeMirrorIsValidJson, setCodeMirrorValue, formikContext, formikRootLessListKey, undoable, valueHistory]
   );
 
   const handleCheck = useCallback(() => {
@@ -220,6 +236,7 @@ export const MlElementEditorReactCodeMirror: React.FC<MlElementEditorReactCodeMi
           <JavaScriptCodeMirror
             value={codeMirrorValue}
             onChange={handleChange}
+            basicSetup={undoable ? basicSetupWithoutHistory : undefined}
             style={{ overflowY: "auto", width: editorWidth }}
           />
         </Suspense>
