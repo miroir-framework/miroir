@@ -13,6 +13,7 @@ import {
   defaultExternalServiceClient,
   defaultSelfApplicationDeploymentMap,
   DomainControllerInterface,
+  getApplicationSection,
   MlElement,
   mlsTypeCheck,
   LocalCacheInterface,
@@ -58,6 +59,7 @@ import {
 import { adminSelfApplication } from "miroir-app-admin";
 import {
   defaultMiroirMetaModel,
+  entityEndpointVersion,
   entityEntity,
   entityEntityVersion,
   entityMlSchema,
@@ -699,6 +701,18 @@ export function buildComponentTestWrapper(
           applicationSection: "data",
           instances: defaultMiroirMetaModel.reports
         },
+        // #505: a suite that runs actions has Miroir's Endpoints, as the app has: the model
+        // environment of an application then knows their actions (block palette, action runs)
+        ...(options.wireLocalCacheCompositeAction
+          ? [
+              {
+                parentName: entityEndpointVersion.name,
+                parentUuid: entityEndpointVersion.uuid,
+                applicationSection: getApplicationSection(selfApplicationMiroir.uuid, entityEndpointVersion.uuid),
+                instances: defaultMiroirMetaModel.endpoints as EntityInstance[],
+              },
+            ]
+          : []),
         ...extraLocalCacheObjects(options.localCacheInstances, selfApplicationMiroir.uuid),
       ],
     }

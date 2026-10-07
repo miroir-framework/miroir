@@ -783,6 +783,62 @@
               }
             ],
             "expectedValue": false
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "#505: a compositeActionSequence field holds a test sequence",
+            "functionRef": {
+              "module": "miroir-core/2_domain/BlockViewFields",
+              "export": "isTestSequenceField"
+            },
+            "arguments": [
+              {
+                "rawSchema": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "compositeActionSequence"
+                  }
+                },
+                "resolvedSchema": {
+                  "type": "any"
+                },
+                "valuePath": [
+                  "definition",
+                  "testCompositeActions"
+                ],
+                "typePath": []
+              }
+            ],
+            "expectedValue": true
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "#505: a Runner's compositeActionSequenceTemplate is no test sequence",
+            "functionRef": {
+              "module": "miroir-core/2_domain/BlockViewFields",
+              "export": "isTestSequenceField"
+            },
+            "arguments": [
+              {
+                "rawSchema": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "compositeActionSequenceTemplate"
+                  }
+                },
+                "resolvedSchema": {
+                  "type": "any"
+                },
+                "valuePath": [
+                  "definition",
+                  "compositeActionSequence"
+                ],
+                "typePath": []
+              }
+            ],
+            "expectedValue": false
           }
         ]
       }

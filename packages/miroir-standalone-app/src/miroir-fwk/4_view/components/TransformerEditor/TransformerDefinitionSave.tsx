@@ -2,10 +2,7 @@
 import { css } from "@emotion/react";
 import {
   compositeTransformerDefinition,
-  getApplicationSection,
   transformerDefinitionParameters,
-  type Action2Error,
-  type TransactionalInstanceAction,
   type MiroirModelEnvironment,
   type TransformerDefinition,
   type TransformerDefinitionRegistry,
@@ -16,6 +13,7 @@ import React, { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 
 import { useMiroirTheme } from "../../contexts/MiroirThemeContext.js";
+import { saveInstanceFromUI } from "../saveInstanceFromUI.js";
 import { ThemedButton } from "../Themes/index";
 
 // ################################################################################################
@@ -27,9 +25,6 @@ import { ThemedButton } from "../Themes/index";
 // A model-section change goes through a transaction, which the user commits as any other model
 // change.
 // ################################################################################################
-
-const CREATE_INSTANCE_ENDPOINT = "ed520de4-55a9-4550-ac50-b1b713b72a89";
-const TRANSACTIONAL_ENDPOINT = "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5";
 
 type SaveStatus = { status: "saved" | "error"; message: string } | undefined;
 
@@ -53,44 +48,24 @@ export function TransformerDefinitionSave(props: TransformerDefinitionSaveProps)
   const [saving, setSaving] = useState(false);
 
   const save = async (definition: TransformerDefinition, actionType: "createInstance" | "updateInstance") => {
-    const applicationSection = getApplicationSection(props.application, definition.parentUuid);
-    const instanceAction = {
-      actionType,
-      endpoint: CREATE_INSTANCE_ENDPOINT,
-      payload: { application: props.application, applicationSection, objects: [definition] },
-    } as TransactionalInstanceAction["payload"]["instanceAction"];
     setSaving(true);
-    try {
-      const result = await domainController.handleActionFromUI(
-        applicationSection === "model"
-          ? {
-              actionType: "transactionalInstanceAction",
-              endpoint: TRANSACTIONAL_ENDPOINT,
-              payload: { application: props.application, instanceAction },
-            }
-          : instanceAction,
-        props.applicationDeploymentMap,
-        props.modelEnvironment,
-      );
-      if (result.status === "error") {
-        const error = result as Action2Error;
-        setSaveStatus({
-          status: "error",
-          message: `${definition.name} was not saved: ${error.errorMessage ?? error.errorType}`,
-        });
-        return false;
-      }
-      setSaveStatus({
-        status: "saved",
-        message: `${definition.name} saved${applicationSection === "model" ? ", to commit with the model" : ""}`,
-      });
-      return true;
-    } catch (error) {
-      setSaveStatus({ status: "error", message: `${definition.name} was not saved: ${String(error)}` });
+    const result = await saveInstanceFromUI(domainController, {
+      application: props.application,
+      applicationDeploymentMap: props.applicationDeploymentMap,
+      modelEnvironment: props.modelEnvironment,
+      instance: definition,
+      actionType,
+    });
+    setSaving(false);
+    if (!result.ok) {
+      setSaveStatus({ status: "error", message: `${definition.name} was not saved: ${result.error}` });
       return false;
-    } finally {
-      setSaving(false);
     }
+    setSaveStatus({
+      status: "saved",
+      message: `${definition.name} saved${result.applicationSection === "model" ? ", to commit with the model" : ""}`,
+    });
+    return true;
   };
 
   /** The composite `build` returns, or undefined with the reason it refused shown. */

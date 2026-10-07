@@ -1373,6 +1373,7 @@ export {
   removeTransformerNode,
   transformerChildren,
   transformerInsertPositions,
+  transformerSlotAt,
   transformerSlots,
   transformerUnionTypes,
   unwrapTransformerNode,
@@ -1380,13 +1381,14 @@ export {
   wrapTransformerNode,
 } from "./2_domain/TransformerTreeEdit.js";
 export type {
+  BlockInsertPosition,
   TransformerChild,
   TransformerInsertPosition,
   TransformerSlot,
   TransformerTypeChange,
 } from "./0_interfaces/2_domain/TransformerTreeEditInterface.js";
 export { transformerSubtreeRuns } from "./2_domain/TransformerSubtreeRun.js";
-export { isBlockViewRoot } from "./2_domain/BlockViewFields.js";
+export { isBlockViewRoot, isTestSequenceField } from "./2_domain/BlockViewFields.js";
 export {
   addTransformerParameter,
   compositeParameterSchema,
@@ -1464,6 +1466,34 @@ export {
   transformerEnvironmentAt,
 } from "./2_domain/TransformerEnvironmentBindings.js";
 export { compositeActionEnvironmentAt, runnerEnvironment } from "./2_domain/CompositeActionScope.js";
+export {
+  actionLabels,
+  actionPaletteGroups,
+  blockEnvironmentAt,
+  blockInsertPositions,
+  defaultActionNode,
+  insertBlockNode,
+  isStepPosition,
+  isValuePosition,
+  moveBlockNode,
+  removeBlockNode,
+  renameBlockKey,
+  renameSequenceName,
+  type ActionPaletteGroup,
+  type BlockEditOptions,
+} from "./2_domain/ActionSequenceEdit.js";
+export {
+  addRunnerFormField,
+  newCustomRunner,
+  removeRunnerFormField,
+  renameRunner,
+  renameRunnerFormField,
+  runnerFormFieldReads,
+  runnerHat,
+  RUNNER_FORM_FIELD_TYPES,
+  type RunnerHat,
+  type RunnerHatField,
+} from "./2_domain/RunnerHat.js";
 export {
   AGGREGATE_VALUE_NAME,
   TRANSFORMER_SCOPE_RULES,

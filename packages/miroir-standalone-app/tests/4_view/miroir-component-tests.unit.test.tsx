@@ -78,14 +78,15 @@ const MIROIR_TEST_DATA_FOLDER = join(
  * blocks put from the palette by Replace with and insert targets; 2 leaves, the tray; 3 leaves,
  * values and ML schemas edited in place; 1 leaf, the build / runtime switch; 2 leaves, type flags;
  * 3 leaves, the result bubble; 1 leaf, Move down; 1 leaf, a record key holding a dot; #501: 3
- * leaves, variable blocks from the palette).
+ * leaves, variable blocks from the palette; #505: 6 leaves, editing a Runner sequence, 5 leaves, the
+ * "when run" hat, and 3 leaves, the sequence editor).
  *
  * `EXPECTED_LEAF_COUNT` counts every leaf of the folder, on-demand ones included (it checks the
  * folder content, not what the run executes); `EXPECTED_ON_DEMAND_LEAF_COUNT` is the part under a
  * `runOnDemand` suite, skipped unless `MIROIR_COMPONENT_PERF=1`.
  */
 const EXPECTED_INSTANCE_COUNT = 13;
-const EXPECTED_LEAF_COUNT = 180;
+const EXPECTED_LEAF_COUNT = 194;
 const EXPECTED_ON_DEMAND_LEAF_COUNT = 15;
 
 /** On-demand suites (`runOnDemand: true`) run only with this environment variable set to `1`. */

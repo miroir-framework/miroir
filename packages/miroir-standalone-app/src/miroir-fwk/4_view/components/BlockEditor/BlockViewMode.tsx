@@ -58,6 +58,31 @@ export interface BlockDefine {
 export const BlockDefineContext = createContext<BlockDefine | undefined>(undefined);
 
 /**
+ * #505: the block view of a custom Runner's sequence has a "when run" hat: the Runner's name and
+ * label, and its form fields, which the sequence reads as `[name, field]` with getFromParameters.
+ * Without the field changes, the fields are shown, not edited (the instance editor edits them in
+ * `formMLSchema`). Each change returns an error message when it is refused.
+ */
+export interface BlockRunner {
+  /** The block view of this field shows the hat; the others under the provider do not. */
+  rootLessListKey: string;
+  name: string;
+  label: string;
+  fields: { name: string; type: string; read: boolean }[];
+  addField?: (name: string, type: string) => string | undefined;
+  renameField?: (from: string, to: string) => string | undefined;
+  removeField?: (name: string) => string | undefined;
+}
+
+export const BlockRunnerContext = createContext<BlockRunner | undefined>(undefined);
+
+/**
+ * #505: the parameters the defaults of a new action read, as `applicationUuid`: the sequence
+ * editor gives its application, so a new instance action acts on it.
+ */
+export const BlockActionDefaultsContext = createContext<Record<string, unknown> | undefined>(undefined);
+
+/**
  * #503: the model environment of the application an instance editor edits, for its block views.
  * It gives no input, so a block shows no result of its subtree.
  */

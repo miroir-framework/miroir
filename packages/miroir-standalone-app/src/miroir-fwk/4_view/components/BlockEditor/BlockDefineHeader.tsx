@@ -22,7 +22,7 @@ export interface BlockDefineHeaderColors {
   blockEditor: BlockEditorColors | undefined;
 }
 
-const smallButton = css({
+export const smallButton = css({
   font: "inherit",
   fontSize: "11px",
   lineHeight: 1.2,
@@ -48,7 +48,7 @@ const nameInput = (colors: BlockDefineHeaderColors) =>
   });
 
 /** A text field applied by Enter and dropped by Escape; `apply` returns an error message when refused. */
-function NameField(props: {
+export function NameField(props: {
   testId: string;
   label: string;
   initial: string;

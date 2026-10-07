@@ -1050,6 +1050,21 @@
                   "byTestId": "block-palette"
                 },
                 "present": false
+              },
+              {
+                "step": "expectElement",
+                "label": "the hat is shown",
+                "target": {
+                  "byTestId": "block-runner-hat"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "its fields are not edited",
+                "target": {
+                  "byTestId": "block-runner-add"
+                },
+                "present": false
               }
             ]
           }

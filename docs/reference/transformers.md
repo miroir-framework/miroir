@@ -229,7 +229,7 @@ The field rule is `isBlockViewRoot` (`miroir-core/src/2_domain/BlockViewFields.t
 
 ### Action sequences as blocks
 
-A composite action sequence (a Runner's `compositeActionSequence`, an Endpoint action implemented by a `compositeActionTemplate`, a MiroirTest sequence) shows as stacked command blocks, read-only (issue #504).
+A composite action sequence (a Runner's `compositeActionSequence`, an Endpoint action implemented by a `compositeActionTemplate`, a MiroirTest sequence) shows as stacked command blocks (issue #504). In an editor that can write it, the blocks edit it (#505, see Editing action sequences below).
 
 - **Which fields.** A field declared as `compositeActionSequence`, `compositeActionSequenceTemplate` or `compositeActionTemplate` gets the Blocks / Form / JSON switch, and so does an `any` field the type check resolves to one (Endpoint `actionImplementation.definition`). Nothing below it gets a switch of its own.
 - **Steps.** Each step is a command block. Its header shows the action type, the name of the Endpoint that declares it, its `actionLabel` and its primitive attributes, such as `nameGivenToResult`. Its rows are its other attributes, then those of its `payload`: first the ones the Endpoint action declares, in their order, then the others, marked ⚠. Payload rows hold transformer, object and list blocks as in a transformer.
@@ -239,6 +239,28 @@ A composite action sequence (a Runner's `compositeActionSequence`, an Endpoint a
 - **Marks.** Templates are resolved at step runtime, so their transformers are not marked build, whatever their `interpolation`.
 
 Steps are looked up by `actionType` in the Endpoint actions of the model environment: Miroir's Endpoints first, then the application's (`endpointActionRegistry`, `miroir-core/src/2_domain/EndpointActionRegistry.ts`). The block tree is `blockTree` and `blockOutline` (`TransformerBlockModel.ts`); both are tested by `fn.blockModel` ("action registry", "action sequences"). `transformerBlockModelAssets.unit.test.ts` checks that every sequence in the package assets maps to one command block per action. The view is tested by the `ui.blockEditor` suite "createEntity Runner".
+
+### Editing action sequences
+
+The Blocks view edits an action sequence as it edits a transformer (issue #505): every edit writes the whole sequence once, and Undo takes it back.
+
+- **Actions in the palette.** When the value is an action, the palette lists the Endpoint actions first, one group per Endpoint, then the transformer types. A click arms an action, a drag takes it. An action goes only at a step of a sequence (the `+` at the end of its steps), and nothing else goes there; a drag that would move a step into a payload, or a payload block to a step, leaves the sequence as it is. A new step is the action with its Endpoint, a free `actionLabel` (the type, numbered when taken: results are bound by label) and the defaults of its payload; in the sequence editor, an instance action gets the edited application.
+- **The assertion.** `compositeRunTestAssertion` is offered only in a test sequence (a field declared `compositeActionSequence`: MiroirTest, Test). Runners and Endpoint actions refuse it at run time, so their palette leaves it out.
+- **Step menu.** The `⋯` button of a step has Replace with (an armed action), Move up, Move down, Move to tray and Remove. Its label is renamed in place: a label another action has is refused, and the reads of the step's result in the sequence follow the new label.
+- **Payloads.** A payload attribute the action declares and the step lacks is an empty slot. Any literal, object or list below a payload or a template can be replaced by the armed transformer or variable (the `⇄` target): the runner resolves every step at run time, so a transformer can sit anywhere there. The payload of a query step stays one block.
+- **Keys.** The key of a record entry (an object, the `definition` of `createObject`, a template) is renamed in place: a new entry is named `value` (`template` for a template) until it is. A taken or empty key is refused. A template's reads in its sequence follow its new name. Reads in quoted values (`returnValue`) are not rewritten, and a name rebound inside the sequence (a `mapList` element named as a label) is not told apart.
+- **Variables.** The names a sequence binds (its templates, the results of its earlier steps) are the variables of the palette, offered where they are visible (`compositeActionEnvironmentAt`).
+
+The edits are `blockInsertPositions`, `insertBlockNode`, `removeBlockNode`, `moveBlockNode`, `renameBlockKey`, `renameSequenceName`, `defaultActionNode` and `actionPaletteGroups` (`miroir-core/src/2_domain/ActionSequenceEdit.ts`), tested by `fn.blockModel` ("sequence editing"). The view is tested by the `ui.blockEditing` suite "editing a Runner sequence".
+
+### Runners: the "when run" hat and the sequence editor
+
+A custom Runner's sequence shows under a "when run" hat: the Runner's label and its form fields (#505). The Runner gives its form values to its sequence under its name, so a field `f` of the Runner `r` is read as `getFromParameters` `[r, f]`.
+
+- **Form fields.** A field chip arms a runtime read of it, a drag takes it, as the palette's variables. In an instance editor of a Runner, the fields are shown, not edited: they are edited in `formMLSchema`. In the sequence editor, `+ field` adds one (a name and a type: string, number, boolean or uuid), ✎ renames one and rewrites the reads of the sequence, and × removes one the sequence does not read.
+- **Sequence editor.** The Tools page has a sequence editor below the TransformerEditor. It edits a new sequence, or the sequence of a custom Runner of the editor application, with the Blocks / Form / JSON switch and Undo. The Runner's form is part of the edited value, so one Undo takes back a field change and its reads together. Another application of the Tools page starts the editor afresh. `Save <name>` updates the chosen Runner. `Save…` opens the save dialog of a new sequence: "create Runner" creates a Runner of the application, named and labelled there (the reads of the form follow the new name, in the sequence and in a form given by a transformer, which is kept); "create Action" is off until issue #506. The Runner is saved in the application's section for Runners, in a transaction for a model section, which the user commits as any other model change. A saved Runner runs below the editor, with its form.
+
+The hat's functions are `runnerHat`, `addRunnerFormField`, `renameRunnerFormField`, `removeRunnerFormField`, `renameRunner` and `newCustomRunner` (`miroir-core/src/2_domain/RunnerHat.ts`), tested by `fn.blockModel` ("runner hat"). The view is tested by the `ui.blockEditing` suites "the when run hat" and "a Runner in an instance editor", and the sequence editor by the `ui.blockEditing` suite "SequenceEditor on the Library": a new sequence built with blocks, saved as a Runner, creates a Publisher when run (AC 1); a stored Runner edited with blocks and saved runs with the edit (AC 2); Undo of a field rename restores the field and its reads.
 
 ---
 

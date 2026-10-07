@@ -392,10 +392,38 @@ function actionBlock(value: Record<string, unknown>, path: BlockPath, context: B
           },
         ]
       : isPlainRecord(payload) && !isTransformerNode(payload)
-        ? attributeRows(payload, payloadPath, declaredObjectAttributes(actionParameters.payload), new Set(), context)
+        ? [
+            ...attributeRows(payload, payloadPath, declaredObjectAttributes(actionParameters.payload), new Set(), context),
+            ...absentPayloadRows(payload, payloadPath, actionParameters.payload, context),
+          ]
         : [{ name: "payload", path: payloadPath, kind: "value", optional: false, node: blockOf(payload, payloadPath, context) }];
   const block: ActionBlock = { kind: "action", ...header, rows: [...rows, ...payloadRows] };
   return block;
+}
+
+/**
+ * #505: with `emptyOptionalSlots`, the declared payload attributes `payload` lacks, as empty slots:
+ * where an editor puts a transformer or a value.
+ */
+function absentPayloadRows(
+  payload: Record<string, unknown>,
+  payloadPath: BlockPath,
+  payloadSchema: unknown,
+  context: BuildContext,
+): TransformerBlockRow[] {
+  if (!context.emptyOptionalSlots || !isPlainRecord(payloadSchema) || payloadSchema.type !== "object") {
+    return [];
+  }
+  const declared = isPlainRecord(payloadSchema.definition) ? payloadSchema.definition : {};
+  return Object.entries(declared)
+    .filter(([name]) => !Object.prototype.hasOwnProperty.call(payload, name))
+    .map(([name, schema]) => ({
+      name,
+      path: [...payloadPath, name],
+      kind: "slot",
+      optional: isPlainRecord(schema) && !!schema.optional,
+      node: undefined,
+    }));
 }
 
 /** The `queryType` of a query step's payload: a run query action, whose own payload holds the query. */

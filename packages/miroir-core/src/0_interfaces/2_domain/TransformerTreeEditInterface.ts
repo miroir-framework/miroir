@@ -36,3 +36,11 @@ export interface TransformerInsertPosition {
   container: (string | number)[];
   kind: "slot" | "listEnd" | "recordEntry";
 }
+
+/**
+ * #505: a position of a transformer or of an action sequence, with what it holds: a step of an
+ * `actionSequence` holds an action, any other position a transformer or a value.
+ */
+export interface BlockInsertPosition extends TransformerInsertPosition {
+  holds: "action" | "transformer";
+}
