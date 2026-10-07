@@ -34,7 +34,7 @@ This plan does not add define blocks (#502) nor the block view of action sequenc
 | 2 | Names in scope in a composite action sequence | ✅ | `fn.transformer.scope` sequence cases |
 | 3 | Variable blocks in the palette | ✅ | `ui.blockEditing` variable cases |
 | 4 | The path picker of a variable block | ✅ | `ui.blockEditing` path case (AC 2) |
-| 5 | Unbound Runner references, nonreg, docs, AC | ⬜ | issue filed, nonreg, AC checklist |
+| 5 | Unbound Runner references, nonreg, docs, AC | ✅ | issue filed, nonreg, AC checklist |
 
 ---
 
@@ -88,3 +88,5 @@ RED: `ui.blockEditing` "a variable block with a path picked from the schema eval
 ## Slice 5 — Unbound Runner references, nonreg, docs, AC
 
 File the Runner issue; `docs/reference/transformers.md` "Editing with blocks" gets variables; nonreg:filesystem; AC check.
+
+**Realization (2026-10-07).** Runner issue filed as #517. "Editing with blocks" documents Variables and Variable paths, and names the scope functions. Pre-push gate green. `nonreg:filesystem --runner shared`: 102 of 106 steps pass; the 4 failures (`unit-MiroirTestDisplay`, `unit-MiroirTestListDisplay` and their two `appstack-*IntegrationLaunch` steps) fail on `_integration` too, tracked by #510. Bundle guards pass (page 801181 bytes gzipped, Electron main 963891). AC check: the `fn.transformer.scope` cases cover mapList, filterList, dataflowObject, createObjectFromPairs and a composite action sequence; the `ui.blockEditing` path case puts a variable block, picks its path and shows the attribute's value. Parameters of define blocks come with #502.
