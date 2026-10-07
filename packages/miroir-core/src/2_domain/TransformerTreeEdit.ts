@@ -516,6 +516,19 @@ export function removeTransformerNode(
   });
 }
 
+/**
+ * #505: the nearest transformer above `path`, with the slot `path` is a position of; `undefined`
+ * when no transformer is above, or when the nearest one has no slot there.
+ */
+export function transformerSlotAt(
+  root: unknown,
+  path: (string | number)[],
+  transformerDefinitions: Record<string, TransformerDefinition> = applicationTransformerDefinitions,
+): { ownerLength: number; slot: TransformerSlot } | undefined {
+  const position = slotPositionAtPath(root, path, transformerDefinitions);
+  return position ? { ownerLength: position.ownerLength, slot: position.slot } : undefined;
+}
+
 /** The nearest transformer above `path` with the slot `path` is a position of. */
 function slotPositionAtPath(
   root: unknown,

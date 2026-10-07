@@ -100,6 +100,27 @@ import { transformerSubtreeRuns } from "../2_domain/TransformerSubtreeRun";
 import { transformerDefinitionBodyEnvironment, transformerEnvironmentAt } from "../2_domain/TransformerEnvironmentBindings";
 import { compositeActionEnvironmentAt, runnerEnvironment } from "../2_domain/CompositeActionScope";
 import {
+  actionLabels,
+  actionPaletteGroups,
+  blockEnvironmentAt,
+  blockInsertPositions,
+  defaultActionNode,
+  insertBlockNode,
+  isStepPosition,
+  isValuePosition,
+  moveBlockNode,
+  removeBlockNode,
+} from "../2_domain/ActionSequenceEdit";
+import {
+  addRunnerFormField,
+  newCustomRunner,
+  removeRunnerFormField,
+  renameRunner,
+  renameRunnerFormField,
+  runnerFormFieldReads,
+  runnerHat,
+} from "../2_domain/RunnerHat";
+import {
   checkTransformerMlSchemaCompatibility,
   formatMlSchemaTypeLabel,
   getDeclaredInputMlSchema,
@@ -327,6 +348,27 @@ const FUNCTION_CALL_REGISTRY: Record<
   "miroir-core/2_domain/EndpointActionRegistry": {
     endpointActionRegistryOf: endpointActionRegistryOf as WhitelistedFunction,
     endpointOfActionType: endpointOfActionType as WhitelistedFunction,
+  },
+  "miroir-core/2_domain/ActionSequenceEdit": {
+    actionLabels: actionLabels as WhitelistedFunction,
+    actionPaletteGroups: actionPaletteGroups as WhitelistedFunction,
+    blockEnvironmentAt: blockEnvironmentAt as WhitelistedFunction,
+    blockInsertPositions: blockInsertPositions as WhitelistedFunction,
+    defaultActionNode: defaultActionNode as WhitelistedFunction,
+    insertBlockNode: insertBlockNode as WhitelistedFunction,
+    isStepPosition: isStepPosition as WhitelistedFunction,
+    isValuePosition: isValuePosition as WhitelistedFunction,
+    moveBlockNode: moveBlockNode as WhitelistedFunction,
+    removeBlockNode: removeBlockNode as WhitelistedFunction,
+  },
+  "miroir-core/2_domain/RunnerHat": {
+    addRunnerFormField: addRunnerFormField as WhitelistedFunction,
+    newCustomRunner: newCustomRunner as WhitelistedFunction,
+    removeRunnerFormField: removeRunnerFormField as WhitelistedFunction,
+    renameRunner: renameRunner as WhitelistedFunction,
+    renameRunnerFormField: renameRunnerFormField as WhitelistedFunction,
+    runnerFormFieldReads: runnerFormFieldReads as WhitelistedFunction,
+    runnerHat: runnerHat as WhitelistedFunction,
   },
   "miroir-core/2_domain/TransformerBlockModel": {
     blockOutline: blockOutline as WhitelistedFunction,

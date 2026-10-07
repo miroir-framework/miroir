@@ -1499,6 +1499,2138 @@
             ]
           }
         ]
+      },
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "sequence editing",
+        "miroirTests": [
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "positions: a new template, the absent payload attributes, the end of a payload list, the end of the steps",
+            "functionRef": {
+              "module": "miroir-core/2_domain/ActionSequenceEdit",
+              "export": "blockInsertPositions"
+            },
+            "arguments": [
+              {
+                "actionType": "compositeActionSequence",
+                "actionLabel": "addPublisher",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "payload": {
+                  "templates": {
+                    "publisherUuid": {
+                      "transformerType": "generateUuid",
+                      "interpolation": "runtime"
+                    }
+                  },
+                  "actionSequence": [
+                    {
+                      "actionType": "createInstance",
+                      "actionLabel": "createPublisher",
+                      "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                      "payload": {
+                        "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                        "objects": [
+                          {
+                            "name": {
+                              "transformerType": "getFromParameters",
+                              "interpolation": "runtime",
+                              "referencePath": [
+                                "addPublisher",
+                                "name"
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "actionType": "commit",
+                      "actionLabel": "commitLibrary",
+                      "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                      "payload": {
+                        "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                      }
+                    }
+                  ]
+                }
+              }
+            ],
+            "expectedValue": [
+              {
+                "path": [
+                  "payload",
+                  "templates",
+                  "template"
+                ],
+                "container": [
+                  "payload",
+                  "templates"
+                ],
+                "kind": "recordEntry",
+                "holds": "transformer"
+              },
+              {
+                "path": [
+                  "payload",
+                  "actionSequence",
+                  0,
+                  "payload",
+                  "parentUuid"
+                ],
+                "container": [
+                  "payload",
+                  "actionSequence",
+                  0,
+                  "payload",
+                  "parentUuid"
+                ],
+                "kind": "slot",
+                "holds": "transformer"
+              },
+              {
+                "path": [
+                  "payload",
+                  "actionSequence",
+                  0,
+                  "payload",
+                  "applicationSection"
+                ],
+                "container": [
+                  "payload",
+                  "actionSequence",
+                  0,
+                  "payload",
+                  "applicationSection"
+                ],
+                "kind": "slot",
+                "holds": "transformer"
+              },
+              {
+                "path": [
+                  "payload",
+                  "actionSequence",
+                  0,
+                  "payload",
+                  "objects",
+                  1
+                ],
+                "container": [
+                  "payload",
+                  "actionSequence",
+                  0,
+                  "payload",
+                  "objects"
+                ],
+                "kind": "listEnd",
+                "holds": "transformer"
+              },
+              {
+                "path": [
+                  "payload",
+                  "actionSequence",
+                  2
+                ],
+                "container": [
+                  "payload",
+                  "actionSequence"
+                ],
+                "kind": "listEnd",
+                "holds": "action"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "positions of a transformer are those of #500, holding transformers",
+            "functionRef": {
+              "module": "miroir-core/2_domain/ActionSequenceEdit",
+              "export": "blockInsertPositions"
+            },
+            "arguments": [
+              {
+                "transformerType": "ifThenElse",
+                "if": {
+                  "transformerType": "returnValue",
+                  "value": true
+                }
+              }
+            ],
+            "expectedValue": [
+              {
+                "path": [
+                  "then"
+                ],
+                "container": [
+                  "then"
+                ],
+                "kind": "slot",
+                "holds": "transformer"
+              },
+              {
+                "path": [
+                  "else"
+                ],
+                "container": [
+                  "else"
+                ],
+                "kind": "slot",
+                "holds": "transformer"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "an action inserted between two steps",
+            "functionRef": {
+              "module": "miroir-core/2_domain/ActionSequenceEdit",
+              "export": "insertBlockNode"
+            },
+            "arguments": [
+              {
+                "actionType": "compositeActionSequence",
+                "actionLabel": "refresh",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "payload": {
+                  "actionSequence": [
+                    {
+                      "actionType": "rollback",
+                      "actionLabel": "rollbackLibrary",
+                      "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                      "payload": {
+                        "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                      }
+                    },
+                    {
+                      "actionType": "commit",
+                      "actionLabel": "commitLibrary",
+                      "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                      "payload": {
+                        "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                      }
+                    }
+                  ]
+                }
+              },
+              [
+                "payload",
+                "actionSequence",
+                1
+              ],
+              {
+                "actionType": "commit",
+                "actionLabel": "commit2",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                }
+              }
+            ],
+            "expectedValue": {
+              "actionType": "compositeActionSequence",
+              "actionLabel": "refresh",
+              "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+              "payload": {
+                "actionSequence": [
+                  {
+                    "actionType": "rollback",
+                    "actionLabel": "rollbackLibrary",
+                    "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                    "payload": {
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                    }
+                  },
+                  {
+                    "actionType": "commit",
+                    "actionLabel": "commit2",
+                    "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                    "payload": {
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                    }
+                  },
+                  {
+                    "actionType": "commit",
+                    "actionLabel": "commitLibrary",
+                    "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                    "payload": {
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a step removed",
+            "functionRef": {
+              "module": "miroir-core/2_domain/ActionSequenceEdit",
+              "export": "removeBlockNode"
+            },
+            "arguments": [
+              {
+                "actionType": "compositeActionSequence",
+                "actionLabel": "refresh",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "payload": {
+                  "actionSequence": [
+                    {
+                      "actionType": "rollback",
+                      "actionLabel": "rollbackLibrary",
+                      "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                      "payload": {
+                        "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                      }
+                    },
+                    {
+                      "actionType": "commit",
+                      "actionLabel": "commitLibrary",
+                      "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                      "payload": {
+                        "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                      }
+                    }
+                  ]
+                }
+              },
+              [
+                "payload",
+                "actionSequence",
+                0
+              ]
+            ],
+            "expectedValue": {
+              "actionType": "compositeActionSequence",
+              "actionLabel": "refresh",
+              "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+              "payload": {
+                "actionSequence": [
+                  {
+                    "actionType": "commit",
+                    "actionLabel": "commitLibrary",
+                    "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                    "payload": {
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a step moved after the next one",
+            "functionRef": {
+              "module": "miroir-core/2_domain/ActionSequenceEdit",
+              "export": "moveBlockNode"
+            },
+            "arguments": [
+              {
+                "actionType": "compositeActionSequence",
+                "actionLabel": "refresh",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "payload": {
+                  "actionSequence": [
+                    {
+                      "actionType": "rollback",
+                      "actionLabel": "rollbackLibrary",
+                      "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                      "payload": {
+                        "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                      }
+                    },
+                    {
+                      "actionType": "commit",
+                      "actionLabel": "commitLibrary",
+                      "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                      "payload": {
+                        "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                      }
+                    }
+                  ]
+                }
+              },
+              [
+                "payload",
+                "actionSequence",
+                0
+              ],
+              [
+                "payload",
+                "actionSequence",
+                2
+              ]
+            ],
+            "expectedValue": {
+              "actionType": "compositeActionSequence",
+              "actionLabel": "refresh",
+              "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+              "payload": {
+                "actionSequence": [
+                  {
+                    "actionType": "commit",
+                    "actionLabel": "commitLibrary",
+                    "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                    "payload": {
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                    }
+                  },
+                  {
+                    "actionType": "rollback",
+                    "actionLabel": "rollbackLibrary",
+                    "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                    "payload": {
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a step moved into a nested sequence",
+            "functionRef": {
+              "module": "miroir-core/2_domain/ActionSequenceEdit",
+              "export": "moveBlockNode"
+            },
+            "arguments": [
+              {
+                "actionType": "compositeActionSequence",
+                "actionLabel": "refresh",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "payload": {
+                  "actionSequence": [
+                    {
+                      "actionType": "rollback",
+                      "actionLabel": "rollbackLibrary",
+                      "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                      "payload": {
+                        "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                      }
+                    },
+                    {
+                      "actionType": "commit",
+                      "actionLabel": "commitLibrary",
+                      "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                      "payload": {
+                        "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                      }
+                    },
+                    {
+                      "actionType": "compositeActionSequence",
+                      "actionLabel": "inner",
+                      "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                      "payload": {
+                        "actionSequence": []
+                      }
+                    }
+                  ]
+                }
+              },
+              [
+                "payload",
+                "actionSequence",
+                0
+              ],
+              [
+                "payload",
+                "actionSequence",
+                2,
+                "payload",
+                "actionSequence",
+                0
+              ]
+            ],
+            "expectedValue": {
+              "actionType": "compositeActionSequence",
+              "actionLabel": "refresh",
+              "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+              "payload": {
+                "actionSequence": [
+                  {
+                    "actionType": "commit",
+                    "actionLabel": "commitLibrary",
+                    "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                    "payload": {
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                    }
+                  },
+                  {
+                    "actionType": "compositeActionSequence",
+                    "actionLabel": "inner",
+                    "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                    "payload": {
+                      "actionSequence": [
+                        {
+                          "actionType": "rollback",
+                          "actionLabel": "rollbackLibrary",
+                          "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                          "payload": {
+                            "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a transformer put in an absent payload attribute",
+            "functionRef": {
+              "module": "miroir-core/2_domain/ActionSequenceEdit",
+              "export": "insertBlockNode"
+            },
+            "arguments": [
+              {
+                "actionType": "createInstance",
+                "actionLabel": "createPublisher",
+                "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                  "objects": []
+                }
+              },
+              [
+                "payload",
+                "applicationSection"
+              ],
+              {
+                "transformerType": "getFromParameters",
+                "interpolation": "runtime",
+                "referenceName": "section"
+              }
+            ],
+            "expectedValue": {
+              "actionType": "createInstance",
+              "actionLabel": "createPublisher",
+              "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+              "payload": {
+                "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                "objects": [],
+                "applicationSection": {
+                  "transformerType": "getFromParameters",
+                  "interpolation": "runtime",
+                  "referenceName": "section"
+                }
+              }
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a transformer put in the slot of a transformer in a payload, as #500 puts it",
+            "functionRef": {
+              "module": "miroir-core/2_domain/ActionSequenceEdit",
+              "export": "insertBlockNode"
+            },
+            "arguments": [
+              {
+                "actionType": "createInstance",
+                "actionLabel": "createPublisher",
+                "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                  "objects": [
+                    {
+                      "transformerType": "ifThenElse",
+                      "if": {
+                        "transformerType": "returnValue",
+                        "value": true
+                      }
+                    }
+                  ]
+                }
+              },
+              [
+                "payload",
+                "objects",
+                0,
+                "then"
+              ],
+              {
+                "transformerType": "getFromParameters",
+                "interpolation": "runtime",
+                "referencePath": [
+                  "addPublisher",
+                  "name"
+                ]
+              }
+            ],
+            "expectedValue": {
+              "actionType": "createInstance",
+              "actionLabel": "createPublisher",
+              "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+              "payload": {
+                "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                "objects": [
+                  {
+                    "transformerType": "ifThenElse",
+                    "if": {
+                      "transformerType": "returnValue",
+                      "value": true
+                    },
+                    "then": {
+                      "transformerType": "getFromParameters",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "addPublisher",
+                        "name"
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a new template takes a free key",
+            "functionRef": {
+              "module": "miroir-core/2_domain/ActionSequenceEdit",
+              "export": "insertBlockNode"
+            },
+            "arguments": [
+              {
+                "actionType": "compositeActionSequence",
+                "actionLabel": "refresh",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "payload": {
+                  "templates": {
+                    "template": {
+                      "transformerType": "generateUuid",
+                      "interpolation": "runtime"
+                    }
+                  },
+                  "actionSequence": []
+                }
+              },
+              [
+                "payload",
+                "templates",
+                "template"
+              ],
+              {
+                "transformerType": "generateUuid",
+                "interpolation": "runtime"
+              }
+            ],
+            "expectedValue": {
+              "actionType": "compositeActionSequence",
+              "actionLabel": "refresh",
+              "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+              "payload": {
+                "templates": {
+                  "template": {
+                    "transformerType": "generateUuid",
+                    "interpolation": "runtime"
+                  },
+                  "template2": {
+                    "transformerType": "generateUuid",
+                    "interpolation": "runtime"
+                  }
+                },
+                "actionSequence": []
+              }
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a value below a payload can be replaced by a transformer",
+            "functionRef": {
+              "module": "miroir-core/2_domain/ActionSequenceEdit",
+              "export": "isValuePosition"
+            },
+            "arguments": [
+              {
+                "actionType": "compositeActionSequence",
+                "actionLabel": "addPublisher",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "payload": {
+                  "templates": {
+                    "publisherUuid": {
+                      "transformerType": "generateUuid",
+                      "interpolation": "runtime"
+                    }
+                  },
+                  "actionSequence": [
+                    {
+                      "actionType": "createInstance",
+                      "actionLabel": "createPublisher",
+                      "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                      "payload": {
+                        "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                        "objects": [
+                          {
+                            "name": {
+                              "transformerType": "getFromParameters",
+                              "interpolation": "runtime",
+                              "referencePath": [
+                                "addPublisher",
+                                "name"
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "actionType": "commit",
+                      "actionLabel": "commitLibrary",
+                      "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                      "payload": {
+                        "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                      }
+                    }
+                  ]
+                }
+              },
+              [
+                "payload",
+                "actionSequence",
+                0,
+                "payload",
+                "objects",
+                0,
+                "name"
+              ]
+            ],
+            "expectedValue": true
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a step is no value position: it holds an action",
+            "functionRef": {
+              "module": "miroir-core/2_domain/ActionSequenceEdit",
+              "export": "isValuePosition"
+            },
+            "arguments": [
+              {
+                "actionType": "compositeActionSequence",
+                "actionLabel": "addPublisher",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "payload": {
+                  "templates": {
+                    "publisherUuid": {
+                      "transformerType": "generateUuid",
+                      "interpolation": "runtime"
+                    }
+                  },
+                  "actionSequence": [
+                    {
+                      "actionType": "createInstance",
+                      "actionLabel": "createPublisher",
+                      "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                      "payload": {
+                        "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                        "objects": [
+                          {
+                            "name": {
+                              "transformerType": "getFromParameters",
+                              "interpolation": "runtime",
+                              "referencePath": [
+                                "addPublisher",
+                                "name"
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "actionType": "commit",
+                      "actionLabel": "commitLibrary",
+                      "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                      "payload": {
+                        "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                      }
+                    }
+                  ]
+                }
+              },
+              [
+                "payload",
+                "actionSequence",
+                0
+              ]
+            ],
+            "expectedValue": false
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "the label of a step is no value position",
+            "functionRef": {
+              "module": "miroir-core/2_domain/ActionSequenceEdit",
+              "export": "isValuePosition"
+            },
+            "arguments": [
+              {
+                "actionType": "compositeActionSequence",
+                "actionLabel": "addPublisher",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "payload": {
+                  "templates": {
+                    "publisherUuid": {
+                      "transformerType": "generateUuid",
+                      "interpolation": "runtime"
+                    }
+                  },
+                  "actionSequence": [
+                    {
+                      "actionType": "createInstance",
+                      "actionLabel": "createPublisher",
+                      "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                      "payload": {
+                        "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                        "objects": [
+                          {
+                            "name": {
+                              "transformerType": "getFromParameters",
+                              "interpolation": "runtime",
+                              "referencePath": [
+                                "addPublisher",
+                                "name"
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "actionType": "commit",
+                      "actionLabel": "commitLibrary",
+                      "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                      "payload": {
+                        "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                      }
+                    }
+                  ]
+                }
+              },
+              [
+                "payload",
+                "actionSequence",
+                0,
+                "actionLabel"
+              ]
+            ],
+            "expectedValue": false
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "the inside of a query step's payload is no value position",
+            "functionRef": {
+              "module": "miroir-core/2_domain/ActionSequenceEdit",
+              "export": "isValuePosition"
+            },
+            "arguments": [
+              {
+                "actionType": "compositeRunBoxedQueryAction",
+                "actionLabel": "getBooks",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "nameGivenToResult": "books",
+                "payload": {
+                  "actionType": "runBoxedQueryAction",
+                  "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  "payload": {
+                    "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                  }
+                }
+              },
+              [
+                "payload",
+                "payload",
+                "application"
+              ]
+            ],
+            "expectedValue": false
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a step of a sequence is a step position",
+            "functionRef": {
+              "module": "miroir-core/2_domain/ActionSequenceEdit",
+              "export": "isStepPosition"
+            },
+            "arguments": [
+              {
+                "actionType": "compositeActionSequence",
+                "actionLabel": "addPublisher",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "payload": {
+                  "templates": {
+                    "publisherUuid": {
+                      "transformerType": "generateUuid",
+                      "interpolation": "runtime"
+                    }
+                  },
+                  "actionSequence": [
+                    {
+                      "actionType": "createInstance",
+                      "actionLabel": "createPublisher",
+                      "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                      "payload": {
+                        "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                        "objects": [
+                          {
+                            "name": {
+                              "transformerType": "getFromParameters",
+                              "interpolation": "runtime",
+                              "referencePath": [
+                                "addPublisher",
+                                "name"
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "actionType": "commit",
+                      "actionLabel": "commitLibrary",
+                      "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                      "payload": {
+                        "application": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+                      }
+                    }
+                  ]
+                }
+              },
+              [
+                "payload",
+                "actionSequence",
+                1
+              ]
+            ],
+            "expectedValue": true
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a new createInstance: its Endpoint, a free label, the defaults of its payload",
+            "functionRef": {
+              "module": "miroir-core/2_domain/ActionSequenceEdit",
+              "export": "defaultActionNode"
+            },
+            "arguments": [
+              "createInstance",
+              {
+                "__miroirEnvironmentRef": "defaultMiroirModelEnvironment"
+              },
+              [
+                "createInstance"
+              ]
+            ],
+            "expectedValue": {
+              "actionType": "createInstance",
+              "actionLabel": "createInstance2",
+              "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+              "payload": {
+                "applicationSection": "data",
+                "objects": []
+              }
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a new sequence has no step",
+            "functionRef": {
+              "module": "miroir-core/2_domain/ActionSequenceEdit",
+              "export": "defaultActionNode"
+            },
+            "arguments": [
+              "compositeActionSequence",
+              {
+                "__miroirEnvironmentRef": "defaultMiroirModelEnvironment"
+              }
+            ],
+            "expectedValue": {
+              "actionType": "compositeActionSequence",
+              "actionLabel": "compositeActionSequence",
+              "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+              "payload": {
+                "actionSequence": []
+              }
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "the action palette: actions grouped by Endpoint, without the assertion",
+            "functionRef": {
+              "module": "miroir-core/2_domain/ActionSequenceEdit",
+              "export": "actionPaletteGroups"
+            },
+            "arguments": [
+              {
+                "__miroirEnvironmentRef": "defaultMiroirModelEnvironment"
+              }
+            ],
+            "assertions": [
+              {
+                "label": "the first group is DomainEndpoint",
+                "resultAccessPath": [
+                  0,
+                  "endpointName"
+                ],
+                "expectedValue": "DomainEndpoint"
+              },
+              {
+                "label": "DomainEndpoint has no assertion",
+                "resultAccessPath": [
+                  0,
+                  "actionTypes"
+                ],
+                "expectedValue": [
+                  "compositeActionSequence",
+                  "compositeRunBoxedQueryAction",
+                  "compositeRunBoxedQueryTemplateAction",
+                  "connectExternalService",
+                  "prepareOpenApiDocument",
+                  "probeExternalService",
+                  "setExternalServiceCredential",
+                  "transactionalInstanceAction"
+                ]
+              },
+              {
+                "label": "InstanceEndpoint comes next",
+                "resultAccessPath": [
+                  1
+                ],
+                "expectedValue": {
+                  "endpointUuid": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                  "endpointName": "InstanceEndpoint",
+                  "actionTypes": [
+                    "createInstance",
+                    "deleteInstance",
+                    "deleteInstanceWithCascade",
+                    "getInstance",
+                    "getInstances",
+                    "loadNewInstancesInLocalCache",
+                    "updateInstance"
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "the action palette of a test sequence has the assertion",
+            "functionRef": {
+              "module": "miroir-core/2_domain/ActionSequenceEdit",
+              "export": "actionPaletteGroups"
+            },
+            "arguments": [
+              {
+                "__miroirEnvironmentRef": "defaultMiroirModelEnvironment"
+              },
+              {
+                "withTestAssertion": true
+              }
+            ],
+            "assertions": [
+              {
+                "label": "DomainEndpoint has the assertion",
+                "resultAccessPath": [
+                  0,
+                  "actionTypes"
+                ],
+                "expectedValue": [
+                  "compositeActionSequence",
+                  "compositeRunBoxedQueryAction",
+                  "compositeRunBoxedQueryTemplateAction",
+                  "compositeRunTestAssertion",
+                  "connectExternalService",
+                  "prepareOpenApiDocument",
+                  "probeExternalService",
+                  "setExternalServiceCredential",
+                  "transactionalInstanceAction"
+                ]
+              }
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "with emptyOptionalSlots, an absent payload attribute is an empty row",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerBlockModel",
+              "export": "blockOutline"
+            },
+            "arguments": [
+              {
+                "actionType": "createInstance",
+                "actionLabel": "createPublisher",
+                "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                  "objects": [
+                    {
+                      "name": {
+                        "transformerType": "getFromParameters",
+                        "interpolation": "runtime",
+                        "referencePath": [
+                          "addPublisher",
+                          "name"
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "emptyOptionalSlots": true
+              }
+            ],
+            "expectedValue": [
+              "createInstance [InstanceEndpoint] \"createPublisher\"",
+              "  application: \"5af03c98-fe5e-490b-b08f-e1230971c57f\"",
+              "  objects: [list]",
+              "    - {object}",
+              "      name: getFromParameters [variable] {runtime} referencePath=[\"addPublisher\",\"name\"]",
+              "  parentUuid: _",
+              "  applicationSection: _"
+            ]
+          }
+        ]
+      },
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "runner hat",
+        "miroirTests": [
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "the hat of a custom Runner: its name, its label, its form fields and whether the sequence reads each",
+            "functionRef": {
+              "module": "miroir-core/2_domain/RunnerHat",
+              "export": "runnerHat"
+            },
+            "arguments": [
+              {
+                "uuid": "3f1f7a0e-2a3b-4c5d-8e9f-0a1b2c3d4e5f",
+                "parentName": "Runner",
+                "parentUuid": "e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd",
+                "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                "name": "addPublisher",
+                "defaultLabel": "Add a publisher",
+                "definition": {
+                  "runnerType": "customRunner",
+                  "formMLSchema": {
+                    "formMLSchemaType": "mlSchema",
+                    "mlSchema": {
+                      "type": "object",
+                      "definition": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "country": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "compositeActionSequence": {
+                    "actionType": "compositeActionSequence",
+                    "actionLabel": "addPublisher",
+                    "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                    "payload": {
+                      "actionSequence": [
+                        {
+                          "actionType": "createInstance",
+                          "actionLabel": "createPublisher",
+                          "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                          "payload": {
+                            "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                            "applicationSection": "data",
+                            "objects": [
+                              {
+                                "name": {
+                                  "transformerType": "getFromParameters",
+                                  "interpolation": "runtime",
+                                  "referencePath": [
+                                    "addPublisher",
+                                    "name"
+                                  ]
+                                },
+                                "country": {
+                                  "transformerType": "getFromParameters",
+                                  "interpolation": "runtime",
+                                  "referencePath": [
+                                    "otherRunner",
+                                    "country"
+                                  ]
+                                },
+                                "note": {
+                                  "transformerType": "returnValue",
+                                  "value": {
+                                    "transformerType": "getFromParameters",
+                                    "interpolation": "runtime",
+                                    "referencePath": [
+                                      "addPublisher",
+                                      "country"
+                                    ]
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            ],
+            "expectedValue": {
+              "name": "addPublisher",
+              "label": "Add a publisher",
+              "fields": [
+                {
+                  "name": "name",
+                  "type": "string",
+                  "read": true
+                },
+                {
+                  "name": "country",
+                  "type": "string",
+                  "read": false
+                }
+              ]
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "an action Runner has no hat",
+            "functionRef": {
+              "module": "miroir-core/2_domain/RunnerHat",
+              "export": "runnerHat"
+            },
+            "arguments": [
+              {
+                "uuid": "cc853632-f158-43fa-b9ed-437c9c25f539",
+                "name": "lendDocument",
+                "definition": {
+                  "runnerType": "actionRunner",
+                  "endpoint": "212f2784-5b68-43b2-8ee0-89b1c6fdd0de",
+                  "action": "lendDocument"
+                }
+              }
+            ],
+            "expectedValue": {
+              "__miroirJsonUndefined": true
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "the fields read: a read of another Runner's form and a quoted read are not reads",
+            "functionRef": {
+              "module": "miroir-core/2_domain/RunnerHat",
+              "export": "runnerFormFieldReads"
+            },
+            "arguments": [
+              {
+                "uuid": "3f1f7a0e-2a3b-4c5d-8e9f-0a1b2c3d4e5f",
+                "parentName": "Runner",
+                "parentUuid": "e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd",
+                "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                "name": "addPublisher",
+                "defaultLabel": "Add a publisher",
+                "definition": {
+                  "runnerType": "customRunner",
+                  "formMLSchema": {
+                    "formMLSchemaType": "mlSchema",
+                    "mlSchema": {
+                      "type": "object",
+                      "definition": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "country": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "compositeActionSequence": {
+                    "actionType": "compositeActionSequence",
+                    "actionLabel": "addPublisher",
+                    "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                    "payload": {
+                      "actionSequence": [
+                        {
+                          "actionType": "createInstance",
+                          "actionLabel": "createPublisher",
+                          "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                          "payload": {
+                            "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                            "applicationSection": "data",
+                            "objects": [
+                              {
+                                "name": {
+                                  "transformerType": "getFromParameters",
+                                  "interpolation": "runtime",
+                                  "referencePath": [
+                                    "addPublisher",
+                                    "name"
+                                  ]
+                                },
+                                "country": {
+                                  "transformerType": "getFromParameters",
+                                  "interpolation": "runtime",
+                                  "referencePath": [
+                                    "otherRunner",
+                                    "country"
+                                  ]
+                                },
+                                "note": {
+                                  "transformerType": "returnValue",
+                                  "value": {
+                                    "transformerType": "getFromParameters",
+                                    "interpolation": "runtime",
+                                    "referencePath": [
+                                      "addPublisher",
+                                      "country"
+                                    ]
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            ],
+            "expectedValue": [
+              "name"
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a field added after the others",
+            "functionRef": {
+              "module": "miroir-core/2_domain/RunnerHat",
+              "export": "addRunnerFormField"
+            },
+            "arguments": [
+              {
+                "uuid": "3f1f7a0e-2a3b-4c5d-8e9f-0a1b2c3d4e5f",
+                "parentName": "Runner",
+                "parentUuid": "e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd",
+                "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                "name": "addPublisher",
+                "defaultLabel": "Add a publisher",
+                "definition": {
+                  "runnerType": "customRunner",
+                  "formMLSchema": {
+                    "formMLSchemaType": "mlSchema",
+                    "mlSchema": {
+                      "type": "object",
+                      "definition": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "country": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "compositeActionSequence": {
+                    "actionType": "compositeActionSequence",
+                    "actionLabel": "addPublisher",
+                    "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                    "payload": {
+                      "actionSequence": [
+                        {
+                          "actionType": "createInstance",
+                          "actionLabel": "createPublisher",
+                          "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                          "payload": {
+                            "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                            "applicationSection": "data",
+                            "objects": [
+                              {
+                                "name": {
+                                  "transformerType": "getFromParameters",
+                                  "interpolation": "runtime",
+                                  "referencePath": [
+                                    "addPublisher",
+                                    "name"
+                                  ]
+                                },
+                                "country": {
+                                  "transformerType": "getFromParameters",
+                                  "interpolation": "runtime",
+                                  "referencePath": [
+                                    "otherRunner",
+                                    "country"
+                                  ]
+                                },
+                                "note": {
+                                  "transformerType": "returnValue",
+                                  "value": {
+                                    "transformerType": "getFromParameters",
+                                    "interpolation": "runtime",
+                                    "referencePath": [
+                                      "addPublisher",
+                                      "country"
+                                    ]
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              },
+              "city",
+              "string"
+            ],
+            "assertions": [
+              {
+                "label": "the form has city",
+                "resultAccessPath": [
+                  "definition",
+                  "formMLSchema",
+                  "mlSchema",
+                  "definition"
+                ],
+                "expectedValue": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "country": {
+                    "type": "string"
+                  },
+                  "city": {
+                    "type": "string"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a field named like another is refused",
+            "functionRef": {
+              "module": "miroir-core/2_domain/RunnerHat",
+              "export": "addRunnerFormField"
+            },
+            "arguments": [
+              {
+                "uuid": "3f1f7a0e-2a3b-4c5d-8e9f-0a1b2c3d4e5f",
+                "parentName": "Runner",
+                "parentUuid": "e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd",
+                "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                "name": "addPublisher",
+                "defaultLabel": "Add a publisher",
+                "definition": {
+                  "runnerType": "customRunner",
+                  "formMLSchema": {
+                    "formMLSchemaType": "mlSchema",
+                    "mlSchema": {
+                      "type": "object",
+                      "definition": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "country": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "compositeActionSequence": {
+                    "actionType": "compositeActionSequence",
+                    "actionLabel": "addPublisher",
+                    "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                    "payload": {
+                      "actionSequence": [
+                        {
+                          "actionType": "createInstance",
+                          "actionLabel": "createPublisher",
+                          "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                          "payload": {
+                            "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                            "applicationSection": "data",
+                            "objects": [
+                              {
+                                "name": {
+                                  "transformerType": "getFromParameters",
+                                  "interpolation": "runtime",
+                                  "referencePath": [
+                                    "addPublisher",
+                                    "name"
+                                  ]
+                                },
+                                "country": {
+                                  "transformerType": "getFromParameters",
+                                  "interpolation": "runtime",
+                                  "referencePath": [
+                                    "otherRunner",
+                                    "country"
+                                  ]
+                                },
+                                "note": {
+                                  "transformerType": "returnValue",
+                                  "value": {
+                                    "transformerType": "getFromParameters",
+                                    "interpolation": "runtime",
+                                    "referencePath": [
+                                      "addPublisher",
+                                      "country"
+                                    ]
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              },
+              "name",
+              "string"
+            ],
+            "expectedError": "the form already has a field name"
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a renamed field: the form and the reads of the sequence follow, another Runner's read is kept",
+            "functionRef": {
+              "module": "miroir-core/2_domain/RunnerHat",
+              "export": "renameRunnerFormField"
+            },
+            "arguments": [
+              {
+                "uuid": "3f1f7a0e-2a3b-4c5d-8e9f-0a1b2c3d4e5f",
+                "parentName": "Runner",
+                "parentUuid": "e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd",
+                "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                "name": "addPublisher",
+                "defaultLabel": "Add a publisher",
+                "definition": {
+                  "runnerType": "customRunner",
+                  "formMLSchema": {
+                    "formMLSchemaType": "mlSchema",
+                    "mlSchema": {
+                      "type": "object",
+                      "definition": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "country": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "compositeActionSequence": {
+                    "actionType": "compositeActionSequence",
+                    "actionLabel": "addPublisher",
+                    "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                    "payload": {
+                      "actionSequence": [
+                        {
+                          "actionType": "createInstance",
+                          "actionLabel": "createPublisher",
+                          "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                          "payload": {
+                            "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                            "applicationSection": "data",
+                            "objects": [
+                              {
+                                "name": {
+                                  "transformerType": "getFromParameters",
+                                  "interpolation": "runtime",
+                                  "referencePath": [
+                                    "addPublisher",
+                                    "name"
+                                  ]
+                                },
+                                "country": {
+                                  "transformerType": "getFromParameters",
+                                  "interpolation": "runtime",
+                                  "referencePath": [
+                                    "otherRunner",
+                                    "country"
+                                  ]
+                                },
+                                "note": {
+                                  "transformerType": "returnValue",
+                                  "value": {
+                                    "transformerType": "getFromParameters",
+                                    "interpolation": "runtime",
+                                    "referencePath": [
+                                      "addPublisher",
+                                      "country"
+                                    ]
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              },
+              "name",
+              "publisherName"
+            ],
+            "assertions": [
+              {
+                "label": "the form has publisherName",
+                "resultAccessPath": [
+                  "definition",
+                  "formMLSchema",
+                  "mlSchema",
+                  "definition"
+                ],
+                "expectedValue": {
+                  "publisherName": {
+                    "type": "string"
+                  },
+                  "country": {
+                    "type": "string"
+                  }
+                }
+              },
+              {
+                "label": "the sequence reads publisherName",
+                "resultAccessPath": [
+                  "definition",
+                  "compositeActionSequence"
+                ],
+                "expectedValue": {
+                  "actionType": "compositeActionSequence",
+                  "actionLabel": "addPublisher",
+                  "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                  "payload": {
+                    "actionSequence": [
+                      {
+                        "actionType": "createInstance",
+                        "actionLabel": "createPublisher",
+                        "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                        "payload": {
+                          "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                          "applicationSection": "data",
+                          "objects": [
+                            {
+                              "name": {
+                                "transformerType": "getFromParameters",
+                                "interpolation": "runtime",
+                                "referencePath": [
+                                  "addPublisher",
+                                  "publisherName"
+                                ]
+                              },
+                              "country": {
+                                "transformerType": "getFromParameters",
+                                "interpolation": "runtime",
+                                "referencePath": [
+                                  "otherRunner",
+                                  "country"
+                                ]
+                              },
+                              "note": {
+                                "transformerType": "returnValue",
+                                "value": {
+                                  "transformerType": "getFromParameters",
+                                  "interpolation": "runtime",
+                                  "referencePath": [
+                                    "addPublisher",
+                                    "country"
+                                  ]
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a field the sequence does not read is removed",
+            "functionRef": {
+              "module": "miroir-core/2_domain/RunnerHat",
+              "export": "removeRunnerFormField"
+            },
+            "arguments": [
+              {
+                "uuid": "3f1f7a0e-2a3b-4c5d-8e9f-0a1b2c3d4e5f",
+                "parentName": "Runner",
+                "parentUuid": "e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd",
+                "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                "name": "addPublisher",
+                "defaultLabel": "Add a publisher",
+                "definition": {
+                  "runnerType": "customRunner",
+                  "formMLSchema": {
+                    "formMLSchemaType": "mlSchema",
+                    "mlSchema": {
+                      "type": "object",
+                      "definition": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "country": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "compositeActionSequence": {
+                    "actionType": "compositeActionSequence",
+                    "actionLabel": "addPublisher",
+                    "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                    "payload": {
+                      "actionSequence": [
+                        {
+                          "actionType": "createInstance",
+                          "actionLabel": "createPublisher",
+                          "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                          "payload": {
+                            "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                            "applicationSection": "data",
+                            "objects": [
+                              {
+                                "name": {
+                                  "transformerType": "getFromParameters",
+                                  "interpolation": "runtime",
+                                  "referencePath": [
+                                    "addPublisher",
+                                    "name"
+                                  ]
+                                },
+                                "country": {
+                                  "transformerType": "getFromParameters",
+                                  "interpolation": "runtime",
+                                  "referencePath": [
+                                    "otherRunner",
+                                    "country"
+                                  ]
+                                },
+                                "note": {
+                                  "transformerType": "returnValue",
+                                  "value": {
+                                    "transformerType": "getFromParameters",
+                                    "interpolation": "runtime",
+                                    "referencePath": [
+                                      "addPublisher",
+                                      "country"
+                                    ]
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              },
+              "country"
+            ],
+            "assertions": [
+              {
+                "label": "the form keeps name",
+                "resultAccessPath": [
+                  "definition",
+                  "formMLSchema",
+                  "mlSchema",
+                  "definition"
+                ],
+                "expectedValue": {
+                  "name": {
+                    "type": "string"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a field the sequence reads cannot be removed",
+            "functionRef": {
+              "module": "miroir-core/2_domain/RunnerHat",
+              "export": "removeRunnerFormField"
+            },
+            "arguments": [
+              {
+                "uuid": "3f1f7a0e-2a3b-4c5d-8e9f-0a1b2c3d4e5f",
+                "parentName": "Runner",
+                "parentUuid": "e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd",
+                "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                "name": "addPublisher",
+                "defaultLabel": "Add a publisher",
+                "definition": {
+                  "runnerType": "customRunner",
+                  "formMLSchema": {
+                    "formMLSchemaType": "mlSchema",
+                    "mlSchema": {
+                      "type": "object",
+                      "definition": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "country": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "compositeActionSequence": {
+                    "actionType": "compositeActionSequence",
+                    "actionLabel": "addPublisher",
+                    "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                    "payload": {
+                      "actionSequence": [
+                        {
+                          "actionType": "createInstance",
+                          "actionLabel": "createPublisher",
+                          "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                          "payload": {
+                            "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                            "applicationSection": "data",
+                            "objects": [
+                              {
+                                "name": {
+                                  "transformerType": "getFromParameters",
+                                  "interpolation": "runtime",
+                                  "referencePath": [
+                                    "addPublisher",
+                                    "name"
+                                  ]
+                                },
+                                "country": {
+                                  "transformerType": "getFromParameters",
+                                  "interpolation": "runtime",
+                                  "referencePath": [
+                                    "otherRunner",
+                                    "country"
+                                  ]
+                                },
+                                "note": {
+                                  "transformerType": "returnValue",
+                                  "value": {
+                                    "transformerType": "getFromParameters",
+                                    "interpolation": "runtime",
+                                    "referencePath": [
+                                      "addPublisher",
+                                      "country"
+                                    ]
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              },
+              "name"
+            ],
+            "expectedError": "the sequence reads name"
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a renamed Runner: its sequence reads the form under the new name",
+            "functionRef": {
+              "module": "miroir-core/2_domain/RunnerHat",
+              "export": "renameRunner"
+            },
+            "arguments": [
+              {
+                "uuid": "3f1f7a0e-2a3b-4c5d-8e9f-0a1b2c3d4e5f",
+                "parentName": "Runner",
+                "parentUuid": "e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd",
+                "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                "name": "addPublisher",
+                "defaultLabel": "Add a publisher",
+                "definition": {
+                  "runnerType": "customRunner",
+                  "formMLSchema": {
+                    "formMLSchemaType": "mlSchema",
+                    "mlSchema": {
+                      "type": "object",
+                      "definition": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "country": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "compositeActionSequence": {
+                    "actionType": "compositeActionSequence",
+                    "actionLabel": "addPublisher",
+                    "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                    "payload": {
+                      "actionSequence": [
+                        {
+                          "actionType": "createInstance",
+                          "actionLabel": "createPublisher",
+                          "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                          "payload": {
+                            "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                            "applicationSection": "data",
+                            "objects": [
+                              {
+                                "name": {
+                                  "transformerType": "getFromParameters",
+                                  "interpolation": "runtime",
+                                  "referencePath": [
+                                    "addPublisher",
+                                    "name"
+                                  ]
+                                },
+                                "country": {
+                                  "transformerType": "getFromParameters",
+                                  "interpolation": "runtime",
+                                  "referencePath": [
+                                    "otherRunner",
+                                    "country"
+                                  ]
+                                },
+                                "note": {
+                                  "transformerType": "returnValue",
+                                  "value": {
+                                    "transformerType": "getFromParameters",
+                                    "interpolation": "runtime",
+                                    "referencePath": [
+                                      "addPublisher",
+                                      "country"
+                                    ]
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              },
+              "newPublisher"
+            ],
+            "assertions": [
+              {
+                "label": "the name",
+                "resultAccessPath": [
+                  "name"
+                ],
+                "expectedValue": "newPublisher"
+              },
+              {
+                "label": "the reads",
+                "resultAccessPath": [
+                  "definition",
+                  "compositeActionSequence"
+                ],
+                "expectedValue": {
+                  "actionType": "compositeActionSequence",
+                  "actionLabel": "addPublisher",
+                  "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                  "payload": {
+                    "actionSequence": [
+                      {
+                        "actionType": "createInstance",
+                        "actionLabel": "createPublisher",
+                        "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                        "payload": {
+                          "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                          "applicationSection": "data",
+                          "objects": [
+                            {
+                              "name": {
+                                "transformerType": "getFromParameters",
+                                "interpolation": "runtime",
+                                "referencePath": [
+                                  "newPublisher",
+                                  "name"
+                                ]
+                              },
+                              "country": {
+                                "transformerType": "getFromParameters",
+                                "interpolation": "runtime",
+                                "referencePath": [
+                                  "otherRunner",
+                                  "country"
+                                ]
+                              },
+                              "note": {
+                                "transformerType": "returnValue",
+                                "value": {
+                                  "transformerType": "getFromParameters",
+                                  "interpolation": "runtime",
+                                  "referencePath": [
+                                    "addPublisher",
+                                    "country"
+                                  ]
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a new custom Runner: an empty form, the sequence, its name as label",
+            "functionRef": {
+              "module": "miroir-core/2_domain/RunnerHat",
+              "export": "newCustomRunner"
+            },
+            "arguments": [
+              {
+                "uuid": "3f1f7a0e-2a3b-4c5d-8e9f-0a1b2c3d4e5f",
+                "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                "name": "addPublisher",
+                "sequence": {
+                  "actionType": "compositeActionSequence",
+                  "actionLabel": "addPublisher",
+                  "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                  "payload": {
+                    "actionSequence": [
+                      {
+                        "actionType": "createInstance",
+                        "actionLabel": "createPublisher",
+                        "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                        "payload": {
+                          "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                          "applicationSection": "data",
+                          "objects": [
+                            {
+                              "name": {
+                                "transformerType": "getFromParameters",
+                                "interpolation": "runtime",
+                                "referencePath": [
+                                  "addPublisher",
+                                  "name"
+                                ]
+                              },
+                              "country": {
+                                "transformerType": "getFromParameters",
+                                "interpolation": "runtime",
+                                "referencePath": [
+                                  "otherRunner",
+                                  "country"
+                                ]
+                              },
+                              "note": {
+                                "transformerType": "returnValue",
+                                "value": {
+                                  "transformerType": "getFromParameters",
+                                  "interpolation": "runtime",
+                                  "referencePath": [
+                                    "addPublisher",
+                                    "country"
+                                  ]
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            ],
+            "expectedValue": {
+              "uuid": "3f1f7a0e-2a3b-4c5d-8e9f-0a1b2c3d4e5f",
+              "parentName": "Runner",
+              "parentUuid": "e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd",
+              "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+              "name": "addPublisher",
+              "defaultLabel": "addPublisher",
+              "definition": {
+                "runnerType": "customRunner",
+                "formMLSchema": {
+                  "formMLSchemaType": "mlSchema",
+                  "mlSchema": {
+                    "type": "object",
+                    "definition": {}
+                  }
+                },
+                "compositeActionSequence": {
+                  "actionType": "compositeActionSequence",
+                  "actionLabel": "addPublisher",
+                  "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                  "payload": {
+                    "actionSequence": [
+                      {
+                        "actionType": "createInstance",
+                        "actionLabel": "createPublisher",
+                        "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                        "payload": {
+                          "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                          "applicationSection": "data",
+                          "objects": [
+                            {
+                              "name": {
+                                "transformerType": "getFromParameters",
+                                "interpolation": "runtime",
+                                "referencePath": [
+                                  "addPublisher",
+                                  "name"
+                                ]
+                              },
+                              "country": {
+                                "transformerType": "getFromParameters",
+                                "interpolation": "runtime",
+                                "referencePath": [
+                                  "otherRunner",
+                                  "country"
+                                ]
+                              },
+                              "note": {
+                                "transformerType": "returnValue",
+                                "value": {
+                                  "transformerType": "getFromParameters",
+                                  "interpolation": "runtime",
+                                  "referencePath": [
+                                    "addPublisher",
+                                    "country"
+                                  ]
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        ]
       }
     ]
   }

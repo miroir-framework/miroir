@@ -1373,6 +1373,7 @@ export {
   removeTransformerNode,
   transformerChildren,
   transformerInsertPositions,
+  transformerSlotAt,
   transformerSlots,
   transformerUnionTypes,
   unwrapTransformerNode,
@@ -1380,6 +1381,7 @@ export {
   wrapTransformerNode,
 } from "./2_domain/TransformerTreeEdit.js";
 export type {
+  BlockInsertPosition,
   TransformerChild,
   TransformerInsertPosition,
   TransformerSlot,
@@ -1464,6 +1466,32 @@ export {
   transformerEnvironmentAt,
 } from "./2_domain/TransformerEnvironmentBindings.js";
 export { compositeActionEnvironmentAt, runnerEnvironment } from "./2_domain/CompositeActionScope.js";
+export {
+  actionLabels,
+  actionPaletteGroups,
+  blockEnvironmentAt,
+  blockInsertPositions,
+  defaultActionNode,
+  insertBlockNode,
+  isStepPosition,
+  isValuePosition,
+  moveBlockNode,
+  removeBlockNode,
+  type ActionPaletteGroup,
+  type BlockEditOptions,
+} from "./2_domain/ActionSequenceEdit.js";
+export {
+  addRunnerFormField,
+  newCustomRunner,
+  removeRunnerFormField,
+  renameRunner,
+  renameRunnerFormField,
+  runnerFormFieldReads,
+  runnerHat,
+  RUNNER_FORM_FIELD_TYPES,
+  type RunnerHat,
+  type RunnerHatField,
+} from "./2_domain/RunnerHat.js";
 export {
   AGGREGATE_VALUE_NAME,
   TRANSFORMER_SCOPE_RULES,

@@ -44,8 +44,8 @@ Working branch: `claude/505-block-editor-edit-sequences`
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
 | 0 | This plan | ✅ | — |
-| 1 | Sequence edits, default actions, action palette (core) | ⬜ | `fn.blockModel` "sequence editing" cases |
-| 2 | Runner hat and form fields (core) | ⬜ | `fn.blockModel` "runner hat" cases |
+| 1 | Sequence edits, default actions, action palette (core) | ✅ | `fn.blockModel` "sequence editing" cases |
+| 2 | Runner hat and form fields (core) | ✅ | `fn.blockModel` "runner hat" cases |
 | 3 | Editing sequences in the block view | ⬜ | `ui.blockEditor` "editing a Runner sequence" |
 | 4 | The "when run" hat in the block view | ⬜ | `ui.blockEditor` hat cases |
 | 5 | Sequence editor, Save as Runner, Run (AC 1, AC 2) | ⬜ | `ui.blockEditing` "SequenceEditor on the Library" |
@@ -76,10 +76,14 @@ GREEN: `ActionSequenceEdit.ts`, the block model rows, registry entries.
 
 Validation: `npm run testMiroir -w miroir-core -- --suites fn.blockModel --mode unit`; `npm run test -w miroir-core -- ''`; core `tsc`.
 
+**Realization (2026-10-07):** `2_domain/ActionSequenceEdit.ts` (`blockInsertPositions`, `isValuePosition`, `isStepPosition`, `insertBlockNode`, `removeBlockNode`, `moveBlockNode`, `defaultActionNode`, `actionPaletteGroups`, `blockEnvironmentAt`); `transformerSlotAt` exported from `TransformerTreeEdit`; `BlockInsertPosition` (`holds`) in the interface. The block model gives an absent declared payload attribute an empty row with `emptyOptionalSlots`. A default payload drops the `queryFailure` values some `initializeTo` transformers give at build. A position inside the payload of a query action (`runBoxedQueryAction`, …) is no value position: the query is resolved as a whole. 19 cases in "sequence editing"; fn.blockModel 68/68, core unit 2989 passed.
+
 ## Slice 2 — Runner hat and form fields
 
 RED: `fn.blockModel` suite "runner hat": `runnerHat` of createEntity (its fields, read flags), add a field, rename a field and its reads (a read of another Runner's name is kept), remove an unread field, refuse to remove a read one.
 GREEN: `RunnerHat.ts`.
+
+**Realization (2026-10-07):** `2_domain/RunnerHat.ts`: `runnerHat`, `runnerFormFieldReads`, `addRunnerFormField`, `renameRunnerFormField`, `removeRunnerFormField`, `renameRunner` (rewrites the reads of `[old name, …]`, used by Save as Runner), `newCustomRunner`, `RUNNER_FORM_FIELD_TYPES`. A form given by a transformer is refused for edits. Quoted values (`returnValue.value`) are not reads. 10 cases in "runner hat".
 
 ## Slice 3 — Editing sequences in the block view
 
