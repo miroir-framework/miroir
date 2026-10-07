@@ -5018,6 +5018,769 @@
             ]
           }
         ]
+      },
+      {
+        "miroirTestType": "reactComponentTestSuite",
+        "miroirTestLabel": "an Endpoint action",
+        "component": "TransformerBlocks",
+        "componentProps": {
+          "endpointAction": "entity_DuplicateAttribute"
+        },
+        "miroirTests": [
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "an Endpoint action: entity_DuplicateAttribute is a define block with its parameters and steps, and its value is unchanged",
+            "steps": [
+              {
+                "step": "waitForAttribute",
+                "label": "the define block names the action",
+                "target": {
+                  "byTestId": "block-define"
+                },
+                "attribute": "data-name",
+                "value": "entity_DuplicateAttribute",
+                "timeout": 3000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "application is read",
+                "target": {
+                  "byTestId": "block-define-parameter:application"
+                },
+                "attribute": "data-read",
+                "value": "true"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "sourceEntityUuid is read",
+                "target": {
+                  "byTestId": "block-define-parameter:sourceEntityUuid"
+                },
+                "attribute": "data-read",
+                "value": "true"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "columns is read",
+                "target": {
+                  "byTestId": "block-define-parameter:columns"
+                },
+                "attribute": "data-read",
+                "value": "true"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "transactional is not read",
+                "target": {
+                  "byTestId": "block-define-parameter:transactional"
+                },
+                "attribute": "data-read",
+                "value": "false"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "sourceEntityName is not read",
+                "target": {
+                  "byTestId": "block-define-parameter:sourceEntityName"
+                },
+                "attribute": "data-read",
+                "value": "false"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the first step looks the source Entity up",
+                "target": {
+                  "byTestId": "block:actionImplementation.definition.payload.actionSequence.0"
+                },
+                "attribute": "data-action-type",
+                "value": "compositeRunBoxedQueryAction"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the third step alters the target Entity",
+                "target": {
+                  "byTestId": "block:actionImplementation.definition.payload.actionSequence.2"
+                },
+                "attribute": "data-action-type",
+                "value": "alterEntityAttribute"
+              },
+              {
+                "step": "expectElement",
+                "label": "read-only: no parameter is added",
+                "target": {
+                  "byTestId": "block-define-add"
+                },
+                "present": false
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the action round-trips",
+                "target": {
+                  "byTestId": "block-action-value"
+                },
+                "attribute": "data-value",
+                "value": "{\"actionParameters\":{\"actionType\":{\"type\":\"literal\",\"tag\":{\"value\":{\"canBeTemplate\":false}},\"definition\":\"entity_DuplicateAttribute\"},\"actionLabel\":{\"type\":\"string\",\"optional\":true},\"endpoint\":{\"type\":\"literal\",\"definition\":\"7947ae40-eb34-4149-887b-15a9021e714e\"},\"payload\":{\"type\":\"object\",\"definition\":{\"application\":{\"type\":\"uuid\",\"tag\":{\"value\":{\"canBeTemplate\":true,\"defaultLabel\":\"Application\",\"foreignKeyParams\":{\"targetApplicationUuid\":\"55af124e-8c05-4bae-a3ef-0933d41daa92\",\"targetEntity\":\"25d935e7-9e93-42c2-aade-0472b883492b\",\"targetEntityOrderInstancesBy\":\"name\"},\"display\":{\"editable\":false}}}},\"transactional\":{\"type\":\"boolean\",\"optional\":true},\"columns\":{\"type\":\"array\",\"optional\":true,\"definition\":{\"type\":\"string\",\"description\":\"the columns to be duplicated\"}},\"sourceEntityName\":{\"type\":\"string\",\"optional\":true},\"sourceEntityUuid\":{\"type\":\"uuid\"},\"targetEntityName\":{\"type\":\"string\",\"optional\":true},\"targetEntityUuid\":{\"type\":\"uuid\"}}}},\"actionImplementation\":{\"actionImplementationType\":\"compositeActionTemplate\",\"definition\":{\"actionType\":\"compositeActionSequence\",\"endpoint\":\"7947ae40-eb34-4149-887b-15a9021e714e\",\"payload\":{\"actionSequence\":[{\"actionType\":\"compositeRunBoxedQueryAction\",\"endpoint\":\"1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5\",\"actionLabel\":\"sourceEntityLookup\",\"nameGivenToResult\":\"sourceEntity\",\"payload\":{\"actionType\":\"runBoxedQueryAction\",\"endpoint\":\"9e404b3c-368c-40cb-be8b-e3c28550c25e\",\"payload\":{\"application\":{\"transformerType\":\"getFromContext\",\"interpolation\":\"runtime\",\"referencePath\":[\"payload\",\"application\"]},\"applicationSection\":\"model\",\"queryExecutionStrategy\":\"storage\",\"query\":{\"queryType\":\"boxedQueryWithExtractorCombinerTransformer\",\"application\":{\"transformerType\":\"getFromContext\",\"interpolation\":\"runtime\",\"referencePath\":[\"payload\",\"application\"]},\"extractors\":{\"entities\":{\"extractorOrCombinerType\":\"extractorByPrimaryKey\",\"applicationSection\":\"model\",\"parentName\":\"Entity\",\"parentUuid\":\"16dbfe28-e1d7-4f20-9ba4-c1a9873202ad\",\"instanceUuid\":{\"transformerType\":\"getFromContext\",\"interpolation\":\"runtime\",\"referencePath\":[\"payload\",\"sourceEntityUuid\"]}}}}}}},{\"actionType\":\"compositeRunBoxedQueryAction\",\"endpoint\":\"1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5\",\"actionLabel\":\"targetEntityLookup\",\"nameGivenToResult\":\"targetEntity\",\"payload\":{\"actionType\":\"runBoxedQueryAction\",\"endpoint\":\"9e404b3c-368c-40cb-be8b-e3c28550c25e\",\"payload\":{\"application\":{\"transformerType\":\"getFromContext\",\"interpolation\":\"runtime\",\"referencePath\":[\"payload\",\"application\"]},\"applicationSection\":\"model\",\"queryExecutionStrategy\":\"storage\",\"query\":{\"queryType\":\"boxedQueryWithExtractorCombinerTransformer\",\"application\":{\"transformerType\":\"getFromContext\",\"interpolation\":\"runtime\",\"referencePath\":[\"payload\",\"application\"]},\"extractors\":{\"entities\":{\"extractorOrCombinerType\":\"extractorByPrimaryKey\",\"applicationSection\":\"model\",\"parentName\":\"Entity\",\"parentUuid\":\"16dbfe28-e1d7-4f20-9ba4-c1a9873202ad\",\"instanceUuid\":{\"transformerType\":\"getFromContext\",\"interpolation\":\"runtime\",\"referencePath\":[\"payload\",\"targetEntityUuid\"]}}}}}}},{\"actionType\":\"alterEntityAttribute\",\"endpoint\":\"7947ae40-eb34-4149-887b-15a9021e714e\",\"actionLabel\":\"duplicateAttributes\",\"payload\":{\"application\":{\"transformerType\":\"getFromContext\",\"interpolation\":\"runtime\",\"referencePath\":[\"payload\",\"application\"]},\"entityName\":{\"transformerType\":\"getFromContext\",\"interpolation\":\"runtime\",\"referencePath\":[\"targetEntity\",\"entities\",\"name\"]},\"entityUuid\":{\"transformerType\":\"getFromContext\",\"interpolation\":\"runtime\",\"referencePath\":[\"payload\",\"targetEntityUuid\"]},\"addColumns\":{\"transformerType\":\"mapList\",\"interpolation\":\"runtime\",\"applyTo\":{\"transformerType\":\"entityDefinition_extractAttributes\",\"interpolation\":\"runtime\",\"entityDefinition\":{\"transformerType\":\"getFromContext\",\"interpolation\":\"runtime\",\"referencePath\":[\"sourceEntity\",\"entities\"]},\"attributeNames\":{\"transformerType\":\"getFromContext\",\"interpolation\":\"runtime\",\"referencePath\":[\"payload\",\"columns\"]}},\"referenceToOuterObject\":\"attribute\",\"elementTransformer\":{\"transformerType\":\"createObject\",\"interpolation\":\"runtime\",\"definition\":{\"name\":{\"transformerType\":\"getFromContext\",\"interpolation\":\"runtime\",\"referencePath\":[\"attribute\",\"0\"]},\"definition\":{\"transformerType\":\"getFromContext\",\"interpolation\":\"runtime\",\"referencePath\":[\"attribute\",\"1\"]}}}}}}]}}}}"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "miroirTestType": "reactComponentTestSuite",
+        "miroirTestLabel": "an Endpoint action edited",
+        "component": "TransformerBlocks",
+        "componentProps": {
+          "endpointAction": "entity_DuplicateAttribute",
+          "editable": true
+        },
+        "miroirTests": [
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "an Endpoint action edited: shown in an editable view, its value is unchanged",
+            "steps": [
+              {
+                "step": "waitForAttribute",
+                "label": "the define block names the action",
+                "target": {
+                  "byTestId": "block-define"
+                },
+                "attribute": "data-name",
+                "value": "entity_DuplicateAttribute",
+                "timeout": 3000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "application is read",
+                "target": {
+                  "byTestId": "block-define-parameter:application"
+                },
+                "attribute": "data-read",
+                "value": "true"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "sourceEntityUuid is read",
+                "target": {
+                  "byTestId": "block-define-parameter:sourceEntityUuid"
+                },
+                "attribute": "data-read",
+                "value": "true"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "columns is read",
+                "target": {
+                  "byTestId": "block-define-parameter:columns"
+                },
+                "attribute": "data-read",
+                "value": "true"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "transactional is not read",
+                "target": {
+                  "byTestId": "block-define-parameter:transactional"
+                },
+                "attribute": "data-read",
+                "value": "false"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "sourceEntityName is not read",
+                "target": {
+                  "byTestId": "block-define-parameter:sourceEntityName"
+                },
+                "attribute": "data-read",
+                "value": "false"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the action round-trips",
+                "target": {
+                  "byTestId": "block-action-value"
+                },
+                "attribute": "data-value",
+                "value": "{\"actionParameters\":{\"actionType\":{\"type\":\"literal\",\"tag\":{\"value\":{\"canBeTemplate\":false}},\"definition\":\"entity_DuplicateAttribute\"},\"actionLabel\":{\"type\":\"string\",\"optional\":true},\"endpoint\":{\"type\":\"literal\",\"definition\":\"7947ae40-eb34-4149-887b-15a9021e714e\"},\"payload\":{\"type\":\"object\",\"definition\":{\"application\":{\"type\":\"uuid\",\"tag\":{\"value\":{\"canBeTemplate\":true,\"defaultLabel\":\"Application\",\"foreignKeyParams\":{\"targetApplicationUuid\":\"55af124e-8c05-4bae-a3ef-0933d41daa92\",\"targetEntity\":\"25d935e7-9e93-42c2-aade-0472b883492b\",\"targetEntityOrderInstancesBy\":\"name\"},\"display\":{\"editable\":false}}}},\"transactional\":{\"type\":\"boolean\",\"optional\":true},\"columns\":{\"type\":\"array\",\"optional\":true,\"definition\":{\"type\":\"string\",\"description\":\"the columns to be duplicated\"}},\"sourceEntityName\":{\"type\":\"string\",\"optional\":true},\"sourceEntityUuid\":{\"type\":\"uuid\"},\"targetEntityName\":{\"type\":\"string\",\"optional\":true},\"targetEntityUuid\":{\"type\":\"uuid\"}}}},\"actionImplementation\":{\"actionImplementationType\":\"compositeActionTemplate\",\"definition\":{\"actionType\":\"compositeActionSequence\",\"endpoint\":\"7947ae40-eb34-4149-887b-15a9021e714e\",\"payload\":{\"actionSequence\":[{\"actionType\":\"compositeRunBoxedQueryAction\",\"endpoint\":\"1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5\",\"actionLabel\":\"sourceEntityLookup\",\"nameGivenToResult\":\"sourceEntity\",\"payload\":{\"actionType\":\"runBoxedQueryAction\",\"endpoint\":\"9e404b3c-368c-40cb-be8b-e3c28550c25e\",\"payload\":{\"application\":{\"transformerType\":\"getFromContext\",\"interpolation\":\"runtime\",\"referencePath\":[\"payload\",\"application\"]},\"applicationSection\":\"model\",\"queryExecutionStrategy\":\"storage\",\"query\":{\"queryType\":\"boxedQueryWithExtractorCombinerTransformer\",\"application\":{\"transformerType\":\"getFromContext\",\"interpolation\":\"runtime\",\"referencePath\":[\"payload\",\"application\"]},\"extractors\":{\"entities\":{\"extractorOrCombinerType\":\"extractorByPrimaryKey\",\"applicationSection\":\"model\",\"parentName\":\"Entity\",\"parentUuid\":\"16dbfe28-e1d7-4f20-9ba4-c1a9873202ad\",\"instanceUuid\":{\"transformerType\":\"getFromContext\",\"interpolation\":\"runtime\",\"referencePath\":[\"payload\",\"sourceEntityUuid\"]}}}}}}},{\"actionType\":\"compositeRunBoxedQueryAction\",\"endpoint\":\"1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5\",\"actionLabel\":\"targetEntityLookup\",\"nameGivenToResult\":\"targetEntity\",\"payload\":{\"actionType\":\"runBoxedQueryAction\",\"endpoint\":\"9e404b3c-368c-40cb-be8b-e3c28550c25e\",\"payload\":{\"application\":{\"transformerType\":\"getFromContext\",\"interpolation\":\"runtime\",\"referencePath\":[\"payload\",\"application\"]},\"applicationSection\":\"model\",\"queryExecutionStrategy\":\"storage\",\"query\":{\"queryType\":\"boxedQueryWithExtractorCombinerTransformer\",\"application\":{\"transformerType\":\"getFromContext\",\"interpolation\":\"runtime\",\"referencePath\":[\"payload\",\"application\"]},\"extractors\":{\"entities\":{\"extractorOrCombinerType\":\"extractorByPrimaryKey\",\"applicationSection\":\"model\",\"parentName\":\"Entity\",\"parentUuid\":\"16dbfe28-e1d7-4f20-9ba4-c1a9873202ad\",\"instanceUuid\":{\"transformerType\":\"getFromContext\",\"interpolation\":\"runtime\",\"referencePath\":[\"payload\",\"targetEntityUuid\"]}}}}}}},{\"actionType\":\"alterEntityAttribute\",\"endpoint\":\"7947ae40-eb34-4149-887b-15a9021e714e\",\"actionLabel\":\"duplicateAttributes\",\"payload\":{\"application\":{\"transformerType\":\"getFromContext\",\"interpolation\":\"runtime\",\"referencePath\":[\"payload\",\"application\"]},\"entityName\":{\"transformerType\":\"getFromContext\",\"interpolation\":\"runtime\",\"referencePath\":[\"targetEntity\",\"entities\",\"name\"]},\"entityUuid\":{\"transformerType\":\"getFromContext\",\"interpolation\":\"runtime\",\"referencePath\":[\"payload\",\"targetEntityUuid\"]},\"addColumns\":{\"transformerType\":\"mapList\",\"interpolation\":\"runtime\",\"applyTo\":{\"transformerType\":\"entityDefinition_extractAttributes\",\"interpolation\":\"runtime\",\"entityDefinition\":{\"transformerType\":\"getFromContext\",\"interpolation\":\"runtime\",\"referencePath\":[\"sourceEntity\",\"entities\"]},\"attributeNames\":{\"transformerType\":\"getFromContext\",\"interpolation\":\"runtime\",\"referencePath\":[\"payload\",\"columns\"]}},\"referenceToOuterObject\":\"attribute\",\"elementTransformer\":{\"transformerType\":\"createObject\",\"interpolation\":\"runtime\",\"definition\":{\"name\":{\"transformerType\":\"getFromContext\",\"interpolation\":\"runtime\",\"referencePath\":[\"attribute\",\"0\"]},\"definition\":{\"transformerType\":\"getFromContext\",\"interpolation\":\"runtime\",\"referencePath\":[\"attribute\",\"1\"]}}}}}}]}}}}"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "an Endpoint action edited: a parameter replaces a block with a read of the payload",
+            "steps": [
+              {
+                "step": "waitForAttribute",
+                "label": "the define block names the action",
+                "target": {
+                  "byTestId": "block-define"
+                },
+                "attribute": "data-name",
+                "value": "entity_DuplicateAttribute",
+                "timeout": 3000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "targetEntityName is not read",
+                "target": {
+                  "byTestId": "block-define-parameter:targetEntityName"
+                },
+                "attribute": "data-read",
+                "value": "false"
+              },
+              {
+                "step": "click",
+                "label": "choose targetEntityName",
+                "target": {
+                  "byTestId": "block-define-variable:targetEntityName"
+                }
+              },
+              {
+                "step": "click",
+                "label": "open the node actions of entityName",
+                "target": {
+                  "byLabelText": "Transformer node actions actionImplementation.definition.payload.actionSequence.2.payload.entityName"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Replace with parameter targetEntityName",
+                "target": {
+                  "byTestId": "block-action-replace"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "entityName reads the payload",
+                "target": {
+                  "byTestId": "block:actionImplementation.definition.payload.actionSequence.2.payload.entityName"
+                },
+                "attribute": "data-transformer-type",
+                "value": "getFromContext"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "targetEntityName is read now",
+                "target": {
+                  "byTestId": "block-define-parameter:targetEntityName"
+                },
+                "attribute": "data-read",
+                "value": "true"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "an Endpoint action edited: a renamed parameter: its reads follow, a read one is not removed, an unread one is",
+            "steps": [
+              {
+                "step": "waitForAttribute",
+                "label": "the define block names the action",
+                "target": {
+                  "byTestId": "block-define"
+                },
+                "attribute": "data-name",
+                "value": "entity_DuplicateAttribute",
+                "timeout": 3000
+              },
+              {
+                "step": "click",
+                "label": "rename sourceEntityUuid",
+                "target": {
+                  "byTestId": "block-define-rename:sourceEntityUuid"
+                }
+              },
+              {
+                "step": "clear",
+                "label": "clear the name",
+                "target": {
+                  "byTestId": "block-define-name:sourceEntityUuid"
+                }
+              },
+              {
+                "step": "type",
+                "label": "name it sourceUuid",
+                "target": {
+                  "byTestId": "block-define-name:sourceEntityUuid"
+                },
+                "text": "sourceUuid{Enter}"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "sourceUuid is read",
+                "target": {
+                  "byTestId": "block-define-parameter:sourceUuid"
+                },
+                "attribute": "data-read",
+                "value": "true"
+              },
+              {
+                "step": "expectElement",
+                "label": "the old name is gone",
+                "target": {
+                  "byTestId": "block-define-parameter:sourceEntityUuid"
+                },
+                "present": false
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "a read parameter cannot be removed",
+                "target": {
+                  "byTestId": "block-define-remove:sourceUuid"
+                },
+                "attribute": "disabled",
+                "value": ""
+              },
+              {
+                "step": "click",
+                "label": "remove sourceEntityName",
+                "target": {
+                  "byTestId": "block-define-remove:sourceEntityName"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "sourceEntityName is gone",
+                "target": {
+                  "byTestId": "block-define-parameter:sourceEntityName"
+                },
+                "present": false
+              },
+              {
+                "step": "click",
+                "label": "add a parameter",
+                "target": {
+                  "byTestId": "block-define-add"
+                }
+              },
+              {
+                "step": "type",
+                "label": "name it application, taken",
+                "target": {
+                  "byTestId": "block-define-new"
+                },
+                "text": "application{Enter}"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "a taken name is refused",
+                "target": {
+                  "byTestId": "block-define-error"
+                },
+                "attribute": "data-testid",
+                "value": "block-define-error"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "miroirTestType": "reactComponentTestSuite",
+        "miroirTestLabel": "an Endpoint action in an instance editor",
+        "component": "MlElementEditor",
+        "componentProps": {
+          "label": "Test Label",
+          "name": "testField",
+          "listKey": "ROOT.testField",
+          "rootLessListKey": "testField",
+          "rootLessListKeyArray": [
+            "testField"
+          ],
+          "blockViewSwitch": true,
+          "rawMlSchema": {
+            "type": "object",
+            "definition": {
+              "action": {
+                "type": "object",
+                "definition": {
+                  "actionParameters": {
+                    "type": "any"
+                  },
+                  "actionImplementation": {
+                    "type": "union",
+                    "optional": true,
+                    "discriminator": "actionImplementationType",
+                    "definition": [
+                      {
+                        "type": "object",
+                        "definition": {
+                          "actionImplementationType": {
+                            "type": "literal",
+                            "definition": "libraryImplementation"
+                          },
+                          "inMemoryImplementationFunctionName": {
+                            "type": "string"
+                          },
+                          "sqlImplementationFunctionName": {
+                            "type": "string",
+                            "optional": true
+                          }
+                        }
+                      },
+                      {
+                        "type": "object",
+                        "definition": {
+                          "actionImplementationType": {
+                            "type": "literal",
+                            "definition": "compositeActionTemplate"
+                          },
+                          "definition": {
+                            "type": "any",
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Composite Action Definition",
+                                "display": {
+                                  "editable": true
+                                },
+                                "ifThenElseMMLS": {
+                                  "mmlsReference": {
+                                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                    "relativePath": "compositeActionTemplate"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "initialFormState": {
+            "action": {
+              "actionParameters": {
+                "actionType": {
+                  "type": "literal",
+                  "tag": {
+                    "value": {
+                      "canBeTemplate": false
+                    }
+                  },
+                  "definition": "entity_DuplicateAttribute"
+                },
+                "actionLabel": {
+                  "type": "string",
+                  "optional": true
+                },
+                "endpoint": {
+                  "type": "literal",
+                  "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+                },
+                "payload": {
+                  "type": "object",
+                  "definition": {
+                    "application": {
+                      "type": "uuid",
+                      "tag": {
+                        "value": {
+                          "canBeTemplate": true,
+                          "defaultLabel": "Application",
+                          "foreignKeyParams": {
+                            "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+                            "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                            "targetEntityOrderInstancesBy": "name"
+                          },
+                          "display": {
+                            "editable": false
+                          }
+                        }
+                      }
+                    },
+                    "transactional": {
+                      "type": "boolean",
+                      "optional": true
+                    },
+                    "columns": {
+                      "type": "array",
+                      "optional": true,
+                      "definition": {
+                        "type": "string",
+                        "description": "the columns to be duplicated"
+                      }
+                    },
+                    "sourceEntityName": {
+                      "type": "string",
+                      "optional": true
+                    },
+                    "sourceEntityUuid": {
+                      "type": "uuid"
+                    },
+                    "targetEntityName": {
+                      "type": "string",
+                      "optional": true
+                    },
+                    "targetEntityUuid": {
+                      "type": "uuid"
+                    }
+                  }
+                }
+              },
+              "actionImplementation": {
+                "actionImplementationType": "compositeActionTemplate",
+                "definition": {
+                  "actionType": "compositeActionSequence",
+                  "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                  "payload": {
+                    "actionSequence": [
+                      {
+                        "actionType": "compositeRunBoxedQueryAction",
+                        "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                        "actionLabel": "sourceEntityLookup",
+                        "nameGivenToResult": "sourceEntity",
+                        "payload": {
+                          "actionType": "runBoxedQueryAction",
+                          "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                          "payload": {
+                            "application": {
+                              "transformerType": "getFromContext",
+                              "interpolation": "runtime",
+                              "referencePath": [
+                                "payload",
+                                "application"
+                              ]
+                            },
+                            "applicationSection": "model",
+                            "queryExecutionStrategy": "storage",
+                            "query": {
+                              "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                              "application": {
+                                "transformerType": "getFromContext",
+                                "interpolation": "runtime",
+                                "referencePath": [
+                                  "payload",
+                                  "application"
+                                ]
+                              },
+                              "extractors": {
+                                "entities": {
+                                  "extractorOrCombinerType": "extractorByPrimaryKey",
+                                  "applicationSection": "model",
+                                  "parentName": "Entity",
+                                  "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                                  "instanceUuid": {
+                                    "transformerType": "getFromContext",
+                                    "interpolation": "runtime",
+                                    "referencePath": [
+                                      "payload",
+                                      "sourceEntityUuid"
+                                    ]
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "actionType": "compositeRunBoxedQueryAction",
+                        "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                        "actionLabel": "targetEntityLookup",
+                        "nameGivenToResult": "targetEntity",
+                        "payload": {
+                          "actionType": "runBoxedQueryAction",
+                          "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                          "payload": {
+                            "application": {
+                              "transformerType": "getFromContext",
+                              "interpolation": "runtime",
+                              "referencePath": [
+                                "payload",
+                                "application"
+                              ]
+                            },
+                            "applicationSection": "model",
+                            "queryExecutionStrategy": "storage",
+                            "query": {
+                              "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                              "application": {
+                                "transformerType": "getFromContext",
+                                "interpolation": "runtime",
+                                "referencePath": [
+                                  "payload",
+                                  "application"
+                                ]
+                              },
+                              "extractors": {
+                                "entities": {
+                                  "extractorOrCombinerType": "extractorByPrimaryKey",
+                                  "applicationSection": "model",
+                                  "parentName": "Entity",
+                                  "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                                  "instanceUuid": {
+                                    "transformerType": "getFromContext",
+                                    "interpolation": "runtime",
+                                    "referencePath": [
+                                      "payload",
+                                      "targetEntityUuid"
+                                    ]
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "actionType": "alterEntityAttribute",
+                        "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                        "actionLabel": "duplicateAttributes",
+                        "payload": {
+                          "application": {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referencePath": [
+                              "payload",
+                              "application"
+                            ]
+                          },
+                          "entityName": {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referencePath": [
+                              "targetEntity",
+                              "entities",
+                              "name"
+                            ]
+                          },
+                          "entityUuid": {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referencePath": [
+                              "payload",
+                              "targetEntityUuid"
+                            ]
+                          },
+                          "addColumns": {
+                            "transformerType": "mapList",
+                            "interpolation": "runtime",
+                            "applyTo": {
+                              "transformerType": "entityDefinition_extractAttributes",
+                              "interpolation": "runtime",
+                              "entityDefinition": {
+                                "transformerType": "getFromContext",
+                                "interpolation": "runtime",
+                                "referencePath": [
+                                  "sourceEntity",
+                                  "entities"
+                                ]
+                              },
+                              "attributeNames": {
+                                "transformerType": "getFromContext",
+                                "interpolation": "runtime",
+                                "referencePath": [
+                                  "payload",
+                                  "columns"
+                                ]
+                              }
+                            },
+                            "referenceToOuterObject": "attribute",
+                            "elementTransformer": {
+                              "transformerType": "createObject",
+                              "interpolation": "runtime",
+                              "definition": {
+                                "name": {
+                                  "transformerType": "getFromContext",
+                                  "interpolation": "runtime",
+                                  "referencePath": [
+                                    "attribute",
+                                    "0"
+                                  ]
+                                },
+                                "definition": {
+                                  "transformerType": "getFromContext",
+                                  "interpolation": "runtime",
+                                  "referencePath": [
+                                    "attribute",
+                                    "1"
+                                  ]
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "miroirTests": [
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "an Endpoint action in an instance editor: the body of a composite action shows its define block; a rename writes the action",
+            "steps": [
+              {
+                "step": "click",
+                "label": "choose Blocks",
+                "target": {
+                  "byTestId": "block-view-mode:testField.action.actionImplementation.definition:blocks"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the define block names the action",
+                "target": {
+                  "byTestId": "block-define"
+                },
+                "attribute": "data-name",
+                "value": "entity_DuplicateAttribute",
+                "timeout": 3000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "sourceEntityUuid is read",
+                "target": {
+                  "byTestId": "block-define-parameter:sourceEntityUuid"
+                },
+                "attribute": "data-read",
+                "value": "true"
+              },
+              {
+                "step": "click",
+                "label": "rename sourceEntityUuid",
+                "target": {
+                  "byTestId": "block-define-rename:sourceEntityUuid"
+                }
+              },
+              {
+                "step": "clear",
+                "label": "clear the name",
+                "target": {
+                  "byTestId": "block-define-name:sourceEntityUuid"
+                }
+              },
+              {
+                "step": "type",
+                "label": "name it sourceUuid",
+                "target": {
+                  "byTestId": "block-define-name:sourceEntityUuid"
+                },
+                "text": "sourceUuid{Enter}"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the action has sourceUuid, read by its body",
+                "target": {
+                  "byTestId": "block-define-parameter:sourceUuid"
+                },
+                "attribute": "data-read",
+                "value": "true"
+              },
+              {
+                "step": "expectElement",
+                "label": "the old name is gone",
+                "target": {
+                  "byTestId": "block-define-parameter:sourceEntityUuid"
+                },
+                "present": false
+              }
+            ]
+          }
+        ]
       }
     ]
   }

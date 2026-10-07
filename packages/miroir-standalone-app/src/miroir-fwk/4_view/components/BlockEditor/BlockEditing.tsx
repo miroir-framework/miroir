@@ -138,7 +138,7 @@ export function armedLabel(armed: ArmedBlock): string {
       return `tray block ${armed.index + 1}`;
     case "variable":
       return armed.path
-        ? `form field ${armed.path.slice(1).join(".")}`
+        ? `${armed.source === "parameters" ? "form field" : "parameter"} ${armed.path.slice(1).join(".")}`
         : `${armed.source === "context" ? "context" : "parameter"} ${armed.name}`;
   }
 }
@@ -202,7 +202,7 @@ function isActionValue(value: unknown): boolean {
   return isRecord(value) && typeof value.actionType === "string" && typeof value.transformerType !== "string";
 }
 
-/** The block a variable puts: a runtime read of its name, or of `path` from it (a Runner's form field, #505). */
+/** The block a variable puts: a runtime read of its name, or of `path` from it (a Runner's form field, #505, an Endpoint action's parameter, #506). */
 export function variableNode(source: VariableSource, name: string, path?: string[]): Record<string, unknown> {
   return {
     transformerType: source === "context" ? "getFromContext" : "getFromParameters",

@@ -45,7 +45,7 @@ Working branch: `claude/506-block-editor-endpoint-actions`
 |---|---|---|---|
 | 0 | This plan | ✅ | — |
 | 1 | Composite Endpoint actions and their hat (core) | ✅ | `fn.blockModel` "endpoint actions" |
-| 2 | The define hat of an Endpoint action in the block view (AC 2) | ⬜ | `ui.blockEditing` "an Endpoint action" |
+| 2 | The define hat of an Endpoint action in the block view (AC 2) | ✅ | `ui.blockEditing` "an Endpoint action" |
 | 3 | Save as Action, the palette, a run (AC 1) | ⬜ | `ui.blockEditing` "SequenceEditor on the Library" |
 | 4 | Docs, nonreg, PR | ⬜ | nonreg |
 
@@ -76,6 +76,8 @@ GREEN: `2_domain/EndpointActionEdit.ts`, registry entries.
 
 RED: `ui.blockEditing` suite "an Endpoint action": `entity_DuplicateAttribute` in the block view shows the define hat with its parameters, read flags, and its steps, and its value is unchanged (round trip); in an editable view, a parameter armed from the hat replaces a literal with `getFromContext ["payload", p]`; a parameter renamed in the hat rewrites its reads.
 GREEN: `BlockDefine` read paths and context names, the hat for actions, detection in `BlockViewSwitch`, the test component.
+
+**Realization (✅):** `BlockDefine` has an optional `contextName`: the parameters of an Endpoint action are attributes of `payload`, so the body's root environment has the context name `payload`, and a parameter chip arms `{ source: "context", name: "payload", path: ["payload", p] }` (a `referencePath` read). `BlockEndpointAction.ts` gives `useBlockDefineOfEndpointAction(action, setAction, key)` over the slice 1 functions. `BlockViewSwitch` detects a field ending in `actionImplementation.definition`, reads the action around it, and writes the whole action with one `setFieldValue` on a parameter change. `TransformerBlocks` takes `endpointAction` (an action type of ModelEndpoint), with `block-action-value` holding the action. Three suites in `ui.blockEditing` (5 leaves): "an Endpoint action" (read-only: define block, read flags, steps, the value unchanged); "an Endpoint action edited" (the value unchanged when editable; `targetEntityName` replaces the `entityName` read by Replace with in the block menu: the third step's payload is the only one that takes blocks, the query steps' payloads being one block each; a rename, a read one not removable, an unread one removed, a taken name refused); "an Endpoint action in an instance editor" (`MlElementEditor` with the Endpoint Entity's own `actionImplementation` schema: a rename writes the action). The round trip compares `block-action-value` with the action's JSON. `ui.blockEditing` 52/52; leaf count 199.
 
 ## Slice 3 — Save as Action, the palette, a run (AC 1)
 
