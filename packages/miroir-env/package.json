@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "miroir-core": "*",
-    "mongodb": "6.21.0",
+    "mongodb": "7.7.0",
     "pg": "8.23.0"
   },
   "devDependencies": {
