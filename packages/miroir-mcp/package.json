@@ -35,7 +35,7 @@
     "framework"
   ],
   "dependencies": {
-    "@modelcontextprotocol/sdk": "1.31.0",
+    "@modelcontextprotocol/sdk": "1.32.0",
     "express": "5.2.1",
     "loglevelnext": "6.0.0",
     "miroir-core": "*",
@@ -64,11 +64,11 @@
   },
   "devDependencies": {
     "@types/express": "5.0.6",
-    "@types/node": "26.6.3",
+    "@types/node": "26.6.4",
     "@types/uuid": "11.0.0",
     "cross-env": "10.1.0",
     "miroir-env": "*",
     "tsup": "8.5.1",
-    "vitest": "5.0.2"
+    "vitest": "5.0.3"
   }
 }
