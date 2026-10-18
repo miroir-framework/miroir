@@ -20,7 +20,7 @@
   "dependencies": {
     "miroir-core": "*",
     "miroir-app-miroir": "*",
-    "pg": "8.23.0",
+    "pg": "8.23.1",
     "pg-hstore": "2.3.4"
   },
   "devDependencies": {

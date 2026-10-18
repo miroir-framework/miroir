@@ -45,10 +45,10 @@
   "devDependencies": {
     "@types/react": "18.3.23",
     "@types/react-dom": "18.3.7",
-    "happy-dom": "20.14.5",
+    "happy-dom": "20.14.6",
     "miroir-app-admin": "*",
     "miroir-example-library": "*",
     "tsup": "8.5.1",
-    "vitest": "5.0.2"
+    "vitest": "5.0.3"
   }
 }
