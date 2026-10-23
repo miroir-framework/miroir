@@ -248,10 +248,15 @@ flowchart LR
     S["Server DomainController<br/>local · PersistenceStoreControllers"]
   end
   C -- "RestClient<br/>HTTPS localhost:3080" --> S
-  S --> PG[("PostgreSQL<br/>schemas miroirAdmin, miroir, library, …")]
+  S -.-> PG[("PostgreSQL (default)<br/>schemas miroirAdmin, miroir, library, …")]
+  S -.-> FS[("Filesystem<br/>JSON files per entity")]
+  S -.-> MG[("MongoDB<br/>one database per section")]
+  S -.-> LV[("IndexedDb API<br/>level databases on disk")]
 ```
 
-`emulateServer: false`, `serverConfig.storeSectionConfiguration` with `emulatedServerType: "sql"`. Turn AI/MCP off by setting `features.ai` / `features.mcp` false on the **server** JSON and restarting.
+Dotted arrows: the backends the server can open (PostgreSQL in the shipped configuration), chosen per section (`admin`, `model`, `data`, `modelVersion`) through `emulatedServerType`; sections of one deployment may use different backends. See [Storage Backend Types](#storage-backend-types-emulatedservertype).
+
+`emulateServer: false`, `serverConfig.storeSectionConfiguration` with `emulatedServerType: "sql"` by default. Turn AI/MCP off by setting `features.ai` / `features.mcp` false on the **server** JSON and restarting.
 
 ### B. Demo / sandbox: Serverless (emulated server within the Browser, indexedDb)
 
