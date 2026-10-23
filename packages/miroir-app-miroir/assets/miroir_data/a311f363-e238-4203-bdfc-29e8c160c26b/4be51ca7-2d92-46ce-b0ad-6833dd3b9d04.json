@@ -6347,6 +6347,112 @@
             ]
           }
         ]
+      },
+      {
+        "miroirTestType": "reactComponentTestSuite",
+        "miroirTestLabel": "presentation hints",
+        "component": "TransformerBlocks",
+        "componentProps": {
+          "transformerDefinition": "entityDefinition_extractAttributes"
+        },
+        "miroirTests": [
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "presentation hints: a filterList block reads as the sentence of its label template",
+            "steps": [
+              {
+                "step": "waitForAttribute",
+                "label": "the root is filterList",
+                "target": {
+                  "byTestId": "block:transformerImplementation.definition"
+                },
+                "attribute": "data-transformer-type",
+                "value": "filterList",
+                "timeout": 3000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "its header is the sentence of its template",
+                "target": {
+                  "byTestId": "block-title:transformerImplementation.definition"
+                },
+                "attribute": "data-title",
+                "value": "keep from [applyTo] where [predicate]"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the type name is its tooltip",
+                "target": {
+                  "byTestId": "block-title:transformerImplementation.definition"
+                },
+                "attribute": "title",
+                "value": "filterList"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the predicate is a chip",
+                "target": {
+                  "byTestId": "block-title-attribute:transformerImplementation.definition:predicate"
+                },
+                "attribute": "data-value",
+                "value": "predicate"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "a block without template keeps its type name",
+                "target": {
+                  "byTestId": "block-title:transformerImplementation.definition.predicate"
+                },
+                "attribute": "data-title",
+                "value": "boolExpr"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "miroirTestType": "reactComponentTestSuite",
+        "miroirTestLabel": "presentation hints of a dataflow",
+        "component": "TransformerBlocks",
+        "componentProps": {
+          "transformerDefinition": "spreadSheetToMlSchema"
+        },
+        "miroirTests": [
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "presentation hints of a dataflow: a header parameter in the sentence shows its value",
+            "steps": [
+              {
+                "step": "waitForAttribute",
+                "label": "the root is dataflowObject",
+                "target": {
+                  "byTestId": "block:transformerImplementation.definition"
+                },
+                "attribute": "data-transformer-type",
+                "value": "dataflowObject",
+                "timeout": 3000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "its header is the sentence of its template",
+                "target": {
+                  "byTestId": "block-title:transformerImplementation.definition"
+                },
+                "attribute": "data-title",
+                "value": "compute [definition] and return [target]"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the target chip shows the target",
+                "target": {
+                  "byTestId": "block-title-attribute:transformerImplementation.definition:target"
+                },
+                "attribute": "data-value",
+                "value": "schema"
+              }
+            ]
+          }
+        ]
       }
     ]
   }

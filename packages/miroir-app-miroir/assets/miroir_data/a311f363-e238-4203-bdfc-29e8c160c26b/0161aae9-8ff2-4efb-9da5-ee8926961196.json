@@ -7293,6 +7293,405 @@
             }
           }
         ]
+      },
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "presentation hints",
+        "miroirTests": [
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a label template: words, and a chip for each attribute",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerBlockModel",
+              "export": "blockTitleSegments"
+            },
+            "arguments": [
+              "map [applyTo] with [elementTransformer]",
+              [
+                "applyTo",
+                "referenceToOuterObject",
+                "elementTransformer"
+              ]
+            ],
+            "expectedValue": [
+              {
+                "text": "map "
+              },
+              {
+                "attribute": "applyTo"
+              },
+              {
+                "text": " with "
+              },
+              {
+                "attribute": "elementTransformer"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a [name] that is no attribute of the block stays text",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerBlockModel",
+              "export": "blockTitleSegments"
+            },
+            "arguments": [
+              "map [list] with [elementTransformer]!",
+              [
+                "applyTo",
+                "referenceToOuterObject",
+                "elementTransformer"
+              ]
+            ],
+            "expectedValue": [
+              {
+                "text": "map [list] with "
+              },
+              {
+                "attribute": "elementTransformer"
+              },
+              {
+                "text": "!"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a template without attributes is one piece of text",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerBlockModel",
+              "export": "blockTitleSegments"
+            },
+            "arguments": [
+              "list of books",
+              [
+                "applyTo",
+                "referenceToOuterObject",
+                "elementTransformer"
+              ]
+            ],
+            "expectedValue": [
+              {
+                "text": "list of books"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "the hints of a TransformerDefinition: the title, the icon, the color category and the colors per Theme",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerBlockModel",
+              "export": "transformerBlockTree"
+            },
+            "arguments": [
+              {
+                "transformerType": "mapList",
+                "interpolation": "runtime",
+                "referenceToOuterObject": "book",
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referenceName": "books"
+                },
+                "elementTransformer": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "book",
+                    "name"
+                  ]
+                }
+              },
+              {
+                "transformerDefinitions": {
+                  "mapList": {
+                    "uuid": "3ec73049-5e54-40aa-bc86-4c4906d00baa",
+                    "name": "mapList",
+                    "defaultLabel": "mapList",
+                    "description": "Transforms each element in a list by applying a transformer to every item.",
+                    "parentUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
+                    "parentDefinitionVersionUuid": "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
+                    "parentName": "TransformerDefinition",
+                    "classification": "list",
+                    "presentation": {
+                      "labelTemplate": "map [applyTo] with [elementTransformer]",
+                      "icon": "repeat",
+                      "category": "control",
+                      "colorByTheme": {
+                        "dark": "#3355aa"
+                      }
+                    },
+                    "transformerInterface": {
+                      "inputOutput": {
+                        "input": "array",
+                        "output": "array"
+                      },
+                      "transformerParameterSchema": {
+                        "transformerType": {
+                          "type": "literal",
+                          "definition": "mapList"
+                        },
+                        "transformerDefinition": {
+                          "type": "object",
+                          "extend": [
+                            {
+                              "type": "schemaReference",
+                              "definition": {
+                                "eager": true,
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "transformer_orderBy"
+                              }
+                            }
+                          ],
+                          "definition": {
+                            "applyTo": {
+                              "type": "any",
+                              "optional": true,
+                              "description": "The list to transform. The actual type is set by the platform depending on interpolation for the transformer."
+                            },
+                            "referenceToOuterObject": {
+                              "type": "string",
+                              "optional": true,
+                              "description": "If set, each element of the list will have access to the outer object through this attribute name."
+                            },
+                            "elementTransformer": {
+                              "type": "schemaReference",
+                              "definition": {
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "transformer"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "transformerResultSchema": {
+                        "returns": "mlSchema",
+                        "definition": {
+                          "type": "array",
+                          "definition": {
+                            "type": "any"
+                          }
+                        }
+                      }
+                    },
+                    "transformerImplementation": {
+                      "transformerImplementationType": "libraryImplementation",
+                      "inMemoryImplementationFunctionName": "transformerForBuild_list_listMapperToList_apply",
+                      "sqlImplementationFunctionName": "sqlStringForMapperListToListTransformer"
+                    }
+                  }
+                }
+              }
+            ],
+            "assertions": [
+              {
+                "label": "the presentation",
+                "resultAccessPath": [
+                  "root",
+                  "presentation"
+                ],
+                "expectedValue": {
+                  "title": [
+                    {
+                      "text": "map "
+                    },
+                    {
+                      "attribute": "applyTo"
+                    },
+                    {
+                      "text": " with "
+                    },
+                    {
+                      "attribute": "elementTransformer"
+                    }
+                  ],
+                  "icon": "repeat",
+                  "colorCategory": "control",
+                  "colorByTheme": {
+                    "dark": "#3355aa"
+                  }
+                }
+              },
+              {
+                "label": "the category stays the classification",
+                "resultAccessPath": [
+                  "root",
+                  "category"
+                ],
+                "expectedValue": "list"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "hints with an icon only: the presentation has the icon only",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerBlockModel",
+              "export": "transformerBlockTree"
+            },
+            "arguments": [
+              {
+                "transformerType": "mapList",
+                "interpolation": "runtime",
+                "referenceToOuterObject": "book",
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referenceName": "books"
+                },
+                "elementTransformer": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "book",
+                    "name"
+                  ]
+                }
+              },
+              {
+                "transformerDefinitions": {
+                  "mapList": {
+                    "uuid": "3ec73049-5e54-40aa-bc86-4c4906d00baa",
+                    "name": "mapList",
+                    "defaultLabel": "mapList",
+                    "description": "Transforms each element in a list by applying a transformer to every item.",
+                    "parentUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
+                    "parentDefinitionVersionUuid": "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
+                    "parentName": "TransformerDefinition",
+                    "classification": "list",
+                    "presentation": {
+                      "icon": "repeat",
+                      "labelTemplate": " "
+                    },
+                    "transformerInterface": {
+                      "inputOutput": {
+                        "input": "array",
+                        "output": "array"
+                      },
+                      "transformerParameterSchema": {
+                        "transformerType": {
+                          "type": "literal",
+                          "definition": "mapList"
+                        },
+                        "transformerDefinition": {
+                          "type": "object",
+                          "extend": [
+                            {
+                              "type": "schemaReference",
+                              "definition": {
+                                "eager": true,
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "transformer_orderBy"
+                              }
+                            }
+                          ],
+                          "definition": {
+                            "applyTo": {
+                              "type": "any",
+                              "optional": true,
+                              "description": "The list to transform. The actual type is set by the platform depending on interpolation for the transformer."
+                            },
+                            "referenceToOuterObject": {
+                              "type": "string",
+                              "optional": true,
+                              "description": "If set, each element of the list will have access to the outer object through this attribute name."
+                            },
+                            "elementTransformer": {
+                              "type": "schemaReference",
+                              "definition": {
+                                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                                "relativePath": "transformer"
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "transformerResultSchema": {
+                        "returns": "mlSchema",
+                        "definition": {
+                          "type": "array",
+                          "definition": {
+                            "type": "any"
+                          }
+                        }
+                      }
+                    },
+                    "transformerImplementation": {
+                      "transformerImplementationType": "libraryImplementation",
+                      "inMemoryImplementationFunctionName": "transformerForBuild_list_listMapperToList_apply",
+                      "sqlImplementationFunctionName": "sqlStringForMapperListToListTransformer"
+                    }
+                  }
+                }
+              }
+            ],
+            "assertions": [
+              {
+                "label": "the icon only",
+                "resultAccessPath": [
+                  "root",
+                  "presentation"
+                ],
+                "expectedValue": {
+                  "icon": "repeat"
+                }
+              }
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "the label template of mapList, from its TransformerDefinition",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerBlockModel",
+              "export": "transformerBlockTree"
+            },
+            "arguments": [
+              {
+                "transformerType": "mapList",
+                "interpolation": "runtime",
+                "referenceToOuterObject": "book",
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referenceName": "books"
+                },
+                "elementTransformer": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "book",
+                    "name"
+                  ]
+                }
+              }
+            ],
+            "assertions": [
+              {
+                "label": "the title",
+                "resultAccessPath": [
+                  "root",
+                  "presentation"
+                ],
+                "expectedValue": {
+                  "title": [
+                    {
+                      "text": "map "
+                    },
+                    {
+                      "attribute": "applyTo"
+                    },
+                    {
+                      "text": " with "
+                    },
+                    {
+                      "attribute": "elementTransformer"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
       }
     ]
   }

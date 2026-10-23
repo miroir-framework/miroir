@@ -1,0 +1,227 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "1d2d73af-b696-4acb-a9cb-ef0c234930dd",
+  "status": "current",
+  "command": "deliver",
+  "type": "explainer",
+  "input": "C:\\Users\\nono\\Documents\\devhome\\miroir-validation\\code-helpers\\analyses\\2026-10-22-report-editor-live-feedback\\candidate.archify.md",
+  "output": "C:\\Users\\nono\\Documents\\devhome\\miroir-validation\\code-helpers\\analyses\\2026-10-22-report-editor-live-feedback\\report-editor-live-feedback.html",
+  "specification": {
+    "sha256": "3c261e255a5f2b544cf1eec6a16dee81977ff9fe6d33de2ed5bb50e6976346c0",
+    "bytes": 16464
+  },
+  "artifact": {
+    "sha256": "9a0ca9839d821e698b3682e9930c799b4cf2ed1444764b07e4ae986111be548b",
+    "bytes": 2458844
+  },
+  "explainer": {
+    "preparedSha256": "cb0ae13990dabed857bda709a920dbde2c92bfd54ffbeba16ebfb74a9eb7828b",
+    "dependencies": [
+      {
+        "kind": "repository",
+        "id": "nested-formik-code",
+        "path": "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportSectionEntityInstance.tsx",
+        "revision": "958657e977fbf176cb7ee1e3c78231e4b318bb65",
+        "sha256": "738e332bf1f25b257bc4122b663ec2757c40eba832d90adc8a798f2ced4ee216",
+        "bytes": 32316
+      },
+      {
+        "kind": "repository",
+        "id": "nested-formik",
+        "path": "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportSectionEntityInstance.tsx",
+        "revision": "958657e977fbf176cb7ee1e3c78231e4b318bb65",
+        "sha256": "738e332bf1f25b257bc4122b663ec2757c40eba832d90adc8a798f2ced4ee216",
+        "bytes": 32316
+      },
+      {
+        "kind": "repository",
+        "id": "displayed-instance",
+        "path": "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportSectionEntityInstance.tsx",
+        "revision": "958657e977fbf176cb7ee1e3c78231e4b318bb65",
+        "sha256": "738e332bf1f25b257bc4122b663ec2757c40eba832d90adc8a798f2ced4ee216",
+        "bytes": 32316
+      },
+      {
+        "kind": "repository",
+        "id": "submit-nested",
+        "path": "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportSectionEntityInstance.tsx",
+        "revision": "958657e977fbf176cb7ee1e3c78231e4b318bb65",
+        "sha256": "738e332bf1f25b257bc4122b663ec2757c40eba832d90adc8a798f2ced4ee216",
+        "bytes": 32316
+      },
+      {
+        "kind": "repository",
+        "id": "query-run",
+        "path": "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportSectionEntityInstance.tsx",
+        "revision": "958657e977fbf176cb7ee1e3c78231e4b318bb65",
+        "sha256": "738e332bf1f25b257bc4122b663ec2757c40eba832d90adc8a798f2ced4ee216",
+        "bytes": 32316
+      },
+      {
+        "kind": "repository",
+        "id": "inline-editor",
+        "path": "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/InlineReportEditor.tsx",
+        "revision": "958657e977fbf176cb7ee1e3c78231e4b318bb65",
+        "sha256": "6483ac9651643aad3abd767975587de0bcb6ad7b1f1a72292cfaaa6c9b3859c5",
+        "bytes": 4599
+      },
+      {
+        "kind": "repository",
+        "id": "rvwe-values",
+        "path": "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportViewWithEditor.tsx",
+        "revision": "958657e977fbf176cb7ee1e3c78231e4b318bb65",
+        "sha256": "fc473534d1d062c4d9d07b72be5cd163bf6a0d3955e9a9270dd61b0019f56418",
+        "bytes": 27331
+      },
+      {
+        "kind": "repository",
+        "id": "rvwe-formik",
+        "path": "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportViewWithEditor.tsx",
+        "revision": "958657e977fbf176cb7ee1e3c78231e4b318bb65",
+        "sha256": "fc473534d1d062c4d9d07b72be5cd163bf6a0d3955e9a9270dd61b0019f56418",
+        "bytes": 27331
+      },
+      {
+        "kind": "repository",
+        "id": "rvwe-query",
+        "path": "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportViewWithEditor.tsx",
+        "revision": "958657e977fbf176cb7ee1e3c78231e4b318bb65",
+        "sha256": "fc473534d1d062c4d9d07b72be5cd163bf6a0d3955e9a9270dd61b0019f56418",
+        "bytes": 27331
+      },
+      {
+        "kind": "repository",
+        "id": "rsvwe-read",
+        "path": "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportSectionViewWithEditor.tsx",
+        "revision": "958657e977fbf176cb7ee1e3c78231e4b318bb65",
+        "sha256": "4971178be75ed77a1deb84025f6c4ec0ab93658189b569d59f8e281b6e6faccb",
+        "bytes": 32332
+      },
+      {
+        "kind": "repository",
+        "id": "tvoe-typecheck",
+        "path": "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/TypedValueObjectEditor.tsx",
+        "revision": "958657e977fbf176cb7ee1e3c78231e4b318bb65",
+        "sha256": "b8c9009530c8d81987e90bc52dfee3ba1d4c20df0f58b030e2c9c2bf5d39a9c1",
+        "bytes": 31525
+      },
+      {
+        "kind": "repository",
+        "id": "report-display",
+        "path": "packages/miroir-standalone-app/src/miroir-fwk/4_view/routes/ReportDisplay.tsx",
+        "revision": "958657e977fbf176cb7ee1e3c78231e4b318bb65",
+        "sha256": "3e083924ae6c85dd2758f48ff95d72cbb30776d66d3666f9a30a2b99c0925a95",
+        "bytes": 8375
+      },
+      {
+        "kind": "repository",
+        "id": "root-mapping",
+        "path": "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Page/RootComponent.tsx",
+        "revision": "958657e977fbf176cb7ee1e3c78231e4b318bb65",
+        "sha256": "b3474e16fffa04a1337d42cc2d65b5820a8f6040e315ab99593628f9c8fdf74e",
+        "bytes": 38692
+      },
+      {
+        "kind": "repository",
+        "id": "localcache",
+        "path": "packages/miroir-localcache-redux/src/4_services/localCache/LocalCacheSlice.ts",
+        "revision": "958657e977fbf176cb7ee1e3c78231e4b318bb65",
+        "sha256": "124675a94a4d1dbda72d2cffb3246bdd8a115d5c1187d0eecc962e52a0a2c2de",
+        "bytes": 41421
+      },
+      {
+        "kind": "repository",
+        "id": "plan82",
+        "path": "code-helpers/features/82-FEATURE-virtual-attributes-on-entity/tdd-implementation-plan.md",
+        "revision": "958657e977fbf176cb7ee1e3c78231e4b318bb65",
+        "sha256": "c492e44e839ca88a8a46b012e9ce6b9aeb146d0d9e47626a0d64f6f76af932bc",
+        "bytes": 42151
+      },
+      {
+        "kind": "repository",
+        "id": "analysis274",
+        "path": "code-helpers/features/274-FEATURE-multistep-reports/analysis.md",
+        "revision": "958657e977fbf176cb7ee1e3c78231e4b318bb65",
+        "sha256": "75cba841f6e816f9756d34b9ce197541f713dd3f9740aca30cd25a908292e1d4",
+        "bytes": 33206
+      },
+      {
+        "kind": "repository",
+        "id": "plan330",
+        "path": "code-helpers/features/330-FEATURE-report-level-miroir-tests/tdd-implementation-plan.md",
+        "revision": "958657e977fbf176cb7ee1e3c78231e4b318bb65",
+        "sha256": "c4b03f520ba3f61110db5b3d362544433dfbf55856355996b49cc8c28ba8e0de",
+        "bytes": 65147
+      },
+      {
+        "kind": "repository",
+        "id": "internals-doc",
+        "path": "docs/internals/report-display.md",
+        "revision": "958657e977fbf176cb7ee1e3c78231e4b318bb65",
+        "sha256": "655dbac63e72438c4dabceac3c3a14723dcc7fc9a436aef2b0214b7c5308f9a5",
+        "bytes": 20236
+      },
+      {
+        "kind": "repository",
+        "id": "bag-keys",
+        "path": "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/MultistepReportHost.tsx",
+        "revision": "958657e977fbf176cb7ee1e3c78231e4b318bb65",
+        "sha256": "66955bc1ebad79aafcbb0b948892cff04f9163530714335b3c18a3c06fa13bc4",
+        "bytes": 37155
+      },
+      {
+        "kind": "repository",
+        "id": "bag-capture",
+        "path": "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportViewWithEditor.tsx",
+        "revision": "958657e977fbf176cb7ee1e3c78231e4b318bb65",
+        "sha256": "fc473534d1d062c4d9d07b72be5cd163bf6a0d3955e9a9270dd61b0019f56418",
+        "bytes": 27331
+      },
+      {
+        "kind": "repository",
+        "id": "bag-finish",
+        "path": "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/MultistepReportHost.tsx",
+        "revision": "958657e977fbf176cb7ee1e3c78231e4b318bb65",
+        "sha256": "66955bc1ebad79aafcbb0b948892cff04f9163530714335b3c18a3c06fa13bc4",
+        "bytes": 37155
+      },
+      {
+        "kind": "repository",
+        "id": "d5",
+        "path": "code-helpers/features/274-FEATURE-multistep-reports/analysis.md",
+        "revision": "958657e977fbf176cb7ee1e3c78231e4b318bb65",
+        "sha256": "75cba841f6e816f9756d34b9ce197541f713dd3f9740aca30cd25a908292e1d4",
+        "bytes": 33206
+      },
+      {
+        "kind": "repository",
+        "id": "plan274",
+        "path": "code-helpers/features/274-FEATURE-multistep-reports/tdd-implementation-plan.md",
+        "revision": "958657e977fbf176cb7ee1e3c78231e4b318bb65",
+        "sha256": "83dcb7cd96d40b764c99527216875a46cbe8961240275eeacc206a647a2445cc",
+        "bytes": 55591
+      },
+      {
+        "kind": "diagram-spec",
+        "id": "report-page-tree",
+        "inline": true,
+        "sha256": "761e6519cba80284f08e97f29073de891bdaac7bc3787d82237ff77a2c2876fc",
+        "bytes": 1972
+      },
+      {
+        "kind": "diagram-spec",
+        "id": "keystroke-june",
+        "inline": true,
+        "sha256": "c505679050e922148784867b520a3d514cd8f32d5fcd40568a3da8554f645d8e",
+        "bytes": 918
+      },
+      {
+        "kind": "diagram-spec",
+        "id": "keystroke-today",
+        "inline": true,
+        "sha256": "db497e199ddbc1b4b2badb1ec7eb40af67dfd29710234cbe245eff439cbf9864",
+        "bytes": 1534
+      }
+    ]
+  }
+}
