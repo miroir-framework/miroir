@@ -35,7 +35,7 @@
     "framework"
   ],
   "dependencies": {
-    "@modelcontextprotocol/sdk": "1.31.0",
+    "@modelcontextprotocol/sdk": "1.32.1",
     "express": "5.2.1",
     "loglevelnext": "6.0.0",
     "miroir-core": "*",
@@ -44,7 +44,7 @@
     "miroir-example-library": "*",
     "miroir-app-miroir": "*",
     "uuid": "14.0.2",
-    "zod": "4.6.5"
+    "zod": "4.6.7"
   },
   "peerDependencies": {
     "miroir-store-filesystem": "*",

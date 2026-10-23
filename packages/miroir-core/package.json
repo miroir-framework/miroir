@@ -68,7 +68,7 @@
     "serialize-error": "13.0.1",
     "uuid": "14.0.2",
     "yaml": "2.9.1",
-    "zod": "4.6.5"
+    "zod": "4.6.7"
   },
   "devDependencies": {
     "@babel/plugin-syntax-import-attributes": "7.29.7",
@@ -93,7 +93,7 @@
     "ts-node": "10.9.2",
     "tsup": "8.5.1",
     "tsx": "4.23.15",
-    "vite": "7.3.6",
+    "vite": "7.3.7",
     "vitest": "5.0.2"
   }
 }
