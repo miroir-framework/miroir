@@ -382,11 +382,14 @@ export interface TransformerInterfaceWalkOptions {
    * replaces the default binding of the root input.
    */
   context?: TransformerResultSchemaContext;
+  /** #501: report the ML schemas of the context names each node sees (variable path pickers). */
+  withContext?: boolean;
 }
 
 interface WalkEnvironment {
   transformerDefinitions: Record<string, TransformerDefinition>;
   entityMlSchemas: Record<string, MlElement>;
+  withContext: boolean;
   nodes: TransformerInterfaceNodeReport[];
   literals: TransformerInterfaceLiteralReport[];
 }
@@ -458,6 +461,7 @@ function walkNode(
     declared,
     output: output.type,
     failures: [],
+    ...(environment.withContext ? { context } : {}),
   };
   environment.nodes.push(report);
 
@@ -656,6 +660,7 @@ export function checkTransformerInterfaceRecursively(
   const environment: WalkEnvironment = {
     transformerDefinitions: options.transformerDefinitions ?? applicationTransformerDefinitions,
     entityMlSchemas: options.entityMlSchemas ?? {},
+    withContext: options.withContext ?? false,
     nodes: [],
     literals: [],
   };

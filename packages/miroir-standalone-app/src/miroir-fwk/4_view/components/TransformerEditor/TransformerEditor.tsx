@@ -9,11 +9,15 @@ import {
   MiroirLoggerFactory,
   Uuid,
   defaultAdminApplicationDeploymentMapNOTGOOD,
-  defaultMiroirModelEnvironment,
   defaultTransformerInput,
   getInnermostTransformerError,
   noValue,
+  addTransformerParameter,
+  removeTransformerParameter,
+  renameTransformerParameter,
   safeStringify,
+  transformerDefinitionParameterUses,
+  transformerDefinitionRegistry,
   transformerNodeTypeStatus,
   transformer_extended_apply_wrapper,
   type InputOutputType,
@@ -29,7 +33,7 @@ import {
   entityApplicationForAdmin
 } from "miroir-app-admin";
 
-import { Formik, type FormikProps } from 'formik';
+import { Formik, useFormikContext, type FormikProps } from 'formik';
 import {
   type CoreTransformerForBuildPlusRuntime,
   type TransformerDefinition
@@ -40,10 +44,20 @@ import { cleanLevel, lastSubmitButtonClicked } from '../../constants';
 import {
   useTransformer
 } from "../Reports/ReportHooks";
-import { useCurrentModel } from "../../ReduxHooks.js";
+import { useCurrentModelEnvironment } from "../../ReduxHooks.js";
 import { useReportPageContext } from '../Reports/ReportPageContext';
 import { TypedValueObjectEditor } from '../Reports/TypedValueObjectEditor';
-import type { TransformerTypeBadge } from '../ValueObjectEditor/MlElementEditorInterface';
+import {
+  BlockDefineContext,
+  BlockRunInputContext,
+  BlockViewModeProvider,
+  type BlockDefine,
+  type BlockRunInput,
+} from '../BlockEditor/BlockViewMode.js';
+import { ValueHistory } from '../ValueObjectEditor/ValueHistory.js';
+import { ValueHistoryProvider } from '../ValueObjectEditor/ValueHistoryProvider.js';
+import { ValueHistoryFallbackButtons } from '../ValueObjectEditor/ValueHistoryButtons.js';
+import type { TransformerTypeBadge, TransformerTypeBadgePart } from '../ValueObjectEditor/MlElementEditorInterface';
 import {
   ThemedContainer,
   ThemedFoldableContainer,
@@ -55,6 +69,7 @@ import {
 } from "../Themes/index";
 import { EntityInstanceSelectorPanel } from './EntityInstanceSelectorPanel';
 import { TransformationResultPanel } from './TransformationResultPanel';
+import { TransformerDefinitionSave } from './TransformerDefinitionSave';
 import {
   formikPath_TransformerEditorInputModeSelector,
   buildInitialTransformerSelectorFromPersistedState,
@@ -76,6 +91,9 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
 ).then((logger: LoggerInterface) => {
   log = logger;
 });
+
+/** The edited transformer in the Formik values: the value the undo history watches (#499). */
+const transformerFormikPath = "transformerEditor_transformer_selector.transformer";
 
 // ################################################################################################
 // ################################################################################################
@@ -103,9 +121,38 @@ function transformerEditorRootInputType(
 
 type EditorEntity = { uuid: Uuid; name?: string; mlSchema?: unknown };
 
+/** #470: a declared side matches the actual type when it is that type, or constrains nothing. */
+function declaredSideMatches(declared: InputOutputType, actual: InputOutputType): boolean {
+  return declared === "any" || declared === "undefined" || safeStringify(declared) === safeStringify(actual);
+}
+
+/** #470: a declaration whose sides are all `any` / `undefined` says nothing worth a "✓ declared". */
+function declaresConstraint(declared: { input: InputOutputType; output: InputOutputType }): boolean {
+  return [declared.input, declared.output].some((side) => side !== "any" && side !== "undefined");
+}
+
+/** #470: the badge parts a failure of the node involves, so that only they are marked. */
+function mismatchedBadgeParts(
+  node: TransformerInterfaceTreeCompatibility["nodes"][number],
+  consumedKind: "in" | "applyTo",
+): Set<TransformerTypeBadgePart["kind"]> {
+  const kinds = new Set<TransformerTypeBadgePart["kind"]>();
+  for (const failure of node.failures) {
+    if (failure.direction === "input") {
+      kinds.add(consumedKind).add("declared");
+    } else if (failure.direction === "output") {
+      kinds.add("out").add("declared");
+    } else {
+      kinds.add("value").add("out");
+    }
+  }
+  return kinds;
+}
+
 /**
  * #453: one type badge per node of the walk and per literal `applyTo`, at its editor path. Labels
  * name known entities and shorten unknown entity uuids (D18); the title keeps the full types.
+ * #470: each badge lists its chips; the declared types are left out when they are the actual ones.
  */
 export function transformerTypeBadges(
   interfaceWalk: TransformerInterfaceTreeCompatibility,
@@ -118,13 +165,24 @@ export function transformerTypeBadges(
       (failure) =>
         `${failure.direction}: given ${formatInputOutputTypeLabel(failure.given)}, declared ${formatInputOutputTypeLabel(failure.declared)}`,
     );
+    const declaredMatchesActual =
+      node.declared === undefined ||
+      (declaredSideMatches(node.declared.input, node.consumedInput) &&
+        declaredSideMatches(node.declared.output, node.output));
+    const mismatched = mismatchedBadgeParts(node, consumedDiffers ? "applyTo" : "in");
+    const part = (
+      kind: TransformerTypeBadgePart["kind"],
+      partLabel: string,
+      title: string,
+    ): TransformerTypeBadgePart => ({ kind, label: partLabel, title, mismatch: mismatched.has(kind) });
+    const declaredLabel = node.declared
+      ? { input: label(node.declared.input), output: label(node.declared.output) }
+      : undefined;
     return {
       path: ["transformer", ...node.path],
       givenLabel: label(node.givenInput),
       consumedLabel: consumedDiffers ? label(node.consumedInput) : undefined,
-      declaredLabel: node.declared
-        ? { input: label(node.declared.input), output: label(node.declared.output) }
-        : undefined,
+      declaredLabel,
       outputLabel: label(node.output),
       status: transformerNodeTypeStatus(node),
       title: [
@@ -137,6 +195,28 @@ export function transformerTypeBadges(
         `output ${formatInputOutputTypeLabel(node.output)}`,
         ...failures,
       ].join("\n"),
+      parts: [
+        part("in", label(node.givenInput), formatInputOutputTypeLabel(node.givenInput)),
+        ...(consumedDiffers
+          ? [part("applyTo", label(node.consumedInput), formatInputOutputTypeLabel(node.consumedInput))]
+          : []),
+        ...(node.declared && declaredLabel && !declaredMatchesActual
+          ? [
+              part(
+                "declared",
+                `${declaredLabel.input} → ${declaredLabel.output}`,
+                `${formatInputOutputTypeLabel(node.declared.input)} → ${formatInputOutputTypeLabel(node.declared.output)}`,
+              ),
+            ]
+          : []),
+        // a `returnValue` whose value does not fit its mlSchema: `out` is the mlSchema type, so the
+        // value's own type gets a chip, the side to fix
+        ...node.failures
+          .filter((failure) => failure.direction === "value")
+          .map((failure) => part("value", label(failure.given), formatInputOutputTypeLabel(failure.given))),
+        part("out", label(node.output), formatInputOutputTypeLabel(node.output)),
+      ],
+      declaredMatchesActual: node.declared && declaresConstraint(node.declared) ? declaredMatchesActual : undefined,
     };
   });
   const literalBadges = interfaceWalk.literals.map(
@@ -145,9 +225,17 @@ export function transformerTypeBadges(
       outputLabel: label(literal.type),
       status: "unknown",
       title: `value ${formatInputOutputTypeLabel(literal.type)}`,
+      parts: [
+        { kind: "value", label: label(literal.type), title: formatInputOutputTypeLabel(literal.type), mismatch: false },
+      ],
     }),
   );
   return [...nodeBadges, ...literalBadges];
+}
+
+/** A refused change of a define header, without the name of the function that refused it. */
+function refusal(error: unknown): string {
+  return (error instanceof Error ? error.message : String(error)).replace(/^\w+: /, "");
 }
 
 /**
@@ -155,6 +243,9 @@ export function transformerTypeBadges(
  * Every transformerType select is restricted to the input of its position while the switch is
  * on; nested mismatches are always marked (#383 D4, D6). The "Show transformer types" switch
  * (#453) puts a type badge on the title row of every node and literal `applyTo`.
+ * #502: a composite TransformerDefinition edited in "defined" mode is a define block, whose header
+ * changes its parameters in a draft of the definition, kept until another one is edited; Save
+ * writes the draft. The undo history covers the body only.
  */
 const TransformerDefinitionEditor: React.FC<{
   formValueMLSchema: MlElement;
@@ -166,6 +257,14 @@ const TransformerDefinitionEditor: React.FC<{
   entities?: EditorEntity[];
   restrictTransformersToInputType: boolean;
   onRestrictTransformersToInputTypeChange: (checked: boolean) => void;
+  /** Undo / redo of the edited transformer (#499). */
+  transformerHistory: ValueHistory;
+  /** The input the transformer runs on, as params and context: blocks run their subtree on it (#500). */
+  transformerInput: Record<string, unknown>;
+  /** The edited application's model environment: its composite TransformerDefinitions (#502). */
+  modelEnvironment: MiroirModelEnvironment;
+  /** The TransformerDefinition edited in "defined" mode (#502). */
+  definedTransformer?: TransformerDefinition;
 }> = ({
   formValueMLSchema,
   application,
@@ -176,7 +275,12 @@ const TransformerDefinitionEditor: React.FC<{
   entities,
   restrictTransformersToInputType,
   onRestrictTransformersToInputTypeChange,
+  transformerHistory,
+  transformerInput,
+  modelEnvironment,
+  definedTransformer,
 }) => {
+  const { setFieldValue } = useFormikContext<TransformerEditorFormikValueType>();
   const entityMlSchemas = useMemo(
     () =>
       Object.fromEntries(
@@ -187,10 +291,77 @@ const TransformerDefinitionEditor: React.FC<{
     [entities],
   );
   const rootInputTypeKey = safeStringify(rootInputType);
+  const runInput: BlockRunInput = useMemo(
+    () => ({
+      transformerParams: transformerInput,
+      contextResults: transformerInput,
+      rootInputType,
+      entityMlSchemas,
+      modelEnvironment,
+    }),
+    [transformerInput, rootInputTypeKey, entityMlSchemas, modelEnvironment],
+  );
+  const transformerDefinitions = useMemo(() => transformerDefinitionRegistry(modelEnvironment), [modelEnvironment]);
   const editedTransformerKey = safeStringify(editedTransformer);
+  // #502: the define block of a composite edited in "defined" mode
+  const [definitionDraft, setDefinitionDraft] = useState<TransformerDefinition | undefined>(undefined);
+  const composite =
+    definedTransformer?.transformerImplementation.transformerImplementationType === "transformer"
+      ? definedTransformer
+      : undefined;
+  // The draft's parameters go with the body they were edited on, and coming back to a definition
+  // fetches its body anew: choosing another definition drops the draft, during render (no effect).
+  const [draftedUuid, setDraftedUuid] = useState(composite?.uuid);
+  if (draftedUuid !== composite?.uuid) {
+    setDraftedUuid(composite?.uuid);
+    setDefinitionDraft(undefined);
+  }
+  const definition = composite && definitionDraft?.uuid === composite.uuid ? definitionDraft : composite;
+  const definedWithBody: TransformerDefinition | undefined = useMemo(
+    () =>
+      definition
+        ? {
+            ...definition,
+            transformerImplementation: {
+              transformerImplementationType: "transformer",
+              definition: editedTransformer as CoreTransformerForBuildPlusRuntime,
+            },
+          }
+        : undefined,
+    [definition, editedTransformerKey],
+  );
+  const define: BlockDefine | undefined = useMemo(() => {
+    if (!definedWithBody) {
+      return undefined;
+    }
+    const apply = (change: (current: TransformerDefinition) => TransformerDefinition): string | undefined => {
+      try {
+        const next = change(definedWithBody);
+        setDefinitionDraft(next);
+        if (next.transformerImplementation !== definedWithBody.transformerImplementation) {
+          void setFieldValue(
+            transformerFormikPath,
+            (next.transformerImplementation as { definition: unknown }).definition,
+            false,
+          );
+        }
+        return undefined;
+      } catch (error) {
+        return refusal(error);
+      }
+    };
+    return {
+      rootLessListKey: "transformer",
+      name: definedWithBody.name,
+      parameters: transformerDefinitionParameterUses(definedWithBody),
+      addParameter: (name) => apply((current) => addTransformerParameter(current, name)),
+      renameParameter: (from, to) => apply((current) => renameTransformerParameter(current, from, to)),
+      removeParameter: (name) => apply((current) => removeTransformerParameter(current, name)),
+    };
+  }, [definedWithBody, setFieldValue]);
   const interfaceWalk = useMemo(
-    () => checkTransformerInterfaceRecursively(editedTransformer, rootInputType, { entityMlSchemas }),
-    [editedTransformerKey, rootInputTypeKey, entityMlSchemas],
+    () => checkTransformerInterfaceRecursively(editedTransformer, rootInputType, { entityMlSchemas, transformerDefinitions }),
+    [editedTransformerKey, rootInputTypeKey, entityMlSchemas, transformerDefinitions],
   );
   // Node paths are relative to the transformer, editor paths to its selector.
   const transformerTypeRestrictions = useMemo(
@@ -259,22 +430,40 @@ const TransformerDefinitionEditor: React.FC<{
           />
         }
       />
-      <TypedValueObjectEditor
-        labelElement={<>Transformer Definition</>}
-        formValueMLSchema={formValueMLSchema}
-        formikValuePathAsString="transformerEditor_transformer_selector"
+      <TransformerDefinitionSave
         application={application}
         applicationDeploymentMap={applicationDeploymentMap}
-        deploymentUuid={deploymentUuid}
-        applicationSection={"model"}
-        formLabel={"Transformer Definition Selector"}
-        displaySubmitButton="noDisplay"
-        valueObjectEditMode="create"
-        maxRenderDepth={Infinity}
-        compatibilityWarnings={compatibilityWarnings}
-        transformerTypeRestrictions={transformerTypeRestrictions}
-        transformerTypeBadges={typeBadges}
+        modelEnvironment={modelEnvironment}
+        transformerDefinitions={transformerDefinitions}
+        body={editedTransformer}
+        defined={definedWithBody}
       />
+      <ValueHistoryProvider history={transformerHistory} formikPath={transformerFormikPath}>
+        {/* #499: Undo stays reachable when an edit made the transformer fail its type check */}
+        <ValueHistoryFallbackButtons rootLessListKey="transformer" />
+        <BlockRunInputContext.Provider value={runInput}>
+          <BlockDefineContext.Provider value={define}>
+            <BlockViewModeProvider>
+              <TypedValueObjectEditor
+                labelElement={<>Transformer Definition</>}
+                formValueMLSchema={formValueMLSchema}
+                formikValuePathAsString="transformerEditor_transformer_selector"
+                application={application}
+                applicationDeploymentMap={applicationDeploymentMap}
+                deploymentUuid={deploymentUuid}
+                applicationSection={"model"}
+                formLabel={"Transformer Definition Selector"}
+                displaySubmitButton="noDisplay"
+                valueObjectEditMode="create"
+                maxRenderDepth={Infinity}
+                compatibilityWarnings={compatibilityWarnings}
+                transformerTypeRestrictions={transformerTypeRestrictions}
+                transformerTypeBadges={typeBadges}
+              />
+            </BlockViewModeProvider>
+          </BlockDefineContext.Provider>
+        </BlockRunInputContext.Provider>
+      </ValueHistoryProvider>
     </>
   );
 };
@@ -297,6 +486,8 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
   // Ref for debouncing transformer definition updates when mode='here'
   const transformerUpdateTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
   const latestFormValuesRef = React.useRef<TransformerEditorFormikValueType | null>(null);
+  // #499: Clear writes to the form through it
+  const formikRef = React.useRef<FormikProps<TransformerEditorFormikValueType> | null>(null);
 
   // Get persisted state from context
   const persistedState = context.toolsPageState.transformerEditor;
@@ -351,6 +542,12 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
     context.updateTransformerEditorState({
       currentTransformerDefinition: DEFAULT_TRANSFORMER_EDITOR_TRANSFORMER,
     });
+    // #499: also in the form, where Undo can bring the edit back; a copy, so that the form never
+    // holds the shared default object
+    void formikRef.current?.setFieldValue(
+      transformerFormikPath,
+      structuredClone(DEFAULT_TRANSFORMER_EDITOR_TRANSFORMER),
+    );
     // Clear previous transformation outputs
     // setTransformationResult(null);
     // setTransformationError(null);
@@ -412,6 +609,11 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
       },
     };
   }, []); // Mount-only: read persistedState on first render; remount on navigation gets fresh state
+
+  // #499: undo / redo of the edited transformer, starting from its initial value
+  const [transformerHistory] = useState(
+    () => new ValueHistory(initialFormValues.transformerEditor_transformer_selector.transformer),
+  );
 
   useEffect(() => {
     return () => {
@@ -479,6 +681,7 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
       {/* <div style={{ display: "flex", gap: "20px" }}> */}
       {/* left Pane: Transformer Definition Editor */}
       <Formik
+        innerRef={formikRef}
         enableReinitialize={true}
         initialValues={initialFormValues as any}
         onSubmit={async (values, { setSubmitting, setErrors }) => {
@@ -514,7 +717,9 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                 : application;
             const editorDeploymentUuid: Uuid =
               applicationDeploymentMap[editorApplication] ?? deploymentUuid;
-            const editorModel = useCurrentModel(editorApplication, applicationDeploymentMap);
+            // #502: the preview and the block view run the editor application's composites
+            const editorModelEnvironment = useCurrentModelEnvironment(editorApplication, applicationDeploymentMap);
+            const editorModel = editorModelEnvironment.currentModel;
             const inputSelectorMode =
               formikContext.values[formikPath_TransformerEditorInputModeSelector].mode;
             const canRenderInputEditor =
@@ -568,6 +773,10 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                   "TransformerEditor: updating context with stored transformer definition:",
                   transformerSelector_currentFetchedTransformerDefinition.transformerImplementation
                     ?.definition
+                );
+                // #499: a loaded transformer starts a new undo history
+                transformerHistory.reset(
+                  transformerSelector_currentFetchedTransformerDefinition.transformerImplementation?.definition,
                 );
                 formikContext.setFieldValue(
                   "transformerEditor_transformer_selector.transformer",
@@ -702,11 +911,11 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                 "TransformerEditor", // label
                 currentFormikTransformerDefinition, // transformer
                 "value", // resolveBuildTransformersTo
-                defaultMiroirModelEnvironment,
+                editorModelEnvironment,
                 transformerParams,
                 transformerInput,
               );
-            }, [transformerDefinitionFingerprint, transformationInputFingerprint]);
+            }, [transformerDefinitionFingerprint, transformationInputFingerprint, editorModelEnvironment]);
 
             const innermostError = useMemo(
               () =>
@@ -954,6 +1163,12 @@ export const TransformerEditor: React.FC<TransformerEditorProps> = (props) => {
                         context.updateTransformerEditorState({
                           restrictTransformersToInputType: checked,
                         })
+                      }
+                      transformerHistory={transformerHistory}
+                      transformerInput={transformerInput}
+                      modelEnvironment={editorModelEnvironment}
+                      definedTransformer={
+                        selectorValues.mode === "defined" ? transformerSelector_currentFetchedTransformerDefinition : undefined
                       }
                     />
                   ) : null}

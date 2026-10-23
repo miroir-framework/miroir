@@ -170,6 +170,52 @@
             }
           }
         }
+      },
+      "componentTestShowTransformerTypes": {
+        "type": "boolean",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 16,
+            "defaultLabel": "Component tests: show transformer types",
+            "description": "Every case of a component test run in the app starts with the TransformerEditor showing the transformer types, set by the \"Show transformer types\" switch next to the Run buttons. Fixed for the duration of a run. Absent or false: hidden.",
+            "display": {
+              "editable": true
+            }
+          }
+        }
+      },
+      "componentTestShowSandbox": {
+        "type": "boolean",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 17,
+            "defaultLabel": "Component tests: show test sandbox",
+            "description": "A component test run in the app shows its sandbox panel, set by the \"Show test sandbox\" switch next to the Run buttons. Absent or false: the cases render off-screen.",
+            "display": {
+              "editable": true
+            }
+          }
+        }
+      },
+      "blockEditorBuildMarking": {
+        "type": "enum",
+        "optional": true,
+        "definition": [
+          "dashedOutline",
+          "marker"
+        ],
+        "tag": {
+          "value": {
+            "id": 18,
+            "defaultLabel": "Build marking in the block editor",
+            "description": "How the block editor marks build transformers, runtime ones being unmarked: a dashed outline or a \"build\" marker. Absent: dashed outline.",
+            "display": {
+              "editable": true
+            }
+          }
+        }
       }
     }
   }

@@ -2,7 +2,7 @@ import { deployment_Miroir } from "miroir-app-admin";
 import { defaultMiroirMetaModel as defaultMiroirMetaModelRaw } from "miroir-app-miroir";
 import type { MetaModel } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
-import { resolveFundamentalSchemaForDeployment } from "../1_core/mls/schemaForDeployment";
+import { resolveFundamentalSchemaForDeployment } from "../2_domain/schemaForDeployment";
 import { defaultMetaModelEnvironment } from "../1_core/Model";
 import {
   listQueryRunnerFixtureRefs,

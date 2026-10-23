@@ -1,0 +1,115 @@
+# Issue #505 — TDD Implementation Plan
+
+> Vertical TDD slices (RED → GREEN each), integration-first per `docs/contributing/testing.md`.
+> Sequence edits, the action palette and the Runner hat are pure miroir-core functions tested with
+> `fn.*` MiroirTest cases; the view with `ui.blockEditor` and `ui.blockEditing` component cases.
+> No mocks.
+>
+> **Execution model:** one green commit per slice, pushed to the working branch. Each slice ends
+> with its Validation commands; on success its Realization is appended and its Status flips to ✅.
+
+Analysis: [`./analysis.md`](./analysis.md) (parent issue #497, G8, D2, D10, §4.5, §4.7, §6.1 row #505) · Issue: https://github.com/miroir-framework/miroir/issues/505
+Working branch: `claude/505-block-editor-edit-sequences`
+
+**Resume note:** plan written 2026-10-07 from `_integration` at `2ad5a31` (#504 merged).
+
+---
+
+## Scope
+
+- **G8 — Edit sequences, create Runners.** A composite action sequence is edited with blocks: Endpoint actions in the palette grouped by Endpoint; action blocks inserted, moved, removed and reordered; payload slots filled with transformer blocks. A custom Runner shows a "when run" hat block whose form fields are variable blocks. A new sequence is saved as a new Runner.
+- **D10.** The assert block (`compositeRunTestAssertion`) stays out of the palette for Runner and Endpoint sequences: `handleCompositeActionTemplate` refuses it. It is offered for test sequences (`compositeActionSequence` fields).
+
+## Acceptance criteria (issue)
+
+1. A `ui.blockEditing` case builds a sequence with a createInstance action whose payload uses a form field, saves it as a new Runner, and the Runner creates the instance when run (runner option of #502).
+2. An existing Runner edited with blocks and saved still runs.
+
+## What the code does today (survey, 2026-10-07)
+
+| Place | Today | Gap |
+|---|---|---|
+| `BlockEditorView` | an action value is read-only (`onCommit` dropped) | no editing of sequences |
+| `TransformerTreeEdit` | insert, remove, move work on transformer slots (`slotPositionAtPath`) | a step of `actionSequence`, a payload attribute or a template is no transformer slot |
+| Block model | action rows: the present attributes only | an absent declared payload attribute has no row to fill |
+| Palette | transformer types and variables | no actions |
+| Scope | `compositeActionEnvironmentAt`, `runnerEnvironment` (#501) | not used by the view |
+| Runner | `customRunner`: `formMLSchema` (form values under the Runner's name, read as `getFromParameters [runner, field]`) and `compositeActionSequence`; run by `StoredRunnerView` → `handleCompositeActionTemplate`, which resolves every step at runtime with the form values as parameters | no hat, no way to build or save one from blocks |
+| Saving | `TransformerDefinitionSave` (#502): `createInstance` / `updateInstance` in a `transactionalInstanceAction` for a model section | nothing for Runners |
+
+---
+
+## Progress summary
+
+| Slice | Title | Status | Primary proof |
+|---|---|---|---|
+| 0 | This plan | ✅ | — |
+| 1 | Sequence edits, default actions, action palette (core) | ✅ | `fn.blockModel` "sequence editing" cases |
+| 2 | Runner hat and form fields (core) | ✅ | `fn.blockModel` "runner hat" cases |
+| 3 | Editing sequences in the block view | ✅ | `ui.blockEditing` "editing a Runner sequence" |
+| 4 | The "when run" hat in the block view | ✅ | `ui.blockEditing` hat cases |
+| 5 | Sequence editor, Save as Runner, Run (AC 1, AC 2) | ✅ | `ui.blockEditing` "SequenceEditor on the Library" |
+| 6 | Docs, nonreg, PR | ⬜ | nonreg |
+
+---
+
+## Locked implementation defaults
+
+| Decision | Choice | Serves |
+|---|---|---|
+| Positions | `blockInsertPositions(root, options)` in `2_domain/ActionSequenceEdit.ts`: the transformer positions of `transformerInsertPositions` for a transformer root; for an action root, the end of every `actionSequence` (holds an action), every absent declared payload attribute (a slot), the end of every plain list and a new entry of `templates`, and the positions of every transformer found in the action. Each position says what it `holds`: `action` or `transformer`. | issue bullet 1 |
+| Edits | `insertBlockNode`, `removeBlockNode`, `moveBlockNode`: a position owned by a transformer slot goes to the #500 functions; otherwise a list position inserts before the item there, a record key is set (a taken `templates` key gets a number suffix), and a remove deletes the list item or the key. `reorderTransformerNode` already works on any list. | issue bullet 1 |
+| Replace a value | In an action, any value below `payload` or `templates` can hold a transformer (`handleCompositeActionTemplate` resolves the whole step), so a literal, object or list block there takes the armed block (`isValuePosition`). | issue bullet 1 ("edit payload slots") |
+| New action | `defaultActionNode(actionType, modelEnvironment)`: `actionType`, `endpoint` of its Endpoint, `payload` the default of the payload schema, `actionLabel` the type, numbered when taken (results are bound by label). | issue bullet 1 |
+| Palette | `actionPaletteGroups(modelEnvironment, { withTestAssertion })`: the Endpoint actions of the registry grouped by Endpoint name, sorted; `compositeRunTestAssertion` only with `withTestAssertion`. The block view shows them above the transformer types when it edits an action; `withTestAssertion` when the field is declared `compositeActionSequence` (MiroirTest, Test). | issue bullets 1, 2 |
+| Hat | `runnerHat(runner)`: name, label and form fields (keys of `formMLSchema.mlSchema.definition`, with whether the sequence reads each one). `addRunnerFormField`, `renameRunnerFormField` (rewrites every `getFromParameters` / `getFromContext` reading `[runner, from, …]`), `removeRunnerFormField` (refused while read). A form field chip arms a variable reading `[runner, field]` as `getFromParameters`, runtime. | issue bullet 3 |
+| Hat placement | The block view shows the hat above a Runner's sequence: in the Runner instance editor (read from the enclosing `customRunner` value, fields read-only there, as they are edited in `formMLSchema`), and in the sequence editor (fields added, renamed, removed in the hat). Variables of the sequence come from `compositeActionEnvironmentAt` with `runnerEnvironment(name)`. | issue bullet 3 |
+| Sequence editor | `SequenceEditor` on the Tools page, under the TransformerEditor: a Runner select (a new sequence, or a custom Runner of the editor application), the sequence in a Formik form with the Blocks / Form / JSON switch and undo (#499), the hat above it. "Save `<name>`" updates the chosen Runner; "Save…" opens the save dialog of a new sequence: "create Runner" (on), "create Action" (off and disabled until #506), name and label. The Runner is created in the application's section for Runners in a transaction, as #502 saves composites. A saved Runner can be run below the editor with `StoredRunnerView`. | issue bullet 4, AC 1, AC 2 |
+| Component test | Registry entry `SequenceEditor` (`SequenceEditorForTest`): the editor on an application of the context, and the names of the instances of a watched Entity as `data-names`, to see what a run created. `TransformerBlocks` gets `editable`: the block view of a Runner's sequence with a writer, its value shown as `data-value`. | AC 1, AC 2 |
+
+---
+
+## Slice 1 — Sequence edits, default actions, action palette
+
+RED: `fn.blockModel` suite "sequence editing": positions of a sequence (end of steps, an absent payload attribute, a template entry, the slots of a payload transformer, a plain list's end), insert an action at the end and between two steps, remove a step, move a step into a nested sequence, insert a transformer in a payload attribute, a value position below a payload, `defaultActionNode` of createInstance, `actionPaletteGroups` with and without the assertion; with `emptyOptionalSlots`, an absent payload attribute is an empty row.
+GREEN: `ActionSequenceEdit.ts`, the block model rows, registry entries.
+
+Validation: `npm run testMiroir -w miroir-core -- --suites fn.blockModel --mode unit`; `npm run test -w miroir-core -- ''`; core `tsc`.
+
+**Realization (2026-10-07):** `2_domain/ActionSequenceEdit.ts` (`blockInsertPositions`, `isValuePosition`, `isStepPosition`, `insertBlockNode`, `removeBlockNode`, `moveBlockNode`, `defaultActionNode`, `actionPaletteGroups`, `blockEnvironmentAt`); `transformerSlotAt` exported from `TransformerTreeEdit`; `BlockInsertPosition` (`holds`) in the interface. The block model gives an absent declared payload attribute an empty row with `emptyOptionalSlots`. A default payload drops the `queryFailure` values some `initializeTo` transformers give at build. A position inside the payload of a query action (`runBoxedQueryAction`, …) is no value position: the query is resolved as a whole. 19 cases in "sequence editing"; fn.blockModel 68/68, core unit 2989 passed.
+
+## Slice 2 — Runner hat and form fields
+
+RED: `fn.blockModel` suite "runner hat": `runnerHat` of createEntity (its fields, read flags), add a field, rename a field and its reads (a read of another Runner's name is kept), remove an unread field, refuse to remove a read one.
+GREEN: `RunnerHat.ts`.
+
+**Realization (2026-10-07):** `2_domain/RunnerHat.ts`: `runnerHat`, `runnerFormFieldReads`, `addRunnerFormField`, `renameRunnerFormField`, `removeRunnerFormField`, `renameRunner` (rewrites the reads of `[old name, …]`, used by Save as Runner), `newCustomRunner`, `RUNNER_FORM_FIELD_TYPES`. A form given by a transformer is refused for edits. Quoted values (`returnValue.value`) are not reads. 10 cases in "runner hat".
+
+## Slice 3 — Editing sequences in the block view
+
+RED: `ui.blockEditor` suite "editing a Runner sequence" (TransformerBlocks `editable`): the action palette lists createInstance under InstanceEndpoint and no assertion; a createInstance put at the end of the steps; a step moved up and removed from its menu; a transformer from the palette in an empty payload slot; a literal of a payload replaced by a variable.
+GREEN: `BlockEditing` on the generic edits, action armed blocks, `ActionNodeActions`, palette section, value replace targets, editable labels.
+
+**Realization (2026-10-07):** `BlockEditing` uses `blockInsertPositions`, `insertBlockNode`, `moveBlockNode`, `removeBlockNode` and `blockEnvironmentAt` for both kinds of value; `ArmedBlock` has an `action` kind (`defaultActionNode`, labels kept free); `accepts` puts an action only at a step and nothing else there; `replaceable` (`isValuePosition`) gives literals, objects and lists below a payload a `block-replace:` target (also a drop target). `BlockActionNodeActions` (`block-actions:<id>`): Replace with, Move up, Move down, Move to tray, Remove. Action labels are `BlockField`s. The palette lists the Endpoint actions first (`block-palette-action:<type>`, `data-endpoint`), with the assertion only when `withTestAssertion` is given to `BlockEditorView`. The tray shows any block (`blockTree`). `TransformerBlocks` takes `editable` (value as `block-value`'s `data-value`). 6 cases in "editing a Runner sequence"; ui.blockEditor and ui.blockEditing 55/55; `EXPECTED_LEAF_COUNT` 186.
+
+## Slice 4 — The "when run" hat
+
+RED: `ui.blockEditor`: the createEntity Runner shows its hat with its form fields; a form field armed replaces a literal with `getFromParameters [createEntity, field]`; the instance editor of a Runner shows the hat (field read from its `customRunner` value).
+GREEN: `BlockRunnerHat`, `BlockRunnerContext`, detection in `BlockViewSwitch`.
+
+**Realization (2026-10-07):** `BlockRunnerContext` (`BlockViewMode.tsx`) gives the hat of the block view at its `rootLessListKey`; `BlockRunnerHat.tsx` shows it (`block-runner-hat`, `block-runner-field:<f>` with `data-read`, `data-type`) and `useBlockRunnerOf(runner, setRunner, key)` adds the field changes with the RunnerHat functions. A field chip arms a variable with a `path` `[runner, field]`, put as `getFromParameters` `referencePath`, runtime; the Runner name is a parameter of the sequence's root environment. `BlockViewSwitch` finds the Runner around a `definition.compositeActionSequence` field in the Formik values and shows its hat, fields read-only, unless an enclosing editor provides one. `isTestSequenceField` (core, 2 `fn.blockView.fields` cases) gives `withTestAssertion` from MlElementEditor. The armed block's node is computed once per arming: every block menu asks for it. 5 cases ("the when run hat", "a Runner in an instance editor") and two steps on the read-only Runner; `EXPECTED_LEAF_COUNT` 191.
+
+## Slice 5 — Sequence editor, Save as Runner, Run
+
+RED: `ui.blockEditing` suite "SequenceEditor on the Library" (wired local cache): AC 1 (add a form field, put createInstance, its object's name from the form field, Save… with create Runner, run it with a name, the Publisher is created); AC 2 (an existing custom Runner chosen, edited with blocks, Save, run, the instance created reflects the edit).
+GREEN: `SequenceEditor`, `RunnerSave`, Tools page, registry entry.
+
+**Realization (2026-10-07):** `components/SequenceEditor/SequenceEditor.tsx` lists the custom Runners of the application (`sequence-editor-runner`, or a new one), edits the chosen Runner's sequence in the block view with its hat (`BlockRunnerContext`, field edits on a draft Runner), saves it (`sequence-editor-save-runner`, updateInstance) or saves it as a new Runner (`sequence-editor-save-as`: a dialog with create Runner, and create Action disabled until #506; a taken name is refused; `renameRunner` then `newCustomRunner`, createInstance) and runs it (`StoredRunnerView`). `saveInstanceFromUI.ts` is the createInstance / updateInstance shared with `TransformerDefinitionSave` (a model-section instance goes through a transaction). `BlockActionDefaultsContext` gives `defaultActionNode` the `application` of a new action's payload. `renameBlockKey` (core, 2 `fn.blockModel` cases) and `BlockKeyField` rename object keys in place. A wired component suite also loads the Miroir Endpoints into the test cache, so the palette has actions. The Tools page (`TransformerBuilderPage`) shows the editor below the transformer editor. 2 cases in "SequenceEditor on the Library" (AC 1, AC 2); 3 `fn.blockModel` cases; fn.blockModel 71/71; `EXPECTED_LEAF_COUNT` 193.
+
+**Deviation (PR #523, bundle guard):** the slice 3 and 4 suites ("editing a Runner sequence", "the when run hat", "a Runner in an instance editor") were written in `ui.blockEditor`, which ships with the page; they took miroir-app-miroir to 3431305 bytes, over its 3400000 cap. They moved to `ui.blockEditing`, which is off the page (#500), so the cap stays as it is. Their RED lines above still say `ui.blockEditor`.
+
+**Review fixes (PR #523, Greptile):** the Tools page keys the sequence editor by application, so another application starts it afresh. The Runner's form is in the edited value next to the sequence (hidden in the Form view: `MlElementEditor` now renders nothing for `display.hidden`), so one Undo restores a renamed field and its reads; a created Runner remounts the editor, which starts a new history. `renameRunner` also follows reads of the whole form (`referenceName`) and the reads in the form itself, and Save as keeps the whole form (`newCustomRunner` `formMLSchema`), a transformer form included. `renameSequenceName` renames a step label (a taken one refused) or a template key with their reads in the sequence; the label is a `BlockKeyField`. `moveBlockNode` refuses a step moved where a transformer goes and the reverse. 8 `fn.blockModel` cases, 1 `ui.blockEditing` case (Undo of a field rename); fn.blockModel 79/79; `EXPECTED_LEAF_COUNT` 194.
+
+## Slice 6 — Docs, nonreg, PR
+
+`docs/reference/transformers.md` (editing sequences, the hat, the sequence editor); nonreg filesystem shared runner; PR into `_integration` with `Closes #505`.

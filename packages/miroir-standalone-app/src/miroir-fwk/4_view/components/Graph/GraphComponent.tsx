@@ -94,6 +94,58 @@ const determineLabelPresentation = (
 };
 
 // ################################################################################################
+// Helpers shared by bar and line charts: x-axis label presentation
+// ################################################################################################
+
+const resolveLabelPresentation = (
+  data: GraphDataPoint[],
+  config: ResolvedGraphConfig
+): 'basic' | 'slanted' | 'separate' =>
+  config.labelPresentation === 'auto'
+    ? determineLabelPresentation(
+        data,
+        config.width - config.margins.left - config.margins.right,
+        config.fontSize
+      )
+    : config.labelPresentation;
+
+const marginsForLabelPresentation = (
+  data: GraphDataPoint[],
+  config: ResolvedGraphConfig,
+  labelPresentation: 'basic' | 'slanted' | 'separate'
+): ResolvedGraphConfig['margins'] => {
+  if (labelPresentation !== 'slanted' || data.length === 0) return config.margins;
+  const maxLabelLength = Math.max(...data.map(d => d.label.length));
+  const estimatedLabelWidth = maxLabelLength * config.fontSize * 0.6;
+  const angleRad = (config.slantAngle * Math.PI) / 180;
+  const requiredBottomMargin = Math.ceil(Math.abs(Math.sin(angleRad)) * estimatedLabelWidth) + 10;
+  return { ...config.margins, bottom: Math.max(config.margins.bottom, requiredBottomMargin) };
+};
+
+const renderXAxisWithLabels = (
+  g: d3.Selection<SVGGElement, unknown, null, undefined>,
+  xScale: d3.AxisScale<string>,
+  innerHeight: number,
+  labelPresentation: 'basic' | 'slanted',
+  config: ResolvedGraphConfig,
+  theme: any
+) => {
+  const labels = g.append('g')
+    .attr('transform', `translate(0,${innerHeight})`)
+    .call(d3.axisBottom(xScale))
+    .selectAll('text')
+    .style('font-size', `${config.fontSize}px`)
+    .style('fill', theme.colors?.text || '#000');
+
+  if (labelPresentation !== 'slanted') return;
+  labels
+    .style('text-anchor', 'end')
+    .attr('dx', '-.8em')
+    .attr('dy', '.15em')
+    .attr('transform', `rotate(-${config.slantAngle})`);
+};
+
+// ################################################################################################
 // Helper function to render separate legend
 // ################################################################################################
 
@@ -167,28 +219,10 @@ const renderBarChart = (
   const svg = d3.select(svgElement);
   svg.selectAll("*").remove(); // Clear previous content
 
-  // Determine actual label presentation mode
-  let actualLabelPresentation = config.labelPresentation;
-  if (actualLabelPresentation === 'auto') {
-    actualLabelPresentation = determineLabelPresentation(
-      data.data,
-      config.width - config.margins.left - config.margins.right,
-      config.fontSize
-    );
-  }
-
-  // Adjust margins for slanted labels if needed
-  const adjustedMargins = { ...config.margins };
-  if (actualLabelPresentation === 'slanted') {
-    const maxLabelLength = Math.max(...data.data.map(d => d.label.length));
-    const estimatedLabelWidth = maxLabelLength * config.fontSize * 0.6;
-    const angleRad = (config.slantAngle * Math.PI) / 180;
-    const requiredBottomMargin = Math.ceil(Math.abs(Math.sin(angleRad)) * estimatedLabelWidth) + 10;
-    adjustedMargins.bottom = Math.max(adjustedMargins.bottom, requiredBottomMargin);
-  }
+  const actualLabelPresentation = resolveLabelPresentation(data.data, config);
 
   const { width, height } = config;
-  const margins = adjustedMargins;
+  const margins = marginsForLabelPresentation(data.data, config, actualLabelPresentation);
   const innerWidth = width - margins.left - margins.right;
   const innerHeight = height - margins.top - margins.bottom;
 
@@ -299,27 +333,8 @@ const renderBarChart = (
       theme,
       updateBarHighlight
     );
-  } else if (actualLabelPresentation === 'slanted') {
-    // Render slanted labels
-    const xAxis = g.append('g')
-      .attr('transform', `translate(0,${innerHeight})`)
-      .call(d3.axisBottom(xScale));
-    
-    xAxis.selectAll('text')
-      .style('text-anchor', 'end')
-      .style('font-size', `${config.fontSize}px`)
-      .style('fill', theme.colors?.text || '#000')
-      .attr('dx', '-.8em')
-      .attr('dy', '.15em')
-      .attr('transform', `rotate(-${config.slantAngle})`);
   } else {
-    // Basic mode - standard horizontal labels
-    g.append('g')
-      .attr('transform', `translate(0,${innerHeight})`)
-      .call(d3.axisBottom(xScale))
-      .selectAll('text')
-      .style('font-size', `${config.fontSize}px`)
-      .style('fill', theme.colors?.text || '#000');
+    renderXAxisWithLabels(g, xScale, innerHeight, actualLabelPresentation, config, theme);
   }
 
   // Add y-axis
@@ -346,7 +361,12 @@ const renderLineChart = (
   const svg = d3.select(svgElement);
   svg.selectAll("*").remove();
 
-  const { width, height, margins } = config;
+  // A line has no per-point colors, so a separate legend cannot replace axis labels: slant them instead.
+  const labelPresentation =
+    resolveLabelPresentation(data.data, config) === 'basic' ? 'basic' : 'slanted';
+
+  const { width, height } = config;
+  const margins = marginsForLabelPresentation(data.data, config, labelPresentation);
   const innerWidth = width - margins.left - margins.right;
   const innerHeight = height - margins.top - margins.bottom;
 
@@ -431,12 +451,7 @@ const renderLineChart = (
       }
     });
 
-  // Add x-axis
-  g.append('g')
-    .attr('transform', `translate(0,${innerHeight})`)
-    .call(d3.axisBottom(xScale))
-    .selectAll('text')
-    .style('fill', theme.colors?.text || '#000');
+  renderXAxisWithLabels(g, xScale, innerHeight, labelPresentation, config, theme);
 
   // Add y-axis
   g.append('g')

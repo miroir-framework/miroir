@@ -61,11 +61,22 @@ const instanceName = (editor: string) => {
 /** #316 D12: the deployment export of an instance, dots as underscores. */
 const exportName = (name: string) => `miroirTest_${name.replace(/\./g, "_")}`;
 
-/** Component test instances added after #292, not per-editor: name to uuid (#303 plan, #406). */
+/** Component test instances added after #292, not per-editor, in file order: name to uuid (#303 plan, #406, #498, #499). */
 const laterComponentInstances: Record<string, string> = {
+  "ui.blockEditor": "1b25f3f1-3474-43d0-b250-8684529d55dc",
   "ui.mlElementEditor.allTypesPattern": "26ef2886-2cd8-4f91-b846-1525b24d5f41",
   "ui.mlElementEditor.renderPerformance": "2da30877-d248-44bd-9786-5c091b1bc8fc",
   "ui.transformerEditor": "ce3f9603-824e-41da-9c6c-27ace3b01678",
+  "ui.valueHistory": "ef540605-8176-45bf-af76-c9d240769c7b",
+};
+
+/**
+ * Component test instances kept off the page bundle (#500): exported by the deployment package but
+ * not listed in `defaultMiroirMetaModel.tests`, so the page does not ship them. The schema check of
+ * `componentMiroirTests.consistency` covers them like every instance of the folder.
+ */
+const offPageComponentInstances: Record<string, string> = {
+  "ui.blockEditing": "4be51ca7-2d92-46ce-b0ad-6833dd3b9d04",
 };
 
 /** The attributes of `miroirTestForReactComponent` since #292 M1. */
@@ -120,9 +131,15 @@ describe("per-editor component test MiroirTest instances", () => {
         .filter((instance) => Object.values(laterComponentInstances).includes(instance.uuid))
         .map((instance) => [instance.name, instance.uuid]),
     ).toEqual(Object.entries(laterComponentInstances));
+    expect(
+      allInstances
+        .filter((instance) => Object.values(offPageComponentInstances).includes(instance.uuid))
+        .map((instance) => [instance.name, instance.uuid]),
+    ).toEqual(Object.entries(offPageComponentInstances));
     const otherComponentInstances = allInstances
       .filter((instance) => !Object.values(expectedInstances).includes(instance.uuid))
       .filter((instance) => !Object.values(laterComponentInstances).includes(instance.uuid))
+      .filter((instance) => !Object.values(offPageComponentInstances).includes(instance.uuid))
       .filter((instance) => componentLeafLabels(instance.definition).length > 0)
       .map((instance) => instance.name);
     expect(otherComponentInstances).toEqual([]);
@@ -210,6 +227,10 @@ describe("per-editor component test MiroirTest instances", () => {
     for (const [name, uuid] of Object.entries(laterComponentInstances)) {
       expect(exports[exportName(name)]?.uuid, name).toBe(uuid);
       expect(testUuids).toContain(uuid);
+    }
+    for (const [name, uuid] of Object.entries(offPageComponentInstances)) {
+      expect(exports[exportName(name)]?.uuid, name).toBe(uuid);
+      expect(testUuids, name).not.toContain(uuid);
     }
   });
 });

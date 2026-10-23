@@ -5,7 +5,7 @@
   "name":"transformer_menu_addItem",
   "defaultLabel": "The Transformer adding an Item to a Menu.",
   "description": "This Transformer adds an Item to an existing Menu.",
-  "classification": "basic",
+  "classification": "metaModel",
   "transformerInterface": {
     "inputOutput": {
       "input": "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",

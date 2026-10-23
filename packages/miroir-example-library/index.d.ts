@@ -84,6 +84,7 @@ export declare const miroirTest_runner_mcp_lendDocument: any;
 export declare const testConfiguration_libraryDocumentSeed: any;
 export declare const testConfiguration_libraryBookDetailsSeed: any;
 export declare const miroirTest_report_bookDetails: any;
+export declare const miroirTest_report_queryDetails: any;
 export declare const lendDocumentRunner: any;
 export declare const mcpLendDocumentRunner: any;
 export declare const returnDocumentRunner: any;

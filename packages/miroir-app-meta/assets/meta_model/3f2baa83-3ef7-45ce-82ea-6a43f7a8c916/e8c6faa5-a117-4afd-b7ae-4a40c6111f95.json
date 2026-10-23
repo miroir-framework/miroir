@@ -85,7 +85,8 @@
               "height": 300,
               "showTooltips": true,
               "showLegend": false,
-              "labelPresentation": "slanted"
+              "labelPresentation": "auto",
+              "slantAngle": 45
             }
           }
         },

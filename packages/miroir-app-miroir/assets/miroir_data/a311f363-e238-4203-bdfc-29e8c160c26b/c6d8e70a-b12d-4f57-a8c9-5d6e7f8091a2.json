@@ -86,9 +86,10 @@
               },
               {
                 "actionType": "compositeRunTestAssertion",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
                 "actionLabel": "checkEmptyAfterRollback",
                 "nameGivenToResult": "checkEmptyAfterRollback",
-                "testAssertion": {
+                "payload": {
                   "testType": "testAssertion",
                   "testLabel": "checkEmptyAfterRollback",
                   "definition": {
@@ -356,9 +357,10 @@
               },
               {
                 "actionType": "compositeRunTestAssertion",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
                 "actionLabel": "checkBothAfterCreate",
                 "nameGivenToResult": "checkBothAfterCreate",
-                "testAssertion": {
+                "payload": {
                   "testType": "testAssertion",
                   "testLabel": "checkBothAfterCreate",
                   "definition": {
@@ -385,9 +387,10 @@
               },
               {
                 "actionType": "compositeRunTestAssertion",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
                 "actionLabel": "listBothAfterCreate",
                 "nameGivenToResult": "listBothAfterCreate",
-                "testAssertion": {
+                "payload": {
                   "testType": "testAssertion",
                   "testLabel": "listBothAfterCreate",
                   "definition": {
@@ -467,9 +470,10 @@
               },
               {
                 "actionType": "compositeRunTestAssertion",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
                 "actionLabel": "checkAuthorAfterUndo1",
                 "nameGivenToResult": "checkAuthorAfterUndo1",
-                "testAssertion": {
+                "payload": {
                   "testType": "testAssertion",
                   "testLabel": "checkAuthorAfterUndo1",
                   "definition": {
@@ -496,9 +500,10 @@
               },
               {
                 "actionType": "compositeRunTestAssertion",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
                 "actionLabel": "listAuthorAfterUndo1",
                 "nameGivenToResult": "listAuthorAfterUndo1",
-                "testAssertion": {
+                "payload": {
                   "testType": "testAssertion",
                   "testLabel": "listAuthorAfterUndo1",
                   "definition": {
@@ -568,9 +573,10 @@
               },
               {
                 "actionType": "compositeRunTestAssertion",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
                 "actionLabel": "checkBothAfterRedo1",
                 "nameGivenToResult": "checkBothAfterRedo1",
-                "testAssertion": {
+                "payload": {
                   "testType": "testAssertion",
                   "testLabel": "checkBothAfterRedo1",
                   "definition": {
@@ -654,9 +660,10 @@
               },
               {
                 "actionType": "compositeRunTestAssertion",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
                 "actionLabel": "checkAuthorAfterUndo2Redo1",
                 "nameGivenToResult": "checkAuthorAfterUndo2Redo1",
-                "testAssertion": {
+                "payload": {
                   "testType": "testAssertion",
                   "testLabel": "checkAuthorAfterUndo2Redo1",
                   "definition": {
@@ -756,9 +763,10 @@
               },
               {
                 "actionType": "compositeRunTestAssertion",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
                 "actionLabel": "checkAuthorAfterExtraUndos",
                 "nameGivenToResult": "checkAuthorAfterExtraUndos",
-                "testAssertion": {
+                "payload": {
                   "testType": "testAssertion",
                   "testLabel": "checkAuthorAfterExtraUndos",
                   "definition": {
@@ -842,9 +850,10 @@
               },
               {
                 "actionType": "compositeRunTestAssertion",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
                 "actionLabel": "checkBothAfterCommit",
                 "nameGivenToResult": "checkBothAfterCommit",
-                "testAssertion": {
+                "payload": {
                   "testType": "testAssertion",
                   "testLabel": "checkBothAfterCommit",
                   "definition": {
@@ -871,9 +880,10 @@
               },
               {
                 "actionType": "compositeRunTestAssertion",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
                 "actionLabel": "listBothAfterCommit",
                 "nameGivenToResult": "listBothAfterCommit",
-                "testAssertion": {
+                "payload": {
                   "testType": "testAssertion",
                   "testLabel": "listBothAfterCommit",
                   "definition": {

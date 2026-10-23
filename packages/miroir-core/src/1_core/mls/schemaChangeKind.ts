@@ -9,6 +9,7 @@ import type {
   MlSchema,
   Query,
   Report,
+  TransformerDefinition,
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { selfApplicationMiroir } from "miroir-app-miroir";
 
@@ -88,6 +89,8 @@ function buildAppSchemaRevisionPayload(
     menus: fingerprintMenus(model.menus),
     endpoints: fingerprintEndpoints(appEndpoints),
     endpointActionTypes: extractEndpointActionTypes(appEndpoints),
+    // #502: the application's composites are branches of the transformer union.
+    transformerDefinitions: fingerprintTransformerDefinitions(model.transformerDefinitions),
   };
 }
 
@@ -161,6 +164,17 @@ function fingerprintMenus(menus: Menu[] | undefined) {
       uuid: menu.uuid,
       name: menu.name,
       definition: menu.definition,
+    }))
+    .sort((left, right) => left.uuid.localeCompare(right.uuid));
+}
+
+function fingerprintTransformerDefinitions(transformerDefinitions: TransformerDefinition[] | undefined) {
+  return [...definedArray(transformerDefinitions)]
+    .map((transformerDefinition) => ({
+      uuid: transformerDefinition.uuid,
+      name: transformerDefinition.name,
+      transformerInterface: transformerDefinition.transformerInterface,
+      transformerImplementationType: transformerDefinition.transformerImplementation?.transformerImplementationType,
     }))
     .sort((left, right) => left.uuid.localeCompare(right.uuid));
 }

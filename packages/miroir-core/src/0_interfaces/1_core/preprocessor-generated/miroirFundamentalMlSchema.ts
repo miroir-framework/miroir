@@ -5848,6 +5848,66 @@ export const miroirFundamentalMlSchema = {
           }
         }
       },
+      "blockPresentationHints": {
+        "type": "object",
+        "definition": {
+          "labelTemplate": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Label template",
+                "description": "The block header as a sentence: words, and [attribute] for an attribute of the block, e.g. \"map [applyTo] with [elementTransformer]\".",
+                "display": {
+                  "editable": true
+                }
+              }
+            }
+          },
+          "icon": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Icon",
+                "description": "An icon name, as for an Entity.",
+                "display": {
+                  "editable": true
+                }
+              }
+            }
+          },
+          "category": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Color category",
+                "description": "A key of the Theme's block editor colors (components.blockEditor.categoryColors) giving the block its color, instead of its classification.",
+                "display": {
+                  "editable": true
+                }
+              }
+            }
+          },
+          "colorByTheme": {
+            "type": "record",
+            "optional": true,
+            "definition": {
+              "type": "string"
+            },
+            "tag": {
+              "value": {
+                "defaultLabel": "Color by Theme",
+                "description": "A color per Theme id, for a block no category fits; it comes before the category.",
+                "display": {
+                  "editable": true
+                }
+              }
+            }
+          }
+        }
+      },
       "transformerDefinition": {
         "type": "object",
         "extend": {
@@ -5870,6 +5930,20 @@ export const miroirFundamentalMlSchema = {
                   "editable": true
                 }
               }
+            }
+          },
+          "presentation": {
+            "type": "schemaReference",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Presentation",
+                "description": "Block editor hints: a label template, an icon, a color."
+              }
+            },
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "blockPresentationHints"
             }
           },
           "runnableAsSql": {
@@ -7172,6 +7246,62 @@ export const miroirFundamentalMlSchema = {
               "type": "any"
             }
           },
+          "wireLocalCacheCompositeAction": {
+            "type": "boolean",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Wire composite actions to the local cache",
+                "description": "The component's DomainController runs actions on the test local cache, and the Library application is deployed (#274, #502)"
+              }
+            }
+          },
+          "localCacheInstances": {
+            "type": "array",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Local cache instances",
+                "description": "Instances loaded in the test local cache with the application's model and data, before the suite's cases run (#502)"
+              }
+            },
+            "definition": {
+              "type": "object",
+              "definition": {
+                "application": {
+                  "type": "uuid"
+                },
+                "objects": {
+                  "type": "array",
+                  "definition": {
+                    "type": "object",
+                    "definition": {
+                      "parentName": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "parentUuid": {
+                        "type": "uuid"
+                      },
+                      "applicationSection": {
+                        "type": "enum",
+                        "definition": [
+                          "model",
+                          "data"
+                        ]
+                      },
+                      "instances": {
+                        "type": "array",
+                        "definition": {
+                          "type": "any"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
           "miroirTests": {
             "type": "array",
             "definition": {
@@ -7814,6 +7944,36 @@ export const miroirFundamentalMlSchema = {
               "saveAs": {
                 "type": "string",
                 "optional": true
+              }
+            }
+          },
+          {
+            "type": "object",
+            "tag": {
+              "value": {
+                "defaultLabel": "setChecked",
+                "description": "Sets a checkbox or switch target to checked: clicks it only when its state differs, then waits until it has that state"
+              }
+            },
+            "definition": {
+              "step": {
+                "type": "literal",
+                "definition": "setChecked"
+              },
+              "label": {
+                "type": "string",
+                "optional": true
+              },
+              "target": {
+                "type": "schemaReference",
+                "definition": {
+                  "relativePath": "reactComponentTestTarget",
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739"
+                },
+                "context": {}
+              },
+              "checked": {
+                "type": "boolean"
               }
             }
           },
@@ -9416,6 +9576,62 @@ export const miroirFundamentalMlSchema = {
                       "type": "any"
                     }
                   },
+                  "wireLocalCacheCompositeAction": {
+                    "type": "boolean",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Wire composite actions to the local cache",
+                        "description": "The component's DomainController runs actions on the test local cache, and the Library application is deployed (#274, #502)"
+                      }
+                    }
+                  },
+                  "localCacheInstances": {
+                    "type": "array",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Local cache instances",
+                        "description": "Instances loaded in the test local cache with the application's model and data, before the suite's cases run (#502)"
+                      }
+                    },
+                    "definition": {
+                      "type": "object",
+                      "definition": {
+                        "application": {
+                          "type": "uuid"
+                        },
+                        "objects": {
+                          "type": "array",
+                          "definition": {
+                            "type": "object",
+                            "definition": {
+                              "parentName": {
+                                "type": "string",
+                                "optional": true
+                              },
+                              "parentUuid": {
+                                "type": "uuid"
+                              },
+                              "applicationSection": {
+                                "type": "enum",
+                                "definition": [
+                                  "model",
+                                  "data"
+                                ]
+                              },
+                              "instances": {
+                                "type": "array",
+                                "definition": {
+                                  "type": "any"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
                   "miroirTests": {
                     "type": "array",
                     "definition": {
@@ -10024,6 +10240,34 @@ export const miroirFundamentalMlSchema = {
                       "saveAs": {
                         "type": "string",
                         "optional": true
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "setChecked",
+                        "description": "Sets a checkbox or switch target to checked: clicks it only when its state differs, then waits until it has that state"
+                      }
+                    },
+                    "definition": {
+                      "step": {
+                        "type": "literal",
+                        "definition": "setChecked"
+                      },
+                      "label": {
+                        "type": "string",
+                        "optional": true
+                      },
+                      "target": {
+                        "type": "schemaReference",
+                        "definition": {
+                          "relativePath": "reactComponentTestTarget"
+                        }
+                      },
+                      "checked": {
+                        "type": "boolean"
                       }
                     }
                   },
@@ -25066,6 +25310,10 @@ export const miroirFundamentalMlSchema = {
             },
             "definition": "compositeRunTestAssertion"
           },
+          "endpoint": {
+            "type": "literal",
+            "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
+          },
           "actionLabel": {
             "type": "string",
             "optional": true
@@ -25073,7 +25321,7 @@ export const miroirFundamentalMlSchema = {
           "nameGivenToResult": {
             "type": "string"
           },
-          "testAssertion": {
+          "payload": {
             "type": "schemaReference",
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
@@ -25154,13 +25402,6 @@ export const miroirFundamentalMlSchema = {
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "domainAction"
-            }
-          },
-          {
-            "type": "schemaReference",
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "compositeRunTestAssertion"
             }
           }
         ]
@@ -25318,6 +25559,38 @@ export const miroirFundamentalMlSchema = {
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "runBoxedQueryTemplateAction"
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false
+                  }
+                },
+                "definition": "compositeRunTestAssertion"
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "nameGivenToResult": {
+                "type": "string"
+              },
+              "payload": {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "testAssertion"
                 }
               }
             }
@@ -25954,6 +26227,20 @@ export const miroirFundamentalMlSchema = {
               }
             }
           },
+          "presentation": {
+            "type": "schemaReference",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Presentation",
+                "description": "Block editor hints: a label template, an icon, a color."
+              }
+            },
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "blockPresentationHints"
+            }
+          },
           "logPhase": {
             "type": "enum",
             "optional": true,
@@ -26260,6 +26547,20 @@ export const miroirFundamentalMlSchema = {
                                 "defaultLabel": "Autocommit from UI",
                                 "description": "When true, the action is followed by a commit when it is sent from the UI"
                               }
+                            }
+                          },
+                          "presentation": {
+                            "type": "schemaReference",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Presentation",
+                                "description": "Block editor hints: a label template, an icon, a color."
+                              }
+                            },
+                            "definition": {
+                              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                              "relativePath": "blockPresentationHints"
                             }
                           },
                           "logPhase": {
@@ -29108,6 +29409,57 @@ export const miroirFundamentalMlSchema = {
                         }
                       }
                     }
+                  },
+                  "blockEditor": {
+                    "type": "object",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Block Editor",
+                        "description": "Colors of the block editor's blocks, by category (#498)."
+                      }
+                    },
+                    "definition": {
+                      "categoryColors": {
+                        "type": "record",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Block Category Colors",
+                            "description": "Block color by category: the classification of a TransformerDefinition (list, object, control, value, variable, operator, MLS, admin, spreadsheet, metaModel)."
+                          }
+                        },
+                        "definition": {
+                          "type": "string",
+                          "optional": true,
+                          "tag": {
+                            "value": {
+                              "defaultLabel": "Block Category Color",
+                              "display": {
+                                "string": {
+                                  "format": "color"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "fallbackColor": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Block Fallback Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            },
+                            "description": "Color of the blocks whose category has no color."
+                          }
+                        }
+                      }
+                    }
                   }
                 }
               },
@@ -31473,6 +31825,56 @@ export const miroirFundamentalMlSchema = {
                           "value": {
                             "defaultLabel": "Feedback Glow Intensity",
                             "description": "Scales the halo size: 1 is thin, default 2.5, clamped to 0.5-5."
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "blockEditor": {
+                    "type": "object",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Block Editor",
+                        "description": "Colors of the block editor's blocks, by category (#498)."
+                      }
+                    },
+                    "definition": {
+                      "categoryColors": {
+                        "type": "record",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Block Category Colors",
+                            "description": "Block color by category: the classification of a TransformerDefinition (list, object, control, value, variable, operator, MLS, admin, spreadsheet, metaModel)."
+                          }
+                        },
+                        "definition": {
+                          "type": "string",
+                          "optional": true,
+                          "tag": {
+                            "value": {
+                              "defaultLabel": "Block Category Color",
+                              "display": {
+                                "string": {
+                                  "format": "color"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      "fallbackColor": {
+                        "type": "string",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Block Fallback Color",
+                            "display": {
+                              "string": {
+                                "format": "color"
+                              }
+                            },
+                            "description": "Color of the blocks whose category has no color."
                           }
                         }
                       }
@@ -39677,6 +40079,38 @@ export const miroirFundamentalMlSchema = {
                     "canBeTemplate": false
                   }
                 },
+                "definition": "compositeRunTestAssertion"
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "nameGivenToResult": {
+                "type": "string"
+              },
+              "payload": {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion"
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false
+                  }
+                },
                 "definition": "connectExternalService"
               },
               "actionLabel": {
@@ -43858,6 +44292,48 @@ export const miroirFundamentalMlSchema = {
           }
         }
       },
+      "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion": {
+        "type": "object",
+        "definition": {
+          "testType": {
+            "type": "literal",
+            "definition": "testAssertion"
+          },
+          "testLabel": {
+            "type": "string"
+          },
+          "definition": {
+            "type": "object",
+            "definition": {
+              "resultAccessPath": {
+                "type": "array",
+                "optional": true,
+                "definition": {
+                  "type": "string"
+                }
+              },
+              "resultTransformer": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_coreTransformerForBuildPlusRuntime"
+                }
+              },
+              "ignoreAttributes": {
+                "type": "array",
+                "optional": true,
+                "definition": {
+                  "type": "string"
+                }
+              },
+              "expectedValue": {
+                "type": "any"
+              }
+            }
+          }
+        }
+      },
       "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_entityInstance": {
         "type": "object",
         "nonStrict": true,
@@ -45333,13 +45809,6 @@ export const miroirFundamentalMlSchema = {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_domainAction"
             }
-          },
-          {
-            "type": "schemaReference",
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeRunTestAssertion"
-            }
           }
         ]
       },
@@ -45714,42 +46183,6 @@ export const miroirFundamentalMlSchema = {
           }
         }
       },
-      "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_compositeRunTestAssertion": {
-        "type": "object",
-        "tag": {
-          "value": {
-            "display": {
-              "displayedAttributeValueWhenFolded": "actionLabel"
-            },
-            "isTemplate": true
-          }
-        },
-        "definition": {
-          "actionType": {
-            "type": "literal",
-            "tag": {
-              "value": {
-                "canBeTemplate": false
-              }
-            },
-            "definition": "compositeRunTestAssertion"
-          },
-          "actionLabel": {
-            "type": "string",
-            "optional": true
-          },
-          "nameGivenToResult": {
-            "type": "string"
-          },
-          "testAssertion": {
-            "type": "schemaReference",
-            "definition": {
-              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion"
-            }
-          }
-        }
-      },
       "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_shippingBox": {
         "type": "object",
         "definition": {
@@ -45892,48 +46325,6 @@ export const miroirFundamentalMlSchema = {
             }
           }
         ]
-      },
-      "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion": {
-        "type": "object",
-        "definition": {
-          "testType": {
-            "type": "literal",
-            "definition": "testAssertion"
-          },
-          "testLabel": {
-            "type": "string"
-          },
-          "definition": {
-            "type": "object",
-            "definition": {
-              "resultAccessPath": {
-                "type": "array",
-                "optional": true,
-                "definition": {
-                  "type": "string"
-                }
-              },
-              "resultTransformer": {
-                "type": "schemaReference",
-                "optional": true,
-                "definition": {
-                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                  "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_coreTransformerForBuildPlusRuntime"
-                }
-              },
-              "ignoreAttributes": {
-                "type": "array",
-                "optional": true,
-                "definition": {
-                  "type": "string"
-                }
-              },
-              "expectedValue": {
-                "type": "any"
-              }
-            }
-          }
-        }
       },
       "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_extractorOrCombinerTemplate": {
         "type": "union",
@@ -46487,6 +46878,38 @@ export const miroirFundamentalMlSchema = {
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_runBoxedQueryTemplateAction"
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false
+                  }
+                },
+                "definition": "compositeRunTestAssertion"
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "nameGivenToResult": {
+                "type": "string"
+              },
+              "payload": {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion"
                 }
               }
             }

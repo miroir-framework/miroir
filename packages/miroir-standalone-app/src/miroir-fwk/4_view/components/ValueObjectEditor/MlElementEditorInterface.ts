@@ -38,9 +38,20 @@ export interface TransformerTypeRestriction {
 }
 
 /**
+ * #470: one chip of a type badge. `label` is the display type (entity names), `title` the full type,
+ * `mismatch` marks the parts a failure of the node involves.
+ */
+export interface TransformerTypeBadgePart {
+  kind: "in" | "applyTo" | "declared" | "out" | "value";
+  label: string;
+  title: string;
+  mismatch: boolean;
+}
+
+/**
  * #453 — type badge of the transformer node (or literal `applyTo` value) at `path`, shown on its
- * title row. Labels are display strings (entity names); `title` holds the full types.
- * A literal has only `outputLabel`, the type of its value.
+ * own line under the node's title row (#470). Labels are display strings (entity names); `title`
+ * holds the full types. A literal has only `outputLabel`, the type of its value.
  */
 export interface TransformerTypeBadge {
   path: (string | number)[];
@@ -52,6 +63,12 @@ export interface TransformerTypeBadge {
   outputLabel: string;
   status: TransformerNodeTypeStatus;
   title: string;
+  /**
+   * #470: the chips shown, in order. `declared` is left out when the declared types are the
+   * actual ones (`declaredMatchesActual`).
+   */
+  parts: TransformerTypeBadgePart[];
+  declaredMatchesActual?: boolean;
 }
 
 export interface MlEditorPropsRoot {

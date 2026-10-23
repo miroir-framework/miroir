@@ -86,9 +86,10 @@
         "testCompositeActionAssertions": [
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "checkNumberOfEntities",
             "nameGivenToResult": "checkNumberOfEntities",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "checkNumberOfEntitiesInLibraryApplicationDeployment",
               "definition": {
@@ -197,9 +198,10 @@
         "testCompositeActionAssertions": [
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "checkNumberOfEntities",
             "nameGivenToResult": "checkNumberOfEntities",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "checkNumberOfEntities",
               "definition": {
@@ -227,9 +229,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "checkEntityList",
             "nameGivenToResult": "checkEntityList",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "checkEntityList",
               "definition": {
@@ -443,9 +446,10 @@
         "testCompositeActionAssertions": [
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "checkNumberOfEntities",
             "nameGivenToResult": "checkNumberOfEntities",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "checkNumberOfEntities",
               "definition": {
@@ -473,9 +477,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "checkEntityBooks",
             "nameGivenToResult": "checkEntityBooks",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "checkEntityBooks",
               "definition": {
@@ -712,9 +717,10 @@
         "testCompositeActionAssertions": [
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "checkNumberOfBooks",
             "nameGivenToResult": "checkNumberOfBooks",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "checkNumberOfBooks",
               "definition": {
@@ -874,9 +880,10 @@
         "testCompositeActionAssertions": [
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "checkNumberOfEntitiesFromPersistentStore",
             "nameGivenToResult": "checkNumberOfEntitiesFromPersistentStore",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "checkNumberOfEntitiesFromPersistentStore",
               "definition": {
@@ -904,9 +911,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "checkNumberOfEntitiesFromLocalCache",
             "nameGivenToResult": "checkNumberOfEntitiesFromLocalCache",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "checkNumberOfEntitiesFromLocalCache",
               "definition": {
@@ -934,9 +942,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "checkEntityFromLocalCache",
             "nameGivenToResult": "checkEntityFromLocalCache",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "checkEntityFromLocalCache",
               "definition": {
@@ -1097,9 +1106,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "checkEntityFromPersistentStore",
             "nameGivenToResult": "checkEntityFromPersistentStore",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "checkEntityFromPersistentStore",
               "definition": {
@@ -1340,9 +1350,10 @@
         "testCompositeActionAssertions": [
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "checkPublisherHasNotChanged",
             "nameGivenToResult": "checkPublisherHasNotChanged",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "checkPublisherHasNotChanged",
               "definition": {
@@ -1613,9 +1624,10 @@
         "testCompositeActionAssertions": [
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "checkNumberOfEntitiesFromLocalCache",
             "nameGivenToResult": "checkNumberOfEntitiesFromLocalCache",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "checkNumberOfEntitiesFromLocalCache",
               "definition": {
@@ -1643,9 +1655,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "checkEntitiesAreAuthorAndPublisher",
             "nameGivenToResult": "checkEntitiesAreAuthorAndPublisher",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "checkEntitiesAreAuthorAndPublisher",
               "definition": {
@@ -1702,9 +1715,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "checkNumberOfEntitiesFromPersistentStore",
             "nameGivenToResult": "checkNumberOfEntitiesFromPersistentStore",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "checkNumberOfEntitiesFromPersistentStore",
               "definition": {
@@ -1732,9 +1746,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "checkEntityFromPersistentStore",
             "nameGivenToResult": "checkEntityFromPersistentStore",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "checkEntityFromPersistentStore",
               "definition": {
@@ -1865,9 +1880,10 @@
         "testCompositeActionAssertions": [
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "checkNumberOfEntities",
             "nameGivenToResult": "checkNumberOfEntities",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "checkNumberOfBooks",
               "definition": {
@@ -1895,9 +1911,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "checkEntityList",
             "nameGivenToResult": "checkEntityList",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "checkEntityBooks",
               "definition": {

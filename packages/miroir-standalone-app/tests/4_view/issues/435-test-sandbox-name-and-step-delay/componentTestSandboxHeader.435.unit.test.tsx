@@ -203,7 +203,9 @@ describe("Component Test Sandbox header (#435)", () => {
       expect(host.stepDelayMs?.()).toBe(savedStepDelayMs);
       // #443: the sandbox passes its pause to the runner; after the run, the run is not paused
       await expect(host.waitWhilePaused?.()).resolves.toBeUndefined();
-      expect(screen.getByRole("button", { name: "Pause component test run" })).toBeDisabled();
+      // the run's end re-renders the panel after the results are reported (and the case root may
+      // render first, for the blur of its focused field): wait for it
+      await waitFor(() => expect(screen.getByRole("button", { name: "Pause component test run" })).toBeDisabled());
 
       const testName = screen.getByTestId("component-test-sandbox-test-name");
       expect(testName.textContent).toContain(enumLeafLabels[enumLeafLabels.length - 1]);
@@ -268,7 +270,9 @@ describe("Component Test Sandbox header (#435)", () => {
       }
 
       expect(results!.filter((row) => row.testResult === "ok")).toHaveLength(enumLeafLabels.length);
-      expect(screen.getByRole("button", { name: "Pause component test run" })).toBeDisabled();
+      // the run's end re-renders the panel after the results are reported (and the case root may
+      // render first, for the blur of its focused field): wait for it
+      await waitFor(() => expect(screen.getByRole("button", { name: "Pause component test run" })).toBeDisabled());
     },
     RUN_TEST_TIMEOUT,
   );

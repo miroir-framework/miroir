@@ -149,6 +149,21 @@
           "md": "24px",
           "lg": "32px"
         }
+      },
+      "blockEditor": {
+        "categoryColors": {
+          "list": "#2f6fd6",
+          "object": "#6a4fc9",
+          "control": "#a8640a",
+          "value": "#23824a",
+          "variable": "#c04f15",
+          "operator": "#bf3c78",
+          "MLS": "#0d7a84",
+          "admin": "#556070",
+          "spreadsheet": "#5e7410",
+          "metaModel": "#94389a"
+        },
+        "fallbackColor": "#5c6370"
       }
     },
     "table": {

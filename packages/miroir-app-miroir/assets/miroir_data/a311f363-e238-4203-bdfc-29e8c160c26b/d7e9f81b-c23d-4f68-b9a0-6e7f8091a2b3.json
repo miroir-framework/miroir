@@ -127,9 +127,10 @@
         "testCompositeActionAssertions": [
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "countSAV_V1-Baseline",
             "nameGivenToResult": "countSAV_V1-Baseline",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "countSAV_V1-Baseline",
               "definition": {
@@ -180,9 +181,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "savMigration_V1-Baseline",
             "nameGivenToResult": "savMigration_V1-Baseline",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "savMigration_V1-Baseline",
               "definition": {
@@ -243,9 +245,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "countCross_2",
             "nameGivenToResult": "countCross_2",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "countCross_2",
               "definition": {
@@ -273,9 +276,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "countEV_a027c379",
             "nameGivenToResult": "countEV_a027c379",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "countEV_a027c379",
               "definition": {
@@ -326,9 +330,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "countEV_d3139a6d",
             "nameGivenToResult": "countEV_d3139a6d",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "countEV_d3139a6d",
               "definition": {
@@ -541,9 +546,10 @@
         "testCompositeActionAssertions": [
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "countSAV_V1-Create",
             "nameGivenToResult": "countSAV_V1-Create",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "countSAV_V1-Create",
               "definition": {
@@ -594,9 +600,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "savMigration_V1-Create",
             "nameGivenToResult": "savMigration_V1-Create",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "savMigration_V1-Create",
               "definition": {
@@ -657,9 +664,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "countEntity_Author",
             "nameGivenToResult": "countEntity_Author",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "countEntity_Author",
               "definition": {
@@ -710,9 +718,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "countEV_d7a144ff",
             "nameGivenToResult": "countEV_d7a144ff",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "countEV_d7a144ff",
               "definition": {
@@ -763,9 +772,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "countCross_3",
             "nameGivenToResult": "countCross_3",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "countCross_3",
               "definition": {
@@ -941,9 +951,10 @@
         "testCompositeActionAssertions": [
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "countSAV_V1-Alter",
             "nameGivenToResult": "countSAV_V1-Alter",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "countSAV_V1-Alter",
               "definition": {
@@ -994,9 +1005,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "countSAV_V2-Alter",
             "nameGivenToResult": "countSAV_V2-Alter",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "countSAV_V2-Alter",
               "definition": {
@@ -1047,9 +1059,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "countLinkedSAV_V2-Alter",
             "nameGivenToResult": "countLinkedSAV_V2-Alter",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "countLinkedSAV_V2-Alter",
               "definition": {
@@ -1123,9 +1136,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "savMigration_V2-Alter",
             "nameGivenToResult": "savMigration_V2-Alter",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "savMigration_V2-Alter",
               "definition": {
@@ -1195,9 +1209,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "countCross_4",
             "nameGivenToResult": "countCross_4",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "countCross_4",
               "definition": {
@@ -1357,9 +1372,10 @@
         "testCompositeActionAssertions": [
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "countSAV_V2-Drop",
             "nameGivenToResult": "countSAV_V2-Drop",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "countSAV_V2-Drop",
               "definition": {
@@ -1410,9 +1426,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "countLinkedSAV_V2-Drop",
             "nameGivenToResult": "countLinkedSAV_V2-Drop",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "countLinkedSAV_V2-Drop",
               "definition": {
@@ -1486,9 +1503,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "savMigration_V2-Drop",
             "nameGivenToResult": "savMigration_V2-Drop",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "savMigration_V2-Drop",
               "definition": {
@@ -1555,9 +1573,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "countEntity_Country",
             "nameGivenToResult": "countEntity_Country",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "countEntity_Country",
               "definition": {
@@ -1608,9 +1627,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "countEV_d3139a6d",
             "nameGivenToResult": "countEV_d3139a6d",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "countEV_d3139a6d",
               "definition": {
@@ -1661,9 +1681,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "countCross_3",
             "nameGivenToResult": "countCross_3",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "countCross_3",
               "definition": {
@@ -1815,9 +1836,10 @@
         "testCompositeActionAssertions": [
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "countSAV_V1-Isolation",
             "nameGivenToResult": "countSAV_V1-Isolation",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "countSAV_V1-Isolation",
               "definition": {
@@ -1868,9 +1890,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "countEntity_PublisherRenamed",
             "nameGivenToResult": "countEntity_PublisherRenamed",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "countEntity_PublisherRenamed",
               "definition": {
@@ -1921,9 +1944,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "countEntity_Publisher",
             "nameGivenToResult": "countEntity_Publisher",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "countEntity_Publisher",
               "definition": {
@@ -1974,9 +1998,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "countEV_Publisher_a027c379",
             "nameGivenToResult": "countEV_Publisher_a027c379",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "countEV_Publisher_a027c379",
               "definition": {
@@ -2184,9 +2209,10 @@
         "testCompositeActionAssertions": [
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "countSAV_V2-Rename",
             "nameGivenToResult": "countSAV_V2-Rename",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "countSAV_V2-Rename",
               "definition": {
@@ -2237,9 +2263,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "countLinkedSAV_V2-Rename",
             "nameGivenToResult": "countLinkedSAV_V2-Rename",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "countLinkedSAV_V2-Rename",
               "definition": {
@@ -2313,9 +2340,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "savMigration_V2-Rename",
             "nameGivenToResult": "savMigration_V2-Rename",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "savMigration_V2-Rename",
               "definition": {
@@ -2498,9 +2526,10 @@
         "testCompositeActionAssertions": [
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "countSAV_V1-Same",
             "nameGivenToResult": "countSAV_V1-Same",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "countSAV_V1-Same",
               "definition": {
@@ -2551,9 +2580,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "countSAV_V2-Same",
             "nameGivenToResult": "countSAV_V2-Same",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "countSAV_V2-Same",
               "definition": {
@@ -2604,9 +2634,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "countLinkedSAV_V2-Same",
             "nameGivenToResult": "countLinkedSAV_V2-Same",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "countLinkedSAV_V2-Same",
               "definition": {
@@ -2680,9 +2711,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "savMigration_V2-Same",
             "nameGivenToResult": "savMigration_V2-Same",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "savMigration_V2-Same",
               "definition": {
@@ -2743,9 +2775,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "countCross_4",
             "nameGivenToResult": "countCross_4",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "countCross_4",
               "definition": {
@@ -3399,9 +3432,10 @@
         "testCompositeActionAssertions": [
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "countSAV_V1-Concepts",
             "nameGivenToResult": "countSAV_V1-Concepts",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "countSAV_V1-Concepts",
               "definition": {
@@ -3452,9 +3486,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "count_queryVersions_queryUuid_6176dcdf",
             "nameGivenToResult": "count_queryVersions_queryUuid_6176dcdf",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "count_queryVersions_queryUuid_6176dcdf",
               "definition": {
@@ -3505,9 +3540,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "count_queryVersions_name_BookCountByPublisher",
             "nameGivenToResult": "count_queryVersions_name_BookCountByPublisher",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "count_queryVersions_name_BookCountByPublisher",
               "definition": {
@@ -3558,9 +3594,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "count_reportVersions_reportUuid_08176cc7",
             "nameGivenToResult": "count_reportVersions_reportUuid_08176cc7",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "count_reportVersions_reportUuid_08176cc7",
               "definition": {
@@ -3611,9 +3648,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "count_reportVersions_name_CountryList",
             "nameGivenToResult": "count_reportVersions_name_CountryList",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "count_reportVersions_name_CountryList",
               "definition": {
@@ -3664,9 +3702,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "count_menuVersions_menuUuid_dd168e5a",
             "nameGivenToResult": "count_menuVersions_menuUuid_dd168e5a",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "count_menuVersions_menuUuid_dd168e5a",
               "definition": {
@@ -3717,9 +3756,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "count_menuVersions_name_LibraryMenu",
             "nameGivenToResult": "count_menuVersions_name_LibraryMenu",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "count_menuVersions_name_LibraryMenu",
               "definition": {
@@ -3770,9 +3810,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "count_endpointVersions_endpointUuid_9884c1a4",
             "nameGivenToResult": "count_endpointVersions_endpointUuid_9884c1a4",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "count_endpointVersions_endpointUuid_9884c1a4",
               "definition": {
@@ -3823,9 +3864,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "count_endpointVersions_name_Books",
             "nameGivenToResult": "count_endpointVersions_name_Books",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "count_endpointVersions_name_Books",
               "definition": {
@@ -3876,9 +3918,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "count_runnerVersions_runnerUuid_98a38a84",
             "nameGivenToResult": "count_runnerVersions_runnerUuid_98a38a84",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "count_runnerVersions_runnerUuid_98a38a84",
               "definition": {
@@ -3929,9 +3972,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "count_runnerVersions_name_returnDocument",
             "nameGivenToResult": "count_runnerVersions_name_returnDocument",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "count_runnerVersions_name_returnDocument",
               "definition": {
@@ -3982,9 +4026,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "count_themeVersions_themeUuid_f0000001",
             "nameGivenToResult": "count_themeVersions_themeUuid_f0000001",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "count_themeVersions_themeUuid_f0000001",
               "definition": {
@@ -4035,9 +4080,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "count_themeVersions_name_FreezeTestTheme",
             "nameGivenToResult": "count_themeVersions_name_FreezeTestTheme",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "count_themeVersions_name_FreezeTestTheme",
               "definition": {
@@ -4088,9 +4134,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "count_transformerDefinitionVersions_transformerDefinitionUuid_f0000002",
             "nameGivenToResult": "count_transformerDefinitionVersions_transformerDefinitionUuid_f0000002",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "count_transformerDefinitionVersions_transformerDefinitionUuid_f0000002",
               "definition": {
@@ -4141,9 +4188,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "count_transformerDefinitionVersions_name_freezeTestReturnValue",
             "nameGivenToResult": "count_transformerDefinitionVersions_name_freezeTestReturnValue",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "count_transformerDefinitionVersions_name_freezeTestReturnValue",
               "definition": {
@@ -4194,9 +4242,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "count_crossQueryVersions_at_least_one",
             "nameGivenToResult": "count_crossQueryVersions_at_least_one",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "count_crossQueryVersions_at_least_one",
               "definition": {
@@ -4224,9 +4273,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "count_crossReportVersions_at_least_one",
             "nameGivenToResult": "count_crossReportVersions_at_least_one",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "count_crossReportVersions_at_least_one",
               "definition": {
@@ -4254,9 +4304,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "count_crossMenuVersions_at_least_one",
             "nameGivenToResult": "count_crossMenuVersions_at_least_one",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "count_crossMenuVersions_at_least_one",
               "definition": {
@@ -4284,9 +4335,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "count_crossEndpointVersions_at_least_one",
             "nameGivenToResult": "count_crossEndpointVersions_at_least_one",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "count_crossEndpointVersions_at_least_one",
               "definition": {
@@ -4314,9 +4366,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "count_crossRunnerVersions_at_least_one",
             "nameGivenToResult": "count_crossRunnerVersions_at_least_one",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "count_crossRunnerVersions_at_least_one",
               "definition": {
@@ -4344,9 +4397,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "count_crossThemeVersions_at_least_one",
             "nameGivenToResult": "count_crossThemeVersions_at_least_one",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "count_crossThemeVersions_at_least_one",
               "definition": {
@@ -4374,9 +4428,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "count_crossTransformerDefinitionVersions_at_least_one",
             "nameGivenToResult": "count_crossTransformerDefinitionVersions_at_least_one",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "count_crossTransformerDefinitionVersions_at_least_one",
               "definition": {
@@ -4404,9 +4459,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "count_queryVersions_uuid_differs_from_live",
             "nameGivenToResult": "count_queryVersions_uuid_differs_from_live",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "count_queryVersions_uuid_differs_from_live",
               "definition": {
@@ -4480,9 +4536,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "count_reportVersions_uuid_differs_from_live",
             "nameGivenToResult": "count_reportVersions_uuid_differs_from_live",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "count_reportVersions_uuid_differs_from_live",
               "definition": {
@@ -4556,9 +4613,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "count_menuVersions_uuid_differs_from_live",
             "nameGivenToResult": "count_menuVersions_uuid_differs_from_live",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "count_menuVersions_uuid_differs_from_live",
               "definition": {
@@ -4632,9 +4690,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "count_endpointVersions_uuid_differs_from_live",
             "nameGivenToResult": "count_endpointVersions_uuid_differs_from_live",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "count_endpointVersions_uuid_differs_from_live",
               "definition": {
@@ -4708,9 +4767,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "count_runnerVersions_uuid_differs_from_live",
             "nameGivenToResult": "count_runnerVersions_uuid_differs_from_live",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "count_runnerVersions_uuid_differs_from_live",
               "definition": {
@@ -4784,9 +4844,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "count_themeVersions_uuid_differs_from_live",
             "nameGivenToResult": "count_themeVersions_uuid_differs_from_live",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "count_themeVersions_uuid_differs_from_live",
               "definition": {
@@ -4860,9 +4921,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "count_transformerDefinitionVersions_uuid_differs_from_live",
             "nameGivenToResult": "count_transformerDefinitionVersions_uuid_differs_from_live",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "count_transformerDefinitionVersions_uuid_differs_from_live",
               "definition": {
@@ -5986,9 +6048,10 @@
         "testCompositeActionAssertions": [
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "countSAV_V1-ConceptIsolation",
             "nameGivenToResult": "countSAV_V1-ConceptIsolation",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "countSAV_V1-ConceptIsolation",
               "definition": {
@@ -6039,9 +6102,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "count_storedQueries_name_BookCountRenamedAfterFreeze",
             "nameGivenToResult": "count_storedQueries_name_BookCountRenamedAfterFreeze",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "count_storedQueries_name_BookCountRenamedAfterFreeze",
               "definition": {
@@ -6092,9 +6156,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "count_storedQueries_name_BookCountByPublisher",
             "nameGivenToResult": "count_storedQueries_name_BookCountByPublisher",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "count_storedQueries_name_BookCountByPublisher",
               "definition": {
@@ -6145,9 +6210,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "count_reports_name_CountryListRenamedAfterFreeze",
             "nameGivenToResult": "count_reports_name_CountryListRenamedAfterFreeze",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "count_reports_name_CountryListRenamedAfterFreeze",
               "definition": {
@@ -6198,9 +6264,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "count_reports_name_CountryList",
             "nameGivenToResult": "count_reports_name_CountryList",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "count_reports_name_CountryList",
               "definition": {
@@ -6251,9 +6318,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "count_menus_name_LibraryMenuRenamedAfterFreeze",
             "nameGivenToResult": "count_menus_name_LibraryMenuRenamedAfterFreeze",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "count_menus_name_LibraryMenuRenamedAfterFreeze",
               "definition": {
@@ -6304,9 +6372,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "count_menus_name_LibraryMenu",
             "nameGivenToResult": "count_menus_name_LibraryMenu",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "count_menus_name_LibraryMenu",
               "definition": {
@@ -6357,9 +6426,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "count_queryVersions_name_BookCountByPublisher",
             "nameGivenToResult": "count_queryVersions_name_BookCountByPublisher",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "count_queryVersions_name_BookCountByPublisher",
               "definition": {
@@ -6410,9 +6480,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "count_queryVersions_name_BookCountRenamedAfterFreeze",
             "nameGivenToResult": "count_queryVersions_name_BookCountRenamedAfterFreeze",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "count_queryVersions_name_BookCountRenamedAfterFreeze",
               "definition": {
@@ -6463,9 +6534,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "count_reportVersions_name_CountryList",
             "nameGivenToResult": "count_reportVersions_name_CountryList",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "count_reportVersions_name_CountryList",
               "definition": {
@@ -6516,9 +6588,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "count_reportVersions_name_CountryListRenamedAfterFreeze",
             "nameGivenToResult": "count_reportVersions_name_CountryListRenamedAfterFreeze",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "count_reportVersions_name_CountryListRenamedAfterFreeze",
               "definition": {
@@ -6569,9 +6642,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "count_menuVersions_name_LibraryMenu",
             "nameGivenToResult": "count_menuVersions_name_LibraryMenu",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "count_menuVersions_name_LibraryMenu",
               "definition": {
@@ -6622,9 +6696,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "count_menuVersions_name_LibraryMenuRenamedAfterFreeze",
             "nameGivenToResult": "count_menuVersions_name_LibraryMenuRenamedAfterFreeze",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "count_menuVersions_name_LibraryMenuRenamedAfterFreeze",
               "definition": {
@@ -6827,9 +6902,10 @@
         "testCompositeActionAssertions": [
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "countSAV_Initial",
             "nameGivenToResult": "countSAV_Initial",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "countSAV_Initial",
               "definition": {
@@ -6880,9 +6956,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "countSAV_V1-Create",
             "nameGivenToResult": "countSAV_V1-Create",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "countSAV_V1-Create",
               "definition": {
@@ -6933,9 +7010,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "countCross_0",
             "nameGivenToResult": "countCross_0",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "countCross_0",
               "definition": {
@@ -6963,9 +7041,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "countEntity_Author",
             "nameGivenToResult": "countEntity_Author",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "countEntity_Author",
               "definition": {

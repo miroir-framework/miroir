@@ -333,9 +333,10 @@
         "testCompositeActionAssertions": [
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "getPlaylistOperationLanded",
             "nameGivenToResult": "getPlaylistOperationLanded",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "getPlaylistOperationLanded",
               "definition": {
@@ -1046,9 +1047,10 @@
         "testCompositeActionAssertions": [
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "getPlaylistOperationLanded",
             "nameGivenToResult": "getPlaylistOperationLanded",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "getPlaylistOperationLanded",
               "definition": {
@@ -1103,9 +1105,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "resyncEntityMlSchemaMatchesResponseSchema",
             "nameGivenToResult": "resyncEntityMlSchemaMatchesResponseSchema",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "resyncEntityMlSchemaMatchesResponseSchema",
               "definition": {
@@ -1153,9 +1156,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "operationSyncSurvivesEndpointUpsert",
             "nameGivenToResult": "operationSyncSurvivesEndpointUpsert",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "operationSyncSurvivesEndpointUpsert",
               "definition": {

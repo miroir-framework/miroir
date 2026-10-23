@@ -69,9 +69,11 @@ import { FoldUnfoldAllObjectAttributesOrArrayItems, FoldUnfoldObjectOrArray, MlE
 import { getFoldedDisplayValue, useMlElementEditorHooks } from "./MlElementEditorHooks";
 import { TransformerTypeBadge, TransformerTypeRestriction, MlObjectEditorProps } from "./MlElementEditorInterface";
 import { emptyContainerMarker, isPlainObjectValue } from "./renderedValueMarkers";
+import { historyCommand } from "./ValueHistoryProvider.js";
 import {
   findPathAnnotation,
   TransformerTitleRowAnnotations,
+  TransformerTypeBadgeRow,
 } from "../Reports/TransformerTypeAnnotation.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MlObjectEditor");
@@ -118,6 +120,13 @@ const EditableAttributeName: FC<{
 
   const handleKeyDown = useCallback(
     (event: React.KeyboardEvent) => {
+      // #499: while the name is being edited, Ctrl+Z and Ctrl+Y undo its text with the browser's
+      // own undo, not a step of the value history, which has not seen the name yet
+      const command = historyCommand(event);
+      if (command && isEditing) {
+        event.stopPropagation();
+        return;
+      }
       if (event.key === "Enter") {
         event.preventDefault();
         handleCommit();
@@ -126,7 +135,7 @@ const EditableAttributeName: FC<{
         setIsEditing(false);
       }
     },
-    [handleCommit, initialValue]
+    [handleCommit, initialValue, isEditing]
   );
 
   // Update local value if the initial value changes (external update)
@@ -1416,7 +1425,6 @@ export function MlObjectEditor(props: MlObjectEditorProps) {
                 skipRoot
                 showMlSchemaTypes={showMlSchemaTypes}
                 mlSchemaTypeAnnotations={mlSchemaTypeAnnotations}
-                transformerTypeBadges={transformerTypeBadges}
                 environmentAnnotations={environmentAnnotations}
                 inadequate={!!titleRowWarning}
                 inadequateTitle={titleRowWarning?.title}
@@ -1439,12 +1447,14 @@ export function MlObjectEditor(props: MlObjectEditorProps) {
           <span id={rootLessListKey + "head"} key={rootLessListKey + "head"}>
             <FoldUnfoldObjectOrArray
               listKey={listKey}
+              reportSectionPathAsString={reportSectionPathAsString}
               rootLessListKeyArray={rootLessListKeyArray}
               currentValue={currentValueObjectAtKey}
               unfoldingDepth={unfoldingDepth}
             ></FoldUnfoldObjectOrArray>
             <FoldUnfoldObjectOrArray
               listKey={listKey}
+              reportSectionPathAsString={reportSectionPathAsString}
               rootLessListKeyArray={rootLessListKeyArray}
               currentValue={currentValueObjectAtKey}
               unfoldingDepth={Infinity}
@@ -1515,6 +1525,9 @@ export function MlObjectEditor(props: MlObjectEditorProps) {
             {/* {mlSchemaTooltip ?? <></>} */}
           </ThemedDeleteButtonContainer>
         </ThemedFlexRow>
+      )}
+      {!currentTypeCheckKeyMap?.resolvedSchema?.tag?.value?.display?.objectWithoutHeader && (
+        <TransformerTypeBadgeRow path={rootLessListKeyArray} transformerTypeBadges={transformerTypeBadges} />
       )}
       {/* {!currentTypeCheckKeyMap?.resolvedSchema?.tag?.value?.display?.objectAttributesNoIndent ? (
           <ThemedIndentedContainer

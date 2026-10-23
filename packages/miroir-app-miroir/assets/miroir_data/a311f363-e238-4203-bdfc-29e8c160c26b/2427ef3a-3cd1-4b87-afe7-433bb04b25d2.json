@@ -322,9 +322,10 @@
         "testCompositeActionAssertions": [
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "libraryMasterTraceRoot",
             "nameGivenToResult": "libraryMasterTraceRoot",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "Library master trace root exists in Library model after model commit",
               "definition": {
@@ -398,9 +399,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "squashedBaseline",
             "nameGivenToResult": "squashedBaseline",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "squashed baseline event exists",
               "definition": {
@@ -451,9 +453,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "createEntityEvent",
             "nameGivenToResult": "createEntityEvent",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "one createEntity event targets WP1 entity",
               "definition": {
@@ -527,9 +530,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "renameEntityEvent",
             "nameGivenToResult": "renameEntityEvent",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "one renameEntity event targets WP1 entity",
               "definition": {
@@ -603,9 +607,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "modelEventCommitStamps",
             "nameGivenToResult": "modelEventCommitStamps",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "model events carry commit and version stamps",
               "definition": {
@@ -702,9 +707,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "modelEventDefinitionResolution",
             "nameGivenToResult": "modelEventDefinitionResolution",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "model events resolve definition version from action payload",
               "definition": {
@@ -755,9 +761,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "libraryDataDoesNotTrace",
             "nameGivenToResult": "libraryDataDoesNotTrace",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "Library data update leaves event count unchanged",
               "definition": {
@@ -798,9 +805,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "miroirDataTraces",
             "nameGivenToResult": "miroirDataTraces",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "Miroir data update adds one data event in Miroir model",
               "definition": {
@@ -851,9 +859,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "miroirDataIncrementsTotal",
             "nameGivenToResult": "miroirDataIncrementsTotal",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "Miroir data update increases Miroir model trace event count",
               "definition": {
