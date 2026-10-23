@@ -30,6 +30,11 @@ Miroir defined as punchlines for hipsters:
 - **Enabling low-code creation** - Build and modify applications at runtime without recompilation
 - **Supporting AI agents** - Native Model Context Protocol (MCP) integration for natural language development
 - **Fostering domain languages** - Create custom Domain-Specific Languages (DSLs) for your business domain -->
+## Quote
+```
+We need good abstractions for the agents to hold on to.
+```
+[Adam Bender, Software engineering at the tipping point, May 2026](https://youtu.be/2n41YjR5QfU?t=2073)
 
 ## Example use case
 

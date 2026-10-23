@@ -202,8 +202,8 @@ You do not set `persistenceStoreAccessMode` in `miroirConfig`. It is how each Do
 
 | Mode | Meaning | Typical process |
 |---|---|---|
-| `"remote"` | This controller keeps the UI cache and sends store work out (HTTP, IPC, or `RestClientStub`). | Browser, Electron renderer, CLI client side |
-| `"local"` | This controller opens store factories and reads/writes files, SQL, IndexedDB, Mongo, or bundled data. | `miroir-server`, Electron main, emulated in-process server |
+| `"remote"` | This controller keeps the UI cache and sends store work out (HTTP, IPC, or `RestClientStub`). | Browser, Electron renderer, client side of a vitest process |
+| `"local"` | This controller opens store factories and reads/writes files, SQL, IndexedDB, Mongo, or bundled data. | `miroir-server`, Electron main, emulated server inside the client process |
 
 How to choose:
 
@@ -223,71 +223,143 @@ What each shipped shape lets you do, and which knobs to turn. Feature flags: [Pr
 
 | Scenario | Stores | `ai` / `mcp` | Designer tools | How you set it |
 |---|---|---|---|---|
-| A. Web + `miroir-server` + SQL | postgres (and whatever the server registered) | on in shipped server JSON | on (default) | `emulateServer: false`. Edit `packages/miroir-server/config/miroirConfig.server.json` `features`. Restart the server. |
-| B. Emulated + filesystem | filesystem directories | off unless that test JSON sets `features` | on | `emulateServer: true`, `emulatedServerType: "filesystem"`. Add `features` only if the profile needs AI/MCP. |
-| C. Emulated + IndexedDB | IndexedDB (+ often filesystem admin) | usually off | on | `emulateServer: true`. Omit `features` to keep AI/MCP off. |
-| D. Sandbox bundled | bundled + IndexedDB; `bundled` not creatable | `ai` forced off | on | Cannot enable AI. `mcp` stays off unless you set it on the sandbox persistence config. |
-| E. Electron desktop | filesystem on main (all writable factories) | on (main `electronServerConfig`) | on | Do not put `features` on the renderer object. Restart the desktop app. Loopback HTTP on `http://127.0.0.1:3080` when `ai` or `mcp` is on. |
+| A. Web app + `miroir-server` | postgres (and whatever the server registered) | on in shipped server JSON | on (default) | `emulateServer: false`. Edit `packages/miroir-server/config/miroirConfig.server.json` `features`. Restart the server. |
+| B. Sandbox bundled | bundled + IndexedDB; `bundled` not creatable | `ai` forced off | on | Cannot enable AI. `mcp` stays off unless you set it on the sandbox persistence config. |
+| C. Electron desktop | filesystem on main (all writable factories) | on (main `electronServerConfig`) | on | Do not put `features` on the renderer object. Restart the desktop app. Loopback HTTP on `http://127.0.0.1:3080` when `ai` or `mcp` is on. |
+| D. Tests, emulated server | stores of `environments/test-<storage>.json` | off unless the environment sets `features` | n/a | `--profile emulatedServer-<storage>` (or `--storage <storage>`) on `testMiroir` / `testByFile`. |
+| E. Tests, real server | stores of `environments/test-<storage>.json`, opened by the server | the server's flags | n/a | Start `miroir-server` on the test environment, then `--profile realServer-<storage>`. |
+| F. Tests in the browser, emulated server + IndexedDB | IndexedDB (+ often filesystem admin) | usually off | on | `emulateServer: true`. Omit `features` to keep AI/MCP off. |
 
-### A. Production: real server + PostgreSQL
+How to read the diagrams:
 
-```
-Browser (CLIENT, remote)
-  --HTTP--> miroir-server (SERVER, local)
-              └── PostgreSQL
-                    ├── schema "miroirAdmin"
-                    ├── schema "miroir"
-                    └── schema "library"
-```
+- A to C are ways to use Miroir; D to F run integration tests.
 
-`emulateServer: false`, `serverConfig.storeSectionConfiguration` with `emulatedServerType: "sql"`. Turn AI/MCP off by setting `features.ai` / `features.mcp` false on the **server** JSON and restarting.
+- A box with a title is one **process** (or browser tab). Arrows between boxes cross a process boundary; arrows inside a box are function calls.
+- Every scenario has **two DomainControllers**: a client one (`remote`) that keeps the local cache, and a server one (`local`) that opens the stores. `remote` and `local` are each controller's `persistenceStoreAccessMode`, not properties of the process. In the emulated scenarios (B, D, F) both controllers live in the same process and `RestClientStub` turns REST calls into function calls.
 
-### B. Development / test: emulated server + filesystem
+### A. Production: web app + `miroir-server`
 
-```
-Browser (CLIENT, remote)
-  └── RestClientStub --> in-process SERVER (local)
-                            └── filesystem
-                                  ├── .miroir/test-filesystem/admin/{model,data}/
-                                  ├── .miroir/test-filesystem/miroir/{model,data,modelVersion}/
-                                  └── .miroir/test-filesystem/library/{model,data,modelVersion}/
-```
-
-`emulateServer: true`, `emulatedServerType: "filesystem"`. Versioned apps add a `modelVersion` directory. Test profiles that never use AI/MCP omit `features` (both false).
-
-### C. Browser tests: emulated server + IndexedDB
-
-```
-Browser (CLIENT, remote)
-  └── RestClientStub --> in-process SERVER (local)
-                            └── IndexedDB
-                                  ├── indexedDb-admin (admin often filesystem)
-                                  └── indexedDb-miroir / indexedDb-app
+```mermaid
+flowchart LR
+  subgraph browser["Browser tab: web app"]
+    C["Client DomainController<br/>remote · local cache"]
+  end
+  subgraph server["miroir-server process"]
+    S["Server DomainController<br/>local · PersistenceStoreControllers"]
+  end
+  C -- "RestClient<br/>HTTPS localhost:3080" --> S
+  S -.-> PG[("PostgreSQL (default)<br/>schemas miroirAdmin, miroir, library, …")]
+  S -.-> FS[("Filesystem<br/>JSON files per entity")]
+  S -.-> MG[("MongoDB<br/>one database per section")]
+  S -.-> LV[("IndexedDb API<br/>level databases on disk")]
 ```
 
-`emulateServer: true`. Admin section often `filesystem`; Miroir and app sections `indexedDb`.
+Dotted arrows: the backends the server can open (PostgreSQL in the shipped configuration), chosen per section (`admin`, `model`, `data`, `modelVersion`) through `emulatedServerType`; sections of one deployment may use different backends. See [Storage Backend Types](#storage-backend-types-emulatedservertype).
 
-### D. Demo / sandbox: emulated server + bundled (read-only)
+`emulateServer: false`, `serverConfig.storeSectionConfiguration` with `emulatedServerType: "sql"` by default. Turn AI/MCP off by setting `features.ai` / `features.mcp` false on the **server** JSON and restarting.
 
+### B. Demo / sandbox: Serverless (emulated server within the Browser, indexedDb)
+
+```mermaid
+flowchart LR
+  subgraph browser["Browser (no server anywhere)"]
+    subgraph tab["Tab: miroir-sandbox SPA (JavaScript bundle)"]
+      C["Client DomainController<br/>remote · local cache"]
+      S["Emulated server DomainController<br/>local · PersistenceStoreControllers"]
+      B[("BundledStore, read-only<br/>Admin + Miroir from demoBundledData,<br/>compiled into the bundle")]
+      C -- "RestClientStub<br/>function calls" --> S
+      S --> B
+    end
+    IDB[("Browser IndexedDB<br/>writable sections")]
+    S --> IDB
+  end
 ```
-Browser (CLIENT, remote)
-  └── RestClientStub --> in-process SERVER (local)
-                            └── BundledStore (read-only)
-                                  ├── ADMIN_DEPLOYMENT_UUID → demoBundledData.admin
-                                  └── MIROIR_DEPLOYMENT_UUID → demoBundledData.miroir
-```
+
+Everything runs in the browser: the bundled data ships inside the SPA's JavaScript, and the writable sections are in the browser's IndexedDB. No `miroir-server` is involved.
 
 `emulateServer: true`, `emulatedServerType: "bundled"`. Star-import of deployment packages. Not suitable for versioned-internal applications. Sandbox environment forces `ai` false.
 
-### E. Desktop: Electron + filesystem
+### C. Desktop: Electron + filesystem
 
+```mermaid
+flowchart LR
+  subgraph app["Electron desktop app (no separate miroir-server)"]
+    subgraph renderer["Renderer process"]
+      C["Client DomainController<br/>remote · local cache"]
+    end
+    subgraph main["Main process (Node)"]
+      S["Server DomainController<br/>local · PersistenceStoreControllers"]
+    end
+    C -- "IPC<br/>(loopback HTTP 127.0.0.1:3080 when ai or mcp is on)" --> S
+  end
+  S --> FS[("Local disk: filesystem stores<br/>paths relative to the app bundle")]
 ```
-Electron renderer (CLIENT, remote)
-  └── IPC --> Electron main (SERVER, local)
-                └── filesystem (paths relative to the app bundle)
-```
+
+The app is a single program that runs two processes: the renderer (the UI, a Chromium page) and main (Node, which plays the server's part). Only the stores are outside it, on the local disk.
 
 `emulateServer: true` on the renderer stub. Store JSON under Electron `assets/<deploymentUuid>.json`. Flags live on **main** `electronServerConfig`. When `ai` or `mcp` is true, main listens on loopback HTTP; the renderer uses that absolute base, not `app://`. Snapshot GET still uses IPC.
+
+### D. Tests from the CLI: emulated server
+
+`npm run testMiroir` or `npm run testByFile` with `--profile emulatedServer-<storage>`. The whole stack runs inside the vitest Node process: no `miroir-server`, no network.
+
+```mermaid
+flowchart LR
+  subgraph node["Node process: vitest, profile emulatedServer-{storage}"]
+    T["Test code<br/>MiroirTest runner · *.integ.test.ts"]
+    C["Client DomainController<br/>remote · local cache"]
+    S["Emulated server DomainController<br/>local · PersistenceStoreControllers"]
+    T --> C
+    C -- "RestClientStub<br/>function calls" --> S
+  end
+  S --> A[("Admin<br/>filesystem copy in .miroir/test-{storage}/admin/")]
+  S --> D[("miroir, library, appForTest, …<br/>store of test-{storage}")]
+```
+
+| `--storage` | Where the application sections live |
+|---|---|
+| `filesystem` | `.miroir/test-filesystem/<application>/{model,data,modelVersion}/` |
+| `indexedDb` | Level databases in `.miroir/test-indexedDb/` (the `level` package writes to disk under Node) |
+| `sql` (default) | PostgreSQL schemas `test_sql_<application>` |
+| `mongodb` | MongoDB databases `test_mongodb_<application>` |
+
+Versioned applications add a `modelVersion` section. Test environments that never use AI/MCP omit `features` (both false).
+
+### E. Tests from the CLI: real server
+
+Same commands with `--profile realServer-<storage>`. The test process holds only the client; it calls a `miroir-server` that you start beforehand on the same test environment, at `https://localhost:3080` (Node must trust the mkcert CA, see [Testing reference](testing.md)).
+
+```mermaid
+flowchart LR
+  subgraph node["Node process: vitest, profile realServer-{storage}"]
+    T["Test code<br/>MiroirTest runner · *.integ.test.ts"]
+    C["Client DomainController<br/>remote · local cache"]
+    T --> C
+  end
+  subgraph server["miroir-server process, on test-{storage}"]
+    S["Server DomainController<br/>local · PersistenceStoreControllers"]
+  end
+  C -- "RestClient<br/>HTTPS localhost:3080" --> S
+  S --> D[("stores of test-{storage}<br/>same places as in D")]
+```
+
+Server-side logs are in the server process, not in the vitest output. Requests to external services leave from the server, so test leaves that fake them are skipped on these profiles.
+
+### F. Tests in the browser: emulated server + IndexedDB
+
+Integration tests launched from the web app itself: **Miroir Tests → Run Integration Tests** on profile `emulatedServer-indexedDb`. The web app then runs with `emulateServer: true`, and the whole stack, tests included, runs in the browser tab.
+
+```mermaid
+flowchart LR
+  subgraph browser["Browser tab: web app, emulateServer: true"]
+    C["Client DomainController<br/>remote · local cache"]
+    S["Emulated server DomainController<br/>local · PersistenceStoreControllers"]
+    C -- "RestClientStub<br/>function calls" --> S
+  end
+  S --> IDB[("Browser IndexedDB<br/>indexedDb-miroir, indexedDb-app, …")]
+```
+
+Admin section often `filesystem`; Miroir and app sections `indexedDb`.
 
 ---
 
