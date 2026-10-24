@@ -482,15 +482,32 @@
                       "operator": "&&",
                       "left": {
                         "transformerType": "boolExpr",
-                        "operator": "==",
+                        "label": "the menu link targets the list Report, created only with addDefaultReports",
+                        "operator": "&&",
                         "left": {
-                          "transformerType": "getFromParameters",
-                          "referencePath": [
-                            "createEntity",
-                            "addMenuLink"
-                          ]
+                          "transformerType": "boolExpr",
+                          "operator": "==",
+                          "left": {
+                            "transformerType": "getFromParameters",
+                            "referencePath": [
+                              "createEntity",
+                              "addMenuLink"
+                            ]
+                          },
+                          "right": true
                         },
-                        "right": true
+                        "right": {
+                          "transformerType": "boolExpr",
+                          "operator": "==",
+                          "left": {
+                            "transformerType": "getFromParameters",
+                            "referencePath": [
+                              "createEntity",
+                              "addDefaultReports"
+                            ]
+                          },
+                          "right": true
+                        }
                       },
                       "right": {
                         "transformerType": "boolExpr",
