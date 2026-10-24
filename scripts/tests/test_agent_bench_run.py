@@ -6,6 +6,7 @@ No test calls the paid agent: the summary is built from a recorded transcript (`
 from __future__ import annotations
 
 import json
+import stat
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -89,3 +90,44 @@ def test_a_missing_mcp_server_makes_the_run_invalid():
 def test_a_run_that_hits_the_turn_limit_says_so():
     result = {"type": "result", "subtype": "error_max_turns", "is_error": True, "usage": {}}
     assert transcript.measures(transcript.Transcript([result]))["stopReason"] == "error_max_turns"
+
+
+def _fake_store(root: Path) -> Path:
+    store = root / "store"
+    query = store / "model" / "e4320b9e-ab45-4abe-85d8-359604b3c62f"
+    query.mkdir(parents=True)
+    (query / "q.json").write_text("{}", encoding="utf-8")
+    (store / "data" / "e81078f3-2de7-4301-bd79-d3a156aec149").mkdir(parents=True)
+    (store / "modelVersion").mkdir()
+    return store
+
+
+def test_files_workspace_holds_the_library_the_meta_model_and_check(tmp_path):
+    workspace = run.prepare_workspace("miroir-files", _fake_store(tmp_path))
+    assert sorted(p.name for p in workspace.iterdir()) == [".check.mjs", "AGENTS.md", "check", "library", "meta-model"]
+    assert sorted(p.name for p in (workspace / "library").iterdir()) == ["data", "model"]
+    assert (workspace / "library" / "model" / "e4320b9e-ab45-4abe-85d8-359604b3c62f" / "q.json").exists()
+    assert (workspace / "meta-model" / "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad").is_dir()
+    assert all(stat.S_IMODE(p.stat().st_mode) & 0o222 == 0 for p in (workspace / "meta-model").rglob("*")), "meta-model is read only"
+
+
+def test_files_workspace_names_no_harness_path(tmp_path):
+    workspace = run.prepare_workspace("miroir-files", _fake_store(tmp_path))
+    for name in ("check", ".check.mjs", "AGENTS.md"):
+        text = (workspace / name).read_text(encoding="utf-8")
+        assert not [hidden for hidden in transcript.HIDDEN_PATHS if hidden in text], name
+
+
+def test_store_from_workspace_keeps_the_baseline_and_takes_the_workspace_library(tmp_path):
+    from agent_bench.acceptance import adapter_miroir
+
+    baseline = _fake_store(tmp_path)
+    library = tmp_path / "ws" / "library"
+    (library / "model" / "new").mkdir(parents=True)
+    (library / "model" / "new" / "x.json").write_text("{}", encoding="utf-8")
+    (library / "data").mkdir()
+    target = tmp_path / "out"
+    adapter_miroir.store_from_workspace(library, baseline, target)
+    assert (target / "model" / "new" / "x.json").exists()
+    assert not (target / "model" / "e4320b9e-ab45-4abe-85d8-359604b3c62f").exists()
+    assert (target / "modelVersion").is_dir()

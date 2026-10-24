@@ -367,7 +367,7 @@ python scripts/agent_bench/acceptance --arm miroir-mcp --feature lending-limit -
 
 ## Slice 6: the `miroir-files` arm
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -397,7 +397,10 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,tooling
 
 ### Realization
 
-_(to fill)_
+- `run.py --arm miroir-files` materializes a fresh `bench-agent` store, then `prepare_workspace` copies its `model` and `data` into `library/`, the meta Entities into a read-only `meta-model/`, and writes `./check`. No server runs during the agent's run. When the agent stops, `store_from_workspace` puts `library/` over the baseline store as `runs/<id>/store`, which acceptance reads with `--store`.
+- `./check` runs a copy of `acceptance/validate_store.mjs` (`.check.mjs`) whose imports point at the repository's built `miroir-core` and `miroir-app-miroir`, so neither file names a harness path (test). Its errors name the file: an invalid transformer type gives `library/model/e4320b9e-…/bad.json: Object must not contain 'transformerType'`, the runtime Zod message an agent will have to work from.
+- `acceptance --arm miroir-files --workspace DIR` builds the store from the workspace; with `--apply-reference` the reference goes in as file edits of the workspace first. Overdue loans: 1 of 6 on the baseline, 6 of 6 with the reference; lending limit: 2 of 8, then 8 of 8.
+- The files arm can run nothing: no Query, action or MiroirTest. Its contracts say so, and that the test's expected values follow from the data the agent reads. `pytest -k agent_bench`: 45 pass.
 
 ---
 

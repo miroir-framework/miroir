@@ -26,6 +26,7 @@ Work until all three are done. Do not change the existing Library data.
 - A Query of the Library application named `OverdueLoans`, with the query parameter `startedBefore` (an ISO date such as `2026-07-02`). Its result has an entry `overdueLoans`: the overdue LendingHistoryItem instances.
 - A Report of the Library application named `OverdueLoansPerUser` that shows them per User.
 - A MiroirTest of the Library application that runs `OverdueLoans` and checks its result.
+- Nothing in your folder runs a Query or a MiroirTest: `./check` validates the files. Make the test's expected values follow from the Library data you read.
 
 <!-- contract: conventional -->
 ## Contract

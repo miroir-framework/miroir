@@ -26,9 +26,12 @@ if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from agent_bench import miroir_server, task, transcript  # noqa: E402
+from agent_bench.acceptance import adapter_miroir  # noqa: E402
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_RUNS_DIR = Path("/mnt/project-files/issue-550/runs")
+META_MODEL = REPO_ROOT / "packages" / "miroir-app-miroir" / "assets" / "miroir_model"
+VALIDATOR = Path(__file__).resolve().parent / "acceptance" / "validate_store.mjs"
 
 MODEL = "claude-sonnet-5-5"
 EFFORT = "medium"
@@ -97,14 +100,55 @@ def claude_command(arm: str, prompt: str, mcp_url: str | None = None) -> list[st
     return command
 
 
-def prepare_workspace(arm: str) -> Path:
+def prepare_workspace(arm: str, library_store: Path | None = None) -> Path:
+    """A fresh folder outside the repository with the arm's AGENTS.md; for `miroir-files`, the Library's files too.
+
+    `library_store` is the store the files arm starts from (a freshly materialized `bench-agent` Library).
+    """
     workspace = Path(tempfile.mkdtemp(prefix=f"agent-bench-{arm}-", dir="/tmp"))
     if REPO_ROOT in workspace.resolve().parents:
         raise RuntimeError(f"workspace {workspace} is inside the repository")
     (workspace / "AGENTS.md").write_text(task.agents_md(arm), encoding="utf-8")
-    if arm != "miroir-mcp":
+    if arm == "miroir-mcp":
+        return workspace
+    if arm != "miroir-files":
         raise NotImplementedError(f"workspace preparation of arm {arm} comes in a later slice (#550 plan)")
+    if library_store is None:
+        raise ValueError("the miroir-files workspace needs the Library store it starts from")
+    for section in adapter_miroir.LIBRARY_SECTIONS:
+        shutil.copytree(library_store / section, workspace / "library" / section)
+    shutil.copytree(META_MODEL, workspace / "meta-model")
+    for path in sorted((workspace / "meta-model").rglob("*"), reverse=True):
+        path.chmod(0o555 if path.is_dir() else 0o444)
+    (workspace / "meta-model").chmod(0o555)
+    write_check_command(workspace)
     return workspace
+
+
+def write_check_command(workspace: Path) -> None:
+    """`./check`: the store validator, copied with its imports pointing at the repository's built packages.
+
+    The copy keeps the agent off the harness folder: the command names no harness path.
+    """
+    modules = REPO_ROOT / "node_modules"
+    lines = VALIDATOR.read_text(encoding="utf-8").splitlines(keepends=True)
+    source = "".join(lines[next(i for i, line in enumerate(lines) if not line.startswith("//")):])
+    for package, entry in (
+        ('"miroir-core/model-validation-fs"', modules / "miroir-core" / "dist" / "model-validation-fs.js"),
+        ('"miroir-core"', modules / "miroir-core" / "dist" / "index.js"),
+        ('"miroir-app-miroir"', modules / "miroir-app-miroir" / "dist" / "index.js"),
+    ):
+        source = source.replace(f"from {package};", f'from "{entry.resolve().as_uri()}";')
+    (workspace / ".check.mjs").write_text(source, encoding="utf-8")
+    check = workspace / "check"
+    check.write_text(
+        '#!/bin/sh\n'
+        '# Validates library/ against the schemas of its Entities; prints {"checked": n, "errors": [...]}.\n'
+        'here="$(cd "$(dirname "$0")" && pwd)"\n'
+        'node "$here/.check.mjs" "$here/library/model" "$here/library/data" 2>/dev/null\n',
+        encoding="utf-8",
+    )
+    check.chmod(0o755)
 
 
 def run_id(feature: str, arm: str, index: int, now: datetime) -> str:
@@ -161,13 +205,15 @@ def main(argv: list[str] | None = None) -> int:
     rid = run_id(args.feature, args.arm, args.run_index, started)
     run_dir = args.runs_dir / rid
     run_dir.mkdir(parents=True)
-    workspace = prepare_workspace(args.arm)
     transcript_path = run_dir / "transcript.jsonl"
 
     miroir_server.reset_state()
+    if args.arm == "miroir-files":
+        adapter_miroir.materialize_store(run_dir / "materialize.log")
+    workspace = prepare_workspace(args.arm, adapter_miroir.LIBRARY_STORE if args.arm == "miroir-files" else None)
     server = miroir_server.MiroirServer(run_dir / "server.log")
     try:
-        if args.arm.startswith("miroir"):
+        if args.arm == "miroir-mcp":
             server.start()
         with transcript_path.open("w", encoding="utf-8") as out, (run_dir / "claude.stderr").open("w") as err:
             subprocess.run(
@@ -181,9 +227,11 @@ def main(argv: list[str] | None = None) -> int:
             )
     finally:
         server.stop()
-        if args.arm.startswith("miroir") and (miroir_server.STATE_DIR / "library").exists():
-            # what the agent left, for the acceptance command (`--store`)
-            shutil.copytree(miroir_server.STATE_DIR / "library", run_dir / "store")
+        # what the agent left, for the acceptance command (`--store`)
+        if args.arm == "miroir-mcp" and adapter_miroir.LIBRARY_STORE.exists():
+            shutil.copytree(adapter_miroir.LIBRARY_STORE, run_dir / "store")
+        if args.arm == "miroir-files":
+            adapter_miroir.store_from_workspace(workspace / "library", adapter_miroir.LIBRARY_STORE, run_dir / "store")
 
     result = summary(
         transcript_path, arm=args.arm, feature=args.feature, index=args.run_index, pilot=args.pilot, started=started, rid=rid

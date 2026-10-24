@@ -23,6 +23,7 @@ Work until both are done. Do not change the existing Library data, except throug
 
 - The rule is enforced by the action `lendDocument` of the Library Endpoint `Lending`, with its current parameters. A refused loan makes the action return an error and creates no LendingHistoryItem.
 - The test is a MiroirTest of the Library application.
+- Nothing in your folder runs an action or a MiroirTest: `./check` validates the files. Make the test's expected values follow from the Library data you read.
 
 <!-- contract: conventional -->
 ## Contract

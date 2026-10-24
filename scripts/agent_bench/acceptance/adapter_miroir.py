@@ -29,6 +29,17 @@ def materialize_store(log_file: Path) -> None:
         pass
 
 
+LIBRARY_SECTIONS = ("model", "data")
+
+
+def store_from_workspace(library: Path, baseline: Path, target: Path) -> None:
+    """`target` becomes the baseline store with its model and data replaced by the workspace's `library/` folders."""
+    shutil.copytree(baseline, target)
+    for section in LIBRARY_SECTIONS:
+        shutil.rmtree(target / section, ignore_errors=True)
+        shutil.copytree(library / section, target / section)
+
+
 def apply_files(source: Path, target: Path = LIBRARY_STORE) -> list[Path]:
     """Copies `source/{model,data}/<entity>/<uuid>.json` into the store; returns the files written."""
     written = []

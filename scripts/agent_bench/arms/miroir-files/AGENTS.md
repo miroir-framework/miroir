@@ -10,8 +10,9 @@ editing these files; a Miroir server reads them when it starts. There is no serv
 - `library/data/<entityUuid>/<uuid>.json`: the data, one file per instance.
 - `meta-model/`: the Miroir application's model, read only. It holds the meta Entities (Entity, Query,
   Report, Endpoint, MiroirTest...) with their `mlSchema`, the schema their instances follow.
-- `./check`: validates every file of `library/` against the `mlSchema` of its Entity and prints the
-  errors. Run it after each change.
+- `./check`: validates the files of `library/` against the `mlSchema` of their Entity (and Queries and
+  Reports against the schema the runtime uses) and prints the errors with their file. MiroirTests are not
+  checked. Run it after each change. Nothing here runs a Query or a MiroirTest.
 
 ## Miroir in short
 

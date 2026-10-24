@@ -2,7 +2,7 @@
 // JavaScript because it imports miroir-core; the acceptance command (Python) runs it and reads its JSON output.
 //
 // usage: node validate_store.mjs <modelPath> <dataPath> [<uuid>...]
-// With uuids, only those instances are checked. Prints {"checked": n, "errors": [{uuid, entity, error}]}.
+// With uuids, only those instances are checked. Prints {"checked": n, "errors": [{file, uuid, entity, error}]}.
 //
 // Each instance is checked against its Entity's `mlSchema`. That check accepts any object where a template allows a
 // transformer, so Queries and Reports are also parsed with the Zod schemas the runtime uses. MiroirTests are not
@@ -48,7 +48,7 @@ for (const group of groups) {
     checked += 1;
     const check = checkModelValidationInstance(group.mlSchema, instance, path, defaultMiroirModelEnvironment);
     if (check.status === "error") {
-      errors.push({ uuid: instance.uuid, entity: group.groupName, error: JSON.stringify(check.innermostError).slice(0, 2000) });
+      errors.push({ file: path, uuid: instance.uuid, entity: group.groupName, error: JSON.stringify(check.innermostError).slice(0, 2000) });
     }
   }
 }
@@ -68,7 +68,7 @@ for (const { entity, folder, parse } of zodChecks) {
     checked += 1;
     const result = parse(instance);
     if (!result.success) {
-      errors.push({ uuid: instance.uuid, entity, error: JSON.stringify(result.error.issues.slice(0, 3)).slice(0, 2000) });
+      errors.push({ file: join(dir, file), uuid: instance.uuid, entity, error: JSON.stringify(result.error.issues.slice(0, 3)).slice(0, 2000) });
     }
   }
 }

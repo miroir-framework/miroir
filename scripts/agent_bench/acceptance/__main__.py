@@ -1,9 +1,11 @@
 """Acceptance of one benchmark run (#550): the feature's scenarios, run on what the agent left.
 
     python scripts/agent_bench/acceptance --arm miroir-mcp --feature overdue-loans [--store DIR] [--apply-reference]
+    python scripts/agent_bench/acceptance --arm miroir-files --feature overdue-loans --workspace DIR [--apply-reference]
 
 Miroir arms: the Library store of the run (`--store`, a copy of `.miroir/bench-agent/library` taken when the agent
-stopped; the untouched baseline without it) is put in place, the model is validated, then a fresh `miroir-server`
+stopped; for the files arm, `--workspace` puts the workspace's `library/` over a baseline store; the untouched
+baseline without either) is put in place, the model is validated, then a fresh `miroir-server`
 answers the scenarios through MCP. `--apply-reference` adds the reference solution first, to check the scenarios.
 
 Prints one JSON object: {"passed": bool, "checks": [{"name", "passed", "detail"}]}. Exit code 0 when every check passed.
@@ -123,12 +125,21 @@ def lending_limit_checks(adapter: adapter_miroir.MiroirAdapter) -> list[dict]:
 FEATURE_CHECKS = {"overdue-loans": overdue_loans_checks, "lending-limit": lending_limit_checks}
 
 
-def accept_miroir(feature: str, store: Path | None, apply_reference: bool, logs: Path) -> list[dict]:
+def accept_miroir(
+    feature: str, store: Path | None, workspace: Path | None, apply_reference: bool, logs: Path
+) -> list[dict]:
     adapter_miroir.materialize_store(logs / "materialize.log")
+    if workspace is not None:
+        # files arm: the reference goes in as file edits of the workspace, then the workspace goes back in the store
+        if apply_reference:
+            adapter_miroir.apply_files(REFERENCE_DIR / "miroir" / feature, workspace / "library")
+        store = logs / "store-from-workspace"
+        shutil.rmtree(store, ignore_errors=True)
+        adapter_miroir.store_from_workspace(workspace / "library", adapter_miroir.LIBRARY_STORE, store)
     if store is not None:
         shutil.rmtree(adapter_miroir.LIBRARY_STORE)
         shutil.copytree(store, adapter_miroir.LIBRARY_STORE)
-    if apply_reference:
+    if apply_reference and workspace is None:
         adapter_miroir.apply_files(REFERENCE_DIR / "miroir" / feature)
 
     checks = [check("the Library model is valid", lambda: validate_store(adapter_miroir.LIBRARY_STORE))]
@@ -143,12 +154,15 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--arm", required=True, choices=("miroir-mcp", "miroir-files"))
     parser.add_argument("--feature", required=True, choices=FEATURES)
     parser.add_argument("--store", type=Path, help="the run's Library store; the baseline when omitted")
+    parser.add_argument("--workspace", type=Path, help="miroir-files: the run's workspace, put back in the store")
     parser.add_argument("--apply-reference", action="store_true")
     parser.add_argument("--logs", type=Path, help="where server logs go; a temporary folder when omitted")
     args = parser.parse_args(argv)
 
     logs = args.logs or Path(tempfile.mkdtemp(prefix="agent-bench-acceptance-"))
-    checks = accept_miroir(args.feature, args.store, args.apply_reference, logs)
+    if args.store and args.workspace:
+        parser.error("--store and --workspace exclude each other")
+    checks = accept_miroir(args.feature, args.store, args.workspace, args.apply_reference, logs)
     passed = all(item["passed"] for item in checks)
     print(json.dumps({"passed": passed, "checks": checks}, indent=2))
     return 0 if passed else 1
