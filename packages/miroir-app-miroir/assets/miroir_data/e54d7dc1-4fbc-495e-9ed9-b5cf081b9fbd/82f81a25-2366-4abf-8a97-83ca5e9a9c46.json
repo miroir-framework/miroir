@@ -480,55 +480,53 @@
                     "if": {
                       "transformerType": "boolExpr",
                       "operator": "&&",
-                      "args": [
-                        {
-                          "transformerType": "boolExpr",
-                          "operator": "==",
-                          "left": {
-                            "transformerType": "getFromParameters",
-                            "referencePath": [
-                              "createEntity",
-                              "addMenuLink"
-                            ]
-                          },
-                          "right": true
+                      "left": {
+                        "transformerType": "boolExpr",
+                        "operator": "==",
+                        "left": {
+                          "transformerType": "getFromParameters",
+                          "referencePath": [
+                            "createEntity",
+                            "addMenuLink"
+                          ]
                         },
-                        {
-                          "transformerType": "boolExpr",
-                          "operator": ">",
-                          "left": {
-                            "transformerType": "aggregate",
+                        "right": true
+                      },
+                      "right": {
+                        "transformerType": "boolExpr",
+                        "operator": ">",
+                        "left": {
+                          "transformerType": "listLength",
+                          "interpolation": "runtime",
+                          "applyTo": {
+                            "transformerType": "ifThenElse",
                             "interpolation": "runtime",
-                            "applyTo": {
-                              "transformerType": "ifThenElse",
-                              "interpolation": "runtime",
-                              "if": {
-                                "transformerType": "boolExpr",
-                                "operator": "==",
-                                "left": {
-                                  "transformerType": "getFromContext",
-                                  "interpolation": "runtime",
-                                  "referencePath": [
-                                    "menuQueryResult",
-                                    "menuList"
-                                  ]
-                                },
-                                "right": null
-                              },
-                              "then": [],
-                              "else": {
+                            "if": {
+                              "transformerType": "boolExpr",
+                              "operator": "==",
+                              "left": {
                                 "transformerType": "getFromContext",
                                 "interpolation": "runtime",
                                 "referencePath": [
                                   "menuQueryResult",
                                   "menuList"
                                 ]
-                              }
+                              },
+                              "right": null
+                            },
+                            "then": [],
+                            "else": {
+                              "transformerType": "getFromContext",
+                              "interpolation": "runtime",
+                              "referencePath": [
+                                "menuQueryResult",
+                                "menuList"
+                              ]
                             }
-                          },
-                          "right": 0
-                        }
-                      ]
+                          }
+                        },
+                        "right": 0
+                      }
                     },
                     "then": {
                       "transformerType": "pickFromList",
@@ -550,27 +548,26 @@
                     "if": {
                       "transformerType": "boolExpr",
                       "operator": "&&",
-                      "args": [
-                        {
-                          "transformerType": "getFromParameters",
-                          "referencePath": [
-                            "createEntity",
-                            "addMenuLink"
-                          ]
+                      "left": {
+                        "transformerType": "getFromParameters",
+                        "referencePath": [
+                          "createEntity",
+                          "addMenuLink"
+                        ]
+                      },
+                      "right": {
+                        "transformerType": "boolExpr",
+                        "operator": "!=",
+                        "left": {
+                          "transformerType": "getFromContext",
+                          "interpolation": "runtime",
+                          "referenceName": "00_firstMenu"
                         },
-                        {
-                          "operator": "!=",
-                          "left": {
-                            "transformerType": "getFromContext",
-                            "interpolation": "runtime",
-                            "referenceName": "00_firstMenu"
-                          },
-                          "right": {
-                            "transformerType": "returnValue",
-                            "value": null
-                          }
+                        "right": {
+                          "transformerType": "returnValue",
+                          "value": null
                         }
-                      ]
+                      }
                     },
                     "then": {
                       "transformerType": "createObject",
