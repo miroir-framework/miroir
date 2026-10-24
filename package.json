@@ -16,12 +16,14 @@
     "rxjs": "7.8.2",
     "lerna": {
       "js-yaml": "4.3.2",
-      "pacote": "21.5.1"
+      "pacote": "21.5.1",
+      "handlebars": "4.7.10"
     },
     "nx": {
       "smol-toml": "1.7.1",
       "brace-expansion@5": "5.0.12",
-      "axios": "1.20.0"
+      "axios": "1.20.0",
+      "follow-redirects": "1.16.1"
     },
     "@connectrpc/connect-node": {
       "undici": "6.28.1"
@@ -39,7 +41,7 @@
     "lerna": "10.0.1",
     "typescript": "npm:@typescript/typescript6@6.0.2",
     "typescript-eslint": "8.70.1",
-    "zod": "4.6.5"
+    "zod": "4.6.7"
   },
   "scripts": {
     "postinstall": "node scripts/patch-tsup-baseurl.cjs",
