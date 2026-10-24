@@ -10,6 +10,7 @@ import json
 import shutil
 import socket
 import subprocess
+import tempfile
 import time
 import urllib.error
 import urllib.request
@@ -63,11 +64,15 @@ def free_port() -> int:
 
 
 class ConventionalApp:
-    """Context manager: builds and serves a copy of the app; `build_log` says why a build failed."""
+    """Context manager: builds and serves a copy of the app; `build_log` says why a build failed.
+
+    The copy goes in a temporary folder next to the baseline's `node_modules` (hard links need the same
+    filesystem); only the log goes in `scratch`.
+    """
 
     def __init__(self, workspace: Path, scratch: Path, timeout_s: float = 600.0):
         self.workspace = workspace
-        self.app = scratch / "app"
+        self.app = Path(tempfile.mkdtemp(prefix="agent-bench-acceptance-app-", dir="/tmp")) / "app"
         self.log = scratch / "app.log"
         self.timeout_s = timeout_s
         self.process: subprocess.Popen | None = None
@@ -106,6 +111,7 @@ class ConventionalApp:
                 self.process.wait(timeout=20)
             except subprocess.TimeoutExpired:
                 self.process.kill()
+        shutil.rmtree(self.app.parent, ignore_errors=True)
 
     def request(self, method: str, path: str, body: dict | None = None) -> tuple[int, str]:
         data = json.dumps(body).encode() if body is not None else None

@@ -489,7 +489,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,tooling
 
 ## Slice 9: pilot
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -509,7 +509,9 @@ npm run testByFile -w miroir-app-meta -- tests/modelValidation.unit.test.ts   # 
 
 ### Realization
 
-_(to fill)_
+Six valid runs, $6.31 list price in all, 23 minutes, on A's subscription. Only the conventional arm passes acceptance (6/6 and 8/8, at $0.07 and $0.11). Miroir: overdue loans 5/6 (MCP, $0.77) and 2/6 (files, $0.85); lending limit 1/8 (MCP, $3.34, agent gave up) and 3/8 (files, $1.17). Report: `/mnt/project-files/issue-550/pilot-report.md`. Runs recorded in `miroir-app-meta/assets/meta_data/954de789-…`.
+
+Harness fixes: `store_from_workspace` no longer removes and recreates a folder (fails on the shared FUSE folder); the conventional acceptance copies the app into /tmp, next to the hard-linked `node_modules`; `run.json` acceptance is `{passed, total}`, as `agent-run:record` reads it; `scripts/agent_bench/batch.py` runs, scores and records a batch. No prompt or AGENTS.md changed, so `taskHash` holds for slice 10.
 
 ---
 

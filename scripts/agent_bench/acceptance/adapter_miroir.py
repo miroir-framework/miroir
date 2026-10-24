@@ -34,10 +34,12 @@ LIBRARY_SECTIONS = ("model", "data")
 
 
 def store_from_workspace(library: Path, baseline: Path, target: Path) -> None:
-    """`target` becomes the baseline store with its model and data replaced by the workspace's `library/` folders."""
-    shutil.copytree(baseline, target)
+    """`target` becomes the baseline store with its model and data replaced by the workspace's `library/` folders.
+
+    The baseline's sections are never copied: removing then recreating a folder fails on the shared FUSE folder.
+    """
+    shutil.copytree(baseline, target, ignore=lambda folder, names: [n for n in names if Path(folder) == baseline and n in LIBRARY_SECTIONS])
     for section in LIBRARY_SECTIONS:
-        shutil.rmtree(target / section, ignore_errors=True)
         shutil.copytree(library / section, target / section)
 
 

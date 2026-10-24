@@ -162,8 +162,7 @@ def accept_conventional(feature: str, workspace: Path | None, apply_reference: b
     source = workspace or adapter_conventional.BASELINE_APP
     if apply_reference:
         # never change the run's workspace: the reference goes over a copy
-        copy = logs / "workspace-with-reference"
-        shutil.rmtree(copy, ignore_errors=True)
+        copy = Path(tempfile.mkdtemp(prefix="agent-bench-reference-", dir="/tmp")) / "app"
         adapter_conventional.copy_app(source, copy)
         adapter_conventional.apply_overlay(REFERENCE_DIR / "conventional" / feature, copy)
         source = copy
