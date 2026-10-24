@@ -61,3 +61,19 @@ def test_miroir_tests_naming_matches_the_query_name_in_any_case():
         )
     )
     assert adapter.miroir_tests_naming("OverdueLoans") == ["checks", "uses the uuid"]
+
+
+def test_new_miroir_tests_ignore_the_library_s_own_tests():
+    own = sorted(adapter_miroir.baseline_uuids(adapter_miroir.MIROIR_TEST_ENTITY))
+    assert own, "the Library ships MiroirTests"
+    adapter = adapter_miroir.MiroirAdapter(
+        FakeClient(
+            {
+                adapter_miroir.MIROIR_TEST_ENTITY: [
+                    {"uuid": own[0], "name": "runner.lendDocument", "definition": {"actionType": "lendDocument"}},
+                    {"uuid": "new-test", "name": "lendingLimit", "definition": {"actionType": "lendDocument"}},
+                ],
+            }
+        )
+    )
+    assert adapter.new_miroir_tests_naming("lendDocument") == ["lendingLimit"]

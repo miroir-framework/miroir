@@ -27,7 +27,8 @@ from agent_bench.acceptance.mcp_client import McpClient  # noqa: E402
 
 REFERENCE_DIR = Path(__file__).resolve().parents[1] / "reference"
 VALIDATE_STORE = Path(__file__).resolve().parent / "validate_store.mjs"
-FEATURES = ("overdue-loans",)
+FEATURES = ("overdue-loans", "lending-limit")
+LEND_DATE = "2026-08-01T00:00:00.000Z"
 
 
 def check(name: str, run) -> dict:
@@ -77,7 +78,49 @@ def overdue_loans_checks(adapter: adapter_miroir.MiroirAdapter) -> list[dict]:
     ]
 
 
-FEATURE_CHECKS = {"overdue-loans": overdue_loans_checks}
+def lending_limit_checks(adapter: adapter_miroir.MiroirAdapter) -> list[dict]:
+    """Who holds how many Books is read from the store, not from the baseline: the agent's own tests may have lent.
+
+    In order, each check seeing the loans the previous ones accepted: every User at the limit is refused, then the
+    User holding the fewest Books gets loans until the limit, each accepted, and one more, refused.
+    """
+    names = scenarios.user_names()
+    book = scenarios.book_uuids()[0]
+
+    def open_loans(user: str) -> int:
+        return len([loan for loan in adapter.loans_of(user) if not loan.get("endDate")])
+
+    def lend(user: str, accepted: bool):
+        def run():
+            before = open_loans(user)
+            answer = adapter.lend(user, book, LEND_DATE)
+            after = open_loans(user)
+            expected_after = before + 1 if accepted else before
+            return answer == accepted and after == expected_after, f"accepted: {answer}, open loans {before} -> {after}"
+
+        return run
+
+    def miroir_test():
+        names_found = adapter.new_miroir_tests_naming("lendDocument")
+        return bool(names_found), f"MiroirTests added that name lendDocument: {names_found}"
+
+    held = {user: open_loans(user) for user in names}
+    checks = [check("a MiroirTest added to the Library names lendDocument", miroir_test)] + [
+        check(f"lending to {names[user]} ({count} open loans) is refused", lend(user, False))
+        for user, count in sorted(held.items(), key=lambda item: names[item[0]])
+        if count >= scenarios.LENDING_LIMIT
+    ]
+    below = [user for user, count in held.items() if count < scenarios.LENDING_LIMIT]
+    if not below:
+        return checks + [check("a User holds fewer Books than the limit", lambda: (False, f"open loans: {held}"))]
+    user = min(below, key=lambda candidate: (held[candidate], names[candidate]))
+    for count in range(held[user], scenarios.LENDING_LIMIT):
+        checks.append(check(f"lending to {names[user]} holding {count} is accepted", lend(user, True)))
+    checks.append(check(f"lending to {names[user]}, now at the limit, is refused", lend(user, False)))
+    return checks
+
+
+FEATURE_CHECKS = {"overdue-loans": overdue_loans_checks, "lending-limit": lending_limit_checks}
 
 
 def accept_miroir(feature: str, store: Path | None, apply_reference: bool, logs: Path) -> list[dict]:

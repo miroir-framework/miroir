@@ -19,6 +19,7 @@ REPORT_ENTITY = "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916"
 LOAN_ENTITY = "e81078f3-2de7-4301-bd79-d3a156aec149"
 MIROIR_TEST_ENTITY = "a311f363-e238-4203-bdfc-29e8c160c26b"
 LIBRARY_STORE = miroir_server.STATE_DIR / "library"
+BASELINE_MODEL = miroir_server.REPO_ROOT / "packages" / "miroir-example-library" / "assets" / "library_model"
 
 
 def materialize_store(log_file: Path) -> None:
@@ -108,6 +109,15 @@ class MiroirAdapter:
                 sets.append(_loan_uuids(value))
         return sets
 
+    def new_miroir_tests_naming(self, needle: str) -> list[str]:
+        """Names of the MiroirTests added to the Library (not in its baseline) that name `needle`, in any case."""
+        baseline = baseline_uuids(MIROIR_TEST_ENTITY)
+        return [
+            test.get("name", test.get("uuid"))
+            for test in self.instances(MIROIR_TEST_ENTITY, "model")
+            if test.get("uuid") not in baseline and needle.lower() in json.dumps(test).lower()
+        ]
+
     def miroir_tests_naming(self, query_name: str) -> list[str]:
         """Names of the Library MiroirTests that name the Query (in any case) or hold its uuid."""
         query = self.model_element(QUERY_ENTITY, query_name)
@@ -121,10 +131,16 @@ class MiroirAdapter:
     def lend(self, user: str, book: str, start_date: str) -> bool:
         """True when the loan was accepted."""
         result = self.client.call("Library_lendDocument", {"user": user, "book": book, "startDate": start_date})
-        return not result.get("isError")
+        answer = result_json(result)
+        return not result.get("isError") and not (isinstance(answer, dict) and answer.get("status") == "error")
 
     def loans_of(self, user: str) -> list[dict]:
         return [loan for loan in self.instances(LOAN_ENTITY, "data") if loan.get("user") == user]
+
+
+def baseline_uuids(entity: str) -> set[str]:
+    """The uuids of the Library's own model instances of `entity`, as the agent found them."""
+    return {path.stem for path in (BASELINE_MODEL / entity).glob("*.json")}
 
 
 def _loan_uuids(value) -> set[str]:

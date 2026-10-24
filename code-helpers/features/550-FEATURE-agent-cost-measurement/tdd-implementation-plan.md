@@ -324,7 +324,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,tooling
 
 ## Slice 5: lending limit in Miroir, reference and acceptance, or a recorded result
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -355,7 +355,13 @@ python scripts/agent_bench/acceptance --arm miroir-mcp --feature lending-limit -
 
 ### Realization
 
-_(to fill)_
+- The limit is expressible with today's Miroir, so feature 2 stays in the runs and D10 keeps 36 runs.
+- Reference `reference/miroir/lending-limit/`: `lendDocument` first runs a `compositeRunBoxedQueryAction` (the User's loans, extractor filtered on `user`), then `createInstance` with `objects: [ifThenElse(open loans < 8, the loan, null)]`. The null object makes `createInstance` fail, so a refused loan returns `FailedToHandleAction` and creates nothing. Crude, but it meets the contract; #557 asks for a declared refusal.
+- `python scripts/agent_bench/acceptance --arm miroir-mcp --feature lending-limit`: on the baseline 6 of 8 checks fail (the model check and the one accepted loan pass); with `--apply-reference` all 8 pass. Who holds how many Books is read from the store at acceptance time, because an MCP agent testing its action lends for real; every User at the limit is refused, then the User holding the fewest gets loans up to 8, each accepted, and one more, refused. The store keeps no trace of refused loans (61 loan files after one accepted loan).
+- The MiroirTest check looks for a test added to the Library (not among its own tests, several of which already name `lendDocument`) that names `lendDocument`. The reference test is a renamed copy of `runner.lendDocument`, a placeholder under D18.
+- Dry-run findings (#556): a transformer failing inside `createInstance.objects` does not fail the action, and its failure object lands in the local cache as an entity with an undefined id; runtime transformers inside a query step of a sequence are evaluated before the query runs, so the count has to live in the next step.
+- The miroir-mcp contract now says the MCP tools cannot run a MiroirTest, as for overdue loans.
+- `adapter_miroir.lend` reads the tool's `status`: the MCP tools answer errors as `{"status": "error"}` in the content, without `isError`.
 
 ---
 

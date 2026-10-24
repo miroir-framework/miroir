@@ -11,7 +11,14 @@ Deliver:
 
 Work until both are done. Do not change the existing Library data, except through your own test if it needs to.
 
-<!-- contract: miroir-mcp, miroir-files -->
+<!-- contract: miroir-mcp -->
+## Contract
+
+- The rule is enforced by the action `lendDocument` of the Library Endpoint `Lending`, with its current parameters. A refused loan makes the action return an error and creates no LendingHistoryItem.
+- The test is a MiroirTest of the Library application.
+- The MCP tools cannot run a MiroirTest: call `Library_lendDocument` to check the results your test expects.
+
+<!-- contract: miroir-files -->
 ## Contract
 
 - The rule is enforced by the action `lendDocument` of the Library Endpoint `Lending`, with its current parameters. A refused loan makes the action return an error and creates no LendingHistoryItem.
