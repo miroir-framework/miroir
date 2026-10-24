@@ -250,6 +250,56 @@
                 "canBeTemplate": false
               }
             },
+            "definition": "compositeFail"
+          },
+          "endpoint": {
+            "type": "literal",
+            "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
+          },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
+          },
+          "payload": {
+            "type": "object",
+            "tag": {
+              "value": {
+                "description": "#557: stops the composite action with this error when `condition` holds; the steps after it do not run."
+              }
+            },
+            "definition": {
+              "condition": {
+                "type": "boolean",
+                "tag": {
+                  "value": {
+                    "description": "The step fails when this is true, usually a boolExpr transformer."
+                  }
+                }
+              },
+              "errorType": {
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "description": "One of the action's actionErrors."
+                  }
+                }
+              },
+              "message": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      {
+        "actionParameters": {
+          "actionType": {
+            "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false
+              }
+            },
             "definition": "connectExternalService"
           },
           "actionLabel": {

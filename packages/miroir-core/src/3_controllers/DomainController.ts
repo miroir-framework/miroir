@@ -152,6 +152,7 @@ import { resolveCompositeActionTemplate } from "../2_domain/ResolveCompositeActi
 import {
   attachQueryRuntimeTransformers,
   detachQueryRuntimeTransformers,
+  compositeFailError,
   findTransformerFailure,
 } from "../2_domain/CompositeActionStep";
 import { innermostFailureMessage } from "../2_domain/AsyncQuerySelectors";
@@ -4801,6 +4802,14 @@ export class DomainController implements DomainControllerInterface, DomainContro
             }
             break;
           }
+          case "compositeFail": {
+            // #557: the sequence stops with the step's error when its condition holds
+            const refusal = compositeFailError(currentAction);
+            if (refusal) {
+              return refusal;
+            }
+            break;
+          }
           case "compositeRunTestAssertion": {
             actionResult = await this.miroirContext.miroirActivityTracker.trackTestAssertion(
               currentAction.actionLabel || "unnamed assertion",
@@ -5888,6 +5897,14 @@ export class DomainController implements DomainControllerInterface, DomainContro
             return actionResult;
           }
           break
+        }
+        case "compositeFail": {
+          // #557: the action refuses with the step's error, and the steps after it do not run
+          const refusal = compositeFailError(resolvedActionTemplate);
+          if (refusal) {
+            return refusal;
+          }
+          break;
         }
         case "compositeRunTestAssertion": {
           log.error(

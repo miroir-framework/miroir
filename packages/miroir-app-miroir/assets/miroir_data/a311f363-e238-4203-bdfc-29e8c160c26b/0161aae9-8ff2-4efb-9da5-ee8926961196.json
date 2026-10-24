@@ -2483,6 +2483,7 @@
                 ],
                 "expectedValue": [
                   "compositeActionSequence",
+                  "compositeFail",
                   "compositeRunBoxedQueryAction",
                   "compositeRunBoxedQueryTemplateAction",
                   "connectExternalService",
@@ -2537,6 +2538,7 @@
                 ],
                 "expectedValue": [
                   "compositeActionSequence",
+                  "compositeFail",
                   "compositeRunBoxedQueryAction",
                   "compositeRunBoxedQueryTemplateAction",
                   "compositeRunTestAssertion",

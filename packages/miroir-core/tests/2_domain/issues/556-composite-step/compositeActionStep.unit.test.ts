@@ -1,8 +1,9 @@
 import { describe, expect, it } from "vitest";
 
-import { TransformerFailure } from "../../../../src/0_interfaces/2_domain/DomainElement";
+import { Action2Error, TransformerFailure } from "../../../../src/0_interfaces/2_domain/DomainElement";
 import {
   attachQueryRuntimeTransformers,
+  compositeFailError,
   detachQueryRuntimeTransformers,
   findTransformerFailure,
 } from "../../../../src/2_domain/CompositeActionStep";
@@ -48,5 +49,26 @@ describe("#556 composite action steps", () => {
       path: ["payload", "objects", 1],
     });
     expect(findTransformerFailure({ payload: { objects: [{ uuid: "a" }] } })).toBeUndefined();
+  });
+});
+
+describe("#557 compositeFail", () => {
+  const step = (condition: unknown) => ({
+    actionLabel: "refuseAtTheLimit",
+    payload: { condition, errorType: "FailedToLendDocument", message: "the User already holds 8 Books" },
+  });
+
+  it("lets the sequence go on when its condition is false", () => {
+    expect(compositeFailError(step(false))).toBeUndefined();
+  });
+
+  it("stops the sequence with its own error when its condition is true", () => {
+    const error = compositeFailError(step(true));
+    expect(error).toBeInstanceOf(Action2Error);
+    expect(error).toMatchObject({ errorType: "FailedToLendDocument", errorMessage: "the User already holds 8 Books" });
+  });
+
+  it("stops the sequence when its condition is not a boolean", () => {
+    expect(compositeFailError(step(undefined))?.errorType).toBe("FailedToHandleAction");
   });
 });
