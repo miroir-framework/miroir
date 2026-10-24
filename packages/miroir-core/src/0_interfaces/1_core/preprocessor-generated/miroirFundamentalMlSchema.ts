@@ -25627,7 +25627,8 @@ export const miroirFundamentalMlSchema = {
                     "type": "boolean",
                     "tag": {
                       "value": {
-                        "description": "The step fails when this is true, usually a boolExpr transformer."
+                        "description": "The step fails when this is true: a runtime transformer such as boolExpr, usually reading an earlier step's result.",
+                        "canBeTemplate": true
                       }
                     }
                   },
@@ -25635,12 +25636,18 @@ export const miroirFundamentalMlSchema = {
                     "type": "string",
                     "tag": {
                       "value": {
-                        "description": "One of the action's actionErrors."
+                        "description": "One of the action's actionErrors.",
+                        "canBeTemplate": true
                       }
                     }
                   },
                   "message": {
-                    "type": "string"
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": true
+                      }
+                    }
                   }
                 }
               }
@@ -40182,23 +40189,98 @@ export const miroirFundamentalMlSchema = {
                 },
                 "definition": {
                   "condition": {
-                    "type": "boolean",
+                    "type": "union",
                     "tag": {
                       "value": {
-                        "description": "The step fails when this is true, usually a boolExpr transformer."
+                        "description": "The step fails when this is true: a runtime transformer such as boolExpr, usually reading an earlier step's result.",
+                        "canBeTemplate": true,
+                        "isTemplate": true
                       }
-                    }
+                    },
+                    "discriminator": [
+                      "transformerType",
+                      "interpolation"
+                    ],
+                    "definition": [
+                      {
+                        "type": "boolean",
+                        "tag": {
+                          "value": {
+                            "description": "The step fails when this is true: a runtime transformer such as boolExpr, usually reading an earlier step's result.",
+                            "canBeTemplate": true
+                          }
+                        }
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          "relativePath": "coreTransformerForBuildPlusRuntime"
+                        }
+                      }
+                    ]
                   },
                   "errorType": {
-                    "type": "string",
+                    "type": "union",
                     "tag": {
                       "value": {
-                        "description": "One of the action's actionErrors."
+                        "description": "One of the action's actionErrors.",
+                        "canBeTemplate": true,
+                        "isTemplate": true
                       }
-                    }
+                    },
+                    "discriminator": [
+                      "transformerType",
+                      "interpolation"
+                    ],
+                    "definition": [
+                      {
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "description": "One of the action's actionErrors.",
+                            "canBeTemplate": true
+                          }
+                        }
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          "relativePath": "coreTransformerForBuildPlusRuntime"
+                        }
+                      }
+                    ]
                   },
                   "message": {
-                    "type": "string"
+                    "type": "union",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": true,
+                        "isTemplate": true
+                      }
+                    },
+                    "discriminator": [
+                      "transformerType",
+                      "interpolation"
+                    ],
+                    "definition": [
+                      {
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "canBeTemplate": true
+                          }
+                        }
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          "relativePath": "coreTransformerForBuildPlusRuntime"
+                        }
+                      }
+                    ]
                   }
                 }
               }
@@ -47047,23 +47129,98 @@ export const miroirFundamentalMlSchema = {
                 },
                 "definition": {
                   "condition": {
-                    "type": "boolean",
+                    "type": "union",
                     "tag": {
                       "value": {
-                        "description": "The step fails when this is true, usually a boolExpr transformer."
+                        "description": "The step fails when this is true: a runtime transformer such as boolExpr, usually reading an earlier step's result.",
+                        "canBeTemplate": true,
+                        "isTemplate": true
                       }
-                    }
+                    },
+                    "discriminator": [
+                      "transformerType",
+                      "interpolation"
+                    ],
+                    "definition": [
+                      {
+                        "type": "boolean",
+                        "tag": {
+                          "value": {
+                            "description": "The step fails when this is true: a runtime transformer such as boolExpr, usually reading an earlier step's result.",
+                            "canBeTemplate": true
+                          }
+                        }
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          "relativePath": "coreTransformerForBuildPlusRuntime"
+                        }
+                      }
+                    ]
                   },
                   "errorType": {
-                    "type": "string",
+                    "type": "union",
                     "tag": {
                       "value": {
-                        "description": "One of the action's actionErrors."
+                        "description": "One of the action's actionErrors.",
+                        "canBeTemplate": true,
+                        "isTemplate": true
                       }
-                    }
+                    },
+                    "discriminator": [
+                      "transformerType",
+                      "interpolation"
+                    ],
+                    "definition": [
+                      {
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "description": "One of the action's actionErrors.",
+                            "canBeTemplate": true
+                          }
+                        }
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          "relativePath": "coreTransformerForBuildPlusRuntime"
+                        }
+                      }
+                    ]
                   },
                   "message": {
-                    "type": "string"
+                    "type": "union",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": true,
+                        "isTemplate": true
+                      }
+                    },
+                    "discriminator": [
+                      "transformerType",
+                      "interpolation"
+                    ],
+                    "definition": [
+                      {
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "canBeTemplate": true
+                          }
+                        }
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          "relativePath": "coreTransformerForBuildPlusRuntime"
+                        }
+                      }
+                    ]
                   }
                 }
               }

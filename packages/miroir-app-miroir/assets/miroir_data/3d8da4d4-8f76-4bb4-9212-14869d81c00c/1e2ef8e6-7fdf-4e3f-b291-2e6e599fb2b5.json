@@ -272,7 +272,8 @@
                 "type": "boolean",
                 "tag": {
                   "value": {
-                    "description": "The step fails when this is true, usually a boolExpr transformer."
+                    "description": "The step fails when this is true: a runtime transformer such as boolExpr, usually reading an earlier step's result.",
+                    "canBeTemplate": true
                   }
                 }
               },
@@ -280,12 +281,18 @@
                 "type": "string",
                 "tag": {
                   "value": {
-                    "description": "One of the action's actionErrors."
+                    "description": "One of the action's actionErrors.",
+                    "canBeTemplate": true
                   }
                 }
               },
               "message": {
-                "type": "string"
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                }
               }
             }
           }
