@@ -1,5 +1,6 @@
 /// <reference types="vitest" />
 import { defineConfig } from "vite";
+import babel from "@rolldown/plugin-babel";
 import react from "@vitejs/plugin-react";
 import { nodePolyfills } from 'vite-plugin-node-polyfills'
 // import { babelImport } from 'vite-plugin-babel-import';
@@ -160,9 +161,11 @@ export default defineConfig(({ command, mode }) => {
         jsxImportSource: '@emotion/react',
         // Use React plugin in all *.jsx and *.tsx files
         include: '../src/**/*.{jsx,tsx}',
-        babel: {
-          plugins: ['@emotion/babel-plugin'],
-        },
+      }),
+      // plugin-react 6 no longer runs babel itself: @emotion/babel-plugin goes through @rolldown/plugin-babel
+      babel({
+        include: /\.[jt]sx(?:$|\?)/,
+        plugins: ['@emotion/babel-plugin'],
       }),
     ],
     server: {
