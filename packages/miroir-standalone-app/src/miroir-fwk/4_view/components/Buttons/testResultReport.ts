@@ -185,3 +185,24 @@ export function generateTestReport(
   setResultText(resultText);
   return testResults;
 }
+
+/** How many of `results` passed, failed and were skipped: the counts of the result display and of the self-test verdict. */
+export function countTestResults(results: TestResultData[]): { passed: number; failed: number; skipped: number } {
+  let passed = 0;
+  let failed = 0;
+  let skipped = 0;
+  for (const result of results) {
+    if (result.testResult === "skipped" || result.status === "skipped") {
+      skipped++;
+    } else if (
+      result.testResult === "error" ||
+      result.status === "error" ||
+      (result.failedAssertions && result.failedAssertions.length > 0)
+    ) {
+      failed++;
+    } else {
+      passed++;
+    }
+  }
+  return { passed, failed, skipped };
+}

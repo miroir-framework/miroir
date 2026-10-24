@@ -8,7 +8,7 @@ declare global {
 
 import { createTheme, StyledEngineProvider, ThemeProvider, type ThemeOptions } from "@mui/material";
 import "material-symbols/outlined.css";
-import { StrictMode } from "react";
+import React, { StrictMode } from "react";
 import { createRoot, Root } from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
@@ -68,6 +68,11 @@ import {
   ElectronServerDomainControllerProxy,
 } from "./miroir-fwk/4_view/services/ElectronIpcProxy.js";
 import { initializePerformanceConfig } from "./miroir-fwk/4_view/tools/performanceConfig.js";
+import {
+  failedSelfTestResult,
+  publishSelfTestResult,
+  shouldStartSelfTest,
+} from "./miroir-fwk/4-tests/selfTest/selfTestResult.js";
 import { miroirAppStartup } from "./startup.js";
 
 import { resolveWebLogConfigWithMeta, VITE_MIROIR_LOG_CONFIG_VALUES } from "./config/logConfigPresets.js";
@@ -126,6 +131,9 @@ const webMiroirConfig: MiroirConfigClient | undefined =
   typeof __MIROIR_CLIENT_CONFIG__ === "undefined" ? undefined : __MIROIR_CLIENT_CONFIG__;
 
 log.info("web client environment:", webMiroirConfig?.environment?.name, "configuration", webMiroirConfig);
+
+/** #487: whether page load runs the self-test; undefined until the client configuration is known. */
+let selfTestRequested: boolean | undefined;
 
 const miroirActivityTracker = new MiroirActivityTracker();
 const miroirEventService = new MiroirEventService(miroirActivityTracker);
@@ -372,7 +380,8 @@ async function startWebApp(root: Root) {
   setRestClientAuthorizationTokenGetter(() => getAuthToken());
   setRestClientAuthorizationInvalidationHandler(() => setAuthToken(undefined));
   // #263: from the server, or from the Electron main process over IPC.
-  setAuthenticationEnabled(await fetchAuthenticationEnabled());
+  const authenticationEnabled = await fetchAuthenticationEnabled();
+  setAuthenticationEnabled(authenticationEnabled);
 
   // Start our mock API server
   // const mServer: IndexedDbObjectStore = new IndexedDbObjectStore(miroirConfig.rootApiUrl);
@@ -405,6 +414,7 @@ async function startWebApp(root: Root) {
     );
   }
   const miroirConfigToUse = electronMiroirConfig ?? webMiroirConfig!;
+  selfTestRequested = shouldStartSelfTest(miroirConfigToUse);
   const {
     domainControllerForClient,
     domainControllerForServer: rawDomainControllerForServer,
@@ -425,30 +435,57 @@ async function startWebApp(root: Root) {
 
   // Electron: the main process opened every deployment of its environment before the window loaded.
 
-  root.render(
-    <>
-      {/* <span>electron {isElectron ? "yes" : "no"}</span>
-        <pre>{JSON.stringify(webMiroirConfig, null, 2)}</pre> */}
-      <StrictMode>
-        <ThemeProvider theme={theme}>
-          <StyledEngineProvider injectFirst>
-            <LocalCacheProvider store={domainControllerForClient.getLocalCache().getInnerStore()}>
-              <MiroirContextReactProvider
-                miroirContext={miroirContext}
-                domainController={domainControllerForClient}
-                processCapabilities={processCapabilities}
-              >
-                <RouterProvider router={router} />
-              </MiroirContextReactProvider>
-            </LocalCacheProvider>
-          </StyledEngineProvider>
-        </ThemeProvider>
-      </StrictMode>
-    </>,
+  const withProviders = (page: React.ReactNode) => (
+    <StrictMode>
+      <ThemeProvider theme={theme}>
+        <StyledEngineProvider injectFirst>
+          <LocalCacheProvider store={domainControllerForClient.getLocalCache().getInnerStore()}>
+            <MiroirContextReactProvider
+              miroirContext={miroirContext}
+              domainController={domainControllerForClient}
+              processCapabilities={processCapabilities}
+            >
+              {page}
+            </MiroirContextReactProvider>
+          </LocalCacheProvider>
+        </StyledEngineProvider>
+      </ThemeProvider>
+    </StrictMode>
   );
+
+  // #487: in self-test mode the page runs the miroir app's MiroirTests instead of the application.
+  // Loaded on demand: the self-test page and the result grids stay out of the application's bundle.
+  if (selfTestRequested) {
+    const { startSelfTest } = await import("./miroir-fwk/4-tests/selfTest/startSelfTest.js");
+    await startSelfTest({
+      root,
+      withProviders,
+      domainController: domainControllerForClient,
+      miroirConfig: miroirConfigToUse,
+      tracker: miroirActivityTracker,
+      authenticationEnabled,
+    });
+    return;
+  }
+
+  root.render(withProviders(<RouterProvider router={router} />));
 }
 
 if (container) {
   const root = createRoot(container);
-  startWebApp(root);
+  startWebApp(root).catch((error) => {
+    log.error("startWebApp failed", error);
+    // #487: a self-test whose client does not start fails at once, instead of at the driver's timeout.
+    if (selfTestRequested !== false) {
+      const now = new Date();
+      publishSelfTestResult(
+        failedSelfTestResult(`the client did not start: ${error instanceof Error ? error.message : String(error)}`, {
+          environment: webMiroirConfig?.environment?.name,
+          tags: [],
+          startedAt: now,
+          endedAt: now,
+        }),
+      );
+    }
+  });
 }
