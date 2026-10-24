@@ -515,6 +515,14 @@ Harness fixes: `store_from_workspace` no longer removes and recreates a folder (
 
 ---
 
+## Hold: Miroir fixes before slice 10
+
+A chose "Fix Miroir first" after the pilot (2026-10-24). Slice 10 waits on #556 (composite actions swallow transformer failures), #557 (an action refuses on a condition), #558 (createInstance does not validate against the Entity's mlSchema), #559 (a failed runtime transformer answers success and names the wrong transformer) and #560 (Library returnDocument creates a loan instead of closing one). Once they land, the pilot is rerun (`python scripts/agent_bench/batch.py --pilot`) and its cost reported before slice 10.
+
+Acceptance now fails a check when a query entry is a transformer failure, rather than reading it as an empty list.
+
+---
+
 ## Slice 10: full runs
 
 **Status:** ⬜ pending (waits for A's go after slice 9)

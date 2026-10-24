@@ -71,3 +71,11 @@ def test_tests_naming_counts_changed_library_tests_and_ignores_unchanged_ones():
         FakeClient({adapter_miroir.MIROIR_TEST_ENTITY: [unchanged, changed, {"uuid": "new", "name": "limit", "definition": {"a": "lendDocument"}}]})
     )
     assert adapter.new_tests_naming("lendDocument") == [changed["name"], "limit"]
+
+
+def test_instance_list_raises_on_a_failed_entry():
+    import pytest
+    from agent_bench.acceptance.adapter_miroir import _instance_list
+
+    with pytest.raises(RuntimeError, match="applyTo is not an array"):
+        _instance_list({"queryFailure": "FailedTransformer", "innerError": {"failureMessage": "filterList: applyTo is not an array"}})

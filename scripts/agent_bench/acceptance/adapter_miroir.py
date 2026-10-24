@@ -176,6 +176,9 @@ def _entry(answer, name: str):
 
 
 def _instance_list(value) -> list[dict]:
+    """The instances of a query entry; a transformer failure in its place raises, with its message (#559)."""
+    if isinstance(value, dict) and "queryFailure" in value:
+        raise RuntimeError(f"the entry is a failure: {json.dumps(value)[-1000:]}")
     if isinstance(value, list):
         return [item for item in value if isinstance(item, dict)]
     if isinstance(value, dict):
