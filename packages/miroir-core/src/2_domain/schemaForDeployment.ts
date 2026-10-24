@@ -1,7 +1,7 @@
-import { getEndpointActions } from "../../0_interfaces/1_core/endpointDefinition.js";
-import type { Uuid } from "../../0_interfaces/1_core/EntityVersion";
-import { applyDeploymentDomainActionCarryOn } from "../../0_interfaces/1_core/bootstrapMlSchemas/getMiroirFundamentalMlSchemaHelpers";
-import { miroirFundamentalMlSchema } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalMlSchema";
+import { getEndpointActions } from "../0_interfaces/1_core/endpointDefinition.js";
+import type { Uuid } from "../0_interfaces/1_core/EntityVersion";
+import { applyDeploymentDomainActionCarryOn } from "../0_interfaces/1_core/bootstrapMlSchemas/getMiroirFundamentalMlSchemaHelpers";
+import { miroirFundamentalMlSchema } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalMlSchema";
 import type {
   Action,
   MlElement,
@@ -11,14 +11,15 @@ import type {
   MlUnion,
   MetaModel,
   MlSchema,
-} from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { selfApplicationMiroir } from "miroir-app-miroir";
-import { LoggerInterface } from "../../0_interfaces/4-services/LoggerInterface";
-import { MiroirLoggerFactory } from "../../4_services/MiroirLoggerFactory";
-import { packageName } from "../../constants";
-import { cleanLevel } from "../constants";
-import { computeCombinedSchemaRevision } from "./schemaChangeKind";
-import { resolveEffectiveSchemaMode } from "./schemaModePolicy";
+import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
+import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
+import { packageName } from "../constants";
+import { cleanLevel } from "./constants";
+import { applicationTransformerBranches } from "./TransformerDefinitionRegistry";
+import { computeCombinedSchemaRevision } from "../1_core/mls/schemaChangeKind";
+import { resolveEffectiveSchemaMode } from "../1_core/mls/schemaModePolicy";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "schemaForDeployment");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
@@ -69,11 +70,19 @@ function getAppSpecificEndpoints(model: MetaModel) {
   return model.endpoints.filter((endpoint) => endpoint.application === model.applicationUuid);
 }
 
+/** #502: the composite TransformerDefinitions of the application, as transformer union branches. */
+function getAppTransformerBranches(model: MetaModel): Record<string, MlElement> {
+  if (model.applicationUuid === selfApplicationMiroir.uuid) {
+    return {};
+  }
+  return applicationTransformerBranches(model.transformerDefinitions);
+}
+
 function shouldBuildExtendedSchema(model: MetaModel, mode: SchemaResolutionMode): boolean {
   if (mode === "static") {
     return false;
   }
-  return hasAppSpecificEndpoints(model);
+  return hasAppSpecificEndpoints(model) || Object.keys(getAppTransformerBranches(model)).length > 0;
 }
 
 function actionTypeKeyFromLiteral(actionType: MlLiteral | undefined): string | undefined {
@@ -127,8 +136,44 @@ function buildAppActionBranches(
   return branches;
 }
 
+/**
+ * #502: `schema` with `branches` in the context and referenced by both transformer unions, so the
+ * form, the transformerType select and the default node of a type change know them.
+ */
+function withAppTransformerBranches(schema: MlSchema, branches: Record<string, MlElement>): MlSchema {
+  const branchNames = Object.keys(branches);
+  if (branchNames.length === 0) {
+    return schema;
+  }
+  const context = (schema.definition as { context: Record<string, MlElement> }).context;
+  const references: MlElement[] = branchNames.map((relativePath) => ({
+    type: "schemaReference",
+    definition: { absolutePath: schema.uuid, relativePath },
+  }));
+  const extendedUnion = (unionName: string): MlUnion => {
+    const union = context[unionName] as MlUnion;
+    return { ...union, definition: [...union.definition, ...references] };
+  };
+  return {
+    ...schema,
+    definition: {
+      ...schema.definition,
+      context: {
+        ...context,
+        ...branches,
+        coreTransformerForBuildPlusRuntime: extendedUnion("coreTransformerForBuildPlusRuntime"),
+        coreTransformerForBuildPlusRuntimeWithoutArray: extendedUnion("coreTransformerForBuildPlusRuntimeWithoutArray"),
+      },
+    },
+  } as MlSchema;
+}
+
 function buildExtendedSchema(model: MetaModel): MlSchema {
   const baseSchema = miroirFundamentalMlSchema as MlSchema & { definition: any };
+  const transformerBranches = getAppTransformerBranches(model);
+  if (!hasAppSpecificEndpoints(model)) {
+    return withAppTransformerBranches(baseSchema, transformerBranches);
+  }
   const appEndpoints = getAppSpecificEndpoints(model);
   const staticDomainAction = baseSchema.definition.context.domainAction as MlUnion;
   const appActionBranches = buildAppActionBranches(
@@ -140,7 +185,10 @@ function buildExtendedSchema(model: MetaModel): MlSchema {
     definition: [...staticDomainAction.definition, ...appActionBranches],
   };
 
-  return applyDeploymentDomainActionCarryOn(baseSchema, extendedDomainAction);
+  return withAppTransformerBranches(
+    applyDeploymentDomainActionCarryOn(baseSchema, extendedDomainAction),
+    transformerBranches,
+  );
 }
 
 /**

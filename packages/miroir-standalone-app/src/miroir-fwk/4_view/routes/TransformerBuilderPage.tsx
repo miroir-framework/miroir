@@ -34,6 +34,7 @@ import {
   selfApplicationLibrary,
 } from "miroir-example-library";
 import { ReportPageContextProvider } from "../components/Reports/ReportPageContext";
+import { SequenceEditor } from "../components/SequenceEditor/SequenceEditor";
 import { TransformerEditor } from "../components/TransformerEditor/TransformerEditor";
 
 import {
@@ -380,6 +381,16 @@ export const TransformerBuilderPage: React.FC<any> = (
             applicationDeploymentMap={currentApplicationDeploymentMap}
             deploymentUuid={editorDeploymentUuid}
             entityUuid={editorEntityUuid}
+          />
+        </div>
+        {/* #505: composite action sequences, edited with blocks and saved as Runners */}
+        <div style={{ margin: "20px 0" }}>
+          {/* another application is another editor: its Runners, draft and history start afresh */}
+          <SequenceEditor
+            key={editorApplication}
+            application={editorApplication}
+            applicationDeploymentMap={currentApplicationDeploymentMap}
+            deploymentUuid={editorDeploymentUuid}
           />
         </div>
       </PageContainer>

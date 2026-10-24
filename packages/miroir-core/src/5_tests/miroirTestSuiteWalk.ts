@@ -94,6 +94,8 @@ function leafSuiteContext(
         caseLabels: suite.miroirTests.map((leaf) => leaf.miroirTestLabel),
         stepKinds: reactComponentTestSuiteStepKinds(suite),
         ...(suite.runOnDemand ? { runOnDemand: true as const } : {}),
+        ...(suite.wireLocalCacheCompositeAction ? { wireLocalCacheCompositeAction: true as const } : {}),
+        ...(suite.localCacheInstances ? { localCacheInstances: suite.localCacheInstances } : {}),
       };
     case "reportTestSuite":
       return {

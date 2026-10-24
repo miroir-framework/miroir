@@ -219,6 +219,37 @@
                 "canBeTemplate": false
               }
             },
+            "definition": "compositeRunTestAssertion"
+          },
+          "endpoint": {
+            "type": "literal",
+            "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
+          },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
+          },
+          "nameGivenToResult": {
+            "type": "string"
+          },
+          "payload": {
+            "type": "schemaReference",
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "testAssertion"
+            }
+          }
+        }
+      },
+      {
+        "actionParameters": {
+          "actionType": {
+            "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false
+              }
+            },
             "definition": "connectExternalService"
           },
           "actionLabel": {

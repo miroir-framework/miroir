@@ -47,7 +47,8 @@
                 "width": 600,
                 "height": 400,
                 "showTooltips": true,
-                "showLegend": true
+                "showLegend": true,
+                "labelPresentation": "slanted"
               }
             }
           },

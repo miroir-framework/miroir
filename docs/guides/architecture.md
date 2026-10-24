@@ -2,6 +2,17 @@
 
 Miroir follows a layered, domain-driven design (Clean / Hexagonal). Implementation dependencies flow **down** (`3_controllers` may use `2_domain` and `1_core`; `1_core` must not import implementations from layer 3). Interfaces may be referenced in both directions.
 
+![Miroir layered architecture: ML, the application DSL built on Entity, Query, Transformer, Report and Action, at the centre, surrounded by 2_domain, 3_controllers, 4_services / 4_views and the infrastructure packages, wired by 5_setup](architecture/miroir-layers.svg)
+
+Read the rings from the centre outwards:
+
+- **ML, the application DSL** (`0_interfaces`, `1_core`): Miroir's meta-language. Its vocabulary has five concepts: **Entity** (data structures), **Query** (data access), **Transformer** (pure computation), **Report** (display) and **Action** (side effects). An application is a program written in this language, stored as JSON in a deployment, so this is where the enterprise business rules live.
+- **ML interpreters** (`2_domain`): pure code that gives the language its meaning, such as query runners, the transformer engine and templates.
+- **Controllers** (`3_controllers`): `DomainController` and `ActionRunner` carry out actions; they play the part of use cases.
+- **Services and views** (`4_services`, `4_views`): adapters to the outside world, such as `PersistenceStoreController`, the REST client and server, and logging.
+- **Packages**: the concrete stores (`miroir-store-*`), the local cache (`miroir-localcache-redux`), the UI (`miroir-react`, `miroir-standalone-app`), the server, and the MCP and CLI tools.
+- **`5_setup`** (dashed line) is the composition root: it picks the implementations and wires them together.
+
 ```
 0_interfaces/  → types and ML schemas
 1_core/        → tools, constants, domain state

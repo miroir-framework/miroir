@@ -30,11 +30,19 @@ export const viewParams: MlElement = {
     componentTestStepDelayMs: { type: "number", optional: true },
     /** The TransformerEditor shows the types of every transformer node (#453). Absent: false. */
     showTransformerTypes: { type: "boolean", optional: true },
+    /** A component test run shows the transformer types in every case, set next to its Run button. Absent: false. */
+    componentTestShowTransformerTypes: { type: "boolean", optional: true },
+    /** A component test run shows its sandbox panel; otherwise the cases render off-screen. Absent: false. */
+    componentTestShowSandbox: { type: "boolean", optional: true },
+    /** How the block editor marks build transformers, runtime ones being unmarked (#498). Absent: dashedOutline. */
+    blockEditorBuildMarking: { type: "enum", definition: ["dashedOutline", "marker"], optional: true },
     toolsPage: { type: "object", definition: {} }, // Add toolsPage to the schema
   },
 };
 
 export type GridType = "ag-grid" | "glide-data-grid";
+/** #498: how the block editor marks build transformers. */
+export type BlockEditorBuildMarking = "dashedOutline" | "marker";
 export type AppTheme = "default" | "dark" | "compact" | "material";
 
 // TransformerBuilderPage state interface for persistence
@@ -70,6 +78,12 @@ export interface ViewParamsData {
   componentTestStepDelayMs?: number;
   /** #453: the TransformerEditor shows the types of every transformer node. Absent or false: hidden. */
   showTransformerTypes?: boolean;
+  /** Every case of a component test run starts with the transformer types shown. Absent or false: hidden. */
+  componentTestShowTransformerTypes?: boolean;
+  /** A component test run shows its sandbox panel. Absent or false: the cases render off-screen. */
+  componentTestShowSandbox?: boolean;
+  /** #498: how the block editor marks build transformers, runtime ones being unmarked. Absent: dashedOutline. */
+  blockEditorBuildMarking?: BlockEditorBuildMarking;
   toolsPage?: ToolsPageState;
   generalEditMode?: boolean;
 }

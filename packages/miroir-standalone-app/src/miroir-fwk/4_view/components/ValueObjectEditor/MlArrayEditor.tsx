@@ -876,12 +876,14 @@ export const MlArrayEditor: React.FC<MlArrayEditorProps> = (
               <>
                 <FoldUnfoldObjectOrArray
                   listKey={listKey}
+                  reportSectionPathAsString={reportSectionPathAsString}
                   rootLessListKeyArray={rootLessListKeyArray}
                   currentValue={currentValue}
                   unfoldingDepth={unfoldingDepth}
                 ></FoldUnfoldObjectOrArray>
                 <FoldUnfoldObjectOrArray
                   listKey={listKey}
+                  reportSectionPathAsString={reportSectionPathAsString}
                   rootLessListKeyArray={rootLessListKeyArray}
                   currentValue={currentValue}
                   unfoldingDepth={Infinity}

@@ -1,4 +1,5 @@
 import { defineConfig } from "vite";
+import babel from "@rolldown/plugin-babel";
 import react from "@vitejs/plugin-react";
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
 import path from 'path';
@@ -49,9 +50,11 @@ export default defineConfig({
       jsxImportSource: '@emotion/react',
       // Process all TSX/JSX files, including those pulled in from miroir-standalone-app
       include: /\.(t|j)sx$/,
-      babel: {
-        plugins: ['@emotion/babel-plugin'],
-      },
+    }),
+    // plugin-react 6 no longer runs babel itself: @emotion/babel-plugin goes through @rolldown/plugin-babel
+    babel({
+      include: /\.(t|j)sx$/,
+      plugins: ['@emotion/babel-plugin'],
     }),
   ],
   // No server proxy – the demo runs fully client-side with bundled stores

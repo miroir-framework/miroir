@@ -1,0 +1,20 @@
+{
+  "uuid": "4dd9ed9c-282b-4978-97aa-e853e0ba37dd",
+  "parentName": "BundleSizeMeasurement",
+  "parentUuid": "90d603f9-58f8-4ac4-b2eb-cb1d718e8b3b",
+  "application": "miroir-standalone-app",
+  "measuredAt": "2026-10-07T12:11:29.853Z",
+  "eagerGzipBytes": 803585,
+  "baseline": 803585,
+  "previousBaseline": 786868,
+  "baselineChange": 16717,
+  "reason": "The block editor issues #498 to #502 grew the page from the #473 baseline: #498 to #501 within the 2% tolerance, then #502 (transformer registry, a deployment schema branch per application composite, parameter edits and composite saving, all in miroir-core, which the page loads) took it to 803585 bytes gzipped. MiroirTest instances are not on the page.",
+  "gitCommit": "6ba6040ae5c4ec5679f01b141f449a4cf997ff17",
+  "gitBranch": "claude/502-block-editor-define-blocks",
+  "miroirVersion": "0.5.0-rc.1",
+  "eagerChunks": 5,
+  "eagerRawBytes": 4494990,
+  "totalChunks": 249,
+  "totalRawBytes": 22006312,
+  "totalGzipBytes": 5594104
+}

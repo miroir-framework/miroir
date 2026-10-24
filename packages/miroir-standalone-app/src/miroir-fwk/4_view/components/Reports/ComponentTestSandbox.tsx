@@ -40,10 +40,15 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI").then((logger:
 // value when each step starts, so moving the slider acts on the running case. The slider mounts
 // with the panel, so that a closed sandbox needs no Redux store or DomainController.
 //
-// The TransformerEditor's "Show transformer types" switch (#453) is the ViewParams attribute
-// `showTransformerTypes`. The cases render over their own store, without ViewParams: the sandbox
-// passes the app's value to the runner, which gives it to each case, and saves the switch's
-// changes in the app's ViewParams, so that it keeps its value from one case to the next.
+// The settings next to the Run buttons (`ComponentTestRunSettings`) are passed to
+// `prepareComponentTests()` when a run starts:
+// - "Show transformer types": the value the TransformerEditor's switch (#453) starts with in every
+//   case, fixed for the run; a toggle in a case changes only that case, and nothing is saved.
+// - "Show test sandbox": the panel is shown, or rendered off-screen so that the cases still run
+//   out of the user's sight. `setSandboxShown()` changes it at once, during or after a run. A
+//   hidden panel is inert outside a run, and a run's end takes the focus out of it.
+// While a run is in progress, a banner at the top of the page asks the user to stay on the
+// window: a page that loses focus or goes to the background renders late.
 //
 // The header's play / pause button (#443) holds the run before its next step: the runner awaits
 // `waitWhilePaused()` before each step, after the step delay. The end of a run resumes it, so the
@@ -65,11 +70,19 @@ export interface ComponentTestSandboxContextValue {
    * Throws when another display's component test run is active.
    */
   prepareReportTests: (session: UiIntegrationReportTestSession) => Promise<() => void>;
+  /** A component or report test run is in progress. */
+  running: boolean;
+  /** Shows the sandbox panel, or renders it off-screen ("Show test sandbox"). */
+  setSandboxShown: (shown: boolean) => void;
 }
 
 export interface ComponentTestRunOptions {
   /** #303 T7: replaces the `iterations` of every `measureRendering` step of the run. */
   iterationsOverride?: number;
+  /** The value the TransformerEditor's "Show transformer types" switch starts with in every case. Default false. */
+  showTransformerTypes?: boolean;
+  /** Shows the sandbox panel during the run; otherwise it is rendered off-screen. Unchanged when absent. */
+  showSandbox?: boolean;
 }
 
 const ComponentTestSandboxContext = createContext<ComponentTestSandboxContextValue | undefined>(
@@ -175,32 +188,6 @@ const ComponentTestStepDelaySlider: React.FC<{ stepDelayMsRef: React.MutableRefO
 };
 
 // ################################################################################################
-/**
- * #453: the TransformerEditor switch value of the cases, kept in `valueRef` for the runner, from
- * the app's ViewParams; `saveRef` saves a change there. A change saved by a case is the value of
- * the next case at once, the ViewParams update arriving later.
- */
-export interface ComponentTestTransformerTypesRefs {
-  valueRef: React.MutableRefObject<boolean>;
-  saveRef: React.MutableRefObject<(showTransformerTypes: boolean) => void>;
-}
-
-const ComponentTestTransformerTypesSetting: React.FC<ComponentTestTransformerTypesRefs> = ({
-  valueRef,
-  saveRef,
-}) => {
-  const { viewParamsData, saveViewParams } = useAdminViewParams();
-  const saved = viewParamsData?.showTransformerTypes === true;
-  const lastSavedRef = useRef<boolean | undefined>(undefined);
-  if (lastSavedRef.current !== saved) {
-    lastSavedRef.current = saved;
-    valueRef.current = saved;
-  }
-  saveRef.current = (showTransformerTypes: boolean) => saveViewParams({ showTransformerTypes });
-  return null;
-};
-
-// ################################################################################################
 export const ComponentTestSandbox: React.FC<{
   open: boolean;
   /** A run is active: the close button is disabled. */
@@ -211,8 +198,8 @@ export const ComponentTestSandbox: React.FC<{
   testName?: string;
   /** #435: receives the step delay of the slider, for the runner. */
   stepDelayMsRef?: React.MutableRefObject<number>;
-  /** #453: receive the TransformerEditor switch value of the cases and its save. */
-  transformerTypesRefs?: ComponentTestTransformerTypesRefs;
+  /** "Show test sandbox": when false, the open panel is rendered off-screen. Default true. */
+  shown?: boolean;
   /** #438: the header checkbox "Glow on interactions"; the glow is on when omitted. */
   glowOn?: boolean;
   onGlowOnChange?: (glowOn: boolean) => void;
@@ -226,7 +213,7 @@ export const ComponentTestSandbox: React.FC<{
   sandboxRef,
   testName,
   stepDelayMsRef,
-  transformerTypesRefs,
+  shown = true,
   glowOn = true,
   onGlowOnChange,
   paused = false,
@@ -234,6 +221,10 @@ export const ComponentTestSandbox: React.FC<{
 }) => (
   <div
     data-testid="component-test-sandbox-panel"
+    data-sandbox-shown={String(shown)}
+    // Not shown and no run: out of keyboard navigation and focus. Not during a run, whose steps
+    // focus and type into the case.
+    {...(!shown && !running ? { inert: "" } : {})}
     style={{
       display: open ? "block" : "none",
       marginTop: "8px",
@@ -241,6 +232,10 @@ export const ComponentTestSandbox: React.FC<{
       border: "1px dashed #7e57c2",
       borderRadius: "6px",
       backgroundColor: "white",
+      // Not shown: rendered off-screen, at the page's width, so that the cases lay out and run as
+      // when shown. The transform also holds the MUI dialogs and menus of the cases (fixed
+      // position) off-screen, and nothing is aria-hidden, so that the role queries still see them.
+      ...(shown ? {} : { position: "fixed", top: 0, left: 0, width: "100vw", transform: "translateX(-200vw)" }),
     }}
   >
     {/* #438: steps of a displayed run glow; every case container and the portal element are inside.
@@ -250,7 +245,6 @@ export const ComponentTestSandbox: React.FC<{
         <span style={{ fontWeight: "bold", color: "#4527a0", flexGrow: 1 }}>Component test sandbox</span>
         {/* mounted with the panel only: it reads ViewParams, which needs the app's providers */}
         {open && stepDelayMsRef && <ComponentTestStepDelaySlider stepDelayMsRef={stepDelayMsRef} />}
-        {open && transformerTypesRefs && <ComponentTestTransformerTypesSetting {...transformerTypesRefs} />}
         {onPausedChange && (
           <button
             type="button"
@@ -304,6 +298,32 @@ export const ComponentTestSandbox: React.FC<{
 );
 
 // ################################################################################################
+/** Shown at the top of the page while a component test run is in progress. */
+export const ComponentTestStayOnWindowBanner: React.FC = () => (
+  <div
+    role="status"
+    data-testid="component-test-stay-on-window"
+    style={{
+      position: "fixed",
+      top: "8px",
+      left: "50%",
+      transform: "translateX(-50%)",
+      zIndex: 2000,
+      padding: "6px 16px",
+      borderRadius: "6px",
+      backgroundColor: "#fff3e0",
+      border: "1px solid #ef6c00",
+      color: "#e65100",
+      fontWeight: "bold",
+      boxShadow: "0 2px 6px rgba(0, 0, 0, 0.2)",
+      pointerEvents: "none",
+    }}
+  >
+    Component tests are running: please stay on this window.
+  </div>
+);
+
+// ################################################################################################
 export const ComponentTestSandboxProvider: React.FC<{ children?: React.ReactNode }> = ({
   children,
 }) => {
@@ -329,23 +349,29 @@ export const ComponentTestSandboxProvider: React.FC<{ children?: React.ReactNode
 
   // #435: set by the slider, read by the runner when each step starts
   const stepDelayMsRef = useRef(0);
-  // #453: set from the app's ViewParams, read by the runner when each case is rendered
-  const transformerTypesValueRef = useRef(false);
-  const transformerTypesSaveRef = useRef<(showTransformerTypes: boolean) => void>(() => {});
-  const transformerTypesRefs = useMemo(
-    () => ({ valueRef: transformerTypesValueRef, saveRef: transformerTypesSaveRef }),
-    [],
-  );
+  // #453: set when a run starts, fixed for the run, read by the runner when each case is rendered
+  const showTransformerTypesRef = useRef(false);
+  // "Show test sandbox": the open panel is shown, or rendered off-screen; the ref for the run's end
+  const [sandboxShown, setSandboxShownState] = useState(false);
+  const sandboxShownRef = useRef(false);
+  const setSandboxShown = useCallback((shown: boolean) => {
+    sandboxShownRef.current = shown;
+    setSandboxShownState(shown);
+  }, []);
+  /** At the end of a run: a hidden panel keeps no focus, which a step may have left in its case. */
+  const releaseHiddenSandboxFocus = useCallback(() => {
+    const panel = sandboxRef.current?.closest('[data-testid="component-test-sandbox-panel"]');
+    const focused = panel?.ownerDocument.activeElement;
+    if (!sandboxShownRef.current && focused instanceof HTMLElement && panel?.contains(focused)) {
+      focused.blur();
+    }
+  }, []);
   const runControls = useMemo(
     () => ({
       onCaseStart: setTestName,
       stepDelayMs: () => stepDelayMsRef.current,
       waitWhilePaused: () => pauseGateRef.current.waitWhilePaused(),
-      showTransformerTypes: () => transformerTypesValueRef.current,
-      saveShowTransformerTypes: (showTransformerTypes: boolean) => {
-        transformerTypesValueRef.current = showTransformerTypes;
-        transformerTypesSaveRef.current(showTransformerTypes);
-      },
+      showTransformerTypes: () => showTransformerTypesRef.current,
     }),
     [],
   );
@@ -370,6 +396,10 @@ export const ComponentTestSandboxProvider: React.FC<{ children?: React.ReactNode
       throw new Error("component test sandbox element is not mounted");
     }
     setTestName(undefined);
+    showTransformerTypesRef.current = options?.showTransformerTypes ?? false;
+    if (options?.showSandbox !== undefined) {
+      setSandboxShown(options.showSandbox);
+    }
     registrationRef.current = registerComponentTests({
       sandboxElement,
       ...runControls,
@@ -379,14 +409,15 @@ export const ComponentTestSandboxProvider: React.FC<{ children?: React.ReactNode
     setRunning(true);
     setOpen(true);
     log.info("component test sandbox ready", options ?? {});
-  }, [closeRegistration, runControls]);
+  }, [closeRegistration, runControls, setSandboxShown]);
 
   const finishComponentTests = useCallback(() => {
     runningRef.current = false;
     setRunning(false);
     onPausedChange(false);
     registrationRef.current?.endRun();
-  }, [onPausedChange]);
+    releaseHiddenSandboxFocus();
+  }, [onPausedChange, releaseHiddenSandboxFocus]);
 
   const prepareReportTests = useCallback(async (session: UiIntegrationReportTestSession) => {
     const { componentTestRunInProgressMessage, isComponentTestRunActive, registerReportTests } =
@@ -417,8 +448,9 @@ export const ComponentTestSandboxProvider: React.FC<{ children?: React.ReactNode
       setRunning(false);
       onPausedChange(false);
       registration.endRun();
+      releaseHiddenSandboxFocus();
     };
-  }, [closeRegistration, runControls, onPausedChange]);
+  }, [closeRegistration, runControls, onPausedChange, releaseHiddenSandboxFocus]);
 
   const onClose = useCallback(() => {
     if (runningRef.current) {
@@ -444,13 +476,14 @@ export const ComponentTestSandboxProvider: React.FC<{ children?: React.ReactNode
   );
 
   const contextValue = useMemo(
-    () => ({ prepareComponentTests, finishComponentTests, prepareReportTests }),
-    [prepareComponentTests, finishComponentTests, prepareReportTests],
+    () => ({ prepareComponentTests, finishComponentTests, prepareReportTests, running, setSandboxShown }),
+    [prepareComponentTests, finishComponentTests, prepareReportTests, running, setSandboxShown],
   );
 
   return (
     <ComponentTestSandboxContext.Provider value={contextValue}>
       {children}
+      {running && <ComponentTestStayOnWindowBanner />}
       <ComponentTestSandbox
         open={open}
         running={running}
@@ -458,7 +491,7 @@ export const ComponentTestSandboxProvider: React.FC<{ children?: React.ReactNode
         sandboxRef={sandboxRef}
         testName={testName}
         stepDelayMsRef={stepDelayMsRef}
-        transformerTypesRefs={transformerTypesRefs}
+        shown={sandboxShown}
         glowOn={glowOn}
         onGlowOnChange={setGlowOn}
         paused={paused}

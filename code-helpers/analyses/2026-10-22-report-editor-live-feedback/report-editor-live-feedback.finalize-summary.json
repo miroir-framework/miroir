@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "ok": true,
+  "command": "finalize",
+  "status": "pass",
+  "type": "explainer",
+  "quality": "showcase",
+  "specification": {
+    "path": "C:\\Users\\nono\\Documents\\devhome\\miroir-validation\\code-helpers\\analyses\\2026-10-22-report-editor-live-feedback\\candidate.archify.md",
+    "sha256": "3c261e255a5f2b544cf1eec6a16dee81977ff9fe6d33de2ed5bb50e6976346c0",
+    "bytes": 16464
+  },
+  "artifact": {
+    "path": "C:\\Users\\nono\\Documents\\devhome\\miroir-validation\\code-helpers\\analyses\\2026-10-22-report-editor-live-feedback\\report-editor-live-feedback.html",
+    "sha256": "9a0ca9839d821e698b3682e9930c799b4cf2ed1444764b07e4ae986111be548b",
+    "bytes": 2458844
+  },
+  "gates": {
+    "validate": "pass",
+    "deliver": "pass",
+    "check": "pass",
+    "browser-check": "not-run"
+  },
+  "diagnostics": [],
+  "diagnosticSummary": {
+    "total": 0,
+    "shown": 0,
+    "truncated": false
+  },
+  "evidence": {
+    "receipt": "C:\\Users\\nono\\Documents\\devhome\\miroir-validation\\code-helpers\\analyses\\2026-10-22-report-editor-live-feedback\\report-editor-live-feedback.finalize.json",
+    "summaryReceipt": "C:\\Users\\nono\\Documents\\devhome\\miroir-validation\\code-helpers\\analyses\\2026-10-22-report-editor-live-feedback\\report-editor-live-feedback.finalize-summary.json"
+  },
+  "visualReview": "not-requested",
+  "durationMs": 6779,
+  "browserCheck": {
+    "requested": false,
+    "ran": false
+  }
+}
