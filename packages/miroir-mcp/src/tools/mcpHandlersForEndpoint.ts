@@ -60,15 +60,27 @@ export type ToolHandler = (
 function mlPayloadToZodSchema(mlPayload: MlElement): ZodTypeAny {
   // Resolve references for Zod conversion, but stop on cycles / depth — the meta-model is
   // recursive (mlElement, compositeAction, coreTransformerForBuildPlusRuntime, …).
-  const resolvedMlSchema = resolveAllReferences(mlPayload);
+  // The depth cap keeps payloads that reach the transformer unions (query templates, action sequences) from expanding
+  // into a schema tree too big for memory: below it, values are accepted as `any` and the DomainController checks them.
+  const resolvedMlSchema = resolveAllReferences(mlPayload, { maxDepth: MCP_PAYLOAD_VALIDATION_MAX_DEPTH });
 
   log.debug("mlPayloadToZodSchema resolved schema for MCP payload conversion");
 
   return mlToZodTextAndZodSchema(resolvedMlSchema, undefined, undefined, { datesAsString: true }).zodSchema;
 }
 
-function unresolvedMlAny(): MlElement {
-  return { type: "any" } as MlElement;
+export const MCP_PAYLOAD_VALIDATION_MAX_DEPTH = 12;
+
+/**
+ * `any` in place of a schema left unresolved; it keeps the element's own optional / nullable flags, or a cut optional
+ * attribute (e.g. a transformer's `label`) would become required.
+ */
+function unresolvedMlAny(element?: MlElement): MlElement {
+  return {
+    type: "any",
+    ...(element?.optional ? { optional: true } : {}),
+    ...(element?.nullable ? { nullable: true } : {}),
+  } as MlElement;
 }
 
 /**
@@ -85,7 +97,7 @@ function resolveAllReferences(
 
   const options = normalizeMlConversionOptions(conversionOptions);
   if (options.depth >= options.maxDepth) {
-    return unresolvedMlAny();
+    return unresolvedMlAny(element);
   }
 
   const childOptions: MlConversionOptions = {
@@ -97,7 +109,7 @@ function resolveAllReferences(
     const ref = element as MlReference;
     const refKey = schemaReferenceKey(ref);
     if (isMlConversionLimitReached(options, refKey)) {
-      return unresolvedMlAny();
+      return unresolvedMlAny(element);
     }
 
     options.resolvingRefs.add(refKey);
@@ -115,20 +127,35 @@ function resolveAllReferences(
           currentModel: defaultMiroirMetaModel as any as MetaModel,
         },
       );
-      return resolveAllReferences(resolvedSchema, childOptions);
+      const resolved = resolveAllReferences(resolvedSchema, childOptions);
+      // the reference's own optional / nullable flags apply to what it resolves to
+      return {
+        ...resolved,
+        ...(ref.optional ? { optional: true } : {}),
+        ...(ref.nullable ? { nullable: true } : {}),
+      } as MlElement;
     } finally {
       options.resolvingRefs.delete(refKey);
     }
   }
 
   if (element.type === "object" && element.definition) {
+    // `extend` holds schema references too (e.g. query payloads extend `shippingBox`): the Zod conversion gets no
+    // reference context, so the extended attributes are inlined, and an extension cut by the depth limit is dropped.
+    const { extend, ...withoutExtend } = element;
+    const resolvedExtensions = (extend === undefined ? [] : Array.isArray(extend) ? extend : [extend]).map(
+      (extension) => resolveAllReferences(extension as MlElement, childOptions),
+    );
+    const extensions = resolvedExtensions.filter((extension) => extension.type === "object" && extension.definition);
     return {
-      ...element,
+      ...withoutExtend,
+      // the attributes of a dropped extension are unknown here: accept them
+      ...(extensions.length < resolvedExtensions.length ? { nonStrict: true } : {}),
       definition: Object.fromEntries(
-        Object.entries(element.definition).map(([key, value]) => [
-          key,
-          resolveAllReferences(value as any, childOptions),
-        ]),
+        [
+          ...extensions.flatMap((extension) => Object.entries((extension as any).definition)),
+          ...Object.entries(element.definition),
+        ].map(([key, value]) => [key, resolveAllReferences(value as any, childOptions)]),
       ),
     };
   }

@@ -12,7 +12,7 @@ Key sources: [`recordBundleSize.ts`](../../../packages/miroir-app-meta/scripts/r
 Grilling: round 1 (Q1 to Q9) in the project folder, `issue-550/grilling-round-1.md`; A accepted every recommended option on 2026-10-24.
 
 **Document role:** analysis and decision record.
-**Status:** D1 to D9 are A's answers to grilling round 1. D10 to D17 settle the round 2 points (task contracts, how the MCP arm runs, isolation, harness language) with defaults chosen by Claude on 2026-10-24, open to A's review with this document.
+**Status:** D1 to D9 are A's answers to grilling round 1. D10 to D18 settle the round 2 points (task contracts, how the MCP arm runs, isolation, harness language) with defaults chosen by Claude on 2026-10-24, open to A's review with this document.
 
 ---
 
@@ -101,6 +101,8 @@ For `miroir-files`, the run's Library copy is put back into `.miroir/bench-agent
 **D16 Harness language.** The runner, the acceptance scenarios, the UUID share and the isolation checks are Python under `scripts/agent_bench/`, tested by `scripts/tests/` (repo rule for ad-hoc scripts; the PR gate runs these tests). The record script is TypeScript in `miroir-app-meta` (`npm run agent-run:record`), as `bundle-size:record` (#473 D12), because it imports `miroir-core` to build and validate the instance. The conventional baseline is a Next.js app under `benchmarks/conventional-library/`, outside the npm workspaces (`packages/*`).
 
 **D17 Entity attributes.** `AgentRunMeasurement`: `arm`, `feature`, `runIndex`, `pilot`, `model`, `effort`, `startedAt`, `durationMs`, `apiDurationMs`, `turns`, `stopReason`, `inputTokens`, `outputTokens`, `cacheReadTokens`, `cacheCreationTokens`, `costUsd` (list price, as Claude Code reports it), `toolCalls`, `uuidCharShare`, `acceptancePassed`, `acceptanceScenariosPassed`, `acceptanceScenariosTotal`, `valid`, `invalidReason`, `transcript` (path in the project folder), `taskHash` (hash of the prompt and AGENTS.md), `claudeCodeVersion`, `gitCommit`, `gitBranch`, `miroirVersion`. The Report shows, per feature and arm, the runs and their medians.
+
+**D18 MiroirTest checked, not run.** Acceptance checks that a Library MiroirTest names `OverdueLoans` (any case) or holds its uuid; it does not run it. The MCP tools cannot run a MiroirTest, and `actionTest` MiroirTests pass whatever their assertions find (#554, found in the slice 4 dry run). Revisit once #554 is fixed.
 
 ## 4. Current state
 

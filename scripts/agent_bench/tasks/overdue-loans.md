@@ -12,7 +12,15 @@ Deliver:
 
 Work until all three are done. Do not change the existing Library data.
 
-<!-- contract: miroir-mcp, miroir-files -->
+<!-- contract: miroir-mcp -->
+## Contract
+
+- A Query of the Library application named `OverdueLoans`, with the query parameter `startedBefore` (an ISO date such as `2026-07-02`). Its result has an entry `overdueLoans`: the overdue LendingHistoryItem instances.
+- A Report of the Library application named `OverdueLoansPerUser` that shows them per User.
+- A MiroirTest of the Library application that runs `OverdueLoans` and checks its result.
+- The MCP tools cannot run a MiroirTest: run the Query with `runBoxedQueryTemplateAction` to check the result your test expects.
+
+<!-- contract: miroir-files -->
 ## Contract
 
 - A Query of the Library application named `OverdueLoans`, with the query parameter `startedBefore` (an ISO date such as `2026-07-02`). Its result has an entry `overdueLoans`: the overdue LendingHistoryItem instances.

@@ -15,6 +15,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -180,6 +181,9 @@ def main(argv: list[str] | None = None) -> int:
             )
     finally:
         server.stop()
+        if args.arm.startswith("miroir") and (miroir_server.STATE_DIR / "library").exists():
+            # what the agent left, for the acceptance command (`--store`)
+            shutil.copytree(miroir_server.STATE_DIR / "library", run_dir / "store")
 
     result = summary(
         transcript_path, arm=args.arm, feature=args.feature, index=args.run_index, pilot=args.pilot, started=started, rid=rid

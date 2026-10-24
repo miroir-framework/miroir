@@ -279,7 +279,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core,ui
 
 ## Slice 4: overdue loans, Miroir acceptance fails on the baseline and passes on the reference
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -313,7 +313,12 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,tooling
 
 ### Realization
 
-_(to fill)_
+- `python scripts/agent_bench/acceptance --arm miroir-mcp --feature overdue-loans`: on the baseline, the 5 feature checks fail and the model check passes; with `--apply-reference`, all 6 pass (21 overdue loans on 2026-07-02, 40 on 2026-08-01, the Report's data holds the 21). `--store DIR` takes the copy of `.miroir/bench-agent/library` that `run.py` now saves as `runs/<id>/store/` when the agent stops.
+- Checks: the Library model is valid (`acceptance/validate_store.mjs`: each instance against its Entity's `mlSchema`, plus the runtime Zod `query` and `report`, because the `mlSchema` check accepts any object where a template allows a transformer); the three Query scenarios; the Report's own query parts or stored Queries, run with `startedBefore` as page and query parameter, hold exactly the overdue loans in one entry; a Library MiroirTest names `OverdueLoans` (any case) or holds its uuid.
+- The MiroirTest is not run by acceptance (D18): the MCP tools cannot run one, and `actionTest` MiroirTests pass whatever their assertions find (#554, found here: the reference test passed with a wrong expected value). The miroir-mcp contract now says the MCP tools cannot run a MiroirTest and to check the Query with `runBoxedQueryTemplateAction`.
+- Dry-run findings that an agent will meet too: the extractor result is already a list, and `getObjectValues` on it fails (`filterList: applyTo is not an array`); `getFromContext` on a missing attribute (an open loan's `endDate`) fails and `filterList` silently drops the element unless the reference has `safe: true`; a Report's `runStoredQueries` runs its Query with empty parameters (`ReportHooks.ts:107`), so the reference Report carries its own extractor and transformer and reads `startedBefore` from the page parameters; the `libraryDomainState` fixture of `queryTest` has no loans, so the reference MiroirTest is an integration `actionTest` with three loans in its testbed (7.5k characters, passes with `testMiroir --mode integration --profile emulatedServer-filesystem`).
+- MCP fix, second part: values cut by the depth limit lost their `optional` flag, so every transformer's optional `label` became required and every runtime transformer was rejected. `unresolvedMlAny` keeps the flags; `mcpQueryToolPayload.unit.test.ts` gained a nested `filterList` case (red without the fix).
+- Issues filed: #554 (actionTest assertions never fail), #555 (date arithmetic transformer).
 
 ---
 

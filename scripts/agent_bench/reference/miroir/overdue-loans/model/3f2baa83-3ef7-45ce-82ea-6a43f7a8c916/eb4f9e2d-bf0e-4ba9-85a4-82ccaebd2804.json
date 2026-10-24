@@ -1,0 +1,84 @@
+{
+  "uuid": "eb4f9e2d-bf0e-4ba9-85a4-82ccaebd2804",
+  "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+  "parentName": "Report",
+  "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+  "conceptLevel": "Model",
+  "name": "OverdueLoansPerUser",
+  "defaultLabel": "Overdue loans per User",
+  "description": "The overdue loans for the page parameter startedBefore (an ISO date), sorted by User. Reference solution of the #550 benchmark, never part of the Library package.",
+  "type": "list",
+  "definition": {
+    "extractorTemplates": {
+      "loans": {
+        "extractorOrCombinerType": "extractorInstancesByEntity",
+        "applicationSection": "data",
+        "parentName": "LendingHistoryItem",
+        "parentUuid": "e81078f3-2de7-4301-bd79-d3a156aec149"
+      }
+    },
+    "runtimeTransformers": {
+      "overdueLoans": {
+        "transformerType": "sortList",
+        "interpolation": "runtime",
+        "orderBy": "user",
+        "applyTo": {
+          "transformerType": "filterList",
+          "interpolation": "runtime",
+          "referenceToOuterObject": "loan",
+          "applyTo": {
+            "transformerType": "getFromContext",
+            "interpolation": "runtime",
+            "referenceName": "loans"
+          },
+          "predicate": {
+            "transformerType": "boolExpr",
+            "interpolation": "runtime",
+            "operator": "&&",
+            "left": {
+              "transformerType": "boolExpr",
+              "interpolation": "runtime",
+              "operator": "isNull",
+              "left": {
+                "transformerType": "getFromContext",
+                "interpolation": "runtime",
+                "referencePath": [
+                  "loan",
+                  "endDate"
+                ],
+                "safe": true
+              }
+            },
+            "right": {
+              "transformerType": "boolExpr",
+              "interpolation": "runtime",
+              "operator": "<",
+              "left": {
+                "transformerType": "getFromContext",
+                "interpolation": "runtime",
+                "referencePath": [
+                  "loan",
+                  "startDate"
+                ]
+              },
+              "right": {
+                "transformerType": "getFromParameters",
+                "interpolation": "runtime",
+                "referenceName": "startedBefore"
+              }
+            }
+          }
+        }
+      }
+    },
+    "section": {
+      "type": "objectListReportSection",
+      "definition": {
+        "parentName": "LendingHistoryItem",
+        "parentUuid": "e81078f3-2de7-4301-bd79-d3a156aec149",
+        "label": "Overdue loans per User",
+        "fetchedDataReference": "overdueLoans"
+      }
+    }
+  }
+}
