@@ -112,7 +112,10 @@ export class RestClient implements RestClientInterface {
           url: response.url,
         };
       }
-      throw new Error(response.statusText);
+      // over HTTP/2 statusText is empty: the status code keeps the reason readable
+      throw new Error(
+        `${method} ${endpoint}: HTTP ${response.status}${response.statusText ? ` ${response.statusText}` : ""}`,
+      );
     } catch (err: any) {
       // If the error has structured data, preserve it in the rejection
       if (err.errorData) {
@@ -123,7 +126,7 @@ export class RestClient implements RestClientInterface {
           isStructuredError: true
         });
       }
-      return Promise.reject(err.message ? err.message : data);
+      return Promise.reject(err?.message || data || String(err));
     }
   }
 
