@@ -122,10 +122,21 @@ export function handleTransformer_menu_AddItem(
   const sectionIndex = transformer.menuSectionInsertionIndex??0;
   const itemIndex = transformer.menuSectionItemInsertionIndex??0;
 
-  const updatedMenu: Menu = { ...menu };
-  const items = (updatedMenu.definition as ComplexMenu).definition[sectionIndex].items;
+  // #487: a new menu, never the given one modified: menus from the local cache are frozen.
+  const complexMenu = menu.definition as ComplexMenu;
+  const items = complexMenu.definition[sectionIndex].items;
   const insertionIndex = itemIndex < 0 ? itemIndex == -1 ? items.length : itemIndex -1 : itemIndex;
-  items.splice(insertionIndex, 0, menuItem);
+  const updatedMenu: Menu = {
+    ...menu,
+    definition: {
+      ...complexMenu,
+      definition: complexMenu.definition.map((section, index) =>
+        index === sectionIndex
+          ? { ...section, items: [...items.slice(0, insertionIndex), menuItem, ...items.slice(insertionIndex)] }
+          : section,
+      ),
+    },
+  };
 
   // log.debug("transformer_menu_AddItem modified menu", JSON.stringify(menu, null, 2));
   // log.debug("transformer_menu_AddItem modified menu", JSON.stringify(updatedMenu, null, 2));

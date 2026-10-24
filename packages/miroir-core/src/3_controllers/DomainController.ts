@@ -4886,7 +4886,9 @@ export class DomainController implements DomainControllerInterface, DomainContro
       } catch (error) {
         return new Action2Error(
           "FailedTestAction",
-          "handleCompositeAction error: " + JSON.stringify(error, null, 2),
+          // An Error stringifies to {}: its message names the cause (#493).
+          "handleCompositeAction error: " +
+            (error instanceof Error ? error.message : JSON.stringify(error, null, 2)),
           [currentAction.actionLabel ?? currentAction.actionType],
         );
       } finally {
