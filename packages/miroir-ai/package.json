@@ -34,30 +34,30 @@
     "@ag-ui/client": "0.0.59",
     "@ag-ui/core": "0.0.59",
     "@ai-sdk/openai": "3.0.65",
-    "@anthropic-ai/claude-agent-sdk": "0.3.288",
-    "@anthropic-ai/sdk": "0.128.0",
+    "@anthropic-ai/claude-agent-sdk": "0.3.302",
+    "@anthropic-ai/sdk": "0.135.0",
     "@bufbuild/protobuf": "1.10.0",
     "@connectrpc/connect": "1.7.0",
     "@connectrpc/connect-node": "1.7.0",
     "@connectrpc/connect-web": "1.7.0",
-    "@copilotkit/runtime": "1.74.0",
-    "@cursor/sdk": "1.0.32",
+    "@copilotkit/runtime": "1.79.1",
+    "@cursor/sdk": "1.0.38",
     "@google/generative-ai": "0.24.1",
     "@statsig/js-client": "3.33.5",
-    "express": "5.2.1",
+    "express": "5.3.0",
     "loglevelnext": "6.0.0",
     "miroir-app-miroir": "*",
     "miroir-core": "*",
     "miroir-example-library": "*",
-    "openai": "7.27.0",
+    "openai": "7.36.0",
     "rxjs": "7.8.2",
-    "uuid": "14.0.2"
+    "uuid": "14.0.3"
   },
   "devDependencies": {
     "@types/express": "5.0.6",
-    "@types/node": "26.6.3",
+    "@types/node": "26.6.5",
     "cross-env": "10.1.0",
     "tsup": "8.5.1",
-    "vitest": "5.0.2"
+    "vitest": "5.0.5"
   }
 }
