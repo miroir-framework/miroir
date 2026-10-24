@@ -20,7 +20,6 @@ import {
   type MiroirModelEnvironment,
   type SelfApplication,
   mlToZodTextAndZodSchema,
-  defaultMiroirModelEnvironment,
   metaModelEntities,
   rejectInstancesNotMatchingTheirEntity,
 } from "miroir-core";
@@ -272,7 +271,7 @@ export async function handleMcpAction(
     const rejectedInstance = rejectInstancesNotMatchingTheirEntity(
       action,
       [...(defaultLibraryModelEnvironment.currentModel?.entities ?? []), ...metaModelEntities],
-      defaultMiroirModelEnvironment,
+      defaultLibraryModelEnvironment, // the action's own model, where an Entity's schemaReferences resolve
     );
 
     // Execute via DomainController
