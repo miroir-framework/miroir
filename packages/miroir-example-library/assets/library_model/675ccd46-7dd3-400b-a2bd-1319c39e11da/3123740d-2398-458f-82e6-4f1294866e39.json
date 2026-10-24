@@ -789,6 +789,72 @@
                         }
                       },
                       {
+                        "actionType": "compositeFail",
+                        "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                        "actionLabel": "returnDocument_noOpenLoan",
+                        "payload": {
+                          "condition": {
+                            "transformerType": "boolExpr",
+                            "interpolation": "runtime",
+                            "operator": "isNull",
+                            "left": {
+                              "transformerType": "find",
+                              "interpolation": "runtime",
+                              "referenceToOuterObject": "loan",
+                              "applyTo": {
+                                "transformerType": "getFromContext",
+                                "interpolation": "runtime",
+                                "referencePath": [
+                                  "userLoans",
+                                  "loans"
+                                ]
+                              },
+                              "predicate": {
+                                "transformerType": "boolExpr",
+                                "interpolation": "runtime",
+                                "operator": "&&",
+                                "left": {
+                                  "transformerType": "boolExpr",
+                                  "interpolation": "runtime",
+                                  "operator": "==",
+                                  "left": {
+                                    "transformerType": "getFromContext",
+                                    "interpolation": "runtime",
+                                    "referencePath": [
+                                      "loan",
+                                      "book"
+                                    ]
+                                  },
+                                  "right": {
+                                    "transformerType": "getFromParameters",
+                                    "referencePath": [
+                                      "payload",
+                                      "book"
+                                    ]
+                                  }
+                                },
+                                "right": {
+                                  "transformerType": "boolExpr",
+                                  "interpolation": "runtime",
+                                  "operator": "isNull",
+                                  "left": {
+                                    "transformerType": "getFromContext",
+                                    "interpolation": "runtime",
+                                    "referencePath": [
+                                      "loan",
+                                      "endDate"
+                                    ],
+                                    "safe": true
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "errorType": "FailedToReturnDocument",
+                          "message": "the User holds no open loan of this Book"
+                        }
+                      },
+                      {
                         "actionType": "updateInstance",
                         "actionLabel": "returnDocument_closeOpenLoan",
                         "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
@@ -798,136 +864,70 @@
                           "parentUuid": "e81078f3-2de7-4301-bd79-d3a156aec149",
                           "objects": [
                             {
-                              "transformerType": "ifThenElse",
+                              "transformerType": "mergeIntoObject",
                               "interpolation": "runtime",
-                              "if": {
-                                "transformerType": "boolExpr",
+                              "applyTo": {
+                                "transformerType": "find",
                                 "interpolation": "runtime",
-                                "operator": "isNull",
-                                "left": {
-                                  "transformerType": "find",
+                                "referenceToOuterObject": "loan",
+                                "applyTo": {
+                                  "transformerType": "getFromContext",
                                   "interpolation": "runtime",
-                                  "referenceToOuterObject": "loan",
-                                  "applyTo": {
-                                    "transformerType": "getFromContext",
-                                    "interpolation": "runtime",
-                                    "referencePath": [
-                                      "userLoans",
-                                      "loans"
-                                    ]
-                                  },
-                                  "predicate": {
+                                  "referencePath": [
+                                    "userLoans",
+                                    "loans"
+                                  ]
+                                },
+                                "predicate": {
+                                  "transformerType": "boolExpr",
+                                  "interpolation": "runtime",
+                                  "operator": "&&",
+                                  "left": {
                                     "transformerType": "boolExpr",
                                     "interpolation": "runtime",
-                                    "operator": "&&",
+                                    "operator": "==",
                                     "left": {
-                                      "transformerType": "boolExpr",
+                                      "transformerType": "getFromContext",
                                       "interpolation": "runtime",
-                                      "operator": "==",
-                                      "left": {
-                                        "transformerType": "getFromContext",
-                                        "interpolation": "runtime",
-                                        "referencePath": [
-                                          "loan",
-                                          "book"
-                                        ]
-                                      },
-                                      "right": {
-                                        "transformerType": "getFromParameters",
-                                        "referencePath": [
-                                          "payload",
-                                          "book"
-                                        ]
-                                      }
+                                      "referencePath": [
+                                        "loan",
+                                        "book"
+                                      ]
                                     },
                                     "right": {
-                                      "transformerType": "boolExpr",
+                                      "transformerType": "getFromParameters",
+                                      "referencePath": [
+                                        "payload",
+                                        "book"
+                                      ]
+                                    }
+                                  },
+                                  "right": {
+                                    "transformerType": "boolExpr",
+                                    "interpolation": "runtime",
+                                    "operator": "isNull",
+                                    "left": {
+                                      "transformerType": "getFromContext",
                                       "interpolation": "runtime",
-                                      "operator": "isNull",
-                                      "left": {
-                                        "transformerType": "getFromContext",
-                                        "interpolation": "runtime",
-                                        "referencePath": [
-                                          "loan",
-                                          "endDate"
-                                        ],
-                                        "safe": true
-                                      }
+                                      "referencePath": [
+                                        "loan",
+                                        "endDate"
+                                      ],
+                                      "safe": true
                                     }
                                   }
                                 }
                               },
-                              "then": {
-                                "transformerType": "returnValue",
+                              "definition": {
+                                "transformerType": "createObject",
                                 "interpolation": "runtime",
-                                "value": null
-                              },
-                              "else": {
-                                "transformerType": "mergeIntoObject",
-                                "interpolation": "runtime",
-                                "applyTo": {
-                                  "transformerType": "find",
-                                  "interpolation": "runtime",
-                                  "referenceToOuterObject": "loan",
-                                  "applyTo": {
-                                    "transformerType": "getFromContext",
-                                    "interpolation": "runtime",
-                                    "referencePath": [
-                                      "userLoans",
-                                      "loans"
-                                    ]
-                                  },
-                                  "predicate": {
-                                    "transformerType": "boolExpr",
-                                    "interpolation": "runtime",
-                                    "operator": "&&",
-                                    "left": {
-                                      "transformerType": "boolExpr",
-                                      "interpolation": "runtime",
-                                      "operator": "==",
-                                      "left": {
-                                        "transformerType": "getFromContext",
-                                        "interpolation": "runtime",
-                                        "referencePath": [
-                                          "loan",
-                                          "book"
-                                        ]
-                                      },
-                                      "right": {
-                                        "transformerType": "getFromParameters",
-                                        "referencePath": [
-                                          "payload",
-                                          "book"
-                                        ]
-                                      }
-                                    },
-                                    "right": {
-                                      "transformerType": "boolExpr",
-                                      "interpolation": "runtime",
-                                      "operator": "isNull",
-                                      "left": {
-                                        "transformerType": "getFromContext",
-                                        "interpolation": "runtime",
-                                        "referencePath": [
-                                          "loan",
-                                          "endDate"
-                                        ],
-                                        "safe": true
-                                      }
-                                    }
-                                  }
-                                },
                                 "definition": {
-                                  "transformerType": "createObject",
-                                  "interpolation": "runtime",
-                                  "definition": {
-                                    "endDate": {
-                                      "transformerType": "getFromParameters",
-                                      "referencePath": [
-                                        "payload",
-                                        "endDate"
-                                      ]
-                                    }
+                                  "endDate": {
+                                    "transformerType": "getFromParameters",
+                                    "referencePath": [
+                                      "payload",
+                                      "endDate"
+                                    ]
                                   }
                                 }
                               }
@@ -941,7 +941,7 @@
               },
               "actionErrors": {
                 "type": "literal",
-                "definition": "FailedToLendDocument"
+                "definition": "FailedToReturnDocument"
               }
             }
           ]
