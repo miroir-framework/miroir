@@ -34,6 +34,7 @@ import {
 import { resolveExtractorTemplate } from "./Templates";
 import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import { applyTransformerDEFUNCT } from "./TransformersForRuntime";
+import { findTransformerFailure } from "./CompositeActionStep";
 import { ApplicationDeploymentMap } from "../1_core/Deployment";
 import { getApplicationSection } from "../1_core/Model";
 
@@ -616,6 +617,17 @@ export const asyncRunQuery = async (
         failureMessage: `runtime transformer ${transformer[0]} failed: ${innermostFailureMessage(result[1])}`,
         queryContext: transformer[0],
         innerError: result[1] as any,
+      });
+    }
+    // so does a failure inside it, such as a mapList element whose transformer failed
+    const nestedFailure = findTransformerFailure(result[1]);
+    if (nestedFailure) {
+      return new Domain2ElementFailed({
+        queryFailure: "FailedTransformer",
+        failureOrigin: ["asyncRunQuery"],
+        failureMessage: `runtime transformer ${transformer[0]} failed at ${nestedFailure.path.join(".")}: ${innermostFailureMessage(nestedFailure.failure)}`,
+        queryContext: transformer[0],
+        innerError: nestedFailure.failure as any,
       });
     }
     context[result[0]] = result[1]; // does side effect!

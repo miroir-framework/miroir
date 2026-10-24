@@ -68,6 +68,22 @@ describe("#559 query runtime transformer failures", () => {
     );
   });
 
+  it("fails the query when a mapped element's transformer fails", async () => {
+    const result = await runQuery({
+      loanBooks: {
+        transformerType: "mapList",
+        interpolation: "runtime",
+        referenceToOuterObject: "loan",
+        applyTo: loansFromContext,
+        elementTransformer: { transformerType: "getFromContext", interpolation: "runtime", referenceName: "noSuchName" },
+      },
+    });
+    expect(result).toBeInstanceOf(Domain2ElementFailed);
+    const failure = result as Domain2ElementFailed;
+    expect(failure.queryContext).toBe("loanBooks");
+    expect(failure.failureMessage).toMatch(/^runtime transformer loanBooks failed at 0: /);
+  });
+
   it("innermostFailureMessage follows innerError to its end", () => {
     expect(
       innermostFailureMessage({ failureMessage: "outer", innerError: { queryContext: "middle", innerError: { failureMessage: "inner" } } }),
