@@ -1,6 +1,6 @@
-// Loads the Library data (packages/miroir-example-library/assets/library_data) with the same uuids.
-// Run by `npx prisma migrate reset --force` and `npx prisma db seed`.
-// LIBRARY_DATA_DIR overrides the data folder (needed when the app is copied outside the repository).
+// Loads the Library data, one JSON file per instance, with the same uuids. Run by `npm run db:reset` and
+// `npx prisma db seed`. The data folder is LIBRARY_DATA_DIR when set, else prisma/library-data when present,
+// else the Library's data files of the Miroir repository this app sits in.
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { prisma } from "../lib/db";
@@ -18,7 +18,8 @@ type Instance = Record<string, unknown>;
 
 const dataDir = path.resolve(
   process.cwd(),
-  process.env.LIBRARY_DATA_DIR ?? "../../packages/miroir-example-library/assets/library_data",
+  process.env.LIBRARY_DATA_DIR ??
+    (existsSync("prisma/library-data") ? "prisma/library-data" : "../../packages/miroir-example-library/assets/library_data"),
 );
 
 function instances(entityUuid: string): Instance[] {

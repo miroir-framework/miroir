@@ -14,6 +14,11 @@ import pytest
 
 from agent_bench import run, transcript
 
+
+@pytest.fixture(autouse=True)
+def _workspaces_in_tmp_path(tmp_path, monkeypatch):
+    monkeypatch.setattr(run, "WORKSPACES_DIR", tmp_path)
+
 FIXTURES = Path(__file__).parent / "fixtures" / "agent_bench"
 PROBE = FIXTURES / "probe-miroir-mcp.jsonl"
 MCP_URL = "http://localhost:4080/mcp"
@@ -131,3 +136,13 @@ def test_store_from_workspace_keeps_the_baseline_and_takes_the_workspace_library
     assert (target / "model" / "new" / "x.json").exists()
     assert not (target / "model" / "e4320b9e-ab45-4abe-85d8-359604b3c62f").exists()
     assert (target / "modelVersion").is_dir()
+
+
+@pytest.mark.skipif(not (run.REPO_ROOT / "benchmarks" / "conventional-library" / "node_modules").exists(), reason="needs npm ci in benchmarks/conventional-library")
+def test_conventional_workspace_is_the_app_with_data_and_a_database():
+    workspace = run.prepare_workspace("conventional")
+    assert (workspace / "AGENTS.md").read_text(encoding="utf-8").startswith("# Working on the Library application")
+    assert (workspace / "app" / "api" / "loans" / "route.ts").exists()
+    assert len(list((workspace / "prisma" / "library-data" / "e81078f3-2de7-4301-bd79-d3a156aec149").glob("*.json"))) == 60
+    assert (workspace / "prisma" / "dev.db").stat().st_size > 0
+    assert not (workspace / ".next").exists()

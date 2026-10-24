@@ -47,33 +47,27 @@ class FakeClient:
         return {"content": [{"type": "text", "text": json.dumps({"status": "success", "result": {"instances": items}})}]}
 
 
-def test_miroir_tests_naming_matches_the_query_name_in_any_case():
+def test_tests_naming_matches_the_needle_in_any_case():
     adapter = adapter_miroir.MiroirAdapter(
         FakeClient(
             {
-                adapter_miroir.QUERY_ENTITY: [{"uuid": "q1", "name": "OverdueLoans"}],
                 adapter_miroir.MIROIR_TEST_ENTITY: [
                     {"uuid": "t1", "name": "checks", "definition": {"resultAccessPath": ["overdueLoans"]}},
-                    {"uuid": "t2", "name": "uses the uuid", "definition": {"storedQuery": "q1"}},
                     {"uuid": "t3", "name": "unrelated", "definition": {}},
                 ],
             }
         )
     )
-    assert adapter.miroir_tests_naming("OverdueLoans") == ["checks", "uses the uuid"]
+    assert adapter.new_tests_naming("OVERDUE") == ["checks"]
 
 
-def test_new_miroir_tests_ignore_the_library_s_own_tests():
-    own = sorted(adapter_miroir.baseline_uuids(adapter_miroir.MIROIR_TEST_ENTITY))
-    assert own, "the Library ships MiroirTests"
+def test_tests_naming_counts_changed_library_tests_and_ignores_unchanged_ones():
+    own = adapter_miroir.baseline_instances(adapter_miroir.MIROIR_TEST_ENTITY)
+    lend_tests = sorted(uuid for uuid, test in own.items() if "lendDocument" in json.dumps(test))
+    assert len(lend_tests) >= 2, "the Library ships MiroirTests of lendDocument"
+    unchanged = own[lend_tests[0]]
+    changed = {**own[lend_tests[1]], "description": "now also checks the lending limit"}
     adapter = adapter_miroir.MiroirAdapter(
-        FakeClient(
-            {
-                adapter_miroir.MIROIR_TEST_ENTITY: [
-                    {"uuid": own[0], "name": "runner.lendDocument", "definition": {"actionType": "lendDocument"}},
-                    {"uuid": "new-test", "name": "lendingLimit", "definition": {"actionType": "lendDocument"}},
-                ],
-            }
-        )
+        FakeClient({adapter_miroir.MIROIR_TEST_ENTITY: [unchanged, changed, {"uuid": "new", "name": "limit", "definition": {"a": "lendDocument"}}]})
     )
-    assert adapter.new_miroir_tests_naming("lendDocument") == ["lendingLimit"]
+    assert adapter.new_tests_naming("lendDocument") == [changed["name"], "limit"]

@@ -406,7 +406,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,tooling
 
 ## Slice 7: conventional baseline and its acceptance
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -439,7 +439,14 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,tooling
 
 ### Realization
 
-_(to fill)_
+- Baseline (built by a worker, validated with `npm ci`, `migrate deploy`, `db seed`, `vitest`, `tsc`, `next build`): Next 16.4.3, React 19.3.1, Prisma 7.10.1 (`prisma-client` generator, `better-sqlite3` adapter, no engine download), Vitest 5.0.5, TypeScript 7.0.2. Seed: 7 Countries, 18 Authors, 10 Publishers, 48 Books, 5 Users, 60 loans, same uuids. 5 Vitest tests.
+- `run.py --arm conventional`: the workspace is a copy of the app with `node_modules` hard-linked (906 MB, same filesystem), the Library data in `prisma/library-data/` (the seed's default when present) and a database from `npm run db:reset`.
+- `npm run db:reset` (delete, `migrate deploy`, `db seed`) replaces `prisma migrate reset --force`, which Prisma 7 refuses under an AI agent unless `PRISMA_USER_CONSENT_FOR_DANGEROUS_AI_ACTION` is set. So that variable stays unset and the question does not arise. The arm page also says to run `prisma generate` after `migrate dev`, since Prisma 7 no longer does it.
+- Fairness choice: `next.config.ts` sets `agentRules: false`, otherwise `next dev` writes into AGENTS.md a pointer to a 4.6 MB docs folder that only this arm would get.
+- `acceptance --arm conventional [--workspace DIR]`: copies the app, rebuilds its database from its own migrations and seed, runs `next build` (a failed build is a failed check), serves it with `next start` on a free port, and runs the same scenarios over HTTP (`adapter_conventional.py`). Overdue loans: 1 of 6 on the baseline, 6 of 6 with the reference; lending limit: 2 of 8, then 8 of 8.
+- The lending-limit reference had to change the baseline's own `tests/loans.test.ts`, which lent to Jeanne Dielman (8 Books) and then lent a second Book to the same User; an agent meets the same thing.
+- One scenario module and one check list serve every arm: each adapter answers `overdue`, `view_shows_overdue`, `new_tests_naming` (tests added or changed that name the feature), `loans_of` and `lend`.
+- `check_dependency_policy.py` reports the same 4 pre-existing audit violations with and without `benchmarks/`; `npm run lint` passes. Test workspaces now go to pytest's `tmp_path`.
 
 ---
 

@@ -11,6 +11,7 @@ import shutil
 from pathlib import Path
 
 from agent_bench import miroir_server
+from agent_bench.acceptance import scenarios
 from agent_bench.acceptance.mcp_client import McpClient, result_json
 
 LIBRARY = "5af03c98-fe5e-490b-b08f-e1230971c57f"
@@ -120,24 +121,19 @@ class MiroirAdapter:
                 sets.append(_loan_uuids(value))
         return sets
 
-    def new_miroir_tests_naming(self, needle: str) -> list[str]:
-        """Names of the MiroirTests added to the Library (not in its baseline) that name `needle`, in any case."""
-        baseline = baseline_uuids(MIROIR_TEST_ENTITY)
+    def new_tests_naming(self, needle: str) -> list[str]:
+        """Names of the MiroirTests added to the Library or changed, that name `needle` in any case."""
+        baseline = baseline_instances(MIROIR_TEST_ENTITY)
         return [
             test.get("name", test.get("uuid"))
             for test in self.instances(MIROIR_TEST_ENTITY, "model")
-            if test.get("uuid") not in baseline and needle.lower() in json.dumps(test).lower()
+            if baseline.get(test.get("uuid")) != test and needle.lower() in json.dumps(test).lower()
         ]
 
-    def miroir_tests_naming(self, query_name: str) -> list[str]:
-        """Names of the Library MiroirTests that name the Query (in any case) or hold its uuid."""
-        query = self.model_element(QUERY_ENTITY, query_name)
-        needles = [query_name.lower()] + ([query["uuid"]] if query else [])
-        return [
-            test.get("name", test.get("uuid"))
-            for test in self.instances(MIROIR_TEST_ENTITY, "model")
-            if any(needle in json.dumps(test).lower() for needle in needles)
-        ]
+    def view_shows_overdue(self, started_before: str) -> tuple[bool, str]:
+        expected = scenarios.overdue_loans(started_before)
+        sets = self.report_loan_sets("OverdueLoansPerUser", {"startedBefore": started_before})
+        return expected in sets, f"loan counts per data entry of the Report: {[len(found) for found in sets]}, {len(expected)} expected"
 
     def lend(self, user: str, book: str, start_date: str) -> bool:
         """True when the loan was accepted."""
@@ -149,9 +145,9 @@ class MiroirAdapter:
         return [loan for loan in self.instances(LOAN_ENTITY, "data") if loan.get("user") == user]
 
 
-def baseline_uuids(entity: str) -> set[str]:
-    """The uuids of the Library's own model instances of `entity`, as the agent found them."""
-    return {path.stem for path in (BASELINE_MODEL / entity).glob("*.json")}
+def baseline_instances(entity: str) -> dict[str, dict]:
+    """The Library's own model instances of `entity` by uuid, as the agent found them."""
+    return {path.stem: json.loads(path.read_text(encoding="utf-8")) for path in (BASELINE_MODEL / entity).glob("*.json")}
 
 
 def _loan_uuids(value) -> set[str]:

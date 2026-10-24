@@ -26,10 +26,11 @@ if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from agent_bench import miroir_server, task, transcript  # noqa: E402
-from agent_bench.acceptance import adapter_miroir  # noqa: E402
+from agent_bench.acceptance import adapter_conventional, adapter_miroir  # noqa: E402
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_RUNS_DIR = Path("/mnt/project-files/issue-550/runs")
+WORKSPACES_DIR = Path("/tmp")
 META_MODEL = REPO_ROOT / "packages" / "miroir-app-miroir" / "assets" / "miroir_model"
 VALIDATOR = Path(__file__).resolve().parent / "acceptance" / "validate_store.mjs"
 
@@ -101,18 +102,20 @@ def claude_command(arm: str, prompt: str, mcp_url: str | None = None) -> list[st
 
 
 def prepare_workspace(arm: str, library_store: Path | None = None) -> Path:
-    """A fresh folder outside the repository with the arm's AGENTS.md; for `miroir-files`, the Library's files too.
+    """A fresh folder outside the repository with the arm's AGENTS.md, and what the arm starts from: nothing more
+    for `miroir-mcp`, the Library's files for `miroir-files`, the baseline app with its database for `conventional`.
 
     `library_store` is the store the files arm starts from (a freshly materialized `bench-agent` Library).
     """
-    workspace = Path(tempfile.mkdtemp(prefix=f"agent-bench-{arm}-", dir="/tmp"))
+    workspace = Path(tempfile.mkdtemp(prefix=f"agent-bench-{arm}-", dir=WORKSPACES_DIR))
     if REPO_ROOT in workspace.resolve().parents:
         raise RuntimeError(f"workspace {workspace} is inside the repository")
+    if arm == "conventional":
+        workspace.rmdir()  # the app is copied in its place
+        prepare_conventional(workspace)
     (workspace / "AGENTS.md").write_text(task.agents_md(arm), encoding="utf-8")
-    if arm == "miroir-mcp":
+    if arm in ("miroir-mcp", "conventional"):
         return workspace
-    if arm != "miroir-files":
-        raise NotImplementedError(f"workspace preparation of arm {arm} comes in a later slice (#550 plan)")
     if library_store is None:
         raise ValueError("the miroir-files workspace needs the Library store it starts from")
     for section in adapter_miroir.LIBRARY_SECTIONS:
@@ -123,6 +126,14 @@ def prepare_workspace(arm: str, library_store: Path | None = None) -> Path:
     (workspace / "meta-model").chmod(0o555)
     write_check_command(workspace)
     return workspace
+
+
+def prepare_conventional(target: Path) -> None:
+    """The baseline app with its own copy of the Library data and a fresh database."""
+    if not (adapter_conventional.BASELINE_APP / "node_modules").exists():
+        raise FileNotFoundError(f"run `npm ci` in {adapter_conventional.BASELINE_APP} first")
+    adapter_conventional.copy_app(adapter_conventional.BASELINE_APP, target)
+    subprocess.run(["npm", "run", "db:reset"], cwd=target, check=True, capture_output=True)
 
 
 def write_check_command(workspace: Path) -> None:

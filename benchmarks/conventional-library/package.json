@@ -9,7 +9,8 @@
     "start": "next start",
     "test": "vitest run",
     "postinstall": "prisma generate",
-    "seed": "prisma db seed"
+    "seed": "prisma db seed",
+    "db:reset": "rm -f prisma/dev.db && prisma migrate deploy && prisma db seed"
   },
   "dependencies": {
     "@prisma/adapter-better-sqlite3": "7.10.1",
