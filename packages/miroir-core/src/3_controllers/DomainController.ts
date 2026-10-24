@@ -125,6 +125,7 @@ import {
   miroirModelEntities,
 } from "../1_core/Model";
 import { rejectPartialMutationInstanceAction } from "../1_core/localCache/partialMutationGuard.js";
+import { rejectInstancesNotMatchingTheirEntity } from "../1_core/Entity/instanceSchemaGuard.js";
 import {
   entityHasNoPrimaryKey,
   invalidEntityPrimaryKeyDeclarationError,
@@ -1332,6 +1333,19 @@ export class DomainController implements DomainControllerInterface, DomainContro
     const rejectedKeyless = this.rejectInstanceActionOnKeylessEntity(instanceAction, applicationDeploymentMap);
     if (rejectedKeyless) {
       return Promise.resolve(rejectedKeyless);
+    }
+
+    const rejectedSchema = rejectInstancesNotMatchingTheirEntity(
+      instanceAction,
+      [
+        ...(this.currentModel(instanceAction.payload.application, applicationDeploymentMap)?.entities ?? []),
+        ...metaModelEntities,
+      ],
+      defaultMiroirModelEnvironment,
+    );
+    if (rejectedSchema) {
+      log.error("DomainController handleInstanceAction rejected an instance (#558)", rejectedSchema.errorMessage);
+      return Promise.resolve(rejectedSchema);
     }
 
     const actionToPersist =
