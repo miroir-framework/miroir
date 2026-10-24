@@ -22,8 +22,8 @@
   },
   "dependencies": {
     "miroir-core": "*",
-    "mongodb": "6.21.0",
-    "pg": "8.23.0"
+    "mongodb": "7.7.0",
+    "pg": "8.23.1"
   },
   "devDependencies": {
     "miroir-localcache-redux": "*",

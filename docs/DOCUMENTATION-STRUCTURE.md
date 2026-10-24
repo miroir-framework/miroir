@@ -77,6 +77,7 @@ docs-new/
 │   ├── core-concepts.md            # Entity, Query, Transformer, Action, Report ✅
 │   ├── why-miroir.md               # Philosophy and rationale ⚠️⚠️
 │   ├── comparison.md               # Competitive analysis ✅
+│   ├── comparison-cms-tdd.md       # CMSs and test-driven development ✅
 │   ├── architecture.md             # Layered architecture overview ⚠️⚠️⚠️
 │   ├── meta-model.md               # Understanding ML and bootstrapping
 │   ├── model-vs-data.md            # Application structure
