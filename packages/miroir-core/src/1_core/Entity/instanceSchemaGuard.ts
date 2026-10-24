@@ -7,7 +7,6 @@ import type {
   Entity,
   InstanceAction,
 } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import type { MlElement } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import type { MiroirModelEnvironment } from "../../0_interfaces/1_core/Transformer.js";
 import { Action2Error } from "../../0_interfaces/2_domain/DomainElement.js";
 import { mlsTypeCheck } from "../mls/mlsTypeCheck.js";
@@ -32,7 +31,7 @@ export function rejectInstancesNotMatchingTheirEntity(
     if (!entity?.mlSchema) {
       continue;
     }
-    const check = mlsTypeCheck(entity.mlSchema as unknown as MlElement, instance, [], [], modelEnvironment, {});
+    const check = mlsTypeCheck(entity.mlSchema, instance, [], [], modelEnvironment, {});
     if (check.status !== "error") {
       continue;
     }
