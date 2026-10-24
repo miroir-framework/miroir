@@ -113,6 +113,7 @@
     "@codemirror/view",
     "@copilotkit/a2ui-renderer",
     "@copilotkit/core",
+    "@copilotkit/learning",
     "@copilotkit/mcp-apps-renderer",
     "@copilotkit/react-core",
     "@copilotkit/react-ui",
