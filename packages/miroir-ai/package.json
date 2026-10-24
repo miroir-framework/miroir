@@ -39,7 +39,7 @@
     "@bufbuild/protobuf": "1.10.0",
     "@connectrpc/connect": "1.7.0",
     "@connectrpc/connect-node": "1.7.0",
-    "@connectrpc/connect-web": "1.7.0",
+    "@connectrpc/connect-web": "2.2.0",
     "@copilotkit/runtime": "1.79.1",
     "@cursor/sdk": "1.0.38",
     "@google/generative-ai": "0.24.1",
