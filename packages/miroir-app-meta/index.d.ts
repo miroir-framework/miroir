@@ -7,8 +7,12 @@ export declare const metaInitApplicationVersion: EntityInstance;
 export declare const menuDefaultMeta: Menu;
 export declare const defaultMetaAppModel: MetaModel;
 export declare const entityBundleSizeMeasurement: Entity;
+export declare const entityAgentRunMeasurement: Entity;
 export declare const reportBundleSizeHistory: Report;
 export declare const reportBundleSizeMeasurementDetails: Report;
+export declare const reportAgentRunHistory: Report;
+export declare const reportAgentRunMeasurementDetails: Report;
+export declare const agentRunMeasurementSeed: EntityInstance[];
 export declare const bundleSizeMeasurementSeed: EntityInstance[];
 export declare const testConfiguration_metaBundleSizeSeed: {
   uuid: string;

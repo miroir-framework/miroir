@@ -1,4 +1,4 @@
-import { execFileSync, spawnSync } from "node:child_process";
+import { spawnSync } from "node:child_process";
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
@@ -13,6 +13,7 @@ import {
   type BundleReport,
   type BundleSizeMeasurement,
 } from "../src/bundleSizeHistory";
+import { repoInfo, repoRoot } from "../src/repoInfo";
 
 // ################################################################################################
 // `npm run bundle-size:record -w miroir-app-meta -- <bundle-report.json> [options]` (#473): records
@@ -30,7 +31,6 @@ import {
 // ################################################################################################
 
 const packageRoot = join(dirname(fileURLToPath(import.meta.url)), "..");
-const repoRoot = join(packageRoot, "../..");
 const defaultDataDir = join(packageRoot, "assets/meta_data");
 const guard = join(repoRoot, "scripts/check_bundle_policy.py");
 const python = process.env.PYTHON ?? "python3";
@@ -45,18 +45,6 @@ export function policyOf(application: string): string {
     throw new Error(`no bundle policy is known for ${application} (known: ${Object.keys(BUNDLE_POLICIES).join(", ")})`);
   }
   return join(repoRoot, policy);
-}
-
-function git(...args: string[]): string | undefined {
-  try {
-    return execFileSync("git", args, { cwd: repoRoot, encoding: "utf-8", stdio: ["ignore", "pipe", "ignore"] }).trim();
-  } catch {
-    return undefined;
-  }
-}
-
-function miroirVersion(): string | undefined {
-  return JSON.parse(readFileSync(join(repoRoot, "package.json"), "utf-8")).version;
 }
 
 function runGuard(...args: string[]): { status: number | null; output: string } {
@@ -170,9 +158,7 @@ export async function main(argv: string[]): Promise<number> {
     measuredAt: new Date().toISOString(),
     previous: newestMeasurement(report.app, dataDir),
     reason: values.reason,
-    gitCommit: git("rev-parse", "HEAD"),
-    gitBranch: git("rev-parse", "--abbrev-ref", "HEAD"),
-    miroirVersion: miroirVersion(),
+    ...repoInfo(),
   });
   const file = writeRecord(instance, dataDir, policyUpdate);
   if (file === undefined) {

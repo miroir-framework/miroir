@@ -68,10 +68,12 @@ Grilling: round 1 (Q1 to Q9) in the project folder, `issue-550/grilling-round-1.
 
 | Feature | Miroir arms | Conventional arm |
 |---|---|---|
-| 1. Overdue loans | Library Query named `OverdueLoans`, parameters `asOf` (ISO date) and `overdueDays` (number), result entry `overdueLoans`: the LendingHistoryItem instances with no `endDate` whose `startDate` is more than `overdueDays` days before `asOf`. A Report `OverdueLoansPerUser` shows them per User. A MiroirTest of the Query. | `GET /api/loans/overdue?asOf=…&overdueDays=…` returns the same loans as JSON, with their `uuid`; page `/loans/overdue` shows them per User. A Vitest test. |
+| 1. Overdue loans | Library Query named `OverdueLoans`, parameter `startedBefore` (ISO date), result entry `overdueLoans`: the LendingHistoryItem instances with no `endDate` whose `startDate` is before `startedBefore`. A Report `OverdueLoansPerUser` shows them per User. A MiroirTest of the Query. | `GET /api/loans/overdue?startedBefore=…` returns the same loans as JSON, with their `uuid`; page `/loans/overdue` shows them per User. A Vitest test. |
 | 2. Lending limit | `lendDocument` (Endpoint Lending) refuses the loan, and creates no LendingHistoryItem, when the User already holds 8 loans with no `endDate`. A test of the refusal. | `POST /api/loans` answers 409 and creates no row in the same case. A Vitest test. |
 
-The fixed date makes the expected results stable: with `asOf` 2026-08-01 and `overdueDays` 30, the Library data has 21 overdue loans over all 5 Users (§4.3). The limit of 8 splits the Users: Laurence Jambois holds 9 open loans, Pierre Martin, François Dupont and Jeanne Dielman 8, Marie Martin 7.
+The fixed date makes the expected results stable: with `startedBefore` 2026-07-02, the Library data has 21 overdue loans over all 5 Users (§4.3).
+
+A's change of 2026-10-24 (decision card): the first contract was "more than `overdueDays` days before `asOf`". The slice 4 dry run found no date arithmetic among Miroir's 52 TransformerDefinitions (`numericOp` has `-`, `*`, `/`; dates are ISO strings), while `boolExpr` `<` compares ISO strings. Every arm now gets the cutoff date; a date transformer gets its own issue. The limit of 8 splits the Users: Laurence Jambois holds 9 open loans, Pierre Martin, François Dupont and Jeanne Dielman 8, Marie Martin 7.
 
 **D12 One scenario set, one adapter per arm.** The acceptance scenarios are written once, in Python, and call each arm through a small adapter: the Miroir adapter runs the agent's Query and `lendDocument` on a fresh `miroir-server` started on the run's store; the conventional adapter calls the HTTP routes of the agent's app. The expected results are computed from the Library data by the scenarios themselves, not copied. Each scenario must fail on the baseline and pass on a reference solution written for each arm before the runs (the dry run of D4 produces the Miroir ones).
 
@@ -94,7 +96,7 @@ For `miroir-files`, the run's Library copy is put back into `.miroir/bench-agent
 
 **D14 Isolation.** Every workspace is a fresh folder outside the repository, so Claude Code loads neither the repository's CLAUDE.md nor its skills. Settings come from the run only (`--setting-sources` limited to the run, `--strict-mcp-config`). The runner reads the `init` event of the transcript (tools, MCP servers, skills, model) and marks the run invalid when anything outside the arm's set is present. It also marks invalid a run whose transcript reads a path of the harness, the reference solutions or the acceptance tests.
 
-**D15 Limits and settings.** `--model claude-sonnet-5-5`, `--effort medium`, `--max-turns 80`, `--max-budget-usd 5` per run, `--output-format stream-json --verbose` for the full transcript. A run that hits a limit is recorded with its stop reason and fails acceptance unless the tests pass anyway.
+**D15 Limits and settings.** `--model claude-sonnet-5-5`, `--effort medium`, `--max-turns 80`, `--max-budget-usd 5` per run, `--output-format stream-json --verbose` for the full transcript. Amended after the slice 1 probe: the MCP arm also gets the `ToolSearch` tool, as Claude Code does by default on the first-party API, because the 47 Miroir tool schemas weigh about 314k tokens when loaded up front (the probe cost $1.31 without it, $0.047 with it). A run that hits a limit is recorded with its stop reason and fails acceptance unless the tests pass anyway.
 
 **D16 Harness language.** The runner, the acceptance scenarios, the UUID share and the isolation checks are Python under `scripts/agent_bench/`, tested by `scripts/tests/` (repo rule for ad-hoc scripts; the PR gate runs these tests). The record script is TypeScript in `miroir-app-meta` (`npm run agent-run:record`), as `bundle-size:record` (#473 D12), because it imports `miroir-core` to build and validate the instance. The conventional baseline is a Next.js app under `benchmarks/conventional-library/`, outside the npm workspaces (`packages/*`).
 
@@ -129,7 +131,7 @@ Application `5af03c98-fe5e-490b-b08f-e1230971c57f`, deployment `f714bb2f-a12d-4e
 
 - 60 LendingHistoryItems, 40 with no `endDate`. Open loans start between 2025-06-01 and 2026-07-20, with dates written `2024-09-08T00:00:00.000Z`.
 - 5 Users. Open loans per User: Laurence Jambois 9, Pierre Martin 8, François Dupont 8, Jeanne Dielman 8, Marie Martin 7.
-- Overdue with `overdueDays` 30: 19 as of 2026-06-01, 20 as of 2026-07-01, 21 as of 2026-08-01 (Jeanne Dielman 5, Laurence Jambois 5, François Dupont 4, Pierre Martin 4, Marie Martin 3). The 20 loans started in July 2026 are not overdue as of 2026-08-01, which tests the boundary.
+- Overdue with `startedBefore` 2026-07-02: 21 loans (Jeanne Dielman 5, Laurence Jambois 5, François Dupont 4, Pierre Martin 4, Marie Martin 3). Twenty open loans start in July 2026, one per day from the 1st to the 20th, so the boundary is tested: the loan of July 1 is overdue and the loan of July 2 is not.
 
 ### 4.4 `miroir-app-meta` (#473)
 

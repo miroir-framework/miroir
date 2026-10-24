@@ -28,15 +28,15 @@ Out: the arm with app-developer skills (#551, rerun later); other models and age
 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
-| 0 | Task contracts, arm AGENTS.md files, `bench-agent` environment | ⬜ pending | `test_agent_bench_contracts.py`, `miroir-env check --strict` |
-| 1 | One harness command runs an isolated agent and writes a run summary (tracer) | ⬜ pending | `test_agent_bench_run.py`, one live probe run |
-| 2 | A run summary becomes a valid `AgentRunMeasurement` instance | ⬜ pending | `agentRunRecord.unit.test.ts`, `modelValidation` |
-| 3 | The Meta app shows the runs per feature and arm | ⬜ pending | MiroirTest `report.agentRunHistory` |
+| 0 | Task contracts, arm AGENTS.md files, `bench-agent` environment | ✅ done | `test_agent_bench_contracts.py`, `miroir-env check --strict` |
+| 1 | One harness command runs an isolated agent and writes a run summary (tracer) | ✅ done | `test_agent_bench_run.py`, one live probe run |
+| 2 | A run summary becomes a valid `AgentRunMeasurement` instance | ✅ done | `agentRunRecord.unit.test.ts`, `modelValidation` |
+| 3 | The Meta app shows the runs per feature and arm | ✅ done | MiroirTest `report.agentRunHistory` |
 | 4 | Overdue loans: Miroir acceptance fails on the baseline, passes on the reference | ⬜ pending | `acceptance --arm miroir-mcp --feature overdue-loans` |
 | 5 | Lending limit in Miroir: reference and acceptance, or a recorded result | ⬜ pending | acceptance, or a filed issue |
 | 6 | The `miroir-files` arm: workspace, `check` command, edits read on start | ⬜ pending | acceptance through the files path |
 | 7 | Conventional baseline and its acceptance | ⬜ pending | acceptance `--arm conventional`, both features |
-| 8 | Transcript measures: UUID share, tool calls, contamination | ⬜ pending | `test_agent_bench_transcript.py` |
+| 8 | Transcript measures: UUID share, tool calls, contamination | ✅ done | `test_agent_bench_transcript.py` |
 | 9 | Pilot: one run per arm and feature, cost reported | ⬜ pending | 6 recorded instances, reply to A |
 | 10 | Full runs | ⬜ pending | 30 more recorded instances |
 | 11 | Docs page, nonreg steps, decisions, cleanup | ⬜ pending | `npm run nonreg:filesystem -- --runner shared` |
@@ -55,11 +55,11 @@ Out: the arm with app-developer skills (#551, rerun later); other models and age
 | D8 | `AgentRunMeasurement` in `miroir-app-meta`, record script, Report; transcripts in the project folder, not in git | G1, G5 |
 | D9 | UUID share as characters in tool inputs and outputs | G3 |
 | D10 | One run per feature from the baseline: pilot 6 runs, then 30 (18 and 15 if D4 drops feature 2) | G1 |
-| D11 | Contracts: Query `OverdueLoans` (`asOf`, `overdueDays`, result `overdueLoans`), Report `OverdueLoansPerUser`; `lendDocument` refuses at 8 open loans; conventional `GET /api/loans/overdue`, page `/loans/overdue`, `POST /api/loans` answers 409 | G4 |
+| D11 | Contracts: Query `OverdueLoans` (`startedBefore`, result `overdueLoans`; changed by A from `asOf` and `overdueDays` after the slice 4 dry run), Report `OverdueLoansPerUser`; `lendDocument` refuses at 8 open loans; conventional `GET /api/loans/overdue`, page `/loans/overdue`, `POST /api/loans` answers 409 | G4 |
 | D12 | One Python scenario set, an adapter per arm; expectations computed from the Library data; each scenario fails on the baseline and passes on a reference | G4 |
 | D13 | `miroir-server` release build, `bench-agent` environment, `--disable-auth`; arm tools and workspaces per analysis §3 D13 | G1, G2 |
 | D14 | Workspaces outside the repository; run-only settings; `init` event and path checks mark a run invalid | G1, G4 |
-| D15 | `--effort medium`, `--max-turns 80`, `--max-budget-usd 5`, `--output-format stream-json --verbose` | G1 |
+| D15 | `--effort medium`, `--max-turns 80`, `--max-budget-usd 5`, `--output-format stream-json --verbose`; the MCP arm also gets `ToolSearch` (slice 1) | G1 |
 | D16 | Harness in Python (`scripts/agent_bench/`), record script in TypeScript (`npm run agent-run:record -w miroir-app-meta`), conventional baseline in `benchmarks/conventional-library/` outside the workspaces | G5 |
 | D17 | Entity attributes per analysis §3 D17 | G1, G3, G4 |
 
@@ -102,7 +102,7 @@ packages/miroir-app-meta/          Entity, Reports, MiroirTest, scripts/recordAg
 | Harness tests | `python -m pytest scripts/tests -q -k agent_bench` |
 | Record script | `npm run testByFile -w miroir-app-meta -- agentRunRecord.unit` |
 | Meta instances | `npm run testByFile -w miroir-app-meta -- tests/modelValidation.unit.test.ts` |
-| Report MiroirTest | `npm run testMiroir -w miroir-standalone-app -- --suites report.agentRunHistory --mode integration` |
+| Report MiroirTest | `npm run testMiroir -w miroir-standalone-app -- --suites report.agentRunHistory --mode integration --profile emulatedServer-filesystem` |
 | Rebuild after meta assets change | `npm run build -w miroir-app-meta` |
 | Server for Miroir acceptance | `npm run build:server -w miroir-server`, then the runner starts it with `MIROIR_ENV=bench-agent` |
 | Acceptance by hand | `python scripts/agent_bench/acceptance --arm <arm> --feature <feature> --workspace <dir>` |
@@ -113,7 +113,7 @@ packages/miroir-app-meta/          Entity, Reports, MiroirTest, scripts/recordAg
 
 ## Slice 0: task contracts, arm AGENTS.md files, `bench-agent` environment
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -122,9 +122,9 @@ The contracts of D11 exist as files an agent will read (two task prompts, three 
 ### RED
 
 `scripts/tests/test_agent_bench_contracts.py`:
-- `overdue_loans(as_of="2026-08-01", overdue_days=30)` computed from `library_data/e81078f3-…` returns 21 loans over 5 Users, and none of the 20 loans started in July 2026.
+- `overdue_loans(started_before="2026-07-02")` computed from `library_data/e81078f3-…` returns 21 loans over 5 Users; the loan started 2026-07-01 is in it, the one started 2026-07-02 is not.
 - `open_loans_per_user()` gives 9, 8, 8, 8, 7 (Laurence Jambois, Pierre Martin, François Dupont, Jeanne Dielman, Marie Martin).
-- Every task prompt names the contract identifiers of D11 (`OverdueLoans`, `asOf`, `overdueDays`, `overdueLoans`, `OverdueLoansPerUser`, `/api/loans/overdue`, the limit 8).
+- Every task prompt names the contract identifiers of D11 (`OverdueLoans`, `startedBefore`, `overdueLoans`, `OverdueLoansPerUser`, `/api/loans/overdue`, the limit 8).
 - Every AGENTS.md is at most 60 lines and names no path under `scripts/agent_bench/`, `reference/` or `acceptance/`.
 
 ### GREEN
@@ -148,17 +148,21 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,tooling
 
 ### Realization
 
-_(to fill)_
+- `scripts/agent_bench/acceptance/scenarios.py` (expectations from the Library data), `task.py` (a task file holds the shared description and one `## Contract` per group of arms; an arm's prompt is the description plus its contract only; `task_hash` covers prompt and AGENTS.md), `tasks/{overdue-loans,lending-limit,probe}.md`, `arms/<arm>/AGENTS.md` (25 to 42 lines).
+- `scripts/tests/test_agent_bench_contracts.py`, 19 tests.
+- Deviation: the first claim "the 20 July loans are not overdue" was wrong; one loan per day from July 1 to 20, so the test now locks the boundary (July 1 in, July 2 out).
+- Deviation (A, 2026-10-24): overdue loans take `startedBefore` instead of `asOf` and `overdueDays` (no date arithmetic in Miroir, see slice 4).
+- The scoped nonreg first ran on stale `dist/` and `node_modules` (built 2026-10-06, `@dnd-kit/core` missing): `npm ci` then `./build-all.sh`. `unit-check-ml-nomenclature` fails on the base branch too (`docs/tutorials/libraryTutorial/bundles-2026-05/library-model.json:2288: jzodSchemas`).
 
 ---
 
 ## Slice 1: one harness command runs an isolated agent and writes a run summary (tracer)
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
-`python scripts/agent_bench/run.py --arm miroir-mcp --task probe` prepares a fresh workspace outside the repository, resets `.miroir/bench-agent/`, starts `miroir-server`, runs `claude -p` with the arm's settings (D15), saves the transcript to the project folder, stops the server, and writes `run.json` with the measures of D17 that the transcript gives. The `probe` task ("how many Books does the Library hold?") costs a few cents and proves the path.
+`python scripts/agent_bench/run.py --arm miroir-mcp --feature probe` prepares a fresh workspace outside the repository, resets `.miroir/bench-agent/`, starts `miroir-server`, runs `claude -p` with the arm's settings (D15), saves the transcript to the project folder, stops the server, and writes `run.json` with the measures of D17 that the transcript gives. The `probe` task ("how many Books does the Library hold?") costs a few cents and proves the path.
 
 ### RED
 
@@ -186,13 +190,16 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,tooling
 
 ### Realization
 
-_(to fill)_
+- `run.py`, `transcript.py`, `miroir_server.py`, `arms/<arm>/settings.json`; `scripts/tests/test_agent_bench_run.py` (12 tests) on the recorded probe `fixtures/agent_bench/probe-miroir-mcp.jsonl`.
+- Isolation, found by trial: `--bare` refuses the host login, so the child gets a whitelisted environment instead (API, proxy and host-login variables only), plus `--setting-sources project,local`, `--disable-slash-commands`, `--no-session-persistence`, `--strict-mcp-config`. The `init` event then lists no skill, no slash command, only built-in plugins, and the system prompt drops from 37.6k tokens (this session's) to about 3k. The workspace AGENTS.md is loaded by Claude Code itself (checked with a codeword).
+- Finding: the 47 Miroir MCP tools weigh 623k characters (about 314k tokens; `compositeActionSequence` 176k characters, `runBoxedQueryTemplateAction` 106k, `runBoxedQueryAction` 49k). Loaded up front, the 2-turn probe cost $1.31. With the `ToolSearch` tool (Claude Code's default with first-party API access; enabled here with `ENABLE_TOOL_SEARCH=true`) schemas load on demand and the probe costs $0.047. D15 amended: the MCP arm gets `ToolSearch`.
+- Live probes: 3 runs, all answered 48, all valid.
 
 ---
 
 ## Slice 2: a run summary becomes a valid `AgentRunMeasurement` instance
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -227,13 +234,15 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core,tooling
 
 ### Realization
 
-_(to fill)_
+- Entity `AgentRunMeasurement` (`954de789-…`, 30 attributes, D17 plus `runId`), `src/agentRunHistory.ts` (`measurementFromRun`, `missingFields`, `readRuns`, `writeRun`), `scripts/recordAgentRun.ts`, npm script `agent-run:record`, Entity registered in `defaultMetaAppModel` and exported.
+- Refactor: `src/repoInfo.ts` (`repoRoot`, `git`, `miroirVersion`, `repoInfo`) now serves `recordBundleSize.ts` too.
+- `tests/agentRunRecord.unit.test.ts` (4 tests) on `scripts/tests/fixtures/agent_bench/run.json`; with `bundleSizeRecord.unit` and `modelValidation`: 48 tests pass.
 
 ---
 
 ## Slice 3: the Meta app shows the runs per feature and arm
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -262,7 +271,9 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core,ui
 
 ### Realization
 
-_(to fill)_
+- Reports `AgentRunHistory` (per feature: bar graph of list cost per run labelled and coloured by arm, then the runs sorted by arm) and `AgentRunMeasurementDetails`; Menu entry "Agent runs"; MiroirTest `report.agentRunHistory` on three seed runs added to the Meta TestConfiguration (`8b8dfbd9-…`).
+- Deviation: no median per arm in the Report (no median transformer); the docs page computes medians from the instances.
+- `npm run testMiroir -w miroir-standalone-app -- --suites report.agentRunHistory,report.bundleSizeHistory --mode integration --profile emulatedServer-filesystem`: 4 tests pass.
 
 ---
 
@@ -277,8 +288,8 @@ The overdue-loans scenarios run against a fresh `miroir-server` on a run's store
 ### RED
 
 `acceptance --arm miroir-mcp --feature overdue-loans` on the baseline store: every scenario fails (no `OverdueLoans` Query). Scenarios:
-- as of 2026-08-01, 30 days: the 21 loans of slice 0, by `uuid`;
-- as of 2026-08-01, 0 days: every open loan started before 2026-08-01;
+- started before 2026-07-02: the 21 loans of slice 0, by `uuid` (the July 1 loan in, the July 2 loan out);
+- started before 2026-08-01: every open loan;
 - a returned loan (with `endDate`) never appears;
 - `OverdueLoansPerUser` exists, is valid against the Report schema, and its Query runs.
 
@@ -420,7 +431,7 @@ _(to fill)_
 
 ## Slice 8: transcript measures, UUID share, tool calls, contamination
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -450,7 +461,8 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,tooling
 
 ### Realization
 
-_(to fill)_
+- `transcript.py`: `uuid_char_share` (UUID characters over tool input JSON and tool result text), `tool_call_counts`, `hidden_path_reads` (`agent_bench`, `reference/`, `acceptance/` in a tool input); `run.py` writes `toolCalls`, `toolCallsByName`, `uuidCharShare`, and marks a run with a hidden-path read invalid.
+- `scripts/tests/test_agent_bench_transcript.py`, 5 tests.
 
 ---
 
