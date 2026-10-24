@@ -1,0 +1,81 @@
+// The Library data model, mirroring the Library Entities of
+// packages/miroir-example-library/assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/.
+// Primary keys are the instance uuids. Foreign key attributes keep the Library's names
+// (`country`, `author`, `publisher`, `user`, `book`); the relation fields end in `Record`.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Country {
+  uuid            String      @id
+  name            String
+  iso3166_1Alpha2 String?     @map("iso3166-1Alpha-2")
+  icon            String?
+  authors         Author[]
+  publishers      Publisher[]
+  users           User[]
+}
+
+model Author {
+  uuid          String    @id
+  name          String
+  language      String?
+  birthDate     DateTime?
+  deathDate     DateTime?
+  country       String?
+  countryRecord Country?  @relation(fields: [country], references: [uuid])
+  icon          String?
+  icons         Float?
+  books         Book[]
+}
+
+model Publisher {
+  uuid          String   @id
+  name          String
+  country       String?
+  countryRecord Country? @relation(fields: [country], references: [uuid])
+  icon          String?
+  books         Book[]
+}
+
+model Book {
+  uuid            String               @id
+  name            String
+  year            Int?
+  author          String
+  authorRecord    Author               @relation(fields: [author], references: [uuid])
+  publisher       String
+  publisherRecord Publisher            @relation(fields: [publisher], references: [uuid])
+  loans           LendingHistoryItem[]
+}
+
+model User {
+  uuid          String               @id
+  name          String
+  firstName     String
+  lastName      String
+  street        String
+  postalCode    String
+  city          String
+  state         String
+  country       String?
+  countryRecord Country?             @relation(fields: [country], references: [uuid])
+  loans         LendingHistoryItem[]
+}
+
+model LendingHistoryItem {
+  uuid       String    @id
+  user       String
+  userRecord User      @relation(fields: [user], references: [uuid])
+  book       String
+  bookRecord Book      @relation(fields: [book], references: [uuid])
+  startDate  DateTime
+  endDate    DateTime?
+  note       String?
+}
