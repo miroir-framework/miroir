@@ -120,6 +120,56 @@
                   }
                 },
                 {
+                  "actionType": "compositeFail",
+                  "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                  "actionLabel": "lendDocument_lendingLimit",
+                  "payload": {
+                    "condition": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": ">=",
+                      "left": {
+                        "transformerType": "listLength",
+                        "interpolation": "runtime",
+                        "applyTo": {
+                          "transformerType": "filterList",
+                          "interpolation": "runtime",
+                          "referenceToOuterObject": "loan",
+                          "applyTo": {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referencePath": [
+                              "userLoans",
+                              "loans"
+                            ]
+                          },
+                          "predicate": {
+                            "transformerType": "boolExpr",
+                            "interpolation": "runtime",
+                            "operator": "isNull",
+                            "left": {
+                              "transformerType": "getFromContext",
+                              "interpolation": "runtime",
+                              "safe": true,
+                              "referencePath": [
+                                "loan",
+                                "endDate"
+                              ]
+                            }
+                          }
+                        }
+                      },
+                      "right": {
+                        "transformerType": "returnValue",
+                        "interpolation": "runtime",
+                        "value": 8
+                      }
+                    },
+                    "errorType": "FailedToLendDocument",
+                    "message": "the User already holds 8 Books"
+                  }
+                },
+                {
                   "actionType": "createInstance",
                   "actionLabel": "lendDocument_createInstance_LendingHistoryItem",
                   "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
@@ -129,92 +179,42 @@
                     "parentUuid": "e81078f3-2de7-4301-bd79-d3a156aec149",
                     "objects": [
                       {
-                        "transformerType": "ifThenElse",
-                        "interpolation": "runtime",
-                        "if": {
-                          "transformerType": "boolExpr",
-                          "interpolation": "runtime",
-                          "operator": "<",
-                          "left": {
-                            "transformerType": "listLength",
-                            "interpolation": "runtime",
-                            "applyTo": {
-                              "transformerType": "filterList",
-                              "interpolation": "runtime",
-                              "referenceToOuterObject": "loan",
-                              "applyTo": {
-                                "transformerType": "getFromContext",
-                                "interpolation": "runtime",
-                                "referencePath": [
-                                  "userLoans",
-                                  "loans"
-                                ]
-                              },
-                              "predicate": {
-                                "transformerType": "boolExpr",
-                                "interpolation": "runtime",
-                                "operator": "isNull",
-                                "left": {
-                                  "transformerType": "getFromContext",
-                                  "interpolation": "runtime",
-                                  "safe": true,
-                                  "referencePath": [
-                                    "loan",
-                                    "endDate"
-                                  ]
-                                }
-                              }
-                            }
+                        "transformerType": "createObject",
+                        "definition": {
+                          "uuid": {
+                            "transformerType": "generateUuid"
                           },
-                          "right": {
-                            "transformerType": "returnValue",
-                            "interpolation": "runtime",
-                            "value": 8
+                          "parentName": "LendingHistoryItem",
+                          "parentUuid": "e81078f3-2de7-4301-bd79-d3a156aec149",
+                          "book": {
+                            "transformerType": "getFromParameters",
+                            "referencePath": [
+                              "payload",
+                              "book"
+                            ]
+                          },
+                          "user": {
+                            "transformerType": "getFromParameters",
+                            "referencePath": [
+                              "payload",
+                              "user"
+                            ]
+                          },
+                          "startDate": {
+                            "transformerType": "getFromParameters",
+                            "referencePath": [
+                              "payload",
+                              "startDate"
+                            ]
+                          },
+                          "note": {
+                            "transformerType": "getFromParameters",
+                            "safe": true,
+                            "referencePath": [
+                              "payload",
+                              "note"
+                            ]
                           }
-                        },
-                        "then": {
-                          "transformerType": "createObject",
-                          "definition": {
-                            "uuid": {
-                              "transformerType": "generateUuid"
-                            },
-                            "parentName": "LendingHistoryItem",
-                            "parentUuid": "e81078f3-2de7-4301-bd79-d3a156aec149",
-                            "book": {
-                              "transformerType": "getFromParameters",
-                              "referencePath": [
-                                "payload",
-                                "book"
-                              ]
-                            },
-                            "user": {
-                              "transformerType": "getFromParameters",
-                              "referencePath": [
-                                "payload",
-                                "user"
-                              ]
-                            },
-                            "startDate": {
-                              "transformerType": "getFromParameters",
-                              "referencePath": [
-                                "payload",
-                                "startDate"
-                              ]
-                            },
-                            "note": {
-                              "transformerType": "getFromParameters",
-                              "safe": true,
-                              "referencePath": [
-                                "payload",
-                                "note"
-                              ]
-                            }
-                          }
-                        },
-                        "else": {
-                          "transformerType": "returnValue",
-                          "interpolation": "runtime",
-                          "value": null
                         }
                       }
                     ]
@@ -305,8 +305,111 @@
             "payload": {
               "actionSequence": [
                 {
-                  "actionType": "createInstance",
-                  "actionLabel": "returnDocument_createInstance_LendingHistoryItem",
+                  "actionType": "compositeRunBoxedQueryAction",
+                  "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                  "actionLabel": "returnDocument_loansOfUser",
+                  "nameGivenToResult": "userLoans",
+                  "payload": {
+                    "actionType": "runBoxedQueryAction",
+                    "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                    "payload": {
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "applicationSection": "data",
+                      "query": {
+                        "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                        "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                        "pageParams": {},
+                        "extractors": {
+                          "loans": {
+                            "extractorOrCombinerType": "extractorInstancesByEntity",
+                            "applicationSection": "data",
+                            "parentName": "LendingHistoryItem",
+                            "parentUuid": "e81078f3-2de7-4301-bd79-d3a156aec149",
+                            "filter": {
+                              "attributeName": "user",
+                              "value": {
+                                "transformerType": "getFromParameters",
+                                "referencePath": [
+                                  "payload",
+                                  "user"
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "actionType": "compositeFail",
+                  "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                  "actionLabel": "returnDocument_noOpenLoan",
+                  "payload": {
+                    "condition": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "isNull",
+                      "left": {
+                        "transformerType": "find",
+                        "interpolation": "runtime",
+                        "referenceToOuterObject": "loan",
+                        "applyTo": {
+                          "transformerType": "getFromContext",
+                          "interpolation": "runtime",
+                          "referencePath": [
+                            "userLoans",
+                            "loans"
+                          ]
+                        },
+                        "predicate": {
+                          "transformerType": "boolExpr",
+                          "interpolation": "runtime",
+                          "operator": "&&",
+                          "left": {
+                            "transformerType": "boolExpr",
+                            "interpolation": "runtime",
+                            "operator": "==",
+                            "left": {
+                              "transformerType": "getFromContext",
+                              "interpolation": "runtime",
+                              "referencePath": [
+                                "loan",
+                                "book"
+                              ]
+                            },
+                            "right": {
+                              "transformerType": "getFromParameters",
+                              "referencePath": [
+                                "payload",
+                                "book"
+                              ]
+                            }
+                          },
+                          "right": {
+                            "transformerType": "boolExpr",
+                            "interpolation": "runtime",
+                            "operator": "isNull",
+                            "left": {
+                              "transformerType": "getFromContext",
+                              "interpolation": "runtime",
+                              "referencePath": [
+                                "loan",
+                                "endDate"
+                              ],
+                              "safe": true
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "errorType": "FailedToReturnDocument",
+                    "message": "the User holds no open loan of this Book"
+                  }
+                },
+                {
+                  "actionType": "updateInstance",
+                  "actionLabel": "returnDocument_closeOpenLoan",
                   "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
                   "payload": {
                     "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
@@ -314,48 +417,71 @@
                     "parentUuid": "e81078f3-2de7-4301-bd79-d3a156aec149",
                     "objects": [
                       {
-                        "transformerType": "createObject",
+                        "transformerType": "mergeIntoObject",
+                        "interpolation": "runtime",
+                        "applyTo": {
+                          "transformerType": "find",
+                          "interpolation": "runtime",
+                          "referenceToOuterObject": "loan",
+                          "applyTo": {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referencePath": [
+                              "userLoans",
+                              "loans"
+                            ]
+                          },
+                          "predicate": {
+                            "transformerType": "boolExpr",
+                            "interpolation": "runtime",
+                            "operator": "&&",
+                            "left": {
+                              "transformerType": "boolExpr",
+                              "interpolation": "runtime",
+                              "operator": "==",
+                              "left": {
+                                "transformerType": "getFromContext",
+                                "interpolation": "runtime",
+                                "referencePath": [
+                                  "loan",
+                                  "book"
+                                ]
+                              },
+                              "right": {
+                                "transformerType": "getFromParameters",
+                                "referencePath": [
+                                  "payload",
+                                  "book"
+                                ]
+                              }
+                            },
+                            "right": {
+                              "transformerType": "boolExpr",
+                              "interpolation": "runtime",
+                              "operator": "isNull",
+                              "left": {
+                                "transformerType": "getFromContext",
+                                "interpolation": "runtime",
+                                "referencePath": [
+                                  "loan",
+                                  "endDate"
+                                ],
+                                "safe": true
+                              }
+                            }
+                          }
+                        },
                         "definition": {
-                          "uuid": {
-                            "transformerType": "generateUuid"
-                          },
-                          "parentName": "LendingHistoryItem",
-                          "parentUuid": "e81078f3-2de7-4301-bd79-d3a156aec149",
-                          "book": {
-                            "transformerType": "getFromParameters",
-                            "referencePath": [
-                              "payload",
-                              "book"
-                            ]
-                          },
-                          "user": {
-                            "transformerType": "getFromParameters",
-                            "referencePath": [
-                              "payload",
-                              "user"
-                            ]
-                          },
-                          "note": {
-                            "transformerType": "getFromParameters",
-                            "safe": true,
-                            "referencePath": [
-                              "payload",
-                              "note"
-                            ]
-                          },
-                          "startDate": {
-                            "transformerType": "getFromParameters",
-                            "referencePath": [
-                              "payload",
-                              "endDate"
-                            ]
-                          },
-                          "endDate": {
-                            "transformerType": "getFromParameters",
-                            "referencePath": [
-                              "payload",
-                              "endDate"
-                            ]
+                          "transformerType": "createObject",
+                          "interpolation": "runtime",
+                          "definition": {
+                            "endDate": {
+                              "transformerType": "getFromParameters",
+                              "referencePath": [
+                                "payload",
+                                "endDate"
+                              ]
+                            }
                           }
                         }
                       }
@@ -368,7 +494,7 @@
         },
         "actionErrors": {
           "type": "literal",
-          "definition": "FailedToLendDocument"
+          "definition": "FailedToReturnDocument"
         }
       }
     ]

@@ -521,6 +521,8 @@ A chose "Fix Miroir first" after the pilot (2026-10-24). Slice 10 waits on #556 
 
 Acceptance now fails a check when a query entry is a transformer failure, rather than reading it as an empty list.
 
+Realization (2026-10-25): #556, #558, #559 and #560 landed in `_integration` with #561, which also added `compositeFail` (#557) and made each of its fields accept a transformer. #557 stays open on its MiroirTest, which waits on #554. The reference `lendDocument` now refuses the 9th loan with a `compositeFail` step (`lendDocument_lendingLimit`, `FailedToLendDocument`), on the current Lending Endpoint, so it also carries the new `returnDocument`. Acceptance: the Miroir baseline fails (2/8, 1/6), the Miroir reference passes (8/8, 6/6), the conventional reference passes (8/8, 6/6). The second pilot keeps the same tasks and `taskHash`; its runs are told apart from the first pilot's by `startedAt` (after 2026-10-25).
+
 ---
 
 ## Slice 10: full runs
