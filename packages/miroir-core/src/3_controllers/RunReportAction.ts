@@ -55,6 +55,10 @@ function failureMessage(failure: any): string {
   return innermostFailureMessage(failure);
 }
 
+/** A Domain2ElementFailed, or one the server sent back serialized. */
+const isFailure = (value: unknown): boolean =>
+  value instanceof Domain2ElementFailed || (!!value && typeof value == "object" && "queryFailure" in value);
+
 type QueryOutcome = { ok: true; value: Record<string, any> } | { ok: false; message: string };
 
 async function runQuery(
@@ -78,8 +82,13 @@ async function runQuery(
     return { ok: false, message: failureMessage(result) };
   }
   const value = result.returnedDomainElement;
-  if (value instanceof Domain2ElementFailed || (value && typeof value == "object" && "queryFailure" in value)) {
+  if (isFailure(value)) {
     return { ok: false, message: failureMessage(value) };
+  }
+  // asyncRunQuery keeps a failed combiner under its entry
+  const failedEntry = Object.entries(value ?? {}).find(([, entry]) => isFailure(entry));
+  if (failedEntry) {
+    return { ok: false, message: `${failedEntry[0]} failed: ${failureMessage(failedEntry[1])}` };
   }
   return { ok: true, value: value ?? {} };
 }

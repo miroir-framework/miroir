@@ -13,16 +13,19 @@ export interface ReportDataPart {
 
 /**
  * The boxed query of a Report or Query definition, with `pageParams` as its page parameters and no query
- * parameters, as `ReportViewWithEditor` and `useStoredQueriesResults` build it: a template query when the
- * definition has extractorTemplates, else a plain query (with no extractors when the definition has none).
+ * parameters. As `ReportViewWithEditor` builds a Report's query: a template query when the definition has
+ * extractorTemplates, else a plain query (with no extractors when the definition has none). As
+ * `useStoredQueriesResults` builds a stored Query's (`asTemplate`): always a template query, which runs the
+ * definition's extractorTemplates, combinerTemplates and runtimeTransformers only.
  */
 export function boxedQueryOfDefinition(
   definition: Record<string, any>,
   application: string,
   pageParams: Record<string, any>,
+  asTemplate = false,
 ): ReportDataPart["query"] {
   const common = { application, pageParams: { ...pageParams }, queryParams: {}, contextResults: {} };
-  if (definition.extractorTemplates) {
+  if (asTemplate || definition.extractorTemplates) {
     return {
       queryType: "boxedQueryTemplateWithExtractorCombinerTransformer",
       ...common,
@@ -41,10 +44,10 @@ export function boxedQueryOfDefinition(
 }
 
 /**
- * The queries a Report's data comes from, as the Report's page runs them: the first stored Query of
- * `runStoredQueries` (the app runs only that one), then the Report's own query. Each runs on its own, so the
- * stored Query's results never reach the Report's runtimeTransformers.
- * Throws when the stored Query is not among `queries`.
+ * The queries a Report's data comes from, as the Report's page runs them: the first of `queries` (the model's
+ * order) that `runStoredQueries` lists (the app runs only that one), then the Report's own query. Each runs on
+ * its own, so the stored Query's results never reach the Report's runtimeTransformers.
+ * Throws when `runStoredQueries` lists Queries and none is among `queries`.
  */
 export function reportDataParts(
   report: { name?: string; definition: Record<string, any> },
@@ -56,20 +59,20 @@ export function reportDataParts(
     label: report.name ? `Report ${report.name} query` : "Report query",
     query: boxedQueryOfDefinition(report.definition, application, pageParams),
   };
-  const runStoredQuery: { storedQuery?: string | null; label?: string } | undefined = (
-    report.definition.runStoredQueries ?? []
-  ).find((candidate: { storedQuery?: string | null }) => !!candidate.storedQuery);
-  if (!runStoredQuery) {
+  const listed: string[] = (report.definition.runStoredQueries ?? [])
+    .map((runStoredQuery: { storedQuery?: string | null }) => runStoredQuery.storedQuery)
+    .filter((uuid: string | null | undefined) => !!uuid);
+  if (listed.length == 0) {
     return [ownQuery];
   }
-  const storedQuery = queries.find((candidate) => candidate.uuid == runStoredQuery.storedQuery);
+  const storedQuery = queries.find((candidate) => listed.includes(candidate.uuid));
   if (!storedQuery) {
-    throw new Error(`stored Query ${runStoredQuery.label ?? ""} (${runStoredQuery.storedQuery}) not found`);
+    throw new Error(`no stored Query of runStoredQueries found (${listed.join(", ")})`);
   }
   return [
     {
       label: `stored Query ${storedQuery.name ?? storedQuery.uuid}`,
-      query: boxedQueryOfDefinition(storedQuery.definition, application, pageParams),
+      query: boxedQueryOfDefinition(storedQuery.definition, application, pageParams, true),
     },
     ownQuery,
   ];

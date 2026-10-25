@@ -114,11 +114,47 @@ const reportShowingStoredQuery = {
   },
 };
 
+/** A stored Query with combinerTemplates only, which the app runs as a template. */
+const storedGreeting = {
+  uuid: "9b3e1d5f-7a2c-4e8b-b6d4-1f3a5c7e9b2d",
+  parentUuid: ENTITY_QUERY,
+  name: "Greeting",
+  definition: { combinerTemplates: { greeting: { extractorOrCombinerType: "literal", definition: "hello" } } },
+};
+const reportShowingGreeting = {
+  uuid: "4c6e8a0b-2d4f-4a6c-8e0b-3d5f7a9c1e3b",
+  parentUuid: ENTITY_REPORT,
+  name: "Greeting",
+  definition: {
+    runStoredQueries: [{ label: "Greeting", storedQuery: storedGreeting.uuid }],
+    section: { type: "jsonReportSection", definition: { fetchedDataReference: "greeting" } },
+  },
+};
+/** Its combiner refers to an entry that does not exist. */
+const reportWithFailingCombiner = {
+  uuid: "6e8a0c2d-4f6b-4c8e-a0c2-5f7b9d1e3a5c",
+  parentUuid: ENTITY_REPORT,
+  name: "FailingCombiner",
+  definition: {
+    extractors: {},
+    combiners: {
+      missing: { extractorOrCombinerType: "extractorOrCombinerContextReference", extractorOrCombinerContextReference: "nothing" },
+    },
+    section: { type: "jsonReportSection", definition: { fetchedDataReference: "missing" } },
+  },
+};
+
 const store: Record<string, Record<string, any>[]> = {
   [ENTITY_LOAN]: loans,
   [ENTITY_USER]: users,
-  [ENTITY_REPORT]: [referenceReport, reportReadingStoredQuery, reportShowingStoredQuery],
-  [ENTITY_QUERY]: [storedOverdueLoans],
+  [ENTITY_REPORT]: [
+    referenceReport,
+    reportReadingStoredQuery,
+    reportShowingStoredQuery,
+    reportShowingGreeting,
+    reportWithFailingCombiner,
+  ],
+  [ENTITY_QUERY]: [storedOverdueLoans, storedGreeting],
 };
 
 /** A host that answers extractors from `store` and runs the query's combiners and transformers for real. */
@@ -184,6 +220,18 @@ describe("#562 runReportAction", () => {
     expect(error.errorMessage).toContain("overdueLoans");
   });
 
+  it("runs a stored Query that has combinerTemplates only", async () => {
+    const result: any = await runReport(reportShowingGreeting.uuid);
+    expect(result.status).toBe("ok");
+    expect(result.returnedDomainElement.greeting).toBe("hello");
+  });
+
+  it("fails when a combiner fails", async () => {
+    const result = await runReport(reportWithFailingCombiner.uuid);
+    expect(result).toBeInstanceOf(Action2Error);
+    expect((result as Action2Error).errorMessage).toContain("Report FailingCombiner query failed: missing failed");
+  });
+
   it("fails for a Report that is not in the model", async () => {
     const result = await runReport("00000000-0000-4000-8000-000000000000");
     expect(result).toBeInstanceOf(Action2Error);
@@ -202,6 +250,20 @@ describe("#562 reportDataParts", () => {
     expect(parts[0].query.queryParams).toEqual({});
   });
 
+  it("runs the first listed Query in the model's order, as the app does", () => {
+    const report = {
+      name: "Both",
+      definition: {
+        runStoredQueries: [
+          { label: "Greeting", storedQuery: storedGreeting.uuid },
+          { label: "OverdueLoans", storedQuery: storedOverdueLoans.uuid },
+        ],
+      },
+    };
+    const [stored] = reportDataParts(report, [storedOverdueLoans, storedGreeting], APPLICATION, pageParams);
+    expect(stored.label).toBe("stored Query OverdueLoans");
+  });
+
   it("gives a Report with no query of its own an empty one", () => {
     const [part] = reportDataParts({ name: "Empty", definition: {} }, [], APPLICATION, pageParams);
     expect(part.query).toMatchObject({ queryType: "boxedQueryWithExtractorCombinerTransformer", extractors: {} });
@@ -209,7 +271,7 @@ describe("#562 reportDataParts", () => {
 
   it("throws when the stored Query is not in the model", () => {
     expect(() => reportDataParts(reportReadingStoredQuery, [], APPLICATION, pageParams)).toThrow(
-      `stored Query OverdueLoans (${storedOverdueLoans.uuid}) not found`,
+      `no stored Query of runStoredQueries found (${storedOverdueLoans.uuid})`,
     );
   });
 
