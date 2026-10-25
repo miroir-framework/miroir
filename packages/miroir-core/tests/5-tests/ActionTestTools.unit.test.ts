@@ -145,6 +145,7 @@ describe("runMiroirActionTest", () => {
   function trackerWithAssertions(assertions: Record<string, TestAssertionResult>) {
     return {
       getCurrentActivityId: vi.fn(() => "activity-1"),
+      getCurrentTestAssertionPath: vi.fn(() => []),
       trackTest: vi.fn(async (_n: string, _p: unknown, fn: () => Promise<unknown>) => fn()),
       setTestAssertionResult: vi.fn(),
       getTestAssertionsResults: vi.fn(() => ({

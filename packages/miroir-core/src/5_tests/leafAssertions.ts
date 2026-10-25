@@ -4,7 +4,10 @@ import type {
   TestResult,
   TestSuiteResult,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import type { MiroirActivityTrackerInterface } from "../0_interfaces/3_controllers/MiroirActivityTrackerInterface";
+import type {
+  MiroirActivityTrackerInterface,
+  TestAssertionPath,
+} from "../0_interfaces/3_controllers/MiroirActivityTrackerInterface";
 
 /** A MiroirTest leaf whose composite action ends with `compositeRunTestAssertion` steps. */
 export type LeafWithAssertions = {
@@ -46,19 +49,38 @@ function findTrackedTest(suiteResult: TestSuiteResult, testLabel: string): TestR
   return undefined;
 }
 
+/** The results recorded under the test suites of `scope`, none when nothing was recorded there. */
+function trackedSuite(miroirActivityTracker: MiroirActivityTrackerInterface, scope: TestAssertionPath): TestSuiteResult {
+  const suites: TestAssertionPath = [];
+  for (const element of scope) {
+    if (!element.testSuite) {
+      break;
+    }
+    suites.push({ testSuite: element.testSuite });
+  }
+  try {
+    return miroirActivityTracker.getTestAssertionsResults(suites);
+  } catch {
+    // getTestAssertionsResults throws on a suite that recorded nothing
+    return {} as TestSuiteResult;
+  }
+}
+
 /**
  * The first assertion of the leaf that failed or did not run, as the activity tracker recorded it,
  * with the message to report. A composite action records a failed assertion in the activity tracker
- * and still returns ok, so the status alone does not tell (#554). Assertions are looked up in the
- * test labelled `testLabel` first.
+ * and still returns ok, so the status alone does not tell (#554). Assertions are looked up under the
+ * test suites of `scope` only, the tracker path the leaf started at, so that a leaf with the same labels
+ * in another suite is not read; and in the test labelled `testLabel` first.
  */
 export function failedLeafAssertion(
   leaf: LeafWithAssertions,
   miroirActivityTracker: MiroirActivityTrackerInterface,
   failureLabel: string,
   testLabel?: string,
+  scope: TestAssertionPath = [],
 ): { message: string; tracked?: TestAssertionResult } | undefined {
-  const trackedRoot = miroirActivityTracker.getTestAssertionsResults([]);
+  const trackedRoot = trackedSuite(miroirActivityTracker, scope);
   const trackedTest = testLabel ? findTrackedTest(trackedRoot, testLabel) : undefined;
   for (const assertion of leaf.testCompositeActionAssertions ?? []) {
     // the list may also hold the queries the assertions read
@@ -91,8 +113,9 @@ export function expectLeafAssertionsPassed(
   miroirActivityTracker: MiroirActivityTrackerInterface,
   failureLabel: string,
   testLabel?: string,
+  scope?: TestAssertionPath,
 ): void {
-  const failure = failedLeafAssertion(leaf, miroirActivityTracker, failureLabel, testLabel);
+  const failure = failedLeafAssertion(leaf, miroirActivityTracker, failureLabel, testLabel, scope);
   if (failure) {
     throw new Error(failure.message);
   }

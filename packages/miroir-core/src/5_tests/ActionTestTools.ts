@@ -156,6 +156,8 @@ export async function runMiroirActionTest(
   };
   const remappedLeaf = remapActionTestLeafForRunTarget(leaf, runTarget);
   const testAction = resolveActionTestLeaf({ leaf: remappedLeaf, applicationUuid });
+  // the leaf's assertions are recorded under the test suites the tracker is in now
+  const trackerScope = [...miroirActivityTracker.getCurrentTestAssertionPath()];
   const result = await runCompositeActionTestParams(
     domainController,
     testAction,
@@ -167,7 +169,7 @@ export async function runMiroirActionTest(
   // #554: a failed assertion is recorded in the tracker, the composite action still returns ok
   const failedAssertion =
     result?.status === "ok"
-      ? failedLeafAssertion(leaf, miroirActivityTracker, "assertion", leaf.miroirTestLabel)
+      ? failedLeafAssertion(leaf, miroirActivityTracker, "assertion", leaf.miroirTestLabel, trackerScope)
       : undefined;
   miroirActivityTracker.setTestAssertionResult(testAssertionPath, {
     assertionName: leaf.miroirTestLabel,

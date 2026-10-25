@@ -166,6 +166,8 @@ export async function runMiroirRunnerTest(
   if (!testAssertionPath) {
     throw new Error("runMiroirRunnerTestInMemory called without testAssertionPath");
   }
+  // the leaf's assertions are recorded under the test suites the tracker is in now
+  const trackerScope = [...miroirActivityTracker.getCurrentTestAssertionPath()];
 
   const runnerContext = executionEnvironment.runnerTestContext;
   if (!runnerContext) {
@@ -244,7 +246,7 @@ export async function runMiroirRunnerTest(
         currentModelEnvironment,
         mergedTestParams,
       );
-      expectLeafAssertionsPassed(leaf, miroirActivityTracker, "post-submit assertion", label);
+      expectLeafAssertionsPassed(leaf, miroirActivityTracker, "post-submit assertion", label, trackerScope);
     }
     miroirActivityTracker.setTestAssertionResult(testAssertionPath, {
       assertionName: leaf.miroirTestLabel,
@@ -280,6 +282,7 @@ export async function runMiroirRunnerTest(
     miroirActivityTracker,
     "assertion",
     leaf.testCompositeActionLabel ?? "no_testCompositeActionLabel_given",
+    trackerScope,
   );
   miroirActivityTracker.setTestAssertionResult(testAssertionPath, {
     assertionName: leaf.miroirTestLabel,
