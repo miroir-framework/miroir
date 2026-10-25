@@ -1,5 +1,6 @@
 import type { MiroirActivity } from "../0_interfaces/3_controllers/MiroirActivityTrackerInterface";
 import type { MiroirEvent } from "../3_controllers/MiroirEventService";
+import { circularReplacer } from "../tools";
 import type { RunExportActivity } from "./runLogExport";
 
 // #490: "Export failed test logs" of the MiroirTest run panel. One JSON file, one entry per failed
@@ -154,36 +155,6 @@ function descendantActivities(
   return result;
 }
 
-/**
- * JSON.stringify replacer that writes "[circular]" for a reference to an ancestor (an object met
- * twice outside its own subtree is written twice), and text for bigints, functions and errors.
- */
-function jsonSafeReplacer(): (this: unknown, key: string, value: unknown) => unknown {
-  const ancestors: unknown[] = [];
-  return function (this: unknown, _key: string, value: unknown) {
-    if (typeof value === "bigint") {
-      return value.toString();
-    }
-    if (typeof value === "function") {
-      return `[function ${value.name || "anonymous"}]`;
-    }
-    if (value instanceof Error) {
-      return value.stack ?? `${value.name}: ${value.message}`;
-    }
-    if (value === null || typeof value !== "object") {
-      return value;
-    }
-    while (ancestors.length > 0 && ancestors[ancestors.length - 1] !== this) {
-      ancestors.pop();
-    }
-    if (ancestors.includes(value)) {
-      return "[circular]";
-    }
-    ancestors.push(value);
-    return value;
-  };
-}
-
 export function formatLogArg(arg: unknown): string {
   let text: string;
   if (typeof arg === "string") {
@@ -192,7 +163,7 @@ export function formatLogArg(arg: unknown): string {
     text = arg.stack ?? `${arg.name}: ${arg.message}`;
   } else {
     try {
-      text = JSON.stringify(arg, jsonSafeReplacer()) ?? String(arg);
+      text = JSON.stringify(arg, circularReplacer()) ?? String(arg);
     } catch {
       text = String(arg);
     }
@@ -204,7 +175,7 @@ export function formatLogArg(arg: unknown): string {
 
 /** The export as indented JSON; assertion values may hold circular references. */
 export function stringifyFailedTestLogsExport(exported: FailedTestLogsExport): string {
-  return JSON.stringify(exported, jsonSafeReplacer(), 2);
+  return JSON.stringify(exported, circularReplacer(), 2);
 }
 
 function toRunExportActivity(activity: MiroirActivity): RunExportActivity {

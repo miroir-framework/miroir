@@ -70,15 +70,34 @@ export function getMiroirEnvironmentMode(): "dev" | "prod" {
   return "prod";
 }
 
-export const circularReplacer = () => {
-  const seen = new WeakSet();
-  return (key: any, value: object | null) => {
-    if (typeof value === "object" && value !== null) {
-      if (seen.has(value)) {
-        return;
-      }
-      seen.add(value);
+/**
+ * `JSON.stringify` replacer that writes "[circular]" for a reference to an ancestor (an object
+ * met twice outside its own subtree is written twice), and text for bigints, functions and
+ * errors, which `JSON.stringify` would otherwise reject or drop. One replacer per call.
+ */
+export const circularReplacer = (): ((this: unknown, key: string, value: unknown) => unknown) => {
+  const ancestors: unknown[] = [];
+  return function (this: unknown, _key: string, value: unknown) {
+    if (typeof value === "bigint") {
+      return value.toString();
     }
+    if (typeof value === "function") {
+      return `[function ${value.name || "anonymous"}]`;
+    }
+    if (value instanceof Error) {
+      return value.stack ?? `${value.name}: ${value.message}`;
+    }
+    if (value === null || typeof value !== "object") {
+      return value;
+    }
+    // `this` is the object holding `value`: drop the ancestors of finished siblings
+    while (ancestors.length > 0 && ancestors[ancestors.length - 1] !== this) {
+      ancestors.pop();
+    }
+    if (ancestors.includes(value)) {
+      return "[circular]";
+    }
+    ancestors.push(value);
     return value;
   };
 };
