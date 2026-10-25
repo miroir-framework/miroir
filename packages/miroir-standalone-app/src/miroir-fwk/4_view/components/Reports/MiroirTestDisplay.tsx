@@ -8,6 +8,7 @@ import {
   type LoggerInterface,
   type MiroirTestDefinition,
   type MiroirTestRunFilter,
+  type TestRunLogSnapshot,
   type ViewParams,
 } from "miroir-core";
 
@@ -90,6 +91,8 @@ const MiroirTestDisplayContent = (props: MiroirTestSectionProps) => {
   // the sandbox's run start and end, the start taking the settings next to the Run button
   const componentTestRun = useComponentTestRunPreparation();
   const [miroirTestResultsData, setMiroirTestResultsData] = useState<TestResultDataAndSelect[]>([]);
+  // #490: logs of the last run, for "Export failed test logs"
+  const [lastRun, setLastRun] = useState<{ runMode: string; runLogs?: TestRunLogSnapshot }>();
   const [testSelectionState, setTestSelectionsState] = useState<TestSelectionState | undefined>(
     undefined,
   );
@@ -134,7 +137,13 @@ const MiroirTestDisplayContent = (props: MiroirTestSectionProps) => {
     return buildTestFilter(testSelectionState, miroirTestResultsData) ?? props.testFilter;
   }, [testSelectionState, miroirTestResultsData, props.testFilter]);
 
-  const handleTestComplete = (testSuiteKey: string, structuredResults: MiroirTestResultData[]) => {
+  const handleTestComplete = (
+    runMode: "unit" | "integration",
+    testSuiteKey: string,
+    structuredResults: MiroirTestResultData[],
+    runLogs?: TestRunLogSnapshot,
+  ) => {
+    setLastRun({ runMode, runLogs });
     const withSelection: TestResultDataAndSelect[] = structuredResults.map((result) => ({
       ...result,
       selected: false,
@@ -194,7 +203,7 @@ const MiroirTestDisplayContent = (props: MiroirTestSectionProps) => {
             testSuiteKey={testLabel}
             useSnackBar={useSnackBar}
             testFilter={currentTestFilter}
-            onTestComplete={handleTestComplete}
+            onTestComplete={(...args) => handleTestComplete("unit", ...args)}
             runMode="unit"
             beforeRun={componentTestRun.prepareComponentTests}
             afterRun={componentTestRun.finishComponentTests}
@@ -230,7 +239,7 @@ const MiroirTestDisplayContent = (props: MiroirTestSectionProps) => {
             testSuiteKey={integrationSuiteKey ?? testLabel}
             useSnackBar={useSnackBar}
             testFilter={currentTestFilter}
-            onTestComplete={handleTestComplete}
+            onTestComplete={(...args) => handleTestComplete("integration", ...args)}
             runMode="integration"
             integrationProfileName={integrationPreferences.profileName}
             integrationRunTargetMode={integrationPreferences.runTargetMode}
@@ -266,6 +275,8 @@ const MiroirTestDisplayContent = (props: MiroirTestSectionProps) => {
         testSelectionsState={testSelectionState}
         setTestSelectionsState={setTestSelectionsState}
         linkResultsToEditor={true}
+        runLogs={lastRun?.runLogs}
+        runMode={lastRun?.runMode}
       />
     </div>
   );

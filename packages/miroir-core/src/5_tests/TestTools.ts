@@ -1126,7 +1126,7 @@ export const displayTestSuiteResultsDetails = async (
         }
         log.info(chalk.red("    Actual:"));
         try {
-          log.info("   ", JSON.stringify(item.assertion.assertionActualValue, circularReplacer, 4));
+          log.info("   ", JSON.stringify(item.assertion.assertionActualValue, circularReplacer(), 4));
         } catch (e) {
           log.info("    (unserializable)");
         }
