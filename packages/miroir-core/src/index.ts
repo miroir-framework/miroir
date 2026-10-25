@@ -1113,6 +1113,7 @@ export {
   createThrowingExpect,
   describe,
   expect,
+  failedExpectationMessage,
   MiroirAssertionError,
   TestFramework,
   type ThrowingDomMatchers,

@@ -14,6 +14,7 @@ import type {
   TestAssertionPath,
 } from "../0_interfaces/3_controllers/MiroirActivityTrackerInterface";
 import { runCompositeActionTestParams } from "./CompositeActionTestTools.js";
+import { failedLeafAssertion } from "./leafAssertions.js";
 import type { MiroirTestExecutionEnvironment } from "./MiroirTestTools";
 import type { TestbedUuids } from "./TestbedUuids.js";
 
@@ -163,9 +164,23 @@ export async function runMiroirActionTest(
     compositeContext?.testParams,
   );
 
-  localVitest.expect(result?.status, `${leaf.miroirTestLabel} failed`).toBe("ok");
+  // #554: a failed assertion is recorded in the tracker, the composite action still returns ok
+  const failedAssertion =
+    result?.status === "ok"
+      ? failedLeafAssertion(leaf, miroirActivityTracker, "assertion", leaf.miroirTestLabel)
+      : undefined;
   miroirActivityTracker.setTestAssertionResult(testAssertionPath, {
     assertionName: leaf.miroirTestLabel,
-    assertionResult: result?.status === "ok" ? "ok" : "error",
+    assertionResult: result?.status === "ok" && !failedAssertion ? "ok" : "error",
+    ...(failedAssertion?.tracked
+      ? {
+          assertionExpectedValue: failedAssertion.tracked.assertionExpectedValue,
+          assertionActualValue: failedAssertion.tracked.assertionActualValue,
+        }
+      : {}),
   });
+  localVitest.expect(result?.status, `${leaf.miroirTestLabel} failed`).toBe("ok");
+  if (failedAssertion) {
+    throw new Error(failedAssertion.message);
+  }
 }
