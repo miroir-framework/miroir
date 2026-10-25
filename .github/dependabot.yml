@@ -31,6 +31,10 @@ updates:
         update-types: ["version-update:semver-major"]
       - dependency-name: "ag-grid-react"
         update-types: ["version-update:semver-major"]
+      # @copilotkit/* pins an exact @ag-ui/* version, and miroir-ai hands its agents to CopilotRuntime:
+      # a different @ag-ui/client gives two AbstractAgent types and breaks the build (#547). Bump
+      # @ag-ui/* in miroir-ai together with CopilotKit, to the version it pins.
+      - dependency-name: "@ag-ui/*"
   - package-ecosystem: github-actions
     directories:
       - /
