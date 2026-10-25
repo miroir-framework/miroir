@@ -61,6 +61,10 @@ export function failedLeafAssertion(
   const trackedRoot = miroirActivityTracker.getTestAssertionsResults([]);
   const trackedTest = testLabel ? findTrackedTest(trackedRoot, testLabel) : undefined;
   for (const assertion of leaf.testCompositeActionAssertions ?? []) {
+    // the list may also hold the queries the assertions read
+    if (assertion.actionType !== "compositeRunTestAssertion") {
+      continue;
+    }
     // the tracker records an assertion under its testLabel
     const assertionName = assertion.payload.testLabel;
     const tracked =

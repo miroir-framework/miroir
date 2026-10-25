@@ -350,4 +350,39 @@ describe("runMiroirActionTest", () => {
       ),
     ).rejects.toThrow('actionTest "Refresh all Instances" assertion "checkNumberOfBooks" did not run');
   });
+
+  it("checks only the assertions among the leaf's assertion steps (#554)", async () => {
+    const tracker = trackerWithAssertions({
+      checkNumberOfBooks: { assertionName: "checkNumberOfBooks", assertionResult: "ok" },
+    });
+    const leafWithQueryStep: MiroirTestForAction = {
+      ...minimalLeaf,
+      testCompositeActionAssertions: [
+        {
+          actionType: "compositeRunBoxedQueryAction",
+          endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+          actionLabel: "queryBooks",
+          nameGivenToResult: "books",
+        } as any,
+        ...(minimalLeaf.testCompositeActionAssertions ?? []),
+      ],
+    };
+    const path = [{ test: "t" }, { testAssertion: "t" }];
+
+    await runMiroirActionTest(
+      vitest,
+      ["action"],
+      undefined,
+      leafWithQueryStep,
+      tracker as any,
+      path,
+      false,
+      libraryExecutionEnvironment(vi.fn(async () => ({ status: "ok" }))),
+    );
+
+    expect(tracker.setTestAssertionResult).toHaveBeenCalledWith(
+      path,
+      expect.objectContaining({ assertionResult: "ok" }),
+    );
+  });
 });
