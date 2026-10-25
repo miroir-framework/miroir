@@ -8,6 +8,7 @@ import type {
   MiroirTestSuite,
   Runner,
   TestbedUuids,
+  TestRunLogSnapshot,
   TestSuiteResult,
 } from "miroir-core";
 
@@ -68,4 +69,6 @@ export type UiIntegrationTestRunResult = {
   inspector: UiIntegrationTestRunInspectorSnapshot;
   /** Dedicated integ tracker results for UI report panels (B5). */
   testSuiteResults?: TestSuiteResult;
+  /** #490: activities and events of the run's dedicated tracker, for "Export failed test logs". */
+  runLogs?: TestRunLogSnapshot;
 };

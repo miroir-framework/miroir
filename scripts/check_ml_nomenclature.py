@@ -34,6 +34,7 @@ EXCLUDED_PREFIXES = (
     "graphify-out/",
     "scripts/check_ml_nomenclature.py",
     "docs/reference/ml-nomenclature.md",  # the old-name → new-name migration table
+    "docs/tutorials/libraryTutorial/bundles-",  # dated application exports, kept in the format of their date
 )
 EXCLUDED_PARTS = ("node_modules", "dist")
 

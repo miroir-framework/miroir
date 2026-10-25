@@ -1,0 +1,20 @@
+{
+  "uuid": "ed18922d-c7e9-4e59-9287-13960b964fa8",
+  "parentName": "BundleSizeMeasurement",
+  "parentUuid": "90d603f9-58f8-4ac4-b2eb-cb1d718e8b3b",
+  "application": "miroir-standalone-app-electron",
+  "measuredAt": "2026-10-25T08:49:17.082Z",
+  "eagerGzipBytes": 982595,
+  "baseline": 982595,
+  "previousBaseline": 962736,
+  "baselineChange": 19859,
+  "reason": "#562 runReportAction: the action's schema in the DomainEndpoint and the domainAction unions, and its implementation in miroir-core, loaded eagerly by the Electron main process (about 2.7 kB gzipped, on top of later additions that stayed under the 2 % tolerance)",
+  "gitCommit": "8469771b911bca1aa288c02bb6790278ee6529a1",
+  "gitBranch": "claude/project-thread-ouyo1m",
+  "miroirVersion": "0.5.0-rc.1",
+  "eagerChunks": 8,
+  "eagerRawBytes": 5362068,
+  "totalChunks": 42,
+  "totalRawBytes": 16243135,
+  "totalGzipBytes": 3376259
+}
