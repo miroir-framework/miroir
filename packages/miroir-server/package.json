@@ -47,7 +47,7 @@
     "cross-fetch": "4.1.0",
     "diff": "9.0.0",
     "express": "5.3.0",
-    "isomorphic-git": "1.44.2",
+    "isomorphic-git": "1.44.3",
     "json-diff": "1.0.6",
     "loglevelnext": "6.0.0",
     "miroir-ai": "*",
