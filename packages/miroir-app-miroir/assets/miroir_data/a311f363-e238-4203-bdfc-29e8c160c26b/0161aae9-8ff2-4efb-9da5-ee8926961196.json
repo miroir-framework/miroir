@@ -2483,11 +2483,13 @@
                 ],
                 "expectedValue": [
                   "compositeActionSequence",
+                  "compositeFail",
                   "compositeRunBoxedQueryAction",
                   "compositeRunBoxedQueryTemplateAction",
                   "connectExternalService",
                   "prepareOpenApiDocument",
                   "probeExternalService",
+                  "runReportAction",
                   "setExternalServiceCredential",
                   "transactionalInstanceAction"
                 ]
@@ -2537,12 +2539,14 @@
                 ],
                 "expectedValue": [
                   "compositeActionSequence",
+                  "compositeFail",
                   "compositeRunBoxedQueryAction",
                   "compositeRunBoxedQueryTemplateAction",
                   "compositeRunTestAssertion",
                   "connectExternalService",
                   "prepareOpenApiDocument",
                   "probeExternalService",
+                  "runReportAction",
                   "setExternalServiceCredential",
                   "transactionalInstanceAction"
                 ]

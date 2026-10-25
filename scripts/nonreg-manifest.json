@@ -1378,6 +1378,46 @@
       }
     },
     {
+      "id": "integ-runner.createEntity",
+      "scopes": ["actions", "runners"],
+      "tier": "default",
+      "title": "MiroirTest integ — runner.createEntity (default Reports and menu link, #493)",
+      "requires": "storage",
+      "argv": [
+        "npm",
+        "run",
+        "testMiroir",
+        "-w",
+        "miroir-standalone-app",
+        "--",
+        "--profile",
+        "{profile}",
+        "--suites",
+        "runner.createEntity",
+        "--mode",
+        "integ"
+      ],
+      "shared": {
+        "group": "standalone-app-runner-suites",
+        "argv": [
+          "npm",
+          "run",
+          "testMiroir",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--profile",
+          "{profile}",
+          "--mode",
+          "integ",
+          "--shared"
+        ],
+        "suites": [
+          "runner.createEntity"
+        ]
+      }
+    },
+    {
       "id": "integ-action.scenario.evolutionTrace",
       "scopes": ["actions"],
       "tier": "default",
@@ -2305,6 +2345,22 @@
         "miroir-standalone-app",
         "--",
         "playPause.443"
+      ]
+    },
+    {
+      "id": "unit-490-export-failed-test-logs",
+      "scopes": ["ui"],
+      "tier": "unit",
+      "title": "#490 Export failed test logs button of the MiroirTest run panel: hidden without failures, JSON with the failed tests and their logs",
+      "requires": "none",
+      "argv": [
+        "npm",
+        "run",
+        "testByFile",
+        "-w",
+        "miroir-standalone-app",
+        "--",
+        "exportFailedTestLogsButton.490"
       ]
     },
     {

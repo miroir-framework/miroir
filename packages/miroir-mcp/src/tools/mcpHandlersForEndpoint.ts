@@ -20,6 +20,8 @@ import {
   type MiroirModelEnvironment,
   type SelfApplication,
   mlToZodTextAndZodSchema,
+  metaModelEntities,
+  rejectInstancesNotMatchingTheirEntity,
 } from "miroir-core";
 import { defaultMiroirMetaModel,  } from "miroir-app-miroir";
 import { deployment_Miroir } from "miroir-app-admin";
@@ -265,8 +267,15 @@ export async function handleMcpAction(
       ),
     );
 
+    // #558: an agent's instance that its Entity's mlSchema rejects is refused, naming what does not match
+    const rejectedInstance = rejectInstancesNotMatchingTheirEntity(
+      action,
+      [...(defaultLibraryModelEnvironment.currentModel?.entities ?? []), ...metaModelEntities],
+      defaultLibraryModelEnvironment, // the action's own model, where an Entity's schemaReferences resolve
+    );
+
     // Execute via DomainController
-    const result: Action2VoidReturnType = await domainController.handleAction(
+    const result: Action2VoidReturnType = rejectedInstance ?? await domainController.handleAction(
       action,
       applicationDeploymentMap,
       defaultLibraryModelEnvironment as any as MiroirModelEnvironment, // defaultMiroirModelEnvironment,

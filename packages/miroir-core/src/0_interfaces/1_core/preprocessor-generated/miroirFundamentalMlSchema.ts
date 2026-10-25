@@ -25636,6 +25636,122 @@ export const miroirFundamentalMlSchema = {
                     "canBeTemplate": false
                   }
                 },
+                "definition": "compositeFail"
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "payload": {
+                "type": "object",
+                "tag": {
+                  "value": {
+                    "description": "#557: stops the composite action with this error when `condition` holds; the steps after it do not run."
+                  }
+                },
+                "definition": {
+                  "condition": {
+                    "type": "boolean",
+                    "tag": {
+                      "value": {
+                        "description": "The step fails when this is true: a runtime transformer such as boolExpr, usually reading an earlier step's result.",
+                        "canBeTemplate": true
+                      }
+                    }
+                  },
+                  "errorType": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "description": "One of the action's actionErrors.",
+                        "canBeTemplate": true
+                      }
+                    }
+                  },
+                  "message": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false,
+                    "description": "#562: Run a Report's queries as the app does when it displays the Report, and return the Report's data. One stored Query (the app runs only the first, in the model's order, of those runStoredQueries lists; as a template, so only its extractorTemplates, combinerTemplates and runtimeTransformers) and the Report's own query (extractors or extractorTemplates, combiners, runtimeTransformers) run separately, both with the page parameters application, deploymentUuid, applicationSection (data) and reportUuid plus `parameters`, which transformers read with getFromParameters. A stored Query's results are therefore not visible to the Report's own runtimeTransformers. Their entries are merged, the Report's own query winning. The Report's reportParameters and the args of runStoredQueries are not read. A part that fails makes the action fail, naming the part and the innermost failure."
+                  }
+                },
+                "definition": "runReportAction"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
+              },
+              "payload": {
+                "type": "object",
+                "definition": {
+                  "application": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Application",
+                        "description": "The application whose model holds the Report."
+                      }
+                    }
+                  },
+                  "report": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Report",
+                        "description": "The uuid of the Report to run."
+                      }
+                    }
+                  },
+                  "parameters": {
+                    "type": "record",
+                    "optional": true,
+                    "definition": {
+                      "type": "any"
+                    },
+                    "tag": {
+                      "value": {
+                        "description": "The parameters the Report's page would carry in its URL, such as a Query parameter."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false
+                  }
+                },
                 "definition": "connectExternalService"
               },
               "actionLabel": {
@@ -40142,6 +40258,192 @@ export const miroirFundamentalMlSchema = {
                     "canBeTemplate": false
                   }
                 },
+                "definition": "compositeFail"
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "payload": {
+                "type": "object",
+                "tag": {
+                  "value": {
+                    "description": "#557: stops the composite action with this error when `condition` holds; the steps after it do not run.",
+                    "isTemplate": true
+                  }
+                },
+                "definition": {
+                  "condition": {
+                    "type": "union",
+                    "tag": {
+                      "value": {
+                        "description": "The step fails when this is true: a runtime transformer such as boolExpr, usually reading an earlier step's result.",
+                        "canBeTemplate": true,
+                        "isTemplate": true
+                      }
+                    },
+                    "discriminator": [
+                      "transformerType",
+                      "interpolation"
+                    ],
+                    "definition": [
+                      {
+                        "type": "boolean",
+                        "tag": {
+                          "value": {
+                            "description": "The step fails when this is true: a runtime transformer such as boolExpr, usually reading an earlier step's result.",
+                            "canBeTemplate": true
+                          }
+                        }
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          "relativePath": "coreTransformerForBuildPlusRuntime"
+                        }
+                      }
+                    ]
+                  },
+                  "errorType": {
+                    "type": "union",
+                    "tag": {
+                      "value": {
+                        "description": "One of the action's actionErrors.",
+                        "canBeTemplate": true,
+                        "isTemplate": true
+                      }
+                    },
+                    "discriminator": [
+                      "transformerType",
+                      "interpolation"
+                    ],
+                    "definition": [
+                      {
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "description": "One of the action's actionErrors.",
+                            "canBeTemplate": true
+                          }
+                        }
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          "relativePath": "coreTransformerForBuildPlusRuntime"
+                        }
+                      }
+                    ]
+                  },
+                  "message": {
+                    "type": "union",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": true,
+                        "isTemplate": true
+                      }
+                    },
+                    "discriminator": [
+                      "transformerType",
+                      "interpolation"
+                    ],
+                    "definition": [
+                      {
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "canBeTemplate": true
+                          }
+                        }
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          "relativePath": "coreTransformerForBuildPlusRuntime"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false,
+                    "description": "#562: Run a Report's queries as the app does when it displays the Report, and return the Report's data. One stored Query (the app runs only the first, in the model's order, of those runStoredQueries lists; as a template, so only its extractorTemplates, combinerTemplates and runtimeTransformers) and the Report's own query (extractors or extractorTemplates, combiners, runtimeTransformers) run separately, both with the page parameters application, deploymentUuid, applicationSection (data) and reportUuid plus `parameters`, which transformers read with getFromParameters. A stored Query's results are therefore not visible to the Report's own runtimeTransformers. Their entries are merged, the Report's own query winning. The Report's reportParameters and the args of runStoredQueries are not read. A part that fails makes the action fail, naming the part and the innermost failure."
+                  }
+                },
+                "definition": "runReportAction"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
+              },
+              "payload": {
+                "type": "object",
+                "definition": {
+                  "application": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Application",
+                        "description": "The application whose model holds the Report."
+                      }
+                    }
+                  },
+                  "report": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Report",
+                        "description": "The uuid of the Report to run."
+                      }
+                    }
+                  },
+                  "parameters": {
+                    "type": "record",
+                    "optional": true,
+                    "definition": {
+                      "type": "any"
+                    },
+                    "tag": {
+                      "value": {
+                        "description": "The parameters the Report's page would carry in its URL, such as a Query parameter.",
+                        "isTemplate": true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false
+                  }
+                },
                 "definition": "connectExternalService"
               },
               "actionLabel": {
@@ -46941,6 +47243,192 @@ export const miroirFundamentalMlSchema = {
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion"
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false
+                  }
+                },
+                "definition": "compositeFail"
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "payload": {
+                "type": "object",
+                "tag": {
+                  "value": {
+                    "description": "#557: stops the composite action with this error when `condition` holds; the steps after it do not run.",
+                    "isTemplate": true
+                  }
+                },
+                "definition": {
+                  "condition": {
+                    "type": "union",
+                    "tag": {
+                      "value": {
+                        "description": "The step fails when this is true: a runtime transformer such as boolExpr, usually reading an earlier step's result.",
+                        "canBeTemplate": true,
+                        "isTemplate": true
+                      }
+                    },
+                    "discriminator": [
+                      "transformerType",
+                      "interpolation"
+                    ],
+                    "definition": [
+                      {
+                        "type": "boolean",
+                        "tag": {
+                          "value": {
+                            "description": "The step fails when this is true: a runtime transformer such as boolExpr, usually reading an earlier step's result.",
+                            "canBeTemplate": true
+                          }
+                        }
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          "relativePath": "coreTransformerForBuildPlusRuntime"
+                        }
+                      }
+                    ]
+                  },
+                  "errorType": {
+                    "type": "union",
+                    "tag": {
+                      "value": {
+                        "description": "One of the action's actionErrors.",
+                        "canBeTemplate": true,
+                        "isTemplate": true
+                      }
+                    },
+                    "discriminator": [
+                      "transformerType",
+                      "interpolation"
+                    ],
+                    "definition": [
+                      {
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "description": "One of the action's actionErrors.",
+                            "canBeTemplate": true
+                          }
+                        }
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          "relativePath": "coreTransformerForBuildPlusRuntime"
+                        }
+                      }
+                    ]
+                  },
+                  "message": {
+                    "type": "union",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": true,
+                        "isTemplate": true
+                      }
+                    },
+                    "discriminator": [
+                      "transformerType",
+                      "interpolation"
+                    ],
+                    "definition": [
+                      {
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "canBeTemplate": true
+                          }
+                        }
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          "relativePath": "coreTransformerForBuildPlusRuntime"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false,
+                    "description": "#562: Run a Report's queries as the app does when it displays the Report, and return the Report's data. One stored Query (the app runs only the first, in the model's order, of those runStoredQueries lists; as a template, so only its extractorTemplates, combinerTemplates and runtimeTransformers) and the Report's own query (extractors or extractorTemplates, combiners, runtimeTransformers) run separately, both with the page parameters application, deploymentUuid, applicationSection (data) and reportUuid plus `parameters`, which transformers read with getFromParameters. A stored Query's results are therefore not visible to the Report's own runtimeTransformers. Their entries are merged, the Report's own query winning. The Report's reportParameters and the args of runStoredQueries are not read. A part that fails makes the action fail, naming the part and the innermost failure."
+                  }
+                },
+                "definition": "runReportAction"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
+              },
+              "payload": {
+                "type": "object",
+                "definition": {
+                  "application": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Application",
+                        "description": "The application whose model holds the Report."
+                      }
+                    }
+                  },
+                  "report": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Report",
+                        "description": "The uuid of the Report to run."
+                      }
+                    }
+                  },
+                  "parameters": {
+                    "type": "record",
+                    "optional": true,
+                    "definition": {
+                      "type": "any"
+                    },
+                    "tag": {
+                      "value": {
+                        "description": "The parameters the Report's page would carry in its URL, such as a Query parameter.",
+                        "isTemplate": true
+                      }
+                    }
+                  }
                 }
               }
             }
