@@ -1,6 +1,7 @@
 import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import { Action2Error } from "../0_interfaces/2_domain/DomainElement";
 import type { ActionImplementationHandler } from "../0_interfaces/3_controllers/DomainControllerActionHost";
+import { handleAction_runReportAction } from "./RunReportAction";
 
 /**
  * #341: library implementations of Miroir actions, by `inMemoryImplementationFunctionName`.
@@ -117,6 +118,7 @@ export const miroirActionImplementations: Record<string, ActionImplementationHan
       {},
       context.principal,
     ),
+  handleAction_runReportAction,
   handleAction_connectExternalService: (host, action, context) =>
     host.handleConnectExternalService(action, context.applicationDeploymentMap, context.principal),
   handleAction_prepareOpenApiDocument: (host, action) => host.handlePrepareOpenApiDocument(action),

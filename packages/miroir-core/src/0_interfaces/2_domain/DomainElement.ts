@@ -192,6 +192,7 @@ export type ActionErrorType =
 | "FailedToResolveAction"
 | "FailedToResolveParentUuid"
 | "FailedToRunBoxedExtractorOrQueryAction"
+| "FailedToRunReport"
 | "FailedToUpsertInstance"
 | "FailedToUpdateInstance"
 | "FailedToSetupTest"

@@ -114,6 +114,7 @@ const expectedActionTypesByEndpoint: Record<string, string[]> = {
     "compositeRunBoxedQueryTemplateAction",
     "compositeRunTestAssertion",
     "compositeFail",
+    "runReportAction",
     "connectExternalService",
     "prepareOpenApiDocument",
     "probeExternalService",
