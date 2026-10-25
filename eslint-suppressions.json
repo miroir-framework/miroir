@@ -466,9 +466,6 @@
   "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Buttons/RunAllMiroirTestsButton.tsx": {
     "miroir/action-result": {
       "count": 1
-    },
-    "miroir/type-escape": {
-      "count": 1
     }
   },
   "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Buttons/RunMiroirTestSuiteButton.tsx": {
