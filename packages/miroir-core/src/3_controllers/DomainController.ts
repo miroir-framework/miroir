@@ -77,7 +77,7 @@ import {
   ModelActionResetModel,
   RunBoxedQueryAction,
   RunBoxedQueryTemplateAction,
-  TestAssertion,
+  CompositeRunTestAssertion,
   TestBuildPlusRuntimeCompositeAction,
   TestBuildPlusRuntimeCompositeActionSuite,
   TestCompositeAction,
@@ -149,6 +149,13 @@ import {
 } from "../2_domain/evolutionTraceRuntime.js";
 import type { EvolutionTraceableAction } from "../2_domain/evolutionTraceWriter.js";
 import { resolveCompositeActionTemplate } from "../2_domain/ResolveCompositeActionTemplate";
+import {
+  attachQueryRuntimeTransformers,
+  detachQueryRuntimeTransformers,
+  compositeFailError,
+  findTransformerFailure,
+} from "../2_domain/CompositeActionStep";
+import { innermostFailureMessage } from "../2_domain/AsyncQuerySelectors";
 import { transformer_extended_apply, transformer_extended_apply_wrapper } from "../2_domain/TransformersForRuntime.js";
 import { LoggerGlobalContext } from '../4_services/LoggerContext.js';
 import {
@@ -3210,6 +3217,11 @@ export class DomainController implements DomainControllerInterface, DomainContro
         } else {
           applicationUuid = staticApplicationUuid;
         }
+        // #506: an Endpoint created in the open model transaction is not persisted yet; the
+        // model environment of the caller, read from the local cache, knows its application
+        if (applicationUuid === undefined && endpointUuid) {
+          applicationUuid = currentModelEnvironment?.endpointsByUuid?.[endpointUuid]?.application;
+        }
         log.debug(
           "DomainController handleAction",
           domainAction.actionType,
@@ -4790,6 +4802,14 @@ export class DomainController implements DomainControllerInterface, DomainContro
             }
             break;
           }
+          case "compositeFail": {
+            // #557: the sequence stops with the step's error when its condition holds
+            const refusal = compositeFailError(currentAction);
+            if (refusal) {
+              return refusal;
+            }
+            break;
+          }
           case "compositeRunTestAssertion": {
             actionResult = await this.miroirContext.miroirActivityTracker.trackTestAssertion(
               currentAction.actionLabel || "unnamed assertion",
@@ -4881,7 +4901,9 @@ export class DomainController implements DomainControllerInterface, DomainContro
       } catch (error) {
         return new Action2Error(
           "FailedTestAction",
-          "handleCompositeAction error: " + JSON.stringify(error, null, 2),
+          // An Error stringifies to {}: its message names the cause (#493).
+          "handleCompositeAction error: " +
+            (error instanceof Error ? error.message : JSON.stringify(error, null, 2)),
           [currentAction.actionLabel ?? currentAction.actionType],
         );
       } finally {
@@ -5281,12 +5303,7 @@ export class DomainController implements DomainControllerInterface, DomainContro
 
   // ##############################################################################################
   private handleTestCompositeActionAssertion(
-    currentAction: {
-      actionType: "compositeRunTestAssertion";
-      actionLabel?: string | undefined;
-      nameGivenToResult: string;
-      testAssertion: TestAssertion;
-    },
+    currentAction: CompositeRunTestAssertion,
     modelEnvironment: MiroirModelEnvironment,
     localContext: Record<string, any>,
     actionResult: Action2ReturnType | undefined,
@@ -5298,15 +5315,15 @@ export class DomainController implements DomainControllerInterface, DomainContro
     }
     let valueToTest: any = undefined;
     try {
-      // this.miroirContext.miroirActivityTracker.setTestAssertion(currentAction.testAssertion.testLabel);
+      // this.miroirContext.miroirActivityTracker.setTestAssertion(currentAction.payload.testLabel);
 
       // TODO: shall there be an interpretation at all?
-      const prePreValueToTest = currentAction.testAssertion.definition.resultTransformer
+      const prePreValueToTest = currentAction.payload.definition.resultTransformer
         ? transformer_extended_apply(
             "runtime",
             [],
             undefined /**WHAT?? */,
-            currentAction.testAssertion.definition.resultTransformer,
+            currentAction.payload.definition.resultTransformer,
             "value",
             modelEnvironment,
             localContext,
@@ -5322,7 +5339,7 @@ export class DomainController implements DomainControllerInterface, DomainContro
         return new Action2Error(
           "FailedToResolveTemplate",
           "handleTestCompositeActionAssertion error resolving template ",
-          [currentAction.testAssertion.testLabel],
+          [currentAction.payload.testLabel],
           prePreValueToTest as any,
         );
       } else {
@@ -5335,11 +5352,11 @@ export class DomainController implements DomainControllerInterface, DomainContro
       if (typeof prePreValueToTest === "object") {
         const preValueToTest =  resolvePathOnObject(
           prePreValueToTest,
-          currentAction.testAssertion.definition.resultAccessPath ?? [],
+          currentAction.payload.definition.resultAccessPath ?? [],
         );
         // #220 / #217 — skinny Entity expectations ignore present-model fields now carried on Entity
         const assertionIgnoreAttributes = [
-          ...(currentAction.testAssertion.definition.ignoreAttributes ?? []),
+          ...(currentAction.payload.definition.ignoreAttributes ?? []),
           ...ENTITY_PRESENT_MODEL_DEFINITION_FIELDS,
         ];
   
@@ -5360,22 +5377,22 @@ export class DomainController implements DomainControllerInterface, DomainContro
         valueToTest = prePreValueToTest;
       }
       const assertionIgnoreAttributes = [
-        ...(currentAction.testAssertion.definition.ignoreAttributes ?? []),
+        ...(currentAction.payload.definition.ignoreAttributes ?? []),
         ...ENTITY_PRESENT_MODEL_DEFINITION_FIELDS,
       ];
-      const expectedValue = typeof currentAction.testAssertion.definition.expectedValue === "object"?
-      Array.isArray(currentAction.testAssertion.definition.expectedValue)
+      const expectedValue = typeof currentAction.payload.definition.expectedValue === "object"?
+      Array.isArray(currentAction.payload.definition.expectedValue)
         ? ignorePostgresExtraAttributesOnList(
-            currentAction.testAssertion.definition.expectedValue,
+            currentAction.payload.definition.expectedValue,
             assertionIgnoreAttributes,
           )
         : ignorePostgresExtraAttributesOnObject(
-            currentAction.testAssertion.definition.expectedValue,
+            currentAction.payload.definition.expectedValue,
             assertionIgnoreAttributes,
-          ):currentAction.testAssertion.definition.expectedValue;
+          ):currentAction.payload.definition.expectedValue;
       log.debug(
         "handleTestCompositeActionAssertion compositeRunTestAssertion to handle",
-        JSON.stringify(currentAction.testAssertion, null, 2),
+        JSON.stringify(currentAction.payload, null, 2),
         "ignoreAttributes",
         assertionIgnoreAttributes,
         "expectedValue",
@@ -5387,10 +5404,10 @@ export class DomainController implements DomainControllerInterface, DomainContro
         ConfigurationService.configurationService.testImplementation
           .expect(valueToTest, currentAction.nameGivenToResult)
           .toEqual(expectedValue);
-        // .toEqual(currentAction.testAssertion.definition.expectedValue);
+        // .toEqual(currentAction.payload.definition.expectedValue);
         log.info(
           "assertion",
-          currentAction.testAssertion.testLabel,
+          currentAction.payload.testLabel,
           "ok",
         );
         actionResult = {
@@ -5398,32 +5415,32 @@ export class DomainController implements DomainControllerInterface, DomainContro
           returnedDomainElement: undefined,
         };
         // TestSuiteContext.setTestAssertionResult({
-        //   assertionName: currentAction.testAssertion.testLabel,
+        //   assertionName: currentAction.payload.testLabel,
         //   assertionResult: "ok",
-        //   // assertionExpectedValue: compositeRunTestAssertion.testAssertion.definition.expectedValue,
+        //   // assertionExpectedValue: compositeRunTestAssertion.payload.definition.expectedValue,
         //   // assertionActualValue: valueToTest,
         // });
         // Set test result in MiroirActivityTracker for TestLogService
         this.miroirContext.miroirActivityTracker.setTestAssertionResult(
           this.miroirContext.miroirActivityTracker.getCurrentTestAssertionPath(),
           {
-            assertionName: currentAction.testAssertion.testLabel,
+            assertionName: currentAction.payload.testLabel,
             assertionResult: "ok",
           },
         );
       } catch (error) {
         log.info(
           "assertion",
-          currentAction.testAssertion.testLabel,
+          currentAction.payload.testLabel,
           "fail",
         );
         // Set test result in MiroirActivityTracker for TestLogService
         this.miroirContext.miroirActivityTracker.setTestAssertionResult(
           this.miroirContext.miroirActivityTracker.getCurrentTestAssertionPath(),
           {
-            assertionName: currentAction.testAssertion.testLabel,
+            assertionName: currentAction.payload.testLabel,
             assertionResult: "error",
-            assertionExpectedValue: currentAction.testAssertion.definition.expectedValue,
+            assertionExpectedValue: currentAction.payload.definition.expectedValue,
             assertionActualValue: valueToTest,
           },
         );
@@ -5434,17 +5451,17 @@ export class DomainController implements DomainControllerInterface, DomainContro
       log.error("handleTestCompositeActionAssertion compositeRunTestAssertion error", error);
       // TODO: 2 try catch blocks, one for the expect, one for the rest
       // TestSuiteContext.setTestAssertionResult({
-      //   assertionName: currentAction.testAssertion.testLabel,
+      //   assertionName: currentAction.payload.testLabel,
       //   assertionResult: "error",
       //   // TODO: set error message
-      //   // assertionExpectedValue: compositeRunTestAssertion.testAssertion.definition.expectedValue,
+      //   // assertionExpectedValue: compositeRunTestAssertion.payload.definition.expectedValue,
       //   // assertionActualValue: valueToTest,
       // });
       // Set test result in MiroirActivityTracker for TestLogService
       this.miroirContext.miroirActivityTracker.setTestAssertionResult(
         this.miroirContext.miroirActivityTracker.getCurrentTestAssertionPath(),
         {
-          assertionName: currentAction.testAssertion.testLabel,
+          assertionName: currentAction.payload.testLabel,
           assertionResult: "error",
         },
       );
@@ -5799,16 +5816,34 @@ export class DomainController implements DomainControllerInterface, DomainContro
         "localContext keys",
         Object.keys(localContext),
       );
-      const resolvedActionTemplate: any = transformer_extended_apply(
+      // #556: a query step's runtimeTransformers are left to the query runner
+      const { step: stepToResolve, runtimeTransformers } = detachQueryRuntimeTransformers(currentAction);
+      const resolvedStep: any = transformer_extended_apply(
         "runtime",
         [],
         currentAction.actionLabel ?? "NO NAME",
-        currentAction as any as CoreTransformerForBuildPlusRuntime, // TODO: correct type
+        stepToResolve as any as CoreTransformerForBuildPlusRuntime, // TODO: correct type
         "value",
         modelEnvironment,
         localActionParams,
         localContext,
       ) as InstanceAction;
+      // #556: a transformer that failed anywhere in the step fails the step
+      const failedTransformer =
+        resolvedStep instanceof TransformerFailure ? undefined : findTransformerFailure(resolvedStep);
+      if (failedTransformer) {
+        return new Action2Error(
+          "FailedToResolveTemplate",
+          `handleCompositeActionTemplate step ${currentAction.actionLabel ?? currentAction.actionType}: transformer at ${failedTransformer.path.join(".")} failed: ${innermostFailureMessage(failedTransformer.failure)}`,
+          [currentAction.actionLabel ?? currentAction.actionType],
+          failedTransformer.failure as any,
+          currentAction,
+        );
+      }
+      const resolvedActionTemplate: any =
+        resolvedStep instanceof TransformerFailure
+          ? resolvedStep
+          : attachQueryRuntimeTransformers(resolvedStep, runtimeTransformers, localActionParams);
       log.info(
         "handleCompositeActionTemplate compositeInstanceAction",
         currentAction.actionLabel ?? "without step name",
@@ -5864,6 +5899,14 @@ export class DomainController implements DomainControllerInterface, DomainContro
             return actionResult;
           }
           break
+        }
+        case "compositeFail": {
+          // #557: the action refuses with the step's error, and the steps after it do not run
+          const refusal = compositeFailError(resolvedActionTemplate);
+          if (refusal) {
+            return refusal;
+          }
+          break;
         }
         case "compositeRunTestAssertion": {
           log.error(

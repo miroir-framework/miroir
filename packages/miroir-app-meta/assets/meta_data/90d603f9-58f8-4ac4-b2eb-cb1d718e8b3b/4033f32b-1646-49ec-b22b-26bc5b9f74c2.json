@@ -1,0 +1,20 @@
+{
+  "uuid": "4033f32b-1646-49ec-b22b-26bc5b9f74c2",
+  "parentName": "BundleSizeMeasurement",
+  "parentUuid": "90d603f9-58f8-4ac4-b2eb-cb1d718e8b3b",
+  "application": "miroir-standalone-app",
+  "measuredAt": "2026-10-24T07:31:08.567Z",
+  "eagerGzipBytes": 824806,
+  "baseline": 824806,
+  "previousBaseline": 803585,
+  "baselineChange": 21221,
+  "reason": "Vite 8 (rolldown) splits shared modules into 53 eager chunks instead of 4; with the CopilotKit 1.79 and #542 bumps the page loads 824806 bytes gzipped (+2.6%)",
+  "gitCommit": "efe2b9ac89f09c9998ac49de055a2badc2bc39d5",
+  "gitBranch": "claude/project-thread-ekcg3n",
+  "miroirVersion": "0.5.0-rc.1",
+  "eagerChunks": 54,
+  "eagerRawBytes": 4583503,
+  "totalChunks": 404,
+  "totalRawBytes": 22470048,
+  "totalGzipBytes": 5672723
+}

@@ -13,6 +13,7 @@ import {
   defaultExternalServiceClient,
   defaultSelfApplicationDeploymentMap,
   DomainControllerInterface,
+  getApplicationSection,
   MlElement,
   mlsTypeCheck,
   LocalCacheInterface,
@@ -27,6 +28,8 @@ import {
   type ApplicationDeploymentMap,
   type DeploymentUuidToReportsEntitiesMapping,
   type EntityInstance,
+  type ReactComponentTestSuite,
+  type Uuid,
 } from "miroir-core";
 import {
   LocalCache,
@@ -56,6 +59,7 @@ import {
 import { adminSelfApplication } from "miroir-app-admin";
 import {
   defaultMiroirMetaModel,
+  entityEndpointVersion,
   entityEntity,
   entityEntityVersion,
   entityMlSchema,
@@ -66,6 +70,7 @@ import {
 } from "miroir-app-miroir";
 
 import { packageName } from "../../../constants.js";
+import { BlockViewModeProvider } from "../../4_view/components/BlockEditor/BlockViewMode.js";
 import { deploymentReportsEntitiesMapping } from "../../4_view/components/Page/deploymentReportsEntitiesMapping.js";
 import { ReportPageContextProvider } from "../../4_view/components/Reports/ReportPageContext.js";
 import { DocumentOutlineContextProvider } from "../../4_view/components/ValueObjectEditor/InstanceEditorOutlineContext.js";
@@ -218,6 +223,8 @@ export interface MlElementEditorProps_Test {
   rawMlSchema: MlElement | undefined;
   /** #453: type badges of the rendered value, at their editor paths. */
   transformerTypeBadges?: TransformerTypeBadge[];
+  /** #498: offer the Blocks / Form / JSON switch on transformer fields, as the TransformerEditor does. */
+  blockViewSwitch?: boolean;
   // isPerformanceTest?: boolean;
 }
 
@@ -318,8 +325,7 @@ export const getMlElementEditorForTest: (pageLabel: string) => React.FC<MlElemen
       // return label ? <label htmlFor={rootLessListKey}>{label}</label> : undefined;
       return label ? <span id={rootLessListKey}>{label}</span> : undefined;
     }, [label]);
-    return (
-      <div>
+    const form = (
         <Formik
           enableReinitialize={true}
           initialValues={{ [testSectionName]: { [name]: initialFormState }}}
@@ -431,8 +437,8 @@ export const getMlElementEditorForTest: (pageLabel: string) => React.FC<MlElemen
             );
           }}
         </Formik>
-      </div>
     );
+    return <div>{props.blockViewSwitch ? <BlockViewModeProvider>{form}</BlockViewModeProvider> : form}</div>;
   };
 
 // ################################################################################################
@@ -467,6 +473,29 @@ export interface BuildComponentTestWrapperOptions {
   wireLocalCacheCompositeAction?: boolean;
   /** See `MiroirTestProvidersProps.isolateToolsPageState`. Off by default. */
   isolateToolsPageState?: boolean;
+  /**
+   * Instances loaded with the model and data of their application, Miroir or Library (#502):
+   * a suite's `localCacheInstances`. A load of its own would be lost: a rollback replaces the
+   * current state of a deployment with what is loading.
+   */
+  localCacheInstances?: ReactComponentTestSuite["localCacheInstances"];
+}
+
+/** The objects of `localCacheInstances` for `application`, in the shape of `loadNewInstancesInLocalCache`. */
+function extraLocalCacheObjects(
+  localCacheInstances: BuildComponentTestWrapperOptions["localCacheInstances"],
+  application: Uuid,
+) {
+  return (localCacheInstances ?? [])
+    .filter((entry) => entry.application === application)
+    .flatMap((entry) =>
+      entry.objects.map((object) => ({
+        parentName: object.parentName ?? "",
+        parentUuid: object.parentUuid,
+        applicationSection: object.applicationSection,
+        instances: object.instances as EntityInstance[],
+      })),
+    );
 }
 
 export interface ComponentTestWrapper {
@@ -672,6 +701,19 @@ export function buildComponentTestWrapper(
           applicationSection: "data",
           instances: defaultMiroirMetaModel.reports
         },
+        // #505: a suite that runs actions has Miroir's Endpoints, as the app has: the model
+        // environment of an application then knows their actions (block palette, action runs)
+        ...(options.wireLocalCacheCompositeAction
+          ? [
+              {
+                parentName: entityEndpointVersion.name,
+                parentUuid: entityEndpointVersion.uuid,
+                applicationSection: getApplicationSection(selfApplicationMiroir.uuid, entityEndpointVersion.uuid),
+                instances: defaultMiroirMetaModel.endpoints as EntityInstance[],
+              },
+            ]
+          : []),
+        ...extraLocalCacheObjects(options.localCacheInstances, selfApplicationMiroir.uuid),
       ],
     }
   }, applicationDeploymentMap);
@@ -730,7 +772,8 @@ export function buildComponentTestWrapper(
               reportMultistepLaunchPad as EntityInstance,
           ],
         },
-        ...libraryApplicationInstances
+        ...libraryApplicationInstances,
+        ...extraLocalCacheObjects(options.localCacheInstances, selfApplicationLibrary.uuid),
       ],
     }
   }, applicationDeploymentMap);

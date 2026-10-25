@@ -173,6 +173,9 @@ describe("Report MiroirTests from the Miroir Tests page (#330)", () => {
 
     const sandboxPanel = screen.getByTestId("component-test-sandbox-panel");
     expect(sandboxPanel).not.toBeVisible();
+    // PR #496 review: a Report suite's sandbox can be shown from its display; no transformer types setting
+    expect(screen.getByRole("checkbox", { name: "Show test sandbox" })).toBeInTheDocument();
+    expect(screen.queryByRole("checkbox", { name: "Show transformer types in component test runs" })).toBeNull();
 
     fireEvent.click(screen.getByRole("button", { name: `Run ${suiteKey} Integration Tests` }));
 

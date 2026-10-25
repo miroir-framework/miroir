@@ -1,5 +1,5 @@
 import { useFormikContext } from "formik";
-import React, { FC, useCallback, useMemo, useState } from "react";
+import React, { FC, useCallback, useContext, useMemo, useState } from "react";
 
 
 import {
@@ -15,6 +15,7 @@ import {
   MiroirLoggerFactory,
   removeTransformerNode,
   resolvePathOnObject,
+  transformerDefinitionRegistry,
   transformerTypesAcceptingInput,
   type ApplicationDeploymentMap,
   type Domain2QueryReturnType,
@@ -53,6 +54,7 @@ import { MlLiteralEditorProps } from "./MlElementEditorInterface";
 import { isPrimaryUnionDiscriminatorField } from "./unionDiscriminatorField.js";
 import { findPathAnnotation } from "../Reports/TransformerTypeAnnotation.js";
 import { TransformerNodeActions, TransformerTypeChangeDialog } from "./TransformerNodeActions.js";
+import { ValueHistoryContext } from "./ValueHistoryProvider.js";
 import { editorNavigationKey, useTrackedRender } from "../../tools/useTrackedRender.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MlLiteralEditor");
@@ -386,6 +388,11 @@ export const MlLiteralEditor: FC<MlLiteralEditorProps> =  (
     currentApplication,
     applicationDeploymentMap
   );
+  // #502: the stock TransformerDefinitions and the application's composites
+  const transformerDefinitions = useMemo(
+    () => transformerDefinitionRegistry(currentMiroirModelEnvironment),
+    [currentMiroirModelEnvironment],
+  );
   const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
         getMemoizedReduxDeploymentsStateSelectorMap();
 
@@ -561,9 +568,10 @@ export const MlLiteralEditor: FC<MlLiteralEditorProps> =  (
         ? transformerTypesAcceptingInput(transformerTypeRestriction.input, {
             transformerTypes: currentDiscriminatorValues,
             currentType: typeof currentValue === "string" ? currentValue : undefined,
+            transformerDefinitions,
           })
         : undefined,
-    [transformerTypeRestriction, currentDiscriminatorValues, currentValue],
+    [transformerTypeRestriction, currentDiscriminatorValues, currentValue, transformerDefinitions],
   );
   // Memoize discriminator options for the filterable select
   const discriminatorSelectOptions = useMemo(() => {
@@ -581,6 +589,10 @@ export const MlLiteralEditor: FC<MlLiteralEditorProps> =  (
   // #415: structural edits of the transformer node this select belongs to.
   const isTransformerTypeSelect = isDiscriminator && name === "transformerType" && !readOnly;
   const transformerNodePath = useMemo(() => rootLessListKeyArray.slice(0, -1), [rootLessListKeyArray]);
+  // #499: under an undo history covering the node, Remove, Unwrap and a type change act at once
+  const valueHistory = useContext(ValueHistoryContext);
+  const transformerNodeUndoable =
+    valueHistory?.covers([reportSectionPathAsString, ...transformerNodePath].join(".")) ?? false;
   const transformerNodeValue = isTransformerTypeSelect
     ? transformerNodePath.length > 0
       ? resolvePathOnObject(currentReportSectionFormikValues, transformerNodePath)
@@ -627,8 +639,10 @@ export const MlLiteralEditor: FC<MlLiteralEditorProps> =  (
         onChangeCallback(newNode, rootLessListKey);
       }
       formik.setFieldValue([reportSectionPathAsString, ...transformerNodePath].join("."), newNode, false);
+      // #499: the edit may unmount the focused element; Ctrl+Z must still reach the history
+      valueHistory?.restoreFocus();
     },
-    [formik, onChangeCallback, rootLessListKey, reportSectionPathAsString, transformerNodePath],
+    [formik, onChangeCallback, rootLessListKey, reportSectionPathAsString, transformerNodePath, valueHistory],
   );
   // #415 Remove: the edit applies to the outermost transformer holding this node, so that an
   // optional attribute, an array item or a record entry is deleted from its container. The root
@@ -650,20 +664,24 @@ export const MlLiteralEditor: FC<MlLiteralEditorProps> =  (
     const newTree = removeTransformerNode(valueAt(treeRootPath), transformerNodePath.slice(treeRootLength), {
       rootDefault: resetNode,
       slotDefault: resetNode,
+      transformerDefinitions,
     });
     if (onChangeCallback) {
       onChangeCallback(newTree, rootLessListKey);
     }
     formik.setFieldValue([reportSectionPathAsString, ...treeRootPath].join("."), newTree, false);
+    valueHistory?.restoreFocus();
   }, [
     currentReportSectionFormikValues,
     transformerNodePath,
     currentDiscriminatorValues,
     defaultTransformerNodeForType,
+    transformerDefinitions,
     onChangeCallback,
     rootLessListKey,
     formik,
     reportSectionPathAsString,
+    valueHistory,
   ]);
   // #447: the values the editor fills in a node of `transformerType` at this position: the type's
   // default, without and with its optional attributes, and the default of the slot holding the node
@@ -722,7 +740,7 @@ export const MlLiteralEditor: FC<MlLiteralEditorProps> =  (
     ],
   );
   // #415 D4, D5: a transformerType change keeps the attributes the new type accepts. When it drops
-  // attributes, a dialog names them first.
+  // attributes, a dialog names them first, unless an undo history covers the node (#499).
   const [pendingTypeChange, setPendingTypeChange] = useState<
     { transformerType: string; node: Record<string, unknown>; dropped: string[] } | undefined
   >(undefined);
@@ -746,7 +764,10 @@ export const MlLiteralEditor: FC<MlLiteralEditorProps> =  (
         currentMiroirModelEnvironment,
       );
       // #447: dropping only values of one default the editor filled in for the old type asks nothing
-      if (holdsOneDefault(oldNode, editorDefaultsOfTransformerNode(oldNode.transformerType), change.dropped)) {
+      if (
+        transformerNodeUndoable ||
+        holdsOneDefault(oldNode, editorDefaultsOfTransformerNode(oldNode.transformerType), change.dropped)
+      ) {
         replaceTransformerNode(change.node);
         return;
       }
@@ -759,6 +780,7 @@ export const MlLiteralEditor: FC<MlLiteralEditorProps> =  (
       handleFilterableSelectChange,
       currentMiroirModelEnvironment,
       replaceTransformerNode,
+      transformerNodeUndoable,
     ],
   );
   // log.info(
@@ -819,6 +841,8 @@ export const MlLiteralEditor: FC<MlLiteralEditorProps> =  (
                 defaultNodeForType={defaultTransformerNodeForType}
                 onReplaceNode={replaceTransformerNode}
                 onRemoveNode={removeTransformerNodeFromTree}
+                undoable={transformerNodeUndoable}
+                transformerDefinitions={transformerDefinitions}
               />
             )}
             {pendingTypeChange && (

@@ -1087,6 +1087,54 @@ export function getMiroirFundamentalMlSchema(
         ...entityDefinitionTransformerDefinition.mlSchema.definition.transformerInterface.definition
           .inputOutput.context,
         // inputOutputObject: entityDefinitionTransformerDefinition.mlSchema.definition.transformerInterface.definition.inputOutput as any,
+        // #507: the presentation hints of a TransformerDefinition or an Endpoint action, read by the
+        // block editor. No raw color (analysis #497, D11): a category of the Theme or a color per Theme.
+        blockPresentationHints: {
+          type: "object",
+          definition: {
+            labelTemplate: {
+              type: "string",
+              optional: true,
+              tag: {
+                value: {
+                  defaultLabel: "Label template",
+                  description:
+                    'The block header as a sentence: words, and [attribute] for an attribute of the block, e.g. "map [applyTo] with [elementTransformer]".',
+                  display: { editable: true },
+                },
+              },
+            },
+            icon: {
+              type: "string",
+              optional: true,
+              tag: { value: { defaultLabel: "Icon", description: "An icon name, as for an Entity.", display: { editable: true } } },
+            },
+            category: {
+              type: "string",
+              optional: true,
+              tag: {
+                value: {
+                  defaultLabel: "Color category",
+                  description:
+                    "A key of the Theme's block editor colors (components.blockEditor.categoryColors) giving the block its color, instead of its classification.",
+                  display: { editable: true },
+                },
+              },
+            },
+            colorByTheme: {
+              type: "record",
+              optional: true,
+              definition: { type: "string" },
+              tag: {
+                value: {
+                  defaultLabel: "Color by Theme",
+                  description: "A color per Theme id, for a block no category fits; it comes before the category.",
+                  display: { editable: true },
+                },
+              },
+            },
+          },
+        },
         transformerDefinition: entityDefinitionTransformerDefinition.mlSchema as any,
         ______________________________________________miroirMetaModel_____________________________________________:
           {
@@ -3206,6 +3254,8 @@ export function getMiroirFundamentalMlSchema(
         compositeActionDefinition: ((getEndpointActions(domainEndpointVersionV1) ?? []).find(
           (a: any) => a.actionParameters?.actionType?.definition == "compositeActionSequence",
         ) as any)?.actionParameters.payload.definition.actionSequence.definition,
+        // #504 (analysis #497, D10): a DomainEndpoint action like compositeRunBoxedQueryAction,
+        // with its assertion in `payload`; the sequence loops run it with the sequence's context
         compositeRunTestAssertion: {
           type: "object",
           tag: {
@@ -3215,31 +3265,9 @@ export function getMiroirFundamentalMlSchema(
               },
             },
           },
-          definition: {
-            actionType: {
-              type: "literal",
-              tag: {
-                value: {
-                  canBeTemplate: false,
-                },
-              },
-              definition: "compositeRunTestAssertion",
-            },
-            actionLabel: {
-              type: "string",
-              optional: true,
-            },
-            nameGivenToResult: {
-              type: "string",
-            },
-            testAssertion: {
-              type: "schemaReference",
-              definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                relativePath: "testAssertion",
-              },
-            },
-          },
+          definition: (getEndpointActions(domainEndpointVersionV1) ?? []).find(
+            (a: any) => a.actionParameters?.actionType?.definition == "compositeRunTestAssertion",
+          )?.actionParameters,
         },
         compositeActionSequence: {
           type: "object",
@@ -3270,13 +3298,7 @@ export function getMiroirFundamentalMlSchema(
             //     relativePath: "compositeActionSequence",
             //   },
             // },
-            {
-              type: "schemaReference",
-              definition: {
-                absolutePath: "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
-                relativePath: "compositeRunTestAssertion",
-              },
-            },
+            // #504: compositeRunTestAssertion is a DomainEndpoint action, in domainAction
           ],
         },
         // ################################################################################

@@ -21,6 +21,7 @@ import {
 } from '../Buttons/RunAllMiroirTestsButton.js';
 import type { TestResultData } from '../Buttons/testResultReport.js';
 import { ThemedProgressiveAccordion } from '../Themes/BasicComponents.js';
+import { ComponentTestRunSettings, useComponentTestRunPreparation } from './ComponentTestRunSettings.js';
 import { ComponentTestSandboxProvider, useComponentTestSandbox } from './ComponentTestSandbox.js';
 import { TestResultsGrid } from './TestResultsGrid.js';
 import { UnitTestExecutionSummary } from './UnitTestExecutionSummary.js';
@@ -121,6 +122,8 @@ export const MiroirTestListDisplay = (props: MiroirTestListDisplayProps) => (
 const MiroirTestListDisplayContent = (props: MiroirTestListDisplayProps) => {
   const { miroirTests, style, useSnackBar = true, onTestComplete } = props;
   const componentTestSandbox = useComponentTestSandbox();
+  // the sandbox's run start and end, the start taking the settings next to the Run button
+  const componentTestRun = useComponentTestRunPreparation();
   const [resultsBySuiteKey, setResultsBySuiteKey] = useState<MiroirTestSuiteResultsMap>({});
   const integrationPreferences = useUiIntegrationTestRunPreferences();
   const integrationProfileBrowserLaunchable = isUiIntegrationProfileLaunchableInBrowser(
@@ -239,12 +242,13 @@ const MiroirTestListDisplayContent = (props: MiroirTestListDisplayProps) => {
           useSnackBar={useSnackBar}
           onTestComplete={handleTestComplete}
           runMode="unit"
-          beforeRun={componentTestSandbox?.prepareComponentTests}
-          afterRun={componentTestSandbox?.finishComponentTests}
+          beforeRun={componentTestRun.prepareComponentTests}
+          afterRun={componentTestRun.finishComponentTests}
           label="Run All Unit Tests"
           style={unitRunButtonStyle}
         />
       )}
+      {showUnitBatch && componentTestSandbox && <ComponentTestRunSettings />}
 
       {showIntegrationBatch && (
         <>
@@ -256,7 +260,7 @@ const MiroirTestListDisplayContent = (props: MiroirTestListDisplayProps) => {
             runMode="integration"
             integrationProfileName={integrationPreferences.profileName}
             integrationRunTargetMode={integrationPreferences.runTargetMode}
-            prepareReportTests={componentTestSandbox?.prepareReportTests}
+            prepareReportTests={componentTestRun.prepareReportTests}
             label="Run All Integration Tests"
             disabled={!integrationProfileBrowserLaunchable}
             title={

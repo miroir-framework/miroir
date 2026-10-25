@@ -1,0 +1,3696 @@
+{
+  "uuid": "50cf75d1-993f-4b5c-bdd1-0fe309e1e2d6",
+  "parentName": "MiroirTest",
+  "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+  "name": "fn.transformer.scope",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "description": "The context and parameter names visible at a position of a transformer or of a composite action sequence, whether a node sits there or not.",
+  "tags": [
+    "unit",
+    "transformer"
+  ],
+  "issue": "501",
+  "definition": {
+    "miroirTestType": "miroirTestSuite",
+    "miroirTestLabel": "fn.transformer.scope",
+    "miroirTests": [
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "transformerEnvironmentAt",
+        "miroirTests": [
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "the root sees the root names",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerEnvironmentBindings",
+              "export": "transformerEnvironmentAt"
+            },
+            "arguments": [
+              {
+                "transformerType": "mapList",
+                "interpolation": "runtime",
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "defaultInput"
+                  ]
+                },
+                "elementTransformer": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "defaultInput",
+                    "name"
+                  ]
+                }
+              },
+              [],
+              {
+                "contextNames": [
+                  "defaultInput"
+                ],
+                "parameterNames": [
+                  "defaultInput"
+                ]
+              }
+            ],
+            "expectedValue": {
+              "contextNames": [
+                "defaultInput"
+              ],
+              "parameterNames": [
+                "defaultInput"
+              ]
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "the applyTo of a mapList sees its parent's names",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerEnvironmentBindings",
+              "export": "transformerEnvironmentAt"
+            },
+            "arguments": [
+              {
+                "transformerType": "mapList",
+                "interpolation": "runtime",
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "defaultInput"
+                  ]
+                },
+                "elementTransformer": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "defaultInput",
+                    "name"
+                  ]
+                }
+              },
+              [
+                "applyTo"
+              ],
+              {
+                "contextNames": [
+                  "defaultInput"
+                ],
+                "parameterNames": [
+                  "defaultInput"
+                ]
+              }
+            ],
+            "expectedValue": {
+              "contextNames": [
+                "defaultInput"
+              ],
+              "parameterNames": [
+                "defaultInput"
+              ]
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "the element transformer of a mapList sees the element as defaultInput",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerEnvironmentBindings",
+              "export": "transformerEnvironmentAt"
+            },
+            "arguments": [
+              {
+                "transformerType": "mapList",
+                "interpolation": "runtime",
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "defaultInput"
+                  ]
+                },
+                "elementTransformer": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "defaultInput",
+                    "name"
+                  ]
+                }
+              },
+              [
+                "elementTransformer"
+              ],
+              {
+                "contextNames": [
+                  "defaultInput"
+                ],
+                "parameterNames": [
+                  "defaultInput"
+                ]
+              }
+            ],
+            "expectedValue": {
+              "contextNames": [
+                "defaultInput"
+              ],
+              "parameterNames": [
+                "defaultInput"
+              ]
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "referenceToOuterObject names the element",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerEnvironmentBindings",
+              "export": "transformerEnvironmentAt"
+            },
+            "arguments": [
+              {
+                "transformerType": "mapList",
+                "interpolation": "runtime",
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "defaultInput"
+                  ]
+                },
+                "elementTransformer": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "defaultInput",
+                    "name"
+                  ]
+                },
+                "referenceToOuterObject": "book"
+              },
+              [
+                "elementTransformer"
+              ],
+              {
+                "contextNames": [
+                  "defaultInput"
+                ],
+                "parameterNames": [
+                  "defaultInput"
+                ]
+              }
+            ],
+            "expectedValue": {
+              "contextNames": [
+                "book",
+                "defaultInput"
+              ],
+              "parameterNames": [
+                "defaultInput"
+              ]
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "the predicate of a filterList sees the element",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerEnvironmentBindings",
+              "export": "transformerEnvironmentAt"
+            },
+            "arguments": [
+              {
+                "transformerType": "filterList",
+                "interpolation": "runtime",
+                "referenceToOuterObject": "book",
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "defaultInput"
+                  ]
+                },
+                "predicate": {
+                  "transformerType": "returnValue",
+                  "interpolation": "runtime",
+                  "value": true
+                }
+              },
+              [
+                "predicate"
+              ],
+              {
+                "contextNames": [
+                  "defaultInput"
+                ],
+                "parameterNames": [
+                  "defaultInput"
+                ]
+              }
+            ],
+            "expectedValue": {
+              "contextNames": [
+                "book",
+                "defaultInput"
+              ],
+              "parameterNames": [
+                "defaultInput"
+              ]
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a dataflowObject step sees the steps before it, not itself nor those after it",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerEnvironmentBindings",
+              "export": "transformerEnvironmentAt"
+            },
+            "arguments": [
+              {
+                "transformerType": "dataflowObject",
+                "interpolation": "runtime",
+                "definition": {
+                  "first": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": 1
+                  },
+                  "second": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": 2
+                  },
+                  "third": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": 3
+                  }
+                }
+              },
+              [
+                "definition",
+                "second"
+              ],
+              {
+                "contextNames": [
+                  "defaultInput"
+                ],
+                "parameterNames": [
+                  "defaultInput"
+                ]
+              }
+            ],
+            "expectedValue": {
+              "contextNames": [
+                "defaultInput",
+                "first"
+              ],
+              "parameterNames": [
+                "defaultInput"
+              ]
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a new dataflowObject step sees every step",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerEnvironmentBindings",
+              "export": "transformerEnvironmentAt"
+            },
+            "arguments": [
+              {
+                "transformerType": "dataflowObject",
+                "interpolation": "runtime",
+                "definition": {
+                  "first": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": 1
+                  },
+                  "second": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": 2
+                  }
+                }
+              },
+              [
+                "definition",
+                "value"
+              ],
+              {
+                "contextNames": [
+                  "defaultInput"
+                ],
+                "parameterNames": [
+                  "defaultInput"
+                ]
+              }
+            ],
+            "expectedValue": {
+              "contextNames": [
+                "defaultInput",
+                "first",
+                "second"
+              ],
+              "parameterNames": [
+                "defaultInput"
+              ]
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "an empty optional slot sees its parent's names",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerEnvironmentBindings",
+              "export": "transformerEnvironmentAt"
+            },
+            "arguments": [
+              {
+                "transformerType": "ifThenElse",
+                "interpolation": "runtime",
+                "if": {
+                  "transformerType": "returnValue",
+                  "interpolation": "runtime",
+                  "value": true
+                }
+              },
+              [
+                "then"
+              ],
+              {
+                "contextNames": [
+                  "defaultInput"
+                ],
+                "parameterNames": [
+                  "defaultInput"
+                ]
+              }
+            ],
+            "expectedValue": {
+              "contextNames": [
+                "defaultInput"
+              ],
+              "parameterNames": [
+                "defaultInput"
+              ]
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a node deep in the definition of createObjectFromPairs sees its applyTo",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerEnvironmentBindings",
+              "export": "transformerEnvironmentAt"
+            },
+            "arguments": [
+              {
+                "transformerType": "createObjectFromPairs",
+                "interpolation": "runtime",
+                "referenceToOuterObject": "pair",
+                "applyTo": {
+                  "transformerType": "returnValue",
+                  "interpolation": "runtime",
+                  "value": {
+                    "k": 1
+                  }
+                },
+                "definition": [
+                  {
+                    "attributeKey": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "value": "a"
+                    },
+                    "attributeValue": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "pair",
+                        "k"
+                      ]
+                    }
+                  }
+                ]
+              },
+              [
+                "definition",
+                0,
+                "attributeValue"
+              ],
+              {
+                "contextNames": [
+                  "defaultInput"
+                ],
+                "parameterNames": [
+                  "defaultInput"
+                ]
+              }
+            ],
+            "expectedValue": {
+              "contextNames": [
+                "defaultInput",
+                "pair"
+              ],
+              "parameterNames": [
+                "defaultInput"
+              ]
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "the having of an aggregate sees aggregateValue",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerEnvironmentBindings",
+              "export": "transformerEnvironmentAt"
+            },
+            "arguments": [
+              {
+                "transformerType": "aggregate",
+                "interpolation": "runtime",
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "defaultInput"
+                  ]
+                },
+                "having": {
+                  "transformerType": "returnValue",
+                  "interpolation": "runtime",
+                  "value": true
+                }
+              },
+              [
+                "having"
+              ],
+              {
+                "contextNames": [
+                  "defaultInput"
+                ],
+                "parameterNames": [
+                  "defaultInput"
+                ]
+              }
+            ],
+            "expectedValue": {
+              "contextNames": [
+                "aggregateValue",
+                "defaultInput"
+              ],
+              "parameterNames": [
+                "defaultInput"
+              ]
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "names add up along the path",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerEnvironmentBindings",
+              "export": "transformerEnvironmentAt"
+            },
+            "arguments": [
+              {
+                "transformerType": "mapList",
+                "interpolation": "runtime",
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "defaultInput"
+                  ]
+                },
+                "elementTransformer": {
+                  "transformerType": "dataflowObject",
+                  "interpolation": "runtime",
+                  "definition": {
+                    "title": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "book",
+                        "title"
+                      ]
+                    },
+                    "upper": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "value": 0
+                    }
+                  }
+                },
+                "referenceToOuterObject": "book"
+              },
+              [
+                "elementTransformer",
+                "definition",
+                "upper"
+              ],
+              {
+                "contextNames": [
+                  "defaultInput"
+                ],
+                "parameterNames": [
+                  "defaultInput"
+                ]
+              }
+            ],
+            "expectedValue": {
+              "contextNames": [
+                "book",
+                "defaultInput",
+                "title"
+              ],
+              "parameterNames": [
+                "defaultInput"
+              ]
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "parameters do not change along the path",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerEnvironmentBindings",
+              "export": "transformerEnvironmentAt"
+            },
+            "arguments": [
+              {
+                "transformerType": "mapList",
+                "interpolation": "runtime",
+                "applyTo": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "defaultInput"
+                  ]
+                },
+                "elementTransformer": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "defaultInput",
+                    "name"
+                  ]
+                }
+              },
+              [
+                "elementTransformer"
+              ],
+              {
+                "contextNames": [
+                  "defaultInput"
+                ],
+                "parameterNames": [
+                  "pageSize"
+                ]
+              }
+            ],
+            "expectedValue": {
+              "contextNames": [
+                "defaultInput"
+              ],
+              "parameterNames": [
+                "pageSize"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "compositeActionEnvironmentAt",
+        "miroirTests": [
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "the first template sees the parameters",
+            "functionRef": {
+              "module": "miroir-core/2_domain/CompositeActionScope",
+              "export": "compositeActionEnvironmentAt"
+            },
+            "arguments": [
+              {
+                "actionType": "compositeActionSequence",
+                "actionLabel": "seq",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "payload": {
+                  "templates": {
+                    "entity": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "value": {
+                        "uuid": "e"
+                      }
+                    },
+                    "entityDefinition": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "entity"
+                      ]
+                    }
+                  },
+                  "actionSequence": [
+                    {
+                      "actionType": "createInstance",
+                      "actionLabel": "createBook",
+                      "payload": {
+                        "objects": [
+                          {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referencePath": [
+                              "entity"
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "actionType": "compositeRunBoxedQueryAction",
+                      "actionLabel": "queryBooks",
+                      "nameGivenToResult": "books",
+                      "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                      "payload": {
+                        "actionType": "runBoxedQueryAction",
+                        "payload": {
+                          "query": {
+                            "queryParams": {
+                              "author": "Tolkien"
+                            },
+                            "pageParams": {
+                              "page": 1
+                            },
+                            "contextResults": {
+                              "shelf": "A"
+                            },
+                            "extractors": {
+                              "all": {
+                                "extractorOrCombinerType": "extractorByEntityReturningObjectList",
+                                "parentUuid": "b"
+                              }
+                            },
+                            "combiners": {
+                              "byAuthor": {
+                                "extractorOrCombinerType": "combinerByForeignKeyReturningObjectList"
+                              }
+                            },
+                            "runtimeTransformers": {
+                              "count": {
+                                "transformerType": "returnValue",
+                                "interpolation": "runtime",
+                                "value": 0
+                              },
+                              "sorted": {
+                                "transformerType": "getFromContext",
+                                "interpolation": "runtime",
+                                "referencePath": [
+                                  "all"
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "actionType": "compositeRunTestAssertion",
+                      "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                      "actionLabel": "check",
+                      "nameGivenToResult": "checked",
+                      "payload": {}
+                    },
+                    {
+                      "actionType": "compositeActionSequence",
+                      "actionLabel": "inner",
+                      "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                      "payload": {
+                        "actionSequence": [
+                          {
+                            "actionType": "createInstance",
+                            "actionLabel": "innerStep",
+                            "payload": {
+                              "value": {
+                                "transformerType": "getFromContext",
+                                "interpolation": "runtime",
+                                "referencePath": [
+                                  "runnerForm"
+                                ]
+                              }
+                            }
+                          },
+                          {
+                            "actionType": "createInstance",
+                            "payload": {
+                              "value": {
+                                "transformerType": "getFromContext",
+                                "interpolation": "runtime",
+                                "referencePath": [
+                                  "innerStep"
+                                ]
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "actionType": "createInstance",
+                      "actionLabel": "last",
+                      "payload": {
+                        "value": {
+                          "transformerType": "getFromContext",
+                          "interpolation": "runtime",
+                          "referencePath": [
+                            "createBook"
+                          ]
+                        },
+                        "build": {
+                          "transformerType": "getFromParameters",
+                          "referenceName": "entity"
+                        },
+                        "titles": {
+                          "transformerType": "mapList",
+                          "interpolation": "runtime",
+                          "referenceToOuterObject": "book",
+                          "applyTo": {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referencePath": [
+                              "books"
+                            ]
+                          },
+                          "elementTransformer": {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referencePath": [
+                              "book",
+                              "title"
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              [
+                "payload",
+                "templates",
+                "entity"
+              ],
+              {
+                "contextNames": [],
+                "parameterNames": [
+                  "runnerForm"
+                ]
+              }
+            ],
+            "expectedValue": {
+              "contextNames": [
+                "runnerForm"
+              ],
+              "parameterNames": [
+                "runnerForm"
+              ]
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a template sees the templates before it",
+            "functionRef": {
+              "module": "miroir-core/2_domain/CompositeActionScope",
+              "export": "compositeActionEnvironmentAt"
+            },
+            "arguments": [
+              {
+                "actionType": "compositeActionSequence",
+                "actionLabel": "seq",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "payload": {
+                  "templates": {
+                    "entity": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "value": {
+                        "uuid": "e"
+                      }
+                    },
+                    "entityDefinition": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "entity"
+                      ]
+                    }
+                  },
+                  "actionSequence": [
+                    {
+                      "actionType": "createInstance",
+                      "actionLabel": "createBook",
+                      "payload": {
+                        "objects": [
+                          {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referencePath": [
+                              "entity"
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "actionType": "compositeRunBoxedQueryAction",
+                      "actionLabel": "queryBooks",
+                      "nameGivenToResult": "books",
+                      "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                      "payload": {
+                        "actionType": "runBoxedQueryAction",
+                        "payload": {
+                          "query": {
+                            "queryParams": {
+                              "author": "Tolkien"
+                            },
+                            "pageParams": {
+                              "page": 1
+                            },
+                            "contextResults": {
+                              "shelf": "A"
+                            },
+                            "extractors": {
+                              "all": {
+                                "extractorOrCombinerType": "extractorByEntityReturningObjectList",
+                                "parentUuid": "b"
+                              }
+                            },
+                            "combiners": {
+                              "byAuthor": {
+                                "extractorOrCombinerType": "combinerByForeignKeyReturningObjectList"
+                              }
+                            },
+                            "runtimeTransformers": {
+                              "count": {
+                                "transformerType": "returnValue",
+                                "interpolation": "runtime",
+                                "value": 0
+                              },
+                              "sorted": {
+                                "transformerType": "getFromContext",
+                                "interpolation": "runtime",
+                                "referencePath": [
+                                  "all"
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "actionType": "compositeRunTestAssertion",
+                      "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                      "actionLabel": "check",
+                      "nameGivenToResult": "checked",
+                      "payload": {}
+                    },
+                    {
+                      "actionType": "compositeActionSequence",
+                      "actionLabel": "inner",
+                      "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                      "payload": {
+                        "actionSequence": [
+                          {
+                            "actionType": "createInstance",
+                            "actionLabel": "innerStep",
+                            "payload": {
+                              "value": {
+                                "transformerType": "getFromContext",
+                                "interpolation": "runtime",
+                                "referencePath": [
+                                  "runnerForm"
+                                ]
+                              }
+                            }
+                          },
+                          {
+                            "actionType": "createInstance",
+                            "payload": {
+                              "value": {
+                                "transformerType": "getFromContext",
+                                "interpolation": "runtime",
+                                "referencePath": [
+                                  "innerStep"
+                                ]
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "actionType": "createInstance",
+                      "actionLabel": "last",
+                      "payload": {
+                        "value": {
+                          "transformerType": "getFromContext",
+                          "interpolation": "runtime",
+                          "referencePath": [
+                            "createBook"
+                          ]
+                        },
+                        "build": {
+                          "transformerType": "getFromParameters",
+                          "referenceName": "entity"
+                        },
+                        "titles": {
+                          "transformerType": "mapList",
+                          "interpolation": "runtime",
+                          "referenceToOuterObject": "book",
+                          "applyTo": {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referencePath": [
+                              "books"
+                            ]
+                          },
+                          "elementTransformer": {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referencePath": [
+                              "book",
+                              "title"
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              [
+                "payload",
+                "templates",
+                "entityDefinition"
+              ],
+              {
+                "contextNames": [],
+                "parameterNames": [
+                  "runnerForm"
+                ]
+              }
+            ],
+            "expectedValue": {
+              "contextNames": [
+                "entity",
+                "runnerForm"
+              ],
+              "parameterNames": [
+                "runnerForm"
+              ]
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "the first action sees the parameters and the templates",
+            "functionRef": {
+              "module": "miroir-core/2_domain/CompositeActionScope",
+              "export": "compositeActionEnvironmentAt"
+            },
+            "arguments": [
+              {
+                "actionType": "compositeActionSequence",
+                "actionLabel": "seq",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "payload": {
+                  "templates": {
+                    "entity": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "value": {
+                        "uuid": "e"
+                      }
+                    },
+                    "entityDefinition": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "entity"
+                      ]
+                    }
+                  },
+                  "actionSequence": [
+                    {
+                      "actionType": "createInstance",
+                      "actionLabel": "createBook",
+                      "payload": {
+                        "objects": [
+                          {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referencePath": [
+                              "entity"
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "actionType": "compositeRunBoxedQueryAction",
+                      "actionLabel": "queryBooks",
+                      "nameGivenToResult": "books",
+                      "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                      "payload": {
+                        "actionType": "runBoxedQueryAction",
+                        "payload": {
+                          "query": {
+                            "queryParams": {
+                              "author": "Tolkien"
+                            },
+                            "pageParams": {
+                              "page": 1
+                            },
+                            "contextResults": {
+                              "shelf": "A"
+                            },
+                            "extractors": {
+                              "all": {
+                                "extractorOrCombinerType": "extractorByEntityReturningObjectList",
+                                "parentUuid": "b"
+                              }
+                            },
+                            "combiners": {
+                              "byAuthor": {
+                                "extractorOrCombinerType": "combinerByForeignKeyReturningObjectList"
+                              }
+                            },
+                            "runtimeTransformers": {
+                              "count": {
+                                "transformerType": "returnValue",
+                                "interpolation": "runtime",
+                                "value": 0
+                              },
+                              "sorted": {
+                                "transformerType": "getFromContext",
+                                "interpolation": "runtime",
+                                "referencePath": [
+                                  "all"
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "actionType": "compositeRunTestAssertion",
+                      "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                      "actionLabel": "check",
+                      "nameGivenToResult": "checked",
+                      "payload": {}
+                    },
+                    {
+                      "actionType": "compositeActionSequence",
+                      "actionLabel": "inner",
+                      "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                      "payload": {
+                        "actionSequence": [
+                          {
+                            "actionType": "createInstance",
+                            "actionLabel": "innerStep",
+                            "payload": {
+                              "value": {
+                                "transformerType": "getFromContext",
+                                "interpolation": "runtime",
+                                "referencePath": [
+                                  "runnerForm"
+                                ]
+                              }
+                            }
+                          },
+                          {
+                            "actionType": "createInstance",
+                            "payload": {
+                              "value": {
+                                "transformerType": "getFromContext",
+                                "interpolation": "runtime",
+                                "referencePath": [
+                                  "innerStep"
+                                ]
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "actionType": "createInstance",
+                      "actionLabel": "last",
+                      "payload": {
+                        "value": {
+                          "transformerType": "getFromContext",
+                          "interpolation": "runtime",
+                          "referencePath": [
+                            "createBook"
+                          ]
+                        },
+                        "build": {
+                          "transformerType": "getFromParameters",
+                          "referenceName": "entity"
+                        },
+                        "titles": {
+                          "transformerType": "mapList",
+                          "interpolation": "runtime",
+                          "referenceToOuterObject": "book",
+                          "applyTo": {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referencePath": [
+                              "books"
+                            ]
+                          },
+                          "elementTransformer": {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referencePath": [
+                              "book",
+                              "title"
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              [
+                "payload",
+                "actionSequence",
+                0,
+                "payload",
+                "objects",
+                0
+              ],
+              {
+                "contextNames": [],
+                "parameterNames": [
+                  "runnerForm"
+                ]
+              }
+            ],
+            "expectedValue": {
+              "contextNames": [
+                "entity",
+                "entityDefinition",
+                "runnerForm"
+              ],
+              "parameterNames": [
+                "runnerForm"
+              ]
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "an action sees earlier results by actionLabel, a boxed query's by nameGivenToResult only, not test assertions",
+            "functionRef": {
+              "module": "miroir-core/2_domain/CompositeActionScope",
+              "export": "compositeActionEnvironmentAt"
+            },
+            "arguments": [
+              {
+                "actionType": "compositeActionSequence",
+                "actionLabel": "seq",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "payload": {
+                  "templates": {
+                    "entity": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "value": {
+                        "uuid": "e"
+                      }
+                    },
+                    "entityDefinition": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "entity"
+                      ]
+                    }
+                  },
+                  "actionSequence": [
+                    {
+                      "actionType": "createInstance",
+                      "actionLabel": "createBook",
+                      "payload": {
+                        "objects": [
+                          {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referencePath": [
+                              "entity"
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "actionType": "compositeRunBoxedQueryAction",
+                      "actionLabel": "queryBooks",
+                      "nameGivenToResult": "books",
+                      "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                      "payload": {
+                        "actionType": "runBoxedQueryAction",
+                        "payload": {
+                          "query": {
+                            "queryParams": {
+                              "author": "Tolkien"
+                            },
+                            "pageParams": {
+                              "page": 1
+                            },
+                            "contextResults": {
+                              "shelf": "A"
+                            },
+                            "extractors": {
+                              "all": {
+                                "extractorOrCombinerType": "extractorByEntityReturningObjectList",
+                                "parentUuid": "b"
+                              }
+                            },
+                            "combiners": {
+                              "byAuthor": {
+                                "extractorOrCombinerType": "combinerByForeignKeyReturningObjectList"
+                              }
+                            },
+                            "runtimeTransformers": {
+                              "count": {
+                                "transformerType": "returnValue",
+                                "interpolation": "runtime",
+                                "value": 0
+                              },
+                              "sorted": {
+                                "transformerType": "getFromContext",
+                                "interpolation": "runtime",
+                                "referencePath": [
+                                  "all"
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "actionType": "compositeRunTestAssertion",
+                      "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                      "actionLabel": "check",
+                      "nameGivenToResult": "checked",
+                      "payload": {}
+                    },
+                    {
+                      "actionType": "compositeActionSequence",
+                      "actionLabel": "inner",
+                      "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                      "payload": {
+                        "actionSequence": [
+                          {
+                            "actionType": "createInstance",
+                            "actionLabel": "innerStep",
+                            "payload": {
+                              "value": {
+                                "transformerType": "getFromContext",
+                                "interpolation": "runtime",
+                                "referencePath": [
+                                  "runnerForm"
+                                ]
+                              }
+                            }
+                          },
+                          {
+                            "actionType": "createInstance",
+                            "payload": {
+                              "value": {
+                                "transformerType": "getFromContext",
+                                "interpolation": "runtime",
+                                "referencePath": [
+                                  "innerStep"
+                                ]
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "actionType": "createInstance",
+                      "actionLabel": "last",
+                      "payload": {
+                        "value": {
+                          "transformerType": "getFromContext",
+                          "interpolation": "runtime",
+                          "referencePath": [
+                            "createBook"
+                          ]
+                        },
+                        "build": {
+                          "transformerType": "getFromParameters",
+                          "referenceName": "entity"
+                        },
+                        "titles": {
+                          "transformerType": "mapList",
+                          "interpolation": "runtime",
+                          "referenceToOuterObject": "book",
+                          "applyTo": {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referencePath": [
+                              "books"
+                            ]
+                          },
+                          "elementTransformer": {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referencePath": [
+                              "book",
+                              "title"
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              [
+                "payload",
+                "actionSequence",
+                4,
+                "payload",
+                "value"
+              ],
+              {
+                "contextNames": [],
+                "parameterNames": [
+                  "runnerForm"
+                ]
+              }
+            ],
+            "expectedValue": {
+              "contextNames": [
+                "books",
+                "createBook",
+                "entity",
+                "entityDefinition",
+                "inner",
+                "runnerForm"
+              ],
+              "parameterNames": [
+                "runnerForm"
+              ]
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a build node sees the parameters and the templates as parameters, and no context",
+            "functionRef": {
+              "module": "miroir-core/2_domain/CompositeActionScope",
+              "export": "compositeActionEnvironmentAt"
+            },
+            "arguments": [
+              {
+                "actionType": "compositeActionSequence",
+                "actionLabel": "seq",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "payload": {
+                  "templates": {
+                    "entity": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "value": {
+                        "uuid": "e"
+                      }
+                    },
+                    "entityDefinition": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "entity"
+                      ]
+                    }
+                  },
+                  "actionSequence": [
+                    {
+                      "actionType": "createInstance",
+                      "actionLabel": "createBook",
+                      "payload": {
+                        "objects": [
+                          {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referencePath": [
+                              "entity"
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "actionType": "compositeRunBoxedQueryAction",
+                      "actionLabel": "queryBooks",
+                      "nameGivenToResult": "books",
+                      "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                      "payload": {
+                        "actionType": "runBoxedQueryAction",
+                        "payload": {
+                          "query": {
+                            "queryParams": {
+                              "author": "Tolkien"
+                            },
+                            "pageParams": {
+                              "page": 1
+                            },
+                            "contextResults": {
+                              "shelf": "A"
+                            },
+                            "extractors": {
+                              "all": {
+                                "extractorOrCombinerType": "extractorByEntityReturningObjectList",
+                                "parentUuid": "b"
+                              }
+                            },
+                            "combiners": {
+                              "byAuthor": {
+                                "extractorOrCombinerType": "combinerByForeignKeyReturningObjectList"
+                              }
+                            },
+                            "runtimeTransformers": {
+                              "count": {
+                                "transformerType": "returnValue",
+                                "interpolation": "runtime",
+                                "value": 0
+                              },
+                              "sorted": {
+                                "transformerType": "getFromContext",
+                                "interpolation": "runtime",
+                                "referencePath": [
+                                  "all"
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "actionType": "compositeRunTestAssertion",
+                      "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                      "actionLabel": "check",
+                      "nameGivenToResult": "checked",
+                      "payload": {}
+                    },
+                    {
+                      "actionType": "compositeActionSequence",
+                      "actionLabel": "inner",
+                      "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                      "payload": {
+                        "actionSequence": [
+                          {
+                            "actionType": "createInstance",
+                            "actionLabel": "innerStep",
+                            "payload": {
+                              "value": {
+                                "transformerType": "getFromContext",
+                                "interpolation": "runtime",
+                                "referencePath": [
+                                  "runnerForm"
+                                ]
+                              }
+                            }
+                          },
+                          {
+                            "actionType": "createInstance",
+                            "payload": {
+                              "value": {
+                                "transformerType": "getFromContext",
+                                "interpolation": "runtime",
+                                "referencePath": [
+                                  "innerStep"
+                                ]
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "actionType": "createInstance",
+                      "actionLabel": "last",
+                      "payload": {
+                        "value": {
+                          "transformerType": "getFromContext",
+                          "interpolation": "runtime",
+                          "referencePath": [
+                            "createBook"
+                          ]
+                        },
+                        "build": {
+                          "transformerType": "getFromParameters",
+                          "referenceName": "entity"
+                        },
+                        "titles": {
+                          "transformerType": "mapList",
+                          "interpolation": "runtime",
+                          "referenceToOuterObject": "book",
+                          "applyTo": {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referencePath": [
+                              "books"
+                            ]
+                          },
+                          "elementTransformer": {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referencePath": [
+                              "book",
+                              "title"
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              [
+                "payload",
+                "actionSequence",
+                4,
+                "payload",
+                "build"
+              ],
+              {
+                "contextNames": [],
+                "parameterNames": [
+                  "runnerForm"
+                ]
+              }
+            ],
+            "expectedValue": {
+              "contextNames": [],
+              "parameterNames": [
+                "entity",
+                "entityDefinition",
+                "runnerForm"
+              ]
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "an empty slot of an action is runtime",
+            "functionRef": {
+              "module": "miroir-core/2_domain/CompositeActionScope",
+              "export": "compositeActionEnvironmentAt"
+            },
+            "arguments": [
+              {
+                "actionType": "compositeActionSequence",
+                "actionLabel": "seq",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "payload": {
+                  "templates": {
+                    "entity": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "value": {
+                        "uuid": "e"
+                      }
+                    },
+                    "entityDefinition": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "entity"
+                      ]
+                    }
+                  },
+                  "actionSequence": [
+                    {
+                      "actionType": "createInstance",
+                      "actionLabel": "createBook",
+                      "payload": {
+                        "objects": [
+                          {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referencePath": [
+                              "entity"
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "actionType": "compositeRunBoxedQueryAction",
+                      "actionLabel": "queryBooks",
+                      "nameGivenToResult": "books",
+                      "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                      "payload": {
+                        "actionType": "runBoxedQueryAction",
+                        "payload": {
+                          "query": {
+                            "queryParams": {
+                              "author": "Tolkien"
+                            },
+                            "pageParams": {
+                              "page": 1
+                            },
+                            "contextResults": {
+                              "shelf": "A"
+                            },
+                            "extractors": {
+                              "all": {
+                                "extractorOrCombinerType": "extractorByEntityReturningObjectList",
+                                "parentUuid": "b"
+                              }
+                            },
+                            "combiners": {
+                              "byAuthor": {
+                                "extractorOrCombinerType": "combinerByForeignKeyReturningObjectList"
+                              }
+                            },
+                            "runtimeTransformers": {
+                              "count": {
+                                "transformerType": "returnValue",
+                                "interpolation": "runtime",
+                                "value": 0
+                              },
+                              "sorted": {
+                                "transformerType": "getFromContext",
+                                "interpolation": "runtime",
+                                "referencePath": [
+                                  "all"
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "actionType": "compositeRunTestAssertion",
+                      "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                      "actionLabel": "check",
+                      "nameGivenToResult": "checked",
+                      "payload": {}
+                    },
+                    {
+                      "actionType": "compositeActionSequence",
+                      "actionLabel": "inner",
+                      "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                      "payload": {
+                        "actionSequence": [
+                          {
+                            "actionType": "createInstance",
+                            "actionLabel": "innerStep",
+                            "payload": {
+                              "value": {
+                                "transformerType": "getFromContext",
+                                "interpolation": "runtime",
+                                "referencePath": [
+                                  "runnerForm"
+                                ]
+                              }
+                            }
+                          },
+                          {
+                            "actionType": "createInstance",
+                            "payload": {
+                              "value": {
+                                "transformerType": "getFromContext",
+                                "interpolation": "runtime",
+                                "referencePath": [
+                                  "innerStep"
+                                ]
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "actionType": "createInstance",
+                      "actionLabel": "last",
+                      "payload": {
+                        "value": {
+                          "transformerType": "getFromContext",
+                          "interpolation": "runtime",
+                          "referencePath": [
+                            "createBook"
+                          ]
+                        },
+                        "build": {
+                          "transformerType": "getFromParameters",
+                          "referenceName": "entity"
+                        },
+                        "titles": {
+                          "transformerType": "mapList",
+                          "interpolation": "runtime",
+                          "referenceToOuterObject": "book",
+                          "applyTo": {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referencePath": [
+                              "books"
+                            ]
+                          },
+                          "elementTransformer": {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referencePath": [
+                              "book",
+                              "title"
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              [
+                "payload",
+                "actionSequence",
+                4,
+                "payload",
+                "missing"
+              ],
+              {
+                "contextNames": [],
+                "parameterNames": [
+                  "runnerForm"
+                ]
+              }
+            ],
+            "expectedValue": {
+              "contextNames": [
+                "books",
+                "createBook",
+                "entity",
+                "entityDefinition",
+                "inner",
+                "runnerForm"
+              ],
+              "parameterNames": [
+                "runnerForm"
+              ]
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a transformer in an action binds its names as in a transformer",
+            "functionRef": {
+              "module": "miroir-core/2_domain/CompositeActionScope",
+              "export": "compositeActionEnvironmentAt"
+            },
+            "arguments": [
+              {
+                "actionType": "compositeActionSequence",
+                "actionLabel": "seq",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "payload": {
+                  "templates": {
+                    "entity": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "value": {
+                        "uuid": "e"
+                      }
+                    },
+                    "entityDefinition": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "entity"
+                      ]
+                    }
+                  },
+                  "actionSequence": [
+                    {
+                      "actionType": "createInstance",
+                      "actionLabel": "createBook",
+                      "payload": {
+                        "objects": [
+                          {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referencePath": [
+                              "entity"
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "actionType": "compositeRunBoxedQueryAction",
+                      "actionLabel": "queryBooks",
+                      "nameGivenToResult": "books",
+                      "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                      "payload": {
+                        "actionType": "runBoxedQueryAction",
+                        "payload": {
+                          "query": {
+                            "queryParams": {
+                              "author": "Tolkien"
+                            },
+                            "pageParams": {
+                              "page": 1
+                            },
+                            "contextResults": {
+                              "shelf": "A"
+                            },
+                            "extractors": {
+                              "all": {
+                                "extractorOrCombinerType": "extractorByEntityReturningObjectList",
+                                "parentUuid": "b"
+                              }
+                            },
+                            "combiners": {
+                              "byAuthor": {
+                                "extractorOrCombinerType": "combinerByForeignKeyReturningObjectList"
+                              }
+                            },
+                            "runtimeTransformers": {
+                              "count": {
+                                "transformerType": "returnValue",
+                                "interpolation": "runtime",
+                                "value": 0
+                              },
+                              "sorted": {
+                                "transformerType": "getFromContext",
+                                "interpolation": "runtime",
+                                "referencePath": [
+                                  "all"
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "actionType": "compositeRunTestAssertion",
+                      "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                      "actionLabel": "check",
+                      "nameGivenToResult": "checked",
+                      "payload": {}
+                    },
+                    {
+                      "actionType": "compositeActionSequence",
+                      "actionLabel": "inner",
+                      "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                      "payload": {
+                        "actionSequence": [
+                          {
+                            "actionType": "createInstance",
+                            "actionLabel": "innerStep",
+                            "payload": {
+                              "value": {
+                                "transformerType": "getFromContext",
+                                "interpolation": "runtime",
+                                "referencePath": [
+                                  "runnerForm"
+                                ]
+                              }
+                            }
+                          },
+                          {
+                            "actionType": "createInstance",
+                            "payload": {
+                              "value": {
+                                "transformerType": "getFromContext",
+                                "interpolation": "runtime",
+                                "referencePath": [
+                                  "innerStep"
+                                ]
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "actionType": "createInstance",
+                      "actionLabel": "last",
+                      "payload": {
+                        "value": {
+                          "transformerType": "getFromContext",
+                          "interpolation": "runtime",
+                          "referencePath": [
+                            "createBook"
+                          ]
+                        },
+                        "build": {
+                          "transformerType": "getFromParameters",
+                          "referenceName": "entity"
+                        },
+                        "titles": {
+                          "transformerType": "mapList",
+                          "interpolation": "runtime",
+                          "referenceToOuterObject": "book",
+                          "applyTo": {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referencePath": [
+                              "books"
+                            ]
+                          },
+                          "elementTransformer": {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referencePath": [
+                              "book",
+                              "title"
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              [
+                "payload",
+                "actionSequence",
+                4,
+                "payload",
+                "titles",
+                "elementTransformer"
+              ],
+              {
+                "contextNames": [],
+                "parameterNames": [
+                  "runnerForm"
+                ]
+              }
+            ],
+            "expectedValue": {
+              "contextNames": [
+                "book",
+                "books",
+                "createBook",
+                "entity",
+                "entityDefinition",
+                "inner",
+                "runnerForm"
+              ],
+              "parameterNames": [
+                "runnerForm"
+              ]
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a runtime transformer of a query sees the query's parameters, its results before it and the action's context",
+            "functionRef": {
+              "module": "miroir-core/2_domain/CompositeActionScope",
+              "export": "compositeActionEnvironmentAt"
+            },
+            "arguments": [
+              {
+                "actionType": "compositeActionSequence",
+                "actionLabel": "seq",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "payload": {
+                  "templates": {
+                    "entity": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "value": {
+                        "uuid": "e"
+                      }
+                    },
+                    "entityDefinition": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "entity"
+                      ]
+                    }
+                  },
+                  "actionSequence": [
+                    {
+                      "actionType": "createInstance",
+                      "actionLabel": "createBook",
+                      "payload": {
+                        "objects": [
+                          {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referencePath": [
+                              "entity"
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "actionType": "compositeRunBoxedQueryAction",
+                      "actionLabel": "queryBooks",
+                      "nameGivenToResult": "books",
+                      "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                      "payload": {
+                        "actionType": "runBoxedQueryAction",
+                        "payload": {
+                          "query": {
+                            "queryParams": {
+                              "author": "Tolkien"
+                            },
+                            "pageParams": {
+                              "page": 1
+                            },
+                            "contextResults": {
+                              "shelf": "A"
+                            },
+                            "extractors": {
+                              "all": {
+                                "extractorOrCombinerType": "extractorByEntityReturningObjectList",
+                                "parentUuid": "b"
+                              }
+                            },
+                            "combiners": {
+                              "byAuthor": {
+                                "extractorOrCombinerType": "combinerByForeignKeyReturningObjectList"
+                              }
+                            },
+                            "runtimeTransformers": {
+                              "count": {
+                                "transformerType": "returnValue",
+                                "interpolation": "runtime",
+                                "value": 0
+                              },
+                              "sorted": {
+                                "transformerType": "getFromContext",
+                                "interpolation": "runtime",
+                                "referencePath": [
+                                  "all"
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "actionType": "compositeRunTestAssertion",
+                      "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                      "actionLabel": "check",
+                      "nameGivenToResult": "checked",
+                      "payload": {}
+                    },
+                    {
+                      "actionType": "compositeActionSequence",
+                      "actionLabel": "inner",
+                      "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                      "payload": {
+                        "actionSequence": [
+                          {
+                            "actionType": "createInstance",
+                            "actionLabel": "innerStep",
+                            "payload": {
+                              "value": {
+                                "transformerType": "getFromContext",
+                                "interpolation": "runtime",
+                                "referencePath": [
+                                  "runnerForm"
+                                ]
+                              }
+                            }
+                          },
+                          {
+                            "actionType": "createInstance",
+                            "payload": {
+                              "value": {
+                                "transformerType": "getFromContext",
+                                "interpolation": "runtime",
+                                "referencePath": [
+                                  "innerStep"
+                                ]
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "actionType": "createInstance",
+                      "actionLabel": "last",
+                      "payload": {
+                        "value": {
+                          "transformerType": "getFromContext",
+                          "interpolation": "runtime",
+                          "referencePath": [
+                            "createBook"
+                          ]
+                        },
+                        "build": {
+                          "transformerType": "getFromParameters",
+                          "referenceName": "entity"
+                        },
+                        "titles": {
+                          "transformerType": "mapList",
+                          "interpolation": "runtime",
+                          "referenceToOuterObject": "book",
+                          "applyTo": {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referencePath": [
+                              "books"
+                            ]
+                          },
+                          "elementTransformer": {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referencePath": [
+                              "book",
+                              "title"
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              [
+                "payload",
+                "actionSequence",
+                1,
+                "payload",
+                "payload",
+                "query",
+                "runtimeTransformers",
+                "sorted"
+              ],
+              {
+                "contextNames": [],
+                "parameterNames": [
+                  "runnerForm"
+                ]
+              }
+            ],
+            "expectedValue": {
+              "contextNames": [
+                "all",
+                "byAuthor",
+                "count",
+                "createBook",
+                "entity",
+                "entityDefinition",
+                "runnerForm",
+                "shelf"
+              ],
+              "parameterNames": [
+                "author",
+                "page"
+              ]
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a nested sequence starts with no templates and no earlier results",
+            "functionRef": {
+              "module": "miroir-core/2_domain/CompositeActionScope",
+              "export": "compositeActionEnvironmentAt"
+            },
+            "arguments": [
+              {
+                "actionType": "compositeActionSequence",
+                "actionLabel": "seq",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "payload": {
+                  "templates": {
+                    "entity": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "value": {
+                        "uuid": "e"
+                      }
+                    },
+                    "entityDefinition": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "entity"
+                      ]
+                    }
+                  },
+                  "actionSequence": [
+                    {
+                      "actionType": "createInstance",
+                      "actionLabel": "createBook",
+                      "payload": {
+                        "objects": [
+                          {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referencePath": [
+                              "entity"
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "actionType": "compositeRunBoxedQueryAction",
+                      "actionLabel": "queryBooks",
+                      "nameGivenToResult": "books",
+                      "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                      "payload": {
+                        "actionType": "runBoxedQueryAction",
+                        "payload": {
+                          "query": {
+                            "queryParams": {
+                              "author": "Tolkien"
+                            },
+                            "pageParams": {
+                              "page": 1
+                            },
+                            "contextResults": {
+                              "shelf": "A"
+                            },
+                            "extractors": {
+                              "all": {
+                                "extractorOrCombinerType": "extractorByEntityReturningObjectList",
+                                "parentUuid": "b"
+                              }
+                            },
+                            "combiners": {
+                              "byAuthor": {
+                                "extractorOrCombinerType": "combinerByForeignKeyReturningObjectList"
+                              }
+                            },
+                            "runtimeTransformers": {
+                              "count": {
+                                "transformerType": "returnValue",
+                                "interpolation": "runtime",
+                                "value": 0
+                              },
+                              "sorted": {
+                                "transformerType": "getFromContext",
+                                "interpolation": "runtime",
+                                "referencePath": [
+                                  "all"
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "actionType": "compositeRunTestAssertion",
+                      "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                      "actionLabel": "check",
+                      "nameGivenToResult": "checked",
+                      "payload": {}
+                    },
+                    {
+                      "actionType": "compositeActionSequence",
+                      "actionLabel": "inner",
+                      "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                      "payload": {
+                        "actionSequence": [
+                          {
+                            "actionType": "createInstance",
+                            "actionLabel": "innerStep",
+                            "payload": {
+                              "value": {
+                                "transformerType": "getFromContext",
+                                "interpolation": "runtime",
+                                "referencePath": [
+                                  "runnerForm"
+                                ]
+                              }
+                            }
+                          },
+                          {
+                            "actionType": "createInstance",
+                            "payload": {
+                              "value": {
+                                "transformerType": "getFromContext",
+                                "interpolation": "runtime",
+                                "referencePath": [
+                                  "innerStep"
+                                ]
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "actionType": "createInstance",
+                      "actionLabel": "last",
+                      "payload": {
+                        "value": {
+                          "transformerType": "getFromContext",
+                          "interpolation": "runtime",
+                          "referencePath": [
+                            "createBook"
+                          ]
+                        },
+                        "build": {
+                          "transformerType": "getFromParameters",
+                          "referenceName": "entity"
+                        },
+                        "titles": {
+                          "transformerType": "mapList",
+                          "interpolation": "runtime",
+                          "referenceToOuterObject": "book",
+                          "applyTo": {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referencePath": [
+                              "books"
+                            ]
+                          },
+                          "elementTransformer": {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referencePath": [
+                              "book",
+                              "title"
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              [
+                "payload",
+                "actionSequence",
+                3,
+                "payload",
+                "actionSequence",
+                0,
+                "payload",
+                "value"
+              ],
+              {
+                "contextNames": [],
+                "parameterNames": [
+                  "runnerForm"
+                ]
+              }
+            ],
+            "expectedValue": {
+              "contextNames": [
+                "runnerForm"
+              ],
+              "parameterNames": [
+                "runnerForm"
+              ]
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a step of a nested sequence sees the steps of that sequence before it",
+            "functionRef": {
+              "module": "miroir-core/2_domain/CompositeActionScope",
+              "export": "compositeActionEnvironmentAt"
+            },
+            "arguments": [
+              {
+                "actionType": "compositeActionSequence",
+                "actionLabel": "seq",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "payload": {
+                  "templates": {
+                    "entity": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "value": {
+                        "uuid": "e"
+                      }
+                    },
+                    "entityDefinition": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "entity"
+                      ]
+                    }
+                  },
+                  "actionSequence": [
+                    {
+                      "actionType": "createInstance",
+                      "actionLabel": "createBook",
+                      "payload": {
+                        "objects": [
+                          {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referencePath": [
+                              "entity"
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "actionType": "compositeRunBoxedQueryAction",
+                      "actionLabel": "queryBooks",
+                      "nameGivenToResult": "books",
+                      "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                      "payload": {
+                        "actionType": "runBoxedQueryAction",
+                        "payload": {
+                          "query": {
+                            "queryParams": {
+                              "author": "Tolkien"
+                            },
+                            "pageParams": {
+                              "page": 1
+                            },
+                            "contextResults": {
+                              "shelf": "A"
+                            },
+                            "extractors": {
+                              "all": {
+                                "extractorOrCombinerType": "extractorByEntityReturningObjectList",
+                                "parentUuid": "b"
+                              }
+                            },
+                            "combiners": {
+                              "byAuthor": {
+                                "extractorOrCombinerType": "combinerByForeignKeyReturningObjectList"
+                              }
+                            },
+                            "runtimeTransformers": {
+                              "count": {
+                                "transformerType": "returnValue",
+                                "interpolation": "runtime",
+                                "value": 0
+                              },
+                              "sorted": {
+                                "transformerType": "getFromContext",
+                                "interpolation": "runtime",
+                                "referencePath": [
+                                  "all"
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "actionType": "compositeRunTestAssertion",
+                      "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                      "actionLabel": "check",
+                      "nameGivenToResult": "checked",
+                      "payload": {}
+                    },
+                    {
+                      "actionType": "compositeActionSequence",
+                      "actionLabel": "inner",
+                      "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                      "payload": {
+                        "actionSequence": [
+                          {
+                            "actionType": "createInstance",
+                            "actionLabel": "innerStep",
+                            "payload": {
+                              "value": {
+                                "transformerType": "getFromContext",
+                                "interpolation": "runtime",
+                                "referencePath": [
+                                  "runnerForm"
+                                ]
+                              }
+                            }
+                          },
+                          {
+                            "actionType": "createInstance",
+                            "payload": {
+                              "value": {
+                                "transformerType": "getFromContext",
+                                "interpolation": "runtime",
+                                "referencePath": [
+                                  "innerStep"
+                                ]
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "actionType": "createInstance",
+                      "actionLabel": "last",
+                      "payload": {
+                        "value": {
+                          "transformerType": "getFromContext",
+                          "interpolation": "runtime",
+                          "referencePath": [
+                            "createBook"
+                          ]
+                        },
+                        "build": {
+                          "transformerType": "getFromParameters",
+                          "referenceName": "entity"
+                        },
+                        "titles": {
+                          "transformerType": "mapList",
+                          "interpolation": "runtime",
+                          "referenceToOuterObject": "book",
+                          "applyTo": {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referencePath": [
+                              "books"
+                            ]
+                          },
+                          "elementTransformer": {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referencePath": [
+                              "book",
+                              "title"
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              [
+                "payload",
+                "actionSequence",
+                3,
+                "payload",
+                "actionSequence",
+                1,
+                "payload",
+                "value"
+              ],
+              {
+                "contextNames": [],
+                "parameterNames": [
+                  "runnerForm"
+                ]
+              }
+            ],
+            "expectedValue": {
+              "contextNames": [
+                "innerStep",
+                "runnerForm"
+              ],
+              "parameterNames": [
+                "runnerForm"
+              ]
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "the context the caller gives is seen by every action",
+            "functionRef": {
+              "module": "miroir-core/2_domain/CompositeActionScope",
+              "export": "compositeActionEnvironmentAt"
+            },
+            "arguments": [
+              {
+                "actionType": "compositeActionSequence",
+                "actionLabel": "seq",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "payload": {
+                  "templates": {
+                    "entity": {
+                      "transformerType": "returnValue",
+                      "interpolation": "runtime",
+                      "value": {
+                        "uuid": "e"
+                      }
+                    },
+                    "entityDefinition": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "entity"
+                      ]
+                    }
+                  },
+                  "actionSequence": [
+                    {
+                      "actionType": "createInstance",
+                      "actionLabel": "createBook",
+                      "payload": {
+                        "objects": [
+                          {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referencePath": [
+                              "entity"
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "actionType": "compositeRunBoxedQueryAction",
+                      "actionLabel": "queryBooks",
+                      "nameGivenToResult": "books",
+                      "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                      "payload": {
+                        "actionType": "runBoxedQueryAction",
+                        "payload": {
+                          "query": {
+                            "queryParams": {
+                              "author": "Tolkien"
+                            },
+                            "pageParams": {
+                              "page": 1
+                            },
+                            "contextResults": {
+                              "shelf": "A"
+                            },
+                            "extractors": {
+                              "all": {
+                                "extractorOrCombinerType": "extractorByEntityReturningObjectList",
+                                "parentUuid": "b"
+                              }
+                            },
+                            "combiners": {
+                              "byAuthor": {
+                                "extractorOrCombinerType": "combinerByForeignKeyReturningObjectList"
+                              }
+                            },
+                            "runtimeTransformers": {
+                              "count": {
+                                "transformerType": "returnValue",
+                                "interpolation": "runtime",
+                                "value": 0
+                              },
+                              "sorted": {
+                                "transformerType": "getFromContext",
+                                "interpolation": "runtime",
+                                "referencePath": [
+                                  "all"
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "actionType": "compositeRunTestAssertion",
+                      "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                      "actionLabel": "check",
+                      "nameGivenToResult": "checked",
+                      "payload": {}
+                    },
+                    {
+                      "actionType": "compositeActionSequence",
+                      "actionLabel": "inner",
+                      "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                      "payload": {
+                        "actionSequence": [
+                          {
+                            "actionType": "createInstance",
+                            "actionLabel": "innerStep",
+                            "payload": {
+                              "value": {
+                                "transformerType": "getFromContext",
+                                "interpolation": "runtime",
+                                "referencePath": [
+                                  "runnerForm"
+                                ]
+                              }
+                            }
+                          },
+                          {
+                            "actionType": "createInstance",
+                            "payload": {
+                              "value": {
+                                "transformerType": "getFromContext",
+                                "interpolation": "runtime",
+                                "referencePath": [
+                                  "innerStep"
+                                ]
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "actionType": "createInstance",
+                      "actionLabel": "last",
+                      "payload": {
+                        "value": {
+                          "transformerType": "getFromContext",
+                          "interpolation": "runtime",
+                          "referencePath": [
+                            "createBook"
+                          ]
+                        },
+                        "build": {
+                          "transformerType": "getFromParameters",
+                          "referenceName": "entity"
+                        },
+                        "titles": {
+                          "transformerType": "mapList",
+                          "interpolation": "runtime",
+                          "referenceToOuterObject": "book",
+                          "applyTo": {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referencePath": [
+                              "books"
+                            ]
+                          },
+                          "elementTransformer": {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referencePath": [
+                              "book",
+                              "title"
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              },
+              [
+                "payload",
+                "actionSequence",
+                0,
+                "payload",
+                "objects",
+                0
+              ],
+              {
+                "contextNames": [
+                  "testContext"
+                ],
+                "parameterNames": [
+                  "runnerForm"
+                ]
+              }
+            ],
+            "expectedValue": {
+              "contextNames": [
+                "entity",
+                "entityDefinition",
+                "runnerForm",
+                "testContext"
+              ],
+              "parameterNames": [
+                "runnerForm"
+              ]
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a Runner's form values are one parameter, under the Runner's name",
+            "functionRef": {
+              "module": "miroir-core/2_domain/CompositeActionScope",
+              "export": "runnerEnvironment"
+            },
+            "arguments": [
+              "createEntity"
+            ],
+            "expectedValue": {
+              "contextNames": [],
+              "parameterNames": [
+                "createEntity"
+              ]
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "the body of a composite TransformerDefinition sees its parameters",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerEnvironmentBindings",
+              "export": "transformerDefinitionBodyEnvironment"
+            },
+            "arguments": [
+              {
+                "transformerInterface": {
+                  "transformerParameterSchema": {
+                    "transformerDefinition": {
+                      "type": "object",
+                      "definition": {
+                        "entityDefinition": {
+                          "type": "any"
+                        },
+                        "attributeNames": {
+                          "type": "array",
+                          "definition": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "expectedValue": {
+              "contextNames": [
+                "attributeNames",
+                "entityDefinition"
+              ],
+              "parameterNames": []
+            }
+          }
+        ]
+      },
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "referencePathAttributeNames",
+        "miroirTests": [
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a name bound to an object schema gives its attributes",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "referencePathAttributeNames"
+            },
+            "arguments": [
+              {
+                "book": {
+                  "type": "object",
+                  "definition": {
+                    "title": {
+                      "type": "string"
+                    },
+                    "year": {
+                      "type": "number"
+                    },
+                    "author": {
+                      "type": "object",
+                      "definition": {
+                        "name": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                },
+                "books": {
+                  "type": "array",
+                  "definition": {
+                    "type": "object",
+                    "definition": {
+                      "title": {
+                        "type": "string"
+                      },
+                      "year": {
+                        "type": "number"
+                      },
+                      "author": {
+                        "type": "object",
+                        "definition": {
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "shelves": {
+                  "type": "record",
+                  "definition": {
+                    "type": "object",
+                    "definition": {
+                      "title": {
+                        "type": "string"
+                      },
+                      "year": {
+                        "type": "number"
+                      },
+                      "author": {
+                        "type": "object",
+                        "definition": {
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "count": {
+                  "type": "number"
+                },
+                "loose": {
+                  "type": "object",
+                  "definition": {}
+                }
+              },
+              [
+                "book"
+              ]
+            ],
+            "expectedValue": [
+              "title",
+              "year",
+              "author"
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a path into a nested object gives the nested attributes",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "referencePathAttributeNames"
+            },
+            "arguments": [
+              {
+                "book": {
+                  "type": "object",
+                  "definition": {
+                    "title": {
+                      "type": "string"
+                    },
+                    "year": {
+                      "type": "number"
+                    },
+                    "author": {
+                      "type": "object",
+                      "definition": {
+                        "name": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                },
+                "books": {
+                  "type": "array",
+                  "definition": {
+                    "type": "object",
+                    "definition": {
+                      "title": {
+                        "type": "string"
+                      },
+                      "year": {
+                        "type": "number"
+                      },
+                      "author": {
+                        "type": "object",
+                        "definition": {
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "shelves": {
+                  "type": "record",
+                  "definition": {
+                    "type": "object",
+                    "definition": {
+                      "title": {
+                        "type": "string"
+                      },
+                      "year": {
+                        "type": "number"
+                      },
+                      "author": {
+                        "type": "object",
+                        "definition": {
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "count": {
+                  "type": "number"
+                },
+                "loose": {
+                  "type": "object",
+                  "definition": {}
+                }
+              },
+              [
+                "book",
+                "author"
+              ]
+            ],
+            "expectedValue": [
+              "name"
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a list is crossed by an index",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "referencePathAttributeNames"
+            },
+            "arguments": [
+              {
+                "book": {
+                  "type": "object",
+                  "definition": {
+                    "title": {
+                      "type": "string"
+                    },
+                    "year": {
+                      "type": "number"
+                    },
+                    "author": {
+                      "type": "object",
+                      "definition": {
+                        "name": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                },
+                "books": {
+                  "type": "array",
+                  "definition": {
+                    "type": "object",
+                    "definition": {
+                      "title": {
+                        "type": "string"
+                      },
+                      "year": {
+                        "type": "number"
+                      },
+                      "author": {
+                        "type": "object",
+                        "definition": {
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "shelves": {
+                  "type": "record",
+                  "definition": {
+                    "type": "object",
+                    "definition": {
+                      "title": {
+                        "type": "string"
+                      },
+                      "year": {
+                        "type": "number"
+                      },
+                      "author": {
+                        "type": "object",
+                        "definition": {
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "count": {
+                  "type": "number"
+                },
+                "loose": {
+                  "type": "object",
+                  "definition": {}
+                }
+              },
+              [
+                "books",
+                0
+              ]
+            ],
+            "expectedValue": [
+              "title",
+              "year",
+              "author"
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a record is crossed by a key",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "referencePathAttributeNames"
+            },
+            "arguments": [
+              {
+                "book": {
+                  "type": "object",
+                  "definition": {
+                    "title": {
+                      "type": "string"
+                    },
+                    "year": {
+                      "type": "number"
+                    },
+                    "author": {
+                      "type": "object",
+                      "definition": {
+                        "name": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                },
+                "books": {
+                  "type": "array",
+                  "definition": {
+                    "type": "object",
+                    "definition": {
+                      "title": {
+                        "type": "string"
+                      },
+                      "year": {
+                        "type": "number"
+                      },
+                      "author": {
+                        "type": "object",
+                        "definition": {
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "shelves": {
+                  "type": "record",
+                  "definition": {
+                    "type": "object",
+                    "definition": {
+                      "title": {
+                        "type": "string"
+                      },
+                      "year": {
+                        "type": "number"
+                      },
+                      "author": {
+                        "type": "object",
+                        "definition": {
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "count": {
+                  "type": "number"
+                },
+                "loose": {
+                  "type": "object",
+                  "definition": {}
+                }
+              },
+              [
+                "shelves",
+                "fiction"
+              ]
+            ],
+            "expectedValue": [
+              "title",
+              "year",
+              "author"
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a scalar has no attributes",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "referencePathAttributeNames"
+            },
+            "arguments": [
+              {
+                "book": {
+                  "type": "object",
+                  "definition": {
+                    "title": {
+                      "type": "string"
+                    },
+                    "year": {
+                      "type": "number"
+                    },
+                    "author": {
+                      "type": "object",
+                      "definition": {
+                        "name": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                },
+                "books": {
+                  "type": "array",
+                  "definition": {
+                    "type": "object",
+                    "definition": {
+                      "title": {
+                        "type": "string"
+                      },
+                      "year": {
+                        "type": "number"
+                      },
+                      "author": {
+                        "type": "object",
+                        "definition": {
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "shelves": {
+                  "type": "record",
+                  "definition": {
+                    "type": "object",
+                    "definition": {
+                      "title": {
+                        "type": "string"
+                      },
+                      "year": {
+                        "type": "number"
+                      },
+                      "author": {
+                        "type": "object",
+                        "definition": {
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "count": {
+                  "type": "number"
+                },
+                "loose": {
+                  "type": "object",
+                  "definition": {}
+                }
+              },
+              [
+                "count"
+              ]
+            ],
+            "expectedValue": {
+              "__miroirJsonUndefined": true
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "an object without declared attributes has none",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "referencePathAttributeNames"
+            },
+            "arguments": [
+              {
+                "book": {
+                  "type": "object",
+                  "definition": {
+                    "title": {
+                      "type": "string"
+                    },
+                    "year": {
+                      "type": "number"
+                    },
+                    "author": {
+                      "type": "object",
+                      "definition": {
+                        "name": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                },
+                "books": {
+                  "type": "array",
+                  "definition": {
+                    "type": "object",
+                    "definition": {
+                      "title": {
+                        "type": "string"
+                      },
+                      "year": {
+                        "type": "number"
+                      },
+                      "author": {
+                        "type": "object",
+                        "definition": {
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "shelves": {
+                  "type": "record",
+                  "definition": {
+                    "type": "object",
+                    "definition": {
+                      "title": {
+                        "type": "string"
+                      },
+                      "year": {
+                        "type": "number"
+                      },
+                      "author": {
+                        "type": "object",
+                        "definition": {
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "count": {
+                  "type": "number"
+                },
+                "loose": {
+                  "type": "object",
+                  "definition": {}
+                }
+              },
+              [
+                "loose"
+              ]
+            ],
+            "expectedValue": {
+              "__miroirJsonUndefined": true
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "an unknown name has none",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "referencePathAttributeNames"
+            },
+            "arguments": [
+              {
+                "book": {
+                  "type": "object",
+                  "definition": {
+                    "title": {
+                      "type": "string"
+                    },
+                    "year": {
+                      "type": "number"
+                    },
+                    "author": {
+                      "type": "object",
+                      "definition": {
+                        "name": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                },
+                "books": {
+                  "type": "array",
+                  "definition": {
+                    "type": "object",
+                    "definition": {
+                      "title": {
+                        "type": "string"
+                      },
+                      "year": {
+                        "type": "number"
+                      },
+                      "author": {
+                        "type": "object",
+                        "definition": {
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "shelves": {
+                  "type": "record",
+                  "definition": {
+                    "type": "object",
+                    "definition": {
+                      "title": {
+                        "type": "string"
+                      },
+                      "year": {
+                        "type": "number"
+                      },
+                      "author": {
+                        "type": "object",
+                        "definition": {
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "count": {
+                  "type": "number"
+                },
+                "loose": {
+                  "type": "object",
+                  "definition": {}
+                }
+              },
+              [
+                "unknown"
+              ]
+            ],
+            "expectedValue": {
+              "__miroirJsonUndefined": true
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a path past a scalar has none",
+            "functionRef": {
+              "module": "miroir-core/2_domain/Transformer_ResultSchema",
+              "export": "referencePathAttributeNames"
+            },
+            "arguments": [
+              {
+                "book": {
+                  "type": "object",
+                  "definition": {
+                    "title": {
+                      "type": "string"
+                    },
+                    "year": {
+                      "type": "number"
+                    },
+                    "author": {
+                      "type": "object",
+                      "definition": {
+                        "name": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                },
+                "books": {
+                  "type": "array",
+                  "definition": {
+                    "type": "object",
+                    "definition": {
+                      "title": {
+                        "type": "string"
+                      },
+                      "year": {
+                        "type": "number"
+                      },
+                      "author": {
+                        "type": "object",
+                        "definition": {
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "shelves": {
+                  "type": "record",
+                  "definition": {
+                    "type": "object",
+                    "definition": {
+                      "title": {
+                        "type": "string"
+                      },
+                      "year": {
+                        "type": "number"
+                      },
+                      "author": {
+                        "type": "object",
+                        "definition": {
+                          "name": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "count": {
+                  "type": "number"
+                },
+                "loose": {
+                  "type": "object",
+                  "definition": {}
+                }
+              },
+              [
+                "book",
+                "title",
+                "length"
+              ]
+            ],
+            "expectedValue": {
+              "__miroirJsonUndefined": true
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "the interface walk reports the schemas a node sees, with withContext",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerInterfaceCheck",
+              "export": "checkTransformerInterfaceRecursively"
+            },
+            "arguments": [
+              {
+                "transformerType": "dataflowObject",
+                "interpolation": "runtime",
+                "definition": {
+                  "book": {
+                    "transformerType": "returnValue",
+                    "interpolation": "runtime",
+                    "value": {
+                      "title": "Dune",
+                      "year": 1965
+                    },
+                    "mlSchema": {
+                      "type": "object",
+                      "definition": {
+                        "title": {
+                          "type": "string"
+                        },
+                        "year": {
+                          "type": "number"
+                        },
+                        "author": {
+                          "type": "object",
+                          "definition": {
+                            "name": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "value": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referencePath": [
+                      "book",
+                      "title"
+                    ]
+                  }
+                }
+              },
+              "any",
+              {
+                "withContext": true
+              }
+            ],
+            "assertions": [
+              {
+                "label": "the second step sees the first",
+                "resultAccessPath": [
+                  "nodes",
+                  2,
+                  "context",
+                  "book"
+                ],
+                "expectedValue": {
+                  "type": "object",
+                  "definition": {
+                    "title": {
+                      "type": "string"
+                    },
+                    "year": {
+                      "type": "number"
+                    },
+                    "author": {
+                      "type": "object",
+                      "definition": {
+                        "name": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "label": "the first step does not see itself",
+                "resultAccessPath": [
+                  "nodes",
+                  1,
+                  "context",
+                  "defaultInput",
+                  "type"
+                ],
+                "expectedValue": "any"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

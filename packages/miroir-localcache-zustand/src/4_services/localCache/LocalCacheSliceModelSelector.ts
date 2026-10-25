@@ -22,7 +22,8 @@ import {
   type Query,
   type Runner,
   type SelfApplication,
-  type StoredMiroirTheme
+  type StoredMiroirTheme,
+  type TransformerDefinition,
 } from "miroir-core";
 import {
   entityEndpointVersion,
@@ -37,6 +38,7 @@ import {
   entitySelfApplication,
   entitySelfApplicationVersion,
   entityTheme,
+  entityTransformerDefinition,
   selfApplicationMiroir,
 } from "miroir-app-miroir";
 import {
@@ -386,6 +388,36 @@ const selectThemesFromReduxState = createSelector(
 );
 
 // ################################################################################################
+// #502: the application's TransformerDefinitions, read like themes (the transformer registry adds
+// the composites to the stock ones).
+const selectTransformerDefinitionsFromReduxState = createSelector(
+  [
+    selectCurrentReduxDeploymentsStateFromReduxState,
+    selectApplicationDeploymentMap,
+    selectMiroirSelectorQueryParams,
+  ],
+  (
+    reduxState: ReduxDeploymentsState,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+    params: MiroirQueryTemplate,
+  ): EntityInstancesUuidIndex | undefined => {
+    return selectEntityInstancesFromReduxDeploymentsState(
+      reduxState,
+      applicationDeploymentMap,
+      params.queryType == "localCacheEntityInstancesExtractor"
+        ? params.definition.application
+        : params.application,
+      params.queryType == "localCacheEntityInstancesExtractor"
+        ? params.definition.application == selfApplicationMiroir.uuid
+          ? "data"
+          : "model"
+        : undefined,
+      entityTransformerDefinition.uuid,
+    );
+  },
+);
+
+// ################################################################################################
 const selectApplicationVersionsFromReduxState = createSelector(
   [
     selectCurrentReduxDeploymentsStateFromReduxState,
@@ -459,6 +491,7 @@ export const selectModelForDeploymentFromReduxState: () => (
       selectEndpointsFromReduxState,
       selectTestsFromReduxState,
       selectThemesFromReduxState,
+      selectTransformerDefinitionsFromReduxState,
     ],
     (
       applications: EntityInstancesUuidIndex | undefined,
@@ -473,6 +506,7 @@ export const selectModelForDeploymentFromReduxState: () => (
       endpoints: EntityInstancesUuidIndex | undefined,
       tests: EntityInstancesUuidIndex | undefined,
       themes: EntityInstancesUuidIndex | undefined,
+      transformerDefinitions: EntityInstancesUuidIndex | undefined,
     ) => {
       const applicationVersion = applicationVersions && Object.values(applicationVersions).length > 0
         ? (Object.values(applicationVersions)[0] as any)
@@ -498,7 +532,9 @@ export const selectModelForDeploymentFromReduxState: () => (
         themeVersions: [],
         applicationVersionCrossTransformerDefinitionVersion: [],
         transformerDefinitionVersions: [],
-        transformerDefinitions: [],
+        transformerDefinitions: (transformerDefinitions
+          ? Object.values(transformerDefinitions)
+          : []) as TransformerDefinition[],
         entities: (entities ? Object.values(entities) : []) as Entity[],
         entityVersions: (entityVersions ? Object.values(entityVersions) : []) as EntityVersion[],
         endpoints: (endpoints ? Object.values(endpoints) : []) as EndpointDefinition[],

@@ -32,7 +32,14 @@
         "definition": [
           "MLS",
           "admin",
-          "basic"
+          "control",
+          "list",
+          "metaModel",
+          "object",
+          "operator",
+          "spreadsheet",
+          "value",
+          "variable"
         ]
       }
     }

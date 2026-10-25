@@ -452,9 +452,10 @@
         "testCompositeActionAssertions": [
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "countSAV_V1-Baseline",
             "nameGivenToResult": "countSAV_V1-Baseline",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "countSAV_V1-Baseline",
               "definition": {
@@ -505,9 +506,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "savMigration_V1-Baseline",
             "nameGivenToResult": "savMigration_V1-Baseline",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "savMigration_V1-Baseline",
               "definition": {
@@ -568,9 +570,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "countCross_2",
             "nameGivenToResult": "countCross_2",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "countCross_2",
               "definition": {
@@ -738,9 +741,10 @@
         "testCompositeActionAssertions": [
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "countSAV_V2-Alter",
             "nameGivenToResult": "countSAV_V2-Alter",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "countSAV_V2-Alter",
               "definition": {
@@ -791,9 +795,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "savMigration_V2-Alter",
             "nameGivenToResult": "savMigration_V2-Alter",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "savMigration_V2-Alter",
               "definition": {
@@ -863,9 +868,10 @@
           },
           {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "countCross_4",
             "nameGivenToResult": "countCross_4",
-            "testAssertion": {
+            "payload": {
               "testType": "testAssertion",
               "testLabel": "countCross_4",
               "definition": {

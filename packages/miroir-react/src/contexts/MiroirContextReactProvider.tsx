@@ -511,32 +511,36 @@ export function MiroirContextReactProvider(props: {
   // Update functions for TransformerBuilderPage state with persistence
   const updateToolsPageStateDEFUNCT = useMemo(
     () => (updates: Partial<ToolsPageState>) => {
-      const newState = { ...toolsPageState, ...updates };
-      // log.info("updateTransformerEditorState updateToolsPageStateDEFUNCT", { updates, newState });
-      setToolsPageState(newState);
-      // Persist to sessionStorage per deployment
-      if (persistToolsPageState) {
-        sessionStorage.setItem("toolsPageState", JSON.stringify(newState));
-      }
+      setToolsPageState((previousState) => {
+        const newState = { ...previousState, ...updates };
+        // Persist to sessionStorage per deployment
+        if (persistToolsPageState) {
+          sessionStorage.setItem("toolsPageState", JSON.stringify(newState));
+        }
+        return newState;
+      });
     },
-    [toolsPageState, persistToolsPageState],
+    [persistToolsPageState],
   );
 
   // ##############################################################################################
+  // Applied to the latest state: callers hold this function in effect cleanups and timers, and a
+  // copy of the state of their render would drop the updates made since.
   const updateTransformerEditorState = useMemo(
     () => (updates: Partial<ToolsPageState["transformerEditor"]>) => {
-      const newState = {
-        ...toolsPageState,
-        transformerEditor: { ...(toolsPageState.transformerEditor || {}), ...updates },
-      };
-      // log.info("updateTransformerEditorState", { toolsPageState, updates, newState });
-      setToolsPageState(newState);
-      // Persist to sessionStorage per deployment
-      if (persistToolsPageState) {
-        sessionStorage.setItem("toolsPageState", JSON.stringify(newState));
-      }
+      setToolsPageState((previousState) => {
+        const newState = {
+          ...previousState,
+          transformerEditor: { ...(previousState.transformerEditor || {}), ...updates },
+        };
+        // Persist to sessionStorage per deployment
+        if (persistToolsPageState) {
+          sessionStorage.setItem("toolsPageState", JSON.stringify(newState));
+        }
+        return newState;
+      });
     },
-    [toolsPageState, persistToolsPageState],
+    [persistToolsPageState],
   );
 
   // Snackbar handlers

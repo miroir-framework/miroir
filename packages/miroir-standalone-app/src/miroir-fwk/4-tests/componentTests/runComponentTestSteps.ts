@@ -420,6 +420,24 @@ export async function runComponentTestSteps<ExtraStep extends AnyStep = never>(
       save(element, step.saveAs);
       await interact(() => env.fireEvent.click(element));
     },
+    setChecked: async (step) => {
+      const element = resolve(step.target) as HTMLInputElement;
+      if (element.checked === step.checked) {
+        return;
+      }
+      await interact(() => env.fireEvent.click(element));
+      // resolved again at each try: the click can re-render the target
+      await waitUntil(
+        env,
+        () => {
+          const current = resolve(step.target) as HTMLInputElement;
+          if (current.checked !== step.checked) {
+            throw new Error(`the target is still ${current.checked ? "checked" : "unchecked"}`);
+          }
+        },
+        1000,
+      );
+    },
     change: async (step) => {
       const element = resolve(step.target);
       save(element, step.saveAs);

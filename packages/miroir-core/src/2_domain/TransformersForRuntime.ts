@@ -145,6 +145,7 @@ import {
 } from "./Transformers";
 import { handleTransformer_syncExternalServiceSchema } from "./syncExternalServiceSchema";
 import type { MiroirActivityTrackerInterface } from "../0_interfaces/3_controllers/MiroirActivityTrackerInterface";
+import { transformerDefinitionRegistry } from "./TransformerDefinitionRegistry";
 import { defaultAdminApplicationDeploymentMapNOTGOOD, type ApplicationDeploymentMap } from "../1_core/Deployment";
 
 // Re-export types needed by other modules
@@ -1457,6 +1458,9 @@ function resolveApplyTo(
         queryParams,
         contextResults
       );
+      if (resolvedReference instanceof TransformerFailure) {
+        throw resolvedReference; // the failure of applyTo, not a type error of this transformer (#559)
+      }
       log.info(
         "resolveApplyTo resolved for transformer",
         transformer,
@@ -1604,6 +1608,9 @@ export function resolveApplyTo_legacy(
         contextResults,
         reduxDeploymentsState
       );
+      if (resolvedReference instanceof TransformerFailure) {
+        throw resolvedReference; // the failure of applyTo, not a type error of this transformer (#559)
+      }
       // log.info(
       //   "resolveApplyTo_legacy resolved for transformer",
       //   transformer,
@@ -3134,9 +3141,9 @@ export function handleTransformer_getObjectValues(
       queryFailure: "FailedTransformer",
       transformerPath, //: [...transformerPath, transformer.transformerType],
       failureOrigin: ["handleTransformer_getObjectValues"],
-      queryContext:
-        "handleTransformer_getObjectValues resolvedReference is not an object: " +
-        typeof resolvedReference,
+      failureMessage: Array.isArray(resolvedReference)
+        ? "getObjectValues: applyTo is a list, expected an object"
+        : "getObjectValues: applyTo is not an object, got: " + typeof resolvedReference,
     });
   }
   // log.info(
@@ -3952,8 +3959,9 @@ export function transformer_extended_apply(
           if (step == "runtime" || ((transformer as any)["interpolation"] ?? "build") == "build") {
             // log.info("transformer_extended_apply interpreting transformer!");
             let preResult;
+            // #502: the stock definitions and the application's composites
             const foundApplicationTransformer =
-              applicationTransformerDefinitions[(transformer as any).transformerType];
+              transformerDefinitionRegistry(modelEnvironment)[(transformer as any).transformerType];
             // log.info(
             //   "transformer_extended_apply foundApplicationTransformer",
             //   foundApplicationTransformer,

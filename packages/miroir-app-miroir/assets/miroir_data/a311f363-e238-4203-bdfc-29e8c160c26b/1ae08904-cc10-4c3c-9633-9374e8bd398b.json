@@ -1,0 +1,847 @@
+{
+  "uuid": "1ae08904-cc10-4c3c-9633-9374e8bd398b",
+  "parentName": "MiroirTest",
+  "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+  "name": "fn.blockView.fields",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "description": "The fields of the value editor that get the Blocks, Form and JSON switch, from the type check's key map.",
+  "tags": [
+    "unit",
+    "editor",
+    "transformer"
+  ],
+  "issue": "503",
+  "definition": {
+    "miroirTestType": "miroirTestSuite",
+    "miroirTestLabel": "fn.blockView.fields",
+    "miroirTests": [
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "block view roots",
+        "miroirTests": [
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a field declared as a transformer is a root",
+            "functionRef": {
+              "module": "miroir-core/2_domain/BlockViewFields",
+              "export": "isBlockViewRoot"
+            },
+            "arguments": [
+              {
+                "rawSchema": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "coreTransformerForBuildPlusRuntime"
+                  }
+                },
+                "resolvedSchema": {
+                  "type": "any"
+                },
+                "valuePath": [
+                  "definition",
+                  "x"
+                ],
+                "typePath": [
+                  "ref:query",
+                  "definition"
+                ]
+              }
+            ],
+            "expectedValue": true
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a field declared as a transformer without array is a root",
+            "functionRef": {
+              "module": "miroir-core/2_domain/BlockViewFields",
+              "export": "isBlockViewRoot"
+            },
+            "arguments": [
+              {
+                "rawSchema": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "coreTransformerForBuildPlusRuntimeWithoutArray"
+                  }
+                },
+                "resolvedSchema": {
+                  "type": "any"
+                },
+                "valuePath": [
+                  "definition",
+                  "x"
+                ],
+                "typePath": []
+              }
+            ],
+            "expectedValue": true
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a field declared as the template form of a transformer is a root",
+            "functionRef": {
+              "module": "miroir-core/2_domain/BlockViewFields",
+              "export": "isBlockViewRoot"
+            },
+            "arguments": [
+              {
+                "rawSchema": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_coreTransformerForBuildPlusRuntime"
+                  }
+                },
+                "resolvedSchema": {
+                  "type": "any"
+                },
+                "valuePath": [
+                  "definition",
+                  "x"
+                ],
+                "typePath": [
+                  "ref:query",
+                  "ref:extractorOrCombinerTemplate"
+                ]
+              }
+            ],
+            "expectedValue": true
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a field inside a transformer is not a root",
+            "functionRef": {
+              "module": "miroir-core/2_domain/BlockViewFields",
+              "export": "isBlockViewRoot"
+            },
+            "arguments": [
+              {
+                "rawSchema": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "coreTransformerForBuildPlusRuntime"
+                  }
+                },
+                "resolvedSchema": {
+                  "type": "any"
+                },
+                "valuePath": [
+                  "definition",
+                  "x"
+                ],
+                "typePath": [
+                  "ref:query",
+                  "ref:coreTransformerForBuildPlusRuntime",
+                  "applyTo"
+                ]
+              }
+            ],
+            "expectedValue": false
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a field inside the template form of a transformer is not a root",
+            "functionRef": {
+              "module": "miroir-core/2_domain/BlockViewFields",
+              "export": "isBlockViewRoot"
+            },
+            "arguments": [
+              {
+                "rawSchema": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_coreTransformerForBuildPlusRuntime"
+                  }
+                },
+                "resolvedSchema": {
+                  "type": "any"
+                },
+                "valuePath": [
+                  "definition",
+                  "x"
+                ],
+                "typePath": [
+                  "ref:miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_coreTransformerForBuildPlusRuntime",
+                  "definition"
+                ]
+              }
+            ],
+            "expectedValue": false
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a template hole holding a transformer is a root",
+            "functionRef": {
+              "module": "miroir-core/2_domain/BlockViewFields",
+              "export": "isBlockViewRoot"
+            },
+            "arguments": [
+              {
+                "rawSchema": {
+                  "type": "union",
+                  "definition": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "schemaReference",
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_coreTransformerForBuildPlusRuntime"
+                      }
+                    }
+                  ]
+                },
+                "resolvedSchema": {
+                  "type": "any"
+                },
+                "valuePath": [
+                  "definition",
+                  "x"
+                ],
+                "typePath": [
+                  "ref:rootReport",
+                  "ref:extractorOrCombinerTemplate"
+                ],
+                "chosenUnionBranchRawSchema": {
+                  "type": "object",
+                  "definition": {
+                    "transformerType": {
+                      "type": "literal",
+                      "definition": "getFromParameters"
+                    },
+                    "referenceName": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            ],
+            "expectedValue": true
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a template hole holding a plain value is not a root",
+            "functionRef": {
+              "module": "miroir-core/2_domain/BlockViewFields",
+              "export": "isBlockViewRoot"
+            },
+            "arguments": [
+              {
+                "rawSchema": {
+                  "type": "union",
+                  "definition": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "schemaReference",
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_coreTransformerForBuildPlusRuntime"
+                      }
+                    }
+                  ]
+                },
+                "resolvedSchema": {
+                  "type": "any"
+                },
+                "valuePath": [
+                  "definition",
+                  "x"
+                ],
+                "typePath": [
+                  "ref:rootReport",
+                  "ref:extractorOrCombinerTemplate"
+                ],
+                "chosenUnionBranchRawSchema": {
+                  "type": "string"
+                }
+              }
+            ],
+            "expectedValue": false
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a union whose chosen branch references a transformer is a root",
+            "functionRef": {
+              "module": "miroir-core/2_domain/BlockViewFields",
+              "export": "isBlockViewRoot"
+            },
+            "arguments": [
+              {
+                "rawSchema": {
+                  "type": "union",
+                  "definition": [
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "schemaReference",
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "coreTransformerForBuildPlusRuntime"
+                      }
+                    }
+                  ]
+                },
+                "resolvedSchema": {
+                  "type": "any"
+                },
+                "valuePath": [
+                  "definition",
+                  "x"
+                ],
+                "typePath": [],
+                "chosenUnionBranchRawSchema": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "coreTransformerForBuildPlusRuntime"
+                  }
+                }
+              }
+            ],
+            "expectedValue": true
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "an object branch with a transformerType but no transformer branch in the union is not a root",
+            "functionRef": {
+              "module": "miroir-core/2_domain/BlockViewFields",
+              "export": "isBlockViewRoot"
+            },
+            "arguments": [
+              {
+                "rawSchema": {
+                  "type": "union",
+                  "definition": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "object",
+                      "definition": {
+                        "transformerType": {
+                          "type": "literal",
+                          "definition": "getFromParameters"
+                        },
+                        "referenceName": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  ]
+                },
+                "resolvedSchema": {
+                  "type": "any"
+                },
+                "valuePath": [
+                  "definition",
+                  "x"
+                ],
+                "typePath": [],
+                "chosenUnionBranchRawSchema": {
+                  "type": "object",
+                  "definition": {
+                    "transformerType": {
+                      "type": "literal",
+                      "definition": "getFromParameters"
+                    },
+                    "referenceName": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            ],
+            "expectedValue": false
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a composite action sequence is a root",
+            "functionRef": {
+              "module": "miroir-core/2_domain/BlockViewFields",
+              "export": "isBlockViewRoot"
+            },
+            "arguments": [
+              {
+                "rawSchema": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "compositeActionSequenceTemplate"
+                  }
+                },
+                "resolvedSchema": {
+                  "type": "any"
+                },
+                "valuePath": [
+                  "definition",
+                  "x"
+                ],
+                "typePath": [
+                  "ref:rootReport"
+                ]
+              }
+            ],
+            "expectedValue": true
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a composite action template is a root",
+            "functionRef": {
+              "module": "miroir-core/2_domain/BlockViewFields",
+              "export": "isBlockViewRoot"
+            },
+            "arguments": [
+              {
+                "rawSchema": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "compositeActionTemplate"
+                  }
+                },
+                "resolvedSchema": {
+                  "type": "any"
+                },
+                "valuePath": [
+                  "definition",
+                  "actions",
+                  0,
+                  "actionImplementation",
+                  "definition"
+                ],
+                "typePath": [
+                  "ref:endpointDefinition"
+                ]
+              }
+            ],
+            "expectedValue": true
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "an any field the type check resolves to a composite action template is a root",
+            "functionRef": {
+              "module": "miroir-core/2_domain/BlockViewFields",
+              "export": "isBlockViewRoot"
+            },
+            "arguments": [
+              {
+                "rawSchema": {
+                  "type": "any",
+                  "tag": {
+                    "value": {
+                      "defaultLabel": "Composite Action Definition",
+                      "display": {
+                        "editable": true
+                      },
+                      "ifThenElseMMLS": {
+                        "mmlsReference": {
+                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          "relativePath": "compositeActionTemplate"
+                        }
+                      }
+                    }
+                  }
+                },
+                "resolvedSchema": {
+                  "type": "any"
+                },
+                "valuePath": [
+                  "definition",
+                  "actions",
+                  0,
+                  "actionImplementation",
+                  "definition"
+                ],
+                "typePath": [
+                  "ref:endpointDefinition"
+                ]
+              }
+            ],
+            "expectedValue": true
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a sequence inside a sequence is not a root",
+            "functionRef": {
+              "module": "miroir-core/2_domain/BlockViewFields",
+              "export": "isBlockViewRoot"
+            },
+            "arguments": [
+              {
+                "rawSchema": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "compositeActionSequence"
+                  }
+                },
+                "resolvedSchema": {
+                  "type": "any"
+                },
+                "valuePath": [
+                  "definition",
+                  "x",
+                  "payload",
+                  "actionSequence",
+                  0
+                ],
+                "typePath": [
+                  "ref:rootReport",
+                  "ref:compositeActionSequenceTemplate",
+                  "payload",
+                  "actionSequence",
+                  0
+                ]
+              }
+            ],
+            "expectedValue": false
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a transformer inside an any field resolved to a sequence is not a root, found through the key map",
+            "functionRef": {
+              "module": "miroir-core/2_domain/BlockViewFields",
+              "export": "isBlockViewRoot"
+            },
+            "arguments": [
+              {
+                "rawSchema": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "coreTransformerForBuildPlusRuntime"
+                  }
+                },
+                "resolvedSchema": {
+                  "type": "any"
+                },
+                "valuePath": [
+                  "implementation",
+                  "payload",
+                  "application"
+                ],
+                "typePath": [
+                  "payload",
+                  "application"
+                ]
+              },
+              {
+                "implementation": {
+                  "rawSchema": {
+                    "type": "any",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Composite Action Definition",
+                        "display": {
+                          "editable": true
+                        },
+                        "ifThenElseMMLS": {
+                          "mmlsReference": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "compositeActionTemplate"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "resolvedSchema": {
+                    "type": "any"
+                  },
+                  "valuePath": [
+                    "implementation"
+                  ],
+                  "typePath": []
+                }
+              }
+            ],
+            "expectedValue": false
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a transformer inside a composite action sequence is not a root",
+            "functionRef": {
+              "module": "miroir-core/2_domain/BlockViewFields",
+              "export": "isBlockViewRoot"
+            },
+            "arguments": [
+              {
+                "rawSchema": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "coreTransformerForBuildPlusRuntime"
+                  }
+                },
+                "resolvedSchema": {
+                  "type": "any"
+                },
+                "valuePath": [
+                  "definition",
+                  "x"
+                ],
+                "typePath": [
+                  "ref:rootReport",
+                  "ref:compositeActionSequenceTemplate",
+                  "payload"
+                ]
+              }
+            ],
+            "expectedValue": false
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a transformer inside a template hole holding a transformer is not a root",
+            "functionRef": {
+              "module": "miroir-core/2_domain/BlockViewFields",
+              "export": "isBlockViewRoot"
+            },
+            "arguments": [
+              {
+                "rawSchema": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "coreTransformerForBuildPlusRuntime"
+                  }
+                },
+                "resolvedSchema": {
+                  "type": "any"
+                },
+                "valuePath": [
+                  "definition",
+                  "parentName",
+                  "applyTo"
+                ],
+                "typePath": [
+                  "ref:rootReport",
+                  "ref:extractorOrCombinerTemplate",
+                  "parentName",
+                  "union choice(aggregate)",
+                  "applyTo"
+                ]
+              },
+              {
+                "definition.parentName": {
+                  "rawSchema": {
+                    "type": "union",
+                    "definition": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_coreTransformerForBuildPlusRuntime"
+                        }
+                      }
+                    ]
+                  },
+                  "resolvedSchema": {
+                    "type": "any"
+                  },
+                  "valuePath": [
+                    "definition",
+                    "parentName"
+                  ],
+                  "typePath": [
+                    "ref:rootReport",
+                    "ref:extractorOrCombinerTemplate",
+                    "parentName"
+                  ],
+                  "chosenUnionBranchRawSchema": {
+                    "type": "object",
+                    "definition": {
+                      "transformerType": {
+                        "type": "literal",
+                        "definition": "getFromParameters"
+                      },
+                      "referenceName": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "expectedValue": false
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a template hole holding a transformer is a root with its key map",
+            "functionRef": {
+              "module": "miroir-core/2_domain/BlockViewFields",
+              "export": "isBlockViewRoot"
+            },
+            "arguments": [
+              {
+                "rawSchema": {
+                  "type": "union",
+                  "definition": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "schemaReference",
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_coreTransformerForBuildPlusRuntime"
+                      }
+                    }
+                  ]
+                },
+                "resolvedSchema": {
+                  "type": "any"
+                },
+                "valuePath": [
+                  "definition",
+                  "parentName"
+                ],
+                "typePath": [
+                  "ref:rootReport",
+                  "ref:extractorOrCombinerTemplate",
+                  "parentName"
+                ],
+                "chosenUnionBranchRawSchema": {
+                  "type": "object",
+                  "definition": {
+                    "transformerType": {
+                      "type": "literal",
+                      "definition": "getFromParameters"
+                    },
+                    "referenceName": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              {
+                "definition": {
+                  "rawSchema": {
+                    "type": "object",
+                    "definition": {}
+                  },
+                  "resolvedSchema": {
+                    "type": "any"
+                  },
+                  "valuePath": [
+                    "definition"
+                  ],
+                  "typePath": [
+                    "ref:rootReport"
+                  ]
+                }
+              }
+            ],
+            "expectedValue": true
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a string field is not a root",
+            "functionRef": {
+              "module": "miroir-core/2_domain/BlockViewFields",
+              "export": "isBlockViewRoot"
+            },
+            "arguments": [
+              {
+                "rawSchema": {
+                  "type": "string"
+                },
+                "resolvedSchema": {
+                  "type": "any"
+                },
+                "valuePath": [
+                  "definition",
+                  "x"
+                ],
+                "typePath": [
+                  "ref:query"
+                ]
+              }
+            ],
+            "expectedValue": false
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a field the type check did not reach is not a root",
+            "functionRef": {
+              "module": "miroir-core/2_domain/BlockViewFields",
+              "export": "isBlockViewRoot"
+            },
+            "arguments": [
+              {
+                "__miroirJsonUndefined": true
+              }
+            ],
+            "expectedValue": false
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "#505: a compositeActionSequence field holds a test sequence",
+            "functionRef": {
+              "module": "miroir-core/2_domain/BlockViewFields",
+              "export": "isTestSequenceField"
+            },
+            "arguments": [
+              {
+                "rawSchema": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "compositeActionSequence"
+                  }
+                },
+                "resolvedSchema": {
+                  "type": "any"
+                },
+                "valuePath": [
+                  "definition",
+                  "testCompositeActions"
+                ],
+                "typePath": []
+              }
+            ],
+            "expectedValue": true
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "#505: a Runner's compositeActionSequenceTemplate is no test sequence",
+            "functionRef": {
+              "module": "miroir-core/2_domain/BlockViewFields",
+              "export": "isTestSequenceField"
+            },
+            "arguments": [
+              {
+                "rawSchema": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "compositeActionSequenceTemplate"
+                  }
+                },
+                "resolvedSchema": {
+                  "type": "any"
+                },
+                "valuePath": [
+                  "definition",
+                  "compositeActionSequence"
+                ],
+                "typePath": []
+              }
+            ],
+            "expectedValue": false
+          }
+        ]
+      }
+    ]
+  }
+}

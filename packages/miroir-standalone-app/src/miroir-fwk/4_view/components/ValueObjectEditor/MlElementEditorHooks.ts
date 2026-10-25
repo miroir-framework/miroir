@@ -40,6 +40,7 @@ import {
   useReduxDeploymentsStateQuerySelectorForCleanedResult,
 } from "../../ReduxHooks";
 import { FieldValidationContext } from "./FieldValidationContext";
+import { BlockViewModeContext } from "../BlockEditor/BlockViewMode.js";
 
 import { entitySelfApplication, selfApplicationMiroir } from "miroir-app-miroir";
 import { shallowEqual } from "react-redux";
@@ -279,11 +280,17 @@ export function useMlElementEditorHooks(
       ? typeCheckKeyMap[rootLessListKey]
       : undefined;
 
-  const [codeMirrorValue, setCodeMirrorValue] = useState<string>("");
+  // #498: a transformer field whose view switch says JSON starts in the code editor, with its text
+  // set from the value (the CodeMirror stand-in of tests shows that text as is).
+  const startsAsCode = useContext(BlockViewModeContext)?.modeOf(formikRootLessListKey) === "json";
+
+  const [codeMirrorValue, setCodeMirrorValue] = useState<string>(() =>
+    startsAsCode ? JSON.stringify(currentValueObjectAtKey, null, 2) : "",
+  );
 
   const [codeMirrorIsValidJson, setCodeMirrorIsValidJson] = useState(true);
 
-  const [displayAsStructuredElement, setDisplayAsStructuredElement] = useState(true);
+  const [displayAsStructuredElement, setDisplayAsStructuredElement] = useState(!startsAsCode);
 
   // ################################################################################################
   // ################################################################################################

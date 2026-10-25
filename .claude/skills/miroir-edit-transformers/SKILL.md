@@ -254,7 +254,7 @@ Documentation is in folder `docs-OLD/transformers`
   "parentUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
   "parentDefinitionVersionUuid": "54a16d69-c1f0-4dd7-aba4-a2cda883586c",
   "parentName": "TransformerDefinition",
-  "classification": "basic",
+  "classification": "<category>",
   "transformerInterface": {
     "inputOutput": {
       "input": "any",
@@ -292,6 +292,8 @@ Documentation is in folder `docs-OLD/transformers`
 ```
 
 **Note**: The `sqlImplementationFunctionName` is optional and only needed if you want database execution support.
+
+`classification` is the block category, which also sets the block's color in the block editor (#498): `list`, `object`, `control`, `value`, `variable`, `operator`, `MLS`, `admin`, `spreadsheet` or `metaModel`. A new value needs a color in the Theme (`components.blockEditor.categoryColors`) and in the `TransformersForClassification` query enum.
 
 ---
 

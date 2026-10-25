@@ -85,9 +85,10 @@ def assertions(count: int, books: list) -> list:
     return [
         {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "checkNumberOfBooks",
             "nameGivenToResult": "checkNumberOfBooks",
-            "testAssertion": {
+            "payload": {
                 "testType": "testAssertion",
                 "testLabel": "checkNumberOfBooks",
                 "definition": {
@@ -107,9 +108,10 @@ def assertions(count: int, books: list) -> list:
         },
         {
             "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "checkEntityBooks",
             "nameGivenToResult": "checkEntityBooks",
-            "testAssertion": {
+            "payload": {
                 "testType": "testAssertion",
                 "testLabel": "checkEntityBooks",
                 "definition": {

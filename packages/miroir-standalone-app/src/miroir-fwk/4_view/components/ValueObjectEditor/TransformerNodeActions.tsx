@@ -11,6 +11,7 @@ import {
   wrapCandidates,
   wrapTransformerNode,
   type InputOutputType,
+  type TransformerDefinitionRegistry,
 } from "miroir-core";
 
 import {
@@ -29,6 +30,9 @@ import { useMiroirTheme } from "../../contexts/MiroirThemeContext";
 // Issue #415 — the action menu of a transformer node, next to its `transformerType` select:
 // structural edits computed by the miroir-core TransformerTreeEdit functions, written back as one
 // new value of the node.
+// #499: under an undo history, Remove and Unwrap act at once (Undo brings the node back); Unwrap
+// of a node with several children lists one menu entry per child.
+// #500: the block view adds its own entries before these (Replace with the armed palette type).
 // ################################################################################################
 
 export interface TransformerNodeActionsProps {
@@ -47,6 +51,18 @@ export interface TransformerNodeActionsProps {
   onReplaceNode: (newNode: unknown) => void;
   /** Removes the node and its subtree from the edited tree (#415 Remove). */
   onRemoveNode: () => void;
+  /** An undo history covers the node (#499): edits act at once, without a confirmation. */
+  undoable?: boolean;
+  /** Menu entries before the #415 ones: the block view's Replace with (#500). */
+  extraEntries?: TransformerNodeExtraEntry[];
+  /** The TransformerDefinitions of the edited application (#502); the stock ones when absent. */
+  transformerDefinitions?: TransformerDefinitionRegistry;
+}
+
+export interface TransformerNodeExtraEntry {
+  testId: string;
+  label: string;
+  onClick: () => void;
 }
 
 type NewNodeAction = "wrap" | "pipe";
@@ -75,6 +91,9 @@ export const TransformerNodeActions: React.FC<TransformerNodeActionsProps> = ({
   defaultNodeForType,
   onReplaceNode,
   onRemoveNode,
+  undoable = false,
+  extraEntries = [],
+  transformerDefinitions,
 }) => {
   const { currentTheme } = useMiroirTheme();
   const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null);
@@ -85,24 +104,26 @@ export const TransformerNodeActions: React.FC<TransformerNodeActionsProps> = ({
   const nodePathKey = nodePath.join(".");
 
   const wrapTypes = useMemo(
-    () => [...wrapCandidates(givenInput ?? "any", { transformerTypes: candidateTypes })].sort(),
-    [candidateTypes, givenInput],
+    () => [...wrapCandidates(givenInput ?? "any", { transformerTypes: candidateTypes, transformerDefinitions })].sort(),
+    [candidateTypes, givenInput, transformerDefinitions],
   );
   const pipeTypes = useMemo(
-    () => [...pipeCandidates(output ?? "any", { transformerTypes: candidateTypes })].sort(),
-    [candidateTypes, output],
+    () => [...pipeCandidates(output ?? "any", { transformerTypes: candidateTypes, transformerDefinitions })].sort(),
+    [candidateTypes, output, transformerDefinitions],
   );
   const dialogTypes = dialog?.kind === "pipe" ? pipeTypes : wrapTypes;
   // Pipe into always uses `applyTo`; Wrap in asks for the slot when there are several.
   const chosenTypeSlots = useMemo(
     () =>
-      dialog?.kind === "wrap" && chosenType ? transformerSlots(chosenType).filter((slot) => !slot.isApplyTo) : [],
-    [dialog, chosenType],
+      dialog?.kind === "wrap" && chosenType
+        ? transformerSlots(chosenType, transformerDefinitions).filter((slot) => !slot.isApplyTo)
+        : [],
+    [dialog, chosenType, transformerDefinitions],
   );
   const slot = chosenTypeSlots.length === 1 ? chosenTypeSlots[0].name : chosenSlot;
   const canConfirm = !!chosenType && (dialog?.kind === "pipe" || !!slot);
   // Unwrap: a child takes the node's place; with several children, the dialog names the dropped ones.
-  const children = useMemo(() => transformerChildren(nodeValue), [nodeValue]);
+  const children = useMemo(() => transformerChildren(nodeValue, transformerDefinitions), [nodeValue, transformerDefinitions]);
   const nodeType =
     typeof nodeValue === "object" && nodeValue !== null && "transformerType" in nodeValue
       ? String((nodeValue as { transformerType: unknown }).transformerType)
@@ -125,7 +146,7 @@ export const TransformerNodeActions: React.FC<TransformerNodeActionsProps> = ({
   };
 
   const unwrap = (childPath: (string | number)[]) => {
-    onReplaceNode(unwrapTransformerNode(nodeValue, childPath));
+    onReplaceNode(unwrapTransformerNode(nodeValue, childPath, transformerDefinitions));
     closeDialog();
   };
 
@@ -136,6 +157,16 @@ export const TransformerNodeActions: React.FC<TransformerNodeActionsProps> = ({
       return;
     }
     setDialog({ kind: "unwrap" });
+  };
+
+  const removeNow = () => {
+    setMenuAnchor(null);
+    onRemoveNode();
+  };
+
+  const unwrapNow = (childPath: (string | number)[]) => {
+    setMenuAnchor(null);
+    unwrap(childPath);
   };
 
   const confirmRemove = () => {
@@ -168,8 +199,9 @@ export const TransformerNodeActions: React.FC<TransformerNodeActionsProps> = ({
     }
     onReplaceNode(
       dialog.kind === "pipe"
-        ? pipeTransformerNode(nodeValue, newNode)
+        ? pipeTransformerNode(nodeValue, newNode, transformerDefinitions)
         : wrapTransformerNode(nodeValue, newNode, slot, {
+            transformerDefinitions,
             slotDefault: returnValueNode ? { ...returnValueNode, transformerType: "returnValue" } : undefined,
           }),
     );
@@ -214,6 +246,18 @@ export const TransformerNodeActions: React.FC<TransformerNodeActionsProps> = ({
         </span>
       )}
       <Menu anchorEl={menuAnchor} open={menuAnchor !== null} onClose={() => setMenuAnchor(null)}>
+        {extraEntries.map((entry) => (
+          <ThemedMenuItem
+            key={entry.testId}
+            data-testid={entry.testId}
+            onClick={() => {
+              setMenuAnchor(null);
+              entry.onClick();
+            }}
+          >
+            {entry.label}
+          </ThemedMenuItem>
+        ))}
         <ThemedMenuItem
           data-testid="transformer-node-action-wrap"
           disabled={wrapTypes.length === 0}
@@ -228,15 +272,30 @@ export const TransformerNodeActions: React.FC<TransformerNodeActionsProps> = ({
         >
           Pipe into…
         </ThemedMenuItem>
+        {undoable && children.length > 1 ? (
+          children.map((child) => (
+            <ThemedMenuItem
+              key={childKey(child.path)}
+              data-testid={`transformer-node-action-unwrap:${childKey(child.path)}`}
+              onClick={() => unwrapNow(child.path)}
+            >
+              Unwrap: keep {childKey(child.path)} ({child.transformerType})
+            </ThemedMenuItem>
+          ))
+        ) : (
+          <ThemedMenuItem
+            data-testid="transformer-node-action-unwrap"
+            disabled={children.length === 0}
+            onClick={startUnwrap}
+          >
+            {children.length > 1 ? "Unwrap…" : "Unwrap"}
+          </ThemedMenuItem>
+        )}
         <ThemedMenuItem
-          data-testid="transformer-node-action-unwrap"
-          disabled={children.length === 0}
-          onClick={startUnwrap}
+          data-testid="transformer-node-action-remove"
+          onClick={undoable ? removeNow : () => openDialog({ kind: "remove" })}
         >
-          {children.length > 1 ? "Unwrap…" : "Unwrap"}
-        </ThemedMenuItem>
-        <ThemedMenuItem data-testid="transformer-node-action-remove" onClick={() => openDialog({ kind: "remove" })}>
-          Remove…
+          {undoable ? "Remove" : "Remove…"}
         </ThemedMenuItem>
       </Menu>
       {dialog?.kind === "remove" && (

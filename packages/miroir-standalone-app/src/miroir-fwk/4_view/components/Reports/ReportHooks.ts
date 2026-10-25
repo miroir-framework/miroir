@@ -388,7 +388,8 @@ export function useTransformer(
             deploymentUuid: "",
             extractors: {},
           },
-    [deploymentUuid, transformerDefinitionApplicationSection]
+    // #502: the chosen transformer and its application change after mount (the editor's selector)
+    [application, applicationDeploymentMap, deploymentUuid, transformerUuid, transformerDefinitionApplicationSection]
   );
 
   const transformerQueryResults: Domain2QueryReturnType<

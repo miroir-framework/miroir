@@ -112,6 +112,8 @@ const expectedActionTypesByEndpoint: Record<string, string[]> = {
     "compositeActionSequence",
     "compositeRunBoxedQueryAction",
     "compositeRunBoxedQueryTemplateAction",
+    "compositeRunTestAssertion",
+    "compositeFail",
     "connectExternalService",
     "prepareOpenApiDocument",
     "probeExternalService",
@@ -256,7 +258,9 @@ describe("Miroir actions run from their implementation reference", () => {
           .filter((action: any) => !action.actionImplementation)
           .map((action: any) => endpoint.name + "." + action.actionParameters.actionType.definition),
       );
-    expect(withoutImplementation).toEqual([]);
+    // #504: an assertion step runs only inside a sequence, which gives it the sequence's local context;
+    // #557: so does a compositeFail step, which stops its sequence
+    expect(withoutImplementation).toEqual(["DomainEndpoint.compositeRunTestAssertion", "DomainEndpoint.compositeFail"]);
   });
 
   it("runs entity_DuplicateAttribute from its composite action template", () => {
