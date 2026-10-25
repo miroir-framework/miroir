@@ -48,7 +48,7 @@
     "happy-dom": "21.0.4",
     "miroir-app-admin": "*",
     "miroir-example-library": "*",
-    "tsup": "8.5.1",
+    "tsup": "9.0.0",
     "vitest": "5.0.5"
   }
 }
