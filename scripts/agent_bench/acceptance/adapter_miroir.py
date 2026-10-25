@@ -103,25 +103,16 @@ class MiroirAdapter:
         return self.model_element(REPORT_ENTITY, name) is not None
 
     def report_loan_sets(self, name: str, params: dict) -> list[set[str]]:
-        """The loans of each entry of the Report's data, run with `params`: its own query parts, then its stored Queries."""
+        """The loans of each entry of the Report's data, as its page computes them with `params` (#562)."""
         report = self.model_element(REPORT_ENTITY, name)
         if report is None:
             raise LookupError(f"no Report named {name}")
-        definition = report.get("definition", {})
-        answers = []
-        if any(part in definition for part in ("extractorTemplates", "extractors", "runtimeTransformers")):
-            answers.append(self.run_definition(definition, params))
-        queries = {query["uuid"]: query for query in self.instances(QUERY_ENTITY, "model")}
-        for stored in definition.get("runStoredQueries") or []:
-            query = queries.get(stored.get("storedQuery"))
-            if query is not None:
-                answers.append(self.run_definition(query["definition"], params))
-        sets = []
-        for answer in answers:
-            entries = answer.get("result", answer) if isinstance(answer, dict) else {}
-            for value in (entries.values() if isinstance(entries, dict) else []):
-                sets.append(_loan_uuids(value))
-        return sets
+        result = self.client.call("Miroir_runReportAction", {"application": LIBRARY, "report": report["uuid"], "parameters": dict(params)})
+        answer = result_json(result)
+        if result.get("isError") or not isinstance(answer, dict) or answer.get("status") == "error":
+            raise RuntimeError(f"the Report failed: {str(answer)[:2000]}")
+        entries = answer.get("result", {})
+        return [_loan_uuids(value) for value in (entries.values() if isinstance(entries, dict) else [])]
 
     def new_tests_naming(self, needle: str) -> list[str]:
         """Names of the MiroirTests added to the Library or changed, that name `needle` in any case."""
