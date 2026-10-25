@@ -1458,6 +1458,9 @@ function resolveApplyTo(
         queryParams,
         contextResults
       );
+      if (resolvedReference instanceof TransformerFailure) {
+        throw resolvedReference; // the failure of applyTo, not a type error of this transformer (#559)
+      }
       log.info(
         "resolveApplyTo resolved for transformer",
         transformer,
@@ -1605,6 +1608,9 @@ export function resolveApplyTo_legacy(
         contextResults,
         reduxDeploymentsState
       );
+      if (resolvedReference instanceof TransformerFailure) {
+        throw resolvedReference; // the failure of applyTo, not a type error of this transformer (#559)
+      }
       // log.info(
       //   "resolveApplyTo_legacy resolved for transformer",
       //   transformer,
@@ -3135,9 +3141,9 @@ export function handleTransformer_getObjectValues(
       queryFailure: "FailedTransformer",
       transformerPath, //: [...transformerPath, transformer.transformerType],
       failureOrigin: ["handleTransformer_getObjectValues"],
-      queryContext:
-        "handleTransformer_getObjectValues resolvedReference is not an object: " +
-        typeof resolvedReference,
+      failureMessage: Array.isArray(resolvedReference)
+        ? "getObjectValues: applyTo is a list, expected an object"
+        : "getObjectValues: applyTo is not an object, got: " + typeof resolvedReference,
     });
   }
   // log.info(

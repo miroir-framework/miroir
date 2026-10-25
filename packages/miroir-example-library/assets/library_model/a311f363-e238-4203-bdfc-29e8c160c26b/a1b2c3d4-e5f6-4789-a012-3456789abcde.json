@@ -150,7 +150,56 @@
                   }
                 },
                 "expectedValue": {
-                  "aggregate": 2
+                  "aggregate": 1
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+            "actionLabel": "checkTheLoanIsClosed",
+            "nameGivenToResult": "checkTheLoanIsClosed",
+            "payload": {
+              "testType": "testAssertion",
+              "testLabel": "checkTheLoanIsClosed",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "loan",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "LendingHistoryList",
+                        "items"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "isNotNull",
+                      "left": {
+                        "transformerType": "getFromContext",
+                        "interpolation": "runtime",
+                        "safe": true,
+                        "referencePath": [
+                          "loan",
+                          "endDate"
+                        ]
+                      }
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "aggregate": 1
                 }
               }
             }

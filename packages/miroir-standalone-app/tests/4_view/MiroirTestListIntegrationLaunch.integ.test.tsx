@@ -15,7 +15,6 @@ import {
   type DomainControllerInterface,
   type MiroirTestDefinition,
 } from 'miroir-core';
-import { MiroirContextReactProvider } from 'miroir-react';
 import { miroirTest_tr_core } from 'miroir-app-miroir';
 import { miroirFileSystemStoreSectionStartup } from 'miroir-store-filesystem';
 import { miroirIndexedDbStoreSectionStartup } from 'miroir-store-indexedDb';
@@ -24,6 +23,7 @@ import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
 
 import { MiroirTestListDisplay } from '../../src/miroir-fwk/4_view/components/Reports/MiroirTestListDisplay.js';
 import { resetIntegTestRunCoordinatorForTests } from '../../src/miroir-fwk/4-tests/integTestRunCoordinator.js';
+import { AdminViewParamsProviders } from '../helpers/AdminViewParamsProviders.js';
 import {
   resetUiIntegrationTestRunPreferencesForTests,
   setUiIntegrationTestRunPreferences,
@@ -55,7 +55,7 @@ function asMiroirTest(instance: unknown): MiroirTestDefinition {
 
 function renderMiroirTestListDisplay(renderKey = 'initial') {
   return render(
-    <MiroirContextReactProvider
+    <AdminViewParamsProviders
       miroirContext={miroirContext}
       domainController={{} as DomainControllerInterface}
     >
@@ -65,7 +65,7 @@ function renderMiroirTestListDisplay(renderKey = 'initial') {
         gridType="glide-data-grid"
         useSnackBar={true}
       />
-    </MiroirContextReactProvider>,
+    </AdminViewParamsProviders>,
   );
 }
 

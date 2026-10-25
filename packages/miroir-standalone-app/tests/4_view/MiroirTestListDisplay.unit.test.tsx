@@ -1,6 +1,7 @@
+import React from 'react';
 import '@testing-library/jest-dom';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render as rtlRender, screen } from '@testing-library/react';
 
 import type {
   MiroirTestDefinition,
@@ -49,6 +50,10 @@ vi.mock('../../src/miroir-fwk/4_view/components/Reports/UiIntegrationTestRunInsp
 }));
 
 import { MiroirTestListDisplay } from '../../src/miroir-fwk/4_view/components/Reports/MiroirTestListDisplay.js';
+import { AdminViewParamsProviders } from '../helpers/AdminViewParamsProviders.js';
+
+/** The display reads the component test run settings from the Admin ViewParams (#510). */
+const render = (ui: React.ReactElement) => rtlRender(ui, { wrapper: AdminViewParamsProviders });
 
 function asMiroirTest(instance: unknown): MiroirTestDefinition {
   return instance as MiroirTestDefinition;

@@ -15,7 +15,7 @@ import {
   CoreTransformerForBuildPlusRuntime,
   type ExtractorOrCombinerTemplate
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { Domain2ElementFailed, Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement";
+import { Domain2ElementFailed, Domain2QueryReturnType, TransformerFailure } from "../0_interfaces/2_domain/DomainElement";
 import {
   AsyncBoxedExtractorOrQueryRunnerMap,
   AsyncBoxedExtractorRunnerParams,
@@ -34,6 +34,7 @@ import {
 import { resolveExtractorTemplate } from "./Templates";
 import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import { applyTransformerDEFUNCT } from "./TransformersForRuntime";
+import { findTransformerFailure } from "./CompositeActionStep";
 import { ApplicationDeploymentMap } from "../1_core/Deployment";
 import { getApplicationSection } from "../1_core/Model";
 
@@ -606,8 +607,29 @@ export const asyncRunQuery = async (
         query.extractor.extractors ?? ({} as any)
       )
       .then((result): [string, Domain2QueryReturnType<DomainElementSuccess>] => {
-        return [transformer[0], result]; // TODO: check for failure!
+        return [transformer[0], result];
       });
+    if (result[1] instanceof TransformerFailure || result[1] instanceof Domain2ElementFailed) {
+      // a failed entry fails the query, rather than standing in for its value (#559)
+      return new Domain2ElementFailed({
+        queryFailure: "FailedTransformer",
+        failureOrigin: ["asyncRunQuery"],
+        failureMessage: `runtime transformer ${transformer[0]} failed: ${innermostFailureMessage(result[1])}`,
+        queryContext: transformer[0],
+        innerError: result[1] as any,
+      });
+    }
+    // so does a failure inside it, such as a mapList element whose transformer failed
+    const nestedFailure = findTransformerFailure(result[1]);
+    if (nestedFailure) {
+      return new Domain2ElementFailed({
+        queryFailure: "FailedTransformer",
+        failureOrigin: ["asyncRunQuery"],
+        failureMessage: `runtime transformer ${transformer[0]} failed at ${nestedFailure.path.join(".")}: ${innermostFailureMessage(nestedFailure.failure)}`,
+        queryContext: transformer[0],
+        innerError: nestedFailure.failure as any,
+      });
+    }
     context[result[0]] = result[1]; // does side effect!
     // log.info(
     //   "asyncRunQuery for runtimeTransformer",
@@ -619,3 +641,15 @@ export const asyncRunQuery = async (
   }
   return context;
 };
+
+// ################################################################################################
+/** The message of the deepest failure in an `innerError` chain: where the failure started. */
+export function innermostFailureMessage(failure: unknown): string {
+  let current: any = failure;
+  let message: string | undefined;
+  for (let depth = 0; current && typeof current == "object" && depth < 50; depth++) {
+    message = current.failureMessage ?? current.queryContext ?? current.message ?? message;
+    current = current.innerError;
+  }
+  return message ?? "unknown failure";
+}
