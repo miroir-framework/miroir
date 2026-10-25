@@ -14,6 +14,8 @@ import type {
   UndoRedoAction,
 } from "../1_core/preprocessor-generated/miroirFundamentalType";
 import type { Action2ReturnType, Action2VoidReturnType } from "../2_domain/DomainElement";
+import type { DomainControllerInterface } from "../2_domain/DomainControllerInterface";
+import type { MiroirActivityTrackerInterface } from "./MiroirActivityTrackerInterface";
 
 /** Payload of the connectExternalService action (#284), as DomainController reads it. */
 export type ConnectExternalServiceAction = {
@@ -147,6 +149,10 @@ export interface DomainControllerActionHost {
     applicationDeploymentMap: ApplicationDeploymentMap,
     principal?: AuthPrincipal,
   ): Promise<Action2VoidReturnType>;
+  /** #575: the DomainController itself, on which runMiroirTestAction runs the leaves of a MiroirTest. */
+  asDomainControllerInterface(): DomainControllerInterface;
+  /** #575: the tracker where the DomainController records the assertions of the tests it runs. */
+  getMiroirActivityTracker(): MiroirActivityTrackerInterface;
 }
 
 /** What DomainController passes to a library action implementation along with the action. */

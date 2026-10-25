@@ -39,7 +39,7 @@ import {
 import { defaultMiroirMetaModel, selfApplicationMiroir } from "miroir-app-miroir";
 import { browserMcpServerUrl, runMcpToolRunner } from "../4_view/components/Runners/runMcpToolRunner.js";
 import { runRealServerClientBootstrap } from "./runRealServerClientBootstrap.js";
-import { runTeardownTestApplicationStores } from "./testApplicationStoreTeardown.js";
+import { runTeardownTestApplicationStores } from "miroir-core";
 import { testbedAccessGrantFromAuthSession } from "./testbedAccessGrantFromAuthSession.js";
 import { resolveCanonicalTestDeploymentUuid } from "./resolveCanonicalTestDeploymentUuid.js";
 import {

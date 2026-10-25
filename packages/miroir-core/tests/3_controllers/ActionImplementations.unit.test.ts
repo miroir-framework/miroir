@@ -14,6 +14,7 @@ import {
 } from "miroir-core";
 import { defaultMiroirMetaModel } from "miroir-app-miroir";
 import { miroirActionImplementations } from "../../src/3_controllers/ActionImplementations";
+import { miroirCoreStartup } from "../../src/startup";
 import { DomainController } from "../../src/3_controllers/DomainController";
 import { MiroirActivityTracker } from "../../src/3_controllers/MiroirActivityTracker";
 import { MiroirContext } from "../../src/3_controllers/MiroirContext";
@@ -115,6 +116,7 @@ const expectedActionTypesByEndpoint: Record<string, string[]> = {
     "compositeRunTestAssertion",
     "compositeFail",
     "runReportAction",
+    "runMiroirTestAction",
     "connectExternalService",
     "prepareOpenApiDocument",
     "probeExternalService",
@@ -272,7 +274,9 @@ describe("Miroir actions run from their implementation reference", () => {
     ).toEqual(["entity_DuplicateAttribute"]);
   });
 
-  it("resolves every libraryImplementation declared in the bundled Endpoints", () => {
+  it("resolves every libraryImplementation declared in the bundled Endpoints, once started", () => {
+    // #575: runMiroirTestAction is registered from 5_tests at startup
+    miroirCoreStartup();
     const declared = defaultMiroirMetaModel.endpoints.flatMap((endpoint: any) =>
       (getEndpointActions(endpoint) ?? [])
         .filter(

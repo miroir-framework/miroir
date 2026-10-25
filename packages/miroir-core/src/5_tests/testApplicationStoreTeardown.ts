@@ -1,12 +1,12 @@
 import type {
-  ApplicationDeploymentMap,
   CompositeActionSequence,
-  DomainControllerInterface,
   EntityInstance,
-  MiroirModelEnvironment,
   StoreUnitConfiguration,
-  Uuid,
-} from "miroir-core";
+} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import type { Uuid } from "../0_interfaces/1_core/EntityVersion";
+import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
+import type { DomainControllerInterface } from "../0_interfaces/2_domain/DomainControllerInterface";
+import type { ApplicationDeploymentMap } from "../1_core/Deployment";
 import {
   adminSelfApplication,
   entityApplicationForAdmin,
