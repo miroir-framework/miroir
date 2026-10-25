@@ -6500,7 +6500,7 @@
                   "queryFailure"
                 ],
                 "unitTestExpectedValue": {
-                  "queryFailure": "ReferenceNotFound"
+                  "queryFailure": "FailedTransformer"
                 },
                 "integrationTestExpectedValue": {
                   "queryFailure": "QueryNotExecutable"

@@ -1086,6 +1086,7 @@ export {
   markSiblingPartialSegmentStale,
   rejectPartialMutationInstanceAction,
 } from "./1_core/localCache/partialMutationGuard.js";
+export { rejectInstancesNotMatchingTheirEntity } from "./1_core/Entity/instanceSchemaGuard.js";
 export {
   formatRelativePath,
   formatRelativePaths,

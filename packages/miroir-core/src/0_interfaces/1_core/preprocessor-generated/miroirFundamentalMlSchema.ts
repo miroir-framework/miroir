@@ -25605,6 +25605,64 @@ export const miroirFundamentalMlSchema = {
                     "canBeTemplate": false
                   }
                 },
+                "definition": "compositeFail"
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "payload": {
+                "type": "object",
+                "tag": {
+                  "value": {
+                    "description": "#557: stops the composite action with this error when `condition` holds; the steps after it do not run."
+                  }
+                },
+                "definition": {
+                  "condition": {
+                    "type": "boolean",
+                    "tag": {
+                      "value": {
+                        "description": "The step fails when this is true: a runtime transformer such as boolExpr, usually reading an earlier step's result.",
+                        "canBeTemplate": true
+                      }
+                    }
+                  },
+                  "errorType": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "description": "One of the action's actionErrors.",
+                        "canBeTemplate": true
+                      }
+                    }
+                  },
+                  "message": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false
+                  }
+                },
                 "definition": "connectExternalService"
               },
               "actionLabel": {
@@ -40111,6 +40169,133 @@ export const miroirFundamentalMlSchema = {
                     "canBeTemplate": false
                   }
                 },
+                "definition": "compositeFail"
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "payload": {
+                "type": "object",
+                "tag": {
+                  "value": {
+                    "description": "#557: stops the composite action with this error when `condition` holds; the steps after it do not run.",
+                    "isTemplate": true
+                  }
+                },
+                "definition": {
+                  "condition": {
+                    "type": "union",
+                    "tag": {
+                      "value": {
+                        "description": "The step fails when this is true: a runtime transformer such as boolExpr, usually reading an earlier step's result.",
+                        "canBeTemplate": true,
+                        "isTemplate": true
+                      }
+                    },
+                    "discriminator": [
+                      "transformerType",
+                      "interpolation"
+                    ],
+                    "definition": [
+                      {
+                        "type": "boolean",
+                        "tag": {
+                          "value": {
+                            "description": "The step fails when this is true: a runtime transformer such as boolExpr, usually reading an earlier step's result.",
+                            "canBeTemplate": true
+                          }
+                        }
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          "relativePath": "coreTransformerForBuildPlusRuntime"
+                        }
+                      }
+                    ]
+                  },
+                  "errorType": {
+                    "type": "union",
+                    "tag": {
+                      "value": {
+                        "description": "One of the action's actionErrors.",
+                        "canBeTemplate": true,
+                        "isTemplate": true
+                      }
+                    },
+                    "discriminator": [
+                      "transformerType",
+                      "interpolation"
+                    ],
+                    "definition": [
+                      {
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "description": "One of the action's actionErrors.",
+                            "canBeTemplate": true
+                          }
+                        }
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          "relativePath": "coreTransformerForBuildPlusRuntime"
+                        }
+                      }
+                    ]
+                  },
+                  "message": {
+                    "type": "union",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": true,
+                        "isTemplate": true
+                      }
+                    },
+                    "discriminator": [
+                      "transformerType",
+                      "interpolation"
+                    ],
+                    "definition": [
+                      {
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "canBeTemplate": true
+                          }
+                        }
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          "relativePath": "coreTransformerForBuildPlusRuntime"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false
+                  }
+                },
                 "definition": "connectExternalService"
               },
               "actionLabel": {
@@ -46910,6 +47095,133 @@ export const miroirFundamentalMlSchema = {
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_testAssertion"
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false
+                  }
+                },
+                "definition": "compositeFail"
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "payload": {
+                "type": "object",
+                "tag": {
+                  "value": {
+                    "description": "#557: stops the composite action with this error when `condition` holds; the steps after it do not run.",
+                    "isTemplate": true
+                  }
+                },
+                "definition": {
+                  "condition": {
+                    "type": "union",
+                    "tag": {
+                      "value": {
+                        "description": "The step fails when this is true: a runtime transformer such as boolExpr, usually reading an earlier step's result.",
+                        "canBeTemplate": true,
+                        "isTemplate": true
+                      }
+                    },
+                    "discriminator": [
+                      "transformerType",
+                      "interpolation"
+                    ],
+                    "definition": [
+                      {
+                        "type": "boolean",
+                        "tag": {
+                          "value": {
+                            "description": "The step fails when this is true: a runtime transformer such as boolExpr, usually reading an earlier step's result.",
+                            "canBeTemplate": true
+                          }
+                        }
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          "relativePath": "coreTransformerForBuildPlusRuntime"
+                        }
+                      }
+                    ]
+                  },
+                  "errorType": {
+                    "type": "union",
+                    "tag": {
+                      "value": {
+                        "description": "One of the action's actionErrors.",
+                        "canBeTemplate": true,
+                        "isTemplate": true
+                      }
+                    },
+                    "discriminator": [
+                      "transformerType",
+                      "interpolation"
+                    ],
+                    "definition": [
+                      {
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "description": "One of the action's actionErrors.",
+                            "canBeTemplate": true
+                          }
+                        }
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          "relativePath": "coreTransformerForBuildPlusRuntime"
+                        }
+                      }
+                    ]
+                  },
+                  "message": {
+                    "type": "union",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": true,
+                        "isTemplate": true
+                      }
+                    },
+                    "discriminator": [
+                      "transformerType",
+                      "interpolation"
+                    ],
+                    "definition": [
+                      {
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "canBeTemplate": true
+                          }
+                        }
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          "relativePath": "coreTransformerForBuildPlusRuntime"
+                        }
+                      }
+                    ]
+                  }
                 }
               }
             }
