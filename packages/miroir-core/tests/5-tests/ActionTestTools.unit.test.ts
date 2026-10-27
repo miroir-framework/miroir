@@ -1,7 +1,10 @@
 import { describe, expect, it, vi } from "vitest";
 import * as vitest from "vitest";
 
-import type { MiroirTestForAction } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import type {
+  MiroirTestForAction,
+  TestAssertionResult,
+} from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { LIBRARY_TMP } from "../../src/0_interfaces/1_core/LIBRARY_TMP";
 import {
   remapActionTestLeafForRunTarget,
@@ -138,13 +141,32 @@ describe("resolveActionTestLeaf", () => {
 });
 
 describe("runMiroirActionTest", () => {
-  it("runs resolved leaf via handleTestCompositeAction and records ok", async () => {
-    const handleTestCompositeAction = vi.fn(async () => ({ status: "ok" }));
-    const tracker = {
+  /** A tracker whose test "Refresh all Instances" recorded `assertions`, as handleTestCompositeActionAssertion does. */
+  function trackerWithAssertions(assertions: Record<string, TestAssertionResult>) {
+    return {
       getCurrentActivityId: vi.fn(() => "activity-1"),
+      getCurrentTestAssertionPath: vi.fn(() => []),
       trackTest: vi.fn(async (_n: string, _p: unknown, fn: () => Promise<unknown>) => fn()),
       setTestAssertionResult: vi.fn(),
+      getTestAssertionsResults: vi.fn(() => ({
+        testsSuiteResults: {
+          action: {
+            testsResults: {
+              "Refresh all Instances": {
+                testLabel: "Refresh all Instances",
+                testResult: "ok",
+                testAssertionsResults: assertions,
+              },
+            },
+          },
+        },
+      })),
     };
+  }
+
+  it("runs resolved leaf via handleTestCompositeAction and records ok", async () => {
+    const handleTestCompositeAction = vi.fn(async () => ({ status: "ok" }));
+    const tracker = trackerWithAssertions({ checkNumberOfBooks: { assertionName: "checkNumberOfBooks", assertionResult: "ok" } });
     const domainController = {
       currentModelEnvironment: vi.fn(() => ({ model: "env" })),
       handleTestCompositeAction,
@@ -196,11 +218,7 @@ describe("runMiroirActionTest", () => {
     const ephemeralApp = "11111111-1111-4111-8111-111111111111";
     const ephemeralDep = "22222222-2222-4222-8222-222222222222";
     const handleTestCompositeAction = vi.fn(async () => ({ status: "ok" }));
-    const tracker = {
-      getCurrentActivityId: vi.fn(() => "activity-1"),
-      trackTest: vi.fn(async (_n: string, _p: unknown, fn: () => Promise<unknown>) => fn()),
-      setTestAssertionResult: vi.fn(),
-    };
+    const tracker = trackerWithAssertions({ checkNumberOfBooks: { assertionName: "checkNumberOfBooks", assertionResult: "ok" } });
     const domainController = {
       currentModelEnvironment: vi.fn(() => ({ model: "env" })),
       handleTestCompositeAction,
@@ -254,6 +272,118 @@ describe("runMiroirActionTest", () => {
         testApplicationUuid: ephemeralApp,
         testApplicationDeploymentUuid: ephemeralDep,
       }),
+    );
+  });
+
+  // #554: a composite action records a failed assertion in the tracker and still returns ok
+  function libraryExecutionEnvironment(handleTestCompositeAction: (...args: any[]) => Promise<unknown>) {
+    const domainController = {
+      currentModelEnvironment: vi.fn(() => ({ model: "env" })),
+      handleTestCompositeAction,
+      handleTestCompositeActionSuite: vi.fn(),
+    };
+    return {
+      domainController,
+      applicationDeploymentMap: { [applicationUuid]: "dep" },
+      testApplicationUuid: applicationUuid,
+      persistenceStoreControllerManager: {} as any,
+      runnerTestContext: {
+        domainController,
+        applicationDeploymentMap: { [applicationUuid]: "dep" },
+        internalMiroirConfig: {} as any,
+        pageLabel: "p",
+        adminDeployment: {} as any,
+        testDeploymentStorageConfiguration: {} as any,
+        runTarget: { applicationUuid, applicationName: "Library", deploymentUuid: canonicalDeploymentUuid },
+        resolvedRunner: {} as any,
+        testParams: {},
+        runtimeContext: {},
+      },
+    } as unknown as MiroirTestExecutionEnvironment;
+  }
+
+  it("fails the leaf and records error when an assertion failed, though the composite action returned ok (#554)", async () => {
+    const tracker = trackerWithAssertions({
+      checkNumberOfBooks: {
+        assertionName: "checkNumberOfBooks",
+        assertionResult: "error",
+        assertionExpectedValue: { aggregate: 999 },
+        assertionActualValue: { aggregate: 5 },
+      },
+    });
+    const path = [{ test: "t" }, { testAssertion: "t" }];
+
+    await expect(
+      runMiroirActionTest(
+        vitest,
+        ["action"],
+        undefined,
+        minimalLeaf,
+        tracker as any,
+        path,
+        false,
+        libraryExecutionEnvironment(vi.fn(async () => ({ status: "ok" }))),
+      ),
+    ).rejects.toThrow(
+      'actionTest "Refresh all Instances" assertion failed: checkNumberOfBooks expected {"aggregate":999} actual {"aggregate":5}',
+    );
+    expect(tracker.setTestAssertionResult).toHaveBeenCalledWith(path, {
+      assertionName: "Refresh all Instances",
+      assertionResult: "error",
+      assertionExpectedValue: { aggregate: 999 },
+      assertionActualValue: { aggregate: 5 },
+    });
+  });
+
+  it("fails the leaf when an assertion did not run (#554)", async () => {
+    const tracker = trackerWithAssertions({});
+
+    await expect(
+      runMiroirActionTest(
+        vitest,
+        ["action"],
+        undefined,
+        minimalLeaf,
+        tracker as any,
+        [{ test: "t" }, { testAssertion: "t" }],
+        false,
+        libraryExecutionEnvironment(vi.fn(async () => ({ status: "ok" }))),
+      ),
+    ).rejects.toThrow('actionTest "Refresh all Instances" assertion "checkNumberOfBooks" did not run');
+  });
+
+  it("checks only the assertions among the leaf's assertion steps (#554)", async () => {
+    const tracker = trackerWithAssertions({
+      checkNumberOfBooks: { assertionName: "checkNumberOfBooks", assertionResult: "ok" },
+    });
+    const leafWithQueryStep: MiroirTestForAction = {
+      ...minimalLeaf,
+      testCompositeActionAssertions: [
+        {
+          actionType: "compositeRunBoxedQueryAction",
+          endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+          actionLabel: "queryBooks",
+          nameGivenToResult: "books",
+        } as any,
+        ...(minimalLeaf.testCompositeActionAssertions ?? []),
+      ],
+    };
+    const path = [{ test: "t" }, { testAssertion: "t" }];
+
+    await runMiroirActionTest(
+      vitest,
+      ["action"],
+      undefined,
+      leafWithQueryStep,
+      tracker as any,
+      path,
+      false,
+      libraryExecutionEnvironment(vi.fn(async () => ({ status: "ok" }))),
+    );
+
+    expect(tracker.setTestAssertionResult).toHaveBeenCalledWith(
+      path,
+      expect.objectContaining({ assertionResult: "ok" }),
     );
   });
 });

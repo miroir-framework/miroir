@@ -118,6 +118,22 @@ function findFirstDiffPath(a: any, b: any, path: string[] = []): string[] | null
 }
 
 // ################################################################################################
+/**
+ * The failure message of a matcher's outcome, or undefined when it passed (#554). `expect` above
+ * reports a mismatch as `{ result: false, message }` instead of throwing; a throwing expect returns
+ * nothing, or a vitest assertion, a proxy that throws on unknown properties: own properties only.
+ */
+export function failedExpectationMessage(outcome: unknown, defaultMessage: string): string | undefined {
+  if (!outcome || typeof outcome != "object") {
+    return undefined;
+  }
+  if (Object.getOwnPropertyDescriptor(outcome, "result")?.value !== false) {
+    return undefined;
+  }
+  return Object.getOwnPropertyDescriptor(outcome, "message")?.value ?? defaultMessage;
+}
+
+// ################################################################################################
 export function expect(actual: any, testName?: string) {
   // console.log(`@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Expect called with actual: ${actual}, testName: ${testName}`);
   const matchers = {
