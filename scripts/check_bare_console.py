@@ -24,6 +24,7 @@ ALLOWLIST_FILES = {
     "FoldedStateTreeDebug.ts",
     "FoldedStateTreeUtils.ts",
     "chunkLoadTrace.ts",
+    "loadTimingBrowser.ts",  # #580: loaded with the page, before any logger is set up
     "ViewParamsUpdateQueueTestUtils.ts",
     "test-icon-extraction.ts",
     "IconExtractionDemo.tsx",
