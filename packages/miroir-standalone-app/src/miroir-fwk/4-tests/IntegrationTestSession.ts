@@ -41,7 +41,7 @@ import { loadLocalCacheImplementation } from "./localCacheImplementation";
 import {
   buildTeardownTestApplicationStoresAction,
   runTeardownTestApplicationStores,
-} from "./testApplicationStoreTeardown.js";
+} from "miroir-core";
 import { buildTestSessionModelEnvironment } from "./testSessionModelEnvironment.js";
 import {
   Action2Error,

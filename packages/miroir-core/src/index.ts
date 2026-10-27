@@ -356,6 +356,8 @@ export {
   miroirEnvironmentApplication,
   MiroirEnvironmentSectionMode,
   MiroirEnvironmentStoreType,
+  MiroirSelfTestConfig,
+  miroirSelfTestConfig,
   // MiroirCustomQueryParams,
   // miroirCustomQueryParams,
   MiroirFundamentalType,
@@ -1111,6 +1113,7 @@ export {
   createThrowingExpect,
   describe,
   expect,
+  failedExpectationMessage,
   MiroirAssertionError,
   TestFramework,
   type ThrowingDomMatchers,
@@ -1896,6 +1899,14 @@ export {
   type LibraryPlayfieldEnsureMode,
   type ResetIntegTestbedParams,
 } from "./5_tests/LibraryPlayfield.js";
+export {
+  buildTeardownTestApplicationAdminCleanupAction,
+  buildTeardownTestApplicationStoreCleanupAction,
+  buildTeardownTestApplicationStoresAction,
+  runTeardownTestApplicationStores,
+  type TeardownTestApplicationStoresOptions,
+} from "./5_tests/testApplicationStoreTeardown.js";
+export { testbedStorageConfiguration, testbedStoreName } from "./5_tests/testbedStorageConfiguration.js";
 export {
   ensureMiroirPlatform,
   type DeployMiroirStrategy,

@@ -131,3 +131,14 @@ export const miroirActionImplementations: Record<string, ActionImplementationHan
       context.principal,
     ),
 };
+
+/**
+ * #575: adds a library implementation from a layer above, which layer 3 does not import (the MiroirTest
+ * runner of `5_tests`). Called at startup, before any action runs.
+ */
+export function registerMiroirActionImplementation(
+  implementationName: string,
+  implementation: ActionImplementationHandler,
+): void {
+  miroirActionImplementations[implementationName] = implementation;
+}

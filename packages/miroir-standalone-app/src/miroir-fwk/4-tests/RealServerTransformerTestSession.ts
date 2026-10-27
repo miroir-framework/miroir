@@ -27,7 +27,7 @@ import {
 
 import { deployment_Miroir } from "miroir-app-admin";
 import { runRealServerClientBootstrap } from "./runRealServerClientBootstrap.js";
-import { runTeardownTestApplicationStores } from "./testApplicationStoreTeardown.js";
+import { runTeardownTestApplicationStores } from "miroir-core";
 import { testbedAccessGrantFromAuthSession } from "./testbedAccessGrantFromAuthSession.js";
 import {
   buildTransformerApplicationDeploymentMap,

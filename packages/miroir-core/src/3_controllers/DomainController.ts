@@ -209,6 +209,8 @@ import { normalizeConnectExternalServicePayload } from "./normalizeConnectExtern
 import { redactCredentialSecretsFromValue } from "../4_services/redactCredentialSecrets.js";
 import type { ExternalServiceClientInterface } from "../0_interfaces/4-services/ExternalServiceClientInterface.js";
 import { ConfigurationService } from './ConfigurationService.js';
+import type { MiroirActivityTrackerInterface } from "../0_interfaces/3_controllers/MiroirActivityTrackerInterface";
+import { failedExpectationMessage } from "../1_core/testing/test-expect.js";
 import {
   ensureSecretsCrypto,
   getSecretsMasterKey,
@@ -3302,13 +3304,13 @@ export class DomainController implements DomainControllerInterface, DomainContro
     resolvedApplicationUuid?: string,
     principal?: AuthPrincipal,
   ): Promise<Action2ReturnType> {
+    // Action type and endpoint only: the event service keeps every log's arguments for ten minutes,
+    // and an initModel action carries a whole model (#487: 8 MB per log, a crashed browser run).
     log.info(
       "DomainController handleApplicationAction",
       domainAction.actionType,
-      "domainAction",
-      JSON.stringify(redactCredentialSecretsFromValue(domainAction), null, 2),
-      "endpoints",
-      JSON.stringify(Object.keys(currentModelEnvironment?.endpointsByUuid || {}), null, 2),
+      "endpoint",
+      (domainAction as { endpoint?: string }).endpoint,
     );
     if (!(domainAction as any).endpoint) {
       return Promise.resolve(
@@ -3468,6 +3470,15 @@ export class DomainController implements DomainControllerInterface, DomainContro
       principal,
     );
     return result as Action2ReturnType;
+  }
+
+  // ##############################################################################################
+  asDomainControllerInterface(): DomainControllerInterface {
+    return this;
+  }
+
+  getMiroirActivityTracker(): MiroirActivityTrackerInterface {
+    return this.miroirContext.miroirActivityTracker;
   }
 
   // ##############################################################################################
@@ -5400,11 +5411,17 @@ export class DomainController implements DomainControllerInterface, DomainContro
         "valueToTest",
         JSON.stringify(valueToTest, null, 2),
       );
+      let assertionPassed: boolean;
       try {
-        ConfigurationService.configurationService.testImplementation
+        const outcome = ConfigurationService.configurationService.testImplementation
           .expect(valueToTest, currentAction.nameGivenToResult)
           .toEqual(expectedValue);
-        // .toEqual(currentAction.payload.definition.expectedValue);
+        // #554: the non-throwing expect reports a mismatch instead of throwing
+        assertionPassed = !failedExpectationMessage(outcome, `${currentAction.payload.testLabel} failed`);
+      } catch {
+        assertionPassed = false;
+      }
+      if (assertionPassed) {
         log.info(
           "assertion",
           currentAction.payload.testLabel,
@@ -5414,12 +5431,6 @@ export class DomainController implements DomainControllerInterface, DomainContro
           status: "ok",
           returnedDomainElement: undefined,
         };
-        // TestSuiteContext.setTestAssertionResult({
-        //   assertionName: currentAction.payload.testLabel,
-        //   assertionResult: "ok",
-        //   // assertionExpectedValue: compositeRunTestAssertion.payload.definition.expectedValue,
-        //   // assertionActualValue: valueToTest,
-        // });
         // Set test result in MiroirActivityTracker for TestLogService
         this.miroirContext.miroirActivityTracker.setTestAssertionResult(
           this.miroirContext.miroirActivityTracker.getCurrentTestAssertionPath(),
@@ -5428,7 +5439,7 @@ export class DomainController implements DomainControllerInterface, DomainContro
             assertionResult: "ok",
           },
         );
-      } catch (error) {
+      } else {
         log.info(
           "assertion",
           currentAction.payload.testLabel,
@@ -5444,7 +5455,6 @@ export class DomainController implements DomainControllerInterface, DomainContro
             assertionActualValue: valueToTest,
           },
         );
-        // return ACTION_OK;
         actionResult = ACTION_OK;
       }
     } catch (error) {
@@ -6045,6 +6055,8 @@ export class DomainController implements DomainControllerInterface, DomainContro
       log.debug("handleTestCompositeAction no beforeTestSetupAction!");
     }
 
+    // #554: a failed step fails the test, after its cleanup
+    let sequenceResult: Action2ReturnType | Action2VoidReturnType | undefined;
     switch (testAction.testType) {
       case "testCompositeAction": {
         const localCompositeAction: CompositeActionSequence = {
@@ -6057,7 +6069,7 @@ export class DomainController implements DomainControllerInterface, DomainContro
             ],
           },
         };
-        await this.handleCompositeAction(
+        sequenceResult = await this.handleCompositeAction(
           localCompositeAction,
           applicationDeploymentMap,
           modelEnvironment,
@@ -6077,7 +6089,7 @@ export class DomainController implements DomainControllerInterface, DomainContro
             ] as any, // TODO: correct type
           },
         };
-        await this.handleRuntimeCompositeActionDO_NOT_USE(
+        sequenceResult = await this.handleRuntimeCompositeActionDO_NOT_USE(
           localCompositeAction,
           applicationDeploymentMap,
           modelEnvironment,
@@ -6108,6 +6120,9 @@ export class DomainController implements DomainControllerInterface, DomainContro
     // TestSuiteContext.setTest(undefined);
     this.miroirContext.miroirActivityTracker.setTest(undefined);
 
+    if (sequenceResult instanceof Action2Error) {
+      return sequenceResult;
+    }
     return Promise.resolve(ACTION_OK);
   }
 
