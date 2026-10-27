@@ -25,10 +25,6 @@ profile (`RunnerTestSession`, `uiIntegrationTestLauncher.ts`), which an MCP clie
   after the run.
 
 Non-goals (v1):
-- `runnerTest` leaves of an `mcpToolRunner`: they call an MCP server themselves. They come back `unsupported`.
-  Other `runnerTest` leaves run on the testbed (D9), since an `actionTest` cannot call an application's
-  Endpoint action: its `compositeActionSequence` is typed with the closed `DomainAction` union, so
-  `createInstance` rejects a test row whose sequence holds `lendDocument`.
 - `reportTest` and `reactComponentTest` leaves (they need a DOM), and `transformerTest` integration leaves
   (they need the store controller manager): `unsupported`.
 - The suite's own declared testbed (`testConfiguration` or inline `testbedModel`): the testbed is a copy of
@@ -63,7 +59,8 @@ Non-goals (v1):
 | D6 | Results | Per leaf: `{ path, type, result: ok, error, skipped or unsupported, assertions, message? }`, read from the tracker after each leaf; a leaf's throw is caught and reported, so one leaf never stops the others | Reading the whole tracker tree once (DomainController and walk record at different paths) | G1 |
 | D7 | Failure of the action | `FailedToRunMiroirTest` only when the MiroirTest is not found or the testbed cannot be created or dropped; leaf failures are data | Failing the action on a failed leaf (the agent then loses the other leaves' results) | G1 |
 | D8 | Where the code goes | `5_tests/RunMiroirTestAction.ts`, registered from `miroirCoreStartup` through `registerMiroirActionImplementation` (`ActionImplementations.ts`), so layer 3 does not import layer 5 | Layer 3 (it would import the test tools) | G1 |
-| D9 | `runnerTest` leaves | Run on the testbed with `skipCreateDeployment` and `skipDropDeployment` forced, the Runner index read from the testbed model, the suite's `testParams` remapped | Unsupported (the agents of the third pilot wrote `runnerTest` leaves, copying `runner.lendDocument`) | G1 |
+| D9 | `runnerTest` leaves | Run on the testbed (an `actionTest` cannot call an application's Endpoint action: its `compositeActionSequence` is the closed `DomainAction` union) with `skipCreateDeployment` and `skipDropDeployment` forced, the Runner index read from the testbed model, the suite's `testParams` remapped | Unsupported (the agents of the third pilot wrote `runnerTest` leaves, copying `runner.lendDocument`) | G1 |
+| D10 | `mcpToolRunner` leaves | Their tool runs in process as the testbed's Endpoint action (`<application>_<actionType>`, the MCP naming), with the tool's arguments as payload, so `expectedMcpStatus: error` tests a refused action | Unsupported (then no passing test of a refused loan can be written: an `actionRunner` leaf whose action fails its sequence); an HTTP call to the server's own MCP (its tools address the live application) | G1, G2 |
 
 ## Risks
 

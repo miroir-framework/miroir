@@ -20,6 +20,7 @@ import type { Uuid } from "../0_interfaces/1_core/EntityVersion";
 import type {
   ApplicationSection,
   Deployment,
+  EndpointDefinition,
   Entity,
   EntityInstance,
   ExtractorOrCombiner,
@@ -33,6 +34,8 @@ import type {
   TestAssertionResult,
   TestSuiteResult,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { getEndpointActions } from "../0_interfaces/1_core/endpointDefinition";
+import type { DomainControllerInterface } from "../0_interfaces/2_domain/DomainControllerInterface";
 import { Action2Error } from "../0_interfaces/2_domain/DomainElement";
 import type {
   ActionImplementationContext,
@@ -49,7 +52,7 @@ import { createThrowingExpect } from "../1_core/testing/test-expect";
 import { ConfigurationService } from "../3_controllers/ConfigurationService";
 import { MiroirActivityTracker } from "../3_controllers/MiroirActivityTracker";
 import { resetIntegTestbed } from "./LibraryPlayfield.js";
-import { runMiroirTests, type MiroirTestExecutionEnvironment } from "./MiroirTestTools.js";
+import { runMiroirTests, type MiroirTestExecutionEnvironment, type RunnerTestContext } from "./MiroirTestTools.js";
 import { createInProcessVitestStub } from "./runMiroirTestSuiteInProcess.js";
 import { runTeardownTestApplicationStores } from "./testApplicationStoreTeardown.js";
 import { testbedStorageConfiguration } from "./testbedStorageConfiguration.js";
@@ -366,8 +369,49 @@ async function prepareTestbed(
   };
 }
 
-const MCP_TOOL_RUNNER_MESSAGE =
-  "a runnerTest leaf of an mcpToolRunner calls the MCP server itself: call the tool directly instead";
+const toolNamePart = (part: string) => part.replace(/[^a-zA-Z0-9_-]/g, "_");
+
+/**
+ * Runs the MCP tool of an mcpToolRunner on the testbed, in process: the tool `<application>_<actionType>` (or
+ * `<application>_<endpoint>_<actionType>`) of the tested application becomes that Endpoint action, with the
+ * tool's arguments as its payload, as the MCP server builds it. The live application's tools are never called.
+ */
+function testbedMcpToolExecutor(
+  domainController: DomainControllerInterface,
+  testbed: Testbed,
+): NonNullable<RunnerTestContext["executeMcpToolRunner"]> {
+  return async (runner, args) => {
+    if (runner.definition.runnerType != "mcpToolRunner") {
+      throw new Error(`runner ${runner.name} is not an mcpToolRunner`);
+    }
+    const toolName = runner.definition.toolName;
+    const application = toolNamePart(testbed.runTarget.applicationName);
+    let found: { endpoint: string; actionType: string } | undefined;
+    for (const endpoint of (testbed.testbedModel.endpoints ?? []) as EndpointDefinition[]) {
+      for (const endpointAction of getEndpointActions(endpoint) ?? []) {
+        const actionType = (endpointAction as any).actionParameters?.actionType?.definition;
+        if (
+          typeof actionType == "string" &&
+          [`${application}_${toolNamePart(actionType)}`, `${application}_${toolNamePart(endpoint.name)}_${toolNamePart(actionType)}`].includes(toolName)
+        ) {
+          found = { endpoint: endpoint.uuid, actionType };
+        }
+      }
+    }
+    if (!found) {
+      return { status: "error", error: { message: `no Endpoint action of ${testbed.runTarget.applicationName} for the tool ${toolName}` } };
+    }
+    const { applicationDeploymentMap, runTarget } = testbed;
+    const result = await domainController.handleAction(
+      { actionType: found.actionType, actionLabel: toolName, endpoint: found.endpoint, payload: args } as any,
+      applicationDeploymentMap,
+      domainController.currentModelEnvironment(runTarget.applicationUuid, applicationDeploymentMap),
+    );
+    return result instanceof Action2Error || result.status != "ok"
+      ? { status: "error", error: { message: errorMessage(result) } }
+      : { status: "success", result: result.returnedDomainElement };
+  };
+}
 
 /**
  * A runnerTest leaf runs on the testbed the action created and reseeds: it neither creates nor drops a
@@ -527,16 +571,6 @@ async function runMiroirTest(
   const runnerUuidIndex: Record<string, Runner> = Object.fromEntries(
     ((testbed.testbedModel.runners ?? []) as Runner[]).map((runner) => [runner.uuid, runner]),
   );
-  const runnableLeaves = testbedLeaves.filter(({ index, leaf }) => {
-    if (leaf.miroirTestType != "runnerTest" || runnerUuidIndex[leaf.runnerRef]?.definition.runnerType != "mcpToolRunner") {
-      return true;
-    }
-    outcomes[index] = { ...outcomes[index], result: "unsupported", message: MCP_TOOL_RUNNER_MESSAGE };
-    return false;
-  });
-  if (runnableLeaves.length == 0) {
-    return { status: "ok" as const, returnedDomainElement: { miroirTest: miroirTest.name, leaves: outcomes } };
-  }
   const domainController = host.asDomainControllerInterface();
   const created = await host.handleCompositeAction(
     createDeploymentCompositeAction(
@@ -580,9 +614,13 @@ async function runMiroirTest(
       testApplicationUuid: runTarget.applicationUuid,
       persistenceStoreControllerManager: undefined as any,
       compositeActionTestContext,
-      runnerTestContext: { ...compositeActionTestContext, runnerUuidIndex },
+      runnerTestContext: {
+        ...compositeActionTestContext,
+        runnerUuidIndex,
+        executeMcpToolRunner: testbedMcpToolExecutor(domainController, testbed),
+      },
     } satisfies MiroirTestExecutionEnvironment;
-    for (const entry of runnableLeaves) {
+    for (const entry of testbedLeaves) {
       try {
         await resetIntegTestbed({
           domainController,
