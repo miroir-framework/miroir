@@ -244,16 +244,19 @@ export function createLoadTimingRecorder(host: LoadTimingHost) {
     }
     writing = true;
     const batch = queue.splice(0, queue.length);
-    write(batch).then((result) => {
-      writing = false;
-      if (!result.ok) {
-        writeStopped = true;
-        queue.length = 0;
-        host.onWriteError?.(result.error);
-        return;
-      }
-      scheduleWrite();
-    });
+    // a rejected write (the writer module could not be loaded) fails like a returned error
+    write(batch)
+      .catch((error: unknown) => ({ ok: false as const, error: String(error) }))
+      .then((result) => {
+        writing = false;
+        if (!result.ok) {
+          writeStopped = true;
+          queue.length = 0;
+          host.onWriteError?.(result.error);
+          return;
+        }
+        scheduleWrite();
+      });
   }
 
   // ##############################################################################################
@@ -261,7 +264,8 @@ export function createLoadTimingRecorder(host: LoadTimingHost) {
     /** A DOM change of the page, at `at` ms. */
     activity,
     resource(entry: LoadTimingResource) {
-      if (state === "off") {
+      // outside a step, a file belongs to no step: keeping it would grow the buffer for nothing
+      if (state === "off" || !open) {
         return;
       }
       resources.push(entry);

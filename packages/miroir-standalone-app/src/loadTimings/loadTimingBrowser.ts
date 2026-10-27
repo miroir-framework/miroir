@@ -134,9 +134,25 @@ function startObserving() {
 
   if (typeof window.fetch === "function") {
     const originalFetch = window.fetch;
+    // A request stays in flight until its body is downloaded: fetch resolves on the headers, and
+    // RestClient reads the body after. Reading a clone does not download the body twice.
     const countingFetch: typeof window.fetch = function (this: unknown, ...args) {
       recorder?.requestStarted();
-      return originalFetch.apply(this, args).finally(() => recorder?.requestEnded());
+      const ended = () => recorder?.requestEnded();
+      return originalFetch.apply(this, args).then(
+        (response) => {
+          try {
+            response.clone().arrayBuffer().catch(() => undefined).finally(ended);
+          } catch {
+            ended();
+          }
+          return response;
+        },
+        (error) => {
+          ended();
+          throw error;
+        },
+      );
     };
     window.fetch = countingFetch;
     teardown.push(() => {

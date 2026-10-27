@@ -272,6 +272,27 @@ describe("load timing recorder (#580)", () => {
       expect(recorder.steps().length).toBe(2);
     });
 
+    it("stops writing after a rejected write, as after a failed one", async () => {
+      const host = fakeHost();
+      const errors: string[] = [];
+      const writes: LoadTimingStep[][] = [];
+      const recorder = createLoadTimingRecorder({ ...host, onWriteError: (error) => errors.push(error) });
+      recorder.navigate({ page: "home", url: "/", action: "POP" });
+      recorder.configure({ ...DEFAULT_LOAD_TIMING_SWITCH, enabled: true }, context, (steps) => {
+        writes.push(steps);
+        return Promise.reject(new Error("cannot load the writer"));
+      });
+      recorder.mark("configurationsLoaded");
+      renderInitialPage(host, recorder);
+      host.advance(3500);
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      expect(errors).toEqual(["Error: cannot load the writer"]);
+      recorder.navigate({ page: "report", url: "/?page=report", action: "PUSH" });
+      host.advance(10000);
+      expect(writes.length).toBe(1);
+      expect(recorder.steps()[1].overlapsWrite).toBeFalsy();
+    });
+
     it("keeps steps without writing them when recording is off", () => {
       const host = fakeHost();
       const writes: LoadTimingStep[][] = [];
