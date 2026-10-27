@@ -48,9 +48,11 @@ MiroirLoggerFactory.startRegisteredLoggers(miroirActivityTracker, miroirEventSer
   specificLoggerOptions: {},
 } as any);
 
+const TEST_PAGE_LOAD = "b1f0c5a2-8f43-4c1e-9c43-2a3f4f8e7d10";
+
 function step(name: string, durationMs: number): LoadTimingStep {
   return {
-    pageLoad: "b1f0c5a2-8f43-4c1e-9c43-2a3f4f8e7d10",
+    pageLoad: TEST_PAGE_LOAD,
     measuredAt: "2026-10-27T10:00:00.000Z",
     step: name,
     page: name === "initialLoad" ? "home" : name.slice("route:".length),
@@ -98,13 +100,16 @@ describe("load timing writer (#580)", () => {
   });
 
   it("writes every step as a PageLoadMeasurement instance of the Meta deployment", async () => {
+    // The seed copies the package assets, which may hold a developer's own (gitignored) rows:
+    // only the rows of this test's page load count.
     const result = await loadTimingWriter(domainController)([step("initialLoad", 1840), step("route:report", 620)]);
     expect(result).toEqual({ ok: true });
 
     const folder = metaEntityFolder(miroirConfig);
     const written = readdirSync(folder)
       .filter((file) => file.endsWith(".json"))
-      .map((file) => JSON.parse(readFileSync(path.join(folder, file), "utf-8")));
+      .map((file) => JSON.parse(readFileSync(path.join(folder, file), "utf-8")))
+      .filter((instance) => instance.pageLoad === TEST_PAGE_LOAD);
     expect(written.map((instance) => [instance.step, instance.durationMs, instance.chunks[0].file]).sort()).toEqual([
       ["initialLoad", 1840, "/assets/HomePage-abc.js"],
       ["route:report", 620, "/assets/HomePage-abc.js"],

@@ -8,17 +8,34 @@
 > The tracer bullet proves that a step record reaches the Meta deployment through the
 > DomainController and reads back as a valid `PageLoadMeasurement`.
 >
-> **Execution model:** A asked for the whole flow without waiting (issue to PR), so commits are
-> made per slice on the working branch. Each slice ends with its Validation commands; on success
+> **Execution model:** A asked for the whole flow without waiting ("implement the slices and add a
+> PR for the issue, apply remarks from the greptile review, until the PR is ready to merge. all on
+> your own"), so commits are made per slice on the working branch. Each slice ends with its Validation commands; on success
 > its Realization summary is appended and its Status flips to ✅ DONE.
 
 Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/580
 Prerequisite: [`../473-FEATURE-bundle-size-history/`](../473-FEATURE-bundle-size-history/) ✅ · [`../487-FEATURE-client-self-test/`](../487-FEATURE-client-self-test/) ✅
 Working branch: `claude/580-page-load-timings`
 
-**Resume note:** plan written; no slice started.
+**Resume note:** see the progress table; Realization notes below each slice.
 
 ---
+
+## Adversarial review, round 1
+
+| # | Finding | Change |
+|---|---|---|
+| 1 | The test seed copies a developer's gitignored rows into `.miroir/test-filesystem` | the writer test counts only the rows of its own `pageLoad` |
+| 2 | Copy path is `.miroir/test-filesystem/meta/data/…` | the test reads the folder from the client configuration |
+| 3 | The "Meta not loaded" failure case depends on test order | dropped from Slice 1; the stop-after-failure rule is a recorder cycle (Slice 2); "configuration does not list Meta" is a switch case (Slice 3) |
+| 4, 5 | Slice 5 misses `reportTestLauncher.unit.test.ts` (report suites regex), `index.d.ts`, `defaultMetaAppModel.reports`, the MiroirTest folder, `docs/reference/testing.md` | added to Slice 5 GREEN |
+| 6 | The ML schema lives in miroir-core: only `devBuild -w miroir-core`; zod objects are strict | Slice 3 validation |
+| 7 | The tour must wait for `initialLoad` and navigate inside the app | Slice 4 RED |
+| 8 | Paths and the first-only `configurationsLoaded` mark | Slice 4 GREEN |
+| 9 | Cleanup renames files the manifest names | Slice 6: cleanup before the manifest steps |
+| 11 | Resume note; dangling details Report until Slice 5 | resume note; the Report lands in Slice 5 of the same PR |
+| 12 | `package-lock.json` changed by a local `npm install` | reverted |
+| 13 | Commits per slice | A's request quoted above |
 
 ## Scope
 
@@ -266,7 +283,7 @@ With `?loadTimings=on` on the production build served with `dev`, a real Chromiu
 
 ### RED
 
-- `scripts/load-timings.mjs` (pattern of `self-test.mjs` / `coverage-tour.mjs`, through `serveBuiltClient.mjs`): `--serve`, `--url`, `--pages`, `--out`; prints a table per step; exits 1 when a step is missing or unsettled.
+- `packages/miroir-standalone-app/scripts/load-timings.mjs`, npm script `loadTimings` (pattern of `self-test.mjs` / `coverage-tour.mjs`, through `serveBuiltClient.mjs`): `--serve`, `--url`, `--pages`, `--out`; prints a table per step; exits 1 when a step is missing or unsettled. It waits until `initialLoad` is settled before it navigates, navigates inside the app (`pushState` + `popstate`, as `coverage-tour.mjs` does; a `page.goto` would start a new page load), and waits for the write before it reads the Meta folder.
 - `tests/0_build/loadTimingsTour.integ.test.ts`, on demand (`MIROIR_LOAD_TIMINGS_TOUR=1`, like `coverageTour.integ`): runs the script, asserts the three steps, `route:report` has at least one chunk, `initialLoad.milestones` has `entryScript < configReady < firstRender <= configurationsLoaded`, and the steps landed in the Meta data folder (then removes the files it created).
 
 Not reachable through MiroirTest: real browser timing APIs on the production build.
@@ -275,7 +292,7 @@ Not reachable through MiroirTest: real browser timing APIs on the production bui
 
 - `src/loadTimings/loadTimingBrowser.ts` (no package imports): `performance.setResourceTimingBufferSize`, `PerformanceObserver` (resource, buffered), `MutationObserver` on `document.body`, `fetch` wrapper, loading marker check, `requestIdleCallback`, `pagehide`, `window.__miroirLoadTimings`, console line per step; exports `loadTimingMark`, `trackLoadTimingRequest`, `startLoadTimingNavigation(router)`, `configureLoadTimings(config, domainController)`.
 - `index.tsx`: first import; marks `configReady` and `firstRender`; `router.subscribe`; configure after `setupClient` with the writer as a dynamic import.
-- `CenteredSpinner`: `data-miroir-loading`; `RenderInsightSummary`, `LocalCacheMonitorSummary`: `data-miroir-load-timing-ignore`; `fetchMiroirAndAppConfigurations`: `loadTimingMark("configurationsLoaded")`; `ElectronRestClient`, `ElectronServerDomainControllerProxy`: `trackLoadTimingRequest`.
+- `CenteredSpinner`: `data-miroir-loading`; `RenderInsightSummary`, `LocalCacheMonitorSummary`: `data-miroir-load-timing-ignore`; `fetchMiroirAndAppConfigurations` (runs more than once: the recorder keeps the first mark): `loadTimingMark("configurationsLoaded")`; both Electron clients are in `src/miroir-fwk/4_view/services/ElectronIpcProxy.ts`: `ElectronRestClient`, `ElectronServerDomainControllerProxy`: `trackLoadTimingRequest`.
 
 ### Refactor checkpoint
 
@@ -309,7 +326,7 @@ MiroirTest `report.pageLoadHistory` (`24f5c213-…`, tags `integ`, `ui`, `report
 
 ### GREEN
 
-Report JSONs, menu item (`icon: "speed"`), `Meta.ts` seed and test configuration, registration in `testConfigurationInstanceIndex.ts`.
+Report JSONs added to `defaultMetaAppModel.reports`, menu item (`icon: "speed"`), the MiroirTest JSON in `meta_model/a311f363-e238-4203-bdfc-29e8c160c26b/` (`issue: "580"`, `testbedInitApplicationParameters: "metaTestbedInitParams"`), `Meta.ts` seed and test configuration, exports in `index.ts` and `index.d.ts`, registration in `testConfigurationInstanceIndex.ts`, the report suites regex of `tests/4_view/reportTestLauncher.unit.test.ts`, the suite line of `docs/reference/testing.md`.
 
 ### Refactor checkpoint
 
@@ -341,7 +358,7 @@ The page stays within the bundle guard (or the baseline is recorded with the rea
 - Bundle report and guard: `npm run build -w miroir-standalone-app` then `python scripts/check_bundle_policy.py …`; when over the tolerance, `npm run bundle-size:record -w miroir-app-meta -- … --reason "#580 …"`.
 - Docs: `docs/reference/environments.md` (`client.loadTimings` row), `docs/reference/load-timings.md` (switch, steps, fields, rules that keep writes out, the tour script), link from `docs/internals/code-splitting.md`.
 - Nonreg manifest: `unit-580-load-timings` (tooling, ui), `integ-580-load-timing-writer` (actions, ui), `integ-report.pageLoadHistory` (ui, shared group `standalone-app-report-suites`).
-- Cleanup: the `issues/580-load-timings` vitest files move to `tests/4_view/loadTimings/` named after the feature (testing.md #238 rule).
+- Cleanup first, then the manifest steps: the `issues/580-load-timings` vitest files move to `tests/4_view/loadTimings/` named after the feature (testing.md #238 rule).
 
 ### AC checklist
 
