@@ -96,7 +96,10 @@ def test_run_new_tests_counts_each_test_leaves_by_result():
     adapter = adapter_miroir.MiroirAdapter(
         FakeTestRunClient({adapter_miroir.MIROIR_TEST_ENTITY: tests}, {"t1": ["ok", "ok", "unsupported"], "t2": ["ok", "error"]})
     )
-    assert adapter.run_new_tests("lendDocument") == {"limit": {"ok": 2, "unsupported": 1}, "limit wrong": {"ok": 1, "error": 1}}
+    assert adapter.run_new_tests("lendDocument") == {
+        "limit": {"ok": 2, "unsupported": 1},
+        "limit wrong": {"ok": 1, "error": 1, "failures": ["1: "]},
+    }
 
 
 def test_test_check_passes_only_when_every_test_passes():
