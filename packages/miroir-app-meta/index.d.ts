@@ -7,6 +7,7 @@ export declare const metaInitApplicationVersion: EntityInstance;
 export declare const menuDefaultMeta: Menu;
 export declare const defaultMetaAppModel: MetaModel;
 export declare const entityBundleSizeMeasurement: Entity;
+export declare const entityPageLoadMeasurement: Entity;
 export declare const reportBundleSizeHistory: Report;
 export declare const reportBundleSizeMeasurementDetails: Report;
 export declare const bundleSizeMeasurementSeed: EntityInstance[];

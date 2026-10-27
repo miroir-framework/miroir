@@ -2,6 +2,7 @@ export {
   bundleSizeMeasurementSeed,
   defaultMetaAppModel,
   entityBundleSizeMeasurement,
+  entityPageLoadMeasurement,
   getDefaultMetaModelEnvironment,
   menuDefaultMeta,
   metaInitApplicationVersion,
