@@ -1898,6 +1898,15 @@ export function getMiroirFundamentalMlSchema(
             tags: { type: "array", optional: true, definition: { type: "string" } },
           },
         },
+        miroirLoadTimingsConfig: {
+          type: "object",
+          definition: {
+            enabled: { type: "boolean" },
+            record: { type: "boolean", optional: true },
+            quietWindowMs: { type: "number", optional: true },
+            maxStepMs: { type: "number", optional: true },
+          },
+        },
         miroirConfigForClientStub: {
           type: "object",
           definition: {
@@ -1976,6 +1985,14 @@ export function getMiroirFundamentalMlSchema(
               definition: {
                 absolutePath: miroirFundamentalMlSchemaUuid,
                 relativePath: "miroirSelfTestConfig",
+              },
+            },
+            loadTimings: {
+              type: "schemaReference",
+              optional: true,
+              definition: {
+                absolutePath: miroirFundamentalMlSchemaUuid,
+                relativePath: "miroirLoadTimingsConfig",
               },
             },
             features: {
@@ -2197,6 +2214,14 @@ export function getMiroirFundamentalMlSchema(
                   definition: {
                     absolutePath: miroirFundamentalMlSchemaUuid,
                     relativePath: "miroirSelfTestConfig",
+                  },
+                },
+                loadTimings: {
+                  type: "schemaReference",
+                  optional: true,
+                  definition: {
+                    absolutePath: miroirFundamentalMlSchemaUuid,
+                    relativePath: "miroirLoadTimingsConfig",
                   },
                 },
               },

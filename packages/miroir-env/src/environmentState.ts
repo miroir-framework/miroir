@@ -312,14 +312,17 @@ export function environmentRealServerClientConfig(
     miroirConfigType: "client",
     client: { emulateServer: false, serverConfig: { rootApiUrl, storeSectionConfiguration } },
     environment: configEnvironment(resolved),
-    ...selfTestConfig(resolved),
+    ...clientSwitches(resolved),
   };
 }
 
-/** #487: the environment's self-test setting, for the client configuration. */
-function selfTestConfig(resolved: ResolvedEnvironment): Pick<MiroirConfigClient, "selfTest"> {
-  const selfTest = resolved.environment.client?.selfTest;
-  return selfTest ? { selfTest } : {};
+/**
+ * The environment's client switches, for the client configuration: the self-test (#487) and the
+ * load timings (#580).
+ */
+function clientSwitches(resolved: ResolvedEnvironment): Pick<MiroirConfigClient, "selfTest" | "loadTimings"> {
+  const { selfTest, loadTimings } = resolved.environment.client ?? {};
+  return { ...(selfTest ? { selfTest } : {}), ...(loadTimings ? { loadTimings } : {}) };
 }
 
 /**
@@ -348,7 +351,7 @@ export function environmentClientConfig(resolved: ResolvedEnvironment, env: Node
     },
     environment: configEnvironment(resolved),
     ...(resolved.environment.features ? { features: resolved.environment.features } : {}),
-    ...selfTestConfig(resolved),
+    ...clientSwitches(resolved),
   };
   return config as MiroirConfigClient;
 }
