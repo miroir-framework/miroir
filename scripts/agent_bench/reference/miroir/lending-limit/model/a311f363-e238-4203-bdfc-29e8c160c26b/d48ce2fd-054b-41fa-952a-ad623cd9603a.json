@@ -5,7 +5,7 @@
   "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
   "name": "runner.lendDocument.lendingLimit",
-  "description": "Reference placeholder of the #550 benchmark: a copy of runner.lendDocument (the accepted case). Acceptance checks that a MiroirTest naming lendDocument was added, and does not run it (D18, #554). Never part of the Library package.",
+  "description": "lendDocument with the lending limit of 8, on the Library data: Marie Martin (7 open loans) gets one more, Jeanne Dielman (8) is refused. Reference solution of the #550 benchmark, never part of the Library package.",
   "tags": [
     "integ",
     "runner",
@@ -19,48 +19,24 @@
       "applicationName": "Library",
       "deploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
     },
-    "testConfiguration": "d669558c-7cda-4037-81bf-0b9a71fbcb94",
     "testParams": {
-      "user1Uuid": "04c371ed-702d-4dd9-a06d-8a04eda5d24f",
-      "book1Uuid": "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
-      "lendStartDate": "2024-01-01T00:00:00.000Z",
-      "lendEndDate": "2024-01-01T00:00:00.000Z",
       "lendingHistoryItemEntityUuid": "e81078f3-2de7-4301-bd79-d3a156aec149",
       "lendingHistoryItemEntityName": "LendingHistoryItem"
     },
     "miroirTests": [
       {
         "miroirTestType": "runnerTest",
-        "miroirTestLabel": "Lend Book Test Composite Action",
-        "environmentRef": "libraryRunnerTestEnvironment",
+        "miroirTestLabel": "Lend to Marie Martin, holding 7 Books, is accepted",
         "runnerRef": "cc853632-f158-43fa-b9ed-437c9c25f539",
-        "deploymentRef": "libraryTestIdentifiers",
-        "testCompositeActionLabel": "Lend Book Test Composite Action",
-        "initialModel": {
-          "transformerType": "getFromParameters",
-          "interpolation": "build",
-          "referenceName": "defaultLibraryAppModel"
-        },
+        "testCompositeActionLabel": "Lend to Marie Martin, holding 7 Books, is accepted",
         "testParams": {
           "lendDocument": {
             "actionType": "lendDocument",
             "endpoint": "212f2784-5b68-43b2-8ee0-89b1c6fdd0de",
             "payload": {
-              "user": {
-                "transformerType": "getFromParameters",
-                "interpolation": "build",
-                "referenceName": "user1Uuid"
-              },
-              "book": {
-                "transformerType": "getFromParameters",
-                "interpolation": "build",
-                "referenceName": "book1Uuid"
-              },
-              "startDate": {
-                "transformerType": "getFromParameters",
-                "interpolation": "build",
-                "referenceName": "lendStartDate"
-              }
+              "user": "9b957235-1202-4c31-a33f-7eb3258b70bb",
+              "book": "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+              "startDate": "2026-08-01T00:00:00.000Z"
             }
           }
         },
@@ -145,7 +121,7 @@
                   }
                 },
                 "expectedValue": {
-                  "aggregate": 1
+                  "aggregate": 61
                 }
               }
             }
@@ -153,6 +129,20 @@
         ],
         "preRunnerCompositeActions": [],
         "defaultApplicationName": "Library"
+      },
+      {
+        "miroirTestType": "runnerTest",
+        "miroirTestLabel": "Lend to Jeanne Dielman, holding 8 Books, is refused",
+        "runnerRef": "dbb39e31-5c7d-4473-9adb-5286e2972e46",
+        "testCompositeActionLabel": "Lend to Jeanne Dielman, holding 8 Books, is refused",
+        "testParams": {
+          "expectedMcpStatus": "error",
+          "mcpLendDocument": {
+            "user": "04c371ed-702d-4dd9-a06d-8a04eda5d24f",
+            "book": "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+            "startDate": "2026-08-01T00:00:00.000Z"
+          }
+        }
       }
     ],
     "testbedInitApplicationParameters": "libraryTestbedInitParams"

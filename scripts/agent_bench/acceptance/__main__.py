@@ -195,6 +195,7 @@ def main(argv: list[str] | None = None) -> int:
         parser.error("the conventional arm takes --workspace")
 
     logs = args.logs or Path(tempfile.mkdtemp(prefix="agent-bench-acceptance-"))
+    logs.mkdir(parents=True, exist_ok=True)
     if args.arm == "conventional":
         checks = accept_conventional(args.feature, args.workspace, args.apply_reference, logs)
     else:

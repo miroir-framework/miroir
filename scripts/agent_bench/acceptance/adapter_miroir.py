@@ -126,17 +126,20 @@ class MiroirAdapter:
         """Names of the MiroirTests added to the Library or changed, that name `needle` in any case."""
         return [test.get("name", test.get("uuid")) for test in self._new_tests(needle)]
 
-    def run_new_tests(self, needle: str) -> dict[str, dict[str, int]]:
-        """Runs each of those MiroirTests with runMiroirTestAction (#575): its leaves counted by result, by test name."""
+    def run_new_tests(self, needle: str) -> dict[str, dict]:
+        """Runs each of those MiroirTests with runMiroirTestAction (#575): its leaves counted by result, and the failed
+        leaves' messages under `failures`, by test name."""
         runs = {}
         for test in self._new_tests(needle):
             result = self.client.call("Miroir_runMiroirTestAction", {"application": LIBRARY, "miroirTest": test["uuid"]})
             answer = result_json(result)
             if result.get("isError") or not isinstance(answer, dict) or answer.get("status") == "error":
                 raise RuntimeError(f"the MiroirTest {test.get('name')} could not run: {str(answer)[:2000]}")
-            counts: dict[str, int] = {}
+            counts: dict = {}
             for leaf in answer.get("result", {}).get("leaves", []):
                 counts[leaf["result"]] = counts.get(leaf["result"], 0) + 1
+                if leaf["result"] == "error":
+                    counts.setdefault("failures", []).append(f"{leaf['path'][-1]}: {leaf.get('message', '')[:300]}")
             runs[test.get("name", test["uuid"])] = counts
         return runs
 
