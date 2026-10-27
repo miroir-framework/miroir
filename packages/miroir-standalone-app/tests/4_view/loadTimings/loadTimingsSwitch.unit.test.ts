@@ -4,19 +4,19 @@
  *
  * Not reachable through MiroirTest: it reads the page URL and sessionStorage.
  * ```bash
- * npm run testByFile -w miroir-standalone-app -- loadTimingsSwitch.580
+ * npm run testByFile -w miroir-standalone-app -- loadTimingsSwitch
  * ```
  */
 import { describe, expect, it } from "vitest";
 
 import type { MiroirConfigClient } from "miroir-core";
 
-import { META_DEPLOYMENT_UUID } from "../../../../src/loadTimings/loadTimingConstants.js";
+import { META_DEPLOYMENT_UUID } from "../../../src/loadTimings/loadTimingConstants.js";
 import {
   configurationListsDeployment,
   resolveLoadTimingsSwitch,
   type LoadTimingSwitchStorage,
-} from "../../../../src/loadTimings/loadTimingSwitch.js";
+} from "../../../src/loadTimings/loadTimingSwitch.js";
 
 function memoryStorage(): LoadTimingSwitchStorage {
   const values = new Map<string, string>();

@@ -6,7 +6,7 @@
  *
  * Not reachable through MiroirTest: browser timing events.
  * ```bash
- * npm run testByFile -w miroir-standalone-app -- loadTimingRecorder.580
+ * npm run testByFile -w miroir-standalone-app -- loadTimingRecorder
  * ```
  */
 import { describe, expect, it } from "vitest";
@@ -16,8 +16,8 @@ import {
   DEFAULT_LOAD_TIMING_SWITCH,
   type LoadTimingHost,
   type LoadTimingResource,
-} from "../../../../src/loadTimings/loadTimingRecorder.js";
-import type { LoadTimingStep } from "../../../../src/loadTimings/loadTimingTypes.js";
+} from "../../../src/loadTimings/loadTimingRecorder.js";
+import type { LoadTimingStep } from "../../../src/loadTimings/loadTimingTypes.js";
 
 type Timer = { at: number; callback: () => void; cancelled: boolean };
 

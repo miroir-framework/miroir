@@ -6,7 +6,7 @@
  * Not reachable through MiroirTest: the writer is a client module the browser recorder calls, not a
  * model element.
  * ```bash
- * npm run testByFile -w miroir-standalone-app -- loadTimingWriter.580
+ * npm run testByFile -w miroir-standalone-app -- loadTimingWriter
  * ```
  */
 import { existsSync, readdirSync, readFileSync } from "node:fs";
@@ -27,14 +27,14 @@ import {
 import { bootEnvironment } from "miroir-env";
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 
-import { ENTITY_PAGE_LOAD_MEASUREMENT_UUID, META_DEPLOYMENT_UUID } from "../../../../src/loadTimings/loadTimingConstants.js";
-import type { LoadTimingStep } from "../../../../src/loadTimings/loadTimingTypes.js";
-import { loadTimingWriter } from "../../../../src/loadTimings/loadTimingWriter.js";
-import { loglevelnext } from "../../../../src/loglevelnextImporter.js";
-import { fetchMiroirAndAppConfigurations } from "../../../../src/miroir-fwk/4_view/services/ConfigurationService.js";
-import { setupMiroirTest } from "../../../../src/miroir-fwk/4-tests/setupMiroirTest.js";
-import { miroirAppStartup } from "../../../../src/startup.js";
-import { openTestEnvironment } from "../../../helpers/testEnvironment.js";
+import { ENTITY_PAGE_LOAD_MEASUREMENT_UUID, META_DEPLOYMENT_UUID } from "../../../src/loadTimings/loadTimingConstants.js";
+import type { LoadTimingStep } from "../../../src/loadTimings/loadTimingTypes.js";
+import { loadTimingWriter } from "../../../src/loadTimings/loadTimingWriter.js";
+import { loglevelnext } from "../../../src/loglevelnextImporter.js";
+import { fetchMiroirAndAppConfigurations } from "../../../src/miroir-fwk/4_view/services/ConfigurationService.js";
+import { setupMiroirTest } from "../../../src/miroir-fwk/4-tests/setupMiroirTest.js";
+import { miroirAppStartup } from "../../../src/startup.js";
+import { openTestEnvironment } from "../../helpers/testEnvironment.js";
 
 miroirAppStartup();
 miroirCoreStartup();

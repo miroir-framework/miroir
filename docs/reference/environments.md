@@ -105,6 +105,7 @@ Tests select their environment through their profile (`--profile emulatedServer-
 | `server` | What the server of this environment listens on. `rootApiUrl` is also the URL the web client calls. |
 | `client.mode` | `realServer` (a client calls a running server) or `emulatedServer` (tests: the client runs the server in-process). |
 | `client.selfTest` | `{ "enabled": true, "tags": ["unit"] }`: page load runs the miroir app's MiroirTests carrying these tags (`unit` when none) and publishes a verdict, instead of showing the application ([Self-test mode](testing.md#self-test-mode)). `integ` adds the integration batch. |
+| `client.loadTimings` | `{ "enabled": true }`: the page measures its initial load and the first display of each page kind, and records the steps in the Meta app when the environment installs it; also `record`, `quietWindowMs`, `maxStepMs` ([load-timings.md](load-timings.md)). Off by default; `?loadTimings=on` turns it on for one tab. |
 | `features` | Process capabilities of the server ([Process capabilities](process-capabilities.md)). Never sent to the web client. |
 | `connections.postgres` | Host, port, user and database of Postgres stores. `passwordEnv` names the variable that holds the password; a definition never contains a password. |
 | `connections.mongodb` | URL of MongoDB stores. |

@@ -242,6 +242,10 @@ Every recorded baseline is a `BundleSizeMeasurement` instance of the `miroir-app
 
 The measurements before #473 come from the git history of the two policies (`npm run bundle-size:backfill -w miroir-app-meta`, `--dry-run` to print them): the baseline is the only size that history keeps, so it is also the measured size of these records. The backfill skips the commits already recorded, so it can run again. A failed build is never recorded: `bundle-size:record` writes nothing when the guard rejects the build.
 
+### Load timings (#580)
+
+The bundle size is a byte count; the time the user waits for the page, and for the first display of each route, with the files each step fetches, is measured in the browser when `client.loadTimings` (or `?loadTimings=on`) is on, and recorded in the Meta app: [load-timings.md](../reference/load-timings.md). `npm run loadTimings -w miroir-standalone-app -- --serve` runs it on the production build.
+
 ---
 
 ## Coverage tour (#326)

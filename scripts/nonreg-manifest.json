@@ -1546,6 +1546,44 @@
       }
     },
     {
+      "id": "integ-report.pageLoadHistory",
+      "scopes": ["ui"],
+      "tier": "default",
+      "title": "MiroirTest integ — report.pageLoadHistory (Meta page load Reports on fixed measurements) (#580)",
+      "requires": "storage",
+      "argv": [
+        "npm",
+        "run",
+        "testMiroir",
+        "-w",
+        "miroir-standalone-app",
+        "--",
+        "--profile",
+        "{profile}",
+        "--suites",
+        "report.pageLoadHistory",
+        "--mode",
+        "integ"
+      ],
+      "shared": {
+        "group": "standalone-app-report-suites",
+        "argv": [
+          "npm",
+          "run",
+          "testMiroir",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--profile",
+          "{profile}",
+          "--mode",
+          "integ",
+          "--shared"
+        ],
+        "suites": ["report.pageLoadHistory"]
+      }
+    },
+    {
       "id": "integ-report.queryDetails",
       "scopes": ["ui"],
       "tier": "default",
@@ -2594,6 +2632,22 @@
         "bash",
         "-c",
         "npm run testByFile -w miroir-standalone-app -- --profile {profile} reportTestFailure.integ && npm run testByFile -w miroir-standalone-app -- --profile {profile} reportTestFakeHttp.integ && npm run testByFile -w miroir-standalone-app -- --profile {profile} reportTestInApp.integ"
+      ]
+    },
+    {
+      "id": "unit-580-load-timings",
+      "scopes": ["ui", "actions"],
+      "tier": "unit",
+      "title": "#580 load timings: the recorder, the switch, the Meta contract, and the writer on the test-filesystem platform",
+      "requires": "none",
+      "argv": [
+        "npm",
+        "run",
+        "testByFile",
+        "-w",
+        "miroir-standalone-app",
+        "--",
+        "4_view/loadTimings/"
       ]
     },
     {

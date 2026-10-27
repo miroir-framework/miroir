@@ -54,13 +54,13 @@ This plan does **not** measure the Electron main process, gate CI on timings, me
 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
-| 0 | Lock the Meta contract: Entity, uuids, data folder | ⬜ | Meta `modelValidation`; `loadTimingContract.unit` |
-| 1 | Tracer: a step record is written to the Meta deployment | ⬜ | `loadTimingWriter.580.integ` |
-| 2 | Recorder core: steps, settle, chunks, write window | ⬜ | `loadTimingRecorder.580.unit` |
-| 3 | Switch: `client.loadTimings`, URL override, self-test off | ⬜ | `loadTimingsSwitch.580.unit`; miroir-env client config test |
-| 4 | Browser wiring: observers, router, marks, Electron | ⬜ | `scripts/load-timings.mjs` on the production build; `loadTimingsTour.integ` |
-| 5 | Meta Report `PageLoadHistory`, details, menu | ⬜ | MiroirTest `report.pageLoadHistory` |
-| 6 | Bundle guard, docs, nonreg, AC | ⬜ | bundle guard; full `nonreg:filesystem` |
+| 0 | Lock the Meta contract: Entity, uuids, data folder | ✅ | Meta `modelValidation`; `loadTimingContract.unit` |
+| 1 | Tracer: a step record is written to the Meta deployment | ✅ | `loadTimingWriter.integ` |
+| 2 | Recorder core: steps, settle, chunks, write window | ✅ | `loadTimingRecorder.unit` |
+| 3 | Switch: `client.loadTimings`, URL override, self-test off | ✅ | `loadTimingsSwitch.unit`; miroir-env client config test |
+| 4 | Browser wiring: observers, router, marks, Electron | ✅ | `scripts/load-timings.mjs` on the production build; `loadTimingsTour.integ` |
+| 5 | Meta Report `PageLoadHistory`, details, menu | ✅ | MiroirTest `report.pageLoadHistory` |
+| 6 | Bundle guard, docs, nonreg, AC | ✅ | bundle guard; full `nonreg:filesystem` |
 
 ---
 
@@ -118,7 +118,7 @@ Vitest files live in `packages/miroir-standalone-app/tests/4_view/issues/580-loa
 
 ## Slice 0 — Lock the Meta contract
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -152,11 +152,13 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core
 
 ### Realization
 
+Entity `PageLoadMeasurement` (0266c0b8-…) in the Meta model, lazy (`cacheAllInstancesOnRefresh: false`); data folder kept by a `.gitkeep`, recorded rows gitignored. `loadTimingContract.unit` checks the recorder's step type against the Entity's fields.
+
 ---
 
 ## Slice 1 — Tracer: a step record reaches the Meta deployment
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -164,7 +166,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core
 
 ### RED
 
-`tests/4_view/issues/580-load-timings/loadTimingWriter.580.integ.test.ts` on the test-filesystem platform (pattern of `selfTestPlatform.ts`: `openTestEnvironment("test-filesystem")`, `setupMiroirTest`, `bootEnvironment`, then `fetchMiroirAndAppConfigurations`):
+`tests/4_view/issues/580-load-timings/loadTimingWriter.integ.test.ts` on the test-filesystem platform (pattern of `selfTestPlatform.ts`: `openTestEnvironment("test-filesystem")`, `setupMiroirTest`, `bootEnvironment`, then `fetchMiroirAndAppConfigurations`):
 
 1. writing two steps returns ok, and a `getInstances` on the Meta deployment for the Entity returns both, with their `step`, `durationMs` and `chunks`;
 2. the written files are in `.miroir/test-filesystem/…/meta_data/0266c0b8-…/`, one per step;
@@ -190,17 +192,19 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,actions,ui
 
 ### Realization
 
+`loadTimingWriter(domainController)` does one `createInstance` per batch on the Meta deployment and returns `{ok}` or `{ok:false,error}`. The integration test filters on its own `page` value, so rows a developer left in the folder do not break it.
+
 ---
 
 ## Slice 2 — Recorder core
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
 `createLoadTimingRecorder({ now, schedule, write, options })` (`src/loadTimings/loadTimingRecorder.ts`, no imports) takes events (`activity(t)`, `resource(entry)`, `requestStart/End`, `loadingMarker(present)`, `navigate({ page, url, action })`, `mark(name, t)`, `configure(switch)`) and produces finished steps and write calls according to D2, D3, D4, D6. Helper-only coverage: the cycles are grouped in this one slice.
 
-### RED (one cycle each, in `loadTimingRecorder.580.unit.test.ts`)
+### RED (one cycle each, in `loadTimingRecorder.unit.test.ts`)
 
 1. initial step: settles 1500 ms after the last activity following `firstRender`; `durationMs` = last activity; milestones relative to 0;
 2. no settle before `firstRender`, nor while a request is in flight, nor while a loading marker is present;
@@ -231,11 +235,13 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,ui
 
 ### Realization
 
+`createLoadTimingRecorder(host)` with injected clock, scheduler and idle callback. The cap ends a step at `start + maxStepMs` exactly. Writes wait until no step is open, `configurationsLoaded` is marked and the page is idle; the first failure stops writing.
+
 ---
 
 ## Slice 3 — Switch
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -244,7 +250,7 @@ An environment with `client.loadTimings` gives `MiroirConfigClient.loadTimings` 
 ### RED
 
 - `packages/miroir-env/tests/loadTimingsClientConfig.unit.test.ts`: a fixture environment with `client.loadTimings` resolves to client configurations (`environmentClientConfig`, `environmentRealServerClientConfig`) that carry it; the shipped environments do not; an invalid value (`enabled: "yes"`) is rejected by `miroir-env check`.
-- `tests/4_view/issues/580-load-timings/loadTimingsSwitch.580.unit.test.ts`: config off + `?loadTimings=on` → on, and stored; later call without the parameter → still on; `?loadTimings=off` → off; config on + self-test → off; defaults of `record`, `quietWindowMs`, `maxStepMs`.
+- `tests/4_view/issues/580-load-timings/loadTimingsSwitch.unit.test.ts`: config off + `?loadTimings=on` → on, and stored; later call without the parameter → still on; `?loadTimings=off` → off; config on + self-test → off; defaults of `record`, `quietWindowMs`, `maxStepMs`.
 
 ### GREEN
 
@@ -271,11 +277,13 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core,tooling
 
 ### Realization
 
+`client.loadTimings` (`miroirLoadTimingsConfig`) in the core schema; miroir-env passes it to the client with `clientSwitches`. `resolveLoadTimingsSwitch`: URL `loadTimings=on|off`, kept in sessionStorage; a self-test run is never measured.
+
 ---
 
 ## Slice 4 — Browser wiring
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -310,11 +318,13 @@ npm run nonreg:filesystem -- --runner shared
 
 ### Realization
 
+`loadTimingBrowser.ts` is the first import of `index.tsx`. Navigation is identified by location key + path + search, because a history entry pushed outside the router has the key "default". The tour (`npm run loadTimings -- --serve`) measured initialLoad ~1000 ms, route:report ~2500 ms, route:model ~100 ms, all recorded.
+
 ---
 
 ## Slice 5 — Meta Report
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -343,11 +353,13 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core,ui
 
 ### Realization
 
+Reports `PageLoadHistory` (two graphs, two lists) and `PageLoadMeasurementDetails`, menu item "Page load history". MiroirTest `report.pageLoadHistory` runs on a 3-row seed (`pageLoadMeasurementSeed`).
+
 ---
 
 ## Slice 6 — Bundle guard, docs, nonreg, AC
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -386,3 +398,5 @@ npm run nonreg:filesystem -- --runner shared
 ```
 
 ### Realization
+
+Bundle guard passes: +4.2 kB gzip eager (loadTimingBrowser chunk 3.5 kB), within the 2% tolerance. Docs: `docs/reference/load-timings.md`, environments row, code-splitting subsection. Nonreg steps `integ-report.pageLoadHistory` and `unit-580-load-timings`. Tests moved to `tests/4_view/loadTimings/`.

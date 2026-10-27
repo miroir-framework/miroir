@@ -4,7 +4,7 @@
  *
  * Not reachable through MiroirTest: it compares TypeScript constants of the client with model assets.
  * ```bash
- * npm run testByFile -w miroir-standalone-app -- loadTimingContract.580
+ * npm run testByFile -w miroir-standalone-app -- loadTimingContract
  * ```
  */
 import { describe, expect, it } from "vitest";
@@ -16,7 +16,7 @@ import {
   ENTITY_PAGE_LOAD_MEASUREMENT_UUID,
   META_DEPLOYMENT_UUID,
   META_SELF_APPLICATION_UUID,
-} from "../../../../src/loadTimings/loadTimingConstants.js";
+} from "../../../src/loadTimings/loadTimingConstants.js";
 
 const record = {
   uuid: "5f7f1d1e-5d1a-4a55-9d5e-0f2b7f6f1a01",
