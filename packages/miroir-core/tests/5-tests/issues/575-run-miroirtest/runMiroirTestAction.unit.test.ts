@@ -20,6 +20,7 @@ const MIROIR_TEST = "6f1c2a3b-4d5e-4f60-8a7b-9c0d1e2f3a4b";
 const RUNNER = "cc853632-f158-43fa-b9ed-437c9c25f539";
 const MCP_RUNNER = "1d2e3f40-5a6b-4c7d-8e9f-0a1b2c3d4e5f";
 const ENDPOINT_COMPOSITE = "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5";
+const LENDING_ENDPOINT = "212f2784-5b68-43b2-8ee0-89b1c6fdd0de";
 
 const context: ActionImplementationContext = {
   applicationDeploymentMap: { [APPLICATION]: DEPLOYMENT, [MIROIR_APPLICATION]: MIROIR_DEPLOYMENT },
@@ -98,7 +99,22 @@ const liveModel: Record<string, unknown[]> = {
   applicationVersions: [{ uuid: "version-1", parentName: "ApplicationVersion", selfApplication: APPLICATION }],
   runners: [
     { uuid: RUNNER, parentName: "Runner", name: "lendDocument", application: APPLICATION, definition: { runnerType: "actionRunner" } },
-    { uuid: MCP_RUNNER, parentName: "Runner", name: "mcpLend", application: APPLICATION, definition: { runnerType: "mcpToolRunner" } },
+    {
+      uuid: MCP_RUNNER,
+      parentName: "Runner",
+      name: "mcpLend",
+      application: APPLICATION,
+      definition: { runnerType: "mcpToolRunner", toolName: "Library_lendDocument" },
+    },
+  ],
+  endpoints: [
+    {
+      uuid: LENDING_ENDPOINT,
+      parentName: "Endpoint",
+      name: "Lending",
+      application: APPLICATION,
+      definition: { actions: [{ actionParameters: { actionType: { type: "literal", definition: "lendDocument" } } }] },
+    },
   ],
 };
 
@@ -114,7 +130,7 @@ afterEach(() => {
  * A host on a fake DomainController: queries answer from `miroirTest` and `liveModel`, every action
  * succeeds, and a composite test records its assertions in the activity tracker as the real one does.
  */
-function fakeHost(miroirTest: unknown, throwingTests: string[] = []) {
+function fakeHost(miroirTest: unknown, throwingTests: string[] = [], refusedActions: string[] = []) {
   const tracker = new MiroirActivityTracker();
   disposables.push(tracker, new MiroirEventService(tracker));
   const calls: Call[] = [];
@@ -140,6 +156,9 @@ function fakeHost(miroirTest: unknown, throwingTests: string[] = []) {
         }
         return async (...args: any[]) => {
           calls.push({ method: String(method), args });
+          if (method == "handleAction" && refusedActions.includes(args[0].actionType)) {
+            return new Action2Error("FailedToHandleAction", `${args[0].actionType} refused`);
+          }
           if (method == "handleTestCompositeAction") {
             if (throwingTests.includes(args[0].testLabel)) {
               throw new Error(`${args[0].testLabel} threw`);
@@ -289,11 +308,32 @@ describe("runMiroirTestAction (#575)", () => {
         { miroirTestType: "reportTest", miroirTestLabel: "report" },
         { miroirTestType: "reactComponentTest", miroirTestLabel: "component" },
         { ...sum("store transformer", 3), unitTestExpectedValue: undefined, integrationTestExpectedValue: 3 },
-        runnerTest("mcp runner", MCP_RUNNER),
       ),
     );
     const { leaves } = (await run(host)).returnedDomainElement;
-    expect(leaves.map((leaf: any) => leaf.result)).toEqual(["unsupported", "unsupported", "unsupported", "unsupported"]);
+    expect(leaves.map((leaf: any) => leaf.result)).toEqual(["unsupported", "unsupported", "unsupported"]);
     expect(leaves.every((leaf: any) => typeof leaf.message == "string")).toBe(true);
+  });
+
+  it("runs an mcpToolRunner leaf's tool as the testbed's Endpoint action, never the live one", async () => {
+    const mcpLeaf = (label: string, expectedMcpStatus: string) => ({
+      ...runnerTest(label, MCP_RUNNER),
+      testParams: {
+        mcpLend: { user: "user-1", book: "book-1", application: APPLICATION },
+        expectedMcpStatus,
+      },
+      testCompositeActionAssertions: [],
+    });
+    const { host, calls } = fakeHost(
+      suite(mcpLeaf("refused", "error"), mcpLeaf("expects success", "success")),
+      [],
+      ["lendDocument"],
+    );
+    const { testbed, leaves } = (await run(host)).returnedDomainElement;
+    expect(leaves.map((leaf: any) => leaf.result)).toEqual(["ok", "error"]);
+    const lends = calls.filter((call) => call.method == "handleAction" && call.args[0].actionType == "lendDocument");
+    expect(lends).toHaveLength(2);
+    expect(lends[0].args[0]).toMatchObject({ endpoint: LENDING_ENDPOINT, payload: { user: "user-1", application: testbed.applicationUuid } });
+    expect(lends[0].args[1]).not.toHaveProperty(APPLICATION);
   });
 });

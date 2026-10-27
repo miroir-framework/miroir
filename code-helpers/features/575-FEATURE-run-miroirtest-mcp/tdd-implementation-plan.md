@@ -10,8 +10,8 @@
      absent from the deployment map it receives and the leaf remapped to the testbed;
    - a leaf that throws is reported as an error and the next leaf still runs; `leaves` selects leaves;
    - a `runnerTest` leaf runs on the testbed without creating or dropping a deployment of its own;
-   - `runnerTest` leaves of an `mcpToolRunner`, `reportTest`, `reactComponentTest` and integration
-     `transformerTest` leaves are `unsupported`;
+   - a `runnerTest` leaf of an `mcpToolRunner` runs its tool as the testbed's Endpoint action;
+   - `reportTest`, `reactComponentTest` and integration `transformerTest` leaves are `unsupported`;
    - the testbed is dropped when a leaf fails.
 3. Inventory (`ActionImplementations.unit.test.ts`) and action palette (`fn.blockModel`) list the new action.
 4. Live, through MCP on a fresh `bench-agent` store: an agent-written Library `runnerTest` calling
