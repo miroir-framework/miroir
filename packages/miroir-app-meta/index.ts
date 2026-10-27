@@ -8,9 +8,13 @@ export {
   metaInitApplicationVersion,
   reportBundleSizeHistory,
   reportBundleSizeMeasurementDetails,
+  pageLoadMeasurementSeed,
+  reportPageLoadHistory,
+  reportPageLoadMeasurementDetails,
   selfApplicationMeta,
   selfApplicationModelBranchMetaMasterBranch,
   testConfiguration_metaBundleSizeSeed,
+  testConfiguration_metaPageLoadSeed,
 } from "./src/Meta";
 
 export { default as adminApplication_Meta_DO_NOT_USE } from "./assets/deployment/9ff432a9-89a1-460b-a263-1672d084a9e0.json" with { type: "json" };

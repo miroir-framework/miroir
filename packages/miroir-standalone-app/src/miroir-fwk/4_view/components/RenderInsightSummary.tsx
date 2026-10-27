@@ -92,6 +92,8 @@ export const RenderInsightSummary: React.FC = () => {
   return (
     <div
       data-testid="render-insight-summary"
+      // #580: polls every second; its changes are not page load activity
+      data-miroir-load-timing-ignore=""
       {...{ [RENDER_INSIGHT_OVERLAY_ATTR]: RENDER_INSIGHT_OVERLAY_VALUE }}
       style={getRenderInsightChromeStyle(chrome, { compact: false })}
     >

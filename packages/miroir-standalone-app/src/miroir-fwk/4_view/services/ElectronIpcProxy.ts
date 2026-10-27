@@ -29,6 +29,8 @@ import {
   type RestClientCallReturnType,
   type RestClientInterface,
 } from "miroir-core";
+
+import { trackLoadTimingRequest } from "../../../loadTimings/loadTimingBrowser.js";
 // ################################################################################################
 // Helpers
 // ################################################################################################
@@ -73,7 +75,10 @@ function authorization(): string | undefined {
 
 /** Sends a data message to the main process and clears the session on AuthenticationRequired. */
 async function callMiroirIpc(message: Record<string, unknown>): Promise<any> {
-  const result = await (window as any).electronAPI.callMiroirIpc({ ...message, authorization: authorization() });
+  // #580: IPC calls have no Resource Timing entry; the load timing step stays open while they run
+  const result: any = await trackLoadTimingRequest(
+    (window as any).electronAPI.callMiroirIpc({ ...message, authorization: authorization() }),
+  );
   if (result && typeof result === "object") {
     if (typeof result.status === "number") {
       maybeInvalidateAuthorization(result.status, result.data);

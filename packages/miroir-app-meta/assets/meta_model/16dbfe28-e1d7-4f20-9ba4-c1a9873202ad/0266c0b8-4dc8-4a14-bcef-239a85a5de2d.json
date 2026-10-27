@@ -124,7 +124,7 @@
           "value": {
             "id": 12,
             "defaultLabel": "Milestones",
-            "description": "Milliseconds from the step start: responseEnd, domContentLoaded, entryScript, configReady, firstRender, configurationsLoaded (initial load), routeChunk."
+            "description": "Milliseconds from the step start (initial load): responseEnd, domContentLoaded, entryScript, configReady, platformReady, firstRender, configurationsLoaded."
           }
         }
       },
