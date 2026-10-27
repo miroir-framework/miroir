@@ -38,4 +38,6 @@ named `miroir`; you have no file or shell access. A change you make through a to
   with `getInstances` / `getInstance` the same way.
 - Create or change model elements with `createInstance` and `updateInstance` on the model section.
 - Run a Query with `runBoxedQueryTemplateAction` (or `runBoxedQueryAction`) to check its result.
+- Run a MiroirTest with `runMiroirTestAction`: it runs on a throwaway copy of the Library, so a test that lends
+  or changes instances leaves the Library as it was.
 - `Library_lendDocument` and `Library_returnDocument` are the actions of the Lending Endpoint.

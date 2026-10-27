@@ -157,6 +157,24 @@ class ConventionalAdapter:
             if baseline.get(path) != text and needle.lower() in text.lower()
         ]
 
+    def run_new_tests(self, needle: str) -> dict[str, dict[str, int]]:
+        """Runs those test files with `vitest run`, on the app's fresh database: passed and failed tests, by file."""
+        runs = {}
+        for path in self.new_tests_naming(needle):
+            report = Path(tempfile.mkdtemp(prefix="agent-bench-vitest-")) / "report.json"
+            subprocess.run(
+                ["npx", "vitest", "run", path, "--reporter=json", f"--outputFile={report}"],
+                cwd=self.app.app,
+                capture_output=True,
+                check=False,
+                timeout=self.app.timeout_s,
+            )
+            if not report.exists():
+                raise RuntimeError(f"vitest wrote no report for {path}")
+            results = json.loads(report.read_text(encoding="utf-8"))
+            runs[path] = {"ok": results.get("numPassedTests", 0), "error": results.get("numFailedTests", 0)}
+        return runs
+
     def loans_of(self, user: str) -> list[dict]:
         return [loan for loan in self.app.get("/api/loans") if loan.get("user") == user]
 

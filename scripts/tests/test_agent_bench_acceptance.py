@@ -9,6 +9,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from agent_bench.acceptance import adapter_miroir  # noqa: E402
+from agent_bench.acceptance import __main__ as acceptance  # noqa: E402
 from agent_bench.acceptance.__main__ import check  # noqa: E402
 
 LOAN = adapter_miroir.LOAN_ENTITY
@@ -71,6 +72,45 @@ def test_tests_naming_counts_changed_library_tests_and_ignores_unchanged_ones():
         FakeClient({adapter_miroir.MIROIR_TEST_ENTITY: [unchanged, changed, {"uuid": "new", "name": "limit", "definition": {"a": "lendDocument"}}]})
     )
     assert adapter.new_tests_naming("lendDocument") == [changed["name"], "limit"]
+
+
+class FakeTestRunClient(FakeClient):
+    """Answers runMiroirTestAction with the leaf results given by test uuid."""
+
+    def __init__(self, instances: dict[str, list[dict]], leaf_results: dict[str, list[str]]):
+        super().__init__(instances)
+        self.leaf_results = leaf_results
+
+    def call(self, name: str, arguments: dict) -> dict:
+        if name != "Miroir_runMiroirTestAction":
+            return super().call(name, arguments)
+        leaves = [{"path": [str(index)], "result": result} for index, result in enumerate(self.leaf_results[arguments["miroirTest"]])]
+        return {"content": [{"type": "text", "text": json.dumps({"status": "success", "result": {"leaves": leaves}})}]}
+
+
+def test_run_new_tests_counts_each_test_leaves_by_result():
+    tests = [
+        {"uuid": "t1", "name": "limit", "definition": {"a": "lendDocument"}},
+        {"uuid": "t2", "name": "limit wrong", "definition": {"a": "lendDocument"}},
+    ]
+    adapter = adapter_miroir.MiroirAdapter(
+        FakeTestRunClient({adapter_miroir.MIROIR_TEST_ENTITY: tests}, {"t1": ["ok", "ok", "unsupported"], "t2": ["ok", "error"]})
+    )
+    assert adapter.run_new_tests("lendDocument") == {"limit": {"ok": 2, "unsupported": 1}, "limit wrong": {"ok": 1, "error": 1}}
+
+
+def test_test_check_passes_only_when_every_test_passes():
+    class Adapter:
+        def __init__(self, runs):
+            self.runs = runs
+
+        def run_new_tests(self, needle):
+            return self.runs
+
+    assert acceptance.test_check(Adapter({"a": {"ok": 2}}), "x")["passed"]
+    assert not acceptance.test_check(Adapter({"a": {"ok": 2}, "b": {"ok": 1, "error": 1}}), "x")["passed"]
+    assert not acceptance.test_check(Adapter({"a": {"unsupported": 1}}), "x")["passed"]
+    assert not acceptance.test_check(Adapter({}), "x")["passed"]
 
 
 def test_instance_list_raises_on_a_failed_entry():

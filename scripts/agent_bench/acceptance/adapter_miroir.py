@@ -114,14 +114,31 @@ class MiroirAdapter:
         entries = answer.get("result", {})
         return [_loan_uuids(value) for value in (entries.values() if isinstance(entries, dict) else [])]
 
-    def new_tests_naming(self, needle: str) -> list[str]:
-        """Names of the MiroirTests added to the Library or changed, that name `needle` in any case."""
+    def _new_tests(self, needle: str) -> list[dict]:
         baseline = baseline_instances(MIROIR_TEST_ENTITY)
         return [
-            test.get("name", test.get("uuid"))
+            test
             for test in self.instances(MIROIR_TEST_ENTITY, "model")
             if baseline.get(test.get("uuid")) != test and needle.lower() in json.dumps(test).lower()
         ]
+
+    def new_tests_naming(self, needle: str) -> list[str]:
+        """Names of the MiroirTests added to the Library or changed, that name `needle` in any case."""
+        return [test.get("name", test.get("uuid")) for test in self._new_tests(needle)]
+
+    def run_new_tests(self, needle: str) -> dict[str, dict[str, int]]:
+        """Runs each of those MiroirTests with runMiroirTestAction (#575): its leaves counted by result, by test name."""
+        runs = {}
+        for test in self._new_tests(needle):
+            result = self.client.call("Miroir_runMiroirTestAction", {"application": LIBRARY, "miroirTest": test["uuid"]})
+            answer = result_json(result)
+            if result.get("isError") or not isinstance(answer, dict) or answer.get("status") == "error":
+                raise RuntimeError(f"the MiroirTest {test.get('name')} could not run: {str(answer)[:2000]}")
+            counts: dict[str, int] = {}
+            for leaf in answer.get("result", {}).get("leaves", []):
+                counts[leaf["result"]] = counts.get(leaf["result"], 0) + 1
+            runs[test.get("name", test["uuid"])] = counts
+        return runs
 
     def view_shows_overdue(self, started_before: str) -> tuple[bool, str]:
         expected = scenarios.overdue_loans(started_before)

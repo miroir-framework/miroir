@@ -11,8 +11,9 @@ through MCP. Conventional arm: a copy of the workspace (the baseline app without
 from its own migrations and seed, is built and served, and answers the scenarios over HTTP. `--apply-reference` adds
 the reference solution first, to check the scenarios.
 
-The scenarios are the same for every arm; each adapter answers them in its own stack. Tests are checked for presence
-(added or changed, naming the feature), not run (analysis D18).
+The scenarios are the same for every arm; each adapter answers them in its own stack. The tests added or changed that
+name the feature are run (analysis D18): through `runMiroirTestAction` on the Miroir arms, with `vitest run` on the
+conventional arm.
 
 Prints one JSON object: {"passed": bool, "checks": [{"name", "passed", "detail"}]}. Exit code 0 when every check passed.
 """
@@ -69,11 +70,14 @@ def validate_store(store: Path) -> tuple[bool, str]:
 
 
 def test_check(adapter, needle: str) -> dict:
-    def run():
-        found = adapter.new_tests_naming(needle)
-        return bool(found), f"tests added or changed that name {needle!r}: {found}"
+    """At least one test passes, and none fails: a test with no failure and at least one passing case passes."""
 
-    return check(f"a test added or changed names {needle!r}", run)
+    def run():
+        runs = adapter.run_new_tests(needle)
+        passing = [name for name, counts in runs.items() if counts.get("ok", 0) > 0 and counts.get("error", 0) == 0]
+        return bool(passing) and len(passing) == len(runs), f"tests added or changed that name {needle!r}, by result: {runs}"
+
+    return check(f"the tests added or changed that name {needle!r} pass", run)
 
 
 def overdue_loans_checks(adapter, needle: str) -> list[dict]:
@@ -99,6 +103,8 @@ def lending_limit_checks(adapter, needle: str) -> list[dict]:
     In order, each check seeing the loans the previous ones accepted: every User at the limit is refused, then the
     User holding the fewest Books gets loans until the limit, each accepted, and one more, refused.
     """
+    # first: a conventional test may lend on the app's database, and who holds what is read after it
+    checks = [test_check(adapter, needle)]
     names = scenarios.user_names()
     book = scenarios.book_uuids()[0]
 
@@ -116,7 +122,7 @@ def lending_limit_checks(adapter, needle: str) -> list[dict]:
         return run
 
     held = {user: open_loans(user) for user in names}
-    checks = [test_check(adapter, needle)] + [
+    checks += [
         check(f"lending to {names[user]} ({count} open loans) is refused", lend(user, False))
         for user, count in sorted(held.items(), key=lambda item: names[item[0]])
         if count >= scenarios.LENDING_LIMIT
