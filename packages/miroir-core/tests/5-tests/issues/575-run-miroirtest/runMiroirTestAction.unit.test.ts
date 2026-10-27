@@ -16,6 +16,8 @@ const APPLICATION = "5af03c98-fe5e-490b-b08f-e1230971c57f";
 const DEPLOYMENT = "f714bb2f-a12d-4e71-a03b-74dcedea6eb4";
 const MIROIR_APPLICATION = "360fcf1f-f0d4-4f8a-9262-07886e70fa15";
 const MIROIR_DEPLOYMENT = "10ff36f2-50a3-48d8-b80f-e48e5d13af8e";
+const OTHER_APPLICATION = "7c0b1a2d-3e4f-4a5b-8c6d-7e8f9a0b1c2d";
+const OTHER_DEPLOYMENT = "8d1c2b3e-4f5a-4b6c-9d7e-8f9a0b1c2d3e";
 const MIROIR_TEST = "6f1c2a3b-4d5e-4f60-8a7b-9c0d1e2f3a4b";
 const RUNNER = "cc853632-f158-43fa-b9ed-437c9c25f539";
 const MCP_RUNNER = "1d2e3f40-5a6b-4c7d-8e9f-0a1b2c3d4e5f";
@@ -23,7 +25,11 @@ const ENDPOINT_COMPOSITE = "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5";
 const LENDING_ENDPOINT = "212f2784-5b68-43b2-8ee0-89b1c6fdd0de";
 
 const context: ActionImplementationContext = {
-  applicationDeploymentMap: { [APPLICATION]: DEPLOYMENT, [MIROIR_APPLICATION]: MIROIR_DEPLOYMENT },
+  applicationDeploymentMap: {
+    [APPLICATION]: DEPLOYMENT,
+    [MIROIR_APPLICATION]: MIROIR_DEPLOYMENT,
+    [OTHER_APPLICATION]: OTHER_DEPLOYMENT,
+  },
   modelEnvironment: defaultMiroirModelEnvironment,
 };
 
@@ -87,10 +93,26 @@ const runnerTest = (label: string, runnerRef = RUNNER) => ({
   testCompositeActionAssertions: [assertion(`${label} check`, "pass")],
 });
 
+/** A functionCallTest of resolvePathOnObject({ a: 1 }, ["a"]), which returns 1. */
+const resolvesPath = (label: string, expectedValue: number) => ({
+  miroirTestType: "functionCallTest",
+  miroirTestLabel: label,
+  functionRef: { module: "miroir-core/tools", export: "resolvePathOnObject" },
+  arguments: [{ a: 1 }, ["a"]],
+  expectedValue,
+});
+
 const suite = (...miroirTests: unknown[]) => ({
   uuid: MIROIR_TEST,
   name: "agent.test",
   definition: { miroirTestType: "miroirTestSuite", miroirTestLabel: "agent.test", miroirTests },
+});
+
+const innerSuite = (miroirTestLabel: string, skip: boolean, ...miroirTests: unknown[]) => ({
+  miroirTestType: "miroirTestSuite",
+  miroirTestLabel,
+  skip,
+  miroirTests,
 });
 
 const liveModel: Record<string, unknown[]> = {
@@ -152,7 +174,10 @@ function fakeHost(miroirTest: unknown, throwingTests: string[] = [], refusedActi
           return undefined;
         }
         if (method == "currentModelEnvironment") {
-          return () => defaultMiroirModelEnvironment;
+          return (...args: any[]) => {
+            calls.push({ method, args });
+            return defaultMiroirModelEnvironment;
+          };
         }
         return async (...args: any[]) => {
           calls.push({ method: String(method), args });
@@ -226,7 +251,7 @@ describe("runMiroirTestAction (#575)", () => {
     expect(result.errorMessage).toContain('"missing"');
   });
 
-  it("runs unit leaves in memory, without a testbed", async () => {
+  it("runs unit leaves in memory, on the application's model, without a testbed", async () => {
     const { host, calls } = fakeHost(suite(sum("adds", 3), sum("adds wrongly", 4)));
     const result = await run(host);
     expect(result.status).toBe("ok");
@@ -235,7 +260,28 @@ describe("runMiroirTestAction (#575)", () => {
       [["agent.test", "adds wrongly"], "error"],
     ]);
     expect(result.returnedDomainElement.leaves[1].message).toBeDefined();
-    expect(calls).toEqual([]);
+    // its TransformerDefinitions come with the application's model environment
+    expect(calls).toEqual([{ method: "currentModelEnvironment", args: [APPLICATION, context.applicationDeploymentMap] }]);
+  });
+
+  it("reports a failed functionCallTest, which records its result under its own label", async () => {
+    const { host } = fakeHost(suite(resolvesPath("resolves", 1), resolvesPath("resolves wrongly", 2)));
+    const { leaves } = (await run(host)).returnedDomainElement;
+    expect(leaves.map((leaf: any) => [leaf.result, leaf.assertions])).toEqual([
+      ["ok", [{ name: "resolves", result: "ok" }]],
+      ["error", [{ name: "resolves wrongly", result: "error", expected: 2, actual: 1 }]],
+    ]);
+  });
+
+  it("skips the leaves of a skipped suite", async () => {
+    const { host } = fakeHost(suite(innerSuite("skipped", true, sum("adds", 3), actionTest("lends")), sum("runs", 3)));
+    const result = await run(host);
+    expect(result.returnedDomainElement.leaves.map((leaf: any) => [leaf.path, leaf.result])).toEqual([
+      [["agent.test", "skipped", "adds"], "skipped"],
+      [["agent.test", "skipped", "lends"], "skipped"],
+      [["agent.test", "runs"], "ok"],
+    ]);
+    expect(result.returnedDomainElement.testbed).toBeUndefined();
   });
 
   it("runs an actionTest leaf on a testbed created, reseeded and dropped around it", async () => {
@@ -255,15 +301,30 @@ describe("runMiroirTestAction (#575)", () => {
     const [create] = calls;
     expect(create.method).toBe("host.handleCompositeAction");
     expect(JSON.stringify(create.args[0])).toContain(testbed.deploymentUuid);
-    // the leaves never reach the live application
-    expect(create.args[1]).toEqual({ [MIROIR_APPLICATION]: MIROIR_DEPLOYMENT, [testbed.applicationUuid]: testbed.deploymentUuid });
+    // the leaves never reach the live application, nor any other but the Miroir meta-application
+    expect(create.args[1]).toEqual({
+      [MIROIR_APPLICATION]: MIROIR_DEPLOYMENT,
+      [OTHER_APPLICATION]: OTHER_DEPLOYMENT,
+      [testbed.applicationUuid]: testbed.deploymentUuid,
+    });
     const leafRun = calls.find((call) => call.method == "handleTestCompositeAction")!;
     expect(JSON.stringify(leafRun.args[0])).not.toContain(APPLICATION);
     expect(JSON.stringify(leafRun.args[0])).toContain(testbed.applicationUuid);
+    expect(leafRun.args[1]).toEqual({ [MIROIR_APPLICATION]: MIROIR_DEPLOYMENT, [testbed.applicationUuid]: testbed.deploymentUuid });
 
     const leafIndex = calls.indexOf(leafRun);
     expect(containing(calls.slice(1, leafIndex), "resetAndInitApplicationDeployment").length).toBeGreaterThan(0);
     expect(containing(calls.slice(leafIndex), "storeManagementAction_deleteStore").length).toBeGreaterThan(0);
+  });
+
+  it("refuses a testbed leaf that names another live application or deployment", async () => {
+    const writesElsewhere = actionTest("writes elsewhere");
+    writesElsewhere.compositeActionSequence.payload.actionSequence[0].payload.application = OTHER_APPLICATION;
+    const { host, calls } = fakeHost(suite(writesElsewhere, actionTest("lends")));
+    const { leaves } = (await run(host)).returnedDomainElement;
+    expect(leaves.map((leaf: any) => leaf.result)).toEqual(["error", "ok"]);
+    expect(leaves[0].message).toContain(OTHER_APPLICATION);
+    expect(containing(calls, OTHER_APPLICATION).filter((call) => call.method == "handleTestCompositeAction")).toEqual([]);
   });
 
   it("reports a failed assertion with its expected and actual values", async () => {
