@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "ok": true,
+  "command": "finalize",
+  "status": "pass",
+  "type": "explainer",
+  "quality": "showcase",
+  "specification": {
+    "path": "C:\\Users\\nono\\Documents\\devhome\\miroir-integration\\.archify\\explainer-feature-switches-20261025-130958\\candidate.archify.md",
+    "sha256": "bfc1945f8eae0c35ab634df2bb704e322b6da5ccc2b8c48223c699e49fd7a9f9",
+    "bytes": 11076
+  },
+  "artifact": {
+    "path": "C:\\Users\\nono\\Documents\\devhome\\miroir-integration\\.archify\\explainer-feature-switches-20261025-130958\\feature-switches-576.html",
+    "sha256": "2ee6746ac3f639d0e22d69e214f09e07020109317b59fed114872cb0e07bd807",
+    "bytes": 1381989
+  },
+  "gates": {
+    "validate": "pass",
+    "deliver": "pass",
+    "check": "pass",
+    "browser-check": "not-run"
+  },
+  "diagnostics": [],
+  "diagnosticSummary": {
+    "total": 0,
+    "shown": 0,
+    "truncated": false
+  },
+  "evidence": {
+    "receipt": "C:\\Users\\nono\\Documents\\devhome\\miroir-integration\\.archify\\explainer-feature-switches-20261025-130958\\feature-switches-576.finalize.json",
+    "summaryReceipt": "C:\\Users\\nono\\Documents\\devhome\\miroir-integration\\.archify\\explainer-feature-switches-20261025-130958\\feature-switches-576.finalize-summary.json"
+  },
+  "visualReview": "not-requested",
+  "durationMs": 6228,
+  "browserCheck": {
+    "requested": false,
+    "ran": false
+  }
+}

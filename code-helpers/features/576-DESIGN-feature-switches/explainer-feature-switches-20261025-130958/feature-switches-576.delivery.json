@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "73d4c14a-dd05-48c5-9109-5fc1a6d42acf",
+  "status": "current",
+  "command": "deliver",
+  "type": "explainer",
+  "input": "C:\\Users\\nono\\Documents\\devhome\\miroir-integration\\.archify\\explainer-feature-switches-20261025-130958\\candidate.archify.md",
+  "output": "C:\\Users\\nono\\Documents\\devhome\\miroir-integration\\.archify\\explainer-feature-switches-20261025-130958\\feature-switches-576.html",
+  "specification": {
+    "sha256": "bfc1945f8eae0c35ab634df2bb704e322b6da5ccc2b8c48223c699e49fd7a9f9",
+    "bytes": 11076
+  },
+  "artifact": {
+    "sha256": "2ee6746ac3f639d0e22d69e214f09e07020109317b59fed114872cb0e07bd807",
+    "bytes": 1381989
+  },
+  "explainer": {
+    "preparedSha256": "962c5815a9a73081ddef1078dc301461a695bdba484f71bd7fac92eff1711fc0",
+    "dependencies": [
+      {
+        "kind": "diagram-spec",
+        "id": "capability-flow",
+        "inline": true,
+        "sha256": "46d3281c6490dee61a4f45f9f3f689ef05c04a30d0f119ab75a82f3b1ca2885f",
+        "bytes": 1584
+      },
+      {
+        "kind": "diagram-spec",
+        "id": "runtime-coupling",
+        "inline": true,
+        "sha256": "1939b1ac9bfe81844b99d50d4d3eb66d0d7766a5cbe14517704e4e2a03f6c986",
+        "bytes": 1534
+      },
+      {
+        "kind": "diagram-spec",
+        "id": "value-levels-flow",
+        "inline": true,
+        "sha256": "f324004dbe28c1576087ebf077c5fadcc5f3c754ae5b75767622951ee26d191d",
+        "bytes": 1104
+      }
+    ]
+  }
+}

@@ -1,0 +1,625 @@
+{
+  "schemaVersion": 1,
+  "ok": true,
+  "command": "finalize",
+  "status": "pass",
+  "type": "explainer",
+  "quality": "showcase",
+  "startedAt": "2026-10-25T12:11:07.900Z",
+  "specification": {
+    "path": "C:\\Users\\nono\\Documents\\devhome\\miroir-integration\\.archify\\explainer-feature-switches-20261025-130958\\candidate.archify.md",
+    "sha256": "bfc1945f8eae0c35ab634df2bb704e322b6da5ccc2b8c48223c699e49fd7a9f9",
+    "bytes": 11076
+  },
+  "artifact": {
+    "path": "C:\\Users\\nono\\Documents\\devhome\\miroir-integration\\.archify\\explainer-feature-switches-20261025-130958\\feature-switches-576.html",
+    "sha256": "2ee6746ac3f639d0e22d69e214f09e07020109317b59fed114872cb0e07bd807",
+    "bytes": 1381989
+  },
+  "stages": {
+    "browser-check": {
+      "status": "not-run",
+      "execution": "not-requested"
+    },
+    "validate": {
+      "status": "pass",
+      "exitCode": 0,
+      "durationMs": null,
+      "execution": "embedded-in-deliver",
+      "command": [
+        "C:\\Program Files\\nodejs\\node.exe",
+        "C:\\Users\\nono\\.agents\\skills\\archify\\bin\\archify.mjs",
+        "deliver",
+        "explainer",
+        "C:\\Users\\nono\\Documents\\devhome\\miroir-integration\\.archify\\explainer-feature-switches-20261025-130958\\candidate.archify.md",
+        "C:\\Users\\nono\\Documents\\devhome\\miroir-integration\\.archify\\explainer-feature-switches-20261025-130958\\feature-switches-576.html",
+        "--quality",
+        "showcase",
+        "--json"
+      ],
+      "receipt": {
+        "schemaVersion": 1,
+        "ok": true,
+        "command": "validate",
+        "specification": {
+          "sha256": "bfc1945f8eae0c35ab634df2bb704e322b6da5ccc2b8c48223c699e49fd7a9f9",
+          "bytes": 11076
+        },
+        "validation": {
+          "checksPassed": 4,
+          "checkCount": 4,
+          "compositionProfile": "showcase",
+          "compositionStatus": "pass",
+          "errors": 0,
+          "warnings": 0
+        }
+      }
+    },
+    "deliver": {
+      "status": "pass",
+      "exitCode": 0,
+      "durationMs": 3199,
+      "command": [
+        "C:\\Program Files\\nodejs\\node.exe",
+        "C:\\Users\\nono\\.agents\\skills\\archify\\bin\\archify.mjs",
+        "deliver",
+        "explainer",
+        "C:\\Users\\nono\\Documents\\devhome\\miroir-integration\\.archify\\explainer-feature-switches-20261025-130958\\candidate.archify.md",
+        "C:\\Users\\nono\\Documents\\devhome\\miroir-integration\\.archify\\explainer-feature-switches-20261025-130958\\feature-switches-576.html",
+        "--quality",
+        "showcase",
+        "--json"
+      ],
+      "receipt": {
+        "schemaVersion": 1,
+        "receiptId": "73d4c14a-dd05-48c5-9109-5fc1a6d42acf",
+        "ok": true,
+        "command": "deliver",
+        "type": "explainer",
+        "input": "C:\\Users\\nono\\Documents\\devhome\\miroir-integration\\.archify\\explainer-feature-switches-20261025-130958\\candidate.archify.md",
+        "output": "C:\\Users\\nono\\Documents\\devhome\\miroir-integration\\.archify\\explainer-feature-switches-20261025-130958\\feature-switches-576.html",
+        "explainer": {
+          "preparedSha256": "962c5815a9a73081ddef1078dc301461a695bdba484f71bd7fac92eff1711fc0",
+          "dependencies": [
+            {
+              "kind": "diagram-spec",
+              "id": "capability-flow",
+              "inline": true,
+              "sha256": "46d3281c6490dee61a4f45f9f3f689ef05c04a30d0f119ab75a82f3b1ca2885f",
+              "bytes": 1584
+            },
+            {
+              "kind": "diagram-spec",
+              "id": "runtime-coupling",
+              "inline": true,
+              "sha256": "1939b1ac9bfe81844b99d50d4d3eb66d0d7766a5cbe14517704e4e2a03f6c986",
+              "bytes": 1534
+            },
+            {
+              "kind": "diagram-spec",
+              "id": "value-levels-flow",
+              "inline": true,
+              "sha256": "f324004dbe28c1576087ebf077c5fadcc5f3c754ae5b75767622951ee26d191d",
+              "bytes": 1104
+            }
+          ]
+        },
+        "specification": {
+          "sha256": "bfc1945f8eae0c35ab634df2bb704e322b6da5ccc2b8c48223c699e49fd7a9f9",
+          "bytes": 11076
+        },
+        "artifact": {
+          "sha256": "2ee6746ac3f639d0e22d69e214f09e07020109317b59fed114872cb0e07bd807",
+          "bytes": 1381989
+        },
+        "validation": {
+          "checksPassed": 4,
+          "checkCount": 4,
+          "compositionProfile": "showcase",
+          "compositionStatus": "pass",
+          "errors": 0,
+          "warnings": 0
+        },
+        "update": {
+          "status": "unavailable",
+          "installedVersion": null,
+          "availableVersion": null,
+          "releaseNotes": null,
+          "checkedAt": null,
+          "source": null,
+          "noticeRequired": false,
+          "noticeText": null,
+          "reason": "disabled"
+        }
+      }
+    },
+    "check": {
+      "status": "pass",
+      "exitCode": 0,
+      "durationMs": 1539,
+      "command": [
+        "C:\\Program Files\\nodejs\\node.exe",
+        "C:\\Users\\nono\\.agents\\skills\\archify\\bin\\archify.mjs",
+        "check",
+        "C:\\Users\\nono\\Documents\\devhome\\miroir-integration\\.archify\\explainer-feature-switches-20261025-130958\\feature-switches-576.html",
+        "--require-provenance"
+      ],
+      "receipt": {
+        "ok": true,
+        "file": "C:\\Users\\nono\\Documents\\devhome\\miroir-integration\\.archify\\explainer-feature-switches-20261025-130958\\feature-switches-576.html",
+        "family": "explainer",
+        "artifact": {
+          "sha256": "2ee6746ac3f639d0e22d69e214f09e07020109317b59fed114872cb0e07bd807",
+          "bytes": 1381989
+        },
+        "checks": [
+          {
+            "name": "explainer_structure",
+            "ok": true,
+            "details": [
+              "126 unique DOM IDs"
+            ]
+          },
+          {
+            "name": "explainer_payload_identity",
+            "ok": true,
+            "details": []
+          },
+          {
+            "name": "explainer_dependencies",
+            "ok": true,
+            "details": [
+              "3 frozen dependencies"
+            ]
+          },
+          {
+            "name": "explainer_native_diagrams",
+            "ok": true,
+            "details": [
+              "capability-flow: pass",
+              "runtime-coupling: pass",
+              "value-levels-flow: pass"
+            ]
+          }
+        ],
+        "composition": {
+          "schemaVersion": 1,
+          "profile": "showcase",
+          "status": "pass",
+          "summary": {
+            "errors": 0,
+            "warnings": 0
+          },
+          "issues": [],
+          "nativeDiagrams": [
+            {
+              "id": "capability-flow",
+              "receipt": {
+                "ok": true,
+                "file": "C:\\Users\\nono\\AppData\\Local\\Temp\\archify-explainer-check-vpJb7j\\child.html",
+                "artifact": {
+                  "sha256": "bbfd4df40c26a32d6f5894b76adfe6c79b5a8f471d903e2f8a53b77ea09347ec",
+                  "bytes": 818660
+                },
+                "checks": [
+                  {
+                    "name": "single_svg",
+                    "ok": true,
+                    "details": [
+                      "found 1 <svg> block(s)"
+                    ]
+                  },
+                  {
+                    "name": "finite_svg",
+                    "ok": true,
+                    "details": []
+                  },
+                  {
+                    "name": "orthogonal_arrows",
+                    "ok": true,
+                    "details": []
+                  },
+                  {
+                    "name": "label_route_clearance",
+                    "ok": true,
+                    "details": []
+                  },
+                  {
+                    "name": "relationship_crossings",
+                    "ok": true,
+                    "details": []
+                  },
+                  {
+                    "name": "relationship_corridors",
+                    "ok": true,
+                    "details": []
+                  },
+                  {
+                    "name": "container_border_runs",
+                    "ok": true,
+                    "details": []
+                  },
+                  {
+                    "name": "route_rhythm",
+                    "ok": true,
+                    "details": []
+                  },
+                  {
+                    "name": "legend_clearance",
+                    "ok": true,
+                    "details": []
+                  }
+                ],
+                "composition": {
+                  "schemaVersion": 1,
+                  "profile": "showcase",
+                  "status": "pass",
+                  "summary": {
+                    "errors": 0,
+                    "warnings": 0
+                  },
+                  "metrics": {
+                    "properCrossings": 0,
+                    "resolvedCrossovers": 0,
+                    "ambiguousCorridors": 0,
+                    "arrowheadCollisions": 0,
+                    "containerBorderRuns": 0,
+                    "labelRouteClearanceIssues": 0,
+                    "labelCanvasOverflowIssues": 0,
+                    "minLabelRouteClearance": 65,
+                    "desktopReadabilityIssues": 0,
+                    "viewportHeightIssues": 0,
+                    "minProjectedNodeTextPx": 6.696517412935323,
+                    "maxBends": 1,
+                    "routesOverSuggestedBends": 0,
+                    "maxStretch": 1,
+                    "routesOverSuggestedStretch": 0,
+                    "minSegmentPx": 114,
+                    "minInteriorSegmentPx": null,
+                    "shortSegmentCount": 0,
+                    "shortEndpointSegmentCount": 0,
+                    "shortInteriorSegmentCount": 0,
+                    "microSegmentCount": 0
+                  },
+                  "suggestedLimits": {
+                    "bendsPerRelationship": 2,
+                    "stretch": 1.35,
+                    "segmentPx": 16,
+                    "microSegmentPx": 8
+                  },
+                  "routeReview": {
+                    "crossings": [],
+                    "detours": []
+                  },
+                  "leadingSpace": {
+                    "measured": true,
+                    "emptyTopPx": 80,
+                    "emptyTopRatio": 0.203,
+                    "occupiedTop": 80,
+                    "viewBoxTop": 0,
+                    "canvasHeight": 394,
+                    "typicalNodeHeight": 60,
+                    "reviewSuggested": false
+                  },
+                  "desktopReadability": {
+                    "budgetBasis": "recognized-declared-wide",
+                    "readerContract": "declared-wide-v1",
+                    "availableDiagramWidth": 1346,
+                    "actualBudgetPx": 1346,
+                    "actualReaderWidth": 1376,
+                    "desiredReaderWidth": 1537.5,
+                    "viewportCap": 1376,
+                    "limit": "viewport-cap",
+                    "requestedTargetPx": 7.5,
+                    "requestedTargetMet": false,
+                    "hardFloorPx": 6,
+                    "hardFloorMet": true,
+                    "minimumOwner": {
+                      "kind": "edge",
+                      "id": "envfile-to-resolver-1",
+                      "from": "envfile",
+                      "to": "resolver"
+                    },
+                    "minimumSourceTextPx": 8,
+                    "minimumProjectedTextPx": 6.696517412935323,
+                    "semanticTextCount": 15
+                  },
+                  "issues": []
+                }
+              }
+            },
+            {
+              "id": "runtime-coupling",
+              "receipt": {
+                "ok": true,
+                "file": "C:\\Users\\nono\\AppData\\Local\\Temp\\archify-explainer-check-Y6qWC7\\child.html",
+                "artifact": {
+                  "sha256": "a6c87abf5a6f495d8b63921fb1d771f39c9b45a14ef858e61b1b1fe9cae91dfa",
+                  "bytes": 818020
+                },
+                "checks": [
+                  {
+                    "name": "single_svg",
+                    "ok": true,
+                    "details": [
+                      "found 1 <svg> block(s)"
+                    ]
+                  },
+                  {
+                    "name": "finite_svg",
+                    "ok": true,
+                    "details": []
+                  },
+                  {
+                    "name": "orthogonal_arrows",
+                    "ok": true,
+                    "details": []
+                  },
+                  {
+                    "name": "label_route_clearance",
+                    "ok": true,
+                    "details": []
+                  },
+                  {
+                    "name": "relationship_crossings",
+                    "ok": true,
+                    "details": []
+                  },
+                  {
+                    "name": "relationship_corridors",
+                    "ok": true,
+                    "details": []
+                  },
+                  {
+                    "name": "container_border_runs",
+                    "ok": true,
+                    "details": []
+                  },
+                  {
+                    "name": "route_rhythm",
+                    "ok": true,
+                    "details": []
+                  },
+                  {
+                    "name": "legend_clearance",
+                    "ok": true,
+                    "details": []
+                  }
+                ],
+                "composition": {
+                  "schemaVersion": 1,
+                  "profile": "showcase",
+                  "status": "pass",
+                  "summary": {
+                    "errors": 0,
+                    "warnings": 0
+                  },
+                  "metrics": {
+                    "properCrossings": 0,
+                    "resolvedCrossovers": 0,
+                    "ambiguousCorridors": 0,
+                    "arrowheadCollisions": 0,
+                    "containerBorderRuns": 0,
+                    "labelRouteClearanceIssues": 0,
+                    "labelCanvasOverflowIssues": 0,
+                    "minLabelRouteClearance": 65.9,
+                    "desktopReadabilityIssues": 0,
+                    "viewportHeightIssues": 0,
+                    "minProjectedNodeTextPx": 7.5,
+                    "maxBends": 1,
+                    "routesOverSuggestedBends": 0,
+                    "maxStretch": 1,
+                    "routesOverSuggestedStretch": 0,
+                    "minSegmentPx": 122,
+                    "minInteriorSegmentPx": null,
+                    "shortSegmentCount": 0,
+                    "shortEndpointSegmentCount": 0,
+                    "shortInteriorSegmentCount": 0,
+                    "microSegmentCount": 0
+                  },
+                  "suggestedLimits": {
+                    "bendsPerRelationship": 2,
+                    "stretch": 1.35,
+                    "segmentPx": 16,
+                    "microSegmentPx": 8
+                  },
+                  "routeReview": {
+                    "crossings": [],
+                    "detours": []
+                  },
+                  "leadingSpace": {
+                    "measured": true,
+                    "emptyTopPx": 80,
+                    "emptyTopRatio": 0.138,
+                    "occupiedTop": 80,
+                    "viewBoxTop": 0,
+                    "canvasHeight": 580,
+                    "typicalNodeHeight": 60,
+                    "reviewSuggested": false
+                  },
+                  "desktopReadability": {
+                    "budgetBasis": "recognized-declared-wide",
+                    "readerContract": "declared-wide-v1",
+                    "availableDiagramWidth": 1079.0625,
+                    "actualBudgetPx": 1079.0625,
+                    "actualReaderWidth": 1109.0625,
+                    "desiredReaderWidth": 1109.0625,
+                    "viewportCap": 1376,
+                    "limit": "source-size",
+                    "requestedTargetPx": 7.5,
+                    "requestedTargetMet": true,
+                    "hardFloorPx": 6,
+                    "hardFloorMet": true,
+                    "minimumOwner": {
+                      "kind": "edge",
+                      "id": "report-to-section-1",
+                      "from": "report",
+                      "to": "section"
+                    },
+                    "minimumSourceTextPx": 8,
+                    "minimumProjectedTextPx": 7.5,
+                    "semanticTextCount": 14
+                  },
+                  "issues": []
+                }
+              }
+            },
+            {
+              "id": "value-levels-flow",
+              "receipt": {
+                "ok": true,
+                "file": "C:\\Users\\nono\\AppData\\Local\\Temp\\archify-explainer-check-ijrpTt\\child.html",
+                "artifact": {
+                  "sha256": "22b125892dd64f14be12f6adbe2ff49e7fcc570421f967ef0c7b21960dd84b37",
+                  "bytes": 811731
+                },
+                "checks": [
+                  {
+                    "name": "single_svg",
+                    "ok": true,
+                    "details": [
+                      "found 1 <svg> block(s)"
+                    ]
+                  },
+                  {
+                    "name": "finite_svg",
+                    "ok": true,
+                    "details": []
+                  },
+                  {
+                    "name": "orthogonal_arrows",
+                    "ok": true,
+                    "details": []
+                  },
+                  {
+                    "name": "label_route_clearance",
+                    "ok": true,
+                    "details": []
+                  },
+                  {
+                    "name": "relationship_crossings",
+                    "ok": true,
+                    "details": []
+                  },
+                  {
+                    "name": "relationship_corridors",
+                    "ok": true,
+                    "details": []
+                  },
+                  {
+                    "name": "container_border_runs",
+                    "ok": true,
+                    "details": []
+                  },
+                  {
+                    "name": "route_rhythm",
+                    "ok": true,
+                    "details": []
+                  },
+                  {
+                    "name": "legend_clearance",
+                    "ok": true,
+                    "details": []
+                  }
+                ],
+                "composition": {
+                  "schemaVersion": 1,
+                  "profile": "showcase",
+                  "status": "pass",
+                  "summary": {
+                    "errors": 0,
+                    "warnings": 0
+                  },
+                  "metrics": {
+                    "properCrossings": 0,
+                    "resolvedCrossovers": 0,
+                    "ambiguousCorridors": 0,
+                    "arrowheadCollisions": 0,
+                    "containerBorderRuns": 0,
+                    "labelRouteClearanceIssues": 0,
+                    "labelCanvasOverflowIssues": 0,
+                    "minLabelRouteClearance": 70.2,
+                    "desktopReadabilityIssues": 0,
+                    "viewportHeightIssues": 0,
+                    "minProjectedNodeTextPx": 7.294117647058823,
+                    "maxBends": 0,
+                    "routesOverSuggestedBends": 0,
+                    "maxStretch": 1,
+                    "routesOverSuggestedStretch": 0,
+                    "minSegmentPx": 8,
+                    "minInteriorSegmentPx": null,
+                    "shortSegmentCount": 2,
+                    "shortEndpointSegmentCount": 2,
+                    "shortInteriorSegmentCount": 0,
+                    "microSegmentCount": 0
+                  },
+                  "suggestedLimits": {
+                    "bendsPerRelationship": 2,
+                    "stretch": 1.35,
+                    "segmentPx": 16,
+                    "microSegmentPx": 8
+                  },
+                  "routeReview": {
+                    "crossings": [],
+                    "detours": []
+                  },
+                  "leadingSpace": {
+                    "measured": false,
+                    "reviewSuggested": false
+                  },
+                  "desktopReadability": {
+                    "budgetBasis": "legacy-930",
+                    "readerContract": "declared-wide-v1",
+                    "availableDiagramWidth": 930,
+                    "actualBudgetPx": 930,
+                    "limit": "legacy",
+                    "requestedTargetPx": null,
+                    "requestedTargetMet": null,
+                    "hardFloorPx": 6,
+                    "hardFloorMet": true,
+                    "minimumOwner": {
+                      "kind": "edge",
+                      "id": "admin-to-scoped-1",
+                      "from": "admin",
+                      "to": "scoped"
+                    },
+                    "minimumSourceTextPx": 8,
+                    "minimumProjectedTextPx": 7.294117647058823,
+                    "semanticTextCount": 9
+                  },
+                  "issues": []
+                }
+              }
+            }
+          ]
+        },
+        "diagnostics": [],
+        "provenance": "current",
+        "deliveryReceiptId": "73d4c14a-dd05-48c5-9109-5fc1a6d42acf"
+      }
+    }
+  },
+  "browserCheck": {
+    "requested": false,
+    "ran": false
+  },
+  "diagnostics": [],
+  "evidence": {
+    "receipt": "C:\\Users\\nono\\Documents\\devhome\\miroir-integration\\.archify\\explainer-feature-switches-20261025-130958\\feature-switches-576.finalize.json",
+    "summaryReceipt": "C:\\Users\\nono\\Documents\\devhome\\miroir-integration\\.archify\\explainer-feature-switches-20261025-130958\\feature-switches-576.finalize-summary.json"
+  },
+  "visualReview": "not-requested",
+  "finishedAt": "2026-10-25T12:11:14.129Z",
+  "durationMs": 6228,
+  "update": {
+    "status": "unavailable",
+    "installedVersion": null,
+    "availableVersion": null,
+    "releaseNotes": null,
+    "checkedAt": null,
+    "source": null,
+    "noticeRequired": false,
+    "noticeText": null,
+    "reason": "check-failed"
+  }
+}
