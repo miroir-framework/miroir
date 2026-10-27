@@ -14,9 +14,11 @@ import {
   entitySelfApplicationModelBranch,
   entitySelfApplicationVersion,
   entityTheme,
+  selfApplicationMiroir,
 } from "miroir-app-miroir";
 
 import type { Uuid } from "../0_interfaces/1_core/EntityVersion";
+import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import type {
   ApplicationSection,
   Deployment,
@@ -46,7 +48,7 @@ import type { InitApplicationParameters } from "../0_interfaces/4-services/Persi
 import type { MiroirTestAnyLeaf } from "../0_interfaces/5-tests/miroirTestTypes";
 import type { ApplicationDeploymentMap, ApplicationEntitiesAndInstances } from "../1_core/Deployment";
 import { createDeploymentCompositeAction } from "../1_core/Deployment";
-import { defaultMetaModelEnvironment, defaultMiroirModelEnvironment, getApplicationSection } from "../1_core/Model";
+import { defaultMiroirModelEnvironment, getApplicationSection } from "../1_core/Model";
 import { remapLibraryAppModelForRunTarget } from "../1_core/model/cloneApplication/remapApplicationModelAtPaths";
 import { createThrowingExpect } from "../1_core/testing/test-expect";
 import { ConfigurationService } from "../3_controllers/ConfigurationService";
@@ -85,7 +87,7 @@ export type MiroirTestLeafOutcome = {
   message?: string;
 };
 
-type LeafToRun = { path: string[]; leaf: MiroirTestAnyLeaf };
+type LeafToRun = { path: string[]; leaf: MiroirTestAnyLeaf; skip: boolean };
 
 type LeafKind = "unit" | "testbed" | "unsupported";
 
@@ -113,14 +115,30 @@ function leafKind(leaf: MiroirTestAnyLeaf): LeafKind {
   }
 }
 
-function collectLeaves(node: MiroirTestSuite | MiroirTestAnyLeaf, path: string[]): LeafToRun[] {
+function collectLeaves(node: MiroirTestSuite | MiroirTestAnyLeaf, path: string[], parentSkip = false): LeafToRun[] {
   const nodePath = [...path, node.miroirTestLabel];
+  // a skipped suite skips all its leaves, as the test CLI does
+  const skip = parentSkip || !!node.skip;
   if (node.miroirTestType !== "miroirTestSuite") {
-    return [{ path: nodePath, leaf: node }];
+    return [{ path: nodePath, leaf: node, skip }];
   }
   return (node.miroirTests as (MiroirTestSuite | MiroirTestAnyLeaf)[]).flatMap((child) =>
-    collectLeaves(child, nodePath),
+    collectLeaves(child, nodePath, skip),
   );
+}
+
+/** The live application and deployment uuids a value names. */
+function liveUuidsIn(value: unknown, live: Set<string>, found = new Set<string>()): Set<string> {
+  if (typeof value === "string") {
+    if (live.has(value)) {
+      found.add(value);
+    }
+  } else if (Array.isArray(value)) {
+    value.forEach((entry) => liveUuidsIn(entry, live, found));
+  } else if (value !== null && typeof value === "object") {
+    Object.values(value).forEach((entry) => liveUuidsIn(entry, live, found));
+  }
+  return found;
 }
 
 function deepReplaceStrings<T>(value: T, replacements: Record<string, string>): T {
@@ -291,7 +309,10 @@ async function readLiveStoreConfiguration(
 type Testbed = {
   runTarget: TestbedUuids;
   storeConfiguration: StoreUnitConfiguration;
+  /** To create, reset and drop the testbed. */
   applicationDeploymentMap: ApplicationDeploymentMap;
+  /** What the leaves run with: the testbed and the Miroir meta-application, never Admin or another live application. */
+  leafDeploymentMap: ApplicationDeploymentMap;
   testbedModel: MetaModelPartial;
   testbedEntitiesAndInstances: ApplicationEntitiesAndInstances;
   testbedInitApplicationParameters: InitApplicationParameters;
@@ -357,6 +378,10 @@ async function prepareTestbed(
     storeConfiguration: testbedStorageConfiguration(liveStoreConfiguration, runTarget.deploymentUuid),
     // D4: no entry for the live application, so a missed reference fails instead of writing live data
     applicationDeploymentMap: { ...otherApplications, [runTarget.applicationUuid]: runTarget.deploymentUuid },
+    leafDeploymentMap: {
+      ...Object.fromEntries(Object.entries(otherApplications).filter(([uuid]) => uuid == selfApplicationMiroir.uuid)),
+      [runTarget.applicationUuid]: runTarget.deploymentUuid,
+    },
     testbedModel,
     testbedEntitiesAndInstances: deepReplaceStrings(liveData, toTestbed),
     testbedInitApplicationParameters: {
@@ -401,11 +426,11 @@ function testbedMcpToolExecutor(
     if (!found) {
       return { status: "error", error: { message: `no Endpoint action of ${testbed.runTarget.applicationName} for the tool ${toolName}` } };
     }
-    const { applicationDeploymentMap, runTarget } = testbed;
+    const { leafDeploymentMap, runTarget } = testbed;
     const result = await domainController.handleAction(
       { actionType: found.actionType, actionLabel: toolName, endpoint: found.endpoint, payload: args } as any,
-      applicationDeploymentMap,
-      domainController.currentModelEnvironment(runTarget.applicationUuid, applicationDeploymentMap),
+      leafDeploymentMap,
+      domainController.currentModelEnvironment(runTarget.applicationUuid, leafDeploymentMap),
     );
     return result instanceof Action2Error || result.status != "ok"
       ? { status: "error", error: { message: errorMessage(result) } }
@@ -426,14 +451,10 @@ function runnerLeafOnTestbed(leaf: MiroirTestForRunner, testbedModel: MetaModelP
   };
 }
 
-function trackedAssertions(suiteResult: TestSuiteResult, leafLabel: string): MiroirTestLeafAssertionOutcome[] {
+function allTrackedAssertions(suiteResult: TestSuiteResult): MiroirTestLeafAssertionOutcome[] {
   const found: MiroirTestLeafAssertionOutcome[] = [];
   for (const test of Object.values(suiteResult.testsResults ?? {})) {
     for (const assertion of Object.values(test.testAssertionsResults ?? {})) {
-      // the leaf's own summary, recorded under its label
-      if (assertion.assertionName == leafLabel) {
-        continue;
-      }
       found.push({
         name: assertion.assertionName,
         result: assertion.assertionResult,
@@ -443,14 +464,28 @@ function trackedAssertions(suiteResult: TestSuiteResult, leafLabel: string): Mir
     }
   }
   for (const nested of Object.values(suiteResult.testsSuiteResults ?? {})) {
-    found.push(...trackedAssertions(nested, leafLabel));
+    found.push(...allTrackedAssertions(nested));
   }
   return found;
 }
 
+/**
+ * A leaf's assertions, without the summary it records under its own label when its other assertions say all of
+ * it. A functionCallTest or queryTest records its result only there.
+ */
+function trackedAssertions(suiteResult: TestSuiteResult, leafLabel: string): MiroirTestLeafAssertionOutcome[] {
+  const all = allTrackedAssertions(suiteResult);
+  const details = all.filter((assertion) => assertion.name != leafLabel);
+  const summaryFailed = all.some((assertion) => assertion.name == leafLabel && assertion.result == "error");
+  return details.length == 0 || (summaryFailed && !details.some((assertion) => assertion.result == "error"))
+    ? all
+    : details;
+}
+
 async function runLeaf(
   host: DomainControllerActionHost,
-  { path, leaf }: LeafToRun,
+  { path, leaf }: Omit<LeafToRun, "skip">,
+  modelEnvironment: MiroirModelEnvironment,
   executionEnvironment: MiroirTestExecutionEnvironment | undefined,
 ): Promise<MiroirTestLeafOutcome> {
   const tracker = host.getMiroirActivityTracker();
@@ -464,7 +499,7 @@ async function runLeaf(
       path,
       undefined,
       leaf,
-      defaultMetaModelEnvironment,
+      modelEnvironment,
       tracker,
       undefined,
       true,
@@ -538,7 +573,7 @@ async function runMiroirTest(
   }));
   const toRun = allLeaves
     .map((entry, index) => ({ ...entry, index, kind: leafKind(entry.leaf) }))
-    .filter(({ leaf }) => (selected.size == 0 || selected.has(leaf.miroirTestLabel)) && !leaf.skip);
+    .filter(({ leaf, skip }) => (selected.size == 0 || selected.has(leaf.miroirTestLabel)) && !skip);
   for (const { index, kind, leaf } of toRun) {
     if (kind == "unsupported") {
       outcomes[index] = { ...outcomes[index], result: "unsupported", message: UNSUPPORTED_MESSAGES[leaf.miroirTestType] };
@@ -552,8 +587,15 @@ async function runMiroirTest(
     });
   }
 
-  for (const entry of toRun.filter(({ kind }) => kind == "unit")) {
-    outcomes[entry.index] = await runLeaf(host, entry, undefined);
+  // unit leaves only read: they run on the live application's model, with its TransformerDefinitions
+  const unitLeaves = toRun.filter(({ kind }) => kind == "unit");
+  if (unitLeaves.length > 0) {
+    const liveModelEnvironment = host
+      .asDomainControllerInterface()
+      .currentModelEnvironment(application, context.applicationDeploymentMap);
+    for (const entry of unitLeaves) {
+      outcomes[entry.index] = await runLeaf(host, entry, liveModelEnvironment, undefined);
+    }
   }
 
   const testbedLeaves = toRun.filter(({ kind }) => kind == "testbed");
@@ -567,7 +609,7 @@ async function runMiroirTest(
   } catch (error) {
     return failedToRunMiroirTest(action, `could not prepare the testbed: ${errorMessage(error)}`);
   }
-  const { runTarget, applicationDeploymentMap } = testbed;
+  const { runTarget, applicationDeploymentMap, leafDeploymentMap } = testbed;
   const runnerUuidIndex: Record<string, Runner> = Object.fromEntries(
     ((testbed.testbedModel.runners ?? []) as Runner[]).map((runner) => [runner.uuid, runner]),
   );
@@ -598,7 +640,7 @@ async function runMiroirTest(
     );
     const compositeActionTestContext = {
       domainController,
-      applicationDeploymentMap,
+      applicationDeploymentMap: leafDeploymentMap,
       // read only when a leaf creates its own deployment, which a leaf run here never does
       internalMiroirConfig: undefined as any,
       pageLabel: "runMiroirTestAction",
@@ -610,7 +652,7 @@ async function runMiroirTest(
     };
     const executionEnvironment = {
       domainController,
-      applicationDeploymentMap,
+      applicationDeploymentMap: leafDeploymentMap,
       testApplicationUuid: runTarget.applicationUuid,
       persistenceStoreControllerManager: undefined as any,
       compositeActionTestContext,
@@ -620,7 +662,19 @@ async function runMiroirTest(
         executeMcpToolRunner: testbedMcpToolExecutor(domainController, testbed),
       },
     } satisfies MiroirTestExecutionEnvironment;
+    const liveUuids = new Set(Object.entries(context.applicationDeploymentMap).flat());
     for (const entry of testbedLeaves) {
+      // D4: the leaf addresses the testbed, never the live application
+      const leaf = deepReplaceStrings(entry.leaf, toTestbed);
+      const named = [...liveUuidsIn([leaf, testParams], liveUuids)];
+      if (named.length > 0) {
+        outcomes[entry.index] = {
+          ...outcomes[entry.index],
+          result: "error",
+          message: `the leaf names the live application or deployment ${named.join(", ")}: a leaf run here addresses only the tested application, on its testbed`,
+        };
+        continue;
+      }
       try {
         await resetIntegTestbed({
           domainController,
@@ -640,14 +694,13 @@ async function runMiroirTest(
         };
         continue;
       }
-      // D4: the leaf addresses the testbed, never the live application
-      const leaf = deepReplaceStrings(entry.leaf, toTestbed);
       outcomes[entry.index] = await runLeaf(
         host,
         {
           path: entry.path,
           leaf: leaf.miroirTestType == "runnerTest" ? runnerLeafOnTestbed(leaf, testbed.testbedModel) : leaf,
         },
+        domainController.currentModelEnvironment(runTarget.applicationUuid, leafDeploymentMap),
         executionEnvironment,
       );
     }
