@@ -7,10 +7,19 @@ export declare const metaInitApplicationVersion: EntityInstance;
 export declare const menuDefaultMeta: Menu;
 export declare const defaultMetaAppModel: MetaModel;
 export declare const entityBundleSizeMeasurement: Entity;
+export declare const entityPageLoadMeasurement: Entity;
 export declare const reportBundleSizeHistory: Report;
 export declare const reportBundleSizeMeasurementDetails: Report;
+export declare const reportPageLoadHistory: Report;
+export declare const reportPageLoadMeasurementDetails: Report;
+export declare const pageLoadMeasurementSeed: EntityInstance[];
 export declare const bundleSizeMeasurementSeed: EntityInstance[];
 export declare const testConfiguration_metaBundleSizeSeed: {
+  uuid: string;
+  testbedModel: MetaModel;
+  testbedEntitiesAndInstances: { entity: Entity; instances: EntityInstance[] }[];
+};
+export declare const testConfiguration_metaPageLoadSeed: {
   uuid: string;
   testbedModel: MetaModel;
   testbedEntitiesAndInstances: { entity: Entity; instances: EntityInstance[] }[];

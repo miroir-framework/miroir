@@ -14,6 +14,7 @@
     "devBuild": "npm run build",
     "coverageTour": "node ./scripts/coverage-tour.mjs",
     "selfTest": "node ./scripts/self-test.mjs",
+    "loadTimings": "node ./scripts/load-timings.mjs",
     "test": "cross-env VITE_TEST_MODE='true' vitest run --bail=1 -t",
     "testByFile": "tsx ./scripts/test-by-file.ts",
     "testMiroir": "cross-env VITE_TEST_MODE='true' tsx ./scripts/test-miroir-runner.ts",

@@ -1,3 +1,5 @@
+// #580: first, so that the load timing recorder takes the entryScript milestone before the other modules run.
+import { configureLoadTimings, followLoadTimingNavigation, loadTimingMark } from "./loadTimings/loadTimingBrowser.js";
 import "./chunkLoadTrace.js";
 
 declare global {
@@ -170,6 +172,7 @@ const router = createBrowserRouter([
     ],
   },
 ]);
+followLoadTimingNavigation(router);
 
 export const themeParams: ThemeOptions = {
   spacing: 0,
@@ -415,6 +418,7 @@ async function startWebApp(root: Root) {
   }
   const miroirConfigToUse = electronMiroirConfig ?? webMiroirConfig!;
   selfTestRequested = shouldStartSelfTest(miroirConfigToUse);
+  loadTimingMark("configReady");
   const {
     domainControllerForClient,
     domainControllerForServer: rawDomainControllerForServer,
@@ -426,6 +430,13 @@ async function startWebApp(root: Root) {
     miroirEventService,
     electronRestClient ? { customRestClient: electronRestClient } : undefined,
   );
+
+  loadTimingMark("platformReady");
+  configureLoadTimings({
+    config: miroirConfigToUse,
+    client: isElectron ? "electron" : "webApp",
+    domainController: domainControllerForClient,
+  });
 
   // In Electron mode, the server-side domain controller is a lightweight IPC proxy that
   // delegates handleAction / handleBoxedExtractorOrQueryAction calls to the main process.
@@ -468,6 +479,7 @@ async function startWebApp(root: Root) {
     return;
   }
 
+  loadTimingMark("firstRender");
   root.render(withProviders(<RouterProvider router={router} />));
 }
 

@@ -7,10 +7,13 @@ import React from "react";
  *
  * The @keyframes miroir-spin animation is defined in src/index.html so it is
  * available as soon as the first byte of HTML is parsed.
+ *
+ * #580: `data-miroir-loading` keeps the load timing step open while the spinner is displayed.
  */
 export function CenteredSpinner(): React.JSX.Element {
   return (
     <div
+      data-miroir-loading=""
       style={{
         position: "fixed",
         inset: 0,

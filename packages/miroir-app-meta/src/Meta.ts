@@ -14,7 +14,10 @@ import type { BundleSizeMeasurement } from "./bundleSizeHistory";
 import selfApplicationMetaJson from "../assets/meta_model/a659d350-dd97-4da9-91de-524fa01745dc/9ff432a9-89a1-460b-a263-1672d084a9e0.json" with { type: "json" };
 import menuDefaultMetaJson from "../assets/meta_model/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/c95bfb70-62bd-4f40-ac2b-04857124f133.json" with { type: "json" };
 import entityBundleSizeMeasurementJson from "../assets/meta_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/90d603f9-58f8-4ac4-b2eb-cb1d718e8b3b.json" with { type: "json" };
+import entityPageLoadMeasurementJson from "../assets/meta_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/0266c0b8-4dc8-4a14-bcef-239a85a5de2d.json" with { type: "json" };
 import reportBundleSizeMeasurementDetailsJson from "../assets/meta_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/85077493-0fea-4969-96c8-b994272de284.json" with { type: "json" };
+import reportPageLoadHistoryJson from "../assets/meta_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/02dd2ead-7b8d-4160-99c9-9f4e9a1c051b.json" with { type: "json" };
+import reportPageLoadMeasurementDetailsJson from "../assets/meta_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/193c3dea-792d-471a-88a0-546e4b5e81cf.json" with { type: "json" };
 import reportBundleSizeHistoryJson from "../assets/meta_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/e8c6faa5-a117-4afd-b7ae-4a40c6111f95.json" with { type: "json" };
 import selfApplicationModelBranchMetaMasterBranchJson from "../assets/meta_model/cdb0aec6-b848-43ac-a058-fe2dbe5811f1/4408382d-daee-41d0-a53d-80a44c0f79e6.json" with { type: "json" };
 
@@ -22,8 +25,11 @@ export const selfApplicationMeta = selfApplicationMetaJson as SelfApplication;
 export const selfApplicationModelBranchMetaMasterBranch = selfApplicationModelBranchMetaMasterBranchJson;
 export const menuDefaultMeta = menuDefaultMetaJson as Menu;
 export const entityBundleSizeMeasurement = entityBundleSizeMeasurementJson as Entity;
+export const entityPageLoadMeasurement = entityPageLoadMeasurementJson as Entity;
 export const reportBundleSizeHistory = reportBundleSizeHistoryJson as Report;
 export const reportBundleSizeMeasurementDetails = reportBundleSizeMeasurementDetailsJson as Report;
+export const reportPageLoadHistory = reportPageLoadHistoryJson as Report;
+export const reportPageLoadMeasurementDetails = reportPageLoadMeasurementDetailsJson as Report;
 
 /** Init-only ApplicationVersion for unversioned Meta (not shipped as a model asset). */
 export const metaInitApplicationVersion: EntityInstance = {
@@ -43,11 +49,16 @@ export const defaultMetaAppModel: MetaModel = {
   applicationUuid: selfApplicationMeta.uuid,
   applicationName: selfApplicationMeta.name,
   applications: [selfApplicationMeta],
-  entities: [entityBundleSizeMeasurement],
+  entities: [entityBundleSizeMeasurement, entityPageLoadMeasurement],
   entityVersions: [],
   endpoints: [],
   menus: [menuDefaultMeta],
-  reports: [reportBundleSizeHistory, reportBundleSizeMeasurementDetails],
+  reports: [
+    reportBundleSizeHistory,
+    reportBundleSizeMeasurementDetails,
+    reportPageLoadHistory,
+    reportPageLoadMeasurementDetails,
+  ],
   runners: [],
   tests: [],
   themes: [],
@@ -119,6 +130,68 @@ export const testConfiguration_metaBundleSizeSeed = {
   testbedEntitiesAndInstances: [
     { entity: entityBundleSizeMeasurement, instances: bundleSizeMeasurementSeed },
   ],
+};
+
+/**
+ * Fixed PageLoadMeasurement instances for the page load Report MiroirTests (#580): one page load
+ * with its initial load, its first report display and its first model page display.
+ */
+function pageLoadSeedRecord(
+  uuid: string,
+  step: string,
+  page: string,
+  measuredAt: string,
+  durationMs: number,
+  chunks: { file: string; startMs: number; durationMs: number; transferBytes: number; encodedBytes: number }[],
+  milestones?: Record<string, number>,
+): EntityInstance {
+  return {
+    uuid,
+    parentName: "PageLoadMeasurement",
+    parentUuid: entityPageLoadMeasurement.uuid,
+    pageLoad: "4278911b-c1cc-46be-8207-e58682e06694",
+    measuredAt,
+    step,
+    page,
+    url: `/?page=${page}`,
+    durationMs,
+    settled: true,
+    ...(milestones ? { milestones } : {}),
+    chunkCount: chunks.length,
+    chunkTransferBytes: chunks.reduce((sum, chunk) => sum + chunk.transferBytes, 0),
+    chunkEncodedBytes: chunks.reduce((sum, chunk) => sum + chunk.encodedBytes, 0),
+    chunks,
+    dataRequestCount: 4,
+    dataTransferBytes: 81000,
+    environment: "dev",
+    client: "webApp",
+    buildMode: "production",
+  } as EntityInstance;
+}
+
+export const pageLoadMeasurementSeed: EntityInstance[] = [
+  pageLoadSeedRecord(
+    "8a7af0c0-caca-4d40-8a6c-83ac95992411",
+    "initialLoad",
+    "home",
+    "2026-10-27T10:00:00.000Z",
+    2350,
+    [{ file: "/assets/index-seed.js", startMs: 15, durationMs: 210, transferBytes: 820000, encodedBytes: 819000 }],
+    { responseEnd: 12, entryScript: 260, configReady: 300, platformReady: 900, firstRender: 910, configurationsLoaded: 2100 },
+  ),
+  pageLoadSeedRecord("691c8330-7349-467b-9d28-6e06b7e707ec", "route:report", "report", "2026-10-27T10:00:05.000Z", 780, [
+    { file: "/assets/ReportDisplay-seed.js", startMs: 4, durationMs: 95, transferBytes: 150000, encodedBytes: 149000 },
+  ]),
+  pageLoadSeedRecord("36b38f70-b4e9-46cb-85f8-119d77210eb5", "route:model", "model", "2026-10-27T10:00:09.000Z", 1210, [
+    { file: "/assets/ModelDiagramPage-seed.js", startMs: 6, durationMs: 120, transferBytes: 210000, encodedBytes: 209000 },
+  ]),
+];
+
+/** TestConfiguration of the Meta page load Report MiroirTests: the Meta model and the fixed steps above. */
+export const testConfiguration_metaPageLoadSeed = {
+  uuid: "a8dd8a49-97de-426c-beb7-c32d0f1beb26",
+  testbedModel: defaultMetaAppModel,
+  testbedEntitiesAndInstances: [{ entity: entityPageLoadMeasurement, instances: pageLoadMeasurementSeed }],
 };
 
 export function getDefaultMetaModelEnvironment(

@@ -358,6 +358,8 @@ export {
   MiroirEnvironmentStoreType,
   MiroirSelfTestConfig,
   miroirSelfTestConfig,
+  MiroirLoadTimingsConfig,
+  miroirLoadTimingsConfig,
   // MiroirCustomQueryParams,
   // miroirCustomQueryParams,
   MiroirFundamentalType,

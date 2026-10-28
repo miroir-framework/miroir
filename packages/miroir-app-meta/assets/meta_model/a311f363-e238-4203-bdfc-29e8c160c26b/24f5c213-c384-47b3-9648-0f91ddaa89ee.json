@@ -1,0 +1,129 @@
+{
+  "uuid": "24f5c213-c384-47b3-9648-0f91ddaa89ee",
+  "parentName": "MiroirTest",
+  "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+  "selfApplication": "9ff432a9-89a1-460b-a263-1672d084a9e0",
+  "branch": "4408382d-daee-41d0-a53d-80a44c0f79e6",
+  "name": "report.pageLoadHistory",
+  "description": "The Meta app's page load Reports on fixed measurements (an initial load, a first report display, a first model page display): the history shows a graph and a list of initial loads, a graph of first report displays and the list of route steps; the details Report shows one step and its files.",
+  "tags": [
+    "integ",
+    "ui",
+    "report"
+  ],
+  "issue": "580",
+  "definition": {
+    "miroirTestType": "miroirTestSuite",
+    "miroirTestLabel": "report.pageLoadHistory",
+    "runTarget": {
+      "applicationUuid": "9ff432a9-89a1-460b-a263-1672d084a9e0",
+      "applicationName": "Meta",
+      "deploymentUuid": "40b74910-4c63-4bd9-8e7d-2bc051342908"
+    },
+    "testConfiguration": "a8dd8a49-97de-426c-beb7-c32d0f1beb26",
+    "testbedInitApplicationParameters": "metaTestbedInitParams",
+    "miroirTests": [
+      {
+        "miroirTestType": "reportTestSuite",
+        "miroirTestLabel": "PageLoadHistory",
+        "report": {
+          "application": "9ff432a9-89a1-460b-a263-1672d084a9e0",
+          "applicationSection": "data",
+          "reportUuid": "02dd2ead-7b8d-4160-99c9-9f4e9a1c051b"
+        },
+        "miroirTests": [
+          {
+            "miroirTestType": "reportTest",
+            "miroirTestLabel": "shows the initial loads and the route steps",
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "the initial load graph",
+                "target": {
+                  "byTestId": "graph-line-initialLoads"
+                },
+                "timeout": 15000
+              },
+              {
+                "step": "expectElement",
+                "label": "the first report display graph",
+                "target": {
+                  "byTestId": "graph-line-reportRoutes"
+                },
+                "timeout": 5000
+              },
+              {
+                "step": "expectElement",
+                "label": "the initial load list",
+                "target": {
+                  "byText": "Initial page loads"
+                },
+                "timeout": 5000
+              },
+              {
+                "step": "expectElement",
+                "label": "the route list",
+                "target": {
+                  "byText": "First display of each page kind"
+                },
+                "timeout": 5000
+              },
+              {
+                "step": "expectElement",
+                "label": "the model page step, in the route list only",
+                "target": {
+                  "byText": "route:model"
+                },
+                "timeout": 5000,
+                "count": 1
+              },
+              {
+                "step": "expectElement",
+                "label": "the initial load step, in the initial load list only",
+                "target": {
+                  "byText": "initialLoad"
+                },
+                "timeout": 5000,
+                "count": 1
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "miroirTestType": "reportTestSuite",
+        "miroirTestLabel": "PageLoadMeasurementDetails",
+        "report": {
+          "application": "9ff432a9-89a1-460b-a263-1672d084a9e0",
+          "applicationSection": "data",
+          "reportUuid": "193c3dea-792d-471a-88a0-546e4b5e81cf",
+          "instanceUuid": "691c8330-7349-467b-9d28-6e06b7e707ec"
+        },
+        "miroirTests": [
+          {
+            "miroirTestType": "reportTest",
+            "miroirTestLabel": "shows the step and its files",
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "the step",
+                "target": {
+                  "byDisplayValue": "route:report"
+                },
+                "timeout": 15000
+              },
+              {
+                "step": "expectElement",
+                "label": "a file fetched during the step",
+                "target": {
+                  "byDisplayValue": "/assets/ReportDisplay-seed.js"
+                },
+                "timeout": 5000
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

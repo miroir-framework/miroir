@@ -150,6 +150,8 @@ export const LocalCacheMonitorSummary: React.FC = () => {
   return (
     <div
       data-testid="localcache-monitor-summary"
+      // #580: polls every second; its changes are not page load activity
+      data-miroir-load-timing-ignore=""
       style={{
         margin: "8px 0",
         padding: "8px 12px",

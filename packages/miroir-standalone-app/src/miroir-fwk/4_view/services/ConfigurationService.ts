@@ -34,6 +34,7 @@ import type { Deployment } from 'miroir-core';
 import { packageName } from '../../../constants.js';
 import { cleanLevel } from '../constants.js';
 import { logStartupError } from 'miroir-react';
+import { loadTimingMark } from '../../../loadTimings/loadTimingBrowser.js';
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ConfigurationService");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
@@ -345,6 +346,8 @@ export function fetchMiroirAndAppConfigurations(
       log.info(
         "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ FETCH CONFIGURATIONS DONE @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
       );
+      // #580: the deployments are loaded in the local cache (the load timing recorder keeps the first mark)
+      loadTimingMark("configurationsLoaded");
 
       // Call success callback if provided
       if (onSuccess) {

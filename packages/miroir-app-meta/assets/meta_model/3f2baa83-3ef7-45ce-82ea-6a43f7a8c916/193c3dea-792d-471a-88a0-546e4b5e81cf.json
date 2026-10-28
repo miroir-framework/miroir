@@ -1,0 +1,35 @@
+{
+  "uuid": "193c3dea-792d-471a-88a0-546e4b5e81cf",
+  "selfApplication": "9ff432a9-89a1-460b-a263-1672d084a9e0",
+  "parentName": "Report",
+  "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+  "conceptLevel": "Model",
+  "name": "PageLoadMeasurementDetails",
+  "defaultLabel": "Page load measurement",
+  "description": "One measured load step, with its milestones and the files fetched during it (#580).",
+  "definition": {
+    "extractorTemplates": {
+      "measurement": {
+        "extractorOrCombinerType": "extractorByPrimaryKey",
+        "parentName": "PageLoadMeasurement",
+        "parentUuid": "0266c0b8-4dc8-4a14-bcef-239a85a5de2d",
+        "instanceUuid": {
+          "transformerType": "getFromParameters",
+          "referenceName": "instanceUuid"
+        }
+      }
+    },
+    "section": {
+      "type": "list",
+      "definition": [
+        {
+          "type": "objectInstanceReportSection",
+          "definition": {
+            "parentUuid": "0266c0b8-4dc8-4a14-bcef-239a85a5de2d",
+            "fetchedDataReference": "measurement"
+          }
+        }
+      ]
+    }
+  }
+}

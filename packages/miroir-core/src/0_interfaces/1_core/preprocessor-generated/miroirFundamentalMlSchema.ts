@@ -17321,6 +17321,26 @@ export const miroirFundamentalMlSchema = {
           }
         }
       },
+      "miroirLoadTimingsConfig": {
+        "type": "object",
+        "definition": {
+          "enabled": {
+            "type": "boolean"
+          },
+          "record": {
+            "type": "boolean",
+            "optional": true
+          },
+          "quietWindowMs": {
+            "type": "number",
+            "optional": true
+          },
+          "maxStepMs": {
+            "type": "number",
+            "optional": true
+          }
+        }
+      },
       "miroirConfigForClientStub": {
         "type": "object",
         "definition": {
@@ -17399,6 +17419,14 @@ export const miroirFundamentalMlSchema = {
             "definition": {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "miroirSelfTestConfig"
+            }
+          },
+          "loadTimings": {
+            "type": "schemaReference",
+            "optional": true,
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "miroirLoadTimingsConfig"
             }
           },
           "features": {
@@ -17718,6 +17746,14 @@ export const miroirFundamentalMlSchema = {
                 "definition": {
                   "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                   "relativePath": "miroirSelfTestConfig"
+                }
+              },
+              "loadTimings": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "miroirLoadTimingsConfig"
                 }
               }
             }

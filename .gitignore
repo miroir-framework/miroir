@@ -86,3 +86,7 @@ test-results/
 !.claude/skills/handoff/
 !.claude/skills/diagnosing-bugs/
 !.claude/skills/codebase-design/
+
+# #580: page load timings recorded in the Meta app depend on the machine and the session; the
+# folder stays tracked (.gitkeep) so that the filesystem store lists the Entity.
+packages/miroir-app-meta/assets/meta_data/0266c0b8-4dc8-4a14-bcef-239a85a5de2d/*.json
