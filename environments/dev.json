@@ -10,7 +10,7 @@
       "https://localhost:3000"
     ]
   },
-  "client": { "mode": "realServer" },
+  "client": { "mode": "realServer","loadTimings": { "enabled": true } },
   "features": { "ai": true, "mcp": true, "agentBackend": "claude", "agentModel": "claude-haiku-4-5-20251001" },
   "logPreset": "catch-all",
   "connections": {

@@ -51,6 +51,7 @@ export function webClientEnvironment({ cwd, env, command, tls }) {
   return {
     name: resolved.name,
     source: resolved.source,
+    files: resolved.files,
     rootApiUrl,
     clientConfig,
     define: { [MIROIR_CLIENT_CONFIG]: JSON.stringify(clientConfig) },

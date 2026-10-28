@@ -42,7 +42,8 @@ function selectedWebClientEnvironment(command, mode) {
     );
   }
   const web = webClientEnvironment({ cwd: __viteDirname, env: process.env, command, tls: certsReady });
-  console.log(`[vite] environment ${web.name} (${web.source}): the web client calls the server at ${web.rootApiUrl}`);
+  console.log(`[vite] environment ${web.name}, selected by ${web.source}, defined by ${web.files.join(" <- ")}`);
+  console.log(`[vite] the web client calls the server at ${web.rootApiUrl}`);
   web.warnings.forEach((warning) => console.warn(`[vite] warning: ${warning}`));
   return web;
 }
