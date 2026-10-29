@@ -142,7 +142,7 @@ async function main() {
     }
     process.exitCode = tour.every((step) => step.visited) ? 0 : 1;
   } finally {
-    stopServer?.();
+    await stopServer?.();
   }
 }
 

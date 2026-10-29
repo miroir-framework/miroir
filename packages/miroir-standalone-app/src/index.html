@@ -5,6 +5,11 @@
     <title>Miroir Standalone App</title>
     <!-- Material Icons font -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <script>
+      // #583: the browser keeps 250 resource timing entries by default; the load timing measurement
+      // needs every file of the page, and the Vite dev server serves hundreds of unbundled modules.
+      try { performance.setResourceTimingBufferSize(10000); } catch (e) {}
+    </script>
     <script type="module" src="/index.tsx"></script>
     <meta name="viewport" content="initial-scale=1, width=device-width" />
     <link rel="icon" type="image/png" href="./assets/miroir-logo.png">

@@ -65,7 +65,7 @@ async function main(options) {
     }
     return exitCode;
   } finally {
-    stopServer?.();
+    await stopServer?.();
   }
 }
 

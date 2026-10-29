@@ -4,11 +4,13 @@
  *
  * `startServer` copies dist/ into the server release and starts it as `npm run run:prod -w
  * miroir-server` does, with authentication off and listening on 127.0.0.1 only, on the selected
- * environment (MIROIR_ENV, as for `npm run miroir-env -- show`). `launchBrowser` opens Chromium
- * through playwright-core.
+ * environment (MIROIR_ENV, as for `npm run miroir-env -- show`). With `devClient` (#583), it starts
+ * the server for its API only and the Vite dev server in front of it, as `npm run dev` does.
+ * `launchBrowser` opens Chromium through playwright-core.
  */
 import { execFileSync, spawn } from "node:child_process";
 import { cpSync, existsSync, mkdirSync, mkdtempSync, openSync, readFileSync, rmSync } from "node:fs";
+import http from "node:http";
 import https from "node:https";
 import { tmpdir } from "node:os";
 import path from "node:path";
@@ -62,47 +64,142 @@ export async function launchBrowser(executablePath, headed) {
 
 /**
  * Starts the server release on the production build, with authentication off and listening on
- * 127.0.0.1 only; returns the function that stops it.
- * @param {{ url: string, name: string }} options `name` names the temporary directory
- * @returns {Promise<() => void>}
+ * 127.0.0.1 only; returns the function that stops it, which resolves once the server exited.
+ *
+ * With `devClient`, the server runs in development mode (it serves its API, not the client: no
+ * production build needed) and the Vite dev server serves the client at `devClient.url`, over HTTPS
+ * with the server's certificate, so the client calls the server over HTTPS.
+ * @param {{ url: string, name: string, devClient?: { url: string } }} options `url` is the server's,
+ *   `name` names the temporary directory
+ * @returns {Promise<() => Promise<void>>}
  */
-export async function startServer({ url, name }) {
+export async function startServer({ url, name, devClient }) {
   const entry = path.join(serverDir, "release/index.js");
   if (!existsSync(entry)) {
     fail("no server release: run npm run build:release -w miroir-server");
   }
-  if (await answers(url)) {
-    fail(`a server already answers at ${url}: stop it, or run without --serve to use it`);
+  for (const used of [url, devClient?.url].filter(Boolean)) {
+    if (await answers(used)) {
+      fail(`a server already answers at ${used}: stop it, or run without --serve to use it`);
+    }
   }
-  cpSync(distDir, path.join(serverDir, "release/client"), { recursive: true });
+  if (!devClient) {
+    cpSync(distDir, path.join(serverDir, "release/client"), { recursive: true });
+  }
   const work = mkdtempSync(path.join(tmpdir(), `miroir-${name}-`));
   const repoCerts = ["localhost.pem", "localhost-key.pem"].every((file) => existsSync(path.join(root, "certs", file)));
   const certsDir = repoCerts ? path.join(root, "certs") : selfSignedCertificate(work);
-  const log = path.join(work, "server.log");
-  const logFd = openSync(log, "w");
   // Authentication is off, so the server listens on 127.0.0.1 only (scripts/loopback-only.mjs).
   const loopbackOnly = path.join(packageDir, "scripts/loopback-only.mjs");
-  const server = spawn(process.execPath, ["--import", pathToFileURL(loopbackOnly).href, "release/index.js", "--certsdir", certsDir, "--disable-auth"], {
-    cwd: serverDir,
-    env: { ...process.env, NODE_ENV: "production" },
-    stdio: ["ignore", logFd, logFd],
-  });
-  let exited = false;
-  server.on("exit", () => (exited = true));
-  const stop = () => {
-    server.kill();
-    rmSync(work, { recursive: true, force: true });
+  const children = [];
+  let stopped;
+  const stop = () =>
+    (stopped ??= (async () => {
+      process.off("SIGINT", onSignal).off("SIGTERM", onSignal);
+      // the dev server first: it proxies to the server
+      for (const child of [...children].reverse()) {
+        await child.stop();
+      }
+      rmSync(work, { recursive: true, force: true });
+    })());
+  // A caller killed (Ctrl-C, a test's timeout) does not reach its finally: stop the servers here.
+  const onSignal = async (signal) => {
+    await stop();
+    process.exit(signal === "SIGINT" ? 130 : 143);
   };
+  process.on("SIGINT", onSignal).on("SIGTERM", onSignal);
+  const server = startProcess({
+    args: ["--import", pathToFileURL(loopbackOnly).href, "release/index.js", "--certsdir", certsDir, "--disable-auth"],
+    cwd: serverDir,
+    // development: the server does not look for a client of its own (miroir-server/src/server.ts)
+    env: { ...process.env, NODE_ENV: devClient ? "development" : "production" },
+    log: path.join(work, "server.log"),
+  });
+  children.push(server);
+  await waitUntilAnswers(url, server, stop, "the server");
+  console.log(
+    `  server started at ${url} (${devClient ? "development mode, API only" : "production mode"}, authentication off, 127.0.0.1 only)`,
+  );
+  if (devClient) {
+    const vite = startProcess({
+      // as the package's build script runs Vite; without --host, Vite listens on localhost only
+      args: [
+        "--max-old-space-size=8192",
+        path.join(root, "node_modules/vite/bin/vite.js"),
+        "--port",
+        defaultedPort(devClient.url),
+        "--strictPort",
+      ],
+      cwd: packageDir,
+      env: viteDevEnv(certsDir),
+      log: path.join(work, "vite.log"),
+    });
+    children.push(vite);
+    await waitUntilAnswers(devClient.url, vite, stop, "the Vite dev server");
+    console.log(`  Vite dev server started at ${devClient.url}`);
+  }
+  return stop;
+}
+
+/**
+ * The environment of the Vite dev server: the caller's, without what a test run sets (VITE_TEST_MODE
+ * would reach the client through import.meta.env and turn the load timing measurement off), with
+ * the server's certificate.
+ */
+function viteDevEnv(certsDir) {
+  const env = Object.fromEntries(
+    Object.entries(process.env).filter(
+      ([key]) => !key.startsWith("VITE_") && key !== "MIROIR_TEST_PROFILE" && key !== "MIROIR_TEST_STORAGE",
+    ),
+  );
+  return {
+    ...env,
+    NODE_ENV: "development",
+    MIROIR_TLS_CERT: path.join(certsDir, "localhost.pem"),
+    MIROIR_TLS_KEY: path.join(certsDir, "localhost-key.pem"),
+  };
+}
+
+/** Starts `node <args>`, its output in `log`; `stop` resolves once the process exited. */
+function startProcess({ args, cwd, env, log }) {
+  const logFd = openSync(log, "w");
+  const child = spawn(process.execPath, args, { cwd, env, stdio: ["ignore", logFd, logFd] });
+  const exited = new Promise((resolve) => child.on("exit", resolve));
+  let hasExited = false;
+  exited.then(() => (hasExited = true));
+  return {
+    log,
+    hasExited: () => hasExited,
+    stop: async () => {
+      if (hasExited) {
+        return;
+      }
+      child.kill();
+      const timeout = new Promise((resolve) => setTimeout(resolve, 10_000).unref());
+      if ((await Promise.race([exited.then(() => "exited"), timeout])) !== "exited") {
+        child.kill("SIGKILL");
+        await exited;
+      }
+    },
+  };
+}
+
+/** The port of `url`, the scheme's default one when it names none. */
+function defaultedPort(url) {
+  const { port, protocol } = new URL(url);
+  return port || (protocol === "https:" ? "443" : "80");
+}
+
+/** Waits until `url` answers; on a failure, stops everything and fails with the end of the log. */
+async function waitUntilAnswers(url, child, stop, what) {
   for (const start = Date.now(); !(await answers(url)); ) {
-    if (exited || Date.now() - start > 120_000) {
-      const tail = readFileSync(log, "utf-8").split("\n").slice(-20).join("\n");
-      stop();
-      fail(`the server did not start at ${url}; end of its log:\n${tail}`);
+    if (child.hasExited() || Date.now() - start > 120_000) {
+      const tail = readFileSync(child.log, "utf-8").split("\n").slice(-20).join("\n");
+      await stop();
+      fail(`${what} did not start at ${url}; end of its log:\n${tail}`);
     }
     await new Promise((resolve) => setTimeout(resolve, 1000));
   }
-  console.log(`  server started at ${url} (production mode, authentication off, 127.0.0.1 only)`);
-  return stop;
 }
 
 /** @returns {string} a directory holding a one-day self-signed certificate for localhost */
@@ -118,10 +215,11 @@ function selfSignedCertificate(work) {
   return dir;
 }
 
-/** @returns {Promise<boolean>} whether anything answers HTTPS at `url` */
+/** @returns {Promise<boolean>} whether anything answers at `url` (http or https) */
 function answers(url) {
+  const client = url.startsWith("https:") ? https : http;
   return new Promise((resolve) => {
-    const request = https.get(url, { rejectUnauthorized: false, timeout: 5000 }, (response) => {
+    const request = client.get(url, { rejectUnauthorized: false, timeout: 5000 }, (response) => {
       response.resume();
       resolve(true);
     });

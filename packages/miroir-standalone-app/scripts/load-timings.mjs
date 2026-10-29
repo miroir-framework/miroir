@@ -7,10 +7,17 @@
  *
  * Run, after `npm run build -w miroir-standalone-app` and `npm run build:release -w miroir-server`:
  *   npm run loadTimings -w miroir-standalone-app -- --serve
+ * or, on the Vite dev client (#583), after `npm run build:release -w miroir-server`:
+ *   npm run loadTimings -w miroir-standalone-app -- --dev --serve
  * Options:
  *   --serve              copy dist/ into the server release, start it on https://localhost:3080 (see
- *                        serveBuiltClient.mjs) and stop it at the end
- *   --url <url>          the app, served by a server already running (default https://localhost:3080)
+ *                        serveBuiltClient.mjs) and stop it at the end; with --dev, start the server
+ *                        for its API only and the Vite dev server on https://localhost:5173
+ *   --dev                measure the Vite dev client (unbundled modules, React's development build)
+ *                        instead of the production build; the whole tour runs once unmeasured first,
+ *                        so that Vite has transformed the modules a developer's reload finds ready
+ *   --url <url>          the app, served by a server already running (default https://localhost:3080,
+ *                        with --dev http(s)://localhost:5173, https when Vite has a certificate)
  *   --browser <path>     Chromium or Chrome executable (default: env MIROIR_TOUR_BROWSER, then the
  *                        browser playwright-core installs, then the installed Chrome)
  *   --meta-folder <dir>  where the server's environment stores PageLoadMeasurement instances
@@ -19,8 +26,9 @@
  *   --clean              remove the instances this run recorded, once checked
  *   --out <file>         also write the steps as JSON to this file
  *   --headed             show the browser
- * Exits 0 when every step was measured and settled (and recorded, when checked), 1 otherwise,
- * 2 when the tour cannot run.
+ * Prints the build mode and the client the page measured first. Exits 0 when every step was measured
+ * and settled, of the expected build mode (and recorded, when checked), 1 otherwise, 2 when the tour
+ * cannot run.
  */
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
@@ -30,6 +38,9 @@ import { fail, launchBrowser, requireProductionBuild, root, ScriptError, startSe
 
 const APP = "miroir-standalone-app";
 const STEP_TIMEOUT = 60_000;
+const SERVER_URL = "https://localhost:3080";
+/** Time limit of the whole warm-up tour (--dev), within the 600 s the integration test gives the tour. */
+const WARM_UP_TIMEOUT = 240_000;
 const ENTITY_PAGE_LOAD_MEASUREMENT = "0266c0b8-4dc8-4a14-bcef-239a85a5de2d";
 
 const LIBRARY_BOOKS_REPORT =
@@ -46,7 +57,8 @@ const TOUR = [
 const { values: options } = parseArgs({
   options: {
     serve: { type: "boolean", default: false },
-    url: { type: "string", default: "https://localhost:3080" },
+    dev: { type: "boolean", default: false },
+    url: { type: "string" },
     browser: { type: "string", default: process.env.MIROIR_TOUR_BROWSER },
     "meta-folder": {
       type: "string",
@@ -57,6 +69,9 @@ const { values: options } = parseArgs({
     headed: { type: "boolean", default: false },
   },
 });
+
+const url = options.url ?? (options.dev ? `${viteHasCertificate() ? "https" : "http"}://localhost:5173` : SERVER_URL);
+const expectedBuildMode = options.dev ? "development" : "production";
 
 try {
   process.exitCode = await main();
@@ -69,8 +84,12 @@ try {
 }
 
 async function main() {
-  requireProductionBuild(APP);
-  const stopServer = options.serve ? await startServer({ url: options.url, name: "load-timings" }) : undefined;
+  if (!options.dev) {
+    requireProductionBuild(APP);
+  }
+  const stopServer = options.serve
+    ? await startServer({ name: "load-timings", ...(options.dev ? { url: SERVER_URL, devClient: { url } } : { url }) })
+    : undefined;
   try {
     const { steps, recorded } = await runTour();
     for (const line of stepLines(steps)) {
@@ -84,16 +103,33 @@ async function main() {
     for (const { step } of missing) {
       console.error(`load-timings: step ${step} was not measured, or did not settle`);
     }
-    return missing.length === 0 && recorded ? 0 : 1;
+    const otherMode = steps.filter((measured) => measured.buildMode !== expectedBuildMode);
+    for (const measured of otherMode) {
+      console.error(`load-timings: step ${measured.step} measured a ${measured.buildMode} build, not a ${expectedBuildMode} one`);
+    }
+    return missing.length === 0 && otherMode.length === 0 && recorded ? 0 : 1;
   } finally {
-    stopServer?.();
+    await stopServer?.();
   }
+}
+
+/** Whether the Vite dev server serves HTTPS: with --serve it gets the server's certificate, else as vite.config.js decides. */
+function viteHasCertificate() {
+  if (options.serve) {
+    return true;
+  }
+  const cert = process.env.MIROIR_TLS_CERT ?? path.join(root, "certs/localhost.pem");
+  const key = process.env.MIROIR_TLS_KEY ?? path.join(root, "certs/localhost-key.pem");
+  return existsSync(cert) && existsSync(key);
 }
 
 /** @returns {Promise<{ steps: any[], recorded: boolean }>} the steps the page measured, and whether they were recorded */
 async function runTour() {
   const browser = await launchBrowser(options.browser, options.headed);
   try {
+    if (options.dev) {
+      await warmUp(browser);
+    }
     const context = await browser.newContext({ ignoreHTTPSErrors: true, viewport: { width: 1400, height: 900 } });
     const page = await context.newPage();
     // The recorder's own console lines: a failed write says why there.
@@ -104,24 +140,81 @@ async function runTour() {
     });
     const [first, ...others] = TOUR;
     await page
-      .goto(`${options.url}${first.target}&loadTimings=on`)
-      .catch((error) => fail(`cannot open ${options.url}: ${String(error).split("\n")[0]}`));
+      .goto(`${url}${first.target}&loadTimings=on`)
+      .catch((error) => fail(`cannot open ${url}: ${String(error).split("\n")[0]}`));
     await waitForStep(page, first.step);
     for (const { step, target } of others) {
-      // Client-side navigation, as the app's own links do: no new page load.
-      await page.evaluate((destination) => {
-        window.history.pushState({}, "", destination);
-        window.dispatchEvent(new PopStateEvent("popstate"));
-      }, target);
+      await navigateInApp(page, target);
       await waitForStep(page, step);
     }
     const steps = await page.evaluate(() => window.__miroirLoadTimings ?? []);
+    if (steps.length > 0) {
+      console.log(`build mode: ${steps[0].buildMode}, client: ${steps[0].client} (${url})`);
+    }
     // The page writes its steps once it is idle: keep it open until they are recorded.
     const recorded = await checkRecorded(steps);
     return { steps, recorded };
   } finally {
     await browser.close();
   }
+}
+
+/** Client-side navigation, as the app's own links do: no new page load. */
+async function navigateInApp(page, target) {
+  await page.evaluate((destination) => {
+    window.history.pushState({}, "", destination);
+    window.dispatchEvent(new PopStateEvent("popstate"));
+  }, target);
+}
+
+/**
+ * The tour once, unmeasured (`loadTimings=off`: the dev environment turns the measurement on), in a
+ * context of its own: Vite transforms each module at its first request, and its dependency optimizer
+ * may reload the page when a lazy page brings a new dependency. The measured run then finds the
+ * modules transformed, as a developer's reload does, in a fresh browser cache.
+ */
+async function warmUp(browser) {
+  const context = await browser.newContext({ ignoreHTTPSErrors: true, viewport: { width: 1400, height: 900 } });
+  try {
+    const page = await context.newPage();
+    const deadline = Date.now() + WARM_UP_TIMEOUT;
+    const [first, ...others] = TOUR;
+    await page
+      .goto(`${url}${first.target}&loadTimings=off`, { timeout: WARM_UP_TIMEOUT })
+      .catch((error) => fail(`cannot open ${url}: ${String(error).split("\n")[0]}`));
+    await waitUntilQuiet(page, deadline);
+    for (const { target } of others) {
+      await navigateInApp(page, target).catch(() => undefined);
+      await waitUntilQuiet(page, deadline);
+    }
+    console.log("  warm-up: the tour ran once, unmeasured");
+  } finally {
+    await context.close();
+  }
+}
+
+/** Waits until no loading spinner shows and no file was fetched for 2 s; survives a page reload. */
+async function waitUntilQuiet(page, deadline) {
+  let last = -1;
+  let quietSince = Date.now();
+  while (Date.now() < deadline) {
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    const state = await page
+      .evaluate(() => ({
+        loading: document.querySelector("[data-miroir-loading]") !== null,
+        rendered: (document.getElementById("root")?.childElementCount ?? 0) > 0,
+        resources: performance.getEntriesByType("resource").length,
+      }))
+      .catch(() => undefined); // the page is reloading
+    if (!state || state.loading || !state.rendered || state.resources !== last) {
+      last = state?.resources ?? -1;
+      quietSince = Date.now();
+    } else if (Date.now() - quietSince >= 2000) {
+      return;
+    }
+  }
+  // measuring Vite's first transforms would record a misleading development row
+  fail(`the warm-up tour did not settle within ${WARM_UP_TIMEOUT / 1000}s`);
 }
 
 async function waitForStep(page, step) {

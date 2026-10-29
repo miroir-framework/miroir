@@ -30,6 +30,8 @@ Each step has milestones (initial load: `responseEnd`, `domContentLoaded`, `entr
 
 Every finished step is printed in the browser console (`[miroir-load-timing]`) and kept on `window.__miroirLoadTimings`. When the client configuration lists the Meta deployment (`dev` installs it), the steps are also recorded as `PageLoadMeasurement` instances of the Meta app, shown by the `Page load history` Report of the Meta menu.
 
+A development build and a production build are not comparable, nor are the web page and Electron (#583). The history draws one initial load graph and one first report display graph per pair of build mode (`production`, `development`) and client (`webApp`, `electron`); a pair without rows shows "No data available". Its lists show every row with its build mode and client, and the details of a step show its environment too. The graphs select their rows on `series`, a virtual attribute of `PageLoadMeasurement` (`<step>/<buildMode>/<client>`, computed, not stored). It is computed by the client's local cache, which the Report uses, and in SQL; a query run by a filesystem, IndexedDB or MongoDB store itself (`runBoxedQueryAction` on the storage) does not compute it, so a filter on it there selects nothing.
+
 Recording does not run while a step is measured:
 
 - nothing is written while a step is open;
@@ -50,7 +52,23 @@ On demand, after `npm run build -w miroir-standalone-app` and `npm run build:rel
 npm run loadTimings -w miroir-standalone-app -- --serve
 ```
 
-It opens the home page with `loadTimings=on`, waits for the initial load, opens the Library Books report and the model page inside the app, prints each step with its milestones and files, and waits for the steps to be recorded in the Meta app. `--clean` removes the instances it recorded, `--out <file>` writes the steps as JSON, `--meta-folder none` skips the recording check. The same options as the coverage tour apply (`--url`, `--browser`, `--headed`). `tests/0_build/loadTimingsTour.integ.test.ts` runs it when `MIROIR_LOAD_TIMINGS_TOUR=1`.
+It opens the home page with `loadTimings=on`, waits for the initial load, opens the Library Books report and the model page inside the app, prints the build mode and client it measured, then each step with its milestones and files, and waits for the steps to be recorded in the Meta app. `--clean` removes the instances it recorded, `--out <file>` writes the steps as JSON, `--meta-folder none` skips the recording check. The same options as the coverage tour apply (`--url`, `--browser`, `--headed`). It fails when a step is missing, did not settle, or measured another build mode than expected.
+
+### Dev mode
+
+The Vite dev client loads hundreds of unbundled modules, transformed on request, with React's development build. To measure it, after `npm run build:release -w miroir-server` (no production build needed):
+
+```bash
+npm run loadTimings -w miroir-standalone-app -- --dev --serve
+```
+
+`--serve` checks that ports 3080 and 5173 are free, starts the server release for its API only (development mode), then the Vite dev server at https://localhost:5173 with the server's certificate, and stops both at the end. Without `--serve`, `--dev` uses a Vite dev server and a server already running (`npm run dev -w miroir-standalone-app`), at `http(s)://localhost:5173` (https when Vite has a certificate, as `vite.config.js` decides) or `--url`.
+
+Before the measured run, the tour runs once with `loadTimings=off` in a browser context of its own: Vite has then transformed the modules, as when a developer reloads the page, and its dependency optimizer has found the dependencies of the lazy pages. The measured run starts with an empty browser cache, as the production tour does.
+
+`index.html` raises the browser's resource timing buffer (250 entries by default) before the entry module loads, so a dev initial load lists all its files.
+
+`tests/0_build/loadTimingsTour.integ.test.ts` runs the production tour when `MIROIR_LOAD_TIMINGS_TOUR=1` and the dev tour when `MIROIR_LOAD_TIMINGS_TOUR_DEV=1`, one per run (both use port 3080).
 
 ## Sources
 
@@ -61,4 +79,5 @@ It opens the home page with `loadTimings=on`, waits for the initial load, opens 
 | Switch | `packages/miroir-standalone-app/src/loadTimings/loadTimingSwitch.ts` |
 | Writer | `packages/miroir-standalone-app/src/loadTimings/loadTimingWriter.ts` |
 | Entity, Reports | `packages/miroir-app-meta/assets/meta_model/` (`PageLoadMeasurement` `0266c0b8-4dc8-4a14-bcef-239a85a5de2d`, `PageLoadHistory` `02dd2ead-7b8d-4160-99c9-9f4e9a1c051b`) |
-| Analysis and plan | `code-helpers/features/580-FEATURE-page-load-timings/` |
+| Tour, servers | `packages/miroir-standalone-app/scripts/load-timings.mjs`, `serveBuiltClient.mjs` |
+| Analysis and plan | `code-helpers/features/580-FEATURE-page-load-timings/`, `code-helpers/features/583-FEATURE-page-load-history-by-build-mode/` |

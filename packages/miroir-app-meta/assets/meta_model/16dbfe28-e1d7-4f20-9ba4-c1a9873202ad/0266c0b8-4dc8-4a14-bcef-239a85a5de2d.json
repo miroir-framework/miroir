@@ -17,7 +17,8 @@
     "chunkCount",
     "chunkTransferBytes",
     "dataRequestCount",
-    "buildMode"
+    "buildMode",
+    "client"
   ],
   "cache": {
     "cacheAllInstancesOnRefresh": false
@@ -247,6 +248,26 @@
             "id": 22,
             "defaultLabel": "Miroir version",
             "description": "Version of miroir-standalone-app."
+          }
+        }
+      },
+      "series": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 23,
+            "defaultLabel": "Series",
+            "description": "<step>/<buildMode>/<client>, computed (not stored): the page load history draws one graph per series (#583).",
+            "display": {
+              "editable": false,
+              "modifiable": false
+            },
+            "virtualAttribute": {
+              "interpolation": "runtime",
+              "transformerType": "mustacheStringTemplate",
+              "definition": "{{{step}}}/{{{buildMode}}}/{{{client}}}"
+            }
           }
         }
       }
