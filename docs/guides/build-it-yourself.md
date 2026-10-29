@@ -147,10 +147,13 @@ If you modified schema definitions under `packages/miroir-app-miroir/assets`, us
 
 ## 4. Server Parameters
 
-The server requires 3 arguments to start:
-- the running mode (`development` or `production`)
-- the path to a folder that contains TLS certificates, neede to enable HTTPS (we strongly recommend using HTTPS)
-- the path to a folder containing **bootstrap** filesystem deployments of the `admin`and `miroir` applications
+The server needs 3 things to start, all with working defaults:
+
+- the running mode, from `NODE_ENV`: `development` is development mode, any other value (or none) is production mode ([Development or production](#development-or-production));
+- a folder with TLS certificates, needed for HTTPS (strongly recommended): `certs/` by default, see step 5;
+- the **bootstrap** filesystem deployments of the `admin` and `miroir` applications: taken from the selected environment (step 6), or from a configuration file outside the repository.
+
+The command-line flags that override these defaults are listed in step 7.
 
 ## 5. Generate TLS certificates (optional but recommended)
 
@@ -249,7 +252,27 @@ set NODE_EXTRA_CA_CERTS=<path-from-mkcert-CAROOT>\rootCA.pem
 node packages\miroir-server\release\index.js [--config <config>] [--certsdir <dir>] [--cert <file>] [--key <file>]
 ```
 
-The server is accessible at **https://localhost:3080** (or http://localhost:3080 if you skipped certificate generation).
+The server is accessible at **https://localhost:3080** (or http://localhost:3080 if you skipped certificate generation). In production mode it also serves the web client there: open that URL in a browser.
+
+### Development or production
+
+The server reads its mode from `NODE_ENV`: `development` is development mode, any other value, or no value, is production mode.
+
+| What | Production | Development |
+|---|---|---|
+| Start the server | `NODE_ENV=production node packages/miroir-server/release/index.js` | `NODE_ENV=development node packages/miroir-server/release/index.js` |
+| Web client | served by the server, from `packages/miroir-server/release/client/` | Vite dev server: `npm run dev -w miroir-standalone-app` |
+| Open | <https://localhost:3080> | <http://localhost:5173> |
+| After changing client code | rebuild (below), then restart the server | reloaded by Vite |
+
+In production mode the server stops at startup if `release/client/index.html` is missing. `./build-all.sh` builds the client before the server binary, so it is in place after step 3. After changing client code, rebuild in this order:
+
+```sh
+npm run build -w miroir-standalone-app    # production build -> packages/miroir-standalone-app/dist/
+npm run build:release -w miroir-server    # server binary, then copies dist/ to release/client/
+```
+
+`build:release` copies the client only if `miroir-standalone-app/dist/` exists. If it doesn't, the script prints a warning and the release has no web client. To refresh only the client in an existing release, run `npm run copy:client -w miroir-server` instead of `build:release`.
 
 To persist named API secrets (Spotify, AI keys, per-user OAuth refresh tokens), [generate a wrapping key](../reference/authentication.md#generate-the-wrapping-key) and import once:
 
