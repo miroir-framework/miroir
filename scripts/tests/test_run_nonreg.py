@@ -910,6 +910,20 @@ def test_serial_run_runs_steps_one_after_the_other_without_a_worker(tmp_path: Pa
     assert "jobs" not in summary
 
 
+def test_steps_write_failed_run_exports_into_the_snapshot(tmp_path: Path):
+    seen = tmp_path / "export-dir.txt"
+    code = f"import os; open({str(seen)!r}, 'w').write(os.environ.get('MIROIR_RUN_EXPORT_DIR', '-'))"
+    manifest = write_manifest(
+        tmp_path,
+        [{"id": "a", "tier": "unit", "title": "a", "requires": "none", "argv": ["python", "-c", code]}],
+    )
+
+    exit_code, _, snap_dir = run_nonreg(tmp_path, manifest, "--tier", "unit")
+
+    assert exit_code == 0
+    assert Path(seen.read_text(encoding="utf-8")) == snap_dir / "run-exports"
+
+
 # #477 Slice 4: --jobs N runs steps and shared groups at the same time, one worker per job.
 def timed_step(step_id: str, log: Path, *, sleep: float = 1.0, exit_code: int = 0) -> dict:
     code = (

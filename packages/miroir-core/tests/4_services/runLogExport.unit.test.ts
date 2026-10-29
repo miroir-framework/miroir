@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it } from "vitest";
+import type { TestResult } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { MiroirActivity } from "../../src/0_interfaces/3_controllers/MiroirActivityTrackerInterface";
 import type { MiroirEvent } from "../../src/3_controllers/MiroirEventService";
 import { MiroirActivityTracker } from "../../src/3_controllers/MiroirActivityTracker";
@@ -10,6 +11,7 @@ import {
   formatActivityRunToken,
   suggestedFailedRunExportFilename,
   uniqueRunIds,
+  type RunExportBundle,
 } from "../../src/4_services/runLogExport";
 
 function activity(partial: Partial<MiroirActivity> & Pick<MiroirActivity, "activityId">): MiroirActivity {
@@ -154,6 +156,66 @@ describe("failed-leaf run export bundle", () => {
       },
     });
     expect(exported).toEqual(["K7X2NQ"]);
+  });
+
+  it("exportFailedRunIfNeeded keeps the failed leaf and its error when given a one-shot iterator", async () => {
+    const failed = activity({
+      activityId: "t1",
+      activityType: "test",
+      actionType: "test",
+      test: "WP1 tracer bullet",
+      runId: "K7X2NQ",
+      status: "error",
+      testResult: "error",
+      error: "WP1 tracer bullet failed: expected 'error' to be 'ok'",
+    });
+    const activityIndex = new Map<string, MiroirActivity>([[failed.activityId, failed]]);
+    const bundles: RunExportBundle[] = [];
+    await exportFailedRunIfNeeded({
+      runId: "K7X2NQ",
+      activities: activityIndex.values(),
+      onFailedRunExport: (bundle) => {
+        bundles.push(bundle);
+      },
+    });
+    expect(bundles).toHaveLength(1);
+    expect(bundles[0].activities).toHaveLength(1);
+    expect(bundles[0].activities[0].error).toBe(
+      "WP1 tracer bullet failed: expected 'error' to be 'ok'",
+    );
+    expect(bundles[0]).not.toHaveProperty("testResult");
+  });
+
+  it("exportFailedRunIfNeeded carries the failed leaf's assertion results", async () => {
+    const failed = activity({
+      activityId: "t1",
+      activityType: "test",
+      actionType: "test",
+      runId: "K7X2NQ",
+      status: "error",
+      testResult: "error",
+    });
+    const testResult: TestResult = {
+      testLabel: "re-sync",
+      testResult: "error",
+      testAssertionsResults: {
+        resync: {
+          assertionName: "resync",
+          assertionResult: "error",
+          assertionActualValue: 'expected {"type":"string"} actual {"type":"string","optional":true}',
+        },
+      },
+    };
+    const bundles: RunExportBundle[] = [];
+    await exportFailedRunIfNeeded({
+      runId: "K7X2NQ",
+      activities: [failed],
+      testResult: () => testResult,
+      onFailedRunExport: (bundle) => {
+        bundles.push(bundle);
+      },
+    });
+    expect(bundles[0].testResult).toEqual(testResult);
   });
 });
 

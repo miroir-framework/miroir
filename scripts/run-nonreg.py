@@ -54,6 +54,8 @@ LOCAL_CACHE_ENV = "MIROIR_TEST_LOCAL_CACHE"
 # its steps in MIROIR_TEST_WORKER, and a test environment then keeps its state in
 # `.miroir/<environment>@<worker>` (miroir-env `environmentStateName`), so jobs do not share stores.
 WORKER_ENV = "MIROIR_TEST_WORKER"
+# Read by packages/miroir-standalone-app/tests/helpers/writeFailedRunExport.ts.
+RUN_EXPORT_DIR_ENV = "MIROIR_RUN_EXPORT_DIR"
 DEFAULT_JOBS = 4
 STATE_ROOT_DIRNAME = ".miroir"
 
@@ -315,13 +317,16 @@ def spawn(argv: list[str], env: dict[str, str] | None) -> subprocess.CompletedPr
     )
 
 
-def step_env(snap_dir: Path, step_id: str, timings: bool, worker: str | None) -> dict[str, str] | None:
-    """Env for one step: the timing profile (#318) and the job's worker (#477), else the runner's own."""
-    if not timings and worker is None:
-        return None
+RUN_EXPORTS_DIRNAME = "run-exports"
+
+
+def step_env(snap_dir: Path, step_id: str, timings: bool, worker: str | None) -> dict[str, str]:
+    """Env for one step: the timing profile (#318), the job's worker (#477), and the snapshot's
+    folder for failed MiroirTest run exports (`miroir-run-{runId}-error.json`)."""
     env = timing_env(snap_dir, step_id) if timings else dict(os.environ)
     if worker is not None:
         env[WORKER_ENV] = worker
+    env[RUN_EXPORT_DIR_ENV] = str(snap_dir / RUN_EXPORTS_DIRNAME)
     return env
 
 

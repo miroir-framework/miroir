@@ -375,7 +375,7 @@ That title is the **leaf**, not the logger context. Prefer `runId` when dumps ar
 
 ### 7.1 Grep recipes
 
-Copy `runId` from `RUN … START`, from any `#??????.sN.#` prefix (six Crockford-base32 characters, no `I L O U`), or from the Events timeline chip (same `#runId.spanId>` / `<` tokens). A failed CLI leaf also writes `miroir-run-{runId}-error.json` (`MIROIR_RUN_EXPORT_DIR` or cwd).
+Copy `runId` from `RUN … START`, from any `#??????.sN.#` prefix (six Crockford-base32 characters, no `I L O U`), or from the Events timeline chip (same `#runId.spanId>` / `<` tokens). A failed CLI leaf also writes `miroir-run-{runId}-error.json` to `MIROIR_RUN_EXPORT_DIR`, else `test-results/run-exports/` (a nonreg run sets it to `test-results/nonreg/<snapshot>/run-exports/`). The bundle lists the run's activities: the failed leaf's `error` holds the assertion message.
 
 **Log presets:** `catch-all` (quiet default; hop lines still visible) for orientation, and `scope-query` for query-path payload dumps at DEBUG. See [testing.md — Logger config options](../../reference/testing.md#logger-config-options).
 

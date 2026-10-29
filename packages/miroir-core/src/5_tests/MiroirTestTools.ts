@@ -478,10 +478,12 @@ export const runMiroirTests: RunMiroirTests = {
             )
           : undefined;
     let runId: string | undefined;
+    let leafTestPath: TestAssertionPath | undefined;
     try {
       await miroirActivityTracker.trackTest(label, parentTrackingId, async (nestedId) => {
         runId = LoggerGlobalContext.getRunId();
         await miroirActivityTracker.trackTestAssertion(label, nestedId, async (assertionId) => {
+          leafTestPath = [...miroirActivityTracker.getCurrentTestAssertionPath()];
           if (excludedMessage !== undefined) {
             const assertionPath =
               testAssertionPath ?? miroirActivityTracker.getCurrentTestAssertionPath();
@@ -519,6 +521,13 @@ export const runMiroirTests: RunMiroirTests = {
         runId,
         activities: miroirActivityTracker.getActivityIndex().values(),
         events: () => MiroirLoggerFactory.getStartedEventService()?.getAllEvents(),
+        testResult: () => {
+          try {
+            return leafTestPath ? miroirActivityTracker.getTestResult(leafTestPath) : undefined;
+          } catch {
+            return undefined; // no assertion was recorded before the failure
+          }
+        },
         onFailedRunExport: executionOptions?.onFailedRunExport,
       });
     }

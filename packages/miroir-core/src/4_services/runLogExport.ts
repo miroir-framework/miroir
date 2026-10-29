@@ -1,3 +1,4 @@
+import type { TestResult } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { MiroirActivity } from "../0_interfaces/3_controllers/MiroirActivityTrackerInterface";
 import type { MiroirEvent } from "../3_controllers/MiroirEventService";
 import { formatRunLogPrefix, type RunLogDir } from "./LoggerContext";
@@ -34,6 +35,8 @@ export type RunExportBundle = {
   timestamp: string;
   activities: RunExportActivity[];
   events: RunExportEvent[];
+  /** The failed leaf's assertion results: `assertionActualValue` says what was expected and found. */
+  testResult?: TestResult;
 };
 
 export function activitySpanDirection(status: MiroirActivity["status"]): RunLogDir {
@@ -76,19 +79,24 @@ export async function exportFailedRunIfNeeded(params: {
   activities: Iterable<MiroirActivity>;
   /** A function is only called when a failed run is actually exported. */
   events?: Iterable<MiroirEvent> | (() => Iterable<MiroirEvent> | undefined);
+  /** Only called when a failed run is actually exported. */
+  testResult?: () => TestResult | undefined;
   onFailedRunExport?: (bundle: RunExportBundle) => void | Promise<void>;
 }): Promise<void> {
   if (!params.runId || !params.onFailedRunExport) {
     return;
   }
-  if (!failedLeafActivityForRun(params.activities, params.runId)) {
+  // Read twice below: a one-shot iterator (e.g. Map.values()) would leave the bundle empty.
+  const activities = [...params.activities];
+  if (!failedLeafActivityForRun(activities, params.runId)) {
     return;
   }
   await params.onFailedRunExport(
     buildRunExportBundle({
       runId: params.runId,
-      activities: params.activities,
+      activities,
       events: typeof params.events === "function" ? params.events() : params.events,
+      testResult: params.testResult?.(),
     }),
   );
 }
@@ -104,6 +112,7 @@ export function buildRunExportBundle(params: {
   runId: string;
   activities: Iterable<MiroirActivity>;
   events?: Iterable<MiroirEvent>;
+  testResult?: TestResult;
   timestamp?: string;
 }): RunExportBundle {
   const activities = collectActivitiesForRun(params.activities, params.runId);
@@ -140,5 +149,6 @@ export function buildRunExportBundle(params: {
       error: activity.error,
     })),
     events,
+    ...(params.testResult ? { testResult: params.testResult } : {}),
   };
 }

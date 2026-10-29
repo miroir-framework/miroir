@@ -1,8 +1,10 @@
+import { existsSync } from "node:fs";
 import { mkdtemp, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { dirname, join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
-import { writeFailedRunExportFile } from "./writeFailedRunExport.js";
+import { defaultRunExportDirectory, writeFailedRunExportFile } from "./writeFailedRunExport.js";
 
 describe("writeFailedRunExportFile", () => {
   it("writes miroir-run-{runId}-error.json", async () => {
@@ -23,5 +25,11 @@ describe("writeFailedRunExportFile", () => {
     } finally {
       await rm(directory, { recursive: true, force: true });
     }
+  });
+
+  it("defaults to the gitignored test-results/run-exports at the repo root", () => {
+    const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../../../..");
+    expect(defaultRunExportDirectory).toBe(join(repoRoot, "test-results", "run-exports"));
+    expect(existsSync(join(repoRoot, "package.json"))).toBe(true);
   });
 });
