@@ -6,12 +6,12 @@ import {
   entityMiroirRight,
 } from "miroir-app-admin";
 
-import type { DomainControllerInterface } from "miroir-core";
+import type { DomainControllerInterface } from "../../src/0_interfaces/2_domain/DomainControllerInterface";
 
 import {
   buildTeardownTestApplicationStoresAction,
   runTeardownTestApplicationStores,
-} from "../../src/miroir-fwk/4-tests/testApplicationStoreTeardown.js";
+} from "../../src/5_tests/testApplicationStoreTeardown";
 
 describe("buildTeardownTestApplicationStoresAction", () => {
   it("deletes the ephemeral store, then Admin Deployment and AdminApplication instances", () => {

@@ -1,0 +1,111 @@
+{
+  "uuid": "ed680b8e-ae0b-40a8-873d-92d92c7191e5",
+  "parentName": "MiroirTest",
+  "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+  "selfApplication": "9ff432a9-89a1-460b-a263-1672d084a9e0",
+  "branch": "4408382d-daee-41d0-a53d-80a44c0f79e6",
+  "name": "report.agentRunHistory",
+  "description": "The Meta app's agent run Reports on fixed runs (two overdue-loans runs in two arms, one invalid lending-limit run): the history shows a cost graph and a list per feature; the details Report shows one run.",
+  "tags": [
+    "integ",
+    "ui",
+    "report"
+  ],
+  "issue": "550",
+  "definition": {
+    "miroirTestType": "miroirTestSuite",
+    "miroirTestLabel": "report.agentRunHistory",
+    "runTarget": {
+      "applicationUuid": "9ff432a9-89a1-460b-a263-1672d084a9e0",
+      "applicationName": "Meta",
+      "deploymentUuid": "40b74910-4c63-4bd9-8e7d-2bc051342908"
+    },
+    "testConfiguration": "8b8dfbd9-66e9-4afb-87e3-90aa07ccd11b",
+    "testbedInitApplicationParameters": "metaTestbedInitParams",
+    "miroirTests": [
+      {
+        "miroirTestType": "reportTestSuite",
+        "miroirTestLabel": "AgentRunHistory",
+        "report": {
+          "application": "9ff432a9-89a1-460b-a263-1672d084a9e0",
+          "applicationSection": "data",
+          "reportUuid": "7a695632-338e-4c33-8b39-dba7f6d4c988"
+        },
+        "miroirTests": [
+          {
+            "miroirTestType": "reportTest",
+            "miroirTestLabel": "shows a cost graph and a list per feature",
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "the overdue loans graph",
+                "target": {
+                  "byTestId": "graph-bar-overdueLoansRuns"
+                },
+                "timeout": 15000
+              },
+              {
+                "step": "expectElement",
+                "label": "the lending limit graph",
+                "target": {
+                  "byTestId": "graph-bar-lendingLimitRuns"
+                },
+                "timeout": 5000
+              },
+              {
+                "step": "expectElement",
+                "label": "the overdue loans list",
+                "target": {
+                  "byText": "Overdue loans: runs"
+                },
+                "timeout": 5000
+              },
+              {
+                "step": "expectElement",
+                "label": "the lending limit list",
+                "target": {
+                  "byText": "Lending limit: runs"
+                },
+                "timeout": 5000
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "miroirTestType": "reportTestSuite",
+        "miroirTestLabel": "AgentRunMeasurementDetails",
+        "report": {
+          "application": "9ff432a9-89a1-460b-a263-1672d084a9e0",
+          "applicationSection": "data",
+          "reportUuid": "49a3c09a-c7cd-4438-9730-c691c70741af",
+          "instanceUuid": "2a6fe1c2-5b55-4f62-9688-fbcc406b6fcc"
+        },
+        "miroirTests": [
+          {
+            "miroirTestType": "reportTest",
+            "miroirTestLabel": "shows the run",
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "why the run is invalid",
+                "target": {
+                  "byDisplayValue": "seed: tool Bash"
+                },
+                "timeout": 15000
+              },
+              {
+                "step": "expectElement",
+                "label": "its arm",
+                "target": {
+                  "byDisplayValue": "miroir-files"
+                },
+                "timeout": 5000
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

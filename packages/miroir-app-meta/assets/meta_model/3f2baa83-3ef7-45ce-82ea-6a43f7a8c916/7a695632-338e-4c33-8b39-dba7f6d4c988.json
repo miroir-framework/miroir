@@ -1,0 +1,108 @@
+{
+  "uuid": "7a695632-338e-4c33-8b39-dba7f6d4c988",
+  "selfApplication": "9ff432a9-89a1-460b-a263-1672d084a9e0",
+  "parentName": "Report",
+  "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+  "conceptLevel": "Model",
+  "name": "AgentRunHistory",
+  "defaultLabel": "Agent runs",
+  "description": "Runs of the agent cost benchmark per feature, grouped by arm: list cost, tokens, turns, duration, acceptance and validity of each run (#550).",
+  "definition": {
+    "reportParameters": {},
+    "extractorTemplates": {
+      "overdueLoansRuns": {
+        "extractorOrCombinerType": "extractorInstancesByEntity",
+        "parentName": "AgentRunMeasurement",
+        "parentUuid": "954de789-6350-4f54-a809-5f2b8b91d067",
+        "filter": {
+          "attributeName": "feature",
+          "value": "^overdue-loans$"
+        },
+        "orderBy": {
+          "attributeName": "arm",
+          "direction": "ASC"
+        }
+      },
+      "lendingLimitRuns": {
+        "extractorOrCombinerType": "extractorInstancesByEntity",
+        "parentName": "AgentRunMeasurement",
+        "parentUuid": "954de789-6350-4f54-a809-5f2b8b91d067",
+        "filter": {
+          "attributeName": "feature",
+          "value": "^lending-limit$"
+        },
+        "orderBy": {
+          "attributeName": "arm",
+          "direction": "ASC"
+        }
+      }
+    },
+    "section": {
+      "type": "list",
+      "definition": [
+        {
+          "type": "graphReportSection",
+          "definition": {
+            "label": "Overdue loans: list cost per run (USD)",
+            "fetchedDataReference": "overdueLoansRuns",
+            "graphType": "bar",
+            "dataMapping": {
+              "labelField": "arm",
+              "valueField": "costUsd",
+              "colorField": "arm"
+            },
+            "config": {
+              "width": 800,
+              "height": 300,
+              "showTooltips": true,
+              "showLegend": true,
+              "labelPresentation": "auto"
+            }
+          }
+        },
+        {
+          "type": "objectListReportSection",
+          "definition": {
+            "label": "Overdue loans: runs",
+            "parentName": "AgentRunMeasurement",
+            "parentUuid": "954de789-6350-4f54-a809-5f2b8b91d067",
+            "fetchedDataReference": "overdueLoansRuns",
+            "sortByAttribute": "arm",
+            "sortOrder": "asc"
+          }
+        },
+        {
+          "type": "graphReportSection",
+          "definition": {
+            "label": "Lending limit: list cost per run (USD)",
+            "fetchedDataReference": "lendingLimitRuns",
+            "graphType": "bar",
+            "dataMapping": {
+              "labelField": "arm",
+              "valueField": "costUsd",
+              "colorField": "arm"
+            },
+            "config": {
+              "width": 800,
+              "height": 300,
+              "showTooltips": true,
+              "showLegend": true,
+              "labelPresentation": "auto"
+            }
+          }
+        },
+        {
+          "type": "objectListReportSection",
+          "definition": {
+            "label": "Lending limit: runs",
+            "parentName": "AgentRunMeasurement",
+            "parentUuid": "954de789-6350-4f54-a809-5f2b8b91d067",
+            "fetchedDataReference": "lendingLimitRuns",
+            "sortByAttribute": "arm",
+            "sortOrder": "asc"
+          }
+        }
+      ]
+    }
+  }
+}

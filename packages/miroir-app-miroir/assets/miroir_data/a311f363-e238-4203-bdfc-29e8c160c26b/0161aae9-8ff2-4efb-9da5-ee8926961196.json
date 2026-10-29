@@ -2489,6 +2489,7 @@
                   "connectExternalService",
                   "prepareOpenApiDocument",
                   "probeExternalService",
+                  "runMiroirTestAction",
                   "runReportAction",
                   "setExternalServiceCredential",
                   "transactionalInstanceAction"
@@ -2546,6 +2547,7 @@
                   "connectExternalService",
                   "prepareOpenApiDocument",
                   "probeExternalService",
+                  "runMiroirTestAction",
                   "runReportAction",
                   "setExternalServiceCredential",
                   "transactionalInstanceAction"

@@ -1,0 +1,4 @@
+{
+  "tools": ["Read", "Edit", "Write", "Glob", "Grep", "Bash"],
+  "mcp": false
+}

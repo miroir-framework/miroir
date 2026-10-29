@@ -25793,6 +25793,64 @@ export const miroirFundamentalMlSchema = {
                 "type": "literal",
                 "tag": {
                   "value": {
+                    "canBeTemplate": false,
+                    "description": "#575: Run a MiroirTest of an application, or some of its leaves, and return each leaf's result: ok, error, skipped or unsupported, with its assertions' expected and actual values and the failure message. The live data is never touched: actionTest and runnerTest leaves run on a throwaway copy of the application (its model and data, under fresh application and deployment uuids, stored beside the live store), reset before each leaf and dropped at the end; the leaves are rewritten to address the copy and the live application is not reachable from them. functionCallTest, queryTest and transformerTest leaves with unitTestExpectedValue run in memory. To call an Endpoint action of the application (such as lendDocument), write a runnerTest leaf: its runnerRef names the application's Runner, its testParams hold the action under the Runner's name, and its preTestCompositeActions and testCompositeActionAssertions read and check the result. A runnerTest leaf of an mcpToolRunner calls its tool as the copy's Endpoint action, and its testParams entry expectedMcpStatus (success by default, or error) checks a refused action. reportTest, reactComponentTest and transformerTest leaves without unitTestExpectedValue are unsupported. The action fails with FailedToRunMiroirTest only when the MiroirTest is not found or the copy cannot be created or dropped."
+                  }
+                },
+                "definition": "runMiroirTestAction"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
+              },
+              "payload": {
+                "type": "object",
+                "definition": {
+                  "application": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Application",
+                        "description": "The application whose model holds the MiroirTest, and which the test runs on a copy of."
+                      }
+                    }
+                  },
+                  "miroirTest": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "MiroirTest",
+                        "description": "The uuid of the MiroirTest to run."
+                      }
+                    }
+                  },
+                  "leaves": {
+                    "type": "array",
+                    "optional": true,
+                    "definition": {
+                      "type": "string"
+                    },
+                    "tag": {
+                      "value": {
+                        "description": "The miroirTestLabel of the leaves to run; all leaves when absent."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
                     "canBeTemplate": false
                   }
                 },
@@ -40485,6 +40543,65 @@ export const miroirFundamentalMlSchema = {
                 "type": "literal",
                 "tag": {
                   "value": {
+                    "canBeTemplate": false,
+                    "description": "#575: Run a MiroirTest of an application, or some of its leaves, and return each leaf's result: ok, error, skipped or unsupported, with its assertions' expected and actual values and the failure message. The live data is never touched: actionTest and runnerTest leaves run on a throwaway copy of the application (its model and data, under fresh application and deployment uuids, stored beside the live store), reset before each leaf and dropped at the end; the leaves are rewritten to address the copy and the live application is not reachable from them. functionCallTest, queryTest and transformerTest leaves with unitTestExpectedValue run in memory. To call an Endpoint action of the application (such as lendDocument), write a runnerTest leaf: its runnerRef names the application's Runner, its testParams hold the action under the Runner's name, and its preTestCompositeActions and testCompositeActionAssertions read and check the result. A runnerTest leaf of an mcpToolRunner calls its tool as the copy's Endpoint action, and its testParams entry expectedMcpStatus (success by default, or error) checks a refused action. reportTest, reactComponentTest and transformerTest leaves without unitTestExpectedValue are unsupported. The action fails with FailedToRunMiroirTest only when the MiroirTest is not found or the copy cannot be created or dropped."
+                  }
+                },
+                "definition": "runMiroirTestAction"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
+              },
+              "payload": {
+                "type": "object",
+                "definition": {
+                  "application": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Application",
+                        "description": "The application whose model holds the MiroirTest, and which the test runs on a copy of."
+                      }
+                    }
+                  },
+                  "miroirTest": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "MiroirTest",
+                        "description": "The uuid of the MiroirTest to run."
+                      }
+                    }
+                  },
+                  "leaves": {
+                    "type": "array",
+                    "optional": true,
+                    "definition": {
+                      "type": "string"
+                    },
+                    "tag": {
+                      "value": {
+                        "description": "The miroirTestLabel of the leaves to run; all leaves when absent.",
+                        "isTemplate": true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
                     "canBeTemplate": false
                   }
                 },
@@ -47469,6 +47586,65 @@ export const miroirFundamentalMlSchema = {
                     "tag": {
                       "value": {
                         "description": "The parameters the Report's page would carry in its URL, such as a Query parameter.",
+                        "isTemplate": true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false,
+                    "description": "#575: Run a MiroirTest of an application, or some of its leaves, and return each leaf's result: ok, error, skipped or unsupported, with its assertions' expected and actual values and the failure message. The live data is never touched: actionTest and runnerTest leaves run on a throwaway copy of the application (its model and data, under fresh application and deployment uuids, stored beside the live store), reset before each leaf and dropped at the end; the leaves are rewritten to address the copy and the live application is not reachable from them. functionCallTest, queryTest and transformerTest leaves with unitTestExpectedValue run in memory. To call an Endpoint action of the application (such as lendDocument), write a runnerTest leaf: its runnerRef names the application's Runner, its testParams hold the action under the Runner's name, and its preTestCompositeActions and testCompositeActionAssertions read and check the result. A runnerTest leaf of an mcpToolRunner calls its tool as the copy's Endpoint action, and its testParams entry expectedMcpStatus (success by default, or error) checks a refused action. reportTest, reactComponentTest and transformerTest leaves without unitTestExpectedValue are unsupported. The action fails with FailedToRunMiroirTest only when the MiroirTest is not found or the copy cannot be created or dropped."
+                  }
+                },
+                "definition": "runMiroirTestAction"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"
+              },
+              "payload": {
+                "type": "object",
+                "definition": {
+                  "application": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Application",
+                        "description": "The application whose model holds the MiroirTest, and which the test runs on a copy of."
+                      }
+                    }
+                  },
+                  "miroirTest": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "MiroirTest",
+                        "description": "The uuid of the MiroirTest to run."
+                      }
+                    }
+                  },
+                  "leaves": {
+                    "type": "array",
+                    "optional": true,
+                    "definition": {
+                      "type": "string"
+                    },
+                    "tag": {
+                      "value": {
+                        "description": "The miroirTestLabel of the leaves to run; all leaves when absent.",
                         "isTemplate": true
                       }
                     }

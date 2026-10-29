@@ -1,0 +1,67 @@
+{
+  "uuid": "62f9e6fa-35c1-4ce1-9d98-8c6aeb835e8c",
+  "parentName": "Query",
+  "parentUuid": "e4320b9e-ab45-4abe-85d8-359604b3c62f",
+  "name": "OverdueLoans",
+  "defaultLabel": "Overdue loans",
+  "description": "Loans with no endDate whose startDate is before the parameter startedBefore (an ISO date). Reference solution of the #550 benchmark, never part of the Library package.",
+  "definition": {
+    "extractorTemplates": {
+      "loans": {
+        "extractorOrCombinerType": "extractorInstancesByEntity",
+        "applicationSection": "data",
+        "parentName": "LendingHistoryItem",
+        "parentUuid": "e81078f3-2de7-4301-bd79-d3a156aec149"
+      }
+    },
+    "runtimeTransformers": {
+      "overdueLoans": {
+        "transformerType": "filterList",
+        "interpolation": "runtime",
+        "referenceToOuterObject": "loan",
+        "applyTo": {
+          "transformerType": "getFromContext",
+          "interpolation": "runtime",
+          "referenceName": "loans"
+        },
+        "predicate": {
+          "transformerType": "boolExpr",
+          "interpolation": "runtime",
+          "operator": "&&",
+          "left": {
+            "transformerType": "boolExpr",
+            "interpolation": "runtime",
+            "operator": "isNull",
+            "left": {
+              "transformerType": "getFromContext",
+              "interpolation": "runtime",
+              "referencePath": [
+                "loan",
+                "endDate"
+              ],
+              "safe": true
+            }
+          },
+          "right": {
+            "transformerType": "boolExpr",
+            "interpolation": "runtime",
+            "operator": "<",
+            "left": {
+              "transformerType": "getFromContext",
+              "interpolation": "runtime",
+              "referencePath": [
+                "loan",
+                "startDate"
+              ]
+            },
+            "right": {
+              "transformerType": "getFromParameters",
+              "interpolation": "runtime",
+              "referenceName": "startedBefore"
+            }
+          }
+        }
+      }
+    }
+  }
+}

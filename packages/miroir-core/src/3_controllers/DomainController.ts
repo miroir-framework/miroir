@@ -209,6 +209,7 @@ import { normalizeConnectExternalServicePayload } from "./normalizeConnectExtern
 import { redactCredentialSecretsFromValue } from "../4_services/redactCredentialSecrets.js";
 import type { ExternalServiceClientInterface } from "../0_interfaces/4-services/ExternalServiceClientInterface.js";
 import { ConfigurationService } from './ConfigurationService.js';
+import type { MiroirActivityTrackerInterface } from "../0_interfaces/3_controllers/MiroirActivityTrackerInterface";
 import { failedExpectationMessage } from "../1_core/testing/test-expect.js";
 import {
   ensureSecretsCrypto,
@@ -3469,6 +3470,15 @@ export class DomainController implements DomainControllerInterface, DomainContro
       principal,
     );
     return result as Action2ReturnType;
+  }
+
+  // ##############################################################################################
+  asDomainControllerInterface(): DomainControllerInterface {
+    return this;
+  }
+
+  getMiroirActivityTracker(): MiroirActivityTrackerInterface {
+    return this.miroirContext.miroirActivityTracker;
   }
 
   // ##############################################################################################

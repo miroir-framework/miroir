@@ -1,0 +1,8 @@
+{
+  "name": "bench-agent",
+  "extends": "test-filesystem",
+  "description": "Agent cost measurement (#550): every section is a copy in .miroir/bench-agent/, so an agent run never writes tracked files. MCP on, served over plain HTTP on loopback.",
+  "server": { "rootApiUrl": "http://localhost:3080", "mcpUrl": "http://localhost:4080" },
+  "client": { "mode": "realServer" },
+  "features": { "ai": false, "mcp": true }
+}
