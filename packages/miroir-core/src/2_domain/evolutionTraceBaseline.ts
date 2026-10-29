@@ -5,6 +5,7 @@ import type {
   ApplicationEvolutionTraceEvent,
   InstanceCUDAction,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import { getApplicationSection } from "../1_core/Model.js";
 
 /** Entity UUID for ApplicationEvolutionTrace instances (parentUuid). */
 export const EVOLUTION_TRACE_ENTITY_UUID = "de089f57-5fa5-4c0e-a43e-20f1a6df5a37";
@@ -99,7 +100,7 @@ export function generateEvolutionBaseline(
 
 /**
  * Builds createInstance actions that persist a squashed baseline for `applicationUuid`.
- * Trace instances live in that application's model section.
+ * Trace instances live in that application's model section (data for Miroir, #222).
  * Used by deployment initialisation for every app reset.
  */
 export function buildEvolutionBaselineCreateInstanceActions(
@@ -120,7 +121,7 @@ export function buildEvolutionBaselineCreateInstanceActions(
       endpoint: INSTANCE_ENDPOINT,
       payload: {
         application: applicationUuid,
-        applicationSection: "model",
+        applicationSection: getApplicationSection(applicationUuid, EVOLUTION_TRACE_ENTITY_UUID),
         parentUuid: EVOLUTION_TRACE_ENTITY_UUID,
         objects: [root],
       },
@@ -131,7 +132,7 @@ export function buildEvolutionBaselineCreateInstanceActions(
       endpoint: INSTANCE_ENDPOINT,
       payload: {
         application: applicationUuid,
-        applicationSection: "model",
+        applicationSection: getApplicationSection(applicationUuid, EVOLUTION_TRACE_EVENT_ENTITY_UUID),
         parentUuid: EVOLUTION_TRACE_EVENT_ENTITY_UUID,
         objects: [event],
       },

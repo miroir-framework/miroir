@@ -5,6 +5,7 @@ import type {
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import type { Uuid } from "../0_interfaces/1_core/EntityVersion.js";
 import type { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface.js";
+import { getApplicationSection } from "../1_core/Model.js";
 import {
   EVOLUTION_TRACE_ENTITY_UUID,
   EVOLUTION_TRACE_EVENT_ENTITY_UUID,
@@ -25,17 +26,24 @@ function isEvolutionTraceEntityUuid(uuid: string | undefined): boolean {
 }
 
 /**
- * Evolution-trace instances are stored in the evolving application's **model**
- * section (same place as SelfApplication / Branch / Version history for that app).
+ * Evolution-trace instances are stored where the evolving application keeps its
+ * instances of the trace Entities: its **model** section, except for Miroir, whose
+ * instances other than Entity live in **data** (#222).
  */
 export function collectEvolutionTraceStateFromDomainState(
   domainState: DomainState,
   applicationDeploymentUuid: Uuid,
   targetApplicationUuid: string,
 ): EvolutionTraceDeploymentState {
-  const modelSection = domainState?.[applicationDeploymentUuid]?.["model"] ?? {};
-  const rootsIndex = modelSection[EVOLUTION_TRACE_ENTITY_UUID] ?? {};
-  const eventsIndex = modelSection[EVOLUTION_TRACE_EVENT_ENTITY_UUID] ?? {};
+  const deploymentState = domainState?.[applicationDeploymentUuid];
+  const rootsIndex =
+    deploymentState?.[getApplicationSection(targetApplicationUuid, EVOLUTION_TRACE_ENTITY_UUID)]?.[
+      EVOLUTION_TRACE_ENTITY_UUID
+    ] ?? {};
+  const eventsIndex =
+    deploymentState?.[
+      getApplicationSection(targetApplicationUuid, EVOLUTION_TRACE_EVENT_ENTITY_UUID)
+    ]?.[EVOLUTION_TRACE_EVENT_ENTITY_UUID] ?? {};
 
   const roots = Object.values(rootsIndex).filter(
     (root): root is ApplicationEvolutionTrace =>
@@ -71,7 +79,7 @@ function createTraceInstanceAction(
     endpoint: INSTANCE_ENDPOINT,
     payload: {
       application: applicationUuid,
-      applicationSection: "model",
+      applicationSection: getApplicationSection(applicationUuid, parentUuid),
       parentUuid,
       objects,
     },
@@ -79,8 +87,8 @@ function createTraceInstanceAction(
 }
 
 /**
- * Builds createInstance actions (targeting the evolving application's model
- * section) that ensure baseline + append a raw trace event for `action` when
+ * Builds createInstance actions (targeting the evolving application's trace
+ * section, see collectEvolutionTraceStateFromDomainState) that ensure baseline + append a raw trace event for `action` when
  * the tracking policy allows.
  *
  * Skips tracing of evolution-trace entities themselves (avoids recursion).

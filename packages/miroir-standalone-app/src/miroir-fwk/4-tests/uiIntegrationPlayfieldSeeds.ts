@@ -127,6 +127,19 @@ export const libraryTestbedInitParams: InitApplicationParameters = {
   applicationVersion: selfApplicationVersionLibraryInitialVersion,
 };
 
+/**
+ * Library seeded versioned-internal (#577), so its deployment gets a modelVersion store from
+ * initModel: action.domainController.freezeApplicationVersion freezes Library versions.
+ */
+export const libraryVersionedTestbedInitParams: InitApplicationParameters = {
+  ...libraryTestbedInitParams,
+  selfApplication: {
+    ...(selfApplicationLibrary as SelfApplication),
+    versioningMode: "versioned-internal",
+    versioningEnabled: true,
+  },
+};
+
 /** GitHub example app (#472): report MiroirTests walk its Reports against fake GitHub answers. */
 export const githubTestbedInitParams: InitApplicationParameters = {
   dataStoreType: "app",

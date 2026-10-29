@@ -7,6 +7,7 @@ import { appForTestTestbedInitParams } from "./uiIntegrationAppForTestPlayfieldS
 import {
   githubTestbedInitParams,
   libraryTestbedInitParams,
+  libraryVersionedTestbedInitParams,
   metaTestbedInitParams,
 } from "./uiIntegrationPlayfieldSeeds.js";
 
@@ -17,6 +18,8 @@ export function getTestbedInitApplicationParametersFromRef(
   switch (ref) {
     case "libraryTestbedInitParams":
       return libraryTestbedInitParams;
+    case "libraryVersionedTestbedInitParams":
+      return libraryVersionedTestbedInitParams;
     case "appForTestTestbedInitParams":
       return appForTestTestbedInitParams;
     case "githubTestbedInitParams":
