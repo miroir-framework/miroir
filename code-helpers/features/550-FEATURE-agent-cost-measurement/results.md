@@ -55,6 +55,7 @@ The conventional arm passed every check in every pilot, at $0.07 to $0.11 a run.
 - **The deliverables differ in kind.** A Miroir feature is a Query, a Report and a MiroirTest, or an Endpoint action and a MiroirTest, written as JSON with UUIDs. A conventional feature is a route, a page and a Vitest file. The acceptance checks the same behaviour, not the same artefacts.
 - **The arms do not have the same means of checking their work.** The conventional agent runs its app and its tests. The MCP agent runs Queries, Reports and MiroirTests through tools. The files agent can only validate the shape of its files with `./check`.
 - **What is scored is narrow.** Only agent cost and time to pass acceptance are measured. Human review time, consistency with the rest of the application, and the cost of later changes are not, nor what the Miroir Report gives beyond a plain page (generic UI, validation, live editing).
+- **The view check is loose.** For overdue loans, a Miroir Report passes when one of its data entries holds exactly the overdue loans, whether or not a section displays it. A conventional page passes when it names the expected Users, without checking each Book and start date under them.
 - **The scale is the best case for code generation:** two small features on a small application.
 - **The sample is small:** one run per cell, one model, one effort level, one agent.
 - **The pilots are not comparable with each other.** Between pilots, the task texts, Miroir and the tools changed together.

@@ -268,7 +268,8 @@ def main(argv: list[str] | None = None) -> int:
     )
     result["workspace"] = str(workspace)
     (run_dir / "run.json").write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
-    print(json.dumps({k: result[k] for k in ("runId", "valid", "invalidReason", "stopReason", "turns", "costUsd", "result")}, indent=2))
+    # a run Claude Code ended without a result event has no turns, cost or result
+    print(json.dumps({k: result.get(k) for k in ("runId", "valid", "invalidReason", "stopReason", "turns", "costUsd", "result")}, indent=2))
     return 0 if result["valid"] else 1
 
 
