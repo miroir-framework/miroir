@@ -23,6 +23,7 @@ const RUNNER = "cc853632-f158-43fa-b9ed-437c9c25f539";
 const MCP_RUNNER = "1d2e3f40-5a6b-4c7d-8e9f-0a1b2c3d4e5f";
 const ENDPOINT_COMPOSITE = "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5";
 const LENDING_ENDPOINT = "212f2784-5b68-43b2-8ee0-89b1c6fdd0de";
+const TRANSFORMER_DEFINITION = "2b3c4d5e-6f70-4a81-9b2c-3d4e5f60718a";
 
 const context: ActionImplementationContext = {
   applicationDeploymentMap: {
@@ -127,6 +128,15 @@ const liveModel: Record<string, unknown[]> = {
       name: "mcpLend",
       application: APPLICATION,
       definition: { runnerType: "mcpToolRunner", toolName: "Library_lendDocument" },
+    },
+  ],
+  transformerDefinitions: [
+    {
+      uuid: TRANSFORMER_DEFINITION,
+      parentName: "TransformerDefinition",
+      parentUuid: "a557419d-a288-4fb8-8a1e-971c86c113b8",
+      name: "openLoans",
+      application: APPLICATION,
     },
   ],
   endpoints: [
@@ -314,6 +324,10 @@ describe("runMiroirTestAction (#575)", () => {
 
     const leafIndex = calls.indexOf(leafRun);
     expect(containing(calls.slice(1, leafIndex), "resetAndInitApplicationDeployment").length).toBeGreaterThan(0);
+    // the application's own TransformerDefinitions are copied to the testbed, for the leaves that use them
+    const seeded = containing(calls.slice(1, leafIndex), TRANSFORMER_DEFINITION);
+    expect(seeded.length).toBeGreaterThan(0);
+    expect(JSON.stringify(seeded[0].args[0])).toContain(testbed.applicationUuid);
     expect(containing(calls.slice(leafIndex), "storeManagementAction_deleteStore").length).toBeGreaterThan(0);
   });
 
