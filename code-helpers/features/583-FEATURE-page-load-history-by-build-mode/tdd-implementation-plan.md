@@ -41,11 +41,11 @@ Out: dev mode speed, warm browser cache tour, the tour on Electron, dynamic sect
 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
-| 0 | Characterize the Report test on the current seed | ⬜ pending | `report.pageLoadHistory` green before changes |
-| 1 | Graphs split by (build mode, client) | ⬜ pending | `report.pageLoadHistory`: `data-point-count` per graph |
-| 2 | Lists and details show build mode and client | ⬜ pending | `report.pageLoadHistory`: `client` column, details values |
-| 3 | Tour `--dev` against the Vite dev client | ⬜ pending | `loadTimingsTour.integ.test.ts` dev describe |
-| 4 | Docs, nonreg, AC | ⬜ pending | `nonreg:filesystem` |
+| 0 | Characterize the Report test on the current seed | ✅ DONE | `report.pageLoadHistory` green before changes |
+| 1 | Graphs split by (build mode, client) | ✅ DONE | `report.pageLoadHistory`: `data-point-count` per graph |
+| 2 | Lists and details show build mode and client | ✅ DONE | `report.pageLoadHistory`: `client` column, details values |
+| 3 | Tour `--dev` against the Vite dev client | ✅ DONE | `loadTimingsTour.integ.test.ts` dev describe |
+| 4 | Docs, nonreg, AC | ✅ DONE | `nonreg:filesystem` |
 
 ## Locked implementation defaults
 
@@ -62,8 +62,9 @@ Out: dev mode speed, warm browser cache tour, the tour on Electron, dynamic sect
 
 | Element | Value |
 |---|---|
-| Seed page load B / C / D | allocated in Slice 1 with `uuidgen`, recorded in Realization |
-| Seed rows of B, C, D | same |
+| Seed page load B / C / D | `a25f8fc9-8794-40e4-8dcd-910364bc0ba5` / `bfd14b1d-758d-4fde-85ca-8bb1e7258efa` / `6ae5219c-6ae3-4ea7-af71-efc9a23076a1` |
+| Seed rows | B `3cf48f43-3baf-4096-838a-dce386ea9051`; C `8b3e6131-12fe-4b24-9a87-c30e7c0b7d6f` (initial load), `f9a62339-da42-442c-b4d4-5c34fb3010eb` (report); D `337b2ac5-df5f-42f7-bfe9-b43852008d2b` |
+| `series` tag id | 23 |
 | MiroirTest suite | `report.pageLoadHistory` (existing, `24f5c213-c384-47b3-9648-0f91ddaa89ee`) |
 | Report keys | `initialLoads<Pair>`, `reportRoutes<Pair>` |
 
@@ -84,7 +85,7 @@ Out: dev mode speed, warm browser cache tour, the tour on Electron, dynamic sect
 
 ## Slice 0 — Characterize
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 The current `report.pageLoadHistory` passes on the current seed, so later failures are ours.
@@ -92,9 +93,13 @@ The current `report.pageLoadHistory` passes on the current seed, so later failur
 ### Validation
 Report MiroirTest command above: green.
 
+### Realization
+`report.pageLoadHistory` green on `_integration` (2 tests), after `npm install` and `./build-all.sh` (the branch had new dependencies).
+
+
 ## Slice 1 — Graphs split by (build mode, client)
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 A maintainer sees one initial load graph and one first report display graph per pair, each with its own rows only (G1, G4).
@@ -113,9 +118,13 @@ Seed: one record function, loads as data. Report graph `config` blocks are ident
 ### Validation
 `npm run build -w miroir-app-meta`; Report MiroirTest; Meta `modelValidation`; typecheck `miroir-app-meta`, `miroir-standalone-app`; `npm run nonreg:filesystem -- --runner shared --scope smoke,ui,core`.
 
+### Realization
+RED: `no element matches target {"byTestId":"graph-line-initialLoadsProductionWebApp"}`. GREEN as planned. Deviation: `client` was added to `viewAttributes` in the same edit as `series`; Slice 2's RED was proven by removing it again (see there). Meta `modelValidation` 38 passed; `tsc` on `miroir-standalone-app` has 32 errors before and after (unrelated files).
+
+
 ## Slice 2 — Lists and details show build mode and client
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 Every list row and the details show which build and client measured it (G2).
@@ -132,9 +141,13 @@ None expected.
 ### Validation
 `npm run build -w miroir-app-meta`; Report MiroirTest; Meta `modelValidation`; `npm run nonreg:filesystem -- --runner shared --scope smoke,ui,core`.
 
+### Realization
+RED (without `client` in `viewAttributes`): `expected 1 elements to match target {"byText":"electron"}, found 0`; GREEN with it. Details checks green from the start (characterization); the details form also shows `series`.
+
+
 ## Slice 3 — Tour `--dev`
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 A framework developer runs `npm run loadTimings -w miroir-standalone-app -- --dev --serve` and gets the 3 steps measured on the Vite dev client, stated as `development` (G3).
@@ -153,9 +166,13 @@ One `waitUntilAnswers(url, timeoutMs, onExit)` for both starters; tour navigatio
 ### Validation
 Both tour commands (one flag per run); load timing unit tests; bundle guard (`index.html` change); `npm run miroir-env -- check --strict --tracked-clean` after the tour; `npm run nonreg:filesystem -- --runner shared --scope smoke,tooling,ui`.
 
+### Realization
+RED: `the tour wrote no steps (exit 1)` (`--dev` unknown). GREEN: `startServer({ url, name, devClient })` keeps one entry point (the 3 callers unchanged except `await stopServer?.()`), with `devClient` starting Vite in the same work dir; the build mode line is printed as soon as the steps are read. Dev tour: initial load 3.0 s and 333 files, `route:report` 9.6 s, `route:model` 0.3 s, 3 of 3 recorded; the dev describe green (4 tests) and the production describe green (5 tests) on a fresh production build. Bundle guard: 0 violations (826882 bytes gzipped, baseline 824806). `miroir-env check --strict --tracked-clean` ok after the tours. The coverage tour starts and stops its server; it stops on a missing source map of the default build and on the Copilot sidebar, which do not depend on this change.
+
+
 ## Slice 4 — Docs, nonreg, AC
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Steps
 - `docs/reference/load-timings.md`: Report split, `series` (computed in the local cache and in SQL, not by the in-memory store runner: a `runBoxedQueryAction` on storage filtering on it returns nothing), `--dev`, warm-up, the env flag of the dev test.
@@ -174,3 +191,7 @@ Both tour commands (one flag per run); load timing unit tests; bundle guard (`in
 
 ### Validation
 Pre-push gate (AGENTS.md); `npm run nonreg:filesystem -- --runner shared`.
+
+### Realization
+Docs: `docs/reference/load-timings.md` (Report split, `series` and its store-side limit, Dev mode section), `docs/reference/testing.md` (seed). No new nonreg step.
+
