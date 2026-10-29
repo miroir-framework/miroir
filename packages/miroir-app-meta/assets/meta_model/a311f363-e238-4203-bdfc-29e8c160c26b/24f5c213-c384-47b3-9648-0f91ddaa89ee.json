@@ -5,13 +5,13 @@
   "selfApplication": "9ff432a9-89a1-460b-a263-1672d084a9e0",
   "branch": "4408382d-daee-41d0-a53d-80a44c0f79e6",
   "name": "report.pageLoadHistory",
-  "description": "The Meta app's page load Reports on fixed measurements (an initial load, a first report display, a first model page display): the history shows a graph and a list of initial loads, a graph of first report displays and the list of route steps; the details Report shows one step and its files.",
+  "description": "The Meta app's page load Reports on fixed measurements of four page loads (production web page twice, development web page, production Electron): the history shows one initial load graph and one first report display graph per (build mode, client) pair, each with its own rows only, and the lists of initial loads and route steps with their build mode and client; the details Report shows one step, its build mode, client, environment and files.",
   "tags": [
     "integ",
     "ui",
     "report"
   ],
-  "issue": "580",
+  "issue": "583",
   "definition": {
     "miroirTestType": "miroirTestSuite",
     "miroirTestLabel": "report.pageLoadHistory",
@@ -34,23 +34,91 @@
         "miroirTests": [
           {
             "miroirTestType": "reportTest",
-            "miroirTestLabel": "shows the initial loads and the route steps",
+            "miroirTestLabel": "shows each (build mode, client) pair apart, and the initial loads and route steps",
             "steps": [
               {
                 "step": "expectElement",
-                "label": "the initial load graph",
+                "label": "the production web page initial load graph: loads A and B",
                 "target": {
-                  "byTestId": "graph-line-initialLoads"
+                  "byTestId": "graph-line-initialLoadsProductionWebApp"
+                },
+                "attribute": {
+                  "name": "data-point-count",
+                  "value": "2"
                 },
                 "timeout": 15000
               },
               {
                 "step": "expectElement",
-                "label": "the first report display graph",
+                "label": "the production Electron initial load graph: load D",
                 "target": {
-                  "byTestId": "graph-line-reportRoutes"
+                  "byTestId": "graph-line-initialLoadsProductionElectron"
+                },
+                "attribute": {
+                  "name": "data-point-count",
+                  "value": "1"
                 },
                 "timeout": 5000
+              },
+              {
+                "step": "expectElement",
+                "label": "the development web page initial load graph: load C",
+                "target": {
+                  "byTestId": "graph-line-initialLoadsDevelopmentWebApp"
+                },
+                "attribute": {
+                  "name": "data-point-count",
+                  "value": "1"
+                },
+                "timeout": 5000
+              },
+              {
+                "step": "expectElement",
+                "label": "the production web page first report display graph: load A",
+                "target": {
+                  "byTestId": "graph-line-reportRoutesProductionWebApp"
+                },
+                "attribute": {
+                  "name": "data-point-count",
+                  "value": "1"
+                },
+                "timeout": 5000
+              },
+              {
+                "step": "expectElement",
+                "label": "the development web page first report display graph: load C",
+                "target": {
+                  "byTestId": "graph-line-reportRoutesDevelopmentWebApp"
+                },
+                "attribute": {
+                  "name": "data-point-count",
+                  "value": "1"
+                },
+                "timeout": 5000
+              },
+              {
+                "step": "expectElement",
+                "label": "no development Electron initial load graph: no row",
+                "target": {
+                  "byTestId": "graph-line-initialLoadsDevelopmentElectron"
+                },
+                "present": false
+              },
+              {
+                "step": "expectElement",
+                "label": "no production Electron first report display graph: no row",
+                "target": {
+                  "byTestId": "graph-line-reportRoutesProductionElectron"
+                },
+                "present": false
+              },
+              {
+                "step": "expectElement",
+                "label": "no development Electron first report display graph: no row",
+                "target": {
+                  "byTestId": "graph-line-reportRoutesDevelopmentElectron"
+                },
+                "present": false
               },
               {
                 "step": "expectElement",
@@ -79,12 +147,30 @@
               },
               {
                 "step": "expectElement",
-                "label": "the initial load step, in the initial load list only",
+                "label": "the initial load steps of loads A, B, C and D, in the initial load list only",
                 "target": {
                   "byText": "initialLoad"
                 },
                 "timeout": 5000,
+                "count": 4
+              },
+              {
+                "step": "expectElement",
+                "label": "the client column: load D's initial load is an Electron row",
+                "target": {
+                  "byText": "electron"
+                },
+                "timeout": 5000,
                 "count": 1
+              },
+              {
+                "step": "expectElement",
+                "label": "the build mode column: load C's initial load and first report display are development rows",
+                "target": {
+                  "byText": "development"
+                },
+                "timeout": 5000,
+                "count": 2
               }
             ]
           }
@@ -102,7 +188,7 @@
         "miroirTests": [
           {
             "miroirTestType": "reportTest",
-            "miroirTestLabel": "shows the step and its files",
+            "miroirTestLabel": "shows the step, its build mode, client, environment and files",
             "steps": [
               {
                 "step": "expectElement",
@@ -117,6 +203,30 @@
                 "label": "a file fetched during the step",
                 "target": {
                   "byDisplayValue": "/assets/ReportDisplay-seed.js"
+                },
+                "timeout": 5000
+              },
+              {
+                "step": "expectElement",
+                "label": "the build mode",
+                "target": {
+                  "byDisplayValue": "production"
+                },
+                "timeout": 5000
+              },
+              {
+                "step": "expectElement",
+                "label": "the client",
+                "target": {
+                  "byDisplayValue": "webApp"
+                },
+                "timeout": 5000
+              },
+              {
+                "step": "expectElement",
+                "label": "the environment",
+                "target": {
+                  "byDisplayValue": "dev"
                 },
                 "timeout": 5000
               }

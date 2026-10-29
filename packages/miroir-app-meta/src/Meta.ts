@@ -133,10 +133,24 @@ export const testConfiguration_metaBundleSizeSeed = {
 };
 
 /**
- * Fixed PageLoadMeasurement instances for the page load Report MiroirTests (#580): one page load
- * with its initial load, its first report display and its first model page display.
+ * Fixed PageLoadMeasurement instances for the page load Report MiroirTests (#580, #583): four page
+ * loads, so that each (build mode, client) graph of the history can be checked to show its own rows
+ * only. A: production web page, with its initial load, first report display and first model page
+ * display; B: production web page, initial load; C: development web page, initial load and first
+ * report display; D: production Electron, initial load.
  */
+type PageLoadSeedLoad = {
+  pageLoad: string;
+  buildMode: "production" | "development";
+  client: "webApp" | "electron";
+};
+const pageLoadA: PageLoadSeedLoad = { pageLoad: "4278911b-c1cc-46be-8207-e58682e06694", buildMode: "production", client: "webApp" };
+const pageLoadB: PageLoadSeedLoad = { pageLoad: "a25f8fc9-8794-40e4-8dcd-910364bc0ba5", buildMode: "production", client: "webApp" };
+const pageLoadC: PageLoadSeedLoad = { pageLoad: "bfd14b1d-758d-4fde-85ca-8bb1e7258efa", buildMode: "development", client: "webApp" };
+const pageLoadD: PageLoadSeedLoad = { pageLoad: "6ae5219c-6ae3-4ea7-af71-efc9a23076a1", buildMode: "production", client: "electron" };
+
 function pageLoadSeedRecord(
+  load: PageLoadSeedLoad,
   uuid: string,
   step: string,
   page: string,
@@ -149,7 +163,7 @@ function pageLoadSeedRecord(
     uuid,
     parentName: "PageLoadMeasurement",
     parentUuid: entityPageLoadMeasurement.uuid,
-    pageLoad: "4278911b-c1cc-46be-8207-e58682e06694",
+    pageLoad: load.pageLoad,
     measuredAt,
     step,
     page,
@@ -164,27 +178,70 @@ function pageLoadSeedRecord(
     dataRequestCount: 4,
     dataTransferBytes: 81000,
     environment: "dev",
-    client: "webApp",
-    buildMode: "production",
+    client: load.client,
+    buildMode: load.buildMode,
   } as EntityInstance;
 }
 
+const seedInitialLoadMilestones = {
+  responseEnd: 12,
+  entryScript: 260,
+  configReady: 300,
+  platformReady: 900,
+  firstRender: 910,
+  configurationsLoaded: 2100,
+};
+
 export const pageLoadMeasurementSeed: EntityInstance[] = [
   pageLoadSeedRecord(
+    pageLoadA,
     "8a7af0c0-caca-4d40-8a6c-83ac95992411",
     "initialLoad",
     "home",
     "2026-10-27T10:00:00.000Z",
     2350,
     [{ file: "/assets/index-seed.js", startMs: 15, durationMs: 210, transferBytes: 820000, encodedBytes: 819000 }],
-    { responseEnd: 12, entryScript: 260, configReady: 300, platformReady: 900, firstRender: 910, configurationsLoaded: 2100 },
+    seedInitialLoadMilestones,
   ),
-  pageLoadSeedRecord("691c8330-7349-467b-9d28-6e06b7e707ec", "route:report", "report", "2026-10-27T10:00:05.000Z", 780, [
+  pageLoadSeedRecord(pageLoadA, "691c8330-7349-467b-9d28-6e06b7e707ec", "route:report", "report", "2026-10-27T10:00:05.000Z", 780, [
     { file: "/assets/ReportDisplay-seed.js", startMs: 4, durationMs: 95, transferBytes: 150000, encodedBytes: 149000 },
   ]),
-  pageLoadSeedRecord("36b38f70-b4e9-46cb-85f8-119d77210eb5", "route:model", "model", "2026-10-27T10:00:09.000Z", 1210, [
+  pageLoadSeedRecord(pageLoadA, "36b38f70-b4e9-46cb-85f8-119d77210eb5", "route:model", "model", "2026-10-27T10:00:09.000Z", 1210, [
     { file: "/assets/ModelDiagramPage-seed.js", startMs: 6, durationMs: 120, transferBytes: 210000, encodedBytes: 209000 },
   ]),
+  pageLoadSeedRecord(
+    pageLoadB,
+    "3cf48f43-3baf-4096-838a-dce386ea9051",
+    "initialLoad",
+    "home",
+    "2026-10-28T10:00:00.000Z",
+    2280,
+    [{ file: "/assets/index-seed.js", startMs: 14, durationMs: 0, transferBytes: 0, encodedBytes: 819000 }],
+    seedInitialLoadMilestones,
+  ),
+  pageLoadSeedRecord(
+    pageLoadC,
+    "8b3e6131-12fe-4b24-9a87-c30e7c0b7d6f",
+    "initialLoad",
+    "home",
+    "2026-10-28T11:00:00.000Z",
+    9400,
+    [{ file: "/index.tsx", startMs: 20, durationMs: 40, transferBytes: 3000, encodedBytes: 2800 }],
+    seedInitialLoadMilestones,
+  ),
+  pageLoadSeedRecord(pageLoadC, "f9a62339-da42-442c-b4d4-5c34fb3010eb", "route:report", "report", "2026-10-28T11:00:12.000Z", 3100, [
+    { file: "/miroir-fwk/4_view/routes/ReportPage.tsx", startMs: 3, durationMs: 30, transferBytes: 9000, encodedBytes: 8800 },
+  ]),
+  pageLoadSeedRecord(
+    pageLoadD,
+    "337b2ac5-df5f-42f7-bfe9-b43852008d2b",
+    "initialLoad",
+    "home",
+    "2026-10-28T12:00:00.000Z",
+    1900,
+    [{ file: "/assets/index-seed.js", startMs: 10, durationMs: 60, transferBytes: 0, encodedBytes: 819000 }],
+    seedInitialLoadMilestones,
+  ),
 ];
 
 /** TestConfiguration of the Meta page load Report MiroirTests: the Meta model and the fixed steps above. */

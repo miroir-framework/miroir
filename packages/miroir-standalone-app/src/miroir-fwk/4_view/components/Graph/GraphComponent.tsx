@@ -664,6 +664,7 @@ export const GraphComponent: React.FC<GraphComponentProps> = ({
       css={containerStyles}
       className={className}
       data-testid={dataTestId}
+      data-point-count={graphData.data.length}
     >
       <svg ref={svgRef} />
     </div>
