@@ -67,11 +67,8 @@ function startObserving() {
     return;
   }
   const entryScript = performance.now();
-  try {
-    performance.setResourceTimingBufferSize?.(1000);
-  } catch {
-    // the default buffer (250 entries) is enough for most pages
-  }
+  // The resource timing buffer is raised by index.html, before the entry module loads: here, the
+  // static module graph is already fetched (hundreds of modules from the Vite dev server, #583).
   const steps: LoadTimingStep[] = [];
   recorder = createLoadTimingRecorder({
     now: () => performance.now(),
