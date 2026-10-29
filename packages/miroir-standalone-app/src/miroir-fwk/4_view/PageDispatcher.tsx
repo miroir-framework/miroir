@@ -24,12 +24,12 @@ import { Navigate, type Params, useParams, useSearchParams } from "react-router-
 
 import { isUsableBearerToken, LoggerInterface, MiroirLoggerFactory, nextPageWhenAccessDenied, nextPageWhenAuthGate, type ApplicationSection } from "miroir-core";
 import { useMiroirContextService } from "miroir-react";
-import { getAuthenticationEnabled, getAuthToken } from "./auth/authSession.js";
-import { useApplicationAccess } from "./auth/useApplicationAccess.js";
+import { getAuthenticationEnabled, getAuthToken } from "miroir-react";
+import { useApplicationAccess } from "miroir-react";
 
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "./constants.js";
-import { PageContainer } from "./components/Page/PageContainer.js";
+import { PageContainer } from "miroir-react";
 import { CenteredSpinner } from "miroir-react";
 
 // All page components are lazy-loaded so they are excluded from the main

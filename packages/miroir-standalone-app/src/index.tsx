@@ -60,10 +60,10 @@ import {
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 
 import { loglevelnext } from "./loglevelnextImporter.js";
-import { getAuthToken, setAuthenticationEnabled, setAuthToken } from "./miroir-fwk/4_view/auth/authSession.js";
+import { getAuthToken, setAuthenticationEnabled, setAuthToken } from "miroir-react";
 import { fetchAuthenticationEnabled } from "./miroir-fwk/4_view/auth/authTransport.js";
 import { RootComponent } from "./miroir-fwk/4_view/components/Page/RootComponent.js";
-import { ErrorPage } from "./miroir-fwk/4_view/ErrorPage.js";
+import { ErrorPage } from "miroir-react";
 import { PageDispatcher } from "./miroir-fwk/4_view/PageDispatcher.js";
 import {
   ElectronRestClient,

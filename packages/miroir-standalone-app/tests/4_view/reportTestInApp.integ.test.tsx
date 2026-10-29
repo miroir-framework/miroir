@@ -51,7 +51,7 @@ import {
   resetLastUiIntegrationTestRunResultForTests,
 } from "../../src/miroir-fwk/4-tests/uiIntegrationTestRunState.js";
 import { MiroirTestDisplay } from "../../src/miroir-fwk/4_view/components/Reports/MiroirTestDisplay.js";
-import { ReportPageContextProvider } from "../../src/miroir-fwk/4_view/components/Reports/ReportPageContext.js";
+import { ReportPageContextProvider } from "miroir-react";
 import { miroirAppStartup } from "../../src/startup.js";
 
 vi.mock("../../src/miroir-fwk/4-tests/useSelectedApplicationMiroirTestSuiteRegistries.js", async () => {

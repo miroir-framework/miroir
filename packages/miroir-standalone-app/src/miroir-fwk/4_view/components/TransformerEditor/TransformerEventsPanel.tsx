@@ -23,7 +23,7 @@ import {
   ThemedText,
   ThemedTitle,
 } from "miroir-react";
-import { EventLogComponent } from '../EventLogComponent';
+import { EventLogComponent } from "miroir-react";
 import { TypedValueObjectEditorWithFormik } from '../Reports/TypedValueObjectEditorWithFormik';
 
 // ################################################################################################

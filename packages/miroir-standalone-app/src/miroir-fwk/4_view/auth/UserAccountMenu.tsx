@@ -5,7 +5,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { nextPageWhenAuthGate } from "miroir-core";
 
 import { useMiroirTheme } from "miroir-react";
-import { setAuthToken, useAuthSession } from "./authSession.js";
+import { setAuthToken, useAuthSession } from "miroir-react";
 
 export function UserAccountMenu(): React.JSX.Element | null {
   const { enabled, principal } = useAuthSession();

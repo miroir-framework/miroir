@@ -29,8 +29,8 @@ import { packageName } from '../../../constants.js';
 import { cleanLevel } from '../constants.js';
 import { useMiroirTheme } from "miroir-react";
 import { useMiroirContextService } from 'miroir-react';
-import { exclusivelyUnfoldPath } from './Reports/FoldedStateTreeUtils.js';
-import { useDocumentOutlineContext } from './ValueObjectEditor/InstanceEditorOutlineContext.js';
+import { exclusivelyUnfoldPath } from "miroir-react";
+import { useDocumentOutlineContext } from "miroir-react";
 import { getFoldedDisplayValue } from './ValueObjectEditor/MlElementEditorHooks.js';
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "InstanceEditorOutline");

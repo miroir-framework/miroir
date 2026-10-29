@@ -34,7 +34,7 @@ import {
 import { miroirAppStartup } from '../../src/startup.js';
 
 import { RUNNER_RETURN_DOCUMENT_LABEL } from '../helpers/miroirTestDisplayIntegrationLaunchMocks.js';
-import { ReportPageContextProvider } from '../../src/miroir-fwk/4_view/components/Reports/ReportPageContext.js';
+import { ReportPageContextProvider } from "miroir-react";
 
 const miroirActivityTracker = new MiroirActivityTracker();
 const miroirEventService = new MiroirEventService(miroirActivityTracker);

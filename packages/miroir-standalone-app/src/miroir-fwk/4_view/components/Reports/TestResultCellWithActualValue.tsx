@@ -4,7 +4,7 @@ import { createPortal } from 'react-dom';
 import { useMiroirTheme } from "miroir-react";
 import { formatValue } from './SideBySideDiff.js';
 import { DraggableContainer } from "miroir-react";
-import { RenderMeasurementTable, renderMeasurementsOfTestResult } from './RenderMeasurementTable.js';
+import { RenderMeasurementTable, renderMeasurementsOfTestResult } from "miroir-react";
 
 // ################################################################################################
 // Test Result Cell Component specifically for the Result column

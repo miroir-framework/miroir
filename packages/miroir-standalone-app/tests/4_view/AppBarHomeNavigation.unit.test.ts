@@ -3,8 +3,8 @@ import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { resolveAppBarHomeNavigationUrl } from "../../src/miroir-fwk/4_view/components/Page/appBarReportNavigation.js";
-import { pageUrl, reportUrl } from "../../src/miroir-fwk/4_view/navigation.js";
+import { resolveAppBarHomeNavigationUrl } from "miroir-react";
+import { pageUrl, reportUrl } from "miroir-react";
 
 const LIBRARY_APP = "5af03c98-fe5e-490b-b08f-e1230971c57f";
 const LIBRARY_DEPLOYMENT = "f714bb2f-a12d-4e71-a03b-74dcedea6eb4";

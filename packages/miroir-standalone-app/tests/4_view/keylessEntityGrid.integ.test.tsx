@@ -16,8 +16,8 @@ import {
 } from "miroir-example-library";
 
 import { EntityInstanceGrid } from "../../src/miroir-fwk/4_view/components/Grids/EntityInstanceGrid.js";
-import { TableComponentTypeSchema } from "../../src/miroir-fwk/4_view/components/Grids/EntityInstanceGridInterface.js";
-import type { TableComponentRow } from "../../src/miroir-fwk/4_view/components/Grids/EntityInstanceGridInterface.js";
+import { TableComponentTypeSchema } from "miroir-react";
+import type { TableComponentRow } from "miroir-react";
 import { toolsCellActions } from "../../src/miroir-fwk/4_view/components/Grids/GlideToolsCellRenderer.js";
 import { waitForProgressiveRendering } from "./MlElementEditorTestTools.js";
 import { GridPaginationIntegShell } from "./helpers/gridPaginationIntegRig.js";

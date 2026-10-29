@@ -70,17 +70,17 @@ import {
 } from "miroir-app-miroir";
 
 import { packageName } from "../../../constants.js";
-import { BlockViewModeProvider } from "../../4_view/components/BlockEditor/BlockViewMode.js";
-import { deploymentReportsEntitiesMapping } from "../../4_view/components/Page/deploymentReportsEntitiesMapping.js";
-import { ReportPageContextProvider } from "../../4_view/components/Reports/ReportPageContext.js";
-import { DocumentOutlineContextProvider } from "../../4_view/components/ValueObjectEditor/InstanceEditorOutlineContext.js";
+import { BlockViewModeProvider } from "miroir-react";
+import { deploymentReportsEntitiesMapping } from "miroir-react";
+import { ReportPageContextProvider } from "miroir-react";
+import { DocumentOutlineContextProvider } from "miroir-react";
 import { MlElementEditor } from "../../4_view/components/ValueObjectEditor/MlElementEditor.js";
 import type { TransformerTypeBadge } from "../../4_view/components/ValueObjectEditor/MlElementEditorInterface.js";
 import {
   EMPTY_CONTAINER_ATTRIBUTE,
   ML_JSON_ATTRIBUTE,
   ML_NAME_ATTRIBUTE,
-} from "../../4_view/components/ValueObjectEditor/renderedValueMarkers.js";
+} from "miroir-react";
 import { cleanLevel } from "../../4_view/constants.js";
 import { useCurrentModel, useCurrentModelEnvironment } from "../../4_view/ReduxHooks.js";
 import { emptyObject } from "miroir-react";

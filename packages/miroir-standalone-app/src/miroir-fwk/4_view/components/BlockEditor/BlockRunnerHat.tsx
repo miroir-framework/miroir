@@ -12,8 +12,8 @@ import React, { useMemo, useState } from "react";
 import { blockCategoryColor } from "miroir-react";
 import { NameField, smallButton, type BlockDefineHeaderColors } from "./BlockDefineHeader.js";
 import { useBlockDraggable } from "./BlockDragDrop.js";
-import { useBlockEditing } from "./BlockEditing.js";
-import type { BlockRunner } from "./BlockViewMode.js";
+import { useBlockEditing } from "miroir-react";
+import type { BlockRunner } from "miroir-react";
 
 // ################################################################################################
 // #505 (analysis #497, G8): the "when run" hat of a custom Runner's sequence. It names the Runner

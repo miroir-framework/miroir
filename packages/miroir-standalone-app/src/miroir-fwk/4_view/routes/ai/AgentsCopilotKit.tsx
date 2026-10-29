@@ -37,7 +37,7 @@ import {
 } from "miroir-core";
 import { useMiroirContextService } from "miroir-react";
 
-import { useAuthSession } from "../../auth/authSession.js";
+import { useAuthSession } from "miroir-react";
 import { AiActionsProvider } from "./AiActionsProvider.js";
 import { agentRequestProperties } from "./agentBackendPick.js";
 import {

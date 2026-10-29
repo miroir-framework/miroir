@@ -29,7 +29,7 @@ import {
   ThemedSelectWithPortal
 } from "miroir-react";
 import { MlEnumEditorProps } from "./MlElementEditorInterface";
-import { isPrimaryUnionDiscriminatorField } from "./unionDiscriminatorField.js";
+import { isPrimaryUnionDiscriminatorField } from "miroir-react";
 import { useSelector } from "react-redux";
 import { getMemoizedReduxDeploymentsStateSelectorMap } from "miroir-localcache-redux";
 import { JsonDisplayHelper } from "miroir-react";

@@ -5,8 +5,8 @@ import React, { useMemo } from "react";
 
 import { blockCategoryColor, type BlockEditorColors } from "miroir-react";
 import { useBlockDraggable } from "./BlockDragDrop.js";
-import { useBlockEditing, type VariableSource } from "./BlockEditing.js";
-import { useBlockModelEnvironment } from "./BlockViewMode.js";
+import { useBlockEditing, type VariableSource } from "miroir-react";
+import { useBlockModelEnvironment } from "miroir-react";
 
 // ################################################################################################
 // #500: the palette of the block view, beside the program. One entry per transformer type, grouped

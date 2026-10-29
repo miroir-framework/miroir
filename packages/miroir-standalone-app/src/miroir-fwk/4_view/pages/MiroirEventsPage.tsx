@@ -50,9 +50,9 @@ import {
 import React, { useMemo, useState } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { packageName } from '../../../constants.js';
-import { EventLogComponent, getLogLevelColor } from '../components/EventLogComponent';
+import { EventLogComponent, getLogLevelColor } from "miroir-react";
 import { cleanLevel } from '../constants.js';
-import { eventsUrl } from '../navigation.js';
+import { eventsUrl } from "miroir-react";
 import { useMiroirContextService, useMiroirEvents } from 'miroir-react';
 import { usePageConfiguration } from '../services';
 

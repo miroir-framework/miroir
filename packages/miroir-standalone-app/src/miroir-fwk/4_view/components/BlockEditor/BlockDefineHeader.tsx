@@ -4,8 +4,8 @@ import React, { useState } from "react";
 
 import { blockCategoryColor, type BlockEditorColors } from "miroir-react";
 import { useBlockDraggable } from "./BlockDragDrop.js";
-import { useBlockEditing, type ArmedBlock } from "./BlockEditing.js";
-import type { BlockDefine } from "./BlockViewMode.js";
+import { useBlockEditing, type ArmedBlock } from "miroir-react";
+import type { BlockDefine } from "miroir-react";
 
 // ################################################################################################
 // #502 (analysis #497): the header of a define block, the body of a composite TransformerDefinition.

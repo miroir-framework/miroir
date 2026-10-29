@@ -16,7 +16,7 @@ import {
 
 import { packageName } from "../../../constants.js";
 import { cleanLevel } from "../constants.js";
-import { TableComponentRow } from "./Grids/EntityInstanceGridInterface.js";
+import { TableComponentRow } from "miroir-react";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "SelectEntityInstanceEditor");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);

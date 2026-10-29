@@ -1,6 +1,6 @@
 import { CustomCell, CustomRenderer, GridCellKind } from '@glideapps/glide-data-grid';
-import { TableComponentRow } from './EntityInstanceGridInterface.js';
-import { renderMaterialIconToCanvas, type MaterialIconName } from '../MaterialIconCanvasRenderer.js';
+import { TableComponentRow } from "miroir-react";
+import { renderMaterialIconToCanvas, type MaterialIconName } from "miroir-react";
 import { LoggerInterface, MiroirLoggerFactory } from 'miroir-core';
 import { packageName } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';

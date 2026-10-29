@@ -10,7 +10,7 @@ import { Link, useNavigate } from 'react-router-dom';
 
 import { packageName } from "../../../constants.js";
 import { cleanLevel } from "../constants.js";
-import { instanceUrl } from "../navigation.js";
+import { instanceUrl } from "miroir-react";
 import { useEntityInstanceUuidIndexFromLocalCache } from "../ReduxHooks.js";
 
 

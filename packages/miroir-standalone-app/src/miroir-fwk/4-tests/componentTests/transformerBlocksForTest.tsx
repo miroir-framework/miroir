@@ -12,9 +12,9 @@ import {
 import React, { lazy, Suspense, useCallback, useState } from "react";
 
 import { BlockEditorDisplayContext } from "../../4_view/components/BlockEditor/BlockEditorDisplay.js";
-import { useBlockDefineOfEndpointAction } from "../../4_view/components/BlockEditor/BlockEndpointAction.js";
+import { useBlockDefineOfEndpointAction } from "miroir-react";
 import { useBlockRunnerOf } from "../../4_view/components/BlockEditor/BlockRunnerHat.js";
-import { BlockDefineContext, BlockRunnerContext } from "../../4_view/components/BlockEditor/BlockViewMode.js";
+import { BlockDefineContext, BlockRunnerContext } from "miroir-react";
 
 // ################################################################################################
 // The block view of a stored TransformerDefinition's body, for the declarative component tests

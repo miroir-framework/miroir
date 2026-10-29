@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { resolveRunnerDefinitionApplication } from "../../src/miroir-fwk/4_view/components/Runners/runnerDefinitionApplication.js";
+import { resolveRunnerDefinitionApplication } from "miroir-react";
 import { runnerFreezeApplicationVersion } from "miroir-app-miroir";
 
 const MIROIR_APP = "360fcf1f-f0d4-4f8a-9262-07886e70fa15";

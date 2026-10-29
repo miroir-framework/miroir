@@ -17,7 +17,7 @@ import { GraphComponent } from './GraphComponent.js';
 import { 
   GraphData, 
   GraphDataPoint, 
-} from './GraphInterfaces.js';
+} from "miroir-react";
 import { ThemedBox } from "miroir-react";
 import { ThemedText } from "miroir-react";
 

@@ -35,14 +35,14 @@ import { cleanLevel } from "../../constants";
 import { useCurrentModel, useCurrentModelEnvironment, useDefaultValueParams } from "../../ReduxHooks";
 import { editorNavigationKey, useTrackedRender } from "../../tools/useTrackedRender.js";
 import { useViewportReveal } from "../../tools/useViewportReveal.js";
-import { ErrorFallbackComponent } from "../ErrorFallbackComponent";
+import { ErrorFallbackComponent } from "miroir-react";
 import {
   findPathAnnotation,
   TransformerTitleRowAnnotations,
   TransformerTypeBadgeRow,
 } from "../Reports/TransformerTypeAnnotation.js";
 import { RenderInsightHeader } from "../RenderInsightHeader.js";
-import { useReportPageContext } from "../Reports/ReportPageContext";
+import { useReportPageContext } from "miroir-react";
 import type { ValueObjectEditMode } from "../Reports/ReportSectionEntityInstance";
 import {
   ThemedAddIcon,
@@ -58,7 +58,7 @@ import {
 } from "./MlElementEditor";
 import { getFoldedDisplayValue } from "./MlElementEditorHooks";
 import { TransformerTypeBadge, TransformerTypeRestriction, MlArrayEditorProps } from "./MlElementEditorInterface";
-import { emptyContainerMarker } from "./renderedValueMarkers";
+import { emptyContainerMarker } from "miroir-react";
 import { selfApplicationMiroir } from "miroir-app-miroir";
 // import { MlUnion } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 

@@ -16,7 +16,7 @@ import { cleanLevel } from "../../constants";
 import { useCurrentModelEnvironment } from "../../ReduxHooks";
 import { ThemedStatusText } from "miroir-react";
 import { FileSelector } from "miroir-react";
-import { hiddenValueInputProps } from "./renderedValueMarkers";
+import { hiddenValueInputProps } from "miroir-react";
 import { useMlElementEditorHooks } from "./MlElementEditorHooks";
 import { MlAnyEditorProps } from "./MlElementEditorInterface";
 import { MlElementEditor } from "./MlElementEditor";

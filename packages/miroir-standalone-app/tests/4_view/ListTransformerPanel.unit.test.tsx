@@ -23,8 +23,8 @@ import {
 } from "miroir-react";
 
 import { ReportSectionListDisplay } from "../../src/miroir-fwk/4_view/components/Reports/ReportSectionListDisplay.js";
-import { LIST_TRANSFORMER_PAGE_SIZE } from "../../src/miroir-fwk/4_view/components/Reports/listDisplayByTransformer.js";
-import { TableComponentTypeSchema } from "../../src/miroir-fwk/4_view/components/Grids/EntityInstanceGridInterface.js";
+import { LIST_TRANSFORMER_PAGE_SIZE } from "miroir-react";
+import { TableComponentTypeSchema } from "miroir-react";
 import { MiroirThemeProvider } from "miroir-react";
 import { defaultStoredMiroirTheme } from "miroir-app-miroir";
 

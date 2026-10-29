@@ -4,7 +4,7 @@ import {
   type TestbedAccessGrantPrincipal,
 } from "miroir-core";
 
-import { getAuthenticationEnabled, getAuthToken } from "../4_view/auth/authSession.js";
+import { getAuthenticationEnabled, getAuthToken } from "miroir-react";
 
 /**
  * Gate for testbed MiroirRight rows: auth on (from /auth/status) and a usable

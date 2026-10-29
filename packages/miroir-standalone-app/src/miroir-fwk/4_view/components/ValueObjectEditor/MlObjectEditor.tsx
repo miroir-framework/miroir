@@ -24,7 +24,7 @@ import {
   type ApplicationDeploymentMap,
 } from "miroir-core";
 
-import { BlobEditorField } from "./BlobEditorField";
+import { BlobEditorField } from "miroir-react";
 
 import { packageName } from "../../../../constants";
 import {
@@ -37,9 +37,9 @@ import { useDefaultValueParams } from "../../ReduxHooks";
 import {
   measuredUnfoldMlSchemaOnce
 } from "../../tools/hookPerformanceMeasure";
-import { ErrorFallbackComponent } from "../ErrorFallbackComponent";
+import { ErrorFallbackComponent } from "miroir-react";
 import { JsonDisplayHelper } from "miroir-react";
-import { useReportPageContext } from "../Reports/ReportPageContext";
+import { useReportPageContext } from "miroir-react";
 import { RenderInsightHeader } from "../RenderInsightHeader.js";
 import { editorNavigationKey, useTrackedRender } from "../../tools/useTrackedRender.js";
 import { useViewportReveal } from "../../tools/useViewportReveal.js";
@@ -48,7 +48,7 @@ import {
   HIGHLIGHTED_UNIT_TEST_STYLE,
   unitTestAnchorId,
   UnitTestKindBadge,
-} from "../Reports/unitTestKindUi.js";
+} from "miroir-react";
 import type { ValueObjectEditMode } from "../Reports/ReportSectionEntityInstance";
 import {
   ThemedAddIcon,
@@ -68,8 +68,8 @@ import {
 import { FoldUnfoldAllObjectAttributesOrArrayItems, FoldUnfoldObjectOrArray, MlElementEditor } from "./MlElementEditor";
 import { getFoldedDisplayValue, useMlElementEditorHooks } from "./MlElementEditorHooks";
 import { TransformerTypeBadge, TransformerTypeRestriction, MlObjectEditorProps } from "./MlElementEditorInterface";
-import { emptyContainerMarker, isPlainObjectValue } from "./renderedValueMarkers";
-import { historyCommand } from "./ValueHistoryProvider.js";
+import { emptyContainerMarker, isPlainObjectValue } from "miroir-react";
+import { historyCommand } from "miroir-react";
 import {
   findPathAnnotation,
   TransformerTitleRowAnnotations,

@@ -57,10 +57,10 @@ import {
   ThemedPreformattedText,
   ThemedTitle
 } from "miroir-react";
-import { useDocumentOutlineContext } from '../ValueObjectEditor/InstanceEditorOutlineContext.js';
+import { useDocumentOutlineContext } from "miroir-react";
 import { OpenApiEndpointSyncButton } from './OpenApiEndpointSyncButton.js';
-import { useReportFormSubmit } from './ReportFormSubmitContext.js';
-import { useReportPageContext } from './ReportPageContext.js';
+import { useReportFormSubmit } from "miroir-react";
+import { useReportPageContext } from "miroir-react";
 import { TypedValueObjectEditor } from './TypedValueObjectEditor.js';
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportSectionEntityInstance");

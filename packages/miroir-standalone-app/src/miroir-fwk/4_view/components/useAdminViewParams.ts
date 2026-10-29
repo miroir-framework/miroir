@@ -14,7 +14,7 @@ import { deployment_Admin } from "miroir-app-admin";
 import { getMemoizedReduxDeploymentsStateSelectorMap, useDomainControllerService } from "miroir-react";
 
 import { useReduxDeploymentsStateQuerySelectorForCleanedResult } from "../ReduxHooks.js";
-import { ViewParamsUpdateQueue } from "./ViewParamsUpdateQueue.js";
+import { ViewParamsUpdateQueue } from "miroir-react";
 
 /**
  * The ViewParams instance of the Admin deployment in the store, and the save of some of its

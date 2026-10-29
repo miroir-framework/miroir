@@ -2,7 +2,7 @@ import type { BlockPath, TransformerInsertPosition } from "miroir-core";
 import React from "react";
 
 import { useBlockDroppable } from "./BlockDragDrop.js";
-import { armedLabel, pathKey, useBlockEditing } from "./BlockEditing.js";
+import { armedLabel, pathKey, useBlockEditing } from "miroir-react";
 
 // ################################################################################################
 // #500: where a new block can go: an empty slot, the end of a list slot, a new record entry. A

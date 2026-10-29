@@ -16,8 +16,8 @@ import {
 import {
   useMiroirContextService
 } from "miroir-react";
-import { PageContainer } from "../components/Page/PageContainer.js";
-import { reportUrl } from "../navigation.js";
+import { PageContainer } from "miroir-react";
+import { reportUrl } from "miroir-react";
 
 // import entityPublisher from "../../assets/library_model/";
 import { JsonDisplayHelper } from "miroir-react";

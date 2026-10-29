@@ -25,7 +25,7 @@ import {
   ReportUrlParamKeys
 } from "../../../constants.js";
 import { useCurrentModel } from "../ReduxHooks.js";
-import { ErrorFallbackComponent } from "../components/ErrorFallbackComponent.js";
+import { ErrorFallbackComponent } from "miroir-react";
 import { RenderInsightSummary } from "../components/RenderInsightSummary.js";
 import { LocalCacheMonitorSummary } from "../components/LocalCacheMonitorSummary.js";
 import { useStoredQueriesResults } from "../components/Reports/ReportHooks.js";

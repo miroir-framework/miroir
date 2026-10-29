@@ -14,7 +14,7 @@ import {
   GraphDataPoint, 
   LineChartData, 
   PieChartData 
-} from './GraphInterfaces';
+} from "miroir-react";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "GraphComponent");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);

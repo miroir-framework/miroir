@@ -51,10 +51,10 @@ import {
   ThemedSelectWithPortal
 } from "miroir-react";
 import { MlLiteralEditorProps } from "./MlElementEditorInterface";
-import { isPrimaryUnionDiscriminatorField } from "./unionDiscriminatorField.js";
+import { isPrimaryUnionDiscriminatorField } from "miroir-react";
 import { findPathAnnotation } from "../Reports/TransformerTypeAnnotation.js";
-import { TransformerNodeActions, TransformerTypeChangeDialog } from "./TransformerNodeActions.js";
-import { ValueHistoryContext } from "./ValueHistoryProvider.js";
+import { TransformerNodeActions, TransformerTypeChangeDialog } from "miroir-react";
+import { ValueHistoryContext } from "miroir-react";
 import { editorNavigationKey, useTrackedRender } from "../../tools/useTrackedRender.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MlLiteralEditor");

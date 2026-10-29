@@ -6,16 +6,16 @@ import React, { lazy, Suspense, useCallback, useContext, useMemo } from "react";
 
 import { useMiroirTheme } from "miroir-react";
 import type { TransformerTypeBadge } from "../ValueObjectEditor/MlElementEditorInterface.js";
-import { switchButtonCss, ValueHistoryButtons } from "../ValueObjectEditor/ValueHistoryButtons.js";
-import { ValueHistoryContext, ValueHistoryScope } from "../ValueObjectEditor/ValueHistoryProvider.js";
-import { useBlockDefineOfEndpointAction } from "./BlockEndpointAction.js";
+import { switchButtonCss, ValueHistoryButtons } from "miroir-react";
+import { ValueHistoryContext, ValueHistoryScope } from "miroir-react";
+import { useBlockDefineOfEndpointAction } from "miroir-react";
 import {
   BlockDefineContext,
   BlockRunnerContext,
   BlockViewModeContext,
   type BlockRunner,
   type BlockViewMode,
-} from "./BlockViewMode.js";
+} from "miroir-react";
 
 // ################################################################################################
 // #498: the Blocks / Form / JSON switch of a transformer field, and the view it selects. The block

@@ -23,10 +23,10 @@ import { v4 as uuidv4 } from "uuid";
 import { useMiroirTheme } from "miroir-react";
 import { useCurrentModelEnvironment, useEntityInstanceUuidIndexFromLocalCache } from "../../ReduxHooks.js";
 import { useBlockRunnerOf } from "../BlockEditor/BlockRunnerHat.js";
-import { BlockActionDefaultsContext, BlockRunnerContext } from "../BlockEditor/BlockViewMode.js";
+import { BlockActionDefaultsContext, BlockRunnerContext } from "miroir-react";
 import { TypedValueObjectEditor } from "../Reports/TypedValueObjectEditor.js";
 import { StoredRunnerView } from "../Runners/RunnerView.js";
-import { saveInstanceFromUI } from "../saveInstanceFromUI.js";
+import { saveInstanceFromUI } from "miroir-react";
 import {
   ThemedButton,
   ThemedDialog,

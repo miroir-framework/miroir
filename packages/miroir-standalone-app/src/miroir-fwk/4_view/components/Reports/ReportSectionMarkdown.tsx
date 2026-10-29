@@ -26,7 +26,7 @@ import {
   ThemedTitle,
   ThemedTooltip,
 } from "miroir-react";
-import { MarkdownEditorModal } from './MarkdownEditorModal.js';
+import { MarkdownEditorModal } from "miroir-react";
 import type { MarkdownReportSection } from 'miroir-core';
 import { useFormikContext } from 'formik';
 import { useMiroirContextService } from 'miroir-react';

@@ -10,7 +10,7 @@ import {
 } from "miroir-core";
 
 import { packageName, type ReportUrlParamKeys } from "../../../constants";
-import { PageContainer } from "../components/Page/PageContainer";
+import { PageContainer } from "miroir-react";
 import {
   EntityInstanceSelectorPanel,
 } from "../components/TransformerEditor/EntityInstanceSelectorPanel";
@@ -20,7 +20,7 @@ import {
   formikPath_EntityInstanceSelectorPanel,
   useMiroirContextService,
 } from "miroir-react";
-import { formikPath_TransformerEditorInputModeSelector } from "../components/TransformerEditor/TransformerEditorInterface";
+import { formikPath_TransformerEditorInputModeSelector } from "miroir-react";
 import { deployment_Library_DO_NO_USE, entityBook, selfApplicationLibrary } from "miroir-example-library";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "SearchPage");

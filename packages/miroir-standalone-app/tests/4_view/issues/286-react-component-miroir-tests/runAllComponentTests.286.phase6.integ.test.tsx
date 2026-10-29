@@ -71,7 +71,7 @@ import {
 } from "../../../../src/miroir-fwk/4_view/components/Buttons/RunAllMiroirTestsButton";
 import type { TestResultData } from "../../../../src/miroir-fwk/4_view/components/Buttons/testResultReport";
 import { MiroirTestListDisplay } from "../../../../src/miroir-fwk/4_view/components/Reports/MiroirTestListDisplay";
-import { ReportPageContextProvider } from "../../../../src/miroir-fwk/4_view/components/Reports/ReportPageContext";
+import { ReportPageContextProvider } from "miroir-react";
 import { resolveRepoRoot } from "../../../helpers/integrationTestProfiles.js";
 
 // ################################################################################################

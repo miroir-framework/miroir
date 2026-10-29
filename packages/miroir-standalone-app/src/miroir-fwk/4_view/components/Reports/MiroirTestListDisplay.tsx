@@ -24,7 +24,7 @@ import { ComponentTestSandboxProvider, useComponentTestSandbox } from './Compone
 import { MiroirTestResultsDisplay } from './MiroirTestResultsDisplay.js';
 import { UiIntegrationTestRunControls } from './UiIntegrationTestRunControls.js';
 import { UiIntegrationTestRunInspectorSummary } from './UiIntegrationTestRunInspectorSummary.js';
-import { getMiroirTestSuiteKey, sortMiroirTestInstances } from './miroirTestSuiteKey.js';
+import { getMiroirTestSuiteKey, sortMiroirTestInstances } from "miroir-react";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, 'MiroirTestListDisplay');
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);

@@ -18,7 +18,7 @@ import {
 } from "miroir-core";
 
 import { packageName } from "../../../constants.js";
-import { PageContainer } from "../components/Page/PageContainer.js";
+import { PageContainer } from "miroir-react";
 import { ModelDiagramReportSectionView } from "../components/Reports/ModelDiagramReportSectionView.js";
 import { cleanLevel } from "../constants.js";
 import { useMiroirTheme } from "miroir-react";
@@ -31,7 +31,7 @@ import { Formik, type FormikProps } from "formik";
 import { TypedValueObjectEditor } from "../components/Reports/TypedValueObjectEditor.js";
 import { reportEntityDetails } from "miroir-app-miroir";
 import { deployment_Miroir } from "miroir-app-admin";
-import { reportUrl } from "../navigation.js";
+import { reportUrl } from "miroir-react";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ModelDiagramPage");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);

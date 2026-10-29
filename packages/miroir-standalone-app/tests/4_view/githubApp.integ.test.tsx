@@ -27,9 +27,9 @@ import {
   selfApplicationGitHub,
 } from "miroir-example-github";
 
-import { ReportPageContextProvider } from "../../src/miroir-fwk/4_view/components/Reports/ReportPageContext.js";
+import { ReportPageContextProvider } from "miroir-react";
 import { ReportViewWithEditor } from "../../src/miroir-fwk/4_view/components/Reports/ReportViewWithEditor.js";
-import { DocumentOutlineContextProvider } from "../../src/miroir-fwk/4_view/components/ValueObjectEditor/InstanceEditorOutlineContext.js";
+import { DocumentOutlineContextProvider } from "miroir-react";
 import { MiroirThemeProvider } from "miroir-react";
 import { ReportUrlParamKeys } from "../../src/constants.js";
 import {

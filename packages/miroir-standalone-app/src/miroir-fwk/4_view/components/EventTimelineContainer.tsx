@@ -3,7 +3,7 @@ import { LoggerInterface, MiroirLoggerFactory } from 'miroir-core';
 import { packageName } from '../../../constants';
 import { cleanLevel } from '../constants';
 import { DraggableContainer } from "miroir-react";
-import { MiroirEventTimeLine } from './MiroirEventTimeline.js';
+import { MiroirEventTimeLine } from "miroir-react";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "EventTimelineContainer");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);

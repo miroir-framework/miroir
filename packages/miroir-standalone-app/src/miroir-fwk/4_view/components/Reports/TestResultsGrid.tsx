@@ -13,8 +13,8 @@ import {
   type TestResultDataAndSelect,
   type TestSelectionState,
 } from "./testSelectionUtils.js";
-import { extractUnitTestLabelFromTestPath } from "./unitTestKindUi.js";
-import { useReportPageContext } from "./ReportPageContext.js";
+import { extractUnitTestLabelFromTestPath } from "miroir-react";
+import { useReportPageContext } from "miroir-react";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "TestResultsGrid");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);

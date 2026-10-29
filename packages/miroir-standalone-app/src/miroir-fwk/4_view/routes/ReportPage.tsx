@@ -16,7 +16,7 @@ import {
   packageName,
   ReportUrlParamKeys
 } from "../../../constants.js";
-import { PageContainer } from "../components/Page/PageContainer.js";
+import { PageContainer } from "miroir-react";
 import { ThemedBox } from "miroir-react";
 import { cleanLevel } from "../constants.js";
 import { usePageConfiguration } from "../services/index.js";

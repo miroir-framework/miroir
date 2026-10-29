@@ -4,7 +4,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { Formik } from 'formik';
 import { MiroirThemeProvider } from "miroir-react";
-import { BlobEditorField } from '../../src/miroir-fwk/4_view/components/ValueObjectEditor/BlobEditorField';
+import { BlobEditorField } from "miroir-react";
 
 const log = console;
 

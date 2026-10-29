@@ -35,14 +35,14 @@ import {
   useBlockEditing,
   useBlockEditingValue,
   type TrayUpdate,
-} from "./BlockEditing.js";
-import { BlockField, BlockKeyField, MlSchemaChip } from "./BlockFields.js";
+} from "miroir-react";
+import { BlockField, BlockKeyField, MlSchemaChip } from "miroir-react";
 import { BlockInsertTargets } from "./BlockInsertTargets.js";
-import { BlockResult, useBlockRunInput } from "./BlockResult.js";
+import { BlockResult, useBlockRunInput } from "miroir-react";
 import { BlockPalette } from "./BlockPalette.js";
-import { BlockVariablePath } from "./BlockVariablePath.js";
+import { BlockVariablePath } from "miroir-react";
 import { BlockRunnerHat } from "./BlockRunnerHat.js";
-import { BlockDefineContext, BlockRunnerContext, useBlockModelEnvironment } from "./BlockViewMode.js";
+import { BlockDefineContext, BlockRunnerContext, useBlockModelEnvironment } from "miroir-react";
 
 // ################################################################################################
 // #498: the read-only block view of a transformer value (analysis #497). The tree comes from the

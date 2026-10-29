@@ -30,7 +30,7 @@ import {
 import { packageName } from "../../../constants.js";
 import { useMiroirFundamentalMlSchemaForDeployment } from "../ReduxHooks.js";
 import { cleanLevel } from "../constants.js";
-import { ErrorFallbackComponent } from "./ErrorFallbackComponent.js";
+import { ErrorFallbackComponent } from "miroir-react";
 import type { ValueObjectEditMode } from "./Reports/ReportSectionEntityInstance.js";
 import ReportSectionViewWithEditor from "./Reports/ReportSectionViewWithEditor.js";
 import { reportSectionsFormSchema } from "./Reports/ReportTools.js";

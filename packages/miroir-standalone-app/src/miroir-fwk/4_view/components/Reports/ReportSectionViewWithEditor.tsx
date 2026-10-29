@@ -25,7 +25,7 @@ import { useNavigate } from 'react-router-dom';
 import { packageName, type ReportUrlParamKeys } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
 import { useCurrentModel, useCurrentModelEnvironment } from '../../ReduxHooks.js';
-import { reportUrl } from '../../navigation.js';
+import { reportUrl } from "miroir-react";
 import { ReportDisplay } from '../../routes/ReportDisplay';
 import {
   OpenReportModal,
@@ -44,9 +44,9 @@ import { ReportSectionListDisplay } from './ReportSectionListDisplay.js';
 import { ReportSectionMarkdown } from './ReportSectionMarkdown.js';
 import { ReportSectionMiroirTest } from './ReportSectionMiroirTest.js';
 import { TypedValueObjectEditor } from './TypedValueObjectEditor.js';
-import { TransformerRunnerReportSectionView } from './TransformerRunner.js';
+import { TransformerRunnerReportSectionView } from "miroir-react";
 import { ReportInputSection } from './ReportInputSection.js';
-import { resolveApiCallReportSectionSchema } from './resolveApiCallReportSectionSchema.js';
+import { resolveApiCallReportSectionSchema } from "miroir-react";
 import {
   isMultistepStepEnvelope,
   useOptionalMultistepReportHost,

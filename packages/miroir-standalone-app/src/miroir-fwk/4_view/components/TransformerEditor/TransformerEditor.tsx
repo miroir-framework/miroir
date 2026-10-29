@@ -45,7 +45,7 @@ import {
   useTransformer
 } from "../Reports/ReportHooks";
 import { useCurrentModelEnvironment } from "../../ReduxHooks.js";
-import { useReportPageContext } from '../Reports/ReportPageContext';
+import { useReportPageContext } from "miroir-react";
 import { TypedValueObjectEditor } from '../Reports/TypedValueObjectEditor';
 import {
   BlockDefineContext,
@@ -53,10 +53,10 @@ import {
   BlockViewModeProvider,
   type BlockDefine,
   type BlockRunInput,
-} from '../BlockEditor/BlockViewMode.js';
-import { ValueHistory } from '../ValueObjectEditor/ValueHistory.js';
-import { ValueHistoryProvider } from '../ValueObjectEditor/ValueHistoryProvider.js';
-import { ValueHistoryFallbackButtons } from '../ValueObjectEditor/ValueHistoryButtons.js';
+} from "miroir-react";
+import { ValueHistory } from "miroir-react";
+import { ValueHistoryProvider } from "miroir-react";
+import { ValueHistoryFallbackButtons } from "miroir-react";
 import type { TransformerTypeBadge, TransformerTypeBadgePart } from '../ValueObjectEditor/MlElementEditorInterface';
 import {
   ThemedContainer,
@@ -69,7 +69,7 @@ import {
 } from "miroir-react";
 import { EntityInstanceSelectorPanel } from './EntityInstanceSelectorPanel';
 import { TransformationResultPanel } from './TransformationResultPanel';
-import { TransformerDefinitionSave } from './TransformerDefinitionSave';
+import { TransformerDefinitionSave } from "miroir-react";
 import {
   formikPath_TransformerEditorInputModeSelector,
   buildInitialTransformerSelectorFromPersistedState,
@@ -79,7 +79,7 @@ import {
   transformerEditorPersistedUpdateMatchesPersistedState,
   type TransformerEditorFormikValueType,
   type TransformerEditorProps,
-} from "./TransformerEditorInterface";
+} from "miroir-react";
 import { TransformerEventsPanel } from './TransformerEventsPanel';
 import { useShowTransformerTypes } from './TransformerTypesDisplay';
 

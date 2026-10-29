@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
-import { setAuthToken } from "../auth/authSession.js";
+import { setAuthToken } from "miroir-react";
 import { requestLoginToken } from "../auth/authTransport.js";
-import { PageContainer } from "../components/Page/PageContainer.js";
+import { PageContainer } from "miroir-react";
 import {
   ThemedBox,
   ThemedButton,
