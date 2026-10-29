@@ -12,6 +12,7 @@ Key sources: [`recordBundleSize.ts`](../../../packages/miroir-app-meta/scripts/r
 Grilling: round 1 (Q1 to Q9) in the project folder, `issue-550/grilling-round-1.md`; A accepted every recommended option on 2026-10-24.
 
 **Document role:** analysis and decision record.
+**Outcome:** closed on 2026-10-29 after four pilots, without the full runs: see [results.md](./results.md). The efficiency claim is dropped from #549.
 **Status:** D1 to D9 are A's answers to grilling round 1. D10 to D18 settle the round 2 points (task contracts, how the MCP arm runs, isolation, harness language) with defaults chosen by Claude on 2026-10-24, open to A's review with this document.
 
 ---
@@ -22,7 +23,7 @@ Grilling: round 1 (Q1 to Q9) in the project folder, `issue-550/grilling-round-1.
 |---|---|
 | G1 | **Know whether the claim holds.** In order to state, or drop, "agents spend fewer tokens and less time on Miroir" in the README and the home page, as a Miroir maintainer, I can read the tokens, list cost, time and turns that the same agent spent on the same features in Miroir and in conventional code, over several runs. |
 | G2 | **Know whether MCP-only is practical.** In order to decide whether agents should change applications only through MCP (the goal set in #549), as a Miroir maintainer, I can compare the MCP-only runs with the file-edit runs on the same features. |
-| G3 | **Know what UUIDs cost.** In order to decide whether agent tools should accept names where they now take UUIDs, as a Miroir maintainer, I can read the share of the agent's tool traffic that UUIDs take. |
+| G3 | **Know what UUIDs cost.** In order to decide whether agent tools could exchange shortened unique identifiers where they now take full UUIDs (never names: technical identifiers do not mix with business identifiers), as a Miroir maintainer, I can read the share of the agent's tool traffic that UUIDs take. |
 | G4 | **Count only working results.** In order to compare cost for the same outcome, as a Miroir maintainer, I see for every run whether hidden acceptance tests, written before the runs and identical in scenario across arms, passed. |
 | G5 | **Rerun and extend.** In order to rerun the benchmark after a Miroir change, or add the arm with the #551 skills, as a Miroir contributor, I run one command per run and one command to record it, from the repository. |
 
@@ -33,7 +34,7 @@ Grilling: round 1 (Q1 to Q9) in the project folder, `issue-550/grilling-round-1.
 | An arm with the app-developer skills | #551, then a rerun with this harness (D7) |
 | Other models (Haiku, Opus) or other agents (Cursor, the in-app agent of `miroir-ai`) | later, only if the Sonnet results are close (D3) |
 | Exact token counts of UUIDs (token-counting API) | later, only if the character share is high (D9) |
-| Names instead of UUIDs in MCP tools | follow-up issue, filed only if G3 calls for it |
+| Shortened unique identifiers in MCP tools (names never replace UUIDs) | to be established; no follow-up issue filed (results.md) |
 | Writing the efficiency line in the README, the home page, the blog | #549 slices 1 and 9, reading this issue's docs page |
 | Running the benchmark in CI | not planned: each run costs money (D2) |
 

@@ -14,6 +14,7 @@ import {
   entitySelfApplicationModelBranch,
   entitySelfApplicationVersion,
   entityTheme,
+  entityTransformerDefinition,
   selfApplicationMiroir,
 } from "miroir-app-miroir";
 
@@ -224,6 +225,7 @@ const MODEL_ENTITIES: Record<string, { uuid: Uuid; name: string }> = {
   mlSchemas: entityMlSchema,
   runners: entityRunner,
   themes: entityTheme,
+  transformerDefinitions: entityTransformerDefinition,
   applications: entitySelfApplication,
   applicationVersions: entitySelfApplicationVersion,
   applicationModelBranches: entitySelfApplicationModelBranch,
@@ -355,6 +357,7 @@ async function prepareTestbed(
       mlSchemas: live.mlSchemas as any,
       runners: live.runners as any,
       themes: live.themes as any,
+      transformerDefinitions: live.transformerDefinitions as any,
       applications: live.applications as any,
       applicationVersions: live.applicationVersions as any,
     } as MetaModelPartial,

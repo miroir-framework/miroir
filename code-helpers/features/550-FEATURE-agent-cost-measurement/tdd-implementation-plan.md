@@ -15,7 +15,7 @@
 
 In: G1 (know whether the claim holds), G2 (know whether MCP-only is practical), G3 (know what UUIDs cost), G4 (count only working results), G5 (rerun and extend), per [`analysis.md`](./analysis.md).
 
-Out: the arm with app-developer skills (#551, rerun later); other models and agents; exact UUID token counts; names instead of UUIDs in MCP tools (follow-up issue only if G3 calls for it); the efficiency line in the README, home page and blog (#549); running the benchmark in CI.
+Out: the arm with app-developer skills (#551, rerun later); other models and agents; exact UUID token counts; shortened unique identifiers in MCP tools (names never replace UUIDs; to be established); the efficiency line in the README, home page and blog (#549); running the benchmark in CI.
 
 ## Related links
 
@@ -340,7 +340,7 @@ Dry run of feature 2 (D4). Either `lendDocument` refuses the ninth open loan wit
 
 The reference `lendDocument` in `reference/miroir/lending-limit/`. If no action can fail on a condition (analysis §4.2), stop at the smallest proof that it cannot (the attempted reference and the error), then:
 - record it in the analysis (document history) and in this plan's Locked defaults (D10 becomes 18 runs);
-- file "FEATURE: an Endpoint action refuses on a condition" in `miroir-framework/miroir`, on Project #2 (A's rule), linked from #550.
+- file "FEATURE: an Endpoint action refuses on a condition" in `miroir-framework/miroir`, on the GitHub Project miroir-framework (https://github.com/users/miroir-framework/projects/2, A's rule), linked from #550.
 
 ### Refactor checkpoint
 
@@ -527,6 +527,8 @@ Realization (2026-10-25): #556, #558, #559 and #560 landed in `_integration` wit
 
 ## Slice 10: full runs
 
+Not run: #550 closed after the fourth pilot (2026-10-29), see [results.md](./results.md).
+
 **Status:** ⬜ pending (waits for A's go after slice 9)
 
 ### Goal
@@ -548,6 +550,8 @@ _(to fill)_
 
 ## Slice 11: docs page, nonreg steps, decisions, cleanup
 
+Not done as planned: the results and decisions are in [results.md](./results.md) and on #550, not on a docs page.
+
 **Status:** ⬜ pending
 
 ### Goal
@@ -558,7 +562,7 @@ A docs page gives the method and the numbers; the decisions the numbers drive ar
 
 - `docs/reference/agent-cost-benchmark.md`: method (arms, features, contracts, limits, isolation), results per feature and arm (medians and spread of cost, tokens, time, turns; acceptance rate), UUID share, threats to validity (one model, one agent, Library-sized features, list price), how to rerun.
 - Nonreg steps: `unit-550-agent-run-record` (vitest of the record script, scopes `tooling`); the pytest tests run in the PR gate already. MiroirTest `report.agentRunHistory` joins the existing Meta report step if one exists, else its own step (scopes `ui`).
-- Decisions: a comment on #549 with the result (efficiency claim supported or not); for G3, a follow-up issue on Project #2 if the UUID share justifies it, else a note on the docs page.
+- Decisions: a comment on #549 with the result (efficiency claim supported or not); for G3, a decision on shortened unique identifiers (names never replace UUIDs).
 - Tracer narrative: from a clean session, `run.py` then `agent-run:record` then the Meta Report shows the run.
 
 ### AC checklist
@@ -568,7 +572,7 @@ A docs page gives the method and the numbers; the decisions the numbers drive ar
 | analysis.md and tdd-implementation-plan.md in `code-helpers/features/550-FEATURE-agent-cost-measurement/` | this folder |
 | The runs of the three arms are recorded in `miroir-app-meta`, with a Report | slices 2, 3, 9, 10; `modelValidation`, `report.agentRunHistory` |
 | A docs page gives the method and the numbers; positioning pages cite or drop the claim | `docs/reference/agent-cost-benchmark.md`; comment on #549 |
-| A decision on accepting names where agent tools take UUIDs | follow-up issue or docs note (slice 11) |
+| A decision on shortening the UUIDs agent tools exchange | results.md: to be established, no issue filed |
 
 ### Validation
 

@@ -6,6 +6,7 @@ No test calls the paid agent: the summary is built from a recorded transcript (`
 from __future__ import annotations
 
 import json
+import shutil
 import stat
 from datetime import datetime, timezone
 from pathlib import Path
@@ -146,3 +147,28 @@ def test_conventional_workspace_is_the_app_with_data_and_a_database():
     assert len(list((workspace / "prisma" / "library-data" / "e81078f3-2de7-4301-bd79-d3a156aec149").glob("*.json"))) == 60
     assert (workspace / "prisma" / "dev.db").stat().st_size > 0
     assert not (workspace / ".next").exists()
+
+
+def test_a_conventional_run_keeps_the_agent_app_and_its_changes(tmp_path):
+    baseline = tmp_path / "baseline"
+    (baseline / "app").mkdir(parents=True)
+    (baseline / "app" / "page.tsx").write_text("old\n")
+    workspace = tmp_path / "workspace"
+    shutil.copytree(baseline, workspace)
+    (workspace / "app" / "page.tsx").write_text("new\n")
+    (workspace / "tests").mkdir()
+    (workspace / "tests" / "added.test.ts").write_text("test\n")
+    for ignored in ("node_modules/pkg/index.js", ".next/build.js", "prisma/dev.db", "generated/client.js"):
+        (workspace / ignored).parent.mkdir(parents=True, exist_ok=True)
+        (workspace / ignored).write_text("x")
+    run_dir = tmp_path / "run"
+    run_dir.mkdir()
+
+    run.keep_conventional_app(workspace, run_dir, baseline)
+
+    kept = sorted(str(path.relative_to(run_dir / "app")) for path in (run_dir / "app").rglob("*") if path.is_file())
+    assert kept == ["app/page.tsx", "tests/added.test.ts"]
+    diff = (run_dir / "changes.diff").read_text()
+    assert "+++ agent/app/page.tsx" in diff and "+new" in diff
+    assert "+++ agent/tests/added.test.ts" in diff
+    assert str(tmp_path) not in diff
