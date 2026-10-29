@@ -20,9 +20,9 @@ import {
   defaultBlockEditorColors,
   useMiroirTheme,
   type BlockEditorColors,
-} from "../../contexts/MiroirThemeContext.js";
+} from "miroir-react";
 import type { TransformerTypeBadge } from "../ValueObjectEditor/MlElementEditorInterface.js";
-import { ThemedIcon } from "../Themes/index.js";
+import { ThemedIcon } from "miroir-react";
 import { useBlockEditorBuildMarking } from "./BlockEditorDisplay.js";
 import { BlockDefineHeader } from "./BlockDefineHeader.js";
 import { BlockDndContext, useBlockDraggable, useBlockDroppable, useDraggingBlock } from "./BlockDragDrop.js";

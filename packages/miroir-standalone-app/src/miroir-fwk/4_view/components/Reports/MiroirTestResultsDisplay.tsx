@@ -1,7 +1,7 @@
 import type { ViewParams } from 'miroir-core';
 
 import { countTestResults, type TestResultData } from '../Buttons/testResultReport.js';
-import { ThemedProgressiveAccordion } from '../Themes/BasicComponents.js';
+import { ThemedProgressiveAccordion } from "miroir-react";
 import { TestResultsGrid } from './TestResultsGrid.js';
 import { UnitTestExecutionSummary } from './UnitTestExecutionSummary.js';
 import type { TestResultDataAndSelect } from './testSelectionUtils.js';

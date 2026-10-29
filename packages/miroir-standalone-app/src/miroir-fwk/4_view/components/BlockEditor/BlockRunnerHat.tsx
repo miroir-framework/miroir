@@ -9,7 +9,7 @@ import {
 } from "miroir-core";
 import React, { useMemo, useState } from "react";
 
-import { blockCategoryColor } from "../../contexts/MiroirThemeContext.js";
+import { blockCategoryColor } from "miroir-react";
 import { NameField, smallButton, type BlockDefineHeaderColors } from "./BlockDefineHeader.js";
 import { useBlockDraggable } from "./BlockDragDrop.js";
 import { useBlockEditing } from "./BlockEditing.js";

@@ -2,8 +2,8 @@
 import { css } from '@emotion/react';
 import React, { useMemo } from 'react';
 
-import { ThemedComponentProps } from 'miroir-react';
-import { useMiroirTheme } from '../../contexts/MiroirThemeContext';
+import { ThemedComponentProps } from "../helpers/BaseTypes.js";
+import { useMiroirTheme } from "../../contexts/MiroirThemeContext.js";
 
 // ################################################################################################
 // Display Components

@@ -36,7 +36,7 @@ import {
   ThemedDialogTitle,
   ThemedSpan,
   ThemedStyledButton,
-} from "../Themes/index.js";
+} from "miroir-react";
 import { openReportHref } from "./OpenReportLaunch.js";
 import { useYamlParserStatus } from "./useYamlParserStatus.js";
 

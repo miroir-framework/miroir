@@ -44,7 +44,7 @@ import {
   Refresh as RefreshIcon,
   Visibility as VisibilityIcon,
   Warning as WarningIcon
-} from './components/Themes/MaterialSymbolWrappers';
+} from "miroir-react";
 
 import { ErrorLogEntry, ThemedOnScreenHelper, useErrorLogService } from 'miroir-react';
 

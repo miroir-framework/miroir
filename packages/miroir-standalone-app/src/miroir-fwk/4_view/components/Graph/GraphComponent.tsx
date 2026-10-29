@@ -6,7 +6,7 @@ import React, { useEffect, useRef } from 'react';
 import { LoggerInterface, MiroirLoggerFactory } from 'miroir-core';
 import { packageName } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
-import { useMiroirTheme } from '../../contexts/MiroirThemeContext';
+import { useMiroirTheme } from "miroir-react";
 import { 
   BarChartData, 
   GraphConfig, 

@@ -12,7 +12,7 @@ import {
   ThemedDialogTitle,
   ThemedSpan,
   ThemedStyledButton,
-} from "../Themes/index.js";
+} from "miroir-react";
 
 export type OpenReportSpec = {
   label?: string;

@@ -27,7 +27,7 @@ import {
   ThemedDisplayValue,
   ThemedLabeledEditor,
   ThemedSelectWithPortal
-} from "../Themes/index";
+} from "miroir-react";
 import { MlEnumEditorProps } from "./MlElementEditorInterface";
 import { isPrimaryUnionDiscriminatorField } from "./unionDiscriminatorField.js";
 import { useSelector } from "react-redux";

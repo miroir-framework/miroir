@@ -6,7 +6,7 @@
  */
 
 import React from 'react';
-import { ThemedIcon } from './IconComponents';
+import { ThemedIcon } from "./IconComponents.js";
 
 // Create wrapper components for all icons used in the codebase
 export const ChevronLeftIcon: React.FC<any> = (props) => <ThemedIcon icon="chevron_left" {...props} />;

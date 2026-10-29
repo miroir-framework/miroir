@@ -14,8 +14,8 @@ import {
   ThemedSpan,
   ThemedStackedLabeledEditor,
   ThemedTitle,
-} from "../components/Themes/index.js";
-import { useMiroirTheme } from "../contexts/MiroirThemeContext.js";
+} from "miroir-react";
+import { useMiroirTheme } from "miroir-react";
 
 export function LoginPage(): React.JSX.Element {
   const [username, setUsername] = useState("");

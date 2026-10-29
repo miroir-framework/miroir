@@ -26,7 +26,7 @@ import {
 import { packageName } from "../../../constants.js";
 import { cleanLevel } from "../constants.js";
 import { usePageConfiguration } from "../services/index.js";
-import { emptyObject } from "../tools/emptyObject.js";
+import { emptyObject } from "miroir-react";
 
 import { deployment_Miroir } from "miroir-app-admin";
 import {

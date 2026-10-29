@@ -1,4 +1,4 @@
-import { ResolvedTableTheme } from './TableTheme.js';
+import { ResolvedTableTheme } from "./TableTheme.js";
 
 // Generate CSS styles for AG-Grid
 export const generateAgGridStyles = (theme: ResolvedTableTheme): string => `

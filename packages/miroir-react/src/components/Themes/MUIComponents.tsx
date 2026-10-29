@@ -22,8 +22,8 @@ import {
   SelectProps,
 } from "@mui/material";
 
-import { useMiroirTheme } from '../../contexts/MiroirThemeContext';
-import { ThemedComponentProps } from 'miroir-react';
+import { useMiroirTheme } from "../../contexts/MiroirThemeContext.js";
+import { ThemedComponentProps } from "../helpers/BaseTypes.js";
 
 // ################################################################################################
 // Themed Material-UI Components

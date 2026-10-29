@@ -11,13 +11,11 @@ import "@testing-library/jest-dom";
 
 const showPerformanceDisplayRef = { current: false };
 
-vi.mock("miroir-react", () => ({
+vi.mock("miroir-react", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("miroir-react")>()),
   useMiroirContextService: () => ({
     showPerformanceDisplay: showPerformanceDisplayRef.current,
   }),
-}));
-
-vi.mock("../../src/miroir-fwk/4_view/contexts/MiroirThemeContext.js", () => ({
   useMiroirTheme: () => ({
     currentTheme: {
       colors: {},
@@ -45,7 +43,7 @@ import { RenderInsightSummary } from "../../src/miroir-fwk/4_view/components/Ren
 import {
   NOOP_RENDER_COUNTS,
   renderInsightRegistry,
-} from "../../src/miroir-fwk/4_view/tools/renderInsightRegistry.js";
+} from "miroir-react";
 import { useRenderInsight } from "../../src/miroir-fwk/4_view/tools/useRenderInsight.js";
 
 const Fixture: React.FC<{ label: string }> = ({ label }) => {

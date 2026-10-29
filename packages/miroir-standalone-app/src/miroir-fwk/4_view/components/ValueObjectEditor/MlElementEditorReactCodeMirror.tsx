@@ -9,7 +9,7 @@ import {
   ThemedStyledButton,
   ThemedSpan,
   ThemedCodeBlock,
-} from "../Themes/index";
+} from "miroir-react";
 import { getIn, useFormikContext } from "formik";
 import { editsOwnText, historyCommand, ValueHistoryContext } from "./ValueHistoryProvider.js";
 

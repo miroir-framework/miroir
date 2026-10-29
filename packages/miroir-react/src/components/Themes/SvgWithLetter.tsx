@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import React from 'react';
-import { useMiroirTheme } from '../../contexts/MiroirThemeContext';
+import { useMiroirTheme } from "../../contexts/MiroirThemeContext.js";
 
 export interface SvgWithLetterProps {
   svgMarkup: string;

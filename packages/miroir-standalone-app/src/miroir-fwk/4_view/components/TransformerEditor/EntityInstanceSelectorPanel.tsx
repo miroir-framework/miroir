@@ -48,7 +48,7 @@ import {
   ThemedFoldableContainer,
   ThemedHeaderSection,
   ThemedTitle
-} from "../Themes/index";
+} from "miroir-react";
 import {
   formikPath_TransformerEditorInputModeSelector,
   type TransformerEditorFormikValueType,

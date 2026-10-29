@@ -83,7 +83,7 @@ import {
 } from "../../4_view/components/ValueObjectEditor/renderedValueMarkers.js";
 import { cleanLevel } from "../../4_view/constants.js";
 import { useCurrentModel, useCurrentModelEnvironment } from "../../4_view/ReduxHooks.js";
-import { emptyObject } from "../../4_view/tools/emptyObject.js";
+import { emptyObject } from "miroir-react";
 
 // ################################################################################################
 // Browser-safe component test tools (#286). No vitest, no @testing-library/react, no process.env,

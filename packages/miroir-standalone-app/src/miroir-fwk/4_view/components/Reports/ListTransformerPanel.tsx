@@ -53,7 +53,7 @@ import {
   ThemedSwitch,
   ThemedText,
   ThemedTitle,
-} from "../Themes/index.js";
+} from "miroir-react";
 
 /** Shared with TransformerEditor — schemaReference to coreTransformerForBuildPlusRuntime. */
 export const coreTransformerForBuildPlusRuntimeSchemaReference: MlElement = {

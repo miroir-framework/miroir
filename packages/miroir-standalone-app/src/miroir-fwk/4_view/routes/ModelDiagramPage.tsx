@@ -21,7 +21,7 @@ import { packageName } from "../../../constants.js";
 import { PageContainer } from "../components/Page/PageContainer.js";
 import { ModelDiagramReportSectionView } from "../components/Reports/ModelDiagramReportSectionView.js";
 import { cleanLevel } from "../constants.js";
-import { useMiroirTheme } from "../contexts/MiroirThemeContext.js";
+import { useMiroirTheme } from "miroir-react";
 import { useMiroirContextService } from "miroir-react";
 import { useCurrentModel, useCurrentModelEnvironment } from "../ReduxHooks.js";
 import { JsonDisplayHelper } from "miroir-react";

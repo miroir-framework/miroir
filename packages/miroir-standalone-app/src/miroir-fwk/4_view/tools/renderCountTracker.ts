@@ -3,16 +3,16 @@
  * @deprecated Prefer useRenderInsight — this module now delegates to the gated registry.
  */
 
-export type { RenderCounts } from "./renderInsightRegistry.js";
+export type { RenderCounts } from "miroir-react";
 export {
   NOOP_RENDER_COUNTS,
   RenderInsightRegistry,
   renderInsightRegistry,
-} from "./renderInsightRegistry.js";
+} from "miroir-react";
 export { useRenderInsight as useRenderTracker } from "./useRenderInsight.js";
 
 // Keep a thin re-export of the legacy singleton API for any direct callers.
-import { renderInsightRegistry } from "./renderInsightRegistry.js";
+import { renderInsightRegistry } from "miroir-react";
 
 /** @deprecated Use renderInsightRegistry */
 export const renderCountTracker = {

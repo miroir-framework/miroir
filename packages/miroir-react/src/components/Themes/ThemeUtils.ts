@@ -7,8 +7,8 @@
 // ################################################################################################
 
 import { css } from '@emotion/react';
-import { resolveThemeColors } from './ThemeColorDefaults.js';
-import { ResolvedMiroirTheme, type MiroirTheme } from './MiroirTheme.js';
+import { resolveThemeColors } from "./ThemeColorDefaults.js";
+import { ResolvedMiroirTheme, type MiroirTheme } from "./MiroirTheme.js";
 
 type UtilsTheme = ReturnType<typeof resolveThemeColors> & {
   colors: Record<string, string>;

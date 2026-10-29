@@ -8,7 +8,7 @@ import {
   KeyboardDoubleArrowUp,
   UnfoldLess,
   UnfoldMore
-} from "../Themes/MaterialSymbolWrappers";
+} from "miroir-react";
 
 import { MenuItem } from "@mui/material";
 
@@ -37,9 +37,9 @@ import { cleanLevel } from "../../constants.js";
 import {
   useMiroirNestingBorderColor,
   useMiroirNestingColor
-} from "../../contexts/MiroirThemeContext.js";
+} from "miroir-react";
 import { useMiroirContextService } from "miroir-react";
-import { RenderPerformanceMetrics } from "../../tools/renderPerformanceMeasure.js";
+import { RenderPerformanceMetrics } from "miroir-react";
 import { useComponentTestMode } from "../../tools/ComponentTestModeContext.js";
 import { isVitestTestMode } from "../../tools/progressiveRenderConfig.js";
 import { BlockViewModeContext } from "../BlockEditor/BlockViewMode.js";
@@ -60,7 +60,7 @@ import {
   ThemedSwitch,
   ThemedText,
   ThemedTextEditor
-} from "../Themes/index";
+} from "miroir-react";
 import { MlAnyEditor } from "./MlAnyEditor.js";
 import { MlArrayEditor } from "./MlArrayEditor.js";
 import { FieldValidationError } from "./FieldValidationError.js";

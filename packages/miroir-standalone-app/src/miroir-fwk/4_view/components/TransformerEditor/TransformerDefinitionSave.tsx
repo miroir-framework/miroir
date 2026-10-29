@@ -12,9 +12,9 @@ import { useDomainControllerService } from "miroir-react";
 import React, { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 
-import { useMiroirTheme } from "../../contexts/MiroirThemeContext.js";
+import { useMiroirTheme } from "miroir-react";
 import { saveInstanceFromUI } from "../saveInstanceFromUI.js";
-import { ThemedButton } from "../Themes/index";
+import { ThemedButton } from "miroir-react";
 
 // ################################################################################################
 // #502 (analysis #497): the TransformerEditor saves the edited transformer as a composite

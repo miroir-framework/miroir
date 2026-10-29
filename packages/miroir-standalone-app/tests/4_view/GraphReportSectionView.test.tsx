@@ -14,7 +14,7 @@ import {
 import { packageName } from "../../src/constants";
 import { GraphReportSectionView } from "../../src/miroir-fwk/4_view/components/Graph/GraphReportSectionView";
 import { cleanLevel } from "../../src/miroir-fwk/4_view/constants";
-import { MiroirThemeProvider } from "../../src/miroir-fwk/4_view/contexts/MiroirThemeContext";
+import { MiroirThemeProvider } from "miroir-react";
 import { deployment_Miroir } from "miroir-app-admin";
 import { defaultStoredMiroirTheme } from "miroir-app-miroir";
 

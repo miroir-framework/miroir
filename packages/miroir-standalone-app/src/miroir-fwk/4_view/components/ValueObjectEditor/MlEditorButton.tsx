@@ -11,7 +11,7 @@ import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";
 import { useMiroirContextService } from "miroir-react";
 import { useCurrentModelEnvironment } from "../../ReduxHooks.js";
-import { ThemedStyledButton } from "../Themes/index.js";
+import { ThemedStyledButton } from "miroir-react";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MlEditorButton");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);

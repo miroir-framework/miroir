@@ -16,7 +16,7 @@ import {
   buildReportApplicationSwitchUrl,
 } from "./reportInputApplication.js";
 import { reportUrl } from "../../navigation.js";
-import { ThemedStyledButton } from "../Themes/index.js";
+import { ThemedStyledButton } from "miroir-react";
 
 /**
  * Report inputReportSection renderer.

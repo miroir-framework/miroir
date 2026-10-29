@@ -27,7 +27,7 @@ import {
   RunMiroirTestSuiteButton,
   type MiroirTestResultData,
 } from "../Buttons/RunMiroirTestSuiteButton.js";
-import { ThemedEditableInput, ThemedLabel } from "../Themes/index.js";
+import { ThemedEditableInput, ThemedLabel } from "miroir-react";
 import { ComponentTestRunSettings, useComponentTestRunPreparation } from "./ComponentTestRunSettings.js";
 import { ComponentTestSandboxProvider, useComponentTestSandbox } from "./ComponentTestSandbox.js";
 import { TestExecutionPanel } from "./TestExecutionPanel.js";

@@ -32,7 +32,7 @@ import {
   PlayArrow,
   Science,
   Visibility
-} from './Themes/MaterialSymbolWrappers';
+} from "miroir-react";
 
 import {
   formatActivityRunToken,

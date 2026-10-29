@@ -2,7 +2,7 @@
 import { css } from "@emotion/react";
 import React, { useState } from "react";
 
-import { blockCategoryColor, type BlockEditorColors } from "../../contexts/MiroirThemeContext.js";
+import { blockCategoryColor, type BlockEditorColors } from "miroir-react";
 import { useBlockDraggable } from "./BlockDragDrop.js";
 import { useBlockEditing, type ArmedBlock } from "./BlockEditing.js";
 import type { BlockDefine } from "./BlockViewMode.js";

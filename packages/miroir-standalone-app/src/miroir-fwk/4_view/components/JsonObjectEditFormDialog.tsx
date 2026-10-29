@@ -34,7 +34,7 @@ import { ErrorFallbackComponent } from "./ErrorFallbackComponent.js";
 import type { ValueObjectEditMode } from "./Reports/ReportSectionEntityInstance.js";
 import ReportSectionViewWithEditor from "./Reports/ReportSectionViewWithEditor.js";
 import { reportSectionsFormSchema } from "./Reports/ReportTools.js";
-import { ThemedDialog, ThemedDialogTitle } from "./Themes/index.js";
+import { ThemedDialog, ThemedDialogTitle } from "miroir-react";
 
 import { entityDefinitionReport as reportFormMlSchemaSource, entityEndpointVersion } from "miroir-app-miroir";
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "JsonObjectEditFormDialog");

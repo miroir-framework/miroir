@@ -1,11 +1,11 @@
-import { ContentCopyIcon, CreateIcon, DeleteIcon, OpenInNew } from '../Themes/MaterialSymbolWrappers';
+import { ContentCopyIcon, CreateIcon, DeleteIcon, OpenInNew } from "miroir-react";
 import { LoggerInterface, MiroirLoggerFactory } from "miroir-core";
 import React from 'react';
 
 import { packageName } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
-import { useMiroirTheme } from '../../contexts/MiroirThemeContext.js';
-import { ThemedSmallIconButton } from '../Themes/index.js';
+import { useMiroirTheme } from "miroir-react";
+import { ThemedSmallIconButton } from "miroir-react";
 import { TableComponentRow } from './EntityInstanceGridInterface.js';
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "TableActionButtonComponents");

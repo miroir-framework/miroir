@@ -2,7 +2,7 @@ import { useMiroirContextService } from 'miroir-react';
 import { LoggerInterface, MiroirLoggerFactory } from 'miroir-core';
 import { packageName } from '../../../constants';
 import { cleanLevel } from '../constants';
-import { DraggableContainer } from './DraggableContainer.js';
+import { DraggableContainer } from "miroir-react";
 import { MiroirEventTimeLine } from './MiroirEventTimeline.js';
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "EventTimelineContainer");

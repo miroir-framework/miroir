@@ -2,10 +2,10 @@
 import { css, type CSSObject, type SerializedStyles } from '@emotion/react';
 import React from 'react';
 
-import { useMiroirTheme } from '../../contexts/MiroirThemeContext';
-import { ThemedComponentProps } from 'miroir-react';
+import { useMiroirTheme } from "../../contexts/MiroirThemeContext.js";
+import { ThemedComponentProps } from "../helpers/BaseTypes.js";
 // import type { CSSInterpolation } from '@mui/material';
-import { ThemedResizeHandleWidth } from './DrawerComponents';
+import { ThemedResizeHandleWidth } from "./DrawerComponents.js";
 
 // ################################################################################################
 // Layout Components

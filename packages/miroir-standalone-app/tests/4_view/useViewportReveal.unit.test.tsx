@@ -8,7 +8,7 @@ import {
   flushProgressiveRevealQueueForTests,
   progressiveRevealQueueSizeForTests,
   scheduleProgressiveReveal,
-} from "../../src/miroir-fwk/4_view/tools/progressiveRevealScheduler.js";
+} from "miroir-react";
 
 describe("useViewportReveal", () => {
   it("reveals immediately when disabled", () => {

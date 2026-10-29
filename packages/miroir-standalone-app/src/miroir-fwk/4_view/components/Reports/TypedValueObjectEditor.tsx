@@ -55,7 +55,7 @@ import {
 } from "../../ReduxHooks.js";
 import { ErrorFallbackComponent } from '../ErrorFallbackComponent.js';
 import { ActionButtonWithSnackbar } from '../Page/ActionButtonWithSnackbar.js';
-import { ThemedStyledButton } from '../Themes/index.js';
+import { ThemedStyledButton } from "miroir-react";
 import { FieldValidationProvider, useFieldValidationContext } from '../ValueObjectEditor/FieldValidationContext.js';
 import { MlElementEditor } from '../ValueObjectEditor/MlElementEditor.js';
 import { BlockModelEnvironmentContext, BlockViewModeRoot } from '../BlockEditor/BlockViewMode.js';

@@ -144,3 +144,39 @@ export { ThemedComponentProps } from "./components/helpers/BaseTypes.js";
 
 // Moved from miroir-standalone-app/src/miroir-fwk/4_view (#592)
 export * from "./components/CenteredSpinner.js";
+
+// Moved from miroir-standalone-app/src/miroir-fwk/4_view (#592)
+export * from "./components/DraggableContainer.js";
+export * from "./components/Themes/BasicComponents.js";
+export * from "./components/Themes/DisplayComponents.js";
+export * from "./components/Themes/DrawerComponents.js";
+export * from "./components/Themes/FileSelector.js";
+export * from "./components/Themes/FormComponents.js";
+export * from "./components/Themes/IconComponents.js";
+export * from "./components/Themes/LayoutComponents.js";
+export * from "./components/Themes/ListComponents.js";
+export * from "./components/Themes/MUIComponents.js";
+export * from "./components/Themes/MaterialSymbolWrappers.js";
+export * from "./components/Themes/SvgWithLetter.js";
+export * from "./components/Themes/SymbolWithLetter.js";
+export * from "./components/Themes/TableStyleGenerators.js";
+export * from "./components/Themes/ThemeUtils.js";
+export * from "./components/Themes/UIComponents.js";
+export * from "./components/Themes/resolveMiroirIconColor.js";
+export * from "./components/Themes/spinner.js";
+export * from "./tools/PortalContainerContext.js";
+export * from "./tools/emptyObject.js";
+export * from "./tools/localCacheMonitorConfig.js";
+export * from "./tools/localCacheMonitorGate.js";
+export * from "./tools/localCacheMonitorIndicators.js";
+export * from "./tools/localCacheMonitorRegistry.js";
+export * from "./tools/localCacheMonitorSession.js";
+export * from "./tools/performanceConfig.js";
+export * from "./tools/performanceDisplayGate.js";
+export * from "./tools/progressiveRevealScheduler.js";
+export * from "./tools/renderInsightChrome.js";
+export * from "./tools/renderInsightMaxDepth.js";
+export * from "./tools/renderInsightRegistry.js";
+export * from "./tools/renderInsightSummarize.js";
+export * from "./tools/renderPerformanceMeasure.js";
+export * from "./utils/foreignKeyAttributeAnalyzer.js";

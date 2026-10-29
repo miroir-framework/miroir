@@ -3,13 +3,13 @@ import { css } from '@emotion/react';
 import React, { useMemo } from 'react';
 
 import { MiroirIcon, MiroirLoggerFactory, type LoggerInterface } from 'miroir-core';
-import { packageName } from '../../../../constants';
-import { cleanLevel } from '../../constants';
-import { useMiroirTheme } from '../../contexts/MiroirThemeContext';
-import { ThemedComponentProps } from 'miroir-react';
-import { SymbolWithLetter } from './SymbolWithLetter';
-import { SvgWithLetter } from './SvgWithLetter';
-import { resolveMiroirIconColor } from './resolveMiroirIconColor';
+import { packageName } from "../../constants.js";
+import { cleanLevel } from "../../viewConstants.js";
+import { useMiroirTheme } from "../../contexts/MiroirThemeContext.js";
+import { ThemedComponentProps } from "../helpers/BaseTypes.js";
+import { SymbolWithLetter } from "./SymbolWithLetter.js";
+import { SvgWithLetter } from "./SvgWithLetter.js";
+import { resolveMiroirIconColor } from "./resolveMiroirIconColor.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "IconComponents");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);

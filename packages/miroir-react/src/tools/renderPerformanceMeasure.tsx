@@ -1,9 +1,9 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import * as React from 'react';
-import { DraggableContainer } from '../components/DraggableContainer.js';
-import { useMiroirTheme } from '../contexts/MiroirThemeContext.js';
-import { getPerformanceConfig } from './performanceConfig.js';
+import { DraggableContainer } from "../components/DraggableContainer.js";
+import { useMiroirTheme } from "../contexts/MiroirThemeContext.js";
+import { getPerformanceConfig } from "./performanceConfig.js";
 
 // Performance tracking for MlElementEditor renders
 export interface RenderPerformanceMetricsElement {

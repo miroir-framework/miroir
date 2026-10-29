@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, FormControl, InputLabel, Select, MenuItem, IconButton, Typography, TextField } from '@mui/material';
-import { Clear as ClearIcon, Add as AddIcon, Remove as RemoveIcon } from '../Themes/MaterialSymbolWrappers';
+import { Clear as ClearIcon, Add as AddIcon, Remove as RemoveIcon } from "miroir-react";
 
 type FilterType = 'contains' | 'startsWith' | 'endsWith' | 'equals' | 'notEqual' | 'notContains' | 'notStartsWith' | 'notEndsWith';
 type FilterLogic = 'AND' | 'OR';

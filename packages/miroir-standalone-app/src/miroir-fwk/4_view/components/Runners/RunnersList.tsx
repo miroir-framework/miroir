@@ -1,4 +1,4 @@
-import { ExpandMoreIcon } from '../Themes/MaterialSymbolWrappers';
+import { ExpandMoreIcon } from "miroir-react";
 // import { z } from "zod";
 
 import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material';

@@ -7,23 +7,24 @@ import { estimateObjectBytes, measureLocalCacheMemory } from "miroir-core";
 const showLocalCacheMonitorRef = { current: false };
 const domainControllerRef: { current: any } = { current: undefined };
 
-vi.mock("miroir-react", () => ({
+vi.mock("miroir-react", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("miroir-react")>()),
   useMiroirContextService: () => ({
     showLocalCacheMonitor: showLocalCacheMonitorRef.current,
     domainController: domainControllerRef.current,
   }),
 }));
 
-import { localCacheMonitorRegistry } from "../../src/miroir-fwk/4_view/tools/localCacheMonitorRegistry.js";
+import { localCacheMonitorRegistry } from "miroir-react";
 import {
   LocalCacheMonitorSummary,
   readLocalCacheMonitorBreakdown,
 } from "../../src/miroir-fwk/4_view/components/LocalCacheMonitorSummary.js";
-import { applyLocalCacheMonitorGate } from "../../src/miroir-fwk/4_view/tools/localCacheMonitorGate.js";
+import { applyLocalCacheMonitorGate } from "miroir-react";
 import {
   LOCAL_CACHE_MONITOR_SESSION_KEY,
   resetLocalCacheMonitorConfig,
-} from "../../src/miroir-fwk/4_view/tools/localCacheMonitorConfig.js";
+} from "miroir-react";
 
 describe("LocalCacheMonitorSummary (Phase 7)", () => {
   beforeEach(() => {

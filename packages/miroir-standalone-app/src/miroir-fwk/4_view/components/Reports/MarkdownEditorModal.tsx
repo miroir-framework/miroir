@@ -19,14 +19,14 @@ import { useFormikContext } from 'formik';
 import { useDomainControllerService, useMiroirContextService } from 'miroir-react';
 import { packageName } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
-import { useMiroirTheme } from '../../contexts/MiroirThemeContext.js';
-import { DraggableContainer } from '../DraggableContainer.js';
+import { useMiroirTheme } from "miroir-react";
+import { DraggableContainer } from "miroir-react";
 import {
   ThemedBox,
   ThemedButton,
   ThemedSpan,
   ThemedText,
-} from '../Themes/index.js';
+} from "miroir-react";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MarkdownEditorModal");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);

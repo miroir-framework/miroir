@@ -37,8 +37,8 @@ import {
   TransformerTypeChangeDialog,
   type TransformerNodeExtraEntry,
 } from "../ValueObjectEditor/TransformerNodeActions.js";
-import { ThemedMenuItem } from "../Themes/index";
-import { useMiroirTheme } from "../../contexts/MiroirThemeContext";
+import { ThemedMenuItem } from "miroir-react";
+import { useMiroirTheme } from "miroir-react";
 
 // ################################################################################################
 // #500: editing with blocks. The block view gets the whole watched value and a writer; every edit

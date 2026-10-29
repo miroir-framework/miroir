@@ -6,14 +6,12 @@ import "@testing-library/jest-dom";
 const showPerformanceDisplayRef = { current: false };
 const showDebugInfoRef = { current: false };
 
-vi.mock("miroir-react", () => ({
+vi.mock("miroir-react", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("miroir-react")>()),
   useMiroirContextService: () => ({
     showPerformanceDisplay: showPerformanceDisplayRef.current,
     showDebugInfo: showDebugInfoRef.current,
   }),
-}));
-
-vi.mock("../../src/miroir-fwk/4_view/contexts/MiroirThemeContext.js", () => ({
   useMiroirTheme: () => ({
     currentTheme: {
       colors: {
@@ -40,9 +38,6 @@ vi.mock("../../src/miroir-fwk/4_view/contexts/MiroirThemeContext.js", () => ({
       borderRadius: { sm: "4px" },
     },
   }),
-}));
-
-vi.mock("../../src/miroir-fwk/4_view/tools/performanceConfig.js", () => ({
   getPerformanceConfig: () => ({
     enabled: true,
     renderThresholdMs: 1.0,

@@ -2,7 +2,7 @@ import React from "react";
 
 import type { Entity, InputOutputPayloadType, InputOutputType } from "miroir-core";
 
-import { ThemedButton, ThemedFlexRow, ThemedSelectWithPortal, ThemedText } from "../Themes/index.js";
+import { ThemedButton, ThemedFlexRow, ThemedSelectWithPortal, ThemedText } from "miroir-react";
 
 /** Main choices of the expected output type, before the entities (#449 D1, D4). */
 const EXPECTED_OUTPUT_KINDS = [

@@ -44,14 +44,14 @@ import EntityEditor from '../../EntityEditor.js';
 import { useCurrentModel, useReduxDeploymentsStateQuerySelectorForCleanedResult } from '../../ReduxHooks.js';
 import { ToolsColumnDefinition } from '../../adaptiveColumnWidths.js';
 import { cleanLevel } from '../../constants.js';
-import { useMiroirTableTheme } from '../../contexts/MiroirThemeContext.js';
+import { useMiroirTableTheme } from "miroir-react";
 import { JsonObjectDeleteFormDialog } from '../JsonObjectDeleteFormDialog.js';
 import {
   JsonObjectEditFormDialog,
   JsonObjectEditFormDialogInputs,
 } from "../JsonObjectEditFormDialog.js";
 import type { ValueObjectEditMode } from '../Reports/ReportSectionEntityInstance.js';
-import { generateAgGridStyles, generateGlideTheme, getFilterToolbarStyles } from '../Themes/TableStyleGenerators.js';
+import { generateAgGridStyles, generateGlideTheme, getFilterToolbarStyles } from "miroir-react";
 import {
   TableComponentProps,
   TableComponentRow,

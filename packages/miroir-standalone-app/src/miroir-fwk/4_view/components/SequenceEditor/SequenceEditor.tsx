@@ -20,7 +20,7 @@ import { useDomainControllerService } from "miroir-react";
 import React, { useCallback, useMemo, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 
-import { useMiroirTheme } from "../../contexts/MiroirThemeContext.js";
+import { useMiroirTheme } from "miroir-react";
 import { useCurrentModelEnvironment, useEntityInstanceUuidIndexFromLocalCache } from "../../ReduxHooks.js";
 import { useBlockRunnerOf } from "../BlockEditor/BlockRunnerHat.js";
 import { BlockActionDefaultsContext, BlockRunnerContext } from "../BlockEditor/BlockViewMode.js";
@@ -37,7 +37,7 @@ import {
   ThemedLabeledEditor,
   ThemedStyledButton,
   ThemedSwitch,
-} from "../Themes/index";
+} from "miroir-react";
 
 // ################################################################################################
 // #505 (analysis #497, G8): the sequence editor of the Tools page. It edits the composite action

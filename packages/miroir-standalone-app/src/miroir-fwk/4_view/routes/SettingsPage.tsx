@@ -43,7 +43,7 @@ import {
   ViewParamsUpdateQueueConfig,
 } from "../components/ViewParamsUpdateQueue.js";
 import { cleanLevel } from "../constants.js";
-import { useMiroirTheme } from "../contexts/MiroirThemeContext.js";
+import { useMiroirTheme } from "miroir-react";
 import {
   useDomainControllerService,
   useMiroirContextService,

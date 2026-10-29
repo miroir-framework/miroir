@@ -1,6 +1,6 @@
 import React, { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
-import { Clear } from "../Themes/MaterialSymbolWrappers";
+import { Clear } from "miroir-react";
 
 import {
   alterObjectAtPath2,
@@ -64,7 +64,7 @@ import {
   ThemedSizedButton,
   ThemedSmallIconButton,
   ThemedStyledButton,
-} from "../Themes/index";
+} from "miroir-react";
 import { FoldUnfoldAllObjectAttributesOrArrayItems, FoldUnfoldObjectOrArray, MlElementEditor } from "./MlElementEditor";
 import { getFoldedDisplayValue, useMlElementEditorHooks } from "./MlElementEditorHooks";
 import { TransformerTypeBadge, TransformerTypeRestriction, MlObjectEditorProps } from "./MlElementEditorInterface";

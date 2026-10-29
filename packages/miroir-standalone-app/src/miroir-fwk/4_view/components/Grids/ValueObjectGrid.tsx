@@ -20,9 +20,9 @@ import {
   ToolsColumnDefinition
 } from "../../adaptiveColumnWidths.js";
 import { cleanLevel } from "../../constants.js";
-import { useMiroirTableTheme } from "../../contexts/MiroirThemeContext.js";
-import { renderInsightRegistry } from "../../tools/renderInsightRegistry.js";
-import { RenderPerformanceMetrics } from "../../tools/renderPerformanceMeasure.js";
+import { useMiroirTableTheme } from "miroir-react";
+import { renderInsightRegistry } from "miroir-react";
+import { RenderPerformanceMetrics } from "miroir-react";
 import {
   JsonObjectEditFormDialogInputs
 } from "../JsonObjectEditFormDialog.js";
@@ -30,8 +30,8 @@ import {
   generateAgGridStyles,
   generateGlideTheme,
   getFilterToolbarStyles,
-} from "../Themes/TableStyleGenerators.js";
-import { DeepPartial, TableTheme } from "../Themes/TableTheme.js";
+} from "miroir-react";
+import { DeepPartial, TableTheme } from "miroir-react";
 import { ToolsCellRenderer } from "./GenderCellRenderer.js";
 import { GlideDataGridComponent } from "./LazyGrids.js";
 import {

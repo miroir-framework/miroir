@@ -9,7 +9,7 @@ import {
   InsertDriveFileIcon,
   CircularProgress,
   PictureAsPdfIcon
-} from "../Themes/MaterialSymbolWrappers";
+} from "miroir-react";
 import { FormikProps } from "formik";
 import React, { FC, useCallback, useMemo, useRef, useState } from "react";
 
@@ -27,8 +27,8 @@ import {
 
 import { packageName } from "../../../../constants";
 import { cleanLevel } from "../../constants";
-import { useMiroirTheme } from "../../contexts/MiroirThemeContext";
-import { DraggableContainer } from "../DraggableContainer";
+import { useMiroirTheme } from "miroir-react";
+import { DraggableContainer } from "miroir-react";
 import {
   ThemedBlobContainer,
   ThemedBlobDropZone,
@@ -36,8 +36,8 @@ import {
   ThemedBlobIconDisplay,
   ThemedBlobMetadata,
   ThemedBlobPreview,
-} from "../Themes/index";
-import getSpinnerStyles from '../Themes/spinner';
+} from "miroir-react";
+import { getSpinnerStyles } from "miroir-react";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "BlobEditorField");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);

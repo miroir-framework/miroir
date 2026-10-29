@@ -23,8 +23,8 @@ import {
   ThemedMenuItem,
   ThemedSelectWithPortal,
   ThemedStyledButton,
-} from "../Themes/index";
-import { useMiroirTheme } from "../../contexts/MiroirThemeContext";
+} from "miroir-react";
+import { useMiroirTheme } from "miroir-react";
 
 // ################################################################################################
 // Issue #415 — the action menu of a transformer node, next to its `transformerType` select:

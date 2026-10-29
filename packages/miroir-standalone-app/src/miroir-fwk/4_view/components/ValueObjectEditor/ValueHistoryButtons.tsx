@@ -2,7 +2,7 @@
 import { css } from "@emotion/react";
 import { useContext } from "react";
 
-import { useMiroirTheme } from "../../contexts/MiroirThemeContext.js";
+import { useMiroirTheme } from "miroir-react";
 import { ValueHistoryContext, ValueHistoryStatusContext } from "./ValueHistoryProvider.js";
 
 // ################################################################################################

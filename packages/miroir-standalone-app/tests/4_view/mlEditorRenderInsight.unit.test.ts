@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
   buildPathKey,
   renderInsightRegistry,
-} from "../../src/miroir-fwk/4_view/tools/renderInsightRegistry.js";
+} from "miroir-react";
 
 /**
  * Documents the object/record + array/tuple instrumentation contract used by

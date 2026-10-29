@@ -47,7 +47,7 @@ import {
   useReduxDeploymentsStateQueryTemplateSelector
 } from "../../ReduxHooks.js";
 import { useRenderTracker } from '../../tools/renderCountTracker.js';
-import { RenderPerformanceMetrics } from '../../tools/renderPerformanceMeasure.js';
+import { RenderPerformanceMetrics } from "miroir-react";
 import { RenderInsightHeader } from '../RenderInsightHeader.js';
 import {
   ThemedCodeBlock,
@@ -56,7 +56,7 @@ import {
   ThemedLabel,
   ThemedPreformattedText,
   ThemedTitle
-} from "../Themes/index";
+} from "miroir-react";
 import { useDocumentOutlineContext } from '../ValueObjectEditor/InstanceEditorOutlineContext.js';
 import { OpenApiEndpointSyncButton } from './OpenApiEndpointSyncButton.js';
 import { useReportFormSubmit } from './ReportFormSubmitContext.js';

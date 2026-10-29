@@ -69,7 +69,7 @@ import {
   ElectronRestClient,
   ElectronServerDomainControllerProxy,
 } from "./miroir-fwk/4_view/services/ElectronIpcProxy.js";
-import { initializePerformanceConfig } from "./miroir-fwk/4_view/tools/performanceConfig.js";
+import { initializePerformanceConfig } from "miroir-react";
 import {
   failedSelfTestResult,
   publishSelfTestResult,

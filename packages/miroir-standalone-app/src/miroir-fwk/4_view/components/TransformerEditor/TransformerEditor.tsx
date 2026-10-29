@@ -66,7 +66,7 @@ import {
   ThemedLabeledEditor,
   ThemedSwitch,
   ThemedTitle
-} from "../Themes/index";
+} from "miroir-react";
 import { EntityInstanceSelectorPanel } from './EntityInstanceSelectorPanel';
 import { TransformationResultPanel } from './TransformationResultPanel';
 import { TransformerDefinitionSave } from './TransformerDefinitionSave';

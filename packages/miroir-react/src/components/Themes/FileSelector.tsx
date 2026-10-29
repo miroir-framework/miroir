@@ -2,12 +2,12 @@
 import { css } from '@emotion/react';
 import React, { useCallback } from 'react';
 import { Box, Button, Typography, Alert } from '@mui/material';
-import { CloudUploadIcon, CheckCircle as CheckCircleIcon, Clear as ClearIcon } from './MaterialSymbolWrappers';
-import { useMiroirTheme } from '../../contexts/MiroirThemeContext';
-import { ThemedComponentProps } from 'miroir-react';
+import { CloudUploadIcon, CheckCircle as CheckCircleIcon, Clear as ClearIcon } from "./MaterialSymbolWrappers.js";
+import { useMiroirTheme } from "../../contexts/MiroirThemeContext.js";
+import { ThemedComponentProps } from "../helpers/BaseTypes.js";
 import { LoggerInterface, MiroirLoggerFactory } from 'miroir-core';
-import { packageName } from '../../../../constants.js';
-import { cleanLevel } from '../../constants.js';
+import { packageName } from "../../constants.js";
+import { cleanLevel } from "../../viewConstants.js";
 // import { devRelativePathPrefix } from 'miroir-core';
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "FileSelector");

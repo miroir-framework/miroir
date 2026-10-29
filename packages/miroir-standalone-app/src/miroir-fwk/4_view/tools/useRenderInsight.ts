@@ -10,7 +10,7 @@ import {
   NOOP_RENDER_COUNTS,
   renderInsightRegistry,
   type RenderCounts,
-} from "./renderInsightRegistry.js";
+} from "miroir-react";
 
 /**
  * Track component renders only when performance display mode is on.

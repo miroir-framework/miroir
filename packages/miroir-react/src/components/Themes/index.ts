@@ -1,8 +1,8 @@
 // Base types
-export type { ThemedComponentProps } from 'miroir-react';
+export type { ThemedComponentProps } from "../helpers/BaseTypes.js";
 
 // Theme color resolution (optional sub-colors → root color fallbacks)
-export { resolveThemeColors, resolveTableThemeColors } from './ThemeColorDefaults';
+export { resolveThemeColors, resolveTableThemeColors } from "./ThemeColorDefaults.js";
 
 // Basic components
 export {
@@ -18,11 +18,11 @@ export {
   ThemedText,
   ThemedSpan,
   ThemedProgressiveAccordion,
-} from './BasicComponents';
+} from "./BasicComponents.js";
 
 // File selector component
-export { FileSelector } from './FileSelector';
-export type { FileSelectorProps } from './FileSelector';
+export { FileSelector } from "./FileSelector.js";
+export type { FileSelectorProps } from "./FileSelector.js";
 
 // Form components
 export {
@@ -30,7 +30,7 @@ export {
   ThemedStackedLabeledEditor,
   ThemedSelectWithPortal,
   ThemedEditableInput,
-} from './FormComponents';
+} from "./FormComponents.js";
 
 // Icon and button components
 export {
@@ -40,13 +40,13 @@ export {
   ThemedAddIcon,
   ThemedIconButton,
   ThemedIcon,
-} from './IconComponents';
+} from "./IconComponents.js";
 
 // Symbol with letter overlay
-export { SymbolWithLetter } from './SymbolWithLetter';
-export type { SymbolWithLetterProps } from './SymbolWithLetter';
-export { SvgWithLetter } from './SvgWithLetter';
-export type { SvgWithLetterProps } from './SvgWithLetter';
+export { SymbolWithLetter } from "./SymbolWithLetter.js";
+export type { SymbolWithLetterProps } from "./SymbolWithLetter.js";
+export { SvgWithLetter } from "./SvgWithLetter.js";
+export type { SvgWithLetterProps } from "./SvgWithLetter.js";
 
 // Layout components
 export {
@@ -62,7 +62,7 @@ export {
   ThemedIndentedContainer,
   ThemedScrollableContent,
   ThemedMainPanel,
-} from './LayoutComponents';
+} from "./LayoutComponents.js";
 
 // Display components
 export {
@@ -83,7 +83,7 @@ export {
   ThemedBlobMetadata,
   ThemedBlobIconDisplay,
   ThemedBlobDropZone,
-} from './DisplayComponents';
+} from "./DisplayComponents.js";
 
 // Drawer components
 export {
@@ -91,7 +91,7 @@ export {
   ThemedDrawerHeader,
   ThemedResizeHandle,
   ThemedDivider,
-} from './DrawerComponents';
+} from "./DrawerComponents.js";
 
 // List components
 export {
@@ -100,7 +100,7 @@ export {
   ThemedListItemButton,
   ThemedListMiroirIcon,
   ThemedListItemText,
-} from './ListComponents';
+} from "./ListComponents.js";
 
 // UI components
 export {
@@ -109,7 +109,7 @@ export {
   ThemedSwitch,
   ThemedTextEditor,
   ThemedColorPicker,
-} from './UIComponents';
+} from "./UIComponents.js";
 
 // Material-UI wrapper components
 export {
@@ -122,4 +122,4 @@ export {
   ThemedDialogTitle,
   ThemedDialogContent,
   ThemedDialogActions,
-} from './MUIComponents';
+} from "./MUIComponents.js";

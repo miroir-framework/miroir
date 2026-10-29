@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useMiroirContextService } from 'miroir-react';
-import { RenderPerformanceMetrics, RenderPerformanceMetricsElement } from '../tools/renderPerformanceMeasure.js';
-import { getPerformanceConfig, updatePerformanceConfig } from '../tools/performanceConfig.js';
-import { DraggableContainer } from './DraggableContainer.js';
+import { RenderPerformanceMetrics, RenderPerformanceMetricsElement } from "miroir-react";
+import { getPerformanceConfig, updatePerformanceConfig } from "miroir-react";
+import { DraggableContainer } from "miroir-react";
 
 /**
  * @deprecated Prefer {@link RenderInsightSummary} (docked panel). Kept for optional

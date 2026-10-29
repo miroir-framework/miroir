@@ -25,7 +25,7 @@ import {
 import { JsonDisplayHelper, useDomainControllerService, useMiroirContextService, useSnackbar } from 'miroir-react';
 import { packageName } from '../../../../constants.js';
 import { cleanLevel, lastSubmitButtonClicked } from '../../constants.js';
-import { ThemedSpan } from '../Themes/index.js';
+import { ThemedSpan } from "miroir-react";
 import { useDocumentOutlineContext } from '../ValueObjectEditor/InstanceEditorOutlineContext.js';
 import { InlineReportEditor, reportReportDetailsKey } from './InlineReportEditor.js';
 import { ReportFormSubmitContext, type SubmitReportFormValues } from './ReportFormSubmitContext.js';

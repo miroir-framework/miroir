@@ -9,10 +9,10 @@ import {
   Chip,
   SelectChangeEvent 
 } from '@mui/material';
-import { Palette, DarkMode, CompressOutlined, Style } from './Themes/MaterialSymbolWrappers';
-import { useMiroirTheme, MiroirThemeOption } from '../contexts/MiroirThemeContext.js';
+import { Palette, DarkMode, CompressOutlined, Style } from "miroir-react";
+import { useMiroirTheme, MiroirThemeOption } from "miroir-react";
 import { AppTheme } from 'miroir-core';
-import { defaultMiroirTheme } from './Themes/MiroirTheme';
+import { defaultMiroirTheme } from "miroir-react";
 
 interface MiroirThemeSelectorProps {
   size?: 'small' | 'medium';

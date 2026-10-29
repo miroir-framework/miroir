@@ -10,7 +10,7 @@ import {
   PlayArrow,
   Search,
   Visibility
-} from '../components/Themes/MaterialSymbolWrappers';
+} from "miroir-react";
 import {
   Badge,
   Box,

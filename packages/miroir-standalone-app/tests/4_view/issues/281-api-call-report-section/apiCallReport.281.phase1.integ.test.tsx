@@ -76,7 +76,7 @@ import { ReportPageContextProvider } from "../../../../src/miroir-fwk/4_view/com
 import { ReportViewWithEditor } from "../../../../src/miroir-fwk/4_view/components/Reports/ReportViewWithEditor.js";
 import { reportSectionsFormSchema } from "../../../../src/miroir-fwk/4_view/components/Reports/ReportTools.js";
 import { DocumentOutlineContextProvider } from "../../../../src/miroir-fwk/4_view/components/ValueObjectEditor/InstanceEditorOutlineContext.js";
-import { MiroirThemeProvider } from "../../../../src/miroir-fwk/4_view/contexts/MiroirThemeContext.js";
+import { MiroirThemeProvider } from "miroir-react";
 import { miroirAppStartup } from "../../../../src/startup.js";
 import { ReportUrlParamKeys } from "../../../../src/constants.js";
 import { cleanLevel, packageName } from "../../../3_controllers/constants.js";

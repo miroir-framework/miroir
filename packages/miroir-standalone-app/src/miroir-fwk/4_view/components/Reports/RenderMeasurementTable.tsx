@@ -2,8 +2,8 @@ import React from "react";
 
 import type { ComponentRenderMeasurement } from "miroir-core";
 
-import { useMiroirTheme } from "../../contexts/MiroirThemeContext.js";
-import { ThemedLabel } from "../Themes/index.js";
+import { useMiroirTheme } from "miroir-react";
+import { ThemedLabel } from "miroir-react";
 
 // ################################################################################################
 // Render measurements of a MiroirTest run (#303 D10): the `assertionMeasurements` of the leaves

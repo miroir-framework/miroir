@@ -7,8 +7,8 @@ import {
 } from 'miroir-core';
 import type { MiroirIcon } from 'miroir-core';
 
-import { ThemedIcon } from '../IconComponents';
-import { MiroirThemeProvider } from '../../../contexts/MiroirThemeContext';
+import { ThemedIcon } from "miroir-react";
+import { MiroirThemeProvider } from "miroir-react";
 
 // ################################################################################################
 const pageLabel = "ThemedIcon.test";

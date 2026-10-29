@@ -10,7 +10,7 @@ import {
 } from "miroir-core";
 
 import { BlobEditorField, BlobEditorFieldProps } from "../../src/miroir-fwk/4_view/components/ValueObjectEditor/BlobEditorField";
-import { MiroirThemeProvider } from "../../src/miroir-fwk/4_view/contexts/MiroirThemeContext";
+import { MiroirThemeProvider } from "miroir-react";
 import { cleanLevel } from "../3_controllers/constants";
 
 // ################################################################################################

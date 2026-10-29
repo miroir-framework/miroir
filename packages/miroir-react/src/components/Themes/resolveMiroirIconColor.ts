@@ -1,5 +1,5 @@
 import type { LoggerInterface } from 'miroir-core';
-import type { MiroirTheme } from './MiroirTheme';
+import type { MiroirTheme } from "./MiroirTheme.js";
 
 type MiroirIconColor =
   | string

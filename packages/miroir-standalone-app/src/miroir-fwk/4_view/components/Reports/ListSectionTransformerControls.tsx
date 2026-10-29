@@ -1,5 +1,5 @@
-import { ThemedButton } from "../Themes/index.js";
-import { ThemedIcon } from "../Themes/IconComponents.js";
+import { ThemedButton } from "miroir-react";
+import { ThemedIcon } from "miroir-react";
 
 export interface ListTransformerToggleProps {
   enabled: boolean;

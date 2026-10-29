@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Box, BoxProps } from '@mui/material';
-import { useMiroirTheme } from '../../contexts/MiroirThemeContext.js';
+import { useMiroirTheme } from "miroir-react";
 
 interface PageContainerProps extends Omit<BoxProps, 'sx'> {
   children: React.ReactNode;

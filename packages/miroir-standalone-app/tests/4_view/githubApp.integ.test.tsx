@@ -30,7 +30,7 @@ import {
 import { ReportPageContextProvider } from "../../src/miroir-fwk/4_view/components/Reports/ReportPageContext.js";
 import { ReportViewWithEditor } from "../../src/miroir-fwk/4_view/components/Reports/ReportViewWithEditor.js";
 import { DocumentOutlineContextProvider } from "../../src/miroir-fwk/4_view/components/ValueObjectEditor/InstanceEditorOutlineContext.js";
-import { MiroirThemeProvider } from "../../src/miroir-fwk/4_view/contexts/MiroirThemeContext.js";
+import { MiroirThemeProvider } from "miroir-react";
 import { ReportUrlParamKeys } from "../../src/constants.js";
 import {
   applicationDeploymentMap,

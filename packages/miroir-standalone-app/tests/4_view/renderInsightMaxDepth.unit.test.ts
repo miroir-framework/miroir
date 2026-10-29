@@ -4,7 +4,7 @@ import {
   RENDER_INSIGHT_MAX_DEPTH_STORAGE_KEY,
   getRenderInsightMaxDepth,
   setRenderInsightMaxDepth,
-} from "../../src/miroir-fwk/4_view/tools/renderInsightMaxDepth.js";
+} from "miroir-react";
 
 describe("renderInsightMaxDepth (Phase 2.4)", () => {
   beforeEach(() => {

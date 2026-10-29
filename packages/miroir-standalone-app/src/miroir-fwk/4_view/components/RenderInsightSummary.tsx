@@ -1,26 +1,26 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useMiroirContextService } from "miroir-react";
-import { useMiroirTheme } from "../contexts/MiroirThemeContext.js";
+import { useMiroirTheme } from "miroir-react";
 import {
   getRenderInsightMaxDepth,
   setRenderInsightMaxDepth,
-} from "../tools/renderInsightMaxDepth.js";
+} from "miroir-react";
 import {
   renderInsightRegistry,
   type RenderInsightNode,
-} from "../tools/renderInsightRegistry.js";
+} from "miroir-react";
 import {
   summarizeTree,
   type SummarizedInsightNode,
-} from "../tools/renderInsightSummarize.js";
-import { getPerformanceConfig } from "../tools/performanceConfig.js";
-import { RenderPerformanceMetrics } from "../tools/renderPerformanceMeasure.js";
+} from "miroir-react";
+import { getPerformanceConfig } from "miroir-react";
+import { RenderPerformanceMetrics } from "miroir-react";
 import {
   RENDER_INSIGHT_OVERLAY_ATTR,
   RENDER_INSIGHT_OVERLAY_VALUE,
   getRenderInsightChromeStyle,
   resolveRenderInsightTheme,
-} from "../tools/renderInsightChrome.js";
+} from "miroir-react";
 
 const EMPTY_STATE =
   "Interact with the report — instrumented components will appear here.";

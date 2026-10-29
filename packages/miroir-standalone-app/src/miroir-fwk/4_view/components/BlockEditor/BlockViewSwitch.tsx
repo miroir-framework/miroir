@@ -4,7 +4,7 @@ import { getIn, useFormikContext } from "formik";
 import { runnerHat } from "miroir-core";
 import React, { lazy, Suspense, useCallback, useContext, useMemo } from "react";
 
-import { useMiroirTheme } from "../../contexts/MiroirThemeContext.js";
+import { useMiroirTheme } from "miroir-react";
 import type { TransformerTypeBadge } from "../ValueObjectEditor/MlElementEditorInterface.js";
 import { switchButtonCss, ValueHistoryButtons } from "../ValueObjectEditor/ValueHistoryButtons.js";
 import { ValueHistoryContext, ValueHistoryScope } from "../ValueObjectEditor/ValueHistoryProvider.js";

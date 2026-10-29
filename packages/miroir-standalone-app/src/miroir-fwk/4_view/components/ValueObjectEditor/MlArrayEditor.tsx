@@ -50,7 +50,7 @@ import {
   ThemedFoldedValueDisplay,
   ThemedSizedButton,
   ThemedStyledButton
-} from "../Themes/index";
+} from "miroir-react";
 import {
   FoldUnfoldAllObjectAttributesOrArrayItems,
   FoldUnfoldObjectOrArray,

@@ -24,7 +24,7 @@ import { TableComponentTypeSchema } from "../../../src/miroir-fwk/4_view/compone
 import { GlideDataGridComponent } from "../../../src/miroir-fwk/4_view/components/Grids/GlideDataGridComponent.js";
 import type { TableComponentRow } from "../../../src/miroir-fwk/4_view/components/Grids/EntityInstanceGridInterface.js";
 import { ValueObjectGrid } from "../../../src/miroir-fwk/4_view/components/Grids/ValueObjectGrid.js";
-import { MiroirThemeProvider } from "../../../src/miroir-fwk/4_view/contexts/MiroirThemeContext.js";
+import { MiroirThemeProvider } from "miroir-react";
 import {
   buildBookListFormikValuesForCount,
   libraryApplicationDeploymentMap,

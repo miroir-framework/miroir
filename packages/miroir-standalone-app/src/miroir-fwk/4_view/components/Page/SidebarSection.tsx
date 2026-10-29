@@ -10,7 +10,7 @@ import {
   ThemedListItemButton,
   ThemedListItemText,
   ThemedListMiroirIcon
-} from "../Themes/index";
+} from "miroir-react";
 
 import {
 adminSelfApplication,

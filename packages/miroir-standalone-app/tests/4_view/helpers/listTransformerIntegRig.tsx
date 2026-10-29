@@ -23,7 +23,7 @@ import { useMiroirContextService } from "miroir-react";
 import { ReportSectionListDisplay } from "../../../src/miroir-fwk/4_view/components/Reports/ReportSectionListDisplay.js";
 import { ListTransformerPanel } from "../../../src/miroir-fwk/4_view/components/Reports/ListTransformerPanel.js";
 import { TableComponentTypeSchema } from "../../../src/miroir-fwk/4_view/components/Grids/EntityInstanceGridInterface.js";
-import { MiroirThemeProvider } from "../../../src/miroir-fwk/4_view/contexts/MiroirThemeContext.js";
+import { MiroirThemeProvider } from "miroir-react";
 
 import { getWrapperLoadingLocalCache } from "../MlElementEditorTestTools.js";
 

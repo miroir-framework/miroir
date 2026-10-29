@@ -5,7 +5,7 @@ import {
   ExpandMore,
   Info,
   Warning
-} from './Themes/MaterialSymbolWrappers';
+} from "miroir-react";
 import {
   Box,
   Chip,

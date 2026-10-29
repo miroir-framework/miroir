@@ -3,12 +3,12 @@ import { css } from '@emotion/react';
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 
-import { useMiroirTheme } from '../../contexts/MiroirThemeContext';
-import { usePortalContainer } from '../../tools/PortalContainerContext';
-import { ThemedComponentProps } from 'miroir-react';
+import { useMiroirTheme } from "../../contexts/MiroirThemeContext.js";
+import { usePortalContainer } from "../../tools/PortalContainerContext.js";
+import { ThemedComponentProps } from "../helpers/BaseTypes.js";
 import { type LoggerInterface, MiroirLoggerFactory } from 'miroir-core';
-import { packageName } from '../../../../constants';
-import { cleanLevel } from '../../constants';
+import { packageName } from "../../constants.js";
+import { cleanLevel } from "../../viewConstants.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "FormComponents");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);

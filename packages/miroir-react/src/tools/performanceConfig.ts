@@ -4,8 +4,8 @@
  */
 
 import { LoggerInterface, MiroirLoggerFactory } from 'miroir-core';
-import { packageName } from '../../../constants.js';
-import { cleanLevel } from '../constants.js';
+import { packageName } from "../constants.js";
+import { cleanLevel } from "../viewConstants.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "performanceConfig");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);

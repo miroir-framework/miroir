@@ -12,7 +12,7 @@ import {
   ThemedGrid,
   ThemedMainPanel,
   ThemedText
-} from '../Themes/index';
+} from "miroir-react";
 
 import { v4 as uuidv4 } from 'uuid';
 
@@ -58,7 +58,7 @@ import {
   useMiroirContextService,
   useSnackbar,
 } from "miroir-react";
-import { MiroirThemeProvider, useMiroirTheme, type MiroirThemeOption } from '../../contexts/MiroirThemeContext.js';
+import { MiroirThemeProvider, useMiroirTheme, type MiroirThemeOption } from "miroir-react";
 import { GlobalFeedbackGlow } from './GlobalFeedbackGlow.js';
 import { RenderInsightHeader } from "../RenderInsightHeader.js";
 import { useRenderTracker } from "../../tools/renderCountTracker.js";

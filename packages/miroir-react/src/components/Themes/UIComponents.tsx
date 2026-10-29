@@ -2,9 +2,9 @@
 import { css } from '@emotion/react';
 import React, { useCallback, useRef } from 'react';
 
-import { useMiroirTheme } from '../../contexts/MiroirThemeContext';
-import { ThemedComponentProps } from 'miroir-react';
-import { getSpinnerStyles } from './spinner';
+import { useMiroirTheme } from "../../contexts/MiroirThemeContext.js";
+import { ThemedComponentProps } from "../helpers/BaseTypes.js";
+import { getSpinnerStyles } from "./spinner.js";
 
 // ################################################################################################
 // UI Components
