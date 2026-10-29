@@ -1,0 +1,20 @@
+{
+  "uuid": "fccff018-c1fa-447f-8206-5e4982218ff8",
+  "parentName": "BundleSizeMeasurement",
+  "parentUuid": "90d603f9-58f8-4ac4-b2eb-cb1d718e8b3b",
+  "application": "miroir-standalone-app-electron",
+  "measuredAt": "2026-10-29T09:00:50.555Z",
+  "eagerGzipBytes": 908129,
+  "baseline": 908129,
+  "previousBaseline": 982595,
+  "baselineChange": -74466,
+  "reason": "Dependabot bumps (#582): one hoisted mime-db 1.54.0 instead of four nested copies; @reduxjs/toolkit and immer shrink",
+  "gitCommit": "13719ed1fd42ecb4186222b01e43b3e885c7b390",
+  "gitBranch": "claude/project-thread-dp4y1y",
+  "miroirVersion": "0.5.0-rc.1",
+  "eagerChunks": 8,
+  "eagerRawBytes": 4973007,
+  "totalChunks": 42,
+  "totalRawBytes": 15854627,
+  "totalGzipBytes": 3301997
+}
