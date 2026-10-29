@@ -13,7 +13,7 @@
 |---|---|
 | G1 | **Read one trend at a time.** In order to see whether a change made loading slower, as an application maintainer reading the Page load history, I can see the initial load and the first report display of each (build mode, client) pair in its own graph, without dev rows in the production graph. |
 | G2 | **Know what a row measured.** In order to compare rows that are comparable, as an application maintainer, I can read the build mode and the client of each row in the history lists, and the build mode, client and environment of one measurement in its details. |
-| G3 | **Measure dev mode on demand.** In order to explain why the app feels slow in development, as a framework developer, I can run the load timings tour against the Vite dev client (http(s)://localhost:5173, API server on 3080) and get the same steps, with the build mode it measured stated in the output. |
+| G3 | **Measure dev mode on demand.** In order to explain why the app feels slow in development, as a framework developer, I can run the load timings tour against the Vite dev client (https://localhost:5173, API server on 3080) and get the same steps, with the build mode it measured stated in the output. |
 | G4 | **Keep the split tested.** In order to change the Report without breaking the split, as a framework developer, I have the MiroirTest `report.pageLoadHistory` seeded with rows of both build modes (and of both clients) that checks each graph shows only its own rows. |
 
 ## 2. Non-goals
