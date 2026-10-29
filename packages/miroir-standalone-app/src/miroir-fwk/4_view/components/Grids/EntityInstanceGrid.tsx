@@ -5,7 +5,7 @@ import {
 } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { CenteredSpinner } from "../CenteredSpinner.js";
+import { CenteredSpinner } from "miroir-react";
 import { useNavigate } from 'react-router-dom';
 
 // import 'ag-grid-community/styles/ag-grid.css';

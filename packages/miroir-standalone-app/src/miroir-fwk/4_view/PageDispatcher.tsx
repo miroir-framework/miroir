@@ -30,7 +30,7 @@ import { useApplicationAccess } from "./auth/useApplicationAccess.js";
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "./constants.js";
 import { PageContainer } from "./components/Page/PageContainer.js";
-import { CenteredSpinner } from "./components/CenteredSpinner.js";
+import { CenteredSpinner } from "miroir-react";
 
 // All page components are lazy-loaded so they are excluded from the main
 // bundle and downloaded in the background after the shell renders.

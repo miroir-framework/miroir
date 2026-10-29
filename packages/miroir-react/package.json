@@ -6,6 +6,7 @@
   "license": "MIT",
   "private": true,
   "type": "module",
+  "sideEffects": false,
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "exports": {
@@ -18,7 +19,8 @@
     "build": "tsup",
     "devBuild": "npm run build",
     "test": "vitest run -t",
-    "testByFile": "vitest run --maxWorkers=1 --reporter=verbose"
+    "testByFile": "vitest run --maxWorkers=1 --reporter=verbose",
+    "dev": "tsup --watch"
   },
   "dependencies": {
     "@codemirror/lang-javascript": "6.2.5",
@@ -38,11 +40,12 @@
   "peerDependencies": {
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
-    "@mui/material": "5.17.1",
+    "@mui/material": ">=5.17.1 <10",
     "react": ">=18.0.0",
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
+    "@mui/material": "9.5.0",
     "@types/react": "18.3.23",
     "@types/react-dom": "18.3.7",
     "happy-dom": "21.0.4",

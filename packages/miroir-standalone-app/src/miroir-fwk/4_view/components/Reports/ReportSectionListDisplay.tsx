@@ -69,7 +69,7 @@ import { getMDataGridColumnDefinitionsFromEntity } from "../../getColumnDefiniti
 import { deleteCascade } from "../../scripts.js";
 import { useRenderTracker } from "../../tools/renderCountTracker.js";
 import { analyzeForeignKeyAttributes, convertToLegacyFormat } from "../../utils/foreignKeyAttributeAnalyzer.js";
-import { CenteredSpinner } from "../CenteredSpinner.js";
+import { CenteredSpinner } from "miroir-react";
 import { EntityInstanceGrid } from "../Grids/LazyGrids.js";
 import { DEFAULT_GRID_PAGE_SIZE } from "../Grids/gridPagination.js";
 import { TableComponentType, TableComponentTypeSchema } from "../Grids/EntityInstanceGridInterface.js";

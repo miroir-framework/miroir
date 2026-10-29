@@ -141,3 +141,6 @@ export {
 } from "./miroir-localcache-imports.js";
 
 export { ThemedComponentProps } from "./components/helpers/BaseTypes.js";
+
+// Moved from miroir-standalone-app/src/miroir-fwk/4_view (#592)
+export * from "./components/CenteredSpinner.js";
