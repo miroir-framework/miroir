@@ -43,7 +43,7 @@ import {
 import { selfApplicationMiroir } from "miroir-app-miroir";
 import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";
-import { useCurrentModelEnvironment, useReduxDeploymentsStateQuerySelectorForCleanedResult } from "../../ReduxHooks.js";
+import { useCurrentModelEnvironment, useReduxDeploymentsStateQuerySelectorForCleanedResult } from "miroir-react";
 import {
   ALL_NON_BUNDLED_CREATABLE_STORE_TYPES,
   getRunner_CreateApplication_formMLSchema,

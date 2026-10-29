@@ -45,7 +45,7 @@ import {
   useCurrentModel,
   useCurrentModelEnvironment,
   useReduxDeploymentsStateQueryTemplateSelector
-} from "../../ReduxHooks.js";
+} from "miroir-react";
 import { useRenderTracker } from "miroir-react";
 import { RenderPerformanceMetrics } from "miroir-react";
 import { RenderInsightHeader } from "miroir-react";

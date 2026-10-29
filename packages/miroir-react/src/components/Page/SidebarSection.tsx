@@ -1,16 +1,10 @@
 import { useTheme } from '@mui/material/styles';
 import { FC, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { cleanLevel } from "../../constants.js";
-import {
-  ThemedDivider,
-  ThemedIcon,
-  ThemedList,
-  ThemedListItem,
-  ThemedListItemButton,
-  ThemedListItemText,
-  ThemedListMiroirIcon
-} from "miroir-react";
+import { cleanLevel } from "../../viewConstants.js";
+import { ThemedDivider } from "../Themes/DrawerComponents.js";
+import { ThemedIcon } from "../Themes/IconComponents.js";
+import { ThemedList, ThemedListItem, ThemedListItemButton, ThemedListItemText, ThemedListMiroirIcon } from "../Themes/ListComponents.js";
 
 import {
 adminSelfApplication,
@@ -32,26 +26,22 @@ import {
   type Menu,
   type MiroirMenuItem,
 } from "miroir-core";
-import { getMemoizedReduxDeploymentsStateSelectorMap } from 'miroir-react';
+import { getMemoizedReduxDeploymentsStateSelectorMap } from "../../miroir-localcache-imports.js";
 import { ErrorBoundary } from 'react-error-boundary';
-import { packageName } from '../../../../constants.js';
-import { useMiroirContextService } from 'miroir-react';
-import { useCurrentModel, useReduxDeploymentsStateQuerySelector } from '../../ReduxHooks.js';
-import { ErrorFallbackComponent } from "miroir-react";
-import { JsonDisplayHelper } from 'miroir-react';
-import { useDesignerToolsVisibility } from '../../auth/useDesignerToolsVisibility.js';
-import { pageUrl, reportUrl } from "miroir-react";
+import { packageName } from "../../constants.js";
+import { useMiroirContextService } from "../../contexts/MiroirContextReactProvider.js";
+import { useCurrentModel, useReduxDeploymentsStateQuerySelector } from "../../ReduxHooks.js";
+import { ErrorFallbackComponent } from "../ErrorFallbackComponent.js";
+import { JsonDisplayHelper } from "../helpers/DebugHelper.js";
+import { useDesignerToolsVisibility } from "../../auth/useDesignerToolsVisibility.js";
+import { pageUrl, reportUrl } from "../../navigation.js";
 
 import {
   entityMenu,
   menuApplicationModelScopeTemplate,
   selfApplicationMiroir,
 } from "miroir-app-miroir";
-import {
-  isApplicationModelScopeInjectionActive,
-  mergeApplicationModelScopeMenuItems,
-  shouldShowAppMenuItem,
-} from "miroir-react";
+import { isApplicationModelScopeInjectionActive, mergeApplicationModelScopeMenuItems, shouldShowAppMenuItem } from "./applicationModelScopeMenu.js";
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "SidebarSection");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",

@@ -72,15 +72,15 @@ import {
   useCurrentModel,
   useReduxDeploymentsStateQuerySelector,
   useReduxDeploymentsStateQuerySelectorForCleanedResult
-} from "../../ReduxHooks.js";
-import { ModelEnvironmentSync } from "../../ModelEnvironmentSync.js";
+} from "miroir-react";
+import { ModelEnvironmentSync } from "miroir-react";
 import { cleanLevel } from '../../constants.js';
 import { usePageConfiguration } from '../../services/index.js';
 import { ReportPageContextProvider } from "miroir-react";
 import { DocumentOutlineContextProvider } from "miroir-react";
 import { ViewParamsUpdateQueue, ViewParamsUpdateQueueConfig } from "miroir-react";
 import { Sidebar } from "./Sidebar.js";
-import { SidebarWidth } from "./SidebarSection.js";
+import { SidebarWidth } from "miroir-react";
 
 const InstanceEditorOutline = lazy(() => import('../InstanceEditorOutline.js').then(m => ({ default: m.InstanceEditorOutline })));
 const AgentsCopilotKit = lazy(() => import("../../routes/ai/AgentsCopilotKit.js").then(m => ({ default: m.AgentsCopilotKit })));

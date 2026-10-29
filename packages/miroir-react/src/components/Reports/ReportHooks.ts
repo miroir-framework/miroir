@@ -31,15 +31,13 @@ import {
   entityDeployment,
 } from "miroir-app-admin";
 
-import { useReduxDeploymentsStateQuerySelector } from '../../ReduxHooks.js';
+import { useReduxDeploymentsStateQuerySelector } from "../../ReduxHooks.js";
 
 import type { RunStoredQuery, TransformerDefinition } from 'miroir-core';
-import {
-  getMemoizedReduxDeploymentsStateSelectorMap
-} from "miroir-react";
-import { packageName } from "../../../../constants.js";
-import { ReportUrlParamKeys } from "miroir-react";
-import { cleanLevel } from '../../constants.js';
+import { getMemoizedReduxDeploymentsStateSelectorMap } from "../../miroir-localcache-imports.js";
+import { packageName } from "../../constants.js";
+import { ReportUrlParamKeys } from "../../reportUrlParams.js";
+import { cleanLevel } from "../../viewConstants.js";
 
 import { entityRunner, entityTransformerDefinition } from "miroir-app-miroir";
 // Entity constants

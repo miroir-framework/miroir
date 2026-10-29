@@ -23,11 +23,11 @@ import {
   extractStepBagFromFormikValues,
   inputReportSectionBagKey,
   multistepViewerReportSectionPath,
-} from "../../../../src/miroir-fwk/4_view/components/Reports/MultistepReportHost.js";
+} from "miroir-react";
 import {
   openReportHref,
   resolveOpenReportPageParams,
-} from "../../../../src/miroir-fwk/4_view/components/Reports/OpenReportLaunch.js";
+} from "miroir-react";
 import { reportMultistepCountryCreate } from "miroir-example-library";
 import { selfApplicationMiroir } from "miroir-app-miroir";
 import { resolveRepoRoot } from "../../../helpers/integrationTestProfiles.js";

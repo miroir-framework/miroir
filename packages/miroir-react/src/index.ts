@@ -272,3 +272,25 @@ export * from "./components/Reports/UnitTestExecutionSummary.js";
 export * from "./tools/renderCountTracker.js";
 export * from "./tools/useRenderInsight.js";
 export * from "./tools/useTrackedRender.js";
+
+// Moved from miroir-standalone-app/src/miroir-fwk/4_view (#592)
+export * from "./ModelEnvironmentSync.js";
+export * from "./ReduxHooks.js";
+export * from "./auth/UserAccountMenu.js";
+export * from "./auth/useDesignerToolsVisibility.js";
+export * from "./components/BlockEditor/BlockEditorDisplay.js";
+export * from "./components/Buttons/testResultReport.js";
+export * from "./components/EntityInstanceLink.js";
+export * from "./components/JsonObjectDeleteFormDialog.js";
+export * from "./components/Page/SidebarSection.js";
+export * from "./components/Reports/MultistepReportHost.js";
+export * from "./components/Reports/OpenReportLaunch.js";
+export * from "./components/Reports/ReportHooks.js";
+export * from "./components/Reports/ReportSectionMarkdown.js";
+export * from "./components/Reports/TransformerTestResults.js";
+export * from "./components/Reports/testSelectionUtils.js";
+export * from "./components/TransformerEditor/TransformerTypesDisplay.js";
+export * from "./components/ValueObjectEditor/MlEditorButton.js";
+export * from "./components/ValueObjectEditor/MlElementEditorHooks.js";
+export * from "./components/useAdminViewParams.js";
+export * from "./tools/hookPerformanceMeasure.js";

@@ -32,7 +32,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { packageName } from "../../../../constants";
 import { cleanLevel } from "../../constants";
-import { useCurrentModel, useCurrentModelEnvironment, useDefaultValueParams } from "../../ReduxHooks";
+import { useCurrentModel, useCurrentModelEnvironment, useDefaultValueParams } from "miroir-react";
 import { editorNavigationKey, useTrackedRender } from "miroir-react";
 import { useViewportReveal } from "../../tools/useViewportReveal.js";
 import { ErrorFallbackComponent } from "miroir-react";
@@ -56,7 +56,7 @@ import {
   FoldUnfoldObjectOrArray,
   MlElementEditor,
 } from "./MlElementEditor";
-import { getFoldedDisplayValue } from "./MlElementEditorHooks";
+import { getFoldedDisplayValue } from "miroir-react";
 import { TransformerTypeBadge, TransformerTypeRestriction, MlArrayEditorProps } from "./MlElementEditorInterface";
 import { emptyContainerMarker } from "miroir-react";
 import { selfApplicationMiroir } from "miroir-app-miroir";

@@ -22,7 +22,7 @@ import {
   isMultistepStepEnvelope,
   unwrapMultistepListChild,
   type MultistepListChild,
-} from "./MultistepReportHost.js";
+} from "miroir-react";
 
 import { entityQueryVersion } from "miroir-app-miroir";
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportTools");

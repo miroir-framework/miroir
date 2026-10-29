@@ -52,7 +52,7 @@ import {
   useCurrentModel,
   useCurrentModelEnvironment,
   useReduxDeploymentsStateQuerySelectorForCleanedResult
-} from "../../ReduxHooks.js";
+} from "miroir-react";
 import { ErrorFallbackComponent } from "miroir-react";
 import { ActionButtonWithSnackbar } from "miroir-react";
 import { ThemedStyledButton } from "miroir-react";

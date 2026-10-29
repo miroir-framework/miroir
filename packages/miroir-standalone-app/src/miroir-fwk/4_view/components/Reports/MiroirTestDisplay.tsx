@@ -33,7 +33,7 @@ import { ComponentTestSandboxProvider, useComponentTestSandbox } from "./Compone
 import { TestExecutionPanel } from "./TestExecutionPanel.js";
 import { UiIntegrationTestRunControls } from "./UiIntegrationTestRunControls.js";
 import { UiIntegrationTestRunInspectorSummary } from "./UiIntegrationTestRunInspectorSummary.js";
-import { buildTestFilter, type TestResultDataAndSelect, type TestSelectionState } from "./testSelectionUtils.js";
+import { buildTestFilter, type TestResultDataAndSelect, type TestSelectionState } from "miroir-react";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MiroirTestDisplay");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);

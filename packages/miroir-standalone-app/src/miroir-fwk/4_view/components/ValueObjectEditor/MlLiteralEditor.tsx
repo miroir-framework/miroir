@@ -44,7 +44,7 @@ import {
   useCurrentModelEnvironment,
   useDefaultValueParams,
   useReduxDeploymentsStateQuerySelectorForCleanedResult,
-} from "../../ReduxHooks";
+} from "miroir-react";
 import {
   ThemedDisplayValue,
   ThemedLabeledEditor,

@@ -7,7 +7,7 @@ import {
   // rootLessListKeyMapDEFUNCT,
   unfoldMlSchemaOnce,
 } from "miroir-core";
-import { useMlElementEditorHooks } from "../components/ValueObjectEditor/MlElementEditorHooks";
+import { useMlElementEditorHooks } from "../components/ValueObjectEditor/MlElementEditorHooks.js";
 
 // Create measured versions of key functions used in this component
 export const measuredMlsTypeCheck = measurePerformance("mlsTypeCheck", mlsTypeCheck, 100);

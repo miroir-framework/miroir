@@ -33,7 +33,7 @@ import { miroirTestDefinitionHasReactComponentTest } from "../../../4-tests/miro
 import { useIntegTestRunCoordinator } from "../../../4-tests/useIntegTestRunCoordinator.js";
 import { ActionButtonWithSnackbar } from "miroir-react";
 import { cleanLevel } from "../../constants.js";
-import { generateTestReport, type TestResultData } from "./testResultReport.js";
+import { generateTestReport, type TestResultData } from "miroir-react";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "RunMiroirTestSuiteButton");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);

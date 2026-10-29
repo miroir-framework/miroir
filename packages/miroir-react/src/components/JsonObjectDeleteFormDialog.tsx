@@ -17,23 +17,14 @@ import {
   type MiroirModelEnvironment
 } from "miroir-core";
 
-import { packageName } from "../../../constants.js";
-import { cleanLevel } from "../constants.js";
-import {
-  useMiroirContextInnerFormOutput,
-  useMiroirContextService
-} from "miroir-react";
+import { packageName } from "../constants.js";
+import { cleanLevel } from "../viewConstants.js";
+import { useMiroirContextInnerFormOutput, useMiroirContextService } from "../contexts/MiroirContextReactProvider.js";
 import { useCurrentModel, useCurrentModelEnvironment } from "../ReduxHooks.js";
-import {
-  ThemedDialog,
-  ThemedDialogTitle,
-  ThemedDialogContent,
-  ThemedDialogActions,
-  ThemedStyledButton,
-  ThemedLabel,
-  ThemedSpan,
-  ThemedBox,
-} from "miroir-react";
+import { ThemedDialog, ThemedDialogTitle, ThemedDialogContent, ThemedDialogActions } from "./Themes/MUIComponents.js";
+import { ThemedStyledButton } from "./Themes/UIComponents.js";
+import { ThemedLabel, ThemedSpan } from "./Themes/BasicComponents.js";
+import { ThemedBox } from "./Themes/LayoutComponents.js";
 
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "JsonObjectDeleteFormDialog");

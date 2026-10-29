@@ -63,7 +63,7 @@ import {
   useCurrentModelEnvironment,
   useDefaultValueParams,
   useReduxDeploymentsStateQuerySelectorForCleanedResult,
-} from "../../ReduxHooks.js";
+} from "miroir-react";
 import { cleanLevel } from "../../constants.js";
 import { getMDataGridColumnDefinitionsFromEntity } from "../../getColumnDefinitionsFromEntityAttributes.js";
 import { deleteCascade } from "miroir-react";
@@ -85,12 +85,12 @@ import {
   openReportHref,
   resolveOpenReportPageParams,
   type OpenReportSpec,
-} from "./OpenReportLaunch.js";
+} from "miroir-react";
 import {
   LIST_TRANSFORMER_PAGE_SIZE,
   sliceInstancesToPage,
 } from "miroir-react";
-import { isMultistepStepEnvelope, unwrapMultistepListChild } from "./MultistepReportHost.js";
+import { isMultistepStepEnvelope, unwrapMultistepListChild } from "miroir-react";
 
 const ReportDisplay = lazy(async () => {
   const module = await import("../../routes/ReportDisplay.js");

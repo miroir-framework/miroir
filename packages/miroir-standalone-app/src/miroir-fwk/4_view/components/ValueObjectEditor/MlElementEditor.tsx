@@ -64,14 +64,14 @@ import {
 import { MlAnyEditor } from "./MlAnyEditor.js";
 import { MlArrayEditor } from "./MlArrayEditor.js";
 import { FieldValidationError } from "miroir-react";
-import { useFieldValidation, useMlElementEditorHooks } from "./MlElementEditorHooks.js";
-import { useDefaultValueParams } from "../../ReduxHooks.js";
+import { useFieldValidation, useMlElementEditorHooks } from "miroir-react";
+import { useDefaultValueParams } from "miroir-react";
 import { MlElementEditorProps } from "./MlElementEditorInterface.js";
 import { MlElementEditorReactCodeMirror } from "./MlElementEditorReactCodeMirror.js";
 import { MlElementStringEditor } from "./MlElementStringEditor.js";
 import { MlEnumEditor } from "./MlEnumEditor.js";
 import { MlLiteralEditor } from "./MlLiteralEditor.js";
-import { MlEditorButton } from "./MlEditorButton.js";
+import { MlEditorButton } from "miroir-react";
 import { MlObjectEditor } from "./MlObjectEditor.js";
 import { editorNavigationKey, useTrackedRender } from "miroir-react";
 

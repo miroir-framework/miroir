@@ -16,7 +16,7 @@ import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";
 import { useMiroirContextService } from "miroir-react";
 import { JsonDisplayHelper } from "miroir-react";
-import { useCurrentModelEnvironment } from "../../ReduxHooks.js";
+import { useCurrentModelEnvironment } from "miroir-react";
 import { TypedValueObjectEditor } from "../Reports/TypedValueObjectEditor.js";
 import type { RunnerProps } from "miroir-react";
 

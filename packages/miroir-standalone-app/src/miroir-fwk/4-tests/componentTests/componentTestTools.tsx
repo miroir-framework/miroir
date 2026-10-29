@@ -82,7 +82,7 @@ import {
   ML_NAME_ATTRIBUTE,
 } from "miroir-react";
 import { cleanLevel } from "../../4_view/constants.js";
-import { useCurrentModel, useCurrentModelEnvironment } from "../../4_view/ReduxHooks.js";
+import { useCurrentModel, useCurrentModelEnvironment } from "miroir-react";
 import { emptyObject } from "miroir-react";
 
 // ################################################################################################

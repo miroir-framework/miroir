@@ -11,7 +11,7 @@ import {
 } from "miroir-core";
 
 import { MiroirThemeProvider } from "miroir-react";
-import { ReportSectionMarkdown } from "../../src/miroir-fwk/4_view/components/Reports/ReportSectionMarkdown";
+import { ReportSectionMarkdown } from "miroir-react";
 import { packageName } from "../../src/constants";
 import { cleanLevel } from "../../src/miroir-fwk/4_view/constants";
 

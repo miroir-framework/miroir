@@ -22,7 +22,7 @@ import {
   type EndpointDefinition,
 } from "miroir-core";
 
-import { allGatedStepsAllowFinish } from "../../../../src/miroir-fwk/4_view/components/Reports/MultistepReportHost.js";
+import { allGatedStepsAllowFinish } from "miroir-react";
 import { resolveRepoRoot } from "../../../helpers/integrationTestProfiles.js";
 import {
   startFakeExternalServiceServer,

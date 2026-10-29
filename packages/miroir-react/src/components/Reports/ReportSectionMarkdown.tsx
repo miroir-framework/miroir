@@ -2,7 +2,7 @@ import { useMemo, useState, useCallback } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeSanitize from 'rehype-sanitize';
-import { EditIcon } from "miroir-react";
+import { EditIcon } from "../Themes/MaterialSymbolWrappers.js";
 
 import {
   ApplicationSection,
@@ -13,23 +13,19 @@ import {
   type ApplicationDeploymentMap,
 } from "miroir-core";
 
-import { packageName } from '../../../../constants.js';
-import { cleanLevel } from '../../constants.js';
-import { RenderInsightHeader } from "miroir-react";
-import { useRenderTracker } from "miroir-react";
-import { RenderPerformanceMetrics } from "miroir-react";
-import {
-  ThemedBox,
-  ThemedContainer,
-  ThemedIconButton,
-  ThemedText,
-  ThemedTitle,
-  ThemedTooltip,
-} from "miroir-react";
-import { MarkdownEditorModal } from "miroir-react";
+import { packageName } from "../../constants.js";
+import { cleanLevel } from "../../viewConstants.js";
+import { RenderInsightHeader } from "../RenderInsightHeader.js";
+import { useRenderTracker } from "../../tools/renderCountTracker.js";
+import { RenderPerformanceMetrics } from "../../tools/renderPerformanceMeasure.js";
+import { ThemedBox } from "../Themes/LayoutComponents.js";
+import { ThemedContainer, ThemedText, ThemedTitle } from "../Themes/BasicComponents.js";
+import { ThemedIconButton } from "../Themes/IconComponents.js";
+import { ThemedTooltip } from "../Themes/DisplayComponents.js";
+import { MarkdownEditorModal } from "./MarkdownEditorModal.js";
 import type { MarkdownReportSection } from 'miroir-core';
 import { useFormikContext } from 'formik';
-import { useMiroirContextService } from 'miroir-react';
+import { useMiroirContextService } from "../../contexts/MiroirContextReactProvider.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportSectionMarkdown");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);

@@ -22,7 +22,7 @@ import {
 import React, { FC, useCallback, useMemo, useState } from "react";
 import { packageName } from "../../../../constants";
 import { cleanLevel } from "../../constants";
-import { useCurrentModelEnvironment, useDefaultValueParams } from "../../ReduxHooks";
+import { useCurrentModelEnvironment, useDefaultValueParams } from "miroir-react";
 import {
   ThemedDisplayValue,
   ThemedLabeledEditor,

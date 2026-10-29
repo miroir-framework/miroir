@@ -14,7 +14,7 @@ describe("logConfigPresets", () => {
     expect(resolution.usedFallback).toBe(false);
     expect(resolution.loggerOptions.defaultLevel).toBe("WARN");
     expect(Object.keys(resolution.loggerOptions.specificLoggerOptions)).toContain(
-      "4_miroir-standalone-app_ReduxHooks",
+      "4_miroir-react_ReduxHooks",
     );
   });
 

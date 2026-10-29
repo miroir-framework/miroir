@@ -5,7 +5,7 @@ import { ExportFailedTestLogsButton } from "miroir-react";
 import { UnitTestExecutionSummary } from "miroir-react";
 import { TestResultsGrid } from "./TestResultsGrid.js";
 import { RenderMeasurementsPanel } from "miroir-react";
-import type { TestResultDataAndSelect, TestSelectionState } from "./testSelectionUtils.js";
+import type { TestResultDataAndSelect, TestSelectionState } from "miroir-react";
 
 export interface TestExecutionPanelProps {
   testLabel: string;

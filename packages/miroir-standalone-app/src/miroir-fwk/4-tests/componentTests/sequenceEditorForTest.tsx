@@ -8,7 +8,7 @@ import { useMiroirContextService } from "miroir-react";
 import React, { useMemo } from "react";
 
 import { SequenceEditor } from "../../4_view/components/SequenceEditor/SequenceEditor.js";
-import { useEntityInstanceUuidIndexFromLocalCache } from "../../4_view/ReduxHooks.js";
+import { useEntityInstanceUuidIndexFromLocalCache } from "miroir-react";
 
 // ################################################################################################
 // The SequenceEditor of the declarative component tests (#505), on an application of the test

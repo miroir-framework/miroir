@@ -13,11 +13,11 @@ import {
 import { JsonDisplayHelper, useMiroirContextService } from "miroir-react";
 import { packageName } from "../../../../constants";
 import { cleanLevel } from "../../constants";
-import { useCurrentModelEnvironment } from "../../ReduxHooks";
+import { useCurrentModelEnvironment } from "miroir-react";
 import { ThemedStatusText } from "miroir-react";
 import { FileSelector } from "miroir-react";
 import { hiddenValueInputProps } from "miroir-react";
-import { useMlElementEditorHooks } from "./MlElementEditorHooks";
+import { useMlElementEditorHooks } from "miroir-react";
 import { MlAnyEditorProps } from "./MlElementEditorInterface";
 import { MlElementEditor } from "./MlElementEditor";
 import { editorNavigationKey, useTrackedRender } from "miroir-react";

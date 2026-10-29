@@ -40,7 +40,7 @@ import {
 import { selfApplicationMiroir } from "miroir-app-miroir";
 import { packageName } from '../../../../constants';
 import { cleanLevel } from '../../constants';
-import { useCurrentModel, useCurrentModelEnvironment } from '../../ReduxHooks';
+import { useCurrentModel, useCurrentModelEnvironment } from "miroir-react";
 import { TypedValueObjectEditor } from '../Reports/TypedValueObjectEditor';
 import { TypedValueObjectEditorWithFormik } from '../Reports/TypedValueObjectEditorWithFormik';
 import {

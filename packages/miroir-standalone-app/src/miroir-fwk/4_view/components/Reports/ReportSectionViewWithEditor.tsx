@@ -25,14 +25,14 @@ import { useNavigate } from 'react-router-dom';
 import { packageName } from "../../../../constants.js";
 import { type ReportUrlParamKeys } from "miroir-react";
 import { cleanLevel } from '../../constants.js';
-import { useCurrentModel, useCurrentModelEnvironment } from '../../ReduxHooks.js';
+import { useCurrentModel, useCurrentModelEnvironment } from "miroir-react";
 import { reportUrl } from "miroir-react";
 import { ReportDisplay } from '../../routes/ReportDisplay';
 import {
   OpenReportModal,
   openReportHref,
   resolveOpenReportPageParams,
-} from './OpenReportLaunch.js';
+} from "miroir-react";
 import { RenderInsightHeader } from "miroir-react";
 import { useRenderTracker } from "miroir-react";
 import GraphReportSectionView from '../Graph/GraphReportSectionView.js';
@@ -42,7 +42,7 @@ import { ThemedBox, ThemedStyledButton, ThemedText } from "miroir-react";
 import { ModelDiagramReportSectionView } from './ModelDiagramReportSectionView.js';
 import { ReportSectionEntityInstance, type ValueObjectEditMode } from './ReportSectionEntityInstance.js';
 import { ReportSectionListDisplay } from './ReportSectionListDisplay.js';
-import { ReportSectionMarkdown } from './ReportSectionMarkdown.js';
+import { ReportSectionMarkdown } from "miroir-react";
 import { ReportSectionMiroirTest } from './ReportSectionMiroirTest.js';
 import { TypedValueObjectEditor } from './TypedValueObjectEditor.js';
 import { TransformerRunnerReportSectionView } from "miroir-react";
@@ -51,7 +51,7 @@ import { resolveApiCallReportSectionSchema } from "miroir-react";
 import {
   isMultistepStepEnvelope,
   useOptionalMultistepReportHost,
-} from './MultistepReportHost.js';
+} from "miroir-react";
 
 import {
   entityEntity,
