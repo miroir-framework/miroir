@@ -3,9 +3,9 @@ import ReactDOM from 'react-dom/client';
 // import { ThemedIcon } from './src/miroir-fwk/4_view/components/Themes/IconComponents';
 // import { MiroirThemeProvider } from './src/miroir-fwk/4_view/contexts/MiroirThemeContext';
 // import { defaultMiroirTheme } from './src/miroir-fwk/4_view/components/Themes/defaults';
-import { ThemedIcon } from './miroir-fwk/4_view/components/Themes';
-import { MiroirThemeProvider } from './miroir-fwk/4_view/contexts/MiroirThemeContext';
-import { defaultMiroirTheme } from './miroir-fwk/4_view/components/Themes/MiroirTheme';
+import { ThemedIcon } from "miroir-react";
+import { MiroirThemeProvider } from "miroir-react";
+import { defaultMiroirTheme } from "miroir-react";
 
 const iconTestThemeOptions = [{
   id: 'default',

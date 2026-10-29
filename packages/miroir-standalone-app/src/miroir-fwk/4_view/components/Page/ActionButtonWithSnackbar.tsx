@@ -1,5 +1,5 @@
 import React from 'react';
-import { ThemedButton } from '../Themes/index';
+import { ThemedButton } from "miroir-react";
 import { useSnackbar } from 'miroir-react';
 import type { Action2VoidReturnType } from 'miroir-core';
 

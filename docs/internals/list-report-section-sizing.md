@@ -33,7 +33,7 @@ contributors touching `packages/miroir-standalone-app/src/miroir-fwk/4_view/comp
 | Last short page / filter shrink | grid shrinks (both backends) | n/a (height follows total, capped) |
 
 Mode resolution lives in `resolveGridSizingMode(pageSize?, maxRows?)` in
-`src/miroir-fwk/4_view/components/Grids/gridPagination.ts`. The **XOR contract** is encoded in the
+`packages/miroir-react/src/components/Grids/gridPagination.ts`. The **XOR contract** is encoded in the
 prop schemas themselves: `tableComponentCorePropsSchema` and `valueObjectGridPropsSchema` are each a
 **union of three variants** — paged (`pageSize: positive int`, `maxRows: never`), scroll
 (`maxRows: positive int`, `pageSize: never`), and default (both `never`) — composed via `.merge` from
@@ -176,4 +176,4 @@ the Glide full-page cap. Decision history: `code-helpers/features/247-FEATURE-pa
 - TDD plan & slice realizations: `code-helpers/features/247-FEATURE-paginated-report-section-grids/tdd-implementation-plan.md`
 - Test suites: `packages/miroir-standalone-app/tests/4_view/gridPagination.unit.test.tsx`,
   `gridPagination.integ.test.tsx` (nonreg steps `unit-gridPagination`, `integ-gridPagination`)
-- Core module: `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Grids/gridPagination.ts`
+- Core module: `packages/miroir-react/src/components/Grids/gridPagination.ts`

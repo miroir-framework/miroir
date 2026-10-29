@@ -5,8 +5,8 @@ import { Icon } from '@mui/material';
 import React, { memo, useMemo } from 'react';
 import { packageName } from '../../../../constants';
 import { cleanLevel } from '../../constants';
-import { TableActionButtons } from './TableActionButtons.js';
-import { TableComponentRow } from './EntityInstanceGridInterface.js';
+import { TableActionButtons } from "miroir-react";
+import { TableComponentRow } from "miroir-react";
 
 // export default (props) => {
 //   const image = props.value === 'Male' ? 'male.png' : 'female.png';

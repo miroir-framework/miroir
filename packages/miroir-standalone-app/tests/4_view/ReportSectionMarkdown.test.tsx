@@ -10,7 +10,7 @@ import {
   MiroirLoggerFactory,
 } from "miroir-core";
 
-import { MiroirThemeProvider } from "../../src/miroir-fwk/4_view/contexts/MiroirThemeContext";
+import { MiroirThemeProvider } from "miroir-react";
 import { ReportSectionMarkdown } from "../../src/miroir-fwk/4_view/components/Reports/ReportSectionMarkdown";
 import { packageName } from "../../src/constants";
 import { cleanLevel } from "../../src/miroir-fwk/4_view/constants";

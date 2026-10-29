@@ -11,7 +11,8 @@ import "@testing-library/jest-dom";
 
 const showLocalCacheMonitorRef = { current: false };
 
-vi.mock("miroir-react", () => ({
+vi.mock("miroir-react", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("miroir-react")>()),
   useMiroirContextService: () => ({
     showLocalCacheMonitor: showLocalCacheMonitorRef.current,
     domainController: undefined,
@@ -19,12 +20,12 @@ vi.mock("miroir-react", () => ({
 }));
 
 import { LocalCacheMonitorSummary } from "../../src/miroir-fwk/4_view/components/LocalCacheMonitorSummary.js";
-import { applyLocalCacheMonitorGate } from "../../src/miroir-fwk/4_view/tools/localCacheMonitorGate.js";
+import { applyLocalCacheMonitorGate } from "miroir-react";
 import {
   LOCAL_CACHE_MONITOR_SESSION_KEY,
   resetLocalCacheMonitorConfig,
-} from "../../src/miroir-fwk/4_view/tools/localCacheMonitorConfig.js";
-import { localCacheMonitorRegistry } from "../../src/miroir-fwk/4_view/tools/localCacheMonitorRegistry.js";
+} from "miroir-react";
+import { localCacheMonitorRegistry } from "miroir-react";
 
 describe("localCacheMonitorFootprint acceptance (Phase 8.3)", () => {
   beforeEach(() => {

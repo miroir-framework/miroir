@@ -20,7 +20,7 @@ import {
   ThemedDrawer,
   ThemedDrawerHeader,
   ThemedScrollableContent
-} from "../Themes/index";
+} from "miroir-react";
 import { SidebarSection } from './SidebarSection.js';
 
 import { menuDefaultMiroir, selfApplicationMiroir } from "miroir-app-miroir";

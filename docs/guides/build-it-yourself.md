@@ -265,6 +265,8 @@ The server reads its mode from `NODE_ENV`: `development` is development mode, an
 | Open | <https://localhost:3080> | <http://localhost:5173> |
 | After changing client code | rebuild (below), then restart the server | reloaded by Vite |
 
+Vite reloads the app's own sources. Components, hooks and themes that live in `miroir-react` reach the app through `packages/miroir-react/dist/`: run `npm run dev -w miroir-react` next to the Vite dev server, so it rebuilds them on save.
+
 In production mode the server stops at startup if `release/client/index.html` is missing. `./build-all.sh` builds the client before the server binary, so it is in place after step 3. After changing client code, rebuild in this order:
 
 ```sh

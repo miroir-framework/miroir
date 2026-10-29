@@ -4,12 +4,12 @@ import React, { memo } from 'react';
 
 import { packageName } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
-import { TableComponentRow } from './EntityInstanceGridInterface.js';
+import { TableComponentRow } from "miroir-react";
 import {
   DeleteActionButton,
   DuplicateActionButton,
   EditActionButton
-} from './TableActionButtonComponents.js';
+} from "miroir-react";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "TableActionButtons_new");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);

@@ -48,8 +48,8 @@ import { cleanLevel } from "../../constants.js";
 import { useCurrentModelEnvironment, useReduxDeploymentsStateQuerySelectorForCleanedResult } from "../../ReduxHooks.js";
 import { useRunner } from "../Reports/ReportHooks.js";
 import { InnerRunnerView } from "./InnerRunnerView.js";
-import type { FormMLSchema, RunnerAction, RunnerProps } from "./RunnerInterface.js";
-import { resolveRunnerDefinitionApplication } from "./runnerDefinitionApplication.js";
+import type { FormMLSchema, RunnerAction, RunnerProps } from "miroir-react";
+import { resolveRunnerDefinitionApplication } from "miroir-react";
 import {
   applicationNameForMcpRunner,
   resolveMcpToolAction,

@@ -20,11 +20,11 @@ import { defaultMiroirMetaModel, defaultStoredMiroirTheme } from "miroir-app-mir
 import { useMiroirContextService } from "miroir-react";
 
 import { EntityInstanceGrid } from "../../../src/miroir-fwk/4_view/components/Grids/EntityInstanceGrid.js";
-import { TableComponentTypeSchema } from "../../../src/miroir-fwk/4_view/components/Grids/EntityInstanceGridInterface.js";
+import { TableComponentTypeSchema } from "miroir-react";
 import { GlideDataGridComponent } from "../../../src/miroir-fwk/4_view/components/Grids/GlideDataGridComponent.js";
-import type { TableComponentRow } from "../../../src/miroir-fwk/4_view/components/Grids/EntityInstanceGridInterface.js";
+import type { TableComponentRow } from "miroir-react";
 import { ValueObjectGrid } from "../../../src/miroir-fwk/4_view/components/Grids/ValueObjectGrid.js";
-import { MiroirThemeProvider } from "../../../src/miroir-fwk/4_view/contexts/MiroirThemeContext.js";
+import { MiroirThemeProvider } from "miroir-react";
 import {
   buildBookListFormikValuesForCount,
   libraryApplicationDeploymentMap,

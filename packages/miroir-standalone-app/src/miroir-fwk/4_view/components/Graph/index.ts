@@ -11,7 +11,7 @@
 //   LineChartData,
 //   PieChartData,
 //   GraphReportSection
-// } from './GraphInterfaces';
+// } from "miroir-react";
 
 // export {
 //   GraphDataSchema,
@@ -28,7 +28,7 @@
 //   lineChartDataSchema,
 //   pieChartDataSchema,
 //   graphReportSectionSchema
-// } from './GraphInterfaces';
+// } from "miroir-react";
 
 // // Components
 // export { GraphComponent } from './GraphComponent';

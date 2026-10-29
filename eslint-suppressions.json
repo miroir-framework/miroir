@@ -367,9 +367,52 @@
       "count": 3
     }
   },
+  "packages/miroir-react/src/components/Reports/useEnsureReportQueryLoaded.ts": {
+    "react-hooks/set-state-in-effect": {
+      "count": 1
+    }
+  },
+  "packages/miroir-react/src/components/Themes/BasicComponents.tsx": {
+    "react-hooks/set-state-in-effect": {
+      "count": 1
+    }
+  },
+  "packages/miroir-react/src/components/Themes/FormComponents.tsx": {
+    "react-hooks/rules-of-hooks": {
+      "count": 21
+    },
+    "react-hooks/set-state-in-effect": {
+      "count": 1
+    }
+  },
+  "packages/miroir-react/src/components/Themes/IconComponents.tsx": {
+    "miroir/global-environment": {
+      "count": 1
+    }
+  },
+  "packages/miroir-react/src/components/ValueObjectEditor/BlobEditorField.tsx": {
+    "react-hooks/rules-of-hooks": {
+      "count": 9
+    }
+  },
+  "packages/miroir-react/src/components/ViewParamsUpdateQueue.ts": {
+    "miroir/type-escape": {
+      "count": 1
+    }
+  },
   "packages/miroir-react/src/contexts/MiroirContextReactProvider.tsx": {
     "miroir/pub-sub": {
       "count": 1
+    }
+  },
+  "packages/miroir-react/src/tools/performanceConfig.ts": {
+    "miroir/global-environment": {
+      "count": 4
+    }
+  },
+  "packages/miroir-react/src/tools/renderPerformanceMeasure.tsx": {
+    "react-hooks/rules-of-hooks": {
+      "count": 2
     }
   },
   "packages/miroir-sandbox/src/bundledData.ts": {
@@ -521,11 +564,6 @@
       "count": 8
     }
   },
-  "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/useEnsureReportQueryLoaded.ts": {
-    "react-hooks/set-state-in-effect": {
-      "count": 1
-    }
-  },
   "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Runners/InnerRunnerView.tsx": {
     "miroir/type-escape": {
       "count": 1
@@ -536,24 +574,6 @@
       "count": 2
     }
   },
-  "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Themes/BasicComponents.tsx": {
-    "react-hooks/set-state-in-effect": {
-      "count": 1
-    }
-  },
-  "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Themes/FormComponents.tsx": {
-    "react-hooks/rules-of-hooks": {
-      "count": 21
-    },
-    "react-hooks/set-state-in-effect": {
-      "count": 1
-    }
-  },
-  "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Themes/IconComponents.tsx": {
-    "miroir/global-environment": {
-      "count": 1
-    }
-  },
   "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/TransformerEditor/EntityInstanceSelectorPanel.tsx": {
     "react-hooks/set-state-in-effect": {
       "count": 2
@@ -562,11 +582,6 @@
   "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/TransformerEditor/TransformerEditor.tsx": {
     "react-hooks/rules-of-hooks": {
       "count": 11
-    }
-  },
-  "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/ValueObjectEditor/BlobEditorField.tsx": {
-    "react-hooks/rules-of-hooks": {
-      "count": 9
     }
   },
   "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/ValueObjectEditor/MlAnyEditor.tsx": {
@@ -593,11 +608,6 @@
       "count": 1
     }
   },
-  "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/ViewParamsUpdateQueue.ts": {
-    "miroir/type-escape": {
-      "count": 1
-    }
-  },
   "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/useAdminViewParams.ts": {
     "miroir/type-escape": {
       "count": 1
@@ -616,16 +626,6 @@
   "packages/miroir-standalone-app/src/miroir-fwk/4_view/services/ConfigurationService.ts": {
     "miroir/action-result": {
       "count": 7
-    }
-  },
-  "packages/miroir-standalone-app/src/miroir-fwk/4_view/tools/performanceConfig.ts": {
-    "miroir/global-environment": {
-      "count": 4
-    }
-  },
-  "packages/miroir-standalone-app/src/miroir-fwk/4_view/tools/renderPerformanceMeasure.tsx": {
-    "react-hooks/rules-of-hooks": {
-      "count": 2
     }
   },
   "packages/miroir-store-postgres/src/1_core/SqlGenerator.ts": {

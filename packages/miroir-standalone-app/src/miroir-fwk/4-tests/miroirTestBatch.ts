@@ -20,7 +20,7 @@ import {
   generateTestReport,
   type TestResultData,
 } from "../4_view/components/Buttons/testResultReport.js";
-import { getMiroirTestSuiteKey, sortMiroirTestInstances } from "../4_view/components/Reports/miroirTestSuiteKey.js";
+import { getMiroirTestSuiteKey, sortMiroirTestInstances } from "miroir-react";
 import { cleanLevel } from "../4_view/constants.js";
 import {
   DEFAULT_UI_INTEGRATION_PROFILE_NAME,

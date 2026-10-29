@@ -1,13 +1,13 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { applyLocalCacheMonitorGate } from "../../src/miroir-fwk/4_view/tools/localCacheMonitorGate.js";
-import { resetLocalCacheMonitorConfig } from "../../src/miroir-fwk/4_view/tools/localCacheMonitorConfig.js";
+import { applyLocalCacheMonitorGate } from "miroir-react";
+import { resetLocalCacheMonitorConfig } from "miroir-react";
 import {
   computeHitRatio,
   computeHistoryToPresentRatio,
   computeTopEntityShare,
   instanceMonitorKey,
   localCacheMonitorIndicators,
-} from "../../src/miroir-fwk/4_view/tools/localCacheMonitorIndicators.js";
+} from "miroir-react";
 
 describe("localCacheMonitorIndicators (Phase 6)", () => {
   beforeEach(() => {

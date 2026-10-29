@@ -27,7 +27,7 @@ vi.mock("../../src/miroir-fwk/4_view/components/Graph/GraphComponent.js", () => 
   ),
 }));
 
-import { MiroirThemeProvider } from "../../src/miroir-fwk/4_view/contexts/MiroirThemeContext.js";
+import { MiroirThemeProvider } from "miroir-react";
 import { GraphReportSectionView } from "../../src/miroir-fwk/4_view/components/Graph/GraphReportSectionView.js";
 
 const testThemeOptions = [

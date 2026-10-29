@@ -20,9 +20,9 @@ import {
   defaultBlockEditorColors,
   useMiroirTheme,
   type BlockEditorColors,
-} from "../../contexts/MiroirThemeContext.js";
+} from "miroir-react";
 import type { TransformerTypeBadge } from "../ValueObjectEditor/MlElementEditorInterface.js";
-import { ThemedIcon } from "../Themes/index.js";
+import { ThemedIcon } from "miroir-react";
 import { useBlockEditorBuildMarking } from "./BlockEditorDisplay.js";
 import { BlockDefineHeader } from "./BlockDefineHeader.js";
 import { BlockDndContext, useBlockDraggable, useBlockDroppable, useDraggingBlock } from "./BlockDragDrop.js";
@@ -35,14 +35,14 @@ import {
   useBlockEditing,
   useBlockEditingValue,
   type TrayUpdate,
-} from "./BlockEditing.js";
-import { BlockField, BlockKeyField, MlSchemaChip } from "./BlockFields.js";
+} from "miroir-react";
+import { BlockField, BlockKeyField, MlSchemaChip } from "miroir-react";
 import { BlockInsertTargets } from "./BlockInsertTargets.js";
-import { BlockResult, useBlockRunInput } from "./BlockResult.js";
+import { BlockResult, useBlockRunInput } from "miroir-react";
 import { BlockPalette } from "./BlockPalette.js";
-import { BlockVariablePath } from "./BlockVariablePath.js";
+import { BlockVariablePath } from "miroir-react";
 import { BlockRunnerHat } from "./BlockRunnerHat.js";
-import { BlockDefineContext, BlockRunnerContext, useBlockModelEnvironment } from "./BlockViewMode.js";
+import { BlockDefineContext, BlockRunnerContext, useBlockModelEnvironment } from "miroir-react";
 
 // ################################################################################################
 // #498: the read-only block view of a transformer value (analysis #497). The tree comes from the

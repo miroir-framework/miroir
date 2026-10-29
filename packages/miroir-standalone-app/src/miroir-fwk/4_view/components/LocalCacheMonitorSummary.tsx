@@ -5,15 +5,15 @@ import {
   measureLocalCacheMemory,
   type LocalCacheMemoryBreakdown,
 } from "miroir-core";
-import { localCacheMonitorRegistry } from "../tools/localCacheMonitorRegistry.js";
+import { localCacheMonitorRegistry } from "miroir-react";
 import {
   localCacheMonitorIndicators,
   type LocalCacheMonitorIndicators,
-} from "../tools/localCacheMonitorIndicators.js";
+} from "miroir-react";
 import {
   clearLocalCacheMonitorSession,
   downloadLocalCacheMonitorExport,
-} from "../tools/localCacheMonitorSession.js";
+} from "miroir-react";
 
 function formatBytes(n: number): string {
   if (!Number.isFinite(n) || n < 0) return "—";

@@ -1,8 +1,8 @@
 import { effectiveShowModelTools, isDesignerToolsVisible } from "miroir-core";
 import { useMiroirContextService } from "miroir-react";
 
-import { useAuthSession } from "./authSession.js";
-import { useApplicationAccess } from "./useApplicationAccess.js";
+import { useAuthSession } from "miroir-react";
+import { useApplicationAccess } from "miroir-react";
 
 export function useDesignerToolsVisibility(): {
   designerToolsVisible: boolean;

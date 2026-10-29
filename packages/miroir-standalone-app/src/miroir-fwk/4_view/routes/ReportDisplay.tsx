@@ -25,15 +25,15 @@ import {
   ReportUrlParamKeys
 } from "../../../constants.js";
 import { useCurrentModel } from "../ReduxHooks.js";
-import { ErrorFallbackComponent } from "../components/ErrorFallbackComponent.js";
+import { ErrorFallbackComponent } from "miroir-react";
 import { RenderInsightSummary } from "../components/RenderInsightSummary.js";
 import { LocalCacheMonitorSummary } from "../components/LocalCacheMonitorSummary.js";
 import { useStoredQueriesResults } from "../components/Reports/ReportHooks.js";
 import { MultistepReportHost } from "../components/Reports/MultistepReportHost.js";
 import { ReportViewWithEditor } from "../components/Reports/ReportViewWithEditor.js";
-import { ThemedBox, ThemedSpan } from "../components/Themes/index.js";
+import { ThemedBox, ThemedSpan } from "miroir-react";
 import { cleanLevel } from "../constants.js";
-import { useMiroirTheme } from "../contexts/MiroirThemeContext.js";
+import { useMiroirTheme } from "miroir-react";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportDisplay");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);

@@ -22,8 +22,8 @@ import {
   ThemedHeaderSection,
   ThemedText,
   ThemedTitle,
-} from "../Themes/index";
-import { EventLogComponent } from '../EventLogComponent';
+} from "miroir-react";
+import { EventLogComponent } from "miroir-react";
 import { TypedValueObjectEditorWithFormik } from '../Reports/TypedValueObjectEditorWithFormik';
 
 // ################################################################################################

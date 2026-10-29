@@ -36,9 +36,9 @@ import {
   ThemedDialogTitle,
   ThemedSpan,
   ThemedStyledButton,
-} from "../Themes/index.js";
+} from "miroir-react";
 import { openReportHref } from "./OpenReportLaunch.js";
-import { useYamlParserStatus } from "./useYamlParserStatus.js";
+import { useYamlParserStatus } from "miroir-react";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(
   packageName,

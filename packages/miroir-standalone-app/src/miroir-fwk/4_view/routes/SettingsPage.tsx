@@ -36,14 +36,14 @@ import {
 import { useMemo } from "react";
 import { packageName } from "../../../constants.js";
 import { getMemoizedReduxDeploymentsStateSelectorMap } from "miroir-react";
-import { MiroirThemeSelector } from "../components/MiroirThemeSelector.js";
-import { PageContainer } from "../components/Page/PageContainer.js";
+import { MiroirThemeSelector } from "miroir-react";
+import { PageContainer } from "miroir-react";
 import {
   ViewParamsUpdateQueue,
   ViewParamsUpdateQueueConfig,
-} from "../components/ViewParamsUpdateQueue.js";
+} from "miroir-react";
 import { cleanLevel } from "../constants.js";
-import { useMiroirTheme } from "../contexts/MiroirThemeContext.js";
+import { useMiroirTheme } from "miroir-react";
 import {
   useDomainControllerService,
   useMiroirContextService,

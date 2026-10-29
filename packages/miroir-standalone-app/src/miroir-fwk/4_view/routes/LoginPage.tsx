@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
-import { setAuthToken } from "../auth/authSession.js";
+import { setAuthToken } from "miroir-react";
 import { requestLoginToken } from "../auth/authTransport.js";
-import { PageContainer } from "../components/Page/PageContainer.js";
+import { PageContainer } from "miroir-react";
 import {
   ThemedBox,
   ThemedButton,
@@ -14,8 +14,8 @@ import {
   ThemedSpan,
   ThemedStackedLabeledEditor,
   ThemedTitle,
-} from "../components/Themes/index.js";
-import { useMiroirTheme } from "../contexts/MiroirThemeContext.js";
+} from "miroir-react";
+import { useMiroirTheme } from "miroir-react";
 
 export function LoginPage(): React.JSX.Element {
   const [username, setUsername] = useState("");

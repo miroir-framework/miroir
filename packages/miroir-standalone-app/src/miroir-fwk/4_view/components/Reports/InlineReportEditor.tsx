@@ -16,7 +16,7 @@ import {
 import { ThemedOnScreenHelper } from 'miroir-react';
 import { packageName } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
-import { ThemedProgressiveAccordion } from '../Themes/BasicComponents.js';
+import { ThemedProgressiveAccordion } from "miroir-react";
 import { ReportSectionEntityInstance } from './ReportSectionEntityInstance.js';
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "InlineReportEditor");

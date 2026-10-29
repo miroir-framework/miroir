@@ -2,9 +2,9 @@ import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import React from 'react';
 
-import { MiroirThemeProvider } from '../../src/miroir-fwk/4_view/contexts/MiroirThemeContext';
+import { MiroirThemeProvider } from "miroir-react";
 import { GraphComponent } from '../../src/miroir-fwk/4_view/components/Graph/GraphComponent';
-import { BarChartData, LineChartData, PieChartData } from '../../src/miroir-fwk/4_view/components/Graph/GraphInterfaces';
+import { BarChartData, LineChartData, PieChartData } from "miroir-react";
 
 // Mock d3 to avoid DOM manipulation issues in tests
 vi.mock('d3', () => ({

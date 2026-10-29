@@ -24,7 +24,7 @@ import {
 } from "miroir-example-library";
 
 import { resolveMcpToolAction } from "../../../../src/miroir-fwk/4_view/components/Runners/resolveMcpToolAction.js";
-import { resolveRunnerDefinitionApplication } from "../../../../src/miroir-fwk/4_view/components/Runners/runnerDefinitionApplication.js";
+import { resolveRunnerDefinitionApplication } from "miroir-react";
 import { resolveRepoRoot } from "../../../helpers/integrationTestProfiles.js";
 
 const RUN_TEST = process.env.RUN_TEST;

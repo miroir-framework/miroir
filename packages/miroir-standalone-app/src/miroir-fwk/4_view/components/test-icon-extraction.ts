@@ -1,5 +1,5 @@
 // Test script to verify runtime icon path extraction
-import { getMaterialIconPath } from './MaterialIconCanvasRenderer';
+import { getMaterialIconPath } from "miroir-react";
 
 export function testIconExtraction() {
   console.log('Testing runtime icon path extraction...');

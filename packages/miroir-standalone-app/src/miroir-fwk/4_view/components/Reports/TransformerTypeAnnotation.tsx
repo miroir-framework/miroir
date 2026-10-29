@@ -2,7 +2,7 @@
 import { css } from "@emotion/react";
 import React from "react";
 
-import { useMiroirTheme } from "../../contexts/MiroirThemeContext.js";
+import { useMiroirTheme } from "miroir-react";
 import type { TransformerTypeBadge, TransformerTypeBadgePart } from "../ValueObjectEditor/MlElementEditorInterface.js";
 
 export type TransformerAnnotationPath = (string | number)[];

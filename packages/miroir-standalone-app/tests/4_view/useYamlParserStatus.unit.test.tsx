@@ -5,7 +5,7 @@ import {
   createYamlParserStatusStore,
   useYamlParserStatus,
   type YamlParserLoader,
-} from "../../src/miroir-fwk/4_view/components/Reports/useYamlParserStatus.js";
+} from "miroir-react";
 
 // #370: in the browser the YAML parser loads on demand. Node always has it loaded, so these tests use
 // a loader whose load the test settles itself.

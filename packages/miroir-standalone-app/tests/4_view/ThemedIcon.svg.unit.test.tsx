@@ -5,8 +5,8 @@ import { render, screen } from '@testing-library/react';
 import type { MiroirIcon } from 'miroir-core';
 import { defaultStoredMiroirTheme } from 'miroir-app-miroir';
 
-import { ThemedIcon } from '../../src/miroir-fwk/4_view/components/Themes/IconComponents';
-import { MiroirThemeProvider } from '../../src/miroir-fwk/4_view/contexts/MiroirThemeContext';
+import { ThemedIcon } from "miroir-react";
+import { MiroirThemeProvider } from "miroir-react";
 
 const testThemeOptions = [
   {

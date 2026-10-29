@@ -40,7 +40,7 @@ import { adminSelfApplication, entityDeployment } from "miroir-app-admin";
 
 import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";
-import { useAuthSession } from "../../auth/authSession.js";
+import { useAuthSession } from "miroir-react";
 import { MIROIR_SYSTEM_PROMPT } from "./miroirSystemPrompt.js";
 import { AiEntityProposalForm, type EntityProposal } from "./AiEntityProposalForm.js";
 import { AiLendProposalForm } from "./AiLendProposalForm.js";

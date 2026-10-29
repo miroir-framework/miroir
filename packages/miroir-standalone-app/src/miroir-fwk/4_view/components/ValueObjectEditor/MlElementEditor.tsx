@@ -8,7 +8,7 @@ import {
   KeyboardDoubleArrowUp,
   UnfoldLess,
   UnfoldMore
-} from "../Themes/MaterialSymbolWrappers";
+} from "miroir-react";
 
 import { MenuItem } from "@mui/material";
 
@@ -37,16 +37,16 @@ import { cleanLevel } from "../../constants.js";
 import {
   useMiroirNestingBorderColor,
   useMiroirNestingColor
-} from "../../contexts/MiroirThemeContext.js";
+} from "miroir-react";
 import { useMiroirContextService } from "miroir-react";
-import { RenderPerformanceMetrics } from "../../tools/renderPerformanceMeasure.js";
+import { RenderPerformanceMetrics } from "miroir-react";
 import { useComponentTestMode } from "../../tools/ComponentTestModeContext.js";
 import { isVitestTestMode } from "../../tools/progressiveRenderConfig.js";
-import { BlockViewModeContext } from "../BlockEditor/BlockViewMode.js";
+import { BlockViewModeContext } from "miroir-react";
 import { BlockViewSwitch } from "../BlockEditor/BlockViewSwitch.js";
-import { ErrorFallbackComponent } from "../ErrorFallbackComponent.js";
+import { ErrorFallbackComponent } from "miroir-react";
 import { JsonDisplayHelper } from "miroir-react";
-import { useReportPageContext } from "../Reports/ReportPageContext.js";
+import { useReportPageContext } from "miroir-react";
 import { findPathAnnotation, TransformerTypeBadgeLine } from "../Reports/TransformerTypeAnnotation.js";
 import {
   ThemedCard,
@@ -60,10 +60,10 @@ import {
   ThemedSwitch,
   ThemedText,
   ThemedTextEditor
-} from "../Themes/index";
+} from "miroir-react";
 import { MlAnyEditor } from "./MlAnyEditor.js";
 import { MlArrayEditor } from "./MlArrayEditor.js";
-import { FieldValidationError } from "./FieldValidationError.js";
+import { FieldValidationError } from "miroir-react";
 import { useFieldValidation, useMlElementEditorHooks } from "./MlElementEditorHooks.js";
 import { useDefaultValueParams } from "../../ReduxHooks.js";
 import { MlElementEditorProps } from "./MlElementEditorInterface.js";

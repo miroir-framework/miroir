@@ -6,8 +6,8 @@ import {
   ThemedDisplayValue,
   ThemedLabeledEditor,
   ThemedTextEditor
-} from "../Themes/index";
-import { FileSelector } from "../Themes/FileSelector.js";
+} from "miroir-react";
+import { FileSelector } from "miroir-react";
 // import { useServerFilesystemRoot } from "../../hooks/useServerFilesystemRoot.js";
 import type { MlEditorPropsRoot } from "./MlElementEditorInterface";
 import { LoggerInterface, MiroirLoggerFactory, type MlBaseObject, type MetaModel } from "miroir-core";

@@ -9,9 +9,9 @@ import {
   ThemedStyledButton,
   ThemedSpan,
   ThemedCodeBlock,
-} from "../Themes/index";
+} from "miroir-react";
 import { getIn, useFormikContext } from "formik";
-import { editsOwnText, historyCommand, ValueHistoryContext } from "./ValueHistoryProvider.js";
+import { editsOwnText, historyCommand, ValueHistoryContext } from "miroir-react";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MlElementEditorReactCodeMirror");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);

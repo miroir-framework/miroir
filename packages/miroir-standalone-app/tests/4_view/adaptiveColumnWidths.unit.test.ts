@@ -6,8 +6,8 @@ import {
   calculateAdaptiveColumnWidths,
   ColumnWidthSpec,
   ToolsColumnDefinition,
-} from "../../src/miroir-fwk/4_view/adaptiveColumnWidths";
-import { TableComponentRow } from "../../src/miroir-fwk/4_view/components/Grids/EntityInstanceGridInterface";
+} from "miroir-react";
+import { TableComponentRow } from "miroir-react";
 
 const defaultToolsColumnDef: ToolsColumnDefinition = {
   field: "",
