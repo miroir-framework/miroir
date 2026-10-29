@@ -1,53 +1,62 @@
 import React from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render as rtlRender, screen } from "@testing-library/react";
+import { MiroirContextReactTestProvider, MiroirThemeContext } from "miroir-react";
 import "@testing-library/jest-dom";
 
 const showPerformanceDisplayRef = { current: false };
-
-vi.mock("miroir-react", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("miroir-react")>()),
-  useMiroirContextService: () => ({
-    showPerformanceDisplay: showPerformanceDisplayRef.current,
-  }),
-  useMiroirTheme: () => ({
-    currentTheme: {
-      colors: {
-        warning: "#f59e0b",
-        warningLight: "#fffbeb",
-        textSecondary: "#484746",
-        text: "#111827",
-        border: "#d1d5db",
-        surface: "#ffffff",
-        divider: "#e5e7eb",
-      },
-      components: {
-        renderInsight: {
-          background: "#134e4a",
-          textColor: "#f0fdfa",
-          textMuted: "#99f6e4",
-          accent: "#0f766e",
-          borderColor: "#0f766e",
-          badgeBackground: "#99f6e4",
-          badgeTextColor: "#042f2e",
-          fontSize: "12px",
-          fontSizeSummary: "13px",
-          borderRadius: "999px",
-          borderRadiusSummary: "6px",
-        },
-      },
-      borderRadius: { sm: "4px" },
-      spacing: { xs: "4px", sm: "8px" },
-      typography: { fontSize: { xs: "11px", sm: "12px", md: "13px" } },
-    },
-  }),
-}));
 
 import {
   RENDER_INSIGHT_MAX_DEPTH_STORAGE_KEY,
 } from "miroir-react";
 import { renderInsightRegistry } from "miroir-react";
 import { RenderInsightSummary } from "../../src/miroir-fwk/4_view/components/RenderInsightSummary.js";
+
+const testTheme = {
+  currentTheme: {
+    colors: {
+      warning: "#f59e0b",
+      warningLight: "#fffbeb",
+      textSecondary: "#484746",
+      text: "#111827",
+      border: "#d1d5db",
+      surface: "#ffffff",
+      divider: "#e5e7eb",
+    },
+    components: {
+      renderInsight: {
+        background: "#134e4a",
+        textColor: "#f0fdfa",
+        textMuted: "#99f6e4",
+        accent: "#0f766e",
+        borderColor: "#0f766e",
+        badgeBackground: "#99f6e4",
+        badgeTextColor: "#042f2e",
+        fontSize: "12px",
+        fontSizeSummary: "13px",
+        borderRadius: "999px",
+        borderRadiusSummary: "6px",
+      },
+    },
+    borderRadius: { sm: "4px" },
+    spacing: { xs: "4px", sm: "8px" },
+    typography: { fontSize: { xs: "11px", sm: "12px", md: "13px" } },
+  },
+};
+
+const TestContext = ({ children }: { children: React.ReactNode }) => (
+  <MiroirContextReactTestProvider
+    value={
+      {
+        showPerformanceDisplay: showPerformanceDisplayRef.current,
+      } as any
+    }
+  >
+    <MiroirThemeContext.Provider value={testTheme as any}>{children}</MiroirThemeContext.Provider>
+  </MiroirContextReactTestProvider>
+);
+const render = ((ui: React.ReactElement, options?: Parameters<typeof rtlRender>[1]) =>
+  rtlRender(ui, { wrapper: TestContext, ...options })) as typeof rtlRender;
 
 describe("RenderInsightSummary (Phase 5)", () => {
   beforeEach(() => {

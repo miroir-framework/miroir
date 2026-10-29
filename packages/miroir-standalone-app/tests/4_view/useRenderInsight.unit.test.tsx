@@ -1,20 +1,21 @@
 import React from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { renderHook } from "@testing-library/react";
-
-const showPerformanceDisplayRef = { current: false };
-
-vi.mock("miroir-react", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("miroir-react")>()),
-  useMiroirContextService: () => ({
-    showPerformanceDisplay: showPerformanceDisplayRef.current,
-  }),
-}));
+import { renderHook as rtlRenderHook } from "@testing-library/react";
 
 import {
+  MiroirContextReactTestProvider,
   NOOP_RENDER_COUNTS,
   renderInsightRegistry,
 } from "miroir-react";
+
+const showPerformanceDisplayRef = { current: false };
+
+const TestContext = ({ children }: { children: React.ReactNode }) => (
+  <MiroirContextReactTestProvider value={{ showPerformanceDisplay: showPerformanceDisplayRef.current }}>
+    {children}
+  </MiroirContextReactTestProvider>
+);
+const renderHook = <Result,>(hook: () => Result) => rtlRenderHook(hook, { wrapper: TestContext });
 import { useRenderInsight } from "../../src/miroir-fwk/4_view/tools/useRenderInsight.js";
 
 describe("useRenderInsight (Phase 1.2)", () => {

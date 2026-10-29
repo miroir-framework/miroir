@@ -77,6 +77,7 @@ export {
   formikPath_EntityInstanceSelectorPanel,
   feedbackGlowStorageKey,
   MiroirContextReactProvider,
+  MiroirContextReactTestProvider,
   MiroirReactContext,
   ToolsPageState,
   useApplicationDeploymentMap,

@@ -1,51 +1,66 @@
 import React from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render as rtlRender, screen } from "@testing-library/react";
+import { MiroirContextReactTestProvider, MiroirThemeContext, resetPerformanceConfig, updatePerformanceConfig } from "miroir-react";
 import "@testing-library/jest-dom";
 
 const showPerformanceDisplayRef = { current: false };
 const showDebugInfoRef = { current: false };
 
-vi.mock("miroir-react", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("miroir-react")>()),
-  useMiroirContextService: () => ({
-    showPerformanceDisplay: showPerformanceDisplayRef.current,
-    showDebugInfo: showDebugInfoRef.current,
-  }),
-  useMiroirTheme: () => ({
-    currentTheme: {
-      colors: {
-        warning: "#f59e0b",
-        warningLight: "#fffbeb",
-        textSecondary: "#484746",
-        text: "#111827",
-      },
-      components: {
-        renderInsight: {
-          background: "#134e4a",
-          textColor: "#f0fdfa",
-          textMuted: "#99f6e4",
-          accent: "#0f766e",
-          borderColor: "#0f766e",
-          badgeBackground: "#99f6e4",
-          badgeTextColor: "#042f2e",
-          fontSize: "12px",
-          fontSizeSummary: "13px",
-          borderRadius: "999px",
-          borderRadiusSummary: "6px",
-        },
-      },
-      borderRadius: { sm: "4px" },
+import { RenderInsightHeader } from "../../src/miroir-fwk/4_view/components/RenderInsightHeader.js";
+
+const testTheme = {
+  currentTheme: {
+    colors: {
+      warning: "#f59e0b",
+      warningLight: "#fffbeb",
+      textSecondary: "#484746",
+      text: "#111827",
     },
-  }),
-  getPerformanceConfig: () => ({
+    components: {
+      renderInsight: {
+        background: "#134e4a",
+        textColor: "#f0fdfa",
+        textMuted: "#99f6e4",
+        accent: "#0f766e",
+        borderColor: "#0f766e",
+        badgeBackground: "#99f6e4",
+        badgeTextColor: "#042f2e",
+        fontSize: "12px",
+        fontSizeSummary: "13px",
+        borderRadius: "999px",
+        borderRadiusSummary: "6px",
+      },
+    },
+    borderRadius: { sm: "4px" },
+  },
+};
+
+const TestContext = ({ children }: { children: React.ReactNode }) => (
+  <MiroirContextReactTestProvider
+    value={
+      {
+        showPerformanceDisplay: showPerformanceDisplayRef.current,
+        showDebugInfo: showDebugInfoRef.current,
+      } as any
+    }
+  >
+    <MiroirThemeContext.Provider value={testTheme as any}>{children}</MiroirThemeContext.Provider>
+  </MiroirContextReactTestProvider>
+);
+const render = ((ui: React.ReactElement, options?: Parameters<typeof rtlRender>[1]) =>
+  rtlRender(ui, { wrapper: TestContext, ...options })) as typeof rtlRender;
+
+beforeEach(() => {
+  updatePerformanceConfig({
     enabled: true,
     renderThresholdMs: 1.0,
     persistMetricsAcrossNavigation: true,
-  }),
-}));
-
-import { RenderInsightHeader } from "../../src/miroir-fwk/4_view/components/RenderInsightHeader.js";
+  }, false);
+});
+afterEach(() => {
+  resetPerformanceConfig();
+});
 
 describe("RenderInsightHeader (Phase 3)", () => {
   beforeEach(() => {

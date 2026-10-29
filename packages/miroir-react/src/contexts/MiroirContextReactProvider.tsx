@@ -871,6 +871,24 @@ export function MiroirContextReactProvider(props: {
 }
 
 // #############################################################################################
+/**
+ * Provides a given MiroirReactContext value, without the services MiroirContextReactProvider builds.
+ * For tests of components and hooks that read the context: a `vi.mock("miroir-react")` does not reach
+ * the modules of miroir-react that call these hooks (#600).
+ */
+export function MiroirContextReactTestProvider({
+  value,
+  children,
+}: {
+  value: Partial<MiroirReactContext>;
+  children: ReactNode;
+}) {
+  return (
+    <miroirReactContext.Provider value={value as MiroirReactContext}>{children}</miroirReactContext.Provider>
+  );
+}
+
+// #############################################################################################
 export function useMiroirContextformHelperState() {
   return [
     useContext(miroirReactContext)?.formHelperState,
