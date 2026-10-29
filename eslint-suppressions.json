@@ -367,6 +367,21 @@
       "count": 3
     }
   },
+  "packages/miroir-react/src/ReduxHooks.ts": {
+    "react-hooks/rules-of-hooks": {
+      "count": 1
+    }
+  },
+  "packages/miroir-react/src/components/LocalCacheMonitorSummary.tsx": {
+    "react-hooks/set-state-in-effect": {
+      "count": 1
+    }
+  },
+  "packages/miroir-react/src/components/Reports/ReportHooks.ts": {
+    "react-hooks/rules-of-hooks": {
+      "count": 2
+    }
+  },
   "packages/miroir-react/src/components/Reports/useEnsureReportQueryLoaded.ts": {
     "react-hooks/set-state-in-effect": {
       "count": 1
@@ -396,6 +411,11 @@
     }
   },
   "packages/miroir-react/src/components/ViewParamsUpdateQueue.ts": {
+    "miroir/type-escape": {
+      "count": 1
+    }
+  },
+  "packages/miroir-react/src/components/useAdminViewParams.ts": {
     "miroir/type-escape": {
       "count": 1
     }
@@ -496,11 +516,6 @@
       "count": 1
     }
   },
-  "packages/miroir-standalone-app/src/miroir-fwk/4_view/ReduxHooks.ts": {
-    "react-hooks/rules-of-hooks": {
-      "count": 1
-    }
-  },
   "packages/miroir-standalone-app/src/miroir-fwk/4_view/auth/authTransport.ts": {
     "miroir/component-io": {
       "count": 2
@@ -536,19 +551,9 @@
       "count": 3
     }
   },
-  "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/LocalCacheMonitorSummary.tsx": {
-    "react-hooks/set-state-in-effect": {
-      "count": 1
-    }
-  },
   "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Page/RootComponent.tsx": {
     "react-hooks/set-state-in-effect": {
       "count": 1
-    }
-  },
-  "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportHooks.ts": {
-    "react-hooks/rules-of-hooks": {
-      "count": 2
     }
   },
   "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportSectionListDisplay.tsx": {
@@ -605,11 +610,6 @@
       "count": 1
     },
     "react-hooks/set-state-in-effect": {
-      "count": 1
-    }
-  },
-  "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/useAdminViewParams.ts": {
-    "miroir/type-escape": {
       "count": 1
     }
   },
