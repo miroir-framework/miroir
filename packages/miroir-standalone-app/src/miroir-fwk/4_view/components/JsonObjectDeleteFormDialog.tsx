@@ -33,7 +33,7 @@ import {
   ThemedLabel,
   ThemedSpan,
   ThemedBox,
-} from "./Themes/index.js";
+} from "miroir-react";
 
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "JsonObjectDeleteFormDialog");

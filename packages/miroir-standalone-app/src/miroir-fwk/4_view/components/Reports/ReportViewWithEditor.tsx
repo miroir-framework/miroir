@@ -25,10 +25,10 @@ import {
 import { JsonDisplayHelper, useDomainControllerService, useMiroirContextService, useSnackbar } from 'miroir-react';
 import { packageName } from '../../../../constants.js';
 import { cleanLevel, lastSubmitButtonClicked } from '../../constants.js';
-import { ThemedSpan } from '../Themes/index.js';
-import { useDocumentOutlineContext } from '../ValueObjectEditor/InstanceEditorOutlineContext.js';
+import { ThemedSpan } from "miroir-react";
+import { useDocumentOutlineContext } from "miroir-react";
 import { InlineReportEditor, reportReportDetailsKey } from './InlineReportEditor.js';
-import { ReportFormSubmitContext, type SubmitReportFormValues } from './ReportFormSubmitContext.js';
+import { ReportFormSubmitContext, type SubmitReportFormValues } from "miroir-react";
 import {
   omitSecretKeysFromBagDump,
   useOptionalMultistepReportHost,
@@ -36,8 +36,8 @@ import {
 import { ReportViewProps, useQueryTemplateResults } from './ReportHooks.js';
 import ReportSectionViewWithEditor from './ReportSectionViewWithEditor.js';
 import { reportSectionsFormValue } from './ReportTools.js';
-import { useEnsureReportQueryLoaded } from './useEnsureReportQueryLoaded.js';
-import { useReportQueryLoadService } from './useReportQueryLoadService.js';
+import { useEnsureReportQueryLoaded } from "miroir-react";
+import { useReportQueryLoadService } from "miroir-react";
 
 import { reportReportDetails, entityReport } from "miroir-app-miroir";
 import { deployment_Miroir } from 'miroir-app-admin';

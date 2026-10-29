@@ -20,7 +20,7 @@ import {
   ThemedContainer,
   ThemedHeaderSection,
   ThemedTitle
-} from "../Themes/index";
+} from "miroir-react";
 import { ThemedOnScreenHelper } from 'miroir-react';
 
 export function hasDisplayableTransformationResult(

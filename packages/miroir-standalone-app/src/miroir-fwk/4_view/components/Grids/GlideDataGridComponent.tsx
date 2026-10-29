@@ -10,7 +10,7 @@ import {
 import "@glideapps/glide-data-grid/dist/index.css";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import GlideDataGridFilterComponent from './GlideDataGridFilterComponent.js';
+import { GlideDataGridFilterComponent } from "miroir-react";
 
 import {
   LoggerInterface,
@@ -18,20 +18,20 @@ import {
 } from "miroir-core";
 
 import { packageName } from '../../../../constants.js';
-import { ColumnWidthSpec, ToolsColumnDefinition } from '../../adaptiveColumnWidths.js';
+import { ColumnWidthSpec, ToolsColumnDefinition } from "miroir-react";
 import { cleanLevel } from '../../constants.js';
 import {
   TableComponentRow
-} from "./EntityInstanceGridInterface.js";
+} from "miroir-react";
 import glideToolsCellRenderer, { ToolsCell, ToolsCellData } from './GlideToolsCellRenderer.js';
-import { GridPaginationToolbar } from './GridPaginationToolbar.js';
+import { GridPaginationToolbar } from "miroir-react";
 import {
   computeGlidePagedHeight,
   computeGlideScrollHeight,
   paginateRows,
   resolveGridSizingMode,
   useClientPagination,
-} from './gridPagination.js';
+} from "miroir-react";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "GlideDataGridComponent");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);

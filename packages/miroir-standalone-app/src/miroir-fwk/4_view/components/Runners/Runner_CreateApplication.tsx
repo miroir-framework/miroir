@@ -48,11 +48,11 @@ import {
   ALL_NON_BUNDLED_CREATABLE_STORE_TYPES,
   getRunner_CreateApplication_formMLSchema,
   type CreateApplicationStoreType,
-} from "./buildCreateApplicationStorageSchema.js";
-import type { FormMLSchema } from "./RunnerInterface.js";
+} from "miroir-react";
+import type { FormMLSchema } from "miroir-react";
 import { RunnerView } from "./RunnerView.js";
 
-export { buildCreateApplicationStorageSchema } from "./buildCreateApplicationStorageSchema.js";
+export { buildCreateApplicationStorageSchema } from "miroir-react";
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Runner_CreateApplication");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",

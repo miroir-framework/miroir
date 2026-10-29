@@ -17,7 +17,7 @@ import {
 import type { BlockPath } from "miroir-core";
 import React, { useCallback, useState } from "react";
 
-import { armedLabel, pathKey, useBlockEditing, valueAtPath, type ArmedBlock, type BlockEditing } from "./BlockEditing.js";
+import { armedLabel, pathKey, useBlockEditing, valueAtPath, type ArmedBlock, type BlockEditing } from "miroir-react";
 
 // ################################################################################################
 // #500: drag and drop in the block view, with @dnd-kit/core (loaded with the block view only).

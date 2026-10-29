@@ -20,13 +20,13 @@ import { afterEach, describe, expect, it } from "vitest";
 
 import { defaultStoredMiroirTheme } from "miroir-app-miroir";
 
-import { MiroirThemeProvider } from "../../../../src/miroir-fwk/4_view/contexts/MiroirThemeContext.js";
-import { ThemedSelectWithPortal } from "../../../../src/miroir-fwk/4_view/components/Themes/FormComponents.js";
-import { ThemedMUISelect } from "../../../../src/miroir-fwk/4_view/components/Themes/MUIComponents.js";
+import { MiroirThemeProvider } from "miroir-react";
+import { ThemedSelectWithPortal } from "miroir-react";
+import { ThemedMUISelect } from "miroir-react";
 import {
   PortalContainerContext,
   PortalContainerProvider,
-} from "../../../../src/miroir-fwk/4_view/tools/PortalContainerContext.js";
+} from "miroir-react";
 
 const testThemeOptions = [
   {

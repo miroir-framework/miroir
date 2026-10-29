@@ -5,8 +5,8 @@ import {
   type LoggerInterface
 } from "miroir-core";
 import { packageName } from "../../../constants.js";
-import { PageContainer } from "../components/Page/PageContainer.js";
-import { ReportPageContextProvider } from "../components/Reports/ReportPageContext.js";
+import { PageContainer } from "miroir-react";
+import { ReportPageContextProvider } from "miroir-react";
 import { runnerConfigs, RunnerList } from '../components/Runners/RunnersList';
 import { cleanLevel } from "../constants.js";
 import { useMiroirContextService } from 'miroir-react';

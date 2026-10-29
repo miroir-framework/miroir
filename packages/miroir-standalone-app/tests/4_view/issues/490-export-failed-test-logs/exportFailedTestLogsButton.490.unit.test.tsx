@@ -5,7 +5,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 
 import type { FailedTestLogsExport, MiroirActivity, MiroirEvent } from "miroir-core";
 
-import { ExportFailedTestLogsButton } from "../../../../src/miroir-fwk/4_view/components/Reports/ExportFailedTestLogsButton.js";
+import { ExportFailedTestLogsButton } from "miroir-react";
 
 const okResult = { testPath: ["ui.editor", "editor", "passes"], testResult: "ok" as const };
 const failedResult = {

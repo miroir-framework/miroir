@@ -7,8 +7,8 @@ import type {
   ReportQueryLoadRequest,
 } from "miroir-core";
 
-import { useEnsureReportQueryLoaded } from "../../src/miroir-fwk/4_view/components/Reports/useEnsureReportQueryLoaded.js";
-import { useReportQueryLoadService } from "../../src/miroir-fwk/4_view/components/Reports/useReportQueryLoadService.js";
+import { useEnsureReportQueryLoaded } from "miroir-react";
+import { useReportQueryLoadService } from "miroir-react";
 
 function stubDomainController(): DomainControllerInterface {
   return {

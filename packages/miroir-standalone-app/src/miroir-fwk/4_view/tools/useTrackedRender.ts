@@ -18,7 +18,7 @@ import {
   NOOP_RENDER_COUNTS,
   renderInsightRegistry,
   type RenderCounts,
-} from "./renderInsightRegistry.js";
+} from "miroir-react";
 
 export interface TrackedRender {
   /** `context.showPerformanceDisplay`: when false, nothing is tracked. */

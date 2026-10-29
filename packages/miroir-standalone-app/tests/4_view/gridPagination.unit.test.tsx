@@ -5,8 +5,8 @@ import { z } from "zod";
 
 import { book1 } from "miroir-example-library";
 
-import { tableComponentCorePropsSchema } from "../../src/miroir-fwk/4_view/components/Grids/EntityInstanceGridInterface.js";
-import { valueObjectGridPropsSchema } from "../../src/miroir-fwk/4_view/components/Grids/ValueObjectGridInterface.js";
+import { tableComponentCorePropsSchema } from "miroir-react";
+import { valueObjectGridPropsSchema } from "miroir-react";
 import {
   agGridModeProps,
   computeAgGridScrollHeight,
@@ -19,7 +19,7 @@ import {
   paginateRows,
   resolveGridSizingMode,
   useClientPagination,
-} from "../../src/miroir-fwk/4_view/components/Grids/gridPagination.js";
+} from "miroir-react";
 import { waitForProgressiveRendering } from "./MlElementEditorTestTools.js";
 import {
   renderEntityInstanceGridHarness,

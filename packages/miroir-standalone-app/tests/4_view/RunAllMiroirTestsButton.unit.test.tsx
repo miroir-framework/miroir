@@ -70,7 +70,8 @@ vi.mock('miroir-core', async (importOriginal) => {
   };
 });
 
-vi.mock('miroir-react', () => ({
+vi.mock('miroir-react', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('miroir-react')>()),
   useSnackbar: () => ({
     isActionRunning: false,
     handleAsyncAction: async (

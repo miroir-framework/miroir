@@ -21,7 +21,7 @@ import {
 import {
   EMPTY_CONTAINER_ATTRIBUTE,
   ML_NAME_ATTRIBUTE,
-} from "../../4_view/components/ValueObjectEditor/renderedValueMarkers.js";
+} from "miroir-react";
 
 // ################################################################################################
 // Interpreter of the declarative component test steps (#292, analysis §5.3, §5.4).

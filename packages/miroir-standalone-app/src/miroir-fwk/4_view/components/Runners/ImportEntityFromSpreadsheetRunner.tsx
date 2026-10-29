@@ -28,7 +28,7 @@ import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";
 import { useDomainControllerService } from "miroir-react";
 import { useCurrentModelEnvironment } from "../../ReduxHooks.js";
-import type { FormMLSchema } from "./RunnerInterface.js";
+import type { FormMLSchema } from "miroir-react";
 import { RunnerView } from "./RunnerView.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ImportEntityFromSpreadsheetRunner");

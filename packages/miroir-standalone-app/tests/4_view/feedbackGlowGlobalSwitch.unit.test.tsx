@@ -12,7 +12,7 @@ import {
 } from "miroir-react";
 
 import { FeedbackGlowAppBarButton } from "../../src/miroir-fwk/4_view/components/Page/AppBar.js";
-import { GlobalFeedbackGlow } from "../../src/miroir-fwk/4_view/components/Page/GlobalFeedbackGlow.js";
+import { GlobalFeedbackGlow } from "miroir-react";
 
 // Feedback glow (#438): the global switch. The AppBar button turns the glow on for the whole document
 // (portals to document.body included); the choice is kept in localStorage; off by default.

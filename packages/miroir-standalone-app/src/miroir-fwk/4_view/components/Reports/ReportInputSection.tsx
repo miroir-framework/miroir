@@ -14,9 +14,9 @@ import { TypedValueObjectEditor } from "./TypedValueObjectEditor.js";
 import { useOptionalMultistepReportHost } from "./MultistepReportHost.js";
 import {
   buildReportApplicationSwitchUrl,
-} from "./reportInputApplication.js";
-import { reportUrl } from "../../navigation.js";
-import { ThemedStyledButton } from "../Themes/index.js";
+} from "miroir-react";
+import { reportUrl } from "miroir-react";
+import { ThemedStyledButton } from "miroir-react";
 
 /**
  * Report inputReportSection renderer.

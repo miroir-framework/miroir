@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { PageContainer } from "../components/Page/PageContainer";
+import { PageContainer } from "miroir-react";
 
 // const MyReactCodeMirror: React.Component = ReactCodeMirror
 // const MyReactCodeMirror: any = ReactCodeMirror // TODO: solve the mystery: it was once well-typed, now the linter raises an error upon direct (default-typed) use!
@@ -26,14 +26,14 @@ import {
 import { packageName } from "../../../constants.js";
 import { cleanLevel } from "../constants.js";
 import { usePageConfiguration } from "../services/index.js";
-import { emptyObject } from "../tools/emptyObject.js";
+import { emptyObject } from "miroir-react";
 
 import { deployment_Miroir } from "miroir-app-admin";
 import {
   entityBook,
   selfApplicationLibrary,
 } from "miroir-example-library";
-import { ReportPageContextProvider } from "../components/Reports/ReportPageContext";
+import { ReportPageContextProvider } from "miroir-react";
 import { SequenceEditor } from "../components/SequenceEditor/SequenceEditor";
 import { TransformerEditor } from "../components/TransformerEditor/TransformerEditor";
 

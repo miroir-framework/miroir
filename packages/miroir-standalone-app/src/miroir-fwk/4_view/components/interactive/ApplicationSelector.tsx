@@ -6,7 +6,7 @@ import {
   noValue,
 } from "miroir-core";
 import { useMiroirContextService } from "miroir-react";
-import { useApplicationAccess } from "../../auth/useApplicationAccess.js";
+import { useApplicationAccess } from "miroir-react";
 import {
   adminSelfApplication,
   deployment_Admin,

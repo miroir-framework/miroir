@@ -1,13 +1,13 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
-import { useMiroirTheme } from "../../contexts/MiroirThemeContext.js";
+import { useMiroirTheme } from "miroir-react";
 import {
   ThemedBox,
   ThemedPaper,
   ThemedStyledButton,
   ThemedTitle
-} from "../Themes/index"
+} from "miroir-react"
 import { formatValue, SideBySideDiff } from './SideBySideDiff.js';
 import { LoggerInterface, MiroirLoggerFactory } from 'miroir-core';
 import { packageName } from '../../../../constants.js';

@@ -17,7 +17,7 @@ import {
   LIST_TRANSFORMER_PAGE_SIZE,
   resolveListTransformationResultDisplaySchema,
   sliceInstancesToPage,
-} from "../../src/miroir-fwk/4_view/components/Reports/listDisplayByTransformer.js";
+} from "miroir-react";
 
 const identityRowTransformer: CoreTransformerForBuildPlusRuntime = {
   interpolation: "runtime",

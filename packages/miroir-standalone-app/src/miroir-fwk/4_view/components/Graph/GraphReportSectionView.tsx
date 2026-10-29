@@ -17,9 +17,9 @@ import { GraphComponent } from './GraphComponent.js';
 import { 
   GraphData, 
   GraphDataPoint, 
-} from './GraphInterfaces.js';
-import { ThemedBox } from '../Themes/LayoutComponents.js';
-import { ThemedText } from '../Themes/BasicComponents.js';
+} from "miroir-react";
+import { ThemedBox } from "miroir-react";
+import { ThemedText } from "miroir-react";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "GraphReportSectionView");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);

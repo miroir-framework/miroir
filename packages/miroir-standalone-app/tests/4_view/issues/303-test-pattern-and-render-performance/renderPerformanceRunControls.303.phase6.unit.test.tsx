@@ -75,7 +75,7 @@ import type { MiroirTestSuiteResultsMap } from "../../../../src/miroir-fwk/4_vie
 import type { TestResultData } from "../../../../src/miroir-fwk/4_view/components/Buttons/testResultReport";
 import { MiroirTestDisplay } from "../../../../src/miroir-fwk/4_view/components/Reports/MiroirTestDisplay";
 import { MiroirTestListDisplay } from "../../../../src/miroir-fwk/4_view/components/Reports/MiroirTestListDisplay";
-import { ReportPageContextProvider } from "../../../../src/miroir-fwk/4_view/components/Reports/ReportPageContext";
+import { ReportPageContextProvider } from "miroir-react";
 
 // ################################################################################################
 const perfInstance = miroirTest_ui_mlElementEditor_renderPerformance as unknown as MiroirTestDefinition;

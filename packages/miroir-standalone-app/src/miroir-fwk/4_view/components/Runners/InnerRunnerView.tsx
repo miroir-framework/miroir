@@ -18,7 +18,7 @@ import { useMiroirContextService } from "miroir-react";
 import { JsonDisplayHelper } from "miroir-react";
 import { useCurrentModelEnvironment } from "../../ReduxHooks.js";
 import { TypedValueObjectEditor } from "../Reports/TypedValueObjectEditor.js";
-import type { RunnerProps } from "./RunnerInterface.js";
+import type { RunnerProps } from "miroir-react";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "InnerRunnerView");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);

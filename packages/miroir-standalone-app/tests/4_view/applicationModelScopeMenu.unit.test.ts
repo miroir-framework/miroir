@@ -13,7 +13,7 @@ import {
   mergeApplicationModelScopeMenuItems,
   shouldShowAppMenuItem,
   type ApplicationModelScopeMenuItemContext,
-} from "../../src/miroir-fwk/4_view/components/Page/applicationModelScopeMenu.js";
+} from "miroir-react";
 
 const APPLICATION_DETAILS_REPORT = "cd24df86-204c-4a72-9ac0-87f2b92f25fe";
 const ENTITY_LIST_REPORT = "c9ea3359-690c-4620-9603-b5b402e4a2b9";

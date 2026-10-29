@@ -3,10 +3,10 @@ import {
   getPerformanceConfig,
   resetPerformanceConfig,
   updatePerformanceConfig,
-} from "../../src/miroir-fwk/4_view/tools/performanceConfig.js";
-import { applyPerformanceDisplayGate } from "../../src/miroir-fwk/4_view/tools/performanceDisplayGate.js";
-import { renderInsightRegistry } from "../../src/miroir-fwk/4_view/tools/renderInsightRegistry.js";
-import { RenderPerformanceMetrics } from "../../src/miroir-fwk/4_view/tools/renderPerformanceMeasure.js";
+} from "miroir-react";
+import { applyPerformanceDisplayGate } from "miroir-react";
+import { renderInsightRegistry } from "miroir-react";
+import { RenderPerformanceMetrics } from "miroir-react";
 
 describe("applyPerformanceDisplayGate (Phase 1.4)", () => {
   beforeEach(() => {

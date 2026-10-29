@@ -12,7 +12,7 @@ import {
   ThemedGrid,
   ThemedMainPanel,
   ThemedText
-} from '../Themes/index';
+} from "miroir-react";
 
 import { v4 as uuidv4 } from 'uuid';
 
@@ -58,12 +58,12 @@ import {
   useMiroirContextService,
   useSnackbar,
 } from "miroir-react";
-import { MiroirThemeProvider, useMiroirTheme, type MiroirThemeOption } from '../../contexts/MiroirThemeContext.js';
-import { GlobalFeedbackGlow } from './GlobalFeedbackGlow.js';
+import { MiroirThemeProvider, useMiroirTheme, type MiroirThemeOption } from "miroir-react";
+import { GlobalFeedbackGlow } from "miroir-react";
 import { RenderInsightHeader } from "../RenderInsightHeader.js";
 import { useRenderTracker } from "../../tools/renderCountTracker.js";
 import AppBar from './AppBar.js';
-import { deploymentReportsEntitiesMapping } from './deploymentReportsEntitiesMapping.js';
+import { deploymentReportsEntitiesMapping } from "miroir-react";
 
 import { JsonDisplayHelper } from 'miroir-react';
 import { defaultStoredMiroirTheme, selfApplicationMiroir } from 'miroir-app-miroir';
@@ -76,9 +76,9 @@ import {
 import { ModelEnvironmentSync } from "../../ModelEnvironmentSync.js";
 import { cleanLevel } from '../../constants.js';
 import { usePageConfiguration } from '../../services/index.js';
-import { ReportPageContextProvider } from '../Reports/ReportPageContext';
-import { DocumentOutlineContextProvider } from '../ValueObjectEditor/InstanceEditorOutlineContext';
-import { ViewParamsUpdateQueue, ViewParamsUpdateQueueConfig } from '../ViewParamsUpdateQueue.js';
+import { ReportPageContextProvider } from "miroir-react";
+import { DocumentOutlineContextProvider } from "miroir-react";
+import { ViewParamsUpdateQueue, ViewParamsUpdateQueueConfig } from "miroir-react";
 import { Sidebar } from "./Sidebar.js";
 import { SidebarWidth } from "./SidebarSection.js";
 

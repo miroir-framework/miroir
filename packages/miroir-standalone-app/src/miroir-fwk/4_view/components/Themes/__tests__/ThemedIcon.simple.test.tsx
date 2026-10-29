@@ -2,8 +2,8 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { MiroirIcon } from 'miroir-core';
-import { ThemedIcon } from '../IconComponents';
-import { MiroirThemeProvider } from '../../../contexts/MiroirThemeContext';
+import { ThemedIcon } from "miroir-react";
+import { MiroirThemeProvider } from "miroir-react";
 import { defaultMiroirTheme } from '../defaults';
 
 // Simple wrapper component to provide theme context

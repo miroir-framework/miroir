@@ -2,7 +2,7 @@ import { useMemo, useState, useCallback } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeSanitize from 'rehype-sanitize';
-import { EditIcon } from '../Themes/MaterialSymbolWrappers';
+import { EditIcon } from "miroir-react";
 
 import {
   ApplicationSection,
@@ -17,7 +17,7 @@ import { packageName } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
 import { RenderInsightHeader } from '../RenderInsightHeader.js';
 import { useRenderTracker } from '../../tools/renderCountTracker.js';
-import { RenderPerformanceMetrics } from '../../tools/renderPerformanceMeasure.js';
+import { RenderPerformanceMetrics } from "miroir-react";
 import {
   ThemedBox,
   ThemedContainer,
@@ -25,8 +25,8 @@ import {
   ThemedText,
   ThemedTitle,
   ThemedTooltip,
-} from "../Themes/index";
-import { MarkdownEditorModal } from './MarkdownEditorModal.js';
+} from "miroir-react";
+import { MarkdownEditorModal } from "miroir-react";
 import type { MarkdownReportSection } from 'miroir-core';
 import { useFormikContext } from 'formik';
 import { useMiroirContextService } from 'miroir-react';

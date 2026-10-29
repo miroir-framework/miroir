@@ -36,10 +36,10 @@ import {
   DEFAULT_ROW_IDENTITY_TRANSFORMER,
   getListTransformationFailure,
   resolveListTransformationResultDisplaySchema,
-} from "./listDisplayByTransformer.js";
+} from "miroir-react";
 import { hasDisplayableTransformationResult } from "../TransformerEditor/TransformationResultPanel.js";
-import { ReportInstanceLink } from "../ReportInstanceLink.js";
-import { ExpectedOutputTypeChooser } from "./ExpectedOutputTypeChooser.js";
+import { ReportInstanceLink } from "miroir-react";
+import { ExpectedOutputTypeChooser } from "miroir-react";
 import {
   TransformerNamedBindings,
   TransformerTitleSignature,
@@ -53,7 +53,7 @@ import {
   ThemedSwitch,
   ThemedText,
   ThemedTitle,
-} from "../Themes/index.js";
+} from "miroir-react";
 
 /** Shared with TransformerEditor — schemaReference to coreTransformerForBuildPlusRuntime. */
 export const coreTransformerForBuildPlusRuntimeSchemaReference: MlElement = {

@@ -4,7 +4,7 @@ import {
   analyzeForeignKeyAttributes, 
   convertToLegacyFormat,
   ForeignKeyAttributeDefinition 
-} from '../../../src/miroir-fwk/4_view/utils/foreignKeyAttributeAnalyzer';
+} from "miroir-react";
 
 describe('analyzeForeignKeyAttributes', () => {
   const createEntity = (

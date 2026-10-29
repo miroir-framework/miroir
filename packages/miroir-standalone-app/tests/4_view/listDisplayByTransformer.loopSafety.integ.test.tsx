@@ -18,7 +18,7 @@ import {
   setPanelElementTransformerType,
 } from "./helpers/listTransformerIntegRig.js";
 import { waitForProgressiveRendering } from "./MlElementEditorTestTools.js";
-import { TableComponentTypeSchema } from "../../src/miroir-fwk/4_view/components/Grids/EntityInstanceGridInterface.js";
+import { TableComponentTypeSchema } from "miroir-react";
 import {
   deployment_Library_DO_NO_USE,
   reportBookList,

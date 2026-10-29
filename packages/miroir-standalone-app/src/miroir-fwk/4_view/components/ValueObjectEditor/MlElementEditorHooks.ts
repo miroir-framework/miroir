@@ -39,8 +39,8 @@ import {
   useDefaultValueParams,
   useReduxDeploymentsStateQuerySelectorForCleanedResult,
 } from "../../ReduxHooks";
-import { FieldValidationContext } from "./FieldValidationContext";
-import { BlockViewModeContext } from "../BlockEditor/BlockViewMode.js";
+import { FieldValidationContext } from "miroir-react";
+import { BlockViewModeContext } from "miroir-react";
 
 import { entitySelfApplication, selfApplicationMiroir } from "miroir-app-miroir";
 import { shallowEqual } from "react-redux";
@@ -50,7 +50,7 @@ import {
   type ReduxStateWithUndoRedo,
 } from "miroir-react";
 import { adminSelfApplication } from "miroir-app-admin";
-import { useApplicationAccess } from "../../auth/useApplicationAccess.js";
+import { useApplicationAccess } from "miroir-react";
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MlElementEditorHooks");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",

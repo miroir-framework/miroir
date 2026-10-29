@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { exclusivelyUnfoldPath, isNodeFolded, type FoldedStateTree } from '../../src/miroir-fwk/4_view/components/Reports/FoldedStateTreeUtils';
+import { exclusivelyUnfoldPath, isNodeFolded, type FoldedStateTree } from "miroir-react";
 
 describe('exclusivelyUnfoldPath', () => {
   // TODO: return error when path does not exist in object

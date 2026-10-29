@@ -3,7 +3,7 @@ import { LoggerInterface, MiroirLoggerFactory } from "miroir-core";
 import { memo } from "react";
 import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";
-import { TableComponentRow } from "./EntityInstanceGridInterface.js";
+import { TableComponentRow } from "miroir-react";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "EntityInstanceCellRenderer");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);

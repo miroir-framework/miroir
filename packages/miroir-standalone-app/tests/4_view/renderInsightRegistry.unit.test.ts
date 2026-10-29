@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from "vitest";
 import {
   RenderInsightRegistry,
   NOOP_RENDER_COUNTS,
-} from "../../src/miroir-fwk/4_view/tools/renderInsightRegistry.js";
+} from "miroir-react";
 
 describe("RenderInsightRegistry (Phase 1–2)", () => {
   let registry: RenderInsightRegistry;

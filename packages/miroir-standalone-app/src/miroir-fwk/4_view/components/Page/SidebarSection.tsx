@@ -10,7 +10,7 @@ import {
   ThemedListItemButton,
   ThemedListItemText,
   ThemedListMiroirIcon
-} from "../Themes/index";
+} from "miroir-react";
 
 import {
 adminSelfApplication,
@@ -37,10 +37,10 @@ import { ErrorBoundary } from 'react-error-boundary';
 import { packageName } from '../../../../constants.js';
 import { useMiroirContextService } from 'miroir-react';
 import { useCurrentModel, useReduxDeploymentsStateQuerySelector } from '../../ReduxHooks.js';
-import { ErrorFallbackComponent } from '../ErrorFallbackComponent.js';
+import { ErrorFallbackComponent } from "miroir-react";
 import { JsonDisplayHelper } from 'miroir-react';
 import { useDesignerToolsVisibility } from '../../auth/useDesignerToolsVisibility.js';
-import { pageUrl, reportUrl } from '../../navigation.js';
+import { pageUrl, reportUrl } from "miroir-react";
 
 import {
   entityMenu,
@@ -51,7 +51,7 @@ import {
   isApplicationModelScopeInjectionActive,
   mergeApplicationModelScopeMenuItems,
   shouldShowAppMenuItem,
-} from "./applicationModelScopeMenu.js";
+} from "miroir-react";
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "SidebarSection");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",

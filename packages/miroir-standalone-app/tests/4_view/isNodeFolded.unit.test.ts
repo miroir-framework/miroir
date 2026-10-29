@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { isNodeFolded, type FoldedStateTree } from '../../src/miroir-fwk/4_view/components/Reports/FoldedStateTreeUtils';
+import { isNodeFolded, type FoldedStateTree } from "miroir-react";
 
 describe('isNodeFolded', () => {
   it('returns false for empty tree', () => {

@@ -29,7 +29,7 @@ import {
 } from "miroir-core";
 
 import { createReactComponentTestRunner } from "../../../../src/miroir-fwk/4-tests/componentTests/runReactComponentTest";
-import { renderInsightRegistry } from "../../../../src/miroir-fwk/4_view/tools/renderInsightRegistry";
+import { renderInsightRegistry } from "miroir-react";
 import { resolveRepoRoot } from "../../../helpers/integrationTestProfiles.js";
 
 const TEST_PATTERN_INSTANCE_FILE = join(

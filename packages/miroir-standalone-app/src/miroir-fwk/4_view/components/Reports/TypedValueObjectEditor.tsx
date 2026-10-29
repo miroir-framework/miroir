@@ -53,13 +53,13 @@ import {
   useCurrentModelEnvironment,
   useReduxDeploymentsStateQuerySelectorForCleanedResult
 } from "../../ReduxHooks.js";
-import { ErrorFallbackComponent } from '../ErrorFallbackComponent.js';
+import { ErrorFallbackComponent } from "miroir-react";
 import { ActionButtonWithSnackbar } from '../Page/ActionButtonWithSnackbar.js';
-import { ThemedStyledButton } from '../Themes/index.js';
-import { FieldValidationProvider, useFieldValidationContext } from '../ValueObjectEditor/FieldValidationContext.js';
+import { ThemedStyledButton } from "miroir-react";
+import { FieldValidationProvider, useFieldValidationContext } from "miroir-react";
 import { MlElementEditor } from '../ValueObjectEditor/MlElementEditor.js';
-import { BlockModelEnvironmentContext, BlockViewModeRoot } from '../BlockEditor/BlockViewMode.js';
-import { EditorRootHistory } from '../ValueObjectEditor/EditorRootHistory.js';
+import { BlockModelEnvironmentContext, BlockViewModeRoot } from "miroir-react";
+import { EditorRootHistory } from "miroir-react";
 import type { TransformerTypeBadge, TransformerTypeRestriction } from '../ValueObjectEditor/MlElementEditorInterface.js';
 import type { ValueObjectEditMode } from './ReportSectionEntityInstance.js';
 

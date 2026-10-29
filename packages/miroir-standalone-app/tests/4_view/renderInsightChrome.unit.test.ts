@@ -6,7 +6,7 @@ import {
   getRenderInsightChromeStyle,
   resolveRenderInsightTheme,
   shortenFormikPath,
-} from "../../src/miroir-fwk/4_view/tools/renderInsightChrome.js";
+} from "miroir-react";
 
 describe("renderInsightChrome (themable)", () => {
   it("resolves defaults when theme has no renderInsight section", () => {

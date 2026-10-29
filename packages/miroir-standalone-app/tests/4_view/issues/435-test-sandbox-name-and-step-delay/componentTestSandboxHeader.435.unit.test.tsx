@@ -60,7 +60,7 @@ vi.mock("../../../../src/miroir-fwk/4-tests/componentTests/index", async (import
 import * as componentTestsEntry from "../../../../src/miroir-fwk/4-tests/componentTests/index";
 import type { TestResultData } from "../../../../src/miroir-fwk/4_view/components/Buttons/testResultReport";
 import { MiroirTestDisplay } from "../../../../src/miroir-fwk/4_view/components/Reports/MiroirTestDisplay";
-import { ReportPageContextProvider } from "../../../../src/miroir-fwk/4_view/components/Reports/ReportPageContext";
+import { ReportPageContextProvider } from "miroir-react";
 
 // ################################################################################################
 const enumInstance = miroirTest_ui_mlElementEditor_enum as unknown as MiroirTestDefinition;

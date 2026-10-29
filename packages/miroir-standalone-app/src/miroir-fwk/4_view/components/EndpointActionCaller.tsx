@@ -33,7 +33,7 @@ import { FC, useEffect, useMemo, useState } from 'react';
 import { packageName } from '../../../constants.js';
 import { useCurrentModel, useCurrentModelEnvironment } from '../ReduxHooks.js';
 import { cleanLevel } from '../constants.js';
-// import { useReportPageContext } from './Reports/ReportPageContext.js';
+// import { useReportPageContext } from "miroir-react";
 import {
   deployment_Admin,
   deployment_Miroir,
@@ -41,7 +41,7 @@ import {
 } from "miroir-app-admin";
 import { selfApplicationLibrary } from 'miroir-example-library';
 import { TypedValueObjectEditor } from './Reports/TypedValueObjectEditor.js';
-import { ThemedPaper } from './Themes/index.js';
+import { ThemedPaper } from "miroir-react";
 
 import { entityEndpointVersion, selfApplicationMiroir } from 'miroir-app-miroir';
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "EndpointActionCaller");

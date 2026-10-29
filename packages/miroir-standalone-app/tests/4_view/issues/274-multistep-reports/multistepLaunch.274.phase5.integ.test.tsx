@@ -15,7 +15,7 @@ import {
 } from "miroir-example-library";
 
 import { ReportPage } from "../../../../src/miroir-fwk/4_view/routes/ReportPage";
-import { reportUrl } from "../../../../src/miroir-fwk/4_view/navigation";
+import { reportUrl } from "miroir-react";
 import type { ReportViewProps } from "../../../../src/miroir-fwk/4_view/components/Reports/ReportHooks";
 import {
   deleteLibraryCountryFromMlEditorTestCache,

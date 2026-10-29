@@ -9,7 +9,7 @@ import {
   spotifyServiceEndpoint,
 } from "miroir-example-spotify";
 
-import { resolveApiCallReportSectionSchema } from "../../../../src/miroir-fwk/4_view/components/Reports/resolveApiCallReportSectionSchema.js";
+import { resolveApiCallReportSectionSchema } from "miroir-react";
 
 const RUN_TEST = process.env.RUN_TEST;
 const shouldRun =

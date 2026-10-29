@@ -75,10 +75,10 @@ import {
 } from "miroir-example-spotify";
 
 import { loglevelnext } from "../../../../src/loglevelnextImporter.js";
-import { ReportPageContextProvider } from "../../../../src/miroir-fwk/4_view/components/Reports/ReportPageContext.js";
+import { ReportPageContextProvider } from "miroir-react";
 import { ReportViewWithEditor } from "../../../../src/miroir-fwk/4_view/components/Reports/ReportViewWithEditor.js";
-import { DocumentOutlineContextProvider } from "../../../../src/miroir-fwk/4_view/components/ValueObjectEditor/InstanceEditorOutlineContext.js";
-import { MiroirThemeProvider } from "../../../../src/miroir-fwk/4_view/contexts/MiroirThemeContext.js";
+import { DocumentOutlineContextProvider } from "miroir-react";
+import { MiroirThemeProvider } from "miroir-react";
 import { miroirAppStartup } from "../../../../src/startup.js";
 import { ReportUrlParamKeys } from "../../../../src/constants.js";
 import { cleanLevel, packageName } from "../../../3_controllers/constants.js";

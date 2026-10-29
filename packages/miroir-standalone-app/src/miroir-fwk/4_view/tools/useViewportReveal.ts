@@ -16,7 +16,7 @@ import {
   PROGRESSIVE_RENDER_VISIBLE_STUCK_TIMEOUT_MS,
   isVitestTestMode,
 } from "./progressiveRenderConfig.js";
-import { scheduleProgressiveReveal } from "./progressiveRevealScheduler.js";
+import { scheduleProgressiveReveal } from "miroir-react";
 import { useComponentTestMode } from "./ComponentTestModeContext.js";
 
 export interface UseViewportRevealOptions {

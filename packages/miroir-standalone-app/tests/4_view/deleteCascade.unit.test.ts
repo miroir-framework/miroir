@@ -3,7 +3,7 @@
  */
 import { describe, expect, it } from "vitest";
 
-import { reverseForeignKeysPointingToEntity } from "../../src/miroir-fwk/4_view/scripts.js";
+import { reverseForeignKeysPointingToEntity } from "miroir-react";
 
 const authorEntity = {
   uuid: "author-uuid",

@@ -1,7 +1,7 @@
 import * as Diff from "diff";
 import React, { useRef, useCallback } from 'react';
 
-import { useMiroirTheme } from "../../contexts/MiroirThemeContext.js";
+import { useMiroirTheme } from "miroir-react";
 
 // Helper function for formatting values in tooltips and diffs
 export const formatValue = (value: any): string => {

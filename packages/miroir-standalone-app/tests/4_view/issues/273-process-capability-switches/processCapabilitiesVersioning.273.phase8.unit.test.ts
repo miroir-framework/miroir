@@ -76,7 +76,7 @@ if (runThis) {
 
     it("appBarReportNavigation still returns the item SelfApplication", () => {
       const src = readRepoFile(
-        "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Page/appBarReportNavigation.ts",
+        "packages/miroir-react/src/components/Page/appBarReportNavigation.ts",
       );
       expect(src).toContain("return params.itemSelfApplication");
     });

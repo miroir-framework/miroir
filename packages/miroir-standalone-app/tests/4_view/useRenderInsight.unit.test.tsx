@@ -4,7 +4,8 @@ import { renderHook } from "@testing-library/react";
 
 const showPerformanceDisplayRef = { current: false };
 
-vi.mock("miroir-react", () => ({
+vi.mock("miroir-react", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("miroir-react")>()),
   useMiroirContextService: () => ({
     showPerformanceDisplay: showPerformanceDisplayRef.current,
   }),
@@ -13,7 +14,7 @@ vi.mock("miroir-react", () => ({
 import {
   NOOP_RENDER_COUNTS,
   renderInsightRegistry,
-} from "../../src/miroir-fwk/4_view/tools/renderInsightRegistry.js";
+} from "miroir-react";
 import { useRenderInsight } from "../../src/miroir-fwk/4_view/tools/useRenderInsight.js";
 
 describe("useRenderInsight (Phase 1.2)", () => {

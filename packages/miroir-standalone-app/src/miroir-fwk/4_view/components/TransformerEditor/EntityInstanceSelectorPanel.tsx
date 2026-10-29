@@ -48,11 +48,11 @@ import {
   ThemedFoldableContainer,
   ThemedHeaderSection,
   ThemedTitle
-} from "../Themes/index";
+} from "miroir-react";
 import {
   formikPath_TransformerEditorInputModeSelector,
   type TransformerEditorFormikValueType,
-} from "./TransformerEditorInterface";
+} from "miroir-react";
 
 // ################################################################################################
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "EntityInstanceSelectorPanel");

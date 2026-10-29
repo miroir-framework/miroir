@@ -3,13 +3,13 @@ import {
   getLocalCacheMonitorConfig,
   resetLocalCacheMonitorConfig,
   LOCAL_CACHE_MONITOR_SESSION_KEY,
-} from "../../src/miroir-fwk/4_view/tools/localCacheMonitorConfig.js";
+} from "miroir-react";
 import {
   applyLocalCacheMonitorGate,
   isLocalCacheMonitorEnabled,
-} from "../../src/miroir-fwk/4_view/tools/localCacheMonitorGate.js";
-import { localCacheMonitorRegistry } from "../../src/miroir-fwk/4_view/tools/localCacheMonitorRegistry.js";
-import { localCacheMonitorIndicators } from "../../src/miroir-fwk/4_view/tools/localCacheMonitorIndicators.js";
+} from "miroir-react";
+import { localCacheMonitorRegistry } from "miroir-react";
+import { localCacheMonitorIndicators } from "miroir-react";
 
 describe("applyLocalCacheMonitorGate (Phase 7)", () => {
   beforeEach(() => {
