@@ -314,11 +314,10 @@ export const MiroirEventTimeLine: React.FC<RunActionTimelineProps> = React.memo(
           <ListItemIcon sx={{ minWidth: "32px" }}>{getStatusIcon(action)}</ListItemIcon>
 
           <ListItemText
-            primaryTypographyProps={{ component: "div" }}
-            secondaryTypographyProps={{ component: "div" }}
+            slotProps={{ primary: { component: "div" }, secondary: { component: "div" } }}
             primary={
               <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                <Typography variant="body2" fontWeight="medium" component="span">
+                <Typography variant="body2" sx={{ fontWeight: "medium" }} component="span">
                   {getDisplayLabel(action)}
                 </Typography>
                 <Chip
@@ -537,12 +536,12 @@ export const MiroirEventTimeLine: React.FC<RunActionTimelineProps> = React.memo(
                 onOpen={() => log.info(`MiroirEventTimeLine [${componentId}] - Status dropdown opened`)}
                 onClose={() => log.info(`MiroirEventTimeLine [${componentId}] - Status dropdown closed`)}
                 MenuProps={{
-                  PaperProps: {
+                  slotProps: { paper: {
                     style: {
                       maxHeight: 300,
                       zIndex: 2000,
                     },
-                  },
+                  } },
                 }}
               >
                 <MenuItem value="">All</MenuItem>

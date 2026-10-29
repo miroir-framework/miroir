@@ -121,13 +121,13 @@ export const MiroirThemeSelector: React.FC<MiroirThemeSelectorProps> = ({
             },
           }}
           MenuProps={{
-            PaperProps: {
+            slotProps: { paper: {
               sx: {
                 backgroundColor: miroirTheme.colors.surface,
                 // color: miroirTheme.colors.text,
               color: "inherit",
               }
-            }
+            } }
           }}
         >
           {availableThemes.map((themeOption) => (

@@ -129,7 +129,7 @@ export const EventLogComponent: React.FC<{ eventLog: MiroirEventLog; isExpanded:
                     </Typography>
                   )
                 ))} */}
-                <Typography variant="caption" display="block">
+                <Typography variant="caption" sx={{ display: "block" }}>
                   activity: {String(eventLog.event.activity?.activityId || "N/A")}, type:{" "}
                   {String(eventLog.event.activity?.activityType || "N/A")}, topic:{" "}
                   {String(getActivityTopic(eventLog.event.activity) || "N/A")}
