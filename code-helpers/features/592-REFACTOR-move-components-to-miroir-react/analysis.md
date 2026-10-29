@@ -43,7 +43,7 @@ Rollup cannot split one module across chunks. Before #592 miroir-react was one m
 
 | Option | Mechanism | Pros | Cons |
 |---|---|---|---|
-| **D1-a. One module per source module** ★ | tsup entries `src/**/*.ts(x)`, esbuild `splitting`; `"sideEffects": false` lets Rollup drop modules the app does not use (their top-level `registerLoggerToStart` calls would keep them otherwise) | Vite places each module in the chunk that uses it, as for the app's own modules | +2 kB gzip on the eager chunks (§4.3), from splitting the former single file |
+| **D1-a. One module per source module** ★ | tsup entries `src/**/*.ts(x)`, esbuild `splitting`; `"sideEffects": false` lets Rollup drop modules the app does not use (their top-level `registerLoggerToStart` calls would keep them otherwise). Every package the moved code imports must be a dependency or peer of miroir-react, or tsup bundles a second copy of it (formik, uuid, zod, fast-deep-equal, rehype-sanitize, remark-gfm, miroir-app-admin were added) | Vite places each module in the chunk that uses it, as for the app's own modules | +4 kB gzip on the eager chunks (§4.3, +0.5 %, within the 2 % budget), from splitting the former single file; esbuild compiles each file alone, so a type re-exported without `type` (`export {GraphConfig} from 'miroir-core'`) becomes a value import that Rollup rejects |
 | D1-b. Keep one file | none | no change | every moved component loads with the page; the bundle guard's eager budget (2 %) would fail after a few batches |
 | D1-c. Vite alias to `miroir-react/src` | the app compiles the sources | fast edit loop | two build paths for one package; Electron and the sandbox build differently |
 
@@ -62,7 +62,7 @@ D2-a surfaced 5 type errors in 3 moved modules, which the app's own tsc run alre
 
 ### D3 — Logger names
 
-**Status:** Accepted — D3-a. **Serves:** G3. `MiroirLoggerFactory.getLoggerName` returns `${cleanLevel}_${packageName}_${name}`. Moved modules import `packageName` from miroir-react (`"miroir-react"`); `cleanLevel` keeps its value (`"4"` from the new `src/viewConstants.ts` for modules that used `4_view/constants.ts`, `"5"` for those that used the app's `src/constants.ts`). `config/logging/scope-ui.json` names three moved loggers (`ReduxHooks`, `scripts`, `MlElementEditorHooks`); they now read `4_miroir-react_*`. Rejected D3-b: keeping `"miroir-standalone-app"` in moved files would name a package the code is not in.
+**Status:** Accepted — D3-a. **Serves:** G3. `MiroirLoggerFactory.getLoggerName` returns `${cleanLevel}_${packageName}_${name}`. Moved modules import `packageName` from miroir-react (`"miroir-react"`); `cleanLevel` keeps its value (`"4"` from the new `src/viewConstants.ts` for modules that used `4_view/constants.ts`, `"5"` for those that used the app's `src/constants.ts`). `config/logging/scope-ui.json` names four loggers; one of them moved (`scripts`) and now reads `4_miroir-react_scripts`. Rejected D3-b: keeping `"miroir-standalone-app"` in moved files would name a package the code is not in.
 
 ### D4 to D7
 
@@ -95,7 +95,7 @@ Two strongly connected components of the import graph contain modules that canno
 | `aba` | 59 | 831 793 | 44 984 (44 984) | 0 violations |
 | experiment (D1 + CenteredSpinner) | 61 | 833 865 | 46 756 (46 756) | 0 violations |
 | batch A | 65 | 835 924 | 164 275 (153 761) | 0 violations |
-| batch B | see PR | | | |
+| batch B | 65 | 835 795 | 315 971 (204 839) | 0 violations |
 
 The budget is `eagerGzipBaseline` 824 806 + 2 % = 841 302. The +2 kB of the experiment comes from splitting the former single file into modules; the moved code itself does not change chunk (miroir-react's lazy part, 10.5 kB after batch A, stays out of the page).
 
@@ -106,6 +106,7 @@ Twenty test files call `vi.mock("miroir-react", …)`. A mock of the package rep
 - `useRenderInsight`, `useTrackedRender` (and `renderCountTracker`, which re-exports `useRenderInsight`) call `useMiroirContextService`, which `useRenderInsight.unit`, `renderInsightFootprint.acceptance`, `RenderInsightHeader.unit`, `RenderInsightSummary.unit`, `GraphReportSectionView*`, `ListTransformerPanel.unit` mock.
 - `RenderInsightHeader`, `RenderInsightSummary`, `LocalCacheMonitorSummary` are rendered by tests that mock `useMiroirContextService` and `useMiroirTheme`.
 - `progressiveRenderConfig.isVitestTestMode` is replaced with `vi.doMock` by `componentTestMode.286.phase4`; `useViewportReveal` and `ComponentTestModeContext` read it.
+- `ReduxHooks.useCurrentModelEnvironment` calls `useMiroirContextService`, which `ListTransformerPanel.unit` mocks while rendering `ReportSectionListDisplay`.
 - `ActionButtonWithSnackbar` (`RunAllMiroirTestsButton.unit`) and `UnitTestExecutionSummary` (`miroirTestListIntegrationLaunchMocks`) are mocked by path.
 
 Tests whose mocks only had to follow the move were changed to partial mocks (`importOriginal` spread): `RenderInsightHeader.unit`, `RenderInsightSummary.unit`, `renderInsightFootprint.acceptance`, `LocalCacheMonitorSummary.unit`, `localCacheMonitorFootprint.acceptance`, `useRenderInsight.unit`.
@@ -114,13 +115,13 @@ Tests whose mocks only had to follow the move were changed to partial mocks (`im
 
 ## 5. Classification
 
-### 5.1 Moved (121 modules, plus 4 deleted copies)
+### 5.1 Moved (111 modules, plus 4 deleted copies)
 
 | Step | Modules |
 |---|---|
 | Experiment | `components/CenteredSpinner.tsx` |
 | Batch A (35) | `components/Themes/*` (17, plus the `index.ts` barrel, not re-exported from the package index), `components/DraggableContainer.tsx`, `tools/` render-insight, local cache monitor, performance and `PortalContainerContext`, `emptyObject`, `progressiveRevealScheduler` modules, `utils/foreignKeyAttributeAnalyzer.ts` |
-| Batch B (85) | `ReduxHooks.ts`, `scripts.ts`, `navigation.ts`, `adaptiveColumnWidths.ts`, `ErrorPage.tsx`, `ModelEnvironmentSync.tsx`, `auth/authSession.ts`, `auth/useApplicationAccess.ts`, Reports contexts and hooks (`ReportPageContext`, `ReportFormSubmitContext`, `FormikValueObjectContext`, `useReportQueryLoadService`, `useEnsureReportQueryLoaded`, `FoldedStateTree*`, …), ValueObjectEditor support (`MlElementEditorHooks`, `ValueHistory*`, `FieldValidation*`, `BlobEditorField`, `TransformerNodeActions`, …), Grids interfaces, toolbar and action buttons, Page helpers (`PageContainer`, `GlobalFeedbackGlow`, `appBarReportNavigation`, …), BlockEditor leaves, Runners interfaces, `EventLogComponent`, `MiroirEventTimeline`, `MiroirThemeSelector`, `JsonObjectDeleteFormDialog`, `PerformanceDisplayContainer` |
+| Batch B (75) | `scripts.ts`, `navigation.ts`, `adaptiveColumnWidths.ts`, `ErrorPage.tsx`, `auth/authSession.ts`, `auth/useApplicationAccess.ts`, Reports contexts and hooks (`ReportPageContext`, `ReportFormSubmitContext`, `FormikValueObjectContext`, `useReportQueryLoadService`, `useEnsureReportQueryLoaded`, `FoldedStateTree*`, …), ValueObjectEditor support (`ValueHistory*`, `FieldValidation*`, `BlobEditorField`, `TransformerNodeActions`, …), Grids interfaces, toolbar and action buttons, Page helpers (`PageContainer`, `GlobalFeedbackGlow`, `appBarReportNavigation`, …), BlockEditor leaves, Runners interfaces, `EventLogComponent`, `MiroirEventTimeline`, `MiroirThemeSelector`, `JsonObjectDeleteFormDialog`, `PerformanceDisplayContainer` |
 
 Exact lists: `git log --name-status` of the #592 commits.
 
@@ -133,7 +134,7 @@ Exact lists: `git log --name-status` of the #592 commits.
 | Lazy target in the app | `ErrorLogsPageDEFUNCT`, `EventTimelineContainer`, `InstanceEditorOutline` (dynamic `import()` from `PageDispatcher`, `RootComponent`) |
 | Heavy library kept lazy | ag-grid cell renderers and editors, `SelectEntityInstanceEditor`, glide-data-grid component, `SideBySideDiff` (`diff`), `GraphComponent` (d3) |
 | Other packages or host | `runMcpToolRunner`, `resolveMcpToolAction` (`miroir-mcp`), `RunnerView` (Electron URL helpers), `UiIntegrationTestRunControls`, `RunMiroirTestSuiteButton`, `RunAllMiroirTestsButton` (import `4-tests`) |
-| Mocked collaborators (§4.4) | `useRenderInsight`, `useTrackedRender`, `renderCountTracker`, `RenderInsightHeader`, `RenderInsightSummary`, `LocalCacheMonitorSummary`, `progressiveRenderConfig`, `useViewportReveal`, `ComponentTestModeContext`, `ActionButtonWithSnackbar`, `UnitTestExecutionSummary`, `OpenApiEndpointSyncButton` |
+| Mocked collaborators (§4.4) | `ReduxHooks` and the modules that import it (`ModelEnvironmentSync`, `MlElementEditorHooks`, `MlEditorButton`, `EntityInstanceLink`, `useAdminViewParams`, `JsonObjectDeleteFormDialog`, `BlockEditorDisplay`, `TransformerTypesDisplay`, `hookPerformanceMeasure`), `useRenderInsight`, `useTrackedRender`, `renderCountTracker`, `RenderInsightHeader`, `RenderInsightSummary`, `LocalCacheMonitorSummary`, `progressiveRenderConfig`, `useViewportReveal`, `ComponentTestModeContext`, `ActionButtonWithSnackbar`, `UnitTestExecutionSummary`, `OpenApiEndpointSyncButton` |
 | App constants | `ReportHooks`, `MultistepReportHost`, `OpenReportLaunch` (import the report URL keys of the app's `src/constants.ts`), `ReportSectionMarkdown` (`renderCountTracker`) |
 | Other | `MlElementDisplay` (imports `miroir-fwk/MlTools.ts`), `TransformerTestResults` (`testSelectionUtils`), `Graph/index.ts`, `TableActionButtons_new` (unused, same export names as `TableActionButtons`), `CellRenderers.tsx` (empty) |
 
