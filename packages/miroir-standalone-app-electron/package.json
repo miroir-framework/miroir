@@ -23,7 +23,7 @@
     "testByFile": "vitest run"
   },
   "dependencies": {
-    "classic-level": "1.4.1",
+    "classic-level": "3.0.0",
     "electron-squirrel-startup": "1.0.1",
     "pg": "8.23.1"
   },
