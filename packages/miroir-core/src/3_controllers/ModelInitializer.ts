@@ -23,6 +23,7 @@ import { DataStoreApplicationType } from "../0_interfaces/3_controllers/Applicat
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
 import { PersistenceStoreControllerInterface } from "../0_interfaces/4-services/PersistenceStoreControllerInterface.js";
 import { ACTION_OK } from "../1_core/constants.js";
+import { resolveVersioningMode } from "../1_core/versioning/versioningMode.js";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory.js";
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
@@ -40,7 +41,7 @@ function abortOnError(result: Action2VoidReturnType): Action2Error | null {
 
 async function upsertInstances(
   persistenceStoreController: PersistenceStoreControllerInterface,
-  section: "model" | "data",
+  section: "model" | "data" | "modelVersion",
   instances: readonly EntityInstance[],
 ): Promise<Action2Error | null> {
   for (const instance of instances) {
@@ -163,11 +164,21 @@ async function initializeAppModel(
     );
   }
 
-  return upsertInstances(persistenceStoreController, "model", [
+  const modelError = await upsertInstances(persistenceStoreController, "model", [
     selfApplication,
     selfApplicationModelBranch,
-    selfApplicationVersion,
   ]);
+  if (modelError) {
+    return modelError;
+  }
+  // #577: a versioned-internal app keeps its version history in modelVersion, where freeze
+  // reads the version chain; an unversioned app has no modelVersion store, so its init-only
+  // version stays in model.
+  return upsertInstances(
+    persistenceStoreController,
+    resolveVersioningMode(selfApplication) === "versioned-internal" ? "modelVersion" : "model",
+    [selfApplicationVersion],
+  );
 }
 
 // ################################################################################################

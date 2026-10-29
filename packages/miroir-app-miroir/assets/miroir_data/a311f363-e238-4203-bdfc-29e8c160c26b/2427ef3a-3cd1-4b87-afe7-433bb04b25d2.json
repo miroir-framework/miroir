@@ -5,7 +5,7 @@
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
   "name": "action.scenario.evolutionTrace",
-  "description": "End-to-end model evolution trace, stored in the evolving application's model section.",
+  "description": "End-to-end model evolution trace, stored in the evolving application's model section (data for Miroir).",
   "tags": [
     "integ",
     "versioning",
@@ -225,20 +225,20 @@
                   "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                   "payload": {
                     "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-                    "applicationSection": "model",
+                    "applicationSection": "data",
                     "query": {
                       "queryType": "boxedQueryWithExtractorCombinerTransformer",
                       "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                       "extractors": {
                         "traces": {
                           "extractorOrCombinerType": "extractorInstancesByEntity",
-                          "applicationSection": "model",
+                          "applicationSection": "data",
                           "parentName": "ApplicationEvolutionTrace",
                           "parentUuid": "de089f57-5fa5-4c0e-a43e-20f1a6df5a37"
                         },
                         "events": {
                           "extractorOrCombinerType": "extractorInstancesByEntity",
-                          "applicationSection": "model",
+                          "applicationSection": "data",
                           "parentName": "ApplicationEvolutionTraceEvent",
                           "parentUuid": "f4c2b3a1-8d6e-4f9a-b2c1-3d4e5f6a7b8c"
                         }
@@ -294,20 +294,20 @@
                   "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                   "payload": {
                     "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
-                    "applicationSection": "model",
+                    "applicationSection": "data",
                     "query": {
                       "queryType": "boxedQueryWithExtractorCombinerTransformer",
                       "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
                       "extractors": {
                         "traces": {
                           "extractorOrCombinerType": "extractorInstancesByEntity",
-                          "applicationSection": "model",
+                          "applicationSection": "data",
                           "parentName": "ApplicationEvolutionTrace",
                           "parentUuid": "de089f57-5fa5-4c0e-a43e-20f1a6df5a37"
                         },
                         "events": {
                           "extractorOrCombinerType": "extractorInstancesByEntity",
-                          "applicationSection": "model",
+                          "applicationSection": "data",
                           "parentName": "ApplicationEvolutionTraceEvent",
                           "parentUuid": "f4c2b3a1-8d6e-4f9a-b2c1-3d4e5f6a7b8c"
                         }
@@ -389,7 +389,7 @@
                   }
                 },
                 "expectedValue": {
-                  "count": 2
+                  "count": 1
                 },
                 "resultAccessPath": [
                   "0"
@@ -443,7 +443,7 @@
                   }
                 },
                 "expectedValue": {
-                  "count": 2
+                  "count": 1
                 },
                 "resultAccessPath": [
                   "0"
@@ -712,7 +712,7 @@
             "nameGivenToResult": "modelEventDefinitionResolution",
             "payload": {
               "testType": "testAssertion",
-              "testLabel": "model events resolve definition version from action payload",
+              "testLabel": "model events record an unresolved definition version (no EntityVersion in model action payloads since #220, unversioned Library)",
               "definition": {
                 "resultTransformer": {
                   "transformerType": "aggregate",
@@ -746,7 +746,7 @@
                           "definitionVersionResolution"
                         ]
                       },
-                      "right": "actionPayload"
+                      "right": "unresolved"
                     }
                   }
                 },
@@ -810,7 +810,7 @@
             "nameGivenToResult": "miroirDataTraces",
             "payload": {
               "testType": "testAssertion",
-              "testLabel": "Miroir data update adds one data event in Miroir model",
+              "testLabel": "Miroir data update adds one data event in Miroir data",
               "definition": {
                 "resultTransformer": {
                   "transformerType": "aggregate",
@@ -864,7 +864,7 @@
             "nameGivenToResult": "miroirDataIncrementsTotal",
             "payload": {
               "testType": "testAssertion",
-              "testLabel": "Miroir data update increases Miroir model trace event count",
+              "testLabel": "Miroir data update increases Miroir trace event count",
               "definition": {
                 "resultTransformer": {
                   "transformerType": "boolExpr",

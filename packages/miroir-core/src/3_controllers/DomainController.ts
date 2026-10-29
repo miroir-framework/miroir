@@ -1461,7 +1461,7 @@ export class DomainController implements DomainControllerInterface, DomainContro
 
   /**
    * Append-only evolution-trace persistence (WP1). Trace instances live in the
-   * evolving application's model section.
+   * evolving application's model section, or in data for Miroir (#222).
    * No-ops when policy skips or when the action itself mutates evolution-trace entities.
    */
   private async maybeRecordEvolutionTrace(

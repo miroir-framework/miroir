@@ -1149,7 +1149,8 @@
                   "name"
                 ],
                 "expectedValue": {
-                  "type": "string"
+                  "type": "string",
+                  "optional": true
                 }
               }
             }

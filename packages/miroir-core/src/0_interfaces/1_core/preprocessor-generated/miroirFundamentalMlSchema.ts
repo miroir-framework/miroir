@@ -7134,6 +7134,10 @@ export const miroirFundamentalMlSchema = {
               },
               {
                 "type": "literal",
+                "definition": "libraryVersionedTestbedInitParams"
+              },
+              {
+                "type": "literal",
                 "definition": "appForTestTestbedInitParams"
               },
               {
@@ -9469,6 +9473,10 @@ export const miroirFundamentalMlSchema = {
                       {
                         "type": "literal",
                         "definition": "libraryTestbedInitParams"
+                      },
+                      {
+                        "type": "literal",
+                        "definition": "libraryVersionedTestbedInitParams"
                       },
                       {
                         "type": "literal",

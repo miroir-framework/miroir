@@ -67,7 +67,7 @@
                   "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                   "payload": {
                     "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
-                    "applicationSection": "model",
+                    "applicationSection": "modelVersion",
                     "queryExecutionStrategy": "storage",
                     "query": {
                       "queryType": "boxedQueryWithExtractorCombinerTransformer",
@@ -76,16 +76,6 @@
                         "currentDeploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
                       },
                       "extractors": {
-                        "entities": {
-                          "extractorOrCombinerType": "extractorInstancesByEntity",
-                          "applicationSection": "model",
-                          "parentName": "Entity",
-                          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                          "orderBy": {
-                            "attributeName": "name",
-                            "direction": "ASC"
-                          }
-                        },
                         "applicationVersions": {
                           "extractorOrCombinerType": "extractorInstancesByEntity",
                           "applicationSection": "modelVersion",
@@ -113,6 +103,40 @@
                           "parentUuid": "8bec933d-6287-4de7-8a88-5c24216de9f4",
                           "orderBy": {
                             "attributeName": "uuid",
+                            "direction": "ASC"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "actionType": "compositeRunBoxedQueryAction",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "actionLabel": "query_freezeState_model",
+                "nameGivenToResult": "freezeStateModel",
+                "payload": {
+                  "actionType": "runBoxedQueryAction",
+                  "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  "payload": {
+                    "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "applicationSection": "model",
+                    "queryExecutionStrategy": "storage",
+                    "query": {
+                      "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "pageParams": {
+                        "currentDeploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+                      },
+                      "extractors": {
+                        "entities": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "Entity",
+                          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                          "orderBy": {
+                            "attributeName": "name",
                             "direction": "ASC"
                           }
                         }
@@ -486,7 +510,7 @@
                   "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                   "payload": {
                     "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
-                    "applicationSection": "model",
+                    "applicationSection": "modelVersion",
                     "queryExecutionStrategy": "storage",
                     "query": {
                       "queryType": "boxedQueryWithExtractorCombinerTransformer",
@@ -495,16 +519,6 @@
                         "currentDeploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
                       },
                       "extractors": {
-                        "entities": {
-                          "extractorOrCombinerType": "extractorInstancesByEntity",
-                          "applicationSection": "model",
-                          "parentName": "Entity",
-                          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                          "orderBy": {
-                            "attributeName": "name",
-                            "direction": "ASC"
-                          }
-                        },
                         "applicationVersions": {
                           "extractorOrCombinerType": "extractorInstancesByEntity",
                           "applicationSection": "modelVersion",
@@ -532,6 +546,40 @@
                           "parentUuid": "8bec933d-6287-4de7-8a88-5c24216de9f4",
                           "orderBy": {
                             "attributeName": "uuid",
+                            "direction": "ASC"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "actionType": "compositeRunBoxedQueryAction",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "actionLabel": "query_freezeState_model",
+                "nameGivenToResult": "freezeStateModel",
+                "payload": {
+                  "actionType": "runBoxedQueryAction",
+                  "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  "payload": {
+                    "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "applicationSection": "model",
+                    "queryExecutionStrategy": "storage",
+                    "query": {
+                      "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "pageParams": {
+                        "currentDeploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+                      },
+                      "extractors": {
+                        "entities": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "Entity",
+                          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                          "orderBy": {
+                            "attributeName": "name",
                             "direction": "ASC"
                           }
                         }
@@ -686,7 +734,7 @@
                       "transformerType": "getFromContext",
                       "interpolation": "runtime",
                       "referencePath": [
-                        "freezeState",
+                        "freezeStateModel",
                         "entities"
                       ]
                     },
@@ -891,7 +939,7 @@
                   "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                   "payload": {
                     "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
-                    "applicationSection": "model",
+                    "applicationSection": "modelVersion",
                     "queryExecutionStrategy": "storage",
                     "query": {
                       "queryType": "boxedQueryWithExtractorCombinerTransformer",
@@ -900,16 +948,6 @@
                         "currentDeploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
                       },
                       "extractors": {
-                        "entities": {
-                          "extractorOrCombinerType": "extractorInstancesByEntity",
-                          "applicationSection": "model",
-                          "parentName": "Entity",
-                          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                          "orderBy": {
-                            "attributeName": "name",
-                            "direction": "ASC"
-                          }
-                        },
                         "applicationVersions": {
                           "extractorOrCombinerType": "extractorInstancesByEntity",
                           "applicationSection": "modelVersion",
@@ -937,6 +975,40 @@
                           "parentUuid": "8bec933d-6287-4de7-8a88-5c24216de9f4",
                           "orderBy": {
                             "attributeName": "uuid",
+                            "direction": "ASC"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "actionType": "compositeRunBoxedQueryAction",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "actionLabel": "query_freezeState_model",
+                "nameGivenToResult": "freezeStateModel",
+                "payload": {
+                  "actionType": "runBoxedQueryAction",
+                  "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  "payload": {
+                    "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "applicationSection": "model",
+                    "queryExecutionStrategy": "storage",
+                    "query": {
+                      "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "pageParams": {
+                        "currentDeploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+                      },
+                      "extractors": {
+                        "entities": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "Entity",
+                          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                          "orderBy": {
+                            "attributeName": "name",
                             "direction": "ASC"
                           }
                         }
@@ -1312,7 +1384,7 @@
                   "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                   "payload": {
                     "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
-                    "applicationSection": "model",
+                    "applicationSection": "modelVersion",
                     "queryExecutionStrategy": "storage",
                     "query": {
                       "queryType": "boxedQueryWithExtractorCombinerTransformer",
@@ -1321,16 +1393,6 @@
                         "currentDeploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
                       },
                       "extractors": {
-                        "entities": {
-                          "extractorOrCombinerType": "extractorInstancesByEntity",
-                          "applicationSection": "model",
-                          "parentName": "Entity",
-                          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                          "orderBy": {
-                            "attributeName": "name",
-                            "direction": "ASC"
-                          }
-                        },
                         "applicationVersions": {
                           "extractorOrCombinerType": "extractorInstancesByEntity",
                           "applicationSection": "modelVersion",
@@ -1358,6 +1420,40 @@
                           "parentUuid": "8bec933d-6287-4de7-8a88-5c24216de9f4",
                           "orderBy": {
                             "attributeName": "uuid",
+                            "direction": "ASC"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "actionType": "compositeRunBoxedQueryAction",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "actionLabel": "query_freezeState_model",
+                "nameGivenToResult": "freezeStateModel",
+                "payload": {
+                  "actionType": "runBoxedQueryAction",
+                  "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  "payload": {
+                    "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "applicationSection": "model",
+                    "queryExecutionStrategy": "storage",
+                    "query": {
+                      "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "pageParams": {
+                        "currentDeploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+                      },
+                      "extractors": {
+                        "entities": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "Entity",
+                          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                          "orderBy": {
+                            "attributeName": "name",
                             "direction": "ASC"
                           }
                         }
@@ -1595,7 +1691,7 @@
                       "transformerType": "getFromContext",
                       "interpolation": "runtime",
                       "referencePath": [
-                        "freezeState",
+                        "freezeStateModel",
                         "entities"
                       ]
                     },
@@ -1776,7 +1872,7 @@
                   "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                   "payload": {
                     "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
-                    "applicationSection": "model",
+                    "applicationSection": "modelVersion",
                     "queryExecutionStrategy": "storage",
                     "query": {
                       "queryType": "boxedQueryWithExtractorCombinerTransformer",
@@ -1785,16 +1881,6 @@
                         "currentDeploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
                       },
                       "extractors": {
-                        "entities": {
-                          "extractorOrCombinerType": "extractorInstancesByEntity",
-                          "applicationSection": "model",
-                          "parentName": "Entity",
-                          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                          "orderBy": {
-                            "attributeName": "name",
-                            "direction": "ASC"
-                          }
-                        },
                         "applicationVersions": {
                           "extractorOrCombinerType": "extractorInstancesByEntity",
                           "applicationSection": "modelVersion",
@@ -1822,6 +1908,40 @@
                           "parentUuid": "8bec933d-6287-4de7-8a88-5c24216de9f4",
                           "orderBy": {
                             "attributeName": "uuid",
+                            "direction": "ASC"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "actionType": "compositeRunBoxedQueryAction",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "actionLabel": "query_freezeState_model",
+                "nameGivenToResult": "freezeStateModel",
+                "payload": {
+                  "actionType": "runBoxedQueryAction",
+                  "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  "payload": {
+                    "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "applicationSection": "model",
+                    "queryExecutionStrategy": "storage",
+                    "query": {
+                      "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "pageParams": {
+                        "currentDeploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+                      },
+                      "extractors": {
+                        "entities": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "Entity",
+                          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                          "orderBy": {
+                            "attributeName": "name",
                             "direction": "ASC"
                           }
                         }
@@ -1912,7 +2032,7 @@
                       "transformerType": "getFromContext",
                       "interpolation": "runtime",
                       "referencePath": [
-                        "freezeState",
+                        "freezeStateModel",
                         "entities"
                       ]
                     },
@@ -1966,7 +2086,7 @@
                       "transformerType": "getFromContext",
                       "interpolation": "runtime",
                       "referencePath": [
-                        "freezeState",
+                        "freezeStateModel",
                         "entities"
                       ]
                     },
@@ -2149,7 +2269,7 @@
                   "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                   "payload": {
                     "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
-                    "applicationSection": "model",
+                    "applicationSection": "modelVersion",
                     "queryExecutionStrategy": "storage",
                     "query": {
                       "queryType": "boxedQueryWithExtractorCombinerTransformer",
@@ -2158,16 +2278,6 @@
                         "currentDeploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
                       },
                       "extractors": {
-                        "entities": {
-                          "extractorOrCombinerType": "extractorInstancesByEntity",
-                          "applicationSection": "model",
-                          "parentName": "Entity",
-                          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                          "orderBy": {
-                            "attributeName": "name",
-                            "direction": "ASC"
-                          }
-                        },
                         "applicationVersions": {
                           "extractorOrCombinerType": "extractorInstancesByEntity",
                           "applicationSection": "modelVersion",
@@ -2195,6 +2305,40 @@
                           "parentUuid": "8bec933d-6287-4de7-8a88-5c24216de9f4",
                           "orderBy": {
                             "attributeName": "uuid",
+                            "direction": "ASC"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "actionType": "compositeRunBoxedQueryAction",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "actionLabel": "query_freezeState_model",
+                "nameGivenToResult": "freezeStateModel",
+                "payload": {
+                  "actionType": "runBoxedQueryAction",
+                  "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  "payload": {
+                    "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "applicationSection": "model",
+                    "queryExecutionStrategy": "storage",
+                    "query": {
+                      "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "pageParams": {
+                        "currentDeploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+                      },
+                      "extractors": {
+                        "entities": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "Entity",
+                          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                          "orderBy": {
+                            "attributeName": "name",
                             "direction": "ASC"
                           }
                         }
@@ -2466,7 +2610,7 @@
                   "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                   "payload": {
                     "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
-                    "applicationSection": "model",
+                    "applicationSection": "modelVersion",
                     "queryExecutionStrategy": "storage",
                     "query": {
                       "queryType": "boxedQueryWithExtractorCombinerTransformer",
@@ -2475,16 +2619,6 @@
                         "currentDeploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
                       },
                       "extractors": {
-                        "entities": {
-                          "extractorOrCombinerType": "extractorInstancesByEntity",
-                          "applicationSection": "model",
-                          "parentName": "Entity",
-                          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                          "orderBy": {
-                            "attributeName": "name",
-                            "direction": "ASC"
-                          }
-                        },
                         "applicationVersions": {
                           "extractorOrCombinerType": "extractorInstancesByEntity",
                           "applicationSection": "modelVersion",
@@ -2512,6 +2646,40 @@
                           "parentUuid": "8bec933d-6287-4de7-8a88-5c24216de9f4",
                           "orderBy": {
                             "attributeName": "uuid",
+                            "direction": "ASC"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "actionType": "compositeRunBoxedQueryAction",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "actionLabel": "query_freezeState_model",
+                "nameGivenToResult": "freezeStateModel",
+                "payload": {
+                  "actionType": "runBoxedQueryAction",
+                  "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  "payload": {
+                    "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "applicationSection": "model",
+                    "queryExecutionStrategy": "storage",
+                    "query": {
+                      "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "pageParams": {
+                        "currentDeploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+                      },
+                      "extractors": {
+                        "entities": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "Entity",
+                          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                          "orderBy": {
+                            "attributeName": "name",
                             "direction": "ASC"
                           }
                         }
@@ -3209,6 +3377,11 @@
                         "transformerResultSchema": {
                           "returns": "any"
                         }
+                      },
+                      "transformerImplementation": {
+                        "transformerImplementationType": "libraryImplementation",
+                        "inMemoryImplementationFunctionName": "handleTransformer_constant",
+                        "sqlImplementationFunctionName": "sqlStringForConstantTransformer"
                       }
                     }
                   ]
@@ -3242,7 +3415,7 @@
                   "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                   "payload": {
                     "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
-                    "applicationSection": "model",
+                    "applicationSection": "modelVersion",
                     "queryExecutionStrategy": "storage",
                     "query": {
                       "queryType": "boxedQueryWithExtractorCombinerTransformer",
@@ -4135,11 +4308,11 @@
           {
             "actionType": "compositeRunTestAssertion",
             "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
-            "actionLabel": "count_transformerDefinitionVersions_transformerDefinitionUuid_f0000002",
-            "nameGivenToResult": "count_transformerDefinitionVersions_transformerDefinitionUuid_f0000002",
+            "actionLabel": "count_transformerDefinitionVersions_transformerUuid_f0000002",
+            "nameGivenToResult": "count_transformerDefinitionVersions_transformerUuid_f0000002",
             "payload": {
               "testType": "testAssertion",
-              "testLabel": "count_transformerDefinitionVersions_transformerDefinitionUuid_f0000002",
+              "testLabel": "count_transformerDefinitionVersions_transformerUuid_f0000002",
               "definition": {
                 "resultAccessPath": [
                   "0"
@@ -4173,7 +4346,7 @@
                             "interpolation": "runtime",
                             "referenceName": "__element__"
                           },
-                          "transformerDefinitionUuid"
+                          "transformerUuid"
                         ]
                       },
                       "right": "f0000002-0002-4002-8002-000000000002"
@@ -4964,7 +5137,7 @@
                               "interpolation": "runtime",
                               "referenceName": "__element__"
                             },
-                            "transformerDefinitionUuid"
+                            "transformerUuid"
                           ]
                         },
                         "right": "f0000002-0002-4002-8002-000000000002"
@@ -5401,6 +5574,11 @@
                         "transformerResultSchema": {
                           "returns": "any"
                         }
+                      },
+                      "transformerImplementation": {
+                        "transformerImplementationType": "libraryImplementation",
+                        "inMemoryImplementationFunctionName": "handleTransformer_constant",
+                        "sqlImplementationFunctionName": "sqlStringForConstantTransformer"
                       }
                     }
                   ]
@@ -5778,7 +5956,7 @@
                   "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                   "payload": {
                     "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
-                    "applicationSection": "model",
+                    "applicationSection": "modelVersion",
                     "queryExecutionStrategy": "storage",
                     "query": {
                       "queryType": "boxedQueryWithExtractorCombinerTransformer",
@@ -5787,86 +5965,6 @@
                         "currentDeploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
                       },
                       "extractors": {
-                        "entities": {
-                          "extractorOrCombinerType": "extractorInstancesByEntity",
-                          "applicationSection": "model",
-                          "parentName": "Entity",
-                          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                          "orderBy": {
-                            "attributeName": "name",
-                            "direction": "ASC"
-                          }
-                        },
-                        "storedQueries": {
-                          "extractorOrCombinerType": "extractorInstancesByEntity",
-                          "applicationSection": "model",
-                          "parentName": "Query",
-                          "parentUuid": "e4320b9e-ab45-4abe-85d8-359604b3c62f",
-                          "orderBy": {
-                            "attributeName": "name",
-                            "direction": "ASC"
-                          }
-                        },
-                        "reports": {
-                          "extractorOrCombinerType": "extractorInstancesByEntity",
-                          "applicationSection": "model",
-                          "parentName": "Report",
-                          "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
-                          "orderBy": {
-                            "attributeName": "name",
-                            "direction": "ASC"
-                          }
-                        },
-                        "menus": {
-                          "extractorOrCombinerType": "extractorInstancesByEntity",
-                          "applicationSection": "model",
-                          "parentName": "Menu",
-                          "parentUuid": "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
-                          "orderBy": {
-                            "attributeName": "name",
-                            "direction": "ASC"
-                          }
-                        },
-                        "endpoints": {
-                          "extractorOrCombinerType": "extractorInstancesByEntity",
-                          "applicationSection": "model",
-                          "parentName": "Endpoint",
-                          "parentUuid": "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
-                          "orderBy": {
-                            "attributeName": "name",
-                            "direction": "ASC"
-                          }
-                        },
-                        "runners": {
-                          "extractorOrCombinerType": "extractorInstancesByEntity",
-                          "applicationSection": "model",
-                          "parentName": "Runner",
-                          "parentUuid": "e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd",
-                          "orderBy": {
-                            "attributeName": "name",
-                            "direction": "ASC"
-                          }
-                        },
-                        "themes": {
-                          "extractorOrCombinerType": "extractorInstancesByEntity",
-                          "applicationSection": "model",
-                          "parentName": "Theme",
-                          "parentUuid": "bdcf956a-771d-40a1-a878-06e0bf6efd3e",
-                          "orderBy": {
-                            "attributeName": "name",
-                            "direction": "ASC"
-                          }
-                        },
-                        "transformerDefinitions": {
-                          "extractorOrCombinerType": "extractorInstancesByEntity",
-                          "applicationSection": "model",
-                          "parentName": "TransformerDefinition",
-                          "parentUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
-                          "orderBy": {
-                            "attributeName": "name",
-                            "direction": "ASC"
-                          }
-                        },
                         "applicationVersions": {
                           "extractorOrCombinerType": "extractorInstancesByEntity",
                           "applicationSection": "modelVersion",
@@ -6041,6 +6139,110 @@
                     }
                   }
                 }
+              },
+              {
+                "actionType": "compositeRunBoxedQueryAction",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "actionLabel": "query_freezeState_model",
+                "nameGivenToResult": "freezeStateModel",
+                "payload": {
+                  "actionType": "runBoxedQueryAction",
+                  "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  "payload": {
+                    "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "applicationSection": "model",
+                    "queryExecutionStrategy": "storage",
+                    "query": {
+                      "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "pageParams": {
+                        "currentDeploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+                      },
+                      "extractors": {
+                        "entities": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "Entity",
+                          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        },
+                        "storedQueries": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "Query",
+                          "parentUuid": "e4320b9e-ab45-4abe-85d8-359604b3c62f",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        },
+                        "reports": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "Report",
+                          "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        },
+                        "menus": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "Menu",
+                          "parentUuid": "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        },
+                        "endpoints": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "Endpoint",
+                          "parentUuid": "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        },
+                        "runners": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "Runner",
+                          "parentUuid": "e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        },
+                        "themes": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "Theme",
+                          "parentUuid": "bdcf956a-771d-40a1-a878-06e0bf6efd3e",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        },
+                        "transformerDefinitions": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "TransformerDefinition",
+                          "parentUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
               }
             ]
           }
@@ -6124,7 +6326,7 @@
                       "transformerType": "getFromContext",
                       "interpolation": "runtime",
                       "referencePath": [
-                        "freezeState",
+                        "freezeStateModel",
                         "storedQueries"
                       ]
                     },
@@ -6178,7 +6380,7 @@
                       "transformerType": "getFromContext",
                       "interpolation": "runtime",
                       "referencePath": [
-                        "freezeState",
+                        "freezeStateModel",
                         "storedQueries"
                       ]
                     },
@@ -6232,7 +6434,7 @@
                       "transformerType": "getFromContext",
                       "interpolation": "runtime",
                       "referencePath": [
-                        "freezeState",
+                        "freezeStateModel",
                         "reports"
                       ]
                     },
@@ -6286,7 +6488,7 @@
                       "transformerType": "getFromContext",
                       "interpolation": "runtime",
                       "referencePath": [
-                        "freezeState",
+                        "freezeStateModel",
                         "reports"
                       ]
                     },
@@ -6340,7 +6542,7 @@
                       "transformerType": "getFromContext",
                       "interpolation": "runtime",
                       "referencePath": [
-                        "freezeState",
+                        "freezeStateModel",
                         "menus"
                       ]
                     },
@@ -6394,7 +6596,7 @@
                       "transformerType": "getFromContext",
                       "interpolation": "runtime",
                       "referencePath": [
-                        "freezeState",
+                        "freezeStateModel",
                         "menus"
                       ]
                     },
@@ -6842,7 +7044,7 @@
                   "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
                   "payload": {
                     "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
-                    "applicationSection": "model",
+                    "applicationSection": "modelVersion",
                     "queryExecutionStrategy": "storage",
                     "query": {
                       "queryType": "boxedQueryWithExtractorCombinerTransformer",
@@ -6851,16 +7053,6 @@
                         "currentDeploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
                       },
                       "extractors": {
-                        "entities": {
-                          "extractorOrCombinerType": "extractorInstancesByEntity",
-                          "applicationSection": "model",
-                          "parentName": "Entity",
-                          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
-                          "orderBy": {
-                            "attributeName": "name",
-                            "direction": "ASC"
-                          }
-                        },
                         "applicationVersions": {
                           "extractorOrCombinerType": "extractorInstancesByEntity",
                           "applicationSection": "modelVersion",
@@ -6888,6 +7080,40 @@
                           "parentUuid": "8bec933d-6287-4de7-8a88-5c24216de9f4",
                           "orderBy": {
                             "attributeName": "uuid",
+                            "direction": "ASC"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "actionType": "compositeRunBoxedQueryAction",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "actionLabel": "query_freezeState_model",
+                "nameGivenToResult": "freezeStateModel",
+                "payload": {
+                  "actionType": "runBoxedQueryAction",
+                  "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  "payload": {
+                    "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "applicationSection": "model",
+                    "queryExecutionStrategy": "storage",
+                    "query": {
+                      "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "pageParams": {
+                        "currentDeploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+                      },
+                      "extractors": {
+                        "entities": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "model",
+                          "parentName": "Entity",
+                          "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+                          "orderBy": {
+                            "attributeName": "name",
                             "direction": "ASC"
                           }
                         }
@@ -7063,7 +7289,7 @@
                       "transformerType": "getFromContext",
                       "interpolation": "runtime",
                       "referencePath": [
-                        "freezeState",
+                        "freezeStateModel",
                         "entities"
                       ]
                     },
@@ -7096,6 +7322,6 @@
         ]
       }
     ],
-    "testbedInitApplicationParameters": "libraryTestbedInitParams"
+    "testbedInitApplicationParameters": "libraryVersionedTestbedInitParams"
   }
 }

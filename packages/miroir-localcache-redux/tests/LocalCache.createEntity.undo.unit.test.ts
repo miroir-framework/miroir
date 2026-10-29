@@ -113,4 +113,40 @@ describe("LocalCache createEntity undo/redo (Entity-only create)", () => {
     expect(localCache.handleLocalCacheAction(redo, applicationDeploymentMap)).toEqual(ACTION_OK);
     expect(entityCount(localCache)).toBe(2);
   });
+
+  // #577: an OpenAPI re-sync re-creates the Entity with the materialized responseSchema. The
+  // persistence stores upsert it, so the local cache must too, or the commit has nothing to replay.
+  it("createEntity on an existing Entity replaces it and records the change for commit", () => {
+    const localCache = new LocalCache();
+    bootstrapModelEntityCollections(localCache, [entityEntity.uuid, entityEntityVersion.uuid]);
+    const createAuthor = (mlSchema: object): ModelAction => ({
+      actionType: "createEntity",
+      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+      payload: {
+        application: selfApplicationLibrary.uuid,
+        entities: [{ ...(entityAuthor as any), mlSchema }],
+      },
+    });
+    const resyncedSchema = {
+      type: "object",
+      definition: { uuid: { type: "uuid" }, name: { type: "string", optional: true } },
+    };
+
+    expect(
+      localCache.handleLocalCacheAction(
+        createAuthor({ type: "object", definition: { uuid: { type: "uuid" } } }),
+        applicationDeploymentMap,
+      ),
+    ).toEqual(ACTION_OK);
+    expect(localCache.handleLocalCacheAction(createAuthor(resyncedSchema), applicationDeploymentMap)).toEqual(
+      ACTION_OK,
+    );
+
+    const author = localCache.getDomainState()[deployment_Library_DO_NO_USE.uuid]?.model?.[entityEntity.uuid]?.[
+      entityAuthor.uuid
+    ] as any;
+    expect(author.mlSchema).toEqual(resyncedSchema);
+    expect(entityCount(localCache)).toBe(1);
+    expect(localCache.currentTransaction().length).toBe(2);
+  });
 });

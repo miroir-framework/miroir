@@ -651,8 +651,10 @@ function handleInstanceAction(
           // );
 
           // Always assign: when initializeLocalCacheSliceStateWithEntityAdapter just wrote a
-          // plain getInitialState() into the draft, addOne does not mutate in place.
-          state.current[instanceCollectionEntityIndex] = sliceEntityAdapter.addOne(
+          // plain getInitialState() into the draft, setOne does not mutate in place.
+          // setOne, not addOne: createInstance upserts, as the persistence stores and the zustand
+          // cache do (#577: a re-sync createEntity on an existing Entity must be recorded).
+          state.current[instanceCollectionEntityIndex] = sliceEntityAdapter.setOne(
             state.current[instanceCollectionEntityIndex],
             instance
           );

@@ -397,6 +397,10 @@
                   },
                   {
                     "type": "literal",
+                    "definition": "libraryVersionedTestbedInitParams"
+                  },
+                  {
+                    "type": "literal",
                     "definition": "appForTestTestbedInitParams"
                   },
                   {
