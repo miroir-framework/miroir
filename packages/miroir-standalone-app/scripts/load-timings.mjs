@@ -39,6 +39,8 @@ import { fail, launchBrowser, requireProductionBuild, root, ScriptError, startSe
 const APP = "miroir-standalone-app";
 const STEP_TIMEOUT = 60_000;
 const SERVER_URL = "https://localhost:3080";
+/** Time limit of the whole warm-up tour (--dev), within the 600 s the integration test gives the tour. */
+const WARM_UP_TIMEOUT = 240_000;
 const ENTITY_PAGE_LOAD_MEASUREMENT = "0266c0b8-4dc8-4a14-bcef-239a85a5de2d";
 
 const LIBRARY_BOOKS_REPORT =
@@ -175,14 +177,15 @@ async function warmUp(browser) {
   const context = await browser.newContext({ ignoreHTTPSErrors: true, viewport: { width: 1400, height: 900 } });
   try {
     const page = await context.newPage();
+    const deadline = Date.now() + WARM_UP_TIMEOUT;
     const [first, ...others] = TOUR;
     await page
-      .goto(`${url}${first.target}&loadTimings=off`, { timeout: 180_000 })
+      .goto(`${url}${first.target}&loadTimings=off`, { timeout: WARM_UP_TIMEOUT })
       .catch((error) => fail(`cannot open ${url}: ${String(error).split("\n")[0]}`));
-    await waitUntilQuiet(page);
+    await waitUntilQuiet(page, deadline);
     for (const { target } of others) {
       await navigateInApp(page, target).catch(() => undefined);
-      await waitUntilQuiet(page);
+      await waitUntilQuiet(page, deadline);
     }
     console.log("  warm-up: the tour ran once, unmeasured");
   } finally {
@@ -191,10 +194,10 @@ async function warmUp(browser) {
 }
 
 /** Waits until no loading spinner shows and no file was fetched for 2 s; survives a page reload. */
-async function waitUntilQuiet(page) {
+async function waitUntilQuiet(page, deadline) {
   let last = -1;
   let quietSince = Date.now();
-  for (const start = Date.now(); Date.now() - start < 180_000; ) {
+  while (Date.now() < deadline) {
     await new Promise((resolve) => setTimeout(resolve, 500));
     const state = await page
       .evaluate(() => ({
@@ -210,7 +213,8 @@ async function waitUntilQuiet(page) {
       return;
     }
   }
-  console.error("load-timings: the warm-up page did not settle within 180s");
+  // measuring Vite's first transforms would record a misleading development row
+  fail(`the warm-up tour did not settle within ${WARM_UP_TIMEOUT / 1000}s`);
 }
 
 async function waitForStep(page, step) {

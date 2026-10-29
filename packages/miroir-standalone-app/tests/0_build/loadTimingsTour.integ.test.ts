@@ -28,43 +28,67 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 const packageDir = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const TOUR_TIMEOUT = 600_000;
 
-/** Runs the tour with `args`, and returns the process and the steps it wrote. */
-function runTour(args: string[]): { run: ReturnType<typeof spawnSync>; steps: any[]; work: string } {
-  const work = mkdtempSync(join(tmpdir(), "load-timings-test-"));
-  const out = join(work, "steps.json");
-  const run = spawnSync(process.execPath, ["scripts/load-timings.mjs", ...args, "--serve", "--clean", "--out", out], {
-    cwd: packageDir,
-    encoding: "utf-8",
-    timeout: TOUR_TIMEOUT,
+type Tour = { run: ReturnType<typeof spawnSync>; steps: any[] };
+
+/**
+ * The tour with `args`, run once before the tests that `body` declares: the same steps, settled, of
+ * `buildMode`, said in the output, and recorded, then the checks of the build mode.
+ */
+function describeTour(
+  name: string,
+  enabled: boolean,
+  args: string[],
+  buildMode: "production" | "development",
+  body: (tour: () => Tour, step: (name: string) => any) => void,
+) {
+  describe.skipIf(!enabled)(name, () => {
+    let work: string;
+    let tour: Tour;
+
+    beforeAll(() => {
+      work = mkdtempSync(join(tmpdir(), "load-timings-test-"));
+      const out = join(work, "steps.json");
+      const run = spawnSync(process.execPath, ["scripts/load-timings.mjs", ...args, "--serve", "--clean", "--out", out], {
+        cwd: packageDir,
+        encoding: "utf-8",
+        timeout: TOUR_TIMEOUT,
+      });
+      if (!existsSync(out)) {
+        throw new Error(`the tour wrote no steps (exit ${run.status}):\n${run.stdout}\n${run.stderr}`);
+      }
+      tour = { run, steps: JSON.parse(readFileSync(out, "utf-8")) };
+    }, TOUR_TIMEOUT);
+
+    afterAll(() => rmSync(work, { recursive: true, force: true }));
+
+    const step = (stepName: string) => tour.steps.find((candidate) => candidate.step === stepName);
+
+    it("measures the initial load, the first report display and the first model page display, settled", () => {
+      expect(
+        tour.steps.map((candidate) => [candidate.step, candidate.settled]),
+        `durations (ms): ${tour.steps.map((candidate) => `${candidate.step} ${candidate.durationMs}`).join(", ")}`,
+      ).toEqual([
+        ["initialLoad", true],
+        ["route:report", true],
+        ["route:model", true],
+      ]);
+    });
+
+    it(`records the ${buildMode} build mode on every step, and says so`, () => {
+      expect(tour.steps.map((candidate) => candidate.buildMode)).toEqual([buildMode, buildMode, buildMode]);
+      expect(tour.run.stdout).toMatch(new RegExp(`^build mode: ${buildMode}, client: webApp `, "m"));
+    });
+
+    it("records every step in the Meta app", () => {
+      expect(tour.run.stdout).toMatch(/recorded in the Meta app: 3 of 3 steps/);
+      expect(tour.run.status).toBe(0);
+    });
+
+    body(() => tour, step);
   });
-  if (!existsSync(out)) {
-    throw new Error(`the tour wrote no steps (exit ${run.status}):\n${run.stdout}\n${run.stderr}`);
-  }
-  return { run, steps: JSON.parse(readFileSync(out, "utf-8")), work };
 }
 
-
-describe.skipIf(process.env.MIROIR_LOAD_TIMINGS_TOUR !== "1")("loadTimingsTour", () => {
-  let work: string;
-  let run: ReturnType<typeof spawnSync>;
-  let steps: any[];
-
-  beforeAll(() => {
-    ({ run, steps, work } = runTour([]));
-  }, TOUR_TIMEOUT);
-
-  afterAll(() => rmSync(work, { recursive: true, force: true }));
-
-  const step = (name: string) => steps.find((candidate) => candidate.step === name);
-
-  it("measures the initial load, the first report display and the first model page display, settled", () => {
-    expect(steps.map((candidate) => [candidate.step, candidate.settled])).toEqual([
-      ["initialLoad", true],
-      ["route:report", true],
-      ["route:model", true],
-    ]);
-  });
-
+describeTour("loadTimingsTour", process.env.MIROIR_LOAD_TIMINGS_TOUR === "1", [], "production", (_tour, step) => {
   it("takes the initial load milestones in startup order", () => {
     const { entryScript, configReady, platformReady, firstRender } = step("initialLoad").milestones;
     expect(entryScript).toBeLessThanOrEqual(configReady);
@@ -77,55 +101,13 @@ describe.skipIf(process.env.MIROIR_LOAD_TIMINGS_TOUR !== "1")("loadTimingsTour",
     expect(step("initialLoad").chunks.some((chunk: any) => /\/assets\/index-.*\.js$/.test(chunk.file))).toBe(true);
     expect(step("route:report").chunkCount).toBeGreaterThan(0);
   });
-
-  it("says it measured the production build", () => {
-    expect(run.stdout).toMatch(/^build mode: production, client: webApp /m);
-  });
-
-  it("records every step in the Meta app", () => {
-    expect(run.stdout).toMatch(/recorded in the Meta app: 3 of 3 steps/);
-    expect(run.status).toBe(0);
-  });
 });
 
-describe.skipIf(process.env.MIROIR_LOAD_TIMINGS_TOUR_DEV !== "1")("loadTimingsTour --dev", () => {
-  let work: string;
-  let run: ReturnType<typeof spawnSync>;
-  let steps: any[];
-
-  beforeAll(() => {
-    ({ run, steps, work } = runTour(["--dev"]));
-  }, TOUR_TIMEOUT);
-
-  afterAll(() => rmSync(work, { recursive: true, force: true }));
-
-  const step = (name: string) => steps.find((candidate) => candidate.step === name);
-
-  it("measures the same steps on the Vite dev client, settled", () => {
-    expect(
-      steps.map((candidate) => [candidate.step, candidate.settled]),
-      `durations (ms): ${steps.map((candidate) => `${candidate.step} ${candidate.durationMs}`).join(", ")}`,
-    ).toEqual([
-      ["initialLoad", true],
-      ["route:report", true],
-      ["route:model", true],
-    ]);
-  });
-
-  it("records the development build mode on every step, and says so", () => {
-    expect(steps.map((candidate) => candidate.buildMode)).toEqual(["development", "development", "development"]);
-    expect(run.stdout).toMatch(/^build mode: development, client: webApp /m);
-  });
-
+describeTour("loadTimingsTour --dev", process.env.MIROIR_LOAD_TIMINGS_TOUR_DEV === "1", ["--dev"], "development", (_tour, step) => {
   it("lists every unbundled source module fetched with the page", () => {
     // Vite's root is src/: the module URLs have no /src/ prefix. More than 250 files: the default
     // resource timing buffer, which index.html raises before the entry module loads.
     expect(step("initialLoad").chunks.some((chunk: any) => /\.tsx$/.test(chunk.file))).toBe(true);
     expect(step("initialLoad").chunkCount).toBeGreaterThan(250);
-  });
-
-  it("records every step in the Meta app", () => {
-    expect(run.stdout).toMatch(/recorded in the Meta app: 3 of 3 steps/);
-    expect(run.status).toBe(0);
   });
 });

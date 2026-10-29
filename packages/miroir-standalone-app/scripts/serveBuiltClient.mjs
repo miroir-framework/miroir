@@ -92,13 +92,22 @@ export async function startServer({ url, name, devClient }) {
   // Authentication is off, so the server listens on 127.0.0.1 only (scripts/loopback-only.mjs).
   const loopbackOnly = path.join(packageDir, "scripts/loopback-only.mjs");
   const children = [];
-  const stop = async () => {
-    // the dev server first: it proxies to the server
-    for (const child of children.reverse()) {
-      await child.stop();
-    }
-    rmSync(work, { recursive: true, force: true });
+  let stopped;
+  const stop = () =>
+    (stopped ??= (async () => {
+      process.off("SIGINT", onSignal).off("SIGTERM", onSignal);
+      // the dev server first: it proxies to the server
+      for (const child of [...children].reverse()) {
+        await child.stop();
+      }
+      rmSync(work, { recursive: true, force: true });
+    })());
+  // A caller killed (Ctrl-C, a test's timeout) does not reach its finally: stop the servers here.
+  const onSignal = async (signal) => {
+    await stop();
+    process.exit(signal === "SIGINT" ? 130 : 143);
   };
+  process.on("SIGINT", onSignal).on("SIGTERM", onSignal);
   const server = startProcess({
     args: ["--import", pathToFileURL(loopbackOnly).href, "release/index.js", "--certsdir", certsDir, "--disable-auth"],
     cwd: serverDir,
@@ -118,7 +127,7 @@ export async function startServer({ url, name, devClient }) {
         "--max-old-space-size=8192",
         path.join(root, "node_modules/vite/bin/vite.js"),
         "--port",
-        new URL(devClient.url).port,
+        defaultedPort(devClient.url),
         "--strictPort",
       ],
       cwd: packageDir,
@@ -162,12 +171,23 @@ function startProcess({ args, cwd, env, log }) {
     log,
     hasExited: () => hasExited,
     stop: async () => {
-      if (!hasExited) {
-        child.kill();
+      if (hasExited) {
+        return;
+      }
+      child.kill();
+      const timeout = new Promise((resolve) => setTimeout(resolve, 10_000).unref());
+      if ((await Promise.race([exited.then(() => "exited"), timeout])) !== "exited") {
+        child.kill("SIGKILL");
         await exited;
       }
     },
   };
+}
+
+/** The port of `url`, the scheme's default one when it names none. */
+function defaultedPort(url) {
+  const { port, protocol } = new URL(url);
+  return port || (protocol === "https:" ? "443" : "80");
 }
 
 /** Waits until `url` answers; on a failure, stops everything and fails with the end of the log. */
