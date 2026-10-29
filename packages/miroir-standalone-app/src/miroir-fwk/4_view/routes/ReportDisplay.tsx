@@ -20,10 +20,8 @@ import {
 
 import { JsonDisplayHelper } from "miroir-react";
 import { ErrorBoundary } from "react-error-boundary";
-import {
-  packageName,
-  ReportUrlParamKeys
-} from "../../../constants.js";
+import { packageName } from "../../../constants.js";
+import { ReportUrlParamKeys } from "miroir-react";
 import { useCurrentModel } from "../ReduxHooks.js";
 import { ErrorFallbackComponent } from "miroir-react";
 import { RenderInsightSummary } from "../components/RenderInsightSummary.js";

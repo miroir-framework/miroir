@@ -3,7 +3,7 @@ import type { Params } from "react-router-dom";
 
 import type { ApplicationSection, Uuid } from "miroir-core";
 
-import { REPORT_URL_KNOWN_PARAM_KEYS, type ReportUrlParamKeys } from "../../../../constants.js";
+import { REPORT_URL_KNOWN_PARAM_KEYS, type ReportUrlParamKeys } from "miroir-react";
 import { reportUrl } from "miroir-react";
 import {
   ThemedDialog,

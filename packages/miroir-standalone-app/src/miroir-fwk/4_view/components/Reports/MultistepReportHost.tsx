@@ -25,7 +25,7 @@ import {
 import { useDomainControllerService, useMiroirContextService } from "miroir-react";
 
 import { packageName } from "../../../../constants.js";
-import type { ReportUrlParamKeys } from "../../../../constants.js";
+import type { ReportUrlParamKeys } from "miroir-react";
 import { useCurrentModelEnvironment } from "../../ReduxHooks.js";
 import { cleanLevel } from "../../constants.js";
 import {

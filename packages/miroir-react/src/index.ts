@@ -258,3 +258,6 @@ export * from "./components/ViewParamsUpdateQueueTestUtils.js";
 export * from "./components/saveInstanceFromUI.js";
 export * from "./navigation.js";
 export * from "./scripts.js";
+
+// Report URL parameters, moved from miroir-standalone-app/src/constants.ts (#600)
+export * from "./reportUrlParams.js";

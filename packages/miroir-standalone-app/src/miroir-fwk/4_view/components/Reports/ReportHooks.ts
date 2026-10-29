@@ -37,7 +37,8 @@ import type { RunStoredQuery, TransformerDefinition } from 'miroir-core';
 import {
   getMemoizedReduxDeploymentsStateSelectorMap
 } from "miroir-react";
-import { packageName, ReportUrlParamKeys } from '../../../../constants.js';
+import { packageName } from "../../../../constants.js";
+import { ReportUrlParamKeys } from "miroir-react";
 import { cleanLevel } from '../../constants.js';
 
 import { entityRunner, entityTransformerDefinition } from "miroir-app-miroir";

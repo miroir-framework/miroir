@@ -12,10 +12,8 @@ import {
   useMiroirContextService
 } from "miroir-react";
 
-import {
-  packageName,
-  ReportUrlParamKeys
-} from "../../../constants.js";
+import { packageName } from "../../../constants.js";
+import { ReportUrlParamKeys } from "miroir-react";
 import { PageContainer } from "miroir-react";
 import { ThemedBox } from "miroir-react";
 import { cleanLevel } from "../constants.js";
