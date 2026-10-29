@@ -533,6 +533,7 @@ export function buildResetAndinitializeDeploymentActionSequence(
             ...resolvedMetaModel.storedQueries as EntityInstance[],
             ...resolvedMetaModel.runners as EntityInstance[],
             ...resolvedMetaModel.themes as EntityInstance[],
+            ...resolvedMetaModel.transformerDefinitions as EntityInstance[],
             ...resolvedMetaModel.mlSchemas as EntityInstance[],
             ...resolvedMetaModel.endpoints as EntityInstance[],
             ...resolvedMetaModel.applicationVersionCrossEntityVersion as EntityInstance[],
