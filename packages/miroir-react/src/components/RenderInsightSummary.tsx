@@ -1,26 +1,12 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { useMiroirContextService } from "miroir-react";
-import { useMiroirTheme } from "miroir-react";
-import {
-  getRenderInsightMaxDepth,
-  setRenderInsightMaxDepth,
-} from "miroir-react";
-import {
-  renderInsightRegistry,
-  type RenderInsightNode,
-} from "miroir-react";
-import {
-  summarizeTree,
-  type SummarizedInsightNode,
-} from "miroir-react";
-import { getPerformanceConfig } from "miroir-react";
-import { RenderPerformanceMetrics } from "miroir-react";
-import {
-  RENDER_INSIGHT_OVERLAY_ATTR,
-  RENDER_INSIGHT_OVERLAY_VALUE,
-  getRenderInsightChromeStyle,
-  resolveRenderInsightTheme,
-} from "miroir-react";
+import { useMiroirContextService } from "../contexts/MiroirContextReactProvider.js";
+import { useMiroirTheme } from "../contexts/MiroirThemeContext.js";
+import { getRenderInsightMaxDepth, setRenderInsightMaxDepth } from "../tools/renderInsightMaxDepth.js";
+import { renderInsightRegistry, type RenderInsightNode } from "../tools/renderInsightRegistry.js";
+import { summarizeTree, type SummarizedInsightNode } from "../tools/renderInsightSummarize.js";
+import { getPerformanceConfig } from "../tools/performanceConfig.js";
+import { RenderPerformanceMetrics } from "../tools/renderPerformanceMeasure.js";
+import { RENDER_INSIGHT_OVERLAY_ATTR, RENDER_INSIGHT_OVERLAY_VALUE, getRenderInsightChromeStyle, resolveRenderInsightTheme } from "../tools/renderInsightChrome.js";
 
 const EMPTY_STATE =
   "Interact with the report — instrumented components will appear here.";

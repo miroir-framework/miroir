@@ -1,15 +1,9 @@
 import React from "react";
-import { useMiroirContextService } from "miroir-react";
-import { useMiroirTheme } from "miroir-react";
-import { getPerformanceConfig } from "miroir-react";
-import {
-  RENDER_INSIGHT_OVERLAY_ATTR,
-  RENDER_INSIGHT_OVERLAY_VALUE,
-  getRenderInsightChromeStyle,
-  resolveRenderInsightTheme,
-  shortenFormikPath,
-} from "miroir-react";
-import type { RenderInsightAggregate } from "miroir-react";
+import { useMiroirContextService } from "../contexts/MiroirContextReactProvider.js";
+import { useMiroirTheme } from "../contexts/MiroirThemeContext.js";
+import { getPerformanceConfig } from "../tools/performanceConfig.js";
+import { RENDER_INSIGHT_OVERLAY_ATTR, RENDER_INSIGHT_OVERLAY_VALUE, getRenderInsightChromeStyle, resolveRenderInsightTheme, shortenFormikPath } from "../tools/renderInsightChrome.js";
+import type { RenderInsightAggregate } from "../tools/renderInsightSummarize.js";
 
 export interface RenderInsightHeaderProps {
   componentName: string;

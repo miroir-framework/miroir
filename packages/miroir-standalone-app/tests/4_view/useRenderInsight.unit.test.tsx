@@ -16,7 +16,7 @@ const TestContext = ({ children }: { children: React.ReactNode }) => (
   </MiroirContextReactTestProvider>
 );
 const renderHook = <Result,>(hook: () => Result) => rtlRenderHook(hook, { wrapper: TestContext });
-import { useRenderInsight } from "../../src/miroir-fwk/4_view/tools/useRenderInsight.js";
+import { useRenderInsight } from "miroir-react";
 
 describe("useRenderInsight (Phase 1.2)", () => {
   beforeEach(() => {

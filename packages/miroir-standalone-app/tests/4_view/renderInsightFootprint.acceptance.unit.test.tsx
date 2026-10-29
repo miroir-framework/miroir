@@ -12,13 +12,13 @@ import "@testing-library/jest-dom";
 
 const showPerformanceDisplayRef = { current: false };
 
-import { RenderInsightHeader } from "../../src/miroir-fwk/4_view/components/RenderInsightHeader.js";
-import { RenderInsightSummary } from "../../src/miroir-fwk/4_view/components/RenderInsightSummary.js";
+import { RenderInsightHeader } from "miroir-react";
+import { RenderInsightSummary } from "miroir-react";
 import {
   NOOP_RENDER_COUNTS,
   renderInsightRegistry,
 } from "miroir-react";
-import { useRenderInsight } from "../../src/miroir-fwk/4_view/tools/useRenderInsight.js";
+import { useRenderInsight } from "miroir-react";
 
 const Fixture: React.FC<{ label: string }> = ({ label }) => {
   const { navigationCount, totalCount } = useRenderInsight("FootprintFixture", label);

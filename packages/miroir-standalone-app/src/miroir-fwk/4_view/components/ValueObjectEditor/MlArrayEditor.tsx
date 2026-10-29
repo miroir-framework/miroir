@@ -33,7 +33,7 @@ import { ErrorBoundary } from "react-error-boundary";
 import { packageName } from "../../../../constants";
 import { cleanLevel } from "../../constants";
 import { useCurrentModel, useCurrentModelEnvironment, useDefaultValueParams } from "../../ReduxHooks";
-import { editorNavigationKey, useTrackedRender } from "../../tools/useTrackedRender.js";
+import { editorNavigationKey, useTrackedRender } from "miroir-react";
 import { useViewportReveal } from "../../tools/useViewportReveal.js";
 import { ErrorFallbackComponent } from "miroir-react";
 import {
@@ -41,7 +41,7 @@ import {
   TransformerTitleRowAnnotations,
   TransformerTypeBadgeRow,
 } from "../Reports/TransformerTypeAnnotation.js";
-import { RenderInsightHeader } from "../RenderInsightHeader.js";
+import { RenderInsightHeader } from "miroir-react";
 import { useReportPageContext } from "miroir-react";
 import type { ValueObjectEditMode } from "../Reports/ReportSectionEntityInstance";
 import {

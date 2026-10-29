@@ -40,8 +40,8 @@ import {
 import { ErrorFallbackComponent } from "miroir-react";
 import { JsonDisplayHelper } from "miroir-react";
 import { useReportPageContext } from "miroir-react";
-import { RenderInsightHeader } from "../RenderInsightHeader.js";
-import { editorNavigationKey, useTrackedRender } from "../../tools/useTrackedRender.js";
+import { RenderInsightHeader } from "miroir-react";
+import { editorNavigationKey, useTrackedRender } from "miroir-react";
 import { useViewportReveal } from "../../tools/useViewportReveal.js";
 import {
   getUnitTestKind,

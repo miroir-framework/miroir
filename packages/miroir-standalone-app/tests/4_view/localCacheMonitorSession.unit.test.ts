@@ -10,7 +10,7 @@ import {
   buildLocalCacheMonitorExportPayload,
   clearLocalCacheMonitorSession,
 } from "miroir-react";
-import { readLocalCacheMonitorBreakdown } from "../../src/miroir-fwk/4_view/components/LocalCacheMonitorSummary.js";
+import { readLocalCacheMonitorBreakdown } from "miroir-react";
 
 describe("LocalCache monitor session clear/export (Phase 8)", () => {
   beforeEach(() => {

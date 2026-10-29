@@ -60,8 +60,8 @@ import {
 } from "miroir-react";
 import { MiroirThemeProvider, useMiroirTheme, type MiroirThemeOption } from "miroir-react";
 import { GlobalFeedbackGlow } from "miroir-react";
-import { RenderInsightHeader } from "../RenderInsightHeader.js";
-import { useRenderTracker } from "../../tools/renderCountTracker.js";
+import { RenderInsightHeader } from "miroir-react";
+import { useRenderTracker } from "miroir-react";
 import AppBar from './AppBar.js';
 import { deploymentReportsEntitiesMapping } from "miroir-react";
 

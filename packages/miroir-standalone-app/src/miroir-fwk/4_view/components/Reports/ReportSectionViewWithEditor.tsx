@@ -33,8 +33,8 @@ import {
   openReportHref,
   resolveOpenReportPageParams,
 } from './OpenReportLaunch.js';
-import { RenderInsightHeader } from '../RenderInsightHeader.js';
-import { useRenderTracker } from '../../tools/renderCountTracker.js';
+import { RenderInsightHeader } from "miroir-react";
+import { useRenderTracker } from "miroir-react";
 import GraphReportSectionView from '../Graph/GraphReportSectionView.js';
 import { StoredRunnerView } from '../Runners/RunnerView';
 import { ThemedProgressiveAccordion } from "miroir-react";

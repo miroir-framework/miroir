@@ -20,7 +20,7 @@ import { hiddenValueInputProps } from "miroir-react";
 import { useMlElementEditorHooks } from "./MlElementEditorHooks";
 import { MlAnyEditorProps } from "./MlElementEditorInterface";
 import { MlElementEditor } from "./MlElementEditor";
-import { editorNavigationKey, useTrackedRender } from "../../tools/useTrackedRender.js";
+import { editorNavigationKey, useTrackedRender } from "miroir-react";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MlAnyEditor");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);

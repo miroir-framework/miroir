@@ -12,7 +12,7 @@ import { localCacheMonitorRegistry } from "miroir-react";
 import {
   LocalCacheMonitorSummary,
   readLocalCacheMonitorBreakdown,
-} from "../../src/miroir-fwk/4_view/components/LocalCacheMonitorSummary.js";
+} from "miroir-react";
 import { applyLocalCacheMonitorGate } from "miroir-react";
 import {
   LOCAL_CACHE_MONITOR_SESSION_KEY,

@@ -31,7 +31,7 @@ import { readAppMiroirReports } from "../../../4-tests/appMiroirReports.js";
 import { setLastUiIntegrationTestRunResult } from "../../../4-tests/uiIntegrationTestRunState.js";
 import { miroirTestDefinitionHasReactComponentTest } from "../../../4-tests/miroirTestSuiteUiExecution.js";
 import { useIntegTestRunCoordinator } from "../../../4-tests/useIntegTestRunCoordinator.js";
-import { ActionButtonWithSnackbar } from "../../components/Page/ActionButtonWithSnackbar.js";
+import { ActionButtonWithSnackbar } from "miroir-react";
 import { cleanLevel } from "../../constants.js";
 import { generateTestReport, type TestResultData } from "./testResultReport.js";
 

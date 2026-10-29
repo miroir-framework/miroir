@@ -11,8 +11,8 @@ import {
 
 import { packageName } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
-import { RenderInsightHeader } from '../RenderInsightHeader.js';
-import { useRenderTracker } from '../../tools/renderCountTracker.js';
+import { RenderInsightHeader } from "miroir-react";
+import { useRenderTracker } from "miroir-react";
 import { GraphComponent } from './GraphComponent.js';
 import { 
   GraphData, 

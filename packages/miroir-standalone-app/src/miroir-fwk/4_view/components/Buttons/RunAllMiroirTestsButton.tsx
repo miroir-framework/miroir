@@ -18,7 +18,7 @@ import type {
   UiIntegrationTestRunTargetMode,
 } from '../../../4-tests/uiIntegrationTestLauncherTypes.js';
 import { useIntegTestRunCoordinator } from '../../../4-tests/useIntegTestRunCoordinator.js';
-import { ActionButtonWithSnackbar } from '../../components/Page/ActionButtonWithSnackbar.js';
+import { ActionButtonWithSnackbar } from "miroir-react";
 import { cleanLevel } from '../../constants.js';
 import {
   runIntegrationMiroirTestBatch,

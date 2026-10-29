@@ -13,12 +13,8 @@
 
 import { useRef } from "react";
 
-import { useMiroirContextService } from "miroir-react";
-import {
-  NOOP_RENDER_COUNTS,
-  renderInsightRegistry,
-  type RenderCounts,
-} from "miroir-react";
+import { useMiroirContextService } from "../contexts/MiroirContextReactProvider.js";
+import { NOOP_RENDER_COUNTS, renderInsightRegistry, type RenderCounts } from "./renderInsightRegistry.js";
 
 export interface TrackedRender {
   /** `context.showPerformanceDisplay`: when false, nothing is tracked. */

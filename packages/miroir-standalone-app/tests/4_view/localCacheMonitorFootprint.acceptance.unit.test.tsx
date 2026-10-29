@@ -12,7 +12,7 @@ import "@testing-library/jest-dom";
 
 const showLocalCacheMonitorRef = { current: false };
 
-import { LocalCacheMonitorSummary } from "../../src/miroir-fwk/4_view/components/LocalCacheMonitorSummary.js";
+import { LocalCacheMonitorSummary } from "miroir-react";
 import { applyLocalCacheMonitorGate } from "miroir-react";
 import {
   LOCAL_CACHE_MONITOR_SESSION_KEY,

@@ -71,7 +71,8 @@ vi.mock('miroir-core', async (importOriginal) => {
   };
 });
 
-vi.mock('../../src/miroir-fwk/4_view/components/Page/ActionButtonWithSnackbar.js', () => ({
+vi.mock("miroir-react", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("miroir-react")>()),
   ActionButtonWithSnackbar: ({
     onAction,
     label,

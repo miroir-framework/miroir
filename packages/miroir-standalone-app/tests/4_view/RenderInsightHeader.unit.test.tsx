@@ -7,7 +7,7 @@ import "@testing-library/jest-dom";
 const showPerformanceDisplayRef = { current: false };
 const showDebugInfoRef = { current: false };
 
-import { RenderInsightHeader } from "../../src/miroir-fwk/4_view/components/RenderInsightHeader.js";
+import { RenderInsightHeader } from "miroir-react";
 
 const testTheme = {
   currentTheme: {

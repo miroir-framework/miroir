@@ -261,3 +261,14 @@ export * from "./scripts.js";
 
 // Report URL parameters, moved from miroir-standalone-app/src/constants.ts (#600)
 export * from "./reportUrlParams.js";
+
+// Moved from miroir-standalone-app/src/miroir-fwk/4_view (#592)
+export * from "./components/LocalCacheMonitorSummary.js";
+export * from "./components/Page/ActionButtonWithSnackbar.js";
+export * from "./components/RenderInsightHeader.js";
+export * from "./components/RenderInsightSummary.js";
+export * from "./components/Reports/OpenApiEndpointSyncButton.js";
+export * from "./components/Reports/UnitTestExecutionSummary.js";
+export * from "./tools/renderCountTracker.js";
+export * from "./tools/useRenderInsight.js";
+export * from "./tools/useTrackedRender.js";

@@ -54,7 +54,7 @@ import {
   useReduxDeploymentsStateQuerySelectorForCleanedResult
 } from "../../ReduxHooks.js";
 import { ErrorFallbackComponent } from "miroir-react";
-import { ActionButtonWithSnackbar } from '../Page/ActionButtonWithSnackbar.js';
+import { ActionButtonWithSnackbar } from "miroir-react";
 import { ThemedStyledButton } from "miroir-react";
 import { FieldValidationProvider, useFieldValidationContext } from "miroir-react";
 import { MlElementEditor } from '../ValueObjectEditor/MlElementEditor.js';

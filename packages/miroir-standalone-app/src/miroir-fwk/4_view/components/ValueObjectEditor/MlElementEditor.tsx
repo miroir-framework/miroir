@@ -73,7 +73,7 @@ import { MlEnumEditor } from "./MlEnumEditor.js";
 import { MlLiteralEditor } from "./MlLiteralEditor.js";
 import { MlEditorButton } from "./MlEditorButton.js";
 import { MlObjectEditor } from "./MlObjectEditor.js";
-import { editorNavigationKey, useTrackedRender } from "../../tools/useTrackedRender.js";
+import { editorNavigationKey, useTrackedRender } from "miroir-react";
 
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MlElementEditor");

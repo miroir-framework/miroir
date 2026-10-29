@@ -10,7 +10,7 @@ import {
   RENDER_INSIGHT_MAX_DEPTH_STORAGE_KEY,
 } from "miroir-react";
 import { renderInsightRegistry } from "miroir-react";
-import { RenderInsightSummary } from "../../src/miroir-fwk/4_view/components/RenderInsightSummary.js";
+import { RenderInsightSummary } from "miroir-react";
 
 const testTheme = {
   currentTheme: {

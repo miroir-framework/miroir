@@ -33,7 +33,7 @@ import { isPrimaryUnionDiscriminatorField } from "miroir-react";
 import { useSelector } from "react-redux";
 import { getMemoizedReduxDeploymentsStateSelectorMap } from "miroir-localcache-redux";
 import { JsonDisplayHelper } from "miroir-react";
-import { editorNavigationKey, useTrackedRender } from "../../tools/useTrackedRender.js";
+import { editorNavigationKey, useTrackedRender } from "miroir-react";
 
 // Common function to handle discriminator changes
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MlEnumEditor");
