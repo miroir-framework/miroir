@@ -3,6 +3,9 @@
     {"package": "http-cache-semantics", "advisory": "GHSA-ch52-4w7c-c8xp", "reason": "no fixed version; reached only through make-fetch-happen (lerna) and cacheable-request (electron-builder), on build and release tooling", "expires": "2026-11-02"},
     {"package": "@graphql-tools/utils", "advisory": "GHSA-7mx3-vvmw-hjmv", "reason": "fixed only in 12.x; reached only through @copilotkit/runtime (graphql-yoga 5, @graphql-yoga/plugin-defer-stream), which accept 10.x and 11.x", "expires": "2026-11-05"},
     {"package": "@graphql-tools/utils", "advisory": "GHSA-c4qx-w738-7hr3", "reason": "fixed only in 12.0.2 and later; reached only through @copilotkit/runtime (graphql-yoga 5, @graphql-yoga/plugin-defer-stream), which accept 10.x and 11.x", "expires": "2026-11-06"},
+    {"package": "graphql-scalars", "advisory": "GHSA-x8rm-f576-gq67", "reason": "fixed only in 2.0.1; reached only through @copilotkit/runtime, which asks for ^1.23.0", "expires": "2026-11-05"},
+    {"package": "highcharts", "advisory": "GHSA-5793-x2q3-c3q7", "reason": "fixed only in 11.4.9; reached only through @hilla/react-components (@vaadin/charts 24.3.22), which pins highcharts 9.2.2", "expires": "2026-11-05"},
+    {"package": "highcharts", "advisory": "GHSA-rmqc-xvr3-v46c", "reason": "fixed only in 11.4.9; reached only through @hilla/react-components (@vaadin/charts 24.3.22), which pins highcharts 9.2.2", "expires": "2026-11-05"},
     {"package": "zod", "advisory": "GHSA-mrhx-c7xc-m3w5", "reason": "fixed only in 4.6.6; Miroir pins zod 4.6.7, and the zod 3.25.76 copies come only through @copilotkit/*, @ag-ui/*, @a2ui/web_core and @cursor/sdk, which ask for ^3", "expires": "2026-11-06"}
   ]
 }
