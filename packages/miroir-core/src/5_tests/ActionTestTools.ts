@@ -14,6 +14,7 @@ import type {
   TestAssertionPath,
 } from "../0_interfaces/3_controllers/MiroirActivityTrackerInterface";
 import { runCompositeActionTestParams } from "./CompositeActionTestTools.js";
+import { deepReplaceUuidStrings } from "./deepReplaceUuidStrings.js";
 import { failedLeafAssertion } from "./leafAssertions.js";
 import type { MiroirTestExecutionEnvironment } from "./MiroirTestTools";
 import type { TestbedUuids } from "./TestbedUuids.js";
@@ -22,23 +23,6 @@ export type ResolveActionTestLeafParams = {
   leaf: MiroirTestForAction;
   applicationUuid: Uuid;
 };
-
-function deepReplaceUuidStrings<T>(value: T, replacements: Record<string, string>): T {
-  if (typeof value === "string") {
-    return (replacements[value] ?? value) as T;
-  }
-  if (Array.isArray(value)) {
-    return value.map((entry) => deepReplaceUuidStrings(entry, replacements)) as T;
-  }
-  if (value !== null && typeof value === "object") {
-    const out: Record<string, unknown> = {};
-    for (const [key, entry] of Object.entries(value as Record<string, unknown>)) {
-      out[key] = deepReplaceUuidStrings(entry, replacements);
-    }
-    return out as T;
-  }
-  return value;
-}
 
 /**
  * Rewrite canonical Library application/deployment UUIDs inside an `actionTest`

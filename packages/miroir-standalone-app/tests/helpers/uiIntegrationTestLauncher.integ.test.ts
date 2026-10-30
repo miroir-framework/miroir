@@ -106,3 +106,27 @@ describe("runUiIntegrationTestSuite transformer (B7)", () => {
     expect(result.success).toBe(true);
   }, 180_000);
 });
+
+describe("runUiIntegrationTestSuite action suite on an ephemeral run target (#588)", () => {
+  // The browser self-test runs integration suites on an ephemeral run target: the testbed
+  // SelfApplication must carry the run target's uuid, or freezeApplicationVersion cannot find it.
+  it("runs every action.domainController.freezeApplicationVersion leaf", async () => {
+    const suiteKey = "action.domainController.freezeApplicationVersion";
+    const suiteDefinition = UI_INTEGRATION_RUNNER_SUITE_REGISTRY[suiteKey].suiteDefinition;
+
+    const result = await runUiIntegrationTestSuiteInNode(
+      {
+        suiteKey,
+        suiteDefinition,
+        profileName: LAUNCH_PROFILE_NAME,
+        runTargetMode: "ephemeral",
+        hostMode: "isolated",
+      },
+      vitestExpect,
+    );
+
+    expect(result.runTargetMode).toBe("ephemeral");
+    expect(result.runTarget.applicationUuid).not.toBe(suiteDefinition.runTarget?.applicationUuid);
+    expect(result.success).toBe(true);
+  }, 180_000);
+});
