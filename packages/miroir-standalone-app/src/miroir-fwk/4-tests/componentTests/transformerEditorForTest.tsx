@@ -1,7 +1,7 @@
 import { defaultSelfApplicationDeploymentMap, type Uuid } from "miroir-core";
 import { useMiroirContextService } from "miroir-react";
 
-import { TransformerEditor } from "../../4_view/components/TransformerEditor/TransformerEditor.js";
+import { TransformerEditor } from "miroir-react";
 
 // ################################################################################################
 // The TransformerEditor of the declarative component tests (#406). The test wrapper's context

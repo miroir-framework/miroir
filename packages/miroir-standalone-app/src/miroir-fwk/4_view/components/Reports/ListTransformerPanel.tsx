@@ -29,21 +29,21 @@ import {
 import { ThemedOnScreenHelper } from "miroir-react";
 import { entityEntity, reportEntityDetails } from "miroir-app-miroir";
 
-import { TypedValueObjectEditor } from "./TypedValueObjectEditor.js";
-import { TypedValueObjectEditorWithFormik } from "./TypedValueObjectEditorWithFormik.js";
+import { TypedValueObjectEditor } from "miroir-react";
+import { TypedValueObjectEditorWithFormik } from "miroir-react";
 import {
   applyTransformerToListRows,
   DEFAULT_ROW_IDENTITY_TRANSFORMER,
   getListTransformationFailure,
   resolveListTransformationResultDisplaySchema,
 } from "miroir-react";
-import { hasDisplayableTransformationResult } from "../TransformerEditor/TransformationResultPanel.js";
+import { hasDisplayableTransformationResult } from "miroir-react";
 import { ReportInstanceLink } from "miroir-react";
 import { ExpectedOutputTypeChooser } from "miroir-react";
 import {
   TransformerNamedBindings,
   TransformerTitleSignature,
-} from "./TransformerTypeAnnotation.js";
+} from "miroir-react";
 import {
   ThemedContainer,
   ThemedFlexRow,

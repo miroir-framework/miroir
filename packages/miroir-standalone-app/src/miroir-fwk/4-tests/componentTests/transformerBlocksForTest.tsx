@@ -9,11 +9,11 @@ import {
   RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY,
   transformer_metaModel_entityDefinition_extractAttributes_json,
 } from "miroir-app-miroir";
-import React, { lazy, Suspense, useCallback, useState } from "react";
+import React, { Suspense, useCallback, useState } from "react";
 
-import { BlockEditorDisplayContext } from "miroir-react";
+import { BlockEditorDisplayContext, LazyBlockEditorView } from "miroir-react";
 import { useBlockDefineOfEndpointAction } from "miroir-react";
-import { useBlockRunnerOf } from "../../4_view/components/BlockEditor/BlockRunnerHat.js";
+import { useBlockRunnerOf } from "miroir-react";
 import { BlockDefineContext, BlockRunnerContext } from "miroir-react";
 
 // ################################################################################################
@@ -30,9 +30,6 @@ import { BlockDefineContext, BlockRunnerContext } from "miroir-react";
 // header; editable, the edited action is the `data-value` of `block-action-value`.
 // ################################################################################################
 
-const BlockEditorView = lazy(async () => ({
-  default: (await import("../../4_view/components/BlockEditor/BlockEditorView.js")).BlockEditorView,
-}));
 
 const transformerDefinitionsByName: Record<string, TransformerDefinition> = Object.fromEntries(
   [
@@ -116,7 +113,7 @@ export function TransformerBlocksForTest(props: TransformerBlocksForTestProps) {
         )
       ) : (
         <BlockRunnerContext.Provider value={readOnlyHat(shown.runner)}>
-          <BlockEditorView value={shown.value} rootLessListKey={shown.rootLessListKey} />
+          <LazyBlockEditorView value={shown.value} rootLessListKey={shown.rootLessListKey} />
         </BlockRunnerContext.Provider>
       )}
     </Suspense>
@@ -154,7 +151,7 @@ function EndpointActionBlocks(props: { action: Record<string, unknown>; editable
       {props.editable ? (
         <EditableBlocks value={body} rootLessListKey={ACTION_BODY_KEY} onCommit={setBody} />
       ) : (
-        <BlockEditorView value={body} rootLessListKey={ACTION_BODY_KEY} />
+        <LazyBlockEditorView value={body} rootLessListKey={ACTION_BODY_KEY} />
       )}
     </BlockDefineContext.Provider>
   );
@@ -193,7 +190,7 @@ function EditableBlocks(props: { value: unknown; rootLessListKey: string; onComm
   return (
     <>
       <span data-testid="block-value" data-value={JSON.stringify(value)} hidden />
-      <BlockEditorView
+      <LazyBlockEditorView
         value={value}
         rootLessListKey={props.rootLessListKey}
         onCommit={setValue}

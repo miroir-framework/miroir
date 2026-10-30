@@ -18,7 +18,7 @@ import {
 } from "miroir-example-library";
 import { deployment_Library_DO_NO_USE } from "miroir-example-library";
 import { Container } from "react-dom";
-import { MlEditorPropsRoot } from "../../src/miroir-fwk/4_view/components/ValueObjectEditor/MlElementEditorInterface";
+import { MlEditorPropsRoot } from "miroir-react";
 import {
   buildComponentTestWrapper,
   extractValuesFromRenderedElements as extractValuesFromRenderedElementsInRoot,

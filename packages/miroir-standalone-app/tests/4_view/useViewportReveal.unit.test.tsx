@@ -3,7 +3,7 @@ import { renderHook } from "@testing-library/react";
 import {
   findScrollParent,
   useViewportReveal,
-} from "../../src/miroir-fwk/4_view/tools/useViewportReveal.js";
+} from "miroir-react";
 import {
   flushProgressiveRevealQueueForTests,
   progressiveRevealQueueSizeForTests,

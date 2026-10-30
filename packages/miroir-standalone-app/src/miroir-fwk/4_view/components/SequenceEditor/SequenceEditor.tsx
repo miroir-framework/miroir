@@ -22,9 +22,9 @@ import { v4 as uuidv4 } from "uuid";
 
 import { useMiroirTheme } from "miroir-react";
 import { useCurrentModelEnvironment, useEntityInstanceUuidIndexFromLocalCache } from "miroir-react";
-import { useBlockRunnerOf } from "../BlockEditor/BlockRunnerHat.js";
+import { useBlockRunnerOf } from "miroir-react";
 import { BlockActionDefaultsContext, BlockRunnerContext } from "miroir-react";
-import { TypedValueObjectEditor } from "../Reports/TypedValueObjectEditor.js";
+import { TypedValueObjectEditor } from "miroir-react";
 import { StoredRunnerView } from "../Runners/RunnerView.js";
 import { saveInstanceFromUI } from "miroir-react";
 import {

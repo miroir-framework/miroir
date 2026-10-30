@@ -74,8 +74,8 @@ import { BlockViewModeProvider } from "miroir-react";
 import { deploymentReportsEntitiesMapping } from "miroir-react";
 import { ReportPageContextProvider } from "miroir-react";
 import { DocumentOutlineContextProvider } from "miroir-react";
-import { MlElementEditor } from "../../4_view/components/ValueObjectEditor/MlElementEditor.js";
-import type { TransformerTypeBadge } from "../../4_view/components/ValueObjectEditor/MlElementEditorInterface.js";
+import { MlElementEditor } from "miroir-react";
+import type { TransformerTypeBadge } from "miroir-react";
 import {
   EMPTY_CONTAINER_ATTRIBUTE,
   ML_JSON_ATTRIBUTE,

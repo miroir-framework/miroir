@@ -11,7 +11,7 @@ const BUTTON_PATH = join(
 
 const INSTANCE_SECTION_PATH = join(
   REPO_ROOT,
-  "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportSectionEntityInstance.tsx",
+  "packages/miroir-react/src/components/Reports/ReportSectionEntityInstance.tsx",
 );
 
 describe("OpenAPI Endpoint Sync button wiring", () => {

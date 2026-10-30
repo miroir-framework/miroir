@@ -79,7 +79,7 @@ import { usePageConfiguration } from '../../services/index.js';
 import { ReportPageContextProvider } from "miroir-react";
 import { DocumentOutlineContextProvider } from "miroir-react";
 import { ViewParamsUpdateQueue, ViewParamsUpdateQueueConfig } from "miroir-react";
-import { Sidebar } from "./Sidebar.js";
+import { Sidebar } from "miroir-react";
 import { SidebarWidth } from "miroir-react";
 
 const InstanceEditorOutline = lazy(() => import('../InstanceEditorOutline.js').then(m => ({ default: m.InstanceEditorOutline })));

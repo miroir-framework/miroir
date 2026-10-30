@@ -40,13 +40,13 @@ import { StoredRunnerView } from '../Runners/RunnerView';
 import { ThemedProgressiveAccordion } from "miroir-react";
 import { ThemedBox, ThemedStyledButton, ThemedText } from "miroir-react";
 import { ModelDiagramReportSectionView } from './ModelDiagramReportSectionView.js';
-import { ReportSectionEntityInstance, type ValueObjectEditMode } from './ReportSectionEntityInstance.js';
+import { ReportSectionEntityInstance, type ValueObjectEditMode } from "miroir-react";
 import { ReportSectionListDisplay } from './ReportSectionListDisplay.js';
 import { ReportSectionMarkdown } from "miroir-react";
 import { ReportSectionMiroirTest } from './ReportSectionMiroirTest.js';
-import { TypedValueObjectEditor } from './TypedValueObjectEditor.js';
+import { TypedValueObjectEditor } from "miroir-react";
 import { TransformerRunnerReportSectionView } from "miroir-react";
-import { ReportInputSection } from './ReportInputSection.js';
+import { ReportInputSection } from "miroir-react";
 import { resolveApiCallReportSectionSchema } from "miroir-react";
 import {
   isMultistepStepEnvelope,

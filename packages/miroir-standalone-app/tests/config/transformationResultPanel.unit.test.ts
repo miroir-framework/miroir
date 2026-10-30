@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { hasDisplayableTransformationResult } from "../../src/miroir-fwk/4_view/components/TransformerEditor/TransformationResultPanel.js";
+import { hasDisplayableTransformationResult } from "miroir-react";
 
 describe("hasDisplayableTransformationResult", () => {
   it("returns false for null and undefined", () => {

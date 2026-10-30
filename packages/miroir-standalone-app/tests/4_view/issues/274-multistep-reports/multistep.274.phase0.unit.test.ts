@@ -15,7 +15,7 @@ import {
 import {
   reportSectionsFormSchema,
   reportSectionsFormValue,
-} from "../../../../src/miroir-fwk/4_view/components/Reports/ReportTools.js";
+} from "miroir-react";
 import {
   allGatedStepsAllowFinish,
   collectStepBagKeys,
@@ -307,7 +307,7 @@ describe.skipIf(!shouldRun)("multistep reports #274 phase0 — current contracts
     expect(source).toContain("pageParams: props.pageParams");
     expect(source).toContain("[reportName]: props.reportDefinition");
     expect(source).toMatch(
-      /import\s*\{[^}]*reportReportDetailsKey[^}]*\}\s*from\s*['"]\.\/InlineReportEditor\.js['"]/,
+      /import\s*\{[^}]*reportReportDetailsKey[^}]*\}\s*from\s*['"]miroir-react['"]/,
     );
   });
 
@@ -317,7 +317,7 @@ describe.skipIf(!shouldRun)("multistep reports #274 phase0 — current contracts
     const source = readFileSync(
       join(
         REPO_ROOT,
-        "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportSectionEntityInstance.tsx",
+        "packages/miroir-react/src/components/Reports/ReportSectionEntityInstance.tsx",
       ),
       "utf8",
     );

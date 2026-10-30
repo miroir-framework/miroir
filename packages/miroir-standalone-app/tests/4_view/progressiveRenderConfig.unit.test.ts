@@ -4,7 +4,7 @@ import {
   PROGRESSIVE_RENDER_BELOW_VIEWPORTS,
   PROGRESSIVE_RENDER_ROOT_MARGIN,
   buildProgressiveRenderRootMargin,
-} from "../../src/miroir-fwk/4_view/tools/progressiveRenderConfig.js";
+} from "miroir-react";
 
 describe("progressiveRenderConfig (viewport-gated)", () => {
   it("builds a rootMargin that prefetches several viewport heights below", () => {
