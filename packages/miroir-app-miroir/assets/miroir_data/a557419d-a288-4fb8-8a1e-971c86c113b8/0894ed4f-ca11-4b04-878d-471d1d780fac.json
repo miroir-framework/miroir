@@ -1,5 +1,5 @@
 {
-  "uuid": "8ddb7e2e-a3d3-4622-81d2-0c3e98bca3ea",
+  "uuid": "0894ed4f-ca11-4b04-878d-471d1d780fac",
   "name": "listReducerToSpreadObject",
   "defaultLabel": "listReducerToSpreadObject",
   "description": "Converts a list of objects into a single spread object.",
