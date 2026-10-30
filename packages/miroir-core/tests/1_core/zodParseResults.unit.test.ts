@@ -114,7 +114,6 @@ const EXPECTED_FAILING_ASSETS: Record<string, string[]> = {
     "miroir-example-postgres/postgres_model/7c80d9ec-35b2-4cb8-8164-c5fe4e20687f.json",
     "miroir-example-postgres/postgres_model/a72bb361-3126-4aa1-85cc-0be4d6838c84.json",
   ],
-  TransformerDefinition: ["miroir-app-miroir/miroir_data/e44300e8-ed02-40fb-a9ee-d83d08cb1f25.json"],
 };
 const EXPECTED_REPORT_SECTION_PATHS = ["definition.section.definition", "definition.section.type"];
 const EXPECTED_TRANSFORMER_IMPLEMENTATION_PATHS = [
