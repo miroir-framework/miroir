@@ -222,18 +222,19 @@ When changing this area, verify:
 
 ## Key files
 
-All under `packages/miroir-standalone-app/src/miroir-fwk/4_view/`:
+Under `packages/miroir-react/src/`, except the files marked *app*, under `packages/miroir-standalone-app/src/miroir-fwk/4_view/` (#13):
 
 | File | Role |
 |---|---|
-| `components/Page/RootComponent.tsx` | Mounts `DocumentOutlineContextProvider` + `ReportPageContextProvider` |
-| `routes/ReportPage.tsx` | Route wrapper; syncs URL params into context |
-| `routes/ReportDisplay.tsx` | Report lookup + stored queries → RVWE |
+| `components/Page/RootComponent.tsx` (*app*) | Mounts `DocumentOutlineContextProvider` + `ReportPageContextProvider` |
+| `routes/ReportPage.tsx` (*app*) | Route wrapper; syncs URL params into context |
+| `components/Reports/ReportDisplay.tsx` (`LazyReportDisplay` for the lazy route) | Report lookup + stored queries → RVWE |
 | `components/Reports/ReportViewWithEditor.tsx` | Query load, `initialValues`, **creates Formik**, submit → domain |
 | `components/Reports/ReportHooks.ts` | `useQueryTemplateResults` / `useStoredQueriesResults` (local-cache selectors) |
 | `components/Reports/useEnsureReportQueryLoaded.ts` | Fingerprint-keyed async load effect |
 | `components/Reports/ReportTools.ts` | `reportSectionsFormValue` / schema helpers |
-| `components/Reports/ReportSectionViewWithEditor.tsx` | Section-type switch; nested `ReportDisplay` guard |
+| `components/Reports/ReportSectionViewWithEditor.tsx` | Section-type switch; nested `ReportDisplay` guard; graph, model diagram, runner and MiroirTest sections come from the app through `ReportSectionRenderersContext` (#610) |
+| `reportSectionRenderers.tsx` (*app*) | The app's lazy renderers for those four section kinds |
 | `components/Reports/ReportSectionEntityInstance.tsx` | Instance leaf; outline uuid guard; query-param editor |
 | `components/Reports/ReportSectionListDisplay.tsx` | Grid + add dialog wiring; delete → direct domain action; list transformer toggle + panel mount |
 | `components/Reports/ListTransformerPanel.tsx` | Panel-owned Formik; per-row `mapList` transform; read-only result |

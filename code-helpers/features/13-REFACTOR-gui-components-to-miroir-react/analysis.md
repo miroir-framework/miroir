@@ -3,10 +3,10 @@
 > Umbrella analysis for #13: what the first three slices did, what is left in `miroir-standalone-app/src/miroir-fwk/4_view`, and the slices and decisions that remain. Each slice keeps its own analysis.
 
 Related issue: https://github.com/miroir-framework/miroir/issues/13
-Slices: #592 ✅ (PR #599), #600 ✅ (PR #601), #604 ✅ (PR #605)
+Slices: #592 ✅ (PR #599), #600 ✅ (PR #601), #604 ✅ (PR #605), #608 S4 (PR #609), #610 S5 (PR #611), #612 S6 and S7 (PR #613)
 Slice analyses: [`592`](../592-REFACTOR-move-components-to-miroir-react/analysis.md) (D1 to D7), [`600`](../600-REFACTOR-mocked-modules-to-miroir-react/analysis.md) (D8 to D11), [`604`](../604-REFACTOR-editor-core-to-miroir-react/analysis.md) (D12 to D15)
 
-**Status:** three slices merged into `aba`; this document plans the rest (state of `aba` on 2026-10-30).
+**Status:** three slices merged into `aba`; S4 to S7 implemented on 2026-10-30 (decisions Q1-a to Q5-a). §8 records the end state.
 
 ---
 
@@ -141,3 +141,32 @@ S4 and S5 are independent. S6 cannot be split along A and B without a seam: the 
 - **Bundle.** Each move can pull a lazy library into the page through a static or dynamic import of `"miroir-react"`. Run the guard on every slice.
 - **Tests that mock by path.** Before moving a module, list the `vi.mock` / `vi.doMock` of its path (the move script reports them). Since #600 the fix is a context or a partial `"miroir-react"` mock.
 - **Electron.** `miroir-standalone-app-electron` has its own bundle policy; S6 adds grid libraries to miroir-react, so its guard must run too.
+
+## 8. End state (S4 to S7)
+
+| Slice | What it did | Decisions in the code |
+|---|---|---|
+| S4 (#608) | deleted group I (13 files) and `xlsx`, used only by the two spreadsheet importers | — |
+| S5 (#610) | `ReportSectionRenderersContext` in miroir-react; `appReportSectionRenderers` (lazy) in the app, provided in `index.tsx` and in the MiroirTest component test providers; `UnsupportedReportSection` for a kind with no renderer | Q3-a |
+| S6 (#612) | moved groups A and B (17 modules), `ReportDisplay` to `components/Reports/`; miroir-react declares ag-grid, glide and lodash-es | Q2-a, Q4-a |
+| S7 | this section, `docs/internals/report-display.md` and `code-splitting.md` | Q1-a |
+
+S6 decisions:
+
+- **D16 — `LazyReportDisplay`.** `PageDispatcher` imported `routes/ReportDisplay` dynamically. Once `ReportDisplay` is in miroir-react, `import("miroir-react")` would split nothing off (D13), so miroir-react exports a lazy wrapper, like `LazyBlockEditorView`. `defeatedDynamicImports` in the bundle policy is now empty.
+- **D17 — `LazyGrids` is the only entry of the grids.** `index.ts` does not export `EntityInstanceGrid.js`, `ValueObjectGrid.js` and `GlideDataGridComponent.js`: their names would clash with the lazy ones, and an eager export would let the app load ag-grid with the page. Tests that render a grid wait for it (`findBy`, `waitFor`, a `Suspense` in the grid rig).
+- **D18 — `JsonObjectEditFormDialog` exports only its component and its two own types.** Its prop type names are those of `JsonObjectDeleteFormDialog`, with other shapes; only miroir-react modules use them.
+- **D19 — `GridComponentsContext`.** A test that renders a list section without ag-grid stubbed `EntityInstanceGrid` by path, which does not reach the imports inside miroir-react (D8). The list section takes its grid from a context whose default is the lazy grid; the tests provide a stub.
+- **D20 — `ListTransformerPanel`'s test moves to miroir-react.** It stubs the editors the panel imports. Inside miroir-react the test mocks the source modules by path, as any package does for its own modules (D15 is resolved).
+
+What stays in `miroir-standalone-app/src/miroir-fwk/4_view`, each for its Q1-a reason:
+
+| Group | Modules | Reason |
+|---|---|---|
+| C | the 15 MiroirTest displays | they run the app's MiroirTest runtime (`4-tests`), which drives `PageDispatcher` |
+| D | `GraphComponent`, `GraphReportSectionView`, `ModelDiagramReportSectionView` | registered renderers: d3, and `miroir-diagram-class`, which depends on miroir-react |
+| E | the runners, `resolveMcpToolAction`, `runMcpToolRunner`, `SequenceEditor` | `miroir-mcp` brings the stores and an example application |
+| F | `PageDispatcher`, `AppBar`, `RootComponent`, `EventTimelineContainer`, `InstanceEditorOutline`, `ErrorLogsPageDEFUNCT`, `authTransport`, `constants`, `reportSectionRenderers` | the app's composition |
+| G | `routes/` (without `ReportDisplay`), `pages/` | the app's pages |
+| H | `services/` | configuration loading and Electron IPC |
+

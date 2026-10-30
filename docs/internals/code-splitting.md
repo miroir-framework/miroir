@@ -57,7 +57,7 @@ All primary pages are lazy-loaded from `PageDispatcher.tsx`, wrapped in `<Suspen
 
 The app entry (`src/index.tsx`) is **eager**: core startup, `RootComponent`, `PageDispatcher`, MUI shell, Redux/local-cache wiring.
 
-`ReportDisplay` is also imported statically by `HomePage`, `SettingsPage` and `ReportSectionViewWithEditor`, which render a report at once, so its chunk loads with the home page route. The bundle report lists it under "Dynamic imports that split nothing off", and the policy accepts it in `defeatedDynamicImports`. The grids it renders are lazy, so the home page fetches no grid library (`tests/0_build/homePageLoad.unit.test.ts`).
+`ReportDisplay` (in miroir-react since #612) is also imported statically by `HomePage`, `SettingsPage` and `ReportSectionViewWithEditor`, which render a report at once, so it loads with the home page route. `PageDispatcher` renders it through `LazyReportDisplay`, which miroir-react exports for that purpose: an `import("miroir-react")` from the app would split nothing off, since the page already loads miroir-react. The grids it renders are lazy, so the home page fetches no grid library (`tests/0_build/homePageLoad.unit.test.ts`).
 
 ---
 
@@ -278,13 +278,13 @@ npm run coverageTour -w miroir-standalone-app -- --serve
 | `packages/miroir-standalone-app/src/miroir-fwk/4-tests/componentTests/index.ts` | Component test chunk entry, `registerComponentTests` (#286) |
 | `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/ValueObjectEditor/MlElementEditorReactCodeMirror.tsx` | Lazy CodeMirror editor (#337) |
 | `packages/miroir-react/src/components/CodeBlock_ReadOnly.tsx` | Lazy read-only CodeMirror block (#337) |
-| `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Grids/LazyGrids.tsx` | Lazy grids (#337) |
+| `packages/miroir-react/src/components/Grids/LazyGrids.tsx` | Lazy grids (#337) |
 | `packages/miroir-standalone-app/vite/nodeStoreStub.js` | Stands in for the Node store packages in the web build (#337) |
 | `packages/miroir-standalone-app/vite/lodashMergeShim.js` | Stands in for bare `lodash` in the web build and dev server (#370) |
 | `packages/miroir-standalone-app/vite/shikiLanguagesPlugin.js` | The 12 shiki grammars the release ships (#370) |
 | `packages/miroir-standalone-app-electron/src/storesOnDemand.ts` | Store packages loaded on first use in the Electron main process (#370) |
 | `packages/miroir-diagram-class/src/4_view/MermaidClassDiagram.tsx` | Mermaid static import |
-| `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Grids/ValueObjectGrid.tsx` | ag-grid static import (behind `LazyGrids.tsx`) |
+| `packages/miroir-react/src/components/Grids/ValueObjectGrid.tsx` | ag-grid static import (behind `LazyGrids.tsx`) |
 
 ---
 
