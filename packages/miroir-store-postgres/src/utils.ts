@@ -56,7 +56,7 @@ export const dataTypesMapping: { [type in string]: DataTypes.AbstractDataTypeCon
   entity_instance_uuid: DataTypes.STRING,
   union: DataTypes.JSONB, 
   object: DataTypes.JSONB, 
-  number: DataTypes.INTEGER, 
+  number: DataTypes.DOUBLE, // not INTEGER: ML numbers can be decimals (#602)
   record: DataTypes.JSONB, 
   string: DataTypes.TEXT, // not STRING: varchar(255) rejects longer values, such as long descriptions
   uuid: DataTypes.STRING,
