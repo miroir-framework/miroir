@@ -307,7 +307,7 @@ describe.skipIf(!shouldRun)("multistep reports #274 phase0 — current contracts
     expect(source).toContain("pageParams: props.pageParams");
     expect(source).toContain("[reportName]: props.reportDefinition");
     expect(source).toMatch(
-      /import\s*\{[^}]*reportReportDetailsKey[^}]*\}\s*from\s*['"]\.\/InlineReportEditor\.js['"]/,
+      /import\s*\{[^}]*reportReportDetailsKey[^}]*\}\s*from\s*['"]miroir-react['"]/,
     );
   });
 
