@@ -16,9 +16,7 @@ const TRANSFORMER_DEFINITIONS = join(assetsDir, "miroir_data/a557419d-a288-4fb8-
 const ENDPOINTS = join(assetsDir, "miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c");
 
 /** Assets that did not parse before #507, by file: each still fails, so a fix asks to drop its entry. */
-const KNOWN_INVALID: Record<string, string> = {
-  "e44300e8-ed02-40fb-a9ee-d83d08cb1f25.json": "#525: spreadSheetToMlSchema, a mergeIntoObject definition given as a transformer",
-};
+const KNOWN_INVALID: Record<string, string> = {};
 
 function assets(dir: string): [string, any][] {
   return readdirSync(dir)
