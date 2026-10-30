@@ -372,6 +372,16 @@
       "count": 1
     }
   },
+  "packages/miroir-react/src/components/Grids/GlideDataGridComponent.tsx": {
+    "react-hooks/set-state-in-effect": {
+      "count": 1
+    }
+  },
+  "packages/miroir-react/src/components/JsonObjectEditFormDialog.tsx": {
+    "react-hooks/rules-of-hooks": {
+      "count": 3
+    }
+  },
   "packages/miroir-react/src/components/LocalCacheMonitorSummary.tsx": {
     "react-hooks/set-state-in-effect": {
       "count": 1
@@ -380,6 +390,14 @@
   "packages/miroir-react/src/components/Reports/ReportHooks.ts": {
     "react-hooks/rules-of-hooks": {
       "count": 2
+    }
+  },
+  "packages/miroir-react/src/components/Reports/ReportSectionListDisplay.tsx": {
+    "miroir/action-result": {
+      "count": 1
+    },
+    "miroir/type-escape": {
+      "count": 1
     }
   },
   "packages/miroir-react/src/components/Reports/TypedValueObjectEditor.tsx": {
@@ -580,31 +598,13 @@
       "count": 6
     }
   },
-  "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Grids/GlideDataGridComponent.tsx": {
-    "react-hooks/set-state-in-effect": {
-      "count": 1
-    }
-  },
   "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/InstanceEditorOutline.tsx": {
     "react-hooks/set-state-in-effect": {
       "count": 2
     }
   },
-  "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/JsonObjectEditFormDialog.tsx": {
-    "react-hooks/rules-of-hooks": {
-      "count": 3
-    }
-  },
   "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Page/RootComponent.tsx": {
     "react-hooks/set-state-in-effect": {
-      "count": 1
-    }
-  },
-  "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportSectionListDisplay.tsx": {
-    "miroir/action-result": {
-      "count": 1
-    },
-    "miroir/type-escape": {
       "count": 1
     }
   },

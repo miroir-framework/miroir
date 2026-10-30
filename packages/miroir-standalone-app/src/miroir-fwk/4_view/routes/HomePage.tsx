@@ -33,7 +33,7 @@ import { type ReportUrlParamKeys } from "miroir-react";
 import { useQueryTemplateResults } from "miroir-react";
 import { cleanLevel } from "../constants.js";
 import { useCurrentModel } from "miroir-react";
-import { ReportDisplay } from "./ReportDisplay.js";
+import { ReportDisplay } from "miroir-react";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "HomePage");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);

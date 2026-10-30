@@ -299,7 +299,7 @@ describe.skipIf(!shouldRun)("multistep reports #274 phase0 — current contracts
     const source = readFileSync(
       join(
         REPO_ROOT,
-        "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportViewWithEditor.tsx",
+        "packages/miroir-react/src/components/Reports/ReportViewWithEditor.tsx",
       ),
       "utf8",
     );
@@ -307,7 +307,7 @@ describe.skipIf(!shouldRun)("multistep reports #274 phase0 — current contracts
     expect(source).toContain("pageParams: props.pageParams");
     expect(source).toContain("[reportName]: props.reportDefinition");
     expect(source).toMatch(
-      /import\s*\{[^}]*reportReportDetailsKey[^}]*\}\s*from\s*['"]miroir-react['"]/,
+      /import\s*\{[^}]*reportReportDetailsKey[^}]*\}\s*from\s*['"]\.\/InlineReportEditor\.js['"]/,
     );
   });
 

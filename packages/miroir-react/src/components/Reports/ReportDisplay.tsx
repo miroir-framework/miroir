@@ -14,24 +14,23 @@ import {
   Report,
   type Domain2QueryReturnType
 } from "miroir-core";
-import {
-  useMiroirContextService
-} from "miroir-react";
+import { useMiroirContextService } from "../../contexts/MiroirContextReactProvider.js";
 
-import { JsonDisplayHelper } from "miroir-react";
+import { JsonDisplayHelper } from "../helpers/DebugHelper.js";
 import { ErrorBoundary } from "react-error-boundary";
-import { packageName } from "../../../constants.js";
-import { ReportUrlParamKeys } from "miroir-react";
-import { useCurrentModel } from "miroir-react";
-import { ErrorFallbackComponent } from "miroir-react";
-import { RenderInsightSummary } from "miroir-react";
-import { LocalCacheMonitorSummary } from "miroir-react";
-import { useStoredQueriesResults } from "miroir-react";
-import { MultistepReportHost } from "miroir-react";
-import { ReportViewWithEditor } from "../components/Reports/ReportViewWithEditor.js";
-import { ThemedBox, ThemedSpan } from "miroir-react";
-import { cleanLevel } from "../constants.js";
-import { useMiroirTheme } from "miroir-react";
+import { packageName } from "../../constants.js";
+import { ReportUrlParamKeys } from "../../reportUrlParams.js";
+import { useCurrentModel } from "../../ReduxHooks.js";
+import { ErrorFallbackComponent } from "../ErrorFallbackComponent.js";
+import { RenderInsightSummary } from "../RenderInsightSummary.js";
+import { LocalCacheMonitorSummary } from "../LocalCacheMonitorSummary.js";
+import { useStoredQueriesResults } from "./ReportHooks.js";
+import { MultistepReportHost } from "./MultistepReportHost.js";
+import { ReportViewWithEditor } from "./ReportViewWithEditor.js";
+import { ThemedBox } from "../Themes/LayoutComponents.js";
+import { ThemedSpan } from "../Themes/BasicComponents.js";
+import { cleanLevel } from "../../viewConstants.js";
+import { useMiroirTheme } from "../../contexts/MiroirThemeContext.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportDisplay");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);

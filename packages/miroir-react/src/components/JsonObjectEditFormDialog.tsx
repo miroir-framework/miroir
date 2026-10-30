@@ -21,20 +21,16 @@ import {
   type Report,
 } from "miroir-core";
 
-import {
-  JsonDisplayHelper,
-  useDomainControllerService,
-  useMiroirContextInnerFormOutput,
-  useMiroirContextService
-} from "miroir-react";
-import { packageName } from "../../../constants.js";
-import { useMiroirFundamentalMlSchemaForDeployment } from "miroir-react";
-import { cleanLevel } from "../constants.js";
-import { ErrorFallbackComponent } from "miroir-react";
-import type { ValueObjectEditMode } from "miroir-react";
+import { JsonDisplayHelper } from "./helpers/DebugHelper.js";
+import { useDomainControllerService, useMiroirContextInnerFormOutput, useMiroirContextService } from "../contexts/MiroirContextReactProvider.js";
+import { packageName } from "../constants.js";
+import { useMiroirFundamentalMlSchemaForDeployment } from "../ReduxHooks.js";
+import { cleanLevel } from "../viewConstants.js";
+import { ErrorFallbackComponent } from "./ErrorFallbackComponent.js";
+import type { ValueObjectEditMode } from "./Reports/ReportSectionEntityInstance.js";
 import ReportSectionViewWithEditor from "./Reports/ReportSectionViewWithEditor.js";
-import { reportSectionsFormSchema } from "miroir-react";
-import { ThemedDialog, ThemedDialogTitle } from "miroir-react";
+import { reportSectionsFormSchema } from "./Reports/ReportTools.js";
+import { ThemedDialog, ThemedDialogTitle } from "./Themes/MUIComponents.js";
 
 import { entityDefinitionReport as reportFormMlSchemaSource, entityEndpointVersion } from "miroir-app-miroir";
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "JsonObjectEditFormDialog");

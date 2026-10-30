@@ -20,8 +20,8 @@ import {
 import { defaultMiroirMetaModel, defaultStoredMiroirTheme } from "miroir-app-miroir";
 import { useMiroirContextService } from "miroir-react";
 
-import { ReportSectionListDisplay } from "../../../src/miroir-fwk/4_view/components/Reports/ReportSectionListDisplay.js";
-import { ListTransformerPanel } from "../../../src/miroir-fwk/4_view/components/Reports/ListTransformerPanel.js";
+import { ReportSectionListDisplay } from "miroir-react";
+import { ListTransformerPanel } from "miroir-react";
 import { TableComponentTypeSchema } from "miroir-react";
 import { MiroirThemeProvider } from "miroir-react";
 

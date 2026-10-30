@@ -2476,7 +2476,7 @@
         "run",
         "testByFile",
         "-w",
-        "miroir-standalone-app",
+        "miroir-react",
         "--",
         "ListTransformerPanel.unit"
       ]

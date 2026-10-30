@@ -344,3 +344,27 @@ export * from "./tools/ComponentTestModeContext.js";
 export * from "./tools/progressiveRenderConfig.js";
 export * from "./tools/useViewportReveal.js";
 export { lastSubmitButtonClicked } from "./viewConstants.js";
+
+// Moved from miroir-standalone-app/src/miroir-fwk/4_view (#612)
+export * from "./EntityEditor.js";
+export * from "./components/Grids/EntityInstanceCellRenderer.js";
+export * from "./components/Grids/GenderCellEditor.js";
+export * from "./components/Grids/GenderCellRenderer.js";
+export * from "./components/Grids/GlideToolsCellRenderer.js";
+// The grids load ag-grid and glide: LazyGrids is their only entry (#13 Q4-a).
+export * from "./components/Grids/LazyGrids.js";
+export * from "./components/Grids/GridComponentsContext.js";
+// Its prop types share their names with JsonObjectDeleteFormDialog's, exported above.
+export { JsonObjectEditFormDialog } from "./components/JsonObjectEditFormDialog.js";
+export type {
+  JsonObjectFormEditorCoreDialogProps,
+  PresentModelSchemaCarrier,
+} from "./components/JsonObjectEditFormDialog.js";
+export * from "./components/Reports/ListTransformerPanel.js";
+export * from "./components/Reports/LazyReportDisplay.js";
+export * from "./components/Reports/ReportDisplay.js";
+export * from "./components/Reports/ReportSectionListDisplay.js";
+export * from "./components/Reports/ReportSectionViewWithEditor.js";
+export * from "./components/Reports/ReportViewWithEditor.js";
+export * from "./components/SelectEntityInstanceEditor.js";
+export * from "./getColumnDefinitionsFromEntityAttributes.js";

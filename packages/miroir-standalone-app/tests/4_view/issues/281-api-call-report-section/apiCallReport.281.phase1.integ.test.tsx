@@ -73,7 +73,7 @@ import {
 
 import { loglevelnext } from "../../../../src/loglevelnextImporter.js";
 import { ReportPageContextProvider } from "miroir-react";
-import { ReportViewWithEditor } from "../../../../src/miroir-fwk/4_view/components/Reports/ReportViewWithEditor.js";
+import { ReportViewWithEditor } from "miroir-react";
 import { reportSectionsFormSchema } from "miroir-react";
 import { DocumentOutlineContextProvider } from "miroir-react";
 import { MiroirThemeProvider } from "miroir-react";

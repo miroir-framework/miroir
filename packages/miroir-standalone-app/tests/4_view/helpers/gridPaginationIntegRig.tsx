@@ -1,5 +1,5 @@
 import { render, type RenderResult } from "@testing-library/react";
-import React, { useMemo, useState } from "react";
+import React, { Suspense, useMemo, useState } from "react";
 import { MemoryRouter } from "react-router-dom";
 import { vi } from "vitest";
 
@@ -19,11 +19,11 @@ import {
 import { defaultMiroirMetaModel, defaultStoredMiroirTheme } from "miroir-app-miroir";
 import { useMiroirContextService } from "miroir-react";
 
-import { EntityInstanceGrid } from "../../../src/miroir-fwk/4_view/components/Grids/EntityInstanceGrid.js";
+import { EntityInstanceGrid } from "miroir-react";
 import { TableComponentTypeSchema } from "miroir-react";
-import { GlideDataGridComponent } from "../../../src/miroir-fwk/4_view/components/Grids/GlideDataGridComponent.js";
+import { GlideDataGridComponent } from "miroir-react";
 import type { TableComponentRow } from "miroir-react";
-import { ValueObjectGrid } from "../../../src/miroir-fwk/4_view/components/Grids/ValueObjectGrid.js";
+import { ValueObjectGrid } from "miroir-react";
 import { MiroirThemeProvider } from "miroir-react";
 import {
   buildBookListFormikValuesForCount,
@@ -32,10 +32,6 @@ import {
 } from "./listTransformerIntegRig.js";
 
 import { getWrapperLoadingLocalCache } from "../MlElementEditorTestTools.js";
-
-vi.mock("../../../src/miroir-fwk/4_view/components/JsonObjectEditFormDialog.js", () => ({
-  JsonObjectEditFormDialog: () => null,
-}));
 
 export { libraryApplicationDeploymentMap, ListTransformerIntegShell, buildBookListFormikValuesForCount };
 
@@ -75,7 +71,10 @@ export function GridPaginationIntegShell({ children }: { children: React.ReactNo
     <MemoryRouter>
       <GridPaginationIntegProviders>
         <MiroirThemeProvider currentThemeOptions={testThemeOptions}>
-          <SeedLibraryDeploymentMapping>{children}</SeedLibraryDeploymentMapping>
+          {/* The grids are the lazy ones of miroir-react (#612). */}
+          <Suspense fallback={null}>
+            <SeedLibraryDeploymentMapping>{children}</SeedLibraryDeploymentMapping>
+          </Suspense>
         </MiroirThemeProvider>
       </GridPaginationIntegProviders>
     </MemoryRouter>

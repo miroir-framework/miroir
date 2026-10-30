@@ -110,8 +110,11 @@ describe("gridPagination — prop contracts and viewport baseline", () => {
     renderJsonArrayGridHarness({ count: 60, pageSize: 20 });
     await waitForProgressiveRendering();
 
-    const summary = document.querySelector(".ag-paging-row-summary-panel");
-    expect(summary?.textContent?.replace(/\s+/g, " ")).toMatch(/1 to 20 of 60/);
+    // ValueObjectGrid is lazy inside EntityInstanceGrid (#612): wait for its pager.
+    await waitFor(() => {
+      const summary = document.querySelector(".ag-paging-row-summary-panel");
+      expect(summary?.textContent?.replace(/\s+/g, " ")).toMatch(/1 to 20 of 60/);
+    });
   });
 
   describe("ag-grid EntityInstanceGrid viewport", () => {
@@ -140,8 +143,12 @@ describe("gridPagination — prop contracts and viewport baseline", () => {
       renderGlideDataGridHarness({ bookCount: 10 });
       await waitForProgressiveRendering();
 
-      const container = document.querySelector(".glide-data-grid-grid-container");
-      expect(container).toBeInTheDocument();
+      // GlideDataGridComponent is lazy (#612): wait for its container.
+      const container = await waitFor(() => {
+        const element = document.querySelector(".glide-data-grid-grid-container");
+        expect(element).toBeInTheDocument();
+        return element;
+      });
       expect(container).toHaveAttribute("data-page-rows", "10");
       expect(screen.queryByTestId("grid-pagination-toolbar")).not.toBeInTheDocument();
     });

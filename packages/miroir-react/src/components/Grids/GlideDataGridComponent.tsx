@@ -10,28 +10,20 @@ import {
 import "@glideapps/glide-data-grid/dist/index.css";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { GlideDataGridFilterComponent } from "miroir-react";
+import { GlideDataGridFilterComponent } from "./GlideDataGridFilterComponent.js";
 
 import {
   LoggerInterface,
   MiroirLoggerFactory
 } from "miroir-core";
 
-import { packageName } from '../../../../constants.js';
-import { ColumnWidthSpec, ToolsColumnDefinition } from "miroir-react";
-import { cleanLevel } from '../../constants.js';
-import {
-  TableComponentRow
-} from "miroir-react";
-import glideToolsCellRenderer, { ToolsCell, ToolsCellData } from './GlideToolsCellRenderer.js';
-import { GridPaginationToolbar } from "miroir-react";
-import {
-  computeGlidePagedHeight,
-  computeGlideScrollHeight,
-  paginateRows,
-  resolveGridSizingMode,
-  useClientPagination,
-} from "miroir-react";
+import { packageName } from "../../constants.js";
+import { ColumnWidthSpec, ToolsColumnDefinition } from "../../adaptiveColumnWidths.js";
+import { cleanLevel } from "../../viewConstants.js";
+import { TableComponentRow } from "./EntityInstanceGridInterface.js";
+import glideToolsCellRenderer, { ToolsCell, ToolsCellData } from "./GlideToolsCellRenderer.js";
+import { GridPaginationToolbar } from "./GridPaginationToolbar.js";
+import { computeGlidePagedHeight, computeGlideScrollHeight, paginateRows, resolveGridSizingMode, useClientPagination } from "./gridPagination.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "GlideDataGridComponent");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
@@ -69,7 +61,7 @@ interface FilterState {
   globalLogic: FilterLogic; // AND/OR logic between different columns
 }
 
-interface GlideDataGridComponentProps {
+export interface GlideDataGridComponentProps {
   tableComponentRows: { tableComponentRowUuidIndexSchema: TableComponentRow[] };
   columnDefs: { columnDefs: any[] };
   styles?: any;
