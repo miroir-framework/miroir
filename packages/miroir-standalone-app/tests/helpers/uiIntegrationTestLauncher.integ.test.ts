@@ -130,5 +130,13 @@ describe("runUiIntegrationTestSuite action suite on an ephemeral run target (#58
     expect(result.runTargetMode).toBe("ephemeral");
     expect(result.runTarget.applicationUuid).not.toBe(selfApplicationLibrary.uuid);
     expect(result.success).toBe(true);
+    // every leaf ran: a leaf that stopped running would not show up as a failure
+    const leafLabels = suiteDefinition.miroirTests.map((leaf) => leaf.miroirTestLabel);
+    expect(leafLabels).toHaveLength(10);
+    expect(
+      Object.fromEntries(
+        Object.entries(result.testSuiteResults?.testsResults ?? {}).map(([label, leaf]) => [label, leaf.testResult]),
+      ),
+    ).toEqual(Object.fromEntries(leafLabels.map((label) => [label, "ok"])));
   }, 180_000);
 });
