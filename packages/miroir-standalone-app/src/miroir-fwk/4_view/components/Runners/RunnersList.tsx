@@ -28,10 +28,6 @@ export type RunnerConfig = {
   component: React.FC<any>; // TODO: give a proper type to the component props
 }
 export const runnerConfigs: RunnerConfig[] = [
-  // // // // {
-  // // // //   title: "Endpoint Action Caller",
-  // // // //   component: EndpointActionCaller,
-  // // // // },
   // {
   //   title: "Install Existing Application",
   //   component: Runner_InstallApplication,
@@ -52,14 +48,6 @@ export const runnerConfigs: RunnerConfig[] = [
   //   title: "Drop Entity",
   //   component: Runner_DropEntity,
   // },
-  // // // // // // {
-  // // // // // //   title: "Import Entity From Spreadsheet",
-  // // // // // //   component: ImportEntityFromSpreadsheetRunner,
-  // // // // // // },
-  // // // // {
-  // // // //   title: "Lend Document",
-  // // // //   component: LibraryRunner_LendDocument,
-  // // // // },
 ] as const;
 
 // ################################################################################################
