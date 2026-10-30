@@ -60,14 +60,14 @@ What worked, to keep for the next slices:
 | # | Group | Modules | Count | What blocks it |
 |---|---|---|---|---|
 | A | Reports cycle | `ReportViewWithEditor`, `ReportSectionViewWithEditor`, `ReportSectionListDisplay`, `ListTransformerPanel`, `JsonObjectEditFormDialog`, `routes/ReportDisplay` | 6 | `ReportSectionViewWithEditor` imports the `ReportDisplay` route, which imports `ReportViewWithEditor`, which imports `ReportSectionViewWithEditor` (a Report section can show a Report). `ReportSectionListDisplay` imports `ReportDisplay` dynamically. `ListTransformerPanel`'s test stubs the editors (D15). |
-| B | Grids (ag-grid, glide) | `LazyGrids`, `EntityInstanceGrid`, `ValueObjectGrid`, `EntityEditor`, `GenderCellRenderer`, `GenderCellEditor`, `EntityInstanceCellRenderer`, `SelectEntityInstanceEditor`, `getColumnDefinitionsFromEntityAttributes`, `GlideDataGridComponent`, `GlideToolsCellRenderer` | 11 | heavy libraries that the page loads lazily through `LazyGrids`; `EntityInstanceGrid` and `ValueObjectGrid` import `JsonObjectEditFormDialog` (group A). |
+| B | Grids (ag-grid, glide) | `LazyGrids`, `EntityInstanceGrid`, `ValueObjectGrid`, `EntityEditor`, `GenderCellRenderer`, `GenderCellEditor`, `EntityInstanceCellRenderer`, `SelectEntityInstanceEditor`, `getColumnDefinitionsFromEntityAttributes`, `GlideDataGridComponent`, `GlideToolsCellRenderer` | 11 | heavy libraries that the page loads lazily through `LazyGrids`. `EntityInstanceGrid` and `ValueObjectGrid` import `JsonObjectEditFormDialog`, which imports `ReportSectionViewWithEditor`: the grids are part of the reports cycle and move with it (S6). |
 | C | MiroirTest displays | `ReportSectionMiroirTest`, `MiroirTestDisplay`, `MiroirTestListDisplay`, `MiroirTestResultsDisplay`, `TestExecutionPanel`, `TestResultsGrid`, `TestCellWithDetails`, `TestResultCellWithActualValue`, `SideBySideDiff` (`diff`), `ComponentTestSandbox`, `ComponentTestRunSettings`, `UiIntegrationTestRunControls`, `UiIntegrationTestRunInspectorSummary`, `RunAllMiroirTestsButton`, `RunMiroirTestSuiteButton` | 15 | they import the MiroirTest runtime in `miroir-fwk/4-tests` (launchers, run state, profile catalog, suite registries), which imports `PageDispatcher` and the app's services. |
 | D | Other packages | `GraphComponent`, `GraphReportSectionView` (d3), `ModelDiagramReportSectionView` (`miroir-diagram-class`) | 3 | `miroir-diagram-class` depends on miroir-react, so miroir-react cannot import it (package cycle). d3 is heavy. |
 | E | Runners | `RunnerView`, `RunnersList`, `Runner_CreateApplication`, `Runner_CreateEntity`, `Runner_DropApplication`, `Runner_DropEntity`, `Runner_InstallApplication`, `resolveMcpToolAction`, `runMcpToolRunner`, `SequenceEditor` | 10 | `RunnerView` runs MCP tools through `miroir-mcp`, which pulls the stores (`miroir-store-*`) and `miroir-example-library`. `ReportSectionViewWithEditor` (group A) renders `RunnerView`. |
-| F | App shell | `PageDispatcher`, `components/Page/AppBar`, `components/Page/RootComponent`, `EventTimelineContainer`, `InstanceEditorOutline`, `auth/authTransport`, `constants.ts` | 7 | the app's composition: routes, lazy page targets, Electron IPC (`authTransport`), AI backend choice (`AppBar`). |
+| F | App shell | `PageDispatcher`, `components/Page/AppBar`, `components/Page/RootComponent`, `EventTimelineContainer`, `InstanceEditorOutline`, `ErrorLogsPageDEFUNCT` (the `error-logs` page: an `AppBar` link and a lazy target of `PageDispatcher`), `auth/authTransport`, `constants.ts` | 8 | the app's composition: routes, lazy page targets, Electron IPC (`authTransport`), AI backend choice (`AppBar`). |
 | G | Routes and pages | `routes/` (16 besides `ReportDisplay`: `HomePage`, `ReportPage`, `SettingsPage`, `SearchPage`, `TransformerBuilderPage`, `ModelDiagramPage`, `Runners`, `Check`, `LoginPage`, `routes/ai/*` with CopilotKit and a CSS asset), `pages/MiroirEventsPage`, `pages/SelfTestPage` | 18 | pages of this app, tied to its routing and its services. |
 | H | Services | `ConfigurationService`, `usePageConfiguration`, `services/index`, `ElectronIpcProxy` | 4 | app configuration loading and Electron IPC. |
-| I | Unused | `CellRenderers`, `SimpleEditor`, `Importer` (`xlsx`), `useStyles`, `components/test-icon-extraction`, `components/MlElementDisplay`, `components/Grids/TableActionButtons_new`, `components/Graph/index`, `components/EndpointActionCaller`, `Runners/ImportEntityFromSpreadsheetRunner` (`xlsx`), `Runners/LibraryRunner_LendDocument` (only commented out in `RunnersList`), `ErrorLogsPageDEFUNCT`, `components/Themes/__tests__/*` (2 test files, one with an unresolved import) | 14 | nothing imports them, or only a commented-out line or a DEFUNCT route does. |
+| I | Unused | `CellRenderers`, `SimpleEditor`, `Importer` (`xlsx`), `useStyles`, `components/test-icon-extraction`, `components/MlElementDisplay`, `components/Grids/TableActionButtons_new`, `components/Graph/index`, `components/EndpointActionCaller`, `Runners/ImportEntityFromSpreadsheetRunner` (`xlsx`), `Runners/LibraryRunner_LendDocument` (only commented out in `RunnersList`), `components/Themes/__tests__/*` (2 test files, one with an unresolved import) | 13 | nothing imports them, or only a commented-out line does. |
 
 ### 4.2 Dependencies between the groups
 
@@ -79,7 +79,7 @@ F shell ──► G routes ──► A reports cycle ──► B grids
                 └──► H services
 ```
 
-A is the knot: it is what G renders and it renders B to E. Moving A needs B to E to either move first or be passed in.
+A is the knot: it is what G renders and it renders B to E. B and A import each other (the grids open `JsonObjectEditFormDialog`, which renders a Report section), so they move together. C, D and E are rendered by A only through `ReportSectionViewWithEditor`, so they can be passed in (Q3).
 
 ## 5. Decisions to make
 
@@ -122,7 +122,7 @@ D11 left them in place. With the end of #13 in sight, they are the noise in §4.
 
 | Option | |
 |---|---|
-| **Q5-a ★ Delete them in their own slice**, after a last check of dynamic imports and test references | 14 files fewer, and §4 counts only real work |
+| **Q5-a ★ Delete them in their own slice**, after a last check of dynamic imports and test references | 13 files fewer, and §4 counts only real work |
 | Q5-b Keep them | |
 
 ## 6. Remaining slices
@@ -131,11 +131,10 @@ D11 left them in place. With the end of #13 in sight, they are the noise in §4.
 |---|---|---|---|
 | S4 Unused files | delete group I (Q5-a) | — | small |
 | S5 Section renderer registry | `ReportSectionRenderersContext` in miroir-react; the app registers graph, model diagram, MiroirTest and Runner sections (Q3-a) | — | medium |
-| S6 Grids | move group B, declare the grid libraries, keep `LazyGrids` lazy (Q4-a) | — | medium |
-| S7 Reports cycle | move group A with `ReportDisplay` (Q2-a); `ListTransformerPanel`'s test uses the `"miroir-react"` mock or the real editors | S5, S6 | medium |
-| S8 Close #13 | check that what stays is Q1's list, update `docs/` and #13 | S4 to S7 | small |
+| S6 Reports cycle and grids | move groups A and B together, with `ReportDisplay` (Q2-a); declare the grid libraries and keep `LazyGrids` lazy (Q4-a); `ListTransformerPanel`'s test uses the `"miroir-react"` mock or the real editors | S5 | large |
+| S7 Close #13 | check that what stays is Q1's list, update `docs/` and #13 | S4 to S6 | small |
 
-S4, S5 and S6 are independent and can go in any order. The order S5 then S6 then S7 keeps each PR reviewable.
+S4 and S5 are independent. S6 cannot be split along A and B without a seam: the grids import `JsonObjectEditFormDialog`, which renders `ReportSectionViewWithEditor`. If S6 turns out too large to review, pass the dialog to the grids as a prop or context first, then move the grids, then the cycle.
 
 ## 7. Risks
 
