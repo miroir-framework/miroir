@@ -21,10 +21,8 @@ An override forces one version of a package everywhere in the tree, whatever its
 
 ## Vendored packages
 
-Packages the npm registry does not carry in a fixed version are committed under [`vendor/`](vendor/) and installed with a `file:` spec. `package-lock.json` records the tarball's SHA-512, so `npm ci` refuses a tarball that changed.
+Packages the npm registry does not carry in a fixed version are committed under `dependency-policy/vendor/` and installed with a `file:` spec. `package-lock.json` records the tarball's SHA-512, so `npm ci` refuses a tarball that changed.
 
-| Package | Tarball | Source | SHA-512 (`sha512sum`) | Used by |
-|---|---|---|---|---|
-| `xlsx` (SheetJS) | `vendor/xlsx-0.20.3.tgz` | `https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz`; the registry stops at 0.18.5, which has GHSA-4r6h-8v6p-xvw6 and GHSA-5pgg-2g8v-p4x9 (high) | `a0b0eade3c3b01c2ea2961f60210a9553665f267fa5f661178ff8d7a1d12254cd5fc1759623b61f78b46e6da22301d4f3eb62dc4e09f6a850292fb6e1fedc024` | `miroir-standalone-app` (`Importer.tsx`, `ImportEntityFromSpreadsheetRunner.tsx`) |
+None at the moment: `xlsx`, the last one, left with the spreadsheet importer (#608).
 
-To update a vendored package: download the new tarball from its source, replace the file, update the spec in the manifest, run `npm install`, and update the table.
+To vendor a package: download the tarball from its source into `vendor/`, add it to the manifest with a `file:` spec, run `npm install`, and list it here with its tarball, source, SHA-512 and users.
