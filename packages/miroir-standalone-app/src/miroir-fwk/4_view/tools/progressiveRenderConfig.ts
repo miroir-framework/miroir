@@ -55,10 +55,16 @@ export const PROGRESSIVE_RENDER_FALLBACK_TIMEOUT_MS = 0;
  */
 export const PROGRESSIVE_RENDER_VISIBLE_STUCK_TIMEOUT_MS = 500;
 
-/** True when Vitest sets VITE_TEST_MODE (progressive reveal is disabled). */
+/**
+ * True when the test runner sets VITE_TEST_MODE (progressive reveal is disabled).
+ *
+ * Reads `process.env` at call time rather than `import.meta.env`: only Vite defines
+ * `import.meta.env`, and it replaces it with a literal when it transforms the module, so a
+ * test could not change it with `vi.stubEnv` (#604). In the browser there is no `process`.
+ */
 export function isVitestTestMode(): boolean {
   return (
-    (import.meta as ImportMeta & { env?: { VITE_TEST_MODE?: string } }).env
+    (globalThis as { process?: { env?: Record<string, string | undefined> } }).process?.env
       ?.VITE_TEST_MODE === "true"
   );
 }

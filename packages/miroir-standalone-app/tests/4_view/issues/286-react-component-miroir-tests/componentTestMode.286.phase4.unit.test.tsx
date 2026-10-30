@@ -2,11 +2,9 @@
  * Issue #286 Slice 4: `ComponentTestModeContext` makes the editors render the vitest DOM in the
  * app (analysis §5.4).
  *
- * The editors see the environment of the running app: `isVitestTestMode()` (the one reader of
- * `VITE_TEST_MODE` in the editors) is mocked to return `false` and the modules are reloaded.
- * `vi.stubEnv("VITE_TEST_MODE", "false")` alone does not reach the src modules: Vite replaces
- * their `import.meta.env` with a literal at transform time, and `vi.resetModules()` does not
- * transform them again (checked with a probe test: `isVitestTestMode()` stayed `true`). With the context `{ progressiveRenderDisabled: true,
+ * The editors see the environment of the running app: `VITE_TEST_MODE` is stubbed to `"false"`.
+ * `isVitestTestMode()`, the one reader of `VITE_TEST_MODE` in the editors, reads `process.env` at
+ * call time, so the stub reaches it wherever the module lives (#604). With the context `{ progressiveRenderDisabled: true,
  * codeMirrorPlaceholder: true }`, an object schema renders with no progressive-reveal placeholder
  * and, in code editor mode, the `codeMirrorValue:` text box (a textarea since #499). Without the context it renders the
  * placeholders and the real CodeMirror editor chrome.
@@ -94,19 +92,12 @@ function switchRootToCodeEditor(container: HTMLElement) {
   fireEvent.click(rootSwitch!);
 }
 
-const progressiveRenderConfigPath = "../../../../src/miroir-fwk/4_view/tools/progressiveRenderConfig";
-
 beforeEach(() => {
   vi.stubEnv("VITE_TEST_MODE", "false");
-  vi.doMock(progressiveRenderConfigPath, async (importOriginal) => ({
-    ...(await importOriginal<Record<string, unknown>>()),
-    isVitestTestMode: () => false,
-  }));
   vi.resetModules();
 });
 
 afterEach(() => {
-  vi.doUnmock(progressiveRenderConfigPath);
   vi.unstubAllEnvs();
   vi.resetModules();
 });
