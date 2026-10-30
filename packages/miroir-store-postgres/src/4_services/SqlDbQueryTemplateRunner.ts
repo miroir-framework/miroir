@@ -11,6 +11,7 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   RunBoxedQueryTemplateAction,
+  type MiroirModelEnvironment,
   type ApplicationDeploymentMap
 } from "miroir-core";
 import { packageName } from "../constants";
@@ -91,6 +92,7 @@ export class SqlDbExtractTemplateRunner {
   async handleQueryTemplateActionForServerONLY(
     runBoxedQueryTemplateAction: RunBoxedQueryTemplateAction,
     applicationDeploymentMap: ApplicationDeploymentMap,
+    currentModel?: MiroirModelEnvironment,
   ): Promise<Action2ReturnType> {
     log.info(
       this.logHeader,
@@ -103,7 +105,7 @@ export class SqlDbExtractTemplateRunner {
       runBoxedQueryTemplateAction,
       applicationDeploymentMap,
       this.extractorRunnerMapForServerOnly,
-      defaultMetaModelEnvironment
+      currentModel ?? defaultMetaModelEnvironment
     );
   }
 

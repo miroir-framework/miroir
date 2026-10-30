@@ -108,6 +108,8 @@ RED: SqlGenerator unit case: a runtime transformer using an application composit
 
 **Moved out (2026-10-07).** A chose to leave the server side out of #502; the Postgres translation of composites goes with it into the server issue, as both need the application's model where the store runs. Today the SqlGenerator refuses an application composite with `QueryNotExecutable` ("transformerType not found in applicationTransformerDefinitions"), which is the explicit error the issue asks for.
 
+**Done in #519 (2026-10-30).** The SqlGenerator reads the registry of the query's model environment, and the server builds an environment per deployment: [`519-FEATURE-server-application-model-environment/tdd-implementation-plan.md`](../519-FEATURE-server-application-model-environment/tdd-implementation-plan.md).
+
 ## Slice 5 — Define block
 
 RED: `fn.blockModel` "a composite TransformerDefinition is a define block with its parameters and its body"; `ui.blockEditing` "the defined mode shows the define block, no build mark in the body". GREEN: block model and view.
