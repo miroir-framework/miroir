@@ -1,0 +1,221 @@
+{
+  "uuid": "c22ca343-af4a-4231-9b12-7044b0f53599",
+  "parentName": "MiroirTest",
+  "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "name": "runner.createApplication",
+  "description": "createApplication runner on filesystem stores, with its form values under createApplication as RunnerView passes them: it writes the AdminApplication and Deployment rows of the new application.",
+  "tags": [
+    "integ",
+    "runner",
+    "model"
+  ],
+  "issue": "517",
+  "definition": {
+    "miroirTestType": "miroirTestSuite",
+    "miroirTestLabel": "runner.createApplication",
+    "miroirTests": [
+      {
+        "miroirTestType": "runnerTest",
+        "miroirTestLabel": "Create an application on filesystem stores",
+        "runnerRef": "bcc872dc-649a-410a-81bc-a8ad65f21e1c",
+        "testCompositeActionLabel": "Create an application on filesystem stores",
+        "initialModel": {
+          "transformerType": "getFromParameters",
+          "interpolation": "build",
+          "referenceName": "emptyApplicationModel"
+        },
+        "testParams": {
+          "createApplication": {
+            "applicationName": "testApplication_CreateApplication",
+            "newApplicationUuid": {
+              "transformerType": "getFromParameters",
+              "interpolation": "build",
+              "referenceName": "testApplicationUuid"
+            },
+            "deploymentUuid": {
+              "transformerType": "getFromParameters",
+              "interpolation": "build",
+              "referenceName": "testApplicationDeploymentUuid"
+            },
+            "applicationStorage": {
+              "emulatedServerType": "filesystem"
+            }
+          }
+        },
+        "preTestCompositeActions": [
+          {
+            "actionType": "compositeRunBoxedQueryAction",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+            "actionLabel": "getAdminRows",
+            "nameGivenToResult": "adminRows",
+            "payload": {
+              "actionType": "runBoxedQueryAction",
+              "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+              "payload": {
+                "application": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+                "applicationSection": "data",
+                "queryExecutionStrategy": "storage",
+                "query": {
+                  "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                  "application": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+                  "extractors": {
+                    "adminApplication": {
+                      "extractorOrCombinerType": "extractorByPrimaryKey",
+                      "applicationSection": "data",
+                      "parentName": "AdminApplication",
+                      "parentUuid": "25d935e7-9e93-42c2-aade-0472b883492b",
+                      "instanceUuid": {
+                        "transformerType": "getFromParameters",
+                        "interpolation": "build",
+                        "referenceName": "testApplicationUuid"
+                      }
+                    },
+                    "deployment": {
+                      "extractorOrCombinerType": "extractorByPrimaryKey",
+                      "applicationSection": "data",
+                      "parentName": "Deployment",
+                      "parentUuid": "7959d814-400c-4e80-988f-a00fe582ab98",
+                      "instanceUuid": {
+                        "transformerType": "getFromParameters",
+                        "interpolation": "build",
+                        "referenceName": "testApplicationDeploymentUuid"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "testCompositeActionAssertions": [
+          {
+            "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+            "actionLabel": "checkAdminApplicationName",
+            "nameGivenToResult": "checkAdminApplicationName",
+            "payload": {
+              "testType": "testAssertion",
+              "testLabel": "checkAdminApplicationName",
+              "definition": {
+                "resultAccessPath": [],
+                "resultTransformer": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "adminRows",
+                    "adminApplication",
+                    "name"
+                  ]
+                },
+                "expectedValue": "testApplication_CreateApplication"
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+            "actionLabel": "checkDeploymentName",
+            "nameGivenToResult": "checkDeploymentName",
+            "payload": {
+              "testType": "testAssertion",
+              "testLabel": "checkDeploymentName",
+              "definition": {
+                "resultAccessPath": [],
+                "resultTransformer": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "adminRows",
+                    "deployment",
+                    "name"
+                  ]
+                },
+                "expectedValue": "Deployment of application testApplication_CreateApplication"
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+            "actionLabel": "checkDeploymentSelfApplication",
+            "nameGivenToResult": "checkDeploymentSelfApplication",
+            "payload": {
+              "testType": "testAssertion",
+              "testLabel": "checkDeploymentSelfApplication",
+              "definition": {
+                "resultAccessPath": [],
+                "resultTransformer": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "adminRows",
+                    "deployment",
+                    "selfApplication"
+                  ]
+                },
+                "expectedValue": {
+                  "transformerType": "getFromParameters",
+                  "interpolation": "build",
+                  "referenceName": "testApplicationUuid"
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+            "actionLabel": "checkDeploymentConfiguration",
+            "nameGivenToResult": "checkDeploymentConfiguration",
+            "payload": {
+              "testType": "testAssertion",
+              "testLabel": "checkDeploymentConfiguration",
+              "definition": {
+                "resultAccessPath": [],
+                "resultTransformer": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "adminRows",
+                    "deployment",
+                    "configuration"
+                  ]
+                },
+                "expectedValue": {
+                  "admin": {
+                    "emulatedServerType": "filesystem",
+                    "directory": {
+                      "transformerType": "mustacheStringTemplate",
+                      "interpolation": "build",
+                      "definition": "{{{environmentAppsDirectory}}}/admin"
+                    }
+                  },
+                  "model": {
+                    "emulatedServerType": "filesystem",
+                    "directory": {
+                      "transformerType": "mustacheStringTemplate",
+                      "interpolation": "build",
+                      "definition": "{{{environmentAppsDirectory}}}/testApplication_CreateApplication-model"
+                    }
+                  },
+                  "data": {
+                    "emulatedServerType": "filesystem",
+                    "directory": {
+                      "transformerType": "mustacheStringTemplate",
+                      "interpolation": "build",
+                      "definition": "{{{environmentAppsDirectory}}}/testApplication_CreateApplication-data"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "defaultApplicationName": "testApplication_CreateApplication",
+        "skipRunTargetPlayfieldReset": true,
+        "skipCreateDeployment": true
+      }
+    ]
+  }
+}
