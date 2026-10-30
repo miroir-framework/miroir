@@ -1790,6 +1790,12 @@ export {
 } from "./4_services/RestClient.js";
 export { RestClientStub } from "./4_services/RestClientStub";
 export { restServerDefaultHandlers } from "./4_services/RestServer.js";
+export {
+  metaModelFromPersistenceStore,
+  modelEnvironmentForApplicationModel,
+  ServerModelEnvironments,
+  serverModelEnvironments,
+} from "./4_services/ServerModelEnvironments.js";
 export { generateRestServiceResponse } from "./4_services/RestTools.js";
 export {
   displayTestSuiteResultsDetails,

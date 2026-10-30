@@ -13,6 +13,8 @@ import {
   transformer_extended_apply_wrapper,
   transformer_resolveReference,
   type CoreTransformerForBuildPlusRuntime,
+  type TransformerDefinition,
+  transformerDefinitionRegistry,
   type Entity,
   type CoreTransformerForBuildPlusRuntime_returnValue,
   type CoreTransformerForBuildPlusRuntime_constantAsExtractor,
@@ -191,6 +193,7 @@ export type ITransformerHandler<T> = (
   topLevelTransformer: boolean,
   withClauseColumnName?: string,
   iterateOn?: string,
+  transformerDefinitions?: Record<string, TransformerDefinition>,
 ) => Domain2QueryReturnType<SqlStringForTransformerElementValue>;
 
 const sqlTransformerImplementations: Record<string, ITransformerHandler<any>> = {
@@ -425,6 +428,7 @@ function sqlStringForConstantAnyTransformer(
   topLevelTransformer: boolean,
   withClauseColumnName?: string,
   iterateOn?: string,
+  transformerDefinitions: Record<string, TransformerDefinition> = applicationTransformerDefinitions,
 ): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
   const getSqlParams = getConstantSqlTypeMap[actionRuntimeTransformer.transformerType];
   return getConstantSql(
@@ -448,6 +452,7 @@ function sqlStringForConstantTransformer(
   topLevelTransformer: boolean,
   withClauseColumnName?: string,
   iterateOn?: string,
+  transformerDefinitions: Record<string, TransformerDefinition> = applicationTransformerDefinitions,
 ): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
   const targetSqlType =
     typeof actionRuntimeTransformer.value === "object"
@@ -616,6 +621,7 @@ function rowColumnSqlContext(entity: Entity): Record<string, SqlContextEntry> {
 function compileVirtualAttributeSqlExpression(
   entity: Entity,
   name: string,
+  transformerDefinitions: Record<string, TransformerDefinition>,
 ): Domain2QueryReturnType<string> {
   const schema = entity.mlSchema?.definition?.[name];
   const transformer = schema
@@ -637,6 +643,9 @@ function compileVirtualAttributeSqlExpression(
     rowColumnSqlContext(entity),
     true,
     false,
+    undefined,
+    undefined,
+    transformerDefinitions,
   );
   if (compiled instanceof Domain2ElementFailed) {
     return compiled;
@@ -713,7 +722,11 @@ export function  sqlStringForExtractor(
         : [];
       const virtualSql: Record<string, string> = {};
       for (const name of needed) {
-        const compiled = compileVirtualAttributeSqlExpression(entity!, name);
+        const compiled = compileVirtualAttributeSqlExpression(
+          entity!,
+          name,
+          transformerDefinitionRegistry(modelEnvironment),
+        );
         if (compiled instanceof Domain2ElementFailed) {
           return compiled;
         }
@@ -815,7 +828,8 @@ function sqlStringForApplyTo(
   queryParams: Record<string, any> = {},
   definedContextEntries: Record<string, any> = {},
   useAccessPathForContextReference: boolean = true,
-  topLevelTransformer: boolean = true
+  topLevelTransformer: boolean = true,
+  transformerDefinitions: Record<string, TransformerDefinition> = applicationTransformerDefinitions,
 ): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
   log.info(
     "sqlStringForApplyTo called with",
@@ -834,7 +848,10 @@ function sqlStringForApplyTo(
         queryParams,
         definedContextEntries,
         useAccessPathForContextReference,
-        topLevelTransformer
+        topLevelTransformer,
+        undefined,
+        undefined,
+        transformerDefinitions,
       )
   }
   switch (typeof actionRuntimeTransformer.applyTo) {
@@ -854,7 +871,10 @@ function sqlStringForApplyTo(
         queryParams,
         definedContextEntries,
         useAccessPathForContextReference,
-        topLevelTransformer
+        topLevelTransformer,
+        undefined,
+        undefined,
+        transformerDefinitions,
       )
       break;
     }
@@ -872,7 +892,10 @@ function sqlStringForApplyTo(
           queryParams,
           definedContextEntries,
           useAccessPathForContextReference,
-          topLevelTransformer
+          topLevelTransformer,
+          undefined,
+          undefined,
+          transformerDefinitions,
         );
       }
       if (
@@ -887,7 +910,10 @@ function sqlStringForApplyTo(
           queryParams,
           definedContextEntries,
           useAccessPathForContextReference,
-          topLevelTransformer
+          topLevelTransformer,
+          undefined,
+          undefined,
+          transformerDefinitions,
         );
       }
       // if (actionRuntimeTransformer.applyTo.transformerType != "getFromContext") {
@@ -936,7 +962,10 @@ function sqlStringForCountTransformer(
   queryParams: Record<string, any>,
   definedContextEntries: Record<string, SqlContextEntry>,
   useAccessPathForContextReference: boolean,
-  topLevelTransformer: boolean
+  topLevelTransformer: boolean,
+  withClauseColumnName?: string,
+  iterateOn?: string,
+  transformerDefinitions: Record<string, TransformerDefinition> = applicationTransformerDefinitions,
 ): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
   const referenceQuery = sqlStringForApplyTo(
     actionRuntimeTransformer,
@@ -946,6 +975,7 @@ function sqlStringForCountTransformer(
     definedContextEntries,
     useAccessPathForContextReference,
     topLevelTransformer,
+    transformerDefinitions,
   );
   log.info("sqlStringForRuntimeTransformer count referenceQuery", JSON.stringify(referenceQuery, null, 2));
   if (referenceQuery instanceof Domain2ElementFailed) {
@@ -1014,6 +1044,9 @@ function sqlStringForCountTransformer(
       havingContextEntries,
       useAccessPathForContextReference,
       false,
+      undefined,
+      undefined,
+      transformerDefinitions,
     );
     if (havingResult instanceof Domain2ElementFailed) {
       log.warn("sqlStringForCountTransformer: HAVING clause generation failed:", JSON.stringify(havingResult));
@@ -1239,6 +1272,7 @@ function sqlStringForConditionalTransformer(
   topLevelTransformer: boolean,
   withClauseColumnName?: string,
   iterateOn?: string,
+  transformerDefinitions: Record<string, TransformerDefinition> = applicationTransformerDefinitions,
 ): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
   let newPreparedStatementParametersCount = preparedStatementParametersCount;
   let preparedStatementParameters: any[] = [];
@@ -1252,6 +1286,9 @@ function sqlStringForConditionalTransformer(
     definedContextEntries,
     useAccessPathForContextReference,
     false, // topLevelTransformer
+    undefined,
+    undefined,
+    transformerDefinitions,
   );
   if (ifResult instanceof Domain2ElementFailed) {
     return ifResult;
@@ -1272,6 +1309,9 @@ function sqlStringForConditionalTransformer(
       definedContextEntries,
       useAccessPathForContextReference,
       false, // topLevelTransformer
+      undefined,
+      undefined,
+      transformerDefinitions,
     );
     if (thenResult instanceof Domain2ElementFailed) {
       return thenResult;
@@ -1296,6 +1336,9 @@ function sqlStringForConditionalTransformer(
       definedContextEntries,
       useAccessPathForContextReference,
       false, // topLevelTransformer
+      undefined,
+      undefined,
+      transformerDefinitions,
     );
     if (elseResult instanceof Domain2ElementFailed) {
       return elseResult;
@@ -1374,6 +1417,7 @@ function sqlStringForBoolExprTransformer(
   topLevelTransformer: boolean,
   withClauseColumnName?: string,
   iterateOn?: string,
+  transformerDefinitions: Record<string, TransformerDefinition> = applicationTransformerDefinitions,
 ): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
   let newPreparedStatementParametersCount = preparedStatementParametersCount;
   let preparedStatementParameters: any[] = [];
@@ -1425,6 +1469,9 @@ function sqlStringForBoolExprTransformer(
     definedContextEntries,
     useAccessPathForContextReference,
     false, // topLevelTransformer
+    undefined,
+    undefined,
+    transformerDefinitions,
   );
   if (left instanceof Domain2ElementFailed) {
     return left;
@@ -1445,6 +1492,9 @@ function sqlStringForBoolExprTransformer(
       definedContextEntries,
       useAccessPathForContextReference,
       false, // topLevelTransformer
+      undefined,
+      undefined,
+      transformerDefinitions,
     );
     if (rightResult instanceof Domain2ElementFailed) {
       return rightResult;
@@ -1578,6 +1628,7 @@ function sqlStringForPlusTransformer(
   topLevelTransformer: boolean,
   withClauseColumnName?: string,
   iterateOn?: string,
+  transformerDefinitions: Record<string, TransformerDefinition> = applicationTransformerDefinitions,
 ): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
   // Check for empty array
   if (!actionRuntimeTransformer.args || actionRuntimeTransformer.args.length === 0) {
@@ -1600,7 +1651,10 @@ function sqlStringForPlusTransformer(
       queryParams,
       definedContextEntries,
       useAccessPathForContextReference,
-      false // child transformers are not top-level
+      false, // child transformers are not top-level
+      undefined,
+      undefined,
+      transformerDefinitions,
     );
     if (evaluatedArg instanceof Domain2ElementFailed) {
       return evaluatedArg;
@@ -1754,6 +1808,7 @@ function sqlStringForConcatListsTransformer(
   topLevelTransformer: boolean,
   withClauseColumnName?: string,
   iterateOn?: string,
+  transformerDefinitions: Record<string, TransformerDefinition> = applicationTransformerDefinitions,
 ): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
   const lists = actionRuntimeTransformer.lists;
   const outputColName = withClauseColumnName ?? "concatLists";
@@ -1787,6 +1842,9 @@ function sqlStringForConcatListsTransformer(
       definedContextEntries,
       useAccessPathForContextReference,
       true, // always top-level to get proper SELECT subqueries for scalar extraction
+      undefined,
+      undefined,
+      transformerDefinitions,
     );
     if (evaluated instanceof Domain2ElementFailed) {
       return evaluated;
@@ -1862,6 +1920,7 @@ function sqlStringForCaseTransformer(
   topLevelTransformer: boolean,
   withClauseColumnName?: string,
   iterateOn?: string,
+  transformerDefinitions: Record<string, TransformerDefinition> = applicationTransformerDefinitions,
 ): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
   let newPreparedStatementParametersCount = preparedStatementParametersCount;
   let preparedStatementParameters: any[] = [];
@@ -1878,6 +1937,8 @@ function sqlStringForCaseTransformer(
     useAccessPathForContextReference,
     false, // topLevelTransformer
     undefined, // withClauseColumnName
+    undefined,
+    transformerDefinitions,
   );
   if (discriminator instanceof Domain2ElementFailed) {
     return discriminator;
@@ -1907,6 +1968,8 @@ function sqlStringForCaseTransformer(
       useAccessPathForContextReference,
       false,
       undefined,
+      undefined,
+      transformerDefinitions,
     );
     if (whenValue instanceof Domain2ElementFailed) {
       return whenValue;
@@ -1933,6 +1996,8 @@ function sqlStringForCaseTransformer(
       useAccessPathForContextReference,
       false,
       undefined,
+      undefined,
+      transformerDefinitions,
     );
     if (thenValue instanceof Domain2ElementFailed) {
       return thenValue;
@@ -1964,6 +2029,8 @@ function sqlStringForCaseTransformer(
       useAccessPathForContextReference,
       false,
       undefined,
+      undefined,
+      transformerDefinitions,
     );
     if (elseValue instanceof Domain2ElementFailed) {
       return elseValue;
@@ -2079,6 +2146,7 @@ function sqlStringForFreeObjectTransformer(
   topLevelTransformer: boolean,
   withClauseColumnName?: string,
   iterateOn?: string,
+  transformerDefinitions: Record<string, TransformerDefinition> = applicationTransformerDefinitions,
 ): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
   let newPreparedStatementParametersCount = preparedStatementParametersCount;
   let preparedStatementParameters: any[] = [];
@@ -2145,9 +2213,12 @@ function sqlStringForFreeObjectTransformer(
               queryParams,
               definedContextEntries,
               useAccessPathForContextReference,
-              false // topLevelTransformer
+              false, // topLevelTransformer
               // undefined, // withClauseColumnName
-              // iterateOn, // iterateOn
+              // iterateOn, // iterateOn,
+              undefined,
+              undefined,
+              transformerDefinitions,
             );
             if (attributeSqlString instanceof Domain2ElementFailed) {
               // return [f[0], { attributeValue: attributeSqlString, index,}];
@@ -2356,7 +2427,10 @@ function sqlStringForUniqueTransformer(
   queryParams: Record<string, any>,
   definedContextEntries: Record<string, SqlContextEntry>,
   useAccessPathForContextReference: boolean,
-  topLevelTransformer: boolean
+  topLevelTransformer: boolean,
+  withClauseColumnName?: string,
+  iterateOn?: string,
+  transformerDefinitions: Record<string, TransformerDefinition> = applicationTransformerDefinitions,
 ): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
   const orderByColumn = (actionRuntimeTransformer as any).orderBy
     ? `"${(actionRuntimeTransformer as any).orderBy}"`
@@ -2369,6 +2443,7 @@ function sqlStringForUniqueTransformer(
     definedContextEntries,
     useAccessPathForContextReference,
     topLevelTransformer,
+    transformerDefinitions,
   );
   if (referenceQuery instanceof Domain2ElementFailed) {
     return referenceQuery;
@@ -2479,7 +2554,10 @@ function sqlStringForMapperListToListTransformer(
   queryParams: Record<string, any>,
   definedContextEntries: Record<string, SqlContextEntry>,
   useAccessPathForContextReference: boolean,
-  topLevelTransformer: boolean
+  topLevelTransformer: boolean,
+  withClauseColumnName?: string,
+  iterateOn?: string,
+  transformerDefinitions: Record<string, TransformerDefinition> = applicationTransformerDefinitions,
 ): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
   /**
    * must take the rerferencedExtractor result and make it avaialable to elementTransformer, apply the elementTransformer to
@@ -2513,7 +2591,8 @@ function sqlStringForMapperListToListTransformer(
           useAccessPathForContextReference,
           topLevelTransformer,
           undefined, // withClauseColumnName
-          referenceToOuterObjectRenamed // iterateOn
+          referenceToOuterObjectRenamed, // iterateOn
+          transformerDefinitions,
         )
       : sqlStringForRuntimeTransformer(
           {
@@ -2545,7 +2624,8 @@ function sqlStringForMapperListToListTransformer(
           useAccessPathForContextReference,
           topLevelTransformer,
           undefined, // withClauseColumnName
-          referenceToOuterObjectRenamed // iterateOn
+          referenceToOuterObjectRenamed, // iterateOn
+          transformerDefinitions,
         );
 
   log.info(
@@ -2574,6 +2654,7 @@ function sqlStringForMapperListToListTransformer(
     definedContextEntries,
     useAccessPathForContextReference,// false, // useAccessPathForContextReference,
     topLevelTransformer,
+    transformerDefinitions,
 );
   // log.info("sqlStringForRuntimeTransformer mapList found applyTo", JSON.stringify(applyTo, null, 2));
   if (applyTo instanceof Domain2ElementFailed) {
@@ -2707,6 +2788,7 @@ function sqlStringForFilterListTransformer(
   topLevelTransformer: boolean,
   withClauseColumnName?: string,
   iterateOn?: string,
+  transformerDefinitions: Record<string, TransformerDefinition> = applicationTransformerDefinitions,
 ): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
   let newPreparedStatementParametersCount = preparedStatementParametersCount;
   const transformerLabel: string = (actionRuntimeTransformer as any).label ?? actionRuntimeTransformer.transformerType;
@@ -2729,6 +2811,9 @@ function sqlStringForFilterListTransformer(
     },
     useAccessPathForContextReference,
     false, // topLevelTransformer — we need just an expression for WHERE
+    undefined,
+    undefined,
+    transformerDefinitions,
   );
 
   if (sqlStringForPredicate instanceof Domain2ElementFailed) {
@@ -2747,6 +2832,7 @@ function sqlStringForFilterListTransformer(
     definedContextEntries,
     useAccessPathForContextReference,
     topLevelTransformer,
+    transformerDefinitions,
   );
 
   if (applyTo instanceof Domain2ElementFailed) {
@@ -2844,6 +2930,7 @@ function sqlStringForFindTransformer(
   topLevelTransformer: boolean,
   withClauseColumnName?: string,
   iterateOn?: string,
+  transformerDefinitions: Record<string, TransformerDefinition> = applicationTransformerDefinitions,
 ): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
   let newPreparedStatementParametersCount = preparedStatementParametersCount;
   const transformerLabel: string = (actionRuntimeTransformer as any).label ?? actionRuntimeTransformer.transformerType;
@@ -2866,6 +2953,9 @@ function sqlStringForFindTransformer(
     },
     useAccessPathForContextReference,
     false, // topLevelTransformer — we need just an expression for WHERE
+    undefined,
+    undefined,
+    transformerDefinitions,
   );
 
   if (sqlStringForPredicate instanceof Domain2ElementFailed) {
@@ -2884,6 +2974,7 @@ function sqlStringForFindTransformer(
     definedContextEntries,
     useAccessPathForContextReference,
     topLevelTransformer,
+    transformerDefinitions,
   );
 
   if (applyTo instanceof Domain2ElementFailed) {
@@ -2970,7 +3061,10 @@ function sqlStringForListPickElementTransformer(
   queryParams: Record<string, any>,
   definedContextEntries: Record<string, SqlContextEntry>,
   useAccessPathForContextReference: boolean,
-  topLevelTransformer: boolean
+  topLevelTransformer: boolean,
+  withClauseColumnName?: string,
+  iterateOn?: string,
+  transformerDefinitions: Record<string, TransformerDefinition> = applicationTransformerDefinitions,
 ): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
   log.info(
     "sqlStringForListPickElementTransformer pickFromList called for",
@@ -2990,7 +3084,8 @@ function sqlStringForListPickElementTransformer(
       queryParams,
       definedContextEntries,
       useAccessPathForContextReference,
-      topLevelTransformer
+      topLevelTransformer,
+      transformerDefinitions,
     );
 
     log.info("sqlStringForListPickElementTransformer pickFromList found applyTo", JSON.stringify(sqlForApplyTo, null, 2));
@@ -3139,6 +3234,9 @@ function sqlStringForObjectFullTemplateTransformer(
   topLevelTransformer: boolean,
   // withClauseColumnName?: string,
   // iterateOn?: string,
+  withClauseColumnName?: string,
+  iterateOn?: string,
+  transformerDefinitions: Record<string, TransformerDefinition> = applicationTransformerDefinitions,
 ): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
   const orderByColumn = (actionRuntimeTransformer as any).orderBy
     ? `"${(actionRuntimeTransformer as any).orderBy}"`
@@ -3156,6 +3254,7 @@ function sqlStringForObjectFullTemplateTransformer(
       newDefinedContextEntries,
       useAccessPathForContextReference,
       topLevelTransformer,
+      transformerDefinitions,
     );
     if (resolvedApplyTo instanceof Domain2ElementFailed) {
       return resolvedApplyTo;
@@ -3210,6 +3309,8 @@ function sqlStringForObjectFullTemplateTransformer(
           useAccessPathForContextReference,
           true, // topLevelTransformer,
           attributeValueName, // withClauseColumnName
+          undefined,
+          transformerDefinitions,
           // iterateOn, // iterateOn
         );
         log.info(
@@ -3239,8 +3340,10 @@ function sqlStringForObjectFullTemplateTransformer(
           newDefinedContextEntries,
           useAccessPathForContextReference,
           true, // topLevelTransformer,
-          `${baseName}attributeKey${index}` // withClauseColumnName
-          // iterateOn, // iterateOn
+          `${baseName}attributeKey${index}`, // withClauseColumnName
+          // iterateOn, // iterateOn,
+          undefined,
+          transformerDefinitions,
         ):
         sqlStringForRuntimeTransformer(
           {
@@ -3254,8 +3357,10 @@ function sqlStringForObjectFullTemplateTransformer(
           newDefinedContextEntries,
           useAccessPathForContextReference,
           true, // topLevelTransformer,
-          `${baseName}attributeKey${index}` // withClauseColumnName
-          // iterateOn, // iterateOn
+          `${baseName}attributeKey${index}`, // withClauseColumnName
+          // iterateOn, // iterateOn,
+          undefined,
+          transformerDefinitions,
         );
         if (attributeKey instanceof Domain2ElementFailed) {
           return [attributeKey];
@@ -3368,6 +3473,7 @@ function sqlStringForObjectFullTemplateTransformer(
       definedContextEntries, // undefined, // undefined, since the result will always be taken from this "WITH" clause.
       useAccessPathForContextReference, // useAccessPathForContextReference,
       topLevelTransformer,
+      transformerDefinitions,
     );
     if (resolvedApplyTo instanceof Domain2ElementFailed) {
       return resolvedApplyTo;
@@ -3387,6 +3493,9 @@ function sqlStringForObjectFullTemplateTransformer(
           definedContextEntries,
           useAccessPathForContextReference,
           false, // topLevelTransformer
+          undefined,
+          undefined,
+          transformerDefinitions,
           // undefined, // withClauseColumnName
           // iterateOn, // iterateOn
         );
@@ -3406,9 +3515,12 @@ function sqlStringForObjectFullTemplateTransformer(
                 queryParams,
                 definedContextEntries,
                 useAccessPathForContextReference,
-                false // topLevelTransformer
+                false, // topLevelTransformer
                 // undefined, // withClauseColumnName
-                // iterateOn, // iterateOn
+                // iterateOn, // iterateOn,
+                undefined,
+                undefined,
+                transformerDefinitions,
               )
             : sqlStringForRuntimeTransformer(
                 {
@@ -3421,9 +3533,12 @@ function sqlStringForObjectFullTemplateTransformer(
                 queryParams,
                 definedContextEntries,
                 useAccessPathForContextReference,
-                false // topLevelTransformer
+                false, // topLevelTransformer
                 // undefined, // withClauseColumnName
-                // iterateOn, // iterateOn
+                // iterateOn, // iterateOn,
+                undefined,
+                undefined,
+                transformerDefinitions,
               );        ;
         if (attributeKey instanceof Domain2ElementFailed) {
           return {attributeValue, attributeKey};
@@ -3491,7 +3606,10 @@ function sqlStringForObjectAlterTransformer(
   queryParams: Record<string, any>,
   definedContextEntries: Record<string, SqlContextEntry>,
   useAccessPathForContextReference: boolean,
-  topLevelTransformer: boolean
+  topLevelTransformer: boolean,
+  withClauseColumnName?: string,
+  iterateOn?: string,
+  transformerDefinitions: Record<string, TransformerDefinition> = applicationTransformerDefinitions,
 ): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
   let newPreparedStatementParametersCount = preparedStatementParametersCount;
   let preparedStatementParameters: any[] = [];
@@ -3510,7 +3628,8 @@ function sqlStringForObjectAlterTransformer(
     queryParams,
     definedContextEntries,
     useAccessPathForContextReference,
-    topLevelTransformer
+    topLevelTransformer,
+    transformerDefinitions,
   );
   if (applyToSql instanceof Domain2ElementFailed) {
     return applyToSql;
@@ -3550,6 +3669,9 @@ function sqlStringForObjectAlterTransformer(
     newDefinedContextEntries,
     useAccessPathForContextReference,
     false, // topLevelTransformer
+    undefined,
+    undefined,
+    transformerDefinitions,
     // undefined, // withClauseColumnName
     // iterateOn, // iterateOn
   );
@@ -3641,7 +3763,10 @@ function sqlStringForObjectEntriesTransformer(
   queryParams: Record<string, any>,
   definedContextEntries: Record<string, SqlContextEntry>,
   useAccessPathForContextReference: boolean,
-  topLevelTransformer: boolean
+  topLevelTransformer: boolean,
+  withClauseColumnName?: string,
+  iterateOn?: string,
+  transformerDefinitions: Record<string, TransformerDefinition> = applicationTransformerDefinitions,
 ): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
   const applyTo = sqlStringForApplyTo(
     actionRuntimeTransformer,
@@ -3650,7 +3775,8 @@ function sqlStringForObjectEntriesTransformer(
     queryParams,
     definedContextEntries,
     useAccessPathForContextReference,
-    topLevelTransformer
+    topLevelTransformer,
+    transformerDefinitions,
   );
   if (applyTo instanceof Domain2ElementFailed) {
     return applyTo;
@@ -3721,6 +3847,7 @@ function sqlStringForObjectFromEntriesTransformer(
   topLevelTransformer: boolean,
   withClauseColumnName?: string,
   iterateOn?: string,
+  transformerDefinitions: Record<string, TransformerDefinition> = applicationTransformerDefinitions,
 ): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
   const transformerLabel: string = (actionRuntimeTransformer as any).label ?? actionRuntimeTransformer.transformerType;
 
@@ -3732,6 +3859,7 @@ function sqlStringForObjectFromEntriesTransformer(
     definedContextEntries,
     useAccessPathForContextReference,
     topLevelTransformer,
+    transformerDefinitions,
   );
 
   if (applyTo instanceof Domain2ElementFailed) {
@@ -3822,6 +3950,7 @@ function sqlStringForSortListTransformer(
   topLevelTransformer: boolean,
   withClauseColumnName?: string,
   iterateOn?: string,
+  transformerDefinitions: Record<string, TransformerDefinition> = applicationTransformerDefinitions,
 ): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
   const transformerLabel: string = (actionRuntimeTransformer as any).label ?? actionRuntimeTransformer.transformerType;
   const direction = (actionRuntimeTransformer.orderByDirection ?? "asc").toUpperCase();
@@ -3834,6 +3963,7 @@ function sqlStringForSortListTransformer(
     definedContextEntries,
     useAccessPathForContextReference,
     topLevelTransformer,
+    transformerDefinitions,
   );
 
   if (applyTo instanceof Domain2ElementFailed) {
@@ -3918,6 +4048,7 @@ function sqlStringForPivotTransformer(
   topLevelTransformer: boolean,
   withClauseColumnName?: string,
   iterateOn?: string,
+  transformerDefinitions: Record<string, TransformerDefinition> = applicationTransformerDefinitions,
 ): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
   const transformerLabel: string = (actionRuntimeTransformer as any).label ?? actionRuntimeTransformer.transformerType;
   const rowKeyAttribute = actionRuntimeTransformer.rowKeyAttribute;
@@ -3966,6 +4097,7 @@ function sqlStringForPivotTransformer(
     definedContextEntries,
     useAccessPathForContextReference,
     true,
+    transformerDefinitions,
   );
   if (applyTo instanceof Domain2ElementFailed) {
     return applyTo;
@@ -4026,6 +4158,9 @@ function sqlStringForPivotTransformer(
       definedContextEntries,
       useAccessPathForContextReference,
       true,
+      undefined,
+      undefined,
+      transformerDefinitions,
     );
     if (columnsSql instanceof Domain2ElementFailed) {
       return columnsSql;
@@ -4157,6 +4292,7 @@ function sqlStringForUnpivotTransformer(
   topLevelTransformer: boolean,
   withClauseColumnName?: string,
   iterateOn?: string,
+  transformerDefinitions: Record<string, TransformerDefinition> = applicationTransformerDefinitions,
 ): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
   const transformerLabel: string = (actionRuntimeTransformer as any).label ?? actionRuntimeTransformer.transformerType;
   const idColumns: string[] = (actionRuntimeTransformer.idColumns as any) ?? [];
@@ -4189,6 +4325,7 @@ function sqlStringForUnpivotTransformer(
     definedContextEntries,
     useAccessPathForContextReference,
     true,
+    transformerDefinitions,
   );
   if (applyTo instanceof Domain2ElementFailed) {
     return applyTo;
@@ -4245,6 +4382,9 @@ function sqlStringForUnpivotTransformer(
       definedContextEntries,
       useAccessPathForContextReference,
       true,
+      undefined,
+      undefined,
+      transformerDefinitions,
     );
     if (columnsSql instanceof Domain2ElementFailed) {
       return columnsSql;
@@ -4318,6 +4458,7 @@ function sqlStringForListLengthTransformer(
   topLevelTransformer: boolean,
   withClauseColumnName?: string,
   iterateOn?: string,
+  transformerDefinitions: Record<string, TransformerDefinition> = applicationTransformerDefinitions,
 ): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
   const transformerLabel: string = (actionRuntimeTransformer as any).label ?? actionRuntimeTransformer.transformerType;
 
@@ -4329,6 +4470,7 @@ function sqlStringForListLengthTransformer(
     definedContextEntries,
     useAccessPathForContextReference,
     topLevelTransformer,
+    transformerDefinitions,
   );
 
   if (applyTo instanceof Domain2ElementFailed) {
@@ -4383,6 +4525,7 @@ function sqlStringForStringOpTransformer(
   topLevelTransformer: boolean,
   withClauseColumnName?: string,
   iterateOn?: string,
+  transformerDefinitions: Record<string, TransformerDefinition> = applicationTransformerDefinitions,
 ): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
   const transformerLabel: string = (actionRuntimeTransformer as any).label ?? actionRuntimeTransformer.transformerType;
   const op = actionRuntimeTransformer.op;
@@ -4397,6 +4540,7 @@ function sqlStringForStringOpTransformer(
     definedContextEntries,
     useAccessPathForContextReference,
     topLevelTransformer,
+    transformerDefinitions,
   );
 
   if (applyTo instanceof Domain2ElementFailed) return applyTo;
@@ -4496,7 +4640,10 @@ function sqlStringForObjectValuesTransformer(
   queryParams: Record<string, any>,
   definedContextEntries: Record<string, SqlContextEntry>,
   useAccessPathForContextReference: boolean,
-  topLevelTransformer: boolean
+  topLevelTransformer: boolean,
+  withClauseColumnName?: string,
+  iterateOn?: string,
+  transformerDefinitions: Record<string, TransformerDefinition> = applicationTransformerDefinitions,
 ): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
   const applyTo = sqlStringForApplyTo(
     actionRuntimeTransformer,
@@ -4505,7 +4652,8 @@ function sqlStringForObjectValuesTransformer(
     queryParams,
     definedContextEntries,
     useAccessPathForContextReference,
-    topLevelTransformer
+    topLevelTransformer,
+    transformerDefinitions,
   );
   if (applyTo instanceof Domain2ElementFailed) {
     return applyTo;
@@ -4567,7 +4715,10 @@ function sqlStringForListReducerToIndexObjectTransformer(
   queryParams: Record<string, any>,
   definedContextEntries: Record<string, SqlContextEntry>,
   useAccessPathForContextReference: boolean,
-  topLevelTransformer: boolean
+  topLevelTransformer: boolean,
+  withClauseColumnName?: string,
+  iterateOn?: string,
+  transformerDefinitions: Record<string, TransformerDefinition> = applicationTransformerDefinitions,
 ): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
   const transformerLabel: string =
     (actionRuntimeTransformer as any).label ?? actionRuntimeTransformer.transformerType;
@@ -4579,7 +4730,8 @@ function sqlStringForListReducerToIndexObjectTransformer(
     queryParams,
     definedContextEntries,
     useAccessPathForContextReference,
-    topLevelTransformer
+    topLevelTransformer,
+    transformerDefinitions,
   );
   if (applyTo instanceof Domain2ElementFailed) {
     return applyTo;
@@ -4738,7 +4890,10 @@ function sqlStringForListReducerToSpreadObjectTransformer(
   queryParams: Record<string, any>,
   definedContextEntries: Record<string, SqlContextEntry>,
   useAccessPathForContextReference: boolean,
-  topLevelTransformer: boolean
+  topLevelTransformer: boolean,
+  withClauseColumnName?: string,
+  iterateOn?: string,
+  transformerDefinitions: Record<string, TransformerDefinition> = applicationTransformerDefinitions,
 ): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
   // throw new Error("sqlStringForRuntimeTransformer listReducerToSpreadObject not implemented");
   const transformerLabel: string =
@@ -4751,7 +4906,8 @@ function sqlStringForListReducerToSpreadObjectTransformer(
     queryParams,
     definedContextEntries,
     useAccessPathForContextReference,
-    topLevelTransformer
+    topLevelTransformer,
+    transformerDefinitions,
   );
   if (applyTo instanceof Domain2ElementFailed) {
     return applyTo;
@@ -4924,7 +5080,10 @@ function sqlStringForDataflowObjectTransformer(
   queryParams: Record<string, any>,
   definedContextEntries: Record<string, SqlContextEntry>,
   useAccessPathForContextReference: boolean,
-  topLevelTransformer: boolean
+  topLevelTransformer: boolean,
+  withClauseColumnName?: string,
+  iterateOn?: string,
+  transformerDefinitions: Record<string, TransformerDefinition> = applicationTransformerDefinitions,
 ): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
   // throw new Error("sqlStringForRuntimeTransformer dataflowObject not implemented");
   let newPreparedStatementParametersCount = preparedStatementParametersCount;
@@ -4944,9 +5103,12 @@ function sqlStringForDataflowObjectTransformer(
           queryParams,
           newDefinedContextEntries,
           useAccessPathForContextReference,
-          topLevelTransformer
+          topLevelTransformer,
           // undefined, // withClauseColumnName
-          // iterateOn, // iterateOn
+          // iterateOn, // iterateOn,
+          undefined,
+          undefined,
+          transformerDefinitions,
         );
         // log.info("sqlStringForRuntimeTransformer dataflowObject for item", f[0], "itemSql", JSON.stringify(itemSql, null, 2));
         if (itemSql instanceof Domain2ElementFailed) {
@@ -5111,6 +5273,7 @@ function sqlStringForContextReferenceTransformer(
   topLevelTransformer: boolean,
   withClauseColumnName?: string,
   iterateOn?: string,
+  transformerDefinitions: Record<string, TransformerDefinition> = applicationTransformerDefinitions,
 ): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
   const referenceName = actionRuntimeTransformer.referenceName??((actionRuntimeTransformer.referencePath??[])[0]);
   const definedContextEntry = definedContextEntries[referenceName];
@@ -5238,6 +5401,7 @@ function sqlStringForParameterReferenceTransformer(
   topLevelTransformer: boolean,
   withClauseColumnName?: string,
   iterateOn?: string,
+  transformerDefinitions: Record<string, TransformerDefinition> = applicationTransformerDefinitions,
 ): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
   // this resolves references to static values, passed as parameters upon executing of the query
   // TODO: resolve each parameter as WITH clause, then only call the name of the clause in each reference?
@@ -5274,6 +5438,9 @@ function sqlStringForParameterReferenceTransformer(
     definedContextEntries,
     useAccessPathForContextReference,
     topLevelTransformer,
+    undefined,
+    undefined,
+    transformerDefinitions,
     // undefined, // withClauseColumnName
     // iterateOn, // iterateOn
   );
@@ -5292,6 +5459,7 @@ function sqlStringForObjectDynamicAccessTransformer(
   topLevelTransformer: boolean,
   withClauseColumnName?: string,
   iterateOn?: string,
+  transformerDefinitions: Record<string, TransformerDefinition> = applicationTransformerDefinitions,
 ): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
   const { objectAccessPath } = actionRuntimeTransformer;
   if (!objectAccessPath || objectAccessPath.length === 0) {
@@ -5318,6 +5486,9 @@ function sqlStringForObjectDynamicAccessTransformer(
     definedContextEntries,
     useAccessPathForContextReference,
     false, // not top-level
+    undefined,
+    undefined,
+    transformerDefinitions,
   );
   if (baseResult instanceof Domain2ElementFailed) return baseResult;
 
@@ -5375,6 +5546,7 @@ function sqlStringForConstantAsExtractorTransformer(
   topLevelTransformer: boolean,
   withClauseColumnName?: string,
   iterateOn?: string,
+  transformerDefinitions: Record<string, TransformerDefinition> = applicationTransformerDefinitions,
 ): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
   // TODO: deal with whole set of transformers, not just returnValue values.
   const jsTypeToConstantType: Record<string, string> = {
@@ -5533,6 +5705,7 @@ function sqlStringForNewUuidTransformer(
   topLevelTransformer: boolean,
   withClauseColumnName?: string,
   iterateOn?: string,
+  transformerDefinitions: Record<string, TransformerDefinition> = applicationTransformerDefinitions,
 ): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
   const columnName = withClauseColumnName ?? 'generateUuid';
   return {
@@ -5566,6 +5739,7 @@ function sqlStringForCurrentTimestampTransformer(
   topLevelTransformer: boolean,
   withClauseColumnName?: string,
   iterateOn?: string,
+  transformerDefinitions: Record<string, TransformerDefinition> = applicationTransformerDefinitions,
 ): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
   const columnName = withClauseColumnName ?? 'currentTimestamp';
   const sqlExpr = "TO_CHAR(NOW() AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS.MS\"Z\"')";
@@ -5600,6 +5774,7 @@ function sqlStringForCurrentDateTransformer(
   topLevelTransformer: boolean,
   withClauseColumnName?: string,
   iterateOn?: string,
+  transformerDefinitions: Record<string, TransformerDefinition> = applicationTransformerDefinitions,
 ): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
   const columnName = withClauseColumnName ?? 'currentDate';
   const sqlExpr = "TO_CHAR(CURRENT_DATE, 'YYYY-MM-DD')";
@@ -5638,6 +5813,7 @@ function sqlStringForNumericOpTransformer(
   topLevelTransformer: boolean,
   withClauseColumnName?: string,
   iterateOn?: string,
+  transformerDefinitions: Record<string, TransformerDefinition> = applicationTransformerDefinitions,
 ): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
   if (!actionRuntimeTransformer.args || actionRuntimeTransformer.args.length === 0) {
     return new Domain2ElementFailed({
@@ -5658,7 +5834,10 @@ function sqlStringForNumericOpTransformer(
       queryParams,
       definedContextEntries,
       useAccessPathForContextReference,
-      false
+      false,
+      undefined,
+      undefined,
+      transformerDefinitions,
     );
     if (evaluatedArg instanceof Domain2ElementFailed) {
       return evaluatedArg;
@@ -5741,6 +5920,7 @@ function sqlStringForMustacheStringTemplateTransformer(
   topLevelTransformer: boolean,
   withClauseColumnName?: string,
   iterateOn?: string,
+  transformerDefinitions: Record<string, TransformerDefinition> = applicationTransformerDefinitions,
 ): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
   log.info(
     "sqlStringForMustacheStringTemplateTransformer called with",
@@ -5844,7 +6024,10 @@ function sqlStringForMustacheStringTemplateTransformer(
       queryParams,
       definedContextEntries,
       useAccessPathForContextReference,
-      false // topLevelTransformer
+      false, // topLevelTransformer
+      undefined,
+      undefined,
+      transformerDefinitions,
     );
     
     if (resolvedPlaceholder instanceof Domain2ElementFailed) {
@@ -5934,6 +6117,7 @@ export function sqlStringForRuntimeTransformer(
   topLevelTransformer: boolean = true,
   withClauseColumnName?: string,
   iterateOn?: string,
+  transformerDefinitions: Record<string, TransformerDefinition> = applicationTransformerDefinitions,
 ): Domain2QueryReturnType<SqlStringForTransformerElementValue> {
   // log.info(
   //   "sqlStringForRuntimeTransformer called with actionRuntimeTransformer",
@@ -5957,19 +6141,22 @@ export function sqlStringForRuntimeTransformer(
       queryParams,
       definedContextEntries,
       useAccessPathForContextReference,
-      topLevelTransformer
+      topLevelTransformer,
+      undefined,
+      undefined,
+      transformerDefinitions,
     )
   }
   const castTransformer = actionRuntimeTransformer as any;
-  const foundApplicationTransformer =
-    applicationTransformerDefinitions[castTransformer.transformerType];
+  // #519: the registry of the query's model environment, so an application composite translates
+  const foundApplicationTransformer = transformerDefinitions[castTransformer.transformerType];
 
   if (!foundApplicationTransformer) {
     return new Domain2ElementFailed({
       queryFailure: "QueryNotExecutable",
       query: actionRuntimeTransformer as any,
       failureMessage:
-        "sqlStringForRuntimeTransformer transformerType not found in applicationTransformerDefinitions: " +
+        "sqlStringForRuntimeTransformer transformerType not found in the TransformerDefinition registry: " +
         castTransformer.transformerType,
     });
   }
@@ -6001,6 +6188,7 @@ export function sqlStringForRuntimeTransformer(
         topLevelTransformer,
         withClauseColumnName,
         iterateOn,
+        transformerDefinitions,
       );
       return transformerSql;
       break;
@@ -6019,6 +6207,7 @@ export function sqlStringForRuntimeTransformer(
         topLevelTransformer,
         withClauseColumnName,
         iterateOn,
+        transformerDefinitions,
       );
       return applicationTransformerSql;
       break;
@@ -6059,6 +6248,7 @@ export function sqlStringForQuery(
   preparedStatementParameters: any[],
   modelEnvironment: MiroirModelEnvironment,
 ): Domain2QueryReturnType<SqlStringForExtractorReturnType> {
+  const transformerDefinitions = transformerDefinitionRegistry(modelEnvironment);
   const extractorRawQueries = Object.entries(queryParams.extractor.extractors ?? {}).map(
     ([key, value]) => {
       return [key, sqlStringForExtractor(value, schema, modelEnvironment)];
@@ -6102,7 +6292,12 @@ export function sqlStringForQuery(
       newPreparedStatementParameters.length,
       0, //indentLevel,
       queryParams.extractor.queryParams,
-      {}
+      {},
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      transformerDefinitions,
     );
     if (convertedParam instanceof Domain2ElementFailed) {
       throw new Error("sqlStringForQuery queryParamsWithClauses convertedParam failed for key: " + key);
@@ -6174,7 +6369,9 @@ export function sqlStringForQuery(
       paramsAndextractorAndCombinerContextEntries, // definedContextEntries
       true, // useAccessPathForContextReference
       true, // topLevelTransformer - these are top-level transformers in WITH clauses
-      key // withClauseColumnName
+      key, // withClauseColumnName
+      undefined,
+      transformerDefinitions,
     );
     if (!(transformerRawQuery instanceof Domain2ElementFailed) && transformerRawQuery.preparedStatementParameters) {
       newPreparedStatementParameters = [...newPreparedStatementParameters, ...transformerRawQuery.preparedStatementParameters];

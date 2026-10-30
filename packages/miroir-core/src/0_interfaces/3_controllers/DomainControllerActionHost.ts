@@ -94,6 +94,7 @@ export interface DomainControllerActionHost {
   handleQueryTemplateActionForServerONLY(
     runBoxedQueryTemplateAction: RunBoxedQueryTemplateAction,
     applicationDeploymentMap: ApplicationDeploymentMap,
+    currentModel?: MiroirModelEnvironment,
   ): Promise<Action2ReturnType>;
   handleStoreManagementAction(
     domainAction: StoreManagementAction,

@@ -590,7 +590,11 @@ export class PersistenceReduxSaga implements PersistenceStoreLocalOrRemoteInterf
           );
         }
         const localStoreResult = yield* call(() =>
-          localPersistenceStoreController.handleQueryTemplateActionForServerONLY(action, applicationDeploymentMap)
+          localPersistenceStoreController.handleQueryTemplateActionForServerONLY(
+            action,
+            applicationDeploymentMap,
+            currentModel
+          )
         );
         return localStoreResult;
         break;

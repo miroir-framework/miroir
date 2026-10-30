@@ -28,7 +28,6 @@ import { generateRestServiceResponse } from "./RestTools";
 
 import { DomainControllerInterface, DomainState } from "../0_interfaces/2_domain/DomainControllerInterface";
 import { Action2Error, Action2ReturnType, Domain2ElementFailed, Domain2QueryReturnType } from "../0_interfaces/2_domain/DomainElement";
-import { defaultMiroirModelEnvironment } from "../1_core/Model";
 import { parseAttributesProjectionParam } from "../1_core/partials/instanceProjection.js";
 import {
   // getExtractorTemplateRunnerParamsForDomainState,
@@ -46,6 +45,7 @@ import {
   assertSecretInstanceMutationAllowed,
 } from "../1_core/authentication/AuthenticationPolicy.js";
 import { redactCredentialSecretsFromValue } from "./redactCredentialSecrets.js";
+import { serverModelEnvironments } from "./ServerModelEnvironments";
 
 const INSTANCE_ENDPOINT = "ed520de4-55a9-4550-ac50-b1b713b72a89";
 const MODEL_ENDPOINT = "7947ae40-eb34-4149-887b-15a9021e714e";
@@ -61,6 +61,47 @@ const modelActionTypesForwardedToDomainController = [
   "createEntity",
   "dropEntity",
 ];
+const instanceWriteActionTypes = [
+  "createInstance",
+  "deleteInstance",
+  "deleteInstanceWithCascade",
+  "updateInstance",
+];
+const storeOrBundleActionTypes = [
+  "storeManagementAction_createStore",
+  "storeManagementAction_deleteStore",
+  "storeManagementAction_resetAndInitApplicationDeployment",
+  "storeManagementAction_openStore",
+  "storeManagementAction_closeStore",
+  "bundleAction",
+];
+
+// ################################################################################################
+/**
+ * #519: after a write that can change an application's model, the server's model environment of
+ * its deployment is rebuilt on the next request (a saved composite TransformerDefinition is used
+ * by the next query).
+ */
+function forgetModelEnvironmentChangedBy(
+  persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface,
+  action: { actionType?: string; payload?: any },
+  applicationDeploymentMap: ApplicationDeploymentMap,
+): void {
+  const actionType = action.actionType ?? "";
+  const environments = serverModelEnvironments(persistenceStoreControllerManager);
+  if (storeOrBundleActionTypes.includes(actionType) || isServerRoutedMiroirAction(action)) {
+    environments.forget();
+    return;
+  }
+  const changesModel =
+    modelActionTypesForwardedToDomainController.includes(actionType) ||
+    (instanceWriteActionTypes.includes(actionType) &&
+      (action.payload?.applicationSection ?? action.payload?.section) === "model");
+  const deploymentUuid = applicationDeploymentMap[action.payload?.application];
+  if (changesModel && deploymentUuid) {
+    environments.forget(deploymentUuid);
+  }
+}
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "RestServer");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
@@ -332,7 +373,7 @@ export async function restMethodsPostPutDeleteHandler(
   //   await targetDataStore.getDataState()
   // );
 
-  return generateRestServiceResponse(
+  const result = await generateRestServiceResponse(
     { section },
     ["section"],
     body?.crudInstances ?? [],
@@ -350,6 +391,10 @@ export async function restMethodsPostPutDeleteHandler(
       },
     continuationFunction(response)
   );
+  if (section === "model") {
+    serverModelEnvironments(persistenceStoreControllerManager).forget(deploymentUuid);
+  }
+  return result;
 }
 
 // ################################################################################################
@@ -381,6 +426,7 @@ export async function restActionHandler(
       undefined,
       urlParams?.authPrincipal,
     );
+    forgetModelEnvironmentChangedBy(persistenceStoreControllerManager, action, applicationDeploymentMap);
     return continuationFunction(response)(redactCredentialSecretsFromValue(result));
   }
 
@@ -419,6 +465,7 @@ export async function restActionHandler(
         applicationDeploymentMap,
         persistenceStoreControllerManager
       );
+      forgetModelEnvironmentChangedBy(persistenceStoreControllerManager, action, applicationDeploymentMap);
       return continuationFunction(response)(result);
       break;
     }
@@ -447,25 +494,30 @@ export async function restActionHandler(
         // #341: DomainController finds an action by its endpoint; actions replayed through the
         // persistence layer carry the PersistenceEndpoint, so they are forwarded with the
         // Miroir Endpoint that declares them.
+        const modelEnvironment = await serverModelEnvironments(
+          persistenceStoreControllerManager,
+        ).forApplication((action as any).payload?.application, applicationDeploymentMap);
         if (modelActionTypesForwardedToDomainController.includes(action.actionType)) {
           const result = await domainController.handleAction(
             { ...action, endpoint: MODEL_ENDPOINT } as any,
             applicationDeploymentMap,
-            defaultMiroirModelEnvironment,
+            modelEnvironment,
             undefined,
             undefined,
             urlParams?.authPrincipal,
-          ); // TODO: get the right model for the app / deployment
+          );
+          forgetModelEnvironmentChangedBy(persistenceStoreControllerManager, action, applicationDeploymentMap);
           return continuationFunction(response)(redactCredentialSecretsFromValue(result));
         } else {
           const result = await domainController.handleAction(
             { ...action, endpoint: INSTANCE_ENDPOINT } as any,
             applicationDeploymentMap,
-            undefined,
+            modelEnvironment,
             undefined,
             undefined,
             urlParams?.authPrincipal,
           );
+          forgetModelEnvironmentChangedBy(persistenceStoreControllerManager, action, applicationDeploymentMap);
           log.info(
             "restActionHandler handled action",
             action.actionType,
@@ -497,6 +549,7 @@ export async function restActionHandler(
           );
         }
         const result = await localPersistenceStoreController.handleAction(action, applicationDeploymentMap);
+        forgetModelEnvironmentChangedBy(persistenceStoreControllerManager, action, applicationDeploymentMap);
         return continuationFunction(response)(result);
       }
       break;
@@ -539,7 +592,10 @@ export async function queryActionHandler(
       const result = await domainController.handleBoxedExtractorOrQueryAction(
         runBoxedExtractorOrQueryAction,
         applicationDeploymentMap,
-        defaultMiroirModelEnvironment,
+        await serverModelEnvironments(persistenceStoreControllerManager).forApplication(
+          runBoxedExtractorOrQueryAction.payload?.application,
+          applicationDeploymentMap,
+        ),
         params.authPrincipal,
       );
       return continuationFunction(response)(redactCredentialSecretsFromValue(result));
@@ -597,6 +653,10 @@ export async function queryTemplateActionHandler(
    *
    */
   const runBoxedQueryTemplateOrBoxedExtractorTemplateAction: any = action as any;
+  const modelEnvironment = await serverModelEnvironments(persistenceStoreControllerManager).forApplication(
+    runBoxedQueryTemplateOrBoxedExtractorTemplateAction?.payload?.application,
+    applicationDeploymentMap,
+  );
 
   // const domainController = persistenceStoreControllerManager.getServerDomainControllerDEFUNCT();
   if (useDomainControllerToHandleModelAndInstanceActions) {
@@ -604,7 +664,7 @@ export async function queryTemplateActionHandler(
     const result = await domainController.handleQueryTemplateActionForServerONLY(
       runBoxedQueryTemplateOrBoxedExtractorTemplateAction, 
       applicationDeploymentMap,
-      defaultMiroirModelEnvironment, // TODO: get the right model for the app / deployment
+      modelEnvironment,
     );
     log.info(
       "RestServer queryTemplateActionHandler used deployment_Miroir domainController result=", result
@@ -634,7 +694,7 @@ export async function queryTemplateActionHandler(
             runBoxedQueryTemplateOrBoxedExtractorTemplateAction.payload.query,
             extractorRunnerMapOnDomainState
           ),
-          defaultMiroirModelEnvironment
+          modelEnvironment
         );
 
         break;

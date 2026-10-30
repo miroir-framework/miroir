@@ -105,7 +105,7 @@ export interface DomainControllerInterface {
   handleQueryTemplateActionForServerONLY(
     action: RunBoxedQueryTemplateAction,
     applicationDeploymentMap: ApplicationDeploymentMap,
-    currentModel: MiroirModelEnvironment
+    currentModel?: MiroirModelEnvironment
   ): Promise<Action2ReturnType>;
   // handleCompositeActionTemplate(action: CompositeInstanceActionTemplate, actionParamValues: any, currentModel?: MetaModel): Promise<Action2VoidReturnType>;
   handleCompositeActionTemplate(
