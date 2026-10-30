@@ -6,6 +6,7 @@ import {
   ensureLibraryPlayfield,
   extendMiroirConfigWithExtraDeploymentConfiguration,
   getBootstrapPhasesForSessionKind,
+  remapIntegTestbedResetParamsForRunTarget,
   remapLibraryAppModelForRunTarget,
   testbedApplicationAccessGrantUuid,
   type ApplicationDeploymentMap,
@@ -487,15 +488,12 @@ export class RunnerTestSession implements RunnerTestSessionInterface {
         } : false,
         ...(resetParams
           ? {
-              integTestbedResetParams: {
-                ...resetParams,
-                testbedModel: remapLibraryAppModelForRunTarget(
-                  resetParams.testbedModel,
-                  canonicalApplicationUuid,
-                  canonicalDeploymentUuid,
-                  this.runnerTestContext.runTarget,
-                ),
-              },
+              integTestbedResetParams: remapIntegTestbedResetParamsForRunTarget(
+                resetParams,
+                canonicalApplicationUuid,
+                canonicalDeploymentUuid,
+                this.runnerTestContext.runTarget,
+              ),
             }
           : {}),
       },

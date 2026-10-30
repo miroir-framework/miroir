@@ -8,6 +8,8 @@ import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
 import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
 
+import { selfApplicationLibrary } from "miroir-example-library";
+
 import { miroirAppStartup } from "../../src/startup.js";
 import { UI_INTEGRATION_RUNNER_SUITE_REGISTRY } from "../../src/miroir-fwk/4-tests/uiIntegrationTestRunnerSuiteRegistry.js";
 import { resolveLaunchProfileName } from "./launchProfileName.js";
@@ -104,5 +106,37 @@ describe("runUiIntegrationTestSuite transformer (B7)", () => {
     expect(result.runTarget.applicationUuid).toBeTruthy();
     expect(result.runTarget.deploymentUuid).toBeTruthy();
     expect(result.success).toBe(true);
+  }, 180_000);
+});
+
+describe("runUiIntegrationTestSuite action suite on an ephemeral run target (#588)", () => {
+  // The browser self-test runs integration suites on an ephemeral run target: the testbed
+  // SelfApplication must carry the run target's uuid, or freezeApplicationVersion cannot find it.
+  it("runs every action.domainController.freezeApplicationVersion leaf", async () => {
+    const suiteKey = "action.domainController.freezeApplicationVersion";
+    const suiteDefinition = UI_INTEGRATION_RUNNER_SUITE_REGISTRY[suiteKey].suiteDefinition;
+
+    const result = await runUiIntegrationTestSuiteInNode(
+      {
+        suiteKey,
+        suiteDefinition,
+        profileName: LAUNCH_PROFILE_NAME,
+        runTargetMode: "ephemeral",
+        hostMode: "isolated",
+      },
+      vitestExpect,
+    );
+
+    expect(result.runTargetMode).toBe("ephemeral");
+    expect(result.runTarget.applicationUuid).not.toBe(selfApplicationLibrary.uuid);
+    expect(result.success).toBe(true);
+    // every leaf ran: a leaf that stopped running would not show up as a failure
+    const leafLabels = suiteDefinition.miroirTests.map((leaf) => leaf.miroirTestLabel);
+    expect(leafLabels).toHaveLength(10);
+    expect(
+      Object.fromEntries(
+        Object.entries(result.testSuiteResults?.testsResults ?? {}).map(([label, leaf]) => [label, leaf.testResult]),
+      ),
+    ).toEqual(Object.fromEntries(leafLabels.map((label) => [label, "ok"])));
   }, 180_000);
 });
