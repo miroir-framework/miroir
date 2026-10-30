@@ -114,6 +114,20 @@ export type {
 } from "./contexts/MiroirThemeContext.js";
 
 export {
+  ReportSectionRenderersProvider,
+  UnsupportedReportSection,
+  useReportSectionRenderers,
+} from "./contexts/ReportSectionRenderersContext.js";
+
+export type {
+  GraphReportSectionRendererProps,
+  MiroirTestReportSectionRendererProps,
+  ModelDiagramReportSectionRendererProps,
+  ReportSectionRenderers,
+  StoredRunnerRendererProps,
+} from "./contexts/ReportSectionRenderersContext.js";
+
+export {
   LocalCache,
   RestPersistenceClientAndRestClient,
   LocalCacheProvider,

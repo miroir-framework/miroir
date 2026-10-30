@@ -54,6 +54,7 @@ import {
 import {
   LocalCacheProvider,
   MiroirContextReactProvider,
+  ReportSectionRenderersProvider,
   RestPersistenceClientAndRestClient,
   setupMiroirDomainController,
 } from "miroir-react";
@@ -65,6 +66,7 @@ import { fetchAuthenticationEnabled } from "./miroir-fwk/4_view/auth/authTranspo
 import { RootComponent } from "./miroir-fwk/4_view/components/Page/RootComponent.js";
 import { ErrorPage } from "miroir-react";
 import { PageDispatcher } from "./miroir-fwk/4_view/PageDispatcher.js";
+import { appReportSectionRenderers } from "./miroir-fwk/4_view/reportSectionRenderers.js";
 import {
   ElectronRestClient,
   ElectronServerDomainControllerProxy,
@@ -456,7 +458,9 @@ async function startWebApp(root: Root) {
               domainController={domainControllerForClient}
               processCapabilities={processCapabilities}
             >
-              {page}
+              <ReportSectionRenderersProvider renderers={appReportSectionRenderers}>
+                {page}
+              </ReportSectionRenderersProvider>
             </MiroirContextReactProvider>
           </LocalCacheProvider>
         </StyledEngineProvider>

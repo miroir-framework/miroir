@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { Suspense, useCallback, useMemo, useState } from 'react';
 
 import {
   ApplicationSection,
@@ -34,16 +34,13 @@ import {
   resolveOpenReportPageParams,
 } from "miroir-react";
 import { RenderInsightHeader } from "miroir-react";
+import { UnsupportedReportSection, useReportSectionRenderers } from "miroir-react";
 import { useRenderTracker } from "miroir-react";
-import GraphReportSectionView from '../Graph/GraphReportSectionView.js';
-import { StoredRunnerView } from '../Runners/RunnerView';
 import { ThemedProgressiveAccordion } from "miroir-react";
 import { ThemedBox, ThemedStyledButton, ThemedText } from "miroir-react";
-import { ModelDiagramReportSectionView } from './ModelDiagramReportSectionView.js';
 import { ReportSectionEntityInstance, type ValueObjectEditMode } from "miroir-react";
 import { ReportSectionListDisplay } from './ReportSectionListDisplay.js';
 import { ReportSectionMarkdown } from "miroir-react";
-import { ReportSectionMiroirTest } from './ReportSectionMiroirTest.js';
 import { TypedValueObjectEditor } from "miroir-react";
 import { TransformerRunnerReportSectionView } from "miroir-react";
 import { ReportInputSection } from "miroir-react";
@@ -166,6 +163,7 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
   const context = useMiroirContextService();
   const showPerformanceDisplay = context.showPerformanceDisplay;
   const navigate = useNavigate();
+  const reportSectionRenderers = useReportSectionRenderers();
   const multistepHost = useOptionalMultistepReportHost();
 
   const formik = useFormikContext<Record<string, any>>();
@@ -612,27 +610,39 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
         )}
         {reportSectionDefinitionFromFormik?.type == "graphReportSection" && (
           <div>
-            <GraphReportSectionView
-              applicationSection={props.applicationSection}
-              deploymentUuid={props.deploymentUuid}
-              queryResults={formik.values}
-              reportSection={reportSectionDefinitionFromFormik as any}
-              showPerformanceDisplay={props.showPerformanceDisplay}
-            />
+            {reportSectionRenderers.graphReportSection ? (
+              <Suspense fallback={<div>Loading graph...</div>}>
+                <reportSectionRenderers.graphReportSection
+                  applicationSection={props.applicationSection}
+                  deploymentUuid={props.deploymentUuid}
+                  queryResults={formik.values}
+                  reportSection={reportSectionDefinitionFromFormik as any}
+                  showPerformanceDisplay={props.showPerformanceDisplay}
+                />
+              </Suspense>
+            ) : (
+              <UnsupportedReportSection sectionType="graphReportSection" />
+            )}
           </div>
         )}
         {reportSectionDefinitionFromFormik?.type == "modelDiagramReportSection" && (
-          <ModelDiagramReportSectionView
-            entities={modelDiagramEntities}
-            mode={modelDiagramMode}
-            label={(reportSectionDefinitionFromFormik as any).definition?.label}
-            title={(reportSectionDefinitionFromFormik as any).definition?.title}
-            direction={(reportSectionDefinitionFromFormik as any).definition?.direction}
-            onClassClick={handleModelDiagramClassClick}
-            applicationSection={props.applicationSection}
-            deploymentUuid={props.deploymentUuid}
-            showPerformanceDisplay={props.showPerformanceDisplay}
-          />
+          reportSectionRenderers.modelDiagramReportSection ? (
+            <Suspense fallback={<div>Loading model diagram...</div>}>
+              <reportSectionRenderers.modelDiagramReportSection
+                entities={modelDiagramEntities}
+                mode={modelDiagramMode}
+                label={(reportSectionDefinitionFromFormik as any).definition?.label}
+                title={(reportSectionDefinitionFromFormik as any).definition?.title}
+                direction={(reportSectionDefinitionFromFormik as any).definition?.direction}
+                onClassClick={handleModelDiagramClassClick}
+                applicationSection={props.applicationSection}
+                deploymentUuid={props.deploymentUuid}
+                showPerformanceDisplay={props.showPerformanceDisplay}
+              />
+            </Suspense>
+          ) : (
+            <UnsupportedReportSection sectionType="modelDiagramReportSection" />
+          )
         )}
         {reportSectionDefinitionFromFormik?.type == "transformerRunnerReportSection" && (
           <TransformerRunnerReportSectionView
@@ -670,13 +680,19 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
           <>
             {reportSectionDefinitionFromFormik.definition.runnerReportSectionType ===
             "storedRunner" ? (
-              <StoredRunnerView
-                applicationUuid={props.application}
-                applicationDeploymentMap={
-                  props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap
-                }
-                runnerUuid={reportSectionDefinitionFromFormik.definition.runner}
-              />
+              reportSectionRenderers.storedRunner ? (
+                <Suspense fallback={<div>Loading runner...</div>}>
+                  <reportSectionRenderers.storedRunner
+                    applicationUuid={props.application}
+                    applicationDeploymentMap={
+                      props.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap
+                    }
+                    runnerUuid={reportSectionDefinitionFromFormik.definition.runner}
+                  />
+                </Suspense>
+              ) : (
+                <UnsupportedReportSection sectionType="runnerReportSection (storedRunner)" />
+              )
             ) : (
               <div>
                 Unsupported runner report section type:{" "}
@@ -686,11 +702,17 @@ export const ReportSectionViewWithEditor = (props: ReportSectionViewWithEditorPr
           </>
         )}
         {reportSectionDefinitionFromFormik?.type == "miroirTestReportSection" && (
-          <ReportSectionMiroirTest
-            reportName={props.reportName}
-            reportSectionPath={props.reportSectionPath}
-            showPerformanceDisplay={props.showPerformanceDisplay}
-          />
+          reportSectionRenderers.miroirTestReportSection ? (
+            <Suspense fallback={<div>Loading MiroirTest section...</div>}>
+              <reportSectionRenderers.miroirTestReportSection
+                reportName={props.reportName}
+                reportSectionPath={props.reportSectionPath}
+                showPerformanceDisplay={props.showPerformanceDisplay}
+              />
+            </Suspense>
+          ) : (
+            <UnsupportedReportSection sectionType="miroirTestReportSection" />
+          )
         )}
         {reportSectionDefinitionFromFormik?.type == "markdownReportSection" && (
           <ReportSectionMarkdown

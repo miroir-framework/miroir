@@ -2494,6 +2494,22 @@
       ]
     },
     {
+      "id": "unit-610-report-section-renderers",
+      "scopes": ["ui"],
+      "tier": "unit",
+      "title": "#610 report section renderer registry: a registered renderer, the fallback without one",
+      "requires": "none",
+      "argv": [
+        "npm",
+        "run",
+        "testByFile",
+        "-w",
+        "miroir-react",
+        "--",
+        "reportSectionRenderers"
+      ]
+    },
+    {
       "id": "unit-307-testByFile-launcher",
       "scopes": ["tooling"],
       "tier": "unit",

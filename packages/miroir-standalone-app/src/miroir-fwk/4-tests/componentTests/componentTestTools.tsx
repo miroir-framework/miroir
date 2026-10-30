@@ -36,8 +36,10 @@ import {
   LocalCacheProvider,
   MiroirContextReactProvider,
   PersistenceReduxSaga,
+  ReportSectionRenderersProvider,
   useMiroirContextService,
 } from "miroir-react";
+import { appReportSectionRenderers } from "../../4_view/reportSectionRenderers.js";
 import {
   deployment_Library_DO_NO_USE,
   entityAuthor,
@@ -581,7 +583,11 @@ function MiroirTestContext(
         onToggleOutline={noOutlineAction}
         onNavigateToPath={noOutlineAction}
       >
-        <ReportPageContextProvider>{props.children}</ReportPageContextProvider>
+        <ReportPageContextProvider>
+          <ReportSectionRenderersProvider renderers={appReportSectionRenderers}>
+            {props.children}
+          </ReportSectionRenderersProvider>
+        </ReportPageContextProvider>
       </DocumentOutlineContextProvider>
     </MiroirContextReactProvider>
   );
