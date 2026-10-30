@@ -26,34 +26,20 @@ import {
   type TransformerReturnType,
   type Uuid,
 } from "miroir-core";
-import { ThemedOnScreenHelper } from "miroir-react";
+import { ThemedOnScreenHelper } from "../helpers/ThemedHelper.js";
 import { entityEntity, reportEntityDetails } from "miroir-app-miroir";
 
-import { TypedValueObjectEditor } from "miroir-react";
-import { TypedValueObjectEditorWithFormik } from "miroir-react";
-import {
-  applyTransformerToListRows,
-  DEFAULT_ROW_IDENTITY_TRANSFORMER,
-  getListTransformationFailure,
-  resolveListTransformationResultDisplaySchema,
-} from "miroir-react";
-import { hasDisplayableTransformationResult } from "miroir-react";
-import { ReportInstanceLink } from "miroir-react";
-import { ExpectedOutputTypeChooser } from "miroir-react";
-import {
-  TransformerNamedBindings,
-  TransformerTitleSignature,
-} from "miroir-react";
-import {
-  ThemedContainer,
-  ThemedFlexRow,
-  ThemedHeaderSection,
-  ThemedLabel,
-  ThemedLabeledEditor,
-  ThemedSwitch,
-  ThemedText,
-  ThemedTitle,
-} from "miroir-react";
+import { TypedValueObjectEditor } from "./TypedValueObjectEditor.js";
+import { TypedValueObjectEditorWithFormik } from "./TypedValueObjectEditorWithFormik.js";
+import { applyTransformerToListRows, DEFAULT_ROW_IDENTITY_TRANSFORMER, getListTransformationFailure, resolveListTransformationResultDisplaySchema } from "./listDisplayByTransformer.js";
+import { hasDisplayableTransformationResult } from "../TransformerEditor/TransformationResultPanel.js";
+import { ReportInstanceLink } from "../ReportInstanceLink.js";
+import { ExpectedOutputTypeChooser } from "./ExpectedOutputTypeChooser.js";
+import { TransformerNamedBindings, TransformerTitleSignature } from "./TransformerTypeAnnotation.js";
+import { ThemedContainer, ThemedHeaderSection, ThemedLabel, ThemedText, ThemedTitle } from "../Themes/BasicComponents.js";
+import { ThemedFlexRow } from "../Themes/LayoutComponents.js";
+import { ThemedLabeledEditor } from "../Themes/FormComponents.js";
+import { ThemedSwitch } from "../Themes/UIComponents.js";
 
 /** Shared with TransformerEditor — schemaReference to coreTransformerForBuildPlusRuntime. */
 export const coreTransformerForBuildPlusRuntimeSchemaReference: MlElement = {

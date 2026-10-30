@@ -3,10 +3,10 @@ import { LoggerInterface, MiroirLoggerFactory } from "miroir-core";
 
 import { Icon } from '@mui/material';
 import React, { memo, useMemo } from 'react';
-import { packageName } from '../../../../constants';
-import { cleanLevel } from '../../constants';
-import { TableActionButtons } from "miroir-react";
-import { TableComponentRow } from "miroir-react";
+import { packageName } from "../../constants.js";
+import { cleanLevel } from "../../viewConstants.js";
+import { TableActionButtons } from "./TableActionButtons.js";
+import { TableComponentRow } from "./EntityInstanceGridInterface.js";
 
 // export default (props) => {
 //   const image = props.value === 'Male' ? 'male.png' : 'female.png';

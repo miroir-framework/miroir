@@ -19,36 +19,32 @@ import {
 } from "miroir-core";
 
 import { useFormikContext } from 'formik';
-import { JsonDisplayHelper, useMiroirContextService } from 'miroir-react';
+import { JsonDisplayHelper } from "../helpers/DebugHelper.js";
+import { useMiroirContextService } from "../../contexts/MiroirContextReactProvider.js";
 import type { Params } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-import { packageName } from "../../../../constants.js";
-import { type ReportUrlParamKeys } from "miroir-react";
-import { cleanLevel } from '../../constants.js';
-import { useCurrentModel, useCurrentModelEnvironment } from "miroir-react";
-import { reportUrl } from "miroir-react";
-import { ReportDisplay } from '../../routes/ReportDisplay';
-import {
-  OpenReportModal,
-  openReportHref,
-  resolveOpenReportPageParams,
-} from "miroir-react";
-import { RenderInsightHeader } from "miroir-react";
-import { UnsupportedReportSection, useReportSectionRenderers } from "miroir-react";
-import { useRenderTracker } from "miroir-react";
-import { ThemedProgressiveAccordion } from "miroir-react";
-import { ThemedBox, ThemedStyledButton, ThemedText } from "miroir-react";
-import { ReportSectionEntityInstance, type ValueObjectEditMode } from "miroir-react";
-import { ReportSectionListDisplay } from './ReportSectionListDisplay.js';
-import { ReportSectionMarkdown } from "miroir-react";
-import { TypedValueObjectEditor } from "miroir-react";
-import { TransformerRunnerReportSectionView } from "miroir-react";
-import { ReportInputSection } from "miroir-react";
-import { resolveApiCallReportSectionSchema } from "miroir-react";
-import {
-  isMultistepStepEnvelope,
-  useOptionalMultistepReportHost,
-} from "miroir-react";
+import { packageName } from "../../constants.js";
+import { type ReportUrlParamKeys } from "../../reportUrlParams.js";
+import { cleanLevel } from "../../viewConstants.js";
+import { useCurrentModel, useCurrentModelEnvironment } from "../../ReduxHooks.js";
+import { reportUrl } from "../../navigation.js";
+import { ReportDisplay } from "./ReportDisplay.js";
+import { OpenReportModal, openReportHref, resolveOpenReportPageParams } from "./OpenReportLaunch.js";
+import { RenderInsightHeader } from "../RenderInsightHeader.js";
+import { UnsupportedReportSection, useReportSectionRenderers } from "../../contexts/ReportSectionRenderersContext.js";
+import { useRenderTracker } from "../../tools/renderCountTracker.js";
+import { ThemedProgressiveAccordion } from "../Themes/BasicComponents.js";
+import { ThemedBox } from "../Themes/LayoutComponents.js";
+import { ThemedStyledButton } from "../Themes/UIComponents.js";
+import { ThemedText } from "../Themes/BasicComponents.js";
+import { ReportSectionEntityInstance, type ValueObjectEditMode } from "./ReportSectionEntityInstance.js";
+import { ReportSectionListDisplay } from "./ReportSectionListDisplay.js";
+import { ReportSectionMarkdown } from "./ReportSectionMarkdown.js";
+import { TypedValueObjectEditor } from "./TypedValueObjectEditor.js";
+import { TransformerRunnerReportSectionView } from "./TransformerRunner.js";
+import { ReportInputSection } from "./ReportInputSection.js";
+import { resolveApiCallReportSectionSchema } from "./resolveApiCallReportSectionSchema.js";
+import { isMultistepStepEnvelope, useOptionalMultistepReportHost } from "./MultistepReportHost.js";
 
 import {
   entityEntity,

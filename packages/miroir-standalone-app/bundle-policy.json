@@ -522,9 +522,7 @@
     "zod-to-json-schema",
     "zwitch"
   ],
-  "defeatedDynamicImports": [
-    "packages/miroir-standalone-app/src/miroir-fwk/4_view/routes/ReportDisplay.tsx"
-  ],
+  "defeatedDynamicImports": [],
   "eagerPackageMaxBytes": {
     "miroir-app-miroir": 3400000
   }

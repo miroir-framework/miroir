@@ -1,5 +1,7 @@
+// @vitest-environment happy-dom
+// Moved from miroir-standalone-app with ListTransformerPanel (#612): the stubs below replace modules
+// of miroir-react's source, which a test outside the package cannot reach.
 import { fireEvent, render as rtlRender, screen } from "@testing-library/react";
-import { MiroirContextReactTestProvider } from "miroir-react";
 import "@testing-library/jest-dom";
 import React from "react";
 import { Formik } from "formik";
@@ -21,27 +23,25 @@ import {
   reduxStoreWithUndoRedoGetInitialState,
   type LocalCacheSliceState,
   type ReduxStateWithUndoRedo,
-} from "miroir-react";
-
-import { ReportSectionListDisplay } from "../../src/miroir-fwk/4_view/components/Reports/ReportSectionListDisplay.js";
-import { LIST_TRANSFORMER_PAGE_SIZE } from "miroir-react";
-import { TableComponentTypeSchema } from "miroir-react";
-import { MiroirThemeProvider } from "miroir-react";
+  GridComponentsProvider,
+  LIST_TRANSFORMER_PAGE_SIZE,
+  MiroirContextReactTestProvider,
+  MiroirThemeProvider,
+  ReportSectionListDisplay,
+  TableComponentTypeSchema,
+} from "../src/index.js";
 import { defaultStoredMiroirTheme } from "miroir-app-miroir";
 
-vi.mock("../../src/miroir-fwk/4_view/components/Grids/EntityInstanceGrid.js", () => ({
-  EntityInstanceGrid: (props: Record<string, unknown>) => {
-    (globalThis as any).__lastEntityInstanceGridProps = props;
-    return <div data-testid="entity-instance-grid-stub" />;
-  },
-}));
+/** Given to the list section through `GridComponentsProvider` (#612). */
+const EntityInstanceGridStub = (props: Record<string, unknown>) => {
+  (globalThis as any).__lastEntityInstanceGridProps = props;
+  return <div data-testid="entity-instance-grid-stub" />;
+};
 
-vi.mock("../../src/miroir-fwk/4_view/components/JsonObjectEditFormDialog.js", () => ({
-  JsonObjectEditFormDialog: () => null,
-}));
-
-/** Stub of `TypedValueObjectEditor`, spread into the miroir-react mock below. */
-async function typedValueObjectEditorMock(actual: typeof import("miroir-react")) {
+/** Stub of `TypedValueObjectEditor`. */
+async function typedValueObjectEditorMock(
+  actual: typeof import("../src/components/Reports/TransformerTypeAnnotation.js"),
+) {
   const { useFormikContext } = await import("formik");
   const {
     annotationPathKey,
@@ -258,11 +258,17 @@ async function typedValueObjectEditorMock(actual: typeof import("miroir-react"))
   };
 }
 
-vi.mock("miroir-react", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("miroir-react")>();
-  return {
-  ...actual,
-  ...(await typedValueObjectEditorMock(actual)),
+vi.mock("../src/components/Reports/TypedValueObjectEditor.js", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("../src/components/Reports/TypedValueObjectEditor.js")>()),
+  ...(await typedValueObjectEditorMock(
+    await vi.importActual<typeof import("../src/components/Reports/TransformerTypeAnnotation.js")>(
+      "../src/components/Reports/TransformerTypeAnnotation.js",
+    ),
+  )),
+}));
+
+vi.mock("../src/components/Reports/TypedValueObjectEditorWithFormik.js", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("../src/components/Reports/TypedValueObjectEditorWithFormik.js")>()),
   TypedValueObjectEditorWithFormik: ({
     initialValueObject,
     formValueMLSchema,
@@ -277,14 +283,21 @@ vi.mock("miroir-react", async (importOriginal) => {
       {JSON.stringify(initialValueObject.transformationResult)}
     </div>
   ),
+}));
+
+vi.mock("../src/components/helpers/DebugHelper.js", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("../src/components/helpers/DebugHelper.js")>()),
   JsonDisplayHelper: () => null,
+}));
+
+vi.mock("../src/components/helpers/ThemedHelper.js", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("../src/components/helpers/ThemedHelper.js")>()),
   ThemedOnScreenHelper: ({ label, data }: { label: string; data: unknown }) => (
     <div data-testid="list-transformer-failure" data-label={label}>
       {JSON.stringify(data)}
     </div>
   ),
-  };
-});
+}));
 
 function createLibraryBookListStore() {
   const mockLocalCacheSliceState: LocalCacheSliceState = {
@@ -350,20 +363,22 @@ function renderBookListSection(pageParams: Record<string, unknown> = {}) {
       <MiroirThemeProvider currentThemeOptions={testThemeOptions}>
         <LocalCacheProvider store={store}>
           <Formik initialValues={formikInitialValues} onSubmit={vi.fn()}>
-            <ReportSectionListDisplay
-              label="Books"
-              paramsAsdomainElements={pageParams}
-              applicationDeploymentMap={{
-                [selfApplicationLibrary.uuid]: deployment_Library_DO_NO_USE.uuid,
-              }}
-              formikReportDefinitionPathString={reportBookList.name}
-              reportSectionPath={[...reportSectionPath]}
-              formikValuePath={[...reportSectionPath]}
-              tableComponentReportType={TableComponentTypeSchema.enum.EntityInstance}
-              chosenApplicationSection="data"
-              application={selfApplicationLibrary.uuid}
-              deploymentUuid={deployment_Library_DO_NO_USE.uuid}
-            />
+            <GridComponentsProvider components={{ EntityInstanceGrid: EntityInstanceGridStub }}>
+              <ReportSectionListDisplay
+                label="Books"
+                paramsAsdomainElements={pageParams}
+                applicationDeploymentMap={{
+                  [selfApplicationLibrary.uuid]: deployment_Library_DO_NO_USE.uuid,
+                }}
+                formikReportDefinitionPathString={reportBookList.name}
+                reportSectionPath={[...reportSectionPath]}
+                formikValuePath={[...reportSectionPath]}
+                tableComponentReportType={TableComponentTypeSchema.enum.EntityInstance}
+                chosenApplicationSection="data"
+                application={selfApplicationLibrary.uuid}
+                deploymentUuid={deployment_Library_DO_NO_USE.uuid}
+              />
+            </GridComponentsProvider>
           </Formik>
         </LocalCacheProvider>
       </MiroirThemeProvider>

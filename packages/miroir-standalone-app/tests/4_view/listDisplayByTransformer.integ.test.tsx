@@ -17,10 +17,6 @@ import {
 } from "./helpers/listTransformerIntegRig.js";
 import { waitForProgressiveRendering } from "./MlElementEditorTestTools.js";
 
-vi.mock("../../src/miroir-fwk/4_view/components/JsonObjectEditFormDialog.js", () => ({
-  JsonObjectEditFormDialog: () => null,
-}));
-
 vi.mock("miroir-react", async (importOriginal) => {
   const actual = await importOriginal<typeof import("miroir-react")>();
   return {

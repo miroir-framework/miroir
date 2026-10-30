@@ -2,7 +2,7 @@ import React, { Suspense, useCallback, useMemo } from "react";
 import { MiroirLoggerFactory, type MlElement, type LoggerInterface, type ViewParams } from "miroir-core";
 
 import { CenteredSpinner } from "miroir-react";
-import { ValueObjectGrid } from "../Grids/LazyGrids.js";
+import { ValueObjectGrid } from "miroir-react";
 import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";
 import { TestCellWithDetails } from "./TestCellWithDetails.js";

@@ -31,13 +31,13 @@ import { packageName } from "../../constants.js";
 import { cleanLevel } from "./constants.js";
 import { PageContainer } from "miroir-react";
 import { CenteredSpinner } from "miroir-react";
+import { LazyReportDisplay } from "miroir-react";
 
 // All page components are lazy-loaded so they are excluded from the main
 // bundle and downloaded in the background after the shell renders.
 const CheckPage            = React.lazy(() => import("./routes/Check.js").then(m => ({ default: m.CheckPage })));
 const HomePage             = React.lazy(() => import("./routes/HomePage.js").then(m => ({ default: m.HomePage })));
 const ModelDiagramPage     = React.lazy(() => import("./routes/ModelDiagramPage.js").then(m => ({ default: m.ModelDiagramPage })));
-const ReportDisplay        = React.lazy(() => import("./routes/ReportDisplay.js").then(m => ({ default: m.ReportDisplay })));
 const RunnersPage          = React.lazy(() => import("./routes/Runners.js").then(m => ({ default: m.RunnersPage })));
 const SearchPage           = React.lazy(() => import("./routes/SearchPage.js").then(m => ({ default: m.SearchPage })));
 const SettingsPage         = React.lazy(() => import("./routes/SettingsPage.js").then(m => ({ default: m.SettingsPage })));
@@ -100,7 +100,7 @@ function ReportWrapper({ pageParams }: { pageParams: Params<ReportUrlParamKeys> 
 
   return (
     <PageContainer withSidebar={true} withDocumentOutline={false}>
-      <ReportDisplay pageParams={pageParams} />
+      <LazyReportDisplay pageParams={pageParams} />
     </PageContainer>
   );
 }

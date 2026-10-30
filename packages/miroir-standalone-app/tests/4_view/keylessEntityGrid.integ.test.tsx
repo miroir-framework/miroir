@@ -15,17 +15,13 @@ import {
   selfApplicationLibrary,
 } from "miroir-example-library";
 
-import { EntityInstanceGrid } from "../../src/miroir-fwk/4_view/components/Grids/EntityInstanceGrid.js";
+import { EntityInstanceGrid } from "miroir-react";
 import { TableComponentTypeSchema } from "miroir-react";
 import type { TableComponentRow } from "miroir-react";
-import { toolsCellActions } from "../../src/miroir-fwk/4_view/components/Grids/GlideToolsCellRenderer.js";
+import { toolsCellActions } from "miroir-react";
 import { waitForProgressiveRendering } from "./MlElementEditorTestTools.js";
 import { GridPaginationIntegShell } from "./helpers/gridPaginationIntegRig.js";
 import { libraryApplicationDeploymentMap } from "./helpers/listTransformerIntegRig.js";
-
-vi.mock("../../src/miroir-fwk/4_view/components/JsonObjectEditFormDialog.js", () => ({
-  JsonObjectEditFormDialog: () => null,
-}));
 
 const keylessEntity = {
   uuid: "22275459-d657-48cc-b72e-834e2ba3947c",

@@ -1,9 +1,9 @@
 import { ICellRendererParams } from "ag-grid-community";
 import { LoggerInterface, MiroirLoggerFactory } from "miroir-core";
 import { memo } from "react";
-import { packageName } from "../../../../constants.js";
-import { cleanLevel } from "../../constants.js";
-import { TableComponentRow } from "miroir-react";
+import { packageName } from "../../constants.js";
+import { cleanLevel } from "../../viewConstants.js";
+import { TableComponentRow } from "./EntityInstanceGridInterface.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "EntityInstanceCellRenderer");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);

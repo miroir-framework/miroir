@@ -50,7 +50,7 @@ import {
 } from "miroir-react";
 import { useReduxDeploymentsStateQuerySelectorForCleanedResult } from "miroir-react";
 import { usePageConfiguration } from "../services/index.js";
-import { ReportDisplay } from "./ReportDisplay.js";
+import { ReportDisplay } from "miroir-react";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "SettingsPage");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);

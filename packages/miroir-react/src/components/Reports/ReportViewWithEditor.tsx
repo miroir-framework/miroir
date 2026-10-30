@@ -22,23 +22,21 @@ import {
   type ReportQueryLoadRequest,
   findEntityFromUuid,
 } from "miroir-core";
-import { JsonDisplayHelper, useDomainControllerService, useMiroirContextService, useSnackbar } from 'miroir-react';
-import { packageName } from '../../../../constants.js';
-import { cleanLevel } from '../../constants.js';
-import { lastSubmitButtonClicked } from "miroir-react";
-import { ThemedSpan } from "miroir-react";
-import { useDocumentOutlineContext } from "miroir-react";
-import { InlineReportEditor, reportReportDetailsKey } from "miroir-react";
-import { ReportFormSubmitContext, type SubmitReportFormValues } from "miroir-react";
-import {
-  omitSecretKeysFromBagDump,
-  useOptionalMultistepReportHost,
-} from "miroir-react";
-import { ReportViewProps, useQueryTemplateResults } from "miroir-react";
-import ReportSectionViewWithEditor from './ReportSectionViewWithEditor.js';
-import { reportSectionsFormValue } from "miroir-react";
-import { useEnsureReportQueryLoaded } from "miroir-react";
-import { useReportQueryLoadService } from "miroir-react";
+import { JsonDisplayHelper } from "../helpers/DebugHelper.js";
+import { useDomainControllerService, useMiroirContextService, useSnackbar } from "../../contexts/MiroirContextReactProvider.js";
+import { packageName } from "../../constants.js";
+import { cleanLevel } from "../../viewConstants.js";
+import { lastSubmitButtonClicked } from "../../viewConstants.js";
+import { ThemedSpan } from "../Themes/BasicComponents.js";
+import { useDocumentOutlineContext } from "../ValueObjectEditor/InstanceEditorOutlineContext.js";
+import { InlineReportEditor, reportReportDetailsKey } from "./InlineReportEditor.js";
+import { ReportFormSubmitContext, type SubmitReportFormValues } from "./ReportFormSubmitContext.js";
+import { omitSecretKeysFromBagDump, useOptionalMultistepReportHost } from "./MultistepReportHost.js";
+import { ReportViewProps, useQueryTemplateResults } from "./ReportHooks.js";
+import ReportSectionViewWithEditor from "./ReportSectionViewWithEditor.js";
+import { reportSectionsFormValue } from "./ReportTools.js";
+import { useEnsureReportQueryLoaded } from "./useEnsureReportQueryLoaded.js";
+import { useReportQueryLoadService } from "./useReportQueryLoadService.js";
 
 import { reportReportDetails, entityReport } from "miroir-app-miroir";
 import { deployment_Miroir } from 'miroir-app-admin';

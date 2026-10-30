@@ -2,8 +2,8 @@ import { ICellEditorParams } from "ag-grid-community";
 import { LoggerInterface, MiroirLoggerFactory } from "miroir-core";
 
 import { forwardRef, KeyboardEvent, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
-import { packageName } from "../../constants.js";
-import { cleanLevel } from "./constants.js";
+import { packageName } from "./constants.js";
+import { cleanLevel } from "./viewConstants.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "EntityEditor");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);

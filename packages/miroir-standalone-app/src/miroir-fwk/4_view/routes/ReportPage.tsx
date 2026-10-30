@@ -21,7 +21,7 @@ import { usePageConfiguration } from "../services/index.js";
 import { RenderInsightHeader } from "miroir-react";
 import { useRenderTracker } from "miroir-react";
 import { RenderPerformanceMetrics } from "miroir-react";
-import { ReportDisplay } from "./ReportDisplay.js";
+import { ReportDisplay } from "miroir-react";
 import { JsonDisplayHelper } from "miroir-react";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportPage");

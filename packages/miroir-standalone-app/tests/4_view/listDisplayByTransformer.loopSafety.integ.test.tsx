@@ -7,7 +7,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import { book1 } from "miroir-example-library";
 
-import { ReportSectionListDisplay } from "../../src/miroir-fwk/4_view/components/Reports/ReportSectionListDisplay.js";
+import { GridComponentsProvider, ReportSectionListDisplay } from "miroir-react";
 import {
   buildBookListFormikValues,
   buildBooksIndex,
@@ -25,13 +25,8 @@ import {
   selfApplicationLibrary,
 } from "miroir-example-library";
 
-vi.mock("../../src/miroir-fwk/4_view/components/JsonObjectEditFormDialog.js", () => ({
-  JsonObjectEditFormDialog: () => null,
-}));
-
-vi.mock("../../src/miroir-fwk/4_view/components/Grids/EntityInstanceGrid.js", () => ({
-  EntityInstanceGrid: () => <div data-testid="entity-instance-grid-stub" />,
-}));
+/** Given to the list section through `GridComponentsProvider` (#612). */
+const gridStubs = { EntityInstanceGrid: () => <div data-testid="entity-instance-grid-stub" /> };
 
 vi.mock("miroir-react", async (importOriginal) => {
   const actual = await importOriginal<typeof import("miroir-react")>();
@@ -81,7 +76,7 @@ describe("listDisplayByTransformer — loop-safety (app-stack)", () => {
     const { rerender } = render(
       <ListTransformerIntegShell>
         <Formik enableReinitialize initialValues={initialValues} onSubmit={() => {}}>
-          <ReportSectionListDisplay {...reportSectionProps} />
+          <GridComponentsProvider components={gridStubs}><ReportSectionListDisplay {...reportSectionProps} /></GridComponentsProvider>
         </Formik>
       </ListTransformerIntegShell>,
     );
@@ -96,7 +91,7 @@ describe("listDisplayByTransformer — loop-safety (app-stack)", () => {
     rerender(
       <ListTransformerIntegShell>
         <Formik enableReinitialize initialValues={refreshedValues} onSubmit={() => {}}>
-          <ReportSectionListDisplay {...reportSectionProps} />
+          <GridComponentsProvider components={gridStubs}><ReportSectionListDisplay {...reportSectionProps} /></GridComponentsProvider>
         </Formik>
       </ListTransformerIntegShell>,
     );
@@ -115,7 +110,7 @@ describe("listDisplayByTransformer — loop-safety (app-stack)", () => {
         <Formik initialValues={initialValues} onSubmit={() => {}}>
           <>
             <ParentFormikValuesObserver onValues={(values) => { parentValues = values; }} />
-            <ReportSectionListDisplay {...reportSectionProps} />
+            <GridComponentsProvider components={gridStubs}><ReportSectionListDisplay {...reportSectionProps} /></GridComponentsProvider>
           </>
         </Formik>
       </ListTransformerIntegShell>,

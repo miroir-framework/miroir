@@ -12,10 +12,6 @@ import {
 } from "./helpers/gridPaginationIntegRig.js";
 import { renderBookListSectionIntegWithCount } from "./helpers/listTransformerIntegRig.js";
 
-vi.mock("../../src/miroir-fwk/4_view/components/JsonObjectEditFormDialog.js", () => ({
-  JsonObjectEditFormDialog: () => null,
-}));
-
 async function clickAgGridNextPage() {
   const nextButton = document.querySelector(
     '.ag-paging-button[aria-label="Next Page"]',
@@ -85,7 +81,8 @@ describe("gridPagination — Glide custom pager", () => {
     renderGlideDataGridHarness({ bookCount: 60 });
     await waitForProgressiveRendering();
 
-    expect(screen.getByTestId("grid-pagination-toolbar")).toBeInTheDocument();
+    // GlideDataGridComponent is lazy (#612): wait for its toolbar.
+    expect(await screen.findByTestId("grid-pagination-toolbar")).toBeInTheDocument();
     expect(screen.getByTestId("grid-pagination-range")).toHaveTextContent(
       "Showing 1–50 of 60",
     );
@@ -172,7 +169,10 @@ describe("gridPagination — ValueObjectGrid both backends", () => {
     renderValueObjectGridHarness({ count: 60, gridType: "ag-grid" });
     await waitForProgressiveRendering();
 
-    expect(document.querySelector(".ag-paging-panel")).toBeInTheDocument();
+    // ValueObjectGrid is lazy (#612): wait for its pager.
+    await waitFor(() => {
+      expect(document.querySelector(".ag-paging-panel")).toBeInTheDocument();
+    });
     expect(
       document.querySelector(".ag-paging-row-summary-panel")?.textContent?.replace(/\s+/g, " "),
     ).toMatch(/1 to 50 of 60/);

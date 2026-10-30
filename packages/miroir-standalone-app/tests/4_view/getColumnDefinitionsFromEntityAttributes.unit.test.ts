@@ -6,7 +6,7 @@ import { describe, expect, it } from "vitest";
 import { entityMLSchema, type Entity } from "miroir-core";
 import { entityMiroirTest } from "miroir-app-miroir";
 
-import { getMDataGridColumnDefinitionsFromEntity } from "../../src/miroir-fwk/4_view/getColumnDefinitionsFromEntityAttributes.js";
+import { getMDataGridColumnDefinitionsFromEntity } from "miroir-react";
 
 const bookEntityShape = {
   uuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
