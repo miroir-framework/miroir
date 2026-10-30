@@ -18,7 +18,6 @@ import {
 import { testbedApplicationAccessGrantUuid } from "../1_core/authentication/TestbedAccessGrant.js";
 import { defaultMiroirModelEnvironment } from "../1_core/Model";
 import { resetAndInitApplicationDeployment } from "../3_controllers/DomainController";
-import { rebindIntegTestbedResetParamsToApplication } from "./composeIntegTestbedResetParams.js";
 
 export type LibraryPlayfieldEnsureMode =
   | "createIfAbsent"
@@ -206,17 +205,13 @@ export async function resetIntegTestbed(
       );
     }
 
-    const seed = rebindIntegTestbedResetParamsToApplication(
-      { testbedInitApplicationParameters, testbedEntitiesAndInstances, testbedModel },
-      librarySelfApplicationUuid,
-    );
     const initResult = await domainController.handleCompositeAction(
       resetAndinitializeDeploymentCompositeAction(
         librarySelfApplicationUuid, // applicationUuid
         libraryDeploymentUuid, // deploymentUuid
-        seed.testbedInitApplicationParameters, // initApplicationParameters
-        seed.testbedEntitiesAndInstances, // appEntitesAndInstances
-        seed.testbedModel, // appMetaModel
+        testbedInitApplicationParameters, // initApplicationParameters
+        testbedEntitiesAndInstances, // appEntitesAndInstances
+        testbedModel, // appMetaModel
       ),
       applicationDeploymentMap,
       defaultMiroirModelEnvironment,

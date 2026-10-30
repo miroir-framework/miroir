@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   composeIntegTestbedResetParams,
-  rebindIntegTestbedResetParamsToApplication,
+  remapIntegTestbedResetParamsForRunTarget,
   type IntegTestbedResetParams,
 } from "../../src/5_tests/composeIntegTestbedResetParams.js";
 import type { InitApplicationParameters } from "../../src/0_interfaces/4-services/PersistenceStoreControllerInterface.js";
@@ -33,13 +33,18 @@ const init: InitApplicationParameters = {
   });
 });
 
-(shouldRun ? describe : describe.skip)("rebindIntegTestbedResetParamsToApplication (#588)", () => {
+(shouldRun ? describe : describe.skip)("remapIntegTestbedResetParamsForRunTarget (#588)", () => {
   const resetParams: IntegTestbedResetParams = {
     testbedModel: {
-      entities: [{ uuid: "e1", selfApplication: "app-uuid", name: "Book" }],
+      applicationUuid: "app-uuid",
+      applicationName: "App",
+      entities: [{ uuid: "e1", parentUuid: "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad", selfApplication: "app-uuid", name: "Book" }],
     } as unknown as IntegTestbedResetParams["testbedModel"],
     testbedEntitiesAndInstances: [
-      { entity: { uuid: "e1", selfApplication: "app-uuid" }, instances: [{ uuid: "i1", name: "app-uuid-like" }] },
+      {
+        entity: { uuid: "e1", selfApplication: "app-uuid" },
+        instances: [{ uuid: "i1", deployment: "deployment-uuid", createdAt: new Date(0) }],
+      },
     ] as unknown as IntegTestbedResetParams["testbedEntitiesAndInstances"],
     testbedInitApplicationParameters: {
       dataStoreType: "app",
@@ -54,28 +59,38 @@ const init: InitApplicationParameters = {
       } as InitApplicationParameters["applicationVersion"],
     },
   };
+  const ephemeral = { applicationUuid: "ephemeral-app", applicationName: "App", deploymentUuid: "ephemeral-deployment" };
 
-  it("returns the params unchanged when they already target the application", () => {
-    expect(rebindIntegTestbedResetParamsToApplication(resetParams, "app-uuid")).toBe(resetParams);
+  it("returns the params unchanged on the canonical run target", () => {
+    const pinned = { ...ephemeral, applicationUuid: "app-uuid", deploymentUuid: "deployment-uuid" };
+    expect(remapIntegTestbedResetParamsForRunTarget(resetParams, "app-uuid", "deployment-uuid", pinned)).toBe(
+      resetParams,
+    );
   });
 
-  it("gives the seeded SelfApplication, its branch, version and Entities the run target uuid", () => {
-    const rebound = rebindIntegTestbedResetParamsToApplication(resetParams, "ephemeral-uuid");
-    const init = rebound.testbedInitApplicationParameters;
-    expect(init.selfApplication.uuid).toBe("ephemeral-uuid");
-    expect(init.selfApplication.name).toBe("App");
-    expect((init.applicationModelBranch as { selfApplication: string }).selfApplication).toBe("ephemeral-uuid");
-    expect((init.applicationVersion as { selfApplication: string }).selfApplication).toBe("ephemeral-uuid");
-    expect(rebound.testbedModel).toEqual({
-      entities: [{ uuid: "e1", selfApplication: "ephemeral-uuid", name: "Book" }],
-    });
-    expect(rebound.testbedEntitiesAndInstances).toEqual([
-      { entity: { uuid: "e1", selfApplication: "ephemeral-uuid" }, instances: [{ uuid: "i1", name: "app-uuid-like" }] },
+  it("gives the seeded SelfApplication, its branch and version the run target uuid", () => {
+    const init = remapIntegTestbedResetParamsForRunTarget(resetParams, "app-uuid", "deployment-uuid", ephemeral)
+      .testbedInitApplicationParameters;
+    expect(init.selfApplication).toEqual({ uuid: "ephemeral-app", name: "App" });
+    expect((init.applicationModelBranch as { selfApplication: string }).selfApplication).toBe("ephemeral-app");
+    expect((init.applicationVersion as { selfApplication: string }).selfApplication).toBe("ephemeral-app");
+  });
+
+  it("moves the model and instances to the run target application and deployment", () => {
+    const remapped = remapIntegTestbedResetParamsForRunTarget(resetParams, "app-uuid", "deployment-uuid", ephemeral);
+    expect((remapped.testbedModel as { entities: { selfApplication: string }[] }).entities[0].selfApplication).toBe(
+      "ephemeral-app",
+    );
+    expect(remapped.testbedEntitiesAndInstances).toEqual([
+      {
+        entity: { uuid: "e1", selfApplication: "ephemeral-app" },
+        instances: [{ uuid: "i1", deployment: "ephemeral-deployment", createdAt: new Date(0) }],
+      },
     ]);
   });
 
   it("does not mutate its input", () => {
-    rebindIntegTestbedResetParamsToApplication(resetParams, "ephemeral-uuid");
+    remapIntegTestbedResetParamsForRunTarget(resetParams, "app-uuid", "deployment-uuid", ephemeral);
     expect(resetParams.testbedInitApplicationParameters.selfApplication.uuid).toBe("app-uuid");
   });
 });

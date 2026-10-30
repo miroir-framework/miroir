@@ -8,6 +8,8 @@ import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
 import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
 
+import { selfApplicationLibrary } from "miroir-example-library";
+
 import { miroirAppStartup } from "../../src/startup.js";
 import { UI_INTEGRATION_RUNNER_SUITE_REGISTRY } from "../../src/miroir-fwk/4-tests/uiIntegrationTestRunnerSuiteRegistry.js";
 import { resolveLaunchProfileName } from "./launchProfileName.js";
@@ -126,7 +128,7 @@ describe("runUiIntegrationTestSuite action suite on an ephemeral run target (#58
     );
 
     expect(result.runTargetMode).toBe("ephemeral");
-    expect(result.runTarget.applicationUuid).not.toBe(suiteDefinition.runTarget?.applicationUuid);
+    expect(result.runTarget.applicationUuid).not.toBe(selfApplicationLibrary.uuid);
     expect(result.success).toBe(true);
   }, 180_000);
 });

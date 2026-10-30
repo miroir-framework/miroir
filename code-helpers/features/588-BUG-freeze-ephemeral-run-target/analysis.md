@@ -1,6 +1,6 @@
 # 588 — freezeApplicationVersion fails on an ephemeral run target (browser self-test)
 
-> Why `action.domainController.freezeApplicationVersion` passes in Node and fails 9 of 10 leaves in the browser self-test, and where the fix goes. Bug analysis: no design choice beyond where to apply the uuid rebinding.
+> Why `action.domainController.freezeApplicationVersion` passes in Node and fails 9 of 10 leaves in the browser self-test, and where the fix goes. Bug analysis: no design choice beyond where to apply the uuid remap.
 
 ## Related
 
@@ -32,6 +32,7 @@ The 10th leaf, "Commit without freeze does not create freeze tip or Cross set", 
 |---|---|---|
 | Run target | suite `runTarget`: Library `5af03c98-…`, deployment `f714bb2f-…` (pinned) | `runIntegrationMiroirTestBatch` → `DEFAULT_UI_INTEGRATION_RUN_TARGET_MODE = "ephemeral"` (`integrationTestProfileAssets.ts`): `getTestbedUuidsForTestSuite` without `runTarget` mints fresh uuids |
 | Action leaves | unchanged | `remapActionTestLeafForRunTarget` (`miroir-core/src/5_tests/ActionTestTools.ts`) replaces Library's application and deployment uuids by the run target's |
+| Seed model | unchanged | `RunnerTestSession.beforeEach` remaps `testbedModel` only (`remapLibraryAppModelForRunTarget`); init params and instances pass through |
 | Testbed seed | `resetIntegTestbed` (`LibraryPlayfield.ts`) → `resetAndinitializeDeploymentCompositeAction(librarySelfApplicationUuid, …, testbedInitApplicationParameters, …)` | same call; `librarySelfApplicationUuid` is the ephemeral uuid but `testbedInitApplicationParameters.selfApplication.uuid` is still `5af03c98-…` |
 | Freeze lookup | `planFreezeApplicationVersionFromMetaModel` (`applicationVersionFreeze.ts`): `metaModel.applications.find((a) => a.uuid === payload.application)` finds Library | the ephemeral application's model holds a SelfApplication row with uuid `5af03c98-…`, none with the run target uuid: throws |
 
@@ -43,16 +44,17 @@ The mismatch is reproducible in Node: `runUiIntegrationTestSuiteInNode` with `ru
 
 | # | Decision | Options | Chosen | Serves |
 |---|---|---|---|---|
-| D1 | Where to rebind the seed to the run target | (a) browser launcher only (`composeUiIntegrationTestbedResetParams`); (b) `resetIntegTestbed` in miroir-core, for every caller; (c) make freeze tolerate a mismatched SelfApplication | **(b) Accepted.** `resetIntegTestbed` is where the application uuid and the seed meet; every caller gets a consistent testbed and pinned runs are a no-op. (a) Rejected: leaves Node ephemeral callers and the UI launch inconsistent. (c) Rejected: hides a broken testbed and weakens a production check. | G1, G2 |
-| D2 | What to rebind | (a) `selfApplication.uuid` only; (b) every occurrence of the seeded SelfApplication uuid in init params, model and instances | **(b) Accepted**, same rule as `remapActionTestLeafForRunTarget` (exact-string replacement). Branch, version and Entities point at the SelfApplication too; (a) leaves dangling references. | G2 |
+| D1 | Where to move the seed onto the run target | (a) `RunnerTestSession.beforeEach`, which already remaps the seed's model with `remapLibraryAppModelForRunTarget` and knows the canonical application and deployment; (b) `resetIntegTestbed` in miroir-core, for every caller, keyed on the seeded SelfApplication uuid; (c) make freeze tolerate a mismatched SelfApplication | **(a) Accepted.** The ephemeral run target is chosen there, next to the existing model remap, and the canonical deployment uuid is known, so deployment references move too. (b) Rejected after review: it only knows the application uuid (the seeded deployment uuid stays), and it would silently rewrite any caller pairing a seed with another application. (c) Rejected: hides a broken testbed and weakens a production check. | G1, G2 |
+| D2 | What to move | (a) `selfApplication.uuid` only; (b) every occurrence of the canonical application and deployment uuids in init params and instances, plus the existing model remap | **(b) Accepted**, same rule as `remapActionTestLeafForRunTarget` (exact-string replacement). Branch, version and instances point at the application and deployment too; (a) leaves dangling references. | G2 |
 
 ## Key reuse
 
 | Piece | Location |
 |---|---|
-| `deepReplaceUuidStrings` (moved to its own module, shared) | `packages/miroir-core/src/5_tests/deepReplaceUuidStrings.ts` |
-| `IntegTestbedResetParams` | `packages/miroir-core/src/5_tests/composeIntegTestbedResetParams.ts` |
-| `resetIntegTestbed` | `packages/miroir-core/src/5_tests/LibraryPlayfield.ts` |
+| `deepReplaceUuidStrings` (moved to its own module, shared with `RunMiroirTestAction.ts`, which had a copy) | `packages/miroir-core/src/5_tests/deepReplaceUuidStrings.ts` |
+| `IntegTestbedResetParams`, new `remapIntegTestbedResetParamsForRunTarget` | `packages/miroir-core/src/5_tests/composeIntegTestbedResetParams.ts` |
+| `remapLibraryAppModelForRunTarget` | `packages/miroir-core/src/1_core/model/cloneApplication/remapApplicationModelAtPaths.ts` |
+| `RunnerTestSession.beforeEach` (resets the testbed of runner and action sessions) | `packages/miroir-standalone-app/src/miroir-fwk/4-tests/RunnerTestSession.ts` |
 | `runUiIntegrationTestSuiteInNode` (runs the browser launcher path in Node) | `packages/miroir-standalone-app/tests/helpers/runUiIntegrationTestSuiteInNode.ts` |
 
 Implementation: [tdd-implementation-plan.md](tdd-implementation-plan.md).

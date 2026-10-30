@@ -59,6 +59,7 @@ import { runMiroirTests, type MiroirTestExecutionEnvironment, type RunnerTestCon
 import { createInProcessVitestStub } from "./runMiroirTestSuiteInProcess.js";
 import { runTeardownTestApplicationStores } from "./testApplicationStoreTeardown.js";
 import { testbedStorageConfiguration } from "./testbedStorageConfiguration.js";
+import { deepReplaceUuidStrings } from "./deepReplaceUuidStrings.js";
 import { buildRunnerTestSessionParamBank, type TestbedUuids } from "./TestbedUuids.js";
 
 /** Payload of the runMiroirTestAction action (#575), as its implementation reads it. */
@@ -140,21 +141,6 @@ function liveUuidsIn(value: unknown, live: Set<string>, found = new Set<string>(
     Object.values(value).forEach((entry) => liveUuidsIn(entry, live, found));
   }
   return found;
-}
-
-function deepReplaceStrings<T>(value: T, replacements: Record<string, string>): T {
-  if (typeof value === "string") {
-    return (replacements[value] ?? value) as T;
-  }
-  if (Array.isArray(value)) {
-    return value.map((entry) => deepReplaceStrings(entry, replacements)) as T;
-  }
-  if (value !== null && typeof value === "object") {
-    return Object.fromEntries(
-      Object.entries(value as Record<string, unknown>).map(([key, entry]) => [key, deepReplaceStrings(entry, replacements)]),
-    ) as T;
-  }
-  return value;
 }
 
 const failedToRunMiroirTest = (action: RunMiroirTestAction, message: string) =>
@@ -366,12 +352,12 @@ async function prepareTestbed(
     runTarget,
   );
   const liveData = await readLiveData(host, application, live.entities as Entity[], context);
-  const testbedSelfApplication = deepReplaceStrings(selfApplication, toTestbed);
-  const testbedBranch = deepReplaceStrings(
+  const testbedSelfApplication = deepReplaceUuidStrings(selfApplication, toTestbed);
+  const testbedBranch = deepReplaceUuidStrings(
     live.applicationModelBranches.find((row) => (row as any).selfApplication == application),
     toTestbed,
   );
-  const testbedVersion = deepReplaceStrings(
+  const testbedVersion = deepReplaceUuidStrings(
     live.applicationVersions.find((row) => (row as any).selfApplication == application),
     toTestbed,
   );
@@ -386,7 +372,7 @@ async function prepareTestbed(
       [runTarget.applicationUuid]: runTarget.deploymentUuid,
     },
     testbedModel,
-    testbedEntitiesAndInstances: deepReplaceStrings(liveData, toTestbed),
+    testbedEntitiesAndInstances: deepReplaceUuidStrings(liveData, toTestbed),
     testbedInitApplicationParameters: {
       dataStoreType: "app",
       metaModel: defaultMiroirMetaModel,
@@ -637,7 +623,7 @@ async function runMiroirTest(
     }
     const toTestbed = { [application]: runTarget.applicationUuid, [context.applicationDeploymentMap[application]]: runTarget.deploymentUuid };
     const testParams = buildRunnerTestSessionParamBank(
-      deepReplaceStrings((miroirTest.definition as { testParams?: Record<string, unknown> }).testParams, toTestbed),
+      deepReplaceUuidStrings((miroirTest.definition as { testParams?: Record<string, unknown> }).testParams, toTestbed),
       runTarget,
       {},
     );
@@ -668,7 +654,7 @@ async function runMiroirTest(
     const liveUuids = new Set(Object.entries(context.applicationDeploymentMap).flat());
     for (const entry of testbedLeaves) {
       // D4: the leaf addresses the testbed, never the live application
-      const leaf = deepReplaceStrings(entry.leaf, toTestbed);
+      const leaf = deepReplaceUuidStrings(entry.leaf, toTestbed);
       const named = [...liveUuidsIn([leaf, testParams], liveUuids)];
       if (named.length > 0) {
         outcomes[entry.index] = {

@@ -3,9 +3,11 @@
  * Canonical type for registry compose → session → resetIntegTestbed.
  */
 import type { InitApplicationParameters } from "../0_interfaces/4-services/PersistenceStoreControllerInterface.js";
-import type { Uuid } from "../0_interfaces/1_core/EntityVersion";
+import type { Uuid } from "../0_interfaces/1_core/EntityVersion.js";
+import { remapLibraryAppModelForRunTarget } from "../1_core/model/cloneApplication/remapApplicationModelAtPaths.js";
 import { deepReplaceUuidStrings } from "./deepReplaceUuidStrings.js";
 import type { SuitePlayfieldSeed } from "./resolveSuitePlayfieldSeed.js";
+import type { TestbedUuids } from "./TestbedUuids.js";
 
 export type IntegTestbedResetParams = {
   testbedModel: SuitePlayfieldSeed["testbedModel"];
@@ -28,19 +30,37 @@ export function composeIntegTestbedResetParams(
 }
 
 /**
- * #588: move the seed onto the application it initializes. A suite on an ephemeral run target
- * initializes a fresh application uuid with a seed written for the canonical one (Library); the
- * seeded SelfApplication, its branch, version and Entities must carry the run target's uuid, as
- * the remapped action leaves do, or actions that look the application up (freezeApplicationVersion)
- * do not find it. Returns `resetParams` itself when it already targets `applicationUuid`.
+ * #588: move the whole seed onto an ephemeral run target. The seed is written for the canonical
+ * application (Library); the run target is a fresh application and deployment. The model is
+ * remapped by {@link remapLibraryAppModelForRunTarget}; the init params (SelfApplication, branch,
+ * version) and the instances get the same uuid replacement as the action leaves
+ * (`remapActionTestLeafForRunTarget`), or actions that look the application up
+ * (freezeApplicationVersion) do not find it. Returns `resetParams` itself on the canonical target.
  */
-export function rebindIntegTestbedResetParamsToApplication(
+export function remapIntegTestbedResetParamsForRunTarget(
   resetParams: IntegTestbedResetParams,
-  applicationUuid: Uuid,
+  canonicalApplicationUuid: Uuid,
+  canonicalDeploymentUuid: Uuid,
+  runTarget: TestbedUuids,
 ): IntegTestbedResetParams {
-  const seededApplicationUuid = resetParams.testbedInitApplicationParameters.selfApplication.uuid;
-  if (seededApplicationUuid === applicationUuid) {
+  if (runTarget.applicationUuid === canonicalApplicationUuid) {
     return resetParams;
   }
-  return deepReplaceUuidStrings(resetParams, { [seededApplicationUuid]: applicationUuid });
+  const toRunTarget = {
+    [canonicalApplicationUuid]: runTarget.applicationUuid,
+    [canonicalDeploymentUuid]: runTarget.deploymentUuid,
+  };
+  return {
+    testbedModel: remapLibraryAppModelForRunTarget(
+      resetParams.testbedModel,
+      canonicalApplicationUuid,
+      canonicalDeploymentUuid,
+      runTarget,
+    ),
+    testbedEntitiesAndInstances: deepReplaceUuidStrings(resetParams.testbedEntitiesAndInstances, toRunTarget),
+    testbedInitApplicationParameters: deepReplaceUuidStrings(
+      resetParams.testbedInitApplicationParameters,
+      toRunTarget,
+    ),
+  };
 }

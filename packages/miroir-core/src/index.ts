@@ -1997,6 +1997,7 @@ export {
 } from "./5_tests/RunnerTestTools.js";
 export {
   composeIntegTestbedResetParams,
+  remapIntegTestbedResetParamsForRunTarget,
   type IntegTestbedResetParams,
 } from "./5_tests/composeIntegTestbedResetParams.js";
 export {

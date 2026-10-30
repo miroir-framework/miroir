@@ -160,7 +160,7 @@ describe("LibraryPlayfield (Gap B L1/L2)", () => {
         libraryDeploymentUuid: LIBRARY_DEPLOYMENT_UUID,
         librarySelfApplicationUuid: LIBRARY_APP_UUID,
         testbedEntitiesAndInstances: [],
-        testbedInitApplicationParameters: { dataStoreType: "app", selfApplication: { uuid: LIBRARY_APP_UUID } } as never,
+        testbedInitApplicationParameters: { dataStoreType: "app" } as never,
         testbedModel: defaultMiroirMetaModel,
       });
 
