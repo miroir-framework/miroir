@@ -40,16 +40,15 @@ vi.mock("../../src/miroir-fwk/4_view/components/JsonObjectEditFormDialog.js", ()
   JsonObjectEditFormDialog: () => null,
 }));
 
-vi.mock("../../src/miroir-fwk/4_view/components/Reports/TypedValueObjectEditor.js", async () => {
+/** Stub of `TypedValueObjectEditor`, spread into the miroir-react mock below. */
+async function typedValueObjectEditorMock(actual: typeof import("miroir-react")) {
   const { useFormikContext } = await import("formik");
   const {
     annotationPathKey,
     parseMlSchemaAnnotationLabel,
     TransformerNamedBindings,
     TransformerTitleSignature,
-  } = await import(
-    "../../src/miroir-fwk/4_view/components/Reports/TransformerTypeAnnotation.js"
-  );
+  } = actual;
 
   return {
   TypedValueObjectEditor: ({
@@ -257,9 +256,13 @@ vi.mock("../../src/miroir-fwk/4_view/components/Reports/TypedValueObjectEditor.j
     );
   },
   };
-});
+}
 
-vi.mock("../../src/miroir-fwk/4_view/components/Reports/TypedValueObjectEditorWithFormik.js", () => ({
+vi.mock("miroir-react", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("miroir-react")>();
+  return {
+  ...actual,
+  ...(await typedValueObjectEditorMock(actual)),
   TypedValueObjectEditorWithFormik: ({
     initialValueObject,
     formValueMLSchema,
@@ -274,17 +277,14 @@ vi.mock("../../src/miroir-fwk/4_view/components/Reports/TypedValueObjectEditorWi
       {JSON.stringify(initialValueObject.transformationResult)}
     </div>
   ),
-}));
-
-vi.mock("miroir-react", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("miroir-react")>()),
   JsonDisplayHelper: () => null,
   ThemedOnScreenHelper: ({ label, data }: { label: string; data: unknown }) => (
     <div data-testid="list-transformer-failure" data-label={label}>
       {JSON.stringify(data)}
     </div>
   ),
-}));
+  };
+});
 
 function createLibraryBookListStore() {
   const mockLocalCacheSliceState: LocalCacheSliceState = {

@@ -15,7 +15,7 @@ import { cleanLevel } from "../../4_view/constants.js";
 import {
   ComponentTestModeContext,
   componentTestSandboxMode,
-} from "../../4_view/tools/ComponentTestModeContext.js";
+} from "miroir-react";
 import { PortalContainerProvider } from "miroir-react";
 import { TransformerTypesDisplayContext } from "miroir-react";
 import {

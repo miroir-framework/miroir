@@ -31,9 +31,9 @@ import { packageName } from "../../../constants.js";
 import { useMiroirFundamentalMlSchemaForDeployment } from "miroir-react";
 import { cleanLevel } from "../constants.js";
 import { ErrorFallbackComponent } from "miroir-react";
-import type { ValueObjectEditMode } from "./Reports/ReportSectionEntityInstance.js";
+import type { ValueObjectEditMode } from "miroir-react";
 import ReportSectionViewWithEditor from "./Reports/ReportSectionViewWithEditor.js";
-import { reportSectionsFormSchema } from "./Reports/ReportTools.js";
+import { reportSectionsFormSchema } from "miroir-react";
 import { ThemedDialog, ThemedDialogTitle } from "miroir-react";
 
 import { entityDefinitionReport as reportFormMlSchemaSource, entityEndpointVersion } from "miroir-app-miroir";

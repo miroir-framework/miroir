@@ -5,7 +5,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 
 import { entityEntity, selfApplicationMiroir } from "miroir-app-miroir";
 
-import { TransformerEditor } from "../../src/miroir-fwk/4_view/components/TransformerEditor/TransformerEditor.js";
+import { TransformerEditor } from "miroir-react";
 import { ReportPageContextProvider } from "miroir-react";
 import {
   ListTransformerIntegShell,

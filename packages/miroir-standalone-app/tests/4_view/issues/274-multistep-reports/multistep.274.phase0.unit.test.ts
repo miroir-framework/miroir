@@ -15,7 +15,7 @@ import {
 import {
   reportSectionsFormSchema,
   reportSectionsFormValue,
-} from "../../../../src/miroir-fwk/4_view/components/Reports/ReportTools.js";
+} from "miroir-react";
 import {
   allGatedStepsAllowFinish,
   collectStepBagKeys,
@@ -317,7 +317,7 @@ describe.skipIf(!shouldRun)("multistep reports #274 phase0 — current contracts
     const source = readFileSync(
       join(
         REPO_ROOT,
-        "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ReportSectionEntityInstance.tsx",
+        "packages/miroir-react/src/components/Reports/ReportSectionEntityInstance.tsx",
       ),
       "utf8",
     );

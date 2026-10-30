@@ -14,7 +14,7 @@ import { type ReportUrlParamKeys } from "miroir-react";
 import { PageContainer } from "miroir-react";
 import {
   EntityInstanceSelectorPanel,
-} from "../components/TransformerEditor/EntityInstanceSelectorPanel";
+} from "miroir-react";
 import { cleanLevel } from "../constants";
 import { usePageConfiguration } from "../services";
 import {

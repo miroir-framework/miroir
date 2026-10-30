@@ -47,9 +47,9 @@ import {
   ComponentTestSandboxProvider,
   useComponentTestSandbox,
 } from "../../src/miroir-fwk/4_view/components/Reports/ComponentTestSandbox";
-import { transformerTypeBadges } from "../../src/miroir-fwk/4_view/components/TransformerEditor/TransformerEditor";
+import { transformerTypeBadges } from "miroir-react";
 import { useShowTransformerTypes } from "miroir-react";
-import type { TransformerTypeBadge } from "../../src/miroir-fwk/4_view/components/ValueObjectEditor/MlElementEditorInterface";
+import type { TransformerTypeBadge } from "miroir-react";
 import { buildAdminViewParamsHarness, loadViewParams } from "../helpers/adminViewParamsHarness";
 
 const RUN_TEST_TIMEOUT = 120_000;

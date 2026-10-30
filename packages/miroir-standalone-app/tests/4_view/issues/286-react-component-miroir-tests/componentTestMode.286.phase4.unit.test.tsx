@@ -21,16 +21,15 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { defaultSelfApplicationDeploymentMap } from "miroir-core";
 
 type LoadedModules = {
-  ComponentTestModeContext: typeof import("../../../../src/miroir-fwk/4_view/tools/ComponentTestModeContext").ComponentTestModeContext;
-  componentTestSandboxMode: typeof import("../../../../src/miroir-fwk/4_view/tools/ComponentTestModeContext").componentTestSandboxMode;
+  ComponentTestModeContext: typeof import("miroir-react").ComponentTestModeContext;
+  componentTestSandboxMode: typeof import("miroir-react").componentTestSandboxMode;
   buildComponentTestWrapper: typeof import("../../../../src/miroir-fwk/4-tests/componentTests/componentTestTools").buildComponentTestWrapper;
   getMlElementEditorForTest: typeof import("../../../../src/miroir-fwk/4-tests/componentTests/componentTestTools").getMlElementEditorForTest;
 };
 
 /** Loads the editors after `VITE_TEST_MODE` is stubbed, so that module-level reads see the stub. */
 async function loadModules(): Promise<LoadedModules> {
-  await import("../../../../src/miroir-fwk/4_view/components/ValueObjectEditor/MlElementEditor");
-  const context = await import("../../../../src/miroir-fwk/4_view/tools/ComponentTestModeContext");
+  const context = await import("miroir-react");
   const tools = await import("../../../../src/miroir-fwk/4-tests/componentTests/componentTestTools");
   return {
     ComponentTestModeContext: context.ComponentTestModeContext,

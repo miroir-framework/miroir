@@ -1,0 +1,865 @@
+import { useFormikContext } from "formik";
+import React, { FC, useCallback, useContext, useMemo, useState } from "react";
+
+
+import {
+  defaultViewParamsFromAdminStorageFetchQueryParams,
+  getDefaultValueForMlSchemaWithResolutionNonHook,
+  holdsOneDefault,
+  keepAttributesOnTypeChange,
+  MlElement,
+  MlEnum,
+  MlLiteral,
+  mlUnionResolvedTypeForObject,
+  LoggerInterface,
+  MiroirLoggerFactory,
+  removeTransformerNode,
+  resolvePathOnObject,
+  transformerDefinitionRegistry,
+  transformerTypesAcceptingInput,
+  type ApplicationDeploymentMap,
+  type Domain2QueryReturnType,
+  type DomainElementSuccess,
+  type EntityInstancesUuidIndex,
+  type MlObject,
+  type MlUnion,
+  type KeyMapEntry,
+  type MiroirModelEnvironment,
+  type ReduxDeploymentsState,
+  type SyncBoxedExtractorOrQueryRunnerMap,
+  type SyncQueryRunner,
+  type Uuid,
+  type ViewParams
+} from "miroir-core";
+
+import { getMemoizedReduxDeploymentsStateSelectorMap, useSelector, type ReduxStateWithUndoRedo } from "../../miroir-localcache-imports.js";
+import { ThemedOnScreenHelper } from "../helpers/ThemedHelper.js";
+import { packageName } from "../../constants.js";
+import { cleanLevel } from "../../viewConstants.js";
+import { useCurrentModelEnvironment, useDefaultValueParams, useReduxDeploymentsStateQuerySelectorForCleanedResult } from "../../ReduxHooks.js";
+import { ThemedDisplayValue } from "../Themes/DisplayComponents.js";
+import { ThemedLabeledEditor, ThemedSelectWithPortal } from "../Themes/FormComponents.js";
+import { MlLiteralEditorProps } from "./MlElementEditorInterface.js";
+import { isPrimaryUnionDiscriminatorField } from "./unionDiscriminatorField.js";
+import { findPathAnnotation } from "../Reports/TransformerTypeAnnotation.js";
+import { TransformerNodeActions, TransformerTypeChangeDialog } from "./TransformerNodeActions.js";
+import { ValueHistoryContext } from "./ValueHistoryProvider.js";
+import { editorNavigationKey, useTrackedRender } from "../../tools/useTrackedRender.js";
+
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MlLiteralEditor");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI"
+).then((logger: LoggerInterface) => {
+  log = logger;
+});
+
+// ################################################################################################
+/**
+ * The default value of the union branch whose discriminator is `selectedValue`, at the position of
+ * `parentKeyMap`: what a discriminator change writes there, and the new node of a wrap (#415).
+ */
+export const discriminatorBranchDefaultValue = (
+  selectedValue: string,
+  discriminatorType: "enum" | "literal" | "schemaReference",
+  parentKeyMap: KeyMapEntry,
+  rootLessListKey: string,
+  rootLessListKeyArray: (string | number)[],
+  reportSectionPathAsString: string,
+  currentApplication: Uuid,
+  applicationDeploymentMap: ApplicationDeploymentMap,
+  currentDeploymentUuid: string | undefined,
+  defaultValueParams: ReturnType<typeof useDefaultValueParams>,
+  modelEnvironment: MiroirModelEnvironment,
+  reduxDeploymentsState: ReduxDeploymentsState | undefined,
+  formik: any,
+  log: LoggerInterface,
+  forceOptional: boolean = false,
+): Record<string, any> | undefined => {
+  let newMlSchema: MlElement | undefined = undefined;
+  let localChosenDiscriminator: string | undefined = undefined;
+  if (Array.isArray(parentKeyMap.discriminator)) {
+    if (!parentKeyMap.recursivelyUnfoldedUnionSchema) {
+      throw new Error(
+        "handleDiscriminatorChange called but current object does not have a recursivelyUnfoldedUnionSchema, cannot proceed!"
+      );
+    }
+    if (parentKeyMap.resolvedSchema.type !== "object") {
+      throw new Error(
+        "handleDiscriminatorChange called but current object is not of type object, cannot proceed!"
+      );
+    }
+    // const discriminator = parentKeyMap.discriminator[0];
+    const discriminator: string | string[] = parentKeyMap.discriminator[0];
+    const currentObjectKeys = Object.keys((parentKeyMap.resolvedSchema as MlObject).definition);
+    localChosenDiscriminator = !Array.isArray(discriminator)
+      ? discriminator
+      : parentKeyMap.discriminator.flat().find((d) =>
+            currentObjectKeys.includes(d)
+        );
+    if (!localChosenDiscriminator) {
+      throw new Error(
+        `handleDiscriminatorChange could not find local chosen discriminator for discriminator ${discriminator} in ${JSON.stringify(parentKeyMap.resolvedSchema)}`
+      );
+    }
+    // const discriminatorTypeLocal = parentKeyMap.resolvedSchema.definition[discriminator]?.type;
+    const parentNewUnionBranch:MlObject | undefined = parentKeyMap.recursivelyUnfoldedUnionSchema.result.find((a: MlElement) => {
+      if (a.type !== "object") return false;
+      const discriminatorElement = a.definition[discriminator as string];
+      if (!discriminatorElement) return false;
+      return true;
+    }) as MlObject | undefined;
+
+    log.info("handleDiscriminatorChange found parentNewUnionBranch", parentNewUnionBranch);
+
+    const discriminatorTypeLocal: string | undefined = parentNewUnionBranch?.definition[localChosenDiscriminator as string].type;
+
+    if (!discriminatorTypeLocal) {
+      throw new Error(
+        `handleDiscriminatorChange could not find discriminator type for discriminator ${discriminator} in ${JSON.stringify(
+          parentKeyMap.resolvedSchema
+        )}`
+      );
+    }
+    if (
+      (discriminatorType === "literal" && discriminatorTypeLocal !== "literal") ||
+      (discriminatorType === "enum" && discriminatorTypeLocal !== "enum") ||
+      (discriminatorType === "schemaReference" && discriminatorTypeLocal !== "schemaReference")
+    ) {
+      throw new Error(
+        `handleDiscriminatorChange discriminator type mismatch: expected ${discriminatorType} but found ${discriminatorTypeLocal} for discriminator ${discriminator} in ${JSON.stringify(
+          parentKeyMap.resolvedSchema
+        )}`
+      );
+    }
+    const newParentValue = {
+      ...resolvePathOnObject(formik.values[reportSectionPathAsString], parentKeyMap.valuePath),
+      [rootLessListKeyArray[rootLessListKeyArray.length - 1]]: selectedValue,
+    };
+    log.info(
+      "handleDiscriminatorChange newParentValue",
+      newParentValue,
+      "parentKeyMap",
+      parentKeyMap,
+      rootLessListKeyArray[rootLessListKeyArray.length - 1],
+      "selectedValue",
+      selectedValue
+    );
+    const resolveUnionResult = mlUnionResolvedTypeForObject(
+      parentKeyMap.recursivelyUnfoldedUnionSchema.result,
+      parentKeyMap.rawSchema as MlUnion,
+      parentKeyMap.discriminator,
+      newParentValue, // valueObject,
+      parentKeyMap.valuePath,
+      parentKeyMap.typePath,
+      modelEnvironment,
+      {}, // relativeReferenceMlContext
+    );
+
+    log.info(
+      `handleDiscriminatorChange (${discriminatorType}) mlUnionResolvedTypeForObject result`,
+      resolveUnionResult,
+    );
+    if (resolveUnionResult.status === "error") {
+      throw new Error(
+        `handleDiscriminatorChange mlUnionResolvedTypeForObject error: ${resolveUnionResult.error}`
+      );
+    }
+    newMlSchema = resolveUnionResult.resolvedMlObjectSchema;
+  } else {
+    localChosenDiscriminator = parentKeyMap.discriminator as string;
+    newMlSchema =
+      parentKeyMap.recursivelyUnfoldedUnionSchema?.result.find((a: MlElement) => {
+        if (a.type !== "object") return false;
+        const discriminatorElement = a.definition[parentKeyMap.discriminator as string];
+        if (!discriminatorElement) return false;
+        
+        if (discriminatorElement.type === "literal") {
+          return (discriminatorElement as MlLiteral).definition === selectedValue;
+        } else if (discriminatorElement.type === "enum") {
+          log.info(
+            "handleDiscriminatorChange checking enum",
+            (discriminatorElement as MlEnum).definition,
+            "for value",
+            selectedValue
+          );
+          return (discriminatorElement as MlEnum).definition.includes(selectedValue);
+        } else if (discriminatorType === "schemaReference" && discriminatorElement.type === "schemaReference") {
+          return (
+            typeof discriminatorElement.definition === "object" &&
+            discriminatorElement.definition.relativePath === selectedValue
+          );
+        } else {
+          // fallback: try to match .definition directly if it exists, otherwise compare the element itself
+          if (typeof discriminatorElement === "object" && "definition" in discriminatorElement) {
+            return (discriminatorElement as any).definition === selectedValue;
+          } else {
+            return false; // unknown discriminator type, don't match
+          }
+        }
+      });
+  }
+
+
+  if (!newMlSchema) {
+    throw new Error(
+      `handleDiscriminatorChange could not find union branch for discriminator ${parentKeyMap.discriminator} with value ${selectedValue} in ${JSON.stringify(parentKeyMap.resolvedSchema)}`
+    );
+  }
+
+  log.info(`handleDiscriminatorChange (${discriminatorType})`, "newMlSchema", JSON.stringify(newMlSchema, null, 2));
+  
+  const defaultValue = modelEnvironment
+    ? {
+      ...getDefaultValueForMlSchemaWithResolutionNonHook(
+        "build",
+        newMlSchema, // a chosen branch is filled, even under an optional attribute (#406)
+        formik.values[reportSectionPathAsString],
+        rootLessListKey,
+        undefined,
+        [], // currentValuePath
+        // undefined,
+        forceOptional,
+        currentApplication,
+        applicationDeploymentMap,
+        currentDeploymentUuid,
+        modelEnvironment,
+        defaultValueParams, // transformerParams
+        {}, // contextResult
+        reduxDeploymentsState,
+      ),
+      // [Array.isArray(parentKeyMap.discriminator) ? parentKeyMap.discriminator[0] : parentKeyMap.discriminator]: selectedValue,
+      [localChosenDiscriminator]: selectedValue,
+    }
+    : undefined;
+  return defaultValue;
+};
+
+// ################################################################################################
+// Common function to handle discriminator changes
+const handleDiscriminatorChange = (
+  selectedValue: string,
+  discriminatorType: "enum" | "literal" | "schemaReference",
+  parentKeyMap: KeyMapEntry,
+  rootLessListKey: string,
+  rootLessListKeyArray: (string | number)[],
+  reportSectionPathAsString: string,
+  currentApplication: Uuid,
+  applicationDeploymentMap: ApplicationDeploymentMap,
+  currentDeploymentUuid: string | undefined,
+  defaultValueParams: ReturnType<typeof useDefaultValueParams>,
+  modelEnvironment: MiroirModelEnvironment,
+  reduxDeploymentsState: ReduxDeploymentsState | undefined,
+  formik: any,
+  log: LoggerInterface,
+  onChangeCallback?: (value: any, rootLessListKey: string) => void
+) => {
+  log.info("handleDiscriminatorChange called with:", {
+    reportSectionPathAsString,
+    selectedValue,
+    discriminatorType,
+    rootLessListKey,
+    rootLessListKeyArray
+  });
+  
+  if (!parentKeyMap) {
+    throw new Error(
+      "handleDiscriminatorChange called but current object does not have information about the discriminated union type it must be part of!"
+    );
+  }
+  if (!parentKeyMap.discriminator) {
+    throw new Error(
+      "handleDiscriminatorChange called but current object does not have a discriminated union type!"
+    );
+  }
+  const fieldName = String(rootLessListKeyArray[rootLessListKeyArray.length - 1] ?? "");
+  if (!isPrimaryUnionDiscriminatorField(fieldName, parentKeyMap.discriminator)) {
+    const targetRootLessListKey =
+      [reportSectionPathAsString, ...rootLessListKeyArray.slice(0, -1)].join(".") ?? "";
+    const patched = {
+      ...resolvePathOnObject(formik.values[reportSectionPathAsString], parentKeyMap.valuePath),
+      [fieldName]: selectedValue,
+    };
+    if (onChangeCallback) {
+      onChangeCallback(patched, rootLessListKey);
+    }
+    formik.setFieldValue(targetRootLessListKey, patched, false);
+    return;
+  }
+  const defaultValue = discriminatorBranchDefaultValue(
+    selectedValue,
+    discriminatorType,
+    parentKeyMap,
+    rootLessListKey,
+    rootLessListKeyArray,
+    reportSectionPathAsString,
+    currentApplication,
+    applicationDeploymentMap,
+    currentDeploymentUuid,
+    defaultValueParams,
+    modelEnvironment,
+    reduxDeploymentsState,
+    formik,
+    log,
+  );
+
+  const targetRootLessListKey = [reportSectionPathAsString,...rootLessListKeyArray.slice(0, rootLessListKeyArray.length - 1)].join(".")??"";
+  // const targetRootLessListKey = [reportSectionPathAsString,rootLessListKeyArray].join(".")??"";
+  log.info(
+    `handleDiscriminatorChange (${discriminatorType})`,
+    "rootLessListKeyArray",
+    JSON.stringify(rootLessListKeyArray),
+    "targetRootLessListKey",
+    JSON.stringify(targetRootLessListKey),
+    "defaultValue",
+    JSON.stringify(defaultValue, null, 2),
+    "formik.values",
+    // JSON.stringify(formik.values, null, 2)
+    formik.values
+  );
+  // if (targetRootLessListKey.length === 0) {
+  //   // If the target key is empty, we set the value directly on formik.values
+  //   formik.setFieldValue(
+  //     [reportSectionPathAsString, ...targetRootLessListKey].join("."),
+  //     defaultValue,
+  //     false, // do not validate / refresh
+  //   );
+  // } else {
+    // Invoke onChangeVector callback if registered for this field
+    if (onChangeCallback) {
+      onChangeCallback(defaultValue, rootLessListKey);
+    }
+    formik.setFieldValue(
+      targetRootLessListKey,
+      defaultValue,
+      false, // do not validate / refresh
+    );
+  // }
+};
+
+
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+// ################################################################################################
+let MlLiteralEditorRenderCount: number = 0;
+export const MlLiteralEditor: FC<MlLiteralEditorProps> =  (
+  {
+    name,
+    labelElement,
+    rootLessListKey,
+    rootLessListKeyArray,
+    reportSectionPathAsString,
+    currentApplication,
+    applicationDeploymentMap,
+    currentDeploymentUuid,
+    currentApplicationSection,
+    typeCheckKeyMap,
+    readOnly,
+    hasPathError,
+    onChangeVector,
+    transformerTypeRestrictions,
+  }
+) => {
+  MlLiteralEditorRenderCount++;
+  const trackedRender = useTrackedRender(
+    editorNavigationKey(currentDeploymentUuid, currentApplicationSection),
+  );
+  let error: JSX.Element | undefined = undefined;
+
+  const currentMiroirModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(
+    currentApplication,
+    applicationDeploymentMap
+  );
+  // #502: the stock TransformerDefinitions and the application's composites
+  const transformerDefinitions = useMemo(
+    () => transformerDefinitionRegistry(currentMiroirModelEnvironment),
+    [currentMiroirModelEnvironment],
+  );
+  const deploymentEntityStateSelectorMap: SyncBoxedExtractorOrQueryRunnerMap<ReduxDeploymentsState> =
+        getMemoizedReduxDeploymentsStateSelectorMap();
+
+  const defaultViewParamsFromAdminStorageFetchQueryResults: Record<string, EntityInstancesUuidIndex> =
+    useReduxDeploymentsStateQuerySelectorForCleanedResult(
+      deploymentEntityStateSelectorMap.runQuery as SyncQueryRunner<
+        ReduxDeploymentsState,
+        Domain2QueryReturnType<DomainElementSuccess>
+      >,
+      defaultViewParamsFromAdminStorageFetchQueryParams(deploymentEntityStateSelectorMap),
+      applicationDeploymentMap,
+    );
+  
+  const viewParams: ViewParams | undefined = defaultViewParamsFromAdminStorageFetchQueryResults?.[
+    "viewParams"
+  ] as any;
+
+  const defaultValueParams = useDefaultValueParams(currentApplication, currentDeploymentUuid, viewParams);
+
+  const formik = useFormikContext<Record<string, any>>();
+
+  // Memoize the onChangeVector callback for this field to avoid repeated lookups
+  const onChangeCallback = useMemo(
+    () => onChangeVector?.[rootLessListKey],
+    [onChangeVector, rootLessListKey]
+  );
+
+  const parentKey = rootLessListKey.includes('.') ? rootLessListKey.substring(0, rootLessListKey.lastIndexOf('.')) : '';
+  const parentKeyMap:KeyMapEntry | undefined = typeCheckKeyMap ? typeCheckKeyMap[parentKey] : undefined;
+  // const currentKeyMap: KeyMapEntry | undefined = typeCheckKeyMap ? typeCheckKeyMap[rootLessListKey] : undefined;
+
+  const deploymentEntityState: ReduxDeploymentsState = useSelector(
+    (state: ReduxStateWithUndoRedo) =>
+      deploymentEntityStateSelectorMap.extractState(
+        state.presentModelSnapshot.current,
+        applicationDeploymentMap,
+        () => ({}),
+        currentMiroirModelEnvironment
+      )
+  );
+
+    // Check if this literal is the primary union discriminator (e.g. transformerType, not interpolation)
+  const isDiscriminator =
+    isPrimaryUnionDiscriminatorField(name, parentKeyMap?.discriminator) &&
+    !!parentKeyMap?.discriminatorValues;
+
+  const discriminatorIndex: number = !parentKeyMap?.discriminator
+    ? -1
+    : typeof parentKeyMap?.discriminator == "string"
+    ? 0
+    : parentKeyMap?.discriminator?.findIndex((d: string | string[]) =>
+        Array.isArray(d) ? d.includes(name) : d === name
+      );
+  if (isDiscriminator && discriminatorIndex === -1) {
+    error = (
+      <div>
+        <ThemedOnScreenHelper
+          label="MlLiteralEditor error"
+          data={{
+            rootLessListKey,
+            name,
+            parentKeyMapDiscriminator: parentKeyMap?.discriminator,
+            parentKeyMapDiscriminatorValues: parentKeyMap?.discriminatorValues,
+          }}
+          // initiallyUnfolded={false}
+          copyButton={true}
+          useCodeBlock={true}
+        />
+        {/* <div style={{ color: "red" }}>
+          Error: MlLiteralEditor: {rootLessListKey} isDiscriminator is true but could not find
+          discriminator index for name "{name}" in parentKeyMap.discriminator{" "}
+          {JSON.stringify(parentKeyMap?.discriminator)} with values{" "}
+          {JSON.stringify(parentKeyMap?.discriminatorValues)}
+        </div> */}
+      </div>
+    );
+    // throw new Error(
+    //   `MlLiteralEditor: isDiscriminator is true but could not find discriminator index for name "${name}" in parentKeyMap.discriminator ${parentKeyMap?.discriminator} with values ${parentKeyMap?.discriminatorValues}`
+    // );
+  }
+  const currentReportSectionFormikValues = formik.values[reportSectionPathAsString] ?? formik.values;
+  const formikRootLessListKeyArray = [reportSectionPathAsString, ...rootLessListKeyArray];
+  const formikRootLessListKey = formikRootLessListKeyArray.join(".");
+
+  const currentValue = useMemo(() => {
+    try {
+      return rootLessListKeyArray.length > 0
+        ? resolvePathOnObject(currentReportSectionFormikValues, rootLessListKeyArray)
+        : currentReportSectionFormikValues;
+      // return rootLessListKeyArray.length > 0
+      //   ? resolvePathOnObject(formik.values, rootLessListKeyArray)
+      //   : formik.values;
+    } catch (e) {
+      log.warn(
+        "MlLiteralEditor resolvePathOnObject error",
+        "rootLessListKeyArray",
+        rootLessListKeyArray,
+        "MlLiteralEditorRenderCount",
+        MlLiteralEditorRenderCount,
+        "formik.values",
+        formik.values,
+        "error",
+        e
+      );
+      return currentReportSectionFormikValues; // fallback to formik.values if the path
+      //        log.info("MlLiteralEditor handleFilterableSelectChange called with event (DEBUG):", event);
+    }
+  }, [currentReportSectionFormikValues, rootLessListKeyArray]);
+
+
+  // Handler for the new filterable select component
+  const handleFilterableSelectChange = useCallback(
+    (event: React.ChangeEvent<HTMLSelectElement>) => {
+      log.info("handleFilterableSelectChange called with event:", event);
+      log.info("handleFilterableSelectChange event.target.value:", event.target.value);
+      log.info("handleFilterableSelectChange event.type:", event.type);
+      log.info("handleFilterableSelectChange isDiscriminator:", isDiscriminator);
+      log.info("handleFilterableSelectChange parentKeyMap:", parentKeyMap);
+      // log.info("Stack trace:", new Error().stack);
+      
+      if (!isDiscriminator) {
+        throw new Error(
+          "handleFilterableSelectChange called but this literal is not a discriminator!"
+        );
+      }
+      if (!parentKeyMap) {
+        throw new Error(
+          "handleFilterableSelectChange called but current object does not have information about the discriminated union type it must be part of!"
+        );
+      }
+      handleDiscriminatorChange(
+        event.target.value,
+        "literal",
+        parentKeyMap,
+        rootLessListKey,
+        rootLessListKeyArray,
+        reportSectionPathAsString,
+        currentApplication,
+        applicationDeploymentMap,
+        currentDeploymentUuid,
+        defaultValueParams,
+        currentMiroirModelEnvironment,
+        deploymentEntityState,
+        formik,
+        log,
+        onChangeCallback
+      );
+    },
+    [
+      isDiscriminator,
+      parentKeyMap,
+      rootLessListKey,
+      rootLessListKeyArray,
+      reportSectionPathAsString,
+      currentDeploymentUuid,
+      currentMiroirModelEnvironment,
+      formik,
+      onChangeCallback
+    ]
+  ); // end handleFilterableSelectChange
+
+  const currentDiscriminatorValues = parentKeyMap?.discriminatorValues && discriminatorIndex !== -1
+    ? parentKeyMap.discriminatorValues[discriminatorIndex]
+    : [];
+  // #383: a transformerType select is restricted to the types accepting its node's input.
+  const transformerTypeRestriction =
+    isDiscriminator && name === "transformerType"
+      ? findPathAnnotation(transformerTypeRestrictions, rootLessListKeyArray.slice(0, -1))
+      : undefined;
+  const acceptedDiscriminatorValues = useMemo(
+    () =>
+      transformerTypeRestriction && currentDiscriminatorValues
+        ? transformerTypesAcceptingInput(transformerTypeRestriction.input, {
+            transformerTypes: currentDiscriminatorValues,
+            currentType: typeof currentValue === "string" ? currentValue : undefined,
+            transformerDefinitions,
+          })
+        : undefined,
+    [transformerTypeRestriction, currentDiscriminatorValues, currentValue, transformerDefinitions],
+  );
+  // Memoize discriminator options for the filterable select
+  const discriminatorSelectOptions = useMemo(() => {
+    if (isDiscriminator && currentDiscriminatorValues) {
+      return [...(acceptedDiscriminatorValues?.offered ?? currentDiscriminatorValues)]
+        .sort()
+        .map((v) => ({
+          value: v,
+          label: v,
+        }));
+    }
+    return [];
+  }, [isDiscriminator, currentDiscriminatorValues, acceptedDiscriminatorValues]);
+  const hiddenTransformerTypeCount = acceptedDiscriminatorValues?.hidden.length ?? 0;
+  // #415: structural edits of the transformer node this select belongs to.
+  const isTransformerTypeSelect = isDiscriminator && name === "transformerType" && !readOnly;
+  const transformerNodePath = useMemo(() => rootLessListKeyArray.slice(0, -1), [rootLessListKeyArray]);
+  // #499: under an undo history covering the node, Remove, Unwrap and a type change act at once
+  const valueHistory = useContext(ValueHistoryContext);
+  const transformerNodeUndoable =
+    valueHistory?.covers([reportSectionPathAsString, ...transformerNodePath].join(".")) ?? false;
+  const transformerNodeValue = isTransformerTypeSelect
+    ? transformerNodePath.length > 0
+      ? resolvePathOnObject(currentReportSectionFormikValues, transformerNodePath)
+      : currentReportSectionFormikValues
+    : undefined;
+  const defaultTransformerNodeForType = useCallback(
+    (transformerType: string, forceOptional: boolean = false) =>
+      parentKeyMap
+        ? discriminatorBranchDefaultValue(
+            transformerType,
+            "literal",
+            parentKeyMap,
+            rootLessListKey,
+            rootLessListKeyArray,
+            reportSectionPathAsString,
+            currentApplication,
+            applicationDeploymentMap,
+            currentDeploymentUuid,
+            defaultValueParams,
+            currentMiroirModelEnvironment,
+            deploymentEntityState,
+            formik,
+            log,
+            forceOptional,
+          )
+        : undefined,
+    [
+      parentKeyMap,
+      rootLessListKey,
+      rootLessListKeyArray,
+      reportSectionPathAsString,
+      currentApplication,
+      applicationDeploymentMap,
+      currentDeploymentUuid,
+      defaultValueParams,
+      currentMiroirModelEnvironment,
+      deploymentEntityState,
+      formik,
+    ],
+  );
+  const replaceTransformerNode = useCallback(
+    (newNode: unknown) => {
+      if (onChangeCallback) {
+        onChangeCallback(newNode, rootLessListKey);
+      }
+      formik.setFieldValue([reportSectionPathAsString, ...transformerNodePath].join("."), newNode, false);
+      // #499: the edit may unmount the focused element; Ctrl+Z must still reach the history
+      valueHistory?.restoreFocus();
+    },
+    [formik, onChangeCallback, rootLessListKey, reportSectionPathAsString, transformerNodePath, valueHistory],
+  );
+  // #415 Remove: the edit applies to the outermost transformer holding this node, so that an
+  // optional attribute, an array item or a record entry is deleted from its container. The root
+  // and required slots get the default `returnValue` of this position.
+  const removeTransformerNodeFromTree = useCallback(() => {
+    const valueAt = (path: (string | number)[]) =>
+      path.length > 0 ? resolvePathOnObject(currentReportSectionFormikValues, path) : currentReportSectionFormikValues;
+    const isTransformerNode = (value: unknown) =>
+      typeof value === "object" && value !== null && typeof (value as { transformerType?: unknown }).transformerType === "string";
+    let treeRootLength = 0;
+    while (treeRootLength < transformerNodePath.length && !isTransformerNode(valueAt(transformerNodePath.slice(0, treeRootLength)))) {
+      treeRootLength++;
+    }
+    const treeRootPath = transformerNodePath.slice(0, treeRootLength);
+    const resetType = (currentDiscriminatorValues ?? []).includes("returnValue")
+      ? "returnValue"
+      : [...(currentDiscriminatorValues ?? [])].sort()[0];
+    const resetNode = resetType ? defaultTransformerNodeForType(resetType) : undefined;
+    const newTree = removeTransformerNode(valueAt(treeRootPath), transformerNodePath.slice(treeRootLength), {
+      rootDefault: resetNode,
+      slotDefault: resetNode,
+      transformerDefinitions,
+    });
+    if (onChangeCallback) {
+      onChangeCallback(newTree, rootLessListKey);
+    }
+    formik.setFieldValue([reportSectionPathAsString, ...treeRootPath].join("."), newTree, false);
+    valueHistory?.restoreFocus();
+  }, [
+    currentReportSectionFormikValues,
+    transformerNodePath,
+    currentDiscriminatorValues,
+    defaultTransformerNodeForType,
+    transformerDefinitions,
+    onChangeCallback,
+    rootLessListKey,
+    formik,
+    reportSectionPathAsString,
+    valueHistory,
+  ]);
+  // #447: the values the editor fills in a node of `transformerType` at this position: the type's
+  // default, without and with its optional attributes, and the default of the slot holding the node
+  // (the `initializeTo` of the transformer union) when it has that type.
+  const editorDefaultsOfTransformerNode = useCallback(
+    (transformerType: unknown): Record<string, unknown>[] => {
+      if (typeof transformerType !== "string") {
+        return [];
+      }
+      const defaults: Record<string, unknown>[] = [];
+      try {
+        for (const forceOptional of [false, true]) {
+          const typeDefault = defaultTransformerNodeForType(transformerType, forceOptional);
+          if (typeDefault) {
+            defaults.push(typeDefault);
+          }
+        }
+        const slotDefault = parentKeyMap?.rawSchema
+          ? getDefaultValueForMlSchemaWithResolutionNonHook(
+              "build",
+              parentKeyMap.rawSchema,
+              formik.values[reportSectionPathAsString],
+              rootLessListKey,
+              undefined,
+              [],
+              true, // forceOptional: an optional slot, once added, holds this default too
+              currentApplication,
+              applicationDeploymentMap,
+              currentDeploymentUuid,
+              currentMiroirModelEnvironment,
+              defaultValueParams,
+              {},
+              deploymentEntityState,
+            )
+          : undefined;
+        if (slotDefault?.transformerType === transformerType) {
+          defaults.push(slotDefault);
+        }
+      } catch (error) {
+        log.warn("editorDefaultsOfTransformerNode: no default value for", transformerType, error);
+      }
+      return defaults;
+    },
+    [
+      defaultTransformerNodeForType,
+      parentKeyMap,
+      formik,
+      reportSectionPathAsString,
+      rootLessListKey,
+      currentApplication,
+      applicationDeploymentMap,
+      currentDeploymentUuid,
+      currentMiroirModelEnvironment,
+      defaultValueParams,
+      deploymentEntityState,
+    ],
+  );
+  // #415 D4, D5: a transformerType change keeps the attributes the new type accepts. When it drops
+  // attributes, a dialog names them first, unless an undo history covers the node (#499).
+  const [pendingTypeChange, setPendingTypeChange] = useState<
+    { transformerType: string; node: Record<string, unknown>; dropped: string[] } | undefined
+  >(undefined);
+  const handleTransformerTypeChange = useCallback(
+    (event: React.ChangeEvent<HTMLSelectElement>) => {
+      const newType = event.target.value;
+      const oldNode = transformerNodeValue as Record<string, unknown> | undefined;
+      let newDefault: Record<string, unknown> | undefined;
+      try {
+        newDefault = defaultTransformerNodeForType(newType);
+      } catch (error) {
+        log.warn("handleTransformerTypeChange: no default value, falling back to a plain type change", error);
+      }
+      if (!newDefault || typeof oldNode !== "object" || oldNode === null) {
+        handleFilterableSelectChange(event);
+        return;
+      }
+      const change = keepAttributesOnTypeChange(
+        oldNode,
+        { ...newDefault, transformerType: newType },
+        currentMiroirModelEnvironment,
+      );
+      // #447: dropping only values of one default the editor filled in for the old type asks nothing
+      if (
+        transformerNodeUndoable ||
+        holdsOneDefault(oldNode, editorDefaultsOfTransformerNode(oldNode.transformerType), change.dropped)
+      ) {
+        replaceTransformerNode(change.node);
+        return;
+      }
+      setPendingTypeChange({ transformerType: newType, node: change.node, dropped: change.dropped });
+    },
+    [
+      transformerNodeValue,
+      defaultTransformerNodeForType,
+      editorDefaultsOfTransformerNode,
+      handleFilterableSelectChange,
+      currentMiroirModelEnvironment,
+      replaceTransformerNode,
+      transformerNodeUndoable,
+    ],
+  );
+  // log.info(
+  //   "MlLiteralEditor render",
+  //   MlLiteralEditorRenderCount,
+  //   "rootLessListKey",
+  //   JSON.stringify(rootLessListKey),
+  //   "currentValue",
+  //   JSON.stringify(currentValue),
+  //   "currentDiscriminatorValues",
+  //   JSON.stringify(currentDiscriminatorValues),
+  //   "discriminatorSelectOptions",
+  //   JSON.stringify(discriminatorSelectOptions)
+  // );
+  // Memoize discriminator values for better rendering performance
+
+  trackedRender.end("MlLiteralEditor", formikRootLessListKey);
+  return error ? (
+    <>{error}</>
+  ) : (
+    <ThemedLabeledEditor
+      labelElement={labelElement ?? <></>}
+      editor={
+        readOnly ? (
+          <ThemedDisplayValue value={currentValue} type="literal" />
+        ) : isDiscriminator ? (
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "nowrap"  }}>
+            <ThemedSelectWithPortal
+              name={formikRootLessListKey}
+              filterable={true}
+              options={discriminatorSelectOptions}
+              value={currentValue}
+              onChange={isTransformerTypeSelect ? handleTransformerTypeChange : handleFilterableSelectChange}
+              placeholder={`Select ${name}...`}
+              filterPlaceholder="Type to filter options..."
+              minWidth="200px"
+            />
+            <div style={{ fontSize: "1.2em", color: "#87CEEB" }} title="Literal discriminator">
+              ★
+            </div>
+            {hiddenTransformerTypeCount > 0 && transformerTypeRestriction && (
+              <span
+                data-testid="transformer-type-restriction-hint"
+                data-restriction-path={transformerTypeRestriction.path.join(".")}
+                style={{ fontSize: "0.85em", opacity: 0.7, whiteSpace: "nowrap" }}
+              >
+                {hiddenTransformerTypeCount} transformers hidden for input{" "}
+                {transformerTypeRestriction.inputLabel}
+              </span>
+            )}
+            {isTransformerTypeSelect && parentKeyMap && (
+              <TransformerNodeActions
+                nodePath={transformerNodePath}
+                nodeValue={transformerNodeValue}
+                candidateTypes={currentDiscriminatorValues ?? []}
+                givenInput={transformerTypeRestriction?.givenInput}
+                output={transformerTypeRestriction?.output}
+                defaultNodeForType={defaultTransformerNodeForType}
+                onReplaceNode={replaceTransformerNode}
+                onRemoveNode={removeTransformerNodeFromTree}
+                undoable={transformerNodeUndoable}
+                transformerDefinitions={transformerDefinitions}
+              />
+            )}
+            {pendingTypeChange && (
+              <TransformerTypeChangeDialog
+                transformerType={pendingTypeChange.transformerType}
+                dropped={pendingTypeChange.dropped}
+                onConfirm={() => {
+                  replaceTransformerNode(pendingTypeChange.node);
+                  setPendingTypeChange(undefined);
+                }}
+                onCancel={() => setPendingTypeChange(undefined)}
+              />
+            )}
+          </div>
+        ) : (
+          <>
+            <input
+              type="text"
+              id={rootLessListKey}
+              name={formikRootLessListKey}
+              form={"form." + name}
+              value={formik.getFieldProps(formikRootLessListKey).value}
+              readOnly
+              disabled
+            />
+          </>
+        )
+      }
+    />
+  );
+}

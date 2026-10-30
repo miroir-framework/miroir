@@ -34,7 +34,7 @@ import { markPageConfigurationsLoaded } from "../../4_view/services/usePageConfi
 import {
   ComponentTestModeContext,
   componentTestSandboxMode,
-} from "../../4_view/tools/ComponentTestModeContext.js";
+} from "miroir-react";
 import { PortalContainerProvider } from "miroir-react";
 import {
   applyComponentTestDomConfig,

@@ -50,7 +50,7 @@ import {
   JsonObjectEditFormDialog,
   JsonObjectEditFormDialogInputs,
 } from "../JsonObjectEditFormDialog.js";
-import type { ValueObjectEditMode } from '../Reports/ReportSectionEntityInstance.js';
+import type { ValueObjectEditMode } from "miroir-react";
 import { generateAgGridStyles, generateGlideTheme, getFilterToolbarStyles } from "miroir-react";
 import {
   TableComponentProps,

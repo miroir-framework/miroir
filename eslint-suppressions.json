@@ -382,8 +382,18 @@
       "count": 2
     }
   },
+  "packages/miroir-react/src/components/Reports/TypedValueObjectEditor.tsx": {
+    "react-hooks/rules-of-hooks": {
+      "count": 8
+    }
+  },
   "packages/miroir-react/src/components/Reports/useEnsureReportQueryLoaded.ts": {
     "react-hooks/set-state-in-effect": {
+      "count": 1
+    }
+  },
+  "packages/miroir-react/src/components/Runners/InnerRunnerView.tsx": {
+    "miroir/type-escape": {
       "count": 1
     }
   },
@@ -405,9 +415,43 @@
       "count": 1
     }
   },
+  "packages/miroir-react/src/components/TransformerEditor/EntityInstanceSelectorPanel.tsx": {
+    "react-hooks/set-state-in-effect": {
+      "count": 2
+    }
+  },
+  "packages/miroir-react/src/components/TransformerEditor/TransformerEditor.tsx": {
+    "react-hooks/rules-of-hooks": {
+      "count": 11
+    }
+  },
   "packages/miroir-react/src/components/ValueObjectEditor/BlobEditorField.tsx": {
     "react-hooks/rules-of-hooks": {
       "count": 9
+    }
+  },
+  "packages/miroir-react/src/components/ValueObjectEditor/MlAnyEditor.tsx": {
+    "react-hooks/set-state-in-effect": {
+      "count": 1
+    }
+  },
+  "packages/miroir-react/src/components/ValueObjectEditor/MlElementEditor.tsx": {
+    "max-depth": {
+      "count": 1
+    },
+    "react-hooks/rules-of-hooks": {
+      "count": 1
+    }
+  },
+  "packages/miroir-react/src/components/ValueObjectEditor/MlObjectEditor.tsx": {
+    "max-depth": {
+      "count": 1
+    },
+    "react-hooks/rules-of-hooks": {
+      "count": 1
+    },
+    "react-hooks/set-state-in-effect": {
+      "count": 1
     }
   },
   "packages/miroir-react/src/components/ViewParamsUpdateQueue.ts": {
@@ -564,53 +608,9 @@
       "count": 1
     }
   },
-  "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/TypedValueObjectEditor.tsx": {
-    "react-hooks/rules-of-hooks": {
-      "count": 8
-    }
-  },
-  "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Runners/InnerRunnerView.tsx": {
-    "miroir/type-escape": {
-      "count": 1
-    }
-  },
   "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Runners/RunnerView.tsx": {
     "miroir/type-escape": {
       "count": 2
-    }
-  },
-  "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/TransformerEditor/EntityInstanceSelectorPanel.tsx": {
-    "react-hooks/set-state-in-effect": {
-      "count": 2
-    }
-  },
-  "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/TransformerEditor/TransformerEditor.tsx": {
-    "react-hooks/rules-of-hooks": {
-      "count": 11
-    }
-  },
-  "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/ValueObjectEditor/MlAnyEditor.tsx": {
-    "react-hooks/set-state-in-effect": {
-      "count": 1
-    }
-  },
-  "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/ValueObjectEditor/MlElementEditor.tsx": {
-    "max-depth": {
-      "count": 1
-    },
-    "react-hooks/rules-of-hooks": {
-      "count": 1
-    }
-  },
-  "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/ValueObjectEditor/MlObjectEditor.tsx": {
-    "max-depth": {
-      "count": 1
-    },
-    "react-hooks/rules-of-hooks": {
-      "count": 1
-    },
-    "react-hooks/set-state-in-effect": {
-      "count": 1
     }
   },
   "packages/miroir-standalone-app/src/miroir-fwk/4_view/routes/ModelDiagramPage.tsx": {

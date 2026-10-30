@@ -47,7 +47,7 @@ import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";
 import { useCurrentModelEnvironment, useReduxDeploymentsStateQuerySelectorForCleanedResult } from "miroir-react";
 import { useRunner } from "miroir-react";
-import { InnerRunnerView } from "./InnerRunnerView.js";
+import { InnerRunnerView } from "miroir-react";
 import type { FormMLSchema, RunnerAction, RunnerProps } from "miroir-react";
 import { resolveRunnerDefinitionApplication } from "miroir-react";
 import {

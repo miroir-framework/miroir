@@ -35,7 +35,7 @@ import {
 } from "miroir-example-library";
 import { ReportPageContextProvider } from "miroir-react";
 import { SequenceEditor } from "../components/SequenceEditor/SequenceEditor";
-import { TransformerEditor } from "../components/TransformerEditor/TransformerEditor";
+import { TransformerEditor } from "miroir-react";
 
 import {
   entityMiroirTest,

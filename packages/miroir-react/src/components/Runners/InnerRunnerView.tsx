@@ -1,0 +1,144 @@
+import { useFormikContext } from "formik";
+import { useMemo } from "react";
+
+import type {
+  MlObject,
+  LoggerInterface,
+  MiroirModelEnvironment,
+  CoreTransformerForBuildPlusRuntime,
+  Uuid
+} from "miroir-core";
+import {
+  MiroirLoggerFactory,
+  transformer_extended_apply_wrapper
+} from "miroir-core";
+import { packageName } from "../../constants.js";
+import { cleanLevel } from "../../viewConstants.js";
+import { useMiroirContextService } from "../../contexts/MiroirContextReactProvider.js";
+import { JsonDisplayHelper } from "../helpers/DebugHelper.js";
+import { useCurrentModelEnvironment } from "../../ReduxHooks.js";
+import { TypedValueObjectEditor } from "../Reports/TypedValueObjectEditor.js";
+import type { RunnerProps } from "./RunnerInterface.js";
+
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "InnerRunnerView");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName,
+  "UI"
+).then((logger: LoggerInterface) => {
+  log = logger;
+});
+
+let count = 0;
+
+// ################################################################################################
+// InnerRunnerView
+// ################################################################################################
+export const InnerRunnerView = <T extends Record<string, any>>({
+  runnerName,
+  application,
+  applicationDeploymentMap,
+  formMLSchema,
+  initialFormValue,
+  action,
+  formikValuePathAsString,
+  formLabel,
+  displaySubmitButton,
+  useActionButton = false,
+  validateOnChange = false,
+  validateOnBlur = false,
+  validationTransformer,
+  ...props
+}: RunnerProps<T>) => {
+  count += 1;
+  const context = useMiroirContextService();
+  const formikContext = useFormikContext<any>();
+  const currentApplication: Uuid = application??formikContext.values[runnerName]?.application;
+  const currentDeploymentUuid: Uuid = applicationDeploymentMap[currentApplication] || "";
+  const currentMiroirModelEnvironment: MiroirModelEnvironment = useCurrentModelEnvironment(
+    currentApplication,
+    applicationDeploymentMap
+  );
+  
+  const deploymentUuidFromApplicationUuid: Uuid = applicationDeploymentMap[currentApplication] || "";
+
+  const targetSchema: MlObject = useMemo(() => {
+    if (typeof formMLSchema === "object" && "formMLSchemaType" in formMLSchema) {
+      if (formMLSchema.formMLSchemaType === "mlSchema") {
+        return formMLSchema.mlSchema;
+      } else {
+        return transformer_extended_apply_wrapper(
+          context.miroirContext.miroirActivityTracker, // activityTracker
+          "build", // step
+          [], // transformerPath
+          "formMlSchemaAsTransformer", // transformerLabel
+          formMLSchema.transformer as any as CoreTransformerForBuildPlusRuntime, // TODO: correct type
+          "value", // resolveBuildTransformersTo
+          currentMiroirModelEnvironment, // TODO: the DeploymentUuid can change, need to handle that?
+          { 
+            [runnerName]: formikContext.values[runnerName] }, // transformerParams
+          // { [runnerName]: { deploymentUuidQuery: deploymentUuidFromApplicationUuid } }, // transformerParams
+          {}, // contextResults
+        ) as MlObject;
+      }
+    } else {
+      return formMLSchema as MlObject;
+    }
+  }, [
+    formMLSchema,
+    deploymentUuidFromApplicationUuid,
+    currentMiroirModelEnvironment,
+    context.miroirContext.miroirActivityTracker,
+  ]);
+
+  return (
+    <>
+      <JsonDisplayHelper debug={true}
+        componentName="InnerRunnerView"
+        elements={[
+          {
+            label: `Runner ${runnerName} formik values`,
+            data: formikContext.values,
+            copyButton: true,
+            useCodeBlock: true,
+          },
+          {
+            label: `Runner ${runnerName} count ${count} targetSchema`,
+            data: targetSchema,
+            copyButton: true,
+            useCodeBlock: true,
+          },
+          {
+            label: `Runner ${runnerName} currentApplication ${currentApplication}`,
+            data: currentApplication,
+          },
+          {
+            label: `Runner ${runnerName} deploymentUuidFromApplicationUuid`,
+            data: deploymentUuidFromApplicationUuid,
+            copyButton: true,
+            useCodeBlock: true,
+          },
+        ]}
+      />
+      <TypedValueObjectEditor
+        labelElement={<h2>{formLabel}</h2>}
+        formValueMLSchema={targetSchema.definition[formikValuePathAsString] as MlObject}
+        formikValuePathAsString={formikValuePathAsString}
+        application={currentApplication}
+        applicationDeploymentMap={applicationDeploymentMap}
+        deploymentUuid={currentDeploymentUuid}
+        applicationSection="model"
+        formLabel={formLabel}
+        zoomInPath=""
+        maxRenderDepth={Infinity}
+        displaySubmitButton={displaySubmitButton}
+        useActionButton={useActionButton}
+        valueObjectEditMode="create" // N/A
+        validationTransformer={validationTransformer}
+      />
+      {/* <ThemedOnScreenHelper
+        label={`Runner ${runnerName} targetSchema`}
+        data={targetSchema}
+      /> */}
+    </>
+  );
+};
