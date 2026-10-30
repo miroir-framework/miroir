@@ -171,7 +171,7 @@ export { default as selfApplicationModelBranchMiroirMasterBranch } from "./asset
 // ################################################################################################
 // Miroir modelVersion - SelfApplicationVersion (parentUuid = c3f0facf)
 // ################################################################################################
-export { default as selfApplicationVersionInitialMiroirVersion } from "./assets/miroir_modelVersion/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24/695826c2-aefa-4f5f-a131-dee46fe21c1.json" with { type: "json" };
+export { default as selfApplicationVersionInitialMiroirVersion } from "./assets/miroir_modelVersion/c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24/695826c2-aefa-4f5f-a131-dee46fe21c13.json" with { type: "json" };
 
 // ################################################################################################
 // Miroir Data - Reports (parentUuid = entityReport = 3f2baa83)
