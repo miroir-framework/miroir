@@ -53,10 +53,13 @@ async function readInstances(
   section: ApplicationSection,
   entityUuid: Uuid,
 ): Promise<EntityInstance[]> {
+  // a missing collection (no Theme, no Runner, ...) comes back empty from the stores; an error is
+  // a failed read, thrown so that `forApplication` does not keep a model missing a collection
   const result = await persistenceStoreController.getInstances(section, entityUuid);
   if (result instanceof Action2Error || result.returnedDomainElement instanceof Domain2ElementFailed) {
-    // an application may lack the collection of a model Entity (no Theme, no Runner, ...)
-    return [];
+    throw new Error(
+      `could not read the instances of Entity ${entityUuid} in section ${section}: ${JSON.stringify(result)}`,
+    );
   }
   return result.returnedDomainElement.instances ?? [];
 }
