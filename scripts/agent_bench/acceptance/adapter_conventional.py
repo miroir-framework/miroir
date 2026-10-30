@@ -25,14 +25,20 @@ TEST_SUFFIXES = (".test.ts", ".test.tsx", ".spec.ts", ".spec.tsx")
 
 
 def copy_app(source: Path, target: Path) -> None:
-    """Copies the app; `node_modules` is hard-linked (same filesystem), not copied (about 900 MB).
+    """Copies the app; `node_modules` is hard-linked, not copied (about 900 MB), unless the target is on another
+    filesystem.
 
     The copy gets the Library data in `prisma/library-data/` when it has none: outside the repository the seed
     finds no other.
     """
     shutil.copytree(source, target, ignore=shutil.ignore_patterns(*COPY_IGNORED), symlinks=True)
     if (source / "node_modules").exists():
-        subprocess.run(["cp", "-al", str(source / "node_modules"), str(target / "node_modules")], check=True)
+        linked = subprocess.run(
+            ["cp", "-al", str(source / "node_modules"), str(target / "node_modules")], capture_output=True, check=False
+        )
+        if linked.returncode != 0:  # hard links need one filesystem
+            shutil.rmtree(target / "node_modules", ignore_errors=True)
+            shutil.copytree(source / "node_modules", target / "node_modules", symlinks=True)
     if not (target / "prisma" / "library-data").exists():
         shutil.copytree(scenarios.LIBRARY_DATA, target / "prisma" / "library-data")
 

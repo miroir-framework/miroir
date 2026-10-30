@@ -162,6 +162,23 @@ def write_check_command(workspace: Path) -> None:
     check.chmod(0o755)
 
 
+# what a conventional run keeps of the agent's app, besides the copy's own exclusions
+KEPT_APP_IGNORED = (*adapter_conventional.COPY_IGNORED, "generated", "next-env.d.ts")
+
+
+def keep_conventional_app(workspace: Path, run_dir: Path, baseline: Path = adapter_conventional.BASELINE_APP) -> None:
+    """What the conventional agent left, to review or run again: its app without dependencies, build or database
+    (`app/`), and its changes to the baseline app (`changes.diff`)."""
+    shutil.copytree(workspace, run_dir / "app", ignore=shutil.ignore_patterns(*KEPT_APP_IGNORED), symlinks=True)
+    excluded = [f"--exclude={pattern}" for pattern in (*KEPT_APP_IGNORED, "library-data", "AGENTS.md")]
+    diff = subprocess.run(
+        ["diff", "-ruN", *excluded, str(baseline), str(workspace)], capture_output=True, text=True, check=False
+    )
+    (run_dir / "changes.diff").write_text(
+        diff.stdout.replace(f"{baseline}/", "baseline/").replace(f"{workspace}/", "agent/"), encoding="utf-8"
+    )
+
+
 def run_id(feature: str, arm: str, index: int, now: datetime) -> str:
     return f"{now.strftime('%Y%m%dT%H%M%SZ')}-{feature}-{arm}-{index}"
 
@@ -243,13 +260,16 @@ def main(argv: list[str] | None = None) -> int:
             shutil.copytree(adapter_miroir.LIBRARY_STORE, run_dir / "store")
         if args.arm == "miroir-files":
             adapter_miroir.store_from_workspace(workspace / "library", adapter_miroir.LIBRARY_STORE, run_dir / "store")
+        if args.arm == "conventional":
+            keep_conventional_app(workspace, run_dir)
 
     result = summary(
         transcript_path, arm=args.arm, feature=args.feature, index=args.run_index, pilot=args.pilot, started=started, rid=rid
     )
     result["workspace"] = str(workspace)
     (run_dir / "run.json").write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
-    print(json.dumps({k: result[k] for k in ("runId", "valid", "invalidReason", "stopReason", "turns", "costUsd", "result")}, indent=2))
+    # a run Claude Code ended without a result event has no turns, cost or result
+    print(json.dumps({k: result.get(k) for k in ("runId", "valid", "invalidReason", "stopReason", "turns", "costUsd", "result")}, indent=2))
     return 0 if result["valid"] else 1
 
 

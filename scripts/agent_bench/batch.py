@@ -43,6 +43,16 @@ def score(run_dir: Path) -> dict:
     return run
 
 
+def run_line(run: dict) -> str:
+    """One line per scored run; a run Claude Code ended without a result has no cost or turns."""
+    cost = f"${run['costUsd']:.2f}" if run.get("costUsd") is not None else "no cost"
+    acceptance = run["acceptance"]
+    return (
+        f"{run['runId']}: {cost}, {run.get('turns', '?')} turns, stop {run.get('stopReason')}, "
+        f"acceptance {acceptance['passed']}/{acceptance['total']}, valid {run['valid']}"
+    )
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--pilot", action="store_true")
@@ -50,6 +60,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--runs-dir", type=Path, default=DEFAULT_RUNS_DIR)
     args = parser.parse_args(argv)
 
+    args.runs_dir.mkdir(parents=True, exist_ok=True)
     for index in args.run_indexes:
         for feature in FEATURES:
             for arm in ARMS:
@@ -66,7 +77,7 @@ def main(argv: list[str] | None = None) -> int:
                     print(f"{new[-1].name}: acceptance failed ({error}), see acceptance.stderr", flush=True)
                     continue
                 subprocess.run(["npm", "run", "-s", "agent-run:record", "-w", "miroir-app-meta", "--", str(new[-1] / "run.json")], cwd=REPO_ROOT, check=False)
-                print(f"{run['runId']}: ${run['costUsd']:.2f}, {run['turns']} turns, acceptance {run['acceptance']['passed']}/{run['acceptance']['total']}, valid {run['valid']}", flush=True)
+                print(run_line(run), flush=True)
     return 0
 
 
