@@ -12,16 +12,14 @@ import {
   useMiroirContextService
 } from "miroir-react";
 
-import {
-  packageName,
-  ReportUrlParamKeys
-} from "../../../constants.js";
+import { packageName } from "../../../constants.js";
+import { ReportUrlParamKeys } from "miroir-react";
 import { PageContainer } from "miroir-react";
 import { ThemedBox } from "miroir-react";
 import { cleanLevel } from "../constants.js";
 import { usePageConfiguration } from "../services/index.js";
-import { RenderInsightHeader } from "../components/RenderInsightHeader.js";
-import { useRenderTracker } from "../tools/renderCountTracker.js";
+import { RenderInsightHeader } from "miroir-react";
+import { useRenderTracker } from "miroir-react";
 import { RenderPerformanceMetrics } from "miroir-react";
 import { ReportDisplay } from "./ReportDisplay.js";
 import { JsonDisplayHelper } from "miroir-react";

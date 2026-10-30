@@ -69,7 +69,7 @@ import {
   RunAllMiroirTestsButton,
   type MiroirTestSuiteResultsMap,
 } from "../../../../src/miroir-fwk/4_view/components/Buttons/RunAllMiroirTestsButton";
-import type { TestResultData } from "../../../../src/miroir-fwk/4_view/components/Buttons/testResultReport";
+import type { TestResultData } from "miroir-react";
 import { MiroirTestListDisplay } from "../../../../src/miroir-fwk/4_view/components/Reports/MiroirTestListDisplay";
 import { ReportPageContextProvider } from "miroir-react";
 import { resolveRepoRoot } from "../../../helpers/integrationTestProfiles.js";

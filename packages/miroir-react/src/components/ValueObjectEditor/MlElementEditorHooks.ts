@@ -29,28 +29,24 @@ import {
   type MlObject,
   valueToMl,
 } from "miroir-core";
-import { getMemoizedReduxDeploymentsStateSelectorMap } from "miroir-react";
-import { packageName } from "../../../../constants";
-import { cleanLevel } from "../../constants";
-import { MiroirReactContext, useMiroirContextService } from "miroir-react";
+import { getMemoizedReduxDeploymentsStateSelectorMap } from "../../miroir-localcache-imports.js";
+import { packageName } from "../../constants.js";
+import { cleanLevel } from "../../viewConstants.js";
+import { MiroirReactContext, useMiroirContextService } from "../../contexts/MiroirContextReactProvider.js";
 import {
   useCurrentModel,
   useCurrentModelEnvironment,
   useDefaultValueParams,
   useReduxDeploymentsStateQuerySelectorForCleanedResult,
-} from "../../ReduxHooks";
-import { FieldValidationContext } from "miroir-react";
-import { BlockViewModeContext } from "miroir-react";
+} from "../../ReduxHooks.js";
+import { FieldValidationContext } from "./FieldValidationContext.js";
+import { BlockViewModeContext } from "../BlockEditor/BlockViewMode.js";
 
 import { entitySelfApplication, selfApplicationMiroir } from "miroir-app-miroir";
 import { shallowEqual } from "react-redux";
-import {
-  selectInstanceArrayForDeploymentSectionEntity,
-  useSelector,
-  type ReduxStateWithUndoRedo,
-} from "miroir-react";
+import { selectInstanceArrayForDeploymentSectionEntity, useSelector, type ReduxStateWithUndoRedo } from "../../miroir-localcache-imports.js";
 import { adminSelfApplication } from "miroir-app-admin";
-import { useApplicationAccess } from "miroir-react";
+import { useApplicationAccess } from "../../auth/useApplicationAccess.js";
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MlElementEditorHooks");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",

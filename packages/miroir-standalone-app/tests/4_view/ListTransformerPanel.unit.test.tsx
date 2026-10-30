@@ -1,4 +1,5 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render as rtlRender, screen } from "@testing-library/react";
+import { MiroirContextReactTestProvider } from "miroir-react";
 import "@testing-library/jest-dom";
 import React from "react";
 import { Formik } from "formik";
@@ -275,41 +276,15 @@ vi.mock("../../src/miroir-fwk/4_view/components/Reports/TypedValueObjectEditorWi
   ),
 }));
 
-vi.mock("miroir-react", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("miroir-react")>();
-  return {
-    ...actual,
-    JsonDisplayHelper: () => null,
-    useMiroirContextService: () => ({
-      showPerformanceDisplay: false,
-      showDebugInfo: false,
-      ensureSchemaForDeployment: vi.fn(),
-      deploymentUuidToReportsEntitiesMapping: {
-        [deployment_Library_DO_NO_USE.uuid]: {
-          data: {
-            entities: defaultLibraryAppModel.entities,
-            entityVersions: [],
-            availableReports: defaultLibraryAppModel.reports,
-          },
-        },
-      },
-      schemasPerDeployment: {},
-    }),
-    useSnackbar: () => ({
-      handleAsyncAction: vi.fn(async (action: () => Promise<unknown>) => action()),
-      isActionRunning: false,
-    }),
-    ThemedOnScreenHelper: ({ label, data }: { label: string; data: unknown }) => (
-      <div data-testid="list-transformer-failure" data-label={label}>
-        {JSON.stringify(data)}
-      </div>
-    ),
-    useDomainControllerService: () => ({
-      handleActionFromUI: vi.fn(),
-    }),
-    useMiroirContextInnerFormOutput: () => [undefined, vi.fn()] as const,
-  };
-});
+vi.mock("miroir-react", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("miroir-react")>()),
+  JsonDisplayHelper: () => null,
+  ThemedOnScreenHelper: ({ label, data }: { label: string; data: unknown }) => (
+    <div data-testid="list-transformer-failure" data-label={label}>
+      {JSON.stringify(data)}
+    </div>
+  ),
+}));
 
 function createLibraryBookListStore() {
   const mockLocalCacheSliceState: LocalCacheSliceState = {
@@ -395,6 +370,39 @@ function renderBookListSection(pageParams: Record<string, unknown> = {}) {
     </MemoryRouter>,
   );
 }
+
+const TestContext = ({ children }: { children: React.ReactNode }) => (
+  <MiroirContextReactTestProvider
+    value={
+      {
+        showPerformanceDisplay: false,
+        showDebugInfo: false,
+        ensureSchemaForDeployment: vi.fn(),
+        deploymentUuidToReportsEntitiesMapping: {
+          [deployment_Library_DO_NO_USE.uuid]: {
+            data: {
+              entities: defaultLibraryAppModel.entities,
+              entityVersions: [],
+              availableReports: defaultLibraryAppModel.reports,
+            },
+          },
+        },
+        schemasPerDeployment: {},
+        handleAsyncAction: vi.fn(async (action: () => Promise<unknown>) => action()),
+        isActionRunning: false,
+        domainController: {
+          handleActionFromUI: vi.fn(),
+        },
+        innerFormOutput: undefined,
+        setInnerFormOutput: vi.fn(),
+      } as any
+    }
+  >
+    {children}
+  </MiroirContextReactTestProvider>
+);
+const render = ((ui: React.ReactElement, options?: Parameters<typeof rtlRender>[1]) =>
+  rtlRender(ui, { wrapper: TestContext, ...options })) as typeof rtlRender;
 
 describe("ListTransformerPanel — list section integration", () => {
   const getTransformerToggle = () => screen.getByRole("button", { name: /functions/i });

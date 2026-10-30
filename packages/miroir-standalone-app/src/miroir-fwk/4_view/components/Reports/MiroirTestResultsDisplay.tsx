@@ -1,10 +1,10 @@
 import type { ViewParams } from 'miroir-core';
 
-import { countTestResults, type TestResultData } from '../Buttons/testResultReport.js';
+import { countTestResults, type TestResultData } from "miroir-react";
 import { ThemedProgressiveAccordion } from "miroir-react";
 import { TestResultsGrid } from './TestResultsGrid.js';
-import { UnitTestExecutionSummary } from './UnitTestExecutionSummary.js';
-import type { TestResultDataAndSelect } from './testSelectionUtils.js';
+import { UnitTestExecutionSummary } from "miroir-react";
+import type { TestResultDataAndSelect } from "miroir-react";
 
 export interface MiroirTestResultsDisplayProps {
   resultsBySuiteKey: Record<string, TestResultData[]>;

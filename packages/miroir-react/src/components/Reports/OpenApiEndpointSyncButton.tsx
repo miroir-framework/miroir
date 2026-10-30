@@ -14,10 +14,10 @@ import {
   type LoggerInterface,
   type MiroirModelEnvironment,
 } from "miroir-core";
-import { useDomainControllerService } from "miroir-react";
+import { useDomainControllerService } from "../../contexts/MiroirContextReactProvider.js";
 
-import { packageName } from "../../../../constants.js";
-import { cleanLevel } from "../../constants.js";
+import { packageName } from "../../constants.js";
+import { cleanLevel } from "../../viewConstants.js";
 import { ActionButtonWithSnackbar } from "../Page/ActionButtonWithSnackbar.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(

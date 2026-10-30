@@ -4,7 +4,7 @@
  * Props only: `startSelfTest` renders it again as the run progresses.
  */
 import type { MiroirSelfTestResult } from '../../4-tests/selfTest/selfTestResult.js';
-import type { TestResultData } from '../components/Buttons/testResultReport.js';
+import type { TestResultData } from "miroir-react";
 import { MiroirTestResultsDisplay } from '../components/Reports/MiroirTestResultsDisplay.js';
 import { ReportPageContextProvider } from "miroir-react";
 

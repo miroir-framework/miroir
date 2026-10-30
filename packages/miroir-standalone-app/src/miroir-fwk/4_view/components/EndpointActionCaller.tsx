@@ -31,7 +31,7 @@ import {
 } from "miroir-react";
 import { FC, useEffect, useMemo, useState } from 'react';
 import { packageName } from '../../../constants.js';
-import { useCurrentModel, useCurrentModelEnvironment } from '../ReduxHooks.js';
+import { useCurrentModel, useCurrentModelEnvironment } from "miroir-react";
 import { cleanLevel } from '../constants.js';
 // import { useReportPageContext } from "miroir-react";
 import {

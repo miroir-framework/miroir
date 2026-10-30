@@ -44,7 +44,7 @@ import {
   useCurrentModelEnvironment,
   useDefaultValueParams,
   useReduxDeploymentsStateQuerySelectorForCleanedResult,
-} from "../../ReduxHooks";
+} from "miroir-react";
 import {
   ThemedDisplayValue,
   ThemedLabeledEditor,
@@ -55,7 +55,7 @@ import { isPrimaryUnionDiscriminatorField } from "miroir-react";
 import { findPathAnnotation } from "../Reports/TransformerTypeAnnotation.js";
 import { TransformerNodeActions, TransformerTypeChangeDialog } from "miroir-react";
 import { ValueHistoryContext } from "miroir-react";
-import { editorNavigationKey, useTrackedRender } from "../../tools/useTrackedRender.js";
+import { editorNavigationKey, useTrackedRender } from "miroir-react";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MlLiteralEditor");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);

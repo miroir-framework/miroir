@@ -18,7 +18,7 @@ import {
 import { selfApplicationMiroir } from "miroir-app-miroir";
 
 import { packageName } from "../../../constants.js";
-import type { TestResultData } from "../../4_view/components/Buttons/testResultReport.js";
+import type { TestResultData } from "miroir-react";
 import { cleanLevel } from "../../4_view/constants.js";
 import { fetchMiroirAndAppConfigurations } from "../../4_view/services/ConfigurationService.js";
 import { readAppMiroirReports } from "../appMiroirReports.js";

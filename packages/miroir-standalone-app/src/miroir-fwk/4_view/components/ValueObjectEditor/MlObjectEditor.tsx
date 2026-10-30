@@ -33,15 +33,15 @@ import {
   useSelector,
 } from "miroir-react";
 import { cleanLevel } from "../../constants";
-import { useDefaultValueParams } from "../../ReduxHooks";
+import { useDefaultValueParams } from "miroir-react";
 import {
   measuredUnfoldMlSchemaOnce
-} from "../../tools/hookPerformanceMeasure";
+} from "miroir-react";
 import { ErrorFallbackComponent } from "miroir-react";
 import { JsonDisplayHelper } from "miroir-react";
 import { useReportPageContext } from "miroir-react";
-import { RenderInsightHeader } from "../RenderInsightHeader.js";
-import { editorNavigationKey, useTrackedRender } from "../../tools/useTrackedRender.js";
+import { RenderInsightHeader } from "miroir-react";
+import { editorNavigationKey, useTrackedRender } from "miroir-react";
 import { useViewportReveal } from "../../tools/useViewportReveal.js";
 import {
   getUnitTestKind,
@@ -66,7 +66,7 @@ import {
   ThemedStyledButton,
 } from "miroir-react";
 import { FoldUnfoldAllObjectAttributesOrArrayItems, FoldUnfoldObjectOrArray, MlElementEditor } from "./MlElementEditor";
-import { getFoldedDisplayValue, useMlElementEditorHooks } from "./MlElementEditorHooks";
+import { getFoldedDisplayValue, useMlElementEditorHooks } from "miroir-react";
 import { TransformerTypeBadge, TransformerTypeRestriction, MlObjectEditorProps } from "./MlElementEditorInterface";
 import { emptyContainerMarker, isPlainObjectValue } from "miroir-react";
 import { historyCommand } from "miroir-react";

@@ -1,7 +1,8 @@
 import React from 'react';
 import '@testing-library/jest-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render as rtlRender, screen, waitFor } from "@testing-library/react";
+import { MiroirContextReactTestProvider, MiroirThemeContext } from "miroir-react";
 
 import type { MiroirTestDefinition } from 'miroir-core';
 import { miroirTest_runner_returnDocument } from 'miroir-example-library';
@@ -70,43 +71,8 @@ vi.mock('miroir-core', async (importOriginal) => {
   };
 });
 
-vi.mock('miroir-react', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('miroir-react')>()),
-  useSnackbar: () => ({
-    isActionRunning: false,
-    handleAsyncAction: async (
-      action: () => Promise<unknown>,
-      _successMessage: string,
-      _actionName: string,
-    ) => {
-      await action();
-    },
-  }),
-  useMiroirContextService: () => ({
-    miroirContext: {
-      miroirActivityTracker: {
-        resetResults: vi.fn(),
-        getTestAssertionsResults: vi.fn(() => []),
-      },
-    },
-  }),
-  useMiroirTheme: () => ({
-    currentTheme: {
-      colors: { primary: '#4527a0', text: '#000', surface: '#fff' },
-      typography: { fontSize: { sm: '14px' }, fontWeight: { medium: 500 } },
-      spacing: { sm: '8px', md: '12px' },
-      borderRadius: { sm: '4px' },
-      components: {
-        button: {
-          primary: {},
-          secondary: {},
-        },
-      },
-    },
-  }),
-}));
-
-vi.mock('../../src/miroir-fwk/4_view/components/Page/ActionButtonWithSnackbar.js', () => ({
+vi.mock("miroir-react", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("miroir-react")>()),
   ActionButtonWithSnackbar: ({
     onAction,
     label,
@@ -173,6 +139,48 @@ beforeEach(() => {
 afterEach(() => {
   resetIntegTestRunCoordinatorForTests();
 });
+
+const testTheme = {
+  currentTheme: {
+    colors: { primary: '#4527a0', text: '#000', surface: '#fff' },
+    typography: { fontSize: { sm: '14px' }, fontWeight: { medium: 500 } },
+    spacing: { sm: '8px', md: '12px' },
+    borderRadius: { sm: '4px' },
+    components: {
+      button: {
+        primary: {},
+        secondary: {},
+      },
+    },
+  },
+};
+
+const TestContext = ({ children }: { children: React.ReactNode }) => (
+  <MiroirContextReactTestProvider
+    value={
+      {
+        isActionRunning: false,
+        handleAsyncAction: async (
+          action: () => Promise<unknown>,
+          _successMessage: string,
+          _actionName: string,
+        ) => {
+          await action();
+        },
+        miroirContext: {
+          miroirActivityTracker: {
+            resetResults: vi.fn(),
+            getTestAssertionsResults: vi.fn(() => []),
+          },
+        },
+      } as any
+    }
+  >
+    <MiroirThemeContext.Provider value={testTheme as any}>{children}</MiroirThemeContext.Provider>
+  </MiroirContextReactTestProvider>
+);
+const render = ((ui: React.ReactElement, options?: Parameters<typeof rtlRender>[1]) =>
+  rtlRender(ui, { wrapper: TestContext, ...options })) as typeof rtlRender;
 
 describe('RunAllMiroirTestsButton runMode (T2)', () => {
   it('defaults to unit and calls _runMiroirTestSuite with executionMode unit', async () => {

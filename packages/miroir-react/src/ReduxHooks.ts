@@ -39,25 +39,12 @@ import {
   entityMenu,
   selfApplicationMiroir
  } from "miroir-app-miroir";
-import {
-  ReduxStateWithUndoRedo,
-  applyDomainStateQuerySelectorForCleanedResult,
-  applyDomainStateQueryTemplateSelector,
-  applyReduxDeploymentsStateQuerySelector,
-  applyReduxDeploymentsStateQuerySelectorForCleanedResult,
-  applyReduxDeploymentsStateQueryTemplateSelector,
-  applyReduxDeploymentsStateQueryTemplateSelectorForCleanedResult,
-  selectCurrentReduxDeploymentsStateFromReduxState,
-  selectEntityInstanceUuidIndexFromLocalCache,
-  selectInstanceArrayForDeploymentSectionEntity,
-  selectModelForDeploymentFromReduxState,
-  useMiroirContextService,
-  useSelector,
-} from "miroir-react";
+import { ReduxStateWithUndoRedo, applyDomainStateQuerySelectorForCleanedResult, applyDomainStateQueryTemplateSelector, applyReduxDeploymentsStateQuerySelector, applyReduxDeploymentsStateQuerySelectorForCleanedResult, applyReduxDeploymentsStateQueryTemplateSelector, applyReduxDeploymentsStateQueryTemplateSelectorForCleanedResult, selectCurrentReduxDeploymentsStateFromReduxState, selectEntityInstanceUuidIndexFromLocalCache, selectInstanceArrayForDeploymentSectionEntity, selectModelForDeploymentFromReduxState, useSelector } from "./miroir-localcache-imports.js";
+import { useMiroirContextService } from "./contexts/MiroirContextReactProvider.js";
 
 import { adminSelfApplication, entityDeployment } from "miroir-app-admin";
-import { packageName } from "../../constants.js";
-import { cleanLevel } from "./constants.js";
+import { packageName } from "./constants.js";
+import { cleanLevel } from "./viewConstants.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReduxHooks");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);

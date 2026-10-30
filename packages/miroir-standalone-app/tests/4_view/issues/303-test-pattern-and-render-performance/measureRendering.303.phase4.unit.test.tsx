@@ -35,7 +35,7 @@ import {
 } from "miroir-core";
 
 import { createReactComponentTestRunner } from "../../../../src/miroir-fwk/4-tests/componentTests/runReactComponentTest";
-import { generateTestReport } from "../../../../src/miroir-fwk/4_view/components/Buttons/testResultReport";
+import { generateTestReport } from "miroir-react";
 
 const LEAF_LABEL = "Enum: measure rendering";
 

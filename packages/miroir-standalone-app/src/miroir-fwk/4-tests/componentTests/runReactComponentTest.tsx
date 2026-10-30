@@ -17,7 +17,7 @@ import {
   componentTestSandboxMode,
 } from "../../4_view/tools/ComponentTestModeContext.js";
 import { PortalContainerProvider } from "miroir-react";
-import { TransformerTypesDisplayContext } from "../../4_view/components/TransformerEditor/TransformerTypesDisplay.js";
+import { TransformerTypesDisplayContext } from "miroir-react";
 import {
   applyComponentTestDomConfig,
   configureComponentTestDom,

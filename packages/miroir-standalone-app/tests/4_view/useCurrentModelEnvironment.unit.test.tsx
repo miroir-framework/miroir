@@ -31,8 +31,8 @@ import {
   type ReduxStateWithUndoRedo,
 } from "miroir-react";
 
-import { useCurrentModelEnvironment } from "../../src/miroir-fwk/4_view/ReduxHooks.js";
-import { ModelEnvironmentSync } from "../../src/miroir-fwk/4_view/ModelEnvironmentSync.js";
+import { useCurrentModelEnvironment } from "miroir-react";
+import { ModelEnvironmentSync } from "miroir-react";
 import {
   addEndpointToLocalCacheState,
   addEntityInstanceToLocalCacheState,

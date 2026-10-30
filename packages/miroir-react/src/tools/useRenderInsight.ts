@@ -5,12 +5,8 @@
  * mount already limits how many instrumented nodes render at once).
  */
 
-import { useMiroirContextService } from "miroir-react";
-import {
-  NOOP_RENDER_COUNTS,
-  renderInsightRegistry,
-  type RenderCounts,
-} from "miroir-react";
+import { useMiroirContextService } from "../contexts/MiroirContextReactProvider.js";
+import { NOOP_RENDER_COUNTS, renderInsightRegistry, type RenderCounts } from "./renderInsightRegistry.js";
 
 /**
  * Track component renders only when performance display mode is on.

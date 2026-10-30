@@ -12,7 +12,7 @@ import {
   getTestSelectionSummary,
   type TestResultDataAndSelect,
   type TestSelectionState,
-} from "./testSelectionUtils.js";
+} from "miroir-react";
 import { extractUnitTestLabelFromTestPath } from "miroir-react";
 import { useReportPageContext } from "miroir-react";
 

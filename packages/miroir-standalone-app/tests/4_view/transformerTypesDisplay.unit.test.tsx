@@ -48,7 +48,7 @@ import {
   useComponentTestSandbox,
 } from "../../src/miroir-fwk/4_view/components/Reports/ComponentTestSandbox";
 import { transformerTypeBadges } from "../../src/miroir-fwk/4_view/components/TransformerEditor/TransformerEditor";
-import { useShowTransformerTypes } from "../../src/miroir-fwk/4_view/components/TransformerEditor/TransformerTypesDisplay";
+import { useShowTransformerTypes } from "miroir-react";
 import type { TransformerTypeBadge } from "../../src/miroir-fwk/4_view/components/ValueObjectEditor/MlElementEditorInterface";
 import { buildAdminViewParamsHarness, loadViewParams } from "../helpers/adminViewParamsHarness";
 

@@ -32,8 +32,8 @@ import { ReportFormSubmitContext, type SubmitReportFormValues } from "miroir-rea
 import {
   omitSecretKeysFromBagDump,
   useOptionalMultistepReportHost,
-} from './MultistepReportHost.js';
-import { ReportViewProps, useQueryTemplateResults } from './ReportHooks.js';
+} from "miroir-react";
+import { ReportViewProps, useQueryTemplateResults } from "miroir-react";
 import ReportSectionViewWithEditor from './ReportSectionViewWithEditor.js';
 import { reportSectionsFormValue } from './ReportTools.js';
 import { useEnsureReportQueryLoaded } from "miroir-react";

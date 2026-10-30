@@ -1,19 +1,13 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { useMiroirContextService } from "miroir-react";
+import { useMiroirContextService } from "../contexts/MiroirContextReactProvider.js";
 import {
   buildAttributedInstanceIndex,
   measureLocalCacheMemory,
   type LocalCacheMemoryBreakdown,
 } from "miroir-core";
-import { localCacheMonitorRegistry } from "miroir-react";
-import {
-  localCacheMonitorIndicators,
-  type LocalCacheMonitorIndicators,
-} from "miroir-react";
-import {
-  clearLocalCacheMonitorSession,
-  downloadLocalCacheMonitorExport,
-} from "miroir-react";
+import { localCacheMonitorRegistry } from "../tools/localCacheMonitorRegistry.js";
+import { localCacheMonitorIndicators, type LocalCacheMonitorIndicators } from "../tools/localCacheMonitorIndicators.js";
+import { clearLocalCacheMonitorSession, downloadLocalCacheMonitorExport } from "../tools/localCacheMonitorSession.js";
 
 function formatBytes(n: number): string {
   if (!Number.isFinite(n) || n < 0) return "—";

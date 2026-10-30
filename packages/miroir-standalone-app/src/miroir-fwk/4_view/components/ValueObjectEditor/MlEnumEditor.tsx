@@ -22,7 +22,7 @@ import {
 import React, { FC, useCallback, useMemo, useState } from "react";
 import { packageName } from "../../../../constants";
 import { cleanLevel } from "../../constants";
-import { useCurrentModelEnvironment, useDefaultValueParams } from "../../ReduxHooks";
+import { useCurrentModelEnvironment, useDefaultValueParams } from "miroir-react";
 import {
   ThemedDisplayValue,
   ThemedLabeledEditor,
@@ -33,7 +33,7 @@ import { isPrimaryUnionDiscriminatorField } from "miroir-react";
 import { useSelector } from "react-redux";
 import { getMemoizedReduxDeploymentsStateSelectorMap } from "miroir-localcache-redux";
 import { JsonDisplayHelper } from "miroir-react";
-import { editorNavigationKey, useTrackedRender } from "../../tools/useTrackedRender.js";
+import { editorNavigationKey, useTrackedRender } from "miroir-react";
 
 // Common function to handle discriminator changes
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MlEnumEditor");

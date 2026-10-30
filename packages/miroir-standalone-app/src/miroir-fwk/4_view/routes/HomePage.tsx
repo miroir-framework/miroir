@@ -28,13 +28,11 @@ import {
   selfApplicationMiroir
 } from "miroir-app-miroir";
 import { deployment_Miroir } from "miroir-app-admin";
-import {
-  packageName,
-  type ReportUrlParamKeys
-} from "../../../constants.js";
-import { useQueryTemplateResults } from "../components/Reports/ReportHooks.js";
+import { packageName } from "../../../constants.js";
+import { type ReportUrlParamKeys } from "miroir-react";
+import { useQueryTemplateResults } from "miroir-react";
 import { cleanLevel } from "../constants.js";
-import { useCurrentModel } from "../ReduxHooks.js";
+import { useCurrentModel } from "miroir-react";
 import { ReportDisplay } from "./ReportDisplay.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "HomePage");

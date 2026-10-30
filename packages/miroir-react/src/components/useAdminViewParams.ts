@@ -11,10 +11,11 @@ import {
   type ViewParamsData,
 } from "miroir-core";
 import { deployment_Admin } from "miroir-app-admin";
-import { getMemoizedReduxDeploymentsStateSelectorMap, useDomainControllerService } from "miroir-react";
+import { getMemoizedReduxDeploymentsStateSelectorMap } from "../miroir-localcache-imports.js";
+import { useDomainControllerService } from "../contexts/MiroirContextReactProvider.js";
 
 import { useReduxDeploymentsStateQuerySelectorForCleanedResult } from "../ReduxHooks.js";
-import { ViewParamsUpdateQueue } from "miroir-react";
+import { ViewParamsUpdateQueue } from "./ViewParamsUpdateQueue.js";
 
 /**
  * The ViewParams instance of the Admin deployment in the store, and the save of some of its

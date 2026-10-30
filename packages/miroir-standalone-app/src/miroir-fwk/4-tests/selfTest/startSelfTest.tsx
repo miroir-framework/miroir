@@ -8,7 +8,7 @@ import type { Root } from "react-dom/client";
 
 import type { DomainControllerInterface, MiroirActivityTrackerInterface, MiroirConfigClient } from "miroir-core";
 
-import type { TestResultData } from "../../4_view/components/Buttons/testResultReport.js";
+import type { TestResultData } from "miroir-react";
 import { SelfTestPage } from "../../4_view/pages/SelfTestPage.js";
 import { runSelfTest } from "./runSelfTest.js";
 import { publishSelfTestResult, selfTestTags, type MiroirSelfTestResult } from "./selfTestResult.js";

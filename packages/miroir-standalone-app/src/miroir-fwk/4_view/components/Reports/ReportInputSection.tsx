@@ -11,7 +11,7 @@ import {
 } from "miroir-core";
 
 import { TypedValueObjectEditor } from "./TypedValueObjectEditor.js";
-import { useOptionalMultistepReportHost } from "./MultistepReportHost.js";
+import { useOptionalMultistepReportHost } from "miroir-react";
 import {
   buildReportApplicationSwitchUrl,
 } from "miroir-react";

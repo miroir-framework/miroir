@@ -28,7 +28,7 @@ import {
   useMiroirContextService
 } from "miroir-react";
 import { packageName } from "../../../constants.js";
-import { useMiroirFundamentalMlSchemaForDeployment } from "../ReduxHooks.js";
+import { useMiroirFundamentalMlSchemaForDeployment } from "miroir-react";
 import { cleanLevel } from "../constants.js";
 import { ErrorFallbackComponent } from "miroir-react";
 import type { ValueObjectEditMode } from "./Reports/ReportSectionEntityInstance.js";

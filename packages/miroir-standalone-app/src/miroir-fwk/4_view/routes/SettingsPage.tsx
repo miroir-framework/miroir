@@ -48,7 +48,7 @@ import {
   useDomainControllerService,
   useMiroirContextService,
 } from "miroir-react";
-import { useReduxDeploymentsStateQuerySelectorForCleanedResult } from "../ReduxHooks.js";
+import { useReduxDeploymentsStateQuerySelectorForCleanedResult } from "miroir-react";
 import { usePageConfiguration } from "../services/index.js";
 import { ReportDisplay } from "./ReportDisplay.js";
 

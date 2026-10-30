@@ -23,7 +23,7 @@ import {
 } from "miroir-react";
 import type { TransformerTypeBadge } from "../ValueObjectEditor/MlElementEditorInterface.js";
 import { ThemedIcon } from "miroir-react";
-import { useBlockEditorBuildMarking } from "./BlockEditorDisplay.js";
+import { useBlockEditorBuildMarking } from "miroir-react";
 import { BlockDefineHeader } from "./BlockDefineHeader.js";
 import { BlockDndContext, useBlockDraggable, useBlockDroppable, useDraggingBlock } from "./BlockDragDrop.js";
 import {

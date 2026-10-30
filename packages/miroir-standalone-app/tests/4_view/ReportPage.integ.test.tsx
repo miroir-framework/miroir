@@ -5,7 +5,7 @@ import * as RRDom from "react-router-dom";
 import { describe, vi, type ExpectStatic } from 'vitest';
 
 // import { reportCountryList, selfApplicationDeploymentLibrary } from "miroir-core";
-import type { ReportViewProps } from "../../src/miroir-fwk/4_view/components/Reports/ReportHooks";
+import type { ReportViewProps } from "miroir-react";
 import { ReportPage } from '../../src/miroir-fwk/4_view/routes/ReportPage';
 import {
   extractValuesFromRenderedElements,

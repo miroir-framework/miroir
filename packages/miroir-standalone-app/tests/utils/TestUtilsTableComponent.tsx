@@ -26,7 +26,7 @@ import {
 
 import { packageName } from "../../src/constants";
 import { cleanLevel } from "../../src/miroir-fwk/4_view/constants";
-import { useQueryTemplateResults } from '../../src/miroir-fwk/4_view/components/Reports/ReportHooks';
+import { useQueryTemplateResults } from "miroir-react";
 export interface MiroirReportComponentProps {
   DisplayLoadingInfo:JSX.Element;
   application: Uuid;

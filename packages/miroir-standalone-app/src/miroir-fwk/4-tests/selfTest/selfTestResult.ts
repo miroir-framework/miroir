@@ -4,7 +4,7 @@
  */
 import type { MiroirConfigClient } from "miroir-core";
 
-import { countTestResults } from "../../4_view/components/Buttons/testResultReport.js";
+import { countTestResults } from "miroir-react";
 import type { MiroirTestSuiteResultsMap, SkippedMiroirTestSuite } from "../miroirTestBatch.js";
 
 export type MiroirSelfTestVerdict = "running" | "passed" | "failed";

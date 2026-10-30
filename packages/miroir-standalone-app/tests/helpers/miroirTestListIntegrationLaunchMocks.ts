@@ -26,7 +26,8 @@ vi.mock('../../src/miroir-fwk/4_view/components/Reports/TestResultsGrid.js', () 
   TestResultsGrid: () => null,
 }));
 
-vi.mock('../../src/miroir-fwk/4_view/components/Reports/UnitTestExecutionSummary.js', () => ({
+vi.mock('miroir-react', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('miroir-react')>()),
   UnitTestExecutionSummary: () => null,
 }));
 

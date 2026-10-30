@@ -17,7 +17,7 @@
 // import { useMiroirContextService } from "miroir-react";
 // import { cleanLevel } from "../constants.js";
 // import { getMDataGridColumnDefinition } from "../getColumnDefinitionsFromEntityAttributes.js";
-// import { EntityInstanceLink } from "./EntityInstanceLink.js";
+// import { EntityInstanceLink } from "miroir-react";
 
 // let log: LoggerInterface = console as any as LoggerInterface;
 // MiroirLoggerFactory.registerLoggerToStart(

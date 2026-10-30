@@ -1,5 +1,5 @@
 import { makeStyles } from "@mui/material";
-import { SidebarWidth } from "./components/Page/SidebarSection";
+import { SidebarWidth } from "miroir-react";
 
 export const useStyles = makeStyles((theme:any) => ({
   root: {

@@ -16,7 +16,7 @@ import {
 
 import { ReportPage } from "../../../../src/miroir-fwk/4_view/routes/ReportPage";
 import { reportUrl } from "miroir-react";
-import type { ReportViewProps } from "../../../../src/miroir-fwk/4_view/components/Reports/ReportHooks";
+import type { ReportViewProps } from "miroir-react";
 import {
   deleteLibraryCountryFromMlEditorTestCache,
   getLibraryCountryFromMlEditorTestCache,

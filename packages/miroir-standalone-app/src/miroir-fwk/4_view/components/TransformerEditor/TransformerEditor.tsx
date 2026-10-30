@@ -43,8 +43,8 @@ import { packageName } from '../../../../constants';
 import { cleanLevel, lastSubmitButtonClicked } from '../../constants';
 import {
   useTransformer
-} from "../Reports/ReportHooks";
-import { useCurrentModelEnvironment } from "../../ReduxHooks.js";
+} from "miroir-react";
+import { useCurrentModelEnvironment } from "miroir-react";
 import { useReportPageContext } from "miroir-react";
 import { TypedValueObjectEditor } from '../Reports/TypedValueObjectEditor';
 import {
@@ -81,7 +81,7 @@ import {
   type TransformerEditorProps,
 } from "miroir-react";
 import { TransformerEventsPanel } from './TransformerEventsPanel';
-import { useShowTransformerTypes } from './TransformerTypesDisplay';
+import { useShowTransformerTypes } from "miroir-react";
 
 import { entityDefinitionTransformerDefinition } from 'miroir-app-miroir';
 // ################################################################################################

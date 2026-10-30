@@ -3,16 +3,11 @@ import type { Params } from "react-router-dom";
 
 import type { ApplicationSection, Uuid } from "miroir-core";
 
-import { REPORT_URL_KNOWN_PARAM_KEYS, type ReportUrlParamKeys } from "../../../../constants.js";
-import { reportUrl } from "miroir-react";
-import {
-  ThemedDialog,
-  ThemedDialogActions,
-  ThemedDialogContent,
-  ThemedDialogTitle,
-  ThemedSpan,
-  ThemedStyledButton,
-} from "miroir-react";
+import { REPORT_URL_KNOWN_PARAM_KEYS, type ReportUrlParamKeys } from "../../reportUrlParams.js";
+import { reportUrl } from "../../navigation.js";
+import { ThemedDialog, ThemedDialogActions, ThemedDialogContent, ThemedDialogTitle } from "../Themes/MUIComponents.js";
+import { ThemedSpan } from "../Themes/BasicComponents.js";
+import { ThemedStyledButton } from "../Themes/UIComponents.js";
 
 export type OpenReportSpec = {
   label?: string;

@@ -1,30 +1,31 @@
 import React from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render as rtlRender, screen } from "@testing-library/react";
+import { MiroirContextReactTestProvider } from "miroir-react";
 import "@testing-library/jest-dom";
 import { estimateObjectBytes, measureLocalCacheMemory } from "miroir-core";
 
 const showLocalCacheMonitorRef = { current: false };
 const domainControllerRef: { current: any } = { current: undefined };
 
-vi.mock("miroir-react", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("miroir-react")>()),
-  useMiroirContextService: () => ({
-    showLocalCacheMonitor: showLocalCacheMonitorRef.current,
-    domainController: domainControllerRef.current,
-  }),
-}));
-
 import { localCacheMonitorRegistry } from "miroir-react";
 import {
   LocalCacheMonitorSummary,
   readLocalCacheMonitorBreakdown,
-} from "../../src/miroir-fwk/4_view/components/LocalCacheMonitorSummary.js";
+} from "miroir-react";
 import { applyLocalCacheMonitorGate } from "miroir-react";
 import {
   LOCAL_CACHE_MONITOR_SESSION_KEY,
   resetLocalCacheMonitorConfig,
 } from "miroir-react";
+
+const TestContext = ({ children }: { children: React.ReactNode }) => (
+  <MiroirContextReactTestProvider value={{ showLocalCacheMonitor: showLocalCacheMonitorRef.current, domainController: domainControllerRef.current } as any}>
+    {children}
+  </MiroirContextReactTestProvider>
+);
+const render = ((ui: React.ReactElement, options?: Parameters<typeof rtlRender>[1]) =>
+  rtlRender(ui, { wrapper: TestContext, ...options })) as typeof rtlRender;
 
 describe("LocalCacheMonitorSummary (Phase 7)", () => {
   beforeEach(() => {

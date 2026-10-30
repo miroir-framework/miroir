@@ -27,7 +27,7 @@ import {
 import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";
 import { useDomainControllerService } from "miroir-react";
-import { useCurrentModelEnvironment } from "../../ReduxHooks.js";
+import { useCurrentModelEnvironment } from "miroir-react";
 import type { FormMLSchema } from "miroir-react";
 import { RunnerView } from "./RunnerView.js";
 

@@ -20,16 +20,14 @@ import {
 
 import { JsonDisplayHelper } from "miroir-react";
 import { ErrorBoundary } from "react-error-boundary";
-import {
-  packageName,
-  ReportUrlParamKeys
-} from "../../../constants.js";
-import { useCurrentModel } from "../ReduxHooks.js";
+import { packageName } from "../../../constants.js";
+import { ReportUrlParamKeys } from "miroir-react";
+import { useCurrentModel } from "miroir-react";
 import { ErrorFallbackComponent } from "miroir-react";
-import { RenderInsightSummary } from "../components/RenderInsightSummary.js";
-import { LocalCacheMonitorSummary } from "../components/LocalCacheMonitorSummary.js";
-import { useStoredQueriesResults } from "../components/Reports/ReportHooks.js";
-import { MultistepReportHost } from "../components/Reports/MultistepReportHost.js";
+import { RenderInsightSummary } from "miroir-react";
+import { LocalCacheMonitorSummary } from "miroir-react";
+import { useStoredQueriesResults } from "miroir-react";
+import { MultistepReportHost } from "miroir-react";
 import { ReportViewWithEditor } from "../components/Reports/ReportViewWithEditor.js";
 import { ThemedBox, ThemedSpan } from "miroir-react";
 import { cleanLevel } from "../constants.js";

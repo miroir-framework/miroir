@@ -41,11 +41,11 @@ import {
 import { packageName } from '../../../../constants.js';
 import { reportUrl } from "miroir-react";
 import EntityEditor from '../../EntityEditor.js';
-import { useCurrentModel, useReduxDeploymentsStateQuerySelectorForCleanedResult } from '../../ReduxHooks.js';
+import { useCurrentModel, useReduxDeploymentsStateQuerySelectorForCleanedResult } from "miroir-react";
 import { ToolsColumnDefinition } from "miroir-react";
 import { cleanLevel } from '../../constants.js';
 import { useMiroirTableTheme } from "miroir-react";
-import { JsonObjectDeleteFormDialog } from '../JsonObjectDeleteFormDialog.js';
+import { JsonObjectDeleteFormDialog } from "miroir-react";
 import {
   JsonObjectEditFormDialog,
   JsonObjectEditFormDialogInputs,

@@ -72,7 +72,7 @@ vi.mock("../../../../src/miroir-fwk/4-tests/componentTests/index", async (import
 
 import * as componentTestsEntry from "../../../../src/miroir-fwk/4-tests/componentTests/index";
 import type { MiroirTestSuiteResultsMap } from "../../../../src/miroir-fwk/4_view/components/Buttons/RunAllMiroirTestsButton";
-import type { TestResultData } from "../../../../src/miroir-fwk/4_view/components/Buttons/testResultReport";
+import type { TestResultData } from "miroir-react";
 import { MiroirTestDisplay } from "../../../../src/miroir-fwk/4_view/components/Reports/MiroirTestDisplay";
 import { MiroirTestListDisplay } from "../../../../src/miroir-fwk/4_view/components/Reports/MiroirTestListDisplay";
 import { ReportPageContextProvider } from "miroir-react";

@@ -22,23 +22,18 @@ import {
   previewOpenApiGetCall,
   type Uuid,
 } from "miroir-core";
-import { useDomainControllerService, useMiroirContextService } from "miroir-react";
+import { useDomainControllerService, useMiroirContextService } from "../../contexts/MiroirContextReactProvider.js";
 
-import { packageName } from "../../../../constants.js";
-import type { ReportUrlParamKeys } from "../../../../constants.js";
+import { packageName } from "../../constants.js";
+import type { ReportUrlParamKeys } from "../../reportUrlParams.js";
 import { useCurrentModelEnvironment } from "../../ReduxHooks.js";
-import { cleanLevel } from "../../constants.js";
-import {
-  ThemedBox,
-  ThemedDialog,
-  ThemedDialogActions,
-  ThemedDialogContent,
-  ThemedDialogTitle,
-  ThemedSpan,
-  ThemedStyledButton,
-} from "miroir-react";
+import { cleanLevel } from "../../viewConstants.js";
+import { ThemedBox } from "../Themes/LayoutComponents.js";
+import { ThemedDialog, ThemedDialogActions, ThemedDialogContent, ThemedDialogTitle } from "../Themes/MUIComponents.js";
+import { ThemedSpan } from "../Themes/BasicComponents.js";
+import { ThemedStyledButton } from "../Themes/UIComponents.js";
 import { openReportHref } from "./OpenReportLaunch.js";
-import { useYamlParserStatus } from "miroir-react";
+import { useYamlParserStatus } from "./useYamlParserStatus.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(
   packageName,

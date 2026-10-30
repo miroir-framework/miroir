@@ -6,7 +6,7 @@ const REPO_ROOT = join(import.meta.dirname, "../../../..");
 
 const BUTTON_PATH = join(
   REPO_ROOT,
-  "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/OpenApiEndpointSyncButton.tsx",
+  "packages/miroir-react/src/components/Reports/OpenApiEndpointSyncButton.tsx",
 );
 
 const INSTANCE_SECTION_PATH = join(

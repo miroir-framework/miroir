@@ -31,7 +31,7 @@ import { ReportPageContextProvider } from "miroir-react";
 import { ReportViewWithEditor } from "../../src/miroir-fwk/4_view/components/Reports/ReportViewWithEditor.js";
 import { DocumentOutlineContextProvider } from "miroir-react";
 import { MiroirThemeProvider } from "miroir-react";
-import { ReportUrlParamKeys } from "../../src/constants.js";
+import { ReportUrlParamKeys } from "miroir-react";
 import {
   applicationDeploymentMap,
   bootGitHubTestbed,

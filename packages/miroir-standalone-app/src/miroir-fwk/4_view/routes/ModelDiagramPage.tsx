@@ -23,7 +23,7 @@ import { ModelDiagramReportSectionView } from "../components/Reports/ModelDiagra
 import { cleanLevel } from "../constants.js";
 import { useMiroirTheme } from "miroir-react";
 import { useMiroirContextService } from "miroir-react";
-import { useCurrentModel, useCurrentModelEnvironment } from "../ReduxHooks.js";
+import { useCurrentModel, useCurrentModelEnvironment } from "miroir-react";
 import { JsonDisplayHelper } from "miroir-react";
 import { usePageConfiguration } from "../services/usePageConfiguration.js";
 import { adminSelfApplication, entityApplicationForAdmin } from "miroir-app-admin";

@@ -6,45 +6,19 @@
  */
 import React from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render as rtlRender, screen } from "@testing-library/react";
+import { MiroirContextReactTestProvider, MiroirThemeContext } from "miroir-react";
 import "@testing-library/jest-dom";
 
 const showPerformanceDisplayRef = { current: false };
 
-vi.mock("miroir-react", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("miroir-react")>()),
-  useMiroirContextService: () => ({
-    showPerformanceDisplay: showPerformanceDisplayRef.current,
-  }),
-  useMiroirTheme: () => ({
-    currentTheme: {
-      colors: {},
-      components: {
-        renderInsight: {
-          background: "#134e4a",
-          textColor: "#f0fdfa",
-          textMuted: "#99f6e4",
-          accent: "#0f766e",
-          borderColor: "#0f766e",
-          badgeBackground: "#99f6e4",
-          badgeTextColor: "#042f2e",
-          fontSize: "12px",
-          fontSizeSummary: "13px",
-          borderRadius: "999px",
-          borderRadiusSummary: "6px",
-        },
-      },
-    },
-  }),
-}));
-
-import { RenderInsightHeader } from "../../src/miroir-fwk/4_view/components/RenderInsightHeader.js";
-import { RenderInsightSummary } from "../../src/miroir-fwk/4_view/components/RenderInsightSummary.js";
+import { RenderInsightHeader } from "miroir-react";
+import { RenderInsightSummary } from "miroir-react";
 import {
   NOOP_RENDER_COUNTS,
   renderInsightRegistry,
 } from "miroir-react";
-import { useRenderInsight } from "../../src/miroir-fwk/4_view/tools/useRenderInsight.js";
+import { useRenderInsight } from "miroir-react";
 
 const Fixture: React.FC<{ label: string }> = ({ label }) => {
   const { navigationCount, totalCount } = useRenderInsight("FootprintFixture", label);
@@ -60,6 +34,41 @@ const Fixture: React.FC<{ label: string }> = ({ label }) => {
     </div>
   );
 };
+
+const testTheme = {
+  currentTheme: {
+    colors: {},
+    components: {
+      renderInsight: {
+        background: "#134e4a",
+        textColor: "#f0fdfa",
+        textMuted: "#99f6e4",
+        accent: "#0f766e",
+        borderColor: "#0f766e",
+        badgeBackground: "#99f6e4",
+        badgeTextColor: "#042f2e",
+        fontSize: "12px",
+        fontSizeSummary: "13px",
+        borderRadius: "999px",
+        borderRadiusSummary: "6px",
+      },
+    },
+  },
+};
+
+const TestContext = ({ children }: { children: React.ReactNode }) => (
+  <MiroirContextReactTestProvider
+    value={
+      {
+        showPerformanceDisplay: showPerformanceDisplayRef.current,
+      } as any
+    }
+  >
+    <MiroirThemeContext.Provider value={testTheme as any}>{children}</MiroirThemeContext.Provider>
+  </MiroirContextReactTestProvider>
+);
+const render = ((ui: React.ReactElement, options?: Parameters<typeof rtlRender>[1]) =>
+  rtlRender(ui, { wrapper: TestContext, ...options })) as typeof rtlRender;
 
 describe("Phase 7.1 footprint acceptance (timer off)", () => {
   beforeEach(() => {

@@ -11,9 +11,9 @@ import {
 
 import { JsonDisplayHelper, useMiroirContextService } from 'miroir-react';
 import { packageName } from '../../../../constants.js';
-import { useDesignerToolsVisibility } from '../../auth/useDesignerToolsVisibility.js';
+import { useDesignerToolsVisibility } from "miroir-react";
 import { cleanLevel } from '../../constants.js';
-import { useMenusOfApplications } from '../../ReduxHooks.js';
+import { useMenusOfApplications } from "miroir-react";
 import { ApplicationSelector } from '../interactive/ApplicationSelector.js';
 import {
   ThemedDivider,
@@ -21,7 +21,7 @@ import {
   ThemedDrawerHeader,
   ThemedScrollableContent
 } from "miroir-react";
-import { SidebarSection } from './SidebarSection.js';
+import { SidebarSection } from "miroir-react";
 
 import { menuDefaultMiroir, selfApplicationMiroir } from "miroir-app-miroir";
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Sidebar");

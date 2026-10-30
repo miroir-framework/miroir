@@ -19,7 +19,7 @@ import {
   countTestResults,
   generateTestReport,
   type TestResultData,
-} from "../4_view/components/Buttons/testResultReport.js";
+} from "miroir-react";
 import { getMiroirTestSuiteKey, sortMiroirTestInstances } from "miroir-react";
 import { cleanLevel } from "../4_view/constants.js";
 import {

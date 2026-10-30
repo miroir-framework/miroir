@@ -31,7 +31,7 @@ import { useMiroirTheme } from "miroir-react";
 import { useMiroirContextService } from 'miroir-react';
 import { exclusivelyUnfoldPath } from "miroir-react";
 import { useDocumentOutlineContext } from "miroir-react";
-import { getFoldedDisplayValue } from './ValueObjectEditor/MlElementEditorHooks.js';
+import { getFoldedDisplayValue } from "miroir-react";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "InstanceEditorOutline");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);

@@ -13,7 +13,7 @@ import type { MlEditorPropsRoot } from "./MlElementEditorInterface";
 import { LoggerInterface, MiroirLoggerFactory, type MlBaseObject, type MetaModel } from "miroir-core";
 import { packageName } from "../../../../constants";
 import { cleanLevel } from "../../constants";
-import { editorNavigationKey, useTrackedRender } from "../../tools/useTrackedRender.js";
+import { editorNavigationKey, useTrackedRender } from "miroir-react";
 
 // ################################################################################################
 export interface MlElementStringEditorProps extends MlEditorPropsRoot {

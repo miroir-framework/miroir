@@ -7,7 +7,7 @@ import { packageName } from "../../../../constants.js";
 import type { ComponentTestRegistration } from "../../../4-tests/componentTests/index.js";
 import type { UiIntegrationReportTestSession } from "../../../4-tests/uiIntegrationTestLauncherTypes.js";
 import { cleanLevel } from "../../constants.js";
-import { useAdminViewParams } from "../useAdminViewParams.js";
+import { useAdminViewParams } from "miroir-react";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ComponentTestSandbox");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);

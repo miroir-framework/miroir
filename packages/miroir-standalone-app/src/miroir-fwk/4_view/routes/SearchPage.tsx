@@ -9,7 +9,8 @@ import {
   type Uuid
 } from "miroir-core";
 
-import { packageName, type ReportUrlParamKeys } from "../../../constants";
+import { packageName } from "../../../constants";
+import { type ReportUrlParamKeys } from "miroir-react";
 import { PageContainer } from "miroir-react";
 import {
   EntityInstanceSelectorPanel,

@@ -78,7 +78,7 @@ import { reportSectionsFormSchema } from "../../../../src/miroir-fwk/4_view/comp
 import { DocumentOutlineContextProvider } from "miroir-react";
 import { MiroirThemeProvider } from "miroir-react";
 import { miroirAppStartup } from "../../../../src/startup.js";
-import { ReportUrlParamKeys } from "../../../../src/constants.js";
+import { ReportUrlParamKeys } from "miroir-react";
 import { cleanLevel, packageName } from "../../../3_controllers/constants.js";
 import { AppStackIntegrationTestSession } from "../../../helpers/IntegrationTestSession.js";
 import { resolveRepoRoot } from "../../../helpers/integrationTestProfiles.js";

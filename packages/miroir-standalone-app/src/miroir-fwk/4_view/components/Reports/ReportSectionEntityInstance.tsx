@@ -45,10 +45,10 @@ import {
   useCurrentModel,
   useCurrentModelEnvironment,
   useReduxDeploymentsStateQueryTemplateSelector
-} from "../../ReduxHooks.js";
-import { useRenderTracker } from '../../tools/renderCountTracker.js';
+} from "miroir-react";
+import { useRenderTracker } from "miroir-react";
 import { RenderPerformanceMetrics } from "miroir-react";
-import { RenderInsightHeader } from '../RenderInsightHeader.js';
+import { RenderInsightHeader } from "miroir-react";
 import {
   ThemedCodeBlock,
   ThemedContainer,
@@ -58,7 +58,7 @@ import {
   ThemedTitle
 } from "miroir-react";
 import { useDocumentOutlineContext } from "miroir-react";
-import { OpenApiEndpointSyncButton } from './OpenApiEndpointSyncButton.js';
+import { OpenApiEndpointSyncButton } from "miroir-react";
 import { useReportFormSubmit } from "miroir-react";
 import { useReportPageContext } from "miroir-react";
 import { TypedValueObjectEditor } from './TypedValueObjectEditor.js';

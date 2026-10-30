@@ -11,7 +11,7 @@ import {
 } from "miroir-app-miroir";
 import React, { lazy, Suspense, useCallback, useState } from "react";
 
-import { BlockEditorDisplayContext } from "../../4_view/components/BlockEditor/BlockEditorDisplay.js";
+import { BlockEditorDisplayContext } from "miroir-react";
 import { useBlockDefineOfEndpointAction } from "miroir-react";
 import { useBlockRunnerOf } from "../../4_view/components/BlockEditor/BlockRunnerHat.js";
 import { BlockDefineContext, BlockRunnerContext } from "miroir-react";
