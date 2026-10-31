@@ -48,7 +48,7 @@ import { miroirDemoAppStartup } from "./startup.js";
 import { ADMIN_DEPLOYMENT_UUID, ADMIN_BUNDLED_CONFIG, ADMIN_MODEL_PARENT_UUIDS_ARRAY, demoBundledData, demoMiroirConfig, MIROIR_DEPLOYMENT_UUID } from "./bundledData.js";
 import { migrateAdminToIndexedDbIfNeeded } from "./adminMigration.js";
 import { RootComponent } from "@miroir-app/miroir-fwk/4_view/components/Page/RootComponent.js";
-import { ErrorPage } from "@miroir-app/miroir-fwk/4_view/ErrorPage.js";
+import { ErrorPage } from "miroir-react";
 import { deployment_Admin, deployment_Miroir } from "miroir-app-admin";
 
 // ---------------------------------------------------------------------------

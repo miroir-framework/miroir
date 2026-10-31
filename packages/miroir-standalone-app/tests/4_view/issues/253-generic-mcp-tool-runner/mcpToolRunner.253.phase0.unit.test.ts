@@ -176,7 +176,7 @@ describe.skipIf(!shouldRun)("mcpToolRunner #253 phase0 — current contracts", (
       `packages/miroir-app-miroir/assets/miroir_data/${ENTITY_RUNNER_UUID}/82f81a25-2366-4abf-8a97-83ca5e9a9c46.json`,
       `packages/miroir-app-miroir/assets/miroir_data/${ENTITY_RUNNER_UUID}/897e9711-65a0-414e-9773-19de92ade533.json`,
       `packages/miroir-app-miroir/assets/miroir_data/${ENTITY_RUNNER_UUID}/${CREATE_APPLICATION_UUID}.json`,
-    ]);
+    ].sort());
   });
 
   it("MIROIR_DATA_RUNNER_UUIDS has exactly the 7 Miroir-data runner uuids", () => {
@@ -289,7 +289,8 @@ describe.skipIf(!shouldRun)("mcpToolRunner #253 phase0 — current contracts", (
     expect(definition.application?.tag?.value?.initializeTo).toBeUndefined();
   });
 
-  it("browser MCP runner modules import miroir-mcp/client, not the Node CLI entry", () => {
+  it("only runMcpToolRunner imports miroir-mcp, through its browser entry miroir-mcp/client", () => {
+    // #627 moved endpoint action naming to miroir-core: resolveMcpToolAction no longer imports miroir-mcp.
     const viewRoot = join(
       REPO_ROOT,
       "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Runners",
@@ -297,9 +298,8 @@ describe.skipIf(!shouldRun)("mcpToolRunner #253 phase0 — current contracts", (
     const runMcp = readFileSync(join(viewRoot, "runMcpToolRunner.ts"), "utf8");
     const resolveMcp = readFileSync(join(viewRoot, "resolveMcpToolAction.ts"), "utf8");
     expect(runMcp).toMatch(/from ["']miroir-mcp\/client["']/);
-    expect(resolveMcp).toMatch(/from ["']miroir-mcp\/client["']/);
     expect(runMcp).not.toMatch(/from ["']miroir-mcp["']/);
-    expect(resolveMcp).not.toMatch(/from ["']miroir-mcp["']/);
+    expect(resolveMcp).not.toMatch(/from ["']miroir-mcp(\/[^"']*)?["']/);
 
     const runnerTestSession = readFileSync(
       join(REPO_ROOT, "packages/miroir-standalone-app/src/miroir-fwk/4-tests/RunnerTestSession.ts"),
