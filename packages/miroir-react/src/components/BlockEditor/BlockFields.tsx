@@ -1,16 +1,26 @@
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
 import { Popover } from "@mui/material";
-import { type BlockPath } from "miroir-core";
-import React, { useCallback, useState } from "react";
+import { Formik } from "formik";
+import { selfApplicationMiroir } from "miroir-app-miroir";
+import {
+  defaultSelfApplicationDeploymentMap,
+  miroirFundamentalMlSchemaUuid,
+  type BlockPath,
+  type MlElement,
+} from "miroir-core";
+import React, { useCallback, useMemo, useState } from "react";
 
+import { TypedValueObjectEditor } from "../Reports/TypedValueObjectEditor.js";
+import { ValueHistoryContext } from "../ValueObjectEditor/ValueHistoryProvider.js";
 import { useBlockEditing, withValueAtPath } from "./BlockEditing.js";
 
 // ################################################################################################
 // #500: the values of the block view, edited in place. A field opens an input on click or Enter;
-// Enter or leaving the field writes the value once, Escape cancels. An ML schema chip opens its
-// JSON text in a popover. Both are marked `data-own-undo`: Ctrl+Z inside them is the browser's
-// undo of the text, not the history's.
+// Enter or leaving the field writes the value once, Escape cancels; the field is marked
+// `data-own-undo`: Ctrl+Z inside it is the browser's undo of the text, not the history's.
+// #538: an ML schema chip opens the form editor of the schema in a popover, which keeps its own
+// history until Save writes the schema.
 // ################################################################################################
 
 export interface FieldColors {
@@ -145,7 +155,19 @@ export const BlockField = React.memo(function BlockField(props: {
   );
 });
 
-/** An ML schema given as a value: a chip, whose JSON text a popover edits when the view edits. */
+/** The schema of the value the ML schema popover edits: any ML schema. */
+const ML_SCHEMA_FORM_SCHEMA: MlElement = {
+  type: "schemaReference",
+  definition: { absolutePath: miroirFundamentalMlSchemaUuid, relativePath: "mlElement" },
+};
+
+/** Path of the edited schema in the Formik values of the popover's form. */
+const ML_SCHEMA_FORM_PATH = "mlSchema";
+
+/**
+ * An ML schema given as a value: a chip. When the view edits, it opens the form editor of the
+ * schema in a popover (#538), with the JSON switch of the form. Save writes the schema once.
+ */
 export const MlSchemaChip = React.memo(function MlSchemaChip(props: {
   value: unknown;
   path: BlockPath;
@@ -154,24 +176,21 @@ export const MlSchemaChip = React.memo(function MlSchemaChip(props: {
 }) {
   const editing = useBlockEditing();
   const [anchor, setAnchor] = useState<HTMLElement | null>(null);
-  const [draft, setDraft] = useState("");
-  const [invalid, setInvalid] = useState(false);
-  const close = useCallback(() => {
-    setAnchor(null);
-    setInvalid(false);
-  }, []);
-  const save = useCallback(() => {
-    if (!editing) {
-      return;
-    }
-    const parsed = parseFieldText(draft, props.value);
-    if (!parsed.ok) {
-      setInvalid(true);
-      return;
-    }
-    close();
-    editing.commit(withValueAtPath(editing.root, props.path, parsed.value));
-  }, [draft, editing, props.value, props.path, close]);
+  const close = useCallback(() => setAnchor(null), []);
+  const save = useCallback(
+    async (values: Record<string, unknown>) => {
+      close();
+      if (!editing) {
+        return;
+      }
+      const schema = values[ML_SCHEMA_FORM_PATH];
+      if (JSON.stringify(schema) !== JSON.stringify(props.value)) {
+        editing.commit(withValueAtPath(editing.root, props.path, schema));
+      }
+    },
+    [editing, props.value, props.path, close],
+  );
+  const initialValues = useMemo(() => ({ [ML_SCHEMA_FORM_PATH]: props.value }), [props.value]);
   const chipCss = css({
     font: "inherit",
     fontSize: "12px",
@@ -189,6 +208,7 @@ export const MlSchemaChip = React.memo(function MlSchemaChip(props: {
       </span>
     );
   }
+  const formLabel = `mlSchema.${props.id}`;
   return (
     <>
       <button
@@ -199,8 +219,6 @@ export const MlSchemaChip = React.memo(function MlSchemaChip(props: {
         aria-haspopup="dialog"
         onClick={(event) => {
           event.stopPropagation();
-          setDraft(schemaText);
-          setInvalid(false);
           setAnchor(event.currentTarget);
         }}
         css={[chipCss, css({ cursor: "pointer" })]}
@@ -213,36 +231,46 @@ export const MlSchemaChip = React.memo(function MlSchemaChip(props: {
         onClose={close}
         anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
       >
-        <div
-          role="dialog"
-          aria-label={`ML schema of ${props.id}`}
-          data-own-undo
-          css={css({ display: "flex", flexDirection: "column", gap: "6px", padding: "8px" })}
-        >
-          <textarea
-            data-testid={`block-mlschema-input:${props.id}`}
-            aria-label="ML schema"
-            aria-invalid={invalid}
-            autoFocus
-            value={draft}
-            rows={Math.min(16, draft.split("\n").length + 1)}
-            cols={40}
-            onChange={(event) => {
-              setDraft(event.target.value);
-              setInvalid(false);
-            }}
-            css={css({ fontFamily: "monospace", fontSize: "12px" })}
-          />
-          {invalid && <span css={css({ color: "#c62828", fontSize: "12px" })}>Not a JSON value</span>}
-          <span css={css({ display: "flex", gap: "6px", justifyContent: "flex-end" })}>
-            <button type="button" data-testid={`block-mlschema-cancel:${props.id}`} onClick={close}>
-              Cancel
-            </button>
-            <button type="button" data-testid={`block-mlschema-save:${props.id}`} onClick={save}>
-              Save
-            </button>
-          </span>
-        </div>
+        {/* the form keeps its own history: the block view's does not reach into the popover */}
+        <ValueHistoryContext.Provider value={undefined}>
+          <div
+            role="dialog"
+            aria-label={`ML schema of ${props.id}`}
+            data-testid={`block-mlschema-form:${props.id}`}
+            onClick={(event) => event.stopPropagation()}
+            // React events bubble through the portal: a submit the form refused (preventDefault
+            // only) would reach the form of the editor around the block view and submit it
+            onSubmit={(event) => event.stopPropagation()}
+            css={css({ display: "flex", flexDirection: "column", gap: "6px", padding: "8px", minWidth: "40ch" })}
+          >
+            <Formik initialValues={initialValues} onSubmit={save} validateOnChange={false} validateOnBlur={false}>
+              {/* mlElement is in Miroir's meta-model, with no foreign keys: Miroir's deployment resolves it in any host */}
+              <TypedValueObjectEditor
+                labelElement={<span>ML schema</span>}
+                formValueMLSchema={ML_SCHEMA_FORM_SCHEMA}
+                formikValuePathAsString={ML_SCHEMA_FORM_PATH}
+                application={selfApplicationMiroir.uuid}
+                applicationDeploymentMap={defaultSelfApplicationDeploymentMap}
+                deploymentUuid={defaultSelfApplicationDeploymentMap[selfApplicationMiroir.uuid]}
+                applicationSection="model"
+                formLabel={formLabel}
+                valueObjectEditMode="update"
+                displaySubmitButton="noDisplay"
+                submitRequiresValidType={true}
+                maxRenderDepth={3}
+              />
+            </Formik>
+            <span css={css({ display: "flex", gap: "6px", justifyContent: "flex-end" })}>
+              <button type="button" data-testid={`block-mlschema-cancel:${props.id}`} onClick={close}>
+                Cancel
+              </button>
+              {/* submits the form above, so that its checks apply: a schema that is not one is not saved */}
+              <button type="submit" form={`form.${formLabel}`} data-testid={`block-mlschema-save:${props.id}`}>
+                Save
+              </button>
+            </span>
+          </div>
+        </ValueHistoryContext.Provider>
       </Popover>
     </>
   );
