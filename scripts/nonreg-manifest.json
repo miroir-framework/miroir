@@ -2806,7 +2806,7 @@
       "argv": [
         "bash",
         "-c",
-        "npm run build -w miroir-server-library && MIROIR_ENV=test-filesystem npm run testByFile -w miroir-server-library && python -m pytest scripts/tests/test_server_library_boundaries.py -q"
+        "npm run build -w miroir-server-library && MIROIR_ENV=test-filesystem npm run testByFile -w miroir-server-library && MIROIR_LIBRARY_BUILD_CHECKS=1 python -m pytest scripts/tests/test_server_library_boundaries.py -q"
       ]
     },
     {
@@ -2819,7 +2819,7 @@
       "argv": [
         "bash",
         "-c",
-        "npm run build -w miroir-server-library && npm run build:server -w miroir-server && python -m pytest scripts/tests/test_server_release_smoke.py -q"
+        "npm run build -w miroir-server-library && npm run build:server -w miroir-server && MIROIR_RELEASE_SMOKE=1 python -m pytest scripts/tests/test_server_release_smoke.py scripts/tests/test_server_release_smoke_production.py -q"
       ]
     },
     {

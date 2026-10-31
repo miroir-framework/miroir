@@ -163,8 +163,7 @@ if (runThis) {
       const library = readFileSync(join(REPO_ROOT, "packages/miroir-server-library/src/createMiroirServerApp.ts"), "utf8");
       expect(library).toContain("shouldMountMcpHttp");
       expect(library).toContain("mountHttpRoutes");
-      expect(src).toContain("shouldMountMcpHttp");
-      expect(src).toContain("mcpServer.run");
+      expect(src).toMatch(/if \(shouldMountMcpHttp\(capabilities\.mcp\)\) \{[\s\S]{0,200}?mcpServer\.run\(/);
     });
   });
 

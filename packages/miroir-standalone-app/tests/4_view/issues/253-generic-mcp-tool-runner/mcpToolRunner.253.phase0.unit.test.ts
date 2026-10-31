@@ -341,7 +341,6 @@ describe.skipIf(!shouldRun)("mcpToolRunner #253 phase0 — current contracts", (
     const library = readFileSync(join(REPO_ROOT, "packages/miroir-server-library/src/createMiroirServerApp.ts"), "utf8");
     expect(library).toContain("shouldMountMcpHttp");
     expect(library).toContain("mountHttpRoutes");
-    expect(server).toContain("shouldMountMcpHttp");
-    expect(server).toContain("mcpServer.run");
+    expect(server).toMatch(/if \(shouldMountMcpHttp\(capabilities\.mcp\)\) \{[\s\S]{0,200}?mcpServer\.run\(/);
   });
 });

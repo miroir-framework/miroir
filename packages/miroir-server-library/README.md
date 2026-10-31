@@ -62,7 +62,7 @@ The library imports no store package (`miroir-store-*`), no database driver (`pg
 ```bash
 npm run build -w miroir-server-library
 MIROIR_ENV=test-filesystem npm run testByFile -w miroir-server-library
-python -m pytest scripts/tests/test_server_library_boundaries.py -q
+MIROIR_LIBRARY_BUILD_CHECKS=1 python -m pytest scripts/tests/test_server_library_boundaries.py -q
 ```
 
 `tests/support/serverTestPlatform.ts` builds a server-side domain controller on a test environment, the way `miroir-server` does. Nonreg steps: `unit-636-server-library` and `build-636-server-release`.

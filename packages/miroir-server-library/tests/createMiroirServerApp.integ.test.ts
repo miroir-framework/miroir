@@ -176,9 +176,14 @@ describe("createMiroirServerApp — REST, status and capabilities, without authe
     expect(await (await fetch(`${started().http.baseUrl}/auth/status`)).json()).toEqual({ enabled: false });
   });
 
-  it("answers the process capabilities, recomputed per request", async () => {
-    const response = await fetch(`${started().http.baseUrl}/capabilities`);
-    expect(await response.json()).toEqual({
+  it("answers the process capabilities, recomputed per request, not the capabilities option", async () => {
+    // the option says the opposite of the registers: the route must not echo it
+    const other = await startApp({ mcp: !platform.capabilities.mcp });
+    const response = await fetch(`${other.http.baseUrl}/capabilities`);
+    await stop(other);
+    const body = await response.json();
+    expect(body.capabilities.mcp).toBe(platform.capabilities.mcp);
+    expect(body).toEqual({
       status: "ok",
       capabilities: getProcessCapabilities({
         config: platform.miroirConfig,
@@ -255,6 +260,17 @@ describe("createMiroirServerApp — with authentication", () => {
       { currentPassword: "alice-dev-changed", newPassword: "alice-dev" },
       (await (await login(base, "alice", "alice-dev-changed")).json()).token,
     );
+  });
+});
+
+describe("createMiroirServerApp — authentication on, MCP authentication off (#263 switch)", () => {
+  const started = startedFor({ authenticationEnabled: true, mcpEnabled: false });
+
+  it("answers REST with 401 and leaves /mcp open", async () => {
+    const base = started().http.baseUrl;
+    expect((await fetch(booksUrl(base))).status).toBe(401);
+    const tools = await listMcpToolsViaHttp(base);
+    expect(tools.length).toBeGreaterThan(0);
   });
 });
 

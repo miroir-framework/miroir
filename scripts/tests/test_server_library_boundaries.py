@@ -21,9 +21,12 @@ LIBRARY = REPO_ROOT / "packages" / "miroir-server-library"
 LIBRARY_DIST = LIBRARY / "dist"
 TSUP = REPO_ROOT / "node_modules" / ".bin" / "tsup"
 
+# the same list as tsup.config.js, matched on a whole specifier, subpaths included
 FORBIDDEN = re.compile(
-    r"^(miroir-store-.*|pg|sequelize|mongodb|level|browser-level|classic-level|miroir-env|miroir-ai|@copilotkit/.*)$"
+    r"^(miroir-store-[^/]+|pg(-[^/]+)?|@?sequelize|mongodb|([a-z-]+-)?level|miroir-env|miroir-ai|@copilotkit/[^/]+)(/.*)?$"
 )
+# the probe builds run tsup twice: only in the unit-636-server-library nonreg step
+BUILD_CHECKS = os.environ.get("MIROIR_LIBRARY_BUILD_CHECKS") == "1"
 
 
 def _read(relative: str) -> str:
@@ -42,17 +45,32 @@ def test_library_stays_private_until_the_rename():
 
 
 @pytest.mark.parametrize(
-    "build_file",
+    "build_file, library_build, after, before",
     [
-        "build-all.sh",
-        "Dockerfile",
-        ".github/workflows/build-linux-runnables.yml",
-        ".github/workflows/self-test.yml",
-        "ci/build/build_server.sh",
+        ("Dockerfile", "RUN npm run build -w miroir-server-library", "RUN npm run build -w miroir-mcp", "build:release"),
+        (
+            ".github/workflows/build-linux-runnables.yml",
+            "npm run build -w miroir-server-library",
+            "npm run build -w miroir-mcp",
+            "build:release",
+        ),
+        (".github/workflows/self-test.yml", "-w miroir-server-library", "-w miroir-mcp", "build:release"),
+        ("ci/build/build_server.sh", "npm run build -w miroir-server-library", "  miroir-mcp \\", "build:release"),
     ],
 )
-def test_every_server_build_path_builds_the_library(build_file):
-    assert "miroir-server-library" in _read(build_file)
+def test_every_server_build_path_builds_the_library_after_mcp_and_before_the_release(
+    build_file, library_build, after, before
+):
+    text = _read(build_file)
+    assert text.index(after) < text.index(library_build) < text.index(before)
+
+
+def test_build_all_builds_the_library_in_a_stage_after_mcp():
+    text = _read("build-all.sh")
+    stages = re.search(r"STAGE_UI_SERVICES=\(([^)]*)\)\nSTAGE_APPS=\(([^)]*)\)", text)
+    assert stages is not None
+    assert "miroir-mcp" in stages.group(1).split()
+    assert "miroir-server-library" in stages.group(2).split()
 
 
 def test_the_release_artifact_list_carries_the_library_dist():
@@ -78,6 +96,7 @@ def test_the_built_library_imports_nothing_forbidden():
 
 
 @needs_workspace
+@pytest.mark.skipif(not BUILD_CHECKS, reason="set MIROIR_LIBRARY_BUILD_CHECKS=1 (unit-636-server-library step)")
 @pytest.mark.parametrize("external", [False, True], ids=["bundled", "declared-dependency"])
 def test_the_build_fails_on_a_store_import(tmp_path, external):
     out_dir = tmp_path / "probe"

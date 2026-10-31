@@ -38,7 +38,7 @@ import {
 import { EndpointToolRegistry, setupMcpServer, type MiroirMcpServer } from "miroir-mcp";
 
 const packageName = "miroir-server-library";
-const loggerName = MiroirLoggerFactory.getLoggerName(packageName, "info", "createMiroirServerApp");
+const loggerName = MiroirLoggerFactory.getLoggerName(packageName, "5", "createMiroirServerApp");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(loggerName);
 MiroirLoggerFactory.registerLoggerToStart(loggerName).then((logger: LoggerInterface) => {
   log = logger;
@@ -103,7 +103,10 @@ export interface MiroirServerApp {
    * also start the dedicated MCP listener with `mcpServer.run(port)`.
    */
   mcpServer: MiroirMcpServer;
-  /** Releases what the factory started. */
+  /**
+   * Stops what the factory started (the MCP tool registry subscription). It does not remove the
+   * routes of `app`: stop the host's listener first.
+   */
   close(): Promise<void>;
 }
 
@@ -379,10 +382,16 @@ export async function createMiroirServerApp(options: MiroirServerAppOptions): Pr
   mountRestHandlers(app, options, authenticationGate);
   mountAuthenticationRoutes(app, options, authenticationGate);
   const mcpServer = await setupMcp(app, options, authenticationGate);
-  // AI / CopilotKit: after the API routes and MCP, before the client catch-all
-  await options.assistantRoute?.(app, { requestGate, capabilities: options.capabilities });
-  if (client) {
-    mountClient(app, client);
+  try {
+    // AI / CopilotKit: after the API routes and MCP, before the client catch-all
+    await options.assistantRoute?.(app, { requestGate, capabilities: options.capabilities });
+    if (client) {
+      mountClient(app, client);
+    }
+  } catch (error) {
+    // no handle reaches the host: stop the registry here
+    await mcpServer.shutdown();
+    throw error;
   }
 
   let closed = false;
@@ -395,8 +404,8 @@ export async function createMiroirServerApp(options: MiroirServerAppOptions): Pr
       if (closed) {
         return;
       }
-      closed = true;
       await mcpServer.shutdown();
+      closed = true;
     },
   };
 }

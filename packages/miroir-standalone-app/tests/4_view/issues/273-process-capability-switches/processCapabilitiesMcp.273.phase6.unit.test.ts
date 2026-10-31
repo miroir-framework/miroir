@@ -60,7 +60,7 @@ if (runThis) {
       const src = readFileSync(join(REPO_ROOT, "packages/miroir-server/src/server.ts"), "utf8");
       const library = readFileSync(join(REPO_ROOT, "packages/miroir-server-library/src/createMiroirServerApp.ts"), "utf8");
       expect(library).toMatch(/if \(shouldMountMcpHttp\(options\.capabilities\.mcp\)\) \{\s*mcpServer\.mountHttpRoutes\(/);
-      expect(src).toMatch(/if \(shouldMountMcpHttp\(capabilities\.mcp\)\) \{\s*mcpServer\.run\(/);
+      expect(src).toMatch(/if \(shouldMountMcpHttp\(capabilities\.mcp\)\) \{[\s\S]{0,200}?mcpServer\.run\(/);
     });
   });
 

@@ -394,3 +394,13 @@ On the PR: `build-linux-runnables.yml` (shared-libs build, artifact list, `build
 
 - v1: initial plan.
 - v2, after an adversarial review: the factory returns its gate from Slice 1 so unmoved binary routes do not need a copy (P1); the assistant slot moves with the client catch-all (Slice 4), so the catch-all never precedes it; route order locked by HTTP behaviour, not a router stack (P4); Slice 0 characterizes the release binary instead of reading `server.ts`; the test platform uses `environmentServerConfig`; the build guard scans the metafile in `onEnd` (an `onResolve` hook misses declared dependencies); the pytest guard splits into a static part for `pr-checks.yml` and a built part for nonreg; the release smoke reuses the `bench-agent` launcher; BigInt probe and test user named; `POST /action` added to the AC proof; `__dirname` stays in the binary; `listMcpToolsViaHttp` and an awaited slot; full nonreg after Slice 3, `core` scope where access is touched, step fields (`tier`, `requires`, `parallel`); `body-parser` and `cors` dropped from `miroir-server` when unused; P3 recorded as a deviation.
+- v3, after an adversarial review of the code (no blocker):
+  - The release smoke runs only with `MIROIR_RELEASE_SMOKE=1`, and the probe builds only with `MIROIR_LIBRARY_BUILD_CHECKS=1`. Both are set by the two #636 nonreg steps, so `pytest scripts/tests` (pre-push gate, `unit-301`) never starts a stale bundle or takes ports 3080 and 4080.
+  - The production check moved to its own module, so the two server fixtures no longer depend on each other's order.
+  - The tracked-file check ignores untracked files and paths that were already dirty.
+  - The factory stops the MCP registry if the assistant slot or the client folder throws. `close()` keeps its "closed" flag only after a successful shutdown, and its TSDoc says it does not remove routes.
+  - The logger uses a layer number. The binary logs the MCP port and the production client folder again.
+  - The forbidden list now also covers `pg-*`, `@sequelize/*`, `*-level` and subpaths, on both sides.
+  - New tests: the `/capabilities` route ignores the option and recomputes from the registers; with authentication on and MCP authentication off, REST answers 401 and `/mcp` stays open.
+  - The build-list guard checks order (after `miroir-mcp`, before the release), not just the name.
+  - The MCP source checks match the gated `mcpServer.run` call instead of the bare import names.

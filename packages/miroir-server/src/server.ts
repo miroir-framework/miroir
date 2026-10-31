@@ -565,6 +565,9 @@ const tlsEnabled = existsSync(certFile) && existsSync(keyFile);
 // In production the server serves the React client from release/client (scripts/copy-client.mjs)
 // after every API and MCP route; otherwise the Vite dev server serves it.
 const pathToClient = path.join(__dirname, 'client');
+if (getMiroirEnvironmentMode() === 'prod') {
+  myLogger.info(`Running in production mode - serving React SPA from ${pathToClient}`);
+}
 
 // #636: Miroir's HTTP surface (REST behind the gate, authentication and capabilities routes, assets, /mcp,
 // the CopilotKit route, the client folder) comes from miroir-server-library. mcpServer.run starts the
@@ -641,6 +644,7 @@ if (tlsEnabled) {
 }
 if ( mcpPortFromConfig) {
   if (shouldMountMcpHttp(capabilities.mcp)) {
+    myLogger.info(`MCP Server being set-up, going to execute on the port::${mcpPortFromConfig}`);
     mcpServer.run(mcpPortFromConfig);
   }
 } else {
