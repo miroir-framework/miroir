@@ -36,9 +36,10 @@ const miroir = await createMiroirServerApp({
 });
 
 const host = express();
-host.use(miroir.app);           // at the root, before any body parser of the host
+host.get("/my-route", myHandler); // host GET routes first: with clientDirectory, the catch-all answers any GET
+host.use(miroir.app);             // at the root, before any body parser of the host
 host.use(express.json());
-host.get("/my-route", myHandler);
+host.post("/my-form", myFormHandler);
 host.listen(3080);
 // miroir.mcpServer.run(4080); // optional dedicated MCP listener
 // await miroir.close();       // stops the MCP tool registry
@@ -51,7 +52,7 @@ host.listen(3080);
 
 ## Route order
 
-CORS and the body parser, `/auth/status`, `/capabilities`, assets, REST, `/auth/login` and `/auth/change-password`, `/mcp`, the assistant route, then the client folder and its catch-all. The catch-all answers any GET path, so it is registered last.
+CORS and the body parser, `/auth/status`, `/capabilities`, assets, REST, `/auth/login` and `/auth/change-password`, `/mcp`, the assistant route, then the client folder and its catch-all. The catch-all answers any GET path, so it is registered last. A host that sets `clientDirectory` registers its own GET routes before mounting `app`; routes for other methods can come after.
 
 ## Boundaries
 
