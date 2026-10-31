@@ -19,6 +19,10 @@
   "type": "module",
   "author": "Miroir Framework <miroir-framework@protonmail.com>",
   "license": "MIT",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "watch": "lerna watch --scope='miroir-store-filesystem' --include-dependencies -- lerna run build --scope='miroir-store-filesystem'",
     "build-tsup": "tsup",
@@ -44,5 +48,10 @@
     "tsconfig-paths": "4.2.0",
     "vite": "8.3.5",
     "vite-plugin-node": "8.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/miroir-framework/miroir.git",
+    "directory": "packages/miroir-store-filesystem"
   }
 }

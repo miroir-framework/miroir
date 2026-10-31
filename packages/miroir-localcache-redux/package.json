@@ -82,5 +82,14 @@
     "vitest": "5.0.5"
   },
   "author": "Miroir Framework <miroir-framework@protonmail.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=22"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/miroir-framework/miroir.git",
+    "directory": "packages/miroir-localcache-redux"
+  }
 }

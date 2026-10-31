@@ -12,7 +12,8 @@
   "homepage": "https://github.com/XXXXXXXXXXXXXXXXXXXXXXXXXXX#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/XXXXXXXXXXXXXXXXXXXXXXXX.git"
+    "url": "git+https://github.com/miroir-framework/miroir.git",
+    "directory": "packages/miroir-server"
   },
   "scripts": {
     "build:client": "cross-env NODE_OPTIONS=--max-old-space-size=6144 npm run build -w miroir-standalone-app",

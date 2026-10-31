@@ -246,3 +246,61 @@ def test_no_repo_code_imports_a_package_source_folder():
         if source_import.match(specifier)
     ]
     assert found == [], "import a named entry point instead of a package's src/ (it is not published)"
+
+
+# --------------------------------------------------------------------------------------------------------------------
+# metadata and TSDoc (Slice 2)
+
+REPOSITORY_URL = "git+https://github.com/miroir-framework/miroir.git"
+
+
+@pytest.mark.parametrize("folder", published_folders())
+def test_a_published_package_carries_its_metadata(folder):
+    data = manifest(folder)
+    assert data.get("sideEffects") is False, f"{folder}: sideEffects must be false (D6)"
+    assert data.get("engines", {}).get("node") == ">=22", f"{folder}: engines.node (D8)"
+    assert data.get("repository") == {"type": "git", "url": REPOSITORY_URL, "directory": folder}
+    assert data.get("license") == "MIT"
+
+
+def tsconfig_chain_value(tsconfig: Path, option: str):
+    """The effective compilerOptions value of `option`, following `extends` (relative paths only)."""
+    # tsconfig files here are JSON with comments and trailing commas in places: strip both before parsing.
+    text = tsconfig.read_text(encoding="utf-8")
+    text = re.sub(r"/\*.*?\*/", "", text, flags=re.DOTALL)
+    text = re.sub(r"^\s*//.*$", "", text, flags=re.MULTILINE)
+    text = re.sub(r",(\s*[}\]])", r"\1", text)
+    config = json.loads(text)
+    options = config.get("compilerOptions", {})
+    if option in options:
+        return options[option]
+    parent = config.get("extends")
+    if not parent:
+        return None
+    return tsconfig_chain_value((tsconfig.parent / parent).resolve(), option)
+
+
+def declaration_tsconfig(folder: str) -> Path:
+    # core emits its declarations with tsc from tsconfig.declarations.json (tsup onSuccess); the others with tsup dts.
+    special = ROOT / folder / "tsconfig.declarations.json"
+    return special if special.is_file() else ROOT / folder / "tsconfig.json"
+
+
+@pytest.mark.parametrize("folder", published_folders())
+def test_a_published_package_keeps_comments_in_its_declarations(folder):
+    assert tsconfig_chain_value(declaration_tsconfig(folder), "removeComments") is not True, (
+        f"{folder}: removeComments strips the TSDoc from the published .d.ts files (D5)"
+    )
+
+
+def test_published_declarations_carry_tsdoc():
+    for folder in ("packages/miroir-localcache-redux", "packages/miroir-core"):
+        require_built(folder)
+    node_declarations = (ROOT / "packages/miroir-localcache-redux/dist/node.d.ts").read_text(encoding="utf-8")
+    assert re.search(r"/\*\*(?:(?!\*/).)*\*/\s*declare function startMiroirNode", node_declarations, re.DOTALL), (
+        "startMiroirNode lost its TSDoc in miroir-localcache-redux/dist/node.d.ts"
+    )
+    core_declarations = (ROOT / "packages/miroir-core/dist/5_tests/ModelValidationToolsFilesystem.d.ts").read_text(
+        encoding="utf-8"
+    )
+    assert "/**" in core_declarations, "miroir-core declarations carry no TSDoc"

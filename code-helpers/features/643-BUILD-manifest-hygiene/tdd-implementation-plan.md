@@ -27,7 +27,7 @@ Out (analysis §2): duplicate-core detection and `@public` TSDoc (#621 items), `
 |---|---|---|---|
 | 0 | The published set is listed, and today's manifests characterized | ✅ | `test_package_manifests.py` (set cases) |
 | 1 | Tarballs ship built files and declared entry points only | ✅ | `test_package_manifests.py` (files, exports, pack cases) |
-| 2 | Packages carry their metadata and their TSDoc | ⬜ | `test_package_manifests.py` (metadata, TSDoc cases) |
+| 2 | Packages carry their metadata and their TSDoc | ✅ | `test_package_manifests.py` (metadata, TSDoc cases) |
 | 3 | Shared libraries are peers, checked by the dependency policy | ⬜ | `test_package_manifests.py` (peer cases), `test_check_dependency_policy.py` (peers rule) |
 | 3b | Every import is declared, every declared runtime dependency is imported | ⬜ | `test_package_manifests.py` (declared-imports cases) |
 | 4 | Nonreg step, docs, AC | ⬜ | `unit-643-package-manifests`, full filesystem nonreg |
@@ -188,7 +188,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core,tooling,ui
 
 ## Slice 2 — Packages carry their metadata and their TSDoc
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -227,6 +227,22 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core,localcache,ui
 ```
 
 ### Realization
+
+- RED: 28 failures. Metadata failed on all 14 packages. `removeComments` failed on 13 of them: `miroir-server-library` already sets it to `false`. The TSDoc pack case failed too.
+- GREEN:
+  - each of the 14 manifests gets `sideEffects: false`, `engines.node: ">=22"` and `repository` with its `directory`;
+  - `miroir-server`'s bogus `repository.url` is fixed;
+  - the root `tsconfig.json` sets `removeComments: false`.
+
+  Neither tsup's dts build nor core's `tsc` declarations needed more than that. `miroir-localcache-redux/dist/node.d.ts` now has 22 TSDoc blocks, `miroir-react/dist/index.d.ts` 444, and core's per-file declarations carry theirs. With the whole set built and `MIROIR_REQUIRE_PACK=1`, 90 tests passed.
+- Browser net:
+  - sandbox, `MIROIR_ENV=self-test` app, Electron and server release builds pass;
+  - the app bundle guard shows 0 violations, with 72 eager chunks and 843,591 bytes gzipped (#639: 843,426);
+  - the Electron bundle guard shows 0 violations;
+  - the web self-test in Chromium passed 1224 of 1224.
+
+  `sideEffects: false` does not shrink the app bundle: the app resolves the workspace packages from sources through Vite, where most of the code is used.
+- Scoped nonreg (`smoke,core,localcache,ui` plus `build-633-sandbox`): 73 of 73.
 
 ---
 
