@@ -8,6 +8,7 @@ import { ThemedBox } from "../Themes/LayoutComponents.js";
 import { ThemedStyledButton } from "../Themes/UIComponents.js";
 import { ThemedSpan, ThemedCodeBlock } from "../Themes/BasicComponents.js";
 import { getIn, useFormikContext } from "formik";
+import { FieldValidationContext } from "./FieldValidationContext.js";
 import { editsOwnText, historyCommand, ValueHistoryContext } from "./ValueHistoryProvider.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MlElementEditorReactCodeMirror");
@@ -59,12 +60,19 @@ export const MlElementEditorReactCodeMirror: React.FC<MlElementEditorReactCodeMi
 
   const formikContext = useFormikContext<any>();
   const valueHistory = useContext(ValueHistoryContext);
+  // #538: typed text that is not valid JSON is not in the value: until it parses, or Ctrl+Z drops
+  // it, the form's submit is refused, so that it does not submit the value the text no longer shows
+  const { setFieldError } = useContext(FieldValidationContext);
+  const draftErrorKey = `${formikRootLessListKey}:jsonDraft`;
   const undoable = valueHistory?.covers(formikRootLessListKey) ?? false;
 
   // #499: hooks before the early returns; the stand-in and the read-only box show the text as is
+  // #538: the cleanup drops the draft error when the editor goes away (back to the structured
+  // view, say), so that a draft no longer shown does not keep blocking the submit
   useEffect(() => {
+    const dropDraftError = () => setFieldError(draftErrorKey, undefined);
     if (props.isUnderTest || readOnly) {
-      return;
+      return dropDraftError;
     }
     if (initialValue) {
       setCodeMirrorValue(initialValue);
@@ -78,6 +86,7 @@ export const MlElementEditorReactCodeMirror: React.FC<MlElementEditorReactCodeMi
       setCodeMirrorValue("");
       setCodeMirrorIsValidJson(false);
     }
+    return dropDraftError;
   }, []);
 
   const handleFormat = useCallback(() => {
@@ -111,13 +120,15 @@ export const MlElementEditorReactCodeMirror: React.FC<MlElementEditorReactCodeMi
       try {
         const objectValue = JSON.parse(value);
         setCodeMirrorIsValidJson(true);
+        setFieldError(draftErrorKey, undefined);
         formikContext.setFieldValue(formikRootLessListKey, objectValue);
       } catch {
         setCodeMirrorIsValidJson(false);
+        setFieldError(draftErrorKey, "The JSON text does not parse");
       }
       setCodeMirrorValue(value);
     },
-    [setCodeMirrorIsValidJson, setCodeMirrorValue, formikContext, formikRootLessListKey, undoable, valueHistory]
+    [setCodeMirrorIsValidJson, setCodeMirrorValue, formikContext, formikRootLessListKey, undoable, valueHistory, setFieldError, draftErrorKey]
   );
 
   // #499: text that is not valid JSON is not in the value yet, so no history step holds it: Ctrl+Z
@@ -137,9 +148,10 @@ export const MlElementEditorReactCodeMirror: React.FC<MlElementEditorReactCodeMi
       if (command === "undo") {
         setCodeMirrorValue(JSON.stringify(getIn(formikContext.values, formikRootLessListKey), null, 2));
         setCodeMirrorIsValidJson(true);
+        setFieldError(draftErrorKey, undefined);
       }
     },
-    [undoable, codeMirrorIsValidJson, setCodeMirrorValue, setCodeMirrorIsValidJson, formikContext, formikRootLessListKey],
+    [undoable, codeMirrorIsValidJson, setCodeMirrorValue, setCodeMirrorIsValidJson, formikContext, formikRootLessListKey, setFieldError, draftErrorKey],
   );
 
   const handleCheck = useCallback(() => {

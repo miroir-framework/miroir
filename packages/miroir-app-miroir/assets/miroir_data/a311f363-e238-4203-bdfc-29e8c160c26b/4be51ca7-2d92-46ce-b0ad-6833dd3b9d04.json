@@ -1238,7 +1238,7 @@
           },
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "TransformerEditor: an ML schema edited as JSON in its popover; Cancel writes nothing, and a value that is not an ML schema is not saved",
+            "miroirTestLabel": "TransformerEditor: an ML schema edited as JSON in its popover; Cancel writes nothing, and neither a value that is not an ML schema nor a JSON text that does not parse is saved",
             "steps": [
               {
                 "step": "click",
@@ -1407,6 +1407,37 @@
               {
                 "step": "expectElement",
                 "label": "the popover stays open",
+                "target": {
+                  "byTestId": "block-mlschema-form:transformer.mlSchema"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "change",
+                "label": "a valid ML schema, in the form value",
+                "target": {
+                  "byTestId": "code-editor:mlSchema"
+                },
+                "value": "{\n  \"type\": \"string\"\n}"
+              },
+              {
+                "step": "change",
+                "label": "then a JSON text that does not parse, so not in the form value",
+                "target": {
+                  "byTestId": "code-editor:mlSchema"
+                },
+                "value": "{\n  \"type\": \"string\"\n"
+              },
+              {
+                "step": "click",
+                "label": "Save",
+                "target": {
+                  "byTestId": "block-mlschema-save:transformer.mlSchema"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the popover stays open: Save does not write the older string schema",
                 "target": {
                   "byTestId": "block-mlschema-form:transformer.mlSchema"
                 },
