@@ -82,7 +82,8 @@ import {
   reconcileEnvironmentDeployments,
   recordInstallsOf,
   resolveEnvironmentFromFiles,
-  seedEnvironmentState,
+  describeSeedReport,
+  seedEnvironmentStateAtStart,
   type ResolvedEnvironment,
 } from "miroir-env";
 import { EndpointToolRegistry, setupMcpServer } from "miroir-mcp";
@@ -252,9 +253,9 @@ if (resolvedEnvironment) {
   if (state.status === "changed") {
     console.log(`  environment ${describeEnvironmentStateStatus(state)}`);
   }
-  const seed = seedEnvironmentState(resolvedEnvironment);
-  if (seed.seeded.length > 0) {
-    console.log(`  environment state seeded from package assets: ${seed.seeded.join(", ")}`);
+  const seedLine = describeSeedReport(seedEnvironmentStateAtStart(resolvedEnvironment));
+  if (seedLine) {
+    console.log(`  ${seedLine}`);
   }
   miroirConfig = environmentServerConfig(resolvedEnvironment);
 } else {

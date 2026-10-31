@@ -97,6 +97,27 @@ export function seedEnvironmentState(resolved: ResolvedEnvironment, options: { r
 }
 
 /**
+ * The seeding of a server or Electron start (#587). A self-test environment
+ * (`client.selfTest.enabled`) is reseeded at each start, so that its copy of the miroir app runs
+ * the current MiroirTests: its state holds no user data. Any other environment is only seeded where
+ * a copy is missing.
+ */
+export function seedEnvironmentStateAtStart(resolved: ResolvedEnvironment): SeedReport & { reseed: boolean } {
+  const reseed = resolved.environment.client?.selfTest?.enabled === true;
+  return { ...seedEnvironmentState(resolved, { reseed }), reseed };
+}
+
+/** The line a start prints about its seeding, `undefined` when nothing was copied. */
+export function describeSeedReport(seed: SeedReport & { reseed?: boolean }): string | undefined {
+  if (seed.seeded.length === 0) {
+    return undefined;
+  }
+  return seed.reseed
+    ? `environment state reseeded from package assets (self-test environment, reseeded at each start): ${seed.seeded.join(", ")}`
+    : `environment state seeded from package assets: ${seed.seeded.join(", ")}`;
+}
+
+/**
  * Recreates, empty, the entity directories of the seed that a kept data section lost: a filesystem
  * data section knows its entities by their directories, and refuses rows of an entity it lacks.
  */

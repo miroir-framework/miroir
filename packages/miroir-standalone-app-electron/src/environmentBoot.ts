@@ -33,7 +33,8 @@ import {
   missingConnectionPasswords,
   recordInstallsOf,
   resolveEnvironmentFromFiles,
-  seedEnvironmentState,
+  describeSeedReport,
+  seedEnvironmentStateAtStart,
   type ResolvedEnvironment,
 } from "miroir-env";
 import { setupMiroirDomainController } from "miroir-localcache-redux/node";
@@ -76,9 +77,11 @@ export async function bootElectronServer(
 ): Promise<ElectronServer> {
   const environment = resolveEnvironmentFromFiles({ cwd: options.cwd, env: options.env });
   log(`environment: ${environment.name}, selected by ${environment.source}, defined by ${environment.files.join(" <- ")}`);
-  const seed = seedEnvironmentState(environment);
-  if (seed.seeded.length > 0) {
-    log(`environment state seeded from package assets: ${seed.seeded.join(", ")}`);
+  // #587: a self-test environment is reseeded at each start; `--self-test` on another environment
+  // is not (its state may hold real data)
+  const seedLine = describeSeedReport(seedEnvironmentStateAtStart(environment));
+  if (seedLine) {
+    log(seedLine);
   }
   for (const warning of missingConnectionPasswords(environment, options.env as NodeJS.ProcessEnv)) {
     log(`warning: ${warning}`);
