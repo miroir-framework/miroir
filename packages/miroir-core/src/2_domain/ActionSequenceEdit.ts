@@ -30,7 +30,8 @@ import {
 //   DomainController.handleCompositeActionTemplate resolves the whole step: a literal, an object or
 //   a list there can be replaced, and a plain list gets a new item at its end;
 // - `templates` gets new entries.
-// The payload of a query step is one block, read with the form or JSON views: nothing inside it.
+// #536: the payload of a query step is edited as any payload: its values can hold transformers,
+// resolved with the step, and its query's `runtimeTransformers` gets new entries, run by the query.
 // ################################################################################################
 
 type PathSegment = string | number;
@@ -41,6 +42,7 @@ const COMPOSITE_ACTION_SEQUENCE = "compositeActionSequence";
 const TEST_ASSERTION = "compositeRunTestAssertion";
 const QUERY_ACTION_TYPES = new Set(["compositeRunBoxedQueryAction", "compositeRunBoxedQueryTemplateAction"]);
 const TEMPLATE_KEY = "template";
+const RUNTIME_TRANSFORMER_KEY = "transformer";
 
 export interface BlockEditOptions {
   modelEnvironment?: MiroirModelEnvironment;
@@ -191,7 +193,23 @@ function actionPositions(action: ActionRecord & { actionType: string }, path: Pa
     }
     return;
   }
-  if (QUERY_ACTION_TYPES.has(action.actionType) || (payload !== undefined && !isPlainRecord(payload))) {
+  if (QUERY_ACTION_TYPES.has(action.actionType)) {
+    // #536: the run query action, then a new runtime transformer of its query
+    valuePositions(payload, payloadPath, walk);
+    const runPayload = isPlainRecord(payload) ? payload.payload : undefined;
+    const query = isPlainRecord(runPayload) ? runPayload.query : undefined;
+    if (isPlainRecord(query) && !isTransformerNode(query)) {
+      const container = [...payloadPath, "payload", "query", "runtimeTransformers"];
+      addPosition(walk, {
+        path: [...container, freeKey(query.runtimeTransformers, RUNTIME_TRANSFORMER_KEY)],
+        container,
+        kind: "recordEntry",
+        holds: "transformer",
+      });
+    }
+    return;
+  }
+  if (payload !== undefined && !isPlainRecord(payload)) {
     return;
   }
   const record = isPlainRecord(payload) ? payload : {};
@@ -246,7 +264,7 @@ function ownerOf(
       return {
         kind: "action",
         ownerLength,
-        valuePosition: relative[0] === "payload" && !isStep && !insideQueryPayload(root, path, ownerLength),
+        valuePosition: relative[0] === "payload" && !isStep,
       };
     }
   }
@@ -254,23 +272,9 @@ function ownerOf(
 }
 
 /**
- * Whether `path` is inside the payload of a query step at or above `ownerLength`: the query, a
- * run query action with its own `actionType`, is one block.
- */
-function insideQueryPayload(root: unknown, path: Path, ownerLength: number): boolean {
-  for (let length = ownerLength; length >= 0; length--) {
-    const action = valueAt(root, path.slice(0, length));
-    if (isActionValue(action) && QUERY_ACTION_TYPES.has(action.actionType)) {
-      return path[length] === "payload" && path.length > length + 1;
-    }
-  }
-  return false;
-}
-
-/**
  * Whether the value at `path` of `root` can be replaced by a transformer (#505): a slot of a
  * transformer, or any value below the `payload` or the `templates` of an action, but a step of a
- * sequence (an action) and the inside of a query step's payload.
+ * sequence (an action); since #536, the inside of a query step's payload too.
  */
 export function isValuePosition(root: unknown, path: Path, options: BlockEditOptions = {}): boolean {
   return path.length > 0 && ownerOf(root, path, definitionsOf(options)).valuePosition;

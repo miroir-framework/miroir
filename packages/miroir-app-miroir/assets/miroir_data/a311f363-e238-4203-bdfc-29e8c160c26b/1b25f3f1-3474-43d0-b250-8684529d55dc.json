@@ -5,7 +5,7 @@
   "name": "ui.blockEditor",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "Block view of transformers: the TransformerEditor's Blocks / Form / JSON switch starts on Form, Blocks draws the transformer as blocks and Form brings the form back; the blocks of a stored TransformerDefinition show slots, parameters, object and list blocks and ML schema chips, collapse one by one or all at once, and zoom; a Runner's composite action sequence shows as read-only stacked command blocks, a query step as one block, build transformers marked where they are evaluated at build.",
+  "description": "Block view of transformers: the TransformerEditor's Blocks / Form / JSON switch starts on Form, Blocks draws the transformer as blocks and Form brings the form back; the blocks of a stored TransformerDefinition show slots, parameters, object and list blocks and ML schema chips, collapse one by one or all at once, and zoom; a Runner's composite action sequence shows as read-only stacked command blocks, a query step as a query block with its extractors, combiners and runtime transformers, build transformers marked where they are evaluated at build.",
   "tags": [
     "ui",
     "editor",
@@ -897,7 +897,7 @@
           },
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "createEntity Runner: a query step is one query block, payload slots hold transformer blocks",
+            "miroirTestLabel": "createEntity Runner: a query step shows its query as blocks, payload slots hold transformer blocks",
             "steps": [
               {
                 "step": "waitForAttribute",
@@ -919,12 +919,49 @@
                 "value": "boxedQueryWithExtractorCombinerTransformer"
               },
               {
-                "step": "expectElement",
-                "label": "the query is folded: its extractors are not blocks",
+                "step": "waitForAttribute",
+                "label": "its extractor menuList is an extractor block",
                 "target": {
-                  "byTestId": "block:definition.compositeActionSequence.payload.actionSequence.0.payload.payload.query.extractors"
+                  "byTestId": "block:definition.compositeActionSequence.payload.actionSequence.0.payload.payload.query.extractors.menuList"
                 },
-                "present": false
+                "attribute": "data-extractor-type",
+                "value": "extractorInstancesByEntity"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "in the extractor category",
+                "target": {
+                  "byTestId": "block:definition.compositeActionSequence.payload.actionSequence.0.payload.payload.query.extractors.menuList"
+                },
+                "attribute": "data-category",
+                "value": "extractor"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the extractor shows its entity in its header",
+                "target": {
+                  "byTestId": "block-parameter:definition.compositeActionSequence.payload.actionSequence.0.payload.payload.query.extractors.menuList.parentName"
+                },
+                "attribute": "data-value",
+                "value": "\"Menu\""
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "a page parameter of the query is a transformer block",
+                "target": {
+                  "byTestId": "block:definition.compositeActionSequence.payload.actionSequence.0.payload.payload.query.pageParams.currentDeploymentUuid"
+                },
+                "attribute": "data-transformer-type",
+                "value": "getFromParameters"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the application of the query is a row holding a transformer block",
+                "target": {
+                  "byTestId": "block:definition.compositeActionSequence.payload.actionSequence.0.payload.payload.query.application"
+                },
+                "attribute": "data-transformer-type",
+                "value": "getFromParameters"
               },
               {
                 "step": "expectElement",
