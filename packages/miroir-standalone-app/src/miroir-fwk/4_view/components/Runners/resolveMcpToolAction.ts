@@ -1,5 +1,4 @@
-import { getEndpointActions, type Action, type EndpointDefinition } from "miroir-core";
-import { toolNameFor } from "miroir-mcp/client";
+import { endpointActionName, getEndpointActions, type Action, type EndpointDefinition } from "miroir-core";
 
 export function resolveMcpToolAction(
   toolName: string,
@@ -24,7 +23,7 @@ export function resolveMcpToolAction(
       if (!actionType || !action?.actionParameters?.payload) {
         continue;
       }
-      const name = toolNameFor(applicationName, endpoint.name, actionType, takenNames);
+      const name = endpointActionName(applicationName, endpoint.name, actionType, takenNames);
       takenNames.add(name);
       if (name === toolName) {
         return { endpoint, action };

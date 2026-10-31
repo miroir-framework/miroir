@@ -1,19 +1,16 @@
 import {
-  authorizeDeployment,
-  deploymentUuidsFromHttpRequest,
+  currentApplicationDeploymentMap,
+  endpointActionFingerprint,
+  executeEndpointAction,
+  listEndpointActions,
   type ApplicationDeploymentMap,
-  type AdminApplication,
   type AuthPrincipal,
-  type LoadedAccessDirectory,
-  type Deployment,
   type DomainControllerInterface,
-  type EndpointDefinition,
+  type EndpointActionEntry,
+  type LoadedAccessDirectory,
   type LoggerInterface,
   MiroirLoggerFactory,
-  getEndpointActions,
 } from "miroir-core";
-import { adminSelfApplication, entityApplicationForAdmin, entityDeployment } from "miroir-app-admin";
-import { entityEndpointVersion } from "miroir-app-miroir";
 
 import {
   handleMcpAction,
@@ -21,8 +18,6 @@ import {
   type McpRequestHandler,
   type McpToolDescription,
 } from "./mcpHandlersForEndpoint.js";
-
-import { toolNameFor } from "./toolNameFor.js";
 
 export {
   MCP_TOOL_NAME_MAX_LENGTH,
@@ -61,15 +56,11 @@ function toolErrorResult(toolName: string, type: string, message: string): McpTo
 }
 
 /**
- * Computes the MCP tool surface live from the endpoints currently defined in the deployed
- * applications: one tool per (endpoint, action), for every application of the (seed)
- * application/deployment map.
+ * The MCP tool surface, computed live from the endpoint action catalog (#627): one tool per
+ * (application, endpoint, action) of every deployed application.
  */
 export class EndpointToolRegistry {
-  private handlers: Record<
-    string,
-    { applicationUuid: string; handler: McpRequestHandler<any> }
-  > = {};
+  private handlers: Record<string, { entry: EndpointActionEntry; handler: McpRequestHandler<any> }> = {};
   private unsubscribeFromStore?: () => void;
   private lastFingerprint?: string;
 
@@ -114,125 +105,30 @@ export class EndpointToolRegistry {
   }
 
   // ##############################################################################################
-  /**
-   * Cheap change detector over the local cache: endpoint instances (uuid@version) of every
-   * deployment + the Admin deployment registry (deployment uuid -> selfApplication).
-   */
   private computeFingerprint(): string {
-    const domainState = this.domainController.getLocalCache().getDomainState();
-    const parts: string[] = [];
-    for (const deploymentUuid of Object.keys(domainState).sort()) {
-      const sections = (domainState as any)[deploymentUuid] ?? {};
-      const endpointInstances = [
-        ...Object.values(sections["model"]?.[entityEndpointVersion.uuid] ?? {}),
-        ...Object.values(sections["data"]?.[entityEndpointVersion.uuid] ?? {}),
-      ] as { uuid: string; version?: string }[];
-      parts.push(
-        `${deploymentUuid}:[${endpointInstances
-          .map((e) => `${e.uuid}@${e.version ?? ""}`)
-          .sort()
-          .join(",")}]`,
-      );
-    }
-    const adminDeploymentUuid = this.seedApplicationDeploymentMap[adminSelfApplication.uuid];
-    const deployments = adminDeploymentUuid
-      ? ((domainState as any)[adminDeploymentUuid]?.["data"]?.[entityDeployment.uuid] ?? {})
-      : {};
-    parts.push(
-      `admin:[${Object.values(deployments)
-        .map((d: any) => `${d.uuid}->${d.selfApplication}`)
-        .sort()
-        .join(",")}]`,
-    );
-    return parts.join("|");
+    return endpointActionFingerprint(this.domainController.getLocalCache(), this.seedApplicationDeploymentMap);
   }
 
   // ##############################################################################################
-  /**
-   * The current application/deployment map: the configured seed map, extended with the
-   * deployments registered in the Admin deployment data section (dynamic discovery).
-   * Seed entries always win over discovered ones.
-   */
+  /** The seed map extended with the deployments of the Admin data section; seed entries win. */
   resolveCurrentApplicationDeploymentMap(): ApplicationDeploymentMap {
-    const domainState = this.domainController.getLocalCache().getDomainState();
-    const adminDeploymentUuid = this.seedApplicationDeploymentMap[adminSelfApplication.uuid];
-    const result: ApplicationDeploymentMap = { ...this.seedApplicationDeploymentMap };
-    if (!adminDeploymentUuid) {
-      return result;
-    }
-    const deployments =
-      (domainState as any)[adminDeploymentUuid]?.["data"]?.[entityDeployment.uuid] ?? {};
-    for (const instance of Object.values(deployments)) {
-      const deployment = instance as Deployment;
-      if (deployment.selfApplication && deployment.uuid && !result[deployment.selfApplication]) {
-        result[deployment.selfApplication] = deployment.uuid;
-      }
-    }
-    return result;
+    return currentApplicationDeploymentMap(this.domainController.getLocalCache(), this.seedApplicationDeploymentMap);
   }
 
   // ##############################################################################################
   async listTools(): Promise<McpToolDescription[]> {
-    const localCache = this.domainController.getLocalCache();
-    const currentMap = this.resolveCurrentApplicationDeploymentMap();
-    const applicationNames = this.resolveApplicationNames(currentMap);
+    const entries = listEndpointActions(this.domainController.getLocalCache(), this.seedApplicationDeploymentMap);
     const tools: McpToolDescription[] = [];
-    const takenNames = new Set<string>();
-    const handlers: Record<string, { applicationUuid: string; handler: McpRequestHandler<any> }> =
-      {};
-
-    for (const applicationUuid of Object.keys(currentMap).sort()) {
-      let endpoints: EndpointDefinition[];
+    const handlers: Record<string, { entry: EndpointActionEntry; handler: McpRequestHandler<any> }> = {};
+    for (const entry of entries) {
       try {
-        endpoints =
-          localCache.currentModel(applicationUuid, currentMap).endpoints ??
-          [];
+        const handler = mcpToolEntry(entry.endpoint, entry.actionType, entry.name);
+        tools.push(handler.mcpToolDescription);
+        handlers[entry.name] = { entry, handler };
       } catch (error) {
-        log.warn(
-          `listTools: could not resolve current model for application ${applicationUuid}, skipping: ${error}`,
+        log.error(
+          `listTools: skipping action ${entry.actionType} of endpoint ${entry.endpoint.name} (${entry.endpoint.uuid}): ${error}`,
         );
-        continue;
-      }
-      const applicationName = applicationNames[applicationUuid] ?? applicationUuid;
-      log.info(
-        `listTools: application ${applicationName} (${applicationUuid}) exposes ${endpoints.length} endpoint(s)`,
-      );
-      const wellFormedEndpoints = endpoints.filter((endpoint) => {
-        const wellFormed = endpoint?.uuid && endpoint?.name && getEndpointActions(endpoint);
-        if (!wellFormed) {
-          log.warn(
-            `listTools: skipping malformed endpoint entry for application ${applicationUuid}: ${JSON.stringify(endpoint)}`,
-          );
-        }
-        return wellFormed;
-      });
-      const sortedEndpoints = [...wellFormedEndpoints].sort((a, b) => a.uuid.localeCompare(b.uuid));
-      for (const endpoint of sortedEndpoints) {
-        const sortedActions = [...(getEndpointActions(endpoint) ?? [])].sort((a: any, b: any) =>
-          String(a?.actionParameters?.actionType?.definition).localeCompare(
-            String(b?.actionParameters?.actionType?.definition),
-          ),
-        );
-        for (const action of sortedActions) {
-          const actionType = action?.actionParameters?.actionType?.definition;
-          if (!actionType || !action?.actionParameters?.payload) {
-            log.info(
-              `listTools: skipping action without type or payload on endpoint ${endpoint.name} (${endpoint.uuid})`,
-            );
-            continue;
-          }
-          try {
-            const toolName = toolNameFor(applicationName, endpoint.name, actionType, takenNames);
-            takenNames.add(toolName);
-            const handler = mcpToolEntry(endpoint, actionType, toolName);
-            tools.push(handler.mcpToolDescription);
-            handlers[toolName] = { applicationUuid, handler };
-          } catch (error) {
-            log.error(
-              `listTools: skipping action ${actionType} of endpoint ${endpoint.name} (${endpoint.uuid}): ${error}`,
-            );
-          }
-        }
       }
     }
     this.handlers = handlers;
@@ -244,87 +140,18 @@ export class EndpointToolRegistry {
     if (Object.keys(this.handlers).length === 0) {
       await this.listTools();
     }
-    const entry = this.handlers[name];
-    if (!entry) {
+    const registered = this.handlers[name];
+    if (!registered) {
       return toolErrorResult(name, "unknown_tool", `Unknown tool: ${name}`);
     }
-    const currentMap = this.resolveCurrentApplicationDeploymentMap();
-    if (context?.enabled) {
-      // The tool's own application, and any other deployment its payload names (#263).
-      const deployments = [
-        currentMap[entry.applicationUuid],
-        ...deploymentUuidsFromHttpRequest({
-          body: { action: { payload: args }, applicationDeploymentMap: currentMap },
-        }),
-      ];
-      const access = authorizeDeployment(true, context, deployments as string[]);
-      if (!access.allowed) {
-        log.warn(
-          `callTool ${name}: access denied for ${context.principal?.username ?? "anonymous"} on deployments ${deployments.join(",")}`,
-        );
-        return toolErrorResult(name, access.body.errorType, "Access denied");
-      }
-    }
-    const modelEnvironment = this.domainController
-      .getLocalCache()
-      .currentModelEnvironment(entry.applicationUuid, currentMap);
-    return handleMcpAction(
-      name,
-      args,
-      entry.handler.payloadZodSchema,
-      (payload: any) =>
-        ({
-          ...entry.handler.actionEnvelope,
-          payload,
-        }) as any,
-      this.domainController,
-      currentMap,
-      modelEnvironment,
-      context?.principal,
+    const applicationDeploymentMap = this.resolveCurrentApplicationDeploymentMap();
+    return handleMcpAction(name, args, registered.handler.payloadZodSchema, (payload) =>
+      executeEndpointAction(registered.entry, payload, {
+        domainController: this.domainController,
+        applicationDeploymentMap,
+        actionLabel: registered.handler.actionLabel,
+        context,
+      }),
     );
-  }
-
-  // ##############################################################################################
-  /**
-   * Application names are resolved from the AdminApplication instances held in the Admin
-   * deployment data section, falling back to the SelfApplication instances of each
-   * application's own model; unknown applications fall back to their uuid.
-   */
-  private resolveApplicationNames(
-    currentMap: ApplicationDeploymentMap,
-  ): Record<string, string> {
-    const localCache = this.domainController.getLocalCache();
-    const domainState = localCache.getDomainState();
-    const adminDeploymentUuid = currentMap[adminSelfApplication.uuid];
-    const result: Record<string, string> = {};
-    if (adminDeploymentUuid) {
-      const adminApplications =
-        (domainState as any)[adminDeploymentUuid]?.["data"]?.[entityApplicationForAdmin.uuid] ?? {};
-      for (const instance of Object.values(adminApplications)) {
-        const adminApplication = instance as AdminApplication;
-        result[adminApplication.selfApplication] = adminApplication.name;
-      }
-    } else {
-      log.warn("resolveApplicationNames: no Admin deployment in applicationDeploymentMap");
-    }
-    for (const applicationUuid of Object.keys(currentMap)) {
-      if (result[applicationUuid]) {
-        continue;
-      }
-      try {
-        const applications =
-          localCache.currentModel(applicationUuid, currentMap).applications ??
-          [];
-        const selfApplication = applications.find((a: any) => a.uuid === applicationUuid);
-        if (selfApplication?.name) {
-          result[applicationUuid] = selfApplication.name;
-        }
-      } catch (error) {
-        log.info(
-          `resolveApplicationNames: could not resolve model for application ${applicationUuid}: ${error}`,
-        );
-      }
-    }
-    return result;
   }
 }

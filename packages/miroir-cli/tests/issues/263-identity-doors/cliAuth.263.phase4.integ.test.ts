@@ -13,7 +13,7 @@ import { openTestEnvironment, selectedTestEnvironment } from "miroir-env";
 import { entityBook, selfApplicationLibrary } from "miroir-example-library";
 
 import { authenticateCli, type CliIdentityOptions } from "../../../src/authentication.js";
-import { cliRequestHandlers_EntityEndpoint } from "../../../src/commands/commandsFromEndpoint.js";
+import { getAllCommands, getCommandByName } from "../../../src/commands/commandsFromEndpoint.js";
 import { initializePlatform, type CliPlatform } from "../../../src/platform.js";
 
 const RUN_TEST = process.env.RUN_TEST;
@@ -40,7 +40,11 @@ async function authenticate(
 }
 
 async function readLibraryBooks() {
-  return cliRequestHandlers_EntityEndpoint.getInstances.execute(
+  const getInstances = getCommandByName(
+    getAllCommands(platform.domainController, platform.applicationDeploymentMap),
+    "getInstances",
+  );
+  return getInstances!.execute(
     {
       application: selfApplicationLibrary.uuid,
       applicationSection: "data",

@@ -1,10 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { z } from "zod";
 
-import type { DomainControllerInterface } from "miroir-core";
 import { handleMcpAction } from "../../src/tools/mcpHandlersForEndpoint.js";
-
-const unusedDomainController = {} as DomainControllerInterface;
 
 describe("handleMcpAction validation", () => {
   it("returns a structured validation_error for missing required args without throwing", async () => {
@@ -19,11 +16,9 @@ describe("handleMcpAction validation", () => {
         book: z.string(),
         startDate: z.string(),
       }),
-      () => {
-        throw new Error("actionBuilder must not run when args fail validation");
+      async () => {
+        throw new Error("execute must not run when args fail validation");
       },
-      unusedDomainController,
-      {},
     );
 
     const parsed = result.content[0]?.parsed;

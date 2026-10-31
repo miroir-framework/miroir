@@ -252,18 +252,9 @@ describe("EndpointToolRegistry integration", () => {
           parentUuid: entityBook.uuid,
           objects: [
             {
-              parentName: "Book",
-              parentUuid: entityBook.uuid,
-              applicationSection: "data",
-              instances: [
-                {
-                  uuid: createdBookUuid,
-                  parentUuid: entityBook.uuid,
-                  name: "Registry Book",
-                  author: "Registry Author",
-                  isbn: "TEST-REG-1",
-                } as any,
-              ],
+              ...(book1 as any),
+              uuid: createdBookUuid,
+              name: "Registry Book",
             },
           ],
         });

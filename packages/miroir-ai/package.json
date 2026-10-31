@@ -48,7 +48,6 @@
     "loglevelnext": "6.0.0",
     "miroir-app-miroir": "*",
     "miroir-core": "*",
-    "miroir-example-library": "*",
     "openai": "7.38.0",
     "rxjs": "7.8.2",
     "uuid": "14.0.3"
@@ -57,6 +56,9 @@
     "@types/express": "5.0.6",
     "@types/node": "26.6.5",
     "cross-env": "10.1.0",
+    "miroir-env": "*",
+    "miroir-localcache-redux": "*",
+    "miroir-store-filesystem": "*",
     "tsup": "9.0.0",
     "vitest": "5.0.5"
   }

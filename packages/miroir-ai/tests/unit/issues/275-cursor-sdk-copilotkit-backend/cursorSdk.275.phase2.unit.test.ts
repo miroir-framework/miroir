@@ -181,7 +181,8 @@ if (runThis) {
       expect(seams.runtimeOptions[0].agents.default).toBe(testAgent);
       expect(seams.runtimeOptions[0].agents.cursor).toBe(testAgent);
       expect(Array.isArray(seams.runtimeOptions[0].actions)).toBe(true);
-      expect(seams.runtimeOptions[0].actions.length).toBeGreaterThan(0);
+      // #627: endpoint actions need a DomainController, so this router has none
+      // (copilotKitEndpointActions.627 covers them)
       const actionNames = seams.runtimeOptions[0].actions.map((action: { name: string }) => action.name);
       expect(actionNames).not.toContain("generateMiroirReport");
       expect(actionNames).not.toContain("getMiroirContext");

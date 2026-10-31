@@ -22,6 +22,21 @@ Shipped `miroir-server` defaults (`packages/miroir-server/config/miroirConfig.se
 
 When authentication is on (the server default), an MCP client must send `Authorization: Bearer <token>`, with a token from `POST /auth/login`. Without it the server answers 401; tools on an application the user may not open return an `AccessDenied` tool error. `--disable-mcp-auth` or `MIROIR_MCP_AUTH_ENABLED=0` keeps MCP open while the rest stays gated. See [MCP in the authentication reference](../reference/authentication.md#mcp).
 
+### Tools, CLI commands and assistant actions from Endpoints
+
+Every Endpoint action of every deployed application is an MCP tool, a `miroir-cli` command and, for applications other than Miroir and Admin, an in-app assistant action. Nothing is coded per application: deploy an application, or add an Endpoint to its model, and the action appears (live for MCP and the assistant, at the next run for the CLI). The list comes from the endpoint action catalog of `miroir-core` (`listEndpointActions`, #627).
+
+| Rule | Detail |
+|---|---|
+| Name | `<application>_<actionType>`, e.g. `Library_lendDocument`, `Miroir_createInstance`; `<application>_<endpoint>_<actionType>` when two endpoints of one application declare the same action type; at most 64 characters (a longer name is cut and ends with a hash of the full name). The same name on every surface. |
+| CLI alias | the bare action type (`lendDocument`, `createInstance`) when exactly one command has it; `list` and `help` are never aliases. `miroir-cli list` shows the commands grouped by application, with their aliases. |
+| Payload | checked against the action's payload schema. A `createInstance` or `updateInstance` is also checked against the Entities of the application it names (`payload.application`), not of the Miroir application that owns the instance endpoint. Instances inside composite actions are not checked yet. |
+| Model | a call runs with the model of the application it targets: the application named in the payload of a Miroir action when that application is deployed, else the endpoint's own application. |
+| Access | with authentication on, a call runs as its caller and only on deployments the caller may open (MCP Bearer, CLI `--user` / `--token`, the assistant's session). |
+| Assistant | the assistant offers the actions of applications other than Miroir and Admin (their framework actions stay on MCP). A proposal form posts its accepted payload to `POST /api/copilotkit/endpointAction/<name>`, which only runs those actions. |
+
+An environment that installs an application package needs that package installed: `miroir-cli` on an environment naming `miroir-example-library` loads the Library assets from it. The CLI itself does not depend on any application package.
+
 ## Connecting AI Agents
 
 ### Claude Desktop

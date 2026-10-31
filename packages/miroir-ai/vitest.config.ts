@@ -11,5 +11,9 @@ export default defineConfig({
     setupFiles: [],
     testTimeout: 10000,
     hookTimeout: 10000,
+    // #627: integration files share the on-disk stores of a test environment (.miroir/<environment>/),
+    // so test files run one at a time, as in miroir-mcp
+    pool: "threads",
+    maxWorkers: 1,
   },
 });
