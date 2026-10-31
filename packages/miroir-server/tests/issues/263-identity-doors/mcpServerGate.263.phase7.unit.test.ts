@@ -1,9 +1,11 @@
 /**
  * #263 Slice 7: miroir-server passes one MCP gate (global hatch plus MCP switch) to both MCP
  * mounts, the dedicated listener and `/mcp` on the main app, and gates `/api/copilotkit` with the
- * shared identity middleware. `server.ts` is a top-level-await script that cannot start in a test,
- * so this pins its wiring in the source; the gate's behaviour is covered by gate.263 (miroir-core)
- * and mcpAuth.263 (miroir-mcp).
+ * shared identity middleware. The gate's behaviour is covered by gate.263 (miroir-core) and
+ * mcpAuth.263 (miroir-mcp).
+ * #636: the gates are built by miroir-server-library's factory; `/mcp` refusing a request without a
+ * token on the factory's app is tested in miroir-server-library (serverApp.636.phase3). This file
+ * keeps the switch resolution (binary) and the gate wiring (library).
  */
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -29,19 +31,20 @@ if (runThis) {
       expect(SERVER_SOURCE).toMatch(
         /resolveMcpAuthenticationEnabled\(\{[\s\S]*?config: \{ mcp: serverAuthentication\?\.mcp \}[\s\S]*?globalEnabled: authenticationEnabled/,
       );
-      expect(SERVER_SOURCE).toMatch(
-        /const mcpAuthenticationGate: AuthenticationGate = \{ \.\.\.authenticationGate, enabled: mcpAuthenticationEnabled \}/,
+      expect(SERVER_SOURCE).toMatch(/authentication: \{ enabled: authenticationEnabled, mcpEnabled: mcpAuthenticationEnabled \}/);
+      expect(LIBRARY_SOURCE).toMatch(
+        /const mcpAuthenticationGate: AuthenticationGate = \{ \.\.\.authenticationGate, enabled: options\.authentication\.mcpEnabled \}/,
       );
     });
 
     it("passes the MCP gate to the dedicated listener and to /mcp on the main app", () => {
-      expect(SERVER_SOURCE).toMatch(/setupMcpServer\(\s*mcpApp,[\s\S]*?mcpAuthenticationGate,\s*\)/);
-      expect(SERVER_SOURCE).toMatch(/mcpServer\.mountHttpRoutes\(app, mcpAuthenticationGate\)/);
+      expect(LIBRARY_SOURCE).toMatch(/setupMcpServer\(\s*mcpApp,[\s\S]*?mcpAuthenticationGate,\s*\)/);
+      expect(LIBRARY_SOURCE).toMatch(/mcpServer\.mountHttpRoutes\(app, mcpAuthenticationGate\)/);
     });
 
     it("gates /api/copilotkit with the shared identity middleware", () => {
       expect(LIBRARY_SOURCE).toMatch(/const identityGate = createIdentityGateMiddleware\(authenticationGate\)/);
-      expect(SERVER_SOURCE).toMatch(/const \{ app, authenticationGate, requestGate \} = await createMiroirServerApp\(/);
+      expect(SERVER_SOURCE).toMatch(/const \{ app, requestGate, mcpServer \} = await createMiroirServerApp\(/);
       expect(SERVER_SOURCE).toMatch(/requestGate: requestGate/);
     });
   });

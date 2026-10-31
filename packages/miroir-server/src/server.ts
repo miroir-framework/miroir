@@ -88,7 +88,6 @@ import {
   seedEnvironmentStateAtStart,
   type ResolvedEnvironment,
 } from "miroir-env";
-import { EndpointToolRegistry, setupMcpServer } from "miroir-mcp";
 import { createMiroirServerApp } from "miroir-server-library";
 import { setupMiroirDomainController } from 'miroir-localcache-redux/node';
 import { miroirFileSystemStoreSectionStartup } from 'miroir-store-filesystem';
@@ -577,9 +576,10 @@ const capabilities = getProcessCapabilities({
 });
 domainController.setProcessCapabilities(capabilities);
 
-// #636: Miroir's HTTP surface (REST behind the gate, authentication and capabilities routes) comes from
-// miroir-server-library; the routes below are added to its app.
-const { app, authenticationGate, requestGate } = await createMiroirServerApp({
+// #636: Miroir's HTTP surface (REST behind the gate, authentication and capabilities routes, /mcp) comes
+// from miroir-server-library; the routes below are added to its app. mcpServer.run starts the dedicated
+// MCP listener at the end of this file.
+const { app, requestGate, mcpServer } = await createMiroirServerApp({
   domainController,
   persistenceStoreControllerManager,
   applicationDeploymentMap,
@@ -608,30 +608,6 @@ app.use(
   })
 );
 
-const endpointToolRegistry = new EndpointToolRegistry(domainController, applicationDeploymentMap);
-myLogger.info("Setting up MCP server with dynamic EndpointToolRegistry");
-const mcpApp = express();
-mcpApp.use(cors({
-  origin: corsAllowedOrigins,
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
-
-mcpApp.use(bodyParser.json({limit: '50mb'}));
-
-myLogger.info(`MCP Server being set-up, going to execute on the port::${mcpPortFromConfig}`);
-const mcpAuthenticationGate: AuthenticationGate = { ...authenticationGate, enabled: mcpAuthenticationEnabled };
-const mcpServer = await setupMcpServer(
-  mcpApp,
-  applicationDeploymentMap,
-  endpointToolRegistry,
-  domainController,
-  mcpAuthenticationGate,
-);
-if (shouldMountMcpHttp(capabilities.mcp)) {
-  mcpServer.mountHttpRoutes(app, mcpAuthenticationGate);
-}
 
 // TLS certificates: present → HTTPS on the API port (listener at the end of this file).
 // run scripts/setup-https.sh (or .ps1) once to generate the certificates.

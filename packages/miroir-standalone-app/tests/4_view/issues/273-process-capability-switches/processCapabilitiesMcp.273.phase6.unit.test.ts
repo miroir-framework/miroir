@@ -55,11 +55,12 @@ if (runThis) {
   });
 
   describe("processCapabilitiesMcp.273.phase6 — server.ts MCP mounts are gated", () => {
-    it("server.ts contains shouldMountMcpHttp and still has mountHttpRoutes and mcpServer.run", () => {
+    // #636: /mcp on the main app is mounted by miroir-server-library; the binary starts the listener.
+    it("both MCP mounts are gated by shouldMountMcpHttp: /mcp in the server library, the listener in server.ts", () => {
       const src = readFileSync(join(REPO_ROOT, "packages/miroir-server/src/server.ts"), "utf8");
-      expect(src).toContain("shouldMountMcpHttp");
-      expect(src).toContain("mountHttpRoutes");
-      expect(src).toContain("mcpServer.run");
+      const library = readFileSync(join(REPO_ROOT, "packages/miroir-server-library/src/createMiroirServerApp.ts"), "utf8");
+      expect(library).toMatch(/if \(shouldMountMcpHttp\(options\.capabilities\.mcp\)\) \{\s*mcpServer\.mountHttpRoutes\(/);
+      expect(src).toMatch(/if \(shouldMountMcpHttp\(capabilities\.mcp\)\) \{\s*mcpServer\.run\(/);
     });
   });
 

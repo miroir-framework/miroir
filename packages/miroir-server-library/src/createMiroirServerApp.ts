@@ -22,6 +22,7 @@ import {
   persistChangedPasswordHash,
   persistPasswordChange,
   restServerDefaultHandlers,
+  shouldMountMcpHttp,
   type ApplicationDeploymentMap,
   type AuthenticationGate,
   type AuthPrincipal,
@@ -31,6 +32,7 @@ import {
   type PersistenceStoreControllerManagerInterface,
   type ProcessCapabilities,
 } from "miroir-core";
+import { EndpointToolRegistry, setupMcpServer, type MiroirMcpServer } from "miroir-mcp";
 
 const packageName = "miroir-server-library";
 const loggerName = MiroirLoggerFactory.getLoggerName(packageName, "info", "createMiroirServerApp");
@@ -78,6 +80,11 @@ export interface MiroirServerApp {
   authenticationGate: AuthenticationGate;
   /** Express middleware answering 401 without a valid token when authentication is on. */
   requestGate: RequestHandler;
+  /**
+   * The MCP server behind `/mcp`. `/mcp` is on `app` when the `mcp` capability is on; the host may
+   * also start the dedicated MCP listener with `mcpServer.run(port)`.
+   */
+  mcpServer: MiroirMcpServer;
   /** Releases what the factory started. */
   close(): Promise<void>;
 }
@@ -191,6 +198,33 @@ function mountAuthenticationRoutes(app: Express, options: MiroirServerAppOptions
   });
 }
 
+async function setupMcp(
+  app: Express,
+  options: MiroirServerAppOptions,
+  authenticationGate: AuthenticationGate,
+): Promise<MiroirMcpServer> {
+  const endpointToolRegistry = new EndpointToolRegistry(options.domainController, options.applicationDeploymentMap);
+  // the dedicated MCP app: no BigInt reviver or replacer, as before #636
+  const mcpApp = express();
+  if (options.corsAllowedOrigins) {
+    mcpApp.use(corsMiddleware(options.corsAllowedOrigins));
+  }
+  mcpApp.use(bodyParser.json({ limit: "50mb" }));
+  // #263: MCP has its own switch, under the global one
+  const mcpAuthenticationGate: AuthenticationGate = { ...authenticationGate, enabled: options.authentication.mcpEnabled };
+  const mcpServer = await setupMcpServer(
+    mcpApp,
+    options.applicationDeploymentMap,
+    endpointToolRegistry,
+    options.domainController,
+    mcpAuthenticationGate,
+  );
+  if (shouldMountMcpHttp(options.capabilities.mcp)) {
+    mcpServer.mountHttpRoutes(app, mcpAuthenticationGate);
+  }
+  return mcpServer;
+}
+
 function mountRestHandlers(app: Express, options: MiroirServerAppOptions, authenticationGate: AuthenticationGate): void {
   for (const op of restServerDefaultHandlers) {
     const operationHandler = async (request: MiroirHttpRequest, response: any) => {
@@ -278,11 +312,20 @@ export async function createMiroirServerApp(options: MiroirServerAppOptions): Pr
   mountStatusRoutes(app, options);
   mountRestHandlers(app, options, authenticationGate);
   mountAuthenticationRoutes(app, options, authenticationGate);
+  const mcpServer = await setupMcp(app, options, authenticationGate);
 
+  let closed = false;
   return {
     app,
     authenticationGate,
     requestGate,
-    close: async () => {},
+    mcpServer,
+    close: async () => {
+      if (closed) {
+        return;
+      }
+      closed = true;
+      await mcpServer.shutdown();
+    },
   };
 }

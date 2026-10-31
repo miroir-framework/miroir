@@ -159,8 +159,11 @@ if (runThis) {
       expect(src).toContain("await mountCopilotKitRoute(app");
       expect(mount).toContain('"/api/copilotkit"');
       expect(mount).toContain("shouldMountCopilotKitRoute");
+      // #636: /mcp on the main app is mounted by miroir-server-library; the binary starts the listener.
+      const library = readFileSync(join(REPO_ROOT, "packages/miroir-server-library/src/createMiroirServerApp.ts"), "utf8");
+      expect(library).toContain("shouldMountMcpHttp");
+      expect(library).toContain("mountHttpRoutes");
       expect(src).toContain("shouldMountMcpHttp");
-      expect(src).toContain("mountHttpRoutes");
       expect(src).toContain("mcpServer.run");
     });
   });

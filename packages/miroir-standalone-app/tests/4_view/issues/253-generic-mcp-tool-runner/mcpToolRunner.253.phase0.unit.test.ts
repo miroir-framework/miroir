@@ -335,10 +335,13 @@ describe.skipIf(!shouldRun)("mcpToolRunner #253 phase0 — current contracts", (
     expect(proxyKeys).toContain("/capabilities");
   });
 
-  it("server.ts MCP HTTP mount is gated by shouldMountMcpHttp", () => {
+  // #636: /mcp on the main app is mounted by miroir-server-library; the binary starts the listener.
+  it("server MCP HTTP mounts are gated by shouldMountMcpHttp", () => {
     const server = readFileSync(join(REPO_ROOT, "packages/miroir-server/src/server.ts"), "utf8");
+    const library = readFileSync(join(REPO_ROOT, "packages/miroir-server-library/src/createMiroirServerApp.ts"), "utf8");
+    expect(library).toContain("shouldMountMcpHttp");
+    expect(library).toContain("mountHttpRoutes");
     expect(server).toContain("shouldMountMcpHttp");
-    expect(server).toContain("mountHttpRoutes");
     expect(server).toContain("mcpServer.run");
   });
 });
