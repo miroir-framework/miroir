@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { DataTypes } from "sequelize";
 
-import type { Entity } from "miroir-core";
+import type { Entity, MiroirModelEnvironment } from "miroir-core";
+
+import { sqlStringForExtractor } from "../src/1_core/SqlGenerator.js";
 
 import {
   fromMiroirPresentModelToSequelizeEntityDefinition,
@@ -53,5 +55,24 @@ describe("bigint attributes", () => {
     const row = { uuid: "u", count: 12n };
     expect(reviveBigintAttributes(row, [])).toBe(row);
     expect(reviveBigintAttributes(row, ["count"])).toBe(row);
+  });
+
+  it("filters a bigint attribute in SQL extractors on its digits, since ILIKE has no bigint operand", () => {
+    const modelEnvironment = {
+      currentModel: { entities: [counterEntity] } as any,
+      endpointsByUuid: {},
+      miroirFundamentalMlSchema: {} as any,
+    } as unknown as MiroirModelEnvironment;
+    const sql = sqlStringForExtractor(
+      {
+        extractorOrCombinerType: "extractorInstancesByEntity",
+        parentUuid: counterEntity.uuid,
+        parentName: "Counter",
+        filter: { attributeName: "count", value: "123" },
+      },
+      "myschema",
+      modelEnvironment,
+    );
+    expect(sql).toContain(`"count"::text ILIKE '%123%'`);
   });
 });

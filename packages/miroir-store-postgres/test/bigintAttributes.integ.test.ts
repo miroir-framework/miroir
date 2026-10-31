@@ -90,4 +90,18 @@ describe.skipIf(!password)("bigint attributes", () => {
     expect(instances[0].count).toBe(big);
     expect(instances[0].previousCount ?? null).toBeNull();
   });
+
+  it("filters on the digits of a bigint attribute", async () => {
+    const filtered = await store.getInstancesWithFilter(counterEntity.uuid, { attribute: "count", value: "54775" });
+    expect(filtered).toMatchObject({ status: "ok" });
+    expect((filtered as any).returnedDomainElement.instances.map((i: any) => i.count)).toEqual([big]);
+
+    const ordered = await store.getOrderedInstancesWithFilter(
+      counterEntity.uuid,
+      { attribute: "count", value: "99999" },
+      { attributeName: "count", direction: "ASC" },
+    );
+    expect(ordered).toMatchObject({ status: "ok" });
+    expect((ordered as any).returnedDomainElement.instances).toEqual([]);
+  });
 });

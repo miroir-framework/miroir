@@ -9,39 +9,26 @@
 
 export const BIGINT_JSON_TAG = "$bigint";
 
-const bigintDigits = /^-?\d+$/;
-
 /**
  * `JSON.stringify` replacer writing each BigInt as `{"$bigint": "<digits>"}`. It reads the value
  * from its holder because `JSON.stringify` applies `toJSON` before calling the replacer.
  */
-export function bigintJsonReplacer(this: unknown, key: string, value: unknown): unknown {
-  const original = this !== null && typeof this === "object" ? (this as Record<string, unknown>)[key] : value;
-  if (typeof original === "bigint") {
-    return { [BIGINT_JSON_TAG]: original.toString() };
-  }
-  if (typeof value === "bigint") {
-    return { [BIGINT_JSON_TAG]: value.toString() };
-  }
-  return value;
+export function bigintJsonReplacer(this: any, key: string, value: unknown): unknown {
+  const original = this?.[key];
+  return typeof original === "bigint" ? { [BIGINT_JSON_TAG]: original.toString() } : value;
 }
 
 /** `JSON.parse` reviver turning each `{"$bigint": "<digits>"}` back into a BigInt. */
-export function bigintJsonReviver(_key: string, value: unknown): unknown {
-  if (value === null || typeof value !== "object" || Array.isArray(value)) {
-    return value;
-  }
-  const keys = Object.keys(value);
-  if (keys.length !== 1 || keys[0] !== BIGINT_JSON_TAG) {
-    return value;
-  }
-  const digits = (value as Record<string, unknown>)[BIGINT_JSON_TAG];
-  return typeof digits === "string" && bigintDigits.test(digits) ? BigInt(digits) : value;
+export function bigintJsonReviver(_key: string, value: any): unknown {
+  const digits = value?.[BIGINT_JSON_TAG];
+  return typeof digits === "string" && /^-?\d+$/.test(digits) && Object.keys(value).length === 1
+    ? BigInt(digits)
+    : value;
 }
 
 /** `JSON.stringify` keeping BigInt values whole (see {@link bigintJsonReplacer}). */
-export function stringifyWithBigint(value: unknown, space?: string | number): string {
-  return JSON.stringify(value, bigintJsonReplacer, space);
+export function stringifyWithBigint(value: unknown): string {
+  return JSON.stringify(value, bigintJsonReplacer);
 }
 
 /** `JSON.parse` restoring the BigInt values written by {@link stringifyWithBigint}. */

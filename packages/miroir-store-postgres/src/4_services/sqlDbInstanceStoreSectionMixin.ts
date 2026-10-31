@@ -25,7 +25,7 @@ import {
 } from "miroir-core";
 import { MixableSqlDbStoreSection, SqlDbStoreSection } from "./SqlDbStoreSection";
 
-import { Op } from "sequelize";
+import { Op, Sequelize } from "sequelize";
 import { sqlStringForExtractor } from "../1_core/SqlGenerator";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
@@ -40,6 +40,15 @@ let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerNa
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {log = logger});
 
 export const MixedSqlDbInstanceStoreSection = SqlDbInstanceStoreSectionMixin(SqlDbStoreSection);
+
+// ##############################################################################################
+/** "Contains" filter on one attribute; LIKE has no bigint operand, so a bigint column is matched on its digits (#48). */
+function likeFilter(filter: { attribute: string; value: string }, bigintAttributes: string[] | undefined) {
+  const pattern = { [Op.like]: "%" + filter.value + "%" };
+  return bigintAttributes?.includes(filter.attribute)
+    ? Sequelize.where(Sequelize.cast(Sequelize.col(filter.attribute), "text"), pattern)
+    : { [filter.attribute]: pattern };
+}
 
 export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSection>(
   Base: TBase
@@ -349,7 +358,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
             ? entityAccess.sequelizeModel.schema(entityAccess.effectiveSchema)
             : entityAccess?.sequelizeModel;
           rawResult = (await scopedModel?.findAll({
-            where: { [filter.attribute]: { [Op.like]: "%" + filter.value + "%" } },
+            where: likeFilter(filter, entityAccess.bigintAttributes),
           })) as unknown as EntityInstance[];
           cleanResult = rawResult.map((i) => reviveBigintAttributes(i["dataValues"], entityAccess.bigintAttributes));
           const optionalNonNullable1 = entityAccess.optionalNonNullableAttributes;
@@ -425,7 +434,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
             ? entityAccess2.sequelizeModel.schema(entityAccess2.effectiveSchema)
             : entityAccess2?.sequelizeModel;
           rawResult = (await scopedModel2?.findAll({
-            where: { [filter.attribute]: { [Op.like]: "%" + filter.value + "%" } },
+            where: likeFilter(filter, entityAccess2.bigintAttributes),
             order: [[orderBy.attributeName, orderBy.direction ?? "ASC"]],
           })) as unknown as EntityInstance[];
           cleanResult = rawResult.map((i) => reviveBigintAttributes(i["dataValues"], entityAccess2.bigintAttributes));

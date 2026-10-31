@@ -239,7 +239,9 @@ export class SqlDbQueryRunner {
       }
       const sqlResult = this.stripNullOptionalAttributesOnSqlResult(
         preSqlResult,
-        foreignKeyParams.extractor.extractors?.[endResultName] as
+        // a combiner returns rows of its parentUuid entity too
+        (foreignKeyParams.extractor.extractors?.[endResultName] ??
+          foreignKeyParams.extractor.combiners?.[endResultName]) as
           | { parentUuid?: string }
           | undefined
       );
