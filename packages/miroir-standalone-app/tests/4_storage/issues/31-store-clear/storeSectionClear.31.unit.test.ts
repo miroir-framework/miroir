@@ -84,7 +84,8 @@ describe.each(cases)("#31 store section clear() on $storage", ({ storage, config
     expect(clearResult.status).toBe("ok");
 
     const after = await fresh.getInstances(entity.uuid);
-    expect(after.status == "ok" ? after.returnedDomainElement.instances : []).toHaveLength(0);
+    expect(after.status).toBe("ok");
+    expect(after.returnedDomainElement.instances).toHaveLength(0);
     await fresh.close();
     if (fresh !== freshData) await freshData.close();
   });
