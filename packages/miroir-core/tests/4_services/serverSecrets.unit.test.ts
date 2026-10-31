@@ -175,11 +175,16 @@ describe.skipIf(!shouldRun)("serverSecrets — SecretStore + parseServerArgs + r
     }
   });
 
-  it("server.ts source contains no live process.env dump", () => {
-    expect(existsSync(SERVER_TS)).toBe(true);
-    const source = readFileSync(SERVER_TS, "utf8");
-    expect(source).not.toMatch(/JSON\.stringify\(\s*process\.env/);
-    expect(source).not.toMatch(/myLogger\.\w+\(`process\.env`/);
-    expect(source).not.toMatch(/myLogger\.\w+\(['"]process\.env['"]/);
+  it("server.ts and the server library contain no live process.env dump", () => {
+    // #636: the server library reads no process.env at all
+    const serverLibraryTs = join(REPO_ROOT, "packages/miroir-server-library/src/createMiroirServerApp.ts");
+    for (const file of [SERVER_TS, serverLibraryTs]) {
+      expect(existsSync(file)).toBe(true);
+      const source = readFileSync(file, "utf8");
+      expect(source).not.toMatch(/JSON\.stringify\(\s*process\.env/);
+      expect(source).not.toMatch(/myLogger\.\w+\(`process\.env`/);
+      expect(source).not.toMatch(/myLogger\.\w+\(['"]process\.env['"]/);
+    }
+    expect(readFileSync(serverLibraryTs, "utf8")).not.toMatch(/process\.(env|argv)[.[]/);
   });
 });

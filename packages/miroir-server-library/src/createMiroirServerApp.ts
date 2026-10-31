@@ -113,7 +113,7 @@ interface MiroirHttpRequest extends Request {
   params: Record<string, any>;
 }
 
-export function corsMiddleware(corsAllowedOrigins: string[]): RequestHandler {
+function corsMiddleware(corsAllowedOrigins: string[]): RequestHandler {
   return cors({
     origin: corsAllowedOrigins,
     credentials: true,

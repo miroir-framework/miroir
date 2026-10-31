@@ -1,6 +1,3 @@
-import bodyParser from 'body-parser';
-import cors from 'cors';
-import express, { Request } from 'express';
 import { existsSync, readFileSync } from 'fs';
 import * as https from 'https';
 import loglevelnextLib from 'loglevelnext'; // TODO: use this? or plain "console" log?
@@ -12,7 +9,6 @@ import {
   type ApplicationDeploymentMap,
   circularReplacer,
   ConfigurationService,
-  defaultLevels,
   defaultMetaModelEnvironment,
   defaultSelfApplicationDeploymentMap,
   type Deployment,
@@ -30,25 +26,10 @@ import {
   MiroirEventService,
   MiroirLoggerFactory,
   PersistenceStoreControllerManager,
-  ACCESS_DENIED,
-  accessDirectoryLoader,
-  authenticateRequest,
-  createIdentityGateMiddleware,
-  authorizeDeployment,
-  type AuthenticationGate,
-  type AuthPrincipal,
-  loadAccessDirectory,
-  persistPasswordChange,
-  buildAuthStatusBody,
   ENTITY_MIROIR_SECRET_UUID,
-  deploymentUuidsFromHttpRequest,
   getProcessTokenSecret,
-  loginWithPassword,
-  persistChangedPasswordHash,
   ParseServerArgsError,
   assembleSecretImportSet,
-  bigintJsonReplacer,
-  bigintJsonReviver,
   hydrateSecrets,
   importProcessSecrets,
   parseServerArgs,
@@ -59,10 +40,8 @@ import {
   type DomainControllerInterface,
   resolveAuthenticationEnabled,
   resolveMcpAuthenticationEnabled,
-  restServerDefaultHandlers,
   setProcessTokenSecret,
   setSecretsMasterKey,
-  SpecificLoggerOptionsMap,
   StoreOrBundleAction,
   StoreUnitConfiguration,
   templateEvaluationParams,
@@ -666,11 +645,4 @@ if ( mcpPortFromConfig) {
   }
 } else {
   myLogger.warn(`MCP port not configured, skipping MCP server startup`);
-}
-
-// Adjust Request type
-interface CustomRequest extends Request {
-  body: any;
-  originalUrl: string;
-  params: Record<string, any>;
 }

@@ -37,7 +37,7 @@ Out (owners):
 | 2 | Auth and capabilities routes from the factory | ✅ DONE | `serverApp.636.phase2.integ` (`/auth/status`, `/capabilities`, login as alice then REST with token) |
 | 3 | MCP from the factory | ✅ DONE | `serverApp.636.phase3.integ` (`tools/list`; 401 when `mcpEnabled`) + full nonreg |
 | 4 | The tail: assistant slot, assets and client folders as options | ✅ DONE | `serverApp.636.phase4.integ` (temp `index.html`, slot gate 401, API and slot beat the catch-all) |
-| 5 | Mount rules; `server.ts` becomes the thin binary | ⬜ pending | `serverApp.636.phase5.integ` (BigInt through a host app) + the repointed source tests + release smoke |
+| 5 | Mount rules; `server.ts` becomes the thin binary | ✅ DONE | `serverApp.636.phase5.integ` (BigInt through a host app) + the repointed source tests + release smoke |
 | 6 | Boundary guard, build lists, docs, cleanup | ⬜ pending | tsup `onEnd` metafile guard + pytest guard; full `nonreg:filesystem` |
 
 ## Locked implementation defaults
@@ -292,7 +292,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core,external,ui
 
 ## Slice 5 — Mount rules; `server.ts` becomes the thin binary
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal (observable):** a host mounts Miroir's app on its own Express app without losing BigInt values; `miroir-server` is CLI, config, boot, TLS and `listen` around one factory call.
 
@@ -322,7 +322,11 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core,actions,runners,
 ```
 
 ### Realization
-_(to fill)_
+- Mount test: a host does `host.use(miroirApp)`, then `express.json()`, then `POST /mine`. The BigInt echo keeps its tag through the host, and the host's route answers.
+- The TSDoc mount rules were missing from `dist/index.d.ts` because the root `tsconfig.json` sets `removeComments: true`. The library's `tsconfig.json` sets it to `false`, so the published types keep the TSDoc and `@public` tags. This is a point for I5's manifest work: the same root setting strips TSDoc from every package's types.
+- Source tests now check both files: `cursorSdk.275.phase4` (no `@cursor/sdk`), `mountCopilotKitRoute.lazyImport.unit` (no static `miroir-ai`), `secrets.270.phase0` (no `/secrets` route) and `serverSecrets.unit` (no `process.env` dump; the library reads no `process.env` or `process.argv` at all). `secretsImport.270.phase6` stays on the binary and needed no change. The non-test readers (`check_bare_console.py`, `graduated-smells.test.mjs`, the `eslint-suppressions.json` entry) still apply to the binary unchanged, and both checks pass.
+- `server.ts` dropped every import that only the moved code used (the `--noUnusedLocals` check is clean), plus the `CustomRequest` type. It went from 945 to 648 lines. The rest is the command line, config, logging presets, stores, domain controller, boot, secrets, TLS, the factory call, the dev route, `listen` and `mcpServer.run`. The boot alone is about 160 lines, and I4 may move it into `startMiroirNode`.
+- `miroir-server/package.json` no longer lists `body-parser`, `cors`, `express` or their `@types`. ncc inlines them from the library.
 
 ---
 
