@@ -6,6 +6,7 @@ import {
   buildUiIntegrationSuiteRegistriesFromMiroirTests,
   defaultMetaModelEnvironment,
   MiroirLoggerFactory,
+  miroirTestInstanceHasAnyTag,
   runMiroirTests,
   TestFramework,
   type LoggerInterface,
@@ -26,6 +27,7 @@ import {
   DEFAULT_UI_INTEGRATION_PROFILE_NAME,
   DEFAULT_UI_INTEGRATION_RUN_TARGET_MODE,
 } from "./integrationTestProfileAssets.js";
+import { getIntegrationTestProfileCatalogEntry } from "./integrationTestProfileCatalog.js";
 import { getIntegTestRunCoordinator, IntegTestRunCoordinator } from "./integTestRunCoordinator.js";
 import {
   classifyMiroirTestListExecutionCapabilities,
@@ -60,6 +62,30 @@ function failedRunResult(
   };
 }
 
+/**
+ * #495: a suite the integration batch did not run, as one `skipped` row carrying the reason, for
+ * the result display of Run all (the self-test lists them in `skippedSuites` instead).
+ */
+export function skippedSuiteResults(skipped: readonly SkippedMiroirTestSuite[]): MiroirTestSuiteResultsMap {
+  return Object.fromEntries(
+    skipped.map(({ suiteKey, reason }) => [
+      suiteKey,
+      [
+        {
+          testName: suiteKey,
+          testPath: [suiteKey],
+          testResult: "skipped",
+          status: "skipped",
+          failedAssertions: [reason],
+          assertionCount: 0,
+          assertions: "",
+          fullAssertionsResults: undefined,
+        } satisfies TestResultData,
+      ],
+    ]),
+  );
+}
+
 /** An error's message; an action error (an object) as JSON, so the report says what failed. */
 function describeError(error: unknown): string {
   if (error instanceof Error) {
@@ -75,6 +101,11 @@ function describeError(error: unknown): string {
 export type SkippedMiroirTestSuite = { suiteKey: string; reason: string };
 
 export const REPORT_TESTS_NEED_THE_SANDBOX = "reportTest suites need the component test sandbox";
+
+/** #495: the tag of the suites that deploy on filesystem stores. */
+export const FILESYSTEM_TAG = "filesystem";
+export const FILESYSTEM_TESTS_NEED_A_FILESYSTEM_STORE =
+  "filesystem suites deploy on filesystem stores, which the in-browser emulated profile does not have";
 
 /**
  * Runs `miroirTests` in unit mode, one suite after the other, in suite order. `reportTest` leaves
@@ -181,6 +212,10 @@ export async function runIntegrationMiroirTestBatch(params: {
     params.miroirTests,
   );
   const toRun: { instance: MiroirTestDefinition; registryKey: string; identityKey: string }[] = [];
+  const profileName = params.integrationProfileName ?? DEFAULT_UI_INTEGRATION_PROFILE_NAME;
+  // #495: the in-browser stack has the IndexedDB and bundled store factories only
+  const inBrowserProfile =
+    getIntegrationTestProfileCatalogEntry(profileName)?.uiTransport === "browserEmulatedIndexedDb";
   const skipped: SkippedMiroirTestSuite[] = [];
   for (const instance of sortedLaunchable) {
     const registryKey = resolveUiIntegrationRunnerSuiteKey(instance, runner, transformer);
@@ -190,6 +225,10 @@ export async function runIntegrationMiroirTestBatch(params: {
     const identityKey = getMiroirTestSuiteKey(instance);
     if (!params.prepareReportTests && runner[registryKey]?.kind === "reportTest") {
       skipped.push({ suiteKey: identityKey, reason: REPORT_TESTS_NEED_THE_SANDBOX });
+      continue;
+    }
+    if (inBrowserProfile && miroirTestInstanceHasAnyTag(instance, [FILESYSTEM_TAG])) {
+      skipped.push({ suiteKey: identityKey, reason: FILESYSTEM_TESTS_NEED_A_FILESYSTEM_STORE });
       continue;
     }
     toRun.push({ instance, registryKey, identityKey });
@@ -225,7 +264,7 @@ export async function runIntegrationMiroirTestBatch(params: {
           {
             suiteKey: registryKey,
             suiteDefinition: instance.definition,
-            profileName: params.integrationProfileName ?? DEFAULT_UI_INTEGRATION_PROFILE_NAME,
+            profileName,
             runTargetMode: params.integrationRunTargetMode ?? DEFAULT_UI_INTEGRATION_RUN_TARGET_MODE,
             hostMode: "isolated",
             runnerUuidIndex: params.runnerUuidIndex,
@@ -250,6 +289,12 @@ export async function runIntegrationMiroirTestBatch(params: {
         ? generateTestReport(identityKey, result.testSuiteResults, () => {})
         : [];
 
+      if (result.teardownError !== undefined) {
+        // #495: reported beside the leaves' results, which still say why the run failed
+        resultsBySuiteKey[identityKey].push(
+          failedRunResult(identityKey, `the teardown failed: ${result.teardownError}`),
+        );
+      }
       if (!result.success) {
         failures.push(registryKey);
         if (countTestResults(resultsBySuiteKey[identityKey]).failed === 0) {

@@ -66,6 +66,8 @@ export type UiIntegrationTestRunResult = {
   profileName: string;
   hostMode: IntegrationTestHostMode;
   success: boolean;
+  /** #495: the teardown's error, when the session failed to drop its run target after the run. */
+  teardownError?: string;
   inspector: UiIntegrationTestRunInspectorSnapshot;
   /** Dedicated integ tracker results for UI report panels (B5). */
   testSuiteResults?: TestSuiteResult;

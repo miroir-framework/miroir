@@ -21,6 +21,7 @@ import {
   REPORT_TESTS_NEED_AN_EMULATED_SERVER_MESSAGE,
   resolveUiIntegrationTestRunTarget,
   runUiIntegrationTestSuite,
+  teardownBesideRunResults,
   type UiIntegrationTestLauncherEnvironment,
 } from "../../src/miroir-fwk/4-tests/uiIntegrationTestLauncher.js";
 import { libraryTestbedInitParams } from "../../src/miroir-fwk/4-tests/uiIntegrationPlayfieldSeeds.js";
@@ -619,5 +620,27 @@ describe("Report suites in the UI launcher (#330 Slice 8)", () => {
     ).rejects.toThrow(REPORT_TESTS_NEED_AN_EMULATED_SERVER_MESSAGE);
     expect(createOrchestrator).not.toHaveBeenCalled();
     expect(prepareReportTests).not.toHaveBeenCalled();
+  });
+});
+
+describe("teardownBesideRunResults (#495)", () => {
+  it("returns undefined when the teardown succeeds", async () => {
+    await expect(teardownBesideRunResults(async () => {})).resolves.toBeUndefined();
+  });
+
+  it("returns the message of a failed teardown instead of throwing it", async () => {
+    await expect(
+      teardownBesideRunResults(async () => {
+        throw new Error("could not find controller for deployment d1");
+      }),
+    ).resolves.toBe("could not find controller for deployment d1");
+  });
+
+  it("returns an action error thrown by the teardown as JSON", async () => {
+    await expect(
+      teardownBesideRunResults(async () => {
+        throw { errorType: "FailedTestAction", errorMessage: "deleteStore failed" };
+      }),
+    ).resolves.toBe('{"errorType":"FailedTestAction","errorMessage":"deleteStore failed"}');
   });
 });

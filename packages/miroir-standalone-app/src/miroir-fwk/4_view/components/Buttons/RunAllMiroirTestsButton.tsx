@@ -22,6 +22,7 @@ import { ActionButtonWithSnackbar } from "miroir-react";
 import { cleanLevel } from '../../constants.js';
 import {
   runIntegrationMiroirTestBatch,
+  skippedSuiteResults,
   runUnitMiroirTestBatch,
   type MiroirTestSuiteResultsMap,
 } from '../../../4-tests/miroirTestBatch.js';
@@ -124,7 +125,7 @@ export const RunAllMiroirTestsButton: React.FC<RunAllMiroirTestsButtonProps> = (
   };
 
   const onIntegrationAction = async (): Promise<Action2VoidReturnType> => {
-    const { resultsBySuiteKey, failures } = await runIntegrationMiroirTestBatch({
+    const { resultsBySuiteKey, failures, skipped } = await runIntegrationMiroirTestBatch({
       miroirTests,
       integrationProfileName,
       integrationRunTargetMode,
@@ -138,7 +139,8 @@ export const RunAllMiroirTestsButton: React.FC<RunAllMiroirTestsButtonProps> = (
     });
 
     if (onTestComplete) {
-      onTestComplete(resultsBySuiteKey);
+      // #495: a suite not run shows as skipped, with the reason, instead of vanishing from the report
+      onTestComplete({ ...skippedSuiteResults(skipped), ...resultsBySuiteKey });
     }
 
     if (failures.length > 0) {
