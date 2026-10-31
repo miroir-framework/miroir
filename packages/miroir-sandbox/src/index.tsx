@@ -12,19 +12,10 @@ import {
   defaultMetaModelEnvironment,
   defaultSelfApplicationDeploymentMap,
   expect,
-  fetchProcessCapabilities,
-  getClientEnvironment,
-  getProcessCapabilities,
   LoggerInterface,
   MiroirActivityTracker,
-  MiroirConfigClient,
-  MiroirConfigForClientStub,
-  MiroirContext,
-  miroirCoreStartup,
   MiroirEventService,
   MiroirLoggerFactory,
-  PersistenceStoreControllerManager,
-  RestClientStub,
   SpecificLoggerOptionsMap,
   type Deployment,
   type StoreOrBundleAction,
@@ -37,9 +28,8 @@ import {
   MiroirContextReactProvider,
   PageDispatcher,
   ReportSectionRenderersProvider,
-  RestPersistenceClientAndRestClient,
   RootComponent,
-  setupMiroirDomainController,
+  startMiroirClient,
   type ReportSectionRenderers,
 } from "miroir-react";
 
@@ -128,78 +118,27 @@ async function startDemoApp() {
   ConfigurationService.configurationService.registerTestImplementation({ expect: expect as any });
 
   miroirDemoAppStartup();
-  miroirCoreStartup();
 
-  // Register bundled stores (read-only, pre-loaded with deployment data)
-  miroirBundledStoreSectionStartup(
-    ConfigurationService.configurationService,
-    demoBundledData,
-  );
-
-  // Register IndexedDB stores for any dynamically-created user deployments
-  miroirIndexedDbStoreSectionStartup(ConfigurationService.configurationService);
-
-  const miroirContext = new MiroirContext(
-    miroirActivityTracker,
-    miroirEventService,
-    demoMiroirConfig,
-  );
-
-  // Narrow to the stub (emulateServer: true) branch of the union
-  const clientStubConfig = demoMiroirConfig.client as MiroirConfigForClientStub;
-
-  // In emulateServer mode the RestClientStub routes HTTP-shaped calls
-  // in-process to a server-side domain controller.
-  const restClient = new RestClientStub(clientStubConfig.rootApiUrl);
-  const persistenceStoreRestClient = new RestPersistenceClientAndRestClient(
-    clientStubConfig.rootApiUrl,
-    restClient,
-  );
-
-  // Client-side domain controller (remote access via stub)
-  const persistenceStoreControllerManagerForClient = new PersistenceStoreControllerManager(
-    ConfigurationService.configurationService.adminStoreFactoryRegister,
-    ConfigurationService.configurationService.StoreSectionFactoryRegister,
-  );
-  const domainControllerForClient = await setupMiroirDomainController(
+  // #639: one startup call; bundled stores are read-only and pre-loaded with deployment data,
+  // IndexedDB holds the deployments created by the user
+  const {
     miroirContext,
-    {
-      persistenceStoreAccessMode: "remote",
-      localPersistenceStoreControllerManager: persistenceStoreControllerManagerForClient,
-      remotePersistenceStoreRestClient: persistenceStoreRestClient,
-    },
-  );
-
-  // Server-side domain controller (local access via bundled stores)
-  const persistenceStoreControllerManagerForServer = new PersistenceStoreControllerManager(
-    ConfigurationService.configurationService.adminStoreFactoryRegister,
-    ConfigurationService.configurationService.StoreSectionFactoryRegister,
-    clientStubConfig.filesystemDeploymentRootDirectory,
-  );
-  const domainControllerForServer = await setupMiroirDomainController(
-    miroirContext,
-    {
-      persistenceStoreAccessMode: "local",
-      localPersistenceStoreControllerManager: persistenceStoreControllerManagerForServer,
-    },
-  );
-
-  restClient.setServerDomainController(domainControllerForServer);
-  restClient.setPersistenceStoreControllerManager(persistenceStoreControllerManagerForServer);
-  restClient.setProcessCapabilities(
-    getProcessCapabilities({
-      config: demoMiroirConfig,
-      environment: getClientEnvironment(),
-      storeSectionFactoryRegister:
-        ConfigurationService.configurationService.StoreSectionFactoryRegister,
-      adminStoreFactoryRegister:
-        ConfigurationService.configurationService.adminStoreFactoryRegister,
-    }),
-  );
-
-  const processCapabilities = await fetchProcessCapabilities(restClient);
-  domainControllerForClient.setProcessCapabilities(processCapabilities);
-  domainControllerForServer.setProcessCapabilities(processCapabilities);
+    domainController: domainControllerForClient,
+    emulatedServer,
+    processCapabilities,
+  } = await startMiroirClient(demoMiroirConfig, {
+    stores: [
+      (configurationService) => miroirBundledStoreSectionStartup(configurationService, demoBundledData),
+      miroirIndexedDbStoreSectionStartup,
+    ],
+    activityTracker: miroirActivityTracker,
+    eventService: miroirEventService,
+  });
+  if (!emulatedServer) {
+    throw new Error("startDemoApp: the sandbox configuration emulates the server");
+  }
+  const domainControllerForServer = emulatedServer.domainController;
+  const persistenceStoreControllerManagerForServer = emulatedServer.persistenceStoreControllerManager;
 
   log.info("startDemoApp: domain controllers ready; running admin→IndexedDB migration check");
 

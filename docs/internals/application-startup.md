@@ -101,6 +101,36 @@ The app shell (`RootComponent`, `AppBar`, `PageDispatcher`, the generic pages, t
 
 A missing slot falls back to its default (`useMiroirShellHost`): MCP calls answer `FeatureUnavailable`, login goes to `/auth/login` over HTTP, no assistant is mounted. The stored runner section is a built-in renderer (`defaultReportSectionRenderers`). The lint block of `eslint.config.mjs` for `packages/miroir-react/src` forbids importing CopilotKit, Electron, `miroir-mcp`, `miroir-diagram-class` or the app.
 
+## One startup call per side (#639)
+
+Hosts no longer build the platform by hand. They pass their configuration and the store startups they use:
+
+```ts
+// Node: CLI, server, Electron main process, test platforms
+import { startMiroirNode } from "miroir-localcache-redux/node";
+const { domainController, emulatedServer, persistenceStoreControllerManager } = await startMiroirNode(config, {
+  stores: [miroirFileSystemStoreSectionStartup],
+  loggers: { factory: loglevelnext, options: loggerOptions }, // optional
+});
+
+// React client: sandbox, standalone app
+import { startMiroirClient } from "miroir-react";
+const { domainController, miroirContext, processCapabilities } = await startMiroirClient(config, { stores: [miroirIndexedDbStoreSectionStartup] });
+```
+
+The call runs `miroirCoreStartup()`, the store startups, the optional logger start, then builds `MiroirContext`, the REST client, the store managers and the domain controllers. It switches on `miroirConfigType`:
+
+| Configuration | `domainController` | Other fields |
+|---|---|---|
+| `server` | `local` | `persistenceStoreControllerManager`, rooted at `server.filesystemDeploymentRootDirectory` |
+| `client`, `emulateServer: true` | `remote`, through a `RestClientStub` | `restClient` (the stub), `emulatedServer: { domainController, persistenceStoreControllerManager, restClientStub }` |
+| `client`, `emulateServer: false` | `remote`, through `RestClient(fetch)` | `restClient` |
+| `client` with a `restClient` option (Electron renderer) | `remote`, through that client | `restClient` |
+
+`configureEmulatedServer(emulatedServer)` runs once the stub is wired, before anything else uses it (the standalone app sets its test identity and access directories there). `startMiroirClient` then sets the process capabilities on the stub and fetches them into both domain controllers; `fetch` defaults to the bound global fetch.
+
+What stays with the host: its own startups (`miroirAppStartup`, `registerTestImplementation`), module-level loggers on the client side, the environment boot (`bootEnvironment`), authentication gates, secrets, and Electron's IPC stub. Neither call imports a store package or reads an environment variable (`scripts/tests/test_startup_calls_boundaries.py`). Test helpers that still build domain controllers by hand (`setupMiroirTest.ts` and others) are listed in the analysis of #639.
+
 ## The server and its library (#636)
 
 On the server side, Miroir's HTTP surface comes from [`miroir-server-library`](../../packages/miroir-server-library/README.md). `createMiroirServerApp` takes a running domain controller and returns an Express app that does not listen: REST behind the authentication gate, the authentication and capabilities routes, `/mcp`, and optionally assets, an assistant route and a client folder. [`server.ts`](../../packages/miroir-server/src/server.ts) is a host of it:
@@ -109,7 +139,7 @@ On the server side, Miroir's HTTP surface comes from [`miroir-server-library`](.
 |---|---|
 | command line, environment or configuration file, log preset | Express app, CORS, BigInt replacer and reviver, body parser |
 | ports, CORS origins, authentication switches, token secret | `/auth/status`, `/capabilities`, `/auth/login`, `/auth/change-password` |
-| store registration, `MiroirContext`, domain controller, boot, secrets | REST loop over `restServerDefaultHandlers`, behind the shared gate |
+| `startMiroirNode` (#639: stores, `MiroirContext`, domain controller), boot, secrets | REST loop over `restServerDefaultHandlers`, behind the shared gate |
 | `getProcessCapabilities`, `setProcessCapabilities` | MCP tool registry, `/mcp` on the app, the MCP server handle |
 | TLS, the asset and client paths (ncc relocates them into `release/`) | assets, the `assistantRoute` slot, the client folder and its catch-all |
 | CopilotKit through the `assistantRoute` slot, the dev `GET /`, `listen`, `mcpServer.run` | |

@@ -76,10 +76,10 @@ Order: I1, I4 and I5 can start now and run in parallel. I2 and I3 next. I6 waits
 | I3 | 2 | Auth, capabilities and MCP behind router options | ✅ #636, slices of its own plan | phase0 test green against the router |
 | I3 | 3 | Client folder as a parameter | ✅ #636, slices of its own plan | router serves a temporary `index.html` |
 | I3 | 4 | Stores injected; the library imports no driver | ✅ #636, slices of its own plan | dist import scan + Postgres-free start |
-| I4 | 0 | Characterize the two `setupMiroirPlatform` copies | ⬜ | `startMiroir.<I4>.phase0.unit.test.ts` |
-| I4 | 1 | `startMiroirNode`: CLI and MCP share one call | ⬜ | `cli.integ`, `unit-345-mcp` |
-| I4 | 2 | `startMiroirClient`: sandbox and standalone app share one call | ⬜ | sandbox tests, standalone UI integ smoke |
-| I4 | 3 | Server and Electron on `startMiroirNode` | ⬜ | `environmentBoot`, server phase0 test |
+| I4 | 0 | Characterize the two `setupMiroirPlatform` copies | ✅ #639 (superseded: baseline of the host tests) | `startMiroir.<I4>.phase0.unit.test.ts` |
+| I4 | 1 | `startMiroirNode`: CLI and MCP share one call | ✅ #639 | `cli.integ`, `unit-345-mcp` |
+| I4 | 2 | `startMiroirClient`: sandbox and standalone app share one call | ✅ #639 | sandbox tests, standalone UI integ smoke |
+| I4 | 3 | Server and Electron on `startMiroirNode` | ✅ #639 | `environmentBoot`, server phase0 test |
 | I5 | 1 | Duplicate copies of core are reported | ⬜ | `duplicateCore.<I5>.phase1.unit.test.ts` |
 | I5 | 2 | Manifest contract for the published set | ⬜ | `scripts/tests/test_package_manifests.py` |
 | I5 | 3 | Named subpaths replace `./src/*` | ⬜ | `npm pack --dry-run` file list, typecheck |
@@ -123,7 +123,7 @@ From the analysis decision record. D1 to D6 are confirmed. D7 to D11 are the rec
 | I1 fixture Endpoint name / action type | `fixtureEndpoint` / `fixtureCreateItem` |
 | I1 nonreg step | `unit-<I1>-endpoint-surfaces` (scopes `runners`, `tooling`) |
 | I3 nonreg step | superseded by #636: `unit-636-server-library`, `build-636-server-release` |
-| I4 nonreg step | `unit-<I4>-startup-calls` (scopes `tooling`, `localcache`) |
+| I4 nonreg step | `unit-639-startup-calls` (scopes `localcache`, `tooling`, `ui`) |
 | I5 pytest guard | `scripts/tests/test_package_manifests.py` (runs in the pre-push gate's `pytest scripts/tests`) |
 | I6 rename script | `scripts/rename_packages.py`, mapping in `scripts/package-rename-map.json` |
 | I7 consumer test | `ci/release/tests/test_consumer_project.py` |
@@ -603,6 +603,8 @@ npm run nonreg:filesystem -- --runner shared
 ---
 
 # I4 — One startup call per side
+
+> Superseded by [`../639-REFACTOR-startup-calls/tdd-implementation-plan.md`](../639-REFACTOR-startup-calls/tdd-implementation-plan.md) (#639).
 
 ## I4 Slice 0 — Characterize the two `setupMiroirPlatform` copies
 

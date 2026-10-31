@@ -12,7 +12,7 @@ In (goals of [`analysis.md`](analysis.md)):
 - **G3** Choose my stores: the calls import no store package.
 - **G4** Keep the existing hosts working: CLI, MCP tests, server, Electron, sandbox, standalone app.
 
-Out (owners): the hand-built test helpers and the model extraction scripts (follow-up issue opened when this one lands); renaming and re-exporting from `@miroir-framework/server` (#621 I6); the MCP store peer dependencies (#621 I5); moving `registerStoreOnDemand`; the environment boot; a one-call path for the zustand cache.
+Out (owners): the hand-built test helpers and the model extraction scripts (#641); renaming and re-exporting from `@miroir-framework/server` (#621 I6); the MCP store peer dependencies (#621 I5); moving `registerStoreOnDemand`; the environment boot; a one-call path for the zustand cache.
 
 ## Related links
 
@@ -29,8 +29,8 @@ Out (owners): the hand-built test helpers and the model extraction scripts (foll
 | 0 | Baseline of the hosts' tests | ✅ DONE | existing host tests and the local web self-test pass on the base commit |
 | 1 | Tracer: `startMiroirNode` on an emulated client config; the CLI and the MCP tests on it | ✅ DONE | `startMiroirNode.integ` (Library books through the returned domain controller) + `cli.integ` + MCP tests |
 | 2 | `startMiroirNode` on a server config; the server and Electron on it | ✅ DONE | `startMiroirNode.integ` (server case) + release smoke + `environmentBoot.integ` + library tests |
-| 3 | `startMiroirClient` in `miroir-react` | ⬜ pending | `startMiroirClient.integ` (providers render Library books; hook order; passed client) |
-| 4 | The sandbox and the standalone app on `startMiroirClient` | ⬜ pending | sandbox and standalone builds, bundle guards, local web self-test |
+| 3 | `startMiroirClient` in `miroir-react` | ✅ DONE | `startMiroirClient.integ` (providers render Library books; hook order; passed client) |
+| 4 | The sandbox and the standalone app on `startMiroirClient` | ✅ DONE | sandbox and standalone builds, bundle guards, local web self-test |
 | 5 | Nonreg step, docs, epic plan, AC | ⬜ pending | full `nonreg:filesystem` |
 
 ## Locked implementation defaults
@@ -220,7 +220,7 @@ npm run nonreg:filesystem -- --runner shared   # full run after Slices 1 and 2
 
 ## Slice 3 — `startMiroirClient` in `miroir-react`
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -256,11 +256,17 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,ui,localcache
 
 ### Realization
 
+- `startMiroirClient.ts` imports `startMiroirPlatform` through `miroir-localcache-imports.ts`; `miroir-react` re-exports `startMiroirClient`, `MiroirClientPlatform` and the platform types. The capabilities URL follows P5 (`capabilitiesUrl`).
+- The test renders `LocalCacheProvider` and `MiroirContextReactProvider` around a probe that reads Library books with `useEntityInstanceUuidIndexFromLocalCache` and finds `book1`'s title. The hook-order assertion reads `FAIL_CLOSED_PROCESS_CAPABILITIES` through the stub inside the hook. The passed-client case sets the owner stub's capabilities with `getProcessCapabilities` (the domain controller has no getter).
+- Deviation: as in Slice 1 the code came before the test run. Mutation check: without the stub's `setProcessCapabilities`, the first test fails; restored, 2 of 2 pass.
+- devDependencies `miroir-env` and `miroir-store-filesystem` added, `package-lock.json` updated (2 lines); dependency policy passes.
+- Pre-existing, not from this issue: `schemaReloadPolicy.unit.test.ts` (2 of 6 fail) and two MUI type errors in `AiEntityProposalForm.tsx` and `AiLendProposalForm.tsx` fail the same way on the commit before Slice 3 (checked with the working tree stashed). Neither is in a nonreg step.
+
 ---
 
 ## Slice 4 — The sandbox and the standalone app on `startMiroirClient`
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -293,6 +299,11 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,ui,localcache
 ```
 
 ### Realization
+
+- Sandbox: `startMiroirClient(demoMiroirConfig, { stores: [bundled closure, indexedDb], activityTracker, eventService })`; the Admin migration and the store opening read `emulatedServer`; 11 imports gone; `miroirCoreStartup` no longer called by the host.
+- Standalone app: `setupMiroirPlatform` and `setupClient` deleted (about 170 lines); `configureEmulatedServerTestDirectories` holds the test identity and access directories; `startWebApp` calls `registerTestImplementation` then `startMiroirClient(..., { stores: [miroirIndexedDbStoreSectionStartup], restClient: electronRestClient, configureEmulatedServer })`; the host's `miroirCoreStartup` and `miroirIndexedDbStoreSectionStartup(...)` calls gone; 13 unused imports removed. `window.fetch.bind(window)` is replaced by the bound default.
+- Source test repointed: `processCapabilitiesContext.273.phase2` now checks that the sandbox calls `startMiroirClient` and that `startMiroirClient.ts` sets the fetched capabilities on both domain controllers (it failed in the full nonreg run after Slice 2 because the sandbox was edited during the run; `build-633-sandbox` failed in that run for the same reason).
+- Validation: sandbox build, standalone build (`MIROIR_ENV=self-test`) and Electron build; both bundle policies 0 violations; release build and local web self-test 1224 of 1224 in 48 suites; `tsc` on react and sandbox clean, on the standalone app only the 2 pre-existing errors; scoped nonreg `smoke,ui,localcache`: 57 of 57.
 
 ---
 

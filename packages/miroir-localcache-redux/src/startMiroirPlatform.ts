@@ -120,7 +120,7 @@ async function startClient(
  * Builds the Miroir platform of a process from its configuration: a `local` domain controller for
  * a server configuration; a `remote` one for a client configuration, with its emulated server when
  * `emulateServer` is on. It runs `miroirCoreStartup()` and the given store startups first.
- * It reads no `process.env` and imports no store package.
+ * It reads no environment variable and imports no store package.
  */
 export async function startMiroirPlatform(
   miroirConfig: MiroirConfigClient | MiroirConfigServer,
