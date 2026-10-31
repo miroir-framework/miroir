@@ -1,10 +1,12 @@
 # Issue #633 — TDD Implementation Plan
 
-> Vertical slices (RED → GREEN each), integration first, no new mocks. The tests render the moved modules through the `miroir-react` package entry, with the real local cache and the `RestClientStub` emulated server of the standalone app's test rig (`tests/4_view`, `componentTestTools.tsx`), and build the sandbox with Vite. The applicative surfaces are the existing Reports and Runners (a `storedRunner` section, the model diagram section, the `?page=` routes). The tracer bullet proves that a client service moved to `miroir-react` still feeds the app's load timings and the sandbox through the package entry.
+> Vertical slices (RED → GREEN each), integration first, no new mocks. The tests render the moved modules through the `miroir-react` package entry, with the real local cache and the `RestClientStub` emulated server of the standalone app's test rig (`tests/4_view`, `componentTestTools.tsx`, `MIROIR_ENV=test-filesystem`), and build the sandbox with Vite. The applicative surfaces are the existing Reports and Runners (a `storedRunner` section, the model diagram section, the `?page=` routes). The tracer bullet proves that a client service moved to `miroir-react` still feeds the app's load timings and the sandbox through the package entry.
 >
 > **Execution model:** each slice ends with its Validation commands; on success its Realization is appended and its Status flips to ✅ DONE. The user asked for the whole issue through to a PR ready to merge, so commits follow each green slice on the working branch.
 >
-> **Resume note:** slices run in order. Slice 0 first.
+> **Resume note:** slice 0 DONE; slice 1 next.
+>
+> **Plan history:** revised after an adversarial review (2026-10-31): shims at the old app paths keep pages lazy mid-way (slices 2 to 5); moved modules' `from "miroir-react"` imports become relative, with a guard; Emotion pragma for `SequenceEditor`; corrected `check_bundle_policy.py`, `--only`, auth test and route test commands; slice 1 RED moved to `loadTimingWriter.integ`; every source-text guard named in its slice; `tsc` and lint in every move slice; `defaultReportSectionRenderers` export for the AC.
 
 Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/633
 Prerequisite: [`../627-FEATURE-endpoint-surfaces/`](../627-FEATURE-endpoint-surfaces/) ✅ (#629)
@@ -25,14 +27,14 @@ Out (analysis §2): the MiroirTest runtime and its displays, the d3 graph render
 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
-| 0 | Characterize: sandbox build, failing guard, mocks, export surface, bundle baseline | ⬜ | `sandboxBuild.633.phase0` nonreg step, `mcpToolRunner.253.phase0` green, mock measurement in Realization |
-| 1 | Tracer: client services and the load-timing sink from `miroir-react` | ⬜ | `loadTimingSink.633.phase1.unit`, `loadTimingContract.unit`, sandbox build |
-| 2 | Runners from `miroir-react`, MCP call injected, stored runner built in | ⬜ | `storedRunnerDefault.633.phase2.integ`, `mcpToolRunner.253.*` |
-| 3 | Login from `miroir-react`, Electron login injected | ⬜ | `loginTransport.633.phase3.integ`, `authentication.71.*` |
-| 4 | Generic pages from `miroir-react`; search opens on the current application | ⬜ | `searchPageDefault.633.phase4.integ` |
+| 0 | Characterize: sandbox build, failing guard, mocks, import surface, bundle baseline | ✅ | `build-633-sandbox`, `mcpToolRunner.253.phase0` green, `list_moved_imports.py` |
+| 1 | Tracer: client services and the load-timing sink from `miroir-react` | ⬜ | `loadTimingSink.633.phase1.unit`, `loadTimingWriter.integ`, sandbox build |
+| 2 | Runners from `miroir-react`, MCP call injected, stored runner built in | ⬜ | `storedRunnerDefault.633.phase2.integ`, `ui.blockEditing` |
+| 3 | Login from `miroir-react`, Electron login injected | ⬜ | `loginTransport.633.phase3.integ`, `electronIpcProxyAuth.263.phase6` |
+| 4 | Generic pages from `miroir-react`; search opens on the current application | ⬜ | `searchPageDefault.633.phase4.integ`, `homePageLoad.unit` |
 | 5 | Model diagram page through the registry; view in `miroir-diagram-class` | ⬜ | `modelDiagramPage.633.phase5.integ` |
-| 6 | Shell from `miroir-react`, assistant injected; sandbox without the alias | ⬜ | `sandboxNoAppAlias` guard, sandbox build, `unit-435`, `unit-443` |
-| 7 | Lint layer rule, nonreg, bundle guard, docs, cleanup, AC | ⬜ | lint, full `nonreg:filesystem`, `check_bundle_policy.py` |
+| 6 | Shell from `miroir-react`, assistant injected; sandbox without the alias | ⬜ | `test_shell_package_boundaries.py`, sandbox build and page smoke |
+| 7 | Lint boundary rule, nonreg, bundle guard, docs, cleanup, AC | ⬜ | lint, full `nonreg:filesystem`, bundle guards |
 
 ---
 
@@ -49,7 +51,17 @@ Copied from the analysis decision record; binding. Deviations go in a slice's Re
 | D5 | Browser login in `miroir-react`; Electron through `requestLoginToken`; the app's browser branch delegates | G2, G4 |
 | D6 | `setLoadTimingMarkSink` / `loadTimingMark` in `miroir-react`, no-op default; the app registers its recorder | G1, G2, G4 |
 | D7 | `git mv` to the same relative path; loggers per #592 D3; lazy pages stay lazy; every symbol used outside the package exported from `index.ts`; tests import from `"miroir-react"`; suppressions and the `VIEW` glob follow the files | G2, G5 |
-| D8 | `storedRunner` is a built-in lazy default renderer of `ReportSectionRenderersProvider` | G1, G3 |
+| D8 | `storedRunner` is a built-in lazy default renderer, in the context default and merged under the provider's renderers; exported as `defaultReportSectionRenderers` | G1, G3 |
+
+### Rules for every move slice
+
+These follow from the review and apply to slices 1 to 6.
+
+- **Relative imports inside the package.** A moved module's `from "miroir-react"` imports (112 in the moved set) become relative imports of the module that defines the symbol. `scripts/tests/test_shell_package_boundaries.py` (added in slice 1) fails on any `from "miroir-react"` under `packages/miroir-react/src`.
+- **Shims while the app still routes.** Until slice 6 moves `PageDispatcher`, a moved page keeps a one-line shim at its old app path (`export { RunnersPage } from "miroir-react";`), and `PageDispatcher` keeps lazy-importing the shim. `bundle-policy.json` has `defeatedDynamicImports: []`, so a lazy `import("miroir-react")` from the app fails the guard (#13 D16). The shim relies on `sideEffects: false` and tsup's one-module-per-file output to keep the page out of the eager chunks; the bundle guard in each slice checks it. Slice 6 deletes the shims.
+- **Emotion.** A moved `.tsx` that uses the `css=` prop gets `/** @jsxImportSource @emotion/react */`, as the other `miroir-react` files do (the app's Vite config sets it globally, tsup does not).
+- **Source-text guards.** `list_moved_imports.py` names the readers of `4_view/<path>`; a `grep` for the moved file's base name finds the guards that join a directory and a name. Each slice lists and updates the guards on the files it moves.
+- **Validation in every move slice:** `npm run build -w miroir-react`, `tsc` for `miroir-react`, `miroir-standalone-app` and `miroir-sandbox`, `npm run lint`, the sandbox build, the bundle guard, and a scoped nonreg.
 
 ---
 
@@ -58,15 +70,16 @@ Copied from the analysis decision record; binding. Deviations go in a slice's Re
 | Artefact | Value |
 |---|---|
 | Issue test directory | `packages/miroir-standalone-app/tests/4_view/issues/633-app-shell-to-react/` |
-| Nonreg step: sandbox build | `build-633-sandbox` (tier `default`, scopes `ui`, `tooling`) |
-| Nonreg step: issue tests | `unit-633-app-shell` (tier `default`, scopes `ui`), folded into feature suites in slice 7 |
-| Sandbox source guard | `scripts/tests/test_sandbox_sources.py` |
+| Nonreg step: sandbox build | `build-633-sandbox` (tier `unit`, scopes `ui`, `tooling`) |
+| Nonreg step: issue tests | `unit-633-app-shell` (tier `default`, scopes `ui`; app issue tests and the new `miroir-react` tests), folded into feature suites in slice 7 |
+| Package boundary guard | `scripts/tests/test_shell_package_boundaries.py` |
 | Export surface check | `packages/miroir-react/tests/shellExports.unit.test.ts` |
 | Host context module | `packages/miroir-react/src/contexts/MiroirShellHostContext.tsx` |
-| Load-timing sink module | `packages/miroir-react/src/loadTimings/loadTimingMarkSink.ts` |
+| Load-timing sink | `packages/miroir-react/src/loadTimings/loadTimingMarkSink.ts`; app side `src/loadTimings/registerLoadTimingSink.ts` |
 | Browser login module | `packages/miroir-react/src/auth/httpLogin.ts` |
+| Boundary lint fixture | `eslint-rules/react-package-boundary.test.mjs` |
 
-No model element and no MiroirTest asset is added: the behaviours are React rendering and build wiring, which MiroirTest cannot reach without the shell being built (vitest exception, one sentence per file below).
+No model element and no MiroirTest asset is added: the behaviours are React rendering and build wiring, which MiroirTest reaches only once the shell is built (vitest exception, one sentence per file below).
 
 ---
 
@@ -74,47 +87,56 @@ No model element and no MiroirTest asset is added: the behaviours are React rend
 
 | Purpose | Command |
 |---|---|
-| Rebuild after a move | `npm run build -w miroir-react` (and `-w miroir-diagram-class` in slice 5) |
-| App UI test by file | `RUN_TEST=<name> npm run testByFile -w miroir-standalone-app -- <name>` |
-| Package unit test | `npm run testByFile -w miroir-react -- <name>` |
+| Rebuild after a move | `npm run build -w miroir-react` (and `-w miroir-diagram-class` from slice 5) |
+| App test by file | `MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- <name>` |
+| Package test by file | `npm run testByFile -w miroir-react -- <name>` |
+| Core test by file | `npm run testByFile -w miroir-core -- <name>` |
 | Sandbox build | `npm run build -w miroir-sandbox` |
-| Sandbox tests | `npm run nonreg:filesystem -- --runner shared --only unit-435-test-sandbox-header --only unit-443-test-sandbox-play-pause` |
-| Bundle guard | `npm run build -w miroir-standalone-app && python scripts/check_bundle_policy.py` |
-| Type check | `npx tsc --noEmit --skipLibCheck -p packages/<pkg>/tsconfig.json` (miroir-react, miroir-standalone-app, miroir-sandbox, miroir-diagram-class) |
+| Bundle guard | `npm run build -w miroir-standalone-app && python scripts/check_bundle_policy.py packages/miroir-standalone-app/dist/.vite/bundle-report.json packages/miroir-standalone-app/bundle-policy.json` |
+| Electron bundle guard | `npm run build -w miroir-standalone-app-electron && python scripts/check_bundle_policy.py packages/miroir-standalone-app-electron/dist/bundle-report.json packages/miroir-standalone-app-electron/bundle-policy.json` |
+| Type check | `npx tsc --noEmit --skipLibCheck -p packages/<pkg>/tsconfig.json` |
 | Lint | `npm run lint` |
-| Scoped nonreg | `npm run nonreg:filesystem -- --runner shared --scope smoke,ui[,runners,tooling]` |
+| Scoped nonreg | `npm run nonreg:filesystem -- --runner shared --scope smoke,ui[,runners,tooling] [--only id1,id2]` |
 | Full nonreg | `npm run nonreg:filesystem -- --runner shared` |
+
+`unit-435` and `unit-443` test the MiroirTest Component Test Sandbox UI of the app, not `miroir-sandbox`; they prove G2. `miroir-sandbox` (G3) is proved by `build-633-sandbox` and the page smoke of slice 6.
 
 ---
 
 ## Slice 0 — Characterize
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
-A safety net before any move: the sandbox build is fixed and checked, the guard that already fails is fixed, the effect of the mocks that the move changes is known, and the bundle baseline is recorded.
+A safety net before any move: the sandbox build is fixed and checked, the guard that already fails is fixed, the effect of the mocks that the move changes is known, the import surface of the moved modules is listed, and the bundle baseline is recorded.
 
 ### Steps
 
-1. **Sandbox build.** Commit `import { ErrorPage } from "miroir-react"` in `miroir-sandbox/src/index.tsx`. Add nonreg step `build-633-sandbox` running `npm run build -w miroir-sandbox` (needs built packages; scopes `ui`, `tooling`). The step is the regression proof: it fails on `_integration` (analysis §4.5) and passes here.
-2. **Failing guard.** `mcpToolRunner.253.phase0.unit.test.ts` expects `resolveMcpToolAction.ts` to import `miroir-mcp/client`; #627 removed that import. Change the assertion to what #627 made true (`resolveMcpToolAction.ts` imports no `miroir-mcp` subpath; `runMcpToolRunner.ts` imports `miroir-mcp/client`). RED is today's failure.
-3. **Mock measurement.** Run the 9 `JsonDisplayHelper` mock files (analysis §4.6) once with the mock removed, without committing. Record pass or fail and duration for each in the Realization. If all pass within their timeout, slice 1 removes the mocks; otherwise the slice that moves the affected module replaces the mock with a mock of the same `"miroir-react"` export at the consumer (the app keeps `ReportPage` and `AiActionsProvider`), and the Realization says which.
-4. **Export surface.** Generate, with a Python helper in this folder (`list_moved_imports.py`), the list of symbols that modules outside the moved set (app `src`, `tests`, the sandbox, Electron) import from each moved module. The list feeds the `index.ts` exports of each slice and `shellExports.unit.test.ts`.
-5. **Bundle baseline.** Build the standalone app and keep the `check_bundle_policy.py` report and the eager chunk list in the Realization.
+1. **Sandbox build.** `import { ErrorPage } from "miroir-react"` in `miroir-sandbox/src/index.tsx`; nonreg step `build-633-sandbox`. RED: the build fails on `_integration` (analysis §4.5).
+2. **Failing guard.** `mcpToolRunner.253.phase0` "exactly 10 Runner instances" compares a `.sort()`ed list with an expected list written library-first; sort the expected list. Its MCP import assertion is reworded to the #627 state (`resolveMcpToolAction.ts` imports no `miroir-mcp` subpath).
+3. **Mock measurement.** Run the 9 `JsonDisplayHelper` mock files with and without the mock (scratch script, not committed). Record results in the Realization. If all pass without it, slice 1 removes the mocks; otherwise the slice that moves an affected module keeps the mock at the consumer, and the Realization says which.
+4. **Import surface.** `list_moved_imports.py` lists, per moved module, the symbols imported from outside the moved set, the importers, the path mocks and the source-text readers.
+5. **Bundle baseline.** Record the guard's summary line.
 
 ### Validation
 
 ```bash
 npm run build -w miroir-sandbox
-RUN_TEST=mcpToolRunner.253.phase0 npm run testByFile -w miroir-standalone-app -- mcpToolRunner.253.phase0
+MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- mcpToolRunner.253.phase0
 python -m pytest scripts/tests -q
-npm run build -w miroir-standalone-app && python scripts/check_bundle_policy.py
+npm run build -w miroir-standalone-app && python scripts/check_bundle_policy.py packages/miroir-standalone-app/dist/.vite/bundle-report.json packages/miroir-standalone-app/bundle-policy.json
+npm run nonreg:filesystem -- --runner shared --scope smoke --only build-633-sandbox,unit-610-report-section-renderers
 ```
 
 ### Realization
 
-_(to fill)_
+- Sandbox fix and `build-633-sandbox` committed; the build passes.
+- `mcpToolRunner.253.phase0`: 8/8 pass after sorting the expected runner list (the MCP import assertion already passed; the review corrected the first diagnosis).
+- Import surface (`list_moved_imports.py`): only 13 symbols are imported from outside the moved set: `PageDispatcher`, `reportPageParamsFromSearchParams`, `RootComponent`, `FeedbackGlowAppBarButton`, `buildCreateApplicationStorageSchema`, `resolveMcpToolAction`, `SequenceEditor`, `fetchMiroirAndAppConfigurations`, `markPageConfigurationsLoaded`, `usePageConfiguration`, the four `miroirAiBackend` functions/constants and `agentBackendLabel`, `agentRequestProperties`; plus `RunnerView` through `reportSectionRenderers.tsx` (dynamic). Most "test imports" counted in the analysis are source-text readers (10 files name a `4_view/<path>` literally).
+- Scoped nonreg (`smoke` + `build-633-sandbox`, `unit-610`): all pass (snapshot `20261031T134405Z`).
+- Bundle baseline: 0 violations; 71 eager chunks, 842,027 bytes gzipped (baseline 841,981).
+- Mock measurement (`MIROIR_ENV=test-filesystem`): all 9 files pass with and without the `JsonDisplayHelper` mock, within 1 s of each other (6 to 16 s per file). The mock is dead weight; slice 1 removes it from the 9 files.
 
 ---
 
@@ -128,31 +150,35 @@ _(to fill)_
 
 ### RED
 
-- `packages/miroir-react/tests/loadTimingSink.633.phase1.unit.test.ts` (vitest: package-internal module state, no Report reaches it): `loadTimingMark("x")` before any sink is a no-op; after `setLoadTimingMarkSink(fn)` it calls `fn("x")` once.
-- `tests/4_view/loadTimings/loadTimingContract.unit.test.ts` gains a case: the app's startup module registers its `loadTimingMark` as the `miroir-react` sink, and a `fetchMiroirAndAppConfigurations` call through `"miroir-react"` records `configurationsLoaded`. Fails until the sink exists.
+- `packages/miroir-react/tests/loadTimingSink.633.phase1.unit.test.ts` (vitest: package-internal module state that no Report reaches): `loadTimingMark("x")` before any sink is a no-op; after `setLoadTimingMarkSink(fn)` it calls `fn("x")` once.
+- `tests/4_view/loadTimings/loadTimingWriter.integ.test.ts` (already calls `fetchMiroirAndAppConfigurations`): after `registerLoadTimingSink()`, a call through `"miroir-react"` records the `configurationsLoaded` mark in the recorder. Fails until the sink exists.
+- `scripts/tests/test_shell_package_boundaries.py::test_no_self_import`: no `from "miroir-react"` under `packages/miroir-react/src` (passes today; it guards the rewrite rule).
 
 ### GREEN
 
 - Add `loadTimings/loadTimingMarkSink.ts`; export both functions.
-- `git mv` the three services; `ConfigurationService` calls the package's `loadTimingMark`; loggers per D7.
-- App `index.tsx`: `setLoadTimingMarkSink(loadTimingMark)` right after the `loadTimingBrowser` import, before the first configuration fetch.
-- Repoint importers (app, `4-tests`, tests, `DemoInitializer.tsx`) to `"miroir-react"`; export `usePageConfiguration`, `fetchMiroirAndAppConfigurations`, `useConfigurationService`, `markPageConfigurationsLoaded` and the rest of slice 0's list for these modules.
-- Move the `ConfigurationService` entry of `eslint-suppressions.json`; add `packages/miroir-react/src/services/**/*.ts` to the `VIEW` glob.
-- Update the source-text guards that read these files.
+- App: `src/loadTimings/registerLoadTimingSink.ts` (`setLoadTimingMarkSink(loadTimingMark)`), called by `index.tsx` right after the `loadTimingBrowser` import.
+- `git mv` the three services; rewrite their `miroir-react` imports to relative; `ConfigurationService` calls the package's `loadTimingMark`; loggers per D7.
+- Repoint importers (app, `4-tests`, `loadTimingWriter.integ`, `DemoInitializer.tsx`) to `"miroir-react"`; export `usePageConfiguration`, `fetchMiroirAndAppConfigurations`, `useConfigurationService`, `markPageConfigurationsLoaded`.
+- Move the `ConfigurationService` entry of `eslint-suppressions.json`; add `packages/miroir-react/src/{services,loadTimings,auth}/**/*.ts` to the `VIEW` glob.
+- Add nonreg step `unit-633-app-shell`.
+- Apply slice 0's mock decision.
 
 ### Refactor checkpoint
 
-`services/index.ts` re-exports only; if the package `index.ts` exports the same names directly, delete it.
+`services/index.ts` re-exports only; if `index.ts` exports the names directly, delete it.
 
 ### Validation
 
 ```bash
 npm run build -w miroir-react
 npm run testByFile -w miroir-react -- loadTimingSink.633.phase1
-RUN_TEST=loadTimingContract npm run testByFile -w miroir-standalone-app -- loadTimingContract
+MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- loadTimingWriter.integ loadTimingContract loadTimingRecorder loadTimingsSwitch
+python -m pytest scripts/tests -q
 npm run build -w miroir-sandbox
-npx tsc --noEmit --skipLibCheck -p packages/miroir-react/tsconfig.json && npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json
+npx tsc --noEmit --skipLibCheck -p packages/miroir-react/tsconfig.json && npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json && npx tsc --noEmit --skipLibCheck -p packages/miroir-sandbox/tsconfig.json
 npm run lint
+npm run build -w miroir-standalone-app && python scripts/check_bundle_policy.py packages/miroir-standalone-app/dist/.vite/bundle-report.json packages/miroir-standalone-app/bundle-policy.json
 npm run nonreg:filesystem -- --runner shared --scope smoke,ui,tooling
 ```
 
@@ -168,34 +194,38 @@ _(to fill)_
 
 ### Goal
 
-A report with a `storedRunner` section shows the runner in a client that registers no renderer (D8). Runners that call an MCP tool use the host's `runMcpTool` and answer `FeatureUnavailable` without it (D2).
+A report with a `storedRunner` section shows the runner in a client that registers no renderer (D8). An MCP-tool runner submits through the host's `runMcpTool` and reports `FeatureUnavailable` without it (D2).
 
 ### RED
 
-- `tests/4_view/issues/633-app-shell-to-react/storedRunnerDefault.633.phase2.integ.test.tsx` (vitest: React rendering of a Report section): a `ReportSectionRenderersProvider` with `renderers={{}}` around the Report that holds a `storedRunner` section shows the runner's form, not `unsupported-report-section`. Fails today (the default is `{}`).
-- Same file: an MCP-tool runner rendered without `MiroirShellHostContext` returns the `FeatureUnavailable` envelope; with a `runMcpTool` slot it calls the slot once with the runner's arguments.
+- `tests/4_view/issues/633-app-shell-to-react/storedRunnerDefault.633.phase2.integ.test.tsx` (vitest: React rendering of a Report section):
+  - with no `ReportSectionRenderersProvider`, and with `renderers={{}}`, the Report that holds a `storedRunner` section shows the runner's form, not `unsupported-report-section`. Fails today (the default is `{}`).
+  - with `processCapabilities.mcp === true` (`StoredRunnerView` renders nothing otherwise, `RunnerView.tsx` line 359), submitting an MCP-tool runner without `MiroirShellHostContext` shows the `FeatureUnavailable` action error; with a `runMcpTool` slot, submit calls the slot once with the runner's arguments.
 
 ### GREEN
 
 - Add `contexts/MiroirShellHostContext.tsx` (provider, hook, defaults, `McpToolRunnerEnvelope`); `runMcpToolRunner.ts` imports the type from `"miroir-react"`.
-- `git mv` `RunnerView`, `RunnersList`, the five `Runner_*`, `resolveMcpToolAction`, `SequenceEditor` and `routes/Runners`; `RunnerView` reads `runMcpTool` from the context.
-- `ReportSectionRenderersProvider` merges its `renderers` over the built-in `storedRunner` default; the app's registry drops `storedRunner`.
+- `git mv` `RunnerView`, `RunnersList`, the five `Runner_*`, `resolveMcpToolAction`, `SequenceEditor` and `routes/Runners`; relative imports; Emotion pragma on `SequenceEditor.tsx`; `RunnerView`'s submit uses `useMiroirShellHost().runMcpTool`.
+- Context default and provider merge carry `storedRunner: lazy(() => import("../components/Runners/RunnerView.js"))`; export `defaultReportSectionRenderers`; the app's registry drops `storedRunner`.
 - App `index.tsx` and the MiroirTest providers (`componentTestTools.tsx`) provide `runMcpTool: async (...a) => (await import(".../runMcpToolRunner.js")).runMcpToolRunner(...a)`.
-- `PageDispatcher` (still in the app) imports `Runners` lazily from `"miroir-react"` for this slice only; slice 6 makes the import relative again.
-- Move the `RunnerView` suppression; update guards (`mcpToolRunner.253.*`, `processCapabilities*.273.*`).
+- Shim `routes/Runners.tsx` in the app; repoint `TransformerBuilderPage.tsx` (still in the app), `4-tests/componentTests/sequenceEditorForTest.tsx` and `4-tests` users of `buildCreateApplicationStorageSchema` and `resolveMcpToolAction`.
+- Move the `RunnerView` suppression; update the guards on these files (`mcpToolRunner.253.*`, `processCapabilitiesMcp.273.phase6` and the rest found by the base-name grep).
 
 ### Refactor checkpoint
 
-Update the registry comment in `ReportSectionRenderersContext.tsx` (three app-provided kinds). Check that `miroir-mcp/client` is absent from the eager chunks.
+Update the registry comment in `ReportSectionRenderersContext.tsx` (three app-provided kinds). `miroir-mcp/client` stays out of the eager chunks.
 
 ### Validation
 
 ```bash
 npm run build -w miroir-react
-RUN_TEST=storedRunnerDefault.633.phase2 npm run testByFile -w miroir-standalone-app -- storedRunnerDefault.633.phase2
-RUN_TEST=mcpToolRunner.253 npm run testByFile -w miroir-standalone-app -- mcpToolRunner.253
-npm run nonreg:filesystem -- --runner shared --only unit-610-report-section-renderers --scope smoke,ui,runners
-npm run build -w miroir-standalone-app && python scripts/check_bundle_policy.py
+MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- storedRunnerDefault.633.phase2 mcpToolRunner.253 processCapabilitiesMcp.273
+npm run testMiroir -w miroir-standalone-app -- --suites ui.blockEditing --mode integration
+npm run build -w miroir-sandbox
+npx tsc --noEmit --skipLibCheck -p packages/miroir-react/tsconfig.json && npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json && npx tsc --noEmit --skipLibCheck -p packages/miroir-sandbox/tsconfig.json
+npm run lint && python -m pytest scripts/tests -q
+npm run build -w miroir-standalone-app && python scripts/check_bundle_policy.py packages/miroir-standalone-app/dist/.vite/bundle-report.json packages/miroir-standalone-app/bundle-policy.json
+npm run nonreg:filesystem -- --runner shared --scope smoke,ui,runners --only unit-610-report-section-renderers
 ```
 
 ### Realization
@@ -214,13 +244,13 @@ _(to fill)_
 
 ### RED
 
-- `tests/4_view/issues/633-app-shell-to-react/loginTransport.633.phase3.integ.test.tsx` (vitest: React page with a host slot): `LoginPage` from `"miroir-react"` with a `requestLoginToken` slot calls the slot with the typed credentials and stores the token; without the slot it posts to `/auth/login` (the test rig's fetch stub of `authentication.71`).
+- `tests/4_view/issues/633-app-shell-to-react/loginTransport.633.phase3.integ.test.tsx` (vitest: React page with a host slot): `LoginPage` from `"miroir-react"` with a `requestLoginToken` slot calls the slot with the typed credentials and stores the token; without the slot it posts to `/auth/login` (the test stubs `globalThis.fetch` itself and restores it).
 
 ### GREEN
 
-- Add `auth/httpLogin.ts` (`requestLoginTokenOverHttp`, `fetchAuthenticationEnabledOverHttp`); `git mv routes/LoginPage`.
-- `authTransport.ts` keeps the Electron branch and delegates the browser branch to `miroir-react`; the app fills `requestLoginToken` with its `requestLoginToken`.
-- Update `authentication.71.*` guards; move the `authTransport` suppression to whichever file keeps the lines.
+- Add `auth/httpLogin.ts` (`requestLoginTokenOverHttp`, `fetchAuthenticationEnabledOverHttp`); `git mv routes/LoginPage` with a shim; relative imports.
+- `authTransport.ts` keeps the Electron branch and delegates the browser branch to `miroir-react`; the app fills `requestLoginToken`.
+- Update the guards: `electronIpcProxyAuth.263.phase6` (app), `authentication.71.*` (miroir-core) where they read moved paths; move the `authTransport` suppression to whichever file keeps the lines.
 
 ### Refactor checkpoint
 
@@ -230,9 +260,13 @@ No browser login code left in `authTransport.ts`.
 
 ```bash
 npm run build -w miroir-react
-RUN_TEST=loginTransport.633.phase3 npm run testByFile -w miroir-standalone-app -- loginTransport.633.phase3
-RUN_TEST=authentication.71 npm run testByFile -w miroir-standalone-app -- authentication.71
-npm run nonreg:filesystem -- --runner shared --only unit-345-electron --scope smoke,ui,tooling
+MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- loginTransport.633.phase3 electronIpcProxyAuth.263
+npm run testByFile -w miroir-core -- authentication.71
+npm run build -w miroir-sandbox
+npx tsc --noEmit --skipLibCheck -p packages/miroir-react/tsconfig.json && npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json && npx tsc --noEmit --skipLibCheck -p packages/miroir-sandbox/tsconfig.json
+npm run lint
+npm run build -w miroir-standalone-app && python scripts/check_bundle_policy.py packages/miroir-standalone-app/dist/.vite/bundle-report.json packages/miroir-standalone-app/bundle-policy.json
+npm run nonreg:filesystem -- --runner shared --scope smoke,ui,tooling --only unit-345-electron
 ```
 
 ### Realization
@@ -251,30 +285,31 @@ Home, settings, search, transformer builder, check, events and error-log pages, 
 
 ### RED
 
-- `tests/4_view/issues/633-app-shell-to-react/searchPageDefault.633.phase4.integ.test.tsx` (vitest: React page state): with the Library deployed and selected as current application, the search page opens on the Library's first entity; with no application selected it opens on Miroir's `Entity`. The second case fails today (it opens on `entityBook`).
-- Same file: `TransformerBuilderPage` with the Miroir application selected opens on `Entity`.
+- `tests/4_view/issues/633-app-shell-to-react/searchPageDefault.633.phase4.integ.test.tsx` (vitest: React page state): with no application selected the search page opens on Miroir's `Entity` (fails today: it opens on `entityBook`); with the Library selected it opens on the Library's first entity. `TransformerBuilderPage` with Miroir selected opens on `Entity`.
 
 ### GREEN
 
-- `git mv` the pages and the two components; replace the Library constants per D4.
-- `PageDispatcher` imports them lazily from `"miroir-react"` until slice 6.
-- Repoint the 13 route-test imports (except `ReportPage`); move suppressions (`ErrorLogsPageDEFUNCT`, `InstanceEditorOutline`).
-- Apply slice 0's mock decision for the tests that render these pages.
+- `git mv` the pages and the two components, each page with a shim; relative imports; replace the Library constants per D4.
+- `homePageLoad.unit.test.ts` (#337 home-page budget) uses the manifest key `miroir-fwk/4_view/routes/HomePage.tsx`; it follows the new key.
+- Move suppressions (`ErrorLogsPageDEFUNCT`, `InstanceEditorOutline`); update the source-text guards on the pages (`externalService.unit`, `SettingsPage` and `HomePage` readers from `list_moved_imports.py`).
+- Apply slice 0's mock decision for tests that render these pages.
 
 ### Refactor checkpoint
 
-`grep` for `miroir-example-library` in `packages/miroir-react/src`: none. Drop `miroir-example-library` from `miroir-react` dev dependencies if a test only needed it there.
+No `miroir-example-library` import under `packages/miroir-react/src`.
 
 ### Validation
 
 ```bash
 npm run build -w miroir-react
-RUN_TEST=searchPageDefault.633.phase4 npm run testByFile -w miroir-standalone-app -- searchPageDefault.633.phase4
-npm run test -w miroir-standalone-app -- tests/4_view/routes
-npm run nonreg:filesystem -- --runner shared --scope smoke,ui
+MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- searchPageDefault.633.phase4 externalService.unit
+npm run build -w miroir-standalone-app && python scripts/check_bundle_policy.py packages/miroir-standalone-app/dist/.vite/bundle-report.json packages/miroir-standalone-app/bundle-policy.json
+npm run testByFile -w miroir-standalone-app -- homePageLoad.unit
+npm run build -w miroir-sandbox
+npx tsc --noEmit --skipLibCheck -p packages/miroir-react/tsconfig.json && npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json && npx tsc --noEmit --skipLibCheck -p packages/miroir-sandbox/tsconfig.json
+npm run lint
+npm run nonreg:filesystem -- --runner shared
 ```
-
-Full nonreg after this slice (slices 2 to 4).
 
 ### Realization
 
@@ -292,27 +327,28 @@ _(to fill)_
 
 ### RED
 
-- `tests/4_view/issues/633-app-shell-to-react/modelDiagramPage.633.phase5.integ.test.tsx` (vitest: React page through the registry): `ModelDiagramPage` from `"miroir-react"` with `renderers={{}}` shows `unsupported-report-section`; with the app's registry it renders the registered view. `miroir-diagram-class` is mocked at its entry, the replacement for the 9 path mocks (happy-dom cannot load `svg-toolbelt`).
+- `tests/4_view/issues/633-app-shell-to-react/modelDiagramPage.633.phase5.integ.test.tsx` (vitest: React page through the registry): `ModelDiagramPage` from `"miroir-react"` with `renderers={{}}` shows `unsupported-report-section`; with the app's registry it renders the registered view. `miroir-diagram-class` is mocked at its entry with a factory, replacing the 9 path mocks (happy-dom cannot load `svg-toolbelt`).
 
 ### GREEN
 
-- `git mv routes/ModelDiagramPage` to `miroir-react`; it renders `useReportSectionRenderers().modelDiagramReportSection`.
+- `git mv routes/ModelDiagramPage` to `miroir-react` with a shim; it renders `useReportSectionRenderers().modelDiagramReportSection`.
 - `git mv components/Reports/ModelDiagramReportSectionView` to `miroir-diagram-class/src/`; export it; its `packageName`/`cleanLevel` come from `miroir-diagram-class`.
 - App registry: `modelDiagramReportSection: lazy(async () => ({ default: (await import("miroir-diagram-class")).ModelDiagramReportSectionView }))`.
-- The 9 tests change their path mock to `vi.mock("miroir-diagram-class", …)`.
-- Move the `ModelDiagramPage` suppression.
+- The 9 tests mock `"miroir-diagram-class"` instead of the path. Move the `ModelDiagramPage` suppression.
 
 ### Refactor checkpoint
 
-`miroir-diagram-class` stays out of the eager chunks (bundle guard).
+`miroir-diagram-class`, `mermaid` and `svg-toolbelt` stay out of the eager chunks.
 
 ### Validation
 
 ```bash
 npm run build -w miroir-react && npm run build -w miroir-diagram-class
-RUN_TEST=modelDiagramPage.633.phase5 npm run testByFile -w miroir-standalone-app -- modelDiagramPage.633.phase5
-npx tsc --noEmit --skipLibCheck -p packages/miroir-diagram-class/tsconfig.json
-npm run build -w miroir-standalone-app && python scripts/check_bundle_policy.py
+MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- modelDiagramPage.633.phase5
+npx tsc --noEmit --skipLibCheck -p packages/miroir-react/tsconfig.json && npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json && npx tsc --noEmit --skipLibCheck -p packages/miroir-diagram-class/tsconfig.json && npx tsc --noEmit --skipLibCheck -p packages/miroir-sandbox/tsconfig.json
+npm run lint
+npm run build -w miroir-sandbox
+npm run build -w miroir-standalone-app && python scripts/check_bundle_policy.py packages/miroir-standalone-app/dist/.vite/bundle-report.json packages/miroir-standalone-app/bundle-policy.json
 npm run nonreg:filesystem -- --runner shared --scope smoke,ui
 ```
 
@@ -328,36 +364,42 @@ _(to fill)_
 
 ### Goal
 
-`RootComponent`, `AppBar`, `PageDispatcher` and the AI pick helpers live in `miroir-react`; the app mounts the assistant through `assistantPanel`; the sandbox builds from library packages with its graph-free renderer registry (model diagram from `miroir-diagram-class`) and no `@miroir-app` alias (G1, G3).
+`RootComponent`, `AppBar`, `PageDispatcher` and the AI pick helpers live in `miroir-react`; the app mounts the assistant through `assistantPanel`; the sandbox builds from library packages, registers the model diagram from `miroir-diagram-class`, and has no `@miroir-app` alias (G1, G3).
 
 ### RED
 
-- `scripts/tests/test_sandbox_sources.py` (pytest: a build-configuration fact): `miroir-sandbox` has no `@miroir-app` alias in `vite.config.js`, no `@miroir-app` path in `tsconfig.json`, and no `@miroir-app` import in `src/`. Fails today.
-- `tests/4_view/issues/633-app-shell-to-react/assistantPanel.633.phase6.integ.test.tsx` (vitest: React shell): `RootComponent` without `assistantPanel` renders no assistant panel when the AI AppBar button is used; with the slot it mounts the slot's component.
+- `scripts/tests/test_shell_package_boundaries.py::test_sandbox_has_no_app_alias` (pytest: a build-configuration fact): no `@miroir-app` alias in `miroir-sandbox/vite.config.js`, no `@miroir-app` path in its `tsconfig.json`, no `@miroir-app` import in `src/`. Fails today.
+- `tests/4_view/issues/633-app-shell-to-react/assistantPanel.633.phase6.integ.test.tsx` (vitest: React shell): `RootComponent` without `assistantPanel` mounts no assistant when the AI AppBar button is used; with the slot it mounts the slot's component.
 
 ### GREEN
 
-- `git mv` `PageDispatcher`, `RootComponent`, `AppBar`, `routes/ai/miroirAiBackend`, `routes/ai/agentBackendPick`; lazy page imports become relative inside the package; `RootComponent` reads `assistantPanel` from the context instead of importing `AgentsCopilotKit`.
+- `git mv` `PageDispatcher`, `RootComponent`, `AppBar`, `routes/ai/miroirAiBackend`, `routes/ai/agentBackendPick`; relative imports; lazy page imports become relative inside the package; delete the shims; `RootComponent` reads `assistantPanel` instead of importing `AgentsCopilotKit`.
 - App `index.tsx`: `assistantPanel: lazy(() => import("./miroir-fwk/4_view/routes/ai/AgentsCopilotKit.js"))`.
 - Sandbox: imports from `"miroir-react"`, provides `ReportSectionRenderersProvider` with `modelDiagramReportSection` from `miroir-diagram-class`, adds `miroir-diagram-class` to its dependencies, drops the alias and the path.
-- Repoint `AppBar` (7), `PageDispatcher` (2), `RootComponent` (1), `routes/ai` (3) test imports; move the `RootComponent` suppression; update `cursorSdk.275.*`, `processCapabilities*.273.*` and the other guards on these files.
-- `shellExports.unit.test.ts` asserts every symbol of slice 0's list is exported from `miroir-react`.
+- Repoint the importers from slice 0's list; move the `RootComponent` suppression; update the guards on these files, including `secrets.270.phase0` (miroir-core, reads `PageDispatcher.tsx`), `cursorSdk.275.*`, `processCapabilities*.273.*` and the `AppBar` readers (6 files).
+- `packages/miroir-react/tests/shellExports.unit.test.ts`: every symbol of slice 0's list, plus `ErrorPage` and `defaultReportSectionRenderers`, is exported from `miroir-react`.
 
 ### Refactor checkpoint
 
-`4_view` holds only the modules of analysis §5.3; the survey script's output confirms it.
+`4_view` holds only the modules of analysis §5.3 (`survey_shell_modules.py`).
 
 ### Validation
 
 ```bash
 npm run build -w miroir-react
-python -m pytest scripts/tests/test_sandbox_sources.py -q
-npm run build -w miroir-sandbox
+python -m pytest scripts/tests -q
 npm run testByFile -w miroir-react -- shellExports
-RUN_TEST=assistantPanel.633.phase6 npm run testByFile -w miroir-standalone-app -- assistantPanel.633.phase6
-npm run nonreg:filesystem -- --runner shared --only unit-435-test-sandbox-header --only unit-443-test-sandbox-play-pause --scope smoke,ui,tooling
-npm run build -w miroir-standalone-app && python scripts/check_bundle_policy.py
+MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- assistantPanel.633.phase6
+npm run test -w miroir-core -- ''
+npm run build -w miroir-sandbox
+npx tsc --noEmit --skipLibCheck -p packages/miroir-react/tsconfig.json && npx tsc --noEmit --skipLibCheck -p packages/miroir-standalone-app/tsconfig.json && npx tsc --noEmit --skipLibCheck -p packages/miroir-sandbox/tsconfig.json
+npm run lint
+npm run build -w miroir-standalone-app && python scripts/check_bundle_policy.py packages/miroir-standalone-app/dist/.vite/bundle-report.json packages/miroir-standalone-app/bundle-policy.json
+npm run testByFile -w miroir-standalone-app -- homePageLoad.unit
+npm run nonreg:filesystem -- --runner shared --scope smoke,ui,tooling --only unit-435-test-sandbox-header,unit-443-test-sandbox-play-pause
 ```
+
+Sandbox page smoke (tracer check, Playwright from Python): `vite preview` of the sandbox build, then load home, settings, search, runners, events, check and `?page=model`; each renders without an error boundary. The script lives in this folder (`sandbox_page_smoke.py`) and its output goes in the Realization.
 
 ### Realization
 
@@ -365,7 +407,7 @@ _(to fill)_
 
 ---
 
-## Slice 7 — Lint layer rule, nonreg, bundle guard, docs, cleanup, AC
+## Slice 7 — Lint boundary rule, nonreg, bundle guard, docs, cleanup, AC
 
 **Status:** ⬜ pending
 
@@ -375,13 +417,14 @@ The package boundary is enforced by lint, the issue tests are folded into featur
 
 ### RED
 
-- A lint fixture test in `eslint-rules/` (the repo's existing pattern, `*.test.mjs`): a file under `packages/miroir-react/src/` importing `@copilotkit/react-core`, `electron`, `miroir-mcp`, `miroir-mcp/client`, `miroir-diagram-class` or a path into `miroir-standalone-app` is an error.
+- `eslint-rules/react-package-boundary.test.mjs` (`node --test`, added to the root `lint` script, which lists its test files): a file under `packages/miroir-react/src/` importing `@copilotkit/react-core`, `electron`, `miroir-mcp`, `miroir-mcp/client`, `miroir-diagram-class` or a path into `miroir-standalone-app` is an error; a `@miroir-framework/jzod` import there is still an error.
 
 ### GREEN
 
-- `eslint.config.mjs`: a `no-restricted-imports` block for `packages/miroir-react/src/**` with those names and patterns. Flat config replaces a rule's options per file, so the block also repeats the `@miroir-framework/jzod` restrictions.
-- Fold `tests/4_view/issues/633-app-shell-to-react/` into feature-named tests (`storedRunnerDefault` next to the report section renderer tests, `loginTransport` next to `authentication`, `searchPageDefault` and `modelDiagramPage` under `tests/4_view/routes/`, `assistantPanel` next to the `AppBar` tests); delete the directory; point `unit-633-app-shell` at them or fold it into `unit-610`.
-- Docs: `docs/internals/application-startup.md`, `code-splitting.md`, `report-display.md`, `docs/reference/load-timings.md` (sink); epic plan I2 rows and #13 Q1-a note.
+- `eslint.config.mjs`: a `no-restricted-imports` block for `packages/miroir-react/src/**` with those names and patterns. Flat config replaces a rule's options per file, so the block repeats the `@miroir-framework/jzod` restrictions (`ml-adapter-imports.test.mjs` asserts them on `packages/miroir-react/src`).
+- `bundle-policy.json` `forbiddenEager` gains `d3*`, `diff`, `miroir-mcp`, `miroir-diagram-class`, `mermaid`, `svg-toolbelt`.
+- Fold `tests/4_view/issues/633-app-shell-to-react/` into feature-named tests (`storedRunnerDefault` beside the report section renderer tests, `loginTransport` beside `electronIpcProxyAuth`, `searchPageDefault` and `modelDiagramPage` under `tests/4_view/`, `assistantPanel` beside the `AppBar` tests); delete the directory; point `unit-633-app-shell` at them.
+- Docs: `docs/internals/application-startup.md`, `code-splitting.md`, `report-display.md`, `docs/reference/load-timings.md` (sink); the epic plan's I2 rows; the #13 Q1-a revision note.
 
 ### Validation
 
@@ -390,23 +433,24 @@ npm run lint
 python scripts/sync_agent_skills.py --check && python -m pytest scripts/tests -q && python scripts/check_dependency_policy.py
 npm run miroir-env -- check --strict --tracked-clean
 npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json && npm run test -w miroir-core -- ''
-npm run build -w miroir-standalone-app && python scripts/check_bundle_policy.py
+npm run build -w miroir-standalone-app && python scripts/check_bundle_policy.py packages/miroir-standalone-app/dist/.vite/bundle-report.json packages/miroir-standalone-app/bundle-policy.json
+npm run build -w miroir-standalone-app-electron && python scripts/check_bundle_policy.py packages/miroir-standalone-app-electron/dist/bundle-report.json packages/miroir-standalone-app-electron/bundle-policy.json
 npm run nonreg:filesystem -- --runner shared
 ```
 
 ### Tracer narrative
 
-Manual: `npm run dev -w miroir-sandbox`, open home, settings, search, runners and `?page=model`; each renders. Automated equivalent: `build-633-sandbox`, `unit-435`, `unit-443`.
+Manual: `npm run dev -w miroir-sandbox`, open home, settings, search, runners and `?page=model`; each renders. Automated equivalent: `build-633-sandbox` and `sandbox_page_smoke.py`.
 
 ### AC checklist
 
 | Acceptance criterion (#633) | Proof |
 |---|---|
-| `miroir-react` exports `RootComponent`, `ErrorPage`, `PageDispatcher`, the route pages and `reportSectionRenderers` | `shellExports.unit.test.ts`. **Interpretation:** the app's `reportSectionRenderers.tsx` (graph, MiroirTest) stays in the app (D1); `miroir-react` exports the registry provider with its built-in `storedRunner` default (D8) |
-| No module of `miroir-react` imports `4-tests/componentTests`, Electron, the auth transport or `@copilotkit/*`; a lint rule enforces it | slice 7 lint block and its fixture test |
-| `miroir-sandbox` has no `@miroir-app` alias or path and builds | `test_sandbox_sources.py`, `build-633-sandbox` |
-| The app and Electron behave as before: UI suites, `unit-435`, `unit-443`, `unit-610` pass; bundle within budget | full `nonreg:filesystem`, `check_bundle_policy.py` |
-| ag-grid, d3 and `diff` stay out of the eager chunks | `check_bundle_policy.py`: `ag-grid-*` is in `forbiddenEager`; d3 and `diff` are not in the `eager` allowlist, so an eager load fails the guard. Slice 7 adds `d3*`, `diff`, `miroir-mcp`, `miroir-diagram-class`, `mermaid` and `svg-toolbelt` to `forbiddenEager` to make the rule explicit |
+| `miroir-react` exports `RootComponent`, `ErrorPage`, `PageDispatcher`, the route pages and `reportSectionRenderers` | `shellExports.unit.test.ts`. `reportSectionRenderers` is exported as `defaultReportSectionRenderers` (the built-in `storedRunner`); the app's graph and MiroirTest renderers stay in the app (D1, D8) |
+| No module of `miroir-react` imports `4-tests/componentTests`, Electron, the auth transport or `@copilotkit/*`; a lint rule enforces it | slice 7 lint block and `react-package-boundary.test.mjs` |
+| `miroir-sandbox` has no `@miroir-app` alias or path and builds | `test_shell_package_boundaries.py`, `build-633-sandbox` |
+| The app and Electron behave as before: UI suites, `unit-435`, `unit-443`, `unit-610` pass; bundle within the #337 budget | full `nonreg:filesystem`, both bundle guards, `homePageLoad.unit` |
+| ag-grid, d3 and `diff` stay out of the eager chunks | bundle guard: `ag-grid-*` already in `forbiddenEager`; slice 7 adds `d3*` and `diff` (they are not in the `eager` allowlist today, so an eager load already fails) |
 
 ### Realization
 
