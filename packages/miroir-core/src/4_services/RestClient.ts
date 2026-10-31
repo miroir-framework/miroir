@@ -2,6 +2,7 @@
 // https://kentcdodds.com/blog/replace-axios-with-a-simple-custom-fetch-wrapper
 
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
+import { parseWithBigint, stringifyWithBigint } from "../1_core/bigintJson";
 import { RestClientCallReturnType, RestClientInterface } from "../0_interfaces/4-services/PersistenceInterface";
 import { packageName } from "../constants";
 import { MiroirLoggerFactory } from "./MiroirLoggerFactory";
@@ -79,7 +80,7 @@ export class RestClient implements RestClientInterface {
     let data;
     try {
       if (body) {
-        config.body = JSON.stringify(body);
+        config.body = stringifyWithBigint(body); // BigInt values cross the wire whole (#48)
       }
       // log.info("RestClient for header", method, endpoint, "sending body", config.body);
 
@@ -87,7 +88,7 @@ export class RestClient implements RestClientInterface {
 
       const responseText: string = await response.text();
       log.info("RestClient response length", responseText.length, response.ok, response.status);
-      data = responseText.length > 0 ? JSON.parse(responseText) : undefined;
+      data = responseText.length > 0 ? parseWithBigint(responseText) : undefined;
       maybeInvalidateAuthorization(response.status, data);
       // log.info("RestClient parsed response", data);
       // For non-OK responses, if we have structured error data, use it

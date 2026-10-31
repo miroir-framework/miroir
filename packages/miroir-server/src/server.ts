@@ -47,6 +47,8 @@ import {
   persistChangedPasswordHash,
   ParseServerArgsError,
   assembleSecretImportSet,
+  bigintJsonReplacer,
+  bigintJsonReviver,
   hydrateSecrets,
   importProcessSecrets,
   parseServerArgs,
@@ -82,7 +84,8 @@ import {
   reconcileEnvironmentDeployments,
   recordInstallsOf,
   resolveEnvironmentFromFiles,
-  seedEnvironmentState,
+  describeSeedReport,
+  seedEnvironmentStateAtStart,
   type ResolvedEnvironment,
 } from "miroir-env";
 import { EndpointToolRegistry, setupMcpServer } from "miroir-mcp";
@@ -252,9 +255,9 @@ if (resolvedEnvironment) {
   if (state.status === "changed") {
     console.log(`  environment ${describeEnvironmentStateStatus(state)}`);
   }
-  const seed = seedEnvironmentState(resolvedEnvironment);
-  if (seed.seeded.length > 0) {
-    console.log(`  environment state seeded from package assets: ${seed.seeded.join(", ")}`);
+  const seedLine = describeSeedReport(seedEnvironmentStateAtStart(resolvedEnvironment));
+  if (seedLine) {
+    console.log(`  ${seedLine}`);
   }
   miroirConfig = environmentServerConfig(resolvedEnvironment);
 } else {
@@ -297,7 +300,9 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-app.use(bodyParser.json({limit: '50mb'}));
+// BigInt values cross the wire as {"$bigint": "<digits>"}, both ways, so none loses digits (#48)
+app.set("json replacer", bigintJsonReplacer);
+app.use(bodyParser.json({ limit: '50mb', reviver: bigintJsonReviver }));
 
 const serverAuthentication = (
   miroirConfig.server as { authentication?: { enabled?: boolean; tokenSecret?: string; mcp?: boolean } }

@@ -96,6 +96,68 @@ export function seedEnvironmentState(resolved: ResolvedEnvironment, options: { r
   return report;
 }
 
+/** The file of a state directory naming the process started on it (#587). */
+export const ENVIRONMENT_PROCESS_FILE = "process.pid";
+
+export type StartSeedReport = SeedReport & {
+  reseed: boolean;
+  /** Another process started on the same state and still running: the copies were kept. */
+  runningProcess?: number;
+};
+
+/** The process recorded in the state directory, when it is another one and still running. */
+function otherRunningProcess(file: string): number | undefined {
+  if (!existsSync(file)) {
+    return undefined;
+  }
+  const pid = Number(readFileSync(file, "utf-8").trim());
+  if (!Number.isInteger(pid) || pid <= 0 || pid === process.pid) {
+    return undefined;
+  }
+  try {
+    process.kill(pid, 0);
+    return pid;
+  } catch (error) {
+    // EPERM: the process exists, owned by another user
+    return (error as NodeJS.ErrnoException).code === "EPERM" ? pid : undefined;
+  }
+}
+
+/**
+ * The seeding of a server or Electron start (#587). A self-test environment
+ * (`client.selfTest.enabled`) is reseeded at each start, so that its copy of the miroir app runs
+ * the current MiroirTests: its state holds no user data. Any other environment is only seeded where
+ * a copy is missing. The start records its process in the state directory and removes it at exit:
+ * while another recorded process runs, a self-test start keeps the copies that process reads.
+ */
+export function seedEnvironmentStateAtStart(resolved: ResolvedEnvironment): StartSeedReport {
+  const processFile = path.join(resolved.repositoryRoot, environmentStateDirectory(resolved), ENVIRONMENT_PROCESS_FILE);
+  const selfTest = resolved.environment.client?.selfTest?.enabled === true;
+  const runningProcess = selfTest ? otherRunningProcess(processFile) : undefined;
+  const reseed = selfTest && runningProcess === undefined;
+  const seed = seedEnvironmentState(resolved, { reseed });
+  writeFileSync(processFile, `${process.pid}\n`);
+  process.once("exit", () => {
+    if (existsSync(processFile) && readFileSync(processFile, "utf-8").trim() === String(process.pid)) {
+      rmSync(processFile, { force: true });
+    }
+  });
+  return { ...seed, reseed, ...(runningProcess !== undefined ? { runningProcess } : {}) };
+}
+
+/** The line a start prints about its seeding, `undefined` when there is nothing to say. */
+export function describeSeedReport(seed: SeedReport & { reseed?: boolean; runningProcess?: number }): string | undefined {
+  if (seed.runningProcess !== undefined) {
+    return `environment state not reseeded: process ${seed.runningProcess} started on it is still running`;
+  }
+  if (seed.seeded.length === 0) {
+    return undefined;
+  }
+  return seed.reseed
+    ? `environment state reseeded from package assets (self-test environment, reseeded at each start): ${seed.seeded.join(", ")}`
+    : `environment state seeded from package assets: ${seed.seeded.join(", ")}`;
+}
+
 /**
  * Recreates, empty, the entity directories of the seed that a kept data section lost: a filesystem
  * data section knows its entities by their directories, and refuses rows of an entity it lacks.

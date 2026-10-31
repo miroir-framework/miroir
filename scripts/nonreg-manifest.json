@@ -2791,6 +2791,37 @@
       ]
     },
     {
+      "id": "unit-31-store-section-clear",
+      "scopes": ["core"],
+      "tier": "unit",
+      "title": "#31 \u2014 indexedDb and filesystem store section clear() empties the persisted store right after open()",
+      "requires": "none",
+      "argv": [
+        "npm",
+        "run",
+        "testByFile",
+        "-w",
+        "miroir-standalone-app",
+        "--",
+        "storeSectionClear.31"
+      ],
+      "shared": {
+        "group": "standalone-app-unit-files",
+        "argv": [
+          "npm",
+          "run",
+          "testByFile",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--no-bail"
+        ],
+        "files": [
+          "storeSectionClear.31"
+        ]
+      }
+    },
+    {
       "id": "unit-321-tracked-assets",
       "scopes": ["always"],
       "tier": "unit",
