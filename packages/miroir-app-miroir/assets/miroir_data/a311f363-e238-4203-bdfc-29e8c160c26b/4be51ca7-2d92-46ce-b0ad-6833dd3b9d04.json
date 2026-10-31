@@ -1198,12 +1198,18 @@
                 }
               },
               {
-                "step": "change",
-                "label": "a number schema",
+                "step": "expectElement",
+                "label": "the popover shows the form editor of the schema",
                 "target": {
-                  "byTestId": "block-mlschema-input:transformer.mlSchema"
+                  "byTestId": "block-mlschema-form:transformer.mlSchema"
                 },
-                "value": "{\"type\": \"number\"}"
+                "timeout": 5000
+              },
+              {
+                "step": "selectOption",
+                "label": "a number schema",
+                "field": "mlSchema.type",
+                "option": "number"
               },
               {
                 "step": "click",
@@ -1227,6 +1233,198 @@
                 },
                 "timeout": 2000,
                 "value": "{\n  \"transformerType\": \"returnValue\",\n  \"mlSchema\": {\n    \"type\": \"number\"\n  },\n  \"value\": \"seize value...\"\n}"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor: an ML schema edited as JSON in its popover; Cancel writes nothing, and a value that is not an ML schema is not saved",
+            "steps": [
+              {
+                "step": "click",
+                "label": "choose Blocks",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                }
+              },
+              {
+                "step": "click",
+                "label": "open the ML schema",
+                "target": {
+                  "byTestId": "block:transformer.mlSchema"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Cancel at once",
+                "target": {
+                  "byTestId": "block-mlschema-cancel:transformer.mlSchema"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the popover is closed",
+                "target": {
+                  "byTestId": "block-mlschema-form:transformer.mlSchema"
+                },
+                "present": false,
+                "timeout": 2000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "Cancel wrote nothing: Undo stays disabled",
+                "target": {
+                  "byTestId": "value-history-undo:transformer"
+                },
+                "attribute": "aria-disabled",
+                "value": "true",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "open the ML schema again",
+                "target": {
+                  "byTestId": "block:transformer.mlSchema"
+                }
+              },
+              {
+                "step": "click",
+                "label": "switch the popover form to JSON (its portal comes first in the page, before the selector forms of the editor)",
+                "target": {
+                  "byTestId": "display-as-structured-element:",
+                  "index": 0
+                }
+              },
+              {
+                "step": "change",
+                "label": "a boolean schema",
+                "target": {
+                  "byTestId": "code-editor:mlSchema"
+                },
+                "value": "{\n  \"type\": \"boolean\"\n}"
+              },
+              {
+                "step": "click",
+                "label": "Save",
+                "target": {
+                  "byTestId": "block-mlschema-save:transformer.mlSchema"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the popover is closed after Save",
+                "target": {
+                  "byTestId": "block-mlschema-form:transformer.mlSchema"
+                },
+                "present": false,
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "choose JSON",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:json"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the value",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "timeout": 2000,
+                "value": "{\n  \"transformerType\": \"returnValue\",\n  \"mlSchema\": {\n    \"type\": \"boolean\"\n  },\n  \"value\": \"seize value...\"\n}"
+              },
+              {
+                "step": "click",
+                "label": "undo the Save",
+                "target": {
+                  "byTestId": "value-history-undo:transformer"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the value before Save",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "timeout": 2000,
+                "value": "{\n  \"transformerType\": \"returnValue\",\n  \"mlSchema\": {\n    \"type\": \"string\"\n  },\n  \"value\": \"seize value...\"\n}"
+              },
+              {
+                "step": "click",
+                "label": "redo the Save",
+                "target": {
+                  "byTestId": "value-history-redo:transformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "choose Blocks again",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                }
+              },
+              {
+                "step": "click",
+                "label": "open the ML schema a third time",
+                "target": {
+                  "byTestId": "block:transformer.mlSchema"
+                }
+              },
+              {
+                "step": "click",
+                "label": "switch the popover form to JSON",
+                "target": {
+                  "byTestId": "display-as-structured-element:",
+                  "index": 0
+                }
+              },
+              {
+                "step": "change",
+                "label": "a value that is not an ML schema",
+                "target": {
+                  "byTestId": "code-editor:mlSchema"
+                },
+                "value": "{\n  \"type\": \"notAType\"\n}"
+              },
+              {
+                "step": "click",
+                "label": "Save",
+                "target": {
+                  "byTestId": "block-mlschema-save:transformer.mlSchema"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the popover stays open",
+                "target": {
+                  "byTestId": "block-mlschema-form:transformer.mlSchema"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "Cancel",
+                "target": {
+                  "byTestId": "block-mlschema-cancel:transformer.mlSchema"
+                }
+              },
+              {
+                "step": "click",
+                "label": "choose JSON",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:json"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the value is still the boolean schema",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "timeout": 2000,
+                "value": "{\n  \"transformerType\": \"returnValue\",\n  \"mlSchema\": {\n    \"type\": \"boolean\"\n  },\n  \"value\": \"seize value...\"\n}"
               }
             ]
           },
@@ -3324,6 +3522,147 @@
                   "byTestId": "block-define-parameter:volume"
                 },
                 "present": false
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "TransformerEditor on an application with a composite: loading a stored transformer starts a new history, with nothing to undo",
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "the editor shows the transformer",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                },
+                "timeout": 10000
+              },
+              {
+                "step": "click",
+                "label": "choose Blocks",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                }
+              },
+              {
+                "step": "click",
+                "label": "open the node actions of the root block",
+                "target": {
+                  "byLabelText": "Transformer node actions transformer"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Wrap in…",
+                "target": {
+                  "byTestId": "transformer-node-action-wrap"
+                }
+              },
+              {
+                "step": "selectOption",
+                "label": "ifThenElse",
+                "field": "transformer-node-dialog-type",
+                "option": "ifThenElse"
+              },
+              {
+                "step": "selectOption",
+                "label": "slot then",
+                "field": "transformer-node-dialog-slot",
+                "option": "then"
+              },
+              {
+                "step": "click",
+                "label": "wrap",
+                "target": {
+                  "byTestId": "transformer-node-dialog-confirm"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the root block is ifThenElse",
+                "target": {
+                  "byTestId": "block:transformer"
+                },
+                "attribute": "data-transformer-type",
+                "value": "ifThenElse",
+                "timeout": 2000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the edit can be undone",
+                "target": {
+                  "byTestId": "value-history-undo:transformer"
+                },
+                "attribute": "aria-disabled",
+                "value": "false",
+                "timeout": 2000
+              },
+              {
+                "step": "selectOption",
+                "label": "edit a defined transformer",
+                "field": "transformerEditor_transformer_selector.mode",
+                "option": "defined"
+              },
+              {
+                "step": "openSelect",
+                "label": "open the TransformerDefinitions for bookAuthor",
+                "field": "transformerEditor_transformer_selector.transformerUuid"
+              },
+              {
+                "step": "filterSelect",
+                "label": "filter bookAuthor",
+                "field": "transformerEditor_transformer_selector.transformerUuid",
+                "text": "bookAuthor"
+              },
+              {
+                "step": "keyboard",
+                "label": "choose bookAuthor",
+                "keys": "{Enter}"
+              },
+              {
+                "step": "expectElement",
+                "label": "the editor shows the body of bookAuthor",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                },
+                "timeout": 5000
+              },
+              {
+                "step": "click",
+                "label": "choose Blocks",
+                "target": {
+                  "byTestId": "block-view-mode:transformer:blocks"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the define block of bookAuthor",
+                "target": {
+                  "byTestId": "block-define"
+                },
+                "attribute": "data-name",
+                "value": "bookAuthor",
+                "timeout": 5000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "Undo is disabled: the load reset the history",
+                "target": {
+                  "byTestId": "value-history-undo:transformer"
+                },
+                "attribute": "aria-disabled",
+                "value": "true",
+                "timeout": 2000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "Redo is disabled too",
+                "target": {
+                  "byTestId": "value-history-redo:transformer"
+                },
+                "attribute": "aria-disabled",
+                "value": "true",
+                "timeout": 2000
               }
             ]
           }
