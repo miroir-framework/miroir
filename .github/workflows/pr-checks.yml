@@ -23,7 +23,7 @@ jobs:
           python3 -m pip install --quiet pytest pyyaml
           python3 -m pytest scripts/tests -q
       - name: Dependency policy
-        run: python3 scripts/check_dependency_policy.py --rule specs --rule classification --rule lockfile --rule workflows --rule actions
+        run: python3 scripts/check_dependency_policy.py --rule specs --rule classification --rule lockfile --rule workflows --rule actions --rule peers
       - name: Set up Node.js
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:

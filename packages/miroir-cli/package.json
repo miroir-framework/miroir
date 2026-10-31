@@ -44,13 +44,13 @@
     "miroir-core": "*",
     "miroir-env": "*",
     "miroir-localcache-redux": "*",
-    "uuid": "14.0.3",
-    "zod": "4.6.7"
+    "uuid": "14.0.3"
   },
   "peerDependencies": {
     "miroir-store-filesystem": "*",
     "miroir-store-indexedDb": "*",
-    "miroir-store-postgres": "*"
+    "miroir-store-postgres": "*",
+    "zod": "^4.6.7"
   },
   "peerDependenciesMeta": {
     "miroir-store-filesystem": {
@@ -69,6 +69,7 @@
     "cross-env": "10.1.0",
     "miroir-example-library": "*",
     "tsup": "9.0.0",
-    "vitest": "5.0.5"
+    "vitest": "5.0.5",
+    "zod": "4.6.7"
   }
 }

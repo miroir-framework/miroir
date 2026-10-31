@@ -28,7 +28,7 @@ Out (analysis §2): duplicate-core detection and `@public` TSDoc (#621 items), `
 | 0 | The published set is listed, and today's manifests characterized | ✅ | `test_package_manifests.py` (set cases) |
 | 1 | Tarballs ship built files and declared entry points only | ✅ | `test_package_manifests.py` (files, exports, pack cases) |
 | 2 | Packages carry their metadata and their TSDoc | ✅ | `test_package_manifests.py` (metadata, TSDoc cases) |
-| 3 | Shared libraries are peers, checked by the dependency policy | ⬜ | `test_package_manifests.py` (peer cases), `test_check_dependency_policy.py` (peers rule) |
+| 3 | Shared libraries are peers, checked by the dependency policy | ✅ | `test_package_manifests.py` (peer cases), `test_check_dependency_policy.py` (peers rule) |
 | 3b | Every import is declared, every declared runtime dependency is imported | ⬜ | `test_package_manifests.py` (declared-imports cases) |
 | 4 | Nonreg step, docs, AC | ⬜ | `unit-643-package-manifests`, full filesystem nonreg |
 
@@ -248,7 +248,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core,localcache,ui
 
 ## Slice 3 — Shared libraries are peers, checked by the dependency policy
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -300,6 +300,28 @@ npm run nonreg:filesystem -- --runner shared
 ```
 
 ### Realization
+
+- RED:
+  - `test_check_dependency_policy.py` failed at import, because there was no `check_peers` and no `satisfies`.
+  - `test_package_manifests.py` had 2 failures: the libraries were still in `dependencies`, and the peer owners and ranges did not match analysis D1.
+  - On the real repo, the new rule reported 7 violations: the existing peers of `miroir-react` and `miroir-localcache-redux` had no devDependency.
+- GREEN:
+  - `check_peers` and `satisfies` cover the forms `^x.y.z`, exact, and space-separated comparators. Any other form is reported as a violation, so it cannot pass unchecked.
+  - The rule is scoped to `scripts/published-packages.json` and documented in the module docstring. `pr-checks.yml` adds `--rule peers`.
+  - 11 new policy tests, including 11 range cases.
+- Manifests:
+  - `zod` moves to `peerDependencies` (`^4.6.7`) plus an exact devDependency in core, react, mcp, cli and store-postgres.
+  - `miroir-react` takes peers `react`, `react-dom`, `react-redux`, `react-router-dom`, `formik`, `@emotion/react` and `@emotion/styled`, each with its installed exact version as a devDependency.
+  - `miroir-localcache-redux` loses `zod` and the `react-dom` peer, and gets devDependencies `react` and `react-redux`. Its `react-redux` peer becomes `^9.3.0`.
+  - Hosts: `miroir-sandbox` gets `formik` and `zod`, and `miroir-server` gets `zod`.
+- Results:
+  - `npm install` changed the workspace entries in `package-lock.json` and no installed version, as compared package by package.
+  - The policy is clean on every CI rule plus `peers`.
+- Validation:
+  - `./build-all.sh devBuild` passes, and 92 manifest tests pass with `MIROIR_REQUIRE_PACK=1`.
+  - `pytest scripts/tests`: 464 passed, 12 skipped. Release tests: 15 passed.
+  - Browser net: all builds pass. The app guard reports 0 violations (843,508 bytes) and the Electron guard 0 violations. The web self-test passes 1224/1224.
+  - `build-636-server-release` and `unit-487-self-test-electron` pass.
 
 ---
 

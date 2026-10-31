@@ -66,8 +66,7 @@
     "mustache": "4.2.0",
     "serialize-error": "13.0.2",
     "uuid": "14.0.3",
-    "yaml": "2.9.1",
-    "zod": "4.6.7"
+    "yaml": "2.9.1"
   },
   "devDependencies": {
     "@babel/plugin-syntax-import-attributes": "7.29.7",
@@ -79,10 +78,10 @@
     "@types/node": "26.6.5",
     "copyfiles": "2.4.1",
     "jest": "30.5.2",
+    "miroir-example-library": "*",
     "miroir-store-bundled": "*",
     "miroir-store-filesystem": "*",
     "miroir-store-postgres": "*",
-    "miroir-example-library": "*",
     "pg": "8.23.1",
     "pg-hstore": "2.3.4",
     "sequelize": "6.37.8",
@@ -92,11 +91,15 @@
     "tsup": "9.0.0",
     "tsx": "4.23.15",
     "vite": "8.3.5",
-    "vitest": "5.0.5"
+    "vitest": "5.0.5",
+    "zod": "4.6.7"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/miroir-framework/miroir.git",
     "directory": "packages/miroir-core"
+  },
+  "peerDependencies": {
+    "zod": "^4.6.7"
   }
 }

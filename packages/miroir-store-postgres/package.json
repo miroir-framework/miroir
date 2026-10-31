@@ -34,12 +34,11 @@
     "generate-ts-types": "tsx ./scripts/postgres-generate-ts-types.ts"
   },
   "dependencies": {
-    "miroir-core": "*",
     "miroir-app-miroir": "*",
+    "miroir-core": "*",
     "pg": "8.23.1",
     "pg-hstore": "2.3.4",
-    "sequelize": "6.37.8",
-    "zod": "4.6.7"
+    "sequelize": "6.37.8"
   },
   "devDependencies": {
     "@babel/preset-typescript": "8.0.7",
@@ -50,11 +49,15 @@
     "rimraf": "6.1.3",
     "ts-jest": "29.4.15",
     "tsconfig-paths": "4.2.0",
-    "tsup": "9.0.0"
+    "tsup": "9.0.0",
+    "zod": "4.6.7"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/miroir-framework/miroir.git",
     "directory": "packages/miroir-store-postgres"
+  },
+  "peerDependencies": {
+    "zod": "^4.6.7"
   }
 }

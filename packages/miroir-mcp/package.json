@@ -46,17 +46,17 @@
     "@modelcontextprotocol/sdk": "1.32.1",
     "express": "5.3.0",
     "loglevelnext": "6.0.0",
-    "miroir-core": "*",
-    "miroir-localcache-redux": "*",
     "miroir-app-admin": "*",
     "miroir-app-miroir": "*",
-    "uuid": "14.0.3",
-    "zod": "4.6.7"
+    "miroir-core": "*",
+    "miroir-localcache-redux": "*",
+    "uuid": "14.0.3"
   },
   "peerDependencies": {
     "miroir-store-filesystem": "*",
     "miroir-store-indexedDb": "*",
-    "miroir-store-postgres": "*"
+    "miroir-store-postgres": "*",
+    "zod": "^4.6.7"
   },
   "peerDependenciesMeta": {
     "miroir-store-filesystem": {
@@ -77,6 +77,7 @@
     "miroir-env": "*",
     "miroir-example-library": "*",
     "tsup": "9.0.0",
-    "vitest": "5.0.5"
+    "vitest": "5.0.5",
+    "zod": "4.6.7"
   }
 }

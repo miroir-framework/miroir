@@ -304,3 +304,45 @@ def test_published_declarations_carry_tsdoc():
         encoding="utf-8"
     )
     assert "/**" in core_declarations, "miroir-core declarations carry no TSDoc"
+
+
+# --------------------------------------------------------------------------------------------------------------------
+# shared libraries (Slice 3, analysis D1)
+
+# library -> (peer range, owners). An owner either imports the library in src/ or needs it for a library it imports (†).
+SHARED_LIBRARIES = {
+    "zod": ("^4.6.7", {"miroir-core", "miroir-react", "miroir-mcp", "miroir-cli", "miroir-store-postgres"}),
+    "react": ("^18.2.0", {"miroir-react", "miroir-localcache-redux"}),  # † localcache-redux: peer of react-redux
+    "react-dom": ("^18.2.0", {"miroir-react"}),
+    "react-redux": ("^9.3.0", {"miroir-react", "miroir-localcache-redux"}),
+    "react-router-dom": ("^7.18.4", {"miroir-react"}),
+    "formik": ("^2.4.9", {"miroir-react"}),
+    "@mui/material": (">=5.17.1 <10", {"miroir-react"}),
+    "@emotion/react": ("^11.10.5", {"miroir-react"}),
+    "@emotion/styled": ("^11.10.5", {"miroir-react"}),  # † peer of @mui/material
+}
+
+
+def published_manifests() -> dict[str, dict]:
+    return {manifest(folder)["name"]: manifest(folder) for folder in published_folders()}
+
+
+def test_shared_libraries_are_peers_of_the_published_set():
+    found = sorted(
+        f"{name}: dependencies.{library}"
+        for name, data in published_manifests().items()
+        for library in SHARED_LIBRARIES
+        if library in data.get("dependencies", {})
+    )
+    assert found == [], "a shared library as a dependency gives the consumer a second copy (D1)"
+
+
+def test_each_shared_library_has_its_peer_range_and_owners_across_the_set():
+    for library, (expected_range, expected_owners) in SHARED_LIBRARIES.items():
+        declared = {
+            name: data["peerDependencies"][library]
+            for name, data in published_manifests().items()
+            if library in data.get("peerDependencies", {})
+        }
+        assert set(declared) == expected_owners, f"{library}: peer owners"
+        assert set(declared.values()) == {expected_range}, f"{library}: one peer range across the set"
