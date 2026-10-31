@@ -222,11 +222,11 @@ When changing this area, verify:
 
 ## Key files
 
-Under `packages/miroir-react/src/`, except the files marked *app*, under `packages/miroir-standalone-app/src/miroir-fwk/4_view/` (#13):
+Under `packages/miroir-react/src/`, except the files marked *app*, under `packages/miroir-standalone-app/src/miroir-fwk/4_view/` (#13, #633):
 
 | File | Role |
 |---|---|
-| `components/Page/RootComponent.tsx` (*app*) | Mounts `DocumentOutlineContextProvider` + `ReportPageContextProvider` |
+| `components/Page/RootComponent.tsx` | Mounts `DocumentOutlineContextProvider` + `ReportPageContextProvider` |
 | `routes/ReportPage.tsx` (*app*) | Route wrapper; syncs URL params into context |
 | `components/Reports/ReportDisplay.tsx` (`LazyReportDisplay` for the lazy route) | Report lookup + stored queries → RVWE |
 | `components/Reports/ReportViewWithEditor.tsx` | Query load, `initialValues`, **creates Formik**, submit → domain |

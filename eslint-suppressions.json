@@ -352,6 +352,14 @@
       "count": 1
     }
   },
+  "packages/miroir-react/src/ErrorLogsPageDEFUNCT.tsx": {
+    "miroir/pub-sub": {
+      "count": 1
+    },
+    "react-hooks/set-state-in-effect": {
+      "count": 1
+    }
+  },
   "packages/miroir-react/src/ReduxHooks.ts": {
     "react-hooks/rules-of-hooks": {
       "count": 1
@@ -362,12 +370,22 @@
       "count": 1
     }
   },
+  "packages/miroir-react/src/components/InstanceEditorOutline.tsx": {
+    "react-hooks/set-state-in-effect": {
+      "count": 2
+    }
+  },
   "packages/miroir-react/src/components/JsonObjectEditFormDialog.tsx": {
     "react-hooks/rules-of-hooks": {
       "count": 3
     }
   },
   "packages/miroir-react/src/components/LocalCacheMonitorSummary.tsx": {
+    "react-hooks/set-state-in-effect": {
+      "count": 1
+    }
+  },
+  "packages/miroir-react/src/components/Page/RootComponent.tsx": {
     "react-hooks/set-state-in-effect": {
       "count": 1
     }
@@ -398,6 +416,11 @@
   "packages/miroir-react/src/components/Runners/InnerRunnerView.tsx": {
     "miroir/type-escape": {
       "count": 1
+    }
+  },
+  "packages/miroir-react/src/components/Runners/RunnerView.tsx": {
+    "miroir/type-escape": {
+      "count": 2
     }
   },
   "packages/miroir-react/src/components/Themes/BasicComponents.tsx": {
@@ -470,6 +493,16 @@
   "packages/miroir-react/src/contexts/MiroirContextReactProvider.tsx": {
     "miroir/pub-sub": {
       "count": 1
+    }
+  },
+  "packages/miroir-react/src/routes/ModelDiagramPage.tsx": {
+    "react-hooks/rules-of-hooks": {
+      "count": 1
+    }
+  },
+  "packages/miroir-react/src/services/ConfigurationService.ts": {
+    "miroir/action-result": {
+      "count": 7
     }
   },
   "packages/miroir-react/src/tools/performanceConfig.ts": {
@@ -555,19 +588,6 @@
       "count": 1
     }
   },
-  "packages/miroir-standalone-app/src/miroir-fwk/4_view/ErrorLogsPageDEFUNCT.tsx": {
-    "miroir/pub-sub": {
-      "count": 1
-    },
-    "react-hooks/set-state-in-effect": {
-      "count": 1
-    }
-  },
-  "packages/miroir-standalone-app/src/miroir-fwk/4_view/auth/authTransport.ts": {
-    "miroir/component-io": {
-      "count": 2
-    }
-  },
   "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Buttons/RunAllMiroirTestsButton.tsx": {
     "miroir/action-result": {
       "count": 1
@@ -578,34 +598,9 @@
       "count": 4
     }
   },
-  "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/InstanceEditorOutline.tsx": {
-    "react-hooks/set-state-in-effect": {
-      "count": 2
-    }
-  },
-  "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Page/RootComponent.tsx": {
-    "react-hooks/set-state-in-effect": {
-      "count": 1
-    }
-  },
-  "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Runners/RunnerView.tsx": {
-    "miroir/type-escape": {
-      "count": 2
-    }
-  },
-  "packages/miroir-standalone-app/src/miroir-fwk/4_view/routes/ModelDiagramPage.tsx": {
-    "react-hooks/rules-of-hooks": {
-      "count": 1
-    }
-  },
   "packages/miroir-standalone-app/src/miroir-fwk/4_view/routes/ai/AiActionsProvider.tsx": {
     "miroir/component-io": {
       "count": 3
-    }
-  },
-  "packages/miroir-standalone-app/src/miroir-fwk/4_view/services/ConfigurationService.ts": {
-    "miroir/action-result": {
-      "count": 7
     }
   },
   "packages/miroir-store-postgres/src/1_core/SqlGenerator.ts": {

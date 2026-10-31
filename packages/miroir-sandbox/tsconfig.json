@@ -1,12 +1,5 @@
 {
   "extends": "../../tsconfig.json",
-  "compilerOptions": {
-    "paths": {
-      "@miroir-app/*": [
-        "./../miroir-standalone-app/src/*"
-      ]
-    }
-  },
   "include": [
     "src/**/*.ts",
     "src/**/*.tsx"

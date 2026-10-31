@@ -15,7 +15,7 @@ When `emulateServer: true`, two domain controllers exist in one process:
 
 ## `fetchMiroirAndAppConfigurations` flow
 
-Called from `DemoInitializer` (sandbox) or `usePageConfiguration({ autoFetchOnMount: true })` (standalone):
+Called from `DemoInitializer` (sandbox) or `usePageConfiguration({ autoFetchOnMount: true })` (standalone); both are in `miroir-react` since #633, so every client starts the same way:
 
 ```
 Step 1: Rollback Admin
@@ -85,4 +85,18 @@ function loadConfigurationFromPersistenceStore(applicationUuid, deploymentUuid, 
 |---|---|
 | [DomainController.ts](../../packages/miroir-core/src/3_controllers/DomainController.ts) | `loadConfigurationFromPersistenceStore`, `handleModelAction("rollback")` |
 | [Model.ts](../../packages/miroir-core/src/1_core/Model.ts) | `metaModelEntities`, `miroirModelEntities` |
-| [ConfigurationService.ts](../../packages/miroir-standalone-app/src/miroir-fwk/4_view/services/ConfigurationService.ts) | `fetchMiroirAndAppConfigurations` |
+| [ConfigurationService.ts](../../packages/miroir-react/src/services/ConfigurationService.ts) | `fetchMiroirAndAppConfigurations` |
+| [usePageConfiguration.ts](../../packages/miroir-react/src/services/usePageConfiguration.ts) | Fetches the configurations on mount; marks `configurationsLoaded` through the load-timing sink |
+| [MiroirShellHostContext.tsx](../../packages/miroir-react/src/contexts/MiroirShellHostContext.tsx) | Host features of the shell (#633): `runMcpTool`, `requestLoginToken`, `assistantPanel` |
+
+## The shell and its host (#633)
+
+The app shell (`RootComponent`, `AppBar`, `PageDispatcher`, the generic pages, the runners, the login page) is in `miroir-react`. A client builds its page from the package and gives it the features the package cannot import:
+
+| Wiring | Standalone app | Sandbox |
+|---|---|---|
+| `MiroirShellHostProvider` | `appShellHost`: MCP tool calls (`miroir-mcp/client`, lazy), login over HTTP or Electron IPC, `assistantPanel` = lazy `AgentsCopilotKit` | none: no MCP, login over HTTP, no assistant |
+| `ReportSectionRenderersProvider` | graph, model diagram (`miroir-diagram-class`, lazy), MiroirTest | model diagram (`miroir-diagram-class`, lazy) |
+| `setLoadTimingMarkSink` | the load-timing recorder | none |
+
+A missing slot falls back to its default (`useMiroirShellHost`): MCP calls answer `FeatureUnavailable`, login goes to `/auth/login` over HTTP, no assistant is mounted. The stored runner section is a built-in renderer (`defaultReportSectionRenderers`). The lint block of `eslint.config.mjs` for `packages/miroir-react/src` forbids importing CopilotKit, Electron, `miroir-mcp`, `miroir-diagram-class` or the app.

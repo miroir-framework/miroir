@@ -184,6 +184,25 @@ async function assertRealServerReachableIfNeeded(
   });
 }
 
+/**
+ * #495: runs the session teardown after a run and returns its error message instead of throwing,
+ * so that a failed teardown is reported beside the run's results and does not replace them (a
+ * leaf that failed to create its store then left a teardown that failed to delete it, and only the
+ * teardown error was reported). An error of the run itself still propagates: this never throws.
+ */
+export async function teardownBesideRunResults(teardown: () => Promise<void>): Promise<string | undefined> {
+  try {
+    await teardown();
+    return undefined;
+  } catch (error) {
+    return error instanceof Error
+      ? error.message
+      : typeof error === "object" && error !== null
+        ? JSON.stringify(error)
+        : String(error);
+  }
+}
+
 async function runRunnerOrActionIntegrationSuite(
   request: UiIntegrationTestRunRequest,
   environment: UiIntegrationTestLauncherEnvironment,
@@ -221,6 +240,7 @@ async function runRunnerOrActionIntegrationSuite(
   );
 
   let success = false;
+  let teardownError: string | undefined;
   // #490: in the browser the bundle is the app's shared tracker: keep this run's events, and
   // only them, for "Export failed test logs"
   let runLogs: TestRunLogSnapshot | undefined;
@@ -263,7 +283,7 @@ async function runRunnerOrActionIntegrationSuite(
     try {
       releaseReportTests?.();
     } finally {
-      await testSession.teardown();
+      teardownError = await teardownBesideRunResults(() => testSession.teardown());
     }
   }
 
@@ -284,7 +304,8 @@ async function runRunnerOrActionIntegrationSuite(
     runTargetMode: request.runTargetMode,
     profileName: request.profileName,
     hostMode,
-    success,
+    success: success && teardownError === undefined,
+    ...(teardownError !== undefined ? { teardownError } : {}),
     inspector: buildInspectorSnapshot(request, sessionKind, runTarget),
     testSuiteResults,
     runLogs,
@@ -328,6 +349,7 @@ async function runTransformerIntegrationSuite(
   });
 
   let success = false;
+  let teardownError: string | undefined;
   // #490: in the browser the bundle is the app's shared tracker: keep this run's events, and
   // only them, for "Export failed test logs"
   let runLogs: TestRunLogSnapshot | undefined;
@@ -360,7 +382,7 @@ async function runTransformerIntegrationSuite(
     });
   } finally {
     releaseRunEvents();
-    await testSession.teardown();
+    teardownError = await teardownBesideRunResults(() => testSession.teardown());
   }
 
   let testSuiteResults: TestSuiteResult | undefined;
@@ -380,7 +402,8 @@ async function runTransformerIntegrationSuite(
     runTargetMode: request.runTargetMode,
     profileName: request.profileName,
     hostMode,
-    success,
+    success: success && teardownError === undefined,
+    ...(teardownError !== undefined ? { teardownError } : {}),
     inspector: buildInspectorSnapshot(request, "transformer", runTarget),
     testSuiteResults,
     runLogs,

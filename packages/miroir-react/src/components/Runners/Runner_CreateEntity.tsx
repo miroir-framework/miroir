@@ -1,0 +1,40 @@
+
+import type {
+  ApplicationDeploymentMap,
+  LoggerInterface
+} from "miroir-core";
+import {
+  defaultSelfApplicationDeploymentMap,
+  MiroirLoggerFactory
+} from "miroir-core";
+import { selfApplicationMiroir } from "miroir-app-miroir";
+import { packageName } from "../../constants.js";
+import { cleanLevel } from "../../viewConstants.js";
+import { StoredRunnerView } from "./RunnerView.js";
+
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Runner_CreateEntity");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName,
+  "UI"
+).then((logger: LoggerInterface) => {
+  log = logger;
+});
+
+// ################################################################################################
+export interface CreateEntityToolProps {
+  applicationDeploymentMap: ApplicationDeploymentMap;
+}
+
+
+// ################################################################################################
+export const Runner_CreateEntity: React.FC<CreateEntityToolProps> = ({
+  applicationDeploymentMap,
+}) => {
+  return (
+    <StoredRunnerView
+      applicationUuid={selfApplicationMiroir.uuid}
+      applicationDeploymentMap={applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap}
+      runnerUuid="82f81a25-2366-4abf-8a97-83ca5e9a9c46"
+    />
+  );
+};

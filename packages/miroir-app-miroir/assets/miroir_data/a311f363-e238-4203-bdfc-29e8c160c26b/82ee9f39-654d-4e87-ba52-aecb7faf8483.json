@@ -9,7 +9,8 @@
   "tags": [
     "integ",
     "runner",
-    "model"
+    "model",
+    "filesystem"
   ],
   "issue": "321",
   "definition": {

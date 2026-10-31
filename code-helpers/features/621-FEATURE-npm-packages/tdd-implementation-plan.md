@@ -66,11 +66,11 @@ Order: I1, I4 and I5 can start now and run in parallel. I2 and I3 next. I6 waits
 | I1 | 3 | Each call runs with its application's model environment | ⬜ | rejection of a fixture instance by its own Entity schema |
 | I1 | 4 | CopilotKit actions from the catalog | ⬜ | `copilotKitActions.<I1>.phase4.unit.test.ts` |
 | I1 | 5 | No runtime dependency on example packages, nonreg, docs | ⬜ | `scripts/tests/test_package_runtime_dependencies.py` |
-| I2 | 0 | Characterize the shell modules and the sandbox alias | ⬜ | inventory script output |
-| I2 | 1 | Break the reports / component-tests cycle | ⬜ | lint layer rule + existing UI suites |
-| I2 | 2 | Shell and routes in miroir-react, host services injected | ⬜ | standalone app UI integ suites |
-| I2 | 3 | Sandbox builds without the alias | ⬜ | sandbox `vite build` + `unit-435`, `unit-443` |
-| I2 | 4 | Nonreg, bundle guard, cleanup | ⬜ | full nonreg, `scripts/check_bundle_policy.py` |
+| I2 | 0 | Characterize the shell modules and the sandbox alias | ✅ #633 slice 0 | inventory script output |
+| I2 | 1 | Break the reports / component-tests cycle | ✅ #610, #612 | lint layer rule + existing UI suites |
+| I2 | 2 | Shell and routes in miroir-react, host services injected | ✅ #633 slices 1 to 6 | standalone app UI integ suites |
+| I2 | 3 | Sandbox builds without the alias | ✅ #633 slice 6 | sandbox `vite build` + `unit-435`, `unit-443` |
+| I2 | 4 | Nonreg, bundle guard, cleanup | ✅ #633 slice 7 | full nonreg, `scripts/check_bundle_policy.py` |
 | I3 | 0 | Characterize the server's HTTP surface | ⬜ | `serverHttpSurface.<I3>.phase0.integ.test.ts` |
 | I3 | 1 | Tracer: REST handlers from a router mounted on a bare Express app | ⬜ | `miroirRouter.<I3>.phase1.integ.test.ts` |
 | I3 | 2 | Auth, capabilities and MCP behind router options | ⬜ | phase0 test green against the router |

@@ -97,15 +97,7 @@ vi.mock("react-router-dom", async () => {
   };
 });
 
-vi.mock("miroir-react", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("miroir-react")>();
-  return {
-    ...actual,
-    JsonDisplayHelper: () => null,
-  };
-});
-
-vi.mock("../../../../src/miroir-fwk/4_view/components/Reports/ModelDiagramReportSectionView.js", () => ({
+vi.mock("miroir-diagram-class", () => ({
   ModelDiagramReportSectionView: () => null,
 }));
 

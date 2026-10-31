@@ -3,7 +3,7 @@ declare global { interface Window { process?: any } }
 import 'material-symbols/outlined.css';
 
 import { createTheme, StyledEngineProvider, ThemeProvider } from "@mui/material";
-import { StrictMode } from "react";
+import { lazy, StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { createHashRouter, RouterProvider } from "react-router-dom";
 
@@ -35,20 +35,22 @@ import { miroirBundledStoreSectionStartup } from "miroir-store-bundled";
 import {
   LocalCacheProvider,
   MiroirContextReactProvider,
+  PageDispatcher,
+  ReportSectionRenderersProvider,
   RestPersistenceClientAndRestClient,
+  RootComponent,
   setupMiroirDomainController,
+  type ReportSectionRenderers,
 } from "miroir-react";
 
 import { loglevelnext } from './loglevelnextImporter.js';
 import { DemoInitializer } from "./DemoInitializer.js";
-import { PageDispatcher } from "./PageDispatcher.js";
 import { packageName } from "./constants.js";
 import { cleanLevel } from "./4_view/constants.js";
 import { miroirDemoAppStartup } from "./startup.js";
 import { ADMIN_DEPLOYMENT_UUID, ADMIN_BUNDLED_CONFIG, ADMIN_MODEL_PARENT_UUIDS_ARRAY, demoBundledData, demoMiroirConfig, MIROIR_DEPLOYMENT_UUID } from "./bundledData.js";
 import { migrateAdminToIndexedDbIfNeeded } from "./adminMigration.js";
-import { RootComponent } from "@miroir-app/miroir-fwk/4_view/components/Page/RootComponent.js";
-import { ErrorPage } from "@miroir-app/miroir-fwk/4_view/ErrorPage.js";
+import { ErrorPage } from "miroir-react";
 import { deployment_Admin, deployment_Miroir } from "miroir-app-admin";
 
 // ---------------------------------------------------------------------------
@@ -72,6 +74,16 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
 // MUI theme (minimal)
 // ---------------------------------------------------------------------------
 const theme = createTheme({});
+
+// ---------------------------------------------------------------------------
+// Report sections the sandbox adds to the miroir-react defaults (#633 D3): the
+// model diagram comes from miroir-diagram-class, loaded on first display.
+// ---------------------------------------------------------------------------
+const sandboxReportSectionRenderers: ReportSectionRenderers = {
+  modelDiagramReportSection: lazy(async () => ({
+    default: (await import("miroir-diagram-class")).ModelDiagramReportSectionView,
+  })),
+};
 
 // ---------------------------------------------------------------------------
 // Hash router: RootComponent provides the layout (AppBar, sidebar);
@@ -245,7 +257,9 @@ async function startDemoApp() {
             >
               {/* Auto-fetch Miroir & App configurations on startup */}
               <DemoInitializer />
-              <RouterProvider router={router} />
+              <ReportSectionRenderersProvider renderers={sandboxReportSectionRenderers}>
+                <RouterProvider router={router} />
+              </ReportSectionRenderersProvider>
             </MiroirContextReactProvider>
           </LocalCacheProvider>
         </StyledEngineProvider>

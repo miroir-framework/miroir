@@ -2426,6 +2426,26 @@
       ]
     },
     {
+      "id": "build-633-sandbox",
+      "scopes": ["ui", "tooling"],
+      "tier": "unit",
+      "title": "#633 — miroir-sandbox builds from library packages (vite build; it broke unnoticed after #592)",
+      "requires": "none",
+      "argv": ["npm", "run", "build", "-w", "miroir-sandbox"]
+    },
+    {
+      "id": "unit-633-app-shell",
+      "scopes": ["ui"],
+      "tier": "unit",
+      "title": "#633 — app shell in miroir-react: load-timing sink, host slots (login, MCP, assistant), stored-runner default, tool page defaults, exports",
+      "requires": "none",
+      "argv": [
+        "bash",
+        "-c",
+        "npm run testByFile -w miroir-react -- loadTimingMarkSink reportSectionRenderersStoredRunner loginTransport toolPageDefaults shellExports && MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- assistantPanel.integ"
+      ]
+    },
+    {
       "id": "unit-490-export-failed-test-logs",
       "scopes": ["ui"],
       "tier": "unit",

@@ -10,7 +10,7 @@ Internal reference for how the Miroir standalone web app (`packages/miroir-stand
 
 | Mechanism | Where configured | What it does | Defers download? |
 |---|---|---|---|
-| **Route lazy loading** | `React.lazy(() => import(...))` in `PageDispatcher.tsx`, `RootComponent.tsx` | Creates async chunks fetched when a route or shell feature first renders | Yes — until navigation / mount |
+| **Route lazy loading** | `React.lazy(() => import(...))` in `PageDispatcher.tsx`, `RootComponent.tsx` (miroir-react), the app's `appShellHost` and report section renderers | Creates async chunks fetched when a route or shell feature first renders | Yes — until navigation / mount |
 | **Vendor chunk pinning** | `build.rollupOptions.output.manualChunks` in `vite.config.js` | Moves matching `node_modules` into named files (`vendor-react`, `vendor-mui`, `vendor-d3`) for cache stability | Only indirectly — the vendor file loads when the first importer chunk loads |
 
 `manualChunks` does **not** lazy-load a library on its own. It only names and isolates vendor code. It can also make things worse: Rollup moves the dependencies of a manual chunk's modules into that chunk, so when eager code needs one of them, the whole vendor chunk loads with the page. Until #337, `vendor-copilotkit` and `vendor-ag-grid` loaded with every page for that reason. Only libraries the page needs anyway keep a rule (`vendor-react`, `vendor-mui`), plus `vendor-d3`, which is lazy.
@@ -45,7 +45,7 @@ Libraries **not** given a dedicated vendor chunk (CopilotKit, ag-grid, CodeMirro
 
 ## Route-level lazy loading
 
-All primary pages are lazy-loaded from `PageDispatcher.tsx`, wrapped in `<Suspense fallback={<CenteredSpinner />}>`:
+All primary pages are lazy-loaded from `PageDispatcher.tsx` (in `miroir-react` since #633: the lazy imports are relative imports inside the package, and tsup keeps each module in its own file, so each page is a chunk of the client build), wrapped in `<Suspense fallback={<CenteredSpinner />}>`:
 
 - `HomePage`, `ReportDisplay`, `SettingsPage`, `SearchPage`, `ModelDiagramPage`, `RunnersPage`, `TransformerBuilderPage`, `MiroirEventsPage`, `CheckPage`, …
 
@@ -53,9 +53,9 @@ All primary pages are lazy-loaded from `PageDispatcher.tsx`, wrapped in `<Suspen
 
 - `EventTimelineContainer`
 - `InstanceEditorOutline`
-- `AiActionsProvider` → lazy `AgentsCopilotKit` (CopilotKit provider + sidebar UI)
+- the host's `assistantPanel` (#633): the app gives a lazy `AgentsCopilotKit` (CopilotKit provider + sidebar UI, `AiActionsProvider`)
 
-The app entry (`src/index.tsx`) is **eager**: core startup, `RootComponent`, `PageDispatcher`, MUI shell, Redux/local-cache wiring.
+The app entry (`src/index.tsx`) is **eager**: core startup, `RootComponent`, `PageDispatcher` (both from `miroir-react`), MUI shell, Redux/local-cache wiring.
 
 `ReportDisplay` (in miroir-react since #612) is also imported statically by `HomePage`, `SettingsPage` and `ReportSectionViewWithEditor`, which render a report at once, so it loads with the home page route. `PageDispatcher` renders it through `LazyReportDisplay`, which miroir-react exports for that purpose: an `import("miroir-react")` from the app would split nothing off, since the page already loads miroir-react. The grids it renders are lazy, so the home page fetches no grid library (`tests/0_build/homePageLoad.unit.test.ts`).
 
@@ -137,7 +137,7 @@ What #370 took off the page (analysis and measurements: `code-helpers/features/3
 | **Vendor chunk** | None (#337) |
 | **react-core** | Lazy import in `AgentsCopilotKit.tsx` — mounted when process snapshot **`ai`** is true **and** an AI AppBar control is active (#273, #244) |
 | **react-ui** | Static import in lazy `AiActionsProvider.tsx` (`CopilotSidebar`, hooks, styles) |
-| **Mount behaviour** | `RootComponent` lazy-loads `<AgentsCopilotKit />` when `processCapabilities.ai` is true and the user toggles the AI assistant sidebar or dev console. AI AppBar icons stay hidden when snapshot `ai` is false. `ViewParams.agents` is gone. |
+| **Mount behaviour** | `RootComponent` mounts the host's `assistantPanel` (the app's lazy `<AgentsCopilotKit />`, #633) when `processCapabilities.ai` is true and the user toggles the AI assistant sidebar or dev console. AI AppBar icons stay hidden when snapshot `ai` is false. `ViewParams.agents` is gone. |
 | **Initial load?** | No (`forbiddenEager` `@copilotkit/*`); until #337 a `vendor-copilotkit` manual chunk held shared packages the entry needed and loaded with the page |
 
 Server-side CopilotKit (`@copilotkit/runtime` in `miroir-server` / `miroir-ai`) is unrelated to client bundle splitting.
@@ -270,8 +270,9 @@ npm run coverageTour -w miroir-standalone-app -- --serve
 | `packages/miroir-standalone-app/vite/bundleReportPlugin.js`, `vite/bundleReportCore.js` | Bundle report (#326) |
 | `packages/miroir-standalone-app/bundle-policy.json`, `packages/miroir-standalone-app-electron/bundle-policy.json` | Bundle guard policies, checked by `scripts/check_bundle_policy.py` |
 | `packages/miroir-standalone-app/scripts/coverage-tour.mjs`, `vite/coverageCore.js` | Coverage tour (#326) |
-| `packages/miroir-standalone-app/src/miroir-fwk/4_view/PageDispatcher.tsx` | Lazy page routes |
-| `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Page/RootComponent.tsx` | Lazy shell features (`AgentsCopilotKit`, outline, timeline) |
+| `packages/miroir-react/src/PageDispatcher.tsx` | Lazy page routes (#633) |
+| `packages/miroir-react/src/components/Page/RootComponent.tsx` | Lazy shell features (outline, timeline), mounts the host's `assistantPanel` (#633) |
+| `packages/miroir-standalone-app/src/miroir-fwk/4_view/reportSectionRenderers.tsx` | `appShellHost` (lazy assistant, lazy MCP client) and the app's lazy report section renderers (#633) |
 | `packages/miroir-standalone-app/src/index.tsx` | Eager entry (imports no CopilotKit itself) |
 | `packages/miroir-standalone-app/src/miroir-fwk/4_view/routes/ai/AgentsCopilotKit.tsx` | Lazy CopilotKit provider (#244) |
 | `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ComponentTestSandbox.tsx` | Dynamic import of the component test chunk (#286) |

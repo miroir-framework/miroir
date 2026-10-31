@@ -19,7 +19,7 @@ import {
   storeManagementEndpoint,
 } from "miroir-app-miroir";
 
-import { reportPageParamsFromSearchParams } from "../../src/miroir-fwk/4_view/PageDispatcher.js";
+import { reportPageParamsFromSearchParams } from "miroir-react";
 import { resolveRepoRoot } from "../helpers/integrationTestProfiles.js";
 
 const RUN_TEST = process.env.RUN_TEST;

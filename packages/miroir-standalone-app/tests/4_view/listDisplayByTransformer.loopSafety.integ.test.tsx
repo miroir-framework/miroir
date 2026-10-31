@@ -28,14 +28,6 @@ import {
 /** Given to the list section through `GridComponentsProvider` (#612). */
 const gridStubs = { EntityInstanceGrid: () => <div data-testid="entity-instance-grid-stub" /> };
 
-vi.mock("miroir-react", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("miroir-react")>();
-  return {
-    ...actual,
-    JsonDisplayHelper: () => null,
-  };
-});
-
 const getTransformerToggle = () => screen.getByRole("button", { name: /functions/i });
 
 function ParentFormikValuesObserver({

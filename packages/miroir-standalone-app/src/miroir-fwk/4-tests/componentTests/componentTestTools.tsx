@@ -30,16 +30,18 @@ import {
   type EntityInstance,
   type ReactComponentTestSuite,
   type Uuid,
+  type ProcessCapabilities,
 } from "miroir-core";
 import {
   LocalCache,
   LocalCacheProvider,
   MiroirContextReactProvider,
   PersistenceReduxSaga,
+  MiroirShellHostProvider,
   ReportSectionRenderersProvider,
   useMiroirContextService,
 } from "miroir-react";
-import { appReportSectionRenderers } from "../../4_view/reportSectionRenderers.js";
+import { appReportSectionRenderers, appShellHost } from "../../4_view/reportSectionRenderers.js";
 import {
   deployment_Library_DO_NO_USE,
   entityAuthor,
@@ -475,6 +477,8 @@ export interface BuildComponentTestWrapperOptions {
   wireLocalCacheCompositeAction?: boolean;
   /** See `MiroirTestProvidersProps.isolateToolsPageState`. Off by default. */
   isolateToolsPageState?: boolean;
+  /** See `MiroirTestProvidersProps.processCapabilities`. */
+  processCapabilities?: ProcessCapabilities;
   /**
    * Instances loaded with the model and data of their application, Miroir or Library (#502):
    * a suite's `localCacheInstances`. A load of its own would be lost: a rollback replaces the
@@ -532,6 +536,8 @@ export interface MiroirTestProvidersProps {
    * RootComponent need them (the report test runner, #330).
    */
   offerReportsAndEntities?: boolean;
+  /** The process capabilities of the context (#633: the AI AppBar buttons); fail-closed by default. */
+  processCapabilities?: ProcessCapabilities;
   children?: React.ReactNode;
 }
 
@@ -576,6 +582,7 @@ function MiroirTestContext(
       initialShowPerformanceDisplay={props.trackRenders ?? false}
       initialToolsPageState={props.isolateToolsPageState ? emptyToolsPageState : undefined}
       initialFeedbackGlowEnabled={false}
+      processCapabilities={props.processCapabilities}
       deploymentUuidToReportsEntitiesMapping={props.deploymentUuidToReportsEntitiesMapping}
     >
       <DocumentOutlineContextProvider
@@ -584,9 +591,11 @@ function MiroirTestContext(
         onNavigateToPath={noOutlineAction}
       >
         <ReportPageContextProvider>
-          <ReportSectionRenderersProvider renderers={appReportSectionRenderers}>
-            {props.children}
-          </ReportSectionRenderersProvider>
+          <MiroirShellHostProvider host={appShellHost}>
+            <ReportSectionRenderersProvider renderers={appReportSectionRenderers}>
+              {props.children}
+            </ReportSectionRenderersProvider>
+          </MiroirShellHostProvider>
         </ReportPageContextProvider>
       </DocumentOutlineContextProvider>
     </MiroirContextReactProvider>
@@ -922,6 +931,7 @@ export function buildComponentTestWrapper(
         testingDeploymentUuid={deployment_Library_DO_NO_USE.uuid}
         trackRenders={trackRenders}
         isolateToolsPageState={options.isolateToolsPageState}
+        processCapabilities={options.processCapabilities}
       >
         {options.wireLocalCacheCompositeAction ? (
           <MemoryRouter>{props.children}</MemoryRouter>

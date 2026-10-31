@@ -68,7 +68,7 @@ if (runThis) {
   describe("processCapabilitiesVersioning.273.phase8 — AppBar wiring", () => {
     it("AppBar filters Versioning with isVersioningAppBarItemVisible and still navigates via resolveAppBarReportLinkApplication", () => {
       const src = readRepoFile(
-        "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Page/AppBar.tsx",
+        "packages/miroir-react/src/components/Page/AppBar.tsx",
       );
       expect(src).toContain("isVersioningAppBarItemVisible");
       expect(src).toContain("resolveAppBarReportLinkApplication");

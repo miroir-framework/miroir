@@ -166,7 +166,7 @@ def test_a_conventional_run_keeps_the_agent_app_and_its_changes(tmp_path):
 
     run.keep_conventional_app(workspace, run_dir, baseline)
 
-    kept = sorted(str(path.relative_to(run_dir / "app")) for path in (run_dir / "app").rglob("*") if path.is_file())
+    kept = sorted(path.relative_to(run_dir / "app").as_posix() for path in (run_dir / "app").rglob("*") if path.is_file())
     assert kept == ["app/page.tsx", "tests/added.test.ts"]
     diff = (run_dir / "changes.diff").read_text()
     assert "+++ agent/app/page.tsx" in diff and "+new" in diff

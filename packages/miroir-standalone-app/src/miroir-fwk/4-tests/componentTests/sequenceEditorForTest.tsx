@@ -7,7 +7,7 @@ import {
 import { useMiroirContextService } from "miroir-react";
 import React, { useMemo } from "react";
 
-import { SequenceEditor } from "../../4_view/components/SequenceEditor/SequenceEditor.js";
+import { SequenceEditor } from "miroir-react";
 import { useEntityInstanceUuidIndexFromLocalCache } from "miroir-react";
 
 // ################################################################################################
