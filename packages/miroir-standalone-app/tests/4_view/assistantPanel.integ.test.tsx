@@ -7,7 +7,7 @@
  *
  * Run:
  * ```bash
- * MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- assistantPanel.633.phase6
+ * MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- assistantPanel.integ
  * ```
  */
 import React from "react";
@@ -21,7 +21,7 @@ import { MiroirShellHostProvider, RootComponent, type MiroirShellHost } from "mi
 import {
   buildComponentTestWrapper,
   type ComponentTestWrapper,
-} from "../../../../src/miroir-fwk/4-tests/componentTests/componentTestTools";
+} from "../../src/miroir-fwk/4-tests/componentTests/componentTestTools";
 
 const aiCapabilities: ProcessCapabilities = {
   ai: true,
@@ -37,7 +37,7 @@ function FakeAssistantPanel(): React.JSX.Element {
   return <div data-testid="fake-assistant-panel" />;
 }
 
-describe("assistantPanel.633.phase6", () => {
+describe("assistantPanel", () => {
   let wrapper: ComponentTestWrapper | undefined;
   // The context keeps the AI sidebar state in sessionStorage: each case starts with it closed.
   beforeEach(() => sessionStorage.clear());

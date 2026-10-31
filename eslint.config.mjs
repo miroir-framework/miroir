@@ -148,6 +148,40 @@ export default tseslint.config(
     },
   },
   {
+    // miroir-react is a library (#633): host features reach it through MiroirShellHostContext and the report section
+    // registry, never through an import. Flat config replaces a rule's options per file, so this block repeats the
+    // jzod restrictions of the block above.
+    files: ["packages/miroir-react/src/**/*.{ts,tsx,mts,cts,js,jsx,mjs,cjs}"],
+    languageOptions: { parser: tseslint.parser },
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          paths: [
+            ...["@miroir-framework/jzod", "@miroir-framework/jzod-ts"].map((name) => ({
+              name,
+              message: "Use the ML adapter of miroir-core: valueToMl, mlToZod, mlToZodTextAndZodSchema, or mlToTs from miroir-core/ml-to-ts.",
+            })),
+            ...["electron", "miroir-mcp", "miroir-mcp/client", "miroir-diagram-class", "miroir-standalone-app"].map((name) => ({
+              name,
+              message: "miroir-react is a library: a host feature goes through MiroirShellHostContext or the report section registry (#633).",
+            })),
+          ],
+          patterns: [
+            {
+              group: ["@copilotkit/*"],
+              message: "The assistant panel is a host slot (MiroirShellHost.assistantPanel), not an import of miroir-react (#633).",
+            },
+            {
+              group: ["**/miroir-standalone-app/**", "miroir-standalone-app/*"],
+              message: "miroir-react never imports the app: move the code into the package or inject it through the host (#633).",
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
     // `declare global { var ... }` requires `var`.
     files: ["packages/*/{src,test,tests}/**/*.d.ts"],
     rules: { "no-var": "off" },

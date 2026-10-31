@@ -93,6 +93,8 @@ A is the knot: it is what G renders and it renders B to E. B and A import each o
 
 Q1-a: the shell, routes and services are this app's composition (G1 asks for reusable components, not a reusable app). `miroir-mcp` brings the stores and an example application. The MiroirTest runtime drives the app's own `PageDispatcher`.
 
+> **Revised by #633 (epic #621, I2):** the shell, routes and client services now move too, so a client builds from libraries (the sandbox first). Host features stay out of `miroir-react` through `MiroirShellHostContext` (MCP call, Electron login, assistant panel) and the report section registry (model diagram, graph, MiroirTest displays). What still stays in the app: [`../633-REFACTOR-app-shell-to-react/analysis.md`](../633-REFACTOR-app-shell-to-react/analysis.md) §5.3.
+
 ### Q2 — The reports cycle (group A)
 
 | Option | Pros | Cons |

@@ -20,7 +20,13 @@
     "@ewoudenberg/difflib",
     "assert",
     "lodash",
-    "miroir-example-library"
+    "miroir-example-library",
+    "d3*",
+    "diff",
+    "miroir-mcp",
+    "miroir-diagram-class",
+    "mermaid",
+    "svg-toolbelt"
   ],
   "eager": [
     "@babel/runtime",
