@@ -660,6 +660,15 @@ function compileVirtualAttributeSqlExpression(
   );
 }
 
+/**
+ * `JSON.stringify` replacer writing a BigInt as its exact decimal string, which `jsonb_to_record`
+ * casts to a bigint column. `BigInt.prototype.toJSON` would give a rounded number (#48).
+ */
+function bigintAsDecimalString(this: any, key: string, value: unknown): unknown {
+  const original = this?.[key];
+  return typeof original === "bigint" ? original.toString() : value;
+}
+
 function sqlColumnOrVirtualExpression(
   attributeName: string,
   virtualSql: Record<string, string>,
@@ -752,9 +761,14 @@ export function  sqlStringForExtractor(
         }
         // Handle single value
         else if (value !== undefined) {
+          // ILIKE has no bigint operand: match on the digits (#48)
+          const likeOperand =
+            (entity?.mlSchema as any)?.definition?.[attributeName]?.type === "bigint"
+              ? `${columnOrExpr}::text`
+              : columnOrExpr;
           whereClause = not
-            ? `${columnOrExpr} NOT ILIKE '%${value}%'`
-            : `${columnOrExpr} ILIKE '%${value}%'`;
+            ? `${likeOperand} NOT ILIKE '%${value}%'`
+            : `${likeOperand} ILIKE '%${value}%'`;
         }
       }
       const select =
@@ -5621,7 +5635,7 @@ function sqlStringForConstantAsExtractorTransformer(
             queryPart: "query",
             from: [{ queryPart: "bypass", value: `${recordFunction}($${paramIndex}::jsonb) AS x(${selectFields})` }],
           }),
-          preparedStatementParameters: [JSON.stringify(actionRuntimeTransformer.value)],
+          preparedStatementParameters: [JSON.stringify(actionRuntimeTransformer.value, bigintAsDecimalString)],
           resultAccessPath: Array.isArray(actionRuntimeTransformer.value)?[]:[0],
         };
       } else {

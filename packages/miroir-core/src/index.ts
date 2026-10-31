@@ -1124,6 +1124,13 @@ export {
 } from "./1_core/testing/test-expect";
 export { toReduxSerializable } from "./1_core/reduxSerializable.js";
 export {
+  BIGINT_JSON_TAG,
+  bigintJsonReplacer,
+  bigintJsonReviver,
+  parseWithBigint,
+  stringifyWithBigint,
+} from "./1_core/bigintJson.js";
+export {
   base64ToBlob,
   deterministicUuidV4,
   fileToBase64,

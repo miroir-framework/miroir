@@ -1,6 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 
+
 import {
   ACTION_OK,
   Action2EntityInstanceReturnType,
@@ -20,7 +21,7 @@ import {
   applyEntityOnlyRename,
   applyMlSchemaColumnChanges
 } from "miroir-core";
-import { FileSystemInstanceStoreSectionMixin, MixedFileSystemInstanceStoreSection } from "./FileSystemInstanceStoreSectionMixin.js";
+import { FileSystemInstanceStoreSectionMixin, MixedFileSystemInstanceStoreSection, fullName } from "./FileSystemInstanceStoreSectionMixin.js";
 import { FileSystemStoreSection } from "./FileSystemStoreSection.js";
 
 
@@ -67,9 +68,14 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
     }
 
     // #########################################################################################
+    // #37 — an Entity's instances live in the data section; the model section only holds
+    // storage spaces for meta-model entities (Entity, Report, Query, ...).
+    // HTTP external entities have no data storage space, so the saved Entity instance counts too.
     existsEntity(entityUuid: string): boolean {
-      const entityDirectories = fs.readdirSync(this.directory);
-      return entityDirectories.includes(entityUuid);
+      return (
+        this.dataStore.getEntityUuids().includes(entityUuid) ||
+        fs.existsSync(path.join(this.directory, entityEntity.uuid, fullName(entityUuid)))
+      );
     }
 
     // #########################################################################################
@@ -85,10 +91,6 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
         );
       } else {
         await this.dataStore.createStorageSpaceForInstancesOfEntity(entity);
-      }
-      const entities = fs.readdirSync(this.directory);
-      if (!entities.includes(entity.uuid)) {
-        fs.mkdirSync(path.join(this.directory, entity.uuid));
       }
       return this.upsertInstance(entityEntity.uuid, entity);
     }
@@ -107,7 +109,7 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
     // #########################################################################################
     // #220 — Entity-only drop: remove Entity + storage space; do not touch EntityVersions.
     async dropEntity(entityUuid: string): Promise<Action2VoidReturnType> {
-      if (this.getEntityUuids().includes(entityUuid)) {
+      if (this.dataStore.getEntityUuids().includes(entityUuid)) {
         await this.dataStore.dropStorageSpaceForInstancesOfEntity(entityUuid);
       } else {
         log.warn(this.logHeader, "dropEntity entity not found:", entityUuid);

@@ -10,7 +10,7 @@ export const mlsToSqlAttributeTypeMap: Record<
   { targetType: "json" | "scalar"; sqlTargetType: string }
 > = {
   boolean: { targetType: "scalar", sqlTargetType: "boolean" },
-  bigint: { targetType: "scalar", sqlTargetType: "double precision" },
+  bigint: { targetType: "scalar", sqlTargetType: "bigint" }, // not double precision, which drops digits beyond 2^53 (#48)
   date: { targetType: "scalar", sqlTargetType: "date" },
   number: { targetType: "scalar", sqlTargetType: "double precision" },
   string: { targetType: "scalar", sqlTargetType: "text" },

@@ -47,6 +47,8 @@ import {
   persistChangedPasswordHash,
   ParseServerArgsError,
   assembleSecretImportSet,
+  bigintJsonReplacer,
+  bigintJsonReviver,
   hydrateSecrets,
   importProcessSecrets,
   parseServerArgs,
@@ -297,7 +299,9 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-app.use(bodyParser.json({limit: '50mb'}));
+// BigInt values cross the wire as {"$bigint": "<digits>"}, both ways, so none loses digits (#48)
+app.set("json replacer", bigintJsonReplacer);
+app.use(bodyParser.json({ limit: '50mb', reviver: bigintJsonReviver }));
 
 const serverAuthentication = (
   miroirConfig.server as { authentication?: { enabled?: boolean; tokenSecret?: string; mcp?: boolean } }
