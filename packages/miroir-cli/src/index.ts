@@ -9,92 +9,12 @@ import {
 
 import { authenticateCli, readPasswordFromTerminal } from './authentication.js';
 import { initializePlatform } from './platform.js';
-import {
-  getAllCommands,
-  type CliResult,
-} from './commands/commandsFromEndpoint.js';
+import { getAllCommands } from './commands/commandsFromEndpoint.js';
+import { registerCatalogCommands } from './commands/registerCatalogCommands.js';
 
 const version = "1.0.0";
 
 const log: LoggerInterface = console as any as LoggerInterface;
-
-// ################################################################################################
-// Register Commands
-// ################################################################################################
-
-function registerCommands(
-  program: Command,
-  domainController: DomainControllerInterface,
-  applicationDeploymentMap: ApplicationDeploymentMap,
-): void {
-  const commands = getAllCommands();
-  
-  for (const handler of commands) {
-    const { commandDescription, execute } = handler;
-    
-    const subcommand = program
-      .command(commandDescription.name)
-      .description(commandDescription.description);
-    
-    // Add --payload option for JSON input
-    subcommand.option(
-      '-p, --payload <json>',
-      'JSON payload for the command (required)',
-      undefined
-    );
-
-    // Add --file option to read payload from file
-    subcommand.option(
-      '-f, --file <path>',
-      'Path to JSON file containing the payload',
-      undefined
-    );
-
-    subcommand.action(async (options) => {
-      try {
-        let payload: unknown;
-
-        if (options.file) {
-          // Read payload from file
-          const fs = await import('fs');
-          const fileContent = fs.readFileSync(options.file, 'utf-8');
-          payload = JSON.parse(fileContent);
-        } else if (options.payload) {
-          // Parse inline JSON payload
-          payload = JSON.parse(options.payload);
-        } else {
-          log.error(`Error: Either --payload or --file is required`);
-          process.exit(1);
-        }
-
-        const result: CliResult = await execute(
-          payload,
-          domainController,
-          applicationDeploymentMap
-        );
-
-        // Output result as JSON
-        log.debug(JSON.stringify(result, null, 2));
-
-        // Exit with appropriate code
-        if (result.status === "error") {
-          process.exit(1);
-        }
-      } catch (error) {
-        const errorResult: CliResult = {
-          status: "error",
-          command: commandDescription.name,
-          error: {
-            type: "cli_error",
-            message: error instanceof Error ? error.message : String(error),
-          },
-        };
-        log.error(JSON.stringify(errorResult, null, 2));
-        process.exit(1);
-      }
-    });
-  }
-}
 
 // ################################################################################################
 // #263: identity options, global to every command (docs/reference/authentication.md)
@@ -180,20 +100,26 @@ async function main(): Promise<void> {
     .command('list')
     .description('List all available commands')
     .action(() => {
-      const commands = getAllCommands();
       log.debug('\nAvailable commands:\n');
+      let applicationName: string | undefined;
       for (const handler of commands) {
-        log.debug(`  ${handler.commandDescription.name}`);
+        if (handler.entry.applicationName !== applicationName) {
+          applicationName = handler.entry.applicationName;
+          log.debug(`${applicationName}:`);
+        }
+        const alias = Object.entries(registration.aliases).find(([, name]) => name === handler.commandDescription.name)?.[0];
+        log.debug(`  ${handler.commandDescription.name}${alias ? ` (alias: ${alias})` : ""}`);
         log.debug(`    ${handler.commandDescription.description}\n`);
       }
     });
 
-  // Register all endpoint commands
-  registerCommands(cliProgram, domainController, applicationDeploymentMap);
+  // #627: one command per Endpoint action of every deployed application
+  const commands = getAllCommands(domainController, applicationDeploymentMap);
+  const registration = registerCatalogCommands(cliProgram, commands, domainController, applicationDeploymentMap);
 
   // Parse and execute; open stores keep the event loop alive, so the CLI exits explicitly
   await cliProgram.parseAsync(process.argv);
-  process.exit(0);
+  process.exit(process.exitCode ?? 0);
 }
 
 // Run CLI

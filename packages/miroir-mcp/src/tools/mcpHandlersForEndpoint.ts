@@ -1,41 +1,17 @@
 import { type ZodTypeAny } from "zod";
-// import { get } from "http";
 
 import {
-  Action2VoidReturnType,
-  ApplicationDeploymentMap,
-  DomainControllerInterface,
-  InstanceAction,
-  MlElement,
-  MlReference,
+  type Action2ReturnType,
   LoggerInterface,
   MiroirLoggerFactory,
-  resolveFundamentalSchemaForDeployment,
-  resolveMlSchemaReferenceInContext,
+  endpointActionPayloadZodSchema,
+  ENDPOINT_ACTION_PAYLOAD_VALIDATION_MAX_DEPTH,
   getEndpointActions,
   redactCredentialSecretsFromValue,
-  type AuthPrincipal,
   type EndpointDefinition,
-  type MetaModel,
-  type MiroirModelEnvironment,
   type SelfApplication,
-  mlToZodTextAndZodSchema,
-  metaModelEntities,
-  rejectInstancesNotMatchingTheirEntity,
 } from "miroir-core";
-import { defaultMiroirMetaModel,  } from "miroir-app-miroir";
-import { deployment_Miroir } from "miroir-app-admin";
-import {
-  getDefaultLibraryModelEnvironmentDEFUNCT,
-  resolveLibraryDeploymentUuid,
-} from "miroir-example-library";
 import { mlElementToJsonSchema } from "./mlElementToJsonSchema.js";
-import {
-  isMlConversionLimitReached,
-  normalizeMlConversionOptions,
-  schemaReferenceKey,
-  type MlConversionOptions,
-} from "./mlConversionContext.js";
 
 
 const packageName = "miroir-mcp";
@@ -45,334 +21,71 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: Logge
   log = logger;
 });
 
-export type ToolHandler = (
-  params: unknown,
-  domainController: DomainControllerInterface,
-  applicationDeploymentMap: ApplicationDeploymentMap
-) => Promise<{ content: Array<{ type: string; text: string, parsed: Record<string, any> }> }>
 
+export const MCP_PAYLOAD_VALIDATION_MAX_DEPTH = ENDPOINT_ACTION_PAYLOAD_VALIDATION_MAX_DEPTH;
 
-/**
- * Helper function to convert a ML payload schema to a Zod schema
- * Recursively resolves all schema references before conversion to avoid reference resolution errors
- * @param mlPayload - The ML schema definition from actionParameters.payload
- * @returns The Zod schema for validation
- */
-// function mlPayloadToZodSchema(mlPayload: MlObject): ZodTypeAny {
-function mlPayloadToZodSchema(mlPayload: MlElement): ZodTypeAny {
-  // Resolve references for Zod conversion, but stop on cycles / depth — the meta-model is
-  // recursive (mlElement, compositeAction, coreTransformerForBuildPlusRuntime, …).
-  // The depth cap keeps payloads that reach the transformer unions (query templates, action sequences) from expanding
-  // into a schema tree too big for memory: below it, values are accepted as `any` and the DomainController checks them.
-  const resolvedMlSchema = resolveAllReferences(mlPayload, { maxDepth: MCP_PAYLOAD_VALIDATION_MAX_DEPTH });
-
-  log.debug("mlPayloadToZodSchema resolved schema for MCP payload conversion");
-
-  return mlToZodTextAndZodSchema(resolvedMlSchema, undefined, undefined, { datesAsString: true }).zodSchema;
-}
-
-export const MCP_PAYLOAD_VALIDATION_MAX_DEPTH = 12;
-
-/**
- * `any` in place of a schema left unresolved; it keeps the element's own optional / nullable flags, or a cut optional
- * attribute (e.g. a transformer's `label`) would become required.
- */
-function unresolvedMlAny(element?: MlElement): MlElement {
+function mcpTextResult(subObject: Record<string, any>): McpTextResult {
+  const redactedSubObject = redactCredentialSecretsFromValue(subObject) as Record<string, any>;
   return {
-    type: "any",
-    ...(element?.optional ? { optional: true } : {}),
-    ...(element?.nullable ? { nullable: true } : {}),
-  } as MlElement;
-}
-
-/**
- * Recursively resolves schema references in a ML element for Zod validation.
- * Cyclic references degrade to `any` instead of overflowing the stack.
- */
-function resolveAllReferences(
-  element: MlElement,
-  conversionOptions?: MlConversionOptions,
-): MlElement {
-  if (!element || typeof element !== "object") {
-    return element;
-  }
-
-  const options = normalizeMlConversionOptions(conversionOptions);
-  if (options.depth >= options.maxDepth) {
-    return unresolvedMlAny(element);
-  }
-
-  const childOptions: MlConversionOptions = {
-    ...options,
-    depth: options.depth + 1,
-  };
-
-  if (element.type === "schemaReference") {
-    const ref = element as MlReference;
-    const refKey = schemaReferenceKey(ref);
-    if (isMlConversionLimitReached(options, refKey)) {
-      return unresolvedMlAny(element);
-    }
-
-    options.resolvingRefs.add(refKey);
-    try {
-      const resolvedSchema = resolveMlSchemaReferenceInContext(
-        ref,
-        ref.context || {},
-        {
-          miroirFundamentalMlSchema: resolveFundamentalSchemaForDeployment(
-            deployment_Miroir.uuid,
-            defaultMiroirMetaModel as any as MetaModel,
-            "static",
-          ),
-          endpointsByUuid: {},
-          currentModel: defaultMiroirMetaModel as any as MetaModel,
-        },
-      );
-      const resolved = resolveAllReferences(resolvedSchema, childOptions);
-      // the reference's own optional / nullable flags apply to what it resolves to
-      return {
-        ...resolved,
-        ...(ref.optional ? { optional: true } : {}),
-        ...(ref.nullable ? { nullable: true } : {}),
-      } as MlElement;
-    } finally {
-      options.resolvingRefs.delete(refKey);
-    }
-  }
-
-  if (element.type === "object" && element.definition) {
-    // `extend` holds schema references too (e.g. query payloads extend `shippingBox`): the Zod conversion gets no
-    // reference context, so the extended attributes are inlined, and an extension cut by the depth limit is dropped.
-    const { extend, ...withoutExtend } = element;
-    const resolvedExtensions = (extend === undefined ? [] : Array.isArray(extend) ? extend : [extend]).map(
-      (extension) => resolveAllReferences(extension as MlElement, childOptions),
-    );
-    const extensions = resolvedExtensions.filter((extension) => extension.type === "object" && extension.definition);
-    return {
-      ...withoutExtend,
-      // the attributes of a dropped extension are unknown here: accept them
-      ...(extensions.length < resolvedExtensions.length ? { nonStrict: true } : {}),
-      definition: Object.fromEntries(
-        [
-          ...extensions.flatMap((extension) => Object.entries((extension as any).definition)),
-          ...Object.entries(element.definition),
-        ].map(([key, value]) => [key, resolveAllReferences(value as any, childOptions)]),
-      ),
-    };
-  }
-
-  if (element.type === "array" && element.definition) {
-    return {
-      ...element,
-      definition: resolveAllReferences(element.definition, childOptions),
-    };
-  }
-
-  if (element.type === "union" && element.definition && Array.isArray(element.definition)) {
-    return {
-      ...element,
-      definition: element.definition.map((member: any) =>
-        resolveAllReferences(member, childOptions),
-      ),
-    };
-  }
-
-  if (element.type === "record" && element.definition) {
-    return {
-      ...element,
-      definition: resolveAllReferences(element.definition, childOptions),
-    };
-  }
-
-  if (element.type === "tuple" && element.definition && Array.isArray(element.definition)) {
-    return {
-      ...element,
-      definition: element.definition.map((member: any) =>
-        resolveAllReferences(member, childOptions),
-      ),
-    };
-  }
-
-  if (element.type === "intersection" && element.definition) {
-    const intersection = element.definition as { left?: MlElement; right?: MlElement };
-    return {
-      ...element,
-      definition: {
-        left: intersection.left
-          ? resolveAllReferences(intersection.left, childOptions)
-          : unresolvedMlAny(),
-        right: intersection.right
-          ? resolveAllReferences(intersection.right, childOptions)
-          : unresolvedMlAny(),
+    content: [
+      {
+        type: "text",
+        parsed: redactedSubObject,
+        text: JSON.stringify(redactedSubObject, null, 2),
       },
-    } as MlElement;
-  }
-
-  if (element.type === "lazy" && element.definition) {
-    return {
-      ...element,
-      definition: resolveAllReferences(element.definition as MlElement, childOptions),
-    } as MlElement;
-  }
-
-  return element;
+    ],
+  };
 }
 
+export type McpTextResult = { content: Array<{ type: string; text: string; parsed: Record<string, any> }> };
+
 /**
- * Base handler that wraps tool invocation with common logic:
- * - Parameter validation
- * - Action construction
- * - DomainController invocation
- * - Response formatting
+ * Validates a tool's arguments against its payload schema, runs `execute` on the validated payload,
+ * and formats the result for MCP, with credential secrets redacted. `execute` is where the action
+ * runs (the endpoint action catalog's executor, #627).
  */
 export async function handleMcpAction(
   toolName: string,
   params: unknown,
   schema: ZodTypeAny,
-  actionBuilder: (validatedParams: any) => InstanceAction,
-  domainController: DomainControllerInterface,
-  applicationDeploymentMap: ApplicationDeploymentMap,
-  modelEnvironmentOverride?: MiroirModelEnvironment,
-  principal?: AuthPrincipal,
-): Promise<{ content: Array<{ type: string; text: string; parsed: Record<string, any> }> }> {
+  execute: (validatedParams: any) => Promise<Action2ReturnType>,
+): Promise<McpTextResult> {
   try {
     log.info(`${toolName} - received params:`, JSON.stringify(redactCredentialSecretsFromValue(params), null, 2));
-    log.info(`${toolName} - received schema:`, JSON.stringify(schema, null, 2));
-
-    // log.info(`${toolName} - received domainController:`, domainController);
-    log.info(`${toolName} - received applicationDeploymentMap:`, applicationDeploymentMap);
-
     const parsedParams = schema.safeParse(params);
     if (!parsedParams.success) {
       const message = parsedParams.error.issues
         .map((issue) => `${issue.path.join(".") || "(root)"}: ${issue.message}`)
         .join("; ");
       log.info(`${toolName} - validation failed:`, message);
-      const subObject = {
-        status: "error",
-        action: toolName,
-        error: {
-          type: "validation_error",
-          message,
-        },
-      };
-      return {
-        content: [
-          {
-            type: "text",
-            parsed: subObject,
-            text: JSON.stringify(subObject, null, 2),
-          },
-        ],
-      };
+      return mcpTextResult({ status: "error", action: toolName, error: { type: "validation_error", message } });
     }
-    const validatedParams = parsedParams.data;
-    log.info(`${toolName} - validated params:`, validatedParams);
-
-    // Build the action
-    const action = actionBuilder(validatedParams);
-    log.info(`${toolName} - constructed action:`, JSON.stringify(redactCredentialSecretsFromValue(action), null, 2));
-
-    const libraryDeploymentUuid = resolveLibraryDeploymentUuid(applicationDeploymentMap);
-    const defaultLibraryModelEnvironment = modelEnvironmentOverride ?? getDefaultLibraryModelEnvironmentDEFUNCT(
-      defaultMiroirMetaModel,
-      undefined as any, // not used
-      libraryDeploymentUuid,
-    );
-    // log.info(`${toolName} - constructed defaultLibraryModelEnvironment:`, JSON.stringify(defaultLibraryModelEnvironment, null, 2));
-    log.info(
-      `${toolName} - constructed defaultLibraryModelEnvironment.endpointsByUuid:`,
-      JSON.stringify(Object.keys(defaultLibraryModelEnvironment.endpointsByUuid), null, 2),
-    );
-    log.info(
-      `${toolName} - constructed defaultLibraryModelEnvironment.currentModel.endpoints:`,
-      JSON.stringify(
-        defaultLibraryModelEnvironment.currentModel.endpoints.map((e: EndpointDefinition) => e.uuid),
-        null,
-        2,
-      ),
-    );
-
-    // #558: an agent's instance that its Entity's mlSchema rejects is refused, naming what does not match
-    const rejectedInstance = rejectInstancesNotMatchingTheirEntity(
-      action,
-      [...(defaultLibraryModelEnvironment.currentModel?.entities ?? []), ...metaModelEntities],
-      defaultLibraryModelEnvironment, // the action's own model, where an Entity's schemaReferences resolve
-    );
-
-    // Execute via DomainController
-    const result: Action2VoidReturnType = rejectedInstance ?? await domainController.handleAction(
-      action,
-      applicationDeploymentMap,
-      defaultLibraryModelEnvironment as any as MiroirModelEnvironment, // defaultMiroirModelEnvironment,
-      undefined,
-      undefined,
-      principal,
-    );
-
+    const result = await execute(parsedParams.data);
     log.info(`${toolName} - result:`, JSON.stringify(redactCredentialSecretsFromValue(result), null, 2));
-
-    // Format response for MCP
     if (result.status === "ok") {
-      const subObject = {
+      return mcpTextResult({
         status: "success",
         action: toolName,
         result: "returnedDomainElement" in result ? result.returnedDomainElement : undefined,
-      };
-      const redactedSubObject = redactCredentialSecretsFromValue(subObject) as Record<string, any>;
-      return {
-        content: [
-          {
-            type: "text",
-            parsed: redactedSubObject,
-            text: JSON.stringify(redactedSubObject, null, 2),
-          },
-        ],
-      };
-    } else {
-      // Error response
-      const subObject = {
-        status: "error",
-        action: toolName,
-        error: {
-          type: "errorType" in result ? result.errorType : "unknown",
-          message: "errorMessage" in result ? result.errorMessage : "Action failed",
-          stack: "errorStack" in result ? result.errorStack : undefined,
-          context: "errorContext" in result ? result.errorContext : undefined,
-        },
-      };
-      const redactedSubObject = redactCredentialSecretsFromValue(subObject) as Record<string, any>;
-      return {
-        content: [
-          {
-            type: "text",
-            parsed: redactedSubObject,
-            text: JSON.stringify(redactedSubObject, null, 2),
-          },
-        ],
-      };
+      });
     }
-  } catch (error) {
-    log.error(`${toolName} - exception:`, error);
-    const subObject = {
+    return mcpTextResult({
       status: "error",
       action: toolName,
       error: {
-        type: "validation_error",
-        message: error instanceof Error ? error.message : String(error),
+        type: "errorType" in result ? result.errorType : "unknown",
+        message: "errorMessage" in result ? result.errorMessage : "Action failed",
+        stack: "errorStack" in result ? result.errorStack : undefined,
+        context: "errorContext" in result ? result.errorContext : undefined,
       },
-    };
-    const redactedSubObject = redactCredentialSecretsFromValue(subObject) as Record<string, any>;
-    return {
-      content: [
-        {
-          type: "text",
-          parsed: redactedSubObject,
-          text: JSON.stringify(redactedSubObject, null, 2),
-        },
-      ],
-    };
+    });
+  } catch (error) {
+    log.error(`${toolName} - exception:`, error);
+    return mcpTextResult({
+      status: "error",
+      action: toolName,
+      error: { type: "validation_error", message: error instanceof Error ? error.message : String(error) },
+    });
   }
 }
 
@@ -420,63 +133,11 @@ export type McpToolDescriptionProperty =
 export type McpRequestHandler<T extends McpToolDescription> = {
   mcpToolDescription: T;
   payloadZodSchema: ZodTypeAny;
-  actionEnvelope: {
-    actionType: string;
-    actionLabel: string;
-    endpoint: string;
-  };
-  actionHandler: ToolHandler;
-}
-export type McpRequestHandlers = Record<string, McpRequestHandler<any>>;
+  actionLabel: string;
+};
 
 // ################################################################################################
-// ################################################################################################
-// Generic handler factory
-// ################################################################################################
-/**
- * Creates a handler function for a given tool name with custom payload building logic
- */
-export function mcpToolHandler(
-  toolName: string,
-  // mcpRequestHandlers: McpRequestHandlers,
-  // config: McpRequestHandler<any>,
-  payloadZodSchema: ZodTypeAny,
-  actionEnvelope: McpRequestHandler<any>["actionEnvelope"],
-): (
-  payload: unknown,
-  domainController: DomainControllerInterface,
-  applicationDeploymentMap: ApplicationDeploymentMap
-) => Promise<{ content: Array<{ type: string; text: string, parsed: Record<string, any> }> }> {
-  return async (
-    payload: unknown,
-    domainController: DomainControllerInterface,
-    applicationDeploymentMap: ApplicationDeploymentMap
-  ) => {
-    // const config = mcpRequestHandlers[toolName];
-    log.info(`mcpToolHandler - invoking tool: ${toolName}`);
-    log.info(
-      `mcpToolHandler - invoking tool: ${toolName}`,
-      "applicationDeploymentMap",
-      applicationDeploymentMap,
-      "payload",
-      JSON.stringify(redactCredentialSecretsFromValue(payload), null, 2)
-    );
-    return handleMcpAction(
-      toolName,
-      payload,
-      payloadZodSchema,
-      (payload) =>
-        ({
-          ...actionEnvelope,
-          payload,
-        }) as InstanceAction,
-      domainController,
-      applicationDeploymentMap,
-    );
-  };
-}
-
-// ################################################################################################
+/** The MCP description and payload validator of one endpoint action. */
 export function mcpToolEntry(
   endpoint: EndpointDefinition,
   actionType: string,
@@ -492,25 +153,13 @@ export function mcpToolEntry(
     throw new Error(`Payload definition not found for action type: ${actionType}`);
   }
   const mlPayload = actionDef.actionParameters.payload;
-  const actionDescription = actionDef.actionParameters.actionType.tag?.value?.description 
+  const actionDescription = actionDef.actionParameters.actionType.tag?.value?.description
     || actionDef.actionParameters.actionType.tag?.value?.defaultLabel
     || `Execute ${actionType} action on ${endpoint.name || endpoint.uuid}`;
-  
+
   log.debug(`Creating MCP tool ${toolName} for action ${actionType} on endpoint ${endpoint.name}`);
 
   let payloadZodSchema: ZodTypeAny | undefined;
-  const getPayloadZodSchema = (): ZodTypeAny => {
-    if (!payloadZodSchema) {
-      payloadZodSchema = mlPayloadToZodSchema(mlPayload);
-    }
-    return payloadZodSchema;
-  };
-
-  const actionEnvelope = {
-    actionType,
-    actionLabel: `MCP: ${actionType.replace(/([A-Z])/g, ' $1').trim()}`,
-    endpoint: endpoint.uuid,
-  };
   return {
     mcpToolDescription: {
       name: toolName,
@@ -518,21 +167,11 @@ export function mcpToolEntry(
       inputSchema: mlElementToJsonSchema(mlPayload) as McpToolDescriptionPropertyObject,
     },
     get payloadZodSchema() {
-      return getPayloadZodSchema();
+      if (!payloadZodSchema) {
+        payloadZodSchema = endpointActionPayloadZodSchema(mlPayload);
+      }
+      return payloadZodSchema;
     },
-    actionEnvelope,
-    actionHandler: (
-      payload: unknown,
-      domainController: DomainControllerInterface,
-      applicationDeploymentMap: ApplicationDeploymentMap,
-    ) =>
-      mcpToolHandler(toolName, getPayloadZodSchema(), actionEnvelope)(
-        payload,
-        domainController,
-        applicationDeploymentMap,
-      ),
+    actionLabel: `MCP: ${actionType.replace(/([A-Z])/g, " $1").trim()}`,
   };
 }
-
-
-

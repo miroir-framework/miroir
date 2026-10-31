@@ -1465,6 +1465,27 @@ export {
   type EndpointActionRegistryEntry,
 } from "./2_domain/EndpointActionRegistry.js";
 export {
+  currentApplicationDeploymentMap,
+  ENDPOINT_ACTION_NAME_MAX_LENGTH,
+  endpointActionFingerprint,
+  endpointActionName,
+  endpointActionTargetApplication,
+  executeEndpointAction,
+  FRAMEWORK_APPLICATION_UUIDS,
+  listEndpointActions,
+  sanitizeEndpointActionNamePart,
+  truncateEndpointActionName,
+  type EndpointActionCallContext,
+  type EndpointActionEntry,
+} from "./2_domain/EndpointActionCatalog.js";
+export {
+  ENDPOINT_ACTION_PAYLOAD_VALIDATION_MAX_DEPTH,
+  endpointActionEntryZodSchema,
+  endpointActionPayloadZodSchema,
+  validateEndpointActionPayload,
+  type EndpointActionPayloadValidation,
+} from "./2_domain/EndpointActionPayloadSchema.js";
+export {
   checkTransformerMlSchemaCompatibility,
   formatMlSchemaTypeLabel,
   getDeclaredInputMlSchema,

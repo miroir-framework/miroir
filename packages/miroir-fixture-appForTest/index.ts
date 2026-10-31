@@ -10,6 +10,8 @@ export { default as deployment_AppForTest_DO_NO_USE } from "./assets/deployment/
 export { default as entityPublisher } from "./assets/appForTest_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/a027c379-8468-43a5-ba4d-bf618be25cab.json" with { type: "json" };
 export { default as entityCountry } from "./assets/appForTest_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/d3139a6d-0486-4ec8-bded-2a83a3c3cee4.json" with { type: "json" };
 
+export { default as endpointFixture } from "./assets/appForTest_model/3d8da4d4-8f76-4bb4-9212-14869d81c00c/bb447b8c-a687-408a-bc59-293aea293906.json" with { type: "json" };
+
 export { default as selfApplicationAppForTest } from "./assets/appForTest_model/a659d350-dd97-4da9-91de-524fa01745dc/eef01001-0001-4000-8000-000000000001.json" with { type: "json" };
 export { default as selfApplicationModelBranchAppForTestMasterBranch } from "./assets/appForTest_model/cdb0aec6-b848-43ac-a058-fe2dbe5811f1/eef01001-0004-4000-8000-000000000004.json" with { type: "json" };
 

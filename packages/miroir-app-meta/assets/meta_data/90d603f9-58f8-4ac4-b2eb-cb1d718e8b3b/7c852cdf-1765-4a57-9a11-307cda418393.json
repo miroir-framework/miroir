@@ -1,0 +1,20 @@
+{
+  "uuid": "7c852cdf-1765-4a57-9a11-307cda418393",
+  "parentName": "BundleSizeMeasurement",
+  "parentUuid": "90d603f9-58f8-4ac4-b2eb-cb1d718e8b3b",
+  "application": "miroir-standalone-app",
+  "measuredAt": "2026-10-31T10:42:15.748Z",
+  "eagerGzipBytes": 841981,
+  "baseline": 841981,
+  "previousBaseline": 824806,
+  "baselineChange": 17175,
+  "reason": "#627: the standalone app imports the shared endpoint action naming from miroir-core (+0.7 kB gzipped over _integration, which was already at +1.99% of the previous baseline)",
+  "gitCommit": "76f160293efc4c8901c1c54c145407f8198851b4",
+  "gitBranch": "claude/627-endpoint-surfaces",
+  "miroirVersion": "0.5.0-rc.1",
+  "eagerChunks": 71,
+  "eagerRawBytes": 4636646,
+  "totalChunks": 430,
+  "totalRawBytes": 22571581,
+  "totalGzipBytes": 5704075
+}

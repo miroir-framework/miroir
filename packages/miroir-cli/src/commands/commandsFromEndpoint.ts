@@ -1,30 +1,20 @@
 import { type ZodTypeAny } from "zod";
 
 import {
-  Action2VoidReturnType,
+  type Action2ReturnType,
   ApplicationDeploymentMap,
+  currentApplicationDeploymentMap,
   DomainControllerInterface,
-  InstanceAction,
+  executeEndpointAction,
+  listEndpointActions,
   MlElement,
-  MlReference,
   LoggerInterface,
   MiroirLoggerFactory,
-  resolveFundamentalSchemaForDeployment,
-  resolveMlSchemaReferenceInContext,
-  getEndpointActions,
-  type EndpointDefinition,
+  endpointActionEntryZodSchema,
+  type EndpointActionEntry,
   type MlObject,
-  type MetaModel,
-  mlToZodTextAndZodSchema,
 } from "miroir-core";
-import { deployment_Miroir } from "miroir-app-admin";
-import {
-  getDefaultLibraryModelEnvironmentDEFUNCT,
-  defaultLibraryAppModel,
-  resolveLibraryDeploymentUuid,
-} from "miroir-example-library";
 
-import { defaultMiroirMetaModel, instanceEndpointV1 } from "miroir-app-miroir";
 const packageName = "miroir-cli";
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, "info", "commandsFromEndpoint");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
@@ -79,90 +69,12 @@ export interface CliCommandOption {
 export interface CliCommandHandler<T extends CliCommandDescription> {
   commandDescription: T;
   payloadZodSchema: ZodTypeAny;
-  actionEnvelope: {
-    actionType: string;
-    actionLabel: string;
-    // application: string;
-    endpoint: string;
-  };
+  /** The endpoint action catalog entry the command runs (#627). */
+  entry: EndpointActionEntry;
   execute: CliExecuteFunction;
 }
 
 export type CliRequestHandlers = Record<string, CliCommandHandler<any>>;
-
-// ################################################################################################
-// Schema Helpers (adapted from miroir-mcp)
-// ################################################################################################
-
-/**
- * Helper function to convert a ML payload schema to a Zod schema
- */
-function mlPayloadToZodSchema(mlPayload: MlObject): ZodTypeAny {
-  const resolvedMlSchema = resolveAllReferences(mlPayload);
-  
-  return mlToZodTextAndZodSchema(resolvedMlSchema, undefined, undefined, { datesAsString: true }).zodSchema;
-}
-
-/**
- * Recursively resolves all schema references in a ML schema element
- */
-function resolveAllReferences(element: MlElement): MlElement {
-  if (!element || typeof element !== 'object') {
-    return element;
-  }
-
-  if (element.type === 'schemaReference') {
-    const resolvedSchema = resolveMlSchemaReferenceInContext(
-      element as MlReference,
-      element.context || {},
-      {
-        miroirFundamentalMlSchema: resolveFundamentalSchemaForDeployment(
-          deployment_Miroir.uuid,
-          defaultMiroirMetaModel as MetaModel,
-          "static",
-        ),
-        endpointsByUuid: {},
-        currentModel: defaultMiroirMetaModel as MetaModel,
-      }
-    );
-    return resolveAllReferences(resolvedSchema);
-  }
-
-  if (element.type === 'object' && element.definition) {
-    return {
-      ...element,
-      definition: Object.fromEntries(
-        Object.entries(element.definition).map(([key, value]) => [
-          key,
-          resolveAllReferences(value as any)
-        ])
-      )
-    };
-  }
-
-  if (element.type === 'array' && element.definition) {
-    return {
-      ...element,
-      definition: resolveAllReferences(element.definition)
-    };
-  }
-
-  if (element.type === 'union' && element.definition && Array.isArray(element.definition)) {
-    return {
-      ...element,
-      definition: element.definition.map((member: any) => resolveAllReferences(member))
-    };
-  }
-
-  if (element.type === 'record' && element.definition) {
-    return {
-      ...element,
-      definition: resolveAllReferences(element.definition)
-    };
-  }
-
-  return element;
-}
 
 /**
  * Extract CLI command options from ML schema
@@ -229,65 +141,36 @@ function authenticationErrorType(error: unknown, depth = 0): string | undefined 
 // ################################################################################################
 
 /**
- * Base handler that wraps CLI command invocation with common logic:
- * - Parameter validation
- * - Action construction
- * - DomainController invocation
- * - Response formatting
+ * Validates a command's payload, runs `execute` on it and formats the result for the CLI.
  */
 export async function handleCliAction(
   commandName: string,
   params: unknown,
-  schema: any,
-  actionBuilder: (validatedParams: any) => InstanceAction,
-  domainController: DomainControllerInterface,
-  applicationDeploymentMap: ApplicationDeploymentMap,
+  schema: () => ZodTypeAny,
+  execute: (validatedParams: any) => Promise<Action2ReturnType>,
 ): Promise<CliResult> {
   try {
     log.info(`${commandName} - received params:`, params);
-    log.info(`${commandName} - applicationDeploymentMap:`, applicationDeploymentMap);
-
-    // Validate parameters
-    const validatedParams = schema.parse(params);
-    log.info(`${commandName} - validated params:`, validatedParams);
-
-    // Build the action
-    const action = actionBuilder(validatedParams);
-    log.info(`${commandName} - constructed action:`, JSON.stringify(action, null, 2));
-
-    const defaultLibraryModelEnvironment = getDefaultLibraryModelEnvironmentDEFUNCT(
-      defaultMiroirMetaModel,
-      instanceEndpointV1 as any as EndpointDefinition,
-      resolveLibraryDeploymentUuid(applicationDeploymentMap),
-    );
-    // Execute via DomainController
-    const result: Action2VoidReturnType = await domainController.handleAction(
-      action,
-      applicationDeploymentMap,
-      defaultLibraryModelEnvironment as any,
-    );
-
+    const validatedParams = schema().parse(params);
+    const result = await execute(validatedParams);
     log.info(`${commandName} - result:`, JSON.stringify(result, null, 2));
-
-    // Format response for CLI
     if (result.status === "ok") {
       return {
         status: "success",
         command: commandName,
         result: "returnedDomainElement" in result ? result.returnedDomainElement : undefined,
       };
-    } else {
-      return {
-        status: "error",
-        command: commandName,
-        error: {
-          type: authenticationErrorType(result) ?? ("errorType" in result ? result.errorType : "unknown"),
-          message: ("errorMessage" in result ? result.errorMessage : "Action failed") as any,
-          stack: ("errorStack" in result ? result.errorStack : undefined) as any,
-          context: "errorContext" in result ? result.errorContext : undefined,
-        },
-      };
     }
+    return {
+      status: "error",
+      command: commandName,
+      error: {
+        type: authenticationErrorType(result) ?? ("errorType" in result ? result.errorType : "unknown"),
+        message: ("errorMessage" in result ? result.errorMessage : "Action failed") as any,
+        stack: ("errorStack" in result ? result.errorStack : undefined) as any,
+        context: "errorContext" in result ? result.errorContext : undefined,
+      },
+    };
   } catch (error) {
     log.error(`${commandName} - exception:`, error);
     return {
@@ -302,125 +185,95 @@ export async function handleCliAction(
 }
 
 // ################################################################################################
-// Command Handler Factory
+// Commands from the endpoint action catalog (#627)
 // ################################################################################################
 
-/**
- * Creates a CLI execute function for a given command name
- */
-export function cliCommandExecutor(
-  commandName: string,
-): CliExecuteFunction {
-  return async (
-    payload: unknown,
-    domainController: DomainControllerInterface,
-    applicationDeploymentMap: ApplicationDeploymentMap
-  ) => {
-    const config = cliRequestHandlers[commandName];
-    log.info(`cliCommandExecutor - invoking command: ${commandName}`);
-    log.info(
-      `cliCommandExecutor - invoking command: ${commandName}, applicationDeploymentMap:`,
-      applicationDeploymentMap,
-    );
-    return handleCliAction(
-      commandName,
-      payload,
-      config.payloadZodSchema,
-      (payload) =>
-        ({
-          ...config.actionEnvelope,
-          payload,
-        }) as InstanceAction,
-      domainController,
-      applicationDeploymentMap,
-    );
-  };
-}
-
-// ################################################################################################
-// Command Entry Factory
-// ################################################################################################
-
-/**
- * Creates a CLI command handler from an endpoint definition and action type
- */
-function cliCommandEntry(endpoint: EndpointDefinition, actionType: string): CliCommandHandler<any> {
-  const actionDef = getEndpointActions(endpoint)?.find(
-    (action: any) => action.actionParameters.actionType.definition === actionType,
-  );
-  if (!actionDef) {
-    throw new Error(`Action definition not found for action type: ${actionType}`);
-  }
-  if (!actionDef.actionParameters.payload) {
-    throw new Error(`Payload definition not found for action type: ${actionType}`);
-  }
-
-  const mlPayload = actionDef.actionParameters.payload;
-  const commandName = actionType;
-  const actionDescription =
-    actionDef.actionParameters.actionType.tag?.value?.description ||
-    actionDef.actionParameters.actionType.tag?.value?.defaultLabel ||
-    `Execute ${actionType} action on ${endpoint.name || endpoint.uuid}`;
-
+/** The CLI command of one catalog entry, named as the MCP tool of the same action. */
+export function cliCommandEntry(entry: EndpointActionEntry): CliCommandHandler<any> {
+  // converted on first use: some framework payloads (deep schema references) do not convert, and
+  // listing or registering the commands must not depend on that
+  let payloadZodSchema: ZodTypeAny | undefined;
+  const getPayloadZodSchema = () => (payloadZodSchema ??= endpointActionEntryZodSchema(entry));
+  const actionLabel = `CLI: ${entry.actionType.replace(/([A-Z])/g, " $1").trim()}`;
   return {
     commandDescription: {
-      name: commandName,
-      description: actionDescription,
-      options: extractCommandOptions(mlPayload as MlObject),
+      name: entry.name,
+      description: `${entry.description} (${entry.applicationName})`,
+      options: extractCommandOptions(entry.payload as MlObject),
     },
-    payloadZodSchema: mlPayloadToZodSchema(mlPayload as MlObject),
-    actionEnvelope: {
-      actionType: actionType,
-      actionLabel: `CLI: ${actionType.replace(/([A-Z])/g, " $1").trim()}`,
-      endpoint: endpoint.uuid,
+    get payloadZodSchema() {
+      return getPayloadZodSchema();
     },
-    execute: cliCommandExecutor(commandName),
+    entry,
+    execute: (payload, domainController, applicationDeploymentMap) =>
+      handleCliAction(entry.name, payload, getPayloadZodSchema, (validatedPayload) =>
+        executeEndpointAction(entry, validatedPayload, {
+          domainController,
+          applicationDeploymentMap: currentApplicationDeploymentMap(
+            domainController.getLocalCache(),
+            applicationDeploymentMap,
+          ),
+          actionLabel,
+        }),
+      ),
   };
 }
 
-// ################################################################################################
-// Register Handlers from Core Endpoints
-// ################################################################################################
-
-export const cliRequestHandlers_EntityEndpoint: CliRequestHandlers = {
-  createInstance: cliCommandEntry(instanceEndpointV1 as any as EndpointDefinition, "createInstance"),
-  getInstance: cliCommandEntry(instanceEndpointV1 as any as EndpointDefinition, "getInstance"),
-  getInstances: cliCommandEntry(instanceEndpointV1 as any as EndpointDefinition, "getInstances"),
-  updateInstance: cliCommandEntry(instanceEndpointV1 as any as EndpointDefinition, "updateInstance"),
-  deleteInstance: cliCommandEntry(instanceEndpointV1 as any as EndpointDefinition, "deleteInstance"),
-  deleteInstanceWithCascade: cliCommandEntry(instanceEndpointV1 as any as EndpointDefinition, "deleteInstanceWithCascade"),
-  loadNewInstancesInLocalCache: cliCommandEntry(instanceEndpointV1 as any as EndpointDefinition, "loadNewInstancesInLocalCache"),
-};
-
-// ################################################################################################
-// Register Handlers from Library Application Endpoints
-// ################################################################################################
-
-export const cliRequestHandlers_Library_lendingEndpoint: CliRequestHandlers = defaultLibraryAppModel.endpoints
-  .filter((endpoint: EndpointDefinition) => endpoint.uuid === "212f2784-5b68-43b2-8ee0-89b1c6fdd0de") // lendingEndpoint UUID
-  .reduce((acc: CliRequestHandlers, endpoint: EndpointDefinition) => {
-    const handler = cliCommandEntry(endpoint, "lendDocument");
-    acc[handler.actionEnvelope.actionType] = handler;
-    return acc;
-  }, {} as CliRequestHandlers);
-
-// ################################################################################################
-// Aggregate all CLI command handlers
-// ################################################################################################
-
-export const cliRequestHandlers: CliRequestHandlers = {
-  ...cliRequestHandlers_EntityEndpoint,
-  ...cliRequestHandlers_Library_lendingEndpoint,
-};
-
-// ################################################################################################
-// Utility: Get all registered commands
-// ################################################################################################
-
-export function getAllCommands(): CliCommandHandler<any>[] {
-  return Object.values(cliRequestHandlers);
+/**
+ * One command per Endpoint action of every deployed application, from the live model. An entry
+ * that cannot be turned into a command is skipped, so one bad Endpoint cannot stop the CLI.
+ */
+export function getAllCommands(
+  domainController: DomainControllerInterface,
+  applicationDeploymentMap: ApplicationDeploymentMap,
+): CliCommandHandler<any>[] {
+  const handlers: CliCommandHandler<any>[] = [];
+  for (const entry of listEndpointActions(domainController.getLocalCache(), applicationDeploymentMap)) {
+    try {
+      handlers.push(cliCommandEntry(entry));
+    } catch (error) {
+      log.warn(`getAllCommands: skipping ${entry.name}: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  }
+  return handlers;
 }
 
-export function getCommandByName(name: string): CliCommandHandler<any> | undefined {
-  return cliRequestHandlers[name];
+/** Command names the CLI itself defines, never used as aliases. */
+export const RESERVED_CLI_COMMAND_NAMES: readonly string[] = ["list", "help"];
+
+/**
+ * Short names: an action type that exactly one command runs is an alias of that command
+ * (`lendDocument` for `Library_lendDocument`), unless it is reserved or already a command name.
+ */
+export function cliCommandAliases(
+  handlers: CliCommandHandler<any>[],
+  reservedNames: readonly string[] = RESERVED_CLI_COMMAND_NAMES,
+): Record<string, string> {
+  const commandNames = new Set(handlers.map((handler) => handler.commandDescription.name));
+  const byActionType = new Map<string, string[]>();
+  for (const handler of handlers) {
+    const names = byActionType.get(handler.entry.actionType) ?? [];
+    names.push(handler.commandDescription.name);
+    byActionType.set(handler.entry.actionType, names);
+  }
+  const aliases: Record<string, string> = {};
+  for (const [actionType, names] of byActionType) {
+    if (names.length !== 1 || reservedNames.includes(actionType) || commandNames.has(actionType)) {
+      if (names.length > 1 || reservedNames.includes(actionType)) {
+        log.info(`cliCommandAliases: no alias ${actionType} (${names.join(", ")})`);
+      }
+      continue;
+    }
+    aliases[actionType] = names[0];
+  }
+  return aliases;
+}
+
+/** The command of a name or an alias. */
+export function getCommandByName(
+  handlers: CliCommandHandler<any>[],
+  name: string,
+): CliCommandHandler<any> | undefined {
+  const commandName = cliCommandAliases(handlers)[name] ?? name;
+  return handlers.find((handler) => handler.commandDescription.name === commandName);
 }

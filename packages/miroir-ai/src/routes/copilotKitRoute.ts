@@ -16,7 +16,9 @@ import {
   FAIL_CLOSED_PROCESS_CAPABILITIES,
   isAgentBackendAllowed,
   type ApplicationDeploymentMap,
+  type AuthenticatedHttpRequest,
   type DomainControllerInterface,
+  type EndpointActionCallContext,
   type ProcessCapabilities,
   type ProcessCapabilityName,
 } from "miroir-core";
@@ -26,7 +28,12 @@ import {
   getDefaultRuntimeConfig,
   type AiRuntimeConfig,
 } from "../runtime/copilotRuntimeFactory.js";
-import { createMiroirCopilotKitActions, createLendDocumentExecutor } from "../tools/miroirCopilotKitActions.js";
+import {
+  copilotKitEndpointActionEntries,
+  createMiroirCopilotKitActions,
+  executeCopilotKitEndpointAction,
+  type CopilotKitEndpointActionResult,
+} from "../tools/miroirCopilotKitActions.js";
 import {
   createAgentForBackend as createDefaultAgentForBackend,
   type ActiveAgentBackend,
@@ -42,6 +49,12 @@ const AGENT_RUNTIME_EXCLUDED_ACTION_NAMES = new Set([
 ]);
 
 export type CreateCopilotKitRouterOptions = {
+  /**
+   * #263 / #627: whether the server's authentication gate is on. When it is, endpoint actions run
+   * as the request's principal (`req.miroirAuthentication`, set by the identity middleware) and
+   * only on deployments that principal may access.
+   */
+  authenticationEnabled?: boolean;
   capabilities?: ProcessCapabilities;
   getCapabilities?: () => ProcessCapabilities;
   /** Builds the agent of the configured backend; defaults to the real SDK-backed agents. */
@@ -158,13 +171,33 @@ function agentRunRequest(req: Request): AgentRunRequest {
     : {};
 }
 
+/** HTTP status of an endpoint action result: 400 on an invalid payload, 403 on a refused access. */
+export function endpointActionHttpStatus(result: CopilotKitEndpointActionResult): number {
+  if (result.status !== "error") {
+    return 200;
+  }
+  if (result.errorType === "validation_error") {
+    return 400;
+  }
+  return result.errorType === "AccessDenied" ? 403 : 200;
+}
+
 export function createCopilotKitRouter(
   domainController: DomainControllerInterface,
   applicationDeploymentMap: ApplicationDeploymentMap,
   options?: CreateCopilotKitRouterOptions,
 ): Router {
-  const actions = createMiroirCopilotKitActions(domainController, applicationDeploymentMap);
-  const lendDocumentExecutor = createLendDocumentExecutor(domainController, applicationDeploymentMap);
+  // #627: who calls, for the endpoint actions; the actions are built per request, from the live model
+  const callContext = (req: Request): EndpointActionCallContext => {
+    const authentication = (req as AuthenticatedHttpRequest).miroirAuthentication;
+    return {
+      enabled: options?.authenticationEnabled ?? false,
+      principal: authentication?.principal,
+      access: authentication?.access,
+    };
+  };
+  const actionsFor = (req: Request) =>
+    createMiroirCopilotKitActions(domainController, applicationDeploymentMap, callContext(req));
   const buildTokenRuntime = options?.buildCopilotRuntime ?? buildCopilotRuntime;
   const nodeHttpEndpoint =
     options?.copilotRuntimeNodeHttpEndpoint ?? copilotRuntimeNodeHttpEndpoint;
@@ -174,13 +207,27 @@ export function createCopilotKitRouter(
 
   const router = Router();
 
-  // REST endpoint called by the frontend propose_lendDocument accept path.
-  // CopilotKit in agent/run mode forwards ALL tool calls to the frontend; this endpoint
-  // is what the frontend review form posts to actually execute the lend.
-  router.post("/lendDocument", async (req: Request, res: Response) => {
+  // REST endpoint running one endpoint action of a deployed application (#627), called by the
+  // frontend proposal forms on accept (propose_lendDocument posts to endpointAction/Library_lendDocument).
+  // CopilotKit in agent/run mode forwards tool calls to the frontend; this is what the form posts to.
+  // Only the actions offered to CopilotKit resolve: the framework's own actions are not reachable here.
+  router.post("/endpointAction/:name", async (req: Request, res: Response) => {
     try {
-      const result = await lendDocumentExecutor(req.body);
-      res.json(result);
+      const entry = copilotKitEndpointActionEntries(domainController, applicationDeploymentMap).find(
+        (candidate) => candidate.name === req.params.name,
+      );
+      if (!entry) {
+        res.status(404).json({ status: "error", message: `Unknown endpoint action: ${req.params.name}` });
+        return;
+      }
+      const result = await executeCopilotKitEndpointAction(
+        entry,
+        req.body,
+        domainController,
+        applicationDeploymentMap,
+        callContext(req),
+      );
+      res.status(endpointActionHttpStatus(result)).json(result);
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
       res.status(500).json({ status: "error", message: `Internal error: ${message}` });
@@ -342,7 +389,7 @@ export function createCopilotKitRouter(
     // Using the minimal no-op runtime lets CopilotKit enumerate available actions
     // without requiring an AI provider to be configured at startup.
     if (req.body?.method === "info") {
-      const { runtime, serviceAdapter } = buildMinimalCopilotRuntime(actions);
+      const { runtime, serviceAdapter } = buildMinimalCopilotRuntime(actionsFor(req));
       const handler = nodeHttpEndpoint({ endpoint: "/", runtime, serviceAdapter });
       try {
         return await handler(req as any, res as any);
@@ -384,7 +431,7 @@ export function createCopilotKitRouter(
       try {
         runtime = createRuntime({
           agents: agentRuntimeAgents(await createAgentForBackend(backend, agentRunRequest(req)), backend),
-          actions: filterAgentRuntimeActions(actions),
+          actions: filterAgentRuntimeActions(actionsFor(req)),
         });
       } catch (err) {
         const message = err instanceof Error ? err.message : String(err);
@@ -423,7 +470,7 @@ export function createCopilotKitRouter(
     let serviceAdapter: ReturnType<typeof buildTokenRuntime>["serviceAdapter"];
 
     try {
-      ({ runtime, serviceAdapter } = buildTokenRuntime(config, actions));
+      ({ runtime, serviceAdapter } = buildTokenRuntime(config, actionsFor(req)));
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
       res.status(503).json({ error: `AI configuration error: ${message}` });
