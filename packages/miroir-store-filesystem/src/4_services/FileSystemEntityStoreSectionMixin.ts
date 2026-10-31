@@ -1,3 +1,6 @@
+import * as fs from "fs";
+import * as path from "path";
+
 
 import {
   ACTION_OK,
@@ -18,7 +21,7 @@ import {
   applyEntityOnlyRename,
   applyMlSchemaColumnChanges
 } from "miroir-core";
-import { FileSystemInstanceStoreSectionMixin, MixedFileSystemInstanceStoreSection } from "./FileSystemInstanceStoreSectionMixin.js";
+import { FileSystemInstanceStoreSectionMixin, MixedFileSystemInstanceStoreSection, fullName } from "./FileSystemInstanceStoreSectionMixin.js";
 import { FileSystemStoreSection } from "./FileSystemStoreSection.js";
 
 
@@ -67,8 +70,12 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
     // #########################################################################################
     // #37 — an Entity's instances live in the data section; the model section only holds
     // storage spaces for meta-model entities (Entity, Report, Query, ...).
+    // HTTP external entities have no data storage space, so the saved Entity instance counts too.
     existsEntity(entityUuid: string): boolean {
-      return this.dataStore.getEntityUuids().includes(entityUuid);
+      return (
+        this.dataStore.getEntityUuids().includes(entityUuid) ||
+        fs.existsSync(path.join(this.directory, entityEntity.uuid, fullName(entityUuid)))
+      );
     }
 
     // #########################################################################################

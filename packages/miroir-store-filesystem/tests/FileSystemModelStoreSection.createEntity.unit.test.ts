@@ -66,4 +66,16 @@ describe("FileSystemModelStoreSection.createEntity (#37)", () => {
     expect(modelSection.existsEntity(bookEntity.uuid)).toBe(false);
     expect(fs.readdirSync(path.join(rootDirectory, "model"))).toEqual([entityEntity.uuid]);
   });
+  it("reports an HTTP external entity as existing, without any storage space", async () => {
+    const httpEntity = {
+      ...bookEntity,
+      uuid: "b1c0ffee-0000-4000-8000-000000000001",
+      name: "RemoteBook",
+      externalDataSource: { kind: "http", endpoint: "3d8da4d4-8f76-4bb4-9212-14869d81c00c" },
+    } as Entity;
+    await modelSection.createEntity(httpEntity);
+    expect(modelSection.existsEntity(httpEntity.uuid)).toBe(true);
+    expect(fs.readdirSync(path.join(rootDirectory, "data"))).toEqual([]);
+    expect(fs.readdirSync(path.join(rootDirectory, "model"))).toEqual([entityEntity.uuid]);
+  });
 });
