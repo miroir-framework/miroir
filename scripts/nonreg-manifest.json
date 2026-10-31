@@ -2797,6 +2797,32 @@
       ]
     },
     {
+      "id": "unit-636-server-library",
+      "scopes": ["core", "actions", "runners", "tooling"],
+      "tier": "default",
+      "title": "#636 \u2014 miroir-server-library: the HTTP surface in-process on a test environment (REST, auth, capabilities, MCP, assets, client folder, assistant slot, mount rules) and its forbidden-import build guard",
+      "requires": "none",
+      "parallel": false,
+      "argv": [
+        "bash",
+        "-c",
+        "npm run build -w miroir-server-library && MIROIR_ENV=test-filesystem npm run testByFile -w miroir-server-library && python -m pytest scripts/tests/test_server_library_boundaries.py -q"
+      ]
+    },
+    {
+      "id": "build-636-server-release",
+      "scopes": ["external", "tooling"],
+      "tier": "default",
+      "title": "#636 \u2014 miroir-server release bundle (ncc, server library inlined) answers its HTTP surface on bench-agent; production mode serves release/client when present",
+      "requires": "none",
+      "parallel": false,
+      "argv": [
+        "bash",
+        "-c",
+        "npm run build -w miroir-server-library && npm run build:server -w miroir-server && python -m pytest scripts/tests/test_server_release_smoke.py -q"
+      ]
+    },
+    {
       "id": "unit-345-cli",
       "scopes": ["tooling"],
       "tier": "default",

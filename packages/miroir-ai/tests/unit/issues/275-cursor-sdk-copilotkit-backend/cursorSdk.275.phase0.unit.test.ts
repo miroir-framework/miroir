@@ -101,7 +101,7 @@ if (runThis) {
       const mountCall = src.indexOf("await mountCopilotKitRoute(miroirApp");
       expect(mountCall).toBeGreaterThanOrEqual(0);
       // #636: miroir-server-library's factory builds the gate and hands it to the binary's assistant
-      // slot; the gate answering 401 is tested in miroir-server-library (serverApp.636.phase4).
+      // slot; the gate answering 401 is tested in miroir-server-library (createMiroirServerApp.integ).
       expect(src).toMatch(/assistantRoute: async \(miroirApp, \{ requestGate \}\)/);
       expect(src.indexOf("requestGate,", mountCall)).toBeGreaterThan(mountCall);
       const library = readRepoFile("packages/miroir-server-library/src/createMiroirServerApp.ts");

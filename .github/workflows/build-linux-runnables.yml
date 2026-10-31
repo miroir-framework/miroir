@@ -179,11 +179,12 @@ jobs:
           npm run build -w miroir-ai & pids+=($!)
           npm run build -w miroir-mcp & pids+=($!)
           for pid in "${pids[@]}"; do wait "$pid"; done
-      - name: Build miroir-react and miroir-diagram-class
+      - name: Build miroir-react, miroir-diagram-class and miroir-server-library
         run: |
           pids=()
           npm run build -w miroir-react & pids+=($!)
           npm run build -w miroir-diagram-class & pids+=($!)
+          npm run build -w miroir-server-library & pids+=($!)
           for pid in "${pids[@]}"; do wait "$pid"; done
       - name: Upload dist – shared libs
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -200,6 +201,7 @@ jobs:
             packages/miroir-store-postgres/dist
             packages/miroir-ai/dist
             packages/miroir-mcp/dist
+            packages/miroir-server-library/dist
             packages/miroir-react/dist
             packages/miroir-diagram-class/dist
           if-no-files-found: error

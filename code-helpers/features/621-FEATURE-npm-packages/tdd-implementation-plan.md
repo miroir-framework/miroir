@@ -60,22 +60,22 @@ Order: I1, I4 and I5 can start now and run in parallel. I2 and I3 next. I6 waits
 
 | Issue | Slice | Title | Status | Primary proof |
 |---|---|---|---|---|
-| I1 | 0 | Characterize the endpoint surfaces | ⬜ | `endpointSurfaces.<I1>.phase0.integ.test.ts` (miroir-mcp, miroir-cli) |
-| I1 | 1 | Tracer: fixture Endpoint becomes an MCP tool | ⬜ | `endpointActionCatalog.<I1>.phase1.integ.test.ts` |
-| I1 | 2 | CLI commands from the catalog | ⬜ | `cli.integ.test.ts`, new fixture command case |
-| I1 | 3 | Each call runs with its application's model environment | ⬜ | rejection of a fixture instance by its own Entity schema |
-| I1 | 4 | CopilotKit actions from the catalog | ⬜ | `copilotKitActions.<I1>.phase4.unit.test.ts` |
-| I1 | 5 | No runtime dependency on example packages, nonreg, docs | ⬜ | `scripts/tests/test_package_runtime_dependencies.py` |
+| I1 | 0 | Characterize the endpoint surfaces | ✅ #627 (#629) | `endpointSurfaces.<I1>.phase0.integ.test.ts` (miroir-mcp, miroir-cli) |
+| I1 | 1 | Tracer: fixture Endpoint becomes an MCP tool | ✅ #627 (#629) | `endpointActionCatalog.<I1>.phase1.integ.test.ts` |
+| I1 | 2 | CLI commands from the catalog | ✅ #627 (#629) | `cli.integ.test.ts`, new fixture command case |
+| I1 | 3 | Each call runs with its application's model environment | ✅ #627 (#629) | rejection of a fixture instance by its own Entity schema |
+| I1 | 4 | CopilotKit actions from the catalog | ✅ #627 (#629) | `copilotKitActions.<I1>.phase4.unit.test.ts` |
+| I1 | 5 | No runtime dependency on example packages, nonreg, docs | ✅ #627 (#629) | `scripts/tests/test_package_runtime_dependencies.py` |
 | I2 | 0 | Characterize the shell modules and the sandbox alias | ✅ #633 slice 0 | inventory script output |
 | I2 | 1 | Break the reports / component-tests cycle | ✅ #610, #612 | lint layer rule + existing UI suites |
 | I2 | 2 | Shell and routes in miroir-react, host services injected | ✅ #633 slices 1 to 6 | standalone app UI integ suites |
 | I2 | 3 | Sandbox builds without the alias | ✅ #633 slice 6 | sandbox `vite build` + `unit-435`, `unit-443` |
 | I2 | 4 | Nonreg, bundle guard, cleanup | ✅ #633 slice 7 | full nonreg, `scripts/check_bundle_policy.py` |
-| I3 | 0 | Characterize the server's HTTP surface | ⬜ | `serverHttpSurface.<I3>.phase0.integ.test.ts` |
-| I3 | 1 | Tracer: REST handlers from a router mounted on a bare Express app | ⬜ | `miroirRouter.<I3>.phase1.integ.test.ts` |
-| I3 | 2 | Auth, capabilities and MCP behind router options | ⬜ | phase0 test green against the router |
-| I3 | 3 | Client folder as a parameter | ⬜ | router serves a temporary `index.html` |
-| I3 | 4 | Stores injected; the library imports no driver | ⬜ | dist import scan + Postgres-free start |
+| I3 | 0 | Characterize the server's HTTP surface | ✅ #636, slices of its own plan | `serverHttpSurface.<I3>.phase0.integ.test.ts` |
+| I3 | 1 | Tracer: REST handlers from a router mounted on a bare Express app | ✅ #636, slices of its own plan | `miroirRouter.<I3>.phase1.integ.test.ts` |
+| I3 | 2 | Auth, capabilities and MCP behind router options | ✅ #636, slices of its own plan | phase0 test green against the router |
+| I3 | 3 | Client folder as a parameter | ✅ #636, slices of its own plan | router serves a temporary `index.html` |
+| I3 | 4 | Stores injected; the library imports no driver | ✅ #636, slices of its own plan | dist import scan + Postgres-free start |
 | I4 | 0 | Characterize the two `setupMiroirPlatform` copies | ⬜ | `startMiroir.<I4>.phase0.unit.test.ts` |
 | I4 | 1 | `startMiroirNode`: CLI and MCP share one call | ⬜ | `cli.integ`, `unit-345-mcp` |
 | I4 | 2 | `startMiroirClient`: sandbox and standalone app share one call | ⬜ | sandbox tests, standalone UI integ smoke |
@@ -122,7 +122,7 @@ From the analysis decision record. D1 to D6 are confirmed. D7 to D11 are the rec
 | I1 fixture Endpoint in `miroir-fixture-appForTest` (`appForTest_model/3d8da4d4-8f76-4bb4-9212-14869d81c00c/`) | `bb447b8c-a687-408a-bc59-293aea293906` |
 | I1 fixture Endpoint name / action type | `fixtureEndpoint` / `fixtureCreateItem` |
 | I1 nonreg step | `unit-<I1>-endpoint-surfaces` (scopes `runners`, `tooling`) |
-| I3 nonreg step | `integ-<I3>-server-router` (scopes `actions`, `tooling`) |
+| I3 nonreg step | superseded by #636: `unit-636-server-library`, `build-636-server-release` |
 | I4 nonreg step | `unit-<I4>-startup-calls` (scopes `tooling`, `localcache`) |
 | I5 pytest guard | `scripts/tests/test_package_manifests.py` (runs in the pre-push gate's `pytest scripts/tests`) |
 | I6 rename script | `scripts/rename_packages.py`, mapping in `scripts/package-rename-map.json` |
@@ -161,7 +161,7 @@ Provisional slices; the I1 analysis settles the questions of analysis §8.1 (eag
 
 ## I1 Slice 0 — Characterize the endpoint surfaces
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE in #627 (PR #629); its own analysis and plan are in `../627-FEATURE-endpoint-surfaces/`.
 
 ### Goal
 
@@ -189,7 +189,7 @@ npm run testByFile -w miroir-cli -- endpointSurfaces
 
 ## I1 Slice 1 — Tracer: an Endpoint added to a fixture application becomes an MCP tool
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE in #627 (PR #629); its own analysis and plan are in `../627-FEATURE-endpoint-surfaces/`.
 
 ### Goal
 
@@ -231,7 +231,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core,runners
 
 ## I1 Slice 2 — CLI commands from the catalog
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE in #627 (PR #629); its own analysis and plan are in `../627-FEATURE-endpoint-surfaces/`.
 
 ### Goal
 
@@ -269,7 +269,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,tooling,runners
 
 ## I1 Slice 3 — Each call runs with its application's model environment
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE in #627 (PR #629); its own analysis and plan are in `../627-FEATURE-endpoint-surfaces/`.
 
 ### Goal
 
@@ -301,7 +301,7 @@ npm run nonreg:filesystem -- --runner shared
 
 ## I1 Slice 4 — CopilotKit actions from the catalog
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE in #627 (PR #629); its own analysis and plan are in `../627-FEATURE-endpoint-surfaces/`.
 
 ### Goal
 
@@ -333,7 +333,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,external,runners
 
 ## I1 Slice 5 — No runtime dependency on example packages; nonreg, docs, cleanup
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE in #627 (PR #629); its own analysis and plan are in `../627-FEATURE-endpoint-surfaces/`.
 
 ### 5.1 RED
 
@@ -496,7 +496,7 @@ Provisional; the I3 analysis settles analysis §8.2 (router only, or TLS and `li
 
 ## I3 Slice 0 — Characterize the server's HTTP surface
 
-**Status:** ⬜ pending
+**Status:** superseded: #636 did this item with its own analysis and plan (`../636-REFACTOR-server-library/`), with no router factory and no stores injected (its analysis D1, D2, D5).
 
 ### 0.1 RED → GREEN
 
@@ -521,7 +521,7 @@ npm run testByFile -w miroir-server -- serverHttpSurface
 
 ## I3 Slice 1 — Tracer: REST handlers from a router on a bare Express app
 
-**Status:** ⬜ pending
+**Status:** superseded: #636 did this item with its own analysis and plan (`../636-REFACTOR-server-library/`), with no router factory and no stores injected (its analysis D1, D2, D5).
 
 ### Goal
 
@@ -549,7 +549,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,actions,tooling
 
 ## I3 Slice 2 — Auth, capabilities and MCP behind router options
 
-**Status:** ⬜ pending
+**Status:** superseded: #636 did this item with its own analysis and plan (`../636-REFACTOR-server-library/`), with no router factory and no stores injected (its analysis D1, D2, D5).
 
 The login, password, status and capabilities routes and the MCP mounting (`EndpointToolRegistry`, `setupMcpServer`) move behind options of the factory. **RED:** the slice 0 test runs against a server built only from the router and fails on the missing routes. **GREEN:** move them. The #263 gate tests (`mcpServerGate.263.phase7`) stay green.
 
@@ -566,7 +566,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,actions,runners
 
 ## I3 Slice 3 — Client folder as a parameter
 
-**Status:** ⬜ pending
+**Status:** superseded: #636 did this item with its own analysis and plan (`../636-REFACTOR-server-library/`), with no router factory and no stores injected (its analysis D1, D2, D5).
 
 **RED:** `miroirRouter.<I3>.phase3.integ.test.ts` passes `clientDirectory` pointing at a temporary folder holding an `index.html` and expects it on `GET /`. **GREEN:** replace the fixed `path.join(__dirname, 'client')` with the option; the binary passes its current folder. This is the hook for the "server serves the user's bundle" issue that follows the epic.
 
@@ -582,7 +582,7 @@ npm run testByFile -w miroir-server -- miroirRouter
 
 ## I3 Slice 4 — Stores injected; the library imports no driver
 
-**Status:** ⬜ pending
+**Status:** superseded: #636 did this item with its own analysis and plan (`../636-REFACTOR-server-library/`), with no router factory and no stores injected (its analysis D1, D2, D5).
 
 **RED:** a test scans the built router entry for imports of `mongodb`, `pg`, `sequelize`, `level` and finds the four store packages (server.ts lines 90–93 today). **GREEN:** the factory takes the store startups as a parameter; only the binary imports them. A Postgres-free start (filesystem store only) passes slice 0.
 

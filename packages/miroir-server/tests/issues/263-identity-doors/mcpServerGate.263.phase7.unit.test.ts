@@ -4,7 +4,7 @@
  * shared identity middleware. The gate's behaviour is covered by gate.263 (miroir-core) and
  * mcpAuth.263 (miroir-mcp).
  * #636: the gates are built by miroir-server-library's factory; `/mcp` refusing a request without a
- * token on the factory's app is tested in miroir-server-library (serverApp.636.phase3). This file
+ * token on the factory's app is tested in miroir-server-library (createMiroirServerApp.integ). This file
  * keeps the switch resolution (binary) and the gate wiring (library).
  */
 import { readFileSync } from "node:fs";

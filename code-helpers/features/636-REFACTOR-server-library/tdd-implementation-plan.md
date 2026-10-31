@@ -38,7 +38,7 @@ Out (owners):
 | 3 | MCP from the factory | ✅ DONE | `serverApp.636.phase3.integ` (`tools/list`; 401 when `mcpEnabled`) + full nonreg |
 | 4 | The tail: assistant slot, assets and client folders as options | ✅ DONE | `serverApp.636.phase4.integ` (temp `index.html`, slot gate 401, API and slot beat the catch-all) |
 | 5 | Mount rules; `server.ts` becomes the thin binary | ✅ DONE | `serverApp.636.phase5.integ` (BigInt through a host app) + the repointed source tests + release smoke |
-| 6 | Boundary guard, build lists, docs, cleanup | ⬜ pending | tsup `onEnd` metafile guard + pytest guard; full `nonreg:filesystem` |
+| 6 | Boundary guard, build lists, docs, cleanup | ✅ DONE | tsup `onEnd` metafile guard + pytest guard; full `nonreg:filesystem` |
 
 ## Locked implementation defaults
 
@@ -72,7 +72,7 @@ No model element, uuid or MiroirTest suite: the feature is HTTP wiring, not reac
 | Test support | `tests/support/serverTestPlatform.ts` (see Slice 1) |
 | Test user | `alice` / `alice-dev` from the Admin fixture data (as in `miroir-core/tests/4_services/issues/264-deployment-access/access.264.phase2.unit.test.ts:124`) |
 | BigInt probe | a `POST /query` whose query is a runtime transformer returning the constant `{"$bigint":"9007199254740993"}` (2^53 + 1); the response must carry the same tagged digits |
-| Issue tests | `tests/issues/636-server-library/serverApp.636.phase{1..5}.integ.test.ts` |
+| Issue tests | `tests/issues/636-server-library/serverApp.636.phase{1..5}.integ.test.ts` (merged into `tests/createMiroirServerApp.integ.test.ts` in Slice 6) |
 | Release smoke | `scripts/tests/test_server_release_smoke.py`, reusing `scripts/agent_bench/miroir_server.py` (`MiroirServer`, environment `bench-agent`, `http://localhost:3080`, `--disable-auth`; state reset with `reset_state()`); skipped when `release/index.js` is missing |
 | Boundary guard | `scripts/tests/test_server_library_boundaries.py` |
 | Feature tests (Slice 6) | `tests/createMiroirServerApp.integ.test.ts` |
@@ -332,7 +332,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core,actions,runners,
 
 ## Slice 6 — Boundary guard, build lists, docs, cleanup
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal (observable):** adding a store or driver import to the library fails its build; CI builds, the Docker build path and the release binary work with the library inlined; the docs describe how to mount Miroir.
 
@@ -378,7 +378,15 @@ On the PR: `build-linux-runnables.yml` (shared-libs build, artifact list, `build
 | Source-text tests on `server.ts` follow the code or become behaviour tests | the 12 tests of analysis D6, repointed in slices 1, 3, 4, 5; behaviour tests in phases 3 and 4 |
 
 ### Realization
-_(to fill)_
+- `tsup.config.js` turns on `metafile` and adds a plugin. Its `onEnd` hook checks two things: the imports left in the output (declared dependencies that tsup marks external) and the bundled inputs (the package each input file comes from, either a sibling workspace package or one under `node_modules`). Both probe modes fail with the plugin's message: a bundled store and a store left external as a declared dependency (`MIROIR_SERVER_LIBRARY_PROBE`, `MIROIR_SERVER_LIBRARY_PROBE_EXTERNAL`).
+- `scripts/tests/test_server_library_boundaries.py` runs 12 checks. Seven are static, so they run in pr-checks: the declared dependencies, `private`, the five build files, the artifact list, and no `-e` in `build:server`. Three need a build and are skipped without one: the metafile scan and the two probe builds.
+- Build lists: `build-all.sh` (`ALL_PACKAGES`, `STAGE_APPS`, step 7 label), the Dockerfile (after `miroir-mcp`), `build-linux-runnables.yml` (the react / diagram step and the `dist-shared-libs` artifact list), `self-test.yml`, and `ci/build/build_server.sh` (after step 6).
+- Nonreg steps: `unit-636-server-library` (scopes core, actions, runners, tooling) and `build-636-server-release` (external, tooling), both `tier: default`, `requires: none`, `parallel: false`.
+- Docs: the package README (use, mount rules, route order, boundaries, tests); `docs/internals/application-startup.md`, new section "The server and its library (#636)"; `docs/guides/build-it-yourself.md` (step 5). The epic plan marks its I1 rows ✅ #627 and its I3 rows as done by #636 (the slices are superseded).
+- AGENTS.md is not changed. Adding `miroir-server-library` to its build order pushes the file over the size cap enforced by `test_agent_instructions.py` (12288 bytes), and `build-all.sh` is the canonical order.
+- Cleanup: the five `tests/issues/636-server-library/` files are merged into `tests/createMiroirServerApp.integ.test.ts` (22 tests) and the issue directory is deleted. The comments in the repointed source tests name the new file.
+- Gate: skills sync, `pytest scripts/tests` (359 passed, 3 skipped), dependency policy, lint, `miroir-env check --strict --tracked-clean`, `tsc` on core, the library and the server, and the miroir-core unit tests (3252 passed).
+- A scoped nonreg after slices 4 and 5 failed one step, `integ-action.domainController.freezeApplicationVersion` (an upsert during freeze reported "Entity not found in model section"). The step passed when rerun alone and in the full run after Slice 3. It runs on the emulated server, which this issue does not touch.
 
 ---
 

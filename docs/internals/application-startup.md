@@ -100,3 +100,18 @@ The app shell (`RootComponent`, `AppBar`, `PageDispatcher`, the generic pages, t
 | `setLoadTimingMarkSink` | the load-timing recorder | none |
 
 A missing slot falls back to its default (`useMiroirShellHost`): MCP calls answer `FeatureUnavailable`, login goes to `/auth/login` over HTTP, no assistant is mounted. The stored runner section is a built-in renderer (`defaultReportSectionRenderers`). The lint block of `eslint.config.mjs` for `packages/miroir-react/src` forbids importing CopilotKit, Electron, `miroir-mcp`, `miroir-diagram-class` or the app.
+
+## The server and its library (#636)
+
+On the server side, Miroir's HTTP surface comes from [`miroir-server-library`](../../packages/miroir-server-library/README.md). `createMiroirServerApp` takes a running domain controller and returns an Express app that does not listen: REST behind the authentication gate, the authentication and capabilities routes, `/mcp`, and optionally assets, an assistant route and a client folder. [`server.ts`](../../packages/miroir-server/src/server.ts) is a host of it:
+
+| `miroir-server` (binary) | `miroir-server-library` |
+|---|---|
+| command line, environment or configuration file, log preset | Express app, CORS, BigInt replacer and reviver, body parser |
+| ports, CORS origins, authentication switches, token secret | `/auth/status`, `/capabilities`, `/auth/login`, `/auth/change-password` |
+| store registration, `MiroirContext`, domain controller, boot, secrets | REST loop over `restServerDefaultHandlers`, behind the shared gate |
+| `getProcessCapabilities`, `setProcessCapabilities` | MCP tool registry, `/mcp` on the app, the MCP server handle |
+| TLS, the asset and client paths (ncc relocates them into `release/`) | assets, the `assistantRoute` slot, the client folder and its catch-all |
+| CopilotKit through the `assistantRoute` slot, the dev `GET /`, `listen`, `mcpServer.run` | |
+
+The library imports no store, driver, `miroir-env`, `miroir-ai` or CopilotKit, and its build fails if one appears. The release bundle inlines it, so it is built before `build:server`.

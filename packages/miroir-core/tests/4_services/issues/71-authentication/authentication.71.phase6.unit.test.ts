@@ -24,7 +24,7 @@ if (runThis) {
       expect(mountIdx).toBeGreaterThanOrEqual(0);
       // #263: the gate is the shared identity middleware, built on assertRequestAllowed.
       // #636: miroir-server-library's factory builds it and hands it to the binary's assistant slot
-      // (behaviour: serverApp.636.phase4 in miroir-server-library).
+      // (behaviour: createMiroirServerApp.integ in miroir-server-library).
       const library = readFileSync(
         join(REPO_ROOT, "packages/miroir-server-library/src/createMiroirServerApp.ts"),
         "utf8",
