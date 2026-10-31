@@ -1479,6 +1479,13 @@ export {
   type EndpointActionEntry,
 } from "./2_domain/EndpointActionCatalog.js";
 export {
+  ENDPOINT_ACTION_PAYLOAD_VALIDATION_MAX_DEPTH,
+  endpointActionEntryZodSchema,
+  endpointActionPayloadZodSchema,
+  validateEndpointActionPayload,
+  type EndpointActionPayloadValidation,
+} from "./2_domain/EndpointActionPayloadSchema.js";
+export {
   checkTransformerMlSchemaCompatibility,
   formatMlSchemaTypeLabel,
   getDeclaredInputMlSchema,

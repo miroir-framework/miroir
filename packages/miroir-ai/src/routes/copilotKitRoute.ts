@@ -32,6 +32,7 @@ import {
   copilotKitEndpointActionEntries,
   createMiroirCopilotKitActions,
   executeCopilotKitEndpointAction,
+  type CopilotKitEndpointActionResult,
 } from "../tools/miroirCopilotKitActions.js";
 import {
   createAgentForBackend as createDefaultAgentForBackend,
@@ -170,6 +171,17 @@ function agentRunRequest(req: Request): AgentRunRequest {
     : {};
 }
 
+/** HTTP status of an endpoint action result: 400 on an invalid payload, 403 on a refused access. */
+export function endpointActionHttpStatus(result: CopilotKitEndpointActionResult): number {
+  if (result.status !== "error") {
+    return 200;
+  }
+  if (result.errorType === "validation_error") {
+    return 400;
+  }
+  return result.errorType === "AccessDenied" ? 403 : 200;
+}
+
 export function createCopilotKitRouter(
   domainController: DomainControllerInterface,
   applicationDeploymentMap: ApplicationDeploymentMap,
@@ -215,7 +227,7 @@ export function createCopilotKitRouter(
         applicationDeploymentMap,
         callContext(req),
       );
-      res.status(result.status === "error" && result.errorType === "AccessDenied" ? 403 : 200).json(result);
+      res.status(endpointActionHttpStatus(result)).json(result);
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
       res.status(500).json({ status: "error", message: `Internal error: ${message}` });

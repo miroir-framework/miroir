@@ -11,6 +11,7 @@ import {
   executeEndpointAction,
   listEndpointActions,
   mlsToCopilotKitParameter,
+  validateEndpointActionPayload,
   LoggerInterface,
   MiroirLoggerFactory,
   type ApplicationDeploymentMap,
@@ -53,7 +54,10 @@ export function copilotKitEndpointActionEntries(
   });
 }
 
-/** Runs one CopilotKit endpoint action as the caller of `context`, with its application's model. */
+/**
+ * Runs one CopilotKit endpoint action as the caller of `context`, with its application's model,
+ * once `payload` matches the action's payload schema (`validation_error` otherwise).
+ */
 export async function executeCopilotKitEndpointAction(
   entry: EndpointActionEntry,
   payload: unknown,
@@ -62,7 +66,12 @@ export async function executeCopilotKitEndpointAction(
   context?: EndpointActionCallContext,
 ): Promise<CopilotKitEndpointActionResult> {
   try {
-    const result = await executeEndpointAction(entry, payload, {
+    const validation = validateEndpointActionPayload(entry, payload);
+    if (!validation.valid) {
+      log.info(`[${entry.name}] invalid payload: ${validation.message}`);
+      return { status: "error", errorType: "validation_error", message: `${entry.name}: invalid payload: ${validation.message}` };
+    }
+    const result = await executeEndpointAction(entry, validation.payload, {
       domainController,
       applicationDeploymentMap: currentApplicationDeploymentMap(domainController.getLocalCache(), applicationDeploymentMap),
       actionLabel: `CopilotKit: ${entry.name}`,

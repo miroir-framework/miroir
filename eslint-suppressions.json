@@ -352,11 +352,6 @@
       "count": 1
     }
   },
-  "packages/miroir-mcp/src/tools/mcpHandlersForEndpoint.ts": {
-    "miroir/type-escape": {
-      "count": 2
-    }
-  },
   "packages/miroir-react/src/ReduxHooks.ts": {
     "react-hooks/rules-of-hooks": {
       "count": 1

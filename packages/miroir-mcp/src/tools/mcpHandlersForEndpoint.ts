@@ -2,28 +2,16 @@ import { type ZodTypeAny } from "zod";
 
 import {
   type Action2ReturnType,
-  MlElement,
-  MlReference,
   LoggerInterface,
   MiroirLoggerFactory,
-  resolveFundamentalSchemaForDeployment,
-  resolveMlSchemaReferenceInContext,
+  endpointActionPayloadZodSchema,
+  ENDPOINT_ACTION_PAYLOAD_VALIDATION_MAX_DEPTH,
   getEndpointActions,
   redactCredentialSecretsFromValue,
   type EndpointDefinition,
-  type MetaModel,
   type SelfApplication,
-  mlToZodTextAndZodSchema,
 } from "miroir-core";
-import { defaultMiroirMetaModel,  } from "miroir-app-miroir";
-import { deployment_Miroir } from "miroir-app-admin";
 import { mlElementToJsonSchema } from "./mlElementToJsonSchema.js";
-import {
-  isMlConversionLimitReached,
-  normalizeMlConversionOptions,
-  schemaReferenceKey,
-  type MlConversionOptions,
-} from "./mlConversionContext.js";
 
 
 const packageName = "miroir-mcp";
@@ -34,172 +22,7 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: Logge
 });
 
 
-/**
- * Helper function to convert a ML payload schema to a Zod schema
- * Recursively resolves all schema references before conversion to avoid reference resolution errors
- * @param mlPayload - The ML schema definition from actionParameters.payload
- * @returns The Zod schema for validation
- */
-// function mlPayloadToZodSchema(mlPayload: MlObject): ZodTypeAny {
-function mlPayloadToZodSchema(mlPayload: MlElement): ZodTypeAny {
-  // Resolve references for Zod conversion, but stop on cycles / depth — the meta-model is
-  // recursive (mlElement, compositeAction, coreTransformerForBuildPlusRuntime, …).
-  // The depth cap keeps payloads that reach the transformer unions (query templates, action sequences) from expanding
-  // into a schema tree too big for memory: below it, values are accepted as `any` and the DomainController checks them.
-  const resolvedMlSchema = resolveAllReferences(mlPayload, { maxDepth: MCP_PAYLOAD_VALIDATION_MAX_DEPTH });
-
-  log.debug("mlPayloadToZodSchema resolved schema for MCP payload conversion");
-
-  return mlToZodTextAndZodSchema(resolvedMlSchema, undefined, undefined, { datesAsString: true }).zodSchema;
-}
-
-export const MCP_PAYLOAD_VALIDATION_MAX_DEPTH = 12;
-
-/**
- * `any` in place of a schema left unresolved; it keeps the element's own optional / nullable flags, or a cut optional
- * attribute (e.g. a transformer's `label`) would become required.
- */
-function unresolvedMlAny(element?: MlElement): MlElement {
-  return {
-    type: "any",
-    ...(element?.optional ? { optional: true } : {}),
-    ...(element?.nullable ? { nullable: true } : {}),
-  } as MlElement;
-}
-
-/**
- * Recursively resolves schema references in a ML element for Zod validation.
- * Cyclic references degrade to `any` instead of overflowing the stack.
- */
-function resolveAllReferences(
-  element: MlElement,
-  conversionOptions?: MlConversionOptions,
-): MlElement {
-  if (!element || typeof element !== "object") {
-    return element;
-  }
-
-  const options = normalizeMlConversionOptions(conversionOptions);
-  if (options.depth >= options.maxDepth) {
-    return unresolvedMlAny(element);
-  }
-
-  const childOptions: MlConversionOptions = {
-    ...options,
-    depth: options.depth + 1,
-  };
-
-  if (element.type === "schemaReference") {
-    const ref = element as MlReference;
-    const refKey = schemaReferenceKey(ref);
-    if (isMlConversionLimitReached(options, refKey)) {
-      return unresolvedMlAny(element);
-    }
-
-    options.resolvingRefs.add(refKey);
-    try {
-      const resolvedSchema = resolveMlSchemaReferenceInContext(
-        ref,
-        ref.context || {},
-        {
-          miroirFundamentalMlSchema: resolveFundamentalSchemaForDeployment(
-            deployment_Miroir.uuid,
-            defaultMiroirMetaModel as any as MetaModel,
-            "static",
-          ),
-          endpointsByUuid: {},
-          currentModel: defaultMiroirMetaModel as any as MetaModel,
-        },
-      );
-      const resolved = resolveAllReferences(resolvedSchema, childOptions);
-      // the reference's own optional / nullable flags apply to what it resolves to
-      return {
-        ...resolved,
-        ...(ref.optional ? { optional: true } : {}),
-        ...(ref.nullable ? { nullable: true } : {}),
-      } as MlElement;
-    } finally {
-      options.resolvingRefs.delete(refKey);
-    }
-  }
-
-  if (element.type === "object" && element.definition) {
-    // `extend` holds schema references too (e.g. query payloads extend `shippingBox`): the Zod conversion gets no
-    // reference context, so the extended attributes are inlined, and an extension cut by the depth limit is dropped.
-    const { extend, ...withoutExtend } = element;
-    const resolvedExtensions = (extend === undefined ? [] : Array.isArray(extend) ? extend : [extend]).map(
-      (extension) => resolveAllReferences(extension as MlElement, childOptions),
-    );
-    const extensions = resolvedExtensions.filter((extension) => extension.type === "object" && extension.definition);
-    return {
-      ...withoutExtend,
-      // the attributes of a dropped extension are unknown here: accept them
-      ...(extensions.length < resolvedExtensions.length ? { nonStrict: true } : {}),
-      definition: Object.fromEntries(
-        [
-          ...extensions.flatMap((extension) => Object.entries((extension as any).definition)),
-          ...Object.entries(element.definition),
-        ].map(([key, value]) => [key, resolveAllReferences(value as any, childOptions)]),
-      ),
-    };
-  }
-
-  if (element.type === "array" && element.definition) {
-    return {
-      ...element,
-      definition: resolveAllReferences(element.definition, childOptions),
-    };
-  }
-
-  if (element.type === "union" && element.definition && Array.isArray(element.definition)) {
-    return {
-      ...element,
-      definition: element.definition.map((member: any) =>
-        resolveAllReferences(member, childOptions),
-      ),
-    };
-  }
-
-  if (element.type === "record" && element.definition) {
-    return {
-      ...element,
-      definition: resolveAllReferences(element.definition, childOptions),
-    };
-  }
-
-  if (element.type === "tuple" && element.definition && Array.isArray(element.definition)) {
-    return {
-      ...element,
-      definition: element.definition.map((member: any) =>
-        resolveAllReferences(member, childOptions),
-      ),
-    };
-  }
-
-  if (element.type === "intersection" && element.definition) {
-    const intersection = element.definition as { left?: MlElement; right?: MlElement };
-    return {
-      ...element,
-      definition: {
-        left: intersection.left
-          ? resolveAllReferences(intersection.left, childOptions)
-          : unresolvedMlAny(),
-        right: intersection.right
-          ? resolveAllReferences(intersection.right, childOptions)
-          : unresolvedMlAny(),
-      },
-    } as MlElement;
-  }
-
-  if (element.type === "lazy" && element.definition) {
-    return {
-      ...element,
-      definition: resolveAllReferences(element.definition as MlElement, childOptions),
-    } as MlElement;
-  }
-
-  return element;
-}
+export const MCP_PAYLOAD_VALIDATION_MAX_DEPTH = ENDPOINT_ACTION_PAYLOAD_VALIDATION_MAX_DEPTH;
 
 function mcpTextResult(subObject: Record<string, any>): McpTextResult {
   const redactedSubObject = redactCredentialSecretsFromValue(subObject) as Record<string, any>;
@@ -345,7 +168,7 @@ export function mcpToolEntry(
     },
     get payloadZodSchema() {
       if (!payloadZodSchema) {
-        payloadZodSchema = mlPayloadToZodSchema(mlPayload);
+        payloadZodSchema = endpointActionPayloadZodSchema(mlPayload);
       }
       return payloadZodSchema;
     },

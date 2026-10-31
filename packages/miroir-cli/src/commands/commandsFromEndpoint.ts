@@ -8,18 +8,12 @@ import {
   executeEndpointAction,
   listEndpointActions,
   MlElement,
-  MlReference,
   LoggerInterface,
   MiroirLoggerFactory,
-  resolveFundamentalSchemaForDeployment,
-  resolveMlSchemaReferenceInContext,
+  endpointActionEntryZodSchema,
   type EndpointActionEntry,
   type MlObject,
-  type MetaModel,
-  mlToZodTextAndZodSchema,
 } from "miroir-core";
-import { deployment_Miroir } from "miroir-app-admin";
-import { defaultMiroirMetaModel } from "miroir-app-miroir";
 
 const packageName = "miroir-cli";
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, "info", "commandsFromEndpoint");
@@ -81,80 +75,6 @@ export interface CliCommandHandler<T extends CliCommandDescription> {
 }
 
 export type CliRequestHandlers = Record<string, CliCommandHandler<any>>;
-
-// ################################################################################################
-// Schema Helpers (adapted from miroir-mcp)
-// ################################################################################################
-
-/**
- * Helper function to convert a ML payload schema to a Zod schema
- */
-function mlPayloadToZodSchema(mlPayload: MlObject): ZodTypeAny {
-  const resolvedMlSchema = resolveAllReferences(mlPayload);
-  
-  return mlToZodTextAndZodSchema(resolvedMlSchema, undefined, undefined, { datesAsString: true }).zodSchema;
-}
-
-/**
- * Recursively resolves all schema references in a ML schema element
- */
-function resolveAllReferences(element: MlElement): MlElement {
-  if (!element || typeof element !== 'object') {
-    return element;
-  }
-
-  if (element.type === 'schemaReference') {
-    const resolvedSchema = resolveMlSchemaReferenceInContext(
-      element as MlReference,
-      element.context || {},
-      {
-        miroirFundamentalMlSchema: resolveFundamentalSchemaForDeployment(
-          deployment_Miroir.uuid,
-          defaultMiroirMetaModel as MetaModel,
-          "static",
-        ),
-        endpointsByUuid: {},
-        currentModel: defaultMiroirMetaModel as MetaModel,
-      }
-    );
-    return resolveAllReferences(resolvedSchema);
-  }
-
-  if (element.type === 'object' && element.definition) {
-    return {
-      ...element,
-      definition: Object.fromEntries(
-        Object.entries(element.definition).map(([key, value]) => [
-          key,
-          resolveAllReferences(value as any)
-        ])
-      )
-    };
-  }
-
-  if (element.type === 'array' && element.definition) {
-    return {
-      ...element,
-      definition: resolveAllReferences(element.definition)
-    };
-  }
-
-  if (element.type === 'union' && element.definition && Array.isArray(element.definition)) {
-    return {
-      ...element,
-      definition: element.definition.map((member: any) => resolveAllReferences(member))
-    };
-  }
-
-  if (element.type === 'record' && element.definition) {
-    return {
-      ...element,
-      definition: resolveAllReferences(element.definition)
-    };
-  }
-
-  return element;
-}
 
 /**
  * Extract CLI command options from ML schema
@@ -273,7 +193,7 @@ export function cliCommandEntry(entry: EndpointActionEntry): CliCommandHandler<a
   // converted on first use: some framework payloads (deep schema references) do not convert, and
   // listing or registering the commands must not depend on that
   let payloadZodSchema: ZodTypeAny | undefined;
-  const getPayloadZodSchema = () => (payloadZodSchema ??= mlPayloadToZodSchema(entry.payload as MlObject));
+  const getPayloadZodSchema = () => (payloadZodSchema ??= endpointActionEntryZodSchema(entry));
   const actionLabel = `CLI: ${entry.actionType.replace(/([A-Z])/g, " $1").trim()}`;
   return {
     commandDescription: {

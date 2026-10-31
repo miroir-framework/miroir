@@ -153,6 +153,27 @@ describe("CopilotKit actions from the endpoint action catalog", () => {
   );
 
   it(
+    "rejects a payload that does not match the action's payload schema, through the route and the assistant",
+    async () => {
+      await refreshFixture();
+      const countriesBefore = countryNames().length;
+      const response = await postEndpointAction(fixtureActionName, { name: 42 });
+      const fixtureAction = createMiroirCopilotKitActions(domainController, applicationDeploymentMap).find(
+        (action) => action.name === fixtureActionName,
+      )!;
+      const handlerResult = await (fixtureAction.handler as Function)({ name: 42 });
+      await refreshFixture();
+
+      expect({
+        routeStatus: response.status,
+        handlerErrorType: handlerResult.errorType,
+        countriesCreated: countryNames().length - countriesBefore,
+      }).toEqual({ routeStatus: 400, handlerErrorType: "validation_error", countriesCreated: 0 });
+    },
+    globalTimeOut,
+  );
+
+  it(
     "does not reach a framework action through the endpointAction route",
     async () => {
       const response = await postEndpointAction("Miroir_createInstance", {});
