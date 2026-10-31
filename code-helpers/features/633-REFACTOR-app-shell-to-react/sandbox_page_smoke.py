@@ -1,15 +1,19 @@
 """#633 slice 6 tracer check: the sandbox build serves each shell page without an error boundary.
 
-Serves packages/miroir-sandbox/dist with `vite preview`, opens each page with Playwright (Node, pre-installed)
-and reports, per page, whether the root rendered and whether an error boundary or a page error showed.
+Serves packages/miroir-sandbox/dist with `vite preview`, opens each page with the repository's `playwright-core`
+(resolved from the repository root, as the coverage tour does) and reports, per page, whether the root rendered
+and whether an error boundary or a page error showed.
 
     npm run build -w miroir-sandbox
-    python code-helpers/features/633-REFACTOR-app-shell-to-react/sandbox_page_smoke.py
+    npx playwright-core install chromium        # once, unless --browser / MIROIR_TOUR_BROWSER names a Chromium
+    python code-helpers/features/633-REFACTOR-app-shell-to-react/sandbox_page_smoke.py [--browser <path>]
 """
 
 from __future__ import annotations
 
+import argparse
 import json
+import os
 import subprocess
 import sys
 import tempfile
@@ -22,10 +26,12 @@ PORT = 4319
 PAGES = ["home", "settings", "search", "runners", "events", "check", "transformerBuilder", "model"]
 
 DRIVER = r"""
-const { chromium } = require('playwright');
+const { createRequire } = require('module');
 (async () => {
-  const [base, pages] = [process.argv[2], JSON.parse(process.argv[3])];
-  const browser = await chromium.launch();
+  const [root, base, pages, executablePath] = [process.argv[2], process.argv[3], JSON.parse(process.argv[4]), process.argv[5]];
+  // The driver lives in a temporary directory: resolve the browser package from the repository root.
+  const { chromium } = createRequire(root + '/package.json')('playwright-core');
+  const browser = await chromium.launch(executablePath ? { executablePath } : {});
   const results = [];
   for (const page of pages) {
     const tab = await browser.newPage();
@@ -57,6 +63,9 @@ def wait_for(url: str, seconds: int = 60) -> None:
 
 
 def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("--browser", default=os.environ.get("MIROIR_TOUR_BROWSER", ""), help="Chromium executable")
+    browser = parser.parse_args().browser
     preview = subprocess.Popen(
         ["npx", "vite", "preview", "--port", str(PORT), "--strictPort"],
         cwd=ROOT / "packages/miroir-sandbox",
@@ -69,9 +78,14 @@ def main() -> int:
         with tempfile.TemporaryDirectory() as tmp:
             driver = Path(tmp) / "driver.cjs"
             driver.write_text(DRIVER, encoding="utf-8")
-            out = subprocess.run(
-                ["node", str(driver), base, json.dumps(PAGES)], capture_output=True, text=True, check=True, cwd=ROOT
-            ).stdout
+            run = subprocess.run(
+                ["node", str(driver), str(ROOT), base, json.dumps(PAGES), browser], capture_output=True, text=True, cwd=ROOT
+            )
+            if run.returncode != 0:
+                # Typically no Chromium for playwright-core: install it or pass --browser.
+                print(run.stderr.strip(), file=sys.stderr)
+                return 2
+            out = run.stdout
         results = json.loads(out.strip().splitlines()[-1])
     finally:
         preview.terminate()
