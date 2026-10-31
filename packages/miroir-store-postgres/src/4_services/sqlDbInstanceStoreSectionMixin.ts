@@ -25,13 +25,13 @@ import {
 } from "miroir-core";
 import { MixableSqlDbStoreSection, SqlDbStoreSection } from "./SqlDbStoreSection";
 
-import { Op } from "sequelize";
+import { Op, Sequelize } from "sequelize";
 import { sqlStringForExtractor } from "../1_core/SqlGenerator";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
 import { SqlDbQueryRunner } from "./SqlDbQueryRunner";
 import { RecursiveStringRecords, SqlDbExtractTemplateRunner } from "./SqlDbQueryTemplateRunner";
-import { stripNullOptionalAttributes } from "../utils";
+import { reviveBigintAttributes, stripNullOptionalAttributes } from "../utils";
 
 // const consoleLog: any = log.info.bind(console, packageName, cleanLevel, "SqlDbInstanceStoreSectionMixin");
 
@@ -40,6 +40,15 @@ let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerNa
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {log = logger});
 
 export const MixedSqlDbInstanceStoreSection = SqlDbInstanceStoreSectionMixin(SqlDbStoreSection);
+
+// ##############################################################################################
+/** "Contains" filter on one attribute; LIKE has no bigint operand, so a bigint column is matched on its digits (#48). */
+function likeFilter(filter: { attribute: string; value: string }, bigintAttributes: string[] | undefined) {
+  const pattern = { [Op.like]: "%" + filter.value + "%" };
+  return bigintAttributes?.includes(filter.attribute)
+    ? Sequelize.where(Sequelize.cast(Sequelize.col(filter.attribute), "text"), pattern)
+    : { [filter.attribute]: pattern };
+}
 
 export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSection>(
   Base: TBase
@@ -284,6 +293,9 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
           } else {
             result = (await scopedModel.findByPk(instancePrimaryKey))?.dataValues;
           }
+          if (result) {
+            result = reviveBigintAttributes(result, entityAccess.bigintAttributes);
+          }
           if (result && entityAccess.optionalNonNullableAttributes && entityAccess.optionalNonNullableAttributes.length > 0) {
             const optionalNonNullable = entityAccess.optionalNonNullableAttributes;
             result = stripNullOptionalAttributes(result as Record<string, any>, optionalNonNullable) as EntityInstance;
@@ -346,9 +358,9 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
             ? entityAccess.sequelizeModel.schema(entityAccess.effectiveSchema)
             : entityAccess?.sequelizeModel;
           rawResult = (await scopedModel?.findAll({
-            where: { [filter.attribute]: { [Op.like]: "%" + filter.value + "%" } },
+            where: likeFilter(filter, entityAccess.bigintAttributes),
           })) as unknown as EntityInstance[];
-          cleanResult = rawResult.map((i) => i["dataValues"]);
+          cleanResult = rawResult.map((i) => reviveBigintAttributes(i["dataValues"], entityAccess.bigintAttributes));
           const optionalNonNullable1 = entityAccess.optionalNonNullableAttributes;
           if (optionalNonNullable1 && optionalNonNullable1.length > 0) {
             cleanResult = cleanResult.map((i) => stripNullOptionalAttributes(i as Record<string, any>, optionalNonNullable1) as EntityInstance);
@@ -422,10 +434,10 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
             ? entityAccess2.sequelizeModel.schema(entityAccess2.effectiveSchema)
             : entityAccess2?.sequelizeModel;
           rawResult = (await scopedModel2?.findAll({
-            where: { [filter.attribute]: { [Op.like]: "%" + filter.value + "%" } },
+            where: likeFilter(filter, entityAccess2.bigintAttributes),
             order: [[orderBy.attributeName, orderBy.direction ?? "ASC"]],
           })) as unknown as EntityInstance[];
-          cleanResult = rawResult.map((i) => i["dataValues"]);
+          cleanResult = rawResult.map((i) => reviveBigintAttributes(i["dataValues"], entityAccess2.bigintAttributes));
           const optionalNonNullable2 = entityAccess2.optionalNonNullableAttributes;
           if (optionalNonNullable2 && optionalNonNullable2.length > 0) {
             cleanResult = cleanResult.map((i) => stripNullOptionalAttributes(i as Record<string, any>, optionalNonNullable2) as EntityInstance);
@@ -489,7 +501,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
             ? entityAccess3.sequelizeModel.schema(entityAccess3.effectiveSchema)
             : entityAccess3?.sequelizeModel;
           rawResult = (await scopedModel3?.findAll()) as unknown as EntityInstance[];
-          cleanResult = rawResult.map((i) => i["dataValues"]);
+          cleanResult = rawResult.map((i) => reviveBigintAttributes(i["dataValues"], entityAccess3.bigintAttributes));
           const optionalNonNullable3 = entityAccess3.optionalNonNullableAttributes;
           if (optionalNonNullable3 && optionalNonNullable3.length > 0) {
             cleanResult = cleanResult.map((i) => stripNullOptionalAttributes(i as Record<string, any>, optionalNonNullable3) as EntityInstance);

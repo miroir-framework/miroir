@@ -1,4 +1,4 @@
-import { configureStore } from '@reduxjs/toolkit';
+import { configureStore, isPlain } from '@reduxjs/toolkit';
 // import reduxJsToolkit from '@reduxjs/toolkit';
 // const { createEntityAdapter, createSlice, createSelector, configureStore } = reduxJsToolkit;
 
@@ -107,6 +107,8 @@ export class LocalCache implements LocalCacheInterface {
             ignoredActions: ignoredActionsList, // Ignore these action types
             ignoredActionPaths: ["meta.promiseActions", "pastModelPatches.0.action.asyncDispatch"], // Ignore these field paths in all actions
             warnAfter: 256,
+            // instances keep ML bigint attributes as BigInt values (#48)
+            isSerializable: (value: unknown) => isPlain(value) || typeof value === "bigint",
           },
           immutableCheck: {
             warnAfter: 256,

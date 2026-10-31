@@ -29,6 +29,7 @@ export type EntityUuidIndexedSequelizeModel = {
     isExternal?: boolean;
     effectiveSchema?: string;
     optionalNonNullableAttributes?: string[];
+    bigintAttributes?: string[]; // read back as BigInt (#48)
     sequelizeModel: ModelStatic<Model<any, any>>;
   };
 };
@@ -52,6 +53,7 @@ function resolveMlSchemaForSequelize(entity: Entity): MlObject {
 
 export const dataTypesMapping: { [type in string]: DataTypes.AbstractDataTypeConstructor } = { // TODO: correct types!
   array: DataTypes.JSONB, // OK?
+  bigint: DataTypes.BIGINT, // int8: not varchar, so values compare and sort as numbers (#48)
   boolean: DataTypes.BOOLEAN,
   entity_instance_uuid: DataTypes.STRING,
   union: DataTypes.JSONB, 
@@ -95,6 +97,7 @@ export function fromMiroirPresentModelToSequelizeEntityDefinition(
             (
               [
                 "any",
+                "bigint",
                 "boolean",
                 "date",
                 "number",
@@ -137,6 +140,36 @@ export function getOptionalNonNullableAttributes(
       return attr.optional === true && !attr.nullable;
     })
     .map(([attrName]) => attrName);
+}
+
+// ##############################################################################################
+/** The stored attributes of type `bigint`, which postgres returns as strings (#48). */
+export function getBigintAttributes(entity: Entity): string[] {
+  const mlSchema = resolveMlSchemaForSequelize(entity);
+  return Object.entries(mlSchema.definition)
+    .filter(([, attrDef]) => (attrDef as MlElement).type === "bigint" && !isVirtualAttribute(attrDef as MlElement))
+    .map(([attrName]) => attrName);
+}
+
+// ##############################################################################################
+/**
+ * Turns the given `bigint` attributes of a row back into BigInt values (#48). The pg driver returns
+ * int8 columns as decimal strings, which keeps every digit; a value read from a JSON column arrives
+ * as a number. null and undefined are left as they are.
+ */
+export function reviveBigintAttributes<T extends Record<string, any>>(instance: T, bigintAttributes: string[] | undefined): T {
+  if (!bigintAttributes || bigintAttributes.length === 0 || instance === null || typeof instance !== "object") {
+    return instance;
+  }
+  let result: T | undefined;
+  for (const attribute of bigintAttributes) {
+    const value = instance[attribute];
+    if ((typeof value === "string" && /^-?\d+$/.test(value)) || (typeof value === "number" && Number.isInteger(value))) {
+      result ??= { ...instance };
+      (result as Record<string, any>)[attribute] = BigInt(value);
+    }
+  }
+  return result ?? instance;
 }
 
 // ##############################################################################################
