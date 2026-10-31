@@ -238,9 +238,13 @@ export const MlSchemaChip = React.memo(function MlSchemaChip(props: {
             aria-label={`ML schema of ${props.id}`}
             data-testid={`block-mlschema-form:${props.id}`}
             onClick={(event) => event.stopPropagation()}
+            // React events bubble through the portal: a submit the form refused (preventDefault
+            // only) would reach the form of the editor around the block view and submit it
+            onSubmit={(event) => event.stopPropagation()}
             css={css({ display: "flex", flexDirection: "column", gap: "6px", padding: "8px", minWidth: "40ch" })}
           >
             <Formik initialValues={initialValues} onSubmit={save} validateOnChange={false} validateOnBlur={false}>
+              {/* mlElement is in Miroir's meta-model, with no foreign keys: Miroir's deployment resolves it in any host */}
               <TypedValueObjectEditor
                 labelElement={<span>ML schema</span>}
                 formValueMLSchema={ML_SCHEMA_FORM_SCHEMA}

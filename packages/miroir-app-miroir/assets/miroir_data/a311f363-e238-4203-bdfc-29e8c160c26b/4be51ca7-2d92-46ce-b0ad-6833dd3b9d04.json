@@ -1359,6 +1359,15 @@
                 }
               },
               {
+                "step": "expectElement",
+                "label": "the value after redo",
+                "target": {
+                  "byTestId": "code-editor:transformerEditor_transformer_selector.transformer"
+                },
+                "timeout": 2000,
+                "value": "{\n  \"transformerType\": \"returnValue\",\n  \"mlSchema\": {\n    \"type\": \"boolean\"\n  },\n  \"value\": \"seize value...\"\n}"
+              },
+              {
                 "step": "click",
                 "label": "choose Blocks again",
                 "target": {
