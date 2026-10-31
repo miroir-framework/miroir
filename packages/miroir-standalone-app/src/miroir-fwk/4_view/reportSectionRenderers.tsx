@@ -11,8 +11,7 @@ import { requestLoginToken } from "./auth/authTransport.js";
 export const appReportSectionRenderers: ReportSectionRenderers = {
   graphReportSection: lazy(() => import("./components/Graph/GraphReportSectionView.js")),
   modelDiagramReportSection: lazy(async () => ({
-    default: (await import("./components/Reports/ModelDiagramReportSectionView.js"))
-      .ModelDiagramReportSectionView,
+    default: (await import("miroir-diagram-class")).ModelDiagramReportSectionView,
   })),
   miroirTestReportSection: lazy(async () => ({
     default: (await import("./components/Reports/ReportSectionMiroirTest.js")).ReportSectionMiroirTest,

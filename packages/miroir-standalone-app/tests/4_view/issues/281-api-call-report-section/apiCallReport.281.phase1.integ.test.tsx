@@ -97,7 +97,7 @@ vi.mock("react-router-dom", async () => {
   };
 });
 
-vi.mock("../../../../src/miroir-fwk/4_view/components/Reports/ModelDiagramReportSectionView.js", () => ({
+vi.mock("miroir-diagram-class", () => ({
   ModelDiagramReportSectionView: () => null,
 }));
 

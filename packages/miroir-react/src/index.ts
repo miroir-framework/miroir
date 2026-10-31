@@ -414,3 +414,4 @@ export { MiroirEventsPage } from "./pages/MiroirEventsPage.js";
 export { ErrorLogsPageDEFUNCT } from "./ErrorLogsPageDEFUNCT.js";
 export { EventTimelineContainer } from "./components/EventTimelineContainer.js";
 export { InstanceEditorOutline } from "./components/InstanceEditorOutline.js";
+export { ModelDiagramPage } from "./routes/ModelDiagramPage.js";

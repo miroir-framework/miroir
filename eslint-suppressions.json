@@ -490,6 +490,11 @@
       "count": 1
     }
   },
+  "packages/miroir-react/src/routes/ModelDiagramPage.tsx": {
+    "react-hooks/rules-of-hooks": {
+      "count": 1
+    }
+  },
   "packages/miroir-react/src/services/ConfigurationService.ts": {
     "miroir/action-result": {
       "count": 7
@@ -590,11 +595,6 @@
   },
   "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Page/RootComponent.tsx": {
     "react-hooks/set-state-in-effect": {
-      "count": 1
-    }
-  },
-  "packages/miroir-standalone-app/src/miroir-fwk/4_view/routes/ModelDiagramPage.tsx": {
-    "react-hooks/rules-of-hooks": {
       "count": 1
     }
   },

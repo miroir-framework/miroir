@@ -6,18 +6,16 @@ import {
   MiroirLoggerFactory,
   type Entity,
 } from "miroir-core";
+import { RenderInsightHeader, useRenderTracker } from "miroir-react";
+
 import {
   buildEntityClickLinks,
   buildEntityVersionClickLinks,
   coerceDiagramCarriersToEntities,
-  MermaidClassDiagram,
   type DiagramCarrierMode,
-} from "miroir-diagram-class";
-
-import { packageName } from "../../../../constants.js";
-import { cleanLevel } from "../../constants.js";
-import { RenderInsightHeader } from "miroir-react";
-import { useRenderTracker } from "miroir-react";
+} from "../2_domain/entitiesToMermaidClassDiagram.js";
+import { cleanLevel, packageName } from "../constants.js";
+import { MermaidClassDiagram } from "./MermaidClassDiagram.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ModelDiagramReportSectionView");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);

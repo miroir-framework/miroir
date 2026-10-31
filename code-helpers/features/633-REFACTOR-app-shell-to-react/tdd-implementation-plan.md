@@ -4,7 +4,7 @@
 >
 > **Execution model:** each slice ends with its Validation commands; on success its Realization is appended and its Status flips to ✅ DONE. The user asked for the whole issue through to a PR ready to merge, so commits follow each green slice on the working branch.
 >
-> **Resume note:** slices 0 to 4 DONE; slice 5 next.
+> **Resume note:** slices 0 to 5 DONE; slice 6 next.
 >
 > **Plan history:** revised after an adversarial review (2026-10-31): shims at the old app paths keep pages lazy mid-way (slices 2 to 5); moved modules' `from "miroir-react"` imports become relative, with a guard; Emotion pragma for `SequenceEditor`; corrected `check_bundle_policy.py`, `--only`, auth test and route test commands; slice 1 RED moved to `loadTimingWriter.integ`; every source-text guard named in its slice; `tsc` and lint in every move slice; `defaultReportSectionRenderers` export for the AC.
 
@@ -32,7 +32,7 @@ Out (analysis §2): the MiroirTest runtime and its displays, the d3 graph render
 | 2 | Runners from `miroir-react`, MCP call injected, stored runner built in | ✅ | `storedRunnerDefault.633.phase2.unit`, `ui.blockEditing` |
 | 3 | Login from `miroir-react`, Electron login injected | ✅ | `loginTransport.633.phase3.unit`, `electronIpcProxyAuth.263.phase6` |
 | 4 | Generic pages from `miroir-react`; search opens on the current application | ✅ | `toolPageDefaults.633.phase4.unit`, `homePageLoad.unit` |
-| 5 | Model diagram page through the registry; view in `miroir-diagram-class` | ⬜ | `modelDiagramPage.633.phase5.integ` |
+| 5 | Model diagram page through the registry; view in `miroir-diagram-class` | ✅ | the 9 diagram-mocking UI tests, slice 6 page smoke |
 | 6 | Shell from `miroir-react`, assistant injected; sandbox without the alias | ⬜ | `test_shell_package_boundaries.py`, sandbox build and page smoke |
 | 7 | Lint boundary rule, nonreg, bundle guard, docs, cleanup, AC | ⬜ | lint, full `nonreg:filesystem`, bundle guards |
 
@@ -343,7 +343,7 @@ npm run nonreg:filesystem -- --runner shared
 
 ## Slice 5 — Model diagram page through the registry
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -378,7 +378,12 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,ui
 
 ### Realization
 
-_(to fill)_
+- `ModelDiagramPage` moved to `miroir-react` (shim left in the app); it renders `useReportSectionRenderers().modelDiagramReportSection`, or `UnsupportedReportSection` when the client registered none. `ModelDiagramReportSectionRendererProps` gains `height`, which the page passes.
+- `ModelDiagramReportSectionView` moved to `miroir-diagram-class/src/4_view/` and is exported from its entry; its logger uses `miroir-diagram-class`'s constants. The app registers it with `lazy(() => import("miroir-diagram-class"))`.
+- The 9 path mocks became `vi.mock("miroir-diagram-class", …)`; the 9 files pass (63 tests).
+- **Deviation:** no `modelDiagramPage.633.phase5.integ` test. Rendering the page needs the whole Miroir context and Formik for one conditional, and happy-dom cannot load the diagram itself; the sandbox page smoke of slice 6 loads `?page=model` in a real browser with the diagram registered, which proves more. The registry fallback is already covered by `reportSectionRenderers.unit.test.tsx`.
+- Checks: `tsc` clean for `miroir-react` and `miroir-diagram-class`, the app and the sandbox at 2 (the CopilotKit forms); lint; sandbox and app builds; bundle guard 0 violations, 71 eager chunks, 843,280 bytes; `miroir-diagram-class`, `mermaid` and `svg-toolbelt` only in lazy chunks.
+- Scoped nonreg (`smoke,ui`): 43/43 pass (snapshot `20261031T150401Z`).
 
 ---
 

@@ -1,0 +1,217 @@
+/**
+ * ModelDiagramPage – displays a UML-like class diagram of the current
+ * application's model (entities and their relationships).
+ *
+ * Accessible via the AppBar "Model" button at route /model.
+ */
+
+import { useMemo } from "react";
+import { useNavigate } from "react-router-dom";
+import { Box, Typography } from "@mui/material";
+import {
+  LoggerInterface,
+  MiroirLoggerFactory,
+  defaultSelfApplicationDeploymentMap,
+  noValue,
+  type MlElement,
+  type MetaModel,
+} from "miroir-core";
+
+import { packageName } from "../constants.js";
+import { PageContainer } from "../components/Page/PageContainer.js";
+import { UnsupportedReportSection, useReportSectionRenderers } from "../contexts/ReportSectionRenderersContext.js";
+import { cleanLevel } from "../viewConstants.js";
+import { useMiroirTheme } from "../contexts/MiroirThemeContext.js";
+import { useMiroirContextService } from "../contexts/MiroirContextReactProvider.js";
+import { useCurrentModel, useCurrentModelEnvironment } from "../ReduxHooks.js";
+import { JsonDisplayHelper } from "../components/helpers/DebugHelper.js";
+import { usePageConfiguration } from "../services/usePageConfiguration.js";
+import { adminSelfApplication, entityApplicationForAdmin } from "miroir-app-admin";
+import { Formik, type FormikProps } from "formik";
+import { TypedValueObjectEditor } from "../components/Reports/TypedValueObjectEditor.js";
+import { reportEntityDetails } from "miroir-app-miroir";
+import { deployment_Miroir } from "miroir-app-admin";
+import { reportUrl } from "../navigation.js";
+
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ModelDiagramPage");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName,
+  "UI",
+).then((logger: LoggerInterface) => {
+  log = logger;
+});
+
+// ################################################################################################
+export const ModelDiagramPage: React.FC<any> = () => {
+  const navigate = useNavigate();
+  const ModelDiagramView = useReportSectionRenderers().modelDiagramReportSection;
+  const { fetchConfigurations } = usePageConfiguration({
+    autoFetchOnMount: true,
+    successMessage: "ModelDiagramPage configurations loaded successfully",
+    actionName: "model diagram page configuration fetch"
+  });
+
+  const miroirTheme = useMiroirTheme();
+  const context = useMiroirContextService();
+  const currentApplicationDeploymentMap =
+    context.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap;
+
+  const formikPath = "modelDiagramPage";
+  const inputSelector_applicationUuid = context.toolsPageState?.applicationSelector ?? deployment_Miroir.uuid;
+  const applicationSelectorPanelSchema: MlElement = {
+    type: "object",
+    definition: {
+      [formikPath]: {
+        type: "object",
+        tag: {
+          value: {
+            defaultLabel: "Application Selector",
+            display: {
+              // unfoldSubLevels: 1,
+              objectWithoutHeader: true,
+              objectOrArrayWithoutFrame: true,
+              objectAttributesNoIndent: true,
+            },
+          },
+        },
+        definition: {
+          application: {
+            type: "uuid",
+            tag: {
+              value: {
+                defaultLabel: "Application",
+                foreignKeyParams: {
+                  targetApplicationUuid: adminSelfApplication.uuid,
+                  targetEntity: entityApplicationForAdmin.uuid,
+                  targetEntityOrderInstancesBy: "name",
+                },
+                initializeTo: {
+                  initializeToType: "value",
+                  value: noValue.uuid,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  };
+  const initialFormValues = {
+    [formikPath]: {
+      // mode: "instance",
+      application: inputSelector_applicationUuid
+    },
+    transformerEditor_input: {},
+    selectedEntityInstance: undefined,
+    entityInstances: [],
+  };
+
+  return (
+    <Formik
+      enableReinitialize={true}
+      initialValues={initialFormValues as any}
+      onSubmit={async () => {
+        // No-op for search page
+      }}
+      validateOnChange={false}
+      validateOnBlur={false}
+    >
+      {(formikContext: FormikProps<any>) => {
+        const application =
+          formikContext.values[formikPath].application ??
+          context.toolsPageState.applicationSelector ??
+          context.application;
+        const deploymentUuid =
+          currentApplicationDeploymentMap[formikContext.values[formikPath].application] ??
+          deployment_Miroir.uuid;
+          
+        const currentModel: MetaModel = useCurrentModel(
+          application,
+          currentApplicationDeploymentMap,
+        );
+        const applicationName = currentModel.applicationName || "Application";
+        const entities = currentModel.entities ?? [];
+
+        const handleClassClick = (entityUuid: string) => {
+          log.info("Class clicked", { entityUuid });
+          navigate(
+            reportUrl(
+              application,
+              deploymentUuid,
+              "model",
+              (reportEntityDetails as any).uuid,
+              entityUuid,
+            )
+          );
+        };
+        return (
+          <PageContainer padding={2}>
+            <JsonDisplayHelper debug={true}
+              componentName="ModelDiagramPage"
+              elements={[
+                { label: "ModelDiagramPage entities", data: currentModel.entities },
+              ]}
+            />
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 2,
+                height: "100%",
+              }}
+            >
+              <TypedValueObjectEditor
+                labelElement={<span>select Application</span>}
+                formValueMLSchema={applicationSelectorPanelSchema.definition["modelDiagramPage"] as MlElement}
+                formikValuePathAsString={"modelDiagramPage"}
+                application={inputSelector_applicationUuid}
+                applicationDeploymentMap={currentApplicationDeploymentMap}
+                deploymentUuid={deploymentUuid}
+                applicationSection={"data"}
+                formLabel={"Application Selector"}
+                valueObjectEditMode="create" // Readonly viewer mode, not relevant here
+                displaySubmitButton="noDisplay"
+                maxRenderDepth={3}
+              />
+              <Typography
+                variant="h5"
+                sx={{
+                  color: miroirTheme.currentTheme.colors.text,
+                  fontWeight: 600,
+                }}
+              >
+                {applicationName} – Model Diagram
+              </Typography>
+
+              <Typography
+                variant="body2"
+                sx={{
+                  color: miroirTheme.currentTheme.colors.text,
+                  opacity: 0.7,
+                }}
+              >
+                UML class diagram showing entities, their attributes, and foreign-key relationships
+                for the current application model.
+                {entities.length > 0 && ` (${entities.length} entities)`}
+              </Typography>
+
+              {ModelDiagramView ? (
+                <ModelDiagramView
+                  entities={entities}
+                  title={`${applicationName} Model`}
+                  direction={entities.length > 10 ? "TB" : "LR"}
+                  onClassClick={handleClassClick}
+                  height="calc(100vh - 220px)"
+                />
+              ) : (
+                <UnsupportedReportSection sectionType="modelDiagramReportSection" />
+              )}
+            </Box>
+          </PageContainer>
+        );
+      }}
+    </Formik>
+  );
+};
+
+export default ModelDiagramPage;

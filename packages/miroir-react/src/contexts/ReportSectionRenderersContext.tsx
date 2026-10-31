@@ -31,6 +31,8 @@ export interface ModelDiagramReportSectionRendererProps {
   label?: string;
   title?: string;
   direction?: "TB" | "BT" | "LR" | "RL";
+  /** CSS height of the diagram container. */
+  height?: string;
   onClassClick?: (instanceUuid: string) => void;
   showPerformanceDisplay?: boolean;
   applicationSection?: ApplicationSection;
