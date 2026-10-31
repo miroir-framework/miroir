@@ -565,7 +565,7 @@ function AiActionsProviderInner(): React.JSX.Element {
         <AiLendProposalForm
           proposal={{ user, book, startDate, note }}
           onAccept={async () => {
-            const response = await fetch(copilotKitHttpUrl("/lendDocument"), {
+            const response = await fetch(copilotKitHttpUrl("/endpointAction/Library_lendDocument"), {
               method: "POST",
               headers: copilotKitJsonHeaders(token),
               body: JSON.stringify({ user, book, startDate, note }),

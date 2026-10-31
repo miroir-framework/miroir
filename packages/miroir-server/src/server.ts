@@ -843,6 +843,7 @@ await mountCopilotKitRoute(app, {
   mcpHttpUrl: agentMcpHttpUrl({ restPort: restPortFromConfig, mcpPort: mcpPortFromConfig, tls: tlsEnabled }),
   agentModel: miroirConfig.features?.agentModel,
   requestGate: createIdentityGateMiddleware(authenticationGate) as any,
+  authenticationEnabled,
 });
 
 // ##############################################################################################
