@@ -238,6 +238,7 @@ The allowed values are the `enum` inside the `tags` array schema of the MiroirTe
 | `versioning` | Application versions, freeze, evolution trace |
 | `mcp` | MCP tools |
 | `external-service` | External services (OpenAPI sync) |
+| `filesystem` | Filesystem stores. The in-browser emulated profile has none, so its batches (Run all, self-test) skip these suites |
 | `report` | Reports |
 | `menu` | Menus |
 | `ai` | AI assistant integration |
@@ -783,7 +784,7 @@ Tests of the mechanism, in `packages/miroir-standalone-app/tests/4_view/`: `repo
 An environment whose `client.selfTest.enabled` is true (`self-test`, `self-test-integ`) makes the production client check itself (#487). At page load the client loads Admin and the miroir deployment only, runs the miroir app's MiroirTests carrying `client.selfTest.tags` (`unit` by default), and shows their results on a page of its own (no menu, no router). Authentication must be off; with it on, the verdict is `failed`.
 
 - `unit` runs the unit batch of Run All Miroir Tests, with component tests (`reactComponentTest` leaves) recorded as skipped.
-- `integ` adds the integration batch of Run All Integration Tests on `emulatedServer-indexedDb`, run target `ephemeral`, which writes only to the browser's IndexedDB. Suites of `reportTest` leaves need the component test sandbox and are listed as not run.
+- `integ` adds the integration batch of Run All Integration Tests on `emulatedServer-indexedDb`, run target `ephemeral`, which writes only to the browser's IndexedDB. Suites of `reportTest` leaves need the component test sandbox, and suites tagged `filesystem` need filesystem stores (#495): both are listed as not run. A teardown that fails after a suite is reported as one more failed result, next to the suite's own results.
 
 The verdict is published three ways, as `MiroirSelfTestResult` (`verdict` `running`, `passed` or `failed`, `counts`, `failures`, `skippedSuites`, `error`):
 

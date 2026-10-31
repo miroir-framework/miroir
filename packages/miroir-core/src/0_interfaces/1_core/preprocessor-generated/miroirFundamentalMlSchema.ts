@@ -9211,6 +9211,7 @@ export const miroirFundamentalMlSchema = {
                 "versioning",
                 "mcp",
                 "external-service",
+                "filesystem",
                 "report",
                 "menu",
                 "ai",
