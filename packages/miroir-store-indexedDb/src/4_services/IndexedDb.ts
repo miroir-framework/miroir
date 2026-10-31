@@ -112,9 +112,16 @@ export class IndexedDb {
   }
 
   // #############################################################################################
+  /**
+   * Removes every entry of this Level database, including the entries of sublevels that are
+   * not registered in `subLevels` (e.g. after a fresh open() with no bootFromPersistedState).
+   * Sublevel keys are prefixed entries of the root database, so a root clear() drops them all.
+   * Each store section owns its own Level database, so this only affects that section. (#31)
+   */
   public async clearObjectStore():Promise<void> {
-    log.info(this.logHeader, 'clearObjectStore, does nothing! (missing API to list all existing sublevels)');
-    // return this.db?.clear();
+    log.info(this.logHeader, 'clearObjectStore clearing all entries, registered sublevels:', this.getSubLevels());
+    await this.db?.clear();
+    this.subLevels.clear();
     return Promise.resolve(undefined);
   }
 

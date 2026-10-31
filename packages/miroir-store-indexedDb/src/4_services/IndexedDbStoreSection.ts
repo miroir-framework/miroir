@@ -67,7 +67,9 @@ export class IndexedDbStoreSection
 
   // ##############################################################################################
   async clear(): Promise<Action2VoidReturnType> {
-    await this.localUuidIndexedDb.removeSubLevels(this.getEntityUuids());
+    // #31: clear the whole Level database, not only the sublevels registered in memory.
+    await this.localUuidIndexedDb.clearObjectStore();
+    this.entityIdAttributes = {};
     return Promise.resolve(ACTION_OK);
   }
 
