@@ -89,6 +89,7 @@ import {
   type ResolvedEnvironment,
 } from "miroir-env";
 import { EndpointToolRegistry, setupMcpServer } from "miroir-mcp";
+import { createMiroirServerApp } from "miroir-server-library";
 import { setupMiroirDomainController } from 'miroir-localcache-redux/node';
 import { miroirFileSystemStoreSectionStartup } from 'miroir-store-filesystem';
 import { miroirIndexedDbStoreSectionStartup } from 'miroir-store-indexedDb';
@@ -292,17 +293,6 @@ const corsAllowedOrigins: string[] =
   (miroirConfig.server as any).corsAllowedOrigins ?? defaultCorsOrigins;
 myLogger.info('CORS allowed origins:', corsAllowedOrigins);
 
-const app = express();
-app.use(cors({
-  origin: corsAllowedOrigins,
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
-
-// BigInt values cross the wire as {"$bigint": "<digits>"}, both ways, so none loses digits (#48)
-app.set("json replacer", bigintJsonReplacer);
-app.use(bodyParser.json({ limit: '50mb', reviver: bigintJsonReviver }));
 
 const serverAuthentication = (
   miroirConfig.server as { authentication?: { enabled?: boolean; tokenSecret?: string; mcp?: boolean } }
@@ -326,20 +316,6 @@ if (serverAuthentication?.tokenSecret) {
   getProcessTokenSecret();
 }
 
-app.get("/auth/status", (_req: any, res: any) => {
-  res.json(buildAuthStatusBody(authenticationEnabled));
-});
-
-app.get("/capabilities", (_req: any, res: any) => {
-  const capabilities = getProcessCapabilities({
-    config: miroirConfig,
-    environment: getClientEnvironment(),
-    storeSectionFactoryRegister:
-      ConfigurationService.configurationService.StoreSectionFactoryRegister,
-    adminStoreFactoryRegister: ConfigurationService.configurationService.adminStoreFactoryRegister,
-  });
-  res.status(200).json({ status: "ok", capabilities });
-});
 
 myLogger.info(`Server being set-up, going to execute on the port::${restPortFromConfig}`);
 
@@ -368,24 +344,6 @@ try {
   myLogger.warn(`Error while checking sample static asset: ${e}`);
 }
 
-// set long cache headers for static assets (1 day) and fall back to no-cache for HTML-like responses
-app.use(
-  assetsMountPath,
-  express.static(pathToPublic, {
-    maxAge: "1d",
-    // express.static expects a Node http.ServerResponse here; using that type ensures setHeader is available
-    setHeaders: (
-      res: import("http").ServerResponse,
-      filePath: string,
-      // stat: import("fs").Stats
-    ) => {
-      // If it's an HTML file, don't cache
-      if (filePath.endsWith(".html")) {
-        res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-      }
-    },
-  })
-);
 
 // // Expose server configuration to browser clients.
 // // Currently exposes the filesystem deployment root directory so clients don't need to guess it.
@@ -610,194 +568,6 @@ if (resolvedEnvironment) {
   recordInstallsOf(domainController, resolvedEnvironment, (line) => console.log(`[miroir-env] ${line}`));
 }
 
-// #263: one gate for REST, CopilotKit and MCP; the Admin directory is read on every gated request.
-const authenticationGate: AuthenticationGate = {
-  enabled: authenticationEnabled,
-  loadDirectory: accessDirectoryLoader(domainController, applicationDeploymentMap),
-};
-
-async function resolveGatedPrincipal(
-  authorizationHeader: string | undefined,
-): Promise<AuthPrincipal | undefined> {
-  const authenticated = await authenticateRequest({ ...authenticationGate, enabled: true }, authorizationHeader);
-  return authenticated.allowed ? authenticated.principal : undefined;
-}
-
-// ##############################################################################################
-// CREATING ENDPOINTS SERVICING CRUD HANDLERS
-for (const op of restServerDefaultHandlers) {
-  const operationHandler = async (request: CustomRequest, response: any, context: any) => {
-    const authorizationHeader =
-      typeof request.headers?.authorization === "string" ? request.headers.authorization : undefined;
-    const authenticated = await authenticateRequest(authenticationGate, authorizationHeader);
-    if (!authenticated.allowed) {
-      response.status(authenticated.status).json(authenticated.body);
-      return;
-    }
-    const principal = authenticated.principal;
-    const access = authorizeDeployment(
-      authenticationEnabled,
-      authenticated,
-      deploymentUuidsFromHttpRequest(request),
-    );
-    if (!access.allowed) {
-      myLogger.warn(
-        `access denied: user=${principal?.username ?? "anonymous"} deployments=${deploymentUuidsFromHttpRequest(request).join(",") || "(none)"} url=${request.originalUrl}`
-      );
-      response.status(access.status).json(access.body ?? ACCESS_DENIED);
-      return;
-    }
-    const body = request.body;
-    myLogger.info(`[CONSOLE DEBUG] Request received: ${op.method} ${request.originalUrl}`);
-    myLogger.info(
-      `[REQUEST START] ${op.method} ${request.originalUrl} - params:`,
-      JSON.stringify(request.params)
-    );
-
-    try {
-      myLogger.info(`[CONSOLE DEBUG] About to call handler`);
-      myLogger.info(
-        `[BEFORE HANDLER] About to call handler for ${op.method} ${request.originalUrl}`
-      );
-
-      await op.handler(
-        true, // useDomainControllerToHandleModelAndInstanceActions: since we're on the server, we use the localCache as intermediate step, to access the persistenceStore
-        (response: any) => response.json.bind(response),
-        response,
-        persistenceStoreControllerManager,
-        domainController,
-        op.method,
-        request.originalUrl,
-        body,
-        { ...request.params, ...request.query, authPrincipal: principal }
-      );
-
-      myLogger.info(`[CONSOLE DEBUG] Handler completed successfully`);
-      myLogger.info(
-        `[AFTER HANDLER] Handler completed successfully for ${op.method} ${request.originalUrl}`
-      );
-      // Don't return anything - the handler should have already sent the response
-    } catch (error) {
-      myLogger.info(`[CONSOLE DEBUG] Error caught:`, error);
-      myLogger.error(
-        `[ERROR CAUGHT] server could not handle action: ${op.method} on URL: ${op.url} error: ${error}`
-      );
-
-      // Send proper error response to client
-      if (!response.headersSent) {
-        myLogger.info(`[CONSOLE DEBUG] Sending error response`);
-        myLogger.info(
-          `[SENDING ERROR RESPONSE] Headers not sent, sending 500 error response for ${request.originalUrl}`
-        );
-        const errorMessage = error instanceof Error ? error.message : String(error);
-        try {
-          response.status(500).json({
-            status: "error",
-            errorType: "ServerError",
-            errorMessage: `Failed to handle ${op.method} request on ${request.originalUrl}: ${errorMessage}`,
-            timestamp: new Date().toISOString(),
-          });
-          myLogger.info(`[CONSOLE DEBUG] Error response sent successfully`);
-          myLogger.info(
-            `[ERROR RESPONSE SENT] Error response sent successfully for ${request.originalUrl}`
-          );
-        } catch (responseError) {
-          myLogger.info(`[CONSOLE DEBUG] Failed to send error response:`, responseError);
-          myLogger.error(
-            `[ERROR SENDING RESPONSE] Failed to send error response: ${responseError}`
-          );
-        }
-      } else {
-        myLogger.info(`[CONSOLE DEBUG] Headers already sent, cannot send error response`);
-        myLogger.warn(
-          `[HEADERS ALREADY SENT] Cannot send error response for ${request.originalUrl} - headers already sent`
-        );
-      }
-      // Don't return anything - we've already handled the response
-    }
-  };
-
-  (app as any)[op.method](
-    op.url,
-    operationHandler,
-  );
-}
-
-app.post("/auth/login", async (request: CustomRequest, response: any) => {
-  const identity = await loadAccessDirectory(domainController, applicationDeploymentMap);
-  if (!identity.ok) {
-    response.status(500).json({
-      status: "error",
-      errorType: "AuthenticationDirectoryMissing",
-      errorMessage: identity.errorMessage,
-    });
-    return;
-  }
-  const result = await loginWithPassword(
-    {
-      username: String(request.body?.username ?? ""),
-      password: String(request.body?.password ?? ""),
-    },
-    identity.directory,
-    getProcessTokenSecret(),
-  );
-  if (!result.ok) {
-    response.status(result.status).json(result.body);
-    return;
-  }
-  response.json({ token: result.token, principal: result.principal });
-});
-
-app.post("/auth/change-password", async (request: CustomRequest, response: any) => {
-  const principal = await resolveGatedPrincipal(
-    typeof request.headers?.authorization === "string" ? request.headers.authorization : undefined,
-  );
-  if (!principal) {
-    response.status(401).json({
-      status: "error",
-      errorType: "AuthenticationRequired",
-    });
-    return;
-  }
-  const identity = await loadAccessDirectory(domainController, applicationDeploymentMap);
-  if (!identity.ok) {
-    response.status(500).json({
-      status: "error",
-      errorType: "AuthenticationDirectoryMissing",
-      errorMessage: identity.errorMessage,
-    });
-    return;
-  }
-  const changed = await persistChangedPasswordHash({
-    directory: identity.directory,
-    principal,
-    currentPassword: String(request.body?.currentPassword ?? ""),
-    newPassword: String(request.body?.newPassword ?? ""),
-  });
-  if (!changed.ok) {
-    response.status(changed.status).json(changed.body);
-    return;
-  }
-  const updatedHash = changed.directory.credentials.find(
-    (row) => row.miroirUser === principal.miroirUserUuid,
-  )?.passwordHash;
-  const persisted =
-    !!updatedHash &&
-    (await persistPasswordChange(domainController, applicationDeploymentMap, {
-      principal,
-      credentialsValue: identity.credentialsValue,
-      passwordHash: updatedHash,
-    }));
-  if (!persisted) {
-    response.status(401).json({
-      status: "error",
-      errorType: "AuthenticationFailed",
-    });
-    return;
-  }
-  response.json({ changed: true });
-});
-
 const capabilities = getProcessCapabilities({
   config: miroirConfig,
   environment: getClientEnvironment(),
@@ -806,6 +576,37 @@ const capabilities = getProcessCapabilities({
   adminStoreFactoryRegister: ConfigurationService.configurationService.adminStoreFactoryRegister,
 });
 domainController.setProcessCapabilities(capabilities);
+
+// #636: Miroir's HTTP surface (REST behind the gate, authentication and capabilities routes) comes from
+// miroir-server-library; the routes below are added to its app.
+const { app, authenticationGate, requestGate } = await createMiroirServerApp({
+  domainController,
+  persistenceStoreControllerManager,
+  applicationDeploymentMap,
+  miroirConfig,
+  capabilities,
+  authentication: { enabled: authenticationEnabled, mcpEnabled: mcpAuthenticationEnabled },
+  corsAllowedOrigins,
+});
+
+// set long cache headers for static assets (1 day) and fall back to no-cache for HTML-like responses
+app.use(
+  assetsMountPath,
+  express.static(pathToPublic, {
+    maxAge: "1d",
+    // express.static expects a Node http.ServerResponse here; using that type ensures setHeader is available
+    setHeaders: (
+      res: import("http").ServerResponse,
+      filePath: string,
+      // stat: import("fs").Stats
+    ) => {
+      // If it's an HTML file, don't cache
+      if (filePath.endsWith(".html")) {
+        res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+      }
+    },
+  })
+);
 
 const endpointToolRegistry = new EndpointToolRegistry(domainController, applicationDeploymentMap);
 myLogger.info("Setting up MCP server with dynamic EndpointToolRegistry");
@@ -847,7 +648,7 @@ await mountCopilotKitRoute(app, {
   applicationDeploymentMap,
   mcpHttpUrl: agentMcpHttpUrl({ restPort: restPortFromConfig, mcpPort: mcpPortFromConfig, tls: tlsEnabled }),
   agentModel: miroirConfig.features?.agentModel,
-  requestGate: createIdentityGateMiddleware(authenticationGate) as any,
+  requestGate: requestGate as any,
   authenticationEnabled,
 });
 

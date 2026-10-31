@@ -55,6 +55,7 @@
     "miroir-env": "*",
     "miroir-localcache-redux": "*",
     "miroir-mcp": "*",
+    "miroir-server-library": "*",
     "miroir-store-filesystem": "*",
     "miroir-store-indexedDb": "*",
     "miroir-store-mongodb": "*",

@@ -100,8 +100,10 @@ if (runThis) {
       expect(mount).toContain('app.use("/api/copilotkit", options.requestGate)');
       const mountCall = src.indexOf("await mountCopilotKitRoute(app");
       expect(mountCall).toBeGreaterThanOrEqual(0);
-      expect(src.indexOf("createIdentityGateMiddleware(authenticationGate)", mountCall)).toBeGreaterThan(mountCall);
-      expect(src).toContain("requestGate:");
+      // #636: the gate comes from miroir-server-library's factory.
+      expect(src.indexOf("requestGate: requestGate", mountCall)).toBeGreaterThan(mountCall);
+      const library = readRepoFile("packages/miroir-server-library/src/createMiroirServerApp.ts");
+      expect(library).toContain("createIdentityGateMiddleware(authenticationGate)");
     });
   });
 

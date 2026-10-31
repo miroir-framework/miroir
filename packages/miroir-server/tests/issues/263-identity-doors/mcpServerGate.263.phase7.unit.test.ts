@@ -17,6 +17,11 @@ const SERVER_SOURCE = readFileSync(
   join(dirname(fileURLToPath(import.meta.url)), "../../../src/server.ts"),
   "utf8",
 );
+// #636: the shared gate is built by miroir-server-library's factory, which the binary calls.
+const LIBRARY_SOURCE = readFileSync(
+  join(dirname(fileURLToPath(import.meta.url)), "../../../../miroir-server-library/src/createMiroirServerApp.ts"),
+  "utf8",
+);
 
 if (runThis) {
   describe("mcpServerGate.263.phase7 server wiring", () => {
@@ -35,7 +40,9 @@ if (runThis) {
     });
 
     it("gates /api/copilotkit with the shared identity middleware", () => {
-      expect(SERVER_SOURCE).toMatch(/requestGate: createIdentityGateMiddleware\(authenticationGate\)/);
+      expect(LIBRARY_SOURCE).toMatch(/const identityGate = createIdentityGateMiddleware\(authenticationGate\)/);
+      expect(SERVER_SOURCE).toMatch(/const \{ app, authenticationGate, requestGate \} = await createMiroirServerApp\(/);
+      expect(SERVER_SOURCE).toMatch(/requestGate: requestGate/);
     });
   });
 }

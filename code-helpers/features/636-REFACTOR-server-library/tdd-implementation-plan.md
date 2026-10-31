@@ -32,9 +32,9 @@ Out (owners):
 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
-| 0 | Characterize the release binary | ⬜ pending | `test_server_release_smoke.py` on today's `server.ts` |
-| 1 | Tracer: REST through the factory, behind the gate, on port 0 | ⬜ pending | `serverApp.636.phase1.integ` (CRUD read and `POST /action` 200; 401 without token; BigInt kept) |
-| 2 | Auth and capabilities routes from the factory | ⬜ pending | `serverApp.636.phase2.integ` (`/auth/status`, `/capabilities`, login as alice then REST with token) |
+| 0 | Characterize the release binary | ✅ DONE | `test_server_release_smoke.py` on today's `server.ts` |
+| 1 | Tracer: REST through the factory, behind the gate, on port 0 | ✅ DONE | `serverApp.636.phase1.integ` (CRUD read and `POST /action` 200; 401 without token; BigInt kept) |
+| 2 | Auth and capabilities routes from the factory | ✅ DONE | `serverApp.636.phase2.integ` (`/auth/status`, `/capabilities`, login as alice then REST with token) |
 | 3 | MCP from the factory | ⬜ pending | `serverApp.636.phase3.integ` (`tools/list`; 401 when `mcpEnabled`) + full nonreg |
 | 4 | The tail: assistant slot, assets and client folders as options | ⬜ pending | `serverApp.636.phase4.integ` (temp `index.html`, slot gate 401, API and slot beat the catch-all) |
 | 5 | Mount rules; `server.ts` becomes the thin binary | ⬜ pending | `serverApp.636.phase5.integ` (BigInt through a host app) + the repointed source tests + release smoke |
@@ -99,7 +99,7 @@ Scopes: authentication and access checks are `core`; the REST and action path is
 
 ## Slice 0 — Characterize the release binary
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** a safety net for G4 before any move: today's release binary answers its HTTP surface, and the readers of `server.ts` pass.
 
@@ -129,13 +129,15 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,tooling
 ```
 
 ### Realization
-_(to fill)_
+- `scripts/tests/test_server_release_smoke.py`: 6 checks on the `bench-agent` launcher (`/capabilities`, `/auth/status`, a Library CRUD read, `/assets/images/miroir-logo.png`, `GET /mcp` 405, dev `/`), plus no tracked change under `packages/`. Passed on today's binary.
+- Deviations: the TLS skip checks `certs/localhost.pem`, not `certs/` (the folder is tracked, with a README). `/capabilities` answers `{ status, capabilities }`, so the checks read `capabilities.mcp`.
+- Baseline: the 12 source-text tests pass (miroir-server 5 files, miroir-ai 3, miroir-core 5, miroir-standalone-app 6). Scoped nonreg `smoke,tooling`: all steps pass.
 
 ---
 
 ## Slice 1 — Tracer: REST through the factory, behind the gate, on port 0
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal (observable):** a test reads Library books and runs an action over HTTP on an app built by `createMiroirServerApp`; the binary serves its REST API through the same factory.
 
@@ -167,13 +169,19 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core,actions,tooling
 ```
 
 ### Realization
-_(to fill)_
+- New package `packages/miroir-server-library` (tsup, vitest single worker, `private: true`), added to `package-lock.json` and to `.gitignore` (`dist*/`). `createMiroirServerApp` builds `express()`, CORS, the `json replacer`, the body parser and the shared gate, then the REST loop. It returns `{ app, authenticationGate, requestGate, close }`.
+- `server.ts` computes `capabilities` and calls `setProcessCapabilities` once, before the factory call. It then adds its routes that have not moved yet to the returned `app`, and passes the factory's `requestGate` to CopilotKit.
+- BigInt probe: `POST /query` with two runtime transformers. `sum` (`+` of two tagged BigInts) only reaches BigInt addition if the reviver ran, and returns the digits as a string. `echo` returns a revived BigInt, which only the replacer can write out. Removing either the reviver or the replacer makes the test fail (checked).
+- The action test is a Library `rollback` through the Model endpoint. Query payloads need `applicationSection: "data"`.
+- Source tests: `mcpServerGate.263.phase7`, `authentication.71.phase6` and `cursorSdk.275.phase0` now check `createIdentityGateMiddleware(authenticationGate)` in the library file and `requestGate: requestGate` in the binary.
+- Lint (`miroir/type-escape`) refused `as unknown as RequestHandler`. `requestGate` is now a small wrapper around the identity middleware.
+- Scoped nonreg `smoke,core,actions,tooling`: all 57 steps pass. Release smoke passes.
 
 ---
 
 ## Slice 2 — Auth and capabilities routes from the factory
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal (observable):** a client of the factory's app learns whether authentication is on, reads the process capabilities, logs in and calls REST with the token.
 
@@ -199,7 +207,9 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core,actions,external
 ```
 
 ### Realization
-_(to fill)_
+- `/auth/status` and `/capabilities` are registered right after the parsers. `/auth/login` and `/auth/change-password` come after the REST loop, with their `resolveGatedPrincipal`. The binary drops all four.
+- Alice (`alice` / `alice-dev`) can read the Library, so test 3 needed no fallback. Test 5 changes her password, and the next login uses the new one.
+- Found: `build:server` bundles the library's `dist/`, so the library must be rebuilt before it. A stale `dist` gave 404 on `/capabilities` in the release smoke. The nonreg step and the build lists of Slice 6 build it first.
 
 ---
 
