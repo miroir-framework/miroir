@@ -150,8 +150,9 @@ Allowlist (each entry with its reason, in the test):
 | localcache-redux | `react` peer, not imported | peer of `react-redux` (D1 †) |
 | react | `@emotion/styled` peer, not imported | peer of `@mui/material` (D1 †) |
 | core | `vitest` imported (type-only), not declared | §2 non-goal |
+| app-miroir | `miroir-core` imported (type-only), only a devDependency | declaring it would make a runtime cycle core ↔ app-miroir; its declarations are a hand-written `index.d.ts` stub with no core type, and tsup marks `miroir-core` external; #621 D7 merges the two in I6 |
 
-Ambient declaration files (`*.d.ts` in `src/`, such as `miroir-react/src/lodash-es.d.ts`) and Node built-ins (including `import type { Domain } from "domain"` in `ViewParamsUpdateQueue.ts:1`) are not counted. Fixes: `immer` becomes an exact `dependency` of core (type-only use in `LocalCacheInterface.ts:8`, kept by the emitted `.d.ts`) and of `miroir-localcache-redux` (runtime, `11.1.21`, within `@reduxjs/toolkit`'s `^11.0.0`, so npm installs one copy); `miroir-app-admin` of `miroir-localcache-redux` and `miroir-app-miroir` of `miroir-store-mongodb` (`"*"`); `@codemirror/view` of `miroir-react` (`6.37.2`, the installed copy that `@uiw/react-codemirror` uses). The unused entries of §4.6 go.
+Ambient declaration files (`*.d.ts` in `src/`, such as `miroir-react/src/lodash-es.d.ts`) and Node built-ins (including `import type { Domain } from "domain"` in `ViewParamsUpdateQueue.ts:1`) are not counted. Fixes: `immer` becomes an exact `dependency` of core (type-only use in `LocalCacheInterface.ts:8`, kept by the emitted `.d.ts`) and of `miroir-localcache-redux` (runtime, `11.1.21`, within `@reduxjs/toolkit`'s `^11.0.0`, so npm installs one copy); `miroir-app-admin` of `miroir-localcache-redux` and `miroir-app-miroir` of `miroir-store-mongodb` (`"*"`); `@codemirror/view` of `miroir-react` (`6.37.2`, the installed copy that `@uiw/react-codemirror` uses). The unused entries of §4.6 go, except those the package's tests use, which move to `devDependencies`.
 
 ---
 
@@ -216,7 +217,7 @@ The functions those 18 files import (`listCli{Unit,RunnerIntegration,Transformer
 ### 4.4 Other findings
 
 - `miroir-react` depends on `miroir-localcache-zustand`; `src/miroir-localcache-imports.ts` mentions it only in comments (line 112 is a commented-out import).
-- `miroir-mcp` declares `miroir-store-filesystem`, `-indexedDb`, `-postgres` as optional peers; since #639 nothing in `src/` imports a store (the test platform loads them as devDependencies). `miroir-cli` keeps its three optional store peers: `src/startup/storeStartup.ts` imports them on demand.
+- `miroir-mcp` declares `miroir-store-filesystem`, `-indexedDb`, `-postgres` as optional peers; since #639 nothing in `src/` imports a store; only its test platform (`tests/integration/mcpTestPlatform.ts`) does, and the package declares no store devDependency. `miroir-cli` keeps its three optional store peers: `src/startup/storeStartup.ts` imports them on demand.
 - `miroir-server` (not in the set) has `repository.url` `git+https://github.com/XXXXXXXXXXXXXXXXXXXXXXXX.git`.
 
 ### 4.5 Top-level statements (D6)
@@ -229,8 +230,9 @@ A scan of `src/**/*.{ts,tsx}` (comments removed; static `import`/`export … fro
 
 | Package | Imported, not declared | Declared, not imported |
 |---|---|---|
-| miroir-core | `immer` (type-only, `LocalCacheInterface.ts:8`), `vitest` (type-only, `QueryRunnerTestTools.ts:1`; devDependency) | `diff`, `uuid` |
-| miroir-react | `@codemirror/view` (`CodeBlock_ReadOnly.tsx:19`, dynamic) | `miroir-localcache-zustand`, `@redux-devtools/core`, `react-hook-form` (a commented-out import), `react-select`, `uuid`, `@emotion/styled` (D1 †) |
+| miroir-core | `immer` (type-only, `LocalCacheInterface.ts:8`), `vitest` (type-only, `QueryRunnerTestTools.ts:1`; devDependency) | `diff` |
+| miroir-app-miroir | `miroir-core` (type-only, `src/Model.ts`, `runnerMiroirEntityTestRegistry.ts:1`; devDependency) | — |
+| miroir-react | `@codemirror/view` (`CodeBlock_ReadOnly.tsx:19`, dynamic) | `miroir-localcache-zustand`, `@redux-devtools/core`, `react-hook-form` (a commented-out import), `react-select`, `@emotion/styled` (D1 †) |
 | miroir-localcache-redux | `immer` (`UndoRedoReducer.ts:2`), `miroir-app-admin` (`Model.ts:35`) | `diff`, `fast-deep-equal`, `lodash`, `zod`, `react-dom`, `react` (D1 †) |
 | miroir-store-mongodb | `miroir-app-miroir` (`MongoDbEntityStoreSectionMixin.ts:20`) | — |
 | miroir-store-postgres | — | `pg`, `pg-hstore` (Sequelize) |
@@ -239,7 +241,7 @@ A scan of `src/**/*.{ts,tsx}` (comments removed; static `import`/`export … fro
 | miroir-cli | — | `miroir-app-admin`, `miroir-app-miroir`, `uuid` |
 | others of the set | — | — |
 
-`miroir-react/src/lodash-es.d.ts` (an ambient module re-exporting `lodash` types) and `import type { Domain } from "domain"` (`ViewParamsUpdateQueue.ts:1`, a Node built-in) are not counted.
+`miroir-react/src/lodash-es.d.ts` (an ambient module re-exporting `lodash` types), `import type { Domain } from "domain"` (`ViewParamsUpdateQueue.ts:1`, a Node built-in) and `(window as any).require("electron")` (`TransformerEditor.tsx:500`, a runtime lookup in the Electron renderer, not an import) are not counted. `uuid` is imported by core (`TransformersForRuntime.ts:5`) and react (6 files) and stays. The unused runtime entries of `miroir-mcp` and `miroir-cli` are used by their tests (`miroir-mcp/tests/integration/mcpTestPlatform.ts` imports `miroir-localcache-redux/node`, the three stores and `miroir-app-*`): they move to `devDependencies` rather than going.
 
 ## 5. Key reuse
 
@@ -267,6 +269,7 @@ A scan of `src/**/*.{ts,tsx}` (comments removed; static `import`/`export … fro
 ## Revision history
 
 - v1 (2026-10-31): first version.
+- v3 (2026-10-31): after the plan review: `uuid` is used (core, react); `miroir-app-miroir`'s type-only `miroir-core` import joins the allowlist; mcp and cli test-only entries move to `devDependencies`.
 - v2 (2026-10-31): after the adversarial review. Added `react-router-dom` and `formik` to D1 and G2, the † peers, D9 (declared imports, §4.6), the `private` column and the non-goal correction (three packages of the set are public), the missing top-level effects (§4.5, D6), core's `files` entries that are not built, the corrected function list (§4.2), the D5 evidence from `miroir-server-library`.
 
 The implementation plan is in [`tdd-implementation-plan.md`](./tdd-implementation-plan.md) once written.
