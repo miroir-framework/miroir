@@ -107,7 +107,7 @@ The call takes `MiroirConfigClient | MiroirConfigServer` and switches on `miroir
 | `client`, `emulateServer: false` (web client) | `remote`, through `RestClient(fetch)` | none | `RestClient` | `client.serverConfig.rootApiUrl` |
 | `client` with `restClient` passed (Electron renderer, which receives an `emulateServer: true` config, `environmentState.ts:409`) | `remote`, through the passed client | none | the passed client | `emulateServer ? rootApiUrl : serverConfig.rootApiUrl` (`index.tsx:248–251`) |
 
-`fetch` defaults to `globalThis.fetch.bind(globalThis)`: `RestClient` calls `this.customFetch(...)` (`RestClient.ts:52`, 87), and an unbound `window.fetch` throws "Illegal invocation" in a browser. The standalone app passes `window.fetch.bind(window)` today; with the default it may stop passing one. `externalServiceClient` passes through to `setupMiroirDomainController` for every domain controller the call builds (the server uses it for rotated secrets).
+`fetch` defaults to `globalThis.fetch.bind(globalThis)`: `RestClient` calls `this.customFetch(...)` (`RestClient.ts:52`, 87), and an unbound `window.fetch` throws "Illegal invocation" in a browser. The standalone app passes `window.fetch.bind(window)` today; with the default it may stop passing one. The client call fetches the process capabilities from the relative `/capabilities` (the stub, a passed client, a browser on the server's origin or behind the Vite proxy), and from `resolveProcessCapabilitiesUrl(serverConfig.rootApiUrl)` for a real server outside a browser, where Node `fetch` refuses relative URLs (`setupMiroirTest.ts:154–157`). `externalServiceClient` passes through to `setupMiroirDomainController` for every domain controller the call builds (the server uses it for rotated secrets).
 
 Result (one type):
 
@@ -221,7 +221,7 @@ So the client call needs its own test in Node, on every mode it builds (emulated
 | The CLI now awaits its logger start | `startRegisteredLoggers` resolves once the loggers exist; the CLI's first log lines come after the call |
 | The server's `externalServiceClient` closure refers to `domainController` before it exists | it is called only later (rotated secrets); the closure reads the variable at call time, as today |
 | `miroir-react` pulls the Node entry | `startMiroirClient` imports the main entry of the cache only, through `miroir-localcache-imports.ts`; the bundle guards (#326, CI job `bundle report + guards`) check the standalone app and Electron bundles |
-| A client consumer passes no `fetch` | the default is bound (D5) and tested |
+| A client consumer passes no `fetch` | the default is bound (D5); a Node test cannot show the browser's "Illegal invocation", so the web self-test proves it |
 | The standalone app's branches run only after merge in CI | the Node test of the client call covers the three modes; the web self-test runs locally before the PR; the Electron renderer branch is a passed client, covered in the Node test |
 
 ## Revision history
