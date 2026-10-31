@@ -58,7 +58,11 @@ export type MiroirPlatformOptions = {
   restClient?: RestClientInterface;
   /** Client configuration with a real server: the fetch of `RestClient`. Defaults to the bound global fetch. */
   fetch?: typeof globalThis.fetch;
-  /** Passed to every domain controller built (#339). */
+  /**
+   * Passed to every domain controller built (#339): with an emulated server, both the remote one and
+   * the emulated server's. A client bound to one controller (the server's rotated secrets) belongs
+   * to a server configuration.
+   */
   externalServiceClient?: ExternalServiceClientInterface;
   /** Runs once the emulated server is wired to its stub, before anything else uses it. */
   configureEmulatedServer?: (emulatedServer: MiroirEmulatedServer) => void | Promise<void>;

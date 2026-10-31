@@ -31,7 +31,7 @@ Out (owners): the hand-built test helpers and the model extraction scripts (#641
 | 2 | `startMiroirNode` on a server config; the server and Electron on it | ✅ DONE | `startMiroirNode.integ` (server case) + release smoke + `environmentBoot.integ` + library tests |
 | 3 | `startMiroirClient` in `miroir-react` | ✅ DONE | `startMiroirClient.integ` (providers render Library books; hook order; passed client) |
 | 4 | The sandbox and the standalone app on `startMiroirClient` | ✅ DONE | sandbox and standalone builds, bundle guards, local web self-test |
-| 5 | Nonreg step, docs, epic plan, AC | ⬜ pending | full `nonreg:filesystem` |
+| 5 | Nonreg step, docs, epic plan, AC | ✅ DONE | full `nonreg:filesystem` |
 
 ## Locked implementation defaults
 
@@ -59,7 +59,7 @@ No model element, uuid or MiroirTest suite: the feature is process wiring, not r
 | Kind | Name |
 |---|---|
 | Shared core | `startMiroirPlatform` (`miroir-localcache-redux/src/startMiroirPlatform.ts`), with `MiroirPlatform`, `MiroirPlatformOptions` |
-| Node call | `startMiroirNode` (same file, exported from `./node` only), with `MiroirNodeOptions` |
+| Node call | `startMiroirNode` (same file, exported from `./node`; the main entry re-exports `node.ts`, so it is there too), with `MiroirNodeOptions` |
 | Client call | `startMiroirClient` (`miroir-react/src/startMiroirClient.ts`), with `MiroirClientPlatform` |
 | Core type | `StoreSectionStartup` (`miroir-core/src/0_interfaces/4-services/StoreSectionStartup.ts` or next to `ConfigurationServiceInner`'s interface) |
 | CLI loader | `loadStoreStartups` (`miroir-cli/src/startup/storeStartup.ts`) |
@@ -309,7 +309,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,ui,localcache
 
 ## Slice 5 — Nonreg step, docs, epic plan, AC
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Steps
 
@@ -343,6 +343,20 @@ npm run nonreg:filesystem -- --runner shared
 ```
 
 ### Realization
+
+- Nonreg step `unit-639-startup-calls` (tier `default`, like `unit-636-server-library`; its CLI half also runs in `unit-345-cli`). Boundary check `scripts/tests/test_startup_calls_boundaries.py` (4 tests): it reads the two call files only, not what they import (`sagaTools`, `RestPersistenceClientAndRestClient`), which import no store either. Docs: `docs/internals/application-startup.md`, section "One startup call per side (#639)". Epic plan I4 rows ✅. Follow-up issue #641 for the test helpers and extraction scripts.
+- Pre-push gate green: skills sync, `pytest scripts/tests` (354 passed, 12 skipped), dependency policy, lint, `miroir-env check --strict --tracked-clean`, `tsc` core, miroir-core unit tests (3252 passed). Full `nonreg:filesystem`: 123 of 123.
+- Adversarial code review (no blocker, no major), fixes applied: the MCP test platform reads a real-server config's stores and warns on an unknown store type, like the CLI loader; `startMiroirClient` no longer binds `fetch` eagerly (the platform does it only when it builds a `RestClient`); `externalServiceClient` documented as going to both domain controllers of an emulated client; the passed-client test asserts the capabilities come from the owner (designer tools off); a test comment corrected; plan wording on the main entry. Accepted as is: the CLI loader wraps only import failures now (a store startup's own error comes out unwrapped, which is more accurate); the step's tier. After the fixes: client 2/2, MCP 109/109, Node 3/3, `tsc`, sandbox build, lint.
+
+### AC result
+
+| Acceptance criterion (#639) | Result |
+|---|---|
+| `startMiroirNode` from `miroir-localcache-redux/node`; CLI and MCP tests call it; both `setup.ts` deleted; Library instances read on `test-filesystem` | ✅ `startMiroirNode.integ` 3/3, CLI, MCP, `git ls-files` shows no `startup/setup.ts` |
+| `startMiroirClient` for React clients; sandbox and standalone call it; a test renders data from it | ✅ `startMiroirClient.integ` 2/2, sandbox and standalone builds, web self-test 1224/1224 |
+| server and Electron on `startMiroirNode`, unchanged behaviour | ✅ release smoke 7/7, Electron 14/14, server library 24/24 |
+| neither call imports a store package or reads `process.env` | ✅ `test_startup_calls_boundaries.py` 4/4 |
+| full filesystem nonreg passes | ✅ 123 of 123 |
 
 ---
 

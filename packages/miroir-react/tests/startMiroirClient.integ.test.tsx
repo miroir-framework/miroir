@@ -118,19 +118,21 @@ describe("startMiroirClient", () => {
     // the process that owns the stores, reached through its stub
     const owner = await startMiroirNode(miroirConfig, { stores: [miroirFileSystemStoreSectionStartup] });
     const { applicationDeploymentMap } = await bootEnvironment(owner.domainController, environment.resolved, process.env);
-    owner.emulatedServer!.restClientStub.setProcessCapabilities(
-    getProcessCapabilities({
-      config: miroirConfig,
+      const ownerCapabilities = getProcessCapabilities({
+      config: { ...miroirConfig, features: { ...miroirConfig.features, designerTools: false } },
       environment: getClientEnvironment(),
       storeSectionFactoryRegister: ConfigurationService.configurationService.StoreSectionFactoryRegister,
       adminStoreFactoryRegister: ConfigurationService.configurationService.adminStoreFactoryRegister,
-    }),
-  );
+    });
+    owner.emulatedServer!.restClientStub.setProcessCapabilities(ownerCapabilities);
 
     const platform = await startMiroirClient(miroirConfig, { stores: [], restClient: owner.emulatedServer!.restClientStub });
 
     expect(platform.emulatedServer).toBeUndefined();
     expect(platform.restClient).toBe(owner.emulatedServer!.restClientStub);
+    // the capabilities came through the passed client: the owner's (designer tools off), not this process's
+    expect(platform.processCapabilities).toEqual(ownerCapabilities);
+    expect(platform.processCapabilities.designerTools).toBe(false);
     await loadLibrary(platform.domainController, applicationDeploymentMap);
     const domainState = platform.domainController.getLocalCache().getDomainState() as any;
     expect(domainState[LIBRARY_DEPLOYMENT]?.data?.[BOOK_ENTITY]?.[book1.uuid]?.name).toBe(book1.name);

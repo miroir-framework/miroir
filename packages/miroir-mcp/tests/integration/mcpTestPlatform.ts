@@ -34,26 +34,32 @@ const storeStartups: Record<string, () => Promise<StoreSectionStartup>> = {
   sql: async () => (await import("miroir-store-postgres")).miroirPostgresStoreSectionStartup,
 };
 
-/** The startups of the stores the test environment's emulated server uses. */
+/**
+ * The startups of the stores the test environment uses: the emulated server's, or those a
+ * real-server client names (MIROIR_TEST_CLIENT=realServer), like the CLI's loader.
+ */
 async function testEnvironmentStores(miroirConfig: MiroirConfigClient): Promise<StoreSectionStartup[]> {
-  if (!miroirConfig.client.emulateServer) {
-    return [];
-  }
+  const deployments: Record<string, StoreUnitConfiguration> = miroirConfig.client.emulateServer
+    ? miroirConfig.client.deploymentStorageConfig
+    : (miroirConfig.client.serverConfig.storeSectionConfiguration ?? {});
   const storeTypes = new Set<string>();
-  for (const storeUnitConfiguration of Object.values(miroirConfig.client.deploymentStorageConfig) as StoreUnitConfiguration[]) {
+  for (const storeUnitConfiguration of Object.values(deployments)) {
     for (const section of Object.values(storeUnitConfiguration) as { emulatedServerType?: string }[]) {
       if (section?.emulatedServerType) {
         storeTypes.add(section.emulatedServerType);
       }
     }
   }
-  return Promise.all([...storeTypes].map((storeType) => {
+  const startups: StoreSectionStartup[] = [];
+  for (const storeType of storeTypes) {
     const load = storeStartups[storeType];
     if (!load) {
-      throw new Error(`mcpTestPlatform: no store startup for ${storeType}`);
+      console.warn(`[mcpTestPlatform] no store startup for ${storeType} - skipping`);
+      continue;
     }
-    return load();
-  }));
+    startups.push(await load());
+  }
+  return startups;
 }
 
 export async function startMcpTestPlatform(

@@ -80,7 +80,7 @@ describe("startMiroirNode", () => {
     const fetched: string[] = [];
     const platform = await startMiroirNode(serverConfig, {
       stores: [miroirFileSystemStoreSectionStartup],
-      // the server's rotated-secrets client goes the same way: the domain controller calls out through it
+      // the domain controller calls out through the client it is given (server.ts passes its rotated-secrets client this way)
       externalServiceClient: defaultExternalServiceClient({
         fetch: async (input) => {
           fetched.push(String(input));

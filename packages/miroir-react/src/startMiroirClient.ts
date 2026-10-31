@@ -32,16 +32,14 @@ function capabilitiesUrl(miroirConfig: MiroirConfigClient, options: MiroirPlatfo
 /**
  * The startup call of a React client: the platform of `startMiroirPlatform` for a client
  * configuration, then the process capabilities, set on the emulated server's stub when there is
- * one, and read by both domain controllers. `fetch` defaults to the bound global fetch.
+ * one, and read by both domain controllers.
  */
 export async function startMiroirClient(
   miroirConfig: MiroirConfigClient,
   options: MiroirPlatformOptions,
 ): Promise<MiroirClientPlatform> {
-  const platform = await startMiroirPlatform(miroirConfig, {
-    ...options,
-    fetch: options.fetch ?? globalThis.fetch.bind(globalThis),
-  });
+  // fetch: startMiroirPlatform defaults to the bound global fetch, only when it builds a RestClient
+  const platform = await startMiroirPlatform(miroirConfig, options);
   platform.emulatedServer?.restClientStub.setProcessCapabilities(
     getProcessCapabilities({
       config: miroirConfig,
