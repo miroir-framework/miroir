@@ -150,7 +150,7 @@ export default tseslint.config(
   {
     // miroir-react is a library (#633): host features reach it through MiroirShellHostContext and the report section
     // registry, never through an import. Flat config replaces a rule's options per file, so this block repeats the
-    // jzod restrictions of the block above.
+    // restrictions on the external ML packages of the block above.
     files: ["packages/miroir-react/src/**/*.{ts,tsx,mts,cts,js,jsx,mjs,cjs}"],
     languageOptions: { parser: tseslint.parser },
     rules: {

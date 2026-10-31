@@ -4,7 +4,7 @@
 >
 > **Execution model:** each slice ends with its Validation commands; on success its Realization is appended and its Status flips to ✅ DONE. The user asked for the whole issue through to a PR ready to merge, so commits follow each green slice on the working branch.
 >
-> **Resume note:** slices 0 to 6 DONE; slice 7 next.
+> **Resume note:** all slices DONE; PR against `_integration`.
 >
 > **Plan history:** revised after an adversarial review (2026-10-31): shims at the old app paths keep pages lazy mid-way (slices 2 to 5); moved modules' `from "miroir-react"` imports become relative, with a guard; Emotion pragma for `SequenceEditor`; corrected `check_bundle_policy.py`, `--only`, auth test and route test commands; slice 1 RED moved to `loadTimingWriter.integ`; every source-text guard named in its slice; `tsc` and lint in every move slice; `defaultReportSectionRenderers` export for the AC.
 
@@ -34,7 +34,7 @@ Out (analysis §2): the MiroirTest runtime and its displays, the d3 graph render
 | 4 | Generic pages from `miroir-react`; search opens on the current application | ✅ | `toolPageDefaults.633.phase4.unit`, `homePageLoad.unit` |
 | 5 | Model diagram page through the registry; view in `miroir-diagram-class` | ✅ | the 9 diagram-mocking UI tests, slice 6 page smoke |
 | 6 | Shell from `miroir-react`, assistant injected; sandbox without the alias | ✅ | `test_shell_package_boundaries.py`, sandbox build and page smoke |
-| 7 | Lint boundary rule, nonreg, bundle guard, docs, cleanup, AC | ⬜ | lint, full `nonreg:filesystem`, bundle guards |
+| 7 | Lint boundary rule, nonreg, bundle guard, docs, cleanup, AC | ✅ | lint, full `nonreg:filesystem`, bundle guards |
 
 ---
 
@@ -445,7 +445,7 @@ Sandbox page smoke (tracer check, Playwright from Python): `vite preview` of the
 
 ## Slice 7 — Lint boundary rule, nonreg, bundle guard, docs, cleanup, AC
 
-**Status:** ⬜ pending
+**Status:** ✅ done
 
 ### Goal
 
@@ -473,6 +473,14 @@ npm run build -w miroir-standalone-app && python scripts/check_bundle_policy.py 
 npm run build -w miroir-standalone-app-electron && python scripts/check_bundle_policy.py packages/miroir-standalone-app-electron/dist/bundle-report.json packages/miroir-standalone-app-electron/bundle-policy.json
 npm run nonreg:filesystem -- --runner shared
 ```
+
+### Realization
+
+- `eslint.config.mjs`: a `no-restricted-imports` block for `packages/miroir-react/src/**` (`electron`, `miroir-mcp`, `miroir-mcp/client`, `miroir-diagram-class`, `miroir-standalone-app`, patterns `@copilotkit/*` and `**/miroir-standalone-app/**`), repeating the restrictions on the external ML packages. `eslint-rules/react-package-boundary.test.mjs` (4 tests) is in the root `lint` script. `check_ml_nomenclature` flagged the word "jzod" in the new comment and test titles; reworded.
+- `bundle-policy.json` `forbiddenEager` gains `d3*`, `diff`, `miroir-mcp`, `miroir-diagram-class`, `mermaid`, `svg-toolbelt`; each matches packages that are lazy in the report.
+- Tests folded: `loadTimingMarkSink.unit`, `reportSectionRenderersStoredRunner.unit`, `loginTransport.unit`, `toolPageDefaults.unit` (miroir-react), `assistantPanel.integ` (app `tests/4_view/`); the issue directory is gone. `unit-633-app-shell` runs them with `shellExports.unit` (6 files, 19 tests).
+- Docs: `application-startup.md` (new section "The shell and its host"), `code-splitting.md`, `report-display.md`, `load-timings.md` (the sink); epic plan I2 rows ✅; #13 analysis gets a Q1-a revision note.
+- Validation: sync-skills, pytest (340 passed), dependency policy, lint, `miroir-env check --strict --tracked-clean`, core tsc, `npm run test -w miroir-core -- ''` (3252 passed) all green. Bundle guards: web 0 violations, 71 eager chunks, 843,413 B gzipped (baseline 841,981); Electron 0 violations, 8 chunks, 920,236 B (baseline 908,129). Full `nonreg:filesystem`: 118 passed, 2 failed (`unit-check-ml-nomenclature`, fixed; `apiCallReport-281`, the known teardown `ECONNRESET`), both pass on rerun.
 
 ### Tracer narrative
 

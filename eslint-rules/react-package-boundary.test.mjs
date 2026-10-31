@@ -26,9 +26,9 @@ test("miroir-react sources cannot import a host feature", async () => {
   }
 });
 
-test("miroir-react sources still cannot import jzod or jzod-ts", async () => {
+test("miroir-react sources still cannot import the external ML packages", async () => {
   assert.equal((await errorsFor(reactSrc, `import { valueToJzod } from "@miroir-framework/jzod";\n`)).length, 1);
-  assert.equal((await errorsFor(reactSrc, `import type { JzodElement } from "@miroir-framework/jzod-ts";\n`)).length, 1);
+  assert.equal((await errorsFor(reactSrc, `import type { MlElement } from "@miroir-framework/jzod-ts";\n`)).length, 1);
 });
 
 test("miroir-react sources import miroir-core and their own modules", async () => {
