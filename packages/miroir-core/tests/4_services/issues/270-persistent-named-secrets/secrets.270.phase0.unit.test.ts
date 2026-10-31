@@ -132,25 +132,25 @@ if (runThis) {
   });
 
   describe("secrets.270.phase0 consumed-by Slice 3", () => {
-    it("MCP success tool response wraps subObject with redactCredentialSecretsFromValue", () => {
+    // #627: success and error responses share one formatter, mcpTextResult, which redacts.
+    it("MCP tool responses are formatted by mcpTextResult, which redacts subObject", () => {
       const src = readFileSync(MCP_HANDLERS, "utf8");
-      const successBlock = src.slice(
-        src.indexOf('if (result.status === "ok")'),
-        src.indexOf("} else {", src.indexOf('if (result.status === "ok")')),
-      );
-      expect(successBlock).toMatch(/redactCredentialSecretsFromValue\(\s*subObject\s*\)/);
-      expect(successBlock).toMatch(/parsed:\s*redactedSubObject/);
-      expect(successBlock).toMatch(/JSON\.stringify\(\s*redactedSubObject,\s*null,\s*2\s*\)/);
+      const fnStart = src.indexOf("function mcpTextResult");
+      const fnBlock = src.slice(fnStart, src.indexOf("\n}\n", fnStart));
+      expect(fnBlock).toMatch(/redactCredentialSecretsFromValue\(\s*subObject\s*\)/);
+      expect(fnBlock).toMatch(/parsed:\s*redactedSubObject/);
+      expect(fnBlock).toMatch(/JSON\.stringify\(\s*redactedSubObject,\s*null,\s*2\s*\)/);
     });
 
-    it("MCP error context wraps subObject with redactCredentialSecretsFromValue", () => {
+    it("MCP success and error responses (including error context) go through mcpTextResult", () => {
       const src = readFileSync(MCP_HANDLERS, "utf8");
-      const errorStart = src.indexOf("// Error response");
-      const errorBlock = src.slice(errorStart, src.indexOf("} catch (error)", errorStart));
-      expect(errorBlock).toContain("context:");
-      expect(errorBlock).toMatch(/redactCredentialSecretsFromValue\(\s*subObject\s*\)/);
-      expect(errorBlock).toMatch(/parsed:\s*redactedSubObject/);
-      expect(errorBlock).toMatch(/JSON\.stringify\(\s*redactedSubObject,\s*null,\s*2\s*\)/);
+      const handlerStart = src.indexOf("export async function handleMcpAction");
+      const handlerBlock = src.slice(handlerStart, src.indexOf("\n}\n", handlerStart));
+      const successStart = handlerBlock.indexOf('if (result.status === "ok")');
+      expect(successStart).toBeGreaterThan(-1);
+      expect(handlerBlock.slice(successStart)).toMatch(/return mcpTextResult\(\{\s*status: "success"/);
+      expect(handlerBlock.slice(successStart)).toMatch(/return mcpTextResult\(\{\s*status: "error"[\s\S]*context:/);
+      expect(handlerBlock).not.toMatch(/content:\s*\[/);
     });
   });
 
