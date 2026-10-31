@@ -16,6 +16,8 @@ export interface MountCopilotKitRouteOptions {
   agentModel?: string;
   /** Runs before the CopilotKit router, e.g. the authentication gate. */
   requestGate?: RequestHandler;
+  /** Whether that gate is on: endpoint actions then run as the request's principal (#627). */
+  authenticationEnabled?: boolean;
   /** Test seam; defaults to the dynamic import of `miroir-ai`. */
   importMiroirAi?: () => Promise<Pick<typeof import("miroir-ai"), "createCopilotKitRouter" | "assertAgentSdkPackaged">>;
 }
@@ -67,6 +69,7 @@ export async function mountCopilotKitRoute(
       capabilities: options.capabilities,
       mcpHttpUrl: options.mcpHttpUrl,
       agentModel: options.agentModel,
+      authenticationEnabled: options.authenticationEnabled,
     }),
   );
   return true;

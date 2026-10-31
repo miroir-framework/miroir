@@ -92,9 +92,10 @@ if (runThis) {
       expect(providerSrc).toContain('name: "getCurrentTimestamp"');
     });
 
-    it("propose_lendDocument accept path POSTs /lendDocument", () => {
+    // #627: /lendDocument became the generic catalog route /endpointAction/:name.
+    it("propose_lendDocument accept path POSTs /endpointAction/Library_lendDocument", () => {
       const block = actionBlock(providerSrc, "propose_lendDocument");
-      expect(block).toMatch(/copilotKitHttpUrl\("\/lendDocument"\)|["']\/lendDocument["']/);
+      expect(block).toMatch(/copilotKitHttpUrl\("\/endpointAction\/Library_lendDocument"\)/);
       expect(block).toMatch(/JSON\.stringify\(\s*\{\s*user,\s*book,\s*startDate,\s*note\s*\}/);
     });
 

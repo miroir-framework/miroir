@@ -15,25 +15,31 @@ import type { MiroirTestDefinition } from "miroir-core";
 import { environmentRealServerClientConfig, resolveEnvironmentFromFiles } from "miroir-env";
 
 import {
+  FILESYSTEM_TESTS_NEED_A_FILESYSTEM_STORE,
   REPORT_TESTS_NEED_THE_SANDBOX,
   runIntegrationMiroirTestBatch,
   runUnitMiroirTestBatch,
+  skippedSuiteResults,
 } from "../../../src/miroir-fwk/4-tests/miroirTestBatch.js";
 import { computeSelfTestResult } from "../../../src/miroir-fwk/4-tests/selfTest/selfTestResult.js";
 import { integrationSuiteKey } from "../../../src/miroir-fwk/4-tests/selfTest/runSelfTest.js";
 import { miroirActivityTracker, repositoryRoot } from "./selfTestPlatform.js";
 
-/** The miroir app's MiroirTest of the external service wizard Report: tags integ, ui, report. */
-function reportMiroirTest(): MiroirTestDefinition {
+function miroirAppMiroirTest(uuid: string): MiroirTestDefinition {
   return JSON.parse(
     readFileSync(
       path.join(
         repositoryRoot,
-        "packages/miroir-app-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/6446d8b1-8268-4e29-b234-37a267cb7c6b.json",
+        `packages/miroir-app-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/${uuid}.json`,
       ),
       "utf8",
     ),
   );
+}
+
+/** The miroir app's MiroirTest of the external service wizard Report: tags integ, ui, report. */
+function reportMiroirTest(): MiroirTestDefinition {
+  return miroirAppMiroirTest("6446d8b1-8268-4e29-b234-37a267cb7c6b");
 }
 
 describe("self-test with integ MiroirTests (#487)", () => {
@@ -52,6 +58,30 @@ describe("self-test with integ MiroirTests (#487)", () => {
     expect(batch.resultsBySuiteKey).toEqual({});
     expect(batch.failures).toEqual([]);
     expect(batch.skipped).toEqual([{ suiteKey: expect.any(String), reason: REPORT_TESTS_NEED_THE_SANDBOX }]);
+  });
+
+  it("lists the suites deploying on filesystem stores as not run on the in-browser profile (#495)", async () => {
+    const filesystemSuites = [
+      miroirAppMiroirTest("82ee9f39-654d-4e87-ba52-aecb7faf8483"), // runner.deployApplication
+      miroirAppMiroirTest("c22ca343-af4a-4231-9b12-7044b0f53599"), // runner.createApplication
+    ];
+    for (const suite of filesystemSuites) {
+      expect(suite.tags).toEqual(expect.arrayContaining(["integ", "filesystem"]));
+    }
+
+    const batch = await runIntegrationMiroirTestBatch({ miroirTests: filesystemSuites });
+
+    expect(batch.resultsBySuiteKey).toEqual({});
+    expect(batch.failures).toEqual([]);
+    expect(batch.skipped.map((suite) => suite.reason)).toEqual([
+      FILESYSTEM_TESTS_NEED_A_FILESYSTEM_STORE,
+      FILESYSTEM_TESTS_NEED_A_FILESYSTEM_STORE,
+    ]);
+    // Run all shows each one as a skipped row carrying the reason
+    expect(Object.values(skippedSuiteResults(batch.skipped)).flat()).toEqual([
+      expect.objectContaining({ testResult: "skipped", failedAssertions: [FILESYSTEM_TESTS_NEED_A_FILESYSTEM_STORE] }),
+      expect.objectContaining({ testResult: "skipped", failedAssertions: [FILESYSTEM_TESTS_NEED_A_FILESYSTEM_STORE] }),
+    ]);
   });
 
   it("reports the suites not run and keeps integration results beside unit results", () => {

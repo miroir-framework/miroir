@@ -102,3 +102,16 @@ describe("toolNameFor", () => {
     expect(name).toMatch(/^[a-zA-Z0-9_-]{1,64}$/);
   });
 });
+
+describe("toolNameFor with names over the limit (#627)", () => {
+  it("gives two endpoints of one application the same long action type two distinct names", () => {
+    const longApplication = "A".repeat(40);
+    const longActionType = "b".repeat(40);
+    const takenNames = new Set<string>();
+    const first = toolNameFor(longApplication, "firstEndpoint", longActionType, takenNames);
+    takenNames.add(first);
+    const second = toolNameFor(longApplication, "secondEndpoint", longActionType, takenNames);
+
+    expect(second).not.toBe(first);
+  });
+});

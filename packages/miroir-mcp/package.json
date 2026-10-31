@@ -41,7 +41,6 @@
     "miroir-core": "*",
     "miroir-localcache-redux": "*",
     "miroir-app-admin": "*",
-    "miroir-example-library": "*",
     "miroir-app-miroir": "*",
     "uuid": "14.0.3",
     "zod": "4.6.7"
@@ -68,6 +67,7 @@
     "@types/uuid": "11.0.0",
     "cross-env": "10.1.0",
     "miroir-env": "*",
+    "miroir-example-library": "*",
     "tsup": "9.0.0",
     "vitest": "5.0.5"
   }

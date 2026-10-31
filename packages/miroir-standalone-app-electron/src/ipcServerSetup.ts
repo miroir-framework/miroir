@@ -159,6 +159,7 @@ export async function setupIpcServer(selfTest?: ElectronSelfTestOptions): Promis
           capabilities,
           mcpHttpUrl,
           agentModel: electronServerConfig.features?.agentModel,
+          authenticationEnabled: gate.enabled,
         }),
       );
     }

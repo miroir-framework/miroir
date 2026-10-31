@@ -20,12 +20,6 @@ const ENTITY_MIROIR_SECRET_UUID = "a96856df-2b38-494a-8027-82617e2d64ad";
 const PASSWORD_HASH = "super-secret-password-hash";
 const CIPHERTEXT = "aes-256-gcm$iv$cipher$tag";
 
-const dummyActionBuilder = () =>
-  ({
-    actionType: "getInstances",
-    payload: {},
-  }) as ReturnType<Parameters<typeof handleMcpAction>[3]>;
-
 if (runThis) {
   describe("secretsRedact.270.phase3 MCP tool response redaction", () => {
     it("redacts passwordHash and ciphertext from success parsed and text", async () => {
@@ -54,9 +48,7 @@ if (runThis) {
         "Test_successRedact",
         {},
         z.object({}),
-        dummyActionBuilder,
-        domainController,
-        {},
+        () => domainController.handleAction({ actionType: "getInstances", payload: {} } as any, {}),
       );
 
       const parsed = result.content[0]?.parsed;
@@ -102,9 +94,7 @@ if (runThis) {
         "Test_errorRedact",
         {},
         z.object({}),
-        dummyActionBuilder,
-        domainController,
-        {},
+        () => domainController.handleAction({ actionType: "getInstances", payload: {} } as any, {}),
       );
 
       const parsed = result.content[0]?.parsed;

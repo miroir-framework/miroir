@@ -1,5 +1,6 @@
 import loglevelNextLog from "loglevelnext";
 import {
+  defaultMiroirModelEnvironment,
   MiroirActivityTracker,
   miroirCoreStartup,
   MiroirEventService,
@@ -43,6 +44,32 @@ export type CliPlatform = {
   restClientStub?: RestClientStub;
 };
 
+/**
+ * #627: the commands come from the Endpoints of each deployed application's model, so every
+ * application's persisted state is loaded into the local cache before the commands are built.
+ */
+async function loadDeployedApplications(
+  domainController: DomainControllerInterface,
+  applicationDeploymentMap: ApplicationDeploymentMap,
+  log: (line: string) => void,
+): Promise<void> {
+  for (const application of Object.keys(applicationDeploymentMap).sort()) {
+    const result = await domainController.handleAction(
+      {
+        actionType: "rollback",
+        actionLabel: `Load ${application} into the local cache`,
+        endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+        payload: { application },
+      },
+      applicationDeploymentMap,
+      defaultMiroirModelEnvironment,
+    );
+    if (result.status !== "ok") {
+      log(`[miroir-cli] warning: could not load application ${application}: ${JSON.stringify(result)}`);
+    }
+  }
+}
+
 export async function initializePlatform(
   options: { cwd?: string; env?: Record<string, string | undefined>; name?: string } = {},
   log: (line: string) => void = console.error,
@@ -81,6 +108,7 @@ export async function initializePlatform(
   for (const warning of reconciliation.warnings) {
     log(`[miroir-cli] warning: ${warning}`);
   }
+  await loadDeployedApplications(domainController, reconciliation.applicationDeploymentMap, log);
   return {
     environment,
     domainController,

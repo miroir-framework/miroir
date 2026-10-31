@@ -63,12 +63,7 @@ import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 
 import { openTestEnvironment, selectedTestEnvironment } from "miroir-env";
 import { initializePlatform } from "../src/platform.js";
-import {
-  cliRequestHandlers,
-  cliRequestHandlers_EntityEndpoint,
-  cliRequestHandlers_Library_lendingEndpoint,
-  type CliCommandHandler,
-} from "../src/commands/commandsFromEndpoint.js";
+import { getAllCommands, getCommandByName } from "../src/commands/commandsFromEndpoint.js";
 
 import { defaultMiroirMetaModel, instanceEndpointV1 } from "miroir-app-miroir";
 import { deployment_Miroir } from 'miroir-app-admin';
@@ -132,8 +127,8 @@ const globalTimeOut = 60000;
 // ################################################################################################
 export interface CliCommandTest {
   testName: string;
+  /** A command name or alias (#627: commands come from the endpoint action catalog). */
   commandName: string;
-  handler: CliCommandHandler<any>;
   params: any;
   tests: (expect: any, result: any) => void;
 }
@@ -152,25 +147,15 @@ export const cliInstanceActionTests: CliCommandTest[] = [
   {
     testName: "should execute createInstance command",
     commandName: "createInstance",
-    handler: cliRequestHandlers_EntityEndpoint.createInstance,
     params: {
       application: selfApplicationLibrary.uuid,
       applicationSection: "data" as const,
       parentUuid: entityBook.uuid,
       objects: [
         {
-          parentName: "Book",
-          parentUuid: entityBook.uuid,
-          applicationSection: "data" as const,
-          instances: [
-            {
-              uuid: testBookUuid,
-              parentUuid: entityBook.uuid,
-              name: "Test Book from CLI",
-              author: "Test Author",
-              isbn: "TEST-CLI-123",
-            } as any,
-          ],
+          ...(book1 as any),
+          uuid: testBookUuid,
+          name: "Test Book from CLI",
         },
       ],
     },
@@ -182,7 +167,6 @@ export const cliInstanceActionTests: CliCommandTest[] = [
   {
     testName: "should execute getInstance command",
     commandName: "getInstance",
-    handler: cliRequestHandlers_EntityEndpoint.getInstance,
     params: {
       application: testApplicationUuid,
       applicationSection: "data" as const,
@@ -197,7 +181,6 @@ export const cliInstanceActionTests: CliCommandTest[] = [
   {
     testName: "should execute getInstances command",
     commandName: "getInstances",
-    handler: cliRequestHandlers_EntityEndpoint.getInstances,
     params: {
       application: testApplicationUuid,
       applicationSection: "data" as const,
@@ -213,22 +196,14 @@ export const cliInstanceActionTests: CliCommandTest[] = [
   {
     testName: "should execute updateInstance command",
     commandName: "updateInstance",
-    handler: cliRequestHandlers_EntityEndpoint.updateInstance,
     params: {
       application: testApplicationUuid,
       applicationSection: "data" as const,
       parentUuid: testEntityUuid,
       objects: [
         {
-          parentName: testEntity.name,
-          parentUuid: testEntity.uuid,
-          applicationSection: "data" as const,
-          instances: [
-            {
-              ...testInstance,
-              name: "Updated Book Name from CLI",
-            } as any,
-          ],
+          ...(testInstance as any),
+          name: "Updated Book Name from CLI",
         },
       ],
     },
@@ -240,7 +215,6 @@ export const cliInstanceActionTests: CliCommandTest[] = [
   {
     testName: "should execute deleteInstance command",
     commandName: "deleteInstance",
-    handler: cliRequestHandlers_EntityEndpoint.deleteInstance,
     params: {
       application: testApplicationUuid,
       applicationSection: "data" as const,
@@ -254,7 +228,6 @@ export const cliInstanceActionTests: CliCommandTest[] = [
   {
     testName: "calling getInstance on non-existing instance should return error",
     commandName: "getInstance",
-    handler: cliRequestHandlers_EntityEndpoint.getInstance,
     params: {
       application: testApplicationUuid,
       applicationSection: "data" as const,
@@ -272,7 +245,6 @@ export const cliLibraryEndpointTests: CliCommandTest[] = [
   {
     testName: "should execute lendDocument command",
     commandName: "lendDocument",
-    handler: cliRequestHandlers_Library_lendingEndpoint.lendDocument,
     params: {
       book: book1.uuid,
       user: user1.uuid,
@@ -300,7 +272,11 @@ async function runCliTest(
 ) {
   log.info(`Running CLI test: "${cliTest.testName}" with params:`, JSON.stringify(cliTest.params, null, 2));
   
-  const result = await cliTest.handler.execute(
+  const handler = getCommandByName(getAllCommands(domainController, applicationDeploymentMap), cliTest.commandName);
+  if (!handler) {
+    throw new Error(`no CLI command ${cliTest.commandName}`);
+  }
+  const result = await handler.execute(
     cliTest.params,
     domainController,
     applicationDeploymentMap,

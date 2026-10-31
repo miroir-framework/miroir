@@ -1,0 +1,107 @@
+{
+  "uuid": "bb447b8c-a687-408a-bc59-293aea293906",
+  "parentName": "Endpoint",
+  "parentUuid": "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
+  "application": "eef01001-0001-4000-8000-000000000001",
+  "name": "fixtureEndpoint",
+  "version": "1",
+  "description": "#627 fixture: an application Endpoint that every surface (MCP, CLI, CopilotKit) must expose without code naming it.",
+  "definition": {
+    "actions": [
+      {
+        "actionParameters": {
+          "actionType": {
+            "type": "literal",
+            "definition": "fixtureCreateItem",
+            "tag": {
+              "value": {
+                "description": "Create a Country in the appForTest fixture application"
+              }
+            }
+          },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
+          },
+          "endpoint": {
+            "type": "literal",
+            "definition": "bb447b8c-a687-408a-bc59-293aea293906"
+          },
+          "payload": {
+            "type": "object",
+            "definition": {
+              "name": {
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Name",
+                    "description": "Name of the Country to create"
+                  }
+                }
+              },
+              "code": {
+                "type": "string",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Country Code",
+                    "description": "ISO 3166-1 alpha-2 code"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "actionImplementation": {
+          "actionImplementationType": "compositeActionTemplate",
+          "definition": {
+            "actionType": "compositeActionSequence",
+            "actionLabel": "fixtureCreateItemImplementation",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+            "payload": {
+              "actionSequence": [
+                {
+                  "actionType": "createInstance",
+                  "actionLabel": "fixtureCreateItem_createInstance_Country",
+                  "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                  "payload": {
+                    "application": "eef01001-0001-4000-8000-000000000001",
+                    "applicationSection": "data",
+                    "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                    "objects": [
+                      {
+                        "transformerType": "createObject",
+                        "definition": {
+                          "uuid": {
+                            "transformerType": "generateUuid"
+                          },
+                          "parentName": "Country",
+                          "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                          "name": {
+                            "transformerType": "getFromParameters",
+                            "referencePath": [
+                              "payload",
+                              "name"
+                            ]
+                          },
+                          "iso3166-1Alpha-2": {
+                            "transformerType": "getFromParameters",
+                            "safe": true,
+                            "referencePath": [
+                              "payload",
+                              "code"
+                            ]
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    ]
+  }
+}

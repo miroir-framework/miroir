@@ -132,6 +132,7 @@
             "versioning",
             "mcp",
             "external-service",
+            "filesystem",
             "report",
             "menu",
             "ai",

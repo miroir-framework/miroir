@@ -43,20 +43,21 @@ function packageHasCursorSdkDependency(pkgJson: Record<string, unknown>): boolea
 
 if (runThis) {
   describe("cursorSdk.275.phase0 — createMiroirCopilotKitActions live action names", () => {
-    it("returns exactly lendDocument, generateMiroirReport, getMiroirContext", () => {
+    // #627: the endpoint actions (Library_lendDocument, …) come from the deployed models, so
+    // without a DomainController only the static tools remain.
+    it("returns exactly generateMiroirReport and getMiroirContext without a DomainController", () => {
       const actions = createMiroirCopilotKitActions(undefined as any, undefined as any);
       expect(actions.map((action) => action.name).sort()).toEqual([
         "generateMiroirReport",
         "getMiroirContext",
-        "lendDocument",
       ]);
     });
   });
 
   describe("cursorSdk.275.phase0 — miroirCopilotKitActions source pins", () => {
-    it("uses lending endpoint uuid 212f2784-5b68-43b2-8ee0-89b1c6fdd0de", () => {
+    it("names no application endpoint (#627: lending endpoint uuid 212f2784-5b68-43b2-8ee0-89b1c6fdd0de is gone)", () => {
       const src = readRepoFile("packages/miroir-ai/src/tools/miroirCopilotKitActions.ts");
-      expect(src).toContain(LENDING_ENDPOINT_UUID);
+      expect(src).not.toContain(LENDING_ENDPOINT_UUID);
     });
 
     it("commented runtime tools exist as comments only", () => {

@@ -74,18 +74,9 @@ export const mcpInstanceActionTests: McpToolTest[] = [
       parentUuid: entityBook.uuid,
       objects: [
         {
-          parentName: "Book",
-          parentUuid: entityBook.uuid,
-          applicationSection: "data" as const,
-          instances: [
-            {
-              uuid: testBookUuid,
-              parentUuid: entityBook.uuid,
-              name: "Test Book from MCP",
-              author: "Test Author",
-              isbn: "TEST-123",
-            } as any,
-          ],
+          ...(book1 as any),
+          uuid: testBookUuid,
+          name: "Test Book from MCP",
         },
       ],
     },
@@ -139,15 +130,8 @@ export const mcpInstanceActionTests: McpToolTest[] = [
       parentUuid: testEntityUuid,
       objects: [
         {
-          parentName: testEntity.name,
-          parentUuid: testEntity.uuid,
-          applicationSection: "data" as const,
-          instances: [
-            {
-              ...testInstance,
-              name: "Updated Book Name from MCP",
-            } as any,
-          ],
+          ...(testInstance as any),
+          name: "Updated Book Name from MCP",
         },
       ],
     },
