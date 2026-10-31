@@ -257,7 +257,7 @@ export async function handleCliAction(
 
     const defaultLibraryModelEnvironment = getDefaultLibraryModelEnvironmentDEFUNCT(
       defaultMiroirMetaModel,
-      instanceEndpointV1 as any as EndpointDefinition,
+      instanceEndpointV1 as EndpointDefinition,
       resolveLibraryDeploymentUuid(applicationDeploymentMap),
     );
     // Execute via DomainController
@@ -383,13 +383,13 @@ function cliCommandEntry(endpoint: EndpointDefinition, actionType: string): CliC
 // ################################################################################################
 
 export const cliRequestHandlers_EntityEndpoint: CliRequestHandlers = {
-  createInstance: cliCommandEntry(instanceEndpointV1 as any as EndpointDefinition, "createInstance"),
-  getInstance: cliCommandEntry(instanceEndpointV1 as any as EndpointDefinition, "getInstance"),
-  getInstances: cliCommandEntry(instanceEndpointV1 as any as EndpointDefinition, "getInstances"),
-  updateInstance: cliCommandEntry(instanceEndpointV1 as any as EndpointDefinition, "updateInstance"),
-  deleteInstance: cliCommandEntry(instanceEndpointV1 as any as EndpointDefinition, "deleteInstance"),
-  deleteInstanceWithCascade: cliCommandEntry(instanceEndpointV1 as any as EndpointDefinition, "deleteInstanceWithCascade"),
-  loadNewInstancesInLocalCache: cliCommandEntry(instanceEndpointV1 as any as EndpointDefinition, "loadNewInstancesInLocalCache"),
+  createInstance: cliCommandEntry(instanceEndpointV1 as EndpointDefinition, "createInstance"),
+  getInstance: cliCommandEntry(instanceEndpointV1 as EndpointDefinition, "getInstance"),
+  getInstances: cliCommandEntry(instanceEndpointV1 as EndpointDefinition, "getInstances"),
+  updateInstance: cliCommandEntry(instanceEndpointV1 as EndpointDefinition, "updateInstance"),
+  deleteInstance: cliCommandEntry(instanceEndpointV1 as EndpointDefinition, "deleteInstance"),
+  deleteInstanceWithCascade: cliCommandEntry(instanceEndpointV1 as EndpointDefinition, "deleteInstanceWithCascade"),
+  loadNewInstancesInLocalCache: cliCommandEntry(instanceEndpointV1 as EndpointDefinition, "loadNewInstancesInLocalCache"),
 };
 
 // ################################################################################################
