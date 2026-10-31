@@ -2,10 +2,12 @@ import { createContext, useContext, type ReactNode } from "react";
 
 import type { ProcessCapabilities, Runner } from "miroir-core";
 
+import { requestLoginTokenOverHttp } from "../auth/httpLogin.js";
+
 // ################################################################################################
 // Host features of the app shell (#633 D2). miroir-react renders the shell, its pages and its
 // runners; what needs code miroir-react must not depend on comes from the host application:
-// the MCP tool call (miroir-mcp/client). Every slot is optional and has the behaviour a client
+// the MCP tool call (miroir-mcp/client) and a login transport other than HTTP (Electron IPC). Every slot is optional and has the behaviour a client
 // without the feature needs. The host fills the slots with `import()` wrappers so the code they
 // reach stays out of the page's eager chunks.
 // ################################################################################################
@@ -25,9 +27,13 @@ export type RunMcpTool = (
   capabilities: Pick<ProcessCapabilities, "mcp">,
 ) => Promise<McpToolRunnerEnvelope>;
 
+export type RequestLoginToken = (username: string, password: string) => Promise<string | undefined>;
+
 export interface MiroirShellHost {
   /** Calls the MCP tool of an mcpToolRunner. Default: the feature is unavailable. */
   runMcpTool?: RunMcpTool;
+  /** The Bearer token for these credentials, or undefined when the login fails. Default: `/auth/login` over HTTP. */
+  requestLoginToken?: RequestLoginToken;
 }
 
 export const mcpToolUnavailable: RunMcpTool = async () => ({
@@ -48,5 +54,8 @@ export function MiroirShellHostProvider(props: { host: MiroirShellHost; children
 /** The host's slots, with each missing slot replaced by its default. */
 export function useMiroirShellHost(): Required<MiroirShellHost> {
   const host = useContext(MiroirShellHostContext);
-  return { runMcpTool: host.runMcpTool ?? mcpToolUnavailable };
+  return {
+    runMcpTool: host.runMcpTool ?? mcpToolUnavailable,
+    requestLoginToken: host.requestLoginToken ?? requestLoginTokenOverHttp,
+  };
 }

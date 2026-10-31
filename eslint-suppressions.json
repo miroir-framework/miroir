@@ -573,11 +573,6 @@
       "count": 1
     }
   },
-  "packages/miroir-standalone-app/src/miroir-fwk/4_view/auth/authTransport.ts": {
-    "miroir/component-io": {
-      "count": 2
-    }
-  },
   "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Buttons/RunAllMiroirTestsButton.tsx": {
     "miroir/action-result": {
       "count": 1

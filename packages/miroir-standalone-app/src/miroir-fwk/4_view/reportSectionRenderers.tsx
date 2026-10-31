@@ -2,6 +2,8 @@ import { lazy } from "react";
 
 import type { MiroirShellHost, ReportSectionRenderers } from "miroir-react";
 
+import { requestLoginToken } from "./auth/authTransport.js";
+
 // ################################################################################################
 // The report section kinds that miroir-react leaves to the application (#13 Q3-a): d3, the class
 // diagram and the MiroirTest runtime stay in this app. Lazy, so that providing the registry at the
@@ -18,8 +20,9 @@ export const appReportSectionRenderers: ReportSectionRenderers = {
 };
 
 // The app's features of the shell (#633 D2): the MCP tool call needs miroir-mcp/client, loaded on the
-// first call.
+// first call; the login goes over Electron IPC in the desktop app (D5).
 export const appShellHost: MiroirShellHost = {
+  requestLoginToken,
   runMcpTool: async (runner, args, serverUrl, capabilities) =>
     (await import("./components/Runners/runMcpToolRunner.js")).runMcpToolRunner(runner, args, serverUrl, capabilities),
 };

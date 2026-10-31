@@ -395,8 +395,11 @@ export {
   useMiroirShellHost,
   type McpToolRunnerEnvelope,
   type MiroirShellHost,
+  type RequestLoginToken,
   type RunMcpTool,
 } from "./contexts/MiroirShellHostContext.js";
+export { fetchAuthenticationEnabledOverHttp, requestLoginTokenOverHttp } from "./auth/httpLogin.js";
+export { LoginPage } from "./routes/LoginPage.js";
 export { RunnerView, StoredRunnerView } from "./components/Runners/RunnerView.js";
 export { RunnerList, runnerConfigs, type RunnerConfig } from "./components/Runners/RunnersList.js";
 export { applicationNameForMcpRunner, resolveMcpToolAction } from "./components/Runners/resolveMcpToolAction.js";

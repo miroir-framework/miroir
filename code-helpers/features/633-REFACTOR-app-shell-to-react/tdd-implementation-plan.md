@@ -4,7 +4,7 @@
 >
 > **Execution model:** each slice ends with its Validation commands; on success its Realization is appended and its Status flips to ✅ DONE. The user asked for the whole issue through to a PR ready to merge, so commits follow each green slice on the working branch.
 >
-> **Resume note:** slices 0 to 2 DONE; slice 3 next.
+> **Resume note:** slices 0 to 3 DONE; slice 4 next.
 >
 > **Plan history:** revised after an adversarial review (2026-10-31): shims at the old app paths keep pages lazy mid-way (slices 2 to 5); moved modules' `from "miroir-react"` imports become relative, with a guard; Emotion pragma for `SequenceEditor`; corrected `check_bundle_policy.py`, `--only`, auth test and route test commands; slice 1 RED moved to `loadTimingWriter.integ`; every source-text guard named in its slice; `tsc` and lint in every move slice; `defaultReportSectionRenderers` export for the AC.
 
@@ -30,7 +30,7 @@ Out (analysis §2): the MiroirTest runtime and its displays, the d3 graph render
 | 0 | Characterize: sandbox build, failing guard, mocks, import surface, bundle baseline | ✅ | `build-633-sandbox`, `mcpToolRunner.253.phase0` green, `list_moved_imports.py` |
 | 1 | Tracer: client services and the load-timing sink from `miroir-react` | ✅ | `loadTimingSink.633.phase1.unit`, `loadTimingWriter.integ`, sandbox build |
 | 2 | Runners from `miroir-react`, MCP call injected, stored runner built in | ✅ | `storedRunnerDefault.633.phase2.unit`, `ui.blockEditing` |
-| 3 | Login from `miroir-react`, Electron login injected | ⬜ | `loginTransport.633.phase3.integ`, `electronIpcProxyAuth.263.phase6` |
+| 3 | Login from `miroir-react`, Electron login injected | ✅ | `loginTransport.633.phase3.unit`, `electronIpcProxyAuth.263.phase6` |
 | 4 | Generic pages from `miroir-react`; search opens on the current application | ⬜ | `searchPageDefault.633.phase4.integ`, `homePageLoad.unit` |
 | 5 | Model diagram page through the registry; view in `miroir-diagram-class` | ⬜ | `modelDiagramPage.633.phase5.integ` |
 | 6 | Shell from `miroir-react`, assistant injected; sandbox without the alias | ⬜ | `test_shell_package_boundaries.py`, sandbox build and page smoke |
@@ -250,7 +250,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,ui,runners --only uni
 
 ## Slice 3 — Login from miroir-react, Electron login injected
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -285,7 +285,11 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,ui,tooling --only uni
 
 ### Realization
 
-_(to fill)_
+- `auth/httpLogin.ts` (`requestLoginTokenOverHttp`, `fetchAuthenticationEnabledOverHttp`) in `miroir-react`; `authTransport.ts` keeps the Electron branch and delegates the browser one, so the fetch calls exist once. Its `component-io` suppression (the two fetch calls) is pruned.
+- `MiroirShellHostContext` gains `requestLoginToken` (default: over HTTP). `LoginPage` moved (shim left in the app) and logs in through `useMiroirShellHost().requestLoginToken`; the app's `appShellHost` gives its `requestLoginToken` (IPC in Electron, HTTP otherwise).
+- **Deviation:** the RED test is a `miroir-react` unit test, `loginTransport.633.phase3.unit.test.tsx` (2 of 3 failed with the previous context, 3/3 after), on the host hook rather than a rendered page: rendering `LoginPage` adds only the form, which did not change.
+- Checks: `electronIpcProxyAuth.263.phase6` 5/5, `authentication.71` (miroir-core) 45/45, `tsc` unchanged, lint, sandbox and app builds; bundle guard 0 violations, 69 eager chunks, 842,900 bytes.
+- Scoped nonreg (`smoke,ui,tooling` + `unit-345-electron`, `unit-633`, snapshot `20261031T143347Z`): 62 pass, 1 fail: `appstack-uiIntegrationTestLauncher.integ` "runner.returnDocument Return Book", which fails fast (13 s) when it runs after other steps on the shared `test-filesystem` store and passes alone (snapshot `20261031T144147Z`) and in slice 2's run. It touches no moved module; the full nonreg of slice 4 checks it on its own order.
 
 ---
 
