@@ -62,6 +62,30 @@ function failedRunResult(
   };
 }
 
+/**
+ * #495: a suite the integration batch did not run, as one `skipped` row carrying the reason, for
+ * the result display of Run all (the self-test lists them in `skippedSuites` instead).
+ */
+export function skippedSuiteResults(skipped: readonly SkippedMiroirTestSuite[]): MiroirTestSuiteResultsMap {
+  return Object.fromEntries(
+    skipped.map(({ suiteKey, reason }) => [
+      suiteKey,
+      [
+        {
+          testName: suiteKey,
+          testPath: [suiteKey],
+          testResult: "skipped",
+          status: "skipped",
+          failedAssertions: [reason],
+          assertionCount: 0,
+          assertions: "",
+          fullAssertionsResults: undefined,
+        } satisfies TestResultData,
+      ],
+    ]),
+  );
+}
+
 /** An error's message; an action error (an object) as JSON, so the report says what failed. */
 function describeError(error: unknown): string {
   if (error instanceof Error) {

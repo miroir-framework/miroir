@@ -19,6 +19,7 @@ import {
   REPORT_TESTS_NEED_THE_SANDBOX,
   runIntegrationMiroirTestBatch,
   runUnitMiroirTestBatch,
+  skippedSuiteResults,
 } from "../../../src/miroir-fwk/4-tests/miroirTestBatch.js";
 import { computeSelfTestResult } from "../../../src/miroir-fwk/4-tests/selfTest/selfTestResult.js";
 import { integrationSuiteKey } from "../../../src/miroir-fwk/4-tests/selfTest/runSelfTest.js";
@@ -75,6 +76,11 @@ describe("self-test with integ MiroirTests (#487)", () => {
     expect(batch.skipped.map((suite) => suite.reason)).toEqual([
       FILESYSTEM_TESTS_NEED_A_FILESYSTEM_STORE,
       FILESYSTEM_TESTS_NEED_A_FILESYSTEM_STORE,
+    ]);
+    // Run all shows each one as a skipped row carrying the reason
+    expect(Object.values(skippedSuiteResults(batch.skipped)).flat()).toEqual([
+      expect.objectContaining({ testResult: "skipped", failedAssertions: [FILESYSTEM_TESTS_NEED_A_FILESYSTEM_STORE] }),
+      expect.objectContaining({ testResult: "skipped", failedAssertions: [FILESYSTEM_TESTS_NEED_A_FILESYSTEM_STORE] }),
     ]);
   });
 
