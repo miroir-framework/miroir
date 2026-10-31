@@ -137,12 +137,50 @@ export interface SequenceBlock extends Omit<ActionBlock, "kind"> {
   steps: BlockNode[];
 }
 
-/** #504: the payload of a query step, shown as one collapsed block. */
+/**
+ * #536: an extractor or a combiner of a query, a block named by the key of its query section: its
+ * primitive attributes but `extractorOrCombinerType` in the header, one row per other attribute.
+ */
+export interface ExtractorBlock {
+  kind: "extractor";
+  path: BlockPath;
+  extractorOrCombinerType: string;
+  /** The query section holding the block: `extractor` or `combiner`. */
+  category: "extractor" | "combiner";
+  parameters: TransformerBlockParameter[];
+  rows: TransformerBlockRow[];
+}
+
+/**
+ * #536: a named section of a query: its parameters (`queryParams`, `pageParams`, `contextResults`),
+ * its `extractors`, `combiners` (or their templates) and its `runtimeTransformers`, one entry per key.
+ */
+export interface QuerySection {
+  name: string;
+  path: BlockPath;
+  entries: { key: string; path: BlockPath; node: BlockNode }[];
+}
+
+/**
+ * #504: the payload of a query step, a run query action. #536: it is shown as blocks: the primitive
+ * attributes of the run action and of its payload in the header, their other attributes as rows,
+ * then its query (`query`): the query's primitive attributes but `queryType`, its other attributes
+ * as rows, and one section per record of the query. A payload without a query record (`query`
+ * absent, or computed by a transformer) has no `query`.
+ */
 export interface QueryBlock {
   kind: "query";
   path: BlockPath;
   queryType?: string;
   value: unknown;
+  parameters: TransformerBlockParameter[];
+  rows: TransformerBlockRow[];
+  query?: {
+    path: BlockPath;
+    parameters: TransformerBlockParameter[];
+    rows: TransformerBlockRow[];
+    sections: QuerySection[];
+  };
 }
 
 export type BlockNode =
@@ -154,12 +192,17 @@ export type BlockNode =
   | JsonBlock
   | ActionBlock
   | SequenceBlock
-  | QueryBlock;
+  | QueryBlock
+  | ExtractorBlock;
 
 export interface BlockTreeStats {
   transformerBlocks: number;
   /** Action blocks, sequences included. */
   actionBlocks: number;
+  /** #536: query blocks whose query is shown as sections. */
+  queryBlocks: number;
+  /** #536: extractor and combiner blocks. */
+  extractorBlocks: number;
   jsonBlocks: number;
   /** Categories of the transformer blocks, sorted, each once. */
   categories: string[];
