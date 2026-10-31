@@ -576,39 +576,6 @@ const capabilities = getProcessCapabilities({
 });
 domainController.setProcessCapabilities(capabilities);
 
-// #636: Miroir's HTTP surface (REST behind the gate, authentication and capabilities routes, /mcp) comes
-// from miroir-server-library; the routes below are added to its app. mcpServer.run starts the dedicated
-// MCP listener at the end of this file.
-const { app, requestGate, mcpServer } = await createMiroirServerApp({
-  domainController,
-  persistenceStoreControllerManager,
-  applicationDeploymentMap,
-  miroirConfig,
-  capabilities,
-  authentication: { enabled: authenticationEnabled, mcpEnabled: mcpAuthenticationEnabled },
-  corsAllowedOrigins,
-});
-
-// set long cache headers for static assets (1 day) and fall back to no-cache for HTML-like responses
-app.use(
-  assetsMountPath,
-  express.static(pathToPublic, {
-    maxAge: "1d",
-    // express.static expects a Node http.ServerResponse here; using that type ensures setHeader is available
-    setHeaders: (
-      res: import("http").ServerResponse,
-      filePath: string,
-      // stat: import("fs").Stats
-    ) => {
-      // If it's an HTML file, don't cache
-      if (filePath.endsWith(".html")) {
-        res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-      }
-    },
-  })
-);
-
-
 // TLS certificates: present → HTTPS on the API port (listener at the end of this file).
 // run scripts/setup-https.sh (or .ps1) once to generate the certificates.
 const defaultCertsDir = argCertsDir ?? path.resolve(__dirname, '../../../certs');
@@ -616,53 +583,39 @@ const certFile = argCertFile ?? process.env.MIROIR_TLS_CERT ?? path.join(default
 const keyFile  = argKeyFile  ?? process.env.MIROIR_TLS_KEY  ?? path.join(defaultCertsDir, 'localhost-key.pem');
 const tlsEnabled = existsSync(certFile) && existsSync(keyFile);
 
-// AI / CopilotKit endpoint — MUST be after API routes and MCP, before SPA catch-all.
-// miroir-ai is imported only when the ai capability is on (#409).
-await mountCopilotKitRoute(app, {
-  capabilities,
+// In production the server serves the React client from release/client (scripts/copy-client.mjs)
+// after every API and MCP route; otherwise the Vite dev server serves it.
+const pathToClient = path.join(__dirname, 'client');
+
+// #636: Miroir's HTTP surface (REST behind the gate, authentication and capabilities routes, assets, /mcp,
+// the CopilotKit route, the client folder) comes from miroir-server-library. mcpServer.run starts the
+// dedicated MCP listener at the end of this file.
+const { app, mcpServer } = await createMiroirServerApp({
   domainController,
+  persistenceStoreControllerManager,
   applicationDeploymentMap,
-  mcpHttpUrl: agentMcpHttpUrl({ restPort: restPortFromConfig, mcpPort: mcpPortFromConfig, tls: tlsEnabled }),
-  agentModel: miroirConfig.features?.agentModel,
-  requestGate: requestGate as any,
-  authenticationEnabled,
+  miroirConfig,
+  capabilities,
+  authentication: { enabled: authenticationEnabled, mcpEnabled: mcpAuthenticationEnabled },
+  corsAllowedOrigins,
+  assets: { directory: pathToPublic, mountPath: assetsMountPath },
+  ...(getMiroirEnvironmentMode() === 'prod' ? { clientDirectory: pathToClient } : {}),
+  // miroir-ai is imported only when the ai capability is on (#409)
+  assistantRoute: async (miroirApp, { requestGate }) => {
+    await mountCopilotKitRoute(miroirApp, {
+      capabilities,
+      domainController,
+      applicationDeploymentMap,
+      mcpHttpUrl: agentMcpHttpUrl({ restPort: restPortFromConfig, mcpPort: mcpPortFromConfig, tls: tlsEnabled }),
+      agentModel: miroirConfig.features?.agentModel,
+      requestGate,
+      authenticationEnabled,
+    });
+  },
 });
 
-// ##############################################################################################
-// ##############################################################################################
-// Serve React SPA — MUST be registered AFTER all API/MCP routes.
-// Static files are served from dist/client/ (built from miroir-standalone-app).
-// All unmatched routes fall through to index.html to support client-side routing.
-if (getMiroirEnvironmentMode() === 'prod') {
-  myLogger.info('Running in production mode - serving React SPA');
-  myLogger.info(`Found dirname: ${__dirname}`);
-  const pathToClient = path.join(__dirname, 'client');
-  myLogger.info(`Serving React SPA from ${pathToClient}`);
-  
-  const indexPath = path.join(pathToClient, 'index.html');
-   if (!existsSync(indexPath)) {
-    throw new Error(`React client build not found at ${indexPath}. Please run "npm run build" in the miroir-standalone-app package and ensure the output is copied to the server's client directory.`);
-  }
-  app.use(express.static(pathToClient, {
-    maxAge: "1d",
-    setHeaders: (res: import("http").ServerResponse, filePath: string) => {
-      if (filePath.endsWith(".html")) {
-        res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-      }
-    },
-  }));
-  
-  // SPA catch-all: serve index.html for all routes not matched above
-  app.get('/{*splat}', (req: any, res: any) => {
-    
-    if (existsSync(indexPath)) {
-      res.sendFile(indexPath);
-    } else {
-      res.status(404).send('React client build not found. Run "npm run build" first.');
-    }
-  });
-} else {
-  myLogger.info('Not in production mode - skipping React SPA setup');
+if (getMiroirEnvironmentMode() !== 'prod') {
+  myLogger.info('Not in production mode - no client folder');
   app.get('/', (req: any,res: any) => {
     res.send('App Works !!!!');
   });

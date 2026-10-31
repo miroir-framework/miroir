@@ -35,8 +35,8 @@ Out (owners):
 | 0 | Characterize the release binary | ✅ DONE | `test_server_release_smoke.py` on today's `server.ts` |
 | 1 | Tracer: REST through the factory, behind the gate, on port 0 | ✅ DONE | `serverApp.636.phase1.integ` (CRUD read and `POST /action` 200; 401 without token; BigInt kept) |
 | 2 | Auth and capabilities routes from the factory | ✅ DONE | `serverApp.636.phase2.integ` (`/auth/status`, `/capabilities`, login as alice then REST with token) |
-| 3 | MCP from the factory | ⬜ pending | `serverApp.636.phase3.integ` (`tools/list`; 401 when `mcpEnabled`) + full nonreg |
-| 4 | The tail: assistant slot, assets and client folders as options | ⬜ pending | `serverApp.636.phase4.integ` (temp `index.html`, slot gate 401, API and slot beat the catch-all) |
+| 3 | MCP from the factory | ✅ DONE | `serverApp.636.phase3.integ` (`tools/list`; 401 when `mcpEnabled`) + full nonreg |
+| 4 | The tail: assistant slot, assets and client folders as options | ✅ DONE | `serverApp.636.phase4.integ` (temp `index.html`, slot gate 401, API and slot beat the catch-all) |
 | 5 | Mount rules; `server.ts` becomes the thin binary | ⬜ pending | `serverApp.636.phase5.integ` (BigInt through a host app) + the repointed source tests + release smoke |
 | 6 | Boundary guard, build lists, docs, cleanup | ⬜ pending | tsup `onEnd` metafile guard + pytest guard; full `nonreg:filesystem` |
 
@@ -215,7 +215,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core,actions,external
 
 ## Slice 3 — MCP from the factory
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal (observable):** an MCP client lists Miroir's tools on the factory's app, and is refused without a token when MCP authentication is on; the binary still runs the dedicated MCP listener from the returned handle.
 
@@ -243,13 +243,16 @@ npm run nonreg:filesystem -- --runner shared   # full run after three slices
 ```
 
 ### Realization
-_(to fill)_
+- The factory builds the `EndpointToolRegistry`, the dedicated MCP app (CORS, body parser without reviver, as before) and the MCP gate (`{ ...authenticationGate, enabled: authentication.mcpEnabled }`). It mounts `/mcp` on its app under `shouldMountMcpHttp(capabilities.mcp)` and returns `mcpServer`. `close()` calls `mcpServer.shutdown()` once.
+- `listMcpToolsViaHttp(baseUrl)` lists tools whose names start with `Library`. With `mcpEnabled`, a raw `POST /mcp` answers 401. With the capability off, it answers 404.
+- Source tests repointed: `mcpServerGate.263.phase7` (the switch is resolved in the binary; the MCP gate, `setupMcpServer` and `mountHttpRoutes` checks moved to the library file), `processCapabilitiesMcp.273.phase6`, `mcpToolRunner.253.phase0` and `processCapabilities.273.phase0`.
+- Full `nonreg:filesystem`: 120 steps pass.
 
 ---
 
 ## Slice 4 — The tail: assistant slot, assets and client folders as options
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal (observable):** a host serves its own `index.html` and static assets by passing folders, and plugs its assistant route in with Miroir's identity gate; every API route and the slot still win over the client catch-all.
 
@@ -279,7 +282,11 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core,external,ui
 ```
 
 ### Realization
-_(to fill)_
+- Options `assets`, `clientDirectory` and `assistantRoute`. A missing `index.html` makes the factory reject before MCP starts, because the client folder is checked first. Assets come right after `/capabilities`. The slot runs after `/mcp`, and the client folder and its catch-all come last.
+- In the binary, TLS is computed before the factory call. The binary passes `pathToPublic`, `path.join(__dirname, 'client')` (prod only) and a slot that awaits `mountCopilotKitRoute(miroirApp, { …, requestGate, … })`. The dev `GET /` is registered after the call.
+- Behaviour tests: a temporary `index.html` at `/` and `/some/client/route`; assets; REST, `/auth/status`, `/mcp` and the slot's route all win over the catch-all; no folders gives 404; the slot's gated route answers 401 without a token and 200 with alice's.
+- Source tests repointed: `cursorSdk.275.phase0` and `phase2`, `authentication.71.phase6`, `processCapabilities.273.phase0` and `mcpServerGate.263.phase7`.
+- Release smoke: a production-mode check was added (`MiroirServer(node_env="production")` in `scripts/agent_bench/miroir_server.py`). It checks that `release/client/index.html` is served at `/` and on a client route, with `/capabilities` and the assets still answering. It is skipped when `release/client` is missing.
 
 ---
 

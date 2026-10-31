@@ -98,12 +98,15 @@ if (runThis) {
       expect(mount).not.toMatch(/from\s*"miroir-ai"/);
       expect(mount).toContain("shouldMountCopilotKitRoute");
       expect(mount).toContain('app.use("/api/copilotkit", options.requestGate)');
-      const mountCall = src.indexOf("await mountCopilotKitRoute(app");
+      const mountCall = src.indexOf("await mountCopilotKitRoute(miroirApp");
       expect(mountCall).toBeGreaterThanOrEqual(0);
-      // #636: the gate comes from miroir-server-library's factory.
-      expect(src.indexOf("requestGate: requestGate", mountCall)).toBeGreaterThan(mountCall);
+      // #636: miroir-server-library's factory builds the gate and hands it to the binary's assistant
+      // slot; the gate answering 401 is tested in miroir-server-library (serverApp.636.phase4).
+      expect(src).toMatch(/assistantRoute: async \(miroirApp, \{ requestGate \}\)/);
+      expect(src.indexOf("requestGate,", mountCall)).toBeGreaterThan(mountCall);
       const library = readRepoFile("packages/miroir-server-library/src/createMiroirServerApp.ts");
       expect(library).toContain("createIdentityGateMiddleware(authenticationGate)");
+      expect(library).toContain("options.assistantRoute?.(app, { requestGate,");
     });
   });
 

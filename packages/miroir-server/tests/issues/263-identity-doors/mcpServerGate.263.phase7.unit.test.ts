@@ -44,8 +44,8 @@ if (runThis) {
 
     it("gates /api/copilotkit with the shared identity middleware", () => {
       expect(LIBRARY_SOURCE).toMatch(/const identityGate = createIdentityGateMiddleware\(authenticationGate\)/);
-      expect(SERVER_SOURCE).toMatch(/const \{ app, requestGate, mcpServer \} = await createMiroirServerApp\(/);
-      expect(SERVER_SOURCE).toMatch(/requestGate: requestGate/);
+      expect(LIBRARY_SOURCE).toContain("options.assistantRoute?.(app, { requestGate,");
+      expect(SERVER_SOURCE).toMatch(/assistantRoute: async \(miroirApp, \{ requestGate \}\)/);
     });
   });
 }

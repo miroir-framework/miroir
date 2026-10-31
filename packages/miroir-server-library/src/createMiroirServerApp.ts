@@ -1,6 +1,9 @@
 import bodyParser from "body-parser";
 import cors from "cors";
 import express, { type Express, type Request, type RequestHandler } from "express";
+import { existsSync } from "node:fs";
+import type { ServerResponse } from "node:http";
+import path from "node:path";
 
 import {
   ACCESS_DENIED,
@@ -62,6 +65,21 @@ export interface MiroirServerAppOptions {
   authentication: { enabled: boolean; mcpEnabled: boolean };
   /** Origins allowed by CORS; no CORS middleware when absent. */
   corsAllowedOrigins?: string[];
+  /** Static files served under `mountPath` (for instance `/assets`); not served when absent. */
+  assets?: { directory: string; mountPath: string };
+  /**
+   * A built client (with an `index.html`), served after every API route, with `index.html` for any
+   * other GET path (client-side routing); not served when absent.
+   */
+  clientDirectory?: string;
+  /**
+   * The host's assistant route (CopilotKit in miroir-server), registered after `/mcp` and before
+   * the client folder. `requestGate` is the identity gate of {@link MiroirServerApp}.
+   */
+  assistantRoute?: (
+    app: Express,
+    context: { requestGate: RequestHandler; capabilities: ProcessCapabilities },
+  ) => Promise<void>;
 }
 
 /**
@@ -117,6 +135,50 @@ function mountStatusRoutes(app: Express, options: MiroirServerAppOptions): void 
       adminStoreFactoryRegister: ConfigurationService.configurationService.adminStoreFactoryRegister,
     });
     response.status(200).json({ status: "ok", capabilities });
+  });
+}
+
+/** Long cache for static files; none for HTML, so a new client build shows at once. */
+function staticFolder(directory: string): RequestHandler {
+  return express.static(directory, {
+    maxAge: "1d",
+    setHeaders: (response: ServerResponse, filePath: string) => {
+      if (filePath.endsWith(".html")) {
+        response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+      }
+    },
+  });
+}
+
+function mountAssets(app: Express, options: MiroirServerAppOptions): void {
+  if (!options.assets) {
+    return;
+  }
+  log.info(`Mounting static assets at ${options.assets.mountPath} -> ${options.assets.directory}`);
+  app.use(options.assets.mountPath, staticFolder(options.assets.directory));
+}
+
+/** The client's `index.html`; a missing build fails the factory before anything starts. */
+function clientIndexPath(clientDirectory: string): string {
+  const indexPath = path.join(clientDirectory, "index.html");
+  if (!existsSync(indexPath)) {
+    throw new Error(
+      `React client build not found at ${indexPath}. Please run "npm run build" in the miroir-standalone-app package and ensure the output is copied to the server's client directory.`,
+    );
+  }
+  return indexPath;
+}
+
+/** MUST come after every API, MCP and assistant route: its catch-all answers any GET path. */
+function mountClient(app: Express, client: { directory: string; indexPath: string }): void {
+  log.info(`Serving the client from ${client.directory}`);
+  app.use(staticFolder(client.directory));
+  app.get("/{*splat}", (_request, response) => {
+    if (existsSync(client.indexPath)) {
+      response.sendFile(client.indexPath);
+    } else {
+      response.status(404).send('React client build not found. Run "npm run build" first.');
+    }
   });
 }
 
@@ -309,10 +371,19 @@ export async function createMiroirServerApp(options: MiroirServerAppOptions): Pr
   const identityGate = createIdentityGateMiddleware(authenticationGate);
   const requestGate: RequestHandler = (request, response, next) => identityGate(request, response, () => next());
 
+  const client = options.clientDirectory
+    ? { directory: options.clientDirectory, indexPath: clientIndexPath(options.clientDirectory) }
+    : undefined;
   mountStatusRoutes(app, options);
+  mountAssets(app, options);
   mountRestHandlers(app, options, authenticationGate);
   mountAuthenticationRoutes(app, options, authenticationGate);
   const mcpServer = await setupMcp(app, options, authenticationGate);
+  // AI / CopilotKit: after the API routes and MCP, before the client catch-all
+  await options.assistantRoute?.(app, { requestGate, capabilities: options.capabilities });
+  if (client) {
+    mountClient(app, client);
+  }
 
   let closed = false;
   return {

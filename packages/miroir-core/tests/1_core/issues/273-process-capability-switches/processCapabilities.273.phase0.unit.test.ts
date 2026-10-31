@@ -156,7 +156,7 @@ if (runThis) {
       );
       // #409: the CopilotKit mount moved to mountCopilotKitRoute.ts (miroir-ai imported on demand).
       const mount = readFileSync(join(REPO_ROOT, "packages/miroir-server/src/mountCopilotKitRoute.ts"), "utf8");
-      expect(src).toContain("await mountCopilotKitRoute(app");
+      expect(src).toContain("await mountCopilotKitRoute(miroirApp"); // #636: in the assistant slot
       expect(mount).toContain('"/api/copilotkit"');
       expect(mount).toContain("shouldMountCopilotKitRoute");
       // #636: /mcp on the main app is mounted by miroir-server-library; the binary starts the listener.

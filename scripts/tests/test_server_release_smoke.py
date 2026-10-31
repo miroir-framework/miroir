@@ -22,6 +22,7 @@ sys.path.insert(0, str(REPO_ROOT / "scripts"))
 from agent_bench import miroir_server  # noqa: E402
 
 RELEASE_ENTRY = REPO_ROOT / "packages" / "miroir-server" / "release" / "index.js"
+RELEASE_CLIENT_INDEX = REPO_ROOT / "packages" / "miroir-server" / "release" / "client" / "index.html"
 TLS_CERT = REPO_ROOT / "certs" / "localhost.pem"
 LIBRARY_DEPLOYMENT = "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
 BOOK_ENTITY = "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
@@ -103,3 +104,31 @@ def test_dev_root_route(release_server):
     status, body, _ = _get("/")
     assert status == 200
     assert body.decode("utf-8") == "App Works !!!!"
+
+
+@pytest.fixture(scope="module")
+def production_release_server(tmp_path_factory, release_server):
+    """Production mode serves release/client; started after the development server has stopped."""
+    if not RELEASE_CLIENT_INDEX.exists():
+        pytest.skip("release/client not copied: npm run build:release -w miroir-server")
+    release_server.stop()
+    miroir_server.reset_state()
+    server = miroir_server.MiroirServer(tmp_path_factory.mktemp("release-prod") / "server.log", node_env="production")
+    server.start()
+    try:
+        yield server
+    finally:
+        server.stop()
+
+
+def test_production_serves_the_client_after_the_api(production_release_server):
+    index_html = RELEASE_CLIENT_INDEX.read_bytes()
+    for route in ("/", "/some/client/route"):
+        status, body, _ = _get(route)
+        assert status == 200
+        assert body == index_html
+    status, body, content_type = _get("/capabilities")
+    assert status == 200
+    assert "application/json" in content_type
+    status, _, _ = _get(f"/assets/{ASSET}")
+    assert status == 200
