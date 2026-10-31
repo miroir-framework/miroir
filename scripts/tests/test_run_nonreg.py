@@ -928,7 +928,8 @@ def test_steps_write_failed_run_exports_into_the_snapshot(tmp_path: Path):
 def timed_step(step_id: str, log: Path, *, sleep: float = 1.0, exit_code: int = 0) -> dict:
     code = (
         "import os, sys, time, json; "
-        f"p = {str(log)!r}; "
+        # One file per step: appends from concurrent processes to a shared file are not atomic on Windows.
+        f"p = {str(log) + '.' + step_id!r}; "
         "w = os.environ.get('MIROIR_TEST_WORKER', '-'); "
         f"open(p, 'a').write(json.dumps(['start', {step_id!r}, w, time.time()]) + '\\n'); "
         f"time.sleep({sleep}); "
@@ -939,7 +940,11 @@ def timed_step(step_id: str, log: Path, *, sleep: float = 1.0, exit_code: int = 
 
 
 def read_events(log: Path) -> list[list]:
-    return [json.loads(line) for line in log.read_text(encoding="utf-8").splitlines()]
+    return [
+        json.loads(line)
+        for step_log in sorted(log.parent.glob(log.name + ".*"))
+        for line in step_log.read_text(encoding="utf-8").splitlines()
+    ]
 
 
 def spans(log: Path) -> dict[str, tuple[float, float, str]]:
