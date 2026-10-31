@@ -8,12 +8,7 @@ import {
   defaultExternalServiceClient,
   getClientEnvironment,
   getProcessCapabilities,
-  MiroirActivityTracker,
-  MiroirContext,
-  miroirCoreStartup,
-  MiroirEventService,
-  MiroirLoggerFactory,
-  PersistenceStoreControllerManager,
+  type PersistenceStoreControllerManager,
   setProcessTokenSecret,
   type ApplicationDeploymentMap,
   type DomainControllerInterface,
@@ -23,7 +18,7 @@ import {
   type ProcessCapabilities,
 } from "miroir-core";
 import { bootEnvironment, environmentServerConfig, openTestEnvironment, selectedTestEnvironment } from "miroir-env";
-import { setupMiroirDomainController } from "miroir-localcache-redux/node";
+import { startMiroirNode } from "miroir-localcache-redux/node";
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 
 // #636: a server-side domain controller on a test environment (test-filesystem unless MIROIR_ENV names
@@ -57,32 +52,15 @@ export async function startServerTestPlatform(): Promise<ServerTestPlatform> {
   });
   const miroirConfig = environmentServerConfig(environment.resolved);
 
-  miroirCoreStartup();
-  miroirFileSystemStoreSectionStartup(ConfigurationService.configurationService);
-
-  const miroirActivityTracker = new MiroirActivityTracker();
-  const miroirEventService = new MiroirEventService(miroirActivityTracker);
-  await MiroirLoggerFactory.startRegisteredLoggers(
-    miroirActivityTracker,
-    miroirEventService,
-    loglevelNextLog as any as LoggerFactoryInterface,
-    quietLoggers,
-  );
-
-  const miroirContext = new MiroirContext(miroirActivityTracker, miroirEventService, miroirConfig);
-  const persistenceStoreControllerManager = new PersistenceStoreControllerManager(
-    ConfigurationService.configurationService.adminStoreFactoryRegister,
-    ConfigurationService.configurationService.StoreSectionFactoryRegister,
-    miroirConfig.server.filesystemDeploymentRootDirectory,
-  );
-  const domainController = await setupMiroirDomainController(
-    miroirContext,
-    {
-      persistenceStoreAccessMode: "local",
-      localPersistenceStoreControllerManager: persistenceStoreControllerManager,
-    },
-    defaultExternalServiceClient({ persistRotatedSecret: async () => {} }),
-  );
+  // #639: the same startup call as miroir-server
+  const { domainController, persistenceStoreControllerManager } = await startMiroirNode(miroirConfig, {
+    stores: [miroirFileSystemStoreSectionStartup],
+    loggers: { factory: loglevelNextLog as any as LoggerFactoryInterface, options: quietLoggers },
+    externalServiceClient: defaultExternalServiceClient({ persistRotatedSecret: async () => {} }),
+  });
+  if (!persistenceStoreControllerManager) {
+    throw new Error("startMiroirNode returned no store manager for a server configuration");
+  }
   const { applicationDeploymentMap } = await bootEnvironment(domainController, environment.resolved, process.env);
   setProcessTokenSecret(TEST_TOKEN_SECRET);
 

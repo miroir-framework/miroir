@@ -1,13 +1,12 @@
 import {
   ConfigurationServiceInner,
   type ApplicationSection,
+  type StoreSectionStartup,
   type PersistenceStoreAdminSectionFactory,
   type PersistenceStoreSectionFactory,
 } from "miroir-core";
 
 type StorageType = Parameters<ConfigurationServiceInner["registerAdminStoreFactory"]>[0];
-
-type StoreSectionStartup = (configurationService: ConfigurationServiceInner) => void;
 
 const SECTIONS: ApplicationSection[] = ["model", "data", "modelVersion"];
 

@@ -1573,6 +1573,7 @@ export {
   ConfigurationService,
   ConfigurationServiceInner,
   PackageConfiguration,
+  StoreSectionStartup,
   undoRedoHistorization
 } from "./3_controllers/ConfigurationService";
 export {

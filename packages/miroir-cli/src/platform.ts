@@ -1,10 +1,6 @@
 import loglevelNextLog from "loglevelnext";
 import {
   defaultMiroirModelEnvironment,
-  MiroirActivityTracker,
-  miroirCoreStartup,
-  MiroirEventService,
-  MiroirLoggerFactory,
   type RestClientStub,
   type ApplicationDeploymentMap,
   type DomainControllerInterface,
@@ -20,8 +16,9 @@ import {
   type ResolvedEnvironment,
 } from "miroir-env";
 
-import { setupMiroirPlatform } from "./startup/setup.js";
-import { initializeStoreStartup } from "./startup/storeStartup.js";
+import { startMiroirNode } from "miroir-localcache-redux/node";
+
+import { loadStoreStartups } from "./startup/storeStartup.js";
 
 // ################################################################################################
 // #345: the CLI runs on the selected environment (docs/reference/environments.md), first match
@@ -87,23 +84,10 @@ export async function initializePlatform(
   }
   const miroirConfig = environmentClientConfig(environment, env);
 
-  miroirCoreStartup();
-  await initializeStoreStartup(miroirConfig);
-
-  const miroirActivityTracker = new MiroirActivityTracker();
-  const miroirEventService = new MiroirEventService(miroirActivityTracker);
-  MiroirLoggerFactory.startRegisteredLoggers(
-    miroirActivityTracker,
-    miroirEventService,
-    loglevelNextLog as any as LoggerFactoryInterface,
-    loggerOptions,
-  );
-
-  const { domainController, domainControllerForServer, restClientStub } = await setupMiroirPlatform(
-    miroirConfig,
-    miroirActivityTracker,
-    miroirEventService,
-  );
+  const { domainController, emulatedServer } = await startMiroirNode(miroirConfig, {
+    stores: await loadStoreStartups(miroirConfig),
+    loggers: { factory: loglevelNextLog as any as LoggerFactoryInterface, options: loggerOptions },
+  });
   const reconciliation = await bootEnvironment(domainController, environment, env);
   for (const warning of reconciliation.warnings) {
     log(`[miroir-cli] warning: ${warning}`);
@@ -113,7 +97,7 @@ export async function initializePlatform(
     environment,
     domainController,
     applicationDeploymentMap: reconciliation.applicationDeploymentMap,
-    serverDomainController: domainControllerForServer,
-    restClientStub,
+    serverDomainController: emulatedServer?.domainController,
+    restClientStub: emulatedServer?.restClientStub,
   };
 }

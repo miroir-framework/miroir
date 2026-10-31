@@ -1,4 +1,4 @@
-import { ConfigurationService, type MiroirConfigClient, type StoreUnitConfiguration } from "miroir-core";
+import { type MiroirConfigClient, type StoreSectionStartup, type StoreUnitConfiguration } from "miroir-core";
 
 const packageName = "miroir-cli";
 
@@ -22,19 +22,19 @@ export function requiredStoreTypes(config: MiroirConfigClient): Set<string> {
 }
 
 /**
- * Registers the store implementations a client configuration needs: only those packages are
- * imported, so the optional store peer dependencies stay optional.
+ * The startups of the store implementations a client configuration needs: only those packages are
+ * imported, so the optional store peer dependencies stay optional. The caller passes them to
+ * `startMiroirNode` (#639).
  */
-export async function initializeStoreStartup(config: MiroirConfigClient): Promise<void> {
+export async function loadStoreStartups(config: MiroirConfigClient): Promise<StoreSectionStartup[]> {
   const storeTypes = requiredStoreTypes(config);
   console.log(`[${packageName}] Detected storage types in configuration:`, Array.from(storeTypes));
-  await Promise.all([...storeTypes].map(initializeStore));
+  const startups = await Promise.all([...storeTypes].map(loadStoreStartup));
+  return startups.filter((startup: StoreSectionStartup | undefined): startup is StoreSectionStartup => startup !== undefined);
 }
 
-type StoreStartup = (configurationService: typeof ConfigurationService.configurationService) => void;
-
 // dynamic imports: a store package is loaded only when a deployment uses it
-const storeStartups: Record<string, { storePackage: string; load: () => Promise<StoreStartup> }> = {
+const storeStartups: Record<string, { storePackage: string; load: () => Promise<StoreSectionStartup> }> = {
   filesystem: {
     storePackage: "miroir-store-filesystem",
     load: async () => (await import("miroir-store-filesystem")).miroirFileSystemStoreSectionStartup,
@@ -49,14 +49,14 @@ const storeStartups: Record<string, { storePackage: string; load: () => Promise<
   },
 };
 
-async function initializeStore(storeType: string): Promise<void> {
+async function loadStoreStartup(storeType: string): Promise<StoreSectionStartup | undefined> {
   const storeStartup = storeStartups[storeType];
   if (!storeStartup) {
     console.warn(`[${packageName}] Unknown storage type: ${storeType} - skipping initialization`);
-    return;
+    return undefined;
   }
   try {
-    (await storeStartup.load())(ConfigurationService.configurationService);
+    return await storeStartup.load();
   } catch (error) {
     throw new Error(
       `${storeType} storage is required but ${storeStartup.storePackage} is not available. ` +

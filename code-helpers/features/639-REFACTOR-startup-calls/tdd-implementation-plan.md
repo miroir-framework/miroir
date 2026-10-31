@@ -26,9 +26,9 @@ Out (owners): the hand-built test helpers and the model extraction scripts (foll
 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
-| 0 | Baseline of the hosts' tests | ⬜ pending | existing host tests and the local web self-test pass on the base commit |
-| 1 | Tracer: `startMiroirNode` on an emulated client config; the CLI and the MCP tests on it | ⬜ pending | `startMiroirNode.integ` (Library books through the returned domain controller) + `cli.integ` + MCP tests |
-| 2 | `startMiroirNode` on a server config; the server and Electron on it | ⬜ pending | `startMiroirNode.integ` (server case) + release smoke + `environmentBoot.integ` + library tests |
+| 0 | Baseline of the hosts' tests | ✅ DONE | existing host tests and the local web self-test pass on the base commit |
+| 1 | Tracer: `startMiroirNode` on an emulated client config; the CLI and the MCP tests on it | ✅ DONE | `startMiroirNode.integ` (Library books through the returned domain controller) + `cli.integ` + MCP tests |
+| 2 | `startMiroirNode` on a server config; the server and Electron on it | ✅ DONE | `startMiroirNode.integ` (server case) + release smoke + `environmentBoot.integ` + library tests |
 | 3 | `startMiroirClient` in `miroir-react` | ⬜ pending | `startMiroirClient.integ` (providers render Library books; hook order; passed client) |
 | 4 | The sandbox and the standalone app on `startMiroirClient` | ⬜ pending | sandbox and standalone builds, bundle guards, local web self-test |
 | 5 | Nonreg step, docs, epic plan, AC | ⬜ pending | full `nonreg:filesystem` |
@@ -87,7 +87,7 @@ No model element, uuid or MiroirTest suite: the feature is process wiring, not r
 
 ## Slice 0 — Baseline of the hosts' tests
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -108,11 +108,13 @@ MIROIR_ENV=self-test npm run build -w miroir-standalone-app && npm run build:rel
 
 ### Realization
 
+On `7439b57ff`: the six steps `unit-345-cli`, `unit-345-mcp`, `unit-345-electron`, `build-633-sandbox`, `unit-636-server-library`, `build-636-server-release` passed; the local web self-test (`MIROIR_ENV=self-test`) passed 1224 of 1224 tests in 48 suites.
+
 ---
 
 ## Slice 1 — Tracer: `startMiroirNode` on an emulated client config; the CLI and the MCP tests on it
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -157,11 +159,18 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core,tooling,localcac
 
 ### Realization
 
+- `StoreSectionStartup` sits next to `ConfigurationServiceInner` (`miroir-core/src/3_controllers/ConfigurationService.ts`), exported from core's index: a type, so no layering cost.
+- `startMiroirPlatform.ts`: one internal `buildPlatform(config, options, afterStores)`; `startMiroirPlatform` passes a no-op, `startMiroirNode` passes the logger start. Exported from `src/node.ts` (and so from the main entry, which re-exports `node.ts`).
+- Deviation: the implementation was written before the test ran, so RED was not observed. Instead, a mutation check: without the store registration and without the stub wiring, 2 of the 3 tests fail; restored, 3 of 3 pass.
+- The test file also carries the server-config case (Slice 2's RED), written at the same time.
+- CLI: `loadStoreStartups` replaces `initializeStoreStartup`; `platform.ts` calls `startMiroirNode` with the loggers (now awaited, P3); `startup/setup.ts` deleted. MCP: `src/startup/` deleted; `mcpTestPlatform.ts` keeps a dynamic store map; the store test of `mcpPackageSurface.unit.test.ts` deleted (its assertion now lives on the CLI loader, on a scratch configuration service).
+- Validation: `startMiroirNode` 3/3, CLI 20/20 (4 files), MCP 109/109 (14 files), `tsc` on core, localcache-redux, CLI, MCP; scoped nonreg `smoke,core,tooling,localcache,runners`: 68 of 68.
+
 ---
 
 ## Slice 2 — `startMiroirNode` on a server config; the server and Electron on it
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -201,6 +210,11 @@ npm run nonreg:filesystem -- --runner shared   # full run after Slices 1 and 2
 ```
 
 ### Realization
+
+- The server-config test was green at once (written with Slice 1); it is kept as the characterization of the branch.
+- The external service client is proven by behaviour: `prepareOpenApiDocument` (endpoint `1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5`) on the local domain controller fetches through the passed client's recording `fetch`.
+- `server.ts`: one `startMiroirNode` call with the four stores, the loggers and the rotated-secrets client; six imports gone; a thrown error replaces a non-null assertion on the manager. Electron: `bootElectronServer` passes four `registerStoreOnDemand` closures and no loggers; `setupIpcServer`'s `miroirCoreStartup()` gone; `storesOnDemand.ts` uses the core type. `serverTestPlatform.ts`: the same call.
+- Validation: `startMiroirNode` 3/3, Electron 14/14 (3 files), server library 24/24, release smoke 7/7 (development and production, after `build:release`), Electron build and bundle policy (0 violations), `electronBundle.unit` 7/7, `tsc` on server, server library, Electron. Full nonreg: see below.
 
 ---
 

@@ -103,6 +103,13 @@ export class ConfigurationServiceInner {
   }
 }
 
+/**
+ * What a store package exports to make its sections available, such as
+ * `miroirFileSystemStoreSectionStartup`: it registers its factories on the given configuration
+ * service. Hosts pass these to `startMiroirNode` / `startMiroirClient` (#639).
+ */
+export type StoreSectionStartup = (configurationService: ConfigurationServiceInner) => void;
+
 export class ConfigurationService {
   public static configurationService = new ConfigurationServiceInner();
 }
