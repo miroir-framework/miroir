@@ -54,6 +54,8 @@ SERVER_LINE_PATTERNS = [
     # environment selection and reconciliation at startup (#321)
     re.compile(r"console\.log\(`  environment"),
     re.compile(r"console\.(log|warn)\(`\[miroir-env\]"),
+    # self-test environment reseed at startup (#587)
+    re.compile(r"console\.log\(`  \$\{seedLine\}`"),
 ]
 
 

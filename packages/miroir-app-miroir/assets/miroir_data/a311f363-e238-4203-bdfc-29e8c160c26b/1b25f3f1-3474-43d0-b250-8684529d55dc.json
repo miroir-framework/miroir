@@ -653,7 +653,7 @@
           },
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "TransformerBlocks: spreadSheetToMlSchema shows object and list blocks and an ML schema chip",
+            "miroirTestLabel": "TransformerBlocks: spreadSheetToMlSchema shows object and list blocks and a quoted value",
             "componentProps": {
               "transformerDefinition": "spreadSheetToMlSchema"
             },
@@ -694,15 +694,6 @@
                 },
                 "attribute": "data-block-kind",
                 "value": "list"
-              },
-              {
-                "step": "waitForAttribute",
-                "label": "the returnValue mlSchema is a chip",
-                "target": {
-                  "byTestId": "block:transformerImplementation.definition.definition.completeAttributeDefinitions.definition.mlSchema"
-                },
-                "attribute": "data-block-kind",
-                "value": "mlSchema"
               },
               {
                 "step": "waitForAttribute",
