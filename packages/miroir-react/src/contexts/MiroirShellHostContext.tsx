@@ -5,12 +5,16 @@ import type { ProcessCapabilities, Runner } from "miroir-core";
 import { requestLoginTokenOverHttp } from "../auth/httpLogin.js";
 
 // ################################################################################################
-// Host features of the app shell (#633 D2). miroir-react renders the shell, its pages and its
-// runners; what needs code miroir-react must not depend on comes from the host application:
-// the MCP tool call (miroir-mcp/client), a login transport other than HTTP (Electron IPC) and the
-// assistant panel (CopilotKit). Every slot is optional and has the behaviour a client
-// without the feature needs. The host fills the slots with `import()` wrappers so the code they
-// reach stays out of the page's eager chunks.
+// Features of the app shell that the host application provides (#633 D2).
+//
+// miroir-react renders the shell, its pages and its runners. Three features need code that
+// miroir-react must not depend on, so the host passes them in:
+// - runMcpTool: calls an MCP tool (miroir-mcp/client),
+// - requestLoginToken: logs in over a transport other than HTTP (Electron IPC),
+// - assistantPanel: the AI assistant panel (CopilotKit).
+//
+// Every slot is optional; a missing slot falls back to its default (see useMiroirShellHost).
+// Hosts should fill slots with `import()` wrappers, to keep that code out of the eager chunks.
 // ################################################################################################
 
 /** What a call of an mcpToolRunner returns to the runner view. */
@@ -31,11 +35,11 @@ export type RunMcpTool = (
 export type RequestLoginToken = (username: string, password: string) => Promise<string | undefined>;
 
 export interface MiroirShellHost {
-  /** Calls the MCP tool of an mcpToolRunner. Default: the feature is unavailable. */
+  /** Calls the MCP tool of an mcpToolRunner. Default: returns a FeatureUnavailable error. */
   runMcpTool?: RunMcpTool;
-  /** The Bearer token for these credentials, or undefined when the login fails. Default: `/auth/login` over HTTP. */
+  /** Returns a Bearer token for the credentials, or undefined if login fails. Default: POST `/auth/login`. */
   requestLoginToken?: RequestLoginToken;
-  /** The assistant panel RootComponent mounts once the AI AppBar button is used. Default: none. */
+  /** Assistant panel, mounted by RootComponent the first time the AI AppBar panel opens. Default: no panel. */
   assistantPanel?: ComponentType;
 }
 
