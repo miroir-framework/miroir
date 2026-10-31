@@ -74,11 +74,15 @@ if (runThis) {
   describe("cursorSdk.275.phase0 — RootComponent CopilotKit latch uses snapshot ai", () => {
     it("agentsEnabled reads context.processCapabilities.ai", () => {
       const src = readRepoFile(
-        "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Page/RootComponent.tsx",
+        "packages/miroir-react/src/components/Page/RootComponent.tsx",
       );
       expect(src).toContain("context.processCapabilities.ai === true");
-      expect(src).toContain("const AgentsCopilotKit = lazy(");
+      // #633: the shell mounts the host's assistantPanel; the app fills it with a lazy AgentsCopilotKit.
+      expect(src).toContain("assistantPanel: AssistantPanel } = useMiroirShellHost()");
       expect(src).toContain("shouldMountCopilotKit");
+      expect(
+        readRepoFile("packages/miroir-standalone-app/src/miroir-fwk/4_view/reportSectionRenderers.tsx"),
+      ).toContain('import("./routes/ai/AgentsCopilotKit.js")');
     });
   });
 

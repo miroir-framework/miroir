@@ -21,7 +21,8 @@ type BundleReport = { chunks: { file: string; gzipBytes: number; packages: { nam
 
 const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const viteDirectory = join(packageRoot, "dist", ".vite");
-const homePageRoute = "miroir-fwk/4_view/routes/HomePage.tsx";
+// The home page route is in miroir-react since #633: the manifest names its dist module.
+const homePageRoute = "../../miroir-react/dist/routes/HomePage.js";
 /**
  * Gzip bytes of everything the home page fetches: 1 391 763 on 2026-09-30 (12 chunks), 1 280 602 on
  * 2026-10-01 after #370 (16 chunks). The bundle guard's

@@ -10,7 +10,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import {
   readMiroirAiBackend,
   writeMiroirAiBackend,
-} from "../../../../src/miroir-fwk/4_view/routes/ai/miroirAiBackend.js";
+} from "miroir-react";
 
 const RUN_TEST = process.env.RUN_TEST;
 const runThis =
@@ -109,7 +109,7 @@ if (runThis) {
   describe("cursorSdk.275.phase6 — AppBar Cursor picker gate", () => {
     it("picker is shown only when AI shell and snapshot cursor are both true", () => {
       const src = readRepoFile(
-        "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Page/AppBar.tsx",
+        "packages/miroir-react/src/components/Page/AppBar.tsx",
       );
       expect(src).toMatch(/aria-label=\{agentLabel\}/);
       const cursorIdx = src.search(/aria-label=\{agentLabel\}/);

@@ -8,11 +8,8 @@ import {
 } from 'react';
 import { Outlet } from 'react-router-dom';
 const EventTimelineContainer = lazy(() => import('../EventTimelineContainer').then(m => ({ default: m.EventTimelineContainer })));
-import {
-  ThemedGrid,
-  ThemedMainPanel,
-  ThemedText
-} from "miroir-react";
+import { ThemedGrid, ThemedMainPanel } from "../Themes/LayoutComponents.js";
+import { ThemedText } from "../Themes/BasicComponents.js";
 
 import { v4 as uuidv4 } from 'uuid';
 
@@ -46,44 +43,33 @@ import {
   entityDeployment
 } from "miroir-app-admin";
 
-import {
-  getMemoizedReduxDeploymentsStateSelectorMap,
-  ReduxStateChanges,
-  type DebugElements,
-} from "miroir-react";
+import { getMemoizedReduxDeploymentsStateSelectorMap, ReduxStateChanges } from "../../miroir-localcache-imports.js";
+import type { DebugElements } from "../helpers/DebugHelper.js";
 
-import {
-  useDomainControllerService,
-  useLocalCacheTransactions,
-  useMiroirContextService,
-  useSnackbar,
-} from "miroir-react";
-import { MiroirThemeProvider, useMiroirTheme, type MiroirThemeOption } from "miroir-react";
-import { GlobalFeedbackGlow } from "miroir-react";
-import { RenderInsightHeader } from "miroir-react";
-import { useRenderTracker } from "miroir-react";
+import { useDomainControllerService, useLocalCacheTransactions, useMiroirContextService, useSnackbar } from "../../contexts/MiroirContextReactProvider.js";
+import { MiroirThemeProvider, useMiroirTheme } from "../../contexts/MiroirThemeContext.js";
+import type { MiroirThemeOption } from "../Themes/MiroirTheme.js";
+import { GlobalFeedbackGlow } from "./GlobalFeedbackGlow.js";
+import { RenderInsightHeader } from "../RenderInsightHeader.js";
+import { useRenderTracker } from "../../tools/renderCountTracker.js";
 import AppBar from './AppBar.js';
-import { deploymentReportsEntitiesMapping } from "miroir-react";
+import { useMiroirShellHost } from "../../contexts/MiroirShellHostContext.js";
+import { deploymentReportsEntitiesMapping } from "./deploymentReportsEntitiesMapping.js";
 
-import { JsonDisplayHelper } from 'miroir-react';
+import { JsonDisplayHelper } from "../helpers/DebugHelper.js";
 import { defaultStoredMiroirTheme, selfApplicationMiroir } from 'miroir-app-miroir';
-import { packageName } from '../../../../constants.js';
-import {
-  useCurrentModel,
-  useReduxDeploymentsStateQuerySelector,
-  useReduxDeploymentsStateQuerySelectorForCleanedResult
-} from "miroir-react";
-import { ModelEnvironmentSync } from "miroir-react";
-import { cleanLevel } from '../../constants.js';
-import { usePageConfiguration } from "miroir-react";
-import { ReportPageContextProvider } from "miroir-react";
-import { DocumentOutlineContextProvider } from "miroir-react";
-import { ViewParamsUpdateQueue, ViewParamsUpdateQueueConfig } from "miroir-react";
-import { Sidebar } from "miroir-react";
-import { SidebarWidth } from "miroir-react";
+import { packageName } from "../../constants.js";
+import { useCurrentModel, useReduxDeploymentsStateQuerySelector, useReduxDeploymentsStateQuerySelectorForCleanedResult } from "../../ReduxHooks.js";
+import { ModelEnvironmentSync } from "../../ModelEnvironmentSync.js";
+import { cleanLevel } from "../../viewConstants.js";
+import { usePageConfiguration } from "../../services/usePageConfiguration.js";
+import { ReportPageContextProvider } from "../Reports/ReportPageContext.js";
+import { DocumentOutlineContextProvider } from "../ValueObjectEditor/InstanceEditorOutlineContext.js";
+import { ViewParamsUpdateQueue, ViewParamsUpdateQueueConfig } from "../ViewParamsUpdateQueue.js";
+import { Sidebar } from "./Sidebar.js";
+import { SidebarWidth } from "./SidebarSection.js";
 
 const InstanceEditorOutline = lazy(() => import('../InstanceEditorOutline.js').then(m => ({ default: m.InstanceEditorOutline })));
-const AgentsCopilotKit = lazy(() => import("../../routes/ai/AgentsCopilotKit.js").then(m => ({ default: m.AgentsCopilotKit })));
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "RootComponent");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
@@ -127,6 +113,8 @@ let count = 0;
 export const RootComponent = (props: RootComponentProps) => {
   // const params = useParams<any>() as Readonly<Params<ReportUrlParamKeys>>;
   count++;
+  // #633 D2: the assistant panel comes from the host (CopilotKit in the standalone app).
+  const { assistantPanel: AssistantPanel } = useMiroirShellHost();
 
   log.info("RootComponent render", count, "######################################");
   const [sidebarIsOpen, setSidebarIsOpen] = useState(true);
@@ -925,9 +913,9 @@ export const RootComponent = (props: RootComponentProps) => {
               </ThemedMainPanel>
             </ThemedGrid>
             {/* CopilotKit — lazy on first AI AppBar open; stay mounted while snapshot ai (#244) */}
-            {shouldMountCopilotKit && (
+            {shouldMountCopilotKit && AssistantPanel && (
               <Suspense fallback={null}>
-                <AgentsCopilotKit />
+                <AssistantPanel />
               </Suspense>
             )}
             {/* Document Outline - Full height on right side */}

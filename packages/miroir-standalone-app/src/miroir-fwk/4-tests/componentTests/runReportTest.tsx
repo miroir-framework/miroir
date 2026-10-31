@@ -29,7 +29,7 @@ import { entityReport, selfApplicationMiroir } from "miroir-app-miroir";
 
 import { packageName } from "../../../constants.js";
 import { cleanLevel } from "../../4_view/constants.js";
-import { PageDispatcher } from "../../4_view/PageDispatcher.js";
+import { PageDispatcher } from "miroir-react";
 import { markPageConfigurationsLoaded } from "miroir-react";
 import {
   ComponentTestModeContext,

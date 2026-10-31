@@ -415,3 +415,14 @@ export { ErrorLogsPageDEFUNCT } from "./ErrorLogsPageDEFUNCT.js";
 export { EventTimelineContainer } from "./components/EventTimelineContainer.js";
 export { InstanceEditorOutline } from "./components/InstanceEditorOutline.js";
 export { ModelDiagramPage } from "./routes/ModelDiagramPage.js";
+export { PageDispatcher, reportPageParamsFromSearchParams } from "./PageDispatcher.js";
+export { RootComponent, type RootComponentProps } from "./components/Page/RootComponent.js";
+export { AppBar, FeedbackGlowAppBarButton, type AppBarProps } from "./components/Page/AppBar.js";
+export {
+  MIROIR_AI_BACKEND_STORAGE_KEY,
+  readMiroirAiBackend,
+  subscribeMiroirAiBackend,
+  writeMiroirAiBackend,
+  type MiroirAiBackendPick,
+} from "./routes/ai/miroirAiBackend.js";
+export { agentBackendLabel, agentRequestProperties } from "./routes/ai/agentBackendPick.js";

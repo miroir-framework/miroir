@@ -385,6 +385,11 @@
       "count": 1
     }
   },
+  "packages/miroir-react/src/components/Page/RootComponent.tsx": {
+    "react-hooks/set-state-in-effect": {
+      "count": 1
+    }
+  },
   "packages/miroir-react/src/components/Reports/ReportHooks.ts": {
     "react-hooks/rules-of-hooks": {
       "count": 2
@@ -591,11 +596,6 @@
   "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Buttons/RunMiroirTestSuiteButton.tsx": {
     "miroir/action-result": {
       "count": 4
-    }
-  },
-  "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Page/RootComponent.tsx": {
-    "react-hooks/set-state-in-effect": {
-      "count": 1
     }
   },
   "packages/miroir-standalone-app/src/miroir-fwk/4_view/routes/ai/AiActionsProvider.tsx": {

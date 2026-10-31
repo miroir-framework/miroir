@@ -39,11 +39,11 @@ import { useMiroirContextService } from "miroir-react";
 
 import { useAuthSession } from "miroir-react";
 import { AiActionsProvider } from "./AiActionsProvider.js";
-import { agentRequestProperties } from "./agentBackendPick.js";
+import { agentRequestProperties } from "miroir-react";
 import {
   readMiroirAiBackend,
   subscribeMiroirAiBackend,
-} from "./miroirAiBackend.js";
+} from "miroir-react";
 
 const isStaticDemo = (import.meta as any).env?.MIROIR_IS_SANDBOX === "true";
 

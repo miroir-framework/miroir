@@ -6,26 +6,27 @@ import {
 } from '@mui/material';
 import { default as MuiAppBar, AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import { styled } from '@mui/material/styles';
-import { ChevronLeftIcon, ChevronRightIcon, Edit, EditOff } from "miroir-react";
+import { ChevronLeftIcon, ChevronRightIcon, Edit, EditOff } from "../Themes/MaterialSymbolWrappers.js";
 import { useSyncExternalStore, type MouseEvent, type ReactNode } from 'react';
 
 import { defaultSelfApplicationDeploymentMap, isVersioningAppBarItemVisible, LoggerInterface, MiroirLoggerFactory, noValue, type MiroirMenuItem, type MiroirMenuPageLink, type ReportLink, type VersioningModeInput } from 'miroir-core';
 
-import { selectInstanceArrayForDeploymentSectionEntity, useMiroirContextService, useSelector, type ReduxStateWithUndoRedo } from 'miroir-react';
+import { selectInstanceArrayForDeploymentSectionEntity, useSelector, type ReduxStateWithUndoRedo } from "../../miroir-localcache-imports.js";
+import { useMiroirContextService } from "../../contexts/MiroirContextReactProvider.js";
 import { useNavigate } from 'react-router-dom';
-import { packageName } from '../../../../constants.js';
-import { pageUrl, reportUrl } from "miroir-react";
-import { cleanLevel } from '../../constants.js';
-import { useDesignerToolsVisibility } from "miroir-react";
-import { UserAccountMenu } from "miroir-react";
-import { useMiroirTheme } from "miroir-react";
-import { usePageConfiguration } from "miroir-react";
-import { applyPerformanceDisplayGate } from "miroir-react";
-import { applyLocalCacheMonitorGate } from "miroir-react";
-import { ThemedIcon } from "miroir-react";
-import { SidebarWidth } from "miroir-react";
+import { packageName } from "../../constants.js";
+import { pageUrl, reportUrl } from "../../navigation.js";
+import { cleanLevel } from "../../viewConstants.js";
+import { useDesignerToolsVisibility } from "../../auth/useDesignerToolsVisibility.js";
+import { UserAccountMenu } from "../../auth/UserAccountMenu.js";
+import { useMiroirTheme } from "../../contexts/MiroirThemeContext.js";
+import { usePageConfiguration } from "../../services/usePageConfiguration.js";
+import { applyPerformanceDisplayGate } from "../../tools/performanceDisplayGate.js";
+import { applyLocalCacheMonitorGate } from "../../tools/localCacheMonitorGate.js";
+import { ThemedIcon } from "../Themes/IconComponents.js";
+import { SidebarWidth } from "./SidebarSection.js";
 import { entitySelfApplication, reportMiroirRunners, reportVersioning } from 'miroir-app-miroir';
-import { resolveAppBarHomeNavigationUrl, resolveAppBarReportLinkApplication } from "miroir-react";
+import { resolveAppBarHomeNavigationUrl, resolveAppBarReportLinkApplication } from "./appBarReportNavigation.js";
 import {
   readMiroirAiBackend,
   subscribeMiroirAiBackend,

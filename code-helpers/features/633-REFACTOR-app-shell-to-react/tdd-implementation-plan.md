@@ -4,7 +4,7 @@
 >
 > **Execution model:** each slice ends with its Validation commands; on success its Realization is appended and its Status flips to ✅ DONE. The user asked for the whole issue through to a PR ready to merge, so commits follow each green slice on the working branch.
 >
-> **Resume note:** slices 0 to 5 DONE; slice 6 next.
+> **Resume note:** slices 0 to 6 DONE; slice 7 next.
 >
 > **Plan history:** revised after an adversarial review (2026-10-31): shims at the old app paths keep pages lazy mid-way (slices 2 to 5); moved modules' `from "miroir-react"` imports become relative, with a guard; Emotion pragma for `SequenceEditor`; corrected `check_bundle_policy.py`, `--only`, auth test and route test commands; slice 1 RED moved to `loadTimingWriter.integ`; every source-text guard named in its slice; `tsc` and lint in every move slice; `defaultReportSectionRenderers` export for the AC.
 
@@ -33,7 +33,7 @@ Out (analysis §2): the MiroirTest runtime and its displays, the d3 graph render
 | 3 | Login from `miroir-react`, Electron login injected | ✅ | `loginTransport.633.phase3.unit`, `electronIpcProxyAuth.263.phase6` |
 | 4 | Generic pages from `miroir-react`; search opens on the current application | ✅ | `toolPageDefaults.633.phase4.unit`, `homePageLoad.unit` |
 | 5 | Model diagram page through the registry; view in `miroir-diagram-class` | ✅ | the 9 diagram-mocking UI tests, slice 6 page smoke |
-| 6 | Shell from `miroir-react`, assistant injected; sandbox without the alias | ⬜ | `test_shell_package_boundaries.py`, sandbox build and page smoke |
+| 6 | Shell from `miroir-react`, assistant injected; sandbox without the alias | ✅ | `test_shell_package_boundaries.py`, sandbox build and page smoke |
 | 7 | Lint boundary rule, nonreg, bundle guard, docs, cleanup, AC | ⬜ | lint, full `nonreg:filesystem`, bundle guards |
 
 ---
@@ -389,7 +389,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,ui
 
 ## Slice 6 — Shell from miroir-react; sandbox without the alias
 
-**Status:** ⬜ pending
+**Status:** ✅ done
 
 ### Goal
 
@@ -432,7 +432,14 @@ Sandbox page smoke (tracer check, Playwright from Python): `vite preview` of the
 
 ### Realization
 
-_(to fill)_
+- Moved with `git mv`: `PageDispatcher.tsx`, `components/Page/RootComponent.tsx`, `components/Page/AppBar.tsx`, `routes/ai/miroirAiBackend.ts`, `routes/ai/agentBackendPick.ts`. The 12 shims of slices 2 to 5 are deleted; the dispatcher lazy-imports the pages by relative path inside the package. `rewrite_self_imports.mjs` mapped `useRenderTracker` to `useRenderInsight.js`; it is re-exported by `tools/renderCountTracker.js`, fixed by hand.
+- `RootComponent` reads `assistantPanel` from `useMiroirShellHost()` and mounts it under `Suspense` once the AI AppBar button latches. Deviation from GREEN: the app's lazy `AgentsCopilotKit` lives in `appShellHost` (`reportSectionRenderers.tsx`), next to the other slots, not in `index.tsx`.
+- Sandbox: `RootComponent` and `PageDispatcher` from `miroir-react` (its `src/PageDispatcher.tsx` re-export is deleted), `ReportSectionRenderersProvider` with `modelDiagramReportSection` from `miroir-diagram-class` (new dependency), no alias in `vite.config.js`, no `paths` in `tsconfig.json`.
+- Test rig: `MiroirTestProviders` / `buildComponentTestWrapper` take `processCapabilities` (passed to `MiroirContextReactProvider`), for the AI AppBar buttons.
+- Tests: `assistantPanel.633.phase6.integ` (2 cases; clears `sessionStorage`, where the context keeps the AI sidebar state), `shellExports.unit` (45 symbols), `test_sandbox_has_no_app_alias`. Repointed: `homePageLoad.unit` (manifest key `../../miroir-react/dist/routes/HomePage.js`), `cursorSdk.275.phase0` (the latch reads the slot; the app fills it), and the readers listed in GREEN. The `RootComponent` suppression key moved.
+- Validation: miroir-react build and tsc clean; app tsc has the 2 pre-existing `Stack justifyContent` errors only; sandbox tsc clean; lint clean; pytest 340 passed; `npm run test -w miroir-core -- ''` 3252 passed; sandbox build OK; bundle guard 0 violations, 71 eager chunks, 843,413 B gzipped (baseline 841,981), `AgentsCopilotKit` a lazy chunk; `homePageLoad.unit` 2/2; scoped nonreg (`unit-273-process-capabilities`, `unit-275-cursor-sdk`, `appstack-273-process-capabilities`, `unit-435-test-sandbox-header`, `unit-443-test-sandbox-play-pause`, `build-633-sandbox`, `unit-633-app-shell`) 7/7 after the 275 repoint.
+- Sandbox page smoke (`sandbox_page_smoke.py`): home, settings, search, runners, events, check, transformerBuilder and model each render, with no error boundary and no page error.
+- Refactor checkpoint: `survey_shell_modules.py` lists 29 modules in `4_view`, all of analysis §5.3 (MiroirTest displays and buttons, graph, CopilotKit, `runMcpToolRunner`, `ReportPage`, `reportSectionRenderers.tsx`, `constants.ts`).
 
 ---
 

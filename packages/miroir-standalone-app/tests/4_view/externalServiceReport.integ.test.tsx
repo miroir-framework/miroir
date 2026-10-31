@@ -77,7 +77,7 @@ import { ReportPageContextProvider } from "miroir-react";
 import { ReportViewWithEditor } from "miroir-react";
 import { DocumentOutlineContextProvider } from "miroir-react";
 import { MiroirThemeProvider } from "miroir-react";
-import { reportPageParamsFromSearchParams } from "../../src/miroir-fwk/4_view/PageDispatcher.js";
+import { reportPageParamsFromSearchParams } from "miroir-react";
 import { miroirAppStartup } from "../../src/startup.js";
 import { cleanLevel, packageName } from "../3_controllers/constants.js";
 import { AppStackIntegrationTestSession } from "../helpers/IntegrationTestSession.js";

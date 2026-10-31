@@ -23,15 +23,15 @@ import React, { Suspense, useEffect, useMemo } from "react";
 import { Navigate, type Params, useParams, useSearchParams } from "react-router-dom";
 
 import { isUsableBearerToken, LoggerInterface, MiroirLoggerFactory, nextPageWhenAccessDenied, nextPageWhenAuthGate, type ApplicationSection } from "miroir-core";
-import { useMiroirContextService } from "miroir-react";
-import { getAuthenticationEnabled, getAuthToken } from "miroir-react";
-import { useApplicationAccess } from "miroir-react";
+import { useMiroirContextService } from "./contexts/MiroirContextReactProvider.js";
+import { getAuthenticationEnabled, getAuthToken } from "./auth/authSession.js";
+import { useApplicationAccess } from "./auth/useApplicationAccess.js";
 
-import { packageName } from "../../constants.js";
-import { cleanLevel } from "./constants.js";
-import { PageContainer } from "miroir-react";
-import { CenteredSpinner } from "miroir-react";
-import { LazyReportDisplay } from "miroir-react";
+import { packageName } from "./constants.js";
+import { cleanLevel } from "./viewConstants.js";
+import { PageContainer } from "./components/Page/PageContainer.js";
+import { CenteredSpinner } from "./components/CenteredSpinner.js";
+import { LazyReportDisplay } from "./components/Reports/LazyReportDisplay.js";
 
 // All page components are lazy-loaded so they are excluded from the main
 // bundle and downloaded in the background after the shell renders.
@@ -45,8 +45,8 @@ const LoginPage            = React.lazy(() => import("./routes/LoginPage.js").th
 const TransformerBuilderPage = React.lazy(() => import("./routes/TransformerBuilderPage.js").then(m => ({ default: m.TransformerBuilderPage })));
 const MiroirEventsPage     = React.lazy(() => import("./pages/MiroirEventsPage.js").then(m => ({ default: m.MiroirEventsPage })));
 const ErrorLogsPageDEFUNCT = React.lazy(() => import("./ErrorLogsPageDEFUNCT.js").then(m => ({ default: m.ErrorLogsPageDEFUNCT })));
-import { REPORT_URL_KNOWN_PARAM_KEYS, type ReportUrlParamKeys } from "miroir-react";
-import { usePageConfiguration } from "miroir-react";
+import { REPORT_URL_KNOWN_PARAM_KEYS, type ReportUrlParamKeys } from "./reportUrlParams.js";
+import { usePageConfiguration } from "./services/usePageConfiguration.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "PageDispatcher");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);

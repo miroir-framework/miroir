@@ -90,7 +90,7 @@ describe("resolveAppBarHomeNavigationUrl (selected application home)", () => {
   it("AppBar Home icon uses resolveAppBarHomeNavigationUrl (not hardcoded pageUrl home)", () => {
     const here = dirname(fileURLToPath(import.meta.url));
     const src = readFileSync(
-      join(here, "../../src/miroir-fwk/4_view/components/Page/AppBar.tsx"),
+      join(here, "../../../miroir-react/src/components/Page/AppBar.tsx"),
       "utf8",
     );
     expect(src).toContain("resolveAppBarHomeNavigationUrl");

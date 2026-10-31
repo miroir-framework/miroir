@@ -11,12 +11,12 @@ import { FAIL_CLOSED_PROCESS_CAPABILITIES, type ProcessCapabilities } from "miro
 import {
   agentBackendLabel,
   agentRequestProperties,
-} from "../../src/miroir-fwk/4_view/routes/ai/agentBackendPick.js";
+} from "miroir-react";
 import {
   MIROIR_AI_BACKEND_STORAGE_KEY,
   readMiroirAiBackend,
   writeMiroirAiBackend,
-} from "../../src/miroir-fwk/4_view/routes/ai/miroirAiBackend.js";
+} from "miroir-react";
 
 const RUN_TEST = process.env.RUN_TEST;
 const runThis = !RUN_TEST || RUN_TEST.startsWith("agentBackendPick");
@@ -82,7 +82,7 @@ if (runThis) {
     it("AgentsCopilotKit and AppBar use these helpers", () => {
       expect(readRepoFile(`${AI_ROUTES}/AgentsCopilotKit.tsx`)).toContain("agentRequestProperties(");
       expect(
-        readRepoFile("packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Page/AppBar.tsx"),
+        readRepoFile("packages/miroir-react/src/components/Page/AppBar.tsx"),
       ).toContain("agentBackendLabel(");
     });
   });

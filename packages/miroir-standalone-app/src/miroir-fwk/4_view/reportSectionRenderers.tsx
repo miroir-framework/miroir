@@ -19,9 +19,13 @@ export const appReportSectionRenderers: ReportSectionRenderers = {
 };
 
 // The app's features of the shell (#633 D2): the MCP tool call needs miroir-mcp/client, loaded on the
-// first call; the login goes over Electron IPC in the desktop app (D5).
+// first call; the login goes over Electron IPC in the desktop app (D5); the assistant panel (CopilotKit)
+// is loaded only when the shell mounts it.
 export const appShellHost: MiroirShellHost = {
   requestLoginToken,
+  assistantPanel: lazy(async () => ({
+    default: (await import("./routes/ai/AgentsCopilotKit.js")).AgentsCopilotKit,
+  })),
   runMcpTool: async (runner, args, serverUrl, capabilities) =>
     (await import("./components/Runners/runMcpToolRunner.js")).runMcpToolRunner(runner, args, serverUrl, capabilities),
 };
