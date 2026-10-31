@@ -5,6 +5,9 @@
   "description": "The Miroir implementation of Local Cache and Remote Access based on Redux.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "type": "module",
   "exports": {
     ".": {

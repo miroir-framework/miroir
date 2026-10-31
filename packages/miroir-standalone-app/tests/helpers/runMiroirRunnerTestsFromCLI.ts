@@ -22,7 +22,7 @@ import { onFailedRunExport } from "./writeFailedRunExport.js";
 import {
   listCliRunnerIntegrationSuiteKeysFromFolders,
   loadApplicationMiroirTestCatalog,
-} from "miroir-core/src/5_tests/loadApplicationMiroirTestsFromFolders.js";
+} from "miroir-core/model-validation-fs";
 
 const applicationMiroirTestCatalog = loadApplicationMiroirTestCatalog();
 const runnerSuitesByKey = indexApplicationMiroirTestsByKey(applicationMiroirTestCatalog);

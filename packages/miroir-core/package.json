@@ -21,23 +21,18 @@
     "./ml-to-ts": {
       "types": "./dist/ml-to-ts.d.ts",
       "import": "./dist/ml-to-ts.js"
-    },
-    "./src/*": "./src/*"
+    }
   },
   "files": [
     "LICENSE.md",
     "package.json",
     "dist/index.js",
     "dist/index.js.map",
-    "dist/index.cjs",
-    "dist/index.cjs.map",
     "dist/**/*.d.ts",
-    "dist/**/*.d.ts.map",
     "dist/model-validation-fs.js",
     "dist/model-validation-fs.js.map",
     "dist/ml-to-ts.js",
-    "dist/ml-to-ts.js.map",
-    "dist/src/worker.js"
+    "dist/ml-to-ts.js.map"
   ],
   "scripts": {
     "copy-files": "copyfiles -u 1 src/**/*.json src/**/*.css dist/src",

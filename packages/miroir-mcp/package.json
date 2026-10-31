@@ -4,6 +4,9 @@
   "description": "Model Context Protocol (MCP) server for Miroir Framework - exposes InstanceEndpoint actions as MCP tools",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "type": "module",
   "exports": {
     "./package.json": "./package.json",

@@ -28,7 +28,7 @@ import {
   listCliRunnerIntegrationSuiteKeysFromFolders,
   resolveCliSuiteKeysFromCatalog,
   loadApplicationRunnerUuidIndexFromFolders,
-} from "miroir-core/src/5_tests/loadApplicationMiroirTestsFromFolders.js";
+} from "miroir-core/model-validation-fs";
 import { miroirAppStartup } from "../src/startup.js";
 import { runMiroirRunnerSuitesSharedFromCLI } from "./helpers/runMiroirRunnerSuitesSharedFromCLI.js";
 import { createRunnerSuiteSessionParams } from "./helpers/runnerSuiteSessionParams.js";

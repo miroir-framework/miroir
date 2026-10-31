@@ -25,8 +25,8 @@ Out (analysis §2): duplicate-core detection and `@public` TSDoc (#621 items), `
 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
-| 0 | The published set is listed, and today's manifests characterized | ⬜ | `test_package_manifests.py` (set cases) |
-| 1 | Tarballs ship built files and declared entry points only | ⬜ | `test_package_manifests.py` (files, exports, pack cases) |
+| 0 | The published set is listed, and today's manifests characterized | ✅ | `test_package_manifests.py` (set cases) |
+| 1 | Tarballs ship built files and declared entry points only | ✅ | `test_package_manifests.py` (files, exports, pack cases) |
 | 2 | Packages carry their metadata and their TSDoc | ⬜ | `test_package_manifests.py` (metadata, TSDoc cases) |
 | 3 | Shared libraries are peers, checked by the dependency policy | ⬜ | `test_package_manifests.py` (peer cases), `test_check_dependency_policy.py` (peers rule) |
 | 3b | Every import is declared, every declared runtime dependency is imported | ⬜ | `test_package_manifests.py` (declared-imports cases) |
@@ -75,7 +75,7 @@ No model element, no uuid, no MiroirTest suite.
 
 ## Slice 0 — The published set is listed, and today's manifests characterized
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -110,11 +110,33 @@ python -m pytest scripts/tests -q
 
 ### Realization
 
+- `scripts/published-packages.json` lists the 14 folders with their target names (`@miroir-framework/core` three times, `-react` twice: #621 D7-b, D8-a). RED: 3 failures (file missing); GREEN: 3 passed. A third case, `test_each_package_of_the_set_has_a_scoped_published_name`, locks the 11 target names.
+- Characterization, `npm pack --dry-run --json --ignore-scripts` on the built packages at `f2ce72969` (files, packed size, then `src/`, `tests/`, `.d.ts.map` entries):
+
+| Package | Files | Size | `src/` | tests | `.d.ts.map` |
+|---|---|---|---|---|---|
+| miroir-app-miroir | 5 | 1308 KB | 0 | 0 | 0 |
+| miroir-app-admin | 5 | 19 KB | 0 | 0 | 0 |
+| miroir-core | 550 | 1590 KB | 0 | 0 | 270 |
+| miroir-localcache-redux | 41 | 162 KB | 17 | 12 | 0 |
+| miroir-store-postgres | 40 | 114 KB | 22 | 10 | 0 |
+| miroir-store-filesystem | 25 | 17 KB | 14 | 2 | 0 |
+| miroir-store-indexedDb | 26 | 16 KB | 12 | 0 | 0 |
+| miroir-store-mongodb | 17 | 211 KB | 12 | 0 | 0 |
+| miroir-store-bundled | 14 | 6 KB | 9 | 0 | 0 |
+| miroir-env | 42 | 102 KB | 13 | 17 | 0 |
+| miroir-react | 1212 | 1576 KB | 247 | 12 | 0 |
+| miroir-mcp | 42 | 61 KB | 13 | 17 | 0 |
+| miroir-server-library | 6 | 11 KB | 0 | 0 | 0 |
+| miroir-cli | 18 | 33 KB | 6 | 4 | 0 |
+
+  The field table of analysis §4.2 was re-checked by the same script; no difference.
+
 ---
 
 ## Slice 1 — Tarballs ship built files and declared entry points only
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -156,6 +178,11 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core,tooling,ui
 ```
 
 ### Realization
+
+- RED: 33 failures (11 packages without `files`, 9 without a well-formed `exports`, 11 pack lists with `src/`, tests or `.d.ts.map`, core's 3 unbuilt `files` entries, and the 20 `src/` specifiers). A pattern self-test (`test_the_specifier_pattern_sees_every_import_form`) locks the import forms the scanner sees.
+- GREEN: `files: ["dist"]` on 10 packages; core's `files` without `dist/**/*.d.ts.map`, `dist/index.cjs`, `dist/index.cjs.map`, `dist/src/worker.js`; `exports` (`./package.json`, `.`) on the five stores and `miroir-env`; `./package.json` in `miroir-react`'s; no `./src/*` in core and store-postgres; `miroir-cli` with `exports: {"./package.json"}` and no `main`/`types`. The 19 specifiers now use `miroir-core/model-validation-fs`; the postgres test imports through `../../../miroir-store-postgres/src/...`. 61 passed.
+- No package reads a file outside `dist/` at runtime (grep of `import.meta.url` and `__dirname` in the set's `src/`: only `miroir-env`'s entry guard).
+- Validation: core `tsc` clean; the standalone app's `tsconfig.tests.json` has 576 errors before and after, none from the moved imports (the two touched files with errors have the jest-dom matcher and env typing errors they had before). `sqlCreateSchemaIfNotExists` passes. Of the six standalone-app helper tests, `uiIntegrationTestLauncher` has one failure (`freezeApplicationVersion: expected 'libraryVersionedTestbedInitParams' to be 'libraryTestbedInitParams'`) that fails the same way on the base with the change stashed: pre-existing, not in a nonreg step. Release tests 15 passed. Scoped nonreg (`smoke,core,tooling,ui`): 80 of 80.
 
 ---
 

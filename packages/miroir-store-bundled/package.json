@@ -5,6 +5,16 @@
   "description": "The Miroir read-only bundled store, serving pre-loaded JSON data for static (GitHub Pages) deployments.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
   "module": "dist/index.js",
   "type": "module",
   "scripts": {

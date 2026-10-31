@@ -11,7 +11,7 @@ import {
   listCliTransformerIntegrationSuiteKeysFromFolders,
   listCliUnitSuiteKeysFromFolders,
   loadApplicationMiroirTestCatalog,
-} from "miroir-core/src/5_tests/loadApplicationMiroirTestsFromFolders.js";
+} from "miroir-core/model-validation-fs";
 
 import type { TestSessionForIntegOptions } from "./IntegrationTestSession.js";
 import { resolveDefaultFilesystemDeploymentRoot } from "./IntegrationTestSession.js";
