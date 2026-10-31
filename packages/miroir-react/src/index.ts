@@ -368,3 +368,21 @@ export * from "./components/Reports/ReportSectionViewWithEditor.js";
 export * from "./components/Reports/ReportViewWithEditor.js";
 export * from "./components/SelectEntityInstanceEditor.js";
 export * from "./getColumnDefinitionsFromEntityAttributes.js";
+
+// App shell client services (#633)
+export {
+  fetchMiroirAndAppConfigurations,
+  useConfigurationService,
+  type ConfigurationServiceOptions,
+} from "./services/ConfigurationService.js";
+export {
+  markPageConfigurationsLoaded,
+  usePageConfiguration,
+  type UsePageConfigurationOptions,
+  type UsePageConfigurationResult,
+} from "./services/usePageConfiguration.js";
+export {
+  loadTimingMark,
+  setLoadTimingMarkSink,
+  type LoadTimingMarkSink,
+} from "./loadTimings/loadTimingMarkSink.js";

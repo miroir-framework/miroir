@@ -64,7 +64,10 @@ import { loglevelnext } from "./loglevelnextImporter.js";
 import { getAuthToken, setAuthenticationEnabled, setAuthToken } from "miroir-react";
 import { fetchAuthenticationEnabled } from "./miroir-fwk/4_view/auth/authTransport.js";
 import { RootComponent } from "./miroir-fwk/4_view/components/Page/RootComponent.js";
-import { ErrorPage } from "miroir-react";
+import { ErrorPage, setLoadTimingMarkSink } from "miroir-react";
+
+// #633 D6: marks from miroir-react code (configurationsLoaded) reach the browser recorder.
+setLoadTimingMarkSink(loadTimingMark);
 import { PageDispatcher } from "./miroir-fwk/4_view/PageDispatcher.js";
 import { appReportSectionRenderers } from "./miroir-fwk/4_view/reportSectionRenderers.js";
 import {

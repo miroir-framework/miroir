@@ -472,6 +472,11 @@
       "count": 1
     }
   },
+  "packages/miroir-react/src/services/ConfigurationService.ts": {
+    "miroir/action-result": {
+      "count": 7
+    }
+  },
   "packages/miroir-react/src/tools/performanceConfig.ts": {
     "miroir/global-environment": {
       "count": 4
@@ -601,11 +606,6 @@
   "packages/miroir-standalone-app/src/miroir-fwk/4_view/routes/ai/AiActionsProvider.tsx": {
     "miroir/component-io": {
       "count": 3
-    }
-  },
-  "packages/miroir-standalone-app/src/miroir-fwk/4_view/services/ConfigurationService.ts": {
-    "miroir/action-result": {
-      "count": 7
     }
   },
   "packages/miroir-store-postgres/src/1_core/SqlGenerator.ts": {

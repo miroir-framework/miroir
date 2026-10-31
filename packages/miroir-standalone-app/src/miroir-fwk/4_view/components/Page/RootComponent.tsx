@@ -75,7 +75,7 @@ import {
 } from "miroir-react";
 import { ModelEnvironmentSync } from "miroir-react";
 import { cleanLevel } from '../../constants.js';
-import { usePageConfiguration } from '../../services/index.js';
+import { usePageConfiguration } from "miroir-react";
 import { ReportPageContextProvider } from "miroir-react";
 import { DocumentOutlineContextProvider } from "miroir-react";
 import { ViewParamsUpdateQueue, ViewParamsUpdateQueueConfig } from "miroir-react";

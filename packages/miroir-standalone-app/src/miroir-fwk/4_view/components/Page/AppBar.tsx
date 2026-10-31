@@ -19,7 +19,7 @@ import { cleanLevel } from '../../constants.js';
 import { useDesignerToolsVisibility } from "miroir-react";
 import { UserAccountMenu } from "miroir-react";
 import { useMiroirTheme } from "miroir-react";
-import { usePageConfiguration } from '../../services/index.js';
+import { usePageConfiguration } from "miroir-react";
 import { applyPerformanceDisplayGate } from "miroir-react";
 import { applyLocalCacheMonitorGate } from "miroir-react";
 import { ThemedIcon } from "miroir-react";

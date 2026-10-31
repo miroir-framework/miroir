@@ -13,7 +13,13 @@ export const ROOTS = [
   "packages/*/src/miroir-fwk/4-tests/**",
 ];
 // React components and hooks.
-export const VIEW = ["packages/*/src/**/*.tsx", "packages/*/src/**/4_view/**/*.ts", "packages/*/src/**/use[A-Z]*.ts"];
+// miroir-react/src/services: client services moved from the standalone app 4_view (#633).
+export const VIEW = [
+  "packages/*/src/**/*.tsx",
+  "packages/*/src/**/4_view/**/*.ts",
+  "packages/*/src/**/use[A-Z]*.ts",
+  "packages/miroir-react/src/services/**/*.ts",
+];
 // The components and hooks of the 4-tests folder are views like any other.
 export const TEST_SESSION_VIEWS = [
   "packages/*/src/miroir-fwk/4-tests/**/*.tsx",

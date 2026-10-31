@@ -4,7 +4,7 @@
 >
 > **Execution model:** each slice ends with its Validation commands; on success its Realization is appended and its Status flips to ✅ DONE. The user asked for the whole issue through to a PR ready to merge, so commits follow each green slice on the working branch.
 >
-> **Resume note:** slice 0 DONE; slice 1 next.
+> **Resume note:** slices 0 and 1 DONE; slice 2 next.
 >
 > **Plan history:** revised after an adversarial review (2026-10-31): shims at the old app paths keep pages lazy mid-way (slices 2 to 5); moved modules' `from "miroir-react"` imports become relative, with a guard; Emotion pragma for `SequenceEditor`; corrected `check_bundle_policy.py`, `--only`, auth test and route test commands; slice 1 RED moved to `loadTimingWriter.integ`; every source-text guard named in its slice; `tsc` and lint in every move slice; `defaultReportSectionRenderers` export for the AC.
 
@@ -28,7 +28,7 @@ Out (analysis §2): the MiroirTest runtime and its displays, the d3 graph render
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
 | 0 | Characterize: sandbox build, failing guard, mocks, import surface, bundle baseline | ✅ | `build-633-sandbox`, `mcpToolRunner.253.phase0` green, `list_moved_imports.py` |
-| 1 | Tracer: client services and the load-timing sink from `miroir-react` | ⬜ | `loadTimingSink.633.phase1.unit`, `loadTimingWriter.integ`, sandbox build |
+| 1 | Tracer: client services and the load-timing sink from `miroir-react` | ✅ | `loadTimingSink.633.phase1.unit`, `loadTimingWriter.integ`, sandbox build |
 | 2 | Runners from `miroir-react`, MCP call injected, stored runner built in | ⬜ | `storedRunnerDefault.633.phase2.integ`, `ui.blockEditing` |
 | 3 | Login from `miroir-react`, Electron login injected | ⬜ | `loginTransport.633.phase3.integ`, `electronIpcProxyAuth.263.phase6` |
 | 4 | Generic pages from `miroir-react`; search opens on the current application | ⬜ | `searchPageDefault.633.phase4.integ`, `homePageLoad.unit` |
@@ -142,7 +142,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke --only build-633-sand
 
 ## Slice 1 — Tracer: client services and the load-timing sink from miroir-react
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -184,7 +184,15 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,ui,tooling
 
 ### Realization
 
-_(to fill)_
+- `services/ConfigurationService.ts` and `usePageConfiguration.ts` moved with `git mv`; `services/index.ts` deleted (the package `index.ts` exports the names). Their `from "miroir-react"` imports were rewritten by [`rewrite_self_imports.mjs`](rewrite_self_imports.mjs) (TypeScript checker, follows the re-exports of `index.ts`), which the next slices reuse.
+- `loadTimings/loadTimingMarkSink.ts` added; the app's `index.tsx` calls `setLoadTimingMarkSink(loadTimingMark)` right after its imports. **Deviation:** no `registerLoadTimingSink.ts` module: the test registers its own sink through `setLoadTimingMarkSink`, so a one-line app module would only wrap the call.
+- RED → GREEN: `loadTimingWriter.integ` failed with `setLoadTimingMarkSink is not a function`, then passed (marks contain `configurationsLoaded`); `loadTimingSink.633.phase1.unit` 3/3.
+- Importers repointed to `"miroir-react"`: 13 app modules, `DemoInitializer.tsx` (sandbox), `loadTimingWriter.integ`.
+- The 9 dead `JsonDisplayHelper` mocks removed (slice 0 measurement).
+- `scripts/tests/test_shell_package_boundaries.py::test_no_self_import` added; nonreg step `unit-633-app-shell` added.
+- Lint: the `ConfigurationService` suppression moved; `VIEW` gains `packages/miroir-react/src/services/**/*.ts`.
+- Checks: `tsc` miroir-react clean; the app and the sandbox keep the 27 MUI typing errors they have on `_integration` (counted on a stash of the branch), none in a changed line. Lint, pytest (339), sandbox build pass. Bundle guard: 0 violations, 69 eager chunks, 841,405 bytes (2 chunks fewer than the baseline).
+- Scoped nonreg (`smoke,ui,tooling`, snapshot `20261031T135730Z`): 122 pass, 2 fail on stale builds of `miroir-env` and `miroir-example-library` (dist from before #632). After rebuilding them both pass (snapshot `20261031T140526Z`).
 
 ---
 

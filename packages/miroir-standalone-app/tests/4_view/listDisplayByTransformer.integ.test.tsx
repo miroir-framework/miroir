@@ -17,14 +17,6 @@ import {
 } from "./helpers/listTransformerIntegRig.js";
 import { waitForProgressiveRendering } from "./MlElementEditorTestTools.js";
 
-vi.mock("miroir-react", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("miroir-react")>();
-  return {
-    ...actual,
-    JsonDisplayHelper: () => null,
-  };
-});
-
 const getTransformerToggle = () => screen.getByRole("button", { name: /functions/i });
 
 async function clickAgGridNextPage() {

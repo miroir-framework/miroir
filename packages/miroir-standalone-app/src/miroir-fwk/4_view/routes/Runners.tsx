@@ -10,7 +10,7 @@ import { ReportPageContextProvider } from "miroir-react";
 import { runnerConfigs, RunnerList } from '../components/Runners/RunnersList';
 import { cleanLevel } from "../constants.js";
 import { useMiroirContextService } from 'miroir-react';
-import { usePageConfiguration } from "../services/index.js";
+import { usePageConfiguration } from "miroir-react";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Runners");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);

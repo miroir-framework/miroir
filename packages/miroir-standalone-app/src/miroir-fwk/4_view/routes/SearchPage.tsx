@@ -16,7 +16,7 @@ import {
   EntityInstanceSelectorPanel,
 } from "miroir-react";
 import { cleanLevel } from "../constants";
-import { usePageConfiguration } from "../services";
+import { usePageConfiguration } from "miroir-react";
 import {
   formikPath_EntityInstanceSelectorPanel,
   useMiroirContextService,

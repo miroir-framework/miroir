@@ -100,14 +100,6 @@ vi.mock("react-router-dom", async () => {
   };
 });
 
-vi.mock("miroir-react", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("miroir-react")>();
-  return {
-    ...actual,
-    JsonDisplayHelper: () => null,
-  };
-});
-
 // Vitest/happy-dom cannot load miroir-diagram-class → svg-toolbelt (CJS `exports` in an ESM package).
 vi.mock("../../src/miroir-fwk/4_view/components/Reports/ModelDiagramReportSectionView.js", () => ({
   ModelDiagramReportSectionView: () => null,

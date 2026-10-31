@@ -7,14 +7,10 @@
  */
 
 import { LoggerInterface, MiroirConfigClient, MiroirLoggerFactory } from 'miroir-core';
-import {
-  useDomainControllerService,
-  useMiroirContextService,
-  useSnackbar,
-} from 'miroir-react';
+import { useDomainControllerService, useMiroirContextService, useSnackbar } from "../contexts/MiroirContextReactProvider.js";
 import { useCallback, useEffect, useRef } from 'react';
-import { packageName } from '../../../constants.js';
-import { cleanLevel } from '../constants.js';
+import { packageName } from "../constants.js";
+import { cleanLevel } from "../viewConstants.js";
 import { fetchMiroirAndAppConfigurations } from './ConfigurationService.js';
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "usePageConfiguration");

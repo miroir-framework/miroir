@@ -49,7 +49,7 @@ import {
   useMiroirContextService,
 } from "miroir-react";
 import { useReduxDeploymentsStateQuerySelectorForCleanedResult } from "miroir-react";
-import { usePageConfiguration } from "../services/index.js";
+import { usePageConfiguration } from "miroir-react";
 import { ReportDisplay } from "miroir-react";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "SettingsPage");

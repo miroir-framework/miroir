@@ -54,7 +54,7 @@ import { EventLogComponent, getLogLevelColor } from "miroir-react";
 import { cleanLevel } from '../constants.js';
 import { eventsUrl } from "miroir-react";
 import { useMiroirContextService, useMiroirEvents } from 'miroir-react';
-import { usePageConfiguration } from '../services';
+import { usePageConfiguration } from "miroir-react";
 
 // Set up logger
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MiroirEventsPage");

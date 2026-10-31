@@ -46,7 +46,7 @@ const TransformerBuilderPage = React.lazy(() => import("./routes/TransformerBuil
 const MiroirEventsPage     = React.lazy(() => import("./pages/MiroirEventsPage.js").then(m => ({ default: m.MiroirEventsPage })));
 const ErrorLogsPageDEFUNCT = React.lazy(() => import("./ErrorLogsPageDEFUNCT.js").then(m => ({ default: m.ErrorLogsPageDEFUNCT })));
 import { REPORT_URL_KNOWN_PARAM_KEYS, type ReportUrlParamKeys } from "miroir-react";
-import { usePageConfiguration } from "./services/index.js";
+import { usePageConfiguration } from "miroir-react";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "PageDispatcher");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);

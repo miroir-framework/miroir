@@ -25,7 +25,7 @@ import { useMiroirTheme } from "miroir-react";
 import { useMiroirContextService } from "miroir-react";
 import { useCurrentModel, useCurrentModelEnvironment } from "miroir-react";
 import { JsonDisplayHelper } from "miroir-react";
-import { usePageConfiguration } from "../services/usePageConfiguration.js";
+import { usePageConfiguration } from "miroir-react";
 import { adminSelfApplication, entityApplicationForAdmin } from "miroir-app-admin";
 import { Formik, type FormikProps } from "formik";
 import { TypedValueObjectEditor } from "miroir-react";

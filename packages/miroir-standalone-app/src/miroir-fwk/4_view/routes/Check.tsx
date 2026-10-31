@@ -9,7 +9,7 @@ import {
 import { useState } from "react";
 import { z } from "zod";
 import { PageContainer } from "miroir-react";
-import { usePageConfiguration } from "../services/index.js";
+import { usePageConfiguration } from "miroir-react";
 import { packageName } from "../../../constants.js";
 import { cleanLevel } from "../constants.js";
 

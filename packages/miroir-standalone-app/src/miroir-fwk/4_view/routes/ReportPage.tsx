@@ -17,7 +17,7 @@ import { ReportUrlParamKeys } from "miroir-react";
 import { PageContainer } from "miroir-react";
 import { ThemedBox } from "miroir-react";
 import { cleanLevel } from "../constants.js";
-import { usePageConfiguration } from "../services/index.js";
+import { usePageConfiguration } from "miroir-react";
 import { RenderInsightHeader } from "miroir-react";
 import { useRenderTracker } from "miroir-react";
 import { RenderPerformanceMetrics } from "miroir-react";

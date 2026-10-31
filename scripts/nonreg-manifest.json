@@ -2434,6 +2434,14 @@
       "argv": ["npm", "run", "build", "-w", "miroir-sandbox"]
     },
     {
+      "id": "unit-633-app-shell",
+      "scopes": ["ui"],
+      "tier": "unit",
+      "title": "#633 — app shell in miroir-react: load-timing sink, host slots, stored-runner default, exports",
+      "requires": "none",
+      "argv": ["npm", "run", "testByFile", "-w", "miroir-react", "--", "633"]
+    },
+    {
       "id": "unit-490-export-failed-test-logs",
       "scopes": ["ui"],
       "tier": "unit",

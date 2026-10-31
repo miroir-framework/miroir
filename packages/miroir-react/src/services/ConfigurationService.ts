@@ -31,10 +31,10 @@ import {
 
 import type { Deployment } from 'miroir-core';
 
-import { packageName } from '../../../constants.js';
-import { cleanLevel } from '../constants.js';
-import { logStartupError } from 'miroir-react';
-import { loadTimingMark } from '../../../loadTimings/loadTimingBrowser.js';
+import { packageName } from "../constants.js";
+import { cleanLevel } from "../viewConstants.js";
+import { logStartupError } from "../components/logs/ErrorLogService.js";
+import { loadTimingMark } from "../loadTimings/loadTimingMarkSink.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ConfigurationService");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
