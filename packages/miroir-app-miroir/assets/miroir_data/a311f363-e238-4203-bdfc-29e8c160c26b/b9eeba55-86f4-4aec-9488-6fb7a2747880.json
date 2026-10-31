@@ -91,6 +91,27 @@
           "name": "text",
           "isActive": "boolean"
         }
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "maps a bigint attribute to bigint, not double precision (#48)",
+        "functionRef": {
+          "module": "miroir-store-postgres/1_core/mlSchema",
+          "export": "getAttributeTypesFromMlSchema"
+        },
+        "arguments": [
+          {
+            "type": "object",
+            "definition": {
+              "count": {
+                "type": "bigint"
+              }
+            }
+          }
+        ],
+        "expectedValue": {
+          "count": "bigint"
+        }
       }
     ]
   }

@@ -18,6 +18,7 @@ import { DataTypes } from "sequelize";
 import {
   EntityUuidIndexedSequelizeModel,
   fromMiroirPresentModelToSequelizeEntityDefinition,
+  getBigintAttributes,
   getOptionalNonNullableAttributes,
 } from "../utils";
 
@@ -67,6 +68,12 @@ export class SqlDbStoreSection
   /** Optional non-nullable attrs for stripping SQL NULL → absent (forceNullOptionalAttributeToUndefined). */
   getOptionalNonNullableAttributesForEntity(entityUuid: string): string[] | undefined {
     return this.sqlSchemaTableAccess[entityUuid]?.optionalNonNullableAttributes;
+  }
+
+  // ##############################################################################################
+  /** Attributes of type bigint, read back as BigInt (#48). */
+  getBigintAttributesForEntity(entityUuid: string): string[] | undefined {
+    return this.sqlSchemaTableAccess[entityUuid]?.bigintAttributes;
   }
 
   // ######################################################################################
@@ -218,6 +225,7 @@ export class SqlDbStoreSection
         isExternal,
         effectiveSchema,
         optionalNonNullableAttributes,
+        bigintAttributes: getBigintAttributes(entity),
         sequelizeModel: sequelizeModel,
       },
     };

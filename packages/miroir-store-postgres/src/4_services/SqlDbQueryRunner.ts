@@ -36,7 +36,7 @@ import {
   sqlStringForQuery
 } from "../1_core/SqlGenerator";
 import { packageName } from "../constants";
-import { stripNullOptionalAttributes } from "../utils";
+import { reviveBigintAttributes, stripNullOptionalAttributes } from "../utils";
 import { cleanLevel } from "./constants";
 import { SqlDbDataStoreSection } from "./SqlDbDataStoreSection";
 import { SqlDbModelStoreSection } from "./SqlDbModelStoreSection";
@@ -263,7 +263,8 @@ export class SqlDbQueryRunner {
 
   // ################################################################################################
   /**
-   * Align runAsSql raw rows with getInstances: drop optional-non-nullable attrs that PG returns as NULL.
+   * Align runAsSql raw rows with getInstances: drop optional-non-nullable attrs that PG returns as NULL,
+   * and turn bigint attrs back into BigInt values (#48).
    */
   private stripNullOptionalAttributesOnSqlResult(
     sqlResult: any,
@@ -274,19 +275,20 @@ export class SqlDbQueryRunner {
       return sqlResult;
     }
     const optionalNonNullable =
-      this.persistenceStoreController.getOptionalNonNullableAttributesForEntity?.(parentUuid);
-    if (!optionalNonNullable || optionalNonNullable.length === 0) {
+      this.persistenceStoreController.getOptionalNonNullableAttributesForEntity?.(parentUuid) ?? [];
+    const bigintAttributes = this.persistenceStoreController.getBigintAttributesForEntity?.(parentUuid) ?? [];
+    if (optionalNonNullable.length === 0 && bigintAttributes.length === 0) {
       return sqlResult;
     }
+    const alignInstance = (instance: Record<string, any>) =>
+      reviveBigintAttributes(stripNullOptionalAttributes(instance, optionalNonNullable), bigintAttributes);
     if (Array.isArray(sqlResult)) {
       return sqlResult.map((instance) =>
-        typeof instance === "object" && instance !== null
-          ? stripNullOptionalAttributes(instance as Record<string, any>, optionalNonNullable)
-          : instance
+        typeof instance === "object" && instance !== null ? alignInstance(instance) : instance
       );
     }
     if (typeof sqlResult === "object" && sqlResult !== null) {
-      return stripNullOptionalAttributes(sqlResult as Record<string, any>, optionalNonNullable);
+      return alignInstance(sqlResult);
     }
     return sqlResult;
   }
