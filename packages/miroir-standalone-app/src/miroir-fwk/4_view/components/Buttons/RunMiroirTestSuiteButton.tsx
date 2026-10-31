@@ -240,12 +240,13 @@ export const RunMiroirTestSuiteButton: React.FC<RunMiroirTestSuiteButtonProps> =
       onTestComplete(testSuiteKey, structuredResults, result.runLogs);
     }
 
-    if (result.teardownError !== undefined) {
-      // #495: the leaves' results are shown above; the teardown's own error is named here
-      throw new Error(`${testSuiteKey}: the teardown failed: ${result.teardownError}`);
-    }
     if (!result.success) {
-      throw new Error(`${testSuiteKey} integration tests failed — see Integration Test Inspector`);
+      // #495: a failed teardown is named here, beside the leaves' results shown above
+      throw new Error(
+        result.teardownError !== undefined
+          ? `${testSuiteKey}: the teardown failed: ${result.teardownError}`
+          : `${testSuiteKey} integration tests failed — see Integration Test Inspector`,
+      );
     }
 
     return ACTION_OK;
