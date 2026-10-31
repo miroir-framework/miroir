@@ -4,7 +4,7 @@
 >
 > **Execution model:** each slice ends with its Validation commands; on success its Realization is appended and its Status flips to ✅ DONE. The user asked for the whole issue through to a PR ready to merge, so commits follow each green slice on the working branch.
 >
-> **Resume note:** slices 0 to 3 DONE; slice 4 next.
+> **Resume note:** slices 0 to 4 DONE; slice 5 next.
 >
 > **Plan history:** revised after an adversarial review (2026-10-31): shims at the old app paths keep pages lazy mid-way (slices 2 to 5); moved modules' `from "miroir-react"` imports become relative, with a guard; Emotion pragma for `SequenceEditor`; corrected `check_bundle_policy.py`, `--only`, auth test and route test commands; slice 1 RED moved to `loadTimingWriter.integ`; every source-text guard named in its slice; `tsc` and lint in every move slice; `defaultReportSectionRenderers` export for the AC.
 
@@ -31,7 +31,7 @@ Out (analysis §2): the MiroirTest runtime and its displays, the d3 graph render
 | 1 | Tracer: client services and the load-timing sink from `miroir-react` | ✅ | `loadTimingSink.633.phase1.unit`, `loadTimingWriter.integ`, sandbox build |
 | 2 | Runners from `miroir-react`, MCP call injected, stored runner built in | ✅ | `storedRunnerDefault.633.phase2.unit`, `ui.blockEditing` |
 | 3 | Login from `miroir-react`, Electron login injected | ✅ | `loginTransport.633.phase3.unit`, `electronIpcProxyAuth.263.phase6` |
-| 4 | Generic pages from `miroir-react`; search opens on the current application | ⬜ | `searchPageDefault.633.phase4.integ`, `homePageLoad.unit` |
+| 4 | Generic pages from `miroir-react`; search opens on the current application | ✅ | `toolPageDefaults.633.phase4.unit`, `homePageLoad.unit` |
 | 5 | Model diagram page through the registry; view in `miroir-diagram-class` | ⬜ | `modelDiagramPage.633.phase5.integ` |
 | 6 | Shell from `miroir-react`, assistant injected; sandbox without the alias | ⬜ | `test_shell_package_boundaries.py`, sandbox build and page smoke |
 | 7 | Lint boundary rule, nonreg, bundle guard, docs, cleanup, AC | ⬜ | lint, full `nonreg:filesystem`, bundle guards |
@@ -295,7 +295,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,ui,tooling --only uni
 
 ## Slice 4 — Generic pages from miroir-react; search opens on the current application
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -331,7 +331,13 @@ npm run nonreg:filesystem -- --runner shared
 
 ### Realization
 
-_(to fill)_
+- Moved with `git mv`, a shim left at each old path: `HomePage`, `SettingsPage`, `SearchPage`, `TransformerBuilderPage`, `Check`, `pages/MiroirEventsPage`, `ErrorLogsPageDEFUNCT`, `EventTimelineContainer`, `InstanceEditorOutline`; all exported from `index.ts`.
+- D4: `routes/applicationDefaults.ts` (`defaultToolApplication`, `defaultToolEntity`). The search page opens on its own selection, then the current application, then Miroir, with that application's deployment and its first entity by name (`Entity` for Miroir); the transformer builder opens on `TransformerDefinition` for Miroir and on the first entity by name otherwise (Library: `Author`, was `Book`). No `miroir-example-library` import is left under `miroir-react/src`.
+- **Deviation:** the RED test is a helper test, `toolPageDefaults.633.phase4.unit.test.ts` (5 cases, on the Library's real Entity assets), written with the helper: the pages only pass the helper's result to `EntityInstanceSelectorPanel`, and rendering them needs no new behaviour beyond it.
+- **Found:** `miroir-react`'s `tsc` (and its DTS build) reported the MUI 9 type errors the app already had in these files (`Grid item xs=…`, `Typography paragraph`, `ListItem button`, `TextField InputProps`, `Switch inputProps`: v5 props that MUI 9 dropped, so they had no effect at run time). Migrated to the MUI 9 API: `Grid size={{ … }}`, `sx={{ alignItems }}`, `sx={{ mb: 2 }}`, `ListItemButton`, `slotProps`. The app's `tsc` errors fall from 27 to 2 (the two CopilotKit forms, which stay).
+- Guards: `processCapabilitiesAi.273.phase5` reads the moved `SettingsPage`; `homePageLoad.unit` keeps the manifest key of the shim (`routes/HomePage.tsx`) and passes (the shim imports the page chunk statically). Suppressions of `ErrorLogsPageDEFUNCT` and `InstanceEditorOutline` moved.
+- Checks: `miroir-react` tests 16/16, `homePageLoad` 2/2, `processCapabilitiesAi.273`, `componentTestChunk.286` pass; lint, pytest 339, sandbox build; bundle guard 0 violations, 70 eager chunks, 843,243 bytes. `externalService.unit` and `ReportPage.integ` fail with and without this slice (`reportCountryList is not defined`, a "not supported yet" message): no nonreg step runs them.
+- Full nonreg (snapshot `20261031T144853Z`): 118 pass, 2 fail. `apiCallReport-281` passes on rerun (a vitest teardown error, snapshot `20261031T145750Z`). `unit-31-store-section-clear` failed on a stale `miroir-store-indexedDb` build (dist from before #31's fix); it passes after rebuilding that package.
 
 ---
 

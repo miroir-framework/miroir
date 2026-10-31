@@ -352,6 +352,14 @@
       "count": 1
     }
   },
+  "packages/miroir-react/src/ErrorLogsPageDEFUNCT.tsx": {
+    "miroir/pub-sub": {
+      "count": 1
+    },
+    "react-hooks/set-state-in-effect": {
+      "count": 1
+    }
+  },
   "packages/miroir-react/src/ReduxHooks.ts": {
     "react-hooks/rules-of-hooks": {
       "count": 1
@@ -360,6 +368,11 @@
   "packages/miroir-react/src/components/Grids/GlideDataGridComponent.tsx": {
     "react-hooks/set-state-in-effect": {
       "count": 1
+    }
+  },
+  "packages/miroir-react/src/components/InstanceEditorOutline.tsx": {
+    "react-hooks/set-state-in-effect": {
+      "count": 2
     }
   },
   "packages/miroir-react/src/components/JsonObjectEditFormDialog.tsx": {
@@ -565,14 +578,6 @@
       "count": 1
     }
   },
-  "packages/miroir-standalone-app/src/miroir-fwk/4_view/ErrorLogsPageDEFUNCT.tsx": {
-    "miroir/pub-sub": {
-      "count": 1
-    },
-    "react-hooks/set-state-in-effect": {
-      "count": 1
-    }
-  },
   "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Buttons/RunAllMiroirTestsButton.tsx": {
     "miroir/action-result": {
       "count": 1
@@ -581,11 +586,6 @@
   "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Buttons/RunMiroirTestSuiteButton.tsx": {
     "miroir/action-result": {
       "count": 4
-    }
-  },
-  "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/InstanceEditorOutline.tsx": {
-    "react-hooks/set-state-in-effect": {
-      "count": 2
     }
   },
   "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Page/RootComponent.tsx": {
