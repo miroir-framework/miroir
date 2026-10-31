@@ -114,6 +114,7 @@ export type {
 } from "./contexts/MiroirThemeContext.js";
 
 export {
+  defaultReportSectionRenderers,
   ReportSectionRenderersProvider,
   UnsupportedReportSection,
   useReportSectionRenderers,
@@ -386,3 +387,18 @@ export {
   setLoadTimingMarkSink,
   type LoadTimingMarkSink,
 } from "./loadTimings/loadTimingMarkSink.js";
+
+// App shell host slots and runners (#633)
+export {
+  mcpToolUnavailable,
+  MiroirShellHostProvider,
+  useMiroirShellHost,
+  type McpToolRunnerEnvelope,
+  type MiroirShellHost,
+  type RunMcpTool,
+} from "./contexts/MiroirShellHostContext.js";
+export { RunnerView, StoredRunnerView } from "./components/Runners/RunnerView.js";
+export { RunnerList, runnerConfigs, type RunnerConfig } from "./components/Runners/RunnersList.js";
+export { applicationNameForMcpRunner, resolveMcpToolAction } from "./components/Runners/resolveMcpToolAction.js";
+export { SequenceEditor, type SequenceEditorProps } from "./components/SequenceEditor/SequenceEditor.js";
+export { RunnersPage } from "./routes/Runners.js";

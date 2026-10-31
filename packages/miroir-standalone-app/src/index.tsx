@@ -54,6 +54,7 @@ import {
 import {
   LocalCacheProvider,
   MiroirContextReactProvider,
+  MiroirShellHostProvider,
   ReportSectionRenderersProvider,
   RestPersistenceClientAndRestClient,
   setupMiroirDomainController,
@@ -69,7 +70,7 @@ import { ErrorPage, setLoadTimingMarkSink } from "miroir-react";
 // #633 D6: marks from miroir-react code (configurationsLoaded) reach the browser recorder.
 setLoadTimingMarkSink(loadTimingMark);
 import { PageDispatcher } from "./miroir-fwk/4_view/PageDispatcher.js";
-import { appReportSectionRenderers } from "./miroir-fwk/4_view/reportSectionRenderers.js";
+import { appReportSectionRenderers, appShellHost } from "./miroir-fwk/4_view/reportSectionRenderers.js";
 import {
   ElectronRestClient,
   ElectronServerDomainControllerProxy,
@@ -461,9 +462,11 @@ async function startWebApp(root: Root) {
               domainController={domainControllerForClient}
               processCapabilities={processCapabilities}
             >
-              <ReportSectionRenderersProvider renderers={appReportSectionRenderers}>
-                {page}
-              </ReportSectionRenderersProvider>
+              <MiroirShellHostProvider host={appShellHost}>
+                <ReportSectionRenderersProvider renderers={appReportSectionRenderers}>
+                  {page}
+                </ReportSectionRenderersProvider>
+              </MiroirShellHostProvider>
             </MiroirContextReactProvider>
           </LocalCacheProvider>
         </StyledEngineProvider>

@@ -6,8 +6,8 @@ import type {
 } from "miroir-core";
 import { defaultSelfApplicationDeploymentMap, MiroirLoggerFactory } from "miroir-core";
 import { runnerDeployApplication, selfApplicationMiroir } from "miroir-app-miroir";
-import { packageName } from "../../../../constants.js";
-import { cleanLevel } from "../../constants.js";
+import { packageName } from "../../constants.js";
+import { cleanLevel } from "../../viewConstants.js";
 import { StoredRunnerView } from "./RunnerView.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Runner_InstallApplication");

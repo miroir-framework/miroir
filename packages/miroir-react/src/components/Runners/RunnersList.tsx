@@ -1,4 +1,4 @@
-import { ExpandMoreIcon } from "miroir-react";
+import { ExpandMoreIcon } from "../Themes/MaterialSymbolWrappers.js";
 // import { z } from "zod";
 
 import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material';
@@ -12,8 +12,8 @@ import { Runner_CreateEntity } from './Runner_CreateEntity';
 import { Runner_DropEntity } from './Runner_DropEntity';
 import { Runner_DropApplication } from './Runner_DropApplication';
 import { Runner_InstallApplication } from './Runner_InstallApplication';
-import { packageName } from '../../../../constants';
-import { cleanLevel } from '../../constants';
+import { packageName } from "../../constants.js";
+import { cleanLevel } from "../../viewConstants.js";
 import { Runner_CreateApplication } from './Runner_CreateApplication';
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "RunnersList");

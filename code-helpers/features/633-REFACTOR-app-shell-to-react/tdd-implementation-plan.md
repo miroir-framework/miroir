@@ -4,7 +4,7 @@
 >
 > **Execution model:** each slice ends with its Validation commands; on success its Realization is appended and its Status flips to ✅ DONE. The user asked for the whole issue through to a PR ready to merge, so commits follow each green slice on the working branch.
 >
-> **Resume note:** slices 0 and 1 DONE; slice 2 next.
+> **Resume note:** slices 0 to 2 DONE; slice 3 next.
 >
 > **Plan history:** revised after an adversarial review (2026-10-31): shims at the old app paths keep pages lazy mid-way (slices 2 to 5); moved modules' `from "miroir-react"` imports become relative, with a guard; Emotion pragma for `SequenceEditor`; corrected `check_bundle_policy.py`, `--only`, auth test and route test commands; slice 1 RED moved to `loadTimingWriter.integ`; every source-text guard named in its slice; `tsc` and lint in every move slice; `defaultReportSectionRenderers` export for the AC.
 
@@ -29,7 +29,7 @@ Out (analysis §2): the MiroirTest runtime and its displays, the d3 graph render
 |---|---|---|---|
 | 0 | Characterize: sandbox build, failing guard, mocks, import surface, bundle baseline | ✅ | `build-633-sandbox`, `mcpToolRunner.253.phase0` green, `list_moved_imports.py` |
 | 1 | Tracer: client services and the load-timing sink from `miroir-react` | ✅ | `loadTimingSink.633.phase1.unit`, `loadTimingWriter.integ`, sandbox build |
-| 2 | Runners from `miroir-react`, MCP call injected, stored runner built in | ⬜ | `storedRunnerDefault.633.phase2.integ`, `ui.blockEditing` |
+| 2 | Runners from `miroir-react`, MCP call injected, stored runner built in | ✅ | `storedRunnerDefault.633.phase2.unit`, `ui.blockEditing` |
 | 3 | Login from `miroir-react`, Electron login injected | ⬜ | `loginTransport.633.phase3.integ`, `electronIpcProxyAuth.263.phase6` |
 | 4 | Generic pages from `miroir-react`; search opens on the current application | ⬜ | `searchPageDefault.633.phase4.integ`, `homePageLoad.unit` |
 | 5 | Model diagram page through the registry; view in `miroir-diagram-class` | ⬜ | `modelDiagramPage.633.phase5.integ` |
@@ -198,7 +198,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,ui,tooling
 
 ## Slice 2 — Runners from miroir-react, MCP call injected, stored runner built in
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -238,7 +238,13 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,ui,runners --only uni
 
 ### Realization
 
-_(to fill)_
+- Moved with `git mv`: `RunnerView`, `RunnersList`, the five `Runner_*`, `resolveMcpToolAction`, `SequenceEditor` (already carried the Emotion pragma), `routes/Runners` (shim left in the app). Logger constants rewritten by [`fix_moved_constants.py`](fix_moved_constants.py), self-imports by `rewrite_self_imports.mjs` (now follows re-exports of dependency symbols to the package module that re-exports them, and writes nothing when a name does not resolve).
+- `contexts/MiroirShellHostContext.tsx`: `MiroirShellHostProvider`, `useMiroirShellHost`, `mcpToolUnavailable`, `McpToolRunnerEnvelope`, `RunMcpTool`. `RunnerView` submits through `useMiroirShellHost().runMcpTool`; `browserMcpServerUrl` comes from `miroir-core`.
+- `defaultReportSectionRenderers` (stored runner) is the context default and the base the provider merges the application's renderers over. The app's `appReportSectionRenderers` drops `storedRunner`; the app's `appShellHost` (in `reportSectionRenderers.tsx`) fills `runMcpTool` with an `import()` of `runMcpToolRunner`, provided in `index.tsx` and `componentTestTools.tsx`.
+- **Deviation:** the RED test is a `miroir-react` unit test, `storedRunnerDefault.633.phase2.unit.test.tsx` (3 of 5 cases failed before the change, 5/5 after): the context wiring is the new behaviour, and a stored runner inside a Report is already rendered by `multistepProcess.274.integ` and the `ui.blockEditing` suite, which now go through the default.
+- Repointed: `TransformerBuilderPage`, `sequenceEditorForTest`, `processCapabilitiesPicker.273.phase4`, `mcpToolRunner.253.phase0` (import and source path), `processCapabilitiesMcp.273.phase6` (source path). `RunnerTestSession` keeps calling the app's `runMcpToolRunner`.
+- Checks: app runner tests 42/42 (`mcpToolRunner.253`, `processCapabilities*.273`, `multistep*.274`), `ui.blockEditing` 56/56, `tsc` (miroir-react clean, app unchanged at 27), lint, pytest 339, sandbox build. Bundle guard 0 violations, 70 eager chunks, 842,765 bytes (+1.4 kB, the host context and the registry default); `miroir-mcp/client` stays in the lazy `runMcpToolRunner` chunk and `RunnerView` in a lazy chunk.
+- Scoped nonreg (`smoke,ui,runners` + `unit-610`, `unit-633`): 53/53 pass (snapshot `20261031T142215Z`).
 
 ---
 

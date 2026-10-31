@@ -1,4 +1,4 @@
-import { createContext, useContext, type ComponentType, type ReactNode } from "react";
+import { createContext, lazy, useContext, useMemo, type ComponentType, type ReactNode } from "react";
 
 import type {
   ApplicationDeploymentMap,
@@ -10,10 +10,11 @@ import type {
 } from "miroir-core";
 
 // ################################################################################################
-// Report section kinds whose renderer the application provides (#13 Q3-a).
-// miroir-react renders every other section kind itself. These four need code that miroir-react
-// does not depend on: d3 (graph), miroir-diagram-class (model diagram, which depends on
-// miroir-react), miroir-mcp (runners) and the MiroirTest runtime of the application.
+// Report section kinds rendered through a registry (#13 Q3-a). miroir-react renders every other
+// section kind itself. The application provides three of them, which need code miroir-react does
+// not depend on: d3 (graph), miroir-diagram-class (model diagram, which depends on miroir-react)
+// and the MiroirTest runtime of the application. The stored runner is a built-in default (#633
+// D8): its MCP call comes from the shell host (MiroirShellHostContext).
 // ################################################################################################
 
 export interface GraphReportSectionRendererProps {
@@ -56,14 +57,22 @@ export interface ReportSectionRenderers {
   miroirTestReportSection?: ComponentType<MiroirTestReportSectionRendererProps>;
 }
 
-const ReportSectionRenderersContext = createContext<ReportSectionRenderers>({});
+/** The renderers every client gets; an application's renderers are merged over them. */
+export const defaultReportSectionRenderers: ReportSectionRenderers = {
+  storedRunner: lazy(async () => ({
+    default: (await import("../components/Runners/RunnerView.js")).StoredRunnerView,
+  })),
+};
+
+const ReportSectionRenderersContext = createContext<ReportSectionRenderers>(defaultReportSectionRenderers);
 
 export function ReportSectionRenderersProvider(props: {
   renderers: ReportSectionRenderers;
   children?: ReactNode;
 }) {
+  const renderers = useMemo(() => ({ ...defaultReportSectionRenderers, ...props.renderers }), [props.renderers]);
   return (
-    <ReportSectionRenderersContext.Provider value={props.renderers}>
+    <ReportSectionRenderersContext.Provider value={renderers}>
       {props.children}
     </ReportSectionRenderersContext.Provider>
   );

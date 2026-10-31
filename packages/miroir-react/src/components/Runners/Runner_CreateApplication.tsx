@@ -36,23 +36,20 @@ import {
 import {
   type AdminApplication
 } from "miroir-core";
-import { getMemoizedReduxDeploymentsStateSelectorMap, useMiroirContextService, useSelector } from "miroir-react";
+import { getMemoizedReduxDeploymentsStateSelectorMap, useSelector } from "../../miroir-localcache-imports.js";
+import { useMiroirContextService } from "../../contexts/MiroirContextReactProvider.js";
 import {
   entityDeployment
 } from "miroir-app-admin";
 import { selfApplicationMiroir } from "miroir-app-miroir";
-import { packageName } from "../../../../constants.js";
-import { cleanLevel } from "../../constants.js";
-import { useCurrentModelEnvironment, useReduxDeploymentsStateQuerySelectorForCleanedResult } from "miroir-react";
-import {
-  ALL_NON_BUNDLED_CREATABLE_STORE_TYPES,
-  getRunner_CreateApplication_formMLSchema,
-  type CreateApplicationStoreType,
-} from "miroir-react";
-import type { FormMLSchema } from "miroir-react";
+import { packageName } from "../../constants.js";
+import { cleanLevel } from "../../viewConstants.js";
+import { useCurrentModelEnvironment, useReduxDeploymentsStateQuerySelectorForCleanedResult } from "../../ReduxHooks.js";
+import { ALL_NON_BUNDLED_CREATABLE_STORE_TYPES, getRunner_CreateApplication_formMLSchema, type CreateApplicationStoreType } from "./buildCreateApplicationStorageSchema.js";
+import type { FormMLSchema } from "./RunnerInterface.js";
 import { RunnerView } from "./RunnerView.js";
 
-export { buildCreateApplicationStorageSchema } from "miroir-react";
+export { buildCreateApplicationStorageSchema } from "./buildCreateApplicationStorageSchema.js";
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Runner_CreateApplication");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",

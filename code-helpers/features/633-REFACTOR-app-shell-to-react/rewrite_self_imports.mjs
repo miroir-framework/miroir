@@ -36,11 +36,20 @@ const options = {
 const program = ts.createProgram([indexFile, ...files], options);
 const checker = program.getTypeChecker();
 
+// The module inside the package that declares the symbol, or, for a symbol the package re-exports from a
+// dependency (useSelector, Redux selectors), the package module that re-exports it.
 function declaringFile(symbol) {
   let target = symbol;
-  while (target.flags & ts.SymbolFlags.Alias) target = checker.getAliasedSymbol(target);
-  const decl = target.declarations?.[0];
-  return decl?.getSourceFile().fileName;
+  let lastInPackage;
+  for (;;) {
+    const file = target.declarations?.[0]?.getSourceFile().fileName;
+    if (file && file.startsWith(pkgSrc) && file !== indexFile) lastInPackage = file;
+    if (!(target.flags & ts.SymbolFlags.Alias)) break;
+    const next = checker.getImmediateAliasedSymbol(target);
+    if (!next || next === target) break;
+    target = next;
+  }
+  return lastInPackage;
 }
 
 function specifierFor(fromFile, toFile) {
@@ -89,7 +98,7 @@ for (const file of files) {
     });
     edits.push({ start: stmt.getStart(source), end: stmt.getEnd(), text: lines.join("\n") });
   }
-  if (edits.length === 0) continue;
+  if (edits.length === 0 || failures) continue;
   let text = source.getFullText();
   for (const edit of edits.sort((a, b) => b.start - a.start)) {
     text = text.slice(0, edit.start) + edit.text + text.slice(edit.end);

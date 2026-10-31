@@ -23,7 +23,7 @@ import {
   selfApplicationLibrary,
 } from "miroir-example-library";
 
-import { resolveMcpToolAction } from "../../../../src/miroir-fwk/4_view/components/Runners/resolveMcpToolAction.js";
+import { resolveMcpToolAction } from "miroir-react";
 import { resolveRunnerDefinitionApplication } from "miroir-react";
 import { resolveRepoRoot } from "../../../helpers/integrationTestProfiles.js";
 
@@ -296,7 +296,10 @@ describe.skipIf(!shouldRun)("mcpToolRunner #253 phase0 — current contracts", (
       "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Runners",
     );
     const runMcp = readFileSync(join(viewRoot, "runMcpToolRunner.ts"), "utf8");
-    const resolveMcp = readFileSync(join(viewRoot, "resolveMcpToolAction.ts"), "utf8");
+    const resolveMcp = readFileSync(
+      join(REPO_ROOT, "packages/miroir-react/src/components/Runners/resolveMcpToolAction.ts"),
+      "utf8",
+    );
     expect(runMcp).toMatch(/from ["']miroir-mcp\/client["']/);
     expect(runMcp).not.toMatch(/from ["']miroir-mcp["']/);
     expect(resolveMcp).not.toMatch(/from ["']miroir-mcp(\/[^"']*)?["']/);

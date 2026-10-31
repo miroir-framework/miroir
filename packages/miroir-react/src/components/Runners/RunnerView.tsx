@@ -34,27 +34,23 @@ import {
   templateEvaluationParams,
   transformer_extended_apply_wrapper,
 } from "miroir-core";
-import {
-  JsonDisplayHelper,
-  getMemoizedReduxDeploymentsStateSelectorMap,
-  type ReduxStateWithUndoRedo,
-  useDomainControllerService, useMiroirContextService,
-  useSelector,
-  useSnackbar,
-} from "miroir-react";
+import { JsonDisplayHelper } from "../helpers/DebugHelper.js";
+import { getMemoizedReduxDeploymentsStateSelectorMap, type ReduxStateWithUndoRedo, useSelector } from "../../miroir-localcache-imports.js";
+import { useDomainControllerService, useMiroirContextService, useSnackbar } from "../../contexts/MiroirContextReactProvider.js";
 import { useMemo, useState } from "react";
-import { packageName } from "../../../../constants.js";
-import { cleanLevel } from "../../constants.js";
-import { useCurrentModelEnvironment, useReduxDeploymentsStateQuerySelectorForCleanedResult } from "miroir-react";
-import { useRunner } from "miroir-react";
-import { InnerRunnerView } from "miroir-react";
-import type { FormMLSchema, RunnerAction, RunnerProps } from "miroir-react";
-import { resolveRunnerDefinitionApplication } from "miroir-react";
+import { packageName } from "../../constants.js";
+import { cleanLevel } from "../../viewConstants.js";
+import { useCurrentModelEnvironment, useReduxDeploymentsStateQuerySelectorForCleanedResult } from "../../ReduxHooks.js";
+import { useRunner } from "../Reports/ReportHooks.js";
+import { InnerRunnerView } from "./InnerRunnerView.js";
+import type { FormMLSchema, RunnerAction, RunnerProps } from "./RunnerInterface.js";
+import { resolveRunnerDefinitionApplication } from "./runnerDefinitionApplication.js";
 import {
   applicationNameForMcpRunner,
   resolveMcpToolAction,
 } from "./resolveMcpToolAction.js";
-import { browserMcpServerUrl, runMcpToolRunner } from "./runMcpToolRunner.js";
+import { browserMcpServerUrl } from "miroir-core";
+import { useMiroirShellHost } from "../../contexts/MiroirShellHostContext.js";
 
 import { selfApplicationMiroir } from "miroir-app-miroir";
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "RunnerView");
@@ -82,6 +78,7 @@ export function StoredRunnerView(props: {
   );
   const runnerDeploymentUuid: Uuid = applicationDeploymentMap[runnerDefinitionApplicationUuid];
   const context = useMiroirContextService();
+  const { runMcpTool } = useMiroirShellHost();
   const { handleAsyncAction } = useSnackbar();
   const [mcpPayloadResult, setMcpPayloadResult] = useState<unknown>(undefined);
   const currentModelEnvironment: MiroirModelEnvironment =
@@ -472,7 +469,7 @@ export function StoredRunnerView(props: {
                               values && typeof values === "object" && runnerName in values
                                 ? (values[runnerName] as Record<string, unknown>)
                                 : (values as Record<string, unknown>);
-                            const envelope = await runMcpToolRunner(
+                            const envelope = await runMcpTool(
                               runnerDefinitionFromLocalCache,
                               args,
                               browserMcpServerUrl(

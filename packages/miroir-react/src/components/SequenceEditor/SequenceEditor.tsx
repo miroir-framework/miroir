@@ -16,28 +16,21 @@ import {
   type MlElement,
   type Uuid,
 } from "miroir-core";
-import { useDomainControllerService } from "miroir-react";
+import { useDomainControllerService } from "../../contexts/MiroirContextReactProvider.js";
 import React, { useCallback, useMemo, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 
-import { useMiroirTheme } from "miroir-react";
-import { useCurrentModelEnvironment, useEntityInstanceUuidIndexFromLocalCache } from "miroir-react";
-import { useBlockRunnerOf } from "miroir-react";
-import { BlockActionDefaultsContext, BlockRunnerContext } from "miroir-react";
-import { TypedValueObjectEditor } from "miroir-react";
+import { useMiroirTheme } from "../../contexts/MiroirThemeContext.js";
+import { useCurrentModelEnvironment, useEntityInstanceUuidIndexFromLocalCache } from "../../ReduxHooks.js";
+import { useBlockRunnerOf } from "../BlockEditor/BlockRunnerHat.js";
+import { BlockActionDefaultsContext, BlockRunnerContext } from "../BlockEditor/BlockViewMode.js";
+import { TypedValueObjectEditor } from "../Reports/TypedValueObjectEditor.js";
 import { StoredRunnerView } from "../Runners/RunnerView.js";
-import { saveInstanceFromUI } from "miroir-react";
-import {
-  ThemedButton,
-  ThemedDialog,
-  ThemedDialogActions,
-  ThemedDialogContent,
-  ThemedDialogTitle,
-  ThemedLabel,
-  ThemedLabeledEditor,
-  ThemedStyledButton,
-  ThemedSwitch,
-} from "miroir-react";
+import { saveInstanceFromUI } from "../saveInstanceFromUI.js";
+import { ThemedButton, ThemedLabel } from "../Themes/BasicComponents.js";
+import { ThemedDialog, ThemedDialogActions, ThemedDialogContent, ThemedDialogTitle } from "../Themes/MUIComponents.js";
+import { ThemedLabeledEditor } from "../Themes/FormComponents.js";
+import { ThemedStyledButton, ThemedSwitch } from "../Themes/UIComponents.js";
 
 // ################################################################################################
 // #505 (analysis #497, G8): the sequence editor of the Tools page. It edits the composite action

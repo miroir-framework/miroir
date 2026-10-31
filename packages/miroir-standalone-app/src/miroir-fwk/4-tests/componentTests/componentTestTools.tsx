@@ -36,10 +36,11 @@ import {
   LocalCacheProvider,
   MiroirContextReactProvider,
   PersistenceReduxSaga,
+  MiroirShellHostProvider,
   ReportSectionRenderersProvider,
   useMiroirContextService,
 } from "miroir-react";
-import { appReportSectionRenderers } from "../../4_view/reportSectionRenderers.js";
+import { appReportSectionRenderers, appShellHost } from "../../4_view/reportSectionRenderers.js";
 import {
   deployment_Library_DO_NO_USE,
   entityAuthor,
@@ -584,9 +585,11 @@ function MiroirTestContext(
         onNavigateToPath={noOutlineAction}
       >
         <ReportPageContextProvider>
-          <ReportSectionRenderersProvider renderers={appReportSectionRenderers}>
-            {props.children}
-          </ReportSectionRenderersProvider>
+          <MiroirShellHostProvider host={appShellHost}>
+            <ReportSectionRenderersProvider renderers={appReportSectionRenderers}>
+              {props.children}
+            </ReportSectionRenderersProvider>
+          </MiroirShellHostProvider>
         </ReportPageContextProvider>
       </DocumentOutlineContextProvider>
     </MiroirContextReactProvider>

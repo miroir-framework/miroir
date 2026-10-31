@@ -1,14 +1,9 @@
 import { browserMcpServerUrl, type ProcessCapabilities, type Runner } from "miroir-core";
 import { callMcpToolViaHttp, type McpHttpFetch } from "miroir-mcp/client";
+import type { McpToolRunnerEnvelope } from "miroir-react";
 
 export { browserMcpServerUrl };
-
-export type McpToolRunnerEnvelope = {
-  status?: string;
-  action?: string;
-  result?: unknown;
-  error?: { message?: string; type?: string; capability?: string };
-};
+export type { McpToolRunnerEnvelope };
 
 export async function runMcpToolRunner(
   runner: Runner,

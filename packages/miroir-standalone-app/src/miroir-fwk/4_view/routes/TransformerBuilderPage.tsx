@@ -34,7 +34,7 @@ import {
   selfApplicationLibrary,
 } from "miroir-example-library";
 import { ReportPageContextProvider } from "miroir-react";
-import { SequenceEditor } from "../components/SequenceEditor/SequenceEditor";
+import { SequenceEditor } from "miroir-react";
 import { TransformerEditor } from "miroir-react";
 
 import {

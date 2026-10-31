@@ -3,7 +3,7 @@
  */
 import { describe, expect, it } from "vitest";
 
-import { buildCreateApplicationStorageSchema } from "../../../../src/miroir-fwk/4_view/components/Runners/Runner_CreateApplication.js";
+import { buildCreateApplicationStorageSchema } from "miroir-react";
 
 const RUN_TEST = process.env.RUN_TEST;
 const runThis =
