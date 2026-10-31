@@ -198,7 +198,13 @@ function actionPositions(action: ActionRecord & { actionType: string }, path: Pa
     valuePositions(payload, payloadPath, walk);
     const runPayload = isPlainRecord(payload) ? payload.payload : undefined;
     const query = isPlainRecord(runPayload) ? runPayload.query : undefined;
-    if (isPlainRecord(query) && !isTransformerNode(query)) {
+    // no new entry in a `runtimeTransformers` computed by a transformer: it would become an attribute of it
+    if (
+      isPlainRecord(query) &&
+      !isTransformerNode(query) &&
+      (query.runtimeTransformers === undefined ||
+        (isPlainRecord(query.runtimeTransformers) && !isTransformerNode(query.runtimeTransformers)))
+    ) {
       const container = [...payloadPath, "payload", "query", "runtimeTransformers"];
       addPosition(walk, {
         path: [...container, freeKey(query.runtimeTransformers, RUNTIME_TRANSFORMER_KEY)],

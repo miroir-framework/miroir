@@ -569,13 +569,18 @@ function queryBlock(payload: unknown, payloadPath: BlockPath, context: BuildCont
   const sectionNames = Object.keys(query).filter(
     (name) =>
       isPlainRecord(query[name]) &&
+      // a section computed by a transformer is a row, not entries
+      !isTransformerNode(query[name]) &&
       (name in EXTRACTOR_SECTIONS || QUERY_PARAMETER_SECTIONS.has(name) || name === RUNTIME_TRANSFORMERS),
   );
   const parameters: TransformerBlockParameter[] = [];
+  const runPayloadParameters: TransformerBlockParameter[] = [];
   const rows = [
     ...attributeRows(payload, payloadPath, undefined, RUN_QUERY_HIDDEN_ATTRIBUTES, context, parameters),
-    ...attributeRows(runPayload, runPayloadPath, undefined, new Set(["query"]), context, parameters),
+    ...attributeRows(runPayload, runPayloadPath, undefined, new Set(["query"]), context, runPayloadParameters),
   ];
+  // the parameters of the run payload are one level below the block's path: each says where it is
+  parameters.push(...runPayloadParameters.map((parameter) => ({ ...parameter, path: [...runPayloadPath, parameter.name] })));
   const queryParameters: TransformerBlockParameter[] = [];
   const queryRows = attributeRows(query, queryPath, undefined, new Set(["queryType", ...sectionNames]), queryContext, queryParameters);
   const sections: QuerySection[] = sectionNames.map((name) => {

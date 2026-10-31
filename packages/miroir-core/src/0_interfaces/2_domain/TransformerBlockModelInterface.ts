@@ -10,6 +10,8 @@ export type BlockPath = (string | number)[];
 export interface TransformerBlockParameter {
   name: string;
   value: unknown;
+  /** #536: where the parameter is, when it is not `[...block.path, name]` */
+  path?: BlockPath;
 }
 
 /**

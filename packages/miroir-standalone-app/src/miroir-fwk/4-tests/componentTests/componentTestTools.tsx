@@ -870,6 +870,13 @@ export function buildComponentTestWrapper(
           );
           (realDc as any).callUtil.callPersistenceAction = async (callContext: any) =>
             callContext ?? {};
+          // #536: there is no persistence store here. A query with the client's default strategy
+          // (localCacheOrFail) runs on the local cache, which holds the Library, as on the client
+          const originalHandleBoxedQuery = realDc.handleBoxedExtractorOrQueryAction.bind(realDc);
+          realDc.handleBoxedExtractorOrQueryAction = ((action: any, map: ApplicationDeploymentMap, ...rest: any[]) =>
+            (action?.payload?.queryExecutionStrategy ?? "localCacheOrFail") === "localCacheOrFail"
+              ? persistenceSaga.handlePersistenceActionForLocalCache(action, map)
+              : originalHandleBoxedQuery(action, map, ...rest)) as typeof realDc.handleBoxedExtractorOrQueryAction;
           const originalHandleAction = realDc.handleAction.bind(realDc);
           realDc.handleAction = (async (
             domainAction: any,

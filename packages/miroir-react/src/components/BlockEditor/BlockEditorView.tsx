@@ -173,7 +173,9 @@ function hiddenSummary(node: BlockNode, count: number): string {
         ? ["item", "items"]
         : node.kind === "sequence" || node.kind === "query"
           ? ["part", "parts"]
-          : ["slot", "slots"];
+          : node.kind === "extractor"
+            ? ["attribute", "attributes"]
+            : ["slot", "slots"];
   return `${count} ${count === 1 ? one : many} hidden`;
 }
 
@@ -463,22 +465,20 @@ function HeaderParameters(props: {
   const { node, settings } = props;
   return (
     <>
-      {node.parameters.map((parameter) => (
-        <span
-          key={parameter.name}
-          data-testid={`block-parameter:${blockId(settings.rootLessListKey, [...node.path, parameter.name])}`}
-          data-value={JSON.stringify(parameter.value)}
-          css={css({ display: "inline-flex", gap: "4px", alignItems: "center" })}
-        >
-          <span css={css({ opacity: 0.85, fontSize: "12px" })}>{parameter.name}</span>
-          <BlockField
-            value={parameter.value}
-            path={[...node.path, parameter.name]}
-            id={blockId(settings.rootLessListKey, [...node.path, parameter.name])}
-            colors={settings}
-          />
-        </span>
-      ))}
+      {node.parameters.map((parameter) => {
+        const path = parameter.path ?? [...node.path, parameter.name];
+        return (
+          <span
+            key={path.join(".")}
+            data-testid={`block-parameter:${blockId(settings.rootLessListKey, path)}`}
+            data-value={JSON.stringify(parameter.value)}
+            css={css({ display: "inline-flex", gap: "4px", alignItems: "center" })}
+          >
+            <span css={css({ opacity: 0.85, fontSize: "12px" })}>{parameter.name}</span>
+            <BlockField value={parameter.value} path={path} id={blockId(settings.rootLessListKey, path)} colors={settings} />
+          </span>
+        );
+      })}
     </>
   );
 }
@@ -720,7 +720,14 @@ const QuerySectionsBlockView = React.memo(function QuerySectionsBlockView(props:
                 <span css={css({ fontSize: "12px", color: settings.textSecondary })}>{section.name}</span>
                 {section.entries.map((entry) => (
                   <div key={entry.key} css={css({ display: "flex", gap: "8px", alignItems: "flex-start", marginLeft: "8px" })}>
-                    <BlockKeyField entryKey={entry.key} path={entry.path} id={idOf(entry.path)} color={settings.textSecondary} />
+                    {/* the keys are read-only: extractors, combiners, runtime transformers and the step
+                        after the query read them by name, and a rename does not rewrite those reads */}
+                    <span
+                      data-testid={`block-query-key:${idOf(entry.path)}`}
+                      css={css({ fontSize: "12px", color: settings.textSecondary, paddingTop: "3px" })}
+                    >
+                      {entry.key}
+                    </span>
                     <BlockNodeView node={entry.node} settings={settings} />
                   </div>
                 ))}

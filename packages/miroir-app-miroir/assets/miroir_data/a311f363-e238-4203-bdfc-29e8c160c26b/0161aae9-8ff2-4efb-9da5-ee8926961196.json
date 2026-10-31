@@ -1720,6 +1720,93 @@
           },
           {
             "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "#536: positions of a query step are those of its run query action, then a new runtime transformer of its query",
+            "functionRef": {
+              "module": "miroir-core/2_domain/ActionSequenceEdit",
+              "export": "blockInsertPositions"
+            },
+            "arguments": [
+              {
+                "actionType": "compositeRunBoxedQueryAction",
+                "actionLabel": "getBooks",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "nameGivenToResult": "books",
+                "payload": {
+                  "actionType": "runBoxedQueryAction",
+                  "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  "payload": {
+                    "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "query": {
+                      "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "extractors": {
+                        "books": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+                        }
+                      },
+                      "runtimeTransformers": {
+                        "title": {
+                          "transformerType": "returnValue",
+                          "interpolation": "runtime",
+                          "value": "Books"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "expectedValue": [
+              {
+                "path": [
+                  "payload",
+                  "payload",
+                  "applicationSection"
+                ],
+                "container": [
+                  "payload",
+                  "payload",
+                  "applicationSection"
+                ],
+                "kind": "slot",
+                "holds": "transformer"
+              },
+              {
+                "path": [
+                  "payload",
+                  "payload",
+                  "queryExecutionStrategy"
+                ],
+                "container": [
+                  "payload",
+                  "payload",
+                  "queryExecutionStrategy"
+                ],
+                "kind": "slot",
+                "holds": "transformer"
+              },
+              {
+                "path": [
+                  "payload",
+                  "payload",
+                  "query",
+                  "runtimeTransformers",
+                  "transformer"
+                ],
+                "container": [
+                  "payload",
+                  "payload",
+                  "query",
+                  "runtimeTransformers"
+                ],
+                "kind": "recordEntry",
+                "holds": "transformer"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
             "miroirTestLabel": "positions of a transformer are those of #500, holding transformers",
             "functionRef": {
               "module": "miroir-core/2_domain/ActionSequenceEdit",
@@ -2398,7 +2485,7 @@
           },
           {
             "miroirTestType": "functionCallTest",
-            "miroirTestLabel": "the inside of a query step's payload is no value position",
+            "miroirTestLabel": "#536: the inside of a query step's payload is a value position",
             "functionRef": {
               "module": "miroir-core/2_domain/ActionSequenceEdit",
               "export": "isValuePosition"
@@ -2423,7 +2510,7 @@
                 "application"
               ]
             ],
-            "expectedValue": false
+            "expectedValue": true
           },
           {
             "miroirTestType": "functionCallTest",

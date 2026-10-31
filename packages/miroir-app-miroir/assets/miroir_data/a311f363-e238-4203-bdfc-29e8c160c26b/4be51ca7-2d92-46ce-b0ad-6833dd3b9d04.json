@@ -6107,6 +6107,38 @@
                 "value": "returnValue"
               },
               {
+                "step": "waitForAttribute",
+                "label": "applicationSection of the run payload is a header parameter at its own path",
+                "target": {
+                  "byTestId": "block-parameter:definition.compositeActionSequence.payload.actionSequence.0.payload.payload.applicationSection"
+                },
+                "attribute": "data-value",
+                "value": "\"data\""
+              },
+              {
+                "step": "expectElement",
+                "label": "not at the path of the run action",
+                "target": {
+                  "byTestId": "block-parameter:definition.compositeActionSequence.payload.actionSequence.0.payload.applicationSection"
+                },
+                "present": false
+              },
+              {
+                "step": "expectElement",
+                "label": "the key of a runtime transformer is shown",
+                "target": {
+                  "byTestId": "block-query-key:definition.compositeActionSequence.payload.actionSequence.0.payload.payload.query.runtimeTransformers.publisherName"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "it cannot be renamed: the next step reads it by name",
+                "target": {
+                  "byTestId": "block-key:definition.compositeActionSequence.payload.actionSequence.0.payload.payload.query.runtimeTransformers.publisherName"
+                },
+                "present": false
+              },
+              {
                 "step": "click",
                 "label": "arm the query parameter newName, offered as a variable",
                 "target": {
