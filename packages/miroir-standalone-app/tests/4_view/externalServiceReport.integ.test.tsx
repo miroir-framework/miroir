@@ -77,7 +77,7 @@ import { ReportPageContextProvider } from "miroir-react";
 import { ReportViewWithEditor } from "miroir-react";
 import { DocumentOutlineContextProvider } from "miroir-react";
 import { MiroirThemeProvider } from "miroir-react";
-import { reportPageParamsFromSearchParams } from "../../src/miroir-fwk/4_view/PageDispatcher.js";
+import { reportPageParamsFromSearchParams } from "miroir-react";
 import { miroirAppStartup } from "../../src/startup.js";
 import { cleanLevel, packageName } from "../3_controllers/constants.js";
 import { AppStackIntegrationTestSession } from "../helpers/IntegrationTestSession.js";
@@ -100,16 +100,8 @@ vi.mock("react-router-dom", async () => {
   };
 });
 
-vi.mock("miroir-react", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("miroir-react")>();
-  return {
-    ...actual,
-    JsonDisplayHelper: () => null,
-  };
-});
-
 // Vitest/happy-dom cannot load miroir-diagram-class → svg-toolbelt (CJS `exports` in an ESM package).
-vi.mock("../../src/miroir-fwk/4_view/components/Reports/ModelDiagramReportSectionView.js", () => ({
+vi.mock("miroir-diagram-class", () => ({
   ModelDiagramReportSectionView: () => null,
 }));
 

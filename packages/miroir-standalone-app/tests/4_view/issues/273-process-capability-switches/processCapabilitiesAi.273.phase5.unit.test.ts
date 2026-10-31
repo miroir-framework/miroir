@@ -39,7 +39,7 @@ if (runThis) {
   describe("processCapabilitiesAi.273.phase5 — Settings has no Agents switch", () => {
     it("SettingsPage FormControlLabel no longer uses the Agents switch label", () => {
       const src = readRepoFile(
-        "packages/miroir-standalone-app/src/miroir-fwk/4_view/routes/SettingsPage.tsx",
+        "packages/miroir-react/src/routes/SettingsPage.tsx",
       );
       expect(src).not.toContain('label="Agents"');
       expect(src).not.toContain('aria-label: "Agents"');
@@ -50,7 +50,7 @@ if (runThis) {
   describe("processCapabilitiesAi.273.phase5 — AppBar AI gate is snapshot ai", () => {
     it("showAgentUi is not gated by viewParams.agents or MIROIR_IS_SANDBOX", () => {
       const src = readRepoFile(
-        "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Page/AppBar.tsx",
+        "packages/miroir-react/src/components/Page/AppBar.tsx",
       );
       expect(src).toContain("showAgentUi");
       expect(src).not.toContain("viewParams.agents");

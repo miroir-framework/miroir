@@ -54,6 +54,7 @@ import {
 import {
   LocalCacheProvider,
   MiroirContextReactProvider,
+  MiroirShellHostProvider,
   ReportSectionRenderersProvider,
   RestPersistenceClientAndRestClient,
   setupMiroirDomainController,
@@ -63,10 +64,13 @@ import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { loglevelnext } from "./loglevelnextImporter.js";
 import { getAuthToken, setAuthenticationEnabled, setAuthToken } from "miroir-react";
 import { fetchAuthenticationEnabled } from "./miroir-fwk/4_view/auth/authTransport.js";
-import { RootComponent } from "./miroir-fwk/4_view/components/Page/RootComponent.js";
-import { ErrorPage } from "miroir-react";
-import { PageDispatcher } from "./miroir-fwk/4_view/PageDispatcher.js";
-import { appReportSectionRenderers } from "./miroir-fwk/4_view/reportSectionRenderers.js";
+import { RootComponent } from "miroir-react";
+import { ErrorPage, setLoadTimingMarkSink } from "miroir-react";
+
+// #633 D6: marks from miroir-react code (configurationsLoaded) reach the browser recorder.
+setLoadTimingMarkSink(loadTimingMark);
+import { PageDispatcher } from "miroir-react";
+import { appReportSectionRenderers, appShellHost } from "./miroir-fwk/4_view/reportSectionRenderers.js";
 import {
   ElectronRestClient,
   ElectronServerDomainControllerProxy,
@@ -458,9 +462,11 @@ async function startWebApp(root: Root) {
               domainController={domainControllerForClient}
               processCapabilities={processCapabilities}
             >
-              <ReportSectionRenderersProvider renderers={appReportSectionRenderers}>
-                {page}
-              </ReportSectionRenderersProvider>
+              <MiroirShellHostProvider host={appShellHost}>
+                <ReportSectionRenderersProvider renderers={appReportSectionRenderers}>
+                  {page}
+                </ReportSectionRenderersProvider>
+              </MiroirShellHostProvider>
             </MiroirContextReactProvider>
           </LocalCacheProvider>
         </StyledEngineProvider>

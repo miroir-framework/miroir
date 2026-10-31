@@ -114,6 +114,7 @@ export type {
 } from "./contexts/MiroirThemeContext.js";
 
 export {
+  defaultReportSectionRenderers,
   ReportSectionRenderersProvider,
   UnsupportedReportSection,
   useReportSectionRenderers,
@@ -368,3 +369,60 @@ export * from "./components/Reports/ReportSectionViewWithEditor.js";
 export * from "./components/Reports/ReportViewWithEditor.js";
 export * from "./components/SelectEntityInstanceEditor.js";
 export * from "./getColumnDefinitionsFromEntityAttributes.js";
+
+// App shell client services (#633)
+export {
+  fetchMiroirAndAppConfigurations,
+  useConfigurationService,
+  type ConfigurationServiceOptions,
+} from "./services/ConfigurationService.js";
+export {
+  markPageConfigurationsLoaded,
+  usePageConfiguration,
+  type UsePageConfigurationOptions,
+  type UsePageConfigurationResult,
+} from "./services/usePageConfiguration.js";
+export {
+  loadTimingMark,
+  setLoadTimingMarkSink,
+  type LoadTimingMarkSink,
+} from "./loadTimings/loadTimingMarkSink.js";
+
+// App shell host slots and runners (#633)
+export {
+  mcpToolUnavailable,
+  MiroirShellHostProvider,
+  useMiroirShellHost,
+  type McpToolRunnerEnvelope,
+  type MiroirShellHost,
+  type RequestLoginToken,
+  type RunMcpTool,
+} from "./contexts/MiroirShellHostContext.js";
+export { fetchAuthenticationEnabledOverHttp, requestLoginTokenOverHttp } from "./auth/httpLogin.js";
+export { LoginPage } from "./routes/LoginPage.js";
+export { RunnerView, StoredRunnerView } from "./components/Runners/RunnerView.js";
+export { RunnerList, runnerConfigs, type RunnerConfig } from "./components/Runners/RunnersList.js";
+export { applicationNameForMcpRunner, resolveMcpToolAction } from "./components/Runners/resolveMcpToolAction.js";
+export { SequenceEditor, type SequenceEditorProps } from "./components/SequenceEditor/SequenceEditor.js";
+export { RunnersPage } from "./routes/Runners.js";
+export { HomePage } from "./routes/HomePage.js";
+export { SettingsPage } from "./routes/SettingsPage.js";
+export { SearchPage } from "./routes/SearchPage.js";
+export { TransformerBuilderPage } from "./routes/TransformerBuilderPage.js";
+export { CheckPage } from "./routes/Check.js";
+export { MiroirEventsPage } from "./pages/MiroirEventsPage.js";
+export { ErrorLogsPageDEFUNCT } from "./ErrorLogsPageDEFUNCT.js";
+export { EventTimelineContainer } from "./components/EventTimelineContainer.js";
+export { InstanceEditorOutline } from "./components/InstanceEditorOutline.js";
+export { ModelDiagramPage } from "./routes/ModelDiagramPage.js";
+export { PageDispatcher, reportPageParamsFromSearchParams } from "./PageDispatcher.js";
+export { RootComponent, type RootComponentProps } from "./components/Page/RootComponent.js";
+export { AppBar, FeedbackGlowAppBarButton, type AppBarProps } from "./components/Page/AppBar.js";
+export {
+  MIROIR_AI_BACKEND_STORAGE_KEY,
+  readMiroirAiBackend,
+  subscribeMiroirAiBackend,
+  writeMiroirAiBackend,
+  type MiroirAiBackendPick,
+} from "./routes/ai/miroirAiBackend.js";
+export { agentBackendLabel, agentRequestProperties } from "./routes/ai/agentBackendPick.js";

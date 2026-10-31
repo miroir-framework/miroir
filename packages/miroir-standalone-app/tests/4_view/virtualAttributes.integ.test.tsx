@@ -20,14 +20,6 @@ import {
   renderBookListSectionInteg,
 } from "./helpers/listTransformerIntegRig.js";
 
-vi.mock("miroir-react", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("miroir-react")>();
-  return {
-    ...actual,
-    JsonDisplayHelper: () => null,
-  };
-});
-
 describe("virtual attributes display — Book citation", () => {
   it("BookList has no report runtimeTransformers", () => {
     expect(reportBookList.definition.runtimeTransformers).toBeUndefined();

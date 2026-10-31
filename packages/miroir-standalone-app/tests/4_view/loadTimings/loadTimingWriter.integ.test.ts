@@ -2,6 +2,8 @@
  * #580: the load timing writer records finished steps as PageLoadMeasurement instances of the Meta
  * app, through the real DomainController, on the emulated filesystem server of `test-filesystem`
  * (copies in .miroir/test-filesystem/, seeded from the package assets).
+ * #633: the configuration fetch, now in miroir-react, marks `configurationsLoaded` through the sink the
+ * host registers (the app's index.tsx registers its browser recorder).
  *
  * Not reachable through MiroirTest: the writer is a client module the browser recorder calls, not a
  * model element.
@@ -31,7 +33,7 @@ import { ENTITY_PAGE_LOAD_MEASUREMENT_UUID, META_DEPLOYMENT_UUID } from "../../.
 import type { LoadTimingStep } from "../../../src/loadTimings/loadTimingTypes.js";
 import { loadTimingWriter } from "../../../src/loadTimings/loadTimingWriter.js";
 import { loglevelnext } from "../../../src/loglevelnextImporter.js";
-import { fetchMiroirAndAppConfigurations } from "../../../src/miroir-fwk/4_view/services/ConfigurationService.js";
+import { fetchMiroirAndAppConfigurations, setLoadTimingMarkSink } from "miroir-react";
 import { setupMiroirTest } from "../../../src/miroir-fwk/4-tests/setupMiroirTest.js";
 import { miroirAppStartup } from "../../../src/startup.js";
 import { openTestEnvironment } from "../../helpers/testEnvironment.js";
@@ -94,9 +96,19 @@ function metaEntityFolder(miroirConfig: MiroirConfigClient): string {
 describe("load timing writer (#580)", () => {
   let domainController: DomainControllerInterface;
   let miroirConfig: MiroirConfigClient;
+  const marks: string[] = [];
 
   beforeAll(async () => {
-    ({ domainController, miroirConfig } = await bootPlatform());
+    setLoadTimingMarkSink((name) => marks.push(name));
+    try {
+      ({ domainController, miroirConfig } = await bootPlatform());
+    } finally {
+      setLoadTimingMarkSink(undefined);
+    }
+  });
+
+  it("the miroir-react configuration fetch marks configurationsLoaded through the registered sink (#633)", () => {
+    expect(marks).toContain("configurationsLoaded");
   });
 
   it("writes every step as a PageLoadMeasurement instance of the Meta deployment", async () => {

@@ -20,7 +20,7 @@ import { selfApplicationMiroir } from "miroir-app-miroir";
 import { packageName } from "../../../constants.js";
 import type { TestResultData } from "miroir-react";
 import { cleanLevel } from "../../4_view/constants.js";
-import { fetchMiroirAndAppConfigurations } from "../../4_view/services/ConfigurationService.js";
+import { fetchMiroirAndAppConfigurations } from "miroir-react";
 import { readAppMiroirReports } from "../appMiroirReports.js";
 import {
   runIntegrationMiroirTestBatch,

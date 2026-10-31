@@ -68,7 +68,7 @@ if (runThis) {
       const src = readFileSync(
         join(
           REPO_ROOT,
-          "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Runners/RunnerView.tsx",
+          "packages/miroir-react/src/components/Runners/RunnerView.tsx",
         ),
         "utf8",
       );

@@ -260,7 +260,7 @@ if (runThis) {
       );
       expect(existsSync(secretsPage)).toBe(false);
       const dispatcherSrc = readFileSync(
-        join(REPO_ROOT, "packages/miroir-standalone-app/src/miroir-fwk/4_view/PageDispatcher.tsx"),
+        join(REPO_ROOT, "packages/miroir-react/src/PageDispatcher.tsx"),
         "utf8",
       );
       expect(dispatcherSrc).not.toMatch(/SecretsPage/);

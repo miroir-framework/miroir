@@ -2,14 +2,6 @@ import { defineConfig } from "vite";
 import babel from "@rolldown/plugin-babel";
 import react from "@vitejs/plugin-react";
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __viteFilename = fileURLToPath(import.meta.url);
-const __viteDirname = path.dirname(__viteFilename);
-
-// miroir-standalone-app source root – aliased as @miroir-app
-const standaloneAppSrc = path.resolve(__viteDirname, '../miroir-standalone-app/src');
 
 export default defineConfig({
   // Serve from src/ so that index.html and assets are resolved correctly
@@ -27,11 +19,6 @@ export default defineConfig({
     'import.meta.env.MIROIR_IS_SANDBOX': JSON.stringify('true'),
   },
   resolve: {
-    alias: [
-      // @miroir-app/* → miroir-standalone-app/src/*
-      // Allows demo code to import standalone-app components without copying them.
-      { find: '@miroir-app', replacement: standaloneAppSrc },
-    ],
     dedupe: ['react', 'react-dom', '@emotion/react', '@emotion/styled', '@mui/material'],
   },
   optimizeDeps: {
@@ -48,7 +35,6 @@ export default defineConfig({
     }),
     react({
       jsxImportSource: '@emotion/react',
-      // Process all TSX/JSX files, including those pulled in from miroir-standalone-app
       include: /\.(t|j)sx$/,
     }),
     // plugin-react 6 no longer runs babel itself: @emotion/babel-plugin goes through @rolldown/plugin-babel

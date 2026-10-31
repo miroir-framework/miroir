@@ -116,7 +116,7 @@ if (runThis) {
   describe("processCapabilitiesDesigner.273.phase7 — AppBar Transformer Builder follows designer tools", () => {
     it("Transformer Builder is not gated by showAgentUi; AI icons may still use showAgentUi", () => {
       const src = readRepoFile(
-        "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Page/AppBar.tsx",
+        "packages/miroir-react/src/components/Page/AppBar.tsx",
       );
       expect(src).toContain("showAgentUi");
       expect(src).not.toContain("...(showAgentUi ? [transformerBuilderMenuItem] : [])");
