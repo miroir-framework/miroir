@@ -158,7 +158,7 @@ function mountAssets(app: Express, options: MiroirServerAppOptions): void {
     return;
   }
   log.info(`Mounting static assets at ${options.assets.mountPath} -> ${options.assets.directory}`);
-  app.use(options.assets.mountPath, staticFolder(options.assets.directory));
+  app.use(options.assets.mountPath, staticFolder(path.resolve(options.assets.directory)));
 }
 
 /** The client's `index.html`; a missing build fails the factory before anything starts. */
@@ -374,9 +374,9 @@ export async function createMiroirServerApp(options: MiroirServerAppOptions): Pr
   const identityGate = createIdentityGateMiddleware(authenticationGate);
   const requestGate: RequestHandler = (request, response, next) => identityGate(request, response, () => next());
 
-  const client = options.clientDirectory
-    ? { directory: options.clientDirectory, indexPath: clientIndexPath(options.clientDirectory) }
-    : undefined;
+  // resolved once: express's sendFile needs an absolute path, and the host's working directory may change later
+  const clientDirectory = options.clientDirectory ? path.resolve(options.clientDirectory) : undefined;
+  const client = clientDirectory ? { directory: clientDirectory, indexPath: clientIndexPath(clientDirectory) } : undefined;
   mountStatusRoutes(app, options);
   mountAssets(app, options);
   mountRestHandlers(app, options, authenticationGate);

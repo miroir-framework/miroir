@@ -327,6 +327,21 @@ describe("createMiroirServerApp — client and assets folders", () => {
     expect(await (await fetch(`${base}/api/copilotkit/probe`)).json()).toEqual({ assistant: true });
   });
 
+  it("serves nested client routes and assets from relative folders (resolved against the working directory)", async () => {
+    const relative = await startApp({
+      clientDirectory: path.relative(process.cwd(), clientDirectory),
+      assets: { directory: path.relative(process.cwd(), assetsDirectory), mountPath: "/assets" },
+    });
+    try {
+      const response = await fetch(`${relative.http.baseUrl}/some/client/route`);
+      expect(response.status).toBe(200);
+      expect(await response.text()).toBe(INDEX_HTML);
+      expect(await (await fetch(`${relative.http.baseUrl}/assets/x.txt`)).text()).toBe("an asset");
+    } finally {
+      await stop(relative);
+    }
+  });
+
   it("rejects a client folder without a build, naming the missing index.html", async () => {
     await expect(startApp({ clientDirectory: assetsDirectory })).rejects.toThrow(
       `React client build not found at ${path.join(assetsDirectory, "index.html")}`,
