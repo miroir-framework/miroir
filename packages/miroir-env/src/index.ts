@@ -27,6 +27,7 @@ export {
   GENERATED_ADMIN_ENTITIES,
   missingConnectionPasswords,
   describeSeedReport,
+  ENVIRONMENT_PROCESS_FILE,
   seedEnvironmentState,
   seedEnvironmentStateAtStart,
   withConnectionPasswords,

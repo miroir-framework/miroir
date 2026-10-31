@@ -793,7 +793,7 @@ The verdict is published three ways, as `MiroirSelfTestResult` (`verdict` `runni
 
 `passed` needs at least one test run and none failed.
 
-The miroir app and the Admin data of a self-test environment are copies in `.miroir/<environment>/`, reseeded from the package assets at each start of the server or of Electron (#587): a pull that changes the miroir app's MiroirTests reaches the next run without deleting anything by hand, and the start prints `environment state reseeded from package assets (self-test environment, reseeded at each start): …`. The self-test environments hold no user data. `--self-test` on another environment does not reseed it, since that state may hold real data.
+The miroir app and the Admin data of a self-test environment are copies in `.miroir/<environment>/`, reseeded from the package assets at each start of the server or of Electron (#587): a pull that changes the miroir app's MiroirTests reaches the next run without deleting anything by hand, and the start prints `environment state reseeded from package assets (self-test environment, reseeded at each start): …`. The self-test environments hold no user data. `--self-test` on another environment does not reseed it, since that state may hold real data. A start records its process in `.miroir/<environment>/process.pid`. While that process still runs, a second start on the same self-test environment keeps the copies and prints `environment state not reseeded: process <pid> started on it is still running`.
 
 ### Local runs
 

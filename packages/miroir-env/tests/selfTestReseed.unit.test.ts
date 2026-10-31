@@ -5,7 +5,12 @@ import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 
-import { describeSeedReport, resolveEnvironmentFromFiles, seedEnvironmentStateAtStart } from "../src/index";
+import {
+  describeSeedReport,
+  ENVIRONMENT_PROCESS_FILE,
+  resolveEnvironmentFromFiles,
+  seedEnvironmentStateAtStart,
+} from "../src/index";
 import { temporaryRepository } from "./cliTestSupport";
 
 const MIROIR_TEST_ENTITY = "a311f363-e238-4203-bdfc-29e8c160c26b";
@@ -37,7 +42,8 @@ function repositoryWithMiroirTest(name: string, selfTest: boolean) {
   const resolved = resolveEnvironmentFromFiles({ cwd: root, env: { MIROIR_ENV: name } });
   const seededTest = () =>
     JSON.parse(readFileSync(path.join(root, `.miroir/${name}/miroir/data`, TEST_ROW), "utf-8")).version;
-  return { resolved, writeTest, seededTest };
+  const processFile = path.join(root, `.miroir/${name}`, ENVIRONMENT_PROCESS_FILE);
+  return { resolved, writeTest, seededTest, processFile };
 }
 
 describe("seeding at start", () => {
@@ -67,5 +73,33 @@ describe("seeding at start", () => {
     expect(seed.reseed).toBe(false);
     expect(seed.seeded).toEqual([]);
     expect(describeSeedReport(seed)).toBeUndefined();
+  });
+
+  it("a self-test start keeps the copies while another process started on them still runs", () => {
+    const { resolved, writeTest, seededTest, processFile } = repositoryWithMiroirTest("self-test", true);
+    seedEnvironmentStateAtStart(resolved);
+    expect(readFileSync(processFile, "utf-8").trim()).toBe(String(process.pid));
+
+    // the parent of the test process stands for a server already started on the state
+    writeFileSync(processFile, `${process.ppid}\n`);
+    writeTest("second");
+    const seed = seedEnvironmentStateAtStart(resolved);
+
+    expect(seededTest()).toBe("first");
+    expect(seed.reseed).toBe(false);
+    expect(seed.runningProcess).toBe(process.ppid);
+    expect(describeSeedReport(seed)).toBe(
+      `environment state not reseeded: process ${process.ppid} started on it is still running`,
+    );
+  });
+
+  it("a self-test start reseeds when the recorded process has ended", () => {
+    const { resolved, writeTest, seededTest, processFile } = repositoryWithMiroirTest("self-test", true);
+    seedEnvironmentStateAtStart(resolved);
+    writeFileSync(processFile, "999999999\n");
+    writeTest("second");
+
+    expect(seedEnvironmentStateAtStart(resolved).reseed).toBe(true);
+    expect(seededTest()).toBe("second");
   });
 });
