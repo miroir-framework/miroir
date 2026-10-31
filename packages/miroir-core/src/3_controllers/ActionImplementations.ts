@@ -57,7 +57,11 @@ export const miroirActionImplementations: Record<string, ActionImplementationHan
       context.principal,
     ),
   handleAction_runBoxedQueryTemplateAction: (host, action, context) =>
-    host.handleQueryTemplateActionForServerONLY(action, context.applicationDeploymentMap),
+    host.handleQueryTemplateActionForServerONLY(
+      action,
+      context.applicationDeploymentMap,
+      context.modelEnvironment,
+    ),
 
   // StoreManagementEndpoint
   handleAction_storeManagementAction_createStore: storeManagementAction(true),

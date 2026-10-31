@@ -130,7 +130,6 @@
           "referenceToOuterObject": "mergedAttributeDefinitions",
           "definition": {
             "transformerType": "returnValue",
-            "mlSchema": { "type": "record", "definition": { "type": "any" } },
             "value": {
               "uuid": {
                 "type": "string",

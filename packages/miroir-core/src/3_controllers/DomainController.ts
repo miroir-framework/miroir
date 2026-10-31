@@ -1106,6 +1106,7 @@ export class DomainController implements DomainControllerInterface, DomainContro
           await this.persistenceStoreLocalOrRemote.handlePersistenceActionForLocalPersistenceStore(
             resolvedQueryOrError.action,
             applicationDeploymentMap,
+            currentModel,
           );
         // const result: Action2ReturnType = await this.persistenceStoreLocalOrRemote.handlePersistenceActionForLocalCache(
         //   runBoxedExtractorOrQueryAction
@@ -1210,6 +1211,7 @@ export class DomainController implements DomainControllerInterface, DomainContro
   async handleQueryTemplateActionForServerONLY(
     runBoxedQueryTemplateAction: RunBoxedQueryTemplateAction,
     applicationDeploymentMap: ApplicationDeploymentMap,
+    currentModel?: MiroirModelEnvironment,
   ): Promise<Action2ReturnType> {
     // let entityDomainAction:DomainAction | undefined = undefined;
     log.info(
@@ -1228,9 +1230,10 @@ export class DomainController implements DomainControllerInterface, DomainContro
        */
 
       const result: Action2ReturnType =
-        await this.persistenceStoreLocalOrRemote.handlePersistenceAction(
+        await this.persistenceStoreLocalOrRemote.handlePersistenceActionForLocalPersistenceStore(
           runBoxedQueryTemplateAction,
           applicationDeploymentMap,
+          currentModel,
         );
       // log.info(
       //   "DomainController handleQueryTemplateActionForServerONLY callPersistenceAction Result=",

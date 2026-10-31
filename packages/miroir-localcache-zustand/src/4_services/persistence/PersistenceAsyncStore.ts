@@ -314,7 +314,11 @@ export class PersistenceAsyncStore implements PersistenceStoreLocalOrRemoteInter
               deploymentUuid
           );
         }
-        const localStoreResult = await localPersistenceStoreController.handleQueryTemplateActionForServerONLY(action, applicationDeploymentMap)
+        const localStoreResult = await localPersistenceStoreController.handleQueryTemplateActionForServerONLY(
+          action,
+          applicationDeploymentMap,
+          currentModel,
+        );
         return localStoreResult;
         break;
       }

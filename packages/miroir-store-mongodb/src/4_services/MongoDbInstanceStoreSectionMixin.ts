@@ -13,6 +13,7 @@ import {
   MiroirLoggerFactory,
   PersistenceStoreInstanceSectionAbstractInterface,
   RunBoxedQueryAction,
+  type MiroirModelEnvironment,
   RunBoxedQueryTemplateAction,
   type ApplicationDeploymentMap
 } from "miroir-core";
@@ -56,14 +57,15 @@ export function MongoDbInstanceStoreSectionMixin<TBase extends MixableMongoDbSto
     // #############################################################################################
     async handleBoxedQueryAction(
       query: RunBoxedQueryAction,
-      applicationDeploymentMap: ApplicationDeploymentMap
+      applicationDeploymentMap: ApplicationDeploymentMap,
+      currentModel?: MiroirModelEnvironment,
     ): Promise<Action2ReturnType> {
       log.info(this.logHeader, "handleBoxedQueryAction", "query", query);
 
       const result: Action2ReturnType = await this.extractorRunner.handleBoxedQueryAction(
         query,
         applicationDeploymentMap,
-        defaultMetaModelEnvironment
+        currentModel ?? defaultMetaModelEnvironment
       );
 
       log.info(this.logHeader, "handleBoxedQueryAction", "query", query, "result", result);
@@ -73,7 +75,8 @@ export function MongoDbInstanceStoreSectionMixin<TBase extends MixableMongoDbSto
     // #############################################################################################
     async handleQueryTemplateActionForServerONLY(
       query: RunBoxedQueryTemplateAction,
-      applicationDeploymentMap: ApplicationDeploymentMap
+      applicationDeploymentMap: ApplicationDeploymentMap,
+      currentModel?: MiroirModelEnvironment,
     ): Promise<Action2ReturnType> {
       log.info(this.logHeader, "handleQueryTemplateActionForServerONLY", "query", query);
 
@@ -81,7 +84,7 @@ export function MongoDbInstanceStoreSectionMixin<TBase extends MixableMongoDbSto
         await this.extractorTemplateRunner.handleQueryTemplateActionForServerONLY(
           query,
           applicationDeploymentMap,
-          defaultMetaModelEnvironment
+          currentModel ?? defaultMetaModelEnvironment
         );
 
       log.info(

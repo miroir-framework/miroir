@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Miroir npm packages: target after epic #621",
+    "output": "target-packages.html",
+    "quality_profile": "showcase",
+    "locale": "en"
+  },
+  "components": [
+    { "id": "app", "type": "frontend", "label": "miroir-standalone-app", "sublabel": "private, only client for now", "pos": [40, 40], "size": [180, 64] },
+    { "id": "bin", "type": "backend", "label": "miroir-server binary", "sublabel": "private artefact", "pos": [540, 40], "size": [180, 64] },
+    { "id": "userpkg", "type": "external", "label": "User application", "sublabel": "next step, after #621", "pos": [790, 40], "size": [180, 64] },
+    { "id": "react", "type": "frontend", "label": "@miroir-framework/react", "sublabel": "components, app shell, local cache", "pos": [40, 200], "size": [180, 64] },
+    { "id": "template", "type": "frontend", "label": "create-miroir-app", "sublabel": "template from miroir-sandbox", "pos": [290, 200], "size": [180, 64] },
+    { "id": "server", "type": "backend", "label": "@miroir-framework/server", "sublabel": "Express router, startup", "pos": [540, 200], "size": [180, 64] },
+    { "id": "mcp", "type": "backend", "label": "@miroir-framework/mcp", "sublabel": "tools from Endpoints", "pos": [790, 200], "size": [180, 64] },
+    { "id": "cli", "type": "backend", "label": "@miroir-framework/cli", "sublabel": "commands from Endpoints", "pos": [1040, 200], "size": [180, 64] },
+    { "id": "core", "type": "backend", "label": "@miroir-framework/core", "sublabel": "DomainController, queries, transformers, meta-model (was miroir-app-miroir, miroir-app-admin)", "pos": [40, 360], "size": [1180, 64] },
+    { "id": "stores", "type": "database", "label": "@miroir-framework/store-*", "sublabel": "postgres, filesystem, indexedDb, mongo, bundled", "pos": [520, 500], "size": [220, 64] }
+  ],
+  "boundaries": [
+    { "kind": "region", "label": "Published on npmjs.org, lockstep versions", "wraps": ["react", "template", "server", "mcp", "cli", "core", "stores"] },
+    { "kind": "security-group", "label": "Stays private", "wraps": ["app", "bin"] }
+  ],
+  "connections": [
+    { "id": "app-react", "from": "app", "to": "react", "label": "imports", "variant": "emphasis" },
+    { "id": "bin-server", "from": "bin", "to": "server", "label": "runs", "variant": "emphasis" },
+    { "id": "user-bin", "from": "userpkg", "to": "bin", "label": "deploys", "variant": "dashed" },
+    { "id": "template-react", "from": "template", "to": "react", "label": "uses" },
+    { "id": "template-server", "from": "template", "to": "server", "label": "uses" },
+    { "id": "server-mcp", "from": "server", "to": "mcp", "label": "mounts" },
+    { "id": "react-core", "from": "react", "to": "core" },
+    { "id": "server-core", "from": "server", "to": "core" },
+    { "id": "mcp-core", "from": "mcp", "to": "core" },
+    { "id": "cli-core", "from": "cli", "to": "core" },
+    { "id": "stores-core", "from": "stores", "to": "core", "label": "register in" }
+  ],
+  "cards": [
+    { "dot": "emerald", "title": "Published set", "items": ["Renamed in the repo to @miroir-framework/*", "Exact internal pins, one version for all", "npm publish stays a manual maintainer step"] },
+    { "dot": "amber", "title": "Merged on the way", "items": ["miroir-app-miroir and miroir-app-admin into core", "miroir-localcache-redux into react", "miroir-localcache stub and zustand cache stay out"] },
+    { "dot": "violet", "title": "Next step (out of scope)", "items": ["A user builds their own application package", "The server serves the React bundle named by a parameter, not only dist/client"] }
+  ]
+}

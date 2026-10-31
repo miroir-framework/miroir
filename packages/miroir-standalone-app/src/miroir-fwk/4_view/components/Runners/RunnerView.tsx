@@ -585,17 +585,20 @@ export const RunnerView = <T extends Record<string, any>>(props: RunnerProps<T>)
     // hard-coded extension of applicationDeploymentMap for RunnerView, to avoid general tinkering with applicationDeploymentMap
     // TODO: see if this could be enabled at runner level without compromising security of sandbox
     // (typical attack: mapping to another user's deployment)
-    const runnerApplicationDeploymentMapForDeployApplication = 
-      (values: any) => (
-        values.deployApplication?.applicationBundle?.applicationUuid?{
-        ...applicationDeploymentMapForAction,
-        [(values.deployApplication?.duplicateApplication
-          ? values.deployApplication?.newApplicationUuid
-          : values.deployApplication?.applicationBundle?.applicationUuid) ?? "NO_APPLICATION_UUID"]:
-          values.deployApplication?.deploymentUuid ?? "NO_DEPLOYMENT_UUID",
-      }: applicationDeploymentMapForAction);
-    
-      const localApplicationDeploymentMap = runnerApplicationDeploymentMapForDeployApplication(values);
+    // Runners that install an application (deployApplication, createApplication) give its
+    // deploymentUuid, and its uuid as applicationBundle.applicationUuid or newApplicationUuid (#517)
+    const runnerFormValues: any = (values as any)[runnerName];
+    const installedApplicationUuid: string | undefined =
+      runnerFormValues?.applicationBundle?.applicationUuid && !runnerFormValues?.duplicateApplication
+        ? runnerFormValues.applicationBundle.applicationUuid
+        : runnerFormValues?.newApplicationUuid;
+    const localApplicationDeploymentMap: ApplicationDeploymentMap =
+      installedApplicationUuid && runnerFormValues?.deploymentUuid
+        ? {
+            ...applicationDeploymentMapForAction,
+            [installedApplicationUuid]: runnerFormValues.deploymentUuid,
+          }
+        : applicationDeploymentMapForAction;
 
     log.info(
       "RunnerView handleSubmit",

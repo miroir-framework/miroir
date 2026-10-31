@@ -957,6 +957,46 @@
       }
     },
     {
+      "id": "integ-runner.createApplication",
+      "scopes": ["runners"],
+      "tier": "default",
+      "title": "MiroirTest integ \u2014 runner.createApplication",
+      "requires": "storage",
+      "argv": [
+        "npm",
+        "run",
+        "testMiroir",
+        "-w",
+        "miroir-standalone-app",
+        "--",
+        "--profile",
+        "{profile}",
+        "--suites",
+        "runner.createApplication",
+        "--mode",
+        "integ"
+      ],
+      "shared": {
+        "group": "standalone-app-runner-suites",
+        "argv": [
+          "npm",
+          "run",
+          "testMiroir",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--profile",
+          "{profile}",
+          "--mode",
+          "integ",
+          "--shared"
+        ],
+        "suites": [
+          "runner.createApplication"
+        ]
+      }
+    },
+    {
       "id": "integ-runner.mcp.lendDocument",
       "scopes": ["runners"],
       "tier": "default",

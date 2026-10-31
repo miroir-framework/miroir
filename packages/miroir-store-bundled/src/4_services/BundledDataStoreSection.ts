@@ -19,6 +19,7 @@ import {
   MiroirLoggerFactory,
   PersistenceStoreDataSectionInterface,
   RunBoxedQueryAction,
+  type MiroirModelEnvironment,
   RunBoxedQueryTemplateAction,
   type ApplicationDeploymentMap,
 } from "miroir-core";
@@ -155,24 +156,26 @@ export class BundledDataStoreSection
   async handleBoxedQueryAction(
     query: RunBoxedQueryAction,
     applicationDeploymentMap: ApplicationDeploymentMap,
+    currentModel?: MiroirModelEnvironment,
   ): Promise<Action2ReturnType> {
     log.info(this.logHeader, "handleBoxedQueryAction", "query", query);
     return this.extractorRunner.handleBoxedQueryAction(
       query,
       applicationDeploymentMap,
-      defaultMetaModelEnvironment,
+      currentModel ?? defaultMetaModelEnvironment,
     );
   }
 
   async handleQueryTemplateActionForServerONLY(
     query: RunBoxedQueryTemplateAction,
     applicationDeploymentMap: ApplicationDeploymentMap,
+    currentModel?: MiroirModelEnvironment,
   ): Promise<Action2ReturnType> {
     log.info(this.logHeader, "handleQueryTemplateActionForServerONLY", "query", query);
     return this.extractorTemplateRunner.handleQueryTemplateActionForServerONLY(
       query,
       applicationDeploymentMap,
-      defaultMetaModelEnvironment,
+      currentModel ?? defaultMetaModelEnvironment,
     );
   }
 

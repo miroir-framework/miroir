@@ -11,37 +11,59 @@
       "transformer": {
         "type": "object",
         "definition": {
+          "applicationName": {
+            "type": "string",
+            "tag": {
+              "value": {
+                "defaultLabel": "Application Name"
+              }
+            }
+          },
           "applicationStorage": {
             "type": "schemaReference",
             "context": {
               "indexedDbStoreSectionConfiguration": {
                 "type": "object",
                 "definition": {
-                  "emulatedServerType": { "type": "literal", "definition": "indexedDb" }
+                  "emulatedServerType": {
+                    "type": "literal",
+                    "definition": "indexedDb"
+                  }
                 }
               },
               "filesystemDbStoreSectionConfiguration": {
                 "type": "object",
                 "definition": {
-                  "emulatedServerType": { "type": "literal", "definition": "filesystem" }
+                  "emulatedServerType": {
+                    "type": "literal",
+                    "definition": "filesystem"
+                  }
                 }
               },
               "sqlDbStoreSectionConfiguration": {
                 "type": "object",
                 "definition": {
-                  "emulatedServerType": { "type": "literal", "definition": "sql" },
+                  "emulatedServerType": {
+                    "type": "literal",
+                    "definition": "sql"
+                  },
                   "connectionString": {
                     "type": "string",
                     "tag": {
                       "value": {
                         "defaultLabel": "SQL Connection String",
-                        "display": { "editable": false },
+                        "display": {
+                          "editable": false
+                        },
                         "initializeTo": {
                           "initializeToType": "transformer",
                           "transformer": {
                             "transformerType": "getFromParameters",
                             "interpolation": "runtime",
-                            "referencePath": ["viewParams", "postgresConnectionString"]
+                            "referencePath": [
+                              "viewParams",
+                              "postgresConnectionString"
+                            ]
                           }
                         }
                       }
@@ -52,19 +74,27 @@
               "mongoDbStoreSectionConfiguration": {
                 "type": "object",
                 "definition": {
-                  "emulatedServerType": { "type": "literal", "definition": "mongodb" },
+                  "emulatedServerType": {
+                    "type": "literal",
+                    "definition": "mongodb"
+                  },
                   "connectionString": {
                     "type": "string",
                     "tag": {
                       "value": {
                         "defaultLabel": "MongoDB Connection String",
-                        "display": { "editable": false },
+                        "display": {
+                          "editable": false
+                        },
                         "initializeTo": {
                           "initializeToType": "transformer",
                           "transformer": {
                             "transformerType": "getFromParameters",
                             "interpolation": "runtime",
-                            "referencePath": ["viewParams", "mongoConnectionString"]
+                            "referencePath": [
+                              "viewParams",
+                              "mongoConnectionString"
+                            ]
                           }
                         }
                       }
@@ -81,7 +111,9 @@
                     [
                       {
                         "type": "schemaReference",
-                        "definition": { "relativePath": "indexedDbStoreSectionConfiguration" }
+                        "definition": {
+                          "relativePath": "indexedDbStoreSectionConfiguration"
+                        }
                       },
                       {
                         "type": "schemaReference",
@@ -97,7 +129,10 @@
                         "operator": "==",
                         "left": {
                           "transformerType": "getFromParameters",
-                          "referencePath": ["viewParams", "postgresConnectionString"]
+                          "referencePath": [
+                            "viewParams",
+                            "postgresConnectionString"
+                          ]
                         },
                         "right": {
                           "transformerType": "returnValue",
@@ -108,7 +143,9 @@
                       "else": [
                         {
                           "type": "schemaReference",
-                          "definition": { "relativePath": "sqlDbStoreSectionConfiguration" }
+                          "definition": {
+                            "relativePath": "sqlDbStoreSectionConfiguration"
+                          }
                         }
                       ]
                     },
@@ -119,7 +156,10 @@
                         "operator": "==",
                         "left": {
                           "transformerType": "getFromParameters",
-                          "referencePath": ["viewParams", "mongoConnectionString"]
+                          "referencePath": [
+                            "viewParams",
+                            "mongoConnectionString"
+                          ]
                         },
                         "right": {
                           "transformerType": "returnValue",
@@ -130,7 +170,9 @@
                       "else": [
                         {
                           "type": "schemaReference",
-                          "definition": { "relativePath": "mongoDbStoreSectionConfiguration" }
+                          "definition": {
+                            "relativePath": "mongoDbStoreSectionConfiguration"
+                          }
                         }
                       ]
                     }
@@ -147,7 +189,9 @@
             "tag": {
               "value": {
                 "defaultLabel": "Deployment UUID",
-                "display": { "editable": false }
+                "display": {
+                  "editable": false
+                }
               }
             }
           },
@@ -156,7 +200,9 @@
             "tag": {
               "value": {
                 "defaultLabel": "New Application UUID",
-                "display": { "editable": false }
+                "display": {
+                  "editable": false
+                }
               }
             }
           }
@@ -170,7 +216,9 @@
         "templates": {
           "prefix": {
             "transformerType": "getFromParameters",
-            "referencePath": ["environmentAppsDirectory"]
+            "referencePath": [
+              "environmentAppsDirectory"
+            ]
           },
           "testApplicationModelBranchUuid": {
             "transformerType": "generateUuid"
@@ -179,63 +227,52 @@
             "transformerType": "generateUuid"
           },
           "testApplicationUuid": {
-              "transformerType": "getFromParameters",
-              "safe": true,
-              "referencePath": ["deployApplication", "newApplicationUuid"]
-            },
-          "modifiedApplicationFromBundle": {
-            "transformerType": "mergeIntoObject",
-            "interpolation": "runtime",
-            "applyTo": {
-              "transformerType": "getFromParameters",
-              "safe": true,
-              "referencePath": ["deployApplication", "applicationBundle", "applications", "0"]
-            },
+            "transformerType": "getFromParameters",
+            "referencePath": [
+              "createApplication",
+              "newApplicationUuid"
+            ]
+          },
+          "testSelfApplication": {
+            "transformerType": "createObject",
             "definition": {
               "uuid": {
                 "transformerType": "getFromContext",
                 "interpolation": "runtime",
-                "referencePath": ["testApplicationUuid"]
-              }
-            }
-          },
-          "modifiedApplicationBundle": {
-            "transformerType": "ifThenElse",
-            "if": {
-              "transformerType": "boolExpr",
-              "operator": "==",
-              "left": {
-                "transformerType": "getFromParameters",
-                "safe": true,
-                "referencePath": ["deployApplication", "duplicateApplication"]
+                "referencePath": [
+                  "testApplicationUuid"
+                ]
               },
-              "right": true
-            },
-            "then": {
-              "transformerType": "duplicateApplicationModel",
-              "interpolation": "runtime",
-              "application": {
-                "transformerType": "getFromContext",
-                "interpolation": "runtime",
-                "referencePath": ["testApplicationUuid"]
-              },
-              "applicationBundle": {
+              "parentName": "SelfApplication",
+              "parentUuid": "a659d350-dd97-4da9-91de-524fa01745dc",
+              "name": {
                 "transformerType": "getFromParameters",
-                "safe": true,
-                "referencePath": ["deployApplication", "applicationBundle"]
+                "referencePath": [
+                  "createApplication",
+                  "applicationName"
+                ]
+              },
+              "defaultLabel": {
+                "transformerType": "mustacheStringTemplate",
+                "interpolation": "build",
+                "definition": "The {{createApplication.applicationName}} selfApplication."
+              },
+              "description": {
+                "transformerType": "mustacheStringTemplate",
+                "interpolation": "build",
+                "definition": "The model and data of the {{createApplication.applicationName}} selfApplication."
               }
-            },
-            "else": {
-              "transformerType": "getFromParameters",
-              "safe": true,
-              "referencePath": ["deployApplication", "applicationBundle"]
             }
           },
           "sqltestDeploymentStorageConfigurationTemplate": {
             "transformerType": "case",
             "discriminator": {
               "transformerType": "getFromParameters",
-              "referencePath": ["deployApplication", "applicationStorage", "emulatedServerType"]
+              "referencePath": [
+                "createApplication",
+                "applicationStorage",
+                "emulatedServerType"
+              ]
             },
             "whens": [
               {
@@ -248,7 +285,7 @@
                       "connectionString": {
                         "transformerType": "getFromParameters",
                         "referencePath": [
-                          "deployApplication",
+                          "createApplication",
                           "applicationStorage",
                           "connectionString"
                         ]
@@ -260,7 +297,7 @@
                       "connectionString": {
                         "transformerType": "getFromParameters",
                         "referencePath": [
-                          "deployApplication",
+                          "createApplication",
                           "applicationStorage",
                           "connectionString"
                         ]
@@ -271,8 +308,7 @@
                           {
                             "transformerType": "getFromParameters",
                             "referencePath": [
-                              "deployApplication",
-                              "applicationBundle",
+                              "createApplication",
                               "applicationName"
                             ]
                           }
@@ -284,7 +320,7 @@
                       "connectionString": {
                         "transformerType": "getFromParameters",
                         "referencePath": [
-                          "deployApplication",
+                          "createApplication",
                           "applicationStorage",
                           "connectionString"
                         ]
@@ -295,8 +331,7 @@
                           {
                             "transformerType": "getFromParameters",
                             "referencePath": [
-                              "deployApplication",
-                              "applicationBundle",
+                              "createApplication",
                               "applicationName"
                             ]
                           }
@@ -316,7 +351,7 @@
                       "connectionString": {
                         "transformerType": "getFromParameters",
                         "referencePath": [
-                          "deployApplication",
+                          "createApplication",
                           "applicationStorage",
                           "connectionString"
                         ]
@@ -329,7 +364,7 @@
                       "connectionString": {
                         "transformerType": "getFromParameters",
                         "referencePath": [
-                          "deployApplication",
+                          "createApplication",
                           "applicationStorage",
                           "connectionString"
                         ]
@@ -340,8 +375,7 @@
                           {
                             "transformerType": "getFromParameters",
                             "referencePath": [
-                              "deployApplication",
-                              "applicationBundle",
+                              "createApplication",
                               "applicationName"
                             ]
                           }
@@ -354,7 +388,7 @@
                       "connectionString": {
                         "transformerType": "getFromParameters",
                         "referencePath": [
-                          "deployApplication",
+                          "createApplication",
                           "applicationStorage",
                           "connectionString"
                         ]
@@ -365,8 +399,7 @@
                           {
                             "transformerType": "getFromParameters",
                             "referencePath": [
-                              "deployApplication",
-                              "applicationBundle",
+                              "createApplication",
                               "applicationName"
                             ]
                           }
@@ -389,9 +422,11 @@
                           {
                             "transformerType": "getFromContext",
                             "interpolation": "runtime",
-                            "referencePath": ["prefix"]
+                            "referencePath": [
+                              "prefix"
+                            ]
                           },
-                          "admin"
+                          "/admin"
                         ]
                       }
                     },
@@ -403,13 +438,15 @@
                           {
                             "transformerType": "getFromContext",
                             "interpolation": "runtime",
-                            "referencePath": ["prefix"]
+                            "referencePath": [
+                              "prefix"
+                            ]
                           },
+                          "/",
                           {
                             "transformerType": "getFromParameters",
                             "referencePath": [
-                              "deployApplication",
-                              "applicationBundle",
+                              "createApplication",
                               "applicationName"
                             ]
                           }
@@ -424,13 +461,15 @@
                           {
                             "transformerType": "getFromContext",
                             "interpolation": "runtime",
-                            "referencePath": ["prefix"]
+                            "referencePath": [
+                              "prefix"
+                            ]
                           },
+                          "/",
                           {
                             "transformerType": "getFromParameters",
                             "referencePath": [
-                              "deployApplication",
-                              "applicationBundle",
+                              "createApplication",
                               "applicationName"
                             ]
                           }
@@ -453,8 +492,11 @@
                           {
                             "transformerType": "getFromContext",
                             "interpolation": "runtime",
-                            "referencePath": ["prefix"]
+                            "referencePath": [
+                              "prefix"
+                            ]
                           },
+                          "/",
                           "admin"
                         ]
                       }
@@ -467,16 +509,19 @@
                           {
                             "transformerType": "getFromContext",
                             "interpolation": "runtime",
-                            "referencePath": ["prefix"]
+                            "referencePath": [
+                              "prefix"
+                            ]
                           },
+                          "/",
                           {
                             "transformerType": "getFromParameters",
                             "referencePath": [
-                              "deployApplication",
-                              "applicationBundle",
+                              "createApplication",
                               "applicationName"
                             ]
-                          }
+                          },
+                          "-model"
                         ]
                       }
                     },
@@ -488,16 +533,19 @@
                           {
                             "transformerType": "getFromContext",
                             "interpolation": "runtime",
-                            "referencePath": ["prefix"]
+                            "referencePath": [
+                              "prefix"
+                            ]
                           },
+                          "/",
                           {
                             "transformerType": "getFromParameters",
                             "referencePath": [
-                              "deployApplication",
-                              "applicationBundle",
+                              "createApplication",
                               "applicationName"
                             ]
-                          }
+                          },
+                          "-data"
                         ]
                       }
                     }
@@ -513,7 +561,9 @@
                   "directory": {
                     "transformerType": "getFromContext",
                     "interpolation": "runtime",
-                    "referencePath": ["prefix"]
+                    "referencePath": [
+                      "prefix"
+                    ]
                   }
                 },
                 "model": {
@@ -521,7 +571,9 @@
                   "directory": {
                     "transformerType": "getFromContext",
                     "interpolation": "runtime",
-                    "referencePath": ["prefix"]
+                    "referencePath": [
+                      "prefix"
+                    ]
                   }
                 },
                 "data": {
@@ -529,7 +581,9 @@
                   "directory": {
                     "transformerType": "getFromContext",
                     "interpolation": "runtime",
-                    "referencePath": ["prefix"]
+                    "referencePath": [
+                      "prefix"
+                    ]
                   }
                 }
               }
@@ -542,7 +596,9 @@
               "selfApplication": {
                 "transformerType": "getFromContext",
                 "interpolation": "runtime",
-                "referencePath": ["modifiedApplicationBundle", "applications", "0"]
+                "referencePath": [
+                  "testSelfApplication"
+                ]
               },
               "applicationModelBranch": {
                 "transformerType": "createObject",
@@ -552,23 +608,29 @@
                   "uuid": {
                     "transformerType": "getFromContext",
                     "interpolation": "runtime",
-                    "referencePath": ["testApplicationModelBranchUuid"]
+                    "referencePath": [
+                      "testApplicationModelBranchUuid"
+                    ]
                   },
                   "name": "master",
                   "selfApplication": {
                     "transformerType": "getFromContext",
                     "interpolation": "runtime",
-                    "referencePath": ["testApplicationUuid"]
+                    "referencePath": [
+                      "testApplicationUuid"
+                    ]
                   },
                   "headVersion": {
                     "transformerType": "getFromContext",
                     "interpolation": "runtime",
-                    "referencePath": ["testApplicationVersionUuid"]
+                    "referencePath": [
+                      "testApplicationVersionUuid"
+                    ]
                   },
                   "description": {
                     "transformerType": "mustacheStringTemplate",
                     "interpolation": "build",
-                    "definition": "The master branch of the {{deployApplication.applicationBundle.applicationName}} SelfApplication"
+                    "definition": "The master branch of the {{createApplication.applicationName}} SelfApplication"
                   }
                 }
               },
@@ -581,22 +643,28 @@
                   "uuid": {
                     "transformerType": "getFromContext",
                     "interpolation": "runtime",
-                    "referencePath": ["testApplicationVersionUuid"]
+                    "referencePath": [
+                      "testApplicationVersionUuid"
+                    ]
                   },
                   "selfApplication": {
                     "transformerType": "getFromContext",
                     "interpolation": "runtime",
-                    "referencePath": ["testApplicationUuid"]
+                    "referencePath": [
+                      "testApplicationUuid"
+                    ]
                   },
                   "branch": {
                     "transformerType": "getFromContext",
                     "interpolation": "runtime",
-                    "referencePath": ["testApplicationModelBranchUuid"]
+                    "referencePath": [
+                      "testApplicationModelBranchUuid"
+                    ]
                   },
                   "description": {
                     "transformerType": "mustacheStringTemplate",
                     "interpolation": "build",
-                    "definition": "Initial {{deployApplication.applicationBundle.applicationName}} selfApplication version"
+                    "definition": "Initial {{createApplication.applicationName}} selfApplication version"
                   },
                   "modelStructureMigration": {
                     "transformerType": "returnValue",
@@ -624,28 +692,35 @@
                   "uuid": {
                     "transformerType": "getFromContext",
                     "interpolation": "runtime",
-                    "referencePath": ["testApplicationUuid"]
+                    "referencePath": [
+                      "testApplicationUuid"
+                    ]
                   },
                   "parentName": "AdminApplication",
                   "parentUuid": "25d935e7-9e93-42c2-aade-0472b883492b",
                   "name": {
                     "transformerType": "getFromParameters",
-                    "referencePath": ["deployApplication", "applicationBundle", "applicationName"]
+                    "referencePath": [
+                      "createApplication",
+                      "applicationName"
+                    ]
                   },
                   "defaultLabel": {
                     "transformerType": "mustacheStringTemplate",
                     "interpolation": "build",
-                    "definition": "The {{deployApplication.applicationBundle.applicationName}} Application."
+                    "definition": "The {{createApplication.applicationName}} Application."
                   },
                   "description": {
                     "transformerType": "mustacheStringTemplate",
                     "interpolation": "build",
-                    "definition": "This Application contains the {{deployApplication.applicationBundle.applicationName}} model and data."
+                    "definition": "This Application contains the {{createApplication.applicationName}} model and data."
                   },
                   "selfApplication": {
                     "transformerType": "getFromContext",
                     "interpolation": "runtime",
-                    "referencePath": ["testApplicationUuid"]
+                    "referencePath": [
+                      "testApplicationUuid"
+                    ]
                   }
                 }
               ]
@@ -659,11 +734,16 @@
               "application": {
                 "transformerType": "getFromContext",
                 "interpolation": "runtime",
-                "referencePath": ["testApplicationUuid"]
+                "referencePath": [
+                  "testApplicationUuid"
+                ]
               },
               "deploymentUuid": {
                 "transformerType": "getFromParameters",
-                "referencePath": ["deployApplication", "deploymentUuid"]
+                "referencePath": [
+                  "createApplication",
+                  "deploymentUuid"
+                ]
               },
               "configuration": {
                 "transformerType": "createObjectFromPairs",
@@ -671,11 +751,16 @@
                   {
                     "attributeKey": {
                       "transformerType": "getFromParameters",
-                      "referencePath": ["deployApplication", "deploymentUuid"]
+                      "referencePath": [
+                        "createApplication",
+                        "deploymentUuid"
+                      ]
                     },
                     "attributeValue": {
                       "transformerType": "getFromParameters",
-                      "referencePath": ["sqltestDeploymentStorageConfigurationTemplate"]
+                      "referencePath": [
+                        "sqltestDeploymentStorageConfigurationTemplate"
+                      ]
                     }
                   }
                 ]
@@ -690,15 +775,22 @@
               "application": {
                 "transformerType": "getFromContext",
                 "interpolation": "runtime",
-                "referencePath": ["testApplicationUuid"]
+                "referencePath": [
+                  "testApplicationUuid"
+                ]
               },
               "deploymentUuid": {
                 "transformerType": "getFromParameters",
-                "referencePath": ["deployApplication", "deploymentUuid"]
+                "referencePath": [
+                  "createApplication",
+                  "deploymentUuid"
+                ]
               },
               "configuration": {
                 "transformerType": "getFromParameters",
-                "referencePath": ["sqltestDeploymentStorageConfigurationTemplate"]
+                "referencePath": [
+                  "sqltestDeploymentStorageConfigurationTemplate"
+                ]
               }
             }
           },
@@ -713,33 +805,40 @@
                 {
                   "uuid": {
                     "transformerType": "getFromParameters",
-                    "referencePath": ["deployApplication", "deploymentUuid"]
+                    "referencePath": [
+                      "createApplication",
+                      "deploymentUuid"
+                    ]
                   },
                   "parentName": "Deployment",
                   "parentUuid": "7959d814-400c-4e80-988f-a00fe582ab98",
                   "name": {
                     "transformerType": "mustacheStringTemplate",
                     "interpolation": "build",
-                    "definition": "Deployment of application {{deployApplication.applicationBundle.applicationName}}"
+                    "definition": "Deployment of application {{createApplication.applicationName}}"
                   },
                   "defaultLabel": {
                     "transformerType": "mustacheStringTemplate",
                     "interpolation": "build",
-                    "definition": "The deployment of application {{deployApplication.applicationBundle.applicationName}}"
+                    "definition": "The deployment of application {{createApplication.applicationName}}"
                   },
                   "description": {
                     "transformerType": "mustacheStringTemplate",
                     "interpolation": "build",
-                    "definition": "The description of deployment of application {{deployApplication.applicationBundle.applicationName}}"
+                    "definition": "The description of deployment of application {{createApplication.applicationName}}"
                   },
                   "selfApplication": {
                     "transformerType": "getFromContext",
                     "interpolation": "runtime",
-                    "referencePath": ["testApplicationUuid"]
+                    "referencePath": [
+                      "testApplicationUuid"
+                    ]
                   },
                   "configuration": {
                     "transformerType": "getFromParameters",
-                    "referencePath": ["sqltestDeploymentStorageConfigurationTemplate"]
+                    "referencePath": [
+                      "sqltestDeploymentStorageConfigurationTemplate"
+                    ]
                   }
                 }
               ]
@@ -750,22 +849,12 @@
             "actionLabel": "resetApplicationStore",
             "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
             "payload": {
-              "transformerType": "mergeIntoObject",
-              "interpolation": "runtime",
-              "applyTo": {
+              "application": {
                 "transformerType": "getFromContext",
                 "interpolation": "runtime",
-                "referencePath": ["modifiedApplicationBundle"]
-              },
-              "definition": {
-                "transformerType": "createObject",
-                "definition": {
-                  "application": {
-                    "transformerType": "getFromContext",
-                    "interpolation": "runtime",
-                    "referencePath": ["testApplicationUuid"]
-                  }
-                }
+                "referencePath": [
+                  "testApplicationUuid"
+                ]
               }
             }
           },
@@ -774,23 +863,16 @@
             "actionLabel": {
               "transformerType": "mustacheStringTemplate",
               "interpolation": "build",
-              "definition": "resetAndinitializeDeployment_initModel for {{deployApplication.applicationBundle.applicationName}}"
+              "definition": "resetAndinitializeDeployment_initModel for {{createApplication.applicationName}}"
             },
             "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
             "payload": {
               "application": {
                 "transformerType": "getFromContext",
                 "interpolation": "runtime",
-                "referencePath": ["testApplicationUuid"]
-              },
-              "model": {
-                "transformerType": "returnValue",
-                "interpolation": "build",
-                "value": {
-                  "transformerType": "getFromContext",
-                  "interpolation": "runtime",
-                  "referencePath": ["modifiedApplicationBundle"]
-                }
+                "referencePath": [
+                  "testApplicationUuid"
+                ]
               },
               "params": {
                 "transformerType": "getFromParameters",
@@ -806,7 +888,9 @@
               "application": {
                 "transformerType": "getFromContext",
                 "interpolation": "runtime",
-                "referencePath": ["testApplicationUuid"]
+                "referencePath": [
+                  "testApplicationUuid"
+                ]
               }
             }
           },
@@ -818,7 +902,9 @@
               "application": {
                 "transformerType": "getFromContext",
                 "interpolation": "runtime",
-                "referencePath": ["testApplicationUuid"]
+                "referencePath": [
+                  "testApplicationUuid"
+                ]
               }
             }
           },
@@ -830,7 +916,9 @@
               "application": {
                 "transformerType": "getFromContext",
                 "interpolation": "runtime",
-                "referencePath": ["testApplicationUuid"]
+                "referencePath": [
+                  "testApplicationUuid"
+                ]
               },
               "entities": []
             }
@@ -843,40 +931,9 @@
               "application": {
                 "transformerType": "getFromContext",
                 "interpolation": "runtime",
-                "referencePath": ["testApplicationUuid"]
-              }
-            }
-          },
-          {
-            "actionType": "createInstance",
-            "actionLabel": "CreateApplicationStoreInstances",
-            "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
-            "payload": {
-              "application": {
-                "transformerType": "getFromContext",
-                "interpolation": "runtime",
-                "referencePath": ["testApplicationUuid"]
-              },
-              "applicationSection": "data",
-              "objects": {
-                "transformerType": "ifThenElse",
-                "if": {
-                  "transformerType": "boolExpr",
-                  "operator": "isNotNull",
-                  "left": {
-                    "transformerType": "getFromParameters",
-                    "safe": true,
-                    "referencePath": ["deployApplication", "deploymentData", "instances"]
-                  }
-                },
-                "then": {
-                  "transformerType": "getFromParameters",
-                  "referencePath": ["deployApplication", "deploymentData", "instances"]
-                },
-                "else": {
-                  "transformerType": "returnValue",
-                  "value": []
-                }
+                "referencePath": [
+                  "testApplicationUuid"
+                ]
               }
             }
           }
