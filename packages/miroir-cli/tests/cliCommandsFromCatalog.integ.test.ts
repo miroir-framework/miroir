@@ -1,4 +1,4 @@
-// #627 slice 3: the CLI commands are the endpoint action catalog, named as the MCP tools, with
+// #627: the CLI commands are the endpoint action catalog, named as the MCP tools, with
 // the action type as an alias when exactly one command has it.
 import { Command } from "commander";
 import { beforeAll, describe, expect, it } from "vitest";
@@ -10,9 +10,9 @@ import {
 } from "miroir-core";
 import { openTestEnvironment, selectedTestEnvironment } from "miroir-env";
 
-import { getAllCommands, type CliCommandHandler } from "../../../src/commands/commandsFromEndpoint.js";
-import { registerCatalogCommands } from "../../../src/commands/registerCatalogCommands.js";
-import { initializePlatform } from "../../../src/platform.js";
+import { getAllCommands, type CliCommandHandler } from "../src/commands/commandsFromEndpoint.js";
+import { registerCatalogCommands } from "../src/commands/registerCatalogCommands.js";
+import { initializePlatform } from "../src/platform.js";
 
 const globalTimeOut = 120000;
 const appForTestApplicationUuid = "eef01001-0001-4000-8000-000000000001";

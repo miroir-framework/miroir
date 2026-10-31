@@ -25,12 +25,12 @@ Out (analysis Non-goals): per-action surface opt-in, a generic CopilotKit propos
 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
-| 0 | Characterize the three surfaces | ⬜ | `endpointSurfaces.627.phase0.integ.test.ts` (mcp, cli) |
-| 1 | Tracer: a fixture Endpoint becomes an MCP tool through the core catalog | ⬜ | `endpointToolNaming.unit.test.ts` collision case, `endpointActionCatalog.627.phase1.integ.test.ts` (mcp) |
-| 2 | Each call runs with its target application's model environment | ⬜ | `endpointActionEnvironment.627.phase2.integ.test.ts` (mcp) |
-| 3 | CLI commands from the catalog | ⬜ | `cliCommandsFromCatalog.627.phase3.integ.test.ts` (cli) |
-| 4 | CopilotKit actions from the catalog | ⬜ | `copilotKitEndpointActions.627.phase4.integ.test.ts` (ai) |
-| 5 | No runtime dependency on example packages; nonreg; docs; cleanup | ⬜ | `scripts/tests/test_package_runtime_dependencies.py` |
+| 0 | Characterize the three surfaces | ✅ | `endpointSurfaces.627.phase0.integ.test.ts` (mcp, cli) |
+| 1 | Tracer: a fixture Endpoint becomes an MCP tool through the core catalog | ✅ | `endpointToolNaming.unit.test.ts` collision case, `endpointActionCatalog.627.phase1.integ.test.ts` (mcp) |
+| 2 | Each call runs with its target application's model environment | ✅ | `endpointActionEnvironment.627.phase2.integ.test.ts` (mcp) |
+| 3 | CLI commands from the catalog | ✅ | `cliCommandsFromCatalog.627.phase3.integ.test.ts` (cli) |
+| 4 | CopilotKit actions from the catalog | ✅ | `copilotKitEndpointActions.627.phase4.integ.test.ts` (ai) |
+| 5 | No runtime dependency on example packages; nonreg; docs; cleanup | ✅ | `scripts/tests/test_package_runtime_dependencies.py` |
 
 ## Locked implementation defaults
 
@@ -79,7 +79,7 @@ Vitest is the vehicle throughout: the behaviour under test is a package surface 
 
 ## Slice 0 — Characterize the three surfaces
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -108,11 +108,15 @@ npm run testByFile -w miroir-cli -- endpointSurfaces.627
 
 ### Realization
 
+- MCP characterization on `test-filesystem`: the instance and lending tools under their names, no truncated name, and the known misalignment (`Miroir_createInstance` of a fixture `Country` with a numeric `name` accepted).
+- Deviation: the test platform does not load the models into the local cache; the tests roll back every application of the map first (the MCP server does the same in `refreshLocalCachesForDeployedApplications`).
+- The CLI characterization (`getAllCommands()` = 7 instance commands + `lendDocument`) passed, then was replaced in slice 3, whose test asserts the same short names as aliases.
+
 ---
 
 ## Slice 1 — Tracer: a fixture Endpoint becomes an MCP tool through the core catalog
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -156,11 +160,15 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core,runners
 
 ### Realization
 
+- RED: the new collision case of `endpointToolNaming.unit.test.ts` failed on the old `toolNameFor`; GREEN once `toolNameFor.ts` re-exports the core helpers.
+- The fixture asset alone made the tracer test green (the registry was already live), as the plan predicted. The enumeration then moved to `EndpointActionCatalog.ts`; `EndpointToolRegistry` keeps the MCP conversion only. `resolveMcpToolAction.ts` uses `endpointActionName` from core.
+- `miroir-mcp/client` now re-exports the core helpers, so it no longer pulls `node:crypto`.
+
 ---
 
 ## Slice 2 — Each call runs with its target application's model environment
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -198,11 +206,15 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core,actions,runners
 
 ### Realization
 
+- `executeEndpointAction` in the catalog; `handleMcpAction(toolName, params, schema, execute)` validates and formats only. `mcpToolHandler`, `actionHandler` and the Library imports are gone from `miroir-mcp/src`.
+- Problem met: `mcpToolsTestCases.ts` and `endpointToolRegistry.integ.test.ts` sent `createInstance` / `updateInstance` objects in an obsolete nested shape (`{ parentName, instances: [...] }`). With the Library model they are now checked against `Book` and refused, as the analysis Risks foresaw; the payloads use the flat `objects` shape of the instance endpoint.
+- The access check now runs after payload validation (it ran before); the #263 MCP tests stay green.
+
 ---
 
 ## Slice 3 — CLI commands from the catalog
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -237,11 +249,15 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,tooling
 
 ### Realization
 
+- `registerCatalogCommands.ts` holds the registration; command actions set `process.exitCode`.
+- Deviation: `initializePlatform` now loads every deployed application into the local cache (the commands come from the live model).
+- Problem met: the CLI's own reference resolution cannot convert the payloads of 12 framework actions (deep references). The Zod schema is now built on first use, so listing and registering never fail; those commands report a `validation_error` when run, as before they did not exist. A shared payload validator in core is follow-up work.
+
 ---
 
 ## Slice 4 — CopilotKit actions from the catalog
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -284,11 +300,15 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,external,ui
 
 ### Realization
 
+- Test platform `tests/integration/aiTestPlatform.ts` (filesystem store only); devDependencies `miroir-env`, `miroir-localcache-redux`, `miroir-store-filesystem`; files run one at a time.
+- `cursorSdk.275.phase0` and `phase2` pins rewritten. `tests/unit/miroirTools.unit.test.ts` fails on `_integration` already (13 to 14 cases on the commented-out generate tools); it is not in any nonreg step and is left as is.
+- Authentication-on cases use the identity middleware's request shape with a real access directory and the real executor; no mock of the access check.
+
 ---
 
 ## Slice 5 — No runtime dependency on example packages; nonreg; docs; cleanup
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -332,3 +352,8 @@ npm run nonreg:filesystem -- --runner shared
 ```
 
 ### Realization
+
+- Guard RED on the five manifests, GREEN after the manifest changes; `npm install` refreshed the lockfile; `dist/` of mcp, cli and ai holds no Library reference.
+- nonreg step `unit-627-endpoint-surfaces` (tier `default`, scopes `external`, `tooling`).
+- Docs: `docs/guides/mcp-integration.md` (new section), `docs/guides/using-ai.md`.
+- Issue directories removed; suites `endpointActionCatalog.integ.test.ts` (mcp), `cliCommandsFromCatalog.integ.test.ts` (cli), `copilotKitEndpointActions.integ.test.ts` (ai). The slice 0 "no truncated name" assertion, a one-off check for the hash change, was dropped.

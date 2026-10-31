@@ -1,4 +1,4 @@
-// #627 slice 4: the Endpoint actions of every deployed application other than the framework's own
+// #627: the Endpoint actions of every deployed application other than the framework's own
 // are CopilotKit actions, executed as the caller, from the live model.
 import { createServer } from "node:http";
 import type { AddressInfo } from "node:net";
@@ -12,9 +12,9 @@ import {
   type DomainControllerInterface,
 } from "miroir-core";
 
-import { createCopilotKitRouter } from "../../../../src/routes/copilotKitRoute.js";
-import { createMiroirCopilotKitActions } from "../../../../src/tools/miroirCopilotKitActions.js";
-import { startAiTestPlatform } from "../../aiTestPlatform.js";
+import { createCopilotKitRouter } from "../../src/routes/copilotKitRoute.js";
+import { createMiroirCopilotKitActions } from "../../src/tools/miroirCopilotKitActions.js";
+import { startAiTestPlatform } from "./aiTestPlatform.js";
 
 const globalTimeOut = 60000;
 const appForTestApplicationUuid = "eef01001-0001-4000-8000-000000000001";

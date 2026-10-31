@@ -2791,6 +2791,22 @@
       ]
     },
     {
+      "id": "unit-627-endpoint-surfaces",
+      "scopes": ["external", "tooling"],
+      "tier": "default",
+      "title": "#627 \u2014 CopilotKit actions from the Endpoints of every deployed application, on a test environment (the MCP and CLI cases run in unit-345-mcp and unit-345-cli)",
+      "requires": "none",
+      "argv": [
+        "npm",
+        "run",
+        "testByFile",
+        "-w",
+        "miroir-ai",
+        "--",
+        "copilotKitEndpointActions"
+      ]
+    },
+    {
       "id": "unit-321-tracked-assets",
       "scopes": ["always"],
       "tier": "unit",

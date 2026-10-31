@@ -1,5 +1,10 @@
 import { Command } from "commander";
-import type { ApplicationDeploymentMap, DomainControllerInterface, LoggerInterface } from "miroir-core";
+import {
+  MiroirLoggerFactory,
+  type ApplicationDeploymentMap,
+  type DomainControllerInterface,
+  type LoggerInterface,
+} from "miroir-core";
 
 import {
   cliCommandAliases,
@@ -8,7 +13,11 @@ import {
   type CliResult,
 } from "./commandsFromEndpoint.js";
 
-const log: LoggerInterface = console as any as LoggerInterface;
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName("miroir-cli", "info", "registerCatalogCommands");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {
+  log = logger;
+});
 
 export type CatalogCommandRegistration = {
   /** Command names registered on the program. */
@@ -88,11 +97,12 @@ export function registerCatalogCommands(
         };
       }
       if (result.status === "error") {
-        log.error(JSON.stringify(result, null, 2));
+        process.stderr.write(`${JSON.stringify(result, null, 2)}\n`);
         process.exitCode = 1;
         return;
       }
-      log.debug(JSON.stringify(result, null, 2));
+      // the command's output, not a log line
+      process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
     });
   }
   return registration;

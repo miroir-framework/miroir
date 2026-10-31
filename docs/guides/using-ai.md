@@ -177,7 +177,7 @@ You can keep both a token provider and the agent configured. The AppBar pick cho
 
 1. Sparkle icon: open the assistant (needs snapshot `ai`).
 2. Robot icon, labelled with the backend (**Cursor** or **Claude**): appears only when snapshot `agentBackend` is not `"none"` **and** the AI shell is shown. Click until the tooltip says the agent is on. The pick is sessionStorage key `miroirAiBackend` (this browser tab), stored as `"agent"`; an older `"cursor"` value reads the same. Clearing it returns to the token path.
-3. Chat as usual. The agent calls Miroir MCP at `http://127.0.0.1:<apiPort>/mcp` with your session Bearer, so its tool calls run as you ([MCP gate](../reference/authentication.md#mcp)). When the server runs with TLS certificates, it calls the dedicated MCP listener (`server.mcpUrl` port, plain HTTP) instead. Write tools such as `Library_lendDocument` run immediately. Sidebar **forms** (`propose_generateMiroirEntity`, `propose_lendDocument`) stay CopilotKit review steps: Accept on lend POSTs `/lendDocument`; Reject does not.
+3. Chat as usual. The agent calls Miroir MCP at `http://127.0.0.1:<apiPort>/mcp` with your session Bearer, so its tool calls run as you ([MCP gate](../reference/authentication.md#mcp)). When the server runs with TLS certificates, it calls the dedicated MCP listener (`server.mcpUrl` port, plain HTTP) instead. Write tools such as `Library_lendDocument` run immediately. Sidebar **forms** (`propose_generateMiroirEntity`, `propose_lendDocument`) stay CopilotKit review steps: Accept on lend POSTs `/endpointAction/Library_lendDocument`; Reject does not.
 
 If the robot icon is missing, `GET /capabilities` still has `agentBackend: "none"` (config not saved, or you did not restart).
 
@@ -204,6 +204,8 @@ Frontend CopilotKit actions (both backends, with the agent runtime dropping `gen
 - Review forms: `propose_generateMiroirEntity`, `propose_lendDocument`
 
 The agent can also execute model/data tools through MCP on loopback `/mcp` (names like `Miroir_getInstances`, `Library_lendDocument`). Those writes are not queued for a second review.
+
+On the token path, the server also offers every Endpoint action of the deployed applications other than Miroir and Admin, under the MCP tool names (`Library_lendDocument`, …), run as you. See [Tools, CLI commands and assistant actions from Endpoints](mcp-integration.md#tools-cli-commands-and-assistant-actions-from-endpoints).
 
 Select the Library (or other) application in the sidebar so lookups and lend proposals target the deployment you are looking at.
 

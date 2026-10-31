@@ -12,11 +12,6 @@
       "count": 3
     }
   },
-  "packages/miroir-ai/src/tools/miroirCopilotKitActions.ts": {
-    "miroir/type-escape": {
-      "count": 2
-    }
-  },
   "packages/miroir-app-miroir/src/Model.ts": {
     "miroir/type-escape": {
       "count": 12
@@ -25,11 +20,6 @@
   "packages/miroir-app-miroir/src/runnerMiroirEntityTestRegistry.ts": {
     "miroir/type-escape": {
       "count": 4
-    }
-  },
-  "packages/miroir-cli/src/commands/commandsFromEndpoint.ts": {
-    "miroir/type-escape": {
-      "count": 8
     }
   },
   "packages/miroir-cli/src/index.ts": {
@@ -364,7 +354,7 @@
   },
   "packages/miroir-mcp/src/tools/mcpHandlersForEndpoint.ts": {
     "miroir/type-escape": {
-      "count": 3
+      "count": 2
     }
   },
   "packages/miroir-react/src/ReduxHooks.ts": {
