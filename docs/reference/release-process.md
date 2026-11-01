@@ -366,6 +366,24 @@ fully resolved and verified — the artefact pipeline never needs to reason abou
 | `node_modules` state | Long-lived, incrementally updated | Fresh per release, `npm ci`'d once versions/ranges are final |
 | Validation | `npm run build` succeeding | + `npm pack` + isolated `file:` consumer install per distributeable layer (§6) |
 
+## 10a. Manifests of the published set (#643)
+
+`scripts/published-packages.json` lists the workspace packages that become `@miroir-framework/*` (#621), each
+with its target name. `scripts/tests/test_package_manifests.py` checks every one of them:
+
+| Field or rule | Contract |
+|---|---|
+| `files` | present, `dist` (plus the stubs a package needs); no `src/`, no `.d.ts.map`, no entry the build does not produce |
+| `exports` | a map with `./package.json` and built targets only (`./dist/...`, or the `index.d.ts` stub of `miroir-app-*`); no `./src/*`. `miroir-cli` exports only `./package.json`: it is a `bin` |
+| `sideEffects`, `engines`, `repository`, `license` | `false`, `node >=22`, the monorepo with the package's `directory`, `MIT` |
+| TSDoc | the tsconfig that emits the declarations keeps comments (`removeComments` is `false` in the root `tsconfig.json`) |
+| shared libraries | `zod`, `react`, `react-dom`, `react-redux`, `react-router-dom`, `formik`, `@mui/material`, `@emotion/*` are peers with one caret range across the set, never `dependencies`; the dependency policy's `peers` rule asks for an exact devDependency inside the range |
+| declared imports | every bare import of `src/` is a dependency or peer (tsup bundles anything else into `dist/`), and every runtime dependency or peer is imported, apart from a short allowlist in the test |
+
+The "pack" cases run `npm pack --dry-run --json` on the built packages. They skip when a package is not built,
+unless `MIROIR_REQUIRE_PACK=1`, which the nonreg step `unit-643-package-manifests` and the `bundle` job of
+`pr-checks.yml` set. Analysis and decisions: `code-helpers/features/643-BUILD-manifest-hygiene/`.
+
 ## 11. Non-goals of the current implementation (v1)
 
 Per the v1 acceptance criteria, explicitly **out of scope** until follow-up work:

@@ -23,7 +23,7 @@ jobs:
           python3 -m pip install --quiet pytest pyyaml
           python3 -m pytest scripts/tests -q
       - name: Dependency policy
-        run: python3 scripts/check_dependency_policy.py --rule specs --rule classification --rule lockfile --rule workflows --rule actions
+        run: python3 scripts/check_dependency_policy.py --rule specs --rule classification --rule lockfile --rule workflows --rule actions --rule peers
       - name: Set up Node.js
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
@@ -65,14 +65,14 @@ jobs:
           EVENT_NAME: ${{ github.event_name }}
         # On a pull_request, HEAD is the merge commit and HEAD^1 the base branch. The inputs are what the
         # bundle job builds from: the packages, the install (root manifest, lockfile, .npmrc and the
-        # postinstall patch), the tsconfig the packages extend, the guard and this workflow.
+        # postinstall patch), the tsconfig the packages extend, the guard, the manifest contract (#643) and this workflow.
         run: |
           if [ "$EVENT_NAME" != "pull_request" ]; then
             echo "run=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
           changed=$(git diff --name-only HEAD^1 HEAD)
-          inputs='^(packages/|package(-lock)?\.json$|\.npmrc$|tsconfig\.json$|scripts/patch-tsup-baseurl\.cjs$|scripts/check_bundle_policy\.py$|\.github/workflows/pr-checks\.yml$)'
+          inputs='^(packages/|package(-lock)?\.json$|\.npmrc$|tsconfig\.json$|scripts/patch-tsup-baseurl\.cjs$|scripts/check_bundle_policy\.py$|scripts/published-packages\.json$|scripts/tests/test_package_manifests\.py$|\.github/workflows/pr-checks\.yml$)'
           if grep -qE "$inputs" <<< "$changed"; then
             echo "run=true" >> "$GITHUB_OUTPUT"
           else
@@ -115,6 +115,14 @@ jobs:
           python3 scripts/check_bundle_policy.py packages/miroir-standalone-app/dist/.vite/bundle-report.json packages/miroir-standalone-app/bundle-policy.json || status=1
           python3 scripts/check_bundle_policy.py packages/miroir-standalone-app-electron/dist/bundle-report.json packages/miroir-standalone-app-electron/bundle-policy.json || status=1
           exit $status
+      # #643: the pack cases of the manifest contract need every package of the published set built; the core job runs
+      # the same test before any build, where they skip.
+      - name: Manifests of the published set (pack cases)
+        if: ${{ !cancelled() }}
+        run: |
+          npm run build -w miroir-server-library -w miroir-cli
+          python3 -m pip install --quiet pytest
+          MIROIR_REQUIRE_PACK=1 python3 -m pytest scripts/tests/test_package_manifests.py -q
       - name: Upload bundle reports and source maps
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

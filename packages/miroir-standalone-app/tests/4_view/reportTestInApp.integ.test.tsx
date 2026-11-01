@@ -33,7 +33,7 @@ import {
   type DomainControllerInterface,
   type EntityInstance,
 } from "miroir-core";
-import { loadApplicationMiroirTestCatalog } from "miroir-core/src/5_tests/loadApplicationMiroirTestsFromFolders.js";
+import { loadApplicationMiroirTestCatalog } from "miroir-core/model-validation-fs";
 import { LocalCache, LocalCacheProvider, MiroirContextReactProvider } from "miroir-react";
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
@@ -56,7 +56,7 @@ import { miroirAppStartup } from "../../src/startup.js";
 
 vi.mock("../../src/miroir-fwk/4-tests/useSelectedApplicationMiroirTestSuiteRegistries.js", async () => {
   const { loadApplicationRunnerUuidIndexFromFolders } = await import(
-    "miroir-core/src/5_tests/loadApplicationMiroirTestsFromFolders.js"
+    "miroir-core/model-validation-fs"
   );
   const index = loadApplicationRunnerUuidIndexFromFolders();
   return {

@@ -14,7 +14,7 @@ import {
 import {
   listCliRunnerIntegrationSuiteKeysFromFolders,
   resolveCliSuiteKeysFromCatalog,
-} from "miroir-core/src/5_tests/loadApplicationMiroirTestsFromFolders.js";
+} from "miroir-core/model-validation-fs";
 import { startReportTestEntry } from "./helpers/reportTestEntry.js";
 import { runMiroirRunnerSuitesSharedFromCLI } from "./helpers/runMiroirRunnerSuitesSharedFromCLI.js";
 

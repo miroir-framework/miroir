@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
   listCliRunnerIntegrationSuiteKeysFromFolders,
   listCliTransformerIntegrationSuiteKeysFromFolders,
-} from "miroir-core/src/5_tests/loadApplicationMiroirTestsFromFolders.js";
+} from "miroir-core/model-validation-fs";
 
 import { resolveVitestEntry } from "../../scripts/testMiroirLauncher.js";
 

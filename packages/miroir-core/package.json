@@ -5,6 +5,10 @@
   "description": "The core Miroir components. Without it, Miroir will not work.",
   "author": "Miroir Framework <miroir-framework@protonmail.com>",
   "license": "MIT",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=22"
+  },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "type": "module",
@@ -21,23 +25,18 @@
     "./ml-to-ts": {
       "types": "./dist/ml-to-ts.d.ts",
       "import": "./dist/ml-to-ts.js"
-    },
-    "./src/*": "./src/*"
+    }
   },
   "files": [
     "LICENSE.md",
     "package.json",
     "dist/index.js",
     "dist/index.js.map",
-    "dist/index.cjs",
-    "dist/index.cjs.map",
     "dist/**/*.d.ts",
-    "dist/**/*.d.ts.map",
     "dist/model-validation-fs.js",
     "dist/model-validation-fs.js.map",
     "dist/ml-to-ts.js",
-    "dist/ml-to-ts.js.map",
-    "dist/src/worker.js"
+    "dist/ml-to-ts.js.map"
   ],
   "scripts": {
     "copy-files": "copyfiles -u 1 src/**/*.json src/**/*.css dist/src",
@@ -58,17 +57,16 @@
     "@miroir-framework/jzod": "1.0.0",
     "@miroir-framework/jzod-ts": "1.0.0",
     "chalk": "6.0.1",
-    "diff": "9.0.0",
     "fast-deep-equal": "3.1.3",
     "fast-json-stable-stringify": "2.1.0",
+    "immer": "11.1.21",
     "json-diff": "1.0.6",
     "miroir-app-admin": "*",
     "miroir-app-miroir": "*",
     "mustache": "4.2.0",
     "serialize-error": "13.0.2",
     "uuid": "14.0.3",
-    "yaml": "2.9.1",
-    "zod": "4.6.7"
+    "yaml": "2.9.1"
   },
   "devDependencies": {
     "@babel/plugin-syntax-import-attributes": "7.29.7",
@@ -80,10 +78,10 @@
     "@types/node": "26.6.5",
     "copyfiles": "2.4.1",
     "jest": "30.5.2",
+    "miroir-example-library": "*",
     "miroir-store-bundled": "*",
     "miroir-store-filesystem": "*",
     "miroir-store-postgres": "*",
-    "miroir-example-library": "*",
     "pg": "8.23.1",
     "pg-hstore": "2.3.4",
     "sequelize": "6.37.8",
@@ -93,6 +91,15 @@
     "tsup": "9.0.0",
     "tsx": "4.23.15",
     "vite": "8.3.5",
-    "vitest": "5.0.5"
+    "vitest": "5.0.5",
+    "zod": "4.6.7"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/miroir-framework/miroir.git",
+    "directory": "packages/miroir-core"
+  },
+  "peerDependencies": {
+    "zod": "^4.6.7"
   }
 }

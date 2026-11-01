@@ -81,8 +81,8 @@ Order: I1, I4 and I5 can start now and run in parallel. I2 and I3 next. I6 waits
 | I4 | 2 | `startMiroirClient`: sandbox and standalone app share one call | ✅ #639 | sandbox tests, standalone UI integ smoke |
 | I4 | 3 | Server and Electron on `startMiroirNode` | ✅ #639 | `environmentBoot`, server phase0 test |
 | I5 | 1 | Duplicate copies of core are reported | ⬜ | `duplicateCore.<I5>.phase1.unit.test.ts` |
-| I5 | 2 | Manifest contract for the published set | ⬜ | `scripts/tests/test_package_manifests.py` |
-| I5 | 3 | Named subpaths replace `./src/*` | ⬜ | `npm pack --dry-run` file list, typecheck |
+| I5 | 2 | Manifest contract for the published set | ✅ #643 | `scripts/tests/test_package_manifests.py`, `unit-643-package-manifests` |
+| I5 | 3 | Named subpaths replace `./src/*` | ✅ #643 (`./src/*` part; `@public` TSDoc left to "Public API of core") | pack cases of `test_package_manifests.py` |
 | I5 | 4 | No `import.meta.env` in published code | ⬜ | `tools.<I5>.phase4.unit.test.ts` |
 | I6 | 0 | Characterize every package-name reference | ⬜ | rename script `--report` |
 | I6 | 1 | Rename script, rerunnable on open branches | ⬜ | `scripts/tests/test_rename_packages.py` |
@@ -110,7 +110,7 @@ From the analysis decision record. D1 to D6 are confirmed. D7 to D11 are the rec
 | D7 Meta-model packages | stay private workspace packages, bundled into core, exposed as `@miroir-framework/core/meta-model` and `/admin` (D7-b) | G1, G5 | I6 |
 | D8 Local cache | bundled into react; its Node entry exposed by `@miroir-framework/server` (D8-a) | G1 | I4, I6 |
 | D9 Endpoint surfaces | one endpoint action catalog in `miroir-core`, adapters per surface (D9-b); per-action opt-in (D9-c) only as a follow-up | G3 | I1 |
-| D10 Shared libraries | peers for `zod`, `react`, `react-dom`, `@mui/material`, `@emotion/*`; exact dependencies for the rest (D10-b) | G1, G5 | I5 |
+| D10 Shared libraries | peers for `zod`, `react`, `react-dom`, `react-redux`, `react-router-dom`, `formik`, `@mui/material`, `@emotion/*`, caret ranges with an exact devDependency; exact dependencies for the rest (D10-b, done in #643 D1) | G1, G5 | I5 |
 | D11 Core API | 0.x promises no stability; `@public` TSDoc marks the supported part (D11-a) | G5 | I5 |
 
 ---
@@ -720,7 +720,7 @@ npm run test -w miroir-core -- ''
 
 ## I5 Slice 2 — Manifest contract for the published set
 
-**Status:** ⬜ pending
+**Status:** superseded: #643 did slices 2 and 3 with its own analysis and plan (`../643-BUILD-manifest-hygiene/`). The `./src/*` imports moved to the existing `./model-validation-fs` entry, not to a new `./testing` one (its D3).
 
 ### 2.1 RED
 
@@ -747,7 +747,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core,ui
 
 ## I5 Slice 3 — Named subpaths replace `./src/*`
 
-**Status:** ⬜ pending
+**Status:** superseded by #643 (see slice 2); `@public` TSDoc (D11-a) stays with the "Public API of core" item.
 
 **RED:** a `test_package_manifests.py` case fails while `miroir-core` exports `./src/*`. **GREEN:** `./testing` (for `loadApplicationMiroirTestsFromFolders`, 16 imports) and `./generated` (one import); move the imports; either ship `src/` in `files` or drop the declaration maps (D11). `@public` TSDoc on the supported exports (D11-a).
 

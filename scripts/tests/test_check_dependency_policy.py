@@ -15,9 +15,11 @@ from check_dependency_policy import (
     check_audit,
     check_classification,
     check_lockfile,
+    check_peers,
     check_specs,
     check_workflows,
     main,
+    satisfies,
     spec_problem,
 )
 
@@ -396,3 +398,100 @@ def test_cli_audit_from_a_file(repo: Path, capsys: pytest.CaptureFixture[str]) -
 def test_this_repository_follows_the_rule(rule: str) -> None:
     result = subprocess.run([sys.executable, str(SCRIPT), "--rule", rule], cwd=REPO_ROOT, capture_output=True, text=True)
     assert result.returncode == 0, result.stdout
+
+
+# --------------------------------------------------------------------------------------------------------------------
+# peers (#643)
+
+
+def _publish(repo: Path, *packages: str) -> None:
+    _write(
+        repo / "scripts" / "published-packages.json",
+        [{"folder": f"packages/{name}", "publishedName": f"@miroir-framework/{name}"} for name in packages],
+    )
+
+
+@pytest.fixture
+def published(repo: Path) -> Path:
+    """miroir-react of the fixture is published; its peers have a matching devDependency."""
+    _publish(repo, "miroir-react")
+    _set(repo, "miroir-react", "devDependencies", "react", "18.3.1")
+    _set(repo, "miroir-react", "devDependencies", "@mui/material", "5.18.0")
+    return repo
+
+
+def test_a_peer_with_a_matching_dev_dependency_passes(published: Path) -> None:
+    assert check_peers(published) == []
+
+
+def test_a_peer_without_a_dev_dependency_is_a_violation(published: Path) -> None:
+    _set(published, "miroir-react", "peerDependencies", "zod", "^4.6.7")
+    [violation] = check_peers(published)
+    assert violation.rule == "peers"
+    assert violation.where == "packages/miroir-react/package.json"
+    assert violation.message == 'peerDependencies.zod "^4.6.7" has no devDependency to build and test with'
+
+
+def test_a_dev_dependency_outside_the_peer_range_is_a_violation(published: Path) -> None:
+    _set(published, "miroir-react", "peerDependencies", "zod", "^4.6.7")
+    _set(published, "miroir-react", "devDependencies", "zod", "3.25.0")
+    [violation] = check_peers(published)
+    assert violation.message == 'peerDependencies.zod "^4.6.7": devDependencies.zod "3.25.0" is outside the range'
+
+
+@pytest.mark.parametrize(
+    "peer, dev, ok",
+    [
+        ("^4.6.7", "4.6.7", True),
+        ("^4.6.7", "4.9.0", True),
+        ("^4.6.7", "5.0.0", False),
+        ("^4.6.7", "4.6.6", False),
+        ("^0.5.2", "0.5.9", True),
+        ("^0.5.2", "0.6.0", False),
+        (">=5.17.1 <10", "9.5.0", True),
+        (">=5.17.1 <10", "10.0.0", False),
+        (">=18.0.0", "19.1.0", True),
+        ("18.3.1", "18.3.1", True),
+        ("18.3.1", "18.3.2", False),
+    ],
+)
+def test_the_range_matcher_covers_the_forms_the_repo_uses(peer: str, dev: str, ok: bool) -> None:
+    assert satisfies(dev, peer) is ok
+
+
+def test_an_unsupported_range_form_is_a_violation(published: Path) -> None:
+    _set(published, "miroir-react", "peerDependencies", "zod", "^4.0.0 || ^5.0.0")
+    _set(published, "miroir-react", "devDependencies", "zod", "4.6.7")
+    [violation] = check_peers(published)
+    assert "range form the policy cannot check" in violation.message
+
+
+def test_internal_peers_are_not_checked(published: Path) -> None:
+    _set(published, "miroir-react", "peerDependencies", "miroir-core", "*")
+    assert check_peers(published) == []
+
+
+def test_packages_outside_the_published_set_are_not_checked(published: Path) -> None:
+    _set(published, "miroir-core", "peerDependencies", "react", "^18.2.0")
+    assert check_peers(published) == []
+
+
+def test_without_a_published_set_nothing_is_checked(repo: Path) -> None:
+    assert check_peers(repo) == []
+
+
+@pytest.mark.parametrize(
+    "version, range_spec, expected",
+    [
+        ("0.0.3", "^0.0.3", True),
+        ("0.0.5", "^0.0.3", False),
+        ("0.2.9", "^0.2.1", True),
+        ("0.3.0", "^0.2.1", False),
+        ("1.3.0", ">=1.2 <1.3", False),
+        ("1.2.5", ">1.2", None),
+        ("1.2.5", "<=1.2", None),
+        ("18.3.1", "^18 || ^19", None),
+    ],
+)
+def test_satisfies_reads_caret_zero_and_refuses_partial_exclusive_bounds(version, range_spec, expected):
+    assert satisfies(version, range_spec) is expected

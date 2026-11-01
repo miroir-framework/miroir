@@ -12,7 +12,8 @@
   "homepage": "https://github.com/XXXXXXXXXXXXXXXXXXXXXXXXXXX#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/XXXXXXXXXXXXXXXXXXXXXXXX.git"
+    "url": "git+https://github.com/miroir-framework/miroir.git",
+    "directory": "packages/miroir-server"
   },
   "scripts": {
     "build:client": "cross-env NODE_OPTIONS=--max-old-space-size=6144 npm run build -w miroir-standalone-app",
@@ -48,8 +49,11 @@
     "json-diff": "1.0.6",
     "loglevelnext": "6.0.0",
     "miroir-ai": "*",
+    "miroir-app-admin": "*",
+    "miroir-app-miroir": "*",
     "miroir-core": "*",
     "miroir-env": "*",
+    "miroir-example-library": "*",
     "miroir-localcache-redux": "*",
     "miroir-mcp": "*",
     "miroir-server-library": "*",
@@ -57,9 +61,7 @@
     "miroir-store-indexedDb": "*",
     "miroir-store-mongodb": "*",
     "miroir-store-postgres": "*",
-    "miroir-app-admin": "*",
-    "miroir-example-library": "*",
-    "miroir-app-miroir": "*"
+    "zod": "4.6.7"
   },
   "devDependencies": {
     "@babel/core": "8.0.7",

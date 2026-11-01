@@ -38,6 +38,7 @@ A package version enters the build only when someone chose it ([#326](https://gi
 | `lockfile` | `package-lock.json` installs another version than a manifest pins, misses a package (often another platform's binary, npm/cli#4828), or has no integrity hash for a package |
 | `workflows` | a GitHub workflow or composite action runs `npm install` rather than `npm ci` |
 | `actions` | a GitHub workflow or composite action uses an action by tag or branch rather than by commit SHA (`actions/checkout@<sha> # v6`) |
+| `peers` | a third-party peer of a package of the published set (`scripts/published-packages.json`) has no exact devDependency, or one outside the peer range (#643) |
 | `audit` | `npm audit` reports a high or critical advisory (`--level critical` for critical only) that no live exception covers, or an exception has expired |
 
 ```bash
