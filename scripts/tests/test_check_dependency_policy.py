@@ -478,3 +478,20 @@ def test_packages_outside_the_published_set_are_not_checked(published: Path) -> 
 
 def test_without_a_published_set_nothing_is_checked(repo: Path) -> None:
     assert check_peers(repo) == []
+
+
+@pytest.mark.parametrize(
+    "version, range_spec, expected",
+    [
+        ("0.0.3", "^0.0.3", True),
+        ("0.0.5", "^0.0.3", False),
+        ("0.2.9", "^0.2.1", True),
+        ("0.3.0", "^0.2.1", False),
+        ("1.3.0", ">=1.2 <1.3", False),
+        ("1.2.5", ">1.2", None),
+        ("1.2.5", "<=1.2", None),
+        ("18.3.1", "^18 || ^19", None),
+    ],
+)
+def test_satisfies_reads_caret_zero_and_refuses_partial_exclusive_bounds(version, range_spec, expected):
+    assert satisfies(version, range_spec) is expected

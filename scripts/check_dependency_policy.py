@@ -396,14 +396,17 @@ def _version(text: str) -> tuple[int, int, int] | None:
 
 
 def _comparators(range_spec: str) -> list[tuple[str, tuple[int, int, int]]] | None:
-    """The forms the repo uses: `^x.y.z`, an exact `x.y.z`, and space-separated `>=`/`<`/`>`/`<=` comparators."""
+    """The forms the repo uses: `^x.y.z`, an exact `x.y.z`, and space-separated `>=`/`<`/`>`/`<=` comparators.
+
+    Anything else (`||`, `~`, x-ranges, hyphen ranges, prereleases) is None, which the rule reports.
+    """
     spec = range_spec.strip()
     if spec.startswith("^"):
         base = _version(spec[1:])
         if base is None:
             return None
         major, minor, patch = base
-        upper = (major + 1, 0, 0) if major else (0, minor + 1, 0)
+        upper = (major + 1, 0, 0) if major else (0, minor + 1, 0) if minor else (0, 0, patch + 1)
         return [(">=", base), ("<", upper)]
     if _version(spec):
         return [("=", _version(spec))]  # type: ignore[list-item]
@@ -412,6 +415,8 @@ def _comparators(range_spec: str) -> list[tuple[str, tuple[int, int, int]]] | No
         match = _COMPARATOR_RE.match(part)
         if not match or not match[1]:
             return None
+        if match[4] is None and match[1] in {">", "<="}:
+            return None  # `>1.2` means `>=1.3.0` and `<=1.2` means `<1.3.0`: partial bounds are read only for >= and <
         comparators.append((match[1], (int(match[2]), int(match[3] or 0), int(match[4] or 0))))
     return comparators or None
 

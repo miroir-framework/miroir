@@ -121,6 +121,7 @@ jobs:
         if: ${{ !cancelled() }}
         run: |
           npm run build -w miroir-server-library -w miroir-cli
+          python3 -m pip install --quiet pytest
           MIROIR_REQUIRE_PACK=1 python3 -m pytest scripts/tests/test_package_manifests.py -q
       - name: Upload bundle reports and source maps
         if: ${{ !cancelled() }}

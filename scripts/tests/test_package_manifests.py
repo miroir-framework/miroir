@@ -99,7 +99,7 @@ def test_each_package_of_the_set_has_a_scoped_published_name():
 
 REQUIRE_PACK = os.environ.get("MIROIR_REQUIRE_PACK") == "1"
 # Files npm always adds to a tarball, whatever `files` says.
-ALWAYS_PACKED = re.compile(r"^(package\.json|README(\.[^/]*)?|LICEN[CS]E(\.[^/]*)?)$", re.IGNORECASE)
+ALWAYS_PACKED = re.compile(r"^(package\.json|README(\.[^/]*)?)$", re.IGNORECASE)
 # The hand-written declaration stub of the meta-model packages (tsup `dts: false`, listed in their `files`).
 DECLARATION_STUBS = {"packages/miroir-app-miroir": "./index.d.ts", "packages/miroir-app-admin": "./index.d.ts"}
 
@@ -185,6 +185,8 @@ def test_a_published_tarball_holds_its_entry_points_and_no_sources(folder):
     assert [target for target in entry_point_targets(folder) if target not in packed] == []
     assert [path for path in packed if path.startswith(("src/", "tests/", "test/"))] == []
     assert [path for path in packed if path.endswith(".d.ts.map")] == []
+    # npm adds a LICENSE only when the package folder holds one: the MIT notice must travel with each tarball.
+    assert [path for path in packed if re.fullmatch(r"LICEN[CS]E(\.[^/]*)?", path, re.IGNORECASE)], f"{folder}: no LICENSE packed"
 
 
 @pytest.mark.parametrize("folder", published_folders())
@@ -201,9 +203,9 @@ def test_every_files_entry_matches_a_built_file(folder):
     assert unmatched == [], f"{folder}: `files` entries that match no built file"
 
 
-# import specifiers only (comments removed): static import/export ... from, import(), vi.mock()/vi.importActual()
+# import specifiers only (comments removed): static import/export ... from, import(), require(), vi.mock()/vi.importActual()
 SPECIFIER = re.compile(
-    r"""(?:^\s*(?:import|export)\s(?:[^;'"]*?\sfrom\s*)?|\bimport\(\s*|\bvi\.(?:mock|importActual|doMock)\(\s*)['"]([^'"]+)['"]""",
+    r"""(?:^\s*(?:import|export)\s(?:[^;'"]*?\sfrom\s*)?|\bimport\(\s*|(?<![.\w])require\(\s*|\bvi\.(?:mock|importActual|doMock)\(\s*)['"]([^'"]+)['"]""",
     re.MULTILINE,
 )
 SKIPPED_DIRS = {"node_modules", "dist", "release", ".vite"}
@@ -253,12 +255,14 @@ import { a,
 import type { T } from 'type-only';
 export * from "re-export";
 const lazy = await import("dynamic");
+const legacy = require("required");
+const electron = (window as any).require("electron");
 vi.mock("mocked", async () => ({}));
 // import { gone } from "commented-out";
 /* import { gone } from "block-commented"; */
 import { local } from "./relative.js";
 """
-    assert import_specifiers(sample) == ["multi-line", "type-only", "re-export", "dynamic", "mocked", "./relative.js"]
+    assert import_specifiers(sample) == ["multi-line", "type-only", "re-export", "dynamic", "required", "mocked", "./relative.js"]
 
 
 def test_no_repo_code_imports_a_package_source_folder():
@@ -292,8 +296,7 @@ def tsconfig_chain_value(tsconfig: Path, option: str):
     """The effective compilerOptions value of `option`, following `extends` (relative paths only)."""
     # tsconfig files here are JSON with comments and trailing commas in places: strip both before parsing.
     text = tsconfig.read_text(encoding="utf-8")
-    text = re.sub(r"/\*.*?\*/", "", text, flags=re.DOTALL)
-    text = re.sub(r"^\s*//.*$", "", text, flags=re.MULTILINE)
+    text = strip_comments(text)  # string-aware: globs such as "./dist/**" hold "/*"
     text = re.sub(r",(\s*[}\]])", r"\1", text)
     config = json.loads(text)
     options = config.get("compilerOptions", {})
@@ -407,13 +410,18 @@ def package_of(specifier: str) -> str | None:
 def imported_packages(folder: str) -> frozenset[str]:
     own = manifest(folder)["name"]
     found = set()
-    for path in source_files(f"{folder}/src"):
+    # src/, plus the build entries at the package root (the meta-model packages build `index.ts` and have no src/).
+    paths = [*source_files(f"{folder}/src"), *(path for path in (ROOT / folder).glob("*.ts") if path.name == "index.ts")]
+    scanned = 0
+    for path in paths:
         if path.name.endswith(".d.ts") or ".test." in path.name:
             continue  # ambient declarations (lodash-es.d.ts) are not imports of the build
+        scanned += 1
         for specifier in import_specifiers(path.read_text(encoding="utf-8", errors="replace")):
             name = package_of(specifier)
             if name and name != own:
                 found.add(name)
+    assert scanned, f"{folder}: no source file scanned for imports"
     return frozenset(found)
 
 
