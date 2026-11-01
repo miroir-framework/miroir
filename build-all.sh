@@ -482,7 +482,7 @@ build_one_package() {
         typecheck_package "$pkg"
         rc=$?
       else
-        npm run build -w "$pkg"
+        npm run build -w "packages/$pkg"
         rc=$?
       fi
       ;;
@@ -561,7 +561,7 @@ run_stage_packages() {
             typecheck_package "$pkg"
             rc=$?
           else
-            npm run build -w "$pkg"
+            npm run build -w "packages/$pkg"
             rc=$?
           fi
           ;;

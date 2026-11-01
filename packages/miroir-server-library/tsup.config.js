@@ -5,12 +5,12 @@ import { defineConfig } from 'tsup';
 // Checked on what the bundle really imports (external ones included), after tsup has marked every
 // declared dependency external: an onResolve hook would not see those.
 const FORBIDDEN_IMPORTS = [
-  /^miroir-store-/,
+  /^(@miroir-framework\/store-|miroir-store-)/,
   /^pg($|\/|-)/, // pg, pg-pool, pg-native, pg-hstore, pg-cursor, …
   /^@?sequelize($|\/)/,
   /^mongodb($|\/)/,
   /^([a-z-]+-)?level($|\/)/, // level, browser-level, classic-level, abstract-level, memory-level, …
-  /^miroir-env($|\/)/,
+  /^(@miroir-framework\/env|miroir-env)($|\/)/,
   /^miroir-ai($|\/)/,
   /^@copilotkit\//,
 ];

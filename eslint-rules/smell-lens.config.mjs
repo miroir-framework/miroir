@@ -151,7 +151,7 @@ const inTests = [
   smell(
     "mocked-own-module",
     // A factory whose properties are all spies keeps the real code: it is not reported.
-    `CallExpression[callee.object.name='vi'][callee.property.name='mock']:not([arguments.length=2]:has(${SPY}):not(:has(Property:not([value.callee.property.name='fn'][value.arguments.0.type='MemberExpression'])))) > Literal.arguments:first-child[value=/^(\\.|miroir-)/]`,
+    `CallExpression[callee.object.name='vi'][callee.property.name='mock']:not([arguments.length=2]:has(${SPY}):not(:has(Property:not([value.callee.property.name='fn'][value.arguments.0.type='MemberExpression'])))) > Literal.arguments:first-child[value=/^(\\.|miroir-|@miroir-framework.(core|react|store-|env|mcp|cli|server))/]`,
     "vi.mock of Miroir's own code: the test checks the mock, not the integration. Prefer a MiroirTest or a real in-memory adapter.",
   ),
 ];

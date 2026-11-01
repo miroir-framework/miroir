@@ -168,9 +168,11 @@ def test_every_name_index_ts_exports_has_a_declaration():
     assert PUBLIC_NAMES <= set(declarations)
 
 
-IMPORT_FROM_CORE = re.compile(r"\bimport\s+(type\s+)?\{([^}]*)\}\s*from\s*([\"'])miroir-core\3")
+IMPORT_FROM_CORE = re.compile(
+    r"\bimport\s+(type\s+)?\{([^}]*)\}\s*from\s*([\"'])(?:@miroir-framework/core|miroir-core)\3"
+)
 # any string naming core or a subpath of it: each must be the specifier of a plain named import
-CORE_SPECIFIER = re.compile(r"([\"'`])miroir-core(?:/[^\"'`]*)?\1")
+CORE_SPECIFIER = re.compile(r"([\"'`])(?:@miroir-framework/core|miroir-core)(?:/[^\"'`]*)?\1")
 TEMPLATE_SUFFIXES = {".ts", ".tsx", ".mts", ".cts", ".js", ".jsx", ".mjs", ".cjs"}
 SANDBOX = ROOT / "packages/miroir-sandbox"
 

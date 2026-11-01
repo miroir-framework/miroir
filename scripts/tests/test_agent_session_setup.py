@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -177,5 +178,5 @@ def test_pr_checks_build_miroir_env_and_check_environments() -> None:
     packages = [p for group in BUILD_GROUPS for p in group]
     assert packages.index("miroir-env") > packages.index("miroir-core")
     workflow = (SCRIPT.parents[1] / ".github" / "workflows" / "pr-checks.yml").read_text(encoding="utf-8")
-    assert "-w miroir-env" in workflow
+    assert re.search(r"-w (@miroir-framework/env|miroir-env)\b", workflow)
     assert "npm run miroir-env -- check --strict --tracked-clean" in workflow

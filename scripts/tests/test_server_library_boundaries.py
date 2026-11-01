@@ -17,13 +17,13 @@ from pathlib import Path
 import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-LIBRARY = REPO_ROOT / "packages" / "miroir-server-library"
+LIBRARY = REPO_ROOT / "packages/miroir-server-library"
 LIBRARY_DIST = LIBRARY / "dist"
 TSUP = REPO_ROOT / "node_modules" / ".bin" / "tsup"
 
 # the same list as tsup.config.js, matched on a whole specifier, subpaths included
 FORBIDDEN = re.compile(
-    r"^(miroir-store-[^/]+|pg(-[^/]+)?|@?sequelize|mongodb|([a-z-]+-)?level|miroir-env|miroir-ai|@copilotkit/[^/]+)(/.*)?$"
+    r"^(@miroir-framework/store-[^/]+|@miroir-framework/env|miroir-store-[^/]+|pg(-[^/]+)?|@?sequelize|mongodb|([a-z-]+-)?level|miroir-env|miroir-ai|@copilotkit/[^/]+)(/.*)?$"
 )
 # the probe builds run tsup twice: only in the unit-636-server-library nonreg step
 BUILD_CHECKS = os.environ.get("MIROIR_LIBRARY_BUILD_CHECKS") == "1"

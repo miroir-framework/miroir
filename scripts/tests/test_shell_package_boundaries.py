@@ -15,7 +15,7 @@ ROOT = Path(__file__).resolve().parents[2]
 REACT_SRC = ROOT / "packages/miroir-react/src"
 SANDBOX = ROOT / "packages/miroir-sandbox"
 
-SELF_IMPORT = re.compile(r"""(?:from\s*|import\s*\(\s*|^\s*import\s+)['"]miroir-react(?:/[^'"]*)?['"]""", re.M)
+SELF_IMPORT = re.compile(r"""(?:from\s*|import\s*\(\s*|^\s*import\s+)['"](?:@miroir-framework/react|miroir-react)(?:/[^'"]*)?['"]""", re.M)
 COMMENT = re.compile(r"/\*.*?\*/|//[^\n]*", re.S)
 
 
