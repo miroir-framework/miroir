@@ -18,12 +18,12 @@ import type { EntityInstance, MiroirConfigClient, StoreUnitConfiguration } from 
 import { versionHistoryEntityUuids } from "@miroir-framework/core";
 import type { BundledDeploymentData, BundledSectionData } from "@miroir-framework/store-bundled";
 
-import * as adminDeployment from "miroir-app-admin";
+import * as adminDeployment from "@miroir-framework/core/admin";
 import {
   deployment_Admin as localDeploymentAdmin,
   deployment_Miroir as localDeploymentMiroir,
-} from "miroir-app-admin";
-import * as miroirDeployment from "miroir-app-miroir";
+} from "@miroir-framework/core/admin";
+import * as miroirDeployment from "@miroir-framework/core/meta-model";
 
 // ---------------------------------------------------------------------------
 // Deployment UUIDs

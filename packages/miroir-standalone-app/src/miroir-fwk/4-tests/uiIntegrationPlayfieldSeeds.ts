@@ -45,7 +45,7 @@ import {
   selfApplicationModelBranchMetaMasterBranch,
 } from "miroir-app-meta";
 
-import { defaultMiroirMetaModel } from "miroir-app-miroir";
+import { defaultMiroirMetaModel } from "@miroir-framework/core/meta-model";
 
 /**
  * Session playfield triple (model + instances + init). Alias of miroir-core IntegTestbedResetParams.

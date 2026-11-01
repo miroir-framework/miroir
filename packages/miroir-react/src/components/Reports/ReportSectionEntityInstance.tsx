@@ -33,8 +33,8 @@ import { ThemedOnScreenHelper } from "../helpers/ThemedHelper.js";
 import { getMemoizedReduxDeploymentsStateSelectorForTemplateMap } from "../../miroir-localcache-imports.js";
 import { useMiroirContextService, type FoldedStateTree } from "../../contexts/MiroirContextReactProvider.js";
 
-import { deployment_Miroir } from "miroir-app-admin";
-import { entityQueryVersion } from "miroir-app-miroir";
+import { deployment_Miroir } from "@miroir-framework/core/admin";
+import { entityQueryVersion } from "@miroir-framework/core/meta-model";
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "../../viewConstants.js";
 import { useCurrentModel, useCurrentModelEnvironment, useReduxDeploymentsStateQueryTemplateSelector } from "../../ReduxHooks.js";

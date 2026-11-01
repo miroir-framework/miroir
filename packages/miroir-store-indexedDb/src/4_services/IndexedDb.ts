@@ -15,7 +15,7 @@ import {
 
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
-import { entityDefinitionEntityDefinition } from 'miroir-app-miroir';
+import { entityDefinitionEntityDefinition } from '@miroir-framework/core/meta-model';
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "IndexedDb");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);

@@ -53,7 +53,7 @@ import {
 import {
   entityEntity,
   entitySelfApplication,
-} from "miroir-app-miroir";
+} from "@miroir-framework/core/meta-model";
 
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "../constants.js";

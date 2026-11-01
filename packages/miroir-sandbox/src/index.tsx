@@ -41,7 +41,7 @@ import { miroirDemoAppStartup } from "./startup.js";
 import { ADMIN_DEPLOYMENT_UUID, ADMIN_BUNDLED_CONFIG, ADMIN_MODEL_PARENT_UUIDS_ARRAY, demoBundledData, demoMiroirConfig, MIROIR_DEPLOYMENT_UUID } from "./bundledData.js";
 import { migrateAdminToIndexedDbIfNeeded } from "./adminMigration.js";
 import { ErrorPage } from "@miroir-framework/react";
-import { deployment_Admin, deployment_Miroir } from "miroir-app-admin";
+import { deployment_Admin, deployment_Miroir } from "@miroir-framework/core/admin";
 
 // ---------------------------------------------------------------------------
 // Logger setup

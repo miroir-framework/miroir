@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import type { MiroirConfigClient, StoreUnitConfiguration } from "@miroir-framework/core";
-import { deployment_Admin } from "miroir-app-admin";
+import { deployment_Admin } from "@miroir-framework/core/admin";
 import { deployment_Library_DO_NO_USE } from "miroir-example-library";
 
 import {

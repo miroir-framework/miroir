@@ -67,8 +67,6 @@
     "@types/node": "26.6.5",
     "@types/uuid": "11.0.0",
     "cross-env": "10.1.0",
-    "miroir-app-admin": "*",
-    "miroir-app-miroir": "*",
     "miroir-example-library": "*",
     "tsup": "9.0.0",
     "vitest": "5.0.5",

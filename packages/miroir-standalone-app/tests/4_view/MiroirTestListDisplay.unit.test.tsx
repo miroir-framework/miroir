@@ -11,7 +11,7 @@ import { miroirTest_runner_returnDocument } from 'miroir-example-library';
 import {
   miroirTest_fn_entityPrimaryKey,
   miroirTest_tr_core,
-} from 'miroir-app-miroir';
+} from '@miroir-framework/core/meta-model';
 
 import { resetUiIntegrationTestRunPreferencesForTests } from '../../src/miroir-fwk/4-tests/uiIntegrationTestRunPreferences.js';
 

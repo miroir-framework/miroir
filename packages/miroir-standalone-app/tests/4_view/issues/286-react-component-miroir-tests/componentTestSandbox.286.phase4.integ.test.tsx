@@ -55,7 +55,7 @@ import {
   entityReport,
   entitySelfApplicationVersion,
   selfApplicationMiroir,
-} from "miroir-app-miroir";
+} from "@miroir-framework/core/meta-model";
 
 vi.mock(
   "../../../../src/miroir-fwk/4-tests/componentTests/componentTestTools",

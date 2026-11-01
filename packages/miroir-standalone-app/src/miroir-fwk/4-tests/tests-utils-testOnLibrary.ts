@@ -6,7 +6,7 @@ import {
   Uuid,
   type ApplicationEntitiesAndInstances
 } from "@miroir-framework/core";
-import { adminSelfApplication, entityDeployment } from "miroir-app-admin";
+import { adminSelfApplication, entityDeployment } from "@miroir-framework/core/admin";
 import {
   entityAuthor,
   author1,

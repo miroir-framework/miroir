@@ -14,11 +14,11 @@ import {
   describeIntegrationTestSession,
   getBootstrapPhasesForDomainControllerProfile,
 } from "@miroir-framework/core";
-import { deployment_Miroir } from "miroir-app-admin";
+import { deployment_Miroir } from "@miroir-framework/core/admin";
 import { selfApplicationLibrary } from "miroir-example-library";
 import {
   selfApplicationMiroir,
-} from "miroir-app-miroir";
+} from "@miroir-framework/core/meta-model";
 
 import {
   runAppStackIntegrationBootstrap,

@@ -24,9 +24,9 @@ Out (analysis §2): `private` flags and publishing (I8); the meta-model size; th
 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
-| 0 | Guards learn about bundled folders (green before and after) | ⏳ | `test_package_manifests.py` owner rule (react owns the local cache, the server library its `./node` entry), unchanged results today |
-| 1 | Import scanner on a fixture tree | ⏳ | `test_rename_packages.py` import cases |
-| 2 | Core carries the meta-model; everyone imports the subpaths | ⏳ | core pack cases, `--check`, alias rule, bundle report, full build |
+| 0 | Guards learn about bundled folders (green before and after) | ✅ | `test_package_manifests.py` owner rule (react owns the local cache, the server library its `./node` entry), unchanged results today |
+| 1 | Import scanner on a fixture tree | ✅ | `test_rename_packages.py` import cases |
+| 2 | Core carries the meta-model; everyone imports the subpaths | ✅ | core pack cases, `--check`, alias rule, bundle report, full build |
 | 3 | The server library exposes `./startup` | ⏳ | server pack case, startup boundaries, release check |
 | 4 | React carries the local cache | ⏳ | react pack cases, dependency rule, local cache source rule |
 | 5 | Docs, nonreg, acceptance | ⏳ | gate, `nonreg:filesystem`, AC table |
@@ -69,7 +69,7 @@ Deviations found while implementing go to the slice's Realization.
 
 ## Slice 0 — Guards learn about bundled folders
 
-**Status:** ⏳
+**Status:** ✅
 
 ### Goal
 
@@ -91,11 +91,15 @@ The manifest declaration rules treat a `BUNDLED_INTO_ANOTHER` folder as part of 
 python -m pytest scripts/tests/test_package_manifests.py -q
 ```
 
+### Realization
+
+- `owned_folders`, `reachable_sources`, `bundled_owned`, `owner_imports` in `test_package_manifests.py`; `ENTRY_OWNERS` gives the server library the files reachable from the local cache's `src/node.ts`. An owned folder counts as bundled only when the owner imports it without declaring it (a declared one stays external), so today's results are unchanged (123 passed). `test_an_owner_counts_the_imports_of_what_it_bundles` pins the ownership table and the Node entry's reach.
+
 ---
 
 ## Slice 1 — Import scanner on a fixture tree
 
-**Status:** ⏳
+**Status:** ✅
 
 ### Tests (RED first)
 
@@ -111,11 +115,15 @@ Fixture tree in `tmp_path`: TS files with `import … from "miroir-app-miroir"`,
 python -m pytest scripts/tests/test_rename_packages.py -q
 ```
 
+### Realization
+
+- `scan_imports` in `rename_packages.py` (forms: `from`, `import(`, `require(`, `vi.mock(`, side-effect `import`), the map file read from `--root` when present. RED checked by running the new cases on the previous script (2 failed), GREEN after.
+
 ---
 
 ## Slice 2 — Core carries the meta-model; everyone imports the subpaths
 
-**Status:** ⏳
+**Status:** ✅
 
 ### Tests (RED first)
 
@@ -145,6 +153,15 @@ npm run test -w @miroir-framework/core -- ''
 npm run build:server -w miroir-server && MIROIR_RELEASE_SMOKE=1 python -m pytest scripts/tests/test_bundled_packages.py -q
 # bundle guards (conventions table)
 ```
+
+### Realization
+
+- `--apply` moved 265 imports in 190 files; 8 vite configs aliased; the meta-model packages left the manifests of react, the 4 stores, both local caches, mcp, cli, ai and the sandbox (the apps, examples and fixtures keep theirs as workspace links); `package-lock.json` refreshed.
+- Deviation, found by the bundle guard: the first build grew the browser's meta-model from 2 392 997 to 3 615 678 bytes. `miroir-app-miroir/src/Model.ts` imported `from ".."`, which esbuild resolves through the package's `main` to `dist/index.js` when the build starts from `../miroir-app-miroir/index.ts`: two copies in `dist/meta-model.js`. It imports `"../index"` now; the eager page is 839 175 bytes gzipped (839 471 before the change).
+- The attribution rule names every `exports` subpath entry, so the standalone policy lists `@miroir-framework/mcp/client` (lazy, and forbidden eager next to `@miroir-framework/mcp`) instead of `@miroir-framework/mcp`.
+- `test_core_public_api.py`: the template may import the meta-model subpaths by name or as a namespace (data, no API); a re-export of them still fails.
+- The release check passes on the release built with the new `-e` flags (9 passed with the release smoke test); it was not run against a release built without them.
+- Gate: pytest 545 passed (pack cases required), lint, dependency policy, env check, tsc on 12 packages, core unit 3292 passed; both bundle guards 0 violations.
 
 ---
 

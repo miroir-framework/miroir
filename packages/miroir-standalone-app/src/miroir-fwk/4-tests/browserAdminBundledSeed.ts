@@ -7,11 +7,11 @@
 
 import type { EntityInstance, StoreUnitConfiguration } from '@miroir-framework/core';
 import type { BundledDeploymentData, BundledSectionData } from '@miroir-framework/store-bundled';
-import * as adminDeployment from 'miroir-app-admin';
+import * as adminDeployment from '@miroir-framework/core/admin';
 import {
   deployment_Admin as localDeploymentAdmin,
   deployment_Miroir as localDeploymentMiroir,
-} from 'miroir-app-admin';
+} from '@miroir-framework/core/admin';
 
 export const ADMIN_DEPLOYMENT_UUID = '18db21bf-f8d3-4f6a-8296-84b69f6dc48b';
 export const MIROIR_DEPLOYMENT_UUID = '10ff36f2-50a3-48d8-b80f-e48e5d13af8e';

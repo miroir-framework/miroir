@@ -10,7 +10,7 @@ import {
   type SyncQueryRunner,
   type ViewParamsData,
 } from "@miroir-framework/core";
-import { deployment_Admin } from "miroir-app-admin";
+import { deployment_Admin } from "@miroir-framework/core/admin";
 import { getMemoizedReduxDeploymentsStateSelectorMap } from "../miroir-localcache-imports.js";
 import { useDomainControllerService } from "../contexts/MiroirContextReactProvider.js";
 

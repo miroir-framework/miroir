@@ -16,8 +16,8 @@ import { packageName } from "../../src/constants";
 import { GraphReportSectionView } from "../../src/miroir-fwk/4_view/components/Graph/GraphReportSectionView";
 import { cleanLevel } from "../../src/miroir-fwk/4_view/constants";
 import { MiroirThemeProvider } from "@miroir-framework/react";
-import { deployment_Miroir } from "miroir-app-admin";
-import { defaultStoredMiroirTheme } from "miroir-app-miroir";
+import { deployment_Miroir } from "@miroir-framework/core/admin";
+import { defaultStoredMiroirTheme } from "@miroir-framework/core/meta-model";
 
 const showPerformanceDisplayRef = { current: false };
 

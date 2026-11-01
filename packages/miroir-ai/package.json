@@ -46,7 +46,6 @@
     "@statsig/js-client": "3.33.5",
     "express": "5.3.0",
     "loglevelnext": "6.0.0",
-    "miroir-app-miroir": "*",
     "@miroir-framework/core": "*",
     "openai": "7.38.0",
     "rxjs": "7.8.2",

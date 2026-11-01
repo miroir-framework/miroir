@@ -24,14 +24,14 @@ import {
   entityDefinitionReport,
   entityDefinitionSelfApplication,
   entityDefinitionSelfApplicationModelBranch,
-} from "miroir-app-miroir";
+} from "@miroir-framework/core/meta-model";
 import {
   deployment_Admin,
   entityApplicationForAdmin,
   entityDeployment,
   entityImport,
   entityViewParams,
-} from "miroir-app-admin";
+} from "@miroir-framework/core/admin";
 // import entityStoreBasedConfigurationAdmin from "../assets/admin_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/9f9170da-538d-425c-8cb7-551640623eed.json" with {
 //   type: "json",
 // };

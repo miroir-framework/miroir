@@ -31,8 +31,8 @@ import { getMemoizedReduxDeploymentsStateSelectorMap, useSelector, type ReduxSta
 import {
   adminSelfApplication,
   entityApplicationForAdmin,
-} from "miroir-app-admin";
-import { selfApplicationMiroir } from "miroir-app-miroir";
+} from "@miroir-framework/core/admin";
+import { selfApplicationMiroir } from "@miroir-framework/core/meta-model";
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "../../viewConstants.js";
 import { useCurrentModel, useCurrentModelEnvironment } from "../../ReduxHooks.js";

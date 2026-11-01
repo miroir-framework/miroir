@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
 
 import type { Menu, MiroirMenuItem } from "@miroir-framework/core";
-import { adminSelfApplication } from "miroir-app-admin";
+import { adminSelfApplication } from "@miroir-framework/core/admin";
 import {
   menuApplicationModelScopeTemplate,
   selfApplicationMiroir,
-} from "miroir-app-miroir";
+} from "@miroir-framework/core/meta-model";
 import { selfApplicationLibrary } from "miroir-example-library";
 
 import {

@@ -1,5 +1,5 @@
 import type { MiroirConfigClient } from "@miroir-framework/core";
-import { deployment_Admin } from "miroir-app-admin";
+import { deployment_Admin } from "@miroir-framework/core/admin";
 
 import type { IntegrationTestTransformerDefaults } from "./integrationTestProfiles.js";
 

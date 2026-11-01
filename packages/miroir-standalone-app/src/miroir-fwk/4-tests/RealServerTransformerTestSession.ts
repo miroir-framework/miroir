@@ -23,9 +23,9 @@ import {
 } from "@miroir-framework/core";
 import {
   selfApplicationMiroir,
-} from "miroir-app-miroir";
+} from "@miroir-framework/core/meta-model";
 
-import { deployment_Miroir } from "miroir-app-admin";
+import { deployment_Miroir } from "@miroir-framework/core/admin";
 import { runRealServerClientBootstrap } from "./runRealServerClientBootstrap.js";
 import { runTeardownTestApplicationStores } from "@miroir-framework/core";
 import { testbedAccessGrantFromAuthSession } from "./testbedAccessGrantFromAuthSession.js";

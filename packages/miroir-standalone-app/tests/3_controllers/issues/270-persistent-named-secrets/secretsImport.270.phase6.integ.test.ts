@@ -49,7 +49,7 @@ import {
   adminSelfApplication,
   deployment_Admin,
   deployment_Miroir,
-} from "miroir-app-admin";
+} from "@miroir-framework/core/admin";
 import { deployment_Library_DO_NO_USE, selfApplicationLibrary } from "miroir-example-library";
 
 import { loglevelnext } from "../../../../src/loglevelnextImporter.js";

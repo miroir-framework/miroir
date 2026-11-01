@@ -2,7 +2,7 @@
 // This file demonstrates how to use the queue and can be used for testing
 
 import { ViewParamsUpdateQueue, ViewParamsUpdateQueueConfig } from "./ViewParamsUpdateQueue.js";
-import { defaultAdminViewParams } from 'miroir-app-admin';
+import { defaultAdminViewParams } from '@miroir-framework/core/admin';
 import { DomainControllerInterface, type ViewParamsData } from '@miroir-framework/core';
 
 const defaultAdminViewParamsData = defaultAdminViewParams as ViewParamsData;

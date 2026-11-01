@@ -8,7 +8,7 @@ import { ThemedList, ThemedListItem, ThemedListItemButton, ThemedListItemText, T
 
 import {
 adminSelfApplication,
-} from "miroir-app-admin";
+} from "@miroir-framework/core/admin";
 import {
   defaultSelfApplicationDeploymentMap,
   Domain2QueryReturnType,
@@ -40,7 +40,7 @@ import {
   entityMenu,
   menuApplicationModelScopeTemplate,
   selfApplicationMiroir,
-} from "miroir-app-miroir";
+} from "@miroir-framework/core/meta-model";
 import { isApplicationModelScopeInjectionActive, mergeApplicationModelScopeMenuItems, shouldShowAppMenuItem } from "./applicationModelScopeMenu.js";
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "SidebarSection");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);

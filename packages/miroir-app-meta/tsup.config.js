@@ -9,7 +9,7 @@ export default defineConfig({
   splitting: false,
   treeshake: false,
   minify: false,
-  external: ['@miroir-framework/core', 'miroir-app-miroir', 'miroir-app-admin'],
+  external: ['@miroir-framework/core'],
   noExternal: [],
   loader: {
     '.json': 'copy',

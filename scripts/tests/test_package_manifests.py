@@ -516,4 +516,53 @@ def test_localcache_redux_dist_does_not_inline_its_dependencies():
     built_code = "\n".join(path.read_text(encoding="utf-8") for path in (ROOT / folder / "dist").glob("*.js"))
     assert "function enablePatches" not in built_code, "immer is bundled into dist/"
     assert re.search(r"""from\s*['"]immer['"]""", built_code)
-    assert re.search(r"""from\s*['"]miroir-app-admin['"]""", built_code)
+    assert re.search(r"""from\s*['"]@miroir-framework/core/admin['"]""", built_code)  # #652: core's subpath
+
+
+# --------------------------------------------------------------------------------------------------------------------
+# bundled folders (#652): no published package depends on one; the owners carry them
+
+BUNDLED_NAMES = {"miroir-app-miroir", "miroir-app-admin"}
+MODULE_REFERENCE = re.compile(
+    r"""(?:from|import|require\()\s*['"](""" + "|".join(sorted(BUNDLED_NAMES)) + r""")(?:/[^'"]*)?['"]"""
+)
+
+
+@pytest.mark.parametrize("folder", [f for f in published_folders() if f not in BUNDLED_INTO_ANOTHER])
+def test_no_published_package_depends_on_a_bundled_folder(folder):
+    data = manifest(folder)
+    found = sorted(
+        f"{section}.{name}"
+        for section in ("dependencies", "peerDependencies", "optionalDependencies")
+        for name in data.get(section, {})
+        if name in BUNDLED_NAMES
+    )
+    assert found == [], f"{folder}: a registry install cannot resolve a private package; its owner bundles it"
+
+
+def built_files(folder: str, patterns: tuple[str, ...]) -> list[Path]:
+    return sorted(path for pattern in patterns for path in (ROOT / folder / "dist").rglob(pattern))
+
+
+def test_core_carries_the_meta_model_subpaths():
+    folder = "packages/miroir-core"
+    exports = manifest(folder)["exports"]
+    assert exports.get("./meta-model") == {"types": "./dist/meta-model.d.ts", "import": "./dist/meta-model.js"}
+    assert exports.get("./admin") == {"types": "./dist/admin.d.ts", "import": "./dist/admin.js"}
+    require_built(folder)
+    packed = pack_list(folder)
+    for path in ("dist/meta-model.js", "dist/meta-model.d.ts", "dist/admin.js", "dist/admin.d.ts"):
+        assert path in packed, path
+    meta_model = (ROOT / folder / "dist/meta-model.js").read_text(encoding="utf-8")
+    assert "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad" in meta_model, "the Entity entity is not in dist/meta-model.js"
+
+
+@pytest.mark.parametrize("folder", ["packages/miroir-core"])
+def test_a_built_owner_names_no_bundled_folder_as_a_module(folder):
+    require_built(folder)
+    found = [
+        f"{path.relative_to(ROOT)}: {match.group(1)}"
+        for path in built_files(folder, ("*.js", "*.d.ts"))
+        for match in MODULE_REFERENCE.finditer(path.read_text(encoding="utf-8"))
+    ]
+    assert found == [], f"{folder}: the built package still imports a private package"

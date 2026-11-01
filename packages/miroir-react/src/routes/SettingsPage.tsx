@@ -21,7 +21,7 @@ import {
   adminSelfApplication,
   defaultAdminViewParams,
   reportViewParamsDetails
-} from "miroir-app-admin";
+} from "@miroir-framework/core/admin";
 
 import {
   defaultViewParamsFromAdminStorageFetchQueryParams,

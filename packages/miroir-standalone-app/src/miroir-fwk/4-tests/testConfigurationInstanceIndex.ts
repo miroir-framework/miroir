@@ -7,7 +7,7 @@ import {
   testConfiguration_libraryBookDetailsSeed,
   testConfiguration_libraryDocumentSeed,
 } from "miroir-example-library";
-import { testConfiguration_libraryPublisherAndCountry } from "miroir-app-miroir";
+import { testConfiguration_libraryPublisherAndCountry } from "@miroir-framework/core/meta-model";
 import { testConfiguration_githubModel } from "miroir-example-github";
 import { testConfiguration_metaBundleSizeSeed, testConfiguration_metaPageLoadSeed } from "miroir-app-meta";
 

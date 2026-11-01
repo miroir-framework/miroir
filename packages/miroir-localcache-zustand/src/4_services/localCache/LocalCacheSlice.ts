@@ -44,7 +44,7 @@ import {
   type LocalCacheLoadSegmentHint,
   type LocalCacheSegmentHeader,
 } from "@miroir-framework/core";
-import { entityEntity, entitySelfApplication } from "miroir-app-miroir";
+import { entityEntity, entitySelfApplication } from "@miroir-framework/core/meta-model";
 
 import type { LocalCacheSliceState, LocalCacheSliceStateZone } from "./localCacheZustandInterface.js";
 import { currentModel } from "./Model.js";

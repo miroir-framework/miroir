@@ -35,7 +35,6 @@
     "test": "cross-env NODE_ENV=test vitest"
   },
   "dependencies": {
-    "miroir-app-miroir": "*",
     "@miroir-framework/core": "*"
   },
   "devDependencies": {

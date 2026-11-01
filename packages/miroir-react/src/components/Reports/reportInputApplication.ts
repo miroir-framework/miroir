@@ -1,6 +1,6 @@
 import type { ApplicationDeploymentMap, Uuid } from "@miroir-framework/core";
 import { noValue } from "@miroir-framework/core";
-import { selfApplicationMiroir } from "miroir-app-miroir";
+import { selfApplicationMiroir } from "@miroir-framework/core/meta-model";
 
 /**
  * Default application for a report input picker: page URL application when set,

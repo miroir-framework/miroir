@@ -52,7 +52,7 @@ import {
 import { getFoldedDisplayValue } from "./MlElementEditorHooks.js";
 import { TransformerTypeBadge, TransformerTypeRestriction, MlArrayEditorProps } from "./MlElementEditorInterface.js";
 import { emptyContainerMarker } from "./renderedValueMarkers.js";
-import { selfApplicationMiroir } from "miroir-app-miroir";
+import { selfApplicationMiroir } from "@miroir-framework/core/meta-model";
 // import { MlUnion } from "miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MlArrayEditor");

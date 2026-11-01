@@ -33,8 +33,8 @@ import {
   type StoreUnitConfiguration,
   type TransformerDefinition,
 } from "@miroir-framework/core";
-import { deployment_Admin, deployment_Miroir } from "miroir-app-admin";
-import { defaultMiroirMetaModel, entityTransformerDefinition } from "miroir-app-miroir";
+import { deployment_Admin, deployment_Miroir } from "@miroir-framework/core/admin";
+import { defaultMiroirMetaModel, entityTransformerDefinition } from "@miroir-framework/core/meta-model";
 import {
   deployment_Library_DO_NO_USE,
   endpointDocument,

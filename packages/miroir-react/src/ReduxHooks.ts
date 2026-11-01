@@ -38,11 +38,11 @@ import {
   entityEndpointVersion,
   entityMenu,
   selfApplicationMiroir
- } from "miroir-app-miroir";
+ } from "@miroir-framework/core/meta-model";
 import { ReduxStateWithUndoRedo, applyDomainStateQuerySelectorForCleanedResult, applyDomainStateQueryTemplateSelector, applyReduxDeploymentsStateQuerySelector, applyReduxDeploymentsStateQuerySelectorForCleanedResult, applyReduxDeploymentsStateQueryTemplateSelector, applyReduxDeploymentsStateQueryTemplateSelectorForCleanedResult, selectCurrentReduxDeploymentsStateFromReduxState, selectEntityInstanceUuidIndexFromLocalCache, selectInstanceArrayForDeploymentSectionEntity, selectModelForDeploymentFromReduxState, useSelector } from "./miroir-localcache-imports.js";
 import { useMiroirContextService } from "./contexts/MiroirContextReactProvider.js";
 
-import { adminSelfApplication, entityDeployment } from "miroir-app-admin";
+import { adminSelfApplication, entityDeployment } from "@miroir-framework/core/admin";
 import { packageName } from "./constants.js";
 import { cleanLevel } from "./viewConstants.js";
 

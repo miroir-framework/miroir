@@ -8,7 +8,7 @@ import { describe, expect, it } from "vitest";
 
 import { shouldMountMcpHttp, type Runner } from "@miroir-framework/core";
 import type { McpHttpFetch } from "@miroir-framework/mcp/client";
-import { runnerMcpGetInstances } from "miroir-app-miroir";
+import { runnerMcpGetInstances } from "@miroir-framework/core/meta-model";
 
 import { runMcpToolRunner } from "../../../../src/miroir-fwk/4_view/components/Runners/runMcpToolRunner.js";
 

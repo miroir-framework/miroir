@@ -15,7 +15,7 @@ import {
   type DomainControllerInterface,
   type MiroirTestDefinition,
 } from '@miroir-framework/core';
-import { miroirTest_tr_core } from 'miroir-app-miroir';
+import { miroirTest_tr_core } from '@miroir-framework/core/meta-model';
 import { miroirFileSystemStoreSectionStartup } from '@miroir-framework/store-filesystem';
 import { miroirIndexedDbStoreSectionStartup } from '@miroir-framework/store-indexeddb';
 import { miroirMongoDbStoreSectionStartup } from '@miroir-framework/store-mongodb';

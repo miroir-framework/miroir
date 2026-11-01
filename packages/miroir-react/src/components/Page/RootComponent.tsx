@@ -41,7 +41,7 @@ import {
   defaultAdminViewParams,
   deployment_Admin,
   entityDeployment
-} from "miroir-app-admin";
+} from "@miroir-framework/core/admin";
 
 import { getMemoizedReduxDeploymentsStateSelectorMap, ReduxStateChanges } from "../../miroir-localcache-imports.js";
 import type { DebugElements } from "../helpers/DebugHelper.js";
@@ -57,7 +57,7 @@ import { useMiroirShellHost } from "../../contexts/MiroirShellHostContext.js";
 import { deploymentReportsEntitiesMapping } from "./deploymentReportsEntitiesMapping.js";
 
 import { JsonDisplayHelper } from "../helpers/DebugHelper.js";
-import { defaultStoredMiroirTheme, selfApplicationMiroir } from 'miroir-app-miroir';
+import { defaultStoredMiroirTheme, selfApplicationMiroir } from '@miroir-framework/core/meta-model';
 import { packageName } from "../../constants.js";
 import { useCurrentModel, useReduxDeploymentsStateQuerySelector, useReduxDeploymentsStateQuerySelectorForCleanedResult } from "../../ReduxHooks.js";
 import { ModelEnvironmentSync } from "../../ModelEnvironmentSync.js";
