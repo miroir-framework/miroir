@@ -384,6 +384,27 @@ The "pack" cases run `npm pack --dry-run --json` on the built packages. They ski
 unless `MIROIR_REQUIRE_PACK=1`, which the nonreg step `unit-643-package-manifests` and the `bundle` job of
 `pr-checks.yml` set. Analysis and decisions: `code-helpers/features/643-BUILD-manifest-hygiene/`.
 
+## 10b. Two copies of core (#645)
+
+Core keeps module-level singletons: the configuration service, the logger factory, the action implementations and
+the secret stores. A project that loads two copies of `miroir-core` (two installs, or one bundle holding both) has
+two of each, so what a store registers on one copy is missing from the other, and `instanceof` checks against
+core classes fail across copies. Each copy records itself, when its `ConfigurationService` module is evaluated,
+in `globalThis[Symbol.for("miroir-core.instances")]` (a list of `{ version, location }`), and the copy evaluated
+second logs, at WARN and before any logger is started:
+
+```
+miroir-core: 2 copies are loaded in this process: 0.5.0 at file:///…/node_modules/miroir-core/dist/index.js, 0.5.0 at file:///…/node_modules/<package>/node_modules/miroir-core/dist/index.js. …
+```
+
+Run `npm ls miroir-core` and make the tree resolve one copy (same version everywhere, `npm dedupe`).
+
+Under Vite dev and HMR and under vitest, modules are evaluated again on purpose, so there one location is one copy.
+Elsewhere every evaluation counts, even of the same file (an import with another query string is another module
+instance). Not detected: a copy built from a core without this guard, and, in Vite dev, two copies served at one
+URL with different `?v=` hashes. Test: `packages/miroir-core/tests/3_controllers/duplicateCoreGuard.unit.test.ts`
+(nonreg step `unit-645-duplicate-core`). Analysis: `code-helpers/features/645-BUILD-duplicate-core/`.
+
 ## 11. Non-goals of the current implementation (v1)
 
 Per the v1 acceptance criteria, explicitly **out of scope** until follow-up work:

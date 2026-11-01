@@ -24,9 +24,9 @@ Out (analysis §2): a hard error or opt-in failure mode; preventing duplicates (
 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
-| 0 | The repo loads one copy of core (characterization) | ⬜ | probe over core unit and full `nonreg:filesystem` |
-| 1 | A second copy of core warns, with its record on `globalThis` | ⬜ | `duplicateCoreGuard.unit.test.ts` (fresh-process and in-process cases) |
-| 2 | Nonreg step, docs, AC | ⬜ | `unit-645-duplicate-core`, full filesystem nonreg |
+| 0 | The repo loads one copy of core (characterization) | ✅ | probe over core unit and full `nonreg:filesystem` |
+| 1 | A second copy of core warns, with its record on `globalThis` | ✅ | `duplicateCoreGuard.unit.test.ts` (fresh-process and in-process cases) |
+| 2 | Nonreg step, docs, AC | ✅ | `unit-645-duplicate-core`, full filesystem nonreg |
 
 ## Locked implementation defaults
 
@@ -64,7 +64,7 @@ No model element, no uuid, no MiroirTest suite.
 
 ## Slice 0 — The repo loads one copy of core (characterization)
 
-**Status:** ⬜ pending
+**Status:** ✅ done
 
 ### Goal
 
@@ -88,11 +88,15 @@ MIROIR_645_PROBE=$PWD/tmp-645/probe.jsonl npm run nonreg:filesystem
 
 ### Realization
 
+- The probe sat at the end of `ConfigurationService.ts` with the Slice 1 guard already in place, so one run covered both: `./build-all.sh`, then the core unit tests and the full `nonreg:filesystem` with `MIROIR_645_PROBE` set (all passed). The probe was removed before commit.
+- 398 processes probed; 124 evaluated core more than once, all under vitest at one location; the only D2 duplicates were the guard test's own cases (4 processes). Browser: the production self-test with a page-console listener, 2517 messages, no warning, 1227 of 1227 passed. Details in analysis §4.5.
+- A first full nonreg, before the rebuild, failed `appstack-miroir-component-tests` on a TransformerEditor case: `miroir-react`'s `dist/` predated the block-editor merges in `_integration`. It passed once rebuilt; not related to this issue.
+
 ---
 
 ## Slice 1 — A second copy of core warns, with its record on `globalThis`
 
-**Status:** ⬜ pending
+**Status:** ✅ done
 
 ### Goal
 
@@ -138,11 +142,16 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core,actions,tooling
 
 ### Realization
 
+- `duplicateCoreGuard.ts` as planned. The lint rule `miroir/type-escape` refused `globalThis as unknown as Record<symbol, unknown>`, so the target parameter is an `object` read and written through `Reflect`, and `ConfigurationService.ts` passes `globalThis` as it is.
+- Deviation from RED first: the guard was written as a spike during the analysis, before the test. The test then went green on its first run, so RED was not observed.
+- 8 cases pass: 4 in fresh Node processes on two copies of the built `dist/index.js` (under `tests/tmp/645-a|b`, removed after), 4 in process. The core unit run: 3286 passed, 1 skipped. `check_bare_console.py`: OK (no allowlist entry needed).
+- Full `nonreg:filesystem`: passed (Slice 0 run).
+
 ---
 
 ## Slice 2 — Nonreg step, docs, AC
 
-**Status:** ⬜ pending
+**Status:** ✅ done
 
 ### Goal
 
@@ -181,3 +190,8 @@ npm run nonreg:filesystem
 | Repo hosts, tests and nonreg do not print it, or each case is explained | Slice 0 probe, Slice 2 full nonreg |
 
 ### Realization
+
+- Nonreg step `unit-645-duplicate-core` (scopes `core`, `actions`, `tooling`; no build) passes in 5 s.
+- Docs: `docs/reference/release-process.md` §10b. Epic plan I5 slice 1 row ✅ #645.
+- Pre-push gate: skills check, `pytest scripts/tests` (502 passed, 12 skipped), dependency policy, lint, `miroir-env check`, core `tsc`, core unit tests, all green.
+- Manual browser tracer: done in Slice 0 (self-test with a console listener).

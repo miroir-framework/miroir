@@ -2852,6 +2852,22 @@
       ]
     },
     {
+      "id": "unit-645-duplicate-core",
+      "scopes": [
+        "core",
+        "actions",
+        "tooling"
+      ],
+      "tier": "unit",
+      "title": "#645 \u2014 two copies of miroir-core warn: two real copies of the built core in fresh Node processes, the record on globalThis, silent re-evaluation under vitest",
+      "requires": "none",
+      "argv": [
+        "bash",
+        "-c",
+        "npm run testByFile -w miroir-core -- duplicateCoreGuard"
+      ]
+    },
+    {
       "id": "unit-345-cli",
       "scopes": ["tooling"],
       "tier": "default",

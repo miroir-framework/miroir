@@ -120,7 +120,13 @@ Since #639, a store's startup receives the host's configuration service as a par
 
 ### 4.5 Probe on the repo's own runs
 
-The guard is built into core with a temporary probe that appends every evaluation (process arguments, working directory, location, dev-tool flag, and whether D2 counts a duplicate) to a file, under `npm run nonreg:filesystem`. Result: _pending_ (a first run used the location-only rule, which cannot see same-URL duplicates; it is rerun with D2).
+The guard is built into core with a temporary probe that appends every evaluation (process arguments, working directory, location, dev-tool flag, and whether D2 counts a duplicate) to a file, under `npm run nonreg:filesystem`. Result, after `./build-all.sh` (a first run used the location-only rule, which cannot see same-URL duplicates, and was replaced):
+
+| Run | Processes probed | Evaluated core more than once | Duplicates by D2 |
+|---|---|---|---|
+| core unit tests and full `nonreg:filesystem` (123 steps, all passed) | 398 | 124, all under vitest at one location (`dist/index.js` 320 evaluations, `src/…/ConfigurationService.ts` 95) | 4: the guard test's own two-copy and query-string cases, run once by the core unit tests and once by its nonreg step |
+
+Browsers have no `process`: the production self-test (`MIROIR_ENV=self-test`, release server, Chromium) was run with a listener on the page console. Of 2517 console messages, none was the warning, and 1227 of 1227 tests passed. No repo host loads two copies.
 
 ## 5. Key reuse
 
