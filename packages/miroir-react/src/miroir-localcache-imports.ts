@@ -27,6 +27,10 @@ export {
   
   // Setup
   setupMiroirDomainController,
+  startMiroirPlatform,
+  type MiroirEmulatedServer,
+  type MiroirPlatform,
+  type MiroirPlatformOptions,
   
   // Types
   type ReduxStateWithUndoRedo,

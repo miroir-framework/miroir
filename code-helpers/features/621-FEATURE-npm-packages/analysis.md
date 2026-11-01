@@ -43,7 +43,7 @@ Revised after the decisions of 2026-10-31: the standalone app stays the only cli
 | D5 Client | **The standalone app stays the only client** for now | scope | Accepted |
 | D6 Sequencing | **All work items land before any publish** | G1, G5 | Accepted |
 | D7 How meta-model packages join core | open, recommend **D7-b** | G1, G5 | Open |
-| D8 Local cache in react | open, recommend **D8-a** | G1 | Open |
+| D8 Local cache in react | **D8-a** (#639 D1, D2) | G1 | Accepted |
 | D9 Endpoint surface mechanism | open, recommend **D9-b** | G3 | Open |
 | D10 `zod` and other shared libraries | open, recommend **D10-b** | G1, G5 | Open |
 | D11 Public API of core | open, recommend **D11-a** | G5 | Open |

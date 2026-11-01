@@ -2823,6 +2823,19 @@
       ]
     },
     {
+      "id": "unit-639-startup-calls",
+      "scopes": ["localcache", "tooling", "ui"],
+      "tier": "default",
+      "title": "#639 \u2014 one startup call per side: startMiroirNode (client with emulated server, server config) and startMiroirClient (React providers, passed client) on a test environment; neither imports a store",
+      "requires": "none",
+      "parallel": false,
+      "argv": [
+        "bash",
+        "-c",
+        "npm run testByFile -w miroir-cli -- startMiroirNode && npm run testByFile -w miroir-react -- startMiroirClient && python -m pytest scripts/tests/test_startup_calls_boundaries.py -q"
+      ]
+    },
+    {
       "id": "unit-345-cli",
       "scopes": ["tooling"],
       "tier": "default",

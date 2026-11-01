@@ -19,13 +19,8 @@ import {
   LoggerFactoryInterface,
   LoggerInterface,
   LoggerOptions,
-  MiroirActivityTracker,
   MiroirConfigServer,
-  MiroirContext,
-  miroirCoreStartup,
-  MiroirEventService,
   MiroirLoggerFactory,
-  PersistenceStoreControllerManager,
   ENTITY_MIROIR_SECRET_UUID,
   getProcessTokenSecret,
   ParseServerArgsError,
@@ -37,7 +32,6 @@ import {
   persistRotatedSecretRow,
   requireWrappingKeyForSecretImport,
   defaultExternalServiceClient,
-  type DomainControllerInterface,
   resolveAuthenticationEnabled,
   resolveMcpAuthenticationEnabled,
   setProcessTokenSecret,
@@ -68,7 +62,7 @@ import {
   type ResolvedEnvironment,
 } from "miroir-env";
 import { createMiroirServerApp } from "miroir-server-library";
-import { setupMiroirDomainController } from 'miroir-localcache-redux/node';
+import { startMiroirNode } from 'miroir-localcache-redux/node';
 import { miroirFileSystemStoreSectionStartup } from 'miroir-store-filesystem';
 import { miroirIndexedDbStoreSectionStartup } from 'miroir-store-indexedDb';
 import { miroirMongoDbStoreSectionStartup } from 'miroir-store-mongodb';
@@ -332,51 +326,30 @@ const filesystemDeploymentRootDirectory: string =
 //   res.json({ filesystemDeploymentRootDirectory });
 // });
 
-miroirCoreStartup();
-miroirFileSystemStoreSectionStartup(ConfigurationService.configurationService);
-miroirIndexedDbStoreSectionStartup(ConfigurationService.configurationService);
-miroirMongoDbStoreSectionStartup(ConfigurationService.configurationService);
-miroirPostgresStoreSectionStartup(ConfigurationService.configurationService);
-
-const miroirActivityTracker = new MiroirActivityTracker();
-const miroirEventService = new MiroirEventService(miroirActivityTracker);
-
-await MiroirLoggerFactory.startRegisteredLoggers(
-  miroirActivityTracker,
-  miroirEventService,
-  loglevelnext,
-  loggerOptions
-  // (defaultLevels as any)[(miroirConfig as any).server.defaultLevel],
-  // (miroirConfig as any).server.defaultTemplate,
-  // (miroirConfig as any).server.specificLoggerOptions
-);
-
-const miroirContext = new MiroirContext(
-  miroirActivityTracker,
-  miroirEventService,
-  miroirConfig
-);
-
-const persistenceStoreControllerManager = new PersistenceStoreControllerManager(
-  ConfigurationService.configurationService.adminStoreFactoryRegister,
-  ConfigurationService.configurationService.StoreSectionFactoryRegister,
-  miroirConfig.server.filesystemDeploymentRootDirectory,
-);
-
-const domainController: DomainControllerInterface = await setupMiroirDomainController(
-  miroirContext, 
-  {
-    persistenceStoreAccessMode: "local",
-    localPersistenceStoreControllerManager: persistenceStoreControllerManager
-  },
-  defaultExternalServiceClient({
+// #639: one startup call builds the local domain controller on the four Node stores
+const {
+  domainController,
+  persistenceStoreControllerManager: serverPersistenceStoreControllerManager,
+} = await startMiroirNode(miroirConfig, {
+  stores: [
+    miroirFileSystemStoreSectionStartup,
+    miroirIndexedDbStoreSectionStartup,
+    miroirMongoDbStoreSectionStartup,
+    miroirPostgresStoreSectionStartup,
+  ],
+  loggers: { factory: loglevelnext, options: loggerOptions },
+  externalServiceClient: defaultExternalServiceClient({
     // a rotated refresh token of a persisted secret row goes back to its row; called only by an
     // external service call, once the server has opened its deployments
     persistRotatedSecret: async (args) => {
       await persistRotatedSecretRow(domainController, args, applicationDeploymentMap);
     },
   }),
-); // even when emulating server, we use remote persistence store, since MSW makes it appear as if we are using a remote server.
+});
+if (!serverPersistenceStoreControllerManager) {
+  throw new Error("startMiroirNode returned no store manager for a server configuration");
+}
+const persistenceStoreControllerManager = serverPersistenceStoreControllerManager;
 
 // without an environment: Admin and Miroir from the Deployment rows of the Admin package
 const configurations: Record<string, Deployment> = resolvedEnvironment

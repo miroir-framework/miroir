@@ -40,7 +40,6 @@ import {
   shouldListenLoopbackHttp,
   shouldMountCopilotKitRoute,
   shouldMountMcpHttp,
-  miroirCoreStartup
 } from "miroir-core";
 import { log } from "console";
 import { bootElectronServer, DESKTOP_ENVIRONMENT, prepareDesktopRoot } from "./environmentBoot.js";
@@ -78,7 +77,7 @@ export async function setupIpcServer(selfTest?: ElectronSelfTestOptions): Promis
   // Store factories are registered in the main-process ConfigurationService instance.
   // (The renderer process has a different ConfigurationService instance and can only register
   //  IndexedDb — which is why IPC is needed for filesystem / postgres / mongodb.)
-  miroirCoreStartup();
+  // #639: bootElectronServer runs miroirCoreStartup through startMiroirNode.
   const location = electronEnvironmentLocation();
   const {
     domainController,
