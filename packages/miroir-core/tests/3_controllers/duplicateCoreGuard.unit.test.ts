@@ -154,6 +154,7 @@ describe("registerMiroirCoreInstance", () => {
   it.each([
     ["another shape", { copies: 3 }],
     ["a frozen array", Object.freeze([] as MiroirCoreInstance[])],
+    ["an array with an entry in another shape", [null]],
   ])("a record in %s is reported and left as it was, without throwing", (_label, foreign) => {
     const target: Record<symbol, unknown> = { [MIROIR_CORE_INSTANCES]: foreign };
     const warnings: string[] = [];

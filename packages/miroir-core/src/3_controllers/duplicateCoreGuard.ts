@@ -17,6 +17,15 @@ export interface MiroirCoreInstance {
   location: string;
 }
 
+function isInstance(value: unknown): value is MiroirCoreInstance {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    typeof Reflect.get(value, "version") === "string" &&
+    typeof Reflect.get(value, "location") === "string"
+  );
+}
+
 function locationOf(moduleUrl: string | undefined): string {
   return moduleUrl ? moduleUrl.replace(/[?#].*$/, "") : "unknown";
 }
@@ -29,7 +38,8 @@ function locationOf(moduleUrl: string | undefined): string {
  * modules are evaluated again on purpose: there, one location is one copy.
  *
  * Never throws, since it runs while core's module is evaluated: a value under the key that is not an extensible array
- * (written by a core with another contract, or frozen by a hardened realm) is reported and left untouched.
+ * of entries (written by a core with another contract, or frozen by a hardened realm) is reported and left untouched,
+ * and any other failure is reported through `warn`.
  */
 export function registerMiroirCoreInstance(
   version: string,
@@ -38,8 +48,25 @@ export function registerMiroirCoreInstance(
   target: object,
   warn: (message: string) => void,
 ): void {
+  try {
+    record(version, moduleUrl, devTool, target, warn);
+  } catch (error) {
+    warn(`miroir-core ${version}: could not record this copy of miroir-core: ${String(error)}`);
+  }
+}
+
+function record(
+  version: string,
+  moduleUrl: string | undefined,
+  devTool: boolean,
+  target: object,
+  warn: (message: string) => void,
+): void {
   const existing: unknown = Reflect.get(target, MIROIR_CORE_INSTANCES);
-  if (existing !== undefined && !(Array.isArray(existing) && Object.isExtensible(existing))) {
+  if (
+    existing !== undefined &&
+    !(Array.isArray(existing) && Object.isExtensible(existing) && existing.every(isInstance))
+  ) {
     warn(
       `miroir-core ${version}: unrecognised record of loaded copies under Symbol.for("miroir-core.instances"); ` +
         "copies of miroir-core cannot be counted.",
