@@ -4718,6 +4718,93 @@
                         }
                       }
                     }
+                  },
+                  {
+                    "uuid": "c2a0f505-5e0a-4c5d-9b1e-505000000003",
+                    "parentName": "Runner",
+                    "parentUuid": "e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd",
+                    "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "name": "addPublisherNamedByQuery",
+                    "defaultLabel": "Add a Publisher named by a query",
+                    "definition": {
+                      "runnerType": "customRunner",
+                      "formMLSchema": {
+                        "formMLSchemaType": "mlSchema",
+                        "mlSchema": {
+                          "type": "object",
+                          "definition": {}
+                        }
+                      },
+                      "compositeActionSequence": {
+                        "actionType": "compositeActionSequence",
+                        "actionLabel": "addPublisherNamedByQuery",
+                        "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                        "payload": {
+                          "actionSequence": [
+                            {
+                              "actionType": "compositeRunBoxedQueryAction",
+                              "actionLabel": "findPublisherName",
+                              "nameGivenToResult": "found",
+                              "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                              "payload": {
+                                "actionType": "runBoxedQueryAction",
+                                "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                                "payload": {
+                                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                                  "applicationSection": "data",
+                                  "query": {
+                                    "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                                    "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                                    "queryParams": {
+                                      "newName": "Query Publisher"
+                                    },
+                                    "extractors": {
+                                      "publishers": {
+                                        "extractorOrCombinerType": "extractorInstancesByEntity",
+                                        "applicationSection": "data",
+                                        "parentName": "Publisher",
+                                        "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab"
+                                      }
+                                    },
+                                    "runtimeTransformers": {
+                                      "publisherName": {
+                                        "transformerType": "returnValue",
+                                        "interpolation": "runtime",
+                                        "value": "Plain Query Publisher"
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "actionType": "createInstance",
+                              "actionLabel": "createPublisher",
+                              "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                              "payload": {
+                                "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                                "applicationSection": "data",
+                                "objects": [
+                                  {
+                                    "uuid": "c2a0f505-5e0a-4c5d-9b1e-505000000004",
+                                    "parentName": "Publisher",
+                                    "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
+                                    "name": {
+                                      "transformerType": "getFromContext",
+                                      "interpolation": "runtime",
+                                      "referencePath": [
+                                        "found",
+                                        "publisherName"
+                                      ]
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
                   }
                 ]
               },
@@ -5959,6 +6046,186 @@
                   "byTestId": "sequence-editor-watched:Runner Publisher"
                 },
                 "timeout": 8000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "SequenceEditor on the Library: #536 a query edited with a block menu, its Runner saved and run, uses the edit",
+            "steps": [
+              {
+                "step": "change",
+                "label": "choose the Runner addPublisherNamedByQuery",
+                "target": {
+                  "byTestId": "sequence-editor-runner"
+                },
+                "value": "c2a0f505-5e0a-4c5d-9b1e-505000000003"
+              },
+              {
+                "step": "click",
+                "label": "show the sequence as blocks",
+                "target": {
+                  "byTestId": "block-view-mode:definition.compositeActionSequence:blocks"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "its hat",
+                "target": {
+                  "byTestId": "block-runner-hat"
+                },
+                "attribute": "data-name",
+                "value": "addPublisherNamedByQuery",
+                "timeout": 5000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the payload of the query step is a query block",
+                "target": {
+                  "byTestId": "block:definition.compositeActionSequence.payload.actionSequence.0.payload"
+                },
+                "attribute": "data-block-kind",
+                "value": "query",
+                "timeout": 3000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "its extractor publishers is an extractor block",
+                "target": {
+                  "byTestId": "block:definition.compositeActionSequence.payload.actionSequence.0.payload.payload.query.extractors.publishers"
+                },
+                "attribute": "data-extractor-type",
+                "value": "extractorInstancesByEntity"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "its runtime transformer publisherName is a transformer block",
+                "target": {
+                  "byTestId": "block:definition.compositeActionSequence.payload.actionSequence.0.payload.payload.query.runtimeTransformers.publisherName"
+                },
+                "attribute": "data-transformer-type",
+                "value": "returnValue"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "applicationSection of the run payload is a header parameter at its own path",
+                "target": {
+                  "byTestId": "block-parameter:definition.compositeActionSequence.payload.actionSequence.0.payload.payload.applicationSection"
+                },
+                "attribute": "data-value",
+                "value": "\"data\""
+              },
+              {
+                "step": "expectElement",
+                "label": "not at the path of the run action",
+                "target": {
+                  "byTestId": "block-parameter:definition.compositeActionSequence.payload.actionSequence.0.payload.applicationSection"
+                },
+                "present": false
+              },
+              {
+                "step": "expectElement",
+                "label": "the key of a runtime transformer is shown",
+                "target": {
+                  "byTestId": "block-query-key:definition.compositeActionSequence.payload.actionSequence.0.payload.payload.query.runtimeTransformers.publisherName"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "it cannot be renamed: the next step reads it by name",
+                "target": {
+                  "byTestId": "block-key:definition.compositeActionSequence.payload.actionSequence.0.payload.payload.query.runtimeTransformers.publisherName"
+                },
+                "present": false
+              },
+              {
+                "step": "click",
+                "label": "arm the query parameter newName, offered as a variable",
+                "target": {
+                  "byTestId": "block-palette-variable:parameters:newName"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "newName is armed",
+                "target": {
+                  "byTestId": "block-palette-variable:parameters:newName"
+                },
+                "attribute": "aria-pressed",
+                "value": "true",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "open the block menu of publisherName",
+                "target": {
+                  "byLabelText": "Transformer node actions definition.compositeActionSequence.payload.actionSequence.0.payload.payload.query.runtimeTransformers.publisherName"
+                }
+              },
+              {
+                "step": "click",
+                "label": "Replace with parameter newName",
+                "target": {
+                  "byTestId": "block-action-replace"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "publisherName reads newName",
+                "target": {
+                  "byTestId": "block:definition.compositeActionSequence.payload.actionSequence.0.payload.payload.query.runtimeTransformers.publisherName"
+                },
+                "attribute": "data-transformer-type",
+                "value": "getFromParameters",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "save the Runner",
+                "target": {
+                  "byTestId": "sequence-editor-save-runner"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "it is saved",
+                "target": {
+                  "byTestId": "sequence-editor-save-status"
+                },
+                "attribute": "data-status",
+                "value": "saved",
+                "timeout": 5000
+              },
+              {
+                "step": "expectElement",
+                "label": "no Publisher has the query parameter's name yet",
+                "target": {
+                  "byTestId": "sequence-editor-watched:Query Publisher"
+                },
+                "present": false
+              },
+              {
+                "step": "click",
+                "label": "run it",
+                "target": {
+                  "byTestId": "typed-value-object-editor-submit"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the run created a Publisher named by the edited query",
+                "target": {
+                  "byTestId": "sequence-editor-watched:Query Publisher"
+                },
+                "timeout": 8000
+              },
+              {
+                "step": "expectElement",
+                "label": "not by the replaced value",
+                "target": {
+                  "byTestId": "sequence-editor-watched:Plain Query Publisher"
+                },
+                "present": false
               }
             ]
           }

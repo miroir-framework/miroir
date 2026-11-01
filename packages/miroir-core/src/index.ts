@@ -1451,6 +1451,8 @@ export type {
   MlSchemaBlock,
   ObjectBlock,
   QueryBlock,
+  QuerySection,
+  ExtractorBlock,
   SequenceBlock,
   TransformerBlock,
   TransformerBlockParameter,

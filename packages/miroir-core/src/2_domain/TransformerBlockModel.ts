@@ -13,6 +13,9 @@ import type {
   BlockTitleSegment,
   BlockTree,
   BlockTreeStats,
+  ExtractorBlock,
+  QueryBlock,
+  QuerySection,
   SequenceBlock,
   TransformerBlock,
   TransformerBlockParameter,
@@ -36,6 +39,10 @@ import { transformerDefinitionRegistry } from "./TransformerDefinitionRegistry";
 // query step is one collapsed block. A transformer block tells the step at which it is evaluated
 // (`evaluatedAt`, analysis D1): runtime when it is a runtime transformer, under one, or under the
 // `templates` of a sequence, which are resolved at step runtime.
+//
+// #536: the query of a query step is shown as blocks: the attributes of the run action and of the
+// query, then one section per record of the query, by key: its parameters, its extractors and
+// combiners (extractor blocks), its runtime transformers (transformer blocks, evaluated at runtime).
 // ################################################################################################
 
 type TransformerNode = { transformerType: string } & Record<string, unknown>;
@@ -52,9 +59,21 @@ const COMMON_ATTRIBUTES = new Set(["transformerType", "interpolation", "label"])
 /** Attributes every action has: shown as the block's type, category and label, never as rows. */
 const ACTION_HEADER_ATTRIBUTES = new Set(["actionType", "endpoint", "actionLabel"]);
 const COMPOSITE_ACTION_SEQUENCE = "compositeActionSequence";
-/** The steps whose payload is a query, shown as one block. */
+/** The steps whose payload is a query, shown as one query block. */
 const QUERY_ACTION_TYPES = new Set(["compositeRunBoxedQueryAction", "compositeRunBoxedQueryTemplateAction"]);
 const APPLY_TO = "applyTo";
+/** #536: the run action attributes a query block does not show: the step type fixes them. */
+const RUN_QUERY_HIDDEN_ATTRIBUTES = new Set(["actionType", "endpoint", "payload"]);
+/** #536: the query sections of extractors and combiners, and their templates, by the block category they give. */
+const EXTRACTOR_SECTIONS: Record<string, ExtractorBlock["category"]> = {
+  extractors: "extractor",
+  extractorTemplates: "extractor",
+  combiners: "combiner",
+  combinerTemplates: "combiner",
+};
+/** #536: the query sections of named values, read by its extractors, combiners and transformers. */
+const QUERY_PARAMETER_SECTIONS = new Set(["queryParams", "pageParams", "contextResults"]);
+const RUNTIME_TRANSFORMERS = "runtimeTransformers";
 /** Schema references whose target is an ML schema: shown as a chip. */
 const ML_SCHEMA_REFERENCE = /^ml[A-Z]/;
 /**
@@ -223,7 +242,16 @@ interface BuildContext {
   emptyOptionalSlots: boolean;
   /** #504: the Endpoint actions, in a tree built from an action: nested sequences are blocks. */
   actions?: EndpointActionRegistry;
-  stats: { transformerBlocks: number; actionBlocks: number; jsonBlocks: number; categories: Set<string> };
+  /** #536: the value is in a query: an extractor is a block. */
+  inQuery?: boolean;
+  stats: {
+    transformerBlocks: number;
+    actionBlocks: number;
+    queryBlocks: number;
+    extractorBlocks: number;
+    jsonBlocks: number;
+    categories: Set<string>;
+  };
 }
 
 function isSequenceValue(value: unknown): value is Record<string, unknown> {
@@ -240,6 +268,10 @@ function blockOf(value: unknown, path: BlockPath, context: BuildContext, runtime
   }
   if (isTransformerNode(value)) {
     return transformerBlock(value, path, context, runtime);
+  }
+  // #536: an extractor below an extractor (a wrapper's definition, a sub-query) is a block too
+  if (context.inQuery && isExtractorValue(value)) {
+    return extractorBlock(value, path, context, "extractor");
   }
   if (Array.isArray(value)) {
     return { kind: "list", path, items: value.map((item, index) => blockOf(item, [...path, index], context, runtime)) };
@@ -457,7 +489,7 @@ function actionBlock(value: Record<string, unknown>, path: BlockPath, context: B
             path: payloadPath,
             kind: "value",
             optional: false,
-            node: { kind: "query", path: payloadPath, ...queryTypeOf(payload), value: payload },
+            node: queryBlock(payload, payloadPath, context),
           },
         ]
       : isPlainRecord(payload) && !isTransformerNode(payload)
@@ -495,6 +527,82 @@ function absentPayloadRows(
     }));
 }
 
+/** #536: an extractor or a combiner: a record with a string `extractorOrCombinerType`. */
+function isExtractorValue(value: unknown): value is Record<string, unknown> {
+  return isPlainRecord(value) && !isTransformerNode(value) && typeof value.extractorOrCombinerType === "string";
+}
+
+function extractorBlock(
+  value: Record<string, unknown>,
+  path: BlockPath,
+  context: BuildContext,
+  category: ExtractorBlock["category"],
+): ExtractorBlock {
+  context.stats.extractorBlocks++;
+  const parameters: TransformerBlockParameter[] = [];
+  const rows = attributeRows(value, path, undefined, new Set(["extractorOrCombinerType"]), context, parameters);
+  return { kind: "extractor", path, extractorOrCombinerType: value.extractorOrCombinerType as string, category, parameters, rows };
+}
+
+/**
+ * #536: the block of a query step's payload, a run query action whose own payload holds the query.
+ * Without a query record, the block has no rows nor query, as before #536.
+ */
+function queryBlock(payload: unknown, payloadPath: BlockPath, context: BuildContext): QueryBlock {
+  const base: QueryBlock = {
+    kind: "query",
+    path: payloadPath,
+    ...queryTypeOf(payload),
+    value: payload,
+    parameters: [],
+    rows: [],
+  };
+  const runPayload = isPlainRecord(payload) && isPlainRecord(payload.payload) ? payload.payload : undefined;
+  const query = runPayload && isPlainRecord(runPayload.query) && !isTransformerNode(runPayload.query) ? runPayload.query : undefined;
+  if (!isPlainRecord(payload) || !runPayload || !query) {
+    return base;
+  }
+  context.stats.queryBlocks++;
+  const queryContext: BuildContext = { ...context, inQuery: true };
+  const runPayloadPath = [...payloadPath, "payload"];
+  const queryPath = [...runPayloadPath, "query"];
+  const sectionNames = Object.keys(query).filter(
+    (name) =>
+      isPlainRecord(query[name]) &&
+      // a section computed by a transformer is a row, not entries
+      !isTransformerNode(query[name]) &&
+      (name in EXTRACTOR_SECTIONS || QUERY_PARAMETER_SECTIONS.has(name) || name === RUNTIME_TRANSFORMERS),
+  );
+  const parameters: TransformerBlockParameter[] = [];
+  const runPayloadParameters: TransformerBlockParameter[] = [];
+  const rows = [
+    ...attributeRows(payload, payloadPath, undefined, RUN_QUERY_HIDDEN_ATTRIBUTES, context, parameters),
+    ...attributeRows(runPayload, runPayloadPath, undefined, new Set(["query"]), context, runPayloadParameters),
+  ];
+  // the parameters of the run payload are one level below the block's path: each says where it is
+  parameters.push(...runPayloadParameters.map((parameter) => ({ ...parameter, path: [...runPayloadPath, parameter.name] })));
+  const queryParameters: TransformerBlockParameter[] = [];
+  const queryRows = attributeRows(query, queryPath, undefined, new Set(["queryType", ...sectionNames]), queryContext, queryParameters);
+  const sections: QuerySection[] = sectionNames.map((name) => {
+    const sectionPath = [...queryPath, name];
+    const category = EXTRACTOR_SECTIONS[name];
+    return {
+      name,
+      path: sectionPath,
+      entries: Object.entries(query[name] as Record<string, unknown>).map(([key, entry]) => {
+        const entryPath = [...sectionPath, key];
+        const node =
+          category && isExtractorValue(entry)
+            ? extractorBlock(entry, entryPath, queryContext, category)
+            : // runtime transformers are evaluated when the query runs, after the step is built
+              blockOf(entry, entryPath, queryContext, name === RUNTIME_TRANSFORMERS);
+        return { key, path: entryPath, node };
+      }),
+    };
+  });
+  return { ...base, parameters, rows, query: { path: queryPath, parameters: queryParameters, rows: queryRows, sections } };
+}
+
 /** The `queryType` of a query step's payload: a run query action, whose own payload holds the query. */
 function queryTypeOf(payload: unknown): { queryType?: string } {
   const runAction = isPlainRecord(payload) && isPlainRecord(payload.payload) ? payload.payload : undefined;
@@ -518,12 +626,14 @@ function buildBlockTree(value: unknown, options: TransformerBlockModelOptions, a
     modelEnvironment,
     emptyOptionalSlots: options.emptyOptionalSlots ?? false,
     ...(action ? { actions: endpointActionRegistry(modelEnvironment) } : {}),
-    stats: { transformerBlocks: 0, actionBlocks: 0, jsonBlocks: 0, categories: new Set() },
+    stats: { transformerBlocks: 0, actionBlocks: 0, queryBlocks: 0, extractorBlocks: 0, jsonBlocks: 0, categories: new Set() },
   };
   const root = action ? stepBlock(value, [], context) : blockOf(value, [], context);
   const stats: BlockTreeStats = {
     transformerBlocks: context.stats.transformerBlocks,
     actionBlocks: context.stats.actionBlocks,
+    queryBlocks: context.stats.queryBlocks,
+    extractorBlocks: context.stats.extractorBlocks,
     jsonBlocks: context.stats.jsonBlocks,
     categories: [...context.stats.categories].sort(),
   };
@@ -571,7 +681,15 @@ function headerOf(node: BlockNode): string {
         ...node.parameters.map((parameter) => `${parameter.name}=${JSON.stringify(parameter.value)}`),
       ].join(" ");
     case "query":
-      return node.queryType === undefined ? "<query>" : `<query ${node.queryType}>`;
+      return [
+        node.queryType === undefined ? "<query>" : `<query ${node.queryType}>`,
+        ...node.parameters.map((parameter) => `${parameter.name}=${JSON.stringify(parameter.value)}`),
+      ].join(" ");
+    case "extractor":
+      return [
+        `${node.extractorOrCombinerType} [${node.category}]`,
+        ...node.parameters.map((parameter) => `${parameter.name}=${JSON.stringify(parameter.value)}`),
+      ].join(" ");
     case "object":
       return "{object}";
     case "list":
@@ -598,7 +716,24 @@ function outlineLines(node: BlockNode, prefix: string, indent: string): string[]
   switch (node.kind) {
     case "transformer":
     case "action":
+    case "extractor":
       return [head, ...rowLines(node.rows, inner)];
+    case "query": {
+      if (!node.query) {
+        return [head];
+      }
+      const queryInner = `${inner}  `;
+      return [
+        head,
+        ...rowLines(node.rows, inner),
+        [`${inner}query:`, ...node.query.parameters.map((parameter) => `${parameter.name}=${JSON.stringify(parameter.value)}`)].join(" "),
+        ...rowLines(node.query.rows, queryInner),
+        ...node.query.sections.flatMap((section) => [
+          `${queryInner}${section.name}:`,
+          ...section.entries.flatMap((entry) => outlineLines(entry.node, `${entry.key}: `, `${queryInner}  `)),
+        ]),
+      ];
+    }
     case "sequence":
       return [
         head,

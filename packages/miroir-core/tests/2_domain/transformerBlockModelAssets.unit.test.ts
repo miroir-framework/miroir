@@ -19,6 +19,8 @@ import { applicationTransformerDefinitions } from "../../src/2_domain/Transforme
 // Slice 4: each category of block has a color in the default Theme.
 // #504: every composite action sequence maps to command blocks, one per sequence and step, with no
 // JSON block: each action type has an Endpoint action among the Endpoints of the assets.
+// #536: every query of a query step maps to a query block with its sections: every extractor and
+// combiner to an extractor block, every runtime transformer node to a transformer block, no JSON.
 // ################################################################################################
 
 const RUN_TEST = process.env.RUN_TEST;
@@ -151,6 +153,49 @@ function actionCount(sequence: Record<string, unknown>): number {
   );
 }
 
+const QUERY_ACTION_TYPES = new Set(["compositeRunBoxedQueryAction", "compositeRunBoxedQueryTemplateAction"]);
+const EXTRACTOR_SECTIONS = ["extractors", "combiners", "extractorTemplates", "combinerTemplates"];
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+/** The query of a query step, when it is a record: the step's run action holds it in its payload. */
+function stepQuery(step: unknown): Record<string, unknown> | undefined {
+  if (!isRecord(step) || !QUERY_ACTION_TYPES.has(String(step.actionType))) {
+    return undefined;
+  }
+  const runAction = step.payload;
+  const query = isRecord(runAction) && isRecord(runAction.payload) ? runAction.payload.query : undefined;
+  return isRecord(query) && typeof query.transformerType !== "string" ? query : undefined;
+}
+
+/** The queries of the query steps of a sequence, nested sequences included. */
+function sequenceQueries(sequence: Record<string, unknown>): Record<string, unknown>[] {
+  const steps = (sequence.payload as { actionSequence?: unknown } | undefined)?.actionSequence;
+  return (Array.isArray(steps) ? steps : []).flatMap((step) => {
+    if (isSequence(step)) {
+      return sequenceQueries(step);
+    }
+    const query = stepQuery(step);
+    return query ? [query] : [];
+  });
+}
+
+/** The extractors and combiners of a query, nested ones (wrappers, sub-queries) included. */
+function extractorCount(value: unknown): number {
+  if (Array.isArray(value)) {
+    return value.reduce<number>((count, item) => count + extractorCount(item), 0);
+  }
+  if (!isRecord(value) || typeof value.transformerType === "string") {
+    return 0;
+  }
+  return (
+    (typeof value.extractorOrCombinerType === "string" ? 1 : 0) +
+    Object.values(value).reduce<number>((count, child) => count + extractorCount(child), 0)
+  );
+}
+
 const files = assetJsonFiles().map((file) => ({
   file: relative(REPO_ROOT, file),
   json: JSON.parse(readFileSync(file, "utf-8")),
@@ -253,6 +298,50 @@ describe.runIf(shouldRun)("transformerBlockModelAssets", () => {
         };
       });
       expect(mapped.filter((root) => root.jsonBlocks > 0 || root.actionBlocks !== root.actions)).toEqual([]);
+    },
+  );
+
+  const queryCorpus = sequenceCorpus
+    .map((entry) => ({ file: entry.file, roots: entry.roots.filter((root) => sequenceQueries(root.value).length > 0) }))
+    .filter((entry) => entry.roots.length > 0);
+
+  it("finds the queries of the query steps of the package assets", () => {
+    const queries = queryCorpus.flatMap((entry) => entry.roots.flatMap((root) => sequenceQueries(root.value)));
+    console.log(
+      "transformerBlockModelAssets:",
+      JSON.stringify({
+        queryFiles: queryCorpus.length,
+        queries: queries.length,
+        extractors: queries.reduce(
+          (count, query) => count + EXTRACTOR_SECTIONS.reduce((sum, name) => sum + extractorCount(query[name]), 0),
+          0,
+        ),
+        runtimeTransformers: queries.reduce((count, query) => count + Object.keys(query.runtimeTransformers ?? {}).length, 0),
+      }),
+    );
+    expect(queries.length).toBeGreaterThan(0);
+  });
+
+  it.each(queryCorpus.map((entry) => [entry.file, entry.roots] as const))(
+    "%s: every query maps to blocks, its extractors and combiners to extractor blocks, none to JSON",
+    (_file, roots) => {
+      const mapped = roots.map((root) => {
+        const tree = blockTree(root.value, { modelEnvironment: assetsModelEnvironment });
+        const queries = sequenceQueries(root.value);
+        return {
+          path: root.path.join("."),
+          queries: queries.length,
+          queryBlocks: tree.stats.queryBlocks,
+          extractors: queries.reduce((count, query) => count + extractorCount(query), 0),
+          extractorBlocks: tree.stats.extractorBlocks,
+          jsonBlocks: tree.stats.jsonBlocks,
+        };
+      });
+      expect(
+        mapped.filter(
+          (root) => root.jsonBlocks > 0 || root.queryBlocks !== root.queries || root.extractorBlocks !== root.extractors,
+        ),
+      ).toEqual([]);
     },
   );
 

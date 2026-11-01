@@ -10,9 +10,10 @@ import { transformerEnvironmentAt, type TransformerEnvironment } from "./Transfo
 // - a build node (no interpolation, or build) is evaluated while the sequence resolves: it sees
 //   the parameters and the templates as parameters, and no context;
 // - a nested sequence starts with no templates and no earlier results of its parent;
-// - a query in an action payload sees its own query and page parameters, and as context its
-//   contextResults, the action's context, its extractors and combiners and the runtime
-//   transformers before it.
+// - a runtime transformer of a query in an action payload sees its query's query and page
+//   parameters, and as context its contextResults, the action's context, its extractors and
+//   combiners (or their templates) and the runtime transformers before it. The rest of the query
+//   is resolved with the step, as any value of the action (#536).
 // Inside a transformer, the scope rules of transformers apply (TransformerScope).
 // ################################################################################################
 
@@ -59,7 +60,10 @@ function isSequence(action: unknown): action is ActionRecord {
 }
 
 function isQuery(value: unknown): value is ActionRecord {
-  return isRecord(value) && ("queryParams" in value || "extractors" in value || "runtimeTransformers" in value);
+  return (
+    isRecord(value) &&
+    ["queryParams", "extractors", "extractorTemplates", "runtimeTransformers"].some((name) => name in value)
+  );
 }
 
 /** The names the result of `action` is bound under, for the actions after it. */
@@ -127,7 +131,8 @@ function stepEnvironmentAt(
 ): TransformerEnvironment {
   const actionContext = [...scope.parameters, ...scope.context, ...templates, ...earlierResults];
   const queryDepth = path.findIndex((segment, depth) => segment === "query" && isQuery(valueAt(step, path.slice(0, depth + 1))));
-  if (queryDepth >= 0) {
+  // #536: only the runtime transformers run with the query; the rest of it is resolved with the step
+  if (queryDepth >= 0 && path[queryDepth + 1] === "runtimeTransformers") {
     return queryEnvironmentAt(valueAt(step, path.slice(0, queryDepth + 1)) as ActionRecord, path.slice(queryDepth + 1), actionContext);
   }
   const target = valueAt(step, path);
@@ -151,6 +156,8 @@ function queryEnvironmentAt(query: ActionRecord, path: (string | number)[], acti
         ...contextNames,
         ...keysOf(query.extractors),
         ...keysOf(query.combiners),
+        ...keysOf(query.extractorTemplates),
+        ...keysOf(query.combinerTemplates),
         ...keysBefore(query.runtimeTransformers, path[1]),
       ],
       parameterNames,

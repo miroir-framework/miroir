@@ -8,9 +8,11 @@ import {
   type BlockNode,
   type BlockPath,
   type BlockPresentation,
+  type ExtractorBlock,
   type QueryBlock,
   type SequenceBlock,
   type TransformerBlock,
+  type TransformerBlockParameter,
   type TransformerBlockRow,
 } from "miroir-core";
 import React, { useCallback, useContext, useMemo, useState } from "react";
@@ -56,13 +58,16 @@ import { BlockDefineContext, BlockRunnerContext, useBlockModelEnvironment } from
 // at runtime, so no block of it is marked build.
 // #504: an action sequence, or a step, shows as stacked command blocks, read-only: one block per
 // action with its payload rows, the templates of a sequence above its steps, and the payload of a
-// query step as one collapsed block. Build transformers are marked by the step at which they are
+// query step as one collapsed block (#536: its query as blocks). Build transformers are marked by the step at which they are
 // evaluated (`evaluatedAt`), so templates and the children of runtime blocks are not.
 // #505: with a writer, an action sequence is edited as a transformer is: the palette offers the
 // Endpoint actions, a step goes at the end of the steps, an action block has its menu and an
 // editable label, and a literal, object or list below a payload can be replaced by the armed block.
 // A custom Runner's sequence is shown under its "when run" hat (BlockRunnerHat.tsx): its form
 // fields are variables of the sequence, given as the parameter named after the Runner.
+// #536: a query step shows its query as blocks: the attributes of its run action and of the query,
+// then a section per record of the query: its parameters, extractors and combiners (extractor
+// blocks) and runtime transformers (transformer blocks), a new one going at the end.
 // ################################################################################################
 
 export interface BlockEditorViewProps {
@@ -166,9 +171,11 @@ function hiddenSummary(node: BlockNode, count: number): string {
       ? ["entry", "entries"]
       : node.kind === "list"
         ? ["item", "items"]
-        : node.kind === "sequence"
+        : node.kind === "sequence" || node.kind === "query"
           ? ["part", "parts"]
-          : ["slot", "slots"];
+          : node.kind === "extractor"
+            ? ["attribute", "attributes"]
+            : ["slot", "slots"];
   return `${count} ${count === 1 ? one : many} hidden`;
 }
 
@@ -451,26 +458,27 @@ function BlockTitle(props: {
 }
 
 /** The primitive parameters of a block's header. */
-function HeaderParameters(props: { node: TransformerBlock | ActionBlock | SequenceBlock; settings: BlockSettings }) {
+function HeaderParameters(props: {
+  node: { path: BlockPath; parameters: TransformerBlockParameter[] };
+  settings: BlockSettings;
+}) {
   const { node, settings } = props;
   return (
     <>
-      {node.parameters.map((parameter) => (
-        <span
-          key={parameter.name}
-          data-testid={`block-parameter:${blockId(settings.rootLessListKey, [...node.path, parameter.name])}`}
-          data-value={JSON.stringify(parameter.value)}
-          css={css({ display: "inline-flex", gap: "4px", alignItems: "center" })}
-        >
-          <span css={css({ opacity: 0.85, fontSize: "12px" })}>{parameter.name}</span>
-          <BlockField
-            value={parameter.value}
-            path={[...node.path, parameter.name]}
-            id={blockId(settings.rootLessListKey, [...node.path, parameter.name])}
-            colors={settings}
-          />
-        </span>
-      ))}
+      {node.parameters.map((parameter) => {
+        const path = parameter.path ?? [...node.path, parameter.name];
+        return (
+          <span
+            key={path.join(".")}
+            data-testid={`block-parameter:${blockId(settings.rootLessListKey, path)}`}
+            data-value={JSON.stringify(parameter.value)}
+            css={css({ display: "inline-flex", gap: "4px", alignItems: "center" })}
+          >
+            <span css={css({ opacity: 0.85, fontSize: "12px" })}>{parameter.name}</span>
+            <BlockField value={parameter.value} path={path} id={blockId(settings.rootLessListKey, path)} colors={settings} />
+          </span>
+        );
+      })}
     </>
   );
 }
@@ -584,8 +592,19 @@ const ActionBlockView = React.memo(function ActionBlockView(props: {
   );
 });
 
-/** #504: the payload of a query step, collapsed; unfolded, its JSON. */
+/**
+ * #504: the payload of a query step without a query record, collapsed; unfolded, its JSON.
+ * #536: with a query record, the run action and its query as blocks.
+ */
 const QueryBlockView = React.memo(function QueryBlockView(props: { node: QueryBlock; settings: BlockSettings }) {
+  const { node, settings } = props;
+  if (!node.query) {
+    return <QueryJsonBlockView node={node} settings={settings} />;
+  }
+  return <QuerySectionsBlockView node={node} query={node.query} settings={settings} />;
+});
+
+const QueryJsonBlockView = React.memo(function QueryJsonBlockView(props: { node: QueryBlock; settings: BlockSettings }) {
   const { node, settings } = props;
   const id = blockId(settings.rootLessListKey, node.path);
   // folded by default; Expand all remounts the tree with every block open
@@ -627,6 +646,156 @@ const QueryBlockView = React.memo(function QueryBlockView(props: { node: QueryBl
       </button>
       {open && (
         <pre css={css({ margin: 0, fontSize: "12px", overflowX: "auto" })}>{JSON.stringify(node.value, null, 2)}</pre>
+      )}
+    </div>
+  );
+});
+
+const QuerySectionsBlockView = React.memo(function QuerySectionsBlockView(props: {
+  node: QueryBlock;
+  query: NonNullable<QueryBlock["query"]>;
+  settings: BlockSettings;
+}) {
+  const { node, query, settings } = props;
+  const id = blockId(settings.rootLessListKey, node.path);
+  const queryId = blockId(settings.rootLessListKey, query.path);
+  const partCount = node.rows.length + query.rows.length + query.sections.length;
+  const { collapsed, toggleButton, summary } = useCollapse(node, settings, partCount);
+  const color = blockColor(settings, "query", undefined);
+  const idOf = (path: BlockPath) => blockId(settings.rootLessListKey, path);
+  const runtimeTransformersPath = [...query.path, "runtimeTransformers"];
+  const hasRuntimeTransformers = query.sections.some((section) => section.name === "runtimeTransformers");
+  return (
+    <div
+      id={id}
+      data-testid={`block:${id}`}
+      data-block-kind="query"
+      data-query-type={node.queryType}
+      role="group"
+      aria-label={`query ${node.queryType ?? ""}`.trim()}
+      css={css({
+        display: "inline-flex",
+        flexDirection: "column",
+        maxWidth: "100%",
+        background: color,
+        color: settings.onBlock,
+        border: "1.5px solid rgba(0,0,0,.22)",
+        borderRadius: "8px",
+        paddingBottom: collapsed ? 0 : "6px",
+        verticalAlign: "top",
+      })}
+    >
+      <div
+        data-testid={`block-header:${id}`}
+        css={css({ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "4px 7px", padding: "4px 10px" })}
+      >
+        {toggleButton}
+        <span data-testid={`block-title:${id}`} data-title="query" css={css({ fontWeight: 700 })}>
+          query
+        </span>
+        {node.queryType !== undefined && <span css={css({ opacity: 0.85, fontSize: "11px" })}>{node.queryType}</span>}
+        <HeaderParameters node={node} settings={settings} />
+        {summary}
+      </div>
+      {!collapsed && (
+        <div css={mouthCss(settings)}>
+          <BlockRows rows={node.rows} settings={settings} ownerType="the run query action" />
+          <div
+            id={queryId}
+            data-testid={`block:${queryId}`}
+            data-block-kind="queryDefinition"
+            css={css({ display: "flex", flexDirection: "column", gap: "4px" })}
+          >
+            <span css={css({ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "4px 7px", fontSize: "12px" })}>
+              <span css={css({ fontWeight: 700, color: settings.textSecondary })}>query</span>
+              <HeaderParameters node={query} settings={settings} />
+            </span>
+            <BlockRows rows={query.rows} settings={settings} ownerType="the query" />
+            {query.sections.map((section) => (
+              <div
+                key={section.name}
+                data-testid={`block-query-section:${idOf(section.path)}`}
+                css={css({ display: "flex", flexDirection: "column", gap: "4px" })}
+              >
+                <span css={css({ fontSize: "12px", color: settings.textSecondary })}>{section.name}</span>
+                {section.entries.map((entry) => (
+                  <div key={entry.key} css={css({ display: "flex", gap: "8px", alignItems: "flex-start", marginLeft: "8px" })}>
+                    {/* the keys are read-only: extractors, combiners, runtime transformers and the step
+                        after the query read them by name, and a rename does not rewrite those reads */}
+                    <span
+                      data-testid={`block-query-key:${idOf(entry.path)}`}
+                      css={css({ fontSize: "12px", color: settings.textSecondary, paddingTop: "3px" })}
+                    >
+                      {entry.key}
+                    </span>
+                    <BlockNodeView node={entry.node} settings={settings} />
+                  </div>
+                ))}
+                {section.name === "runtimeTransformers" && (
+                  <span css={css({ display: "flex", gap: "4px", marginLeft: "8px" })}>
+                    <BlockInsertTargets container={runtimeTransformersPath} idOf={idOf} color={settings.border} />
+                  </span>
+                )}
+              </div>
+            ))}
+            {!hasRuntimeTransformers && (
+              <span
+                data-testid={`block-query-section:${idOf(runtimeTransformersPath)}`}
+                css={css({ display: "flex", gap: "4px", alignItems: "center", fontSize: "12px", color: settings.textSecondary })}
+              >
+                <BlockInsertTargets container={runtimeTransformersPath} idOf={idOf} color={settings.border} />
+              </span>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+});
+
+/** #536: an extractor or a combiner of a query: its type and its primitive attributes, then its other attributes. */
+const ExtractorBlockView = React.memo(function ExtractorBlockView(props: { node: ExtractorBlock; settings: BlockSettings }) {
+  const { node, settings } = props;
+  const id = blockId(settings.rootLessListKey, node.path);
+  const { collapsed, toggleButton, summary } = useCollapse(node, settings, node.rows.length);
+  const color = blockColor(settings, node.category, undefined);
+  return (
+    <div
+      id={id}
+      data-testid={`block:${id}`}
+      data-block-kind="extractor"
+      data-extractor-type={node.extractorOrCombinerType}
+      data-category={node.category}
+      role="group"
+      aria-label={node.extractorOrCombinerType}
+      css={css({
+        display: "inline-flex",
+        flexDirection: "column",
+        maxWidth: "100%",
+        background: color,
+        color: settings.onBlock,
+        border: "1.5px solid rgba(0,0,0,.22)",
+        borderRadius: "8px",
+        paddingBottom: node.rows.length > 0 && !collapsed ? "6px" : 0,
+        verticalAlign: "top",
+      })}
+    >
+      <div
+        data-testid={`block-header:${id}`}
+        css={css({ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "4px 7px", padding: "4px 10px" })}
+      >
+        {toggleButton}
+        <span data-testid={`block-title:${id}`} data-title={node.extractorOrCombinerType} css={css({ fontWeight: 700 })}>
+          {node.extractorOrCombinerType}
+        </span>
+        <span css={css({ opacity: 0.85, fontSize: "11px" })}>{node.category}</span>
+        <HeaderParameters node={node} settings={settings} />
+        {summary}
+      </div>
+      {node.rows.length > 0 && !collapsed && (
+        <div css={mouthCss(settings)}>
+          <BlockRows rows={node.rows} settings={settings} ownerType={node.extractorOrCombinerType} />
+        </div>
       )}
     </div>
   );
@@ -823,6 +992,8 @@ const BlockNodeView = React.memo(function BlockNodeView(props: {
       return <ActionBlockView node={node} settings={settings} />;
     case "query":
       return <QueryBlockView node={node} settings={settings} />;
+    case "extractor":
+      return <ExtractorBlockView node={node} settings={settings} />;
     case "json":
       return (
         <pre

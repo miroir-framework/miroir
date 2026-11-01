@@ -1120,7 +1120,7 @@
           },
           {
             "miroirTestType": "functionCallTest",
-            "miroirTestLabel": "the payload of a query step is one query block",
+            "miroirTestLabel": "the query of a query step is shown as blocks: its attributes, then its sections",
             "functionRef": {
               "module": "miroir-core/2_domain/TransformerBlockModel",
               "export": "blockOutline"
@@ -1170,7 +1170,85 @@
             ],
             "expectedValue": [
               "compositeRunBoxedQueryAction [DomainEndpoint] \"getBooks\" nameGivenToResult=\"books\"",
-              "  payload: <query boxedQueryWithExtractorCombinerTransformer>"
+              "  payload: <query boxedQueryWithExtractorCombinerTransformer> applicationSection=\"data\"",
+              "    application: getFromParameters [variable] referencePath=[\"createEntity\",\"application\"]",
+              "    query:",
+              "      application: getFromParameters [variable] referencePath=[\"createEntity\",\"application\"]",
+              "      pageParams:",
+              "      queryParams:",
+              "      contextResults:",
+              "      extractors:",
+              "        books: extractorInstancesByEntity [extractor] applicationSection=\"data\" parentName=\"Book\" parentUuid=\"e8ba151b-d68e-4cc3-9a83-3459d309ccf5\""
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "the extractors and combiners of a query are extractor blocks, its runtime transformers are evaluated at runtime",
+            "functionRef": {
+              "module": "miroir-core/2_domain/TransformerBlockModel",
+              "export": "blockOutline"
+            },
+            "arguments": [
+              {
+                "actionType": "compositeRunBoxedQueryAction",
+                "actionLabel": "queryBooks",
+                "nameGivenToResult": "books",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "payload": {
+                  "actionType": "runBoxedQueryAction",
+                  "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  "payload": {
+                    "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "applicationSection": "data",
+                    "query": {
+                      "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "queryParams": {
+                        "author": "Tolkien"
+                      },
+                      "extractors": {
+                        "book": {
+                          "extractorOrCombinerType": "extractorByPrimaryKey",
+                          "parentName": "Book",
+                          "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                          "instanceUuid": "caef8a59-39eb-48b5-ad59-a7642d3a1e8f"
+                        }
+                      },
+                      "combiners": {
+                        "author": {
+                          "extractorOrCombinerType": "combinerOneToOne",
+                          "parentName": "Author",
+                          "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+                          "objectReference": "book",
+                          "AttributeOfObjectToCompareToReferenceUuid": "author"
+                        }
+                      },
+                      "runtimeTransformers": {
+                        "title": {
+                          "transformerType": "getFromContext",
+                          "referencePath": [
+                            "book",
+                            "name"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "expectedValue": [
+              "compositeRunBoxedQueryAction [DomainEndpoint] \"queryBooks\" nameGivenToResult=\"books\"",
+              "  payload: <query boxedQueryWithExtractorCombinerTransformer> application=\"5af03c98-fe5e-490b-b08f-e1230971c57f\" applicationSection=\"data\"",
+              "    query: application=\"5af03c98-fe5e-490b-b08f-e1230971c57f\"",
+              "      queryParams:",
+              "        author: \"Tolkien\"",
+              "      extractors:",
+              "        book: extractorByPrimaryKey [extractor] parentName=\"Book\" parentUuid=\"e8ba151b-d68e-4cc3-9a83-3459d309ccf5\" instanceUuid=\"caef8a59-39eb-48b5-ad59-a7642d3a1e8f\"",
+              "      combiners:",
+              "        author: combinerOneToOne [combiner] parentName=\"Author\" parentUuid=\"d7a144ff-d1b9-4135-800c-a7cfc1f38733\" objectReference=\"book\" AttributeOfObjectToCompareToReferenceUuid=\"author\"",
+              "      runtimeTransformers:",
+              "        title: getFromContext [variable] @runtime referencePath=[\"book\",\"name\"]"
             ]
           },
           {
@@ -1637,6 +1715,93 @@
                 ],
                 "kind": "listEnd",
                 "holds": "action"
+              }
+            ]
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "#536: positions of a query step are those of its run query action, then a new runtime transformer of its query",
+            "functionRef": {
+              "module": "miroir-core/2_domain/ActionSequenceEdit",
+              "export": "blockInsertPositions"
+            },
+            "arguments": [
+              {
+                "actionType": "compositeRunBoxedQueryAction",
+                "actionLabel": "getBooks",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "nameGivenToResult": "books",
+                "payload": {
+                  "actionType": "runBoxedQueryAction",
+                  "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  "payload": {
+                    "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "query": {
+                      "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "extractors": {
+                        "books": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+                        }
+                      },
+                      "runtimeTransformers": {
+                        "title": {
+                          "transformerType": "returnValue",
+                          "interpolation": "runtime",
+                          "value": "Books"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "expectedValue": [
+              {
+                "path": [
+                  "payload",
+                  "payload",
+                  "applicationSection"
+                ],
+                "container": [
+                  "payload",
+                  "payload",
+                  "applicationSection"
+                ],
+                "kind": "slot",
+                "holds": "transformer"
+              },
+              {
+                "path": [
+                  "payload",
+                  "payload",
+                  "queryExecutionStrategy"
+                ],
+                "container": [
+                  "payload",
+                  "payload",
+                  "queryExecutionStrategy"
+                ],
+                "kind": "slot",
+                "holds": "transformer"
+              },
+              {
+                "path": [
+                  "payload",
+                  "payload",
+                  "query",
+                  "runtimeTransformers",
+                  "transformer"
+                ],
+                "container": [
+                  "payload",
+                  "payload",
+                  "query",
+                  "runtimeTransformers"
+                ],
+                "kind": "recordEntry",
+                "holds": "transformer"
               }
             ]
           },
@@ -2320,7 +2485,7 @@
           },
           {
             "miroirTestType": "functionCallTest",
-            "miroirTestLabel": "the inside of a query step's payload is no value position",
+            "miroirTestLabel": "#536: the inside of a query step's payload is a value position",
             "functionRef": {
               "module": "miroir-core/2_domain/ActionSequenceEdit",
               "export": "isValuePosition"
@@ -2345,7 +2510,7 @@
                 "application"
               ]
             ],
-            "expectedValue": false
+            "expectedValue": true
           },
           {
             "miroirTestType": "functionCallTest",
