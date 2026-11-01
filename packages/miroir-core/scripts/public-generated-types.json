@@ -1,0 +1,11 @@
+[
+  "Deployment",
+  "Entity",
+  "EntityInstance",
+  "EntityInstanceCollection",
+  "EntityVersion",
+  "MiroirConfigClient",
+  "MiroirConfigServer",
+  "StoreOrBundleAction",
+  "StoreUnitConfiguration"
+]

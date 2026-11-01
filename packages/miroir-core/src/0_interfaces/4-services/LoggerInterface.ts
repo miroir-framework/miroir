@@ -58,8 +58,16 @@ export interface SpecificLoggerOptions {
   level?: string | number, template?: string
 }
 
+/**
+ * Log level and template per logger name, overriding `LoggerOptions` defaults.
+ * @public
+ */
 export type SpecificLoggerOptionsMap = Record<string,SpecificLoggerOptions>;
 
+/**
+ * The log levels and templates of a host, by default and per logger.
+ * @public
+ */
 export interface LoggerOptions {
   defaultLevel: keyof typeof defaultLevels;
   defaultTemplate: string;
@@ -67,6 +75,10 @@ export interface LoggerOptions {
   specificLoggerOptions: SpecificLoggerOptionsMap;
 }
 
+/**
+ * Creates loggers; implemented by the host's logging library adapter (for example loglevelnext).
+ * @public
+ */
 export interface LoggerFactoryInterface {
   create(opts: LogLevelOptions | string): LoggerInterface
   get loggers(): Record<string, LoggerInterface>
@@ -79,6 +91,10 @@ export interface LoggerFactoryAsyncInterface {
 
 export type LogLevel = "trace" | "debug" | "info" | "warn" | "error";
 
+/**
+ * A logger, as created by a `LoggerFactoryInterface`.
+ * @public
+ */
 export interface LoggerInterface {
 
   get name(): string;

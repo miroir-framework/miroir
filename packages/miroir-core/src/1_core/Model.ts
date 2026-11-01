@@ -119,6 +119,10 @@ const defaultEndpointsByUuid: Record<Uuid, EndpointDefinition> = {
   ),
 };
 
+/**
+ * The meta-model environment of Miroir's own model (fundamental schema, meta-model, endpoints).
+ * @public
+ */
 export const defaultMetaModelEnvironment: MiroirModelEnvironment = {
   miroirFundamentalMlSchema: miroirFundamentalMlSchema as MlSchema,
   miroirMetaModel: defaultMiroirMetaModel,
@@ -150,6 +154,7 @@ const metaModelVersionReports = [
 /**
  * #232 — entity UUIDs whose instances always belong to `modelVersion`.
  * Checked first in getApplicationSection; independent of application UUID.
+ * @public
  */
 export const versionHistoryEntityUuids: ReadonlySet<string> = new Set([
   entityEntityVersion.uuid!,

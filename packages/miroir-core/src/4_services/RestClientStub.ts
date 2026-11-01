@@ -35,6 +35,7 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: Logge
 // ##############################################################################################
 /**
  * calls Rest Server directly, without going through the network.
+ * @public
  */
 export class RestClientStub implements RestClientInterface {
   private persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface | undefined;

@@ -405,6 +405,21 @@ instance). Not detected: a copy built from a core without this guard, and, in Vi
 URL with different `?v=` hashes. Test: `packages/miroir-core/tests/3_controllers/duplicateCoreGuard.unit.test.ts`
 (nonreg step `unit-645-duplicate-core`). Analysis: `code-helpers/features/645-BUILD-duplicate-core/`.
 
+## 10c. Public API of core (#649)
+
+`miroir-core` is in 0.x and promises no stability. The exports an application is meant to use carry `@public`
+TSDoc: what the template (`miroir-sandbox`) imports from core, plus the core types named by the startup calls'
+signatures. They are listed in [`core-public-api.md`](./core-public-api.md), written by
+`python scripts/core_public_api.py --write`. Hand-written declarations are tagged in the source; the 9 generated
+types are listed in `packages/miroir-core/scripts/public-generated-types.json`, and `generate-ts-types.ts` tags them
+(`scripts/markPublicTypes.ts`), failing the generation when a listed type is no longer generated.
+
+`scripts/tests/test_core_public_api.py` fails when the template imports an unmarked core export, when the marks
+differ from the supported set, when a built declaration loses its tag, or when the document is out of date. It runs
+in `pytest scripts/tests` and in the nonreg step `unit-649-core-public-api`. To make an export public: tag its
+declaration (or add a generated type to the list and regenerate), add it to the test's sets with the reason, and
+rewrite the document.
+
 ## 11. Non-goals of the current implementation (v1)
 
 Per the v1 acceptance criteria, explicitly **out of scope** until follow-up work:

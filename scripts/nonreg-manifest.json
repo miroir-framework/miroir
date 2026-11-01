@@ -2868,6 +2868,22 @@
       ]
     },
     {
+      "id": "unit-649-core-public-api",
+      "scopes": [
+        "core",
+        "tooling"
+      ],
+      "tier": "default",
+      "title": "#649 \u2014 core's public API: the template imports only @public exports, the marks are exactly the supported set (generated types included), the generator's marks, the built declarations keep them, the list document in sync",
+      "requires": "none",
+      "parallel": false,
+      "argv": [
+        "bash",
+        "-c",
+        "npm run testByFile -w miroir-core -- markPublicTypes && npm run build -w miroir-server-library && MIROIR_REQUIRE_PACK=1 python -m pytest scripts/tests/test_core_public_api.py -q"
+      ]
+    },
+    {
       "id": "unit-345-cli",
       "scopes": ["tooling"],
       "tier": "default",

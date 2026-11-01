@@ -19,6 +19,8 @@ from pathlib import Path
 
 import pytest
 
+from ts_source import strip_comments
+
 ROOT = Path(__file__).resolve().parents[2]
 PUBLISHED_SET_FILE = ROOT / "scripts" / "published-packages.json"
 
@@ -216,32 +218,6 @@ def source_files(*tops: str):
         for path in (ROOT / top).rglob("*"):
             if path.suffix in {".ts", ".tsx", ".mts", ".cts"} and not SKIPPED_DIRS.intersection(path.parts):
                 yield path
-
-
-def strip_comments(text: str) -> str:
-    """Remove // and /* */ comments outside string literals ('...', "...", `...`), so that a "/*" inside a string
-    (a glob, a path) does not swallow the code that follows it. Regex literals are not parsed: none of the set's
-    sources has a comment marker inside one before an import."""
-    out: list[str] = []
-    i, n = 0, len(text)
-    while i < n:
-        char = text[i]
-        if char in "'\"`":
-            j = i + 1
-            while j < n and text[j] != char:
-                j += 2 if text[j] == "\\" else 1
-            out.append(text[i : j + 1])
-            i = j + 1
-        elif text.startswith("//", i):
-            j = text.find("\n", i)
-            i = n if j < 0 else j
-        elif text.startswith("/*", i):
-            j = text.find("*/", i + 2)
-            i = n if j < 0 else j + 2
-        else:
-            out.append(char)
-            i += 1
-    return "".join(out)
 
 
 def import_specifiers(text: str) -> list[str]:
