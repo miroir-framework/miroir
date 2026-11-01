@@ -80,7 +80,7 @@ Order: I1, I4 and I5 can start now and run in parallel. I2 and I3 next. I6 waits
 | I4 | 1 | `startMiroirNode`: CLI and MCP share one call | ✅ #639 | `cli.integ`, `unit-345-mcp` |
 | I4 | 2 | `startMiroirClient`: sandbox and standalone app share one call | ✅ #639 | sandbox tests, standalone UI integ smoke |
 | I4 | 3 | Server and Electron on `startMiroirNode` | ✅ #639 | `environmentBoot`, server phase0 test |
-| I5 | 1 | Duplicate copies of core are reported | ⬜ | `duplicateCore.<I5>.phase1.unit.test.ts` |
+| I5 | 1 | Duplicate copies of core are reported | ✅ #645 | `duplicateCoreGuard.unit.test.ts`, `unit-645-duplicate-core` |
 | I5 | 2 | Manifest contract for the published set | ✅ #643 | `scripts/tests/test_package_manifests.py`, `unit-643-package-manifests` |
 | I5 | 3 | Named subpaths replace `./src/*` | ✅ #643 (`./src/*` part; `@public` TSDoc left to "Public API of core") | pack cases of `test_package_manifests.py` |
 | I5 | 4 | No `import.meta.env` in published code | ⬜ | `tools.<I5>.phase4.unit.test.ts` |
