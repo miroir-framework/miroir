@@ -9,7 +9,7 @@ import {
   type ModelAction,
   type TransactionalInstanceAction,
   type UndoRedoAction,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   book1,
   book2,

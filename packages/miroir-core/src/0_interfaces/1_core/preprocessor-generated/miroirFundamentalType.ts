@@ -2543,12 +2543,14 @@ export type StoreBasedConfiguration = {
         currentApplicationVersion: string;
     };
 };
+/** @public */
 export type EntityInstance = {
     uuid?: string | undefined;
     parentName?: string | undefined;
     parentUuid?: string | undefined;
     conceptLevel?: ("MetaModel" | "Model" | "Data" | "External") | undefined;
 };
+/** @public */
 export type EntityInstanceCollection = {
     parentName?: string | undefined;
     parentUuid: string;
@@ -3029,6 +3031,7 @@ export type Bundle = {
         applicationVersion: ApplicationVersion;
     };
 };
+/** @public */
 export type Deployment = {
     uuid: string;
     parentName?: string | undefined;
@@ -3044,6 +3047,7 @@ export type Deployment = {
     model?: MlObject | undefined;
     data?: MlObject | undefined;
 };
+/** @public */
 export type Entity = {
     uuid: string;
     parentName?: string | undefined;
@@ -3077,6 +3081,7 @@ export type Entity = {
     logicalDataModel?: ("manyToMany" | "entity") | undefined;
     mlSchema: MlObject;
 };
+/** @public */
 export type EntityVersion = {
     uuid: string;
     parentName?: string | undefined;
@@ -3787,6 +3792,7 @@ export type BundledStoreSectionConfiguration = {
     deploymentUuid: string;
 };
 export type StoreSectionConfiguration = IndexedDbStoreSectionConfiguration | FilesystemDbStoreSectionConfiguration | SqlDbStoreSectionConfiguration | MongoDbStoreSectionConfiguration | BundledStoreSectionConfiguration;
+/** @public */
 export type StoreUnitConfiguration = {
     admin: StoreSectionConfiguration;
     model: StoreSectionConfiguration;
@@ -3828,6 +3834,7 @@ export type MiroirConfigForRestClient = {
     emulateServer: false;
     serverConfig: ServerConfigForClientConfig;
 };
+/** @public */
 export type MiroirConfigClient = {
     miroirConfigType: "client";
     client: MiroirConfigForClientStub | MiroirConfigForRestClient;
@@ -3843,6 +3850,7 @@ export type MiroirConfigClient = {
         designerTools?: boolean | undefined;
     } | undefined;
 };
+/** @public */
 export type MiroirConfigServer = {
     miroirConfigType: "server";
     server: {
@@ -5111,6 +5119,7 @@ export type BundleAction = {
         application: string;
     };
 };
+/** @public */
 export type StoreOrBundleAction = StoreManagementAction | BundleAction;
 export type ActionTransformer = {
     transformerType: "actionTransformer";

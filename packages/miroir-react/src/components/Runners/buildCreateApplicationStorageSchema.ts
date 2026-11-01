@@ -1,4 +1,4 @@
-import type { MlObject, ProcessCapabilities } from "miroir-core";
+import type { MlObject, ProcessCapabilities } from "@miroir-framework/core";
 import type { FormMLSchema } from "./RunnerInterface.js";
 
 export type CreateApplicationStoreType = ProcessCapabilities["creatableStoreTypes"][number];

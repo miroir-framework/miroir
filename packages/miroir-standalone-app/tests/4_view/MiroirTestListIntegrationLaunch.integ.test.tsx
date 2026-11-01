@@ -14,12 +14,12 @@ import {
   miroirCoreStartup,
   type DomainControllerInterface,
   type MiroirTestDefinition,
-} from 'miroir-core';
+} from '@miroir-framework/core';
 import { miroirTest_tr_core } from 'miroir-app-miroir';
-import { miroirFileSystemStoreSectionStartup } from 'miroir-store-filesystem';
-import { miroirIndexedDbStoreSectionStartup } from 'miroir-store-indexedDb';
-import { miroirMongoDbStoreSectionStartup } from 'miroir-store-mongodb';
-import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
+import { miroirFileSystemStoreSectionStartup } from '@miroir-framework/store-filesystem';
+import { miroirIndexedDbStoreSectionStartup } from '@miroir-framework/store-indexeddb';
+import { miroirMongoDbStoreSectionStartup } from '@miroir-framework/store-mongodb';
+import { miroirPostgresStoreSectionStartup } from '@miroir-framework/store-postgres';
 
 import { MiroirTestListDisplay } from '../../src/miroir-fwk/4_view/components/Reports/MiroirTestListDisplay.js';
 import { resetIntegTestRunCoordinatorForTests } from '../../src/miroir-fwk/4-tests/integTestRunCoordinator.js';

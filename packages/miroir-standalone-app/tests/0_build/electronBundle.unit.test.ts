@@ -53,7 +53,7 @@ describe("electronBundle", () => {
   // #370: the main process imports the store packages, miroir-ai and miroir-mcp when it uses them.
   it("loads no MongoDB or PostgreSQL driver, miroir-ai or miroir-mcp at start: they are lazy chunks", () => {
     const atStart = report.chunks.filter((chunk) => chunk.loadKind !== "lazy");
-    const onDemand = ["mongodb", "sequelize", "miroir-store-mongodb", "miroir-store-postgres", "miroir-ai", "miroir-mcp"];
+    const onDemand = ["mongodb", "sequelize", "@miroir-framework/store-mongodb", "@miroir-framework/store-postgres", "miroir-ai", "@miroir-framework/mcp"];
     expect(
       atStart.flatMap((chunk) =>
         chunk.packages.filter((entry) => onDemand.includes(entry.name)).map((entry) => `${entry.name} in ${chunk.file}`),
@@ -62,7 +62,7 @@ describe("electronBundle", () => {
   });
 
   it("bundles the four stores and express into the main process", () => {
-    for (const name of ["miroir-store-filesystem", "miroir-store-indexedDb", "miroir-store-mongodb", "miroir-store-postgres", "express"]) {
+    for (const name of ["@miroir-framework/store-filesystem", "@miroir-framework/store-indexeddb", "@miroir-framework/store-mongodb", "@miroir-framework/store-postgres", "express"]) {
       expect(names.has(name), name).toBe(true);
     }
   });

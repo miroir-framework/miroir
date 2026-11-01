@@ -1,9 +1,9 @@
 import { describe, it, expect } from "vitest";
-import type { RenderInsightNode } from "miroir-react";
+import type { RenderInsightNode } from "@miroir-framework/react";
 import {
   summarizeTree,
   type SummarizedInsightNode,
-} from "miroir-react";
+} from "@miroir-framework/react";
 
 function node(
   partial: Pick<RenderInsightNode, "pathKey" | "componentId" | "depth" | "navigationCount"> &

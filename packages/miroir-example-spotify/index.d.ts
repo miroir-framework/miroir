@@ -6,7 +6,7 @@ import type {
   MiroirModelEnvironment,
   Report,
   SelfApplication,
-} from "miroir-core";
+} from "@miroir-framework/core";
 export declare const adminApplication_Spotify_DO_NOT_USE: any;
 export declare const deployment_Spotify_DO_NO_USE: any;
 export declare const selfApplicationSpotify: SelfApplication;

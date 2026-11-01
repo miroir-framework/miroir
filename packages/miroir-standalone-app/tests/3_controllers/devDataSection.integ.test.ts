@@ -29,12 +29,12 @@ import {
   type PersistenceStoreControllerInterface,
   type PersistenceStoreControllerManagerInterface,
   type StoreUnitConfiguration,
-} from "miroir-core";
-import { bootEnvironment } from "miroir-env";
-import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
-import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
-import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
-import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
+} from "@miroir-framework/core";
+import { bootEnvironment } from "@miroir-framework/env";
+import { miroirFileSystemStoreSectionStartup } from "@miroir-framework/store-filesystem";
+import { miroirIndexedDbStoreSectionStartup } from "@miroir-framework/store-indexeddb";
+import { miroirMongoDbStoreSectionStartup } from "@miroir-framework/store-mongodb";
+import { miroirPostgresStoreSectionStartup } from "@miroir-framework/store-postgres";
 
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import { setupMiroirTest } from "../../src/miroir-fwk/4-tests/setupMiroirTest.js";

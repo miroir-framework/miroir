@@ -9,7 +9,7 @@ import {
   type ApplicationDeploymentMap,
   type ApplicationSection,
   type EntityInstance,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import {
   reportMultistepCountryCreate,
@@ -18,7 +18,7 @@ import {
 } from "miroir-example-library";
 import { deployment_Library_DO_NO_USE } from "miroir-example-library";
 import { Container } from "react-dom";
-import { MlEditorPropsRoot } from "miroir-react";
+import { MlEditorPropsRoot } from "@miroir-framework/react";
 import {
   buildComponentTestWrapper,
   extractValuesFromRenderedElements as extractValuesFromRenderedElementsInRoot,

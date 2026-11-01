@@ -17,7 +17,7 @@ import {
   defaultMiroirModelEnvironment,
   type Entity,
   type MlElement,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import { defaultMiroirMetaModel } from "../../src/Model";
 

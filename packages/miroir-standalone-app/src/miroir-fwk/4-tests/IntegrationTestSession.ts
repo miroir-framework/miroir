@@ -28,9 +28,9 @@ import {
   penguin as publisher2,
   springer as publisher3,
 } from "miroir-example-library";
-import { miroirBundledStoreSectionStartup } from "miroir-store-bundled";
-import type { BundledDeploymentData } from "miroir-store-bundled";
-import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
+import { miroirBundledStoreSectionStartup } from "@miroir-framework/store-bundled";
+import type { BundledDeploymentData } from "@miroir-framework/store-bundled";
+import { miroirIndexedDbStoreSectionStartup } from "@miroir-framework/store-indexeddb";
 import { deployment_Admin } from "miroir-app-admin";
 import { loadLocalCacheImplementation } from "./localCacheImplementation";
 // Node-only store drivers (filesystem / postgres / mongodb) must NOT be static
@@ -41,7 +41,7 @@ import { loadLocalCacheImplementation } from "./localCacheImplementation";
 import {
   buildTeardownTestApplicationStoresAction,
   runTeardownTestApplicationStores,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { buildTestSessionModelEnvironment } from "./testSessionModelEnvironment.js";
 import {
   Action2Error,
@@ -69,7 +69,7 @@ import {
   type StoreSectionConfiguration,
   type StoreUnitConfiguration,
   type Uuid,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import { defaultMiroirMetaModel } from "miroir-app-miroir";
 
@@ -79,7 +79,7 @@ import type {
   IntegrationTestBundledDeploymentData,
   TestApplicationStoreOptions,
   TestSessionForIntegOptions,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 export type {
   AdminStoreOptions,
@@ -425,15 +425,15 @@ async function registerStoreSectionStartups(
   // Node-only drivers — dynamic import so Vite webApp never evaluates them unless
   // a Node/Electron/Vitest path actually requests that store type.
   if (serverTypes.has("filesystem")) {
-    const { miroirFileSystemStoreSectionStartup } = await import("miroir-store-filesystem");
+    const { miroirFileSystemStoreSectionStartup } = await import("@miroir-framework/store-filesystem");
     miroirFileSystemStoreSectionStartup(configurationService);
   }
   if (serverTypes.has("sql")) {
-    const { miroirPostgresStoreSectionStartup } = await import("miroir-store-postgres");
+    const { miroirPostgresStoreSectionStartup } = await import("@miroir-framework/store-postgres");
     miroirPostgresStoreSectionStartup(configurationService);
   }
   if (serverTypes.has("mongodb")) {
-    const { miroirMongoDbStoreSectionStartup } = await import("miroir-store-mongodb");
+    const { miroirMongoDbStoreSectionStartup } = await import("@miroir-framework/store-mongodb");
     miroirMongoDbStoreSectionStartup(configurationService);
   }
 }

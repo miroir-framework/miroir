@@ -24,7 +24,7 @@ import {
   type MiroirModelEnvironment,
   type ApplicationDeploymentMap,
   type EntityInstance
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "../constants.js";
 import { selectDomainStateFromlocalCacheEntityZone } from "./LocalCacheSlice.js";

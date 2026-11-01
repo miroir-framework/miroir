@@ -9,7 +9,7 @@ import React, { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-import type { Runner } from "miroir-core";
+import type { Runner } from "@miroir-framework/core";
 import {
   MiroirShellHostProvider,
   useMiroirShellHost,

@@ -14,7 +14,7 @@ import {
   type LoggerFactoryInterface,
   type LoggerOptions,
   type SpecificLoggerOptionsMap
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   book1,
   entityBook,

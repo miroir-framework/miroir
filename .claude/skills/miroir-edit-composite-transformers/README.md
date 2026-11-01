@@ -73,7 +73,7 @@ A specialized skill for creating and updating **Composite** Miroir Transformers 
 
 ```bash
 # Unit tests (in-memory execution)
-npm run testMiroir -w miroir-core -- --suites tr.core --mode unit
+npm run testMiroir -w @miroir-framework/core -- --suites tr.core --mode unit
 
 # Integration tests (PostgreSQL execution)
 npm run testMiroir -w miroir-standalone-app -- --suites tr.core --mode integration

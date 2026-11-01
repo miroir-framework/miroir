@@ -1,5 +1,5 @@
 import type { ReactCodeMirrorProps } from "@uiw/react-codemirror";
-import { LoggerInterface, MiroirLoggerFactory } from "miroir-core";
+import { LoggerInterface, MiroirLoggerFactory } from "@miroir-framework/core";
 import React, { lazy, Suspense, useCallback, useContext, useEffect } from "react";
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "../../viewConstants.js";

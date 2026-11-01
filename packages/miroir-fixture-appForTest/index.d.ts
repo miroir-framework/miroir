@@ -1,4 +1,4 @@
-import type { MetaModel } from "miroir-core";
+import type { MetaModel } from "@miroir-framework/core";
 
 export declare const defaultAppForTestModel: MetaModel;
 export declare const appForTestInitialApplicationVersion: any;

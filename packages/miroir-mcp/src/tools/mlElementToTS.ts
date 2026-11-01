@@ -3,7 +3,7 @@ import {
   resolveMlSchemaReferenceInContext,
   type MlReference,
   defaultMiroirModelEnvironment,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 /**
  * Recursively converts a MlElement to a TypeScript type string.

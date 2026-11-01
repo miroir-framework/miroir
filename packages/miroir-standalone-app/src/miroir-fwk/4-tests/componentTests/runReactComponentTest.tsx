@@ -8,16 +8,16 @@ import {
   type ReactComponentTestRunner,
   type ReactComponentTestRunnerResult,
   type ReactComponentTestSuiteContext,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import { packageName } from "../../../constants.js";
 import { cleanLevel } from "../../4_view/constants.js";
 import {
   ComponentTestModeContext,
   componentTestSandboxMode,
-} from "miroir-react";
-import { PortalContainerProvider } from "miroir-react";
-import { TransformerTypesDisplayContext } from "miroir-react";
+} from "@miroir-framework/react";
+import { PortalContainerProvider } from "@miroir-framework/react";
+import { TransformerTypesDisplayContext } from "@miroir-framework/react";
 import {
   applyComponentTestDomConfig,
   configureComponentTestDom,

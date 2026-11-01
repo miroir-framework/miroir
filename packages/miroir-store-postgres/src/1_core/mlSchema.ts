@@ -1,8 +1,8 @@
-import type { MlEnumAttributeTypes } from "miroir-core";
+import type { MlEnumAttributeTypes } from "@miroir-framework/core";
 import {
   getAttributeTypesFromMlSchema,
   mlsToSqlAttributeTypeMap,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import type { PostgresDataTypes } from "./Postgres";
 
 // Re-export for callers / MiroirTest functionRefs that still use this module path.

@@ -3,7 +3,7 @@
 
 import { ViewParamsUpdateQueue, ViewParamsUpdateQueueConfig } from "./ViewParamsUpdateQueue.js";
 import { defaultAdminViewParams } from 'miroir-app-admin';
-import { DomainControllerInterface, type ViewParamsData } from 'miroir-core';
+import { DomainControllerInterface, type ViewParamsData } from '@miroir-framework/core';
 
 const defaultAdminViewParamsData = defaultAdminViewParams as ViewParamsData;
 export class ViewParamsUpdateQueueTestUtils {

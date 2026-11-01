@@ -34,7 +34,7 @@ import {
   type LocalCacheMonitorSnapshot,
   type MiroirModelEnvironment,
   type RunBoxedQueryAction,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import {
   localCacheStateToDomainState,

@@ -39,7 +39,7 @@ import {
   StoreOrBundleAction,
   StoreUnitConfiguration,
   templateEvaluationParams,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   adminSelfApplication,
   deployment_Admin,
@@ -60,13 +60,13 @@ import {
   describeSeedReport,
   seedEnvironmentStateAtStart,
   type ResolvedEnvironment,
-} from "miroir-env";
-import { createMiroirServerApp } from "miroir-server-library";
+} from "@miroir-framework/env";
+import { createMiroirServerApp } from "@miroir-framework/server";
 import { startMiroirNode } from 'miroir-localcache-redux/node';
-import { miroirFileSystemStoreSectionStartup } from 'miroir-store-filesystem';
-import { miroirIndexedDbStoreSectionStartup } from 'miroir-store-indexedDb';
-import { miroirMongoDbStoreSectionStartup } from 'miroir-store-mongodb';
-import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
+import { miroirFileSystemStoreSectionStartup } from '@miroir-framework/store-filesystem';
+import { miroirIndexedDbStoreSectionStartup } from '@miroir-framework/store-indexeddb';
+import { miroirMongoDbStoreSectionStartup } from '@miroir-framework/store-mongodb';
+import { miroirPostgresStoreSectionStartup } from '@miroir-framework/store-postgres';
 import { agentMcpHttpUrl, mountCopilotKitRoute } from './mountCopilotKitRoute.js';
 import { resolveServerConfigFilePath } from './serverConfigFile.js';
 

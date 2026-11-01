@@ -10,12 +10,12 @@ import {
   type Report,
   type ReportSection,
   type RootReport,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import {
   reportSectionsFormSchema,
   reportSectionsFormValue,
-} from "miroir-react";
+} from "@miroir-framework/react";
 import {
   allGatedStepsAllowFinish,
   collectStepBagKeys,
@@ -23,11 +23,11 @@ import {
   extractStepBagFromFormikValues,
   inputReportSectionBagKey,
   multistepViewerReportSectionPath,
-} from "miroir-react";
+} from "@miroir-framework/react";
 import {
   openReportHref,
   resolveOpenReportPageParams,
-} from "miroir-react";
+} from "@miroir-framework/react";
 import { reportMultistepCountryCreate } from "miroir-example-library";
 import { selfApplicationMiroir } from "miroir-app-miroir";
 import { resolveRepoRoot } from "../../../helpers/integrationTestProfiles.js";

@@ -32,12 +32,12 @@ import {
   type PersistenceStoreControllerInterface,
   type PersistenceStoreControllerManagerInterface,
   type StoreSectionConfiguration,
-} from "miroir-core";
-import { bootEnvironment } from "miroir-env";
-import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
+} from "@miroir-framework/core";
+import { bootEnvironment } from "@miroir-framework/env";
+import { miroirFileSystemStoreSectionStartup } from "@miroir-framework/store-filesystem";
 
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
-import { fetchMiroirAndAppConfigurations } from "miroir-react";
+import { fetchMiroirAndAppConfigurations } from "@miroir-framework/react";
 import { setupMiroirTest } from "../../src/miroir-fwk/4-tests/setupMiroirTest.js";
 import { miroirAppStartup } from "../../src/startup.js";
 import { openTestEnvironment } from "../helpers/testEnvironment.js";

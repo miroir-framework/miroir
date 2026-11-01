@@ -8,7 +8,7 @@ import type { AddressInfo } from "node:net";
 import express, { type Router } from "express";
 import { describe, expect, it } from "vitest";
 import { AbstractAgent } from "@ag-ui/client";
-import { FAIL_CLOSED_PROCESS_CAPABILITIES, type ProcessCapabilities } from "miroir-core";
+import { FAIL_CLOSED_PROCESS_CAPABILITIES, type ProcessCapabilities } from "@miroir-framework/core";
 
 import { createCopilotKitRouter } from "../../src/routes/copilotKitRoute.js";
 

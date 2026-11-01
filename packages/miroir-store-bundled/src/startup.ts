@@ -13,7 +13,7 @@ import {
   StoreSectionConfiguration,
   type ConfigurationServiceInner,
   optionalApplicationSections,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { cleanLevel } from "./4_services/constants.js";
 import { BundledAdminStore } from "./4_services/BundledAdminStore.js";
 import { BundledDataStoreSection } from "./4_services/BundledDataStoreSection.js";

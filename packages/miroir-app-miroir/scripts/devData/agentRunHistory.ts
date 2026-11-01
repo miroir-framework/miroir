@@ -6,7 +6,7 @@ import {
   checkModelValidationInstance,
   defaultMiroirModelEnvironment,
   type MlElement,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import agentRunMeasurementEntityJson from "../../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/954de789-6350-4f54-a809-5f2b8b91d067.json" with { type: "json" };
 

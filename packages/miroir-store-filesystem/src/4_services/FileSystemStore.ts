@@ -7,7 +7,7 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   PersistenceStoreAbstractInterface,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
 import path from "path";

@@ -12,7 +12,7 @@ import {
   type MiroirConfigClient,
   type PersistenceStoreControllerManager,
   type StoreUnitConfiguration,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { deployment_Miroir } from "miroir-app-admin";
 import { selfApplicationLibrary } from "miroir-example-library";
 import { selfApplicationMiroir } from "miroir-app-miroir";

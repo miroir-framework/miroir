@@ -17,8 +17,8 @@ import type {
   MiroirPlatformEnsureMode,
   MiroirTestExecutionEnvironment,
   StoreUnitConfiguration,
-} from "miroir-core";
-import { ensureMiroirPlatform } from "miroir-core";
+} from "@miroir-framework/core";
+import { ensureMiroirPlatform } from "@miroir-framework/core";
 
 import { setupMiroirTest } from "./setupMiroirTest.js";
 

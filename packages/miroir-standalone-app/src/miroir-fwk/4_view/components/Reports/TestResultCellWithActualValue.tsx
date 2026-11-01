@@ -1,10 +1,10 @@
 import React, { useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
-import { useMiroirTheme } from "miroir-react";
+import { useMiroirTheme } from "@miroir-framework/react";
 import { formatValue } from './SideBySideDiff.js';
-import { DraggableContainer } from "miroir-react";
-import { RenderMeasurementTable, renderMeasurementsOfTestResult } from "miroir-react";
+import { DraggableContainer } from "@miroir-framework/react";
+import { RenderMeasurementTable, renderMeasurementsOfTestResult } from "@miroir-framework/react";
 
 // ################################################################################################
 // Test Result Cell Component specifically for the Result column

@@ -25,7 +25,7 @@ import {
   type TransformerMlSchemaNodeReport,
   type TransformerReturnType,
   type Uuid,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { ThemedOnScreenHelper } from "../helpers/ThemedHelper.js";
 import { entityEntity, reportEntityDetails } from "miroir-app-miroir";
 

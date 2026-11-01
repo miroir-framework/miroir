@@ -15,7 +15,7 @@ import {
   type MiroirConfigServer,
   type StoreSectionConfiguration,
   type StoreUnitConfiguration,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import { stableJson } from "./adminRows.js";
 import { EnvironmentError, type ResolvedEnvironment } from "./environmentFiles.js";

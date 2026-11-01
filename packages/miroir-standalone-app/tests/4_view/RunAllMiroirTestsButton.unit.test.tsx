@@ -2,9 +2,9 @@ import React from 'react';
 import '@testing-library/jest-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { fireEvent, render as rtlRender, screen, waitFor } from "@testing-library/react";
-import { MiroirContextReactTestProvider, MiroirThemeContext } from "miroir-react";
+import { MiroirContextReactTestProvider, MiroirThemeContext } from "@miroir-framework/react";
 
-import type { MiroirTestDefinition } from 'miroir-core';
+import type { MiroirTestDefinition } from '@miroir-framework/core';
 import { miroirTest_runner_returnDocument } from 'miroir-example-library';
 import {
   miroirTest_fn_entityPrimaryKey,
@@ -59,8 +59,8 @@ const runUiIntegrationTestSuiteMock = vi.fn(
   ) => buildSuccessfulIntegrationResult(request.suiteKey),
 );
 
-vi.mock('miroir-core', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('miroir-core')>();
+vi.mock('@miroir-framework/core', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@miroir-framework/core')>();
   return {
     ...actual,
     runMiroirTests: {
@@ -71,8 +71,8 @@ vi.mock('miroir-core', async (importOriginal) => {
   };
 });
 
-vi.mock("miroir-react", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("miroir-react")>()),
+vi.mock("@miroir-framework/react", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@miroir-framework/react")>()),
   ActionButtonWithSnackbar: ({
     onAction,
     label,

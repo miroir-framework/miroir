@@ -14,7 +14,7 @@ import {
   MAX_BLOB_FILE_SIZE,
   MiroirLoggerFactory,
   validateMimeType,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "../../viewConstants.js";

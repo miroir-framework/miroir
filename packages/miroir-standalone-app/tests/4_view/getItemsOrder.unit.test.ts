@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { MlElement, MlObject, KeyMapEntry } from 'miroir-core';
-import { getItemsOrder } from "miroir-react";
+import { MlElement, MlObject, KeyMapEntry } from '@miroir-framework/core';
+import { getItemsOrder } from "@miroir-framework/react";
 
 // Helper to create a KeyMapEntry whose resolvedReferenceSchemaInContext marks a record type.
 // Note: resolvedReferenceSchemaInContext is defined in the ML schema for KeyMapEntry

@@ -11,7 +11,7 @@ import {
   type StoreSectionConfiguration,
   type ConfigurationServiceInner,
   optionalApplicationSections,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { SqlDbDataStoreSection } from "./4_services/SqlDbDataStoreSection.js";
 import { SqlDbModelStoreSection } from "./4_services/SqlDbModelStoreSection.js";
 

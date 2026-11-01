@@ -613,6 +613,7 @@ export {
   ServerSqlStorage,
   ServerStorageLocation,
   StorageLocation,
+  StorageType,
   StorageTypeSchema
 } from "./0_interfaces/1_core/StorageConfiguration.js";
 export {
@@ -1609,6 +1610,7 @@ export {
   LoggerGlobalContext,
   RUN_LOG_PREFIX_PATTERN,
   emptyLoggerContextElement,
+  type LoggerContextElement,
   type LogPhase,
 } from "./4_services/LoggerContext.js";
 export {
@@ -2014,7 +2016,7 @@ export {
   type ModelValidationInstanceModule,
   type ModelValidationPlan,
 } from "./5_tests/ModelValidationTools.js";
-// Node-only filesystem loaders: import from "miroir-core/model-validation-fs"
+// Node-only filesystem loaders: import from "@miroir-framework/core/model-validation-fs"
 // (kept off the main browser entry — Vite cannot bundle node:fs).
 export {
   buildModelValidationRunnableSuites,

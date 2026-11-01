@@ -15,7 +15,7 @@ import {
   mlsTypeCheck,
   type ApplicationDeploymentMap,
   type MiroirModelEnvironment
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import { packageName } from "../constants.js";
 import { cleanLevel } from "../viewConstants.js";

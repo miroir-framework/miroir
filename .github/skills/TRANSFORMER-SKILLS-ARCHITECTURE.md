@@ -160,7 +160,7 @@ Both skills share the same test infrastructure:
 
 ```bash
 # Unit tests (in-memory)
-npm run testMiroir -w miroir-core -- --suites tr.core --mode unit
+npm run testMiroir -w @miroir-framework/core -- --suites tr.core --mode unit
 
 # Integration tests (database)
 npm run testMiroir -w miroir-standalone-app -- --suites tr.core --mode integration

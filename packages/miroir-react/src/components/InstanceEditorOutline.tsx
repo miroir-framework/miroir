@@ -12,7 +12,7 @@ import {
   ListItemText,
   Typography,
 } from '@mui/material';
-import { MiroirLoggerFactory, type KeyMapEntry, type LoggerInterface } from 'miroir-core';
+import { MiroirLoggerFactory, type KeyMapEntry, type LoggerInterface } from '@miroir-framework/core';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { packageName } from "../constants.js";
 import { cleanLevel } from "../viewConstants.js";

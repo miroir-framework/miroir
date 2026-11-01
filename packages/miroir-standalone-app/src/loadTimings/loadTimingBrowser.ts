@@ -1,4 +1,4 @@
-import type { DomainControllerInterface, MiroirConfigClient } from "miroir-core";
+import type { DomainControllerInterface, MiroirConfigClient } from "@miroir-framework/core";
 
 import { MIROIR_DEPLOYMENT_UUID } from "./loadTimingConstants.js";
 import {

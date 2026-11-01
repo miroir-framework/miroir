@@ -466,13 +466,13 @@ build_one_package() {
       ;;
     miroir-core)
       if [[ "$CORE_BUILD_MODE" == "devBuild" ]]; then
-        npm run devBuild -w miroir-core
+        npm run devBuild -w @miroir-framework/core
         rc=$?
       elif [[ "$CORE_BUILD_MODE" == "typecheck" ]]; then
         typecheck_package miroir-core
         rc=$?
       else
-        npm run build -w miroir-core
+        npm run build -w @miroir-framework/core
         rc=$?
       fi
       ;;
@@ -481,7 +481,7 @@ build_one_package() {
         typecheck_package "$pkg"
         rc=$?
       else
-        npm run build -w "$pkg"
+        npm run build -w "packages/$pkg"
         rc=$?
       fi
       ;;
@@ -545,13 +545,13 @@ run_stage_packages() {
           ;;
         miroir-core)
           if [[ "$CORE_BUILD_MODE" == "devBuild" ]]; then
-            npm run devBuild -w miroir-core
+            npm run devBuild -w @miroir-framework/core
             rc=$?
           elif [[ "$CORE_BUILD_MODE" == "typecheck" ]]; then
             typecheck_package miroir-core
             rc=$?
           else
-            npm run build -w miroir-core
+            npm run build -w @miroir-framework/core
             rc=$?
           fi
           ;;
@@ -560,7 +560,7 @@ run_stage_packages() {
             typecheck_package "$pkg"
             rc=$?
           else
-            npm run build -w "$pkg"
+            npm run build -w "packages/$pkg"
             rc=$?
           fi
           ;;
@@ -619,7 +619,7 @@ bootstrap_miroir_core_for_deployment_dts() {
   for pkg in "${STAGE_DEPLOY_BOOTSTRAP[@]}"; do
     if should_build_package "$pkg"; then
       echo "  [BOOTSTRAP] miroir-core plain build (deployment packages need dist/index.d.ts for DTS)"
-      npm run build -w miroir-core
+      npm run build -w @miroir-framework/core
       return 0
     fi
   done
@@ -656,10 +656,10 @@ record_time "3/9  miroir-app-miroir & miroir-app-admin" "$t0"
 # ---------------------------------------------------------------------------
 # Step 4 – miroir-core (optionally with type generation)
 # ---------------------------------------------------------------------------
-step "4/9 · miroir-core ($CORE_BUILD_MODE)"
+step "4/9 · @miroir-framework/core ($CORE_BUILD_MODE)"
 t0=$(now_secs)
-run_stage_packages "miroir-core" "${STAGE_CORE[@]}"
-record_time "4/9  miroir-core ($CORE_BUILD_MODE)" "$t0"
+run_stage_packages "@miroir-framework/core" "${STAGE_CORE[@]}"
+record_time "4/9  @miroir-framework/core ($CORE_BUILD_MODE)" "$t0"
 
 # ---------------------------------------------------------------------------
 # Step 5 – Local caches & store backends (all depend only on miroir-core)

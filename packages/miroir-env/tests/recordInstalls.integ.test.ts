@@ -17,8 +17,8 @@ import {
   miroirCoreStartup,
   type DomainControllerInterface,
   type EntityInstance,
-} from "miroir-core";
-import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
+} from "@miroir-framework/core";
+import { miroirFileSystemStoreSectionStartup } from "@miroir-framework/store-filesystem";
 
 import {
   changesDeployments,

@@ -1,15 +1,15 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
-import { useMiroirTheme } from "miroir-react";
+import { useMiroirTheme } from "@miroir-framework/react";
 import {
   ThemedBox,
   ThemedPaper,
   ThemedStyledButton,
   ThemedTitle
-} from "miroir-react"
+} from "@miroir-framework/react"
 import { formatValue, SideBySideDiff } from './SideBySideDiff.js';
-import { LoggerInterface, MiroirLoggerFactory } from 'miroir-core';
+import { LoggerInterface, MiroirLoggerFactory } from '@miroir-framework/core';
 import { packageName } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
 

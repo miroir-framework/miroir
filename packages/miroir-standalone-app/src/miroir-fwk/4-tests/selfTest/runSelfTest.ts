@@ -14,13 +14,13 @@ import {
   type MiroirActivityTrackerInterface,
   type MiroirConfigClient,
   type Runner,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { selfApplicationMiroir } from "miroir-app-miroir";
 
 import { packageName } from "../../../constants.js";
-import type { TestResultData } from "miroir-react";
+import type { TestResultData } from "@miroir-framework/react";
 import { cleanLevel } from "../../4_view/constants.js";
-import { fetchMiroirAndAppConfigurations } from "miroir-react";
+import { fetchMiroirAndAppConfigurations } from "@miroir-framework/react";
 import { readAppMiroirReports } from "../appMiroirReports.js";
 import {
   runIntegrationMiroirTestBatch,

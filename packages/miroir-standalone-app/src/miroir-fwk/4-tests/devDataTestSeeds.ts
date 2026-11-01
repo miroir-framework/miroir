@@ -4,7 +4,7 @@
  * Library testbed, seeded with the fixed rows below, so they do not depend on the real history, which
  * grows with every record.
  */
-import type { Entity, EntityInstance } from "miroir-core";
+import type { Entity, EntityInstance } from "@miroir-framework/core";
 import {
   entityAgentRunMeasurement as entityAgentRunMeasurementJson,
   entityBundleSizeMeasurement as entityBundleSizeMeasurementJson,
@@ -98,7 +98,7 @@ function agentRunSeedRecord(
   };
 }
 const agentRunSeedRecords: AgentRunMeasurement[] = [
-  agentRunSeedRecord("3b5358a8-2407-491b-a3b4-1a64788776ab", "miroir-mcp", "overdue-loans", 1.25),
+  agentRunSeedRecord("3b5358a8-2407-491b-a3b4-1a64788776ab", "@miroir-framework/mcp", "overdue-loans", 1.25),
   agentRunSeedRecord("24d23f7b-5d45-4453-8c02-5c0b2fdbf92f", "conventional", "overdue-loans", 2.5),
   agentRunSeedRecord("2a6fe1c2-5b55-4f62-9688-fbcc406b6fcc", "miroir-files", "lending-limit", 0.75, {
     valid: false,

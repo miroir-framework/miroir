@@ -40,7 +40,7 @@ import {
   shouldListenLoopbackHttp,
   shouldMountCopilotKitRoute,
   shouldMountMcpHttp,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { log } from "console";
 import { bootElectronServer, DESKTOP_ENVIRONMENT, prepareDesktopRoot } from "./environmentBoot.js";
 import { electronAuthenticationGates, handleMiroirIpc, type MiroirIpcPayload } from "./miroirIpcHandler.js";
@@ -164,7 +164,7 @@ export async function setupIpcServer(selfTest?: ElectronSelfTestOptions): Promis
     }
 
     if (shouldMountMcpHttp(capabilities.mcp)) {
-      const { EndpointToolRegistry, setupMcpServer } = await import("miroir-mcp");
+      const { EndpointToolRegistry, setupMcpServer } = await import("@miroir-framework/mcp");
       const endpointToolRegistry = new EndpointToolRegistry(
         domainController,
         defaultSelfApplicationDeploymentMap,

@@ -14,8 +14,8 @@ import {
   RestClientStub,
   type DomainControllerInterface,
   type ProcessCapabilities,
-} from "miroir-core";
-import { MiroirContextReactProvider, useMiroirContextService } from "miroir-react";
+} from "@miroir-framework/core";
+import { MiroirContextReactProvider, useMiroirContextService } from "@miroir-framework/react";
 
 const RUN_TEST = process.env.RUN_TEST;
 const runThis =

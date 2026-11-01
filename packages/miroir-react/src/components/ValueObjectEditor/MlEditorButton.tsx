@@ -6,7 +6,7 @@ import {
   type ApplicationDeploymentMap,
   type TransformerReturnType,
   type Uuid,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "../../viewConstants.js";
 import { useMiroirContextService } from "../../contexts/MiroirContextReactProvider.js";

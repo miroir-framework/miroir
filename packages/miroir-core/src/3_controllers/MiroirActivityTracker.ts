@@ -37,6 +37,10 @@ export function getActivityTopic(activity: MiroirActivity): LogTopic | undefined
   return activityTypeToTopicMap[activity.activityType];
 }
 
+/**
+ * Tracks running actions, tests and transformers; passed to the startup call.
+ * @public
+ */
 export class MiroirActivityTracker implements MiroirActivityTrackerInterface {
   private readonly CLEANUP_INTERVAL_MS = 60000; // 1 minute
   private readonly MAX_AGE_MS = 20 * 60 * 1000; // 20 minutes

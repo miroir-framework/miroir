@@ -5,8 +5,8 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { miroirCoreStartup, RestClientStub, ELECTRON_LOOPBACK_ROOT_API_URL } from "miroir-core";
-import { openTestEnvironment } from "miroir-env";
+import { miroirCoreStartup, RestClientStub, ELECTRON_LOOPBACK_ROOT_API_URL } from "@miroir-framework/core";
+import { openTestEnvironment } from "@miroir-framework/env";
 
 import { bootElectronServer, type ElectronServer } from "../../../../src/environmentBoot";
 import { electronAuthenticationGates, handleMiroirIpc, type MiroirIpcDeps } from "../../../../src/miroirIpcHandler";

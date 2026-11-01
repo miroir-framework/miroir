@@ -28,11 +28,11 @@ Each application's model and data live in a package whose name says its role (#3
 
 | Role | Prefix | Packages |
 |---|---|---|
-| Framework: applications every Miroir server needs | `miroir-app-` | `miroir-app-miroir` (meta-model, built before `miroir-core`), `miroir-app-admin` |
+| Framework: applications every Miroir server needs | `miroir-app-` | `miroir-app-miroir` (meta-model, built before `@miroir-framework/core`), `miroir-app-admin` |
 | Example: demo applications | `miroir-example-` | `miroir-example-library`, `miroir-example-spotify`, `miroir-example-github`, `miroir-example-designer`, `miroir-example-postgres` |
 | Test fixture: exists only for tests | `miroir-fixture-` | `miroir-fixture-appForTest` |
 
-CLI MiroirTest discovery scans every package with one of these prefixes (`DEPLOYMENT_PACKAGE_PREFIXES` in miroir-core).
+CLI MiroirTest discovery scans every package with one of these prefixes (`DEPLOYMENT_PACKAGE_PREFIXES` in @miroir-framework/core).
 
 ### Deployment package asset folders
 
@@ -177,7 +177,7 @@ Optional section for information about an application that is not needed to depl
 
 ## Bundled Store: Data Classification
 
-The bundled store factory (`miroir-store-bundled`) splits statically-imported instances into `model` vs `data` sections by `parentUuid`. The classification is **deployment-specific**.
+The bundled store factory (`@miroir-framework/store-bundled`) splits statically-imported instances into `model` vs `data` sections by `parentUuid`. The classification is **deployment-specific**.
 
 ### Miroir deployment
 

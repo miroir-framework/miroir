@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { MarkdownEditorModal } from "miroir-react";
+import { MarkdownEditorModal } from "@miroir-framework/react";
 
 describe('MarkdownEditorModal Integration Tests', () => {
   const mockOnSave = vi.fn();

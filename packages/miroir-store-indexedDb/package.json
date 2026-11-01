@@ -1,7 +1,10 @@
 {
-  "name": "miroir-store-indexedDb",
+  "name": "@miroir-framework/store-indexeddb",
   "private": true,
   "version": "0.5.0-rc.1",
+  "publishConfig": {
+    "access": "public"
+  },
   "description": "The Miroir implementation for accessing indexedDb databases (on web browser, or file-based on nodejs server).",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -18,7 +21,7 @@
   "module": "dist/index.js",
   "type": "module",
   "scripts": {
-    "watch": "lerna watch --scope='miroir-store-indexedDb' --include-dependencies -- lerna run build --scope='miroir-store-indexedDb'",
+    "watch": "lerna watch --scope='@miroir-framework/store-indexeddb' --include-dependencies -- lerna run build --scope='@miroir-framework/store-indexeddb'",
     "build": "tsup",
     "devBuild": "npm run build",
     "copy-files": "copyfiles -u 1 src/**/*.json src/**/*.css dist/src",
@@ -26,7 +29,7 @@
   },
   "dependencies": {
     "level": "10.0.0",
-    "miroir-core": "*",
+    "@miroir-framework/core": "*",
     "miroir-app-miroir": "*"
   },
   "devDependencies": {

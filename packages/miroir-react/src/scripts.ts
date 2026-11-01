@@ -14,10 +14,10 @@ import {
   type ApplicationDeploymentMap,
   type Entity,
   type Uuid
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { packageName } from "./constants.js";
 import { cleanLevel } from "./viewConstants.js";
-import type { ExtractorTemplateInstancesByEntity } from "miroir-core";
+import type { ExtractorTemplateInstancesByEntity } from "@miroir-framework/core";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "scripts");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);

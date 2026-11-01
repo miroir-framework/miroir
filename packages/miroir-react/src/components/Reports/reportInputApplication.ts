@@ -1,5 +1,5 @@
-import type { ApplicationDeploymentMap, ApplicationSection, Uuid } from "miroir-core";
-import { metaModelDevDataReports, noValue } from "miroir-core";
+import type { ApplicationDeploymentMap, ApplicationSection, Uuid } from "@miroir-framework/core";
+import { metaModelDevDataReports, noValue } from "@miroir-framework/core";
 import { selfApplicationMiroir } from "miroir-app-miroir";
 
 /**

@@ -8,7 +8,7 @@ import {
   type ApplicationDeploymentMap,
   type DomainControllerInterface,
   type LoggerOptions,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import { EndpointToolRegistry } from "../../src/tools/EndpointToolRegistry.js";
 import { startMcpTestPlatform } from "./mcpTestPlatform.js";

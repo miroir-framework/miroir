@@ -7,19 +7,19 @@ import {
   MiroirLoggerFactory,
   Uuid,
   type GraphReportSection
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import { packageName } from '../../../../constants.js';
 import { cleanLevel } from '../../constants.js';
-import { RenderInsightHeader } from "miroir-react";
-import { useRenderTracker } from "miroir-react";
+import { RenderInsightHeader } from "@miroir-framework/react";
+import { useRenderTracker } from "@miroir-framework/react";
 import { GraphComponent } from './GraphComponent.js';
 import { 
   GraphData, 
   GraphDataPoint, 
-} from "miroir-react";
-import { ThemedBox } from "miroir-react";
-import { ThemedText } from "miroir-react";
+} from "@miroir-framework/react";
+import { ThemedBox } from "@miroir-framework/react";
+import { ThemedText } from "@miroir-framework/react";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "GraphReportSectionView");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);

@@ -16,10 +16,10 @@ import {
   type DomainControllerInterface,
   type LoggerFactoryInterface,
   type LoggerOptions,
-} from "miroir-core";
-import { bootEnvironment, openTestEnvironment, selectedTestEnvironment } from "miroir-env";
+} from "@miroir-framework/core";
+import { bootEnvironment, openTestEnvironment, selectedTestEnvironment } from "@miroir-framework/env";
 import { RestPersistenceClientAndRestClient, setupMiroirDomainController } from "miroir-localcache-redux/node";
-import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
+import { miroirFileSystemStoreSectionStartup } from "@miroir-framework/store-filesystem";
 
 export type AiTestPlatform = {
   domainController: DomainControllerInterface;

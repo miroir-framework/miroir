@@ -1,21 +1,21 @@
 import { act, render as rtlRender, screen } from "@testing-library/react";
-import { MiroirContextReactTestProvider } from "miroir-react";
+import { MiroirContextReactTestProvider } from "@miroir-framework/react";
 import React from 'react';
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import '@testing-library/jest-dom';
 
-import type { GraphReportSection } from "miroir-core";
+import type { GraphReportSection } from "@miroir-framework/core";
 import {
   ApplicationSection,
   LoggerInterface,
   MiroirLoggerFactory,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import { packageName } from "../../src/constants";
 import { GraphReportSectionView } from "../../src/miroir-fwk/4_view/components/Graph/GraphReportSectionView";
 import { cleanLevel } from "../../src/miroir-fwk/4_view/constants";
-import { MiroirThemeProvider } from "miroir-react";
+import { MiroirThemeProvider } from "@miroir-framework/react";
 import { deployment_Miroir } from "miroir-app-admin";
 import { defaultStoredMiroirTheme } from "miroir-app-miroir";
 

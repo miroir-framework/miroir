@@ -10,7 +10,7 @@ import {
   RestPersistenceClientAndRestClientInterface,
   isServerRoutedMiroirAction,
   type ApplicationDeploymentMap,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "../constants.js";
 

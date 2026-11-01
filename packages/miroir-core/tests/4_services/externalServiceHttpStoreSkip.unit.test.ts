@@ -7,7 +7,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 
-import { isHttpExternalEntity, type Entity } from "miroir-core";
+import { isHttpExternalEntity, type Entity } from "@miroir-framework/core";
 import { FileSystemStoreSection } from "../../../miroir-store-filesystem/src/4_services/FileSystemStoreSection.js";
 
 const RUN_TEST = process.env.RUN_TEST;

@@ -1,5 +1,5 @@
 import { ICellRendererParams } from 'ag-grid-community';
-import { LoggerInterface, MiroirLoggerFactory } from "miroir-core";
+import { LoggerInterface, MiroirLoggerFactory } from "@miroir-framework/core";
 
 import { Icon } from '@mui/material';
 import React, { memo, useMemo } from 'react';

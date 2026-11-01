@@ -20,7 +20,7 @@ import {
   RunBoxedQueryTemplateAction,
   defaultMetaModelEnvironment,
   type ApplicationDeploymentMap
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import { packageName } from "../constants.js";
 import { FileSystemStoreSection, MixableFileSystemDbStore } from "./FileSystemStoreSection.js";

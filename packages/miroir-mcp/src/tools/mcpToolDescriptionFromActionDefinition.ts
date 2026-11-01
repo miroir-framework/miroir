@@ -1,4 +1,4 @@
-import { getEndpointActions, type EndpointDefinition } from "miroir-core";
+import { getEndpointActions, type EndpointDefinition } from "@miroir-framework/core";
 import type { McpToolDescription } from "./mcpHandlersForEndpoint.js";
 import { mlElementToJsonSchema } from "./mlElementToJsonSchema.js";
 

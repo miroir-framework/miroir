@@ -11,7 +11,7 @@ import {
 import { createOpenAI } from "@ai-sdk/openai";
 import type { LanguageModel } from "ai";
 import type { Action, Parameter } from "@copilotkit/shared";
-import { AI_SECRET_IMPORT_ALIASES, resolveSecret } from "miroir-core";
+import { AI_SECRET_IMPORT_ALIASES, resolveSecret } from "@miroir-framework/core";
 import OpenAI from "openai";
 import Anthropic from "@anthropic-ai/sdk";
 

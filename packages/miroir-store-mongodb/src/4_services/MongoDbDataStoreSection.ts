@@ -6,7 +6,7 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   PersistenceStoreDataSectionInterface
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { MongoDb } from "./MongoDb.js";
 import { MixedMongoDbInstanceStoreSection } from "./MongoDbInstanceStoreSectionMixin.js";
 

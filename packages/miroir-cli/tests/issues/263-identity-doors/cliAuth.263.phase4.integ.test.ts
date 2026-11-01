@@ -8,8 +8,8 @@ import {
   ConfigurationService,
   issueBearerToken,
   setProcessTokenSecret,
-} from "miroir-core";
-import { openTestEnvironment, selectedTestEnvironment } from "miroir-env";
+} from "@miroir-framework/core";
+import { openTestEnvironment, selectedTestEnvironment } from "@miroir-framework/env";
 import { entityBook, selfApplicationLibrary } from "miroir-example-library";
 
 import { authenticateCli, type CliIdentityOptions } from "../../../src/authentication.js";

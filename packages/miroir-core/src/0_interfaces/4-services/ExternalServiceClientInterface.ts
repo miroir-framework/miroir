@@ -43,6 +43,10 @@ export interface ExternalServiceEnvironment {
   readonly persistRotatedSecret?: PersistRotatedSecret;
 }
 
+/**
+ * Calls the operations of external services declared in the model.
+ * @public
+ */
 export interface ExternalServiceClientInterface {
   /** The fetch of the environment, for requests that are not operations (OpenAPI documents). */
   readonly fetch: OutboundFetch;

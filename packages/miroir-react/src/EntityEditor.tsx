@@ -1,5 +1,5 @@
 import { ICellEditorParams } from "ag-grid-community";
-import { LoggerInterface, MiroirLoggerFactory } from "miroir-core";
+import { LoggerInterface, MiroirLoggerFactory } from "@miroir-framework/core";
 
 import { forwardRef, KeyboardEvent, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { packageName } from "./constants.js";

@@ -115,7 +115,7 @@ jobs:
           name: dist-deployment-packages
           path: packages
       - name: devBuild miroir-core (generates TypeScript types from ML schemas)
-        run: npm run devBuild -w miroir-core
+        run: npm run devBuild -w @miroir-framework/core
       - name: Upload dist – miroir-core
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
@@ -163,24 +163,24 @@ jobs:
           npm run build -w miroir-localcache & pids+=($!)
           npm run build -w miroir-localcache-redux & pids+=($!)
           npm run build -w miroir-localcache-zustand & pids+=($!)
-          npm run build -w miroir-store-bundled & pids+=($!)
-          npm run build -w miroir-store-indexedDb & pids+=($!)
+          npm run build -w @miroir-framework/store-bundled & pids+=($!)
+          npm run build -w @miroir-framework/store-indexeddb & pids+=($!)
           for pid in "${pids[@]}"; do wait "$pid"; done
       - name: Build server stores and service packages (parallel)
         run: |
           pids=()
-          npm run build -w miroir-store-filesystem & pids+=($!)
-          npm run build -w miroir-store-mongodb & pids+=($!)
-          npm run build -w miroir-store-postgres & pids+=($!)
+          npm run build -w @miroir-framework/store-filesystem & pids+=($!)
+          npm run build -w @miroir-framework/store-mongodb & pids+=($!)
+          npm run build -w @miroir-framework/store-postgres & pids+=($!)
           npm run build -w miroir-ai & pids+=($!)
-          npm run build -w miroir-mcp & pids+=($!)
+          npm run build -w @miroir-framework/mcp & pids+=($!)
           for pid in "${pids[@]}"; do wait "$pid"; done
       - name: Build miroir-react, miroir-diagram-class and miroir-server-library
         run: |
           pids=()
-          npm run build -w miroir-react & pids+=($!)
+          npm run build -w @miroir-framework/react & pids+=($!)
           npm run build -w miroir-diagram-class & pids+=($!)
-          npm run build -w miroir-server-library & pids+=($!)
+          npm run build -w @miroir-framework/server & pids+=($!)
           for pid in "${pids[@]}"; do wait "$pid"; done
       - name: Upload dist – shared libs
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -286,7 +286,7 @@ jobs:
           name: dist-shared-libs
           path: packages
       - name: Build miroir-cli
-        run: npm run build -w miroir-cli
+        run: npm run build -w @miroir-framework/cli
       - name: Produce server release binary
         run: npm run build:release -w miroir-server
       - name: Upload server binary

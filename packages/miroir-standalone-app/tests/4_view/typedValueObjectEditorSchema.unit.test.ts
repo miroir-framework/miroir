@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
-import type { MlElement, MetaModel, MiroirModelEnvironment } from "miroir-core";
-import { getMiroirFundamentalSchemaForDeployment, mlsTypeCheck } from "miroir-core";
+import type { MlElement, MetaModel, MiroirModelEnvironment } from "@miroir-framework/core";
+import { getMiroirFundamentalSchemaForDeployment, mlsTypeCheck } from "@miroir-framework/core";
 import {
   defaultLibraryAppModel,
   deployment_Library_DO_NO_USE,

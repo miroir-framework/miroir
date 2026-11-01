@@ -8,7 +8,7 @@ import {
   type LoggerInterface,
   type MiroirTestDefinition,
   type ViewParams,
-} from 'miroir-core';
+} from '@miroir-framework/core';
 
 import { packageName } from '../../../../constants.js';
 import { isUiIntegrationProfileLaunchableInBrowser } from '../../../4-tests/integrationTestProfileCatalog.js';
@@ -24,7 +24,7 @@ import { ComponentTestSandboxProvider, useComponentTestSandbox } from './Compone
 import { MiroirTestResultsDisplay } from './MiroirTestResultsDisplay.js';
 import { UiIntegrationTestRunControls } from './UiIntegrationTestRunControls.js';
 import { UiIntegrationTestRunInspectorSummary } from './UiIntegrationTestRunInspectorSummary.js';
-import { getMiroirTestSuiteKey, sortMiroirTestInstances } from "miroir-react";
+import { getMiroirTestSuiteKey, sortMiroirTestInstances } from "@miroir-framework/react";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, 'MiroirTestListDisplay');
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);

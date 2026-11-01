@@ -7,7 +7,7 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   type ObjectListReportSection,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import { packageName } from "./constants.js";
 import { EntityInstanceCellRenderer } from "./components/Grids/EntityInstanceCellRenderer.js";

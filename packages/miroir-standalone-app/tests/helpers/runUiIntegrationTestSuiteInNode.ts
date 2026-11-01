@@ -1,7 +1,7 @@
 import crossFetch from "cross-fetch";
 import {
   type LoggerOptions,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import {
   createIntegActivityTracker,

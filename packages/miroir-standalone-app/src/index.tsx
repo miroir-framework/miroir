@@ -39,7 +39,7 @@ import {
   type DomainControllerInterface,
   type StoreOrBundleAction,
   type StoreUnitConfiguration,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   LocalCacheProvider,
   MiroirContextReactProvider,
@@ -47,24 +47,24 @@ import {
   ReportSectionRenderersProvider,
   startMiroirClient,
   type MiroirEmulatedServer,
-} from "miroir-react";
-import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
+} from "@miroir-framework/react";
+import { miroirIndexedDbStoreSectionStartup } from "@miroir-framework/store-indexeddb";
 
 import { loglevelnext } from "./loglevelnextImporter.js";
-import { getAuthToken, setAuthenticationEnabled, setAuthToken } from "miroir-react";
+import { getAuthToken, setAuthenticationEnabled, setAuthToken } from "@miroir-framework/react";
 import { fetchAuthenticationEnabled } from "./miroir-fwk/4_view/auth/authTransport.js";
-import { RootComponent } from "miroir-react";
-import { ErrorPage, setLoadTimingMarkSink } from "miroir-react";
+import { RootComponent } from "@miroir-framework/react";
+import { ErrorPage, setLoadTimingMarkSink } from "@miroir-framework/react";
 
 // #633 D6: marks from miroir-react code (configurationsLoaded) reach the browser recorder.
 setLoadTimingMarkSink(loadTimingMark);
-import { PageDispatcher } from "miroir-react";
+import { PageDispatcher } from "@miroir-framework/react";
 import { appReportSectionRenderers, appShellHost } from "./miroir-fwk/4_view/reportSectionRenderers.js";
 import {
   ElectronRestClient,
   ElectronServerDomainControllerProxy,
 } from "./miroir-fwk/4_view/services/ElectronIpcProxy.js";
-import { initializePerformanceConfig } from "miroir-react";
+import { initializePerformanceConfig } from "@miroir-framework/react";
 import {
   failedSelfTestResult,
   publishSelfTestResult,

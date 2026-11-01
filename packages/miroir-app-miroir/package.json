@@ -37,12 +37,12 @@
   },
   "nx": {
     "implicitDependencies": [
-      "!miroir-core"
+      "!@miroir-framework/core"
     ]
   },
   "devDependencies": {
     "copyfiles": "2.4.1",
-    "miroir-core": "*",
+    "@miroir-framework/core": "*",
     "tsup": "9.0.0",
     "tsx": "4.23.15",
     "vite": "8.3.5",

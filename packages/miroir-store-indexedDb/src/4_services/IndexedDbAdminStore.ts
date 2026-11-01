@@ -5,7 +5,7 @@ import {
   MiroirLoggerFactory,
   PersistenceStoreAdminSectionInterface,
   StoreSectionConfiguration
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { packageName } from "../constants.js";
 import { IndexedDb } from "./IndexedDb.js";
 import { IndexedDbStore } from "./IndexedDbStore.js";

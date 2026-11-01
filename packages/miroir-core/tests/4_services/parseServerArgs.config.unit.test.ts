@@ -4,7 +4,7 @@
  */
 import { describe, expect, it } from "vitest";
 
-import { parseServerArgs } from "miroir-core";
+import { parseServerArgs } from "@miroir-framework/core";
 
 const RUN_TEST = process.env.RUN_TEST;
 const runThis = !RUN_TEST || RUN_TEST.startsWith("parseServerArgs.config");

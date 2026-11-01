@@ -10,6 +10,8 @@ import { AdminStoreFactoryRegister, PersistenceStoreAdminSectionFactory, Persist
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
+import packageJson from "../../package.json";
+import { registerMiroirCoreInstance } from "./duplicateCoreGuard";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ConfigurationService");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
@@ -107,10 +109,27 @@ export class ConfigurationServiceInner {
  * What a store package exports to make its sections available, such as
  * `miroirFileSystemStoreSectionStartup`: it registers its factories on the given configuration
  * service. Hosts pass these to `startMiroirNode` / `startMiroirClient` (#639).
+ * @public
  */
 export type StoreSectionStartup = (configurationService: ConfigurationServiceInner) => void;
 
+/**
+ * Holds core's process-wide configuration service, on which store packages register their sections.
+ * @public
+ */
 export class ConfigurationService {
   public static configurationService = new ConfigurationServiceInner();
 }
-// export const configurationService = new ConfigurationService()
+
+// #645: a copy of core is a copy of this module, which holds the configuration service; the logger factory and the
+// other singletons are in the same bundle file. Its pre-start logger prints at WARN, whatever the log configuration.
+const devTool =
+  Boolean((import.meta as { hot?: unknown }).hot) ||
+  Boolean((globalThis as { process?: { env?: Record<string, string | undefined> } }).process?.env?.VITEST);
+registerMiroirCoreInstance(
+  packageJson.version,
+  import.meta.url,
+  devTool,
+  globalThis,
+  (message) => log.warn(message),
+);

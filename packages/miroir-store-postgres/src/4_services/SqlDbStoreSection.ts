@@ -12,7 +12,7 @@ import {
   PersistenceStoreAbstractSectionInterface,
   StorageSpaceHandlerInterface,
   Uuid
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { DataTypes } from "sequelize";
 
 import {

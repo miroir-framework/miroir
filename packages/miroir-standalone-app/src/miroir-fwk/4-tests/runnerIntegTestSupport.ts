@@ -12,7 +12,7 @@ import {
   optionalApplicationSections,
   ENVIRONMENT_STATE_ROOT,
   resetIntegTestbed,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { deployment_Admin, deployment_Miroir } from "miroir-app-admin";
 import { deployment_Library_DO_NO_USE, selfApplicationLibrary } from "miroir-example-library";
 import { selfApplicationMiroir } from "miroir-app-miroir";

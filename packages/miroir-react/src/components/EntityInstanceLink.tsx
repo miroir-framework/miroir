@@ -5,7 +5,7 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   Uuid
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { Link, useNavigate } from 'react-router-dom';
 
 import { packageName } from "../constants.js";

@@ -20,7 +20,7 @@ export default (path, options) =>({
 
   ],
   transformIgnorePatterns: [`<rootDir>\/(?!(/node_modules/(?!${esModules})))\/`],
-  // transformIgnorePatterns: ['node_modules','miroir-core'],
+  // transformIgnorePatterns: ['node_modules','@miroir-framework/core'],
   // roots: ["."],
   // modulePaths: ["./packages/miroir-standalone-app/src/"], // <-- This will be set to 'baseUrl' value
   modulePaths: ["./src/"], // <-- This will be set to 'baseUrl' value

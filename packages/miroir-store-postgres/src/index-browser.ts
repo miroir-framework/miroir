@@ -1,4 +1,4 @@
-import { PersistenceStoreControllerInterface } from "miroir-core";
+import { PersistenceStoreControllerInterface } from "@miroir-framework/core";
 
 /**
  * Empty implementation, intended for use (of the miroir-store-postgres package) in the browser.

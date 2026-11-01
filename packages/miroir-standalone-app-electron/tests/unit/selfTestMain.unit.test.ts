@@ -1,7 +1,7 @@
 // #487: the `--self-test` mode of the Electron main process. vitest, not MiroirTest:
 // main-process wiring, in src/selfTestMain.ts with no `electron` import. The run in Electron itself
 // is the Electron job of .github/workflows/self-test.yml.
-import type { MiroirConfigClient } from "miroir-core";
+import type { MiroirConfigClient } from "@miroir-framework/core";
 import { describe, expect, it } from "vitest";
 
 import {

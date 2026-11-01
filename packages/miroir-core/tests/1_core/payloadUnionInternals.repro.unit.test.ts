@@ -5,7 +5,7 @@ import {
   unionObjectChoices,
   type MlUnion,
   type MiroirModelEnvironment,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 describe("payload union internals", () => {
   it("inspects unfolded union and object choices", () => {

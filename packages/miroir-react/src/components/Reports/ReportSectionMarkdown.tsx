@@ -11,7 +11,7 @@ import {
   resolvePathOnObject,
   Uuid,
   type ApplicationDeploymentMap,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "../../viewConstants.js";
@@ -23,7 +23,7 @@ import { ThemedContainer, ThemedText, ThemedTitle } from "../Themes/BasicCompone
 import { ThemedIconButton } from "../Themes/IconComponents.js";
 import { ThemedTooltip } from "../Themes/DisplayComponents.js";
 import { MarkdownEditorModal } from "./MarkdownEditorModal.js";
-import type { MarkdownReportSection } from 'miroir-core';
+import type { MarkdownReportSection } from '@miroir-framework/core';
 import { useFormikContext } from 'formik';
 import { useMiroirContextService } from "../../contexts/MiroirContextReactProvider.js";
 

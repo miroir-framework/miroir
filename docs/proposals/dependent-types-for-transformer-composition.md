@@ -88,8 +88,8 @@ A transformer's `transformerInterface` would become:
 | Bootstrap schema JSON (`1e8dab4b-…`) | Add `mlTypeVar`, `mlForAll` to `mlElement` union and `mlEnumElementTypes` |
 | `jzod/src/JzodToZod.ts` | Handle `typeVar` (emit `z.any()` at generation time, or a branded marker) |
 | `jzod-ts/src/JzodToTs.ts` | Emit generic TS type parameters (`<X>`) when encountering `forAll` |
-| `miroir-core` fundamental schema | Add `typeVar`/`forAll` to `miroirFundamentalMlSchema.definition.context` |
-| `miroir-core` transformer resolution | New unification pass in `transformer_extended_apply` or a new `resolveTypeVars` utility |
+| `@miroir-framework/core` fundamental schema | Add `typeVar`/`forAll` to `miroirFundamentalMlSchema.definition.context` |
+| `@miroir-framework/core` transformer resolution | New unification pass in `transformer_extended_apply` or a new `resolveTypeVars` utility |
 | Transformer EntityDefinition schema | Replace `InputOutputType` enum with structural ML types |
 | UI schema editor | Render type variables as generic placeholders; propagate bindings during composition |
 
@@ -157,8 +157,8 @@ The **composition validator** runs at design time (in the editor or during `devB
 | Area | Change |
 |---|---|
 | Transformer EntityDefinition schema | Add `inputSchema`, `outputSchema`, `outputSchemaTransformer` to `transformerInterface` |
-| `miroir-core` new utility | `deriveOutputSchema(transformerDef, inputSchema): MlElement` |
-| `miroir-core` new utility | `validateTransformerComposition(steps): ValidationResult[]` |
+| `@miroir-framework/core` new utility | `deriveOutputSchema(transformerDef, inputSchema): MlElement` |
+| `@miroir-framework/core` new utility | `validateTransformerComposition(steps): ValidationResult[]` |
 | Transformer JSON assets | Annotate each transformer definition with `inputSchema`/`outputSchema` |
 | UI editor | Call `deriveOutputSchema` to filter and rank available transformers |
 | `jzod`, `jzod-ts` | **No changes** |
@@ -229,8 +229,8 @@ This is essentially a simplified unification, but encoded **within the existing 
 |---|---|
 | Bootstrap schema (`1e8dab4b-…`) | Add `typeSlot?: string` and `typeSlotBinding?: Record<string, mlElement>` to `tag.value` definition |
 | Transformer EntityDefinition schema | Add `typeSlots: string[]` to `transformerInterface` |
-| `miroir-core` new utility | `resolveTypeSlots(schema, bindings): MlElement` — substitute `typeSlot` placeholders |
-| `miroir-core` new utility | `matchAndBindSlots(concreteSchema, paramSchema): Record<string, MlElement>` — structural matching |
+| `@miroir-framework/core` new utility | `resolveTypeSlots(schema, bindings): MlElement` — substitute `typeSlot` placeholders |
+| `@miroir-framework/core` new utility | `matchAndBindSlots(concreteSchema, paramSchema): Record<string, MlElement>` — structural matching |
 | Transformer JSON assets | Annotate input/output schemas with `typeSlot` tags |
 | UI editor | Use `matchAndBindSlots` + `resolveTypeSlots` to filter transformers |
 | `jzod` | Minor: `JzodToZod.ts` propagates tags but no new element handling needed |
@@ -266,4 +266,4 @@ A pragmatic staged approach:
 
 This avoids large upfront investment while progressively building toward richer type relationships, each stage subsuming the previous without wasted work.
 
-**Implementation status (Proposal B tracer):** `resolveTransformerResultSchema` in `miroir-core` covers the full `miroirCoreTransformers` catalog. See [`docs/reference/transformer-result-schema.md`](../reference/transformer-result-schema.md) and the TDD plan at [`code-helpers/features/88-FEATURE-typed-transformers/tdd-implementation-plan.md`](../../code-helpers/features/88-FEATURE-typed-transformers/tdd-implementation-plan.md).
+**Implementation status (Proposal B tracer):** `resolveTransformerResultSchema` in `@miroir-framework/core` covers the full `miroirCoreTransformers` catalog. See [`docs/reference/transformer-result-schema.md`](../reference/transformer-result-schema.md) and the TDD plan at [`code-helpers/features/88-FEATURE-typed-transformers/tdd-implementation-plan.md`](../../code-helpers/features/88-FEATURE-typed-transformers/tdd-implementation-plan.md).

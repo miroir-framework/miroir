@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { deployment_Miroir } from "miroir-app-admin";
-import { getMiroirFundamentalSchemaForDeployment, miroirFundamentalMlSchema } from "miroir-core";
+import { getMiroirFundamentalSchemaForDeployment, miroirFundamentalMlSchema } from "@miroir-framework/core";
 
 import { buildTestSessionModelEnvironment } from "./testSessionModelEnvironment.js";
 

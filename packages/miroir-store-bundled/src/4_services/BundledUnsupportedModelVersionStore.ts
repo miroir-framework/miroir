@@ -11,7 +11,7 @@ import {
   type PersistenceStoreDataSectionInterface,
   type RunBoxedQueryAction,
   type RunBoxedQueryTemplateAction,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 export const BUNDLED_MODEL_VERSION_UNSUPPORTED_MESSAGE =
   "Bundled deployments are read-only; the modelVersion section cannot persist version history.";

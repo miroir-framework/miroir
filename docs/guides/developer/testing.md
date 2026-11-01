@@ -60,16 +60,16 @@ Field naming uses `miroirTestType`, `miroirTestLabel`, `miroirTests`.
 
 ```bash
 # Preferred — argv
-npm run testMiroir -w miroir-core -- --suites fn.mustache.extractDoubleBracePatterns --mode unit
+npm run testMiroir -w @miroir-framework/core -- --suites fn.mustache.extractDoubleBracePatterns --mode unit
 
 # Filter to specific test labels
-npm run testMiroir -w miroir-core -- --suites fn.mustache.extractDoubleBracePatterns --mode unit \
+npm run testMiroir -w @miroir-framework/core -- --suites fn.mustache.extractDoubleBracePatterns --mode unit \
   --filter '{"fn.mustache.extractDoubleBracePatterns":["should extract patterns with double braces"]}'
 
 # Legacy — env (still supported; argv wins when both are set)
-MIROIR_TEST_SUITES=fn.mustache.extractDoubleBracePatterns MIROIR_TEST_MODE=unit npm run testMiroir -w miroir-core
-MIROIR_TEST_SUITES=fn.tools.alterObjectAtPath,fn.entityPrimaryKey MIROIR_TEST_MODE=unit npm run testMiroir -w miroir-core
-MIROIR_TEST_MODE=unit npm run testMiroir -w miroir-core
+MIROIR_TEST_SUITES=fn.mustache.extractDoubleBracePatterns MIROIR_TEST_MODE=unit npm run testMiroir -w @miroir-framework/core
+MIROIR_TEST_SUITES=fn.tools.alterObjectAtPath,fn.entityPrimaryKey MIROIR_TEST_MODE=unit npm run testMiroir -w @miroir-framework/core
+MIROIR_TEST_MODE=unit npm run testMiroir -w @miroir-framework/core
 ```
 
 See [Filtering MiroirTest cases](../../reference/testing.md#filtering-miroirtest-cases) for the full filter model (suite key (`name`) vs `miroirTestLabel`, runner examples).
@@ -204,7 +204,7 @@ Legacy **Unit Test** / **Transformer Test** reports still exist; prefer **Miroir
 2. Optional: export `miroirTest_<name with . replaced by _>` from the deployment package `index.ts` if other TypeScript wants a named import.
 3. Rebuild that package if you added a named export: `npm run build -w miroir-app-miroir`.
 4. Validate schema: run `tests/4_services/miroirTest.schema.unit.test.ts`.
-5. Run: `npm run testMiroir -w miroir-core -- --suites myNewSuite --mode unit`. TypeScript files that have no MiroirTest entity are PLATFORM — launch those with `testByFile`.
+5. Run: `npm run testMiroir -w @miroir-framework/core -- --suites myNewSuite --mode unit`. TypeScript files that have no MiroirTest entity are PLATFORM — launch those with `testByFile`.
 
 For migrations from legacy `UnitTest` / `TransformerTest`, use `migrateLegacyTestInstance` in `scripts/miroirTestMigrateDefinition.ts` and the manifest `miroir-test-migration-map.json`.
 

@@ -10,7 +10,7 @@
  */
 import { describe, expect, it } from "vitest";
 
-import { checkModelValidationInstance, defaultMiroirModelEnvironment, type MlElement } from "miroir-core";
+import { checkModelValidationInstance, defaultMiroirModelEnvironment, type MlElement } from "@miroir-framework/core";
 import { deployment_Miroir } from "miroir-app-admin";
 import { entityPageLoadMeasurement, selfApplicationMiroir } from "miroir-app-miroir";
 

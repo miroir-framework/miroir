@@ -32,7 +32,7 @@ import {
   type ApplicationDeploymentMap,
   type Deployment,
   type Entity
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   deployment_Admin,
   deployment_Miroir,
@@ -40,9 +40,9 @@ import {
 } from "miroir-app-admin";
 import { deployment_Library_DO_NO_USE } from "miroir-example-library";
 
-import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
-import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
-import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
+import { miroirFileSystemStoreSectionStartup } from "@miroir-framework/store-filesystem";
+import { miroirIndexedDbStoreSectionStartup } from "@miroir-framework/store-indexeddb";
+import { miroirPostgresStoreSectionStartup } from "@miroir-framework/store-postgres";
 import {
   author1,
   book1,

@@ -11,7 +11,7 @@
  */
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-import { MiroirActivityTracker } from "miroir-core";
+import { MiroirActivityTracker } from "@miroir-framework/core";
 
 import { createActionsIdleWaiter } from "../../src/miroir-fwk/4-tests/componentTests/waitForActionsIdle.js";
 

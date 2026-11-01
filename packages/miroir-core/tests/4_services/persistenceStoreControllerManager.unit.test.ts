@@ -31,7 +31,7 @@ import { PersistenceStoreControllerManager } from "../../src/4_services/Persiste
 import {
   BUNDLED_MODEL_VERSION_UNSUPPORTED_MESSAGE,
   miroirBundledStoreSectionStartup,
-} from "miroir-store-bundled";
+} from "@miroir-framework/store-bundled";
 import { entitySelfApplicationVersion } from "miroir-app-miroir";
 
 const DEPLOYMENT_UUID = "cccccccc-cccc-4ccc-8ccc-cccccccccccc";

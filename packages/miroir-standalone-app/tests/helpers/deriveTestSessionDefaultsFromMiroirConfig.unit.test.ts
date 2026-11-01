@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { environmentClientConfig, resolveEnvironmentFromFiles } from "miroir-env";
+import { environmentClientConfig, resolveEnvironmentFromFiles } from "@miroir-framework/env";
 
 import { deriveTestSessionDefaultsFromMiroirConfig, parsePostgresHostFromConnectionString } from "./deriveTestSessionDefaultsFromMiroirConfig.js";
 import { resolveRepoRoot } from "./integrationTestProfiles.js";

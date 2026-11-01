@@ -7,5 +7,5 @@ export default defineConfig({
   dts: true,
   sourcemap: true,
   clean: true,
-  external: ["miroir-core"],
+  external: ["@miroir-framework/core"],
 });

@@ -1,7 +1,7 @@
 import type {
   InitApplicationParameters,
   TestbedInitApplicationParametersRef,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import { appForTestTestbedInitParams } from "./uiIntegrationAppForTestPlayfieldSeed.js";
 import {

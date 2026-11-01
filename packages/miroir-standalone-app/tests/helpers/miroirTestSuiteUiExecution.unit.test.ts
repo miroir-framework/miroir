@@ -4,7 +4,7 @@ import type {
   MiroirTestDefinition,
   MiroirTestForTransformer,
   MiroirTestSuite,
-} from 'miroir-core';
+} from '@miroir-framework/core';
 import { miroirTest_runner_returnDocument } from 'miroir-example-library';
 import {
   miroirTest_fn_entityPrimaryKey,

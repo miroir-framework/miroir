@@ -10,7 +10,7 @@ import {
   MlObject,
   LoggerInterface,
   MiroirLoggerFactory,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { Attributes, DataTypes, Model, ModelAttributes, ModelStatic } from "sequelize";
 
 import { cleanLevel } from "./4_services/constants.js";

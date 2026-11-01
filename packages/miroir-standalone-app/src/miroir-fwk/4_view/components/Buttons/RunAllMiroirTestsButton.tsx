@@ -6,9 +6,9 @@ import {
   type Action2VoidReturnType,
   type LoggerInterface,
   type MiroirTestDefinition,
-} from 'miroir-core';
+} from '@miroir-framework/core';
 
-import { useMiroirContextService, useSnackbar } from 'miroir-react';
+import { useMiroirContextService, useSnackbar } from '@miroir-framework/react';
 import { readAppMiroirReports } from '../../../4-tests/appMiroirReports.js';
 import { useSelectedApplicationRunnerUuidIndex } from '../../../4-tests/useSelectedApplicationMiroirTestSuiteRegistries.js';
 import { packageName } from '../../../../constants.js';
@@ -18,7 +18,7 @@ import type {
   UiIntegrationTestRunTargetMode,
 } from '../../../4-tests/uiIntegrationTestLauncherTypes.js';
 import { useIntegTestRunCoordinator } from '../../../4-tests/useIntegTestRunCoordinator.js';
-import { ActionButtonWithSnackbar } from "miroir-react";
+import { ActionButtonWithSnackbar } from "@miroir-framework/react";
 import { cleanLevel } from '../../constants.js';
 import {
   runIntegrationMiroirTestBatch,

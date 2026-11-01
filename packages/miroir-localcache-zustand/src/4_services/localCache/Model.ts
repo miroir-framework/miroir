@@ -31,7 +31,7 @@ import {
   getReduxDeploymentsStateIndex,
   LoggerInterface,
   MiroirLoggerFactory,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { deployment_Miroir } from "miroir-app-admin";
 import {
   defaultMiroirMetaModel, entityDefinitionTheme, entityEndpointVersion, entityEntity,

@@ -17,7 +17,7 @@ import {
   type MiroirTestDefinition,
   type MiroirTestSuite,
   type Runner,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { deployment_Miroir } from "miroir-app-admin";
 import {
   defaultAppForTestModel,
@@ -39,8 +39,8 @@ const beforeEachTestMock = vi.fn();
 const ensureLibraryPlayfieldMock = vi.fn();
 const testbedAccessGrantFromAuthSessionMock = vi.fn();
 
-vi.mock("miroir-core", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("miroir-core")>();
+vi.mock("@miroir-framework/core", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@miroir-framework/core")>();
   return {
     ...actual,
     ensureLibraryPlayfield: (...args: unknown[]) => ensureLibraryPlayfieldMock(...args),

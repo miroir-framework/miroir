@@ -101,7 +101,7 @@
         "run",
         "testMiroir",
         "-w",
-        "miroir-core",
+        "@miroir-framework/core",
         "--",
         "--mode",
         "unit"
@@ -118,7 +118,7 @@
         "run",
         "testByFile",
         "-w",
-        "miroir-core",
+        "@miroir-framework/core",
         "--",
         "authentication.71"
       ],
@@ -129,7 +129,7 @@
           "run",
           "testByFile",
           "-w",
-          "miroir-core",
+          "@miroir-framework/core",
           "--"
         ],
         "files": [
@@ -148,7 +148,7 @@
         "run",
         "testByFile",
         "-w",
-        "miroir-core",
+        "@miroir-framework/core",
         "--",
         "access.262"
       ],
@@ -159,7 +159,7 @@
           "run",
           "testByFile",
           "-w",
-          "miroir-core",
+          "@miroir-framework/core",
           "--"
         ],
         "files": [
@@ -178,7 +178,7 @@
         "run",
         "testByFile",
         "-w",
-        "miroir-core",
+        "@miroir-framework/core",
         "--",
         "access.264"
       ],
@@ -189,7 +189,7 @@
           "run",
           "testByFile",
           "-w",
-          "miroir-core",
+          "@miroir-framework/core",
           "--"
         ],
         "files": [
@@ -208,7 +208,7 @@
         "run",
         "testByFile",
         "-w",
-        "miroir-core",
+        "@miroir-framework/core",
         "--",
         "transformerResultSchema",
         "Transformer_ResultSchema.failures"
@@ -220,7 +220,7 @@
           "run",
           "testByFile",
           "-w",
-          "miroir-core",
+          "@miroir-framework/core",
           "--"
         ],
         "files": [
@@ -240,7 +240,7 @@
         "run",
         "testByFile",
         "-w",
-        "miroir-core",
+        "@miroir-framework/core",
         "--",
         "transformerBlockModelAssets"
       ],
@@ -251,7 +251,7 @@
           "run",
           "testByFile",
           "-w",
-          "miroir-core",
+          "@miroir-framework/core",
           "--"
         ],
         "files": [
@@ -270,7 +270,7 @@
         "run",
         "testByFile",
         "-w",
-        "miroir-core",
+        "@miroir-framework/core",
         "--",
         "resolveSuitePlayfieldSeed"
       ],
@@ -281,7 +281,7 @@
           "run",
           "testByFile",
           "-w",
-          "miroir-core",
+          "@miroir-framework/core",
           "--"
         ],
         "files": [
@@ -300,7 +300,7 @@
         "run",
         "testByFile",
         "-w",
-        "miroir-core",
+        "@miroir-framework/core",
         "--",
         "testConfigurationSection"
       ],
@@ -311,7 +311,7 @@
           "run",
           "testByFile",
           "-w",
-          "miroir-core",
+          "@miroir-framework/core",
           "--"
         ],
         "files": [
@@ -520,7 +520,7 @@
         "run",
         "testByFile",
         "-w",
-        "miroir-core",
+        "@miroir-framework/core",
         "--",
         "tests/2_domain/localCacheMemoryMeasure.unit.test.ts"
       ]
@@ -600,7 +600,7 @@
         "run",
         "testByFile",
         "-w",
-        "miroir-core",
+        "@miroir-framework/core",
         "--",
         "tests/2_domain/localCacheMemoryAttributed.unit.test.ts"
       ]
@@ -2189,7 +2189,7 @@
       "argv": [
         "bash",
         "-c",
-        "npm run testMiroir -w miroir-core -- --suites tr.syncExternalServiceSchema --mode unit && npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-filesystem --suites action.scenario.externalServiceSync --mode integ && npm run testByFile -w miroir-core -- serverSecrets && npm run testByFile -w miroir-core -- externalServiceHttpStoreSkip && npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem externalServiceQuery && npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem externalServiceGuards && npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem externalServiceDispatch && npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem externalServiceReport && npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem spotifyApp"
+        "npm run testMiroir -w @miroir-framework/core -- --suites tr.syncExternalServiceSchema --mode unit && npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-filesystem --suites action.scenario.externalServiceSync --mode integ && npm run testByFile -w @miroir-framework/core -- serverSecrets && npm run testByFile -w @miroir-framework/core -- externalServiceHttpStoreSkip && npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem externalServiceQuery && npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem externalServiceGuards && npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem externalServiceDispatch && npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem externalServiceReport && npm run testByFile -w miroir-standalone-app -- --profile emulatedServer-filesystem spotifyApp"
       ]
     },
     {
@@ -2213,7 +2213,7 @@
       "argv": [
         "bash",
         "-c",
-        "RUN_TEST=apiCallReport.281.phase0 npm run testByFile -w miroir-standalone-app -- apiCallReport.281.phase0 && RUN_TEST=apiCallReport.281.phase1 npm run testByFile -w miroir-standalone-app -- apiCallReport.281.phase1 --profile emulatedServer-filesystem && RUN_TEST=apiCallReport.281.phase2 npm run testByFile -w miroir-standalone-app -- apiCallReport.281.phase2 --profile emulatedServer-filesystem && RUN_TEST=apiCallReport.281.phase4 npm run testByFile -w miroir-standalone-app -- apiCallReport.281.phase4 --profile emulatedServer-filesystem && RUN_TEST=syncExternalServiceSchema.281.phase3 npm run testByFile -w miroir-core -- syncExternalServiceSchema.281.phase3 && RUN_TEST=resolveApiCallReportSectionSchema npm run testByFile -w miroir-standalone-app -- resolveApiCallReportSectionSchema"
+        "RUN_TEST=apiCallReport.281.phase0 npm run testByFile -w miroir-standalone-app -- apiCallReport.281.phase0 && RUN_TEST=apiCallReport.281.phase1 npm run testByFile -w miroir-standalone-app -- apiCallReport.281.phase1 --profile emulatedServer-filesystem && RUN_TEST=apiCallReport.281.phase2 npm run testByFile -w miroir-standalone-app -- apiCallReport.281.phase2 --profile emulatedServer-filesystem && RUN_TEST=apiCallReport.281.phase4 npm run testByFile -w miroir-standalone-app -- apiCallReport.281.phase4 --profile emulatedServer-filesystem && RUN_TEST=syncExternalServiceSchema.281.phase3 npm run testByFile -w @miroir-framework/core -- syncExternalServiceSchema.281.phase3 && RUN_TEST=resolveApiCallReportSectionSchema npm run testByFile -w miroir-standalone-app -- resolveApiCallReportSectionSchema"
       ]
     },
     {
@@ -2225,7 +2225,7 @@
       "argv": [
         "bash",
         "-c",
-        "npm run testByFile -w miroir-core -- 270.phase && npm run testByFile -w miroir-mcp -- secretsRedact.270"
+        "npm run testByFile -w @miroir-framework/core -- 270.phase && npm run testByFile -w @miroir-framework/mcp -- secretsRedact.270"
       ]
     },
     {
@@ -2255,7 +2255,7 @@
       "argv": [
         "bash",
         "-c",
-        "npm run testByFile -w miroir-core -- 273-process-capability-switches && npm run testByFile -w miroir-standalone-app -- 4_view/issues/273-process-capability-switches"
+        "npm run testByFile -w @miroir-framework/core -- 273-process-capability-switches && npm run testByFile -w miroir-standalone-app -- 4_view/issues/273-process-capability-switches"
       ]
     },
     {
@@ -2267,7 +2267,7 @@
       "argv": [
         "bash",
         "-c",
-        "npm run testByFile -w miroir-core -- 275-cursor-sdk-copilotkit-backend && npm run testByFile -w miroir-ai -- 275-cursor-sdk-copilotkit-backend && npm run testByFile -w miroir-standalone-app -- 4_view/issues/275-cursor-sdk-copilotkit-backend"
+        "npm run testByFile -w @miroir-framework/core -- 275-cursor-sdk-copilotkit-backend && npm run testByFile -w miroir-ai -- 275-cursor-sdk-copilotkit-backend && npm run testByFile -w miroir-standalone-app -- 4_view/issues/275-cursor-sdk-copilotkit-backend"
       ]
     },
     {
@@ -2279,7 +2279,7 @@
       "argv": [
         "bash",
         "-c",
-        "npm run testByFile -w miroir-core -- agentBackendCapabilities && npm run testByFile -w miroir-ai -- agentBackendRoute claudeAgent agentSdkModuleLoading assertAgentSdkPackaged && npm run testByFile -w miroir-standalone-app -- agentBackendPick && npm run testByFile -w miroir-server -- mountCopilotKitRoute && npm run testByFile -w miroir-env -- agentBackendAlias"
+        "npm run testByFile -w @miroir-framework/core -- agentBackendCapabilities && npm run testByFile -w miroir-ai -- agentBackendRoute claudeAgent agentSdkModuleLoading assertAgentSdkPackaged && npm run testByFile -w miroir-standalone-app -- agentBackendPick && npm run testByFile -w miroir-server -- mountCopilotKitRoute && npm run testByFile -w @miroir-framework/env -- agentBackendAlias"
       ]
     },
     {
@@ -2440,7 +2440,7 @@
       "argv": [
         "bash",
         "-c",
-        "npm run testByFile -w miroir-core -- 286-react-component-miroir-tests && npm run testByFile -w miroir-standalone-app -- componentMiroirTests.286.phase0 && npm run testByFile -w miroir-standalone-app -- domMatchersParity.286.phase3 && npm run testByFile -w miroir-standalone-app -- extractValuesScoped.286.phase3 && npm run testByFile -w miroir-standalone-app -- componentTestMode.286.phase4 && npm run testByFile -w miroir-standalone-app -- componentTestSandbox.286.phase4 && npm run testByFile -w miroir-standalone-app -- componentTestRunLock.286.review && npm run testByFile -w miroir-standalone-app -- portalContainer.286.phase5 && npm run testByFile -w miroir-standalone-app -- runAllComponentTests.286.phase6 && npm run testByFile -w miroir-standalone-app -- componentTestFireEvent.286.phase8"
+        "npm run testByFile -w @miroir-framework/core -- 286-react-component-miroir-tests && npm run testByFile -w miroir-standalone-app -- componentMiroirTests.286.phase0 && npm run testByFile -w miroir-standalone-app -- domMatchersParity.286.phase3 && npm run testByFile -w miroir-standalone-app -- extractValuesScoped.286.phase3 && npm run testByFile -w miroir-standalone-app -- componentTestMode.286.phase4 && npm run testByFile -w miroir-standalone-app -- componentTestSandbox.286.phase4 && npm run testByFile -w miroir-standalone-app -- componentTestRunLock.286.review && npm run testByFile -w miroir-standalone-app -- portalContainer.286.phase5 && npm run testByFile -w miroir-standalone-app -- runAllComponentTests.286.phase6 && npm run testByFile -w miroir-standalone-app -- componentTestFireEvent.286.phase8"
       ]
     },
     {
@@ -2452,7 +2452,7 @@
       "argv": [
         "bash",
         "-c",
-        "npm run testByFile -w miroir-core -- 292-declarative-react-component-tests && npm run testByFile -w miroir-standalone-app -- componentTestSchema.292.phase1 && npm run testByFile -w miroir-standalone-app -- componentTestInstances.292.phase1 && npm run testByFile -w miroir-standalone-app -- extractorOpenCombobox.292.phase2 && npm run testByFile -w miroir-standalone-app -- componentTestSteps.292.phase2 && npm run testByFile -w miroir-standalone-app -- componentTestTargets.292.phase3 && npm run testByFile -w miroir-standalone-app -- componentTestWidgets.292.phase4 && npm run testByFile -w miroir-standalone-app -- componentTestUnionWidgets.292.phase5 && npm run testByFile -w miroir-standalone-app -- legacyRemoved.292.phase6"
+        "npm run testByFile -w @miroir-framework/core -- 292-declarative-react-component-tests && npm run testByFile -w miroir-standalone-app -- componentTestSchema.292.phase1 && npm run testByFile -w miroir-standalone-app -- componentTestInstances.292.phase1 && npm run testByFile -w miroir-standalone-app -- extractorOpenCombobox.292.phase2 && npm run testByFile -w miroir-standalone-app -- componentTestSteps.292.phase2 && npm run testByFile -w miroir-standalone-app -- componentTestTargets.292.phase3 && npm run testByFile -w miroir-standalone-app -- componentTestWidgets.292.phase4 && npm run testByFile -w miroir-standalone-app -- componentTestUnionWidgets.292.phase5 && npm run testByFile -w miroir-standalone-app -- legacyRemoved.292.phase6"
       ]
     },
     {
@@ -2517,7 +2517,7 @@
       "argv": [
         "bash",
         "-c",
-        "npm run testByFile -w miroir-react -- loadTimingMarkSink reportSectionRenderersStoredRunner loginTransport toolPageDefaults shellExports && MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- assistantPanel.integ"
+        "npm run testByFile -w @miroir-framework/react -- loadTimingMarkSink reportSectionRenderersStoredRunner loginTransport toolPageDefaults shellExports && MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- assistantPanel.integ"
       ]
     },
     {
@@ -2611,7 +2611,7 @@
         "run",
         "testByFile",
         "-w",
-        "miroir-react",
+        "@miroir-framework/react",
         "--",
         "ListTransformerPanel.unit"
       ]
@@ -2625,7 +2625,7 @@
       "argv": [
         "bash",
         "-c",
-        "npm run testByFile -w miroir-react -- feedbackGlow && npm run testByFile -w miroir-standalone-app -- componentTestSandboxGlow feedbackGlowGlobalSwitch"
+        "npm run testByFile -w @miroir-framework/react -- feedbackGlow && npm run testByFile -w miroir-standalone-app -- componentTestSandboxGlow feedbackGlowGlobalSwitch"
       ]
     },
     {
@@ -2639,7 +2639,7 @@
         "run",
         "testByFile",
         "-w",
-        "miroir-react",
+        "@miroir-framework/react",
         "--",
         "reportSectionRenderers"
       ]
@@ -2738,7 +2738,7 @@
       "argv": [
         "bash",
         "-c",
-        "npm run testByFile -w miroir-core -- miroirTestTags.unit miroirTestNaming.unit && npm run testByFile -w miroir-standalone-app -- testMiroirLauncher.tags getColumnDefinitionsFromEntityAttributes"
+        "npm run testByFile -w @miroir-framework/core -- miroirTestTags.unit miroirTestNaming.unit && npm run testByFile -w miroir-standalone-app -- testMiroirLauncher.tags getColumnDefinitionsFromEntityAttributes"
       ]
     },
     {
@@ -2813,7 +2813,7 @@
         "run",
         "test",
         "-w",
-        "miroir-env"
+        "@miroir-framework/env"
       ]
     },
     {
@@ -2855,7 +2855,7 @@
       "argv": [
         "bash",
         "-c",
-        "npm run testByFile -w miroir-core -- 263-identity-doors && npm run testByFile -w miroir-ai -- 263-identity-doors && npm run testByFile -w miroir-server -- 263-identity-doors && npm run testByFile -w miroir-standalone-app -- 4_view/issues/263-identity-doors"
+        "npm run testByFile -w @miroir-framework/core -- 263-identity-doors && npm run testByFile -w miroir-ai -- 263-identity-doors && npm run testByFile -w miroir-server -- 263-identity-doors && npm run testByFile -w miroir-standalone-app -- 4_view/issues/263-identity-doors"
       ]
     },
     {
@@ -2869,7 +2869,7 @@
         "run",
         "testByFile",
         "-w",
-        "miroir-mcp"
+        "@miroir-framework/mcp"
       ]
     },
     {
@@ -2882,7 +2882,7 @@
       "argv": [
         "bash",
         "-c",
-        "npm run build -w miroir-server-library && MIROIR_ENV=test-filesystem npm run testByFile -w miroir-server-library && MIROIR_LIBRARY_BUILD_CHECKS=1 python -m pytest scripts/tests/test_server_library_boundaries.py -q"
+        "npm run build -w @miroir-framework/server && MIROIR_ENV=test-filesystem npm run testByFile -w @miroir-framework/server && MIROIR_LIBRARY_BUILD_CHECKS=1 python -m pytest scripts/tests/test_server_library_boundaries.py -q"
       ]
     },
     {
@@ -2895,7 +2895,7 @@
       "argv": [
         "bash",
         "-c",
-        "npm run build -w miroir-server-library && npm run build:server -w miroir-server && MIROIR_RELEASE_SMOKE=1 python -m pytest scripts/tests/test_server_release_smoke.py scripts/tests/test_server_release_smoke_production.py -q"
+        "npm run build -w @miroir-framework/server && npm run build:server -w miroir-server && MIROIR_RELEASE_SMOKE=1 python -m pytest scripts/tests/test_server_release_smoke.py scripts/tests/test_server_release_smoke_production.py -q"
       ]
     },
     {
@@ -2908,7 +2908,7 @@
       "argv": [
         "bash",
         "-c",
-        "npm run testByFile -w miroir-cli -- startMiroirNode && npm run testByFile -w miroir-react -- startMiroirClient && python -m pytest scripts/tests/test_startup_calls_boundaries.py -q"
+        "npm run testByFile -w @miroir-framework/cli -- startMiroirNode && npm run testByFile -w @miroir-framework/react -- startMiroirClient && python -m pytest scripts/tests/test_startup_calls_boundaries.py -q"
       ]
     },
     {
@@ -2928,6 +2928,38 @@
       ]
     },
     {
+      "id": "unit-645-duplicate-core",
+      "scopes": [
+        "core",
+        "actions",
+        "tooling"
+      ],
+      "tier": "unit",
+      "title": "#645 \u2014 two copies of miroir-core warn: two real copies of the built core in fresh Node processes, the record on globalThis, silent re-evaluation under vitest",
+      "requires": "none",
+      "argv": [
+        "bash",
+        "-c",
+        "npm run testByFile -w @miroir-framework/core -- duplicateCoreGuard"
+      ]
+    },
+    {
+      "id": "unit-649-core-public-api",
+      "scopes": [
+        "core",
+        "tooling"
+      ],
+      "tier": "default",
+      "title": "#649 \u2014 core's public API: the template imports only @public exports, the marks are exactly the supported set (generated types included), the generator's marks, the built declarations keep them, the list document in sync",
+      "requires": "none",
+      "parallel": false,
+      "argv": [
+        "bash",
+        "-c",
+        "npm run testByFile -w @miroir-framework/core -- markPublicTypes && npm run build -w @miroir-framework/server && MIROIR_REQUIRE_PACK=1 python -m pytest scripts/tests/test_core_public_api.py -q"
+      ]
+    },
+    {
       "id": "unit-345-cli",
       "scopes": ["tooling"],
       "tier": "default",
@@ -2938,7 +2970,7 @@
         "run",
         "testByFile",
         "-w",
-        "miroir-cli"
+        "@miroir-framework/cli"
       ]
     },
     {

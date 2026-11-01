@@ -9,11 +9,11 @@ import type {
   MiroirConfigClient,
   MiroirTestExecutionEnvironment,
   RunnerTestSessionInterface
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   describeIntegrationTestSession,
   getBootstrapPhasesForDomainControllerProfile,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { deployment_Miroir } from "miroir-app-admin";
 import { selfApplicationLibrary } from "miroir-example-library";
 import {

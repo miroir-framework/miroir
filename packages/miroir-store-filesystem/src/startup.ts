@@ -11,7 +11,7 @@ import {
   PersistenceStoreModelSectionInterface,
   StoreSectionConfiguration,
   optionalApplicationSections,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { FileSystemAdminStore } from "./4_services/FileSystemAdminStore.js";
 import { FileSystemDataStoreSection } from "./4_services/FileSystemDataStoreSection.js";
 import { FileSystemModelStoreSection } from "./4_services/FileSystemModelStoreSection.js";

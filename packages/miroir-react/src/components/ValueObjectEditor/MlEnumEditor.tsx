@@ -18,7 +18,7 @@ import {
   type ReduxStateWithUndoRedo,
   type SyncBoxedExtractorOrQueryRunnerMap,
   type Uuid
-} from "miroir-core";
+} from "@miroir-framework/core";
 import React, { FC, useCallback, useMemo, useState } from "react";
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "../../viewConstants.js";

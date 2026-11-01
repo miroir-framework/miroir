@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import { Palette, DarkMode, CompressOutlined, Style } from "./Themes/MaterialSymbolWrappers.js";
 import { useMiroirTheme, MiroirThemeOption } from "../contexts/MiroirThemeContext.js";
-import { AppTheme } from 'miroir-core';
+import { AppTheme } from '@miroir-framework/core';
 import { defaultMiroirTheme } from "./Themes/MiroirTheme.js";
 
 interface MiroirThemeSelectorProps {

@@ -16,7 +16,7 @@ import {
   type MiroirConfigServer,
   type RestClientInterface,
   type StoreSectionStartup,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { RestPersistenceClientAndRestClient } from "./4_services/persistence/RestPersistenceClientAndRestClient.js";
 import { setupMiroirDomainController } from "./sagaTools.js";
 

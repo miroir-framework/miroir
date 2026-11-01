@@ -31,6 +31,10 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: Logge
 
 
 // ################################################################################################
+/**
+ * Holds the persistence store controllers of the deployments open in this process.
+ * @public
+ */
 export class PersistenceStoreControllerManager implements PersistenceStoreControllerManagerInterface {
   private persistenceStoreControllers: {
     [deploymentUuid: Uuid]: PersistenceStoreControllerInterface;

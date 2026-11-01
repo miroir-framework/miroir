@@ -1,7 +1,7 @@
 import { existsSync, rmSync } from "node:fs";
 import path from "node:path";
 
-import { ENVIRONMENT_STATE_ROOT, isTestEnvironment } from "miroir-core";
+import { ENVIRONMENT_STATE_ROOT, isTestEnvironment } from "@miroir-framework/core";
 
 import { EnvironmentError, readEnvironmentDefinitions, type ResolvedEnvironment } from "./environmentFiles.js";
 

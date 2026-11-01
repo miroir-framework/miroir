@@ -4,7 +4,7 @@ import type {
   ReportLoadStatus,
   ReportQueryLoadRequest,
   ReportQueryLoadService,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 /**
  * Effect-driven report query load. Render only observes status; ensureLoaded

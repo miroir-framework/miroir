@@ -11,7 +11,7 @@ import {
   StoreSectionConfiguration,
   type ConfigurationServiceInner,
   optionalApplicationSections,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { MongoDb } from "./4_services/MongoDb.js";
 import { MongoDbAdminStore } from "./4_services/MongoDbAdminStore.js";
 import { MongoDbDataStoreSection } from "./4_services/MongoDbDataStoreSection.js";

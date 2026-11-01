@@ -5,7 +5,7 @@
  * Side-effect-free pure functions (layer 2 – domain).
  */
 
-import type { Entity } from "miroir-core";
+import type { Entity } from "@miroir-framework/core";
 
 // ############################################################################
 // Types

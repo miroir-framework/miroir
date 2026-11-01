@@ -8,7 +8,7 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { beforeEach, describe, expect, it } from "vitest";
 
-import { ENTITY_DEPLOYMENT_UUID } from "miroir-core";
+import { ENTITY_DEPLOYMENT_UUID } from "@miroir-framework/core";
 
 import { run } from "./cliTestSupport";
 import { temporaryCheckout } from "./bootTestSupport";
