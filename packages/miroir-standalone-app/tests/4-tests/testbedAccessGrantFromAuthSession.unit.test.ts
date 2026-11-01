@@ -4,7 +4,7 @@ import {
   getAuthenticationEnabled,
   setAuthenticationEnabled,
   setAuthToken,
-} from "miroir-react";
+} from "@miroir-framework/react";
 import { testbedAccessGrantFromAuthSession } from "../../src/miroir-fwk/4-tests/testbedAccessGrantFromAuthSession.js";
 
 const ALICE_UUID = "1c39328c-7de4-44ae-bcf1-5bbc38d8e267";

@@ -8,7 +8,7 @@ import {
   miroirFundamentalMlSchemaUuid,
   type BlockPath,
   type MlElement,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import React, { useCallback, useMemo, useState } from "react";
 
 import { TypedValueObjectEditor } from "../Reports/TypedValueObjectEditor.js";

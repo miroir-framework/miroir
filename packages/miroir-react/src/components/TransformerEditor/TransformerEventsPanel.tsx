@@ -10,7 +10,7 @@ import {
   type TransformerEvent,
   type TransformerFailure,
   valueToMl,
-} from 'miroir-core';
+} from '@miroir-framework/core';
 import React, { useMemo, useState } from 'react';
 
 import { packageName } from "../../constants.js";

@@ -6,7 +6,7 @@ import type {
   MiroirTestSuite,
   Runner,
   TestbedUuids,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   buildApplicationMiroirTestCatalog,
   buildUiIntegrationRunnerSuiteRegistryFromCatalog,
@@ -17,7 +17,7 @@ import {
   resolveSuiteTestbedInitApplicationParameters,
   composeIntegTestbedResetParams,
   type IntegTestbedResetParams,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   lendDocumentRunner,
   mcpLendDocumentRunner,

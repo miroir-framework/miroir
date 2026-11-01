@@ -5,7 +5,7 @@ import {
   type EntityInstanceCollection,
   type InstanceAction,
   type ModelAction,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import { LocalCache } from "miroir-localcache-redux";
 

@@ -1,5 +1,5 @@
 import { ContentCopyIcon, CreateIcon, DeleteIcon, OpenInNew } from "../Themes/MaterialSymbolWrappers.js";
-import { LoggerInterface, MiroirLoggerFactory } from "miroir-core";
+import { LoggerInterface, MiroirLoggerFactory } from "@miroir-framework/core";
 import React from 'react';
 
 import { packageName } from "../../constants.js";

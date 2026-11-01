@@ -22,7 +22,7 @@ import {
   SyncBoxedExtractorOrQueryRunnerMap,
   Uuid,
   type ApplicationDeploymentMap,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import { BlobEditorField } from "./BlobEditorField.js";
 

@@ -10,12 +10,12 @@ Internal reference for how the Miroir standalone web app (`packages/miroir-stand
 
 | Mechanism | Where configured | What it does | Defers download? |
 |---|---|---|---|
-| **Route lazy loading** | `React.lazy(() => import(...))` in `PageDispatcher.tsx`, `RootComponent.tsx` (miroir-react), the app's `appShellHost` and report section renderers | Creates async chunks fetched when a route or shell feature first renders | Yes — until navigation / mount |
+| **Route lazy loading** | `React.lazy(() => import(...))` in `PageDispatcher.tsx`, `RootComponent.tsx` (@miroir-framework/react), the app's `appShellHost` and report section renderers | Creates async chunks fetched when a route or shell feature first renders | Yes — until navigation / mount |
 | **Vendor chunk pinning** | `build.rollupOptions.output.manualChunks` in `vite.config.js` | Moves matching `node_modules` into named files (`vendor-react`, `vendor-mui`, `vendor-d3`) for cache stability | Only indirectly — the vendor file loads when the first importer chunk loads |
 
 `manualChunks` does **not** lazy-load a library on its own. It only names and isolates vendor code. It can also make things worse: Rollup moves the dependencies of a manual chunk's modules into that chunk, so when eager code needs one of them, the whole vendor chunk loads with the page. Until #337, `vendor-copilotkit` and `vendor-ag-grid` loaded with every page for that reason. Only libraries the page needs anyway keep a rule (`vendor-react`, `vendor-mui`), plus `vendor-d3`, which is lazy.
 
-Besides the routes, components load heavy libraries through `React.lazy` (#337): the list grids (`components/Grids/LazyGrids.tsx`, ag-grid and, since #370, glide-data-grid on its own) and CodeMirror (`CodeBlock_ReadOnly` in `miroir-react`, `MlElementEditorReactCodeMirror`). Libraries a feature needs only sometimes are loaded by a conditional dynamic import with an `ensureX()` that callers await: `node:crypto` in `SecretsService.ts` (#337), `yaml` in `syncExternalServiceSchema.ts` and `json-diff` in `ModelUpdate.ts` (#370). Node evaluates the import at module load; the browser fetches it on the first `ensureX()`.
+Besides the routes, components load heavy libraries through `React.lazy` (#337): the list grids (`components/Grids/LazyGrids.tsx`, ag-grid and, since #370, glide-data-grid on its own) and CodeMirror (`CodeBlock_ReadOnly` in `@miroir-framework/react`, `MlElementEditorReactCodeMirror`). Libraries a feature needs only sometimes are loaded by a conditional dynamic import with an `ensureX()` that callers await: `node:crypto` in `SecretsService.ts` (#337), `yaml` in `syncExternalServiceSchema.ts` and `json-diff` in `ModelUpdate.ts` (#370). Node evaluates the import at module load; the browser fetches it on the first `ensureX()`.
 
 ### Tracing manual chunk loads
 
@@ -45,7 +45,7 @@ Libraries **not** given a dedicated vendor chunk (CopilotKit, ag-grid, CodeMirro
 
 ## Route-level lazy loading
 
-All primary pages are lazy-loaded from `PageDispatcher.tsx` (in `miroir-react` since #633: the lazy imports are relative imports inside the package, and tsup keeps each module in its own file, so each page is a chunk of the client build), wrapped in `<Suspense fallback={<CenteredSpinner />}>`:
+All primary pages are lazy-loaded from `PageDispatcher.tsx` (in `@miroir-framework/react` since #633: the lazy imports are relative imports inside the package, and tsup keeps each module in its own file, so each page is a chunk of the client build), wrapped in `<Suspense fallback={<CenteredSpinner />}>`:
 
 - `HomePage`, `ReportDisplay`, `SettingsPage`, `SearchPage`, `ModelDiagramPage`, `RunnersPage`, `TransformerBuilderPage`, `MiroirEventsPage`, `CheckPage`, …
 
@@ -55,9 +55,9 @@ All primary pages are lazy-loaded from `PageDispatcher.tsx` (in `miroir-react` s
 - `InstanceEditorOutline`
 - the host's `assistantPanel` (#633): the app gives a lazy `AgentsCopilotKit` (CopilotKit provider + sidebar UI, `AiActionsProvider`)
 
-The app entry (`src/index.tsx`) is **eager**: core startup, `RootComponent`, `PageDispatcher` (both from `miroir-react`), MUI shell, Redux/local-cache wiring.
+The app entry (`src/index.tsx`) is **eager**: core startup, `RootComponent`, `PageDispatcher` (both from `@miroir-framework/react`), MUI shell, Redux/local-cache wiring.
 
-`ReportDisplay` (in miroir-react since #612) is also imported statically by `HomePage`, `SettingsPage` and `ReportSectionViewWithEditor`, which render a report at once, so it loads with the home page route. `PageDispatcher` renders it through `LazyReportDisplay`, which miroir-react exports for that purpose: an `import("miroir-react")` from the app would split nothing off, since the page already loads miroir-react. The grids it renders are lazy, so the home page fetches no grid library (`tests/0_build/homePageLoad.unit.test.ts`).
+`ReportDisplay` (in @miroir-framework/react since #612) is also imported statically by `HomePage`, `SettingsPage` and `ReportSectionViewWithEditor`, which render a report at once, so it loads with the home page route. `PageDispatcher` renders it through `LazyReportDisplay`, which @miroir-framework/react exports for that purpose: an `import("@miroir-framework/react")` from the app would split nothing off, since the page already loads @miroir-framework/react. The grids it renders are lazy, so the home page fetches no grid library (`tests/0_build/homePageLoad.unit.test.ts`).
 
 ---
 
@@ -69,7 +69,7 @@ Measured by the [bundle report](#bundle-report-and-guards-326) of the build of 2
 
 | Chunk | Size, gzip | Largest content | Why it loads with the page |
 |---|---|---|---|
-| `index-*.js` (entry) | 3.58 MB, 547 kB | `miroir-app-miroir` (the meta-model deployment), `miroir-core`, the app, `@remix-run/router`, `miroir-localcache-redux`, `zod` | the entry; `ModelEnvironmentSync.tsx` and `miroir-core` import the meta-model statically |
+| `index-*.js` (entry) | 3.58 MB, 547 kB | `miroir-app-miroir` (the meta-model deployment), `@miroir-framework/core`, the app, `@remix-run/router`, `miroir-localcache-redux`, `zod` | the entry; `ModelEnvironmentSync.tsx` and `@miroir-framework/core` import the meta-model statically |
 | `vendor-mui-*` | 380 kB, 117 kB | `@mui/material`, `@mui/system`, `@popperjs/core` | the app shell |
 | `vendor-react-*` | 227 kB, 73 kB | `react-dom`, `react`, `scheduler` | the app shell |
 | two `index-*.js` | 29 kB, 9 kB | `vite-plugin-node-polyfills` shims | Node built-ins the entry's dependencies import; shared with lazy chunks since #370 |
@@ -79,7 +79,7 @@ What #337 took off the page, each cut with the rule that keeps it off:
 | Cut | Gzip saved | Kept off by |
 |---|---|---|
 | `vendor-copilotkit` and `vendor-ag-grid` rules removed from `manualChunks.js` | 1.15 MB | `forbiddenEager` `@copilotkit/*`, `ag-grid-*` |
-| `node:crypto` loaded by a conditional dynamic import in `miroir-core` `SecretsService.ts` (`ensureSecretsCrypto()`) | 175 kB | `forbiddenEager` `crypto-browserify`, `bn.js`, `elliptic` |
+| `node:crypto` loaded by a conditional dynamic import in `@miroir-framework/core` `SecretsService.ts` (`ensureSecretsCrypto()`) | 175 kB | `forbiddenEager` `crypto-browserify`, `bn.js`, `elliptic` |
 | The test suite registry that read the whole `miroir-app-miroir` namespace deleted, so Rollup tree-shakes the meta-model | 332 kB | `eagerPackageMaxBytes` |
 | CodeMirror behind `React.lazy` | 168 kB | `forbiddenEager` `@codemirror/*`, `@uiw/react-codemirror`, `@lezer/*` |
 | Node store drivers aliased to `vite/nodeStoreStub.js` in the web build | 36 kB | `allowlist` (`sequelize`, `mongodb` left the policy) |
@@ -89,7 +89,7 @@ What #370 took off the page (analysis and measurements: `code-helpers/features/3
 | Cut | Gzip saved | Kept off by |
 |---|---|---|
 | `yaml` loaded by `ensureYamlParser()` (`syncExternalServiceSchema.ts`), awaited by the DomainController's OpenAPI handlers, the OpenAPI Endpoint sync button and the `transformerTest` runner | 31 kB | `forbiddenEager` `yaml` |
-| `miroir-store-indexedDb` factories import the store classes (and `level`) when they first run; the package exports only its startup function | 34 kB | `forbiddenEager` `level`, `browser-level`, `abstract-level` |
+| `@miroir-framework/store-indexeddb` factories import the store classes (and `level`) when they first run; the package exports only its startup function | 34 kB | `forbiddenEager` `level`, `browser-level`, `abstract-level` |
 | `json-diff` loaded by `ensureJsonDiff()` (`ModelUpdate.ts`); the function-call test registry accepts a module loader | 33 kB | `forbiddenEager` `json-diff`, `@ewoudenberg/difflib`, `assert` |
 | Bare `lodash` aliased to `vite/lodashMergeShim.js` (`merge` from `lodash-es`): its only importer, `@teroneko/redux-saga-promise`, requires it for `merge` | 27 kB | `forbiddenEager` `lodash`; `bundleReport.unit` |
 | The application picker names applications from the cache (Admin rows, then each application's SelfApplication row) instead of importing `miroir-example-library` | 11 kB | `forbiddenEager` `miroir-example-library` |
@@ -115,7 +115,7 @@ What #370 took off the page (analysis and measurements: `code-helpers/features/3
 | | |
 |---|---|
 | **Vendor chunk** | None (lazy chunks shared by both components) |
-| **Dynamic import** | `React.lazy` in `MlElementEditorReactCodeMirror.tsx` (editor) and in `miroir-react` `CodeBlock_ReadOnly.tsx` (read-only block, which shows the text in a `<pre>` until CodeMirror arrives), #337 |
+| **Dynamic import** | `React.lazy` in `MlElementEditorReactCodeMirror.tsx` (editor) and in `@miroir-framework/react` `CodeBlock_ReadOnly.tsx` (read-only block, which shows the text in a `<pre>` until CodeMirror arrives), #337 |
 | **Reachability** | Routes that mount editors: `ReportDisplay` (via `TypedValueObjectEditor`), `TransformerBuilderPage` (via `TransformerEditor` → `TypedValueObjectEditor`) |
 | **Initial load?** | No (`forbiddenEager` `@codemirror/*`, `@uiw/react-codemirror`, `@lezer/*`) |
 | **On field use?** | Yes — the first code field or code block fetches CodeMirror |
@@ -194,9 +194,9 @@ npm run testByFile -w miroir-standalone-app -- componentTestChunk.286.phase4
 
 3. **A dynamic import is defeated by any static import of the same module.** The bundle report lists these under "Dynamic imports that split nothing off"; the guard's `defeated` rule fails on a new one.
 
-4. **Store driver packages** (`miroir-store-filesystem`, `postgres`, `mongodb`) use dynamic `import()` in `IntegrationTestSession.ts` for vitest and the CLI. In `vite build` (not in test mode), `vite.config.js` aliases them to `vite/nodeStoreStub.js`, whose functions throw, so the web build ships no Node store driver (#337). Vitest resolves the real packages. The same config aliases bare `lodash` to `vite/lodashMergeShim.js` outside test mode (#370); app code imports `lodash-es`.
+4. **Store driver packages** (`@miroir-framework/store-filesystem`, `postgres`, `mongodb`) use dynamic `import()` in `IntegrationTestSession.ts` for vitest and the CLI. In `vite build` (not in test mode), `vite.config.js` aliases them to `vite/nodeStoreStub.js`, whose functions throw, so the web build ships no Node store driver (#337). Vitest resolves the real packages. The same config aliases bare `lodash` to `vite/lodashMergeShim.js` outside test mode (#370); app code imports `lodash-es`.
 
-5. **A local dynamic import in a package built without splitting is inlined.** `miroir-core` is built by tsup with `splitting: false`: `import("./module")` of its own module puts the module, and the static imports of its dependencies, in `dist/index.js`. Only a dynamic import of an external package (`yaml`, `json-diff`) stays dynamic in the package's output (#370).
+5. **A local dynamic import in a package built without splitting is inlined.** `@miroir-framework/core` is built by tsup with `splitting: false`: `import("./module")` of its own module puts the module, and the static imports of its dependencies, in `dist/index.js`. Only a dynamic import of an external package (`yaml`, `json-diff`) stays dynamic in the package's output (#370).
 
 ---
 
@@ -209,7 +209,7 @@ Every production build prints a table and writes, next to the Vite manifest:
 
 The console table shows the eager chunks and the 15 largest lazy ones, each with its 5 largest packages. The attribution is in `vite/bundleReportCore.js`, the plugin in `vite/bundleReportPlugin.js`; `VITE_MIROIR_BUNDLE_REPORT=false` disables both. The Electron main process and preload are bundled with esbuild (`packages/miroir-standalone-app-electron/scripts/bundle-main.mjs`, run by its `npm run build`), which writes `dist/bundle-report.json` in the same format. That bundle is minified (names kept), and the Node processes (Electron main, server, CLI, MCP) import `miroir-localcache-redux/node`, an entry without React, so none of them bundles `react-dom` (#337). The package leaves the source maps out, so a stack from a packaged app names the functions (`keepNames`) but gives positions in the minified file; to map a position, rebuild the release's commit (`npm ci`, then `npm run build -w miroir-standalone-app-electron`: the same lockfile and sources give the same bundle) and look it up in `dist/src/main.js.map` with a source map tool. Pull request builds also keep these maps in the `bundle-reports` artifact.
 
-Since #370 the Electron main process is built with `splitting: true` into `dist/src/` (on-demand chunks in `dist/src/chunks/`). `environmentBoot.ts` registers each store type through `src/storesOnDemand.ts`: a placeholder factory imports the store package the first time a section on that store opens, then the package's real factories take over. `ipcServerSetup.ts` imports `miroir-ai` and `miroir-mcp` only when their feature is on. The main process reads 1.0 MB gzipped at start instead of 3.2 MB; the `desktop` environment never reads the MongoDB, PostgreSQL or IndexedDB stores (`electronBundle.unit`). esbuild sets `entryPoint` on the chunk of each dynamic import target, so `bundleReportCore.js` counts as entries only the outputs whose entry point is not a dynamic import target.
+Since #370 the Electron main process is built with `splitting: true` into `dist/src/` (on-demand chunks in `dist/src/chunks/`). `environmentBoot.ts` registers each store type through `src/storesOnDemand.ts`: a placeholder factory imports the store package the first time a section on that store opens, then the package's real factories take over. `ipcServerSetup.ts` imports `miroir-ai` and `@miroir-framework/mcp` only when their feature is on. The main process reads 1.0 MB gzipped at start instead of 3.2 MB; the `desktop` environment never reads the MongoDB, PostgreSQL or IndexedDB stores (`electronBundle.unit`). esbuild sets `entryPoint` on the chunk of each dynamic import target, so `bundleReportCore.js` counts as entries only the outputs whose entry point is not a dynamic import target.
 
 The guard compares a report with the app's committed policy:
 

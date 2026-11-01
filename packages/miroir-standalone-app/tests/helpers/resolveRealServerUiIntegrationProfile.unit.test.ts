@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   isMiroirTestStorageType,
   parseStorageArg,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import {
   realServerProfileNameForStorage,

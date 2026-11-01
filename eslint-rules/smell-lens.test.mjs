@@ -122,6 +122,10 @@ test("mocked-own-module: vi.mock of Miroir code in tests, not of libraries", asy
   await flags(TEST, `import { vi } from "vitest";\nvi.mock("../../src/4_services/Store.js", () => ({}));\n`, "mocked-own-module");
   await flags(TEST, `import { vi } from "vitest";\nvi.mock("miroir-localcache-redux", () => ({}));\n`, "mocked-own-module");
   await spares(TEST, `import { vi } from "vitest";\nvi.mock("react-router-dom", () => ({}));\n`, "mocked-own-module");
+  // #650: the published packages' scoped names are Miroir's own code; @miroir-framework/jzod is a library
+  await flags(TEST, `import { vi } from "vitest";\nvi.mock("@miroir-framework/core", () => ({}));\n`, "mocked-own-module");
+  await flags(TEST, `import { vi } from "vitest";\nvi.mock("@miroir-framework/store-postgres", () => ({}));\n`, "mocked-own-module");
+  await spares(TEST, `import { vi } from "vitest";\nvi.mock("@miroir-framework/jzod", () => ({}));\n`, "mocked-own-module");
   await flags(TEST, `import { vi } from "vitest";\nvi.mock("../../src/4_services/Store.js");\n`, "mocked-own-module");
   // A spy keeps the real code; a factory that also stubs an export is a mock.
   const factory = (properties) =>

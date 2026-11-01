@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import type { ApplicationDeploymentMap, DomainControllerInterface, MiroirConfigClient } from "miroir-core";
-import { getBootstrapPhasesForSessionKind } from "miroir-core";
+import type { ApplicationDeploymentMap, DomainControllerInterface, MiroirConfigClient } from "@miroir-framework/core";
+import { getBootstrapPhasesForSessionKind } from "@miroir-framework/core";
 
 const runAppStackIntegrationBootstrapMock = vi.fn();
 
@@ -14,7 +14,7 @@ import {
   setupMiroirTestAndCreateMiroirDeployment,
   setupMiroirTestAndDeployMiroirApp,
 } from "./setupMiroirTestWrappers.js";
-import { MiroirActivityTracker, MiroirEventService } from "miroir-core";
+import { MiroirActivityTracker, MiroirEventService } from "@miroir-framework/core";
 import { selfApplicationLibrary } from "miroir-example-library";
 import {
   selfApplicationMiroir,

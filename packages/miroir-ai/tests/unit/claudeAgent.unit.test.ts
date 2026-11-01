@@ -8,7 +8,7 @@ import { basename } from "node:path";
 import { firstValueFrom, toArray } from "rxjs";
 import { afterEach, describe, expect, it } from "vitest";
 import { EventType, type BaseEvent, type RunAgentInput } from "@ag-ui/core";
-import { clearSecrets, registerSecrets } from "miroir-core";
+import { clearSecrets, registerSecrets } from "@miroir-framework/core";
 
 import { createClaudeAbstractAgent } from "../../src/runtime/claudeAgent.js";
 

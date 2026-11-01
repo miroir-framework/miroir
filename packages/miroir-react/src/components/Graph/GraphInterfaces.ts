@@ -1,6 +1,6 @@
-import { graphConfig, type MlElement, type MlObject } from 'miroir-core';
+import { graphConfig, type MlElement, type MlObject } from '@miroir-framework/core';
 import { z } from 'zod';
-export type { GraphConfig } from 'miroir-core';
+export type { GraphConfig } from '@miroir-framework/core';
 // ################################################################################################
 // Graph Data Schema using ML
 // ################################################################################################

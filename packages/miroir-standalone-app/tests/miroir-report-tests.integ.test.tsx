@@ -10,11 +10,11 @@ import {
   parseMiroirRunnerTestCliConfig,
   runMiroirTests,
   type LoggerInterface,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   listCliRunnerIntegrationSuiteKeysFromFolders,
   resolveCliSuiteKeysFromCatalog,
-} from "miroir-core/model-validation-fs";
+} from "@miroir-framework/core/model-validation-fs";
 import { startReportTestEntry } from "./helpers/reportTestEntry.js";
 import { runMiroirRunnerSuitesSharedFromCLI } from "./helpers/runMiroirRunnerSuitesSharedFromCLI.js";
 

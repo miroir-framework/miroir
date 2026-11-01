@@ -6,7 +6,7 @@ import {
   MiroirLoggerFactory,
   resolveMlSchemaReference,
   type LoggerInterface
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { packageName, cleanLevel } from "../constants";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MlTools");

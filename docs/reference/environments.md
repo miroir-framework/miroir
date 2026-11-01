@@ -1,6 +1,6 @@
 # Environments Reference
 
-**Audience:** framework contributors and anyone running Miroir from this repository (server, web client, tests, coding-agent sessions, miroir-cli, miroir-mcp, Electron, Docker).
+**Audience:** framework contributors and anyone running Miroir from this repository (server, web client, tests, coding-agent sessions, miroir-cli, @miroir-framework/mcp, Electron, Docker).
 **Scope:** how an environment is selected, the definition file format, where running state lives, the `miroir-env` command, and how deviations are reported. Introduced by #321; every runtime adopted it with #345.
 
 ---
@@ -8,7 +8,7 @@
 ## Key points
 
 - An **environment** says which applications are installed and where each of their stores lives. It is one JSON file in `environments/`, validated by the `miroirEnvironment` ML schema.
-- Every runtime takes its configuration from an environment ([Runtimes](#runtimes)): the server, the web client served by Vite, the tests, coding-agent sessions, miroir-cli, miroir-mcp, Electron and Docker. There is no other per-run configuration file (the release binary run outside a checkout, without `MIROIR_ROOT`, is the one exception).
+- Every runtime takes its configuration from an environment ([Runtimes](#runtimes)): the server, the web client served by Vite, the tests, coding-agent sessions, miroir-cli, @miroir-framework/mcp, Electron and Docker. There is no other per-run configuration file (the release binary run outside a checkout, without `MIROIR_ROOT`, is the one exception).
 - **Running state** (Admin data, copied stores, applications installed from the UI) lives in the gitignored `.miroir/<environment>/`. Running Miroir or its tests never writes tracked files; the application models you edit live in their package assets are the exception, on purpose.
 - `npm run miroir-env -- show` prints the resolved environment; `npm run miroir-env -- check` compares the state with it. Deviations warn locally and fail in CI and nonreg.
 
@@ -41,10 +41,10 @@ Test environments (`test-*`) hold copies only: a `live` section in a test enviro
 | miroir-server (checkout) | the selected one | `npm run` or `node packages/miroir-server/release/index.js` from the checkout |
 | miroir-server (release binary elsewhere) | none | `--config <file>`, default `config/miroirConfig.server.json` ([build-it-yourself.md](../guides/build-it-yourself.md)); `MIROIR_ROOT` switches it to an environment |
 | Web client (Vite) | the selected one | `vite.config.js` injects its client configuration ([Web client](#web-client)) |
-| Tests (vitest, MiroirTest) | `test-<storage>` | `--profile`, or `MIROIR_ENV=test-*`; default `test-sql` (`test-filesystem` for miroir-mcp and miroir-cli) |
+| Tests (vitest, MiroirTest) | `test-<storage>` | `--profile`, or `MIROIR_ENV=test-*`; default `test-sql` (`test-filesystem` for @miroir-framework/mcp and miroir-cli) |
 | Coding-agent sessions | `cloud-agent` | `environments/local.json` written by `agent_session_setup.py --cloud-agent` |
 | miroir-cli | the selected one | `--env <name>` (same as `MIROIR_ENV`); prints `environment: <name>, selected by …` on stderr |
-| miroir-mcp | the one of its host | a library: miroir-server and Electron start it on their DomainController; its tests run on `test-filesystem` |
+| @miroir-framework/mcp | the one of its host | a library: miroir-server and Electron start it on their DomainController; its tests run on `test-filesystem` |
 | Electron, development | the selected one | the main process boots it (`src/environmentBoot.ts`), the renderer asks for its client configuration over IPC (`get-client-config`) |
 | Electron, packaged | `desktop` | first start copies `resources/miroir-assets` to `<user data>/miroir`; `MIROIR_ROOT` points there |
 | Docker | `docker` | `MIROIR_ROOT=/data`, `MIROIR_ENV=docker` in the image; the entrypoint seeds `/data` from `/seed` ([docker.md](docker.md)) |
@@ -148,7 +148,7 @@ Paths are relative to the root (`MIROIR_ROOT`, else the repository root), which 
 
 ## The `miroir-env` command
 
-`npm run miroir-env -- <command>` (after `npm run build -w miroir-env`). Every command takes `--name <environment>`.
+`npm run miroir-env -- <command>` (after `npm run build -w @miroir-framework/env`). Every command takes `--name <environment>`.
 
 | Command | Does |
 |---|---|

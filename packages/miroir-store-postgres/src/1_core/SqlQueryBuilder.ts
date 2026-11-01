@@ -1,4 +1,4 @@
-import { MlReference, MiroirLoggerFactory, type LoggerInterface } from "miroir-core";
+import { MlReference, MiroirLoggerFactory, type LoggerInterface } from "@miroir-framework/core";
 import {
   SqlQueryDefineColumnSchema,
   SqlQueryHereTableDefinitionSchema,

@@ -5,7 +5,7 @@ import {
   mlUnionResolvedTypeForObject,
   type MlUnion,
   type MiroirModelEnvironment,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 describe("union resolved type for object", () => {
   it("picks getFromParameters branch for transformer value", () => {

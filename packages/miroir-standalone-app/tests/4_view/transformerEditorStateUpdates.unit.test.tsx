@@ -17,8 +17,8 @@ import React from "react";
 import { act, render } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 
-import { defaultSelfApplicationDeploymentMap } from "miroir-core";
-import { useMiroirContextService } from "miroir-react";
+import { defaultSelfApplicationDeploymentMap } from "@miroir-framework/core";
+import { useMiroirContextService } from "@miroir-framework/react";
 
 import {
   buildComponentTestWrapper,

@@ -1,16 +1,16 @@
 import React from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { fireEvent, render as rtlRender, screen } from "@testing-library/react";
-import { MiroirContextReactTestProvider, MiroirThemeContext } from "miroir-react";
+import { MiroirContextReactTestProvider, MiroirThemeContext } from "@miroir-framework/react";
 import "@testing-library/jest-dom";
 
 const showPerformanceDisplayRef = { current: false };
 
 import {
   RENDER_INSIGHT_MAX_DEPTH_STORAGE_KEY,
-} from "miroir-react";
-import { renderInsightRegistry } from "miroir-react";
-import { RenderInsightSummary } from "miroir-react";
+} from "@miroir-framework/react";
+import { renderInsightRegistry } from "@miroir-framework/react";
+import { RenderInsightSummary } from "@miroir-framework/react";
 
 const testTheme = {
   currentTheme: {

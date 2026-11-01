@@ -1,4 +1,4 @@
-import { getTestbedUuidsForTestSuite, type MiroirTestSuite } from "miroir-core";
+import { getTestbedUuidsForTestSuite, type MiroirTestSuite } from "@miroir-framework/core";
 
 import {
   buildUiIntegrationOrchestratorCreateSessionParams,

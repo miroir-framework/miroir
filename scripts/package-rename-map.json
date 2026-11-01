@@ -1,0 +1,13 @@
+{
+  "miroir-core": "@miroir-framework/core",
+  "miroir-react": "@miroir-framework/react",
+  "miroir-store-postgres": "@miroir-framework/store-postgres",
+  "miroir-store-filesystem": "@miroir-framework/store-filesystem",
+  "miroir-store-indexedDb": "@miroir-framework/store-indexeddb",
+  "miroir-store-mongodb": "@miroir-framework/store-mongodb",
+  "miroir-store-bundled": "@miroir-framework/store-bundled",
+  "miroir-env": "@miroir-framework/env",
+  "miroir-mcp": "@miroir-framework/mcp",
+  "miroir-server-library": "@miroir-framework/server",
+  "miroir-cli": "@miroir-framework/cli"
+}

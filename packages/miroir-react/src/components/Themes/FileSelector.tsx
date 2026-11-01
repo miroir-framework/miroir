@@ -5,10 +5,10 @@ import { Box, Button, Typography, Alert } from '@mui/material';
 import { CloudUploadIcon, CheckCircle as CheckCircleIcon, Clear as ClearIcon } from "./MaterialSymbolWrappers.js";
 import { useMiroirTheme } from "../../contexts/MiroirThemeContext.js";
 import { ThemedComponentProps } from "../helpers/BaseTypes.js";
-import { LoggerInterface, MiroirLoggerFactory } from 'miroir-core';
+import { LoggerInterface, MiroirLoggerFactory } from '@miroir-framework/core';
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "../../viewConstants.js";
-// import { devRelativePathPrefix } from 'miroir-core';
+// import { devRelativePathPrefix } from '@miroir-framework/core';
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "FileSelector");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);

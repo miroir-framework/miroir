@@ -10,7 +10,7 @@ import {
   redactCredentialSecretsFromValue,
   type EndpointDefinition,
   type SelfApplication,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { mlElementToJsonSchema } from "./mlElementToJsonSchema.js";
 
 

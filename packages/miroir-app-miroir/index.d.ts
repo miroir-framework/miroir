@@ -380,7 +380,7 @@ export declare const materialStoredMiroirTheme: any;
 export declare const entityVersionTheme: any;
 /** @deprecated Use entityVersionTheme */
 export declare const entityDefinitionTheme: any;
-import type { Entity, MetaModel } from "miroir-core";
+import type { Entity, MetaModel } from "@miroir-framework/core";
 
 export declare const defaultMiroirMetaModel: MetaModel;
 export declare const miroirModelInitializeCreateEntityOrder: Entity[];

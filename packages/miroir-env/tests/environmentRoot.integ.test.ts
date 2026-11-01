@@ -7,8 +7,8 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { ConfigurationService, ENTITY_DEPLOYMENT_UUID, miroirCoreStartup } from "miroir-core";
-import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
+import { ConfigurationService, ENTITY_DEPLOYMENT_UUID, miroirCoreStartup } from "@miroir-framework/core";
+import { miroirFileSystemStoreSectionStartup } from "@miroir-framework/store-filesystem";
 
 import { hasEnvironmentDefinitions } from "../src/index";
 import { boot, readRows } from "./bootTestSupport";

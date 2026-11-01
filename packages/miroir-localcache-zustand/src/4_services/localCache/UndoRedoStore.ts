@@ -13,7 +13,7 @@ import {
   ModelActionReplayableAction,
   TransactionalInstanceAction,
   type ApplicationDeploymentMap,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import {
   LocalCacheSliceState,

@@ -3,7 +3,7 @@ import type {
   LoggerOptions,
   MiroirConfigClient,
   StoreUnitConfiguration,
-} from 'miroir-core';
+} from '@miroir-framework/core';
 
 import catchAllLogConfig from '../../../config/logging/catch-all.json';
 import {

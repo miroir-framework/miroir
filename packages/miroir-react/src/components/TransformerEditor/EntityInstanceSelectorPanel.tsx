@@ -21,7 +21,7 @@ import {
   type MiroirModelEnvironment,
   type ReduxDeploymentsState,
   type SyncBoxedExtractorOrQueryRunnerMap
-} from 'miroir-core';
+} from '@miroir-framework/core';
 
 
 import { useFormikContext } from 'formik';

@@ -5,7 +5,7 @@ import type {
   DomainControllerInterface,
   MiroirConfigClient,
   PersistenceStoreControllerManagerInterface,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { deployment_Library_DO_NO_USE, selfApplicationLibrary } from "miroir-example-library";
 
 import {
@@ -28,8 +28,8 @@ vi.mock("../../src/miroir-fwk/4-tests/tests-utils.js", () => ({
     createMiroirDeploymentGetPersistenceStoreControllerMock(...args),
 }));
 
-vi.mock("miroir-core", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("miroir-core")>();
+vi.mock("@miroir-framework/core", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@miroir-framework/core")>();
   return {
     ...actual,
     createDeploymentCompositeAction: (...args: unknown[]) =>
@@ -40,7 +40,7 @@ vi.mock("miroir-core", async (importOriginal) => {
   };
 });
 
-import { resetAndInitApplicationDeployment } from "miroir-core";
+import { resetAndInitApplicationDeployment } from "@miroir-framework/core";
 
 function createMockDomainController(): DomainControllerInterface {
   return {

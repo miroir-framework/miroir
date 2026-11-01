@@ -7,7 +7,7 @@ import {
   defaultMiroirModelEnvironment,
   runModelValidationSuite,
   type Entity,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import {
   defaultMiroirMetaModel,

@@ -18,7 +18,7 @@ import type {
   CoreTransformerForBuildPlusRuntime,
   Uuid,
   ViewParams
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   Action2Error,
   defaultMiroirModelEnvironment,
@@ -33,7 +33,7 @@ import {
   MiroirLoggerFactory,
   templateEvaluationParams,
   transformer_extended_apply_wrapper,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { JsonDisplayHelper } from "../helpers/DebugHelper.js";
 import { getMemoizedReduxDeploymentsStateSelectorMap, type ReduxStateWithUndoRedo, useSelector } from "../../miroir-localcache-imports.js";
 import { useDomainControllerService, useMiroirContextService, useSnackbar } from "../../contexts/MiroirContextReactProvider.js";
@@ -49,7 +49,7 @@ import {
   applicationNameForMcpRunner,
   resolveMcpToolAction,
 } from "./resolveMcpToolAction.js";
-import { browserMcpServerUrl } from "miroir-core";
+import { browserMcpServerUrl } from "@miroir-framework/core";
 import { useMiroirShellHost } from "../../contexts/MiroirShellHostContext.js";
 
 import { selfApplicationMiroir } from "miroir-app-miroir";

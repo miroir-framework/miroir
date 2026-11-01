@@ -51,26 +51,25 @@ def test_the_published_set_names_existing_workspace_packages():
         assert (ROOT / folder / "package.json").is_file(), f"{folder} has no package.json"
 
 
-def test_the_published_set_matches_the_epic_mapping():
-    # #621 analysis §4.1 (D7-b, D8-a); I6 renames them and updates this list.
-    assert sorted(manifest(folder)["name"] for folder in published_folders()) == sorted(
-        [
-            "miroir-core",
-            "miroir-app-miroir",
-            "miroir-app-admin",
-            "miroir-react",
-            "miroir-localcache-redux",
-            "miroir-server-library",
-            "miroir-store-postgres",
-            "miroir-store-filesystem",
-            "miroir-store-indexedDb",
-            "miroir-store-mongodb",
-            "miroir-store-bundled",
-            "miroir-mcp",
-            "miroir-cli",
-            "miroir-env",
-        ]
-    )
+# the folders bundled into another published package (#652): they keep their private workspace name until then
+BUNDLED_INTO_ANOTHER = {"packages/miroir-app-miroir", "packages/miroir-app-admin", "packages/miroir-localcache-redux"}
+
+
+def test_each_published_package_carries_its_published_name():
+    """#650: each published name is the `name` of exactly one folder; the folders bundled into it (#652) keep a
+    private miroir-* name. Each published package declares public access, which a scoped package needs."""
+    owners: dict[str, list[str]] = {}
+    for entry in published_set():
+        data = manifest(entry["folder"])
+        if entry["folder"] in BUNDLED_INTO_ANOTHER:
+            assert data["name"].startswith("miroir-") and data.get("private") is True, entry["folder"]
+            continue
+        assert data["name"] == entry["publishedName"], entry["folder"]
+        assert data.get("publishConfig", {}).get("access") == "public", entry["folder"]
+        owners.setdefault(data["name"], []).append(entry["folder"])
+    assert {name: len(folders) for name, folders in owners.items()} == {
+        entry["publishedName"]: 1 for entry in published_set()
+    }
 
 
 def test_each_package_of_the_set_has_a_scoped_published_name():
@@ -173,7 +172,7 @@ def test_a_published_package_declares_its_entry_points(folder):
         assert target == "./package.json" or target.startswith("./dist/") or target == DECLARATION_STUBS.get(folder), (
             f"{folder}: export target {target} is not a built file"
         )
-    if data["name"] == "miroir-cli":
+    if data["name"] == "@miroir-framework/cli":
         # D7: the CLI is a program (`bin`); importing the package must not run it.
         assert list(exports) == ["./package.json"]
         assert "main" not in data and "types" not in data
@@ -315,15 +314,15 @@ def test_published_declarations_carry_tsdoc():
 
 # library -> (peer range, owners). An owner either imports the library in src/ or needs it for a library it imports (†).
 SHARED_LIBRARIES = {
-    "zod": ("^4.6.7", {"miroir-core", "miroir-react", "miroir-mcp", "miroir-cli", "miroir-store-postgres"}),
-    "react": (">=18.2.0", {"miroir-react", "miroir-localcache-redux"}),  # † localcache-redux: peer of react-redux
-    "react-dom": ("^18.2.0", {"miroir-react"}),
-    "react-redux": ("^9.3.0", {"miroir-react", "miroir-localcache-redux"}),
-    "react-router-dom": ("^7.18.4", {"miroir-react"}),
-    "formik": ("^2.4.9", {"miroir-react"}),
-    "@mui/material": (">=5.17.1 <10", {"miroir-react"}),
-    "@emotion/react": ("^11.10.5", {"miroir-react"}),
-    "@emotion/styled": ("^11.10.5", {"miroir-react"}),  # † peer of @mui/material
+    "zod": ("^4.6.7", {"@miroir-framework/core", "@miroir-framework/react", "@miroir-framework/mcp", "@miroir-framework/cli", "@miroir-framework/store-postgres"}),
+    "react": (">=18.2.0", {"@miroir-framework/react", "miroir-localcache-redux"}),  # † localcache-redux: peer of react-redux
+    "react-dom": ("^18.2.0", {"@miroir-framework/react"}),
+    "react-redux": ("^9.3.0", {"@miroir-framework/react", "miroir-localcache-redux"}),
+    "react-router-dom": ("^7.18.4", {"@miroir-framework/react"}),
+    "formik": ("^2.4.9", {"@miroir-framework/react"}),
+    "@mui/material": (">=5.17.1 <10", {"@miroir-framework/react"}),
+    "@emotion/react": ("^11.10.5", {"@miroir-framework/react"}),
+    "@emotion/styled": ("^11.10.5", {"@miroir-framework/react"}),  # † peer of @mui/material
 }
 
 
@@ -363,14 +362,14 @@ NODE_BUILTINS = set(
 )
 # (package, dependency) -> reason. "imported" entries: imported but not declared; "declared": declared, not imported.
 ALLOWED_UNDECLARED_IMPORTS = {
-    ("miroir-core", "vitest"): "type-only, QueryRunnerTestTools; left to the 'Public API of core' item of #621",
-    ("miroir-app-miroir", "miroir-core"): "type-only; a runtime dependency would make a core <-> app-miroir cycle (#621 D7)",
+    ("@miroir-framework/core", "vitest"): "type-only, QueryRunnerTestTools; left to the 'Public API of core' item of #621",
+    ("miroir-app-miroir", "@miroir-framework/core"): "type-only; a runtime dependency would make a core <-> app-miroir cycle (#621 D7)",
 }
 ALLOWED_UNIMPORTED_DECLARATIONS = {
-    ("miroir-store-postgres", "pg"): "Sequelize loads the driver by name",
-    ("miroir-store-postgres", "pg-hstore"): "Sequelize loads it by name",
+    ("@miroir-framework/store-postgres", "pg"): "Sequelize loads the driver by name",
+    ("@miroir-framework/store-postgres", "pg-hstore"): "Sequelize loads it by name",
     ("miroir-localcache-redux", "react"): "peer of react-redux (D1)",
-    ("miroir-react", "@emotion/styled"): "peer of @mui/material (D1)",
+    ("@miroir-framework/react", "@emotion/styled"): "peer of @mui/material (D1)",
 }
 
 

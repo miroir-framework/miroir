@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
-import { transformerSubtreeRuns, type BlockPath, type TransformerSubtreeRun } from "miroir-core";
+import { transformerSubtreeRuns, type BlockPath, type TransformerSubtreeRun } from "@miroir-framework/core";
 import React, { useContext, useMemo, useState } from "react";
 
 import { useBlockEditing } from "./BlockEditing.js";

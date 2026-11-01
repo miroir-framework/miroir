@@ -9,7 +9,7 @@ import {
   safeStringify,
   type MlElement,
   type TransformerReturnType
-} from 'miroir-core';
+} from '@miroir-framework/core';
 
 
 import { packageName } from "../../constants.js";

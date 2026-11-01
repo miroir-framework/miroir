@@ -12,7 +12,7 @@
 //
 // ################################################################################################
 
-import type { MiroirThemeFull } from "miroir-core";
+import type { MiroirThemeFull } from "@miroir-framework/core";
 import { defaultMiroirTheme, MiroirTheme } from "./MiroirTheme.js";
 import { ResolvedTableTheme, TableTheme } from './TableTheme.js';
 import { defaultFeedbackGlow } from '../FeedbackGlow/feedbackGlow.js';

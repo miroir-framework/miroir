@@ -146,7 +146,7 @@ A file with the same name and at least 90% of the same lines in another package.
 
 **Why.** A fix lands in one copy. The copies drift apart, and the next reader cannot tell which one is meant.
 
-**Fix.** Keep one module, in the lowest package both copies depend on, and import it. `miroir-standalone-app` depends on `miroir-react`, so a theme file shared by both lives in `miroir-react`. When neither package depends on the other, move the module to `miroir-core`.
+**Fix.** Keep one module, in the lowest package both copies depend on, and import it. `miroir-standalone-app` depends on `@miroir-framework/react`, so a theme file shared by both lives in `@miroir-framework/react`. When neither package depends on the other, move the module to `@miroir-framework/core`.
 
 **Leave it** for files under 20 lines (one-line `constants.ts` files are alike by design; the runner skips them).
 
@@ -163,7 +163,7 @@ A file with the same name and at least 90% of the same lines in another package.
 ```ts
 // Before
 const libraryModel = libraryModelJson as unknown as MetaModel;
-// After: `metaModel` is the generated Zod schema of MetaModel, exported by miroir-core
+// After: `metaModel` is the generated Zod schema of MetaModel, exported by @miroir-framework/core
 const libraryModel: MetaModel = metaModel.parse(libraryModelJson);
 ```
 

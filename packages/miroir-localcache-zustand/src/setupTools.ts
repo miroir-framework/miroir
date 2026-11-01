@@ -8,7 +8,7 @@ import {
   MiroirContextInterface,
   defaultExternalServiceClient,
   type ExternalServiceClientInterface,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { LocalCache } from "./4_services/LocalCache.js";
 import {
   PersistenceAsyncStore,

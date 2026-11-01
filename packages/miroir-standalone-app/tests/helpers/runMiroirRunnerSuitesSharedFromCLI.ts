@@ -12,7 +12,7 @@ import {
   type VitestNamespace,
   resolveSuiteTestbedReset,
   withTestbedResetPolicy,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import { loadRunnerOrActionMiroirTestSuite } from "./runMiroirRunnerTestsFromCLI.js";
 import { timedTestPhase } from "./testTimingPhase.js";

@@ -1,5 +1,5 @@
 import { expect } from "vitest";
-import { Action2ReturnType, DomainElementType, Action2Error, LoggerInterface, MiroirLoggerFactory } from "miroir-core";
+import { Action2ReturnType, DomainElementType, Action2Error, LoggerInterface, MiroirLoggerFactory } from "@miroir-framework/core";
 import { packageName, cleanLevel } from "../../constants";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "vitest-utils");

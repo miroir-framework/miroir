@@ -17,7 +17,7 @@ import {
   redactCredentialSecretsFromValue,
   registerSecrets,
   resolveSecret,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 const RUN_TEST = process.env.RUN_TEST;
 const runThis =

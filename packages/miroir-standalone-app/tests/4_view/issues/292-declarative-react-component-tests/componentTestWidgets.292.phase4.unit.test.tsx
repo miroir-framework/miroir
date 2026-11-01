@@ -22,7 +22,7 @@ import type {
   MiroirTestForReactComponent,
   ReactComponentTestStep,
   ReactComponentTestSuiteContext,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import { createReactComponentTestRunner } from "../../../../src/miroir-fwk/4-tests/componentTests/runReactComponentTest";
 

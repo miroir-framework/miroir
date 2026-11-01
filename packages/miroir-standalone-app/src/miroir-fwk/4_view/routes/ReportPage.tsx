@@ -7,22 +7,22 @@ import {
   ApplicationSection,
   LoggerInterface,
   MiroirLoggerFactory
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   useMiroirContextService
-} from "miroir-react";
+} from "@miroir-framework/react";
 
 import { packageName } from "../../../constants.js";
-import { ReportUrlParamKeys } from "miroir-react";
-import { PageContainer } from "miroir-react";
-import { ThemedBox } from "miroir-react";
+import { ReportUrlParamKeys } from "@miroir-framework/react";
+import { PageContainer } from "@miroir-framework/react";
+import { ThemedBox } from "@miroir-framework/react";
 import { cleanLevel } from "../constants.js";
-import { usePageConfiguration } from "miroir-react";
-import { RenderInsightHeader } from "miroir-react";
-import { useRenderTracker } from "miroir-react";
-import { RenderPerformanceMetrics } from "miroir-react";
-import { ReportDisplay } from "miroir-react";
-import { JsonDisplayHelper } from "miroir-react";
+import { usePageConfiguration } from "@miroir-framework/react";
+import { RenderInsightHeader } from "@miroir-framework/react";
+import { useRenderTracker } from "@miroir-framework/react";
+import { RenderPerformanceMetrics } from "@miroir-framework/react";
+import { ReportDisplay } from "@miroir-framework/react";
+import { JsonDisplayHelper } from "@miroir-framework/react";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportPage");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);

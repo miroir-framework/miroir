@@ -3,9 +3,9 @@ import "@testing-library/jest-dom";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
 
-import type { FailedTestLogsExport, MiroirActivity, MiroirEvent } from "miroir-core";
+import type { FailedTestLogsExport, MiroirActivity, MiroirEvent } from "@miroir-framework/core";
 
-import { ExportFailedTestLogsButton } from "miroir-react";
+import { ExportFailedTestLogsButton } from "@miroir-framework/react";
 
 const okResult = { testPath: ["ui.editor", "editor", "passes"], testResult: "ok" as const };
 const failedResult = {

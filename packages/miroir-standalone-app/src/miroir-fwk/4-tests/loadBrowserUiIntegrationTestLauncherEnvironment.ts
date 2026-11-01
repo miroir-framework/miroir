@@ -3,8 +3,8 @@ import {
   type InProcessExpectFn,
   type MiroirConfigClient,
   type StoreUnitConfiguration,
-} from "miroir-core";
-import { miroirBundledStoreSectionStartup } from "miroir-store-bundled";
+} from "@miroir-framework/core";
+import { miroirBundledStoreSectionStartup } from "@miroir-framework/store-bundled";
 
 import {
   ADMIN_DEPLOYMENT_UUID,

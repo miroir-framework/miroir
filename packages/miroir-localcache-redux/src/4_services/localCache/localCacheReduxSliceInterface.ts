@@ -11,7 +11,7 @@ import {
   TransactionalInstanceAction,
   UndoRedoAction,
   type ApplicationDeploymentMap
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 // Re-export types from miroir-core for backward compatibility
 export type {
@@ -20,7 +20,7 @@ export type {
   QueriesResultsCache,
   ReduxStateChanges,
   ReduxStateWithUndoRedo,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 export const localCacheSliceName: string = "localCache";
 

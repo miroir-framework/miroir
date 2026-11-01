@@ -7,7 +7,7 @@ import {
   type MiroirTestSuite,
   type ReactComponentTestSuite,
   type MiroirTestSuiteUiExecutionMode,
-} from 'miroir-core';
+} from '@miroir-framework/core';
 
 import {
   isUiIntegrationRunnerSuiteSupportedForInstance,

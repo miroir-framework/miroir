@@ -17,7 +17,7 @@ import {
   reportBookList,
   selfApplicationLibrary,
 } from "miroir-example-library";
-import { getReduxDeploymentsStateIndex } from "miroir-core";
+import { getReduxDeploymentsStateIndex } from "@miroir-framework/core";
 import {
   LocalCacheProvider,
   reduxStoreWithUndoRedoGetInitialState,

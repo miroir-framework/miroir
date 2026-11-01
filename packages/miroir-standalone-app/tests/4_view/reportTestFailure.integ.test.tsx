@@ -28,7 +28,7 @@ import {
   type TestAssertionResult,
   type TestSuiteResult,
   type VitestNamespace,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import { startReportTestEntry } from "../helpers/reportTestEntry.js";
 import { loadRunnerOrActionMiroirTestSuite } from "../helpers/runMiroirRunnerTestsFromCLI.js";

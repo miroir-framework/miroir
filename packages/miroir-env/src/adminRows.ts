@@ -9,7 +9,7 @@ import {
   type AdminRowLabels,
   type Deployment,
   type EnvironmentDeployment,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import type { ResolvedEnvironment } from "./environmentFiles.js";
 

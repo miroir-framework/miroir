@@ -7,7 +7,7 @@ import {
   type TransformerDefinition,
   type TransformerDefinitionRegistry,
   type Uuid,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { useDomainControllerService } from "../../contexts/MiroirContextReactProvider.js";
 import React, { useState } from "react";
 import { v4 as uuidv4 } from "uuid";

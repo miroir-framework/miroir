@@ -2,9 +2,9 @@
  * #258 slice 1 — init params trace folder catalog → beforeEachTest → resetIntegTestbed.
  */
 import { describe, expect, it, vi, beforeEach } from "vitest";
-import * as miroirCore from "miroir-core";
-import { indexApplicationMiroirTestsByKey } from "miroir-core";
-import { loadApplicationMiroirTestCatalog } from "miroir-core/model-validation-fs";
+import * as miroirCore from "@miroir-framework/core";
+import { indexApplicationMiroirTestsByKey } from "@miroir-framework/core";
+import { loadApplicationMiroirTestCatalog } from "@miroir-framework/core/model-validation-fs";
 
 import { appForTestTestbedInitParams } from "../../src/miroir-fwk/4-tests/uiIntegrationAppForTestPlayfieldSeed.js";
 import { libraryTestbedInitParams } from "../../src/miroir-fwk/4-tests/uiIntegrationPlayfieldSeeds.js";

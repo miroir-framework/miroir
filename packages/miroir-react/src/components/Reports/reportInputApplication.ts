@@ -1,5 +1,5 @@
-import type { ApplicationDeploymentMap, Uuid } from "miroir-core";
-import { noValue } from "miroir-core";
+import type { ApplicationDeploymentMap, Uuid } from "@miroir-framework/core";
+import { noValue } from "@miroir-framework/core";
 import { selfApplicationMiroir } from "miroir-app-miroir";
 
 /**

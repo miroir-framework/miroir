@@ -3,13 +3,13 @@
  * is a copy in .miroir/<environment>/ or a database named after the environment; the filesystem copies are
  * wiped and seeded from the package assets once per test file, so no test writes into tracked files.
  */
-import { MiroirLoggerFactory, type LoggerInterface } from "miroir-core";
+import { MiroirLoggerFactory, type LoggerInterface } from "@miroir-framework/core";
 import { expect } from "vitest";
 import {
   openTestEnvironment as openEnvironmentForTests,
   selectedTestEnvironment as selectedTestEnvironmentFromEnv,
   type TestEnvironment,
-} from "miroir-env";
+} from "@miroir-framework/env";
 
 import { packageName } from "../../src/constants";
 import { cleanLevel } from "../3_controllers/constants";

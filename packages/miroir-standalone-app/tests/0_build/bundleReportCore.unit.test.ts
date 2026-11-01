@@ -27,10 +27,10 @@ const context = {
   root,
   app: "miroir-standalone-app",
   workspaces: [
-    { dir: "packages/miroir-core", name: "miroir-core" },
+    { dir: "packages/miroir-core", name: "@miroir-framework/core" },
     { dir: "packages/miroir-standalone-app", name: "miroir-standalone-app" },
-    { dir: "packages/miroir-store-indexedDb", name: "miroir-store-indexedDb" },
-    { dir: "packages/miroir-store-mongodb", name: "miroir-store-mongodb" },
+    { dir: "packages/miroir-store-indexedDb", name: "@miroir-framework/store-indexeddb" },
+    { dir: "packages/miroir-store-mongodb", name: "@miroir-framework/store-mongodb" },
     { dir: "packages/miroir-app-miroir", name: "miroir-app-miroir" },
   ],
 };
@@ -68,7 +68,7 @@ describe("bundleReportCore: packages of a module id", () => {
 
   it("attributes app, workspace, npm and bundler modules", () => {
     expect(attributeModule(indexTsx, context)).toEqual({ name: "miroir-standalone-app", kind: "app" });
-    expect(attributeModule(storeMongodb, context)).toEqual({ name: "miroir-store-mongodb", kind: "workspace" });
+    expect(attributeModule(storeMongodb, context)).toEqual({ name: "@miroir-framework/store-mongodb", kind: "workspace" });
     expect(attributeModule(mongodbWrapper, context)).toEqual({ name: "mongodb", kind: "npm" });
     expect(attributeModule(commonjsHelpers, context).kind).toBe("virtual");
     expect(attributeModule("\0vite/preload-helper.js", context).kind).toBe("virtual");
@@ -77,7 +77,7 @@ describe("bundleReportCore: packages of a module id", () => {
 
   it("attributes Windows paths the same way", () => {
     const windows = { ...context, root: "C:\\dev\\miroir" };
-    expect(attributeModule("C:\\dev\\miroir\\packages\\miroir-core\\dist\\index.js", windows).name).toBe("miroir-core");
+    expect(attributeModule("C:\\dev\\miroir\\packages\\miroir-core\\dist\\index.js", windows).name).toBe("@miroir-framework/core");
     expect(attributeModule("C:/dev/miroir/node_modules/zod/index.js", windows).name).toBe("zod");
   });
 
@@ -115,7 +115,7 @@ describe("bundleReportCore: import chains", () => {
   it("condenses a chain to one step per package", () => {
     const chain = importChain(mongodb, importerLinks(graph, sources), root);
     expect(condensedChain(chain, (path) => attributeModule(path, context).name)).toBe(
-      "packages/miroir-standalone-app/src/miroir-fwk/4-tests/IntegrationTestSession.ts → import(miroir-store-mongodb) → mongodb",
+      "packages/miroir-standalone-app/src/miroir-fwk/4-tests/IntegrationTestSession.ts → import(@miroir-framework/store-mongodb) → mongodb",
     );
   });
 });
@@ -159,13 +159,13 @@ describe("bundleReportCore: report", () => {
   it("lists packages by size, leaving out modules tree-shaken to nothing", () => {
     expect(byFile["mongodb.js"].packages.map((entry) => [entry.name, entry.renderedBytes])).toEqual([
       ["mongodb", 30],
-      ["miroir-store-mongodb", 7],
+      ["@miroir-framework/store-mongodb", 7],
       ["(bundler runtime)", 2],
     ]);
   });
 
   it("starts the chain of a package in an eager chunk at an app file of an eager chunk", () => {
-    const core = byFile["core.js"].packages.find((entry) => entry.name === "miroir-core")!;
+    const core = byFile["core.js"].packages.find((entry) => entry.name === "@miroir-framework/core")!;
     expect(core.chain).toEqual([
       "packages/miroir-standalone-app/src/index.tsx",
       "packages/miroir-store-indexedDb/dist/index.js",
@@ -183,10 +183,10 @@ describe("bundleReportCore: report", () => {
         kind: "externalized-node-module",
         module: "fs",
         importer: "packages/miroir-store-indexedDb/dist/index.js",
-        importerPackage: "miroir-store-indexedDb",
+        importerPackage: "@miroir-framework/store-indexeddb",
         chunk: "index.js",
         chain: ["packages/miroir-standalone-app/src/index.tsx", "packages/miroir-store-indexedDb/dist/index.js"],
-        via: "packages/miroir-standalone-app/src/index.tsx → miroir-store-indexedDb",
+        via: "packages/miroir-standalone-app/src/index.tsx → @miroir-framework/store-indexeddb",
       },
     ]);
   });
@@ -273,7 +273,7 @@ describe("bundleReportCore: report from an esbuild metafile", () => {
     });
     const mongodbEntry = report.packages.find((entry) => entry.name === "mongodb")!;
     expect([mongodbEntry.kind, mongodbEntry.loadKind]).toEqual(["npm", "eager"]);
-    expect(mongodbEntry.via).toBe("packages/miroir-standalone-app-electron/src/ipcServerSetup.ts → miroir-store-mongodb → mongodb");
+    expect(mongodbEntry.via).toBe("packages/miroir-standalone-app-electron/src/ipcServerSetup.ts → @miroir-framework/store-mongodb → mongodb");
     expect(report.totals.eager).toEqual({ chunks: 2, rawBytes: 200, gzipBytes: 100 });
   });
 

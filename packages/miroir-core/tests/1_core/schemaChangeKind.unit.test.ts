@@ -4,7 +4,7 @@ import { deployment_Library_DO_NO_USE, defaultLibraryAppModel } from "miroir-exa
 import { deployment_Miroir } from "miroir-app-admin";
 import { selfApplicationMiroir, defaultMiroirMetaModel, entityDefinitionEntity } from "miroir-app-miroir";
 
-import { classifySchemaChange, computeSchemaRevision, getEndpointActions, type MetaModel } from "miroir-core";
+import { classifySchemaChange, computeSchemaRevision, getEndpointActions, type MetaModel } from "@miroir-framework/core";
 
 const libraryDeploymentUuid = deployment_Library_DO_NO_USE.uuid;
 const libraryApplicationUuid = defaultLibraryAppModel.applicationUuid;

@@ -14,9 +14,9 @@
  * Admin section = empty (no admin-level data needed for read-only demo)
  */
 
-import type { EntityInstance, MiroirConfigClient, StoreUnitConfiguration } from "miroir-core";
-import { versionHistoryEntityUuids } from "miroir-core";
-import type { BundledDeploymentData, BundledSectionData } from "miroir-store-bundled";
+import type { EntityInstance, MiroirConfigClient, StoreUnitConfiguration } from "@miroir-framework/core";
+import { versionHistoryEntityUuids } from "@miroir-framework/core";
+import type { BundledDeploymentData, BundledSectionData } from "@miroir-framework/store-bundled";
 
 import * as adminDeployment from "miroir-app-admin";
 import {

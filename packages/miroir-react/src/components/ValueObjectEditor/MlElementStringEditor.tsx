@@ -7,7 +7,7 @@ import { ThemedLabeledEditor } from "../Themes/FormComponents.js";
 import { FileSelector } from "../Themes/FileSelector.js";
 // import { useServerFilesystemRoot } from "../../hooks/useServerFilesystemRoot.js";
 import type { MlEditorPropsRoot } from "./MlElementEditorInterface.js";
-import { LoggerInterface, MiroirLoggerFactory, type MlBaseObject, type MetaModel } from "miroir-core";
+import { LoggerInterface, MiroirLoggerFactory, type MlBaseObject, type MetaModel } from "@miroir-framework/core";
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "../../viewConstants.js";
 import { editorNavigationKey, useTrackedRender } from "../../tools/useTrackedRender.js";

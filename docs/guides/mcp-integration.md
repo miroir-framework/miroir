@@ -24,7 +24,7 @@ When authentication is on (the server default), an MCP client must send `Authori
 
 ### Tools, CLI commands and assistant actions from Endpoints
 
-Every Endpoint action of every deployed application is an MCP tool, a `miroir-cli` command and, for applications other than Miroir and Admin, an in-app assistant action. Nothing is coded per application: deploy an application, or add an Endpoint to its model, and the action appears (live for MCP and the assistant, at the next run for the CLI). The list comes from the endpoint action catalog of `miroir-core` (`listEndpointActions`, #627).
+Every Endpoint action of every deployed application is an MCP tool, a `miroir-cli` command and, for applications other than Miroir and Admin, an in-app assistant action. Nothing is coded per application: deploy an application, or add an Endpoint to its model, and the action appears (live for MCP and the assistant, at the next run for the CLI). The list comes from the endpoint action catalog of `@miroir-framework/core` (`listEndpointActions`, #627).
 
 | Rule | Detail |
 |---|---|

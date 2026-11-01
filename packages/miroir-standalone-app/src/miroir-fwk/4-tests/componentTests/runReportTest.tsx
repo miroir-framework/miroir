@@ -24,18 +24,18 @@ import {
   type ReportTestRunner,
   type ReportTestRunnerResult,
   type ReportTestSuiteContext,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { entityReport, selfApplicationMiroir } from "miroir-app-miroir";
 
 import { packageName } from "../../../constants.js";
 import { cleanLevel } from "../../4_view/constants.js";
-import { PageDispatcher } from "miroir-react";
-import { markPageConfigurationsLoaded } from "miroir-react";
+import { PageDispatcher } from "@miroir-framework/react";
+import { markPageConfigurationsLoaded } from "@miroir-framework/react";
 import {
   ComponentTestModeContext,
   componentTestSandboxMode,
-} from "miroir-react";
-import { PortalContainerProvider } from "miroir-react";
+} from "@miroir-framework/react";
+import { PortalContainerProvider } from "@miroir-framework/react";
 import {
   applyComponentTestDomConfig,
   configureComponentTestDom,

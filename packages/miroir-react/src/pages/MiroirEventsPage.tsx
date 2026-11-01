@@ -35,7 +35,7 @@ import {
   type MiroirEvent,
   type MiroirEventLog,
   type MiroirEventService
-} from "miroir-core";
+} from "@miroir-framework/core";
 import React, { useMemo, useState } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { packageName } from "../constants.js";

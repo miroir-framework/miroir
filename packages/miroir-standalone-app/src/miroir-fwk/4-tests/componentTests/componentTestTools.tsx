@@ -31,7 +31,7 @@ import {
   type ReactComponentTestSuite,
   type Uuid,
   type ProcessCapabilities,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   LocalCache,
   LocalCacheProvider,
@@ -40,7 +40,7 @@ import {
   MiroirShellHostProvider,
   ReportSectionRenderersProvider,
   useMiroirContextService,
-} from "miroir-react";
+} from "@miroir-framework/react";
 import { appReportSectionRenderers, appShellHost } from "../../4_view/reportSectionRenderers.js";
 import {
   deployment_Library_DO_NO_USE,
@@ -74,20 +74,20 @@ import {
 } from "miroir-app-miroir";
 
 import { packageName } from "../../../constants.js";
-import { BlockViewModeProvider } from "miroir-react";
-import { deploymentReportsEntitiesMapping } from "miroir-react";
-import { ReportPageContextProvider } from "miroir-react";
-import { DocumentOutlineContextProvider } from "miroir-react";
-import { MlElementEditor } from "miroir-react";
-import type { TransformerTypeBadge } from "miroir-react";
+import { BlockViewModeProvider } from "@miroir-framework/react";
+import { deploymentReportsEntitiesMapping } from "@miroir-framework/react";
+import { ReportPageContextProvider } from "@miroir-framework/react";
+import { DocumentOutlineContextProvider } from "@miroir-framework/react";
+import { MlElementEditor } from "@miroir-framework/react";
+import type { TransformerTypeBadge } from "@miroir-framework/react";
 import {
   EMPTY_CONTAINER_ATTRIBUTE,
   ML_JSON_ATTRIBUTE,
   ML_NAME_ATTRIBUTE,
-} from "miroir-react";
+} from "@miroir-framework/react";
 import { cleanLevel } from "../../4_view/constants.js";
-import { useCurrentModel, useCurrentModelEnvironment } from "miroir-react";
-import { emptyObject } from "miroir-react";
+import { useCurrentModel, useCurrentModelEnvironment } from "@miroir-framework/react";
+import { emptyObject } from "@miroir-framework/react";
 
 // ################################################################################################
 // Browser-safe component test tools (#286). No vitest, no @testing-library/react, no process.env,

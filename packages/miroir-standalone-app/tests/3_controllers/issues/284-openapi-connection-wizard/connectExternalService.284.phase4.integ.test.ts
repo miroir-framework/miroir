@@ -18,7 +18,7 @@ import {
   getExternalService,
   miroirSecretInstanceUuid,
   setSecretsMasterKey,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import {
   ADMIN_APPLICATION_UUID,
@@ -468,7 +468,7 @@ describe.skipIf(!shouldRunPhase4)(
         }
       };
       // loglevelnext binds console at factory start; intercept MiroirLogger instead.
-      const { MiroirLogger } = await import("miroir-core");
+      const { MiroirLogger } = await import("@miroir-framework/core");
       const proto = MiroirLogger.prototype as {
         info: (...args: unknown[]) => void;
         log: (...args: unknown[]) => void;

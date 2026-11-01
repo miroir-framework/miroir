@@ -8,13 +8,13 @@ import type {
   MlElement,
   MetaModel,
   MiroirModelEnvironment,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   defaultMiroirModelEnvironment,
   mlsTypeCheck,
   miroirFundamentalMlSchema,
   resolveFundamentalSchemaForDeployment,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import {
   defaultMiroirMetaModel,

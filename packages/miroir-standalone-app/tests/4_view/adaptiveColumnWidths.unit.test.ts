@@ -1,13 +1,13 @@
 import { describe, it, expect } from "vitest";
 
-import { MlElement } from "miroir-core";
+import { MlElement } from "@miroir-framework/core";
 
 import {
   calculateAdaptiveColumnWidths,
   ColumnWidthSpec,
   ToolsColumnDefinition,
-} from "miroir-react";
-import { TableComponentRow } from "miroir-react";
+} from "@miroir-framework/react";
+import { TableComponentRow } from "@miroir-framework/react";
 
 const defaultToolsColumnDef: ToolsColumnDefinition = {
   field: "",

@@ -32,13 +32,13 @@
   },
   "nx": {
     "implicitDependencies": [
-      "!miroir-core"
+      "!@miroir-framework/core"
     ]
   },
   "devDependencies": {
     "copyfiles": "2.4.1",
-    "miroir-core": "*",
-    "miroir-store-filesystem": "*",
+    "@miroir-framework/core": "*",
+    "@miroir-framework/store-filesystem": "*",
     "miroir-app-admin": "*",
     "miroir-app-miroir": "*",
     "tsup": "9.0.0",

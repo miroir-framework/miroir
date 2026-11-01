@@ -2,7 +2,7 @@ import {
   type TransformerTest,
   type TransformerTestSuite,
   type ViewParams
-} from "miroir-core";
+} from "@miroir-framework/core";
 import React from "react";
 
 import {

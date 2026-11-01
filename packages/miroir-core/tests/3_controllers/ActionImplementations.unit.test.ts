@@ -11,7 +11,7 @@ import {
   getEndpointActions,
   logPhaseForActionType,
   type MiroirModelEnvironment,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { defaultMiroirMetaModel } from "miroir-app-miroir";
 import { miroirActionImplementations } from "../../src/3_controllers/ActionImplementations";
 import { miroirCoreStartup } from "../../src/startup";

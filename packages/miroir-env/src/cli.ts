@@ -2,7 +2,7 @@
 import { existsSync, readFileSync, realpathSync, writeFileSync } from "node:fs";
 import { pathToFileURL } from "node:url";
 
-import type { StoreSectionConfiguration } from "miroir-core";
+import type { StoreSectionConfiguration } from "@miroir-framework/core";
 
 import {
   EnvironmentError,

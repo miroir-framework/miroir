@@ -1,4 +1,4 @@
-import type { MiroirActivityTrackerInterface, MiroirEventTrackingData } from "miroir-core";
+import type { MiroirActivityTrackerInterface, MiroirEventTrackingData } from "@miroir-framework/core";
 
 // ################################################################################################
 // Waits for the actions an interaction step started (#330, analysis T5).

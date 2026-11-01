@@ -132,7 +132,7 @@ export default tseslint.config(
   },
   {
     // @miroir-framework/jzod and jzod-ts are reached only through the adapter of miroir-core (#145): mlJzodAdapter.ts (valueToMl, mlToZod,
-    // mlToZodTextAndZodSchema, exported by miroir-core) and mlJzodTsAdapter.ts (mlToTs, Node-only `miroir-core/ml-to-ts`).
+    // mlToZodTextAndZodSchema, exported by miroir-core) and mlJzodTsAdapter.ts (mlToTs, Node-only `@miroir-framework/core/ml-to-ts`).
     // Every source file of every package is covered, scripts and config files included.
     files: ["packages/**/*.{ts,tsx,mts,cts,js,jsx,mjs,cjs}"],
     ignores: ["packages/miroir-core/src/1_core/mls/mlJzodAdapter.ts", "packages/miroir-core/src/1_core/mls/mlJzodTsAdapter.ts"],
@@ -142,7 +142,7 @@ export default tseslint.config(
         "error",
         ...["@miroir-framework/jzod", "@miroir-framework/jzod-ts"].map((name) => ({
           name,
-          message: "Use the ML adapter of miroir-core: valueToMl, mlToZod, mlToZodTextAndZodSchema, or mlToTs from miroir-core/ml-to-ts.",
+          message: "Use the ML adapter of @miroir-framework/core: valueToMl, mlToZod, mlToZodTextAndZodSchema, or mlToTs from @miroir-framework/core/ml-to-ts.",
         })),
       ],
     },
@@ -160,9 +160,9 @@ export default tseslint.config(
           paths: [
             ...["@miroir-framework/jzod", "@miroir-framework/jzod-ts"].map((name) => ({
               name,
-              message: "Use the ML adapter of miroir-core: valueToMl, mlToZod, mlToZodTextAndZodSchema, or mlToTs from miroir-core/ml-to-ts.",
+              message: "Use the ML adapter of @miroir-framework/core: valueToMl, mlToZod, mlToZodTextAndZodSchema, or mlToTs from @miroir-framework/core/ml-to-ts.",
             })),
-            ...["electron", "miroir-mcp", "miroir-mcp/client", "miroir-diagram-class", "miroir-standalone-app"].map((name) => ({
+            ...["electron", "@miroir-framework/mcp", "@miroir-framework/mcp/client", "miroir-diagram-class", "miroir-standalone-app"].map((name) => ({
               name,
               message: "miroir-react is a library: a host feature goes through MiroirShellHostContext or the report section registry (#633).",
             })),

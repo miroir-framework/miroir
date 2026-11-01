@@ -125,13 +125,13 @@ The script performs ordered steps:
 | Step | Packages |
 |---|---|
 | 1 | `miroir-app-miroir`, `miroir-app-admin` |
-| 2 | `miroir-core` (plain build, or `devbuild` to regenerate TS types from ML schemas) |
+| 2 | `@miroir-framework/core` (plain build, or `devbuild` to regenerate TS types from ML schemas) |
 | 3 | All local-cache and store packages (built in parallel) |
-| 4 | `miroir-react`, `miroir-mcp`, `miroir-diagram-class` |
-| 5 | `miroir-server-library` (Miroir's HTTP surface, after `miroir-mcp`), `miroir-server`, `miroir-standalone-app`, `miroir-cli` |
+| 4 | `@miroir-framework/react`, `@miroir-framework/mcp`, `miroir-diagram-class` |
+| 5 | `@miroir-framework/server` (Miroir's HTTP surface, after `@miroir-framework/mcp`), `miroir-server`, `miroir-standalone-app`, `@miroir-framework/cli` |
 | 6 | Remaining deployment packages |
 
-If you modified schema definitions under `packages/miroir-app-miroir/assets`, use `devbuild` to regenerate TypeScript types before building `miroir-core`:
+If you modified schema definitions under `packages/miroir-app-miroir/assets`, use `devbuild` to regenerate TypeScript types before building `@miroir-framework/core`:
 
 ```sh
 ./build-all.sh devbuild
@@ -186,7 +186,7 @@ Run from the repository, the server and the web client take their configuration 
 - Admin data (installed applications, users, rights, secrets, view settings) lives in the gitignored `.miroir/dev/`, so installing an application or changing a right changes no tracked file.
 
 ```sh
-npm run build -w miroir-env
+npm run build -w @miroir-framework/env
 npm run miroir-env -- show      # the selected environment, where its state stands, each deployment and its stores
 ```
 
@@ -265,7 +265,7 @@ The server reads its mode from `NODE_ENV`: `development` is development mode, an
 | Open | <https://localhost:3080> | <http://localhost:5173> |
 | After changing client code | rebuild (below), then restart the server | reloaded by Vite |
 
-Vite reloads the app's own sources. Components, hooks and themes that live in `miroir-react` reach the app through `packages/miroir-react/dist/`: run `npm run dev -w miroir-react` next to the Vite dev server, so it rebuilds them on save.
+Vite reloads the app's own sources. Components, hooks and themes that live in `@miroir-framework/react` reach the app through `packages/miroir-react/dist/`: run `npm run dev -w @miroir-framework/react` next to the Vite dev server, so it rebuilds them on save.
 
 In production mode the server stops at startup if `release/client/index.html` is missing. `./build-all.sh` builds the client before the server binary, so it is in place after step 3. After changing client code, rebuild in this order:
 

@@ -91,6 +91,6 @@ function record(
       instances.map((instance) => `${instance.version} at ${instance.location}`).join(", ") +
       ". Each copy has its own configuration service, loggers, action implementations and secrets: what is " +
       "registered on one copy is missing from the other, and instanceof checks fail across copies. " +
-      "Install a single miroir-core (npm ls miroir-core).",
+      "Install a single miroir-core (npm ls @miroir-framework/core).",
   );
 }

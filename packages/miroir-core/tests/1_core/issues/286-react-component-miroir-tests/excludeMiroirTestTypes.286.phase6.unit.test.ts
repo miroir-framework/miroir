@@ -10,7 +10,7 @@
  *
  * Run:
  * ```bash
- * npm run testByFile -w miroir-core -- excludeMiroirTestTypes.286.phase6
+ * npm run testByFile -w @miroir-framework/core -- excludeMiroirTestTypes.286.phase6
  * ```
  */
 import { describe, expect, it } from "vitest";

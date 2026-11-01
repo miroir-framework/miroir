@@ -9,7 +9,7 @@ import {
   MiroirContext,
   MiroirEventService,
   PersistenceStoreControllerManager,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { setupMiroirDomainController } from "miroir-localcache-redux";
 
 import {

@@ -84,10 +84,10 @@ Order: I1, I4 and I5 can start now and run in parallel. I2 and I3 next. I6 waits
 | I5 | 2 | Manifest contract for the published set | ✅ #643 | `scripts/tests/test_package_manifests.py`, `unit-643-package-manifests` |
 | I5 | 3 | Named subpaths replace `./src/*` | ✅ #643 (`./src/*` part), ✅ #649 (`@public` TSDoc) | pack cases of `test_package_manifests.py`; `test_core_public_api.py`, `unit-649-core-public-api` |
 | I5 | 4 | No `import.meta.env` in published code | ⬜ | `tools.<I5>.phase4.unit.test.ts` |
-| I6 | 0 | Characterize every package-name reference | ⬜ | rename script `--report` |
-| I6 | 1 | Rename script, rerunnable on open branches | ⬜ | `scripts/tests/test_rename_packages.py` |
-| I6 | 2 | Apply the rename | ⬜ | `build-all.sh`, full nonreg |
-| I6 | 3 | Meta-model and local cache join core and react (D7, D8) | ⬜ | packed core exposes `./meta-model`, `./admin` |
+| I6 | 0 | Characterize every package-name reference | ✅ #650 | rename script `--report` |
+| I6 | 1 | Rename script, rerunnable on open branches | ✅ #650 | `scripts/tests/test_rename_packages.py` |
+| I6 | 2 | Apply the rename | ✅ #650 | `build-all.sh`, full nonreg |
+| I6 | 3 | Meta-model and local cache join core and react (D7, D8) | ⬜ #652 | packed core exposes `./meta-model`, `./admin` |
 | I7 | 1 | Generator writes a runnable project | ⬜ | `create-miroir-app` unit test on a temp folder |
 | I7 | 2 | Consumer test builds and starts the generated project from tarballs | ⬜ | `ci/release/tests/test_consumer_project.py` |
 | I8 | 1 | Published set selected, consumer check covers it | ⬜ | `ci/release/tests/test_release_version.py` |

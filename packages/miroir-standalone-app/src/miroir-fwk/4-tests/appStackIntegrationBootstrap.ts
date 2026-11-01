@@ -15,7 +15,7 @@ import type {
   MiroirTestExecutionEnvironment,
   PersistenceStoreControllerManagerInterface,
   StoreUnitConfiguration,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   defaultMetaModelEnvironment,
   defaultSelfApplicationDeploymentMap,
@@ -23,7 +23,7 @@ import {
   ensureMiroirPlatform,
   resetAndInitApplicationDeployment,
   type StoreOrBundleAction,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { deployment_Miroir } from "miroir-app-admin";
 import {
   deployment_Library_DO_NO_USE,

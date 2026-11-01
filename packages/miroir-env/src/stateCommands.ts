@@ -12,7 +12,7 @@ import {
   type MiroirEnvironmentApplication,
   type StoreSectionConfiguration,
   type StoreUnitConfiguration,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import {
   compareAdminRows,

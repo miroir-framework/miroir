@@ -6,11 +6,11 @@ import type {
   MiroirTestIntegrationOrchestrator,
   RealServerTransformerIntegrationSessionOptions,
   TestSessionForIntegOptions,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   createDefaultMiroirTestIntegrationOrchestrator,
   isRealServerTransformerSessionOptions,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import { RunnerTestSession } from "./RunnerTestSession.js";
 import {

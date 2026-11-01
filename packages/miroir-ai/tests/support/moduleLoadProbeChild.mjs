@@ -2,7 +2,7 @@
 // miroir-ai package, optionally sends one agent request, then exits.
 import { createServer } from "node:http";
 import express from "express";
-import { registerSecrets } from "miroir-core";
+import { registerSecrets } from "@miroir-framework/core";
 import { createCopilotKitRouter } from "miroir-ai";
 
 const scenario = JSON.parse(process.env.MIROIR_PROBE_SCENARIO ?? "{}");

@@ -75,13 +75,13 @@ A specialized skill for creating and updating **Library-Implemented** Miroir Tra
 
 ```bash
 # Unit tests (in-memory execution)
-npm run testMiroir -w miroir-core -- --suites tr.core --mode unit
+npm run testMiroir -w @miroir-framework/core -- --suites tr.core --mode unit
 
 # Integration tests (PostgreSQL execution)
 npm run testMiroir -w miroir-standalone-app -- --suites tr.core --mode integration
 
 # devBuild to generate types
-npm run devBuild -w miroir-core
+npm run devBuild -w @miroir-framework/core
 ```
 
 ## Directory Structure

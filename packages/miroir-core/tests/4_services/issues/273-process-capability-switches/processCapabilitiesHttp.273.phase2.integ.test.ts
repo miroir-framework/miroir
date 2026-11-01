@@ -6,8 +6,8 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterEach, describe, expect, it } from "vitest";
 
-import { RestClientStub, fetchProcessCapabilities, resolveProcessCapabilitiesUrl } from "miroir-core";
-import type { IdentityDirectory, ProcessCapabilities } from "miroir-core";
+import { RestClientStub, fetchProcessCapabilities, resolveProcessCapabilitiesUrl } from "@miroir-framework/core";
+import type { IdentityDirectory, ProcessCapabilities } from "@miroir-framework/core";
 
 const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../../../../..");
 

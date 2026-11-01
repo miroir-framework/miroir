@@ -6,7 +6,7 @@ import {
   resolveProcessCapabilitiesUrl,
   type MiroirConfigClient,
   type ProcessCapabilities,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import {
   startMiroirPlatform,

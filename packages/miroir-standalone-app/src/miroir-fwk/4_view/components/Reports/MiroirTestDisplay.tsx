@@ -10,7 +10,7 @@ import {
   type MiroirTestRunFilter,
   type TestRunLogSnapshot,
   type ViewParams,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import { packageName } from "../../../../constants.js";
 import {
@@ -27,13 +27,13 @@ import {
   RunMiroirTestSuiteButton,
   type MiroirTestResultData,
 } from "../Buttons/RunMiroirTestSuiteButton.js";
-import { ThemedEditableInput, ThemedLabel } from "miroir-react";
+import { ThemedEditableInput, ThemedLabel } from "@miroir-framework/react";
 import { ComponentTestRunSettings, useComponentTestRunPreparation } from "./ComponentTestRunSettings.js";
 import { ComponentTestSandboxProvider, useComponentTestSandbox } from "./ComponentTestSandbox.js";
 import { TestExecutionPanel } from "./TestExecutionPanel.js";
 import { UiIntegrationTestRunControls } from "./UiIntegrationTestRunControls.js";
 import { UiIntegrationTestRunInspectorSummary } from "./UiIntegrationTestRunInspectorSummary.js";
-import { buildTestFilter, type TestResultDataAndSelect, type TestSelectionState } from "miroir-react";
+import { buildTestFilter, type TestResultDataAndSelect, type TestSelectionState } from "@miroir-framework/react";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MiroirTestDisplay");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);

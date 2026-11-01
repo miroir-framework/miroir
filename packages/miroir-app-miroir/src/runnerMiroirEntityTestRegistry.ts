@@ -1,4 +1,4 @@
-import type { Runner } from "miroir-core";
+import type { Runner } from "@miroir-framework/core";
 
 import runnerCreateEntity from "../assets/miroir_data/e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd/82f81a25-2366-4abf-8a97-83ca5e9a9c46.json" with { type: "json" };
 import runnerDropEntity from "../assets/miroir_data/e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd/44313751-b0e5-4132-bb12-a544806e759b.json" with { type: "json" };

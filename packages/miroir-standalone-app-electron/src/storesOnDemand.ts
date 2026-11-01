@@ -4,7 +4,7 @@ import {
   type StoreSectionStartup,
   type PersistenceStoreAdminSectionFactory,
   type PersistenceStoreSectionFactory,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 type StorageType = Parameters<ConfigurationServiceInner["registerAdminStoreFactory"]>[0];
 

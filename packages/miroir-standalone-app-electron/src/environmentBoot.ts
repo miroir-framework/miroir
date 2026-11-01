@@ -21,7 +21,7 @@ import {
   type DomainControllerInterface,
   type MiroirConfigClient,
   type MiroirConfigServer,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   bootEnvironment,
   environmentClientConfig,
@@ -33,7 +33,7 @@ import {
   describeSeedReport,
   seedEnvironmentStateAtStart,
   type ResolvedEnvironment,
-} from "miroir-env";
+} from "@miroir-framework/env";
 import { startMiroirNode } from "miroir-localcache-redux/node";
 
 import { registerStoreOnDemand } from "./storesOnDemand.js";
@@ -90,13 +90,13 @@ export async function bootElectronServer(
   const { domainController, persistenceStoreControllerManager, miroirContext } = await startMiroirNode(serverConfig, {
     stores: [
       (configurationService) => registerStoreOnDemand(configurationService, "filesystem", async () =>
-        (await import("miroir-store-filesystem")).miroirFileSystemStoreSectionStartup),
+        (await import("@miroir-framework/store-filesystem")).miroirFileSystemStoreSectionStartup),
       (configurationService) => registerStoreOnDemand(configurationService, "indexedDb", async () =>
-        (await import("miroir-store-indexedDb")).miroirIndexedDbStoreSectionStartup),
+        (await import("@miroir-framework/store-indexeddb")).miroirIndexedDbStoreSectionStartup),
       (configurationService) => registerStoreOnDemand(configurationService, "mongodb", async () =>
-        (await import("miroir-store-mongodb")).miroirMongoDbStoreSectionStartup),
+        (await import("@miroir-framework/store-mongodb")).miroirMongoDbStoreSectionStartup),
       (configurationService) => registerStoreOnDemand(configurationService, "sql", async () =>
-        (await import("miroir-store-postgres")).miroirPostgresStoreSectionStartup),
+        (await import("@miroir-framework/store-postgres")).miroirPostgresStoreSectionStartup),
     ],
   });
   if (!persistenceStoreControllerManager) {

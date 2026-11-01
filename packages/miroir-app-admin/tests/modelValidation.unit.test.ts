@@ -8,8 +8,8 @@ import {
   buildModelValidationPlanFromGroups,
   defaultMiroirModelEnvironment,
   runModelValidationSuite,
-} from "miroir-core";
-import { buildModelValidationGroupsFromFilesystem } from "miroir-core/model-validation-fs";
+} from "@miroir-framework/core";
+import { buildModelValidationGroupsFromFilesystem } from "@miroir-framework/core/model-validation-fs";
 
 import { defaultMiroirMetaModel } from "miroir-app-miroir";
 

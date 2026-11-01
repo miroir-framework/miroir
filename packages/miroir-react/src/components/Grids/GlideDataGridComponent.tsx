@@ -15,7 +15,7 @@ import { GlideDataGridFilterComponent } from "./GlideDataGridFilterComponent.js"
 import {
   LoggerInterface,
   MiroirLoggerFactory
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import { packageName } from "../../constants.js";
 import { ColumnWidthSpec, ToolsColumnDefinition } from "../../adaptiveColumnWidths.js";

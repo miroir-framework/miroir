@@ -1,7 +1,7 @@
 import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 
 // import AutoStories from '@mui/icons-material/AutoStories';
-import { LoggerInterface, MiroirLoggerFactory, type Uuid } from "miroir-core";
+import { LoggerInterface, MiroirLoggerFactory, type Uuid } from "@miroir-framework/core";
 import {
   adminSelfApplication,
   deployment_Admin,

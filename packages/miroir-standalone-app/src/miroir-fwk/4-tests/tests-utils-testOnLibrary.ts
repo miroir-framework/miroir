@@ -5,7 +5,7 @@ import {
   MiroirConfigClient,
   Uuid,
   type ApplicationEntitiesAndInstances
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { adminSelfApplication, entityDeployment } from "miroir-app-admin";
 import {
   entityAuthor,

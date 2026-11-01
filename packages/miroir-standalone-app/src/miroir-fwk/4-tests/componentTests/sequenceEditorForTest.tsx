@@ -3,12 +3,12 @@ import {
   type ApplicationSection,
   type LocalCacheExtractor,
   type Uuid,
-} from "miroir-core";
-import { useMiroirContextService } from "miroir-react";
+} from "@miroir-framework/core";
+import { useMiroirContextService } from "@miroir-framework/react";
 import React, { useMemo } from "react";
 
-import { SequenceEditor } from "miroir-react";
-import { useEntityInstanceUuidIndexFromLocalCache } from "miroir-react";
+import { SequenceEditor } from "@miroir-framework/react";
+import { useEntityInstanceUuidIndexFromLocalCache } from "@miroir-framework/react";
 
 // ################################################################################################
 // The SequenceEditor of the declarative component tests (#505), on an application of the test

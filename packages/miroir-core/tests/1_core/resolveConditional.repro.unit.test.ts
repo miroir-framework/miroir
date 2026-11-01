@@ -3,7 +3,7 @@ import { resolveConditionalSchema } from "../../src/1_core/mls/resolveConditiona
 import {
   defaultMiroirModelEnvironment,
   type MiroirModelEnvironment,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 describe("resolveConditionalSchema on payload union", () => {
   it("returns the union unchanged", () => {

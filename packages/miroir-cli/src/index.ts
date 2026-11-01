@@ -5,7 +5,7 @@ import {
   ApplicationDeploymentMap,
   DomainControllerInterface,
   type LoggerInterface,
-} from 'miroir-core';
+} from '@miroir-framework/core';
 
 import { authenticateCli, readPasswordFromTerminal } from './authentication.js';
 import { initializePlatform } from './platform.js';

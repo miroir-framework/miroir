@@ -8,7 +8,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import { ELECTRON_LOOPBACK_ROOT_API_URL, ENTITY_DEPLOYMENT_UUID, miroirCoreStartup } from "miroir-core";
+import { ELECTRON_LOOPBACK_ROOT_API_URL, ENTITY_DEPLOYMENT_UUID, miroirCoreStartup } from "@miroir-framework/core";
 
 import { bootElectronServer, DESKTOP_ENVIRONMENT, prepareDesktopRoot } from "../src/environmentBoot";
 

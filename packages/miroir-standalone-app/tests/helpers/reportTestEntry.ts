@@ -14,12 +14,12 @@ import {
   type LoggerOptions,
   type MiroirTestSuite,
   type RunnerTestSessionInterface,
-} from "miroir-core";
-import { loadApplicationRunnerUuidIndexFromFolders } from "miroir-core/model-validation-fs";
-import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
-import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
-import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
-import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
+} from "@miroir-framework/core";
+import { loadApplicationRunnerUuidIndexFromFolders } from "@miroir-framework/core/model-validation-fs";
+import { miroirFileSystemStoreSectionStartup } from "@miroir-framework/store-filesystem";
+import { miroirIndexedDbStoreSectionStartup } from "@miroir-framework/store-indexeddb";
+import { miroirMongoDbStoreSectionStartup } from "@miroir-framework/store-mongodb";
+import { miroirPostgresStoreSectionStartup } from "@miroir-framework/store-postgres";
 import { entityReport } from "miroir-app-miroir";
 import { env } from "process";
 

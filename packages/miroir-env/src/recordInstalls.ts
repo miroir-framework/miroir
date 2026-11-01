@@ -10,7 +10,7 @@ import {
   type DomainControllerInterface,
   type EnvironmentDefinition,
   type InstanceAction,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import {
   EnvironmentError,

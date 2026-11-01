@@ -9,7 +9,7 @@ import {
   ListItemText,
   Typography
 } from '@mui/material';
-import { formatActivityRunToken, getActivityTopic, type MiroirEventLog } from 'miroir-core';
+import { formatActivityRunToken, getActivityTopic, type MiroirEventLog } from '@miroir-framework/core';
 import React from 'react';
 
 // Utility function to get appropriate icon for log level

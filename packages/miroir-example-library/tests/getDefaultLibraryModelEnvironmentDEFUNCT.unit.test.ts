@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { miroirFundamentalMlSchema, type EndpointDefinition } from "miroir-core";
+import { miroirFundamentalMlSchema, type EndpointDefinition } from "@miroir-framework/core";
 
 import deployment_Library_DO_NO_USE from "../assets/deployment/f714bb2f-a12d-4e71-a03b-74dcedea6eb4.json";
 import selfApplicationLibrary from "../assets/library_model/a659d350-dd97-4da9-91de-524fa01745dc/5af03c98-fe5e-490b-b08f-e1230971c57f.json";

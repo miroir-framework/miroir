@@ -21,19 +21,19 @@ uses the old names must be updated by hand with the table below.
 
 ## The Jzod adapter
 
-Miroir reaches the Jzod packages only through one adapter in miroir-core, which holds the casts between Jzod's types
+Miroir reaches the Jzod packages only through one adapter in @miroir-framework/core, which holds the casts between Jzod's types
 and the ML types:
 
 | Function | Wraps | Import from |
 |---|---|---|
-| `valueToMl(value, arrayResolution?)` | `valueToJzod` | `miroir-core` |
-| `mlToZod(mlSchema)` | `jzodToZod` | `miroir-core` |
-| `mlToZodTextAndZodSchema(mlSchema, eager?, lazy?, { datesAsString })` | `jzodToZodTextAndZodSchema` | `miroir-core` |
-| `mlToTs(typeName, mlSchema, context?, …)`, `mlToZodTextAndZodSchemaForTsGeneration` | `jzodToTsCode`, `jzodToZodTextAndZodSchemaForTsGeneration` | `miroir-core/ml-to-ts` (Node only: jzod-ts needs the TypeScript compiler) |
+| `valueToMl(value, arrayResolution?)` | `valueToJzod` | `@miroir-framework/core` |
+| `mlToZod(mlSchema)` | `jzodToZod` | `@miroir-framework/core` |
+| `mlToZodTextAndZodSchema(mlSchema, eager?, lazy?, { datesAsString })` | `jzodToZodTextAndZodSchema` | `@miroir-framework/core` |
+| `mlToTs(typeName, mlSchema, context?, …)`, `mlToZodTextAndZodSchemaForTsGeneration` | `jzodToTsCode`, `jzodToZodTextAndZodSchemaForTsGeneration` | `@miroir-framework/core/ml-to-ts` (Node only: jzod-ts needs the TypeScript compiler) |
 
 The sources are `packages/miroir-core/src/1_core/mls/mlJzodAdapter.ts` and `mlJzodTsAdapter.ts`. No other file imports
 `@miroir-framework/jzod` or `@miroir-framework/jzod-ts` (`no-restricted-imports` in `eslint.config.mjs`, run by
-`npm run lint`), and only miroir-core depends on them.
+`npm run lint`), and only @miroir-framework/core depends on them.
 
 ## Names a stored deployment can contain
 
@@ -44,7 +44,7 @@ The sources are `packages/miroir-core/src/1_core/mls/mlJzodAdapter.ts` and `mlJz
 | transformer `jzodTypeCheck` | `mlsTypeCheck` |
 | transformer `ansiColumnsToJzodSchema` | `ansiColumnsToMlSchema` |
 | transformer parameters `relativeReferenceJzodContext`, `rawJzodSchema`, `rawJzodSchemaType`, `valueJzodSchema` | `relativeReferenceMlContext`, `rawMlSchema`, `rawMlSchemaType`, `valueMlSchema` |
-| MiroirTest functionCallTest modules `miroir-core/1_core/jzod/*` | `miroir-core/1_core/mls/*` |
+| MiroirTest functionCallTest modules `@miroir-framework/core/1_core/jzod/*` | `@miroir-framework/core/1_core/mls/*` |
 | MiroirTest labels `jzod.*` | `mls.*` |
 | component tests `component: "JzodElementEditor"` (and the other `Jzod*Editor` names) | `"MlElementEditor"` (`Ml*Editor`) |
 | MetaModel section `jzodSchemas` | `mlSchemas` |

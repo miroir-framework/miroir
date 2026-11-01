@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
-import { type BlockPath } from "miroir-core";
+import { type BlockPath } from "@miroir-framework/core";
 import React, { useCallback, useState } from "react";
 
 import { referencePathOf, useBlockEditing, valueAtPath, withReferencePath, withValueAtPath } from "./BlockEditing.js";

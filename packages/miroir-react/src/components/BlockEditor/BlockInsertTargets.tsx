@@ -1,4 +1,4 @@
-import type { BlockPath, TransformerInsertPosition } from "miroir-core";
+import type { BlockPath, TransformerInsertPosition } from "@miroir-framework/core";
 import React from "react";
 
 import { useBlockDroppable } from "./BlockDragDrop.js";

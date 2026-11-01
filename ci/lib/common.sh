@@ -102,7 +102,7 @@ run_parallel_builds() {
   local pids=()
   local pkg
   for pkg in "$@"; do
-    npm run build -w "$pkg" &
+    npm run build -w "packages/$pkg" &
     pids+=($!)
   done
   _wait_parallel_jobs "build" "${pids[@]}"

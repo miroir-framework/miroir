@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import React, { lazy, Suspense } from "react";
-import { LoggerInterface, MiroirLoggerFactory } from 'miroir-core';
+import { LoggerInterface, MiroirLoggerFactory } from '@miroir-framework/core';
 import { useMiroirTheme } from '../contexts/MiroirThemeContext';
 import { cleanLevel, packageName } from '../constants';
 

@@ -5,4 +5,4 @@ export {
   endpointActionName as toolNameFor,
   sanitizeEndpointActionNamePart as sanitizeToolNamePart,
   truncateEndpointActionName as truncateToolName,
-} from "miroir-core";
+} from "@miroir-framework/core";

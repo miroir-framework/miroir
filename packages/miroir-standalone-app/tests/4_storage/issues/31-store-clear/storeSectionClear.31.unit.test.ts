@@ -16,10 +16,10 @@ import type {
   PersistenceStoreDataSectionInterface,
   StorageType,
   StoreSectionConfiguration,
-} from "miroir-core";
-import { ConfigurationServiceInner } from "miroir-core";
-import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
-import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
+} from "@miroir-framework/core";
+import { ConfigurationServiceInner } from "@miroir-framework/core";
+import { miroirFileSystemStoreSectionStartup } from "@miroir-framework/store-filesystem";
+import { miroirIndexedDbStoreSectionStartup } from "@miroir-framework/store-indexeddb";
 
 const entity = {
   uuid: "8d3f7c1e-31a0-4c2b-9e5d-0a1b2c3d4e5f",

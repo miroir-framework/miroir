@@ -3,7 +3,7 @@ import {
   getLocalCacheIndexDeploymentSection,
   getLocalCacheIndexDeploymentUuid,
   getLocalCacheIndexEntityUuid,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import {
   getLocalCacheKeysDeploymentSectionEntitiesList,

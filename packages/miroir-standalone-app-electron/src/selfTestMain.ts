@@ -10,7 +10,7 @@
  * or 2 (could not run). The report is `{ renderer }`, so that the main-process checks of #486 add a
  * `main` key without changing its shape.
  */
-import type { MiroirConfigClient } from "miroir-core";
+import type { MiroirConfigClient } from "@miroir-framework/core";
 
 /** The IPC channel the renderer sends its final self-test result on (preload `reportSelfTestResult`). */
 export const SELF_TEST_RESULT_CHANNEL = "miroir-self-test-result";

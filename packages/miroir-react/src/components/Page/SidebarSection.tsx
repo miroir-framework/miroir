@@ -25,7 +25,7 @@ import {
   type ApplicationDeploymentMap,
   type Menu,
   type MiroirMenuItem,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { getMemoizedReduxDeploymentsStateSelectorMap } from "../../miroir-localcache-imports.js";
 import { ErrorBoundary } from 'react-error-boundary';
 import { packageName } from "../../constants.js";

@@ -168,15 +168,17 @@ def test_every_name_index_ts_exports_has_a_declaration():
     assert PUBLIC_NAMES <= set(declarations)
 
 
-IMPORT_FROM_CORE = re.compile(r"\bimport\s+(type\s+)?\{([^}]*)\}\s*from\s*([\"'])miroir-core\3")
+IMPORT_FROM_CORE = re.compile(
+    r"\bimport\s+(type\s+)?\{([^}]*)\}\s*from\s*([\"'])(?:@miroir-framework/core|miroir-core)\3"
+)
 # any string naming core or a subpath of it: each must be the specifier of a plain named import
-CORE_SPECIFIER = re.compile(r"([\"'`])miroir-core(?:/[^\"'`]*)?\1")
+CORE_SPECIFIER = re.compile(r"([\"'`])(?:@miroir-framework/core|miroir-core)(?:/[^\"'`]*)?\1")
 TEMPLATE_SUFFIXES = {".ts", ".tsx", ".mts", ".cts", ".js", ".jsx", ".mjs", ".cjs"}
 SANDBOX = ROOT / "packages/miroir-sandbox"
 
 
 def named_imports(text: str) -> tuple[set[str], list[str]]:
-    """The names of the plain named imports from "miroir-core" in `text` (comments stripped), and the other uses of
+    """The names of the plain named imports from "@miroir-framework/core" in `text` (comments stripped), and the other uses of
     a core specifier: namespace or default imports, re-exports, dynamic imports, subpaths."""
     from ts_source import strip_comments
 
@@ -214,15 +216,15 @@ def sandbox_core_imports() -> set[str]:
 
 def test_the_template_import_scan_sees_every_form():
     text = """
-import { A, type B } from "miroir-core";
-import type { C as D } from 'miroir-core';
-// import { Commented } from "miroir-core";
-import * as core from "miroir-core";
-import Def, { E } from "miroir-core";
-export { F } from "miroir-core";
-const g = await import("miroir-core");
-const h = await import(`miroir-core`);
-import { H } from "miroir-core/model-validation-fs";
+import { A, type B } from "@miroir-framework/core";
+import type { C as D } from '@miroir-framework/core';
+// import { Commented } from "@miroir-framework/core";
+import * as core from "@miroir-framework/core";
+import Def, { E } from "@miroir-framework/core";
+export { F } from "@miroir-framework/core";
+const g = await import("@miroir-framework/core");
+const h = await import(`@miroir-framework/core`);
+import { H } from "@miroir-framework/core/model-validation-fs";
 """
     names, others = named_imports(text)
     assert names == {"A", "B", "C"}
@@ -282,7 +284,7 @@ def require_file(path: Path, build: str) -> None:
 
 def test_the_built_declarations_keep_the_tag():
     """Case 4 (pack-style): consumers hover the built declarations, emitted per file by tsc into dist/."""
-    require_file(CORE / "dist/index.d.ts", "npm run build -w miroir-core")
+    require_file(CORE / "dist/index.d.ts", "npm run build -w @miroir-framework/core")
     missing: list[str] = []
     for declaration in api.public_declarations():
         relative = declaration.file.relative_to(CORE / "src").with_suffix(".d.ts")
@@ -297,7 +299,7 @@ def test_the_built_declarations_keep_the_tag():
 def test_the_server_library_declarations_import_exactly_the_listed_core_types():
     """Case 2, pack-style: the server library's published declarations import the set above, by name."""
     path = ROOT / "packages/miroir-server-library/dist/index.d.ts"
-    require_file(path, "npm run build -w miroir-server-library")
+    require_file(path, "npm run build -w @miroir-framework/server")
     names, others = named_imports(path.read_text(encoding="utf-8"))
     assert others == []
     assert names == SERVER_LIBRARY_NAMES

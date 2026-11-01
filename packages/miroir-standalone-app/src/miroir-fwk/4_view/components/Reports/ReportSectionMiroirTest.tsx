@@ -6,10 +6,10 @@ import {
   MiroirLoggerFactory,
   resolvePathOnObject,
   type MiroirTestDefinition,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { useSelectedApplicationMiroirTests } from "../../../4-tests/useSelectedApplicationMiroirTestSuiteRegistries.js";
-import type { MiroirTestReportSection } from "miroir-core";
-import { useViewParams } from "miroir-react";
+import type { MiroirTestReportSection } from "@miroir-framework/core";
+import { useViewParams } from "@miroir-framework/react";
 
 import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";

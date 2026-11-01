@@ -10,7 +10,7 @@
 import { beforeAll, describe, expect, it } from "vitest";
 import process from "process";
 
-import type { EntityInstance, EntityInstanceCollection, StoreUnitConfiguration } from "miroir-core";
+import type { EntityInstance, EntityInstanceCollection, StoreUnitConfiguration } from "@miroir-framework/core";
 import {
   Action2Error,
   ConfigurationService,
@@ -21,8 +21,8 @@ import {
   MiroirEventService,
   MiroirLoggerFactory,
   PersistenceStoreControllerManagerInterface,
-} from "miroir-core";
-import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
+} from "@miroir-framework/core";
+import { miroirFileSystemStoreSectionStartup } from "@miroir-framework/store-filesystem";
 
 import { defaultMiroirMetaModel as deploymentMetaModel, entityEntityVersion } from "miroir-app-miroir";
 

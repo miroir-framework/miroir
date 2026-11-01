@@ -9,7 +9,7 @@
  */
 import { describe, expect, it } from "vitest";
 
-import type { MiroirConfigClient } from "miroir-core";
+import type { MiroirConfigClient } from "@miroir-framework/core";
 
 import { META_DEPLOYMENT_UUID } from "../../../src/loadTimings/loadTimingConstants.js";
 import {

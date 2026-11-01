@@ -1,4 +1,4 @@
-import { endpointActionName, getEndpointActions, type Action, type EndpointDefinition } from "miroir-core";
+import { endpointActionName, getEndpointActions, type Action, type EndpointDefinition } from "@miroir-framework/core";
 
 export function resolveMcpToolAction(
   toolName: string,

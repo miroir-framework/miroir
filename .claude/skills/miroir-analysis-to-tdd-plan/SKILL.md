@@ -32,7 +32,7 @@ The `tdd` skill's "public interface" means TS/JS signatures only. In Miroir the 
 
 - **Favor applicative interfaces whenever the behavior can be expressed as model data.** A new Report/Query/Runner asset is interface; a new exported TS function is a last resort.
 - Lock applicative contracts (JSON shapes, uuids, `menuItemScope`-style marker fields, endpoint action payload schemas) in **Slice 0** before any code changes.
-- Interface changes to core schemas imply the build chain: edit assets in `miroir-app-miroir` → `npm run build -w miroir-app-miroir` → `npm run devBuild -w miroir-core` (regenerates `miroirFundamentalType.ts`). Plan this explicitly in the slice that changes a schema.
+- Interface changes to core schemas imply the build chain: edit assets in `miroir-app-miroir` → `npm run build -w miroir-app-miroir` → `npm run devBuild -w @miroir-framework/core` (regenerates `miroirFundamentalType.ts`). Plan this explicitly in the slice that changes a schema.
 - Code-level interfaces still follow the `codebase-design` vocabulary (deep modules, seams).
 
 ### 3. MiroirTest whenever possible; vitest for internals only
@@ -89,13 +89,13 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,<scope>[,<scope>]
 
 | Files the slice changes | Scopes |
 |---|---|
-| `miroir-core` `0_interfaces`, `1_core`, `2_domain` (transformers, queries, schemas, templates); ML schemas and deployment assets (`miroir-app-*`, `miroir-example-*`) | `core` |
+| `@miroir-framework/core` `0_interfaces`, `1_core`, `2_domain` (transformers, queries, schemas, templates); ML schemas and deployment assets (`miroir-app-*`, `miroir-example-*`) | `core` |
 | `3_controllers`, `4_services`, `miroir-store-*`, persistence and model-evolution paths | `actions` |
-| Runner definitions and execution, `miroir-mcp`, scenarios, multistep processes | `runners` |
-| `miroir-react`, `miroir-standalone-app/src/4_view`, Report assets, Miroir Tests UI | `ui` |
+| Runner definitions and execution, `@miroir-framework/mcp`, scenarios, multistep processes | `runners` |
+| `@miroir-framework/react`, `miroir-standalone-app/src/4_view`, Report assets, Miroir Tests UI | `ui` |
 | `miroir-localcache*`, local cache monitor | `localcache` |
 | External services, OpenAPI connection wizard, secrets, process capabilities, `miroir-ai` | `external` |
-| `scripts/`, `.agents/`, test launchers, `miroir-env`, `miroir-cli`, Electron | `tooling` |
+| `scripts/`, `.agents/`, test launchers, `@miroir-framework/env`, `@miroir-framework/cli`, Electron | `tooling` |
 
 - A slice spanning several areas lists each of their scopes; a change to a shared foundation (e.g. `miroirFundamentalType.ts` or the DomainController interface) takes the scopes of its main consumers.
 - `--only <step-id>` adds a single step to the scopes (union), e.g. the step of the suite the slice adds.
@@ -120,7 +120,7 @@ Use [plan-template.md](plan-template.md). Required sections, in order:
 ## Conventions
 
 - Issue-scoped vitest files live in `tests/<layer>/issues/<NNN>-<slug>/`, named `<feature>.<NNN>.phaseN.unit|integ.test.ts`; MiroirTest assets live in the deployment package they test, carry `tags` from the vocabulary in `docs/reference/testing.md` (Tags), and carry the issue number in their `description` until cleanup.
-- Run: `npm run testMiroir -w miroir-core -- --suites <suite> --mode unit` / `-w miroir-standalone-app --mode integration`; vitest via `RUN_TEST=<name> npm run testByFile -w <pkg> -- <name>`; deployment assets proven by `modelValidation`; per slice a scoped nonreg (§ Nonreg scope per slice); full safety net `npm run nonreg:filesystem`.
+- Run: `npm run testMiroir -w @miroir-framework/core -- --suites <suite> --mode unit` / `-w miroir-standalone-app --mode integration`; vitest via `RUN_TEST=<name> npm run testByFile -w <pkg> -- <name>`; deployment assets proven by `modelValidation`; per slice a scoped nonreg (§ Nonreg scope per slice); full safety net `npm run nonreg:filesystem`.
 - Update the plan's progress table as slices complete — the plan is a living resume document (`**Resume note:**` line in the header, see #225).
 
 ## Workflow

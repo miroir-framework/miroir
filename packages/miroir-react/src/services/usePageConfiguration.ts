@@ -6,7 +6,7 @@
  * manually triggered by user actions.
  */
 
-import { LoggerInterface, MiroirConfigClient, MiroirLoggerFactory } from 'miroir-core';
+import { LoggerInterface, MiroirConfigClient, MiroirLoggerFactory } from '@miroir-framework/core';
 import { useDomainControllerService, useMiroirContextService, useSnackbar } from "../contexts/MiroirContextReactProvider.js";
 import { useCallback, useEffect, useRef } from 'react';
 import { packageName } from "../constants.js";

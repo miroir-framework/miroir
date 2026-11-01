@@ -34,16 +34,16 @@ import {
   ELECTRON_LOOPBACK_ROOT_API_URL,
   electronRuntimeBaseUrl,
   getClientEnvironment,
-} from "miroir-core";
-import { useMiroirContextService } from "miroir-react";
+} from "@miroir-framework/core";
+import { useMiroirContextService } from "@miroir-framework/react";
 
-import { useAuthSession } from "miroir-react";
+import { useAuthSession } from "@miroir-framework/react";
 import { AiActionsProvider } from "./AiActionsProvider.js";
-import { agentRequestProperties } from "miroir-react";
+import { agentRequestProperties } from "@miroir-framework/react";
 import {
   readMiroirAiBackend,
   subscribeMiroirAiBackend,
-} from "miroir-react";
+} from "@miroir-framework/react";
 
 const isStaticDemo = (import.meta as any).env?.MIROIR_IS_SANDBOX === "true";
 

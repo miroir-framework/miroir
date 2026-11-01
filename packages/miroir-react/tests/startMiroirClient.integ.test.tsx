@@ -16,11 +16,11 @@ import {
   type DomainControllerInterface,
   type MiroirConfigClient,
   type ProcessCapabilities,
-} from "miroir-core";
-import { bootEnvironment, openTestEnvironment } from "miroir-env";
+} from "@miroir-framework/core";
+import { bootEnvironment, openTestEnvironment } from "@miroir-framework/env";
 import { book1 } from "miroir-example-library";
 import { startMiroirNode } from "miroir-localcache-redux/node";
-import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
+import { miroirFileSystemStoreSectionStartup } from "@miroir-framework/store-filesystem";
 
 import {
   LocalCacheProvider,

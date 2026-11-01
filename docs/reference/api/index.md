@@ -67,7 +67,7 @@ packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/
 These types are generated from ML schemas using:
 
 ```bash
-npm run devBuild -w miroir-core
+npm run devBuild -w @miroir-framework/core
 ```
 
 ---

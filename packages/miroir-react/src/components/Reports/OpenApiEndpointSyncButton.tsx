@@ -13,7 +13,7 @@ import {
   type CompositeActionSequence,
   type LoggerInterface,
   type MiroirModelEnvironment,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { useDomainControllerService } from "../../contexts/MiroirContextReactProvider.js";
 
 import { packageName } from "../../constants.js";
