@@ -51,6 +51,42 @@ def test_configs_aliasing_core_to_its_sources_alias_the_meta_model_subpaths():
     assert missing == [], "alias @miroir-framework/core/meta-model and /admin before @miroir-framework/core"
 
 
+LOCAL_CACHE_IMPORT = re.compile(r"""(?:from|import|require\()\s*['"]miroir-localcache-redux(/node)?['"]""")
+SERVER_STARTUP_IMPORT = re.compile(r"""(?:from|import\()\s*['"]@miroir-framework/server/startup['"]""")
+CODE_SUFFIXES = {".ts", ".tsx", ".mts", ".js", ".mjs"}
+
+
+def code_files(*tops: str) -> list[Path]:
+    return sorted(
+        path
+        for top in tops
+        for path in (ROOT / "packages").glob(top)
+        if path.suffix in CODE_SUFFIXES and not {"node_modules", "dist", "release"} & set(path.parts)
+    )
+
+
+def test_node_sources_take_the_startup_call_from_the_server_library():
+    """#652 (D4): the local cache's Node entry is bundled into `@miroir-framework/server/startup`; a Node process that
+    imported it directly would hold a second local cache next to the server library's."""
+    found = [
+        str(path.relative_to(ROOT))
+        for path in code_files("*/src/**/*")
+        if not path.is_relative_to(ROOT / "packages/miroir-server-library")
+        and not path.is_relative_to(ROOT / "packages/miroir-localcache-redux")
+        and any(match.group(1) for match in LOCAL_CACHE_IMPORT.finditer(path.read_text(encoding="utf-8")))
+    ]
+    assert found == [], "import startMiroirNode from @miroir-framework/server/startup"
+
+
+def test_no_file_holds_two_local_caches():
+    found = [
+        str(path.relative_to(ROOT))
+        for path in code_files("*/src/**/*", "*/tests/**/*")
+        if LOCAL_CACHE_IMPORT.search(text := path.read_text(encoding="utf-8")) and SERVER_STARTUP_IMPORT.search(text)
+    ]
+    assert found == [], "a file imports the local cache next to @miroir-framework/server/startup, which bundles it"
+
+
 def test_the_meta_model_marker_matches_the_meta_model_data():
     sample = '{"uuid":"16dbfe28-e1d7-4f20-9ba4-c1a9873202ad","name":"Entity"}'
     assert META_MODEL_MARKER.search(sample) and META_MODEL_MARKER.search("{uuid:'16dbfe28-e1d7-4f20-9ba4-c1a9873202ad'}")

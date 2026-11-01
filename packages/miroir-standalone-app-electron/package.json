@@ -38,7 +38,7 @@
     "miroir-app-admin": "*",
     "@miroir-framework/core": "*",
     "@miroir-framework/env": "*",
-    "miroir-localcache-redux": "*",
+    "@miroir-framework/server": "*",
     "@miroir-framework/mcp": "*",
     "miroir-standalone-app": "*",
     "@miroir-framework/store-filesystem": "*",

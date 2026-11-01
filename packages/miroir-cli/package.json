@@ -44,7 +44,7 @@
     "loglevelnext": "6.0.0",
     "@miroir-framework/core": "*",
     "@miroir-framework/env": "*",
-    "miroir-localcache-redux": "*"
+    "@miroir-framework/server": "*"
   },
   "peerDependencies": {
     "@miroir-framework/store-filesystem": "*",

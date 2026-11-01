@@ -62,7 +62,7 @@ import {
   type ResolvedEnvironment,
 } from "@miroir-framework/env";
 import { createMiroirServerApp } from "@miroir-framework/server";
-import { startMiroirNode } from 'miroir-localcache-redux/node';
+import { startMiroirNode } from '@miroir-framework/server/startup';
 import { miroirFileSystemStoreSectionStartup } from '@miroir-framework/store-filesystem';
 import { miroirIndexedDbStoreSectionStartup } from '@miroir-framework/store-indexeddb';
 import { miroirMongoDbStoreSectionStartup } from '@miroir-framework/store-mongodb';

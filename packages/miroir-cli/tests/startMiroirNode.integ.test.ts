@@ -9,7 +9,7 @@ import {
   type MiroirConfigClient,
 } from "@miroir-framework/core";
 import { bootEnvironment, environmentServerConfig, openTestEnvironment } from "@miroir-framework/env";
-import { startMiroirNode } from "miroir-localcache-redux/node";
+import { startMiroirNode } from "@miroir-framework/server/startup";
 import { miroirFileSystemStoreSectionStartup } from "@miroir-framework/store-filesystem";
 import { describe, expect, it } from "vitest";
 

@@ -99,7 +99,8 @@ jobs:
         run: npm ci --no-audit
       # The packages the two apps import, and miroir-env, which the standalone app's vite.config.js imports; each
       # line needs the ones above it (miroir-mcp and miroir-ai import miroir-example-library,
-      # miroir-diagram-class imports miroir-react).
+      # miroir-diagram-class imports miroir-react, the server library imports miroir-mcp and carries the Node startup
+      # call that the Electron main process imports, #652).
       - name: Build the packages the apps import
         run: |
           npm run build -w miroir-app-miroir -w miroir-app-admin
@@ -107,6 +108,7 @@ jobs:
           npm run build -w @miroir-framework/env -w miroir-localcache-redux -w @miroir-framework/store-bundled -w @miroir-framework/store-filesystem -w @miroir-framework/store-indexeddb -w @miroir-framework/store-postgres -w @miroir-framework/store-mongodb -w miroir-example-library -w miroir-example-spotify -w miroir-example-github -w miroir-app-meta -w miroir-fixture-appForTest
           npm run build -w @miroir-framework/react -w @miroir-framework/mcp -w miroir-ai
           npm run build -w miroir-diagram-class
+          npm run build -w @miroir-framework/server
       - name: Build the standalone app (prints its bundle report)
         run: npm run build -w miroir-standalone-app
       - name: Build the Electron main process (prints its bundle report)
@@ -122,7 +124,7 @@ jobs:
       - name: Manifests of the published set (pack cases)
         if: ${{ !cancelled() }}
         run: |
-          npm run build -w @miroir-framework/server -w @miroir-framework/cli
+          npm run build -w @miroir-framework/cli
           python3 -m pip install --quiet pytest
           MIROIR_REQUIRE_PACK=1 python3 -m pytest scripts/tests/test_package_manifests.py -q
       - name: Upload bundle reports and source maps

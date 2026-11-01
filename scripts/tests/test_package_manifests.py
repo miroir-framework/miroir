@@ -566,3 +566,20 @@ def test_a_built_owner_names_no_bundled_folder_as_a_module(folder):
         for match in MODULE_REFERENCE.finditer(path.read_text(encoding="utf-8"))
     ]
     assert found == [], f"{folder}: the built package still imports a private package"
+
+
+LOCAL_CACHE_REFERENCE = re.compile(r"""(?:from|import|require\()\s*['"](miroir-localcache-redux(?:/[^'"]*)?)['"]""")
+
+
+def test_the_server_library_carries_the_node_startup_call():
+    """#652 (D4): `@miroir-framework/server/startup` exposes startMiroirNode; the local cache's Node entry is bundled."""
+    folder = "packages/miroir-server-library"
+    assert manifest(folder)["exports"].get("./startup") == {"types": "./dist/startup.d.ts", "import": "./dist/startup.js"}
+    require_built(folder)
+    packed = pack_list(folder)
+    assert "dist/startup.js" in packed and "dist/startup.d.ts" in packed
+    built = [ROOT / folder / "dist/startup.js", ROOT / folder / "dist/startup.d.ts"]
+    # a module reference, not the logger names and source comments that keep the package's name
+    found = [f"{path.name}: {m.group(1)}" for path in built for m in LOCAL_CACHE_REFERENCE.finditer(path.read_text(encoding="utf-8"))]
+    assert found == [], "dist/startup.* still imports a private package"
+    assert "startMiroirNode" in (ROOT / folder / "dist/startup.d.ts").read_text(encoding="utf-8")

@@ -11,7 +11,7 @@ export default defineConfig({
   minify: false, // Keep unminified for better debugging
   external: [
     '@miroir-framework/core',
-    'miroir-localcache-redux',
+    '@miroir-framework/server',
     '@miroir-framework/store-filesystem',
     '@miroir-framework/store-indexeddb', 
     '@miroir-framework/store-postgres'

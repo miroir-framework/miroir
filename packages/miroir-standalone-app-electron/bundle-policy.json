@@ -68,7 +68,7 @@
     "@miroir-framework/core/meta-model",
     "@miroir-framework/core",
     "@miroir-framework/env",
-    "miroir-localcache-redux",
+    "@miroir-framework/server/startup",
     "ms",
     "mustache",
     "negotiator",

@@ -27,7 +27,7 @@ Out (analysis §2): `private` flags and publishing (I8); the meta-model size; th
 | 0 | Guards learn about bundled folders (green before and after) | ✅ | `test_package_manifests.py` owner rule (react owns the local cache, the server library its `./node` entry), unchanged results today |
 | 1 | Import scanner on a fixture tree | ✅ | `test_rename_packages.py` import cases |
 | 2 | Core carries the meta-model; everyone imports the subpaths | ✅ | core pack cases, `--check`, alias rule, bundle report, full build |
-| 3 | The server library exposes `./startup` | ⏳ | server pack case, startup boundaries, release check |
+| 3 | The server library exposes `./startup` | ✅ | server pack case, startup boundaries, release check |
 | 4 | React carries the local cache | ⏳ | react pack cases, dependency rule, local cache source rule |
 | 5 | Docs, nonreg, acceptance | ⏳ | gate, `nonreg:filesystem`, AC table |
 
@@ -167,7 +167,7 @@ npm run build:server -w miroir-server && MIROIR_RELEASE_SMOKE=1 python -m pytest
 
 ## Slice 3 — The server library exposes `./startup`
 
-**Status:** ⏳
+**Status:** ✅
 
 ### Tests (RED first)
 
@@ -191,6 +191,15 @@ npm run build:server -w miroir-server && MIROIR_RELEASE_SMOKE=1 python -m pytest
 npm run testByFile -w @miroir-framework/cli -- startMiroirNode
 # bundle guards (conventions table)
 ```
+
+### Realization
+
+- Deviation: tsup's declaration bundler resolves packages without their `exports` map, so `dts.resolve` (names, regex or `true`) left `export … from 'miroir-localcache-redux/node'` in `dist/startup.d.ts`. tsup now emits declarations for `index` only, and `onSuccess` writes `dist/startup.d.ts` from the local cache's bundled `dist/node.d.ts` (which imports only declared dependencies), exporting the names `src/startup.ts` re-exports; side-effect imports (`react-redux`) are dropped.
+- Deviation: `miroir-ai`'s test platform keeps the private package (a devDependency): it builds two domain controllers with `setupMiroirDomainController` and the REST client, not the startup call, and loads no server library, so it holds one local cache. The source rule covers `src/`, the two-copies rule every file.
+- The pack case matches module references (`from`/`import`/`require`), not the logger names (`packageName`) that keep the package's name in the bundled code.
+- Build order: `STAGE_SERVER_LIBRARY` runs before `STAGE_APPS` in step 7; `pr-checks.yml` builds the server library after `miroir-diagram-class`, before Electron, and the pack-case step builds only the CLI. `agent_session_setup.py` builds neither the CLI nor Electron, and nonreg assumes built packages: no change there.
+- Electron policy: `@miroir-framework/server/startup` replaces `miroir-localcache-redux` in `eager`; 918 362 bytes gzipped (918 359 before).
+- Validation: pytest 550 passed (pack cases required); `rename_packages.py --check`; tsc on cli, server, server-library, Electron, mcp; CLI `startMiroirNode` 3 passed; server library 24 passed; Electron 14 passed; `electronBundle.unit` 7 passed; server release built without `-e miroir-localcache-redux`, release checks (`MIROIR_RELEASE_SMOKE=1`) passed; Electron bundle guard 0 violations.
 
 ---
 
