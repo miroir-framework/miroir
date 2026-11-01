@@ -18,7 +18,7 @@
 
 | Environment | Used by | Stores |
 |---|---|---|
-| `dev` | default for the server and the web client | models edited **live** in the package assets; Admin data **copied** in `.miroir/dev/`; the only one, with `test-filesystem`, that installs Meta (`miroir-app-meta`, live, since its data is the tracked bundle size history) |
+| `dev` | default for the server and the web client | models edited **live** in the package assets; Admin data **copied** in `.miroir/dev/`; Miroir's `devData` section **live**, since it holds the tracked bundle size history (#647; every `test-*` environment copies it) |
 | `local` | `environments/local.json`, gitignored: a developer's own environment | whatever it declares, usually `{ "extends": "dev" }` plus extra applications |
 | `cloud-agent` | coding-agent cloud sessions (`local.json` = `{ "extends": "cloud-agent" }`) | `dev` with the AI features off |
 | `test-filesystem` | profile `emulatedServer-filesystem`, `realServer-filesystem` | every section copied in `.miroir/test-filesystem/` |
@@ -105,17 +105,17 @@ Tests select their environment through their profile (`--profile emulatedServer-
 | `server` | What the server of this environment listens on. `rootApiUrl` is also the URL the web client calls. |
 | `client.mode` | `realServer` (a client calls a running server) or `emulatedServer` (tests: the client runs the server in-process). |
 | `client.selfTest` | `{ "enabled": true, "tags": ["unit"] }`: page load runs the miroir app's MiroirTests carrying these tags (`unit` when none) and publishes a verdict, instead of showing the application ([Self-test mode](testing.md#self-test-mode)). `integ` adds the integration batch. |
-| `client.loadTimings` | `{ "enabled": true }`: the page measures its initial load and the first display of each page kind, and records the steps in the Meta app when the environment installs it; also `record`, `quietWindowMs`, `maxStepMs` ([load-timings.md](load-timings.md)). Off by default; `?loadTimings=on` turns it on for one tab. |
+| `client.loadTimings` | `{ "enabled": true }`: the page measures its initial load and the first display of each page kind, and records the steps in Miroir's `devData` section when the environment declares it; also `record`, `quietWindowMs`, `maxStepMs` ([load-timings.md](load-timings.md)). Off by default; `?loadTimings=on` turns it on for one tab. |
 | `features` | Process capabilities of the server ([Process capabilities](process-capabilities.md)). Never sent to the web client. |
 | `connections.postgres` | Host, port, user and database of Postgres stores. `passwordEnv` names the variable that holds the password; a definition never contains a password. |
 | `connections.mongodb` | URL of MongoDB stores. |
 | `applications.<key>` | One installed application. The key names it in paths (`.miroir/<env>/<key>/…`) and in store names. |
 | `packagesDirectory` | Where the application packages are, relative to the root: `packages` by default, `.` when each package's `assets/` sits directly under the root (`docker`, `desktop`). |
-| `package` | The folder of `packagesDirectory` whose `assets/` hold the application's sections (`<key>_model`, `<key>_data`, `<key>_modelVersion`; `assetPrefix` overrides `<key>`). |
+| `package` | The folder of `packagesDirectory` whose `assets/` hold the application's sections (`<key>_model`, `<key>_data`, `<key>_modelVersion`, `<key>_devData`; `assetPrefix` overrides `<key>`). |
 | `selfApplication`, `deployment` | The application and deployment uuids. Admin and Miroir must use the uuids the platform opens. |
 | `store` | `filesystem`, `sql`, `indexedDb` or `mongodb`. |
 | `mode` | `live`: the section is the package folder itself (filesystem only, never in `test-*`). `copy`: the section lives in the state, seeded from the package on first use. |
-| `sections` | Per-section `mode` / `store` overrides for `model`, `data`, `modelVersion`. Declaring `modelVersion` adds that section. The `admin` section follows the application. |
+| `sections` | Per-section `mode` / `store` overrides for `model`, `data`, `modelVersion`, `devData`. Declaring `modelVersion` or `devData` adds that section (`devData`: [data-architecture-deployments.md](data-architecture-deployments.md#devdata-development-data-optional)); without it, reads of the section are empty and writes fail. The `admin` section follows the application. |
 | `configuration` | A complete store configuration used as given, instead of `package` / `store` / `mode` (applications installed outside the package layout, for example from the UI). |
 
 `logPreset` and `secrets` are accepted by the schema but not read yet.

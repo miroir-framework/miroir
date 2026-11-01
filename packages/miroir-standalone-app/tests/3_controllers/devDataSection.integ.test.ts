@@ -1,15 +1,17 @@
 /**
- * #647 Slice 3: the devData section of the Miroir application on the database stores, in a store of
- * its own: IndexedDb (Level in Node), Postgres and MongoDB. The deployments are the ones the test
+ * #647: the devData section of the Miroir application, in a store of its own, on every store
+ * (filesystem, IndexedDb (Level in Node), Postgres, MongoDB). The deployments are the ones the test
  * environment derives; Miroir declares devData there, Library does not. A devData section that is not
  * a filesystem copy starts empty (the seeding copies only the package's exported JSON, D10).
  *
  * Not reachable through MiroirTest: it asserts the store sections, their restart and their teardown,
- * which are framework internals.
+ * which are framework internals. The filesystem copy, seeded from the tracked rows, has its own cases in
+ * devDataSection.filesystem.integ.test.ts.
  * ```bash
- * npm run testByFile -w miroir-standalone-app -- devDataSection.647.phase3 --profile emulatedServer-indexedDb
- * MIROIR_POSTGRES_PASSWORD=... npm run testByFile -w miroir-standalone-app -- devDataSection.647.phase3 --profile emulatedServer-sql
- * npm run testByFile -w miroir-standalone-app -- devDataSection.647.phase3 --profile emulatedServer-mongodb
+ * npm run testByFile -w miroir-standalone-app -- devDataSection.integ --profile emulatedServer-filesystem
+ * npm run testByFile -w miroir-standalone-app -- devDataSection.integ --profile emulatedServer-indexedDb
+ * MIROIR_POSTGRES_PASSWORD=... npm run testByFile -w miroir-standalone-app -- devDataSection.integ --profile emulatedServer-sql
+ * npm run testByFile -w miroir-standalone-app -- devDataSection.integ --profile emulatedServer-mongodb
  * ```
  */
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
@@ -34,11 +36,11 @@ import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
 import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
 
-import { loglevelnext } from "../../../../src/loglevelnextImporter.js";
-import { setupMiroirTest } from "../../../../src/miroir-fwk/4-tests/setupMiroirTest.js";
-import { testApplicationStorageConfiguration } from "../../../../src/miroir-fwk/4-tests/runnerIntegTestSupport.js";
-import { miroirAppStartup } from "../../../../src/startup.js";
-import { openTestEnvironment, selectedTestEnvironment } from "../../../helpers/testEnvironment.js";
+import { loglevelnext } from "../../src/loglevelnextImporter.js";
+import { setupMiroirTest } from "../../src/miroir-fwk/4-tests/setupMiroirTest.js";
+import { testApplicationStorageConfiguration } from "../../src/miroir-fwk/4-tests/runnerIntegTestSupport.js";
+import { miroirAppStartup } from "../../src/startup.js";
+import { openTestEnvironment, selectedTestEnvironment } from "../helpers/testEnvironment.js";
 
 miroirAppStartup();
 miroirCoreStartup();
@@ -114,7 +116,7 @@ afterAll(async () => {
   await serverManager?.deletePersistenceStoreController(LIBRARY_DEPLOYMENT);
 });
 
-describe(`devData section on ${ENVIRONMENT} (#647 Slice 3)`, () => {
+describe(`devData section on ${ENVIRONMENT} (#647)`, () => {
   it("gives Miroir's devData a store of its own", () => {
     const miroir = deploymentStorageConfig[MIROIR_DEPLOYMENT];
     expect(miroir.devData, "Miroir declares devData").toBeDefined();

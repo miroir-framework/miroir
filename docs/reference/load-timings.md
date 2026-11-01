@@ -1,6 +1,6 @@
 # Load timings
 
-The standalone web page and the Electron renderer can measure how long they take to load, and record the measurements in the Meta app (#580). The bundle guard counts the bytes loaded with the page ([code-splitting.md](../internals/code-splitting.md#bundle-report-and-guards-326)); load timings measure the time the user waits, step by step, and the files each step fetches.
+The standalone web page and the Electron renderer can measure how long they take to load, and record the measurements in the `devData` section of the Miroir application (#580, #647). The bundle guard counts the bytes loaded with the page ([code-splitting.md](../internals/code-splitting.md#bundle-report-and-guards-326)); load timings measure the time the user waits, step by step, and the files each step fetches.
 
 ## Turning it on
 
@@ -30,7 +30,7 @@ Each step has milestones (initial load: `responseEnd`, `domContentLoaded`, `entr
 
 ## Where measurements go
 
-Every finished step is printed in the browser console (`[miroir-load-timing]`) and kept on `window.__miroirLoadTimings`. When the client configuration lists the Meta deployment (`dev` installs it), the steps are also recorded as `PageLoadMeasurement` instances of the Meta app, shown by the `Page load history` Report of the Meta menu.
+Every finished step is printed in the browser console (`[miroir-load-timing]`) and kept on `window.__miroirLoadTimings`. When the client configuration gives the Miroir deployment a `devData` section (`dev` does), the steps are also recorded as `PageLoadMeasurement` instances in that section, shown by the `Page load history` Report of the `Dev data` group of the Miroir menu.
 
 A development build and a production build are not comparable, nor are the web page and Electron (#583). The history draws one initial load graph and one first report display graph per pair of build mode (`production`, `development`) and client (`webApp`, `electron`); a pair without rows shows "No data available". Its lists show every row with its build mode and client, and the details of a step show its environment too. The graphs select their rows on `series`, a virtual attribute of `PageLoadMeasurement` (`<step>/<buildMode>/<client>`, computed, not stored). It is computed by the client's local cache, which the Report uses, and in SQL; a query run by a filesystem, IndexedDB or MongoDB store itself (`runBoxedQueryAction` on the storage) does not compute it, so a filter on it there selects nothing.
 
@@ -39,12 +39,12 @@ Recording does not run while a step is measured:
 - nothing is written while a step is open;
 - the steps of a page load are written together, in one `createInstance` action, once the configurations are loaded, 2 s after the last step ended, when the browser is idle;
 - the writer module is loaded at the first write;
-- `PageLoadMeasurement` is not loaded when the client refreshes the Meta deployment (`cacheAllInstancesOnRefresh: false`), so the history does not slow down the next start;
+- `PageLoadMeasurement` is not loaded when the client refreshes the Miroir deployment (`cacheAllInstancesOnRefresh: false`), so the history does not slow down the next start;
 - a step that starts while a write runs has `overlapsWrite: true`.
 
 Steps still queued when the tab closes are written by a last attempt on `pagehide`, which may not finish. A write that fails stops recording for the page load.
 
-The instance files are gitignored (`packages/miroir-app-meta/assets/meta_data/0266c0b8-4dc8-4a14-bcef-239a85a5de2d/*.json`): timings depend on the machine. `git add -f` shares one.
+The instance files are gitignored (`packages/miroir-app-miroir/assets/miroir_devData/0266c0b8-4dc8-4a14-bcef-239a85a5de2d/*.json`): timings depend on the machine. `git add -f` shares one.
 
 ## Load timings tour
 
@@ -80,6 +80,6 @@ Before the measured run, the tour runs once with `loadTimings=off` in a browser 
 | Browser adapter (observers, router, `fetch` count) | `packages/miroir-standalone-app/src/loadTimings/loadTimingBrowser.ts` |
 | Switch | `packages/miroir-standalone-app/src/loadTimings/loadTimingSwitch.ts` |
 | Writer | `packages/miroir-standalone-app/src/loadTimings/loadTimingWriter.ts` |
-| Entity, Reports | `packages/miroir-app-meta/assets/meta_model/` (`PageLoadMeasurement` `0266c0b8-4dc8-4a14-bcef-239a85a5de2d`, `PageLoadHistory` `02dd2ead-7b8d-4160-99c9-9f4e9a1c051b`) |
+| Entity, Reports | `packages/miroir-app-miroir/assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/` (`PageLoadMeasurement` `0266c0b8-4dc8-4a14-bcef-239a85a5de2d`), `packages/miroir-app-miroir/assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/` (`PageLoadHistory` `02dd2ead-7b8d-4160-99c9-9f4e9a1c051b`) |
 | Tour, servers | `packages/miroir-standalone-app/scripts/load-timings.mjs`, `serveBuiltClient.mjs` |
 | Analysis and plan | `code-helpers/features/580-FEATURE-page-load-timings/`, `code-helpers/features/583-FEATURE-page-load-history-by-build-mode/` |

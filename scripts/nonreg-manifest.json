@@ -371,7 +371,7 @@
       "id": "default-miroir-devData-validation",
       "scopes": ["core"],
       "tier": "default",
-      "title": "Miroir devData rows validated against their Entities (#473, #647)",
+      "title": "Miroir devData rows validated against their Entities, and where the devData Entities, Reports and MiroirTests live, with no Meta application left (#473, #647)",
       "requires": "none",
       "argv": [
         "npm",
@@ -380,7 +380,8 @@
         "-w",
         "miroir-app-miroir",
         "--",
-        "devData/devDataRows.unit"
+        "devData/devDataRows.unit",
+        "devData/devDataLayout.unit"
       ]
     },
     {
@@ -1660,6 +1661,42 @@
         ],
         "suites": ["report.agentRunHistory"]
       }
+    },
+    {
+      "id": "integ-devData-section",
+      "scopes": ["actions"],
+      "tier": "default",
+      "title": "#647 devData section on the store of the run: its own store, restart, refused writes, clear, teardown",
+      "requires": "storage",
+      "argv": [
+        "npm",
+        "run",
+        "testByFile",
+        "-w",
+        "miroir-standalone-app",
+        "--",
+        "--profile",
+        "{profile}",
+        "devDataSection.integ"
+      ]
+    },
+    {
+      "id": "integ-devData-section-filesystem",
+      "scopes": ["actions"],
+      "tier": "default",
+      "title": "#647 devData section on the test-filesystem copy: tracked rows, files on disk, rollback without page load rows, close and reopen",
+      "requires": "none",
+      "argv": [
+        "npm",
+        "run",
+        "testByFile",
+        "-w",
+        "miroir-standalone-app",
+        "--",
+        "--profile",
+        "emulatedServer-filesystem",
+        "devDataSection.filesystem.integ"
+      ]
     },
     {
       "id": "integ-report.queryDetails",

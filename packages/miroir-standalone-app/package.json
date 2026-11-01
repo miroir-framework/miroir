@@ -48,7 +48,6 @@
     "lodash-es": "4.18.1",
     "loglevelnext": "6.0.0",
     "material-symbols": "0.48.0",
-    "miroir-app-meta": "*",
     "miroir-app-miroir": "*",
     "miroir-core": "*",
     "miroir-diagram-class": "*",

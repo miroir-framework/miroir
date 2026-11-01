@@ -1,7 +1,6 @@
 /**
  * #647: every row of the Miroir devData section (bundle sizes, agent runs, and any page load a
- * developer recorded) is an instance of its Entity, with the Entity's uuid as folder name. Replaces
- * the validation of miroir-app-meta's data section (#473).
+ * developer recorded) is an instance of its Entity, with the Entity's uuid as folder name (#473).
  *
  * Not reachable through MiroirTest: it reads the section's folder on disk.
  * ```bash

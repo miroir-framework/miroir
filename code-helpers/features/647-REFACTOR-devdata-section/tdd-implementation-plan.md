@@ -40,7 +40,7 @@ This plan does **not** add test run Entities or the Miroir Tests recorder (#483)
 | 1 | Tracer: Miroir's measurement rows live in `miroir_devData`, and every reader and writer follows | ✅ | `devDataSection.647.phase1.integ.test.ts`, moved recorder tests, `test_check_bundle_policy.py`, `loadTimingWriter.integ` |
 | 2 | The history Reports open on any application's `devData` | ✅ | MiroirTests `report.bundleSizeHistory`, `report.pageLoadHistory`, `report.agentRunHistory` on Library |
 | 3 | `devData` on IndexedDb, Postgres and MongoDB in its own store; bundled refuses it | ✅ | `devDataSection.647.phase3.integ.test.ts` per profile, restart and teardown cases |
-| 4 | Delete `miroir-app-meta`; deliveries, docs, nonreg, cleanup, AC | ⬜ | full `nonreg:filesystem` and `nonreg:default`, delivery check |
+| 4 | Delete `miroir-app-meta`; deliveries, docs, nonreg, cleanup, AC | ✅ | full `nonreg:filesystem` and `nonreg:default`, delivery check |
 
 Between Slice 1 and the end of Slice 2, the Meta application still holds the 6 Reports and the 3 report MiroirTests, but their Entities and rows have moved to Miroir, so those 3 MiroirTests fail. Slices 1 and 2 are done back to back. Slice 1's scoped nonreg leaves out the 3 `integ-report.*` steps with `--skip` (or runs the scopes without them, see Slice 1 Validation), and the full nonreg runs at the end of Slice 2.
 
@@ -442,7 +442,7 @@ Validation: `tsc` on the 5 store packages, miroir-env, miroir-sandbox (standalon
 
 ## Slice 4 — Delete `miroir-app-meta`; deliveries, docs, nonreg, cleanup, AC
 
-**Status:** ⬜ pending
+**Status:** ✅ done
 
 ### Goal
 
@@ -486,13 +486,24 @@ npm run nonreg:default -- --runner shared
 
 | Acceptance criterion (#647) | Proof |
 |---|---|
-| `devData` is an `ApplicationSection`, routed by `devDataEntityUuids`, supported by filesystem, IndexedDb, Postgres and MongoDB; bundled refuses it | `devDataSection.647.phase1/phase3.integ` (later `devDataSection.integ`), `versioningModes.bundled` |
-| `miroir-env check` accepts `sections.devData` and deploys the section | `fn.environment.deriveDeployments` (Slice 1 Test B), the new `miroirEnvDeploy` case (Slice 3 Test C), `miroir-env check --strict` |
-| The 3 Entities, their Reports and MiroirTests live in `miroir-app-miroir` with uuids unchanged, rows in `miroir_devData/` | `devDataInventory` (later `devDataLayout`), `devDataRows` |
-| Recording commands, the `history` rule, the agent bench and page load recording use `miroir_devData/` | Slice 1 Test D |
-| The 3 history Reports open from the Miroir menu in `dev` | Slice 2 Test C (menu items), the 3 report MiroirTests (Reports on `devData` rows), Slice 2 manual check on `dev` |
-| `packages/miroir-app-meta` is gone and nothing references it | Slice 4 inventory case |
-| The docs describe the `devData` section | Slice 4 docs list, review |
+| `devData` is an `ApplicationSection`, routed by `devDataEntityUuids`, supported by filesystem, IndexedDb, Postgres and MongoDB; bundled refuses it | ✅ `devDataSection.integ` (filesystem, IndexedDb, SQL; MongoDB not run here), `devDataSection.filesystem.integ`, `versioningModes.bundled` |
+| `miroir-env check` accepts `sections.devData` and deploys the section | ✅ `fn.environment.deriveDeployments` (Slice 1 Test B), the new `miroirEnvDeploy` case (Slice 3 Test C), `miroir-env check --strict` |
+| The 3 Entities, their Reports and MiroirTests live in `miroir-app-miroir` with uuids unchanged, rows in `miroir_devData/` | ✅ `devDataLayout`, `devDataRows` |
+| Recording commands, the `history` rule, the agent bench and page load recording use `miroir_devData/` | ✅ Slice 1 Test D |
+| The 3 history Reports open from the Miroir menu in `dev` | ✅ Slice 2 Test C (menu items), the 3 report MiroirTests (Reports on `devData` rows), Slice 2 manual check on `dev` |
+| `packages/miroir-app-meta` is gone and nothing references it | ✅ `devDataLayout` "leaves no Meta application" |
+| The docs describe the `devData` section | ✅ Slice 4 docs list, review |
 | `nonreg:unit` and `nonreg:filesystem` pass | Slice 4 Validation |
 
 ### Realization
+
+2026-11-01. Done, with these differences:
+
+- **Cleanup (#238):** the issue directories are gone; their lasting cases moved with `git mv`:
+  - `miroir-app-miroir/tests/devData/devDataLayout.unit.test.ts` (from the Slice 0 inventory): Entities, Reports and MiroirTests by uuid and name, the tracked rows as a subset, and the new "leaves no Meta application" case (`git grep` outside `code-helpers/` and the `*_devData/` rows, one of which gives a past reason that names Meta);
+  - `miroir-core/tests/1_core/devDataReports.unit.test.ts` (Slice 2): the Reports per section and the `Dev data` menu group;
+  - two integration files instead of one, in `miroir-standalone-app/tests/3_controllers/`: `devDataSection.integ.test.ts` (Slice 3, every store, step `integ-devData-section`, `requires: storage`) and `devDataSection.filesystem.integ.test.ts` (Slice 1, step `integ-devData-section-filesystem`), which keeps only what the shared file does not cover on filesystem: the tracked rows of the seeded copy, the files on disk, rollback without the page load rows, close and reopen. The Slice 1 cases that every store shares (D23, absent section, D24) are now only in the shared file.
+- **Delivery (D19):** Electron filters `!miroir_devData/**`; Docker excludes `packages/*/assets/*_devData` in `.dockerignore`. `scripts/tests/test_delivery_assets.py` (2 tests) reads both rules.
+- **Docs:** besides the planned pages, `loadTimingsTour.integ.test.ts` expected the tour's old output ("recorded in the Meta app"); it now expects "recorded in Miroir's devData", which the tour has printed since Slice 1. That tour is on demand, outside nonreg.
+- `bundle-policy.json` had already lost `miroir-app-meta` in Slice 2, and the nonreg manifest's Meta validation step had become `default-miroir-devData-validation` in Slice 1; it now also runs `devDataLayout`.
+

@@ -1,13 +1,14 @@
 /**
- * #647 Slice 1: the devData section of the Miroir application, on the emulated filesystem server of
- * `test-filesystem` (copies in .miroir/test-filesystem/, seeded from the package assets). The
+ * #647: the devData section of the Miroir application on the emulated filesystem server of
+ * `test-filesystem` (copies in .miroir/test-filesystem/, seeded from the tracked rows of the package
+ * assets). The cases every store shares are in devDataSection.integ.test.ts. The
  * deployments are the ones the environment derives, which no test-storage helper rewrites: Miroir
  * declares devData there, Library does not.
  *
  * Not reachable through MiroirTest: it asserts the store sections and their files on disk, which are
  * framework internals.
  * ```bash
- * MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- devDataSection.647.phase1
+ * MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- devDataSection.filesystem.integ
  * ```
  */
 import { existsSync, readdirSync } from "node:fs";
@@ -35,11 +36,11 @@ import {
 import { bootEnvironment } from "miroir-env";
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 
-import { loglevelnext } from "../../../../src/loglevelnextImporter.js";
+import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import { fetchMiroirAndAppConfigurations } from "miroir-react";
-import { setupMiroirTest } from "../../../../src/miroir-fwk/4-tests/setupMiroirTest.js";
-import { miroirAppStartup } from "../../../../src/startup.js";
-import { openTestEnvironment } from "../../../helpers/testEnvironment.js";
+import { setupMiroirTest } from "../../src/miroir-fwk/4-tests/setupMiroirTest.js";
+import { miroirAppStartup } from "../../src/startup.js";
+import { openTestEnvironment } from "../helpers/testEnvironment.js";
 
 miroirAppStartup();
 miroirCoreStartup();
@@ -153,7 +154,7 @@ beforeAll(async () => {
   serverManager = wired.persistenceStoreControllerManagerForServer!;
 });
 
-describe("devData section of the Miroir application (#647 Slice 1)", () => {
+describe("devData section of the Miroir application on test-filesystem (#647)", () => {
   it("routes the measurement Entities to devData", () => {
     expect(getApplicationSection(MIROIR_APPLICATION, BUNDLE_SIZE_MEASUREMENT)).toBe("devData");
     expect(getApplicationSection(LIBRARY_APPLICATION, PAGE_LOAD_MEASUREMENT)).toBe("devData");
@@ -179,29 +180,7 @@ describe("devData section of the Miroir application (#647 Slice 1)", () => {
     expect(existsSync(dataFolder) ? readdirSync(dataFolder) : []).toEqual([]);
   });
 
-  it("refuses a devData row written to another section (D23)", async () => {
-    const result = await serverController(MIROIR_DEPLOYMENT).upsertInstance(
-      "data",
-      bundleSizeRow("7d0b6f4e-6f8e-4d3e-9d55-647000000002"),
-    );
-    expect(result instanceof Action2Error).toBe(true);
-    expect((result as Action2Error).errorMessage).toContain("devData");
-  });
-
   describe("on an application whose deployment has no devData section", () => {
-    it("reads nothing", async () => {
-      expect(await instanceUuids(serverController(LIBRARY_DEPLOYMENT), "devData", BUNDLE_SIZE_MEASUREMENT)).toEqual([]);
-    });
-
-    it("refuses a write with a named error", async () => {
-      const result = await serverController(LIBRARY_DEPLOYMENT).upsertInstance(
-        "devData",
-        bundleSizeRow("7d0b6f4e-6f8e-4d3e-9d55-647000000003"),
-      );
-      expect(result instanceof Action2Error).toBe(true);
-      expect((result as Action2Error).errorMessage).toContain("devData section is not configured");
-    });
-
     it("rolls back (D22)", async () => {
       const result = await rollback(LIBRARY_APPLICATION);
       expect(result instanceof Action2Error, JSON.stringify(result)).toBe(false);
@@ -222,13 +201,6 @@ describe("devData section of the Miroir application (#647 Slice 1)", () => {
     await controller.close();
     expect(await controller.open()).not.toBeInstanceOf(Action2Error);
     expect(await controller.bootFromPersistedState(metaModelEntities)).not.toBeInstanceOf(Action2Error);
-    expect((await instanceUuids(controller, "devData", BUNDLE_SIZE_MEASUREMENT)).sort()).toEqual(before.sort());
-  });
-
-  it("keeps the devData rows when the model is cleared (D24)", async () => {
-    const controller = serverController(MIROIR_DEPLOYMENT);
-    const before = await instanceUuids(controller, "devData", BUNDLE_SIZE_MEASUREMENT);
-    expect(await controller.clear()).not.toBeInstanceOf(Action2Error);
     expect((await instanceUuids(controller, "devData", BUNDLE_SIZE_MEASUREMENT)).sort()).toEqual(before.sort());
   });
 });

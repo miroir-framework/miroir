@@ -1,5 +1,5 @@
 /**
- * #647 Slice 2: the devData Reports are Miroir's, listed under the devData section of every
+ * #647: the devData Reports are Miroir's, listed under the devData section of every
  * application (D16), and opened from the "Dev data" group of the Miroir menu.
  *
  * A vitest case and not a MiroirTest `functionCallTest`: `getReportsAndEntitiesForDeploymentUuid`
@@ -10,8 +10,8 @@ import { describe, expect, it } from "vitest";
 import { defaultMiroirMetaModel, menuDefaultMiroir, selfApplicationMiroir } from "miroir-app-miroir";
 import { defaultLibraryAppModel, selfApplicationLibrary } from "miroir-example-library";
 
-import type { MetaModel, Report } from "../../../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
-import { getReportsAndEntitiesForDeploymentUuid, metaModelDevDataReports } from "../../../../src/1_core/Model";
+import type { MetaModel, Report } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import { getReportsAndEntitiesForDeploymentUuid, metaModelDevDataReports } from "../../src/1_core/Model";
 
 const DEV_DATA_REPORTS = [
   "e8c6faa5-a117-4afd-b7ae-4a40c6111f95", // BundleSizeHistory

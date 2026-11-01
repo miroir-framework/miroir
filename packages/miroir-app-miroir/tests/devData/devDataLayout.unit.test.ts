@@ -1,14 +1,20 @@
 /**
- * #647 — inventory of the development information that moves from miroir-app-meta to the devData
- * section of the Miroir application. The LOCATION table says where each kind lives; the slices of
- * the plan change it, so the same test proves the move.
+ * #647: where the development information of the Miroir application lives. Its Entities are in the
+ * model, its Reports and MiroirTests in the data section, and its rows in the devData section; no
+ * application named Meta (#473) remains.
+ *
+ * Not reachable through MiroirTest: it reads the package folders and the git index.
+ * ```bash
+ * npm run testByFile -w miroir-app-miroir -- devData/devDataLayout.unit
+ * ```
  */
 import { describe, expect, it } from "vitest";
+import { execFileSync } from "node:child_process";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
-const packagesRoot = resolve(fileURLToPath(new URL(".", import.meta.url)), "../../../../../");
+const packagesRoot = resolve(fileURLToPath(new URL(".", import.meta.url)), "../../../");
 
 const ENTITY = "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad";
 const REPORT = "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916";
@@ -64,7 +70,7 @@ function rowUuids(entityUuid: string): string[] {
     .map((f) => f.replace(/\.json$/, ""));
 }
 
-describe("devData inventory (#647)", () => {
+describe("devData layout (#647)", () => {
   it("has the 3 measurement Entities", () => expectNamedFiles(LOCATION.entities, ENTITIES));
   it("has the 6 history Reports", () => expectNamedFiles(LOCATION.reports, REPORTS));
   it("has the 3 report MiroirTests", () => expectNamedFiles(LOCATION.miroirTests, MIROIR_TESTS));
@@ -85,5 +91,30 @@ describe("devData inventory (#647)", () => {
   it("loads page load rows on demand", () => {
     const entity = readJson(join(packagesRoot, LOCATION.entities, "0266c0b8-4dc8-4a14-bcef-239a85a5de2d.json"));
     expect(entity.cache?.cacheAllInstancesOnRefresh).toBe(false);
+  });
+
+  it("leaves no Meta application (#647 G5)", () => {
+    expect(existsSync(join(packagesRoot, "miroir-app" + "-meta"))).toBe(false);
+    // built by concatenation, so that this file does not name them
+    const names = [
+      "miroir-app" + "-meta",
+      "9ff432a9-89a1-460b" + "-a263-1672d084a9e0", // the Meta SelfApplication
+      "40b74910-4c63-4bd9" + "-8e7d-2bc051342908", // the Meta Deployment
+    ];
+    const pattern = names.join("|");
+    let found = "";
+    try {
+      found = execFileSync(
+        "git",
+        // code-helpers keeps the history of #473 and #647; a devData row may give a past reason
+        ["grep", "-l", "-I", "-E", pattern, "--", ".", ":!code-helpers", ":!packages/*/assets/*_devData/*"],
+        { cwd: join(packagesRoot, ".."), encoding: "utf8" },
+      );
+    } catch (error: any) {
+      if (error.status !== 1) {
+        throw error; // 1: no match
+      }
+    }
+    expect(found.split("\n").filter(Boolean)).toEqual([]);
   });
 });
