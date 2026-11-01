@@ -511,7 +511,7 @@ npm run nonreg:default -- --runner shared
 **Code review (before the PR), fixed:**
 
 - On SQL, the storage probe answered "no" for an Entity the section had not registered (a controller opened but not booted), and a "no" leads to `createStorageSpaceForInstancesOfEntity`, which drops the table (`sync({ force: true })`). `hasStorageSpaceForInstancesOfEntity` now takes the Entity and asks the schema whether its table exists, registered or not.
-- Concurrent first writes of a devData Entity (two tabs flushing page loads) each probed "no" and each created the table, the second dropping the first one's rows. The controller now shares one creation per Entity, and keeps a negative probe until it creates the storage, so reads of an empty section do not probe again. Test: "creates a fresh devData store once for concurrent first writes" in `devDataSection.integ` (IndexedDb, SQL; skipped on filesystem, whose test application rows outlive `deleteStore`).
+- Concurrent first writes of a devData Entity (two tabs flushing page loads) each probed "no" and each created the table, the second dropping the first one's rows. The controller now shares one creation per Entity. Test: "creates a fresh devData store once for concurrent first writes" in `devDataSection.integ` (IndexedDb, SQL; skipped on filesystem, whose test application rows outlive `deleteStore`).
 - `getInstance` of a devData Entity with no storage yet returned the store's missing-table error; it now says no row was written yet.
 - `resetData` (`clearDataInstances`) and Miroir's model initialization created data storage for the devData Entities (phantom tables, the #234 problem). Both now leave them out: the initialization writes their Entity rows to the model only.
 - A report load read a devData Entity from the requested section when one was named (a page or link on `data`), while the local cache selectors look for its rows in `devData`. `reportLoadSection` (was `defaultReportLoadSection`) now always reads devData Entities from `devData`.
@@ -521,3 +521,10 @@ npm run nonreg:default -- --runner shared
 
 - `clear` (resetModel) keeps the devData rows on every deployment, test ones included: D24. A test application's devData store goes with `deleteStore`.
 - The refresh reads the refresh-cached devData Entities of every application, which costs one empty read each where the section is absent (the controller answers without store I/O): D16 lets any application open the history Reports on its devData.
+
+**PR review (Greptile), fixed:**
+
+- Two servers on one SQL deployment: a "no" kept by one controller, then its creation, could drop the table the other server had created and filled. A "no" is now asked again at the next read or write, and SQL offers `createStorageSpaceForInstancesOfEntityIfMissing` (`CREATE TABLE IF NOT EXISTS`), which the devData creation uses when the store has it.
+- `runReportAction` (#562) ran every Report query on the `data` store; the server picks the store from the action's section, so the history Reports read nothing. A query that reads only devData Entities now runs on `devData` (`partSection`, tested in `runReportAction.unit`).
+- A `dev` or `local` state from before keeps the Meta Deployment rows: `environments.md` says to run `miroir-env prune` once.
+

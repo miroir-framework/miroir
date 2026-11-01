@@ -300,6 +300,18 @@ export class SqlDbStoreSection
   }
 
   // ##############################################################################################
+  /** #647: `CREATE TABLE IF NOT EXISTS`: a table another server created, and its rows, are kept. */
+  async createStorageSpaceForInstancesOfEntityIfMissing(entity: Entity): Promise<Action2VoidReturnType> {
+    const access =
+      this.sqlSchemaTableAccess[entity.uuid] ?? this.getAccessToDataSectionEntity(entity)[entity.uuid];
+    this.sqlSchemaTableAccess = { ...this.sqlSchemaTableAccess, [entity.uuid]: access };
+    if (!access.isExternal) {
+      await access.sequelizeModel.sync();
+    }
+    return ACTION_OK;
+  }
+
+  // ##############################################################################################
   async renameStorageSpaceForInstancesOfEntity(
     oldName: string,
     newName: string,

@@ -85,6 +85,13 @@ export interface StorageSpaceHandlerInterface {
    * The answer comes from the storage itself, whether the store registered the Entity or not.
    */
   hasStorageSpaceForInstancesOfEntity?(entity: Entity): Promise<boolean>;
+
+  /**
+   * #647: creates the storage space of an Entity's instances unless it exists, keeping the rows it
+   * holds, so that two servers writing the first rows of a devData Entity do not drop each other's.
+   * For a store whose `createStorageSpaceForInstancesOfEntity` drops existing storage (SQL).
+   */
+  createStorageSpaceForInstancesOfEntityIfMissing?(entity: Entity): Promise<Action2VoidReturnType>;
 }
 
 // ###########################################################################################

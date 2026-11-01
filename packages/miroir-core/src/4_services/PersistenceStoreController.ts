@@ -750,9 +750,9 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   }
 
   /**
-   * #647: whether the devData storage of an Entity exists, asked of the store once per Entity and
-   * controller (a "no" too, until this controller creates it): a store that lists the Entities it was
-   * booted with (SQL) answers with its probe.
+   * #647: whether the devData storage of an Entity exists. A "yes" is kept for the controller's life;
+   * a "no" is asked again next time, since another server may create the storage meanwhile. A store
+   * that lists the Entities it was booted with (SQL) answers with its probe.
    */
   private devDataStorageExists(sectionStore: PersistenceStoreDataSectionInterface, entity: Entity): Promise<boolean> {
     const known = this.devDataStorage.get(entity.uuid);
@@ -763,7 +763,14 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
       ? sectionStore.hasStorageSpaceForInstancesOfEntity(entity)
       : Promise.resolve(sectionStore.getEntityUuids().includes(entity.uuid));
     this.devDataStorage.set(entity.uuid, probe);
-    probe.catch(() => this.devDataStorage.delete(entity.uuid));
+    probe.then(
+      (exists) => {
+        if (!exists && this.devDataStorage.get(entity.uuid) === probe) {
+          this.devDataStorage.delete(entity.uuid);
+        }
+      },
+      () => this.devDataStorage.delete(entity.uuid),
+    );
     return probe;
   }
 
@@ -790,7 +797,10 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
       if (await this.devDataStorageExists(sectionStore, entity)) {
         return ACTION_OK;
       }
-      const created = await sectionStore.createStorageSpaceForInstancesOfEntity(entity);
+      // a store that creates by dropping offers a creation that keeps what another server created
+      const created = sectionStore.createStorageSpaceForInstancesOfEntityIfMissing
+        ? await sectionStore.createStorageSpaceForInstancesOfEntityIfMissing(entity)
+        : await sectionStore.createStorageSpaceForInstancesOfEntity(entity);
       if (!(created instanceof Action2Error)) {
         this.devDataStorage.set(entity.uuid, Promise.resolve(true));
       }

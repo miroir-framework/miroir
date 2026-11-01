@@ -4,7 +4,7 @@ import { Action2Error, Domain2ElementFailed } from "../../../../src/0_interfaces
 import type { DomainControllerActionHost } from "../../../../src/0_interfaces/3_controllers/DomainControllerActionHost";
 import { asyncApplyExtractorTransformerInMemory, asyncRunQuery } from "../../../../src/2_domain/AsyncQuerySelectors";
 import { mergeReportData, reportDataParts } from "../../../../src/2_domain/ReportData";
-import { handleAction_runReportAction } from "../../../../src/3_controllers/RunReportAction";
+import { handleAction_runReportAction, partSection } from "../../../../src/3_controllers/RunReportAction";
 
 // #562: runReportAction runs a Report's queries as its page does and returns the Report's data.
 const APPLICATION = "5af03c98-fe5e-490b-b08f-e1230971c57f";
@@ -277,5 +277,32 @@ describe("#562 reportDataParts", () => {
 
   it("lets the Report's own query win over its stored Query", () => {
     expect(mergeReportData([{ a: 1, b: 1 }, { b: 2 }])).toEqual({ a: 1, b: 2 });
+  });
+});
+
+describe("#647 runReportAction on devData Entities", () => {
+  const BUNDLE_SIZE_MEASUREMENT = "90d603f9-58f8-4ac4-b2eb-cb1d718e8b3b";
+  const query = (extractors: Record<string, any>) =>
+    ({ queryType: "boxedQueryWithExtractorCombinerTransformer", application: APPLICATION, extractors }) as any;
+
+  it("runs a query reading only devData Entities on the devData store", () => {
+    expect(
+      partSection(
+        query({ sizes: { extractorOrCombinerType: "extractorInstancesByEntity", parentUuid: BUNDLE_SIZE_MEASUREMENT } }),
+      ),
+    ).toBe("devData");
+  });
+
+  it("runs any other query on the data store", () => {
+    expect(partSection(query({ loans: loansExtractor }))).toBe("data");
+    expect(
+      partSection(
+        query({
+          loans: loansExtractor,
+          sizes: { extractorOrCombinerType: "extractorInstancesByEntity", parentUuid: BUNDLE_SIZE_MEASUREMENT },
+        }),
+      ),
+    ).toBe("data");
+    expect(partSection(query({}))).toBe("data");
   });
 });
