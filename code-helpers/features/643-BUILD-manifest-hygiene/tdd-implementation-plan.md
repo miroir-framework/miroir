@@ -29,7 +29,7 @@ Out (analysis §2): duplicate-core detection and `@public` TSDoc (#621 items), `
 | 1 | Tarballs ship built files and declared entry points only | ✅ | `test_package_manifests.py` (files, exports, pack cases) |
 | 2 | Packages carry their metadata and their TSDoc | ✅ | `test_package_manifests.py` (metadata, TSDoc cases) |
 | 3 | Shared libraries are peers, checked by the dependency policy | ✅ | `test_package_manifests.py` (peer cases), `test_check_dependency_policy.py` (peers rule) |
-| 3b | Every import is declared, every declared runtime dependency is imported | ⬜ | `test_package_manifests.py` (declared-imports cases) |
+| 3b | Every import is declared, every declared runtime dependency is imported | ✅ | `test_package_manifests.py` (declared-imports cases) |
 | 4 | Nonreg step, docs, AC | ⬜ | `unit-643-package-manifests`, full filesystem nonreg |
 
 ## Locked implementation defaults
@@ -327,7 +327,7 @@ npm run nonreg:filesystem -- --runner shared
 
 ## Slice 3b — Every import is declared, every declared runtime dependency is imported
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -367,6 +367,39 @@ npm run nonreg:filesystem -- --runner shared
 ```
 
 ### Realization
+
+- RED: 11 failures, matching analysis §4.6 (v3).
+  - Undeclared imports in 4 packages: core, localcache-redux, store-mongodb and react.
+  - Unimported declarations in 6 packages: core, localcache-redux, store-filesystem, react, mcp and cli.
+  - The localcache-redux pack case failed too: its `dist/` defined `enablePatches` itself.
+- Two scanner bugs, both found while writing RED.
+  - **Python's standard library was used as the list of Node built-ins.** `uuid` is a Python module, so the scanner skipped it. This bug was also behind the analysis' first wrong "`uuid` unused". The list now comes from Node's `builtinModules`, and a self-test case covers `uuid`.
+  - **The first comment-stripping regex could start inside a string.** A `/*` inside a glob string swallowed the code after it. It is replaced by a small stripper that skips string literals.
+- GREEN:
+  - Declared:
+    - `immer` `11.1.21` in core and localcache-redux;
+    - `miroir-app-admin` in localcache-redux;
+    - `miroir-app-miroir` in store-mongodb;
+    - `@codemirror/view` `6.37.2` in react.
+  - Removed:
+    - from core: `diff`;
+    - from localcache-redux: `diff`, `fast-deep-equal`, `lodash`;
+    - from store-filesystem: `pg`, `pg-hstore`;
+    - from react: `@redux-devtools/core`, `react-hook-form`, `react-select`, `miroir-localcache-zustand`;
+    - from mcp and cli: `uuid`.
+  - Moved to `devDependencies`, because the packages' own tests import them:
+    - in mcp: `miroir-app-admin`, `miroir-app-miroir`, `miroir-localcache-redux` and the three stores. Its store peers and `peerDependenciesMeta` are gone.
+    - in cli: `miroir-app-*`.
+  - localcache-redux's tsup now has `clean: true`. Its `dist/` holds one chunk of 140 KB instead of four stale chunks of about 172 KB each. That chunk imports `immer` and `miroir-app-admin`.
+  - `npm install` added and removed no package, and changed no installed version. The dependency policy is clean.
+- Validation:
+  - Set built; 122 manifest tests passed with `MIROIR_REQUIRE_PACK=1`.
+  - The undo test passed 2 of 2, `mcpPackageSurface` 1 of 1, and the release tests 15.
+  - Browser net, all builds passed:
+    - app guard: 0 violations, 839,849 bytes eager, 3.7 KB less than Slice 3, from the shared `immer` and admin model;
+    - Electron guard: 0 violations;
+    - web self-test: 1224 of 1224.
+  - **Full `nonreg:filesystem`: 123 of 123.**
 
 ---
 

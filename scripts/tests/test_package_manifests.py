@@ -206,7 +206,6 @@ SPECIFIER = re.compile(
     r"""(?:^\s*(?:import|export)\s(?:[^;'"]*?\sfrom\s*)?|\bimport\(\s*|\bvi\.(?:mock|importActual|doMock)\(\s*)['"]([^'"]+)['"]""",
     re.MULTILINE,
 )
-COMMENT = re.compile(r"/\*.*?\*/|^\s*//.*?$", re.DOTALL | re.MULTILINE)
 SKIPPED_DIRS = {"node_modules", "dist", "release", ".vite"}
 
 
@@ -217,8 +216,34 @@ def source_files(*tops: str):
                 yield path
 
 
+def strip_comments(text: str) -> str:
+    """Remove // and /* */ comments outside string literals ('...', "...", `...`), so that a "/*" inside a string
+    (a glob, a path) does not swallow the code that follows it. Regex literals are not parsed: none of the set's
+    sources has a comment marker inside one before an import."""
+    out: list[str] = []
+    i, n = 0, len(text)
+    while i < n:
+        char = text[i]
+        if char in "'\"`":
+            j = i + 1
+            while j < n and text[j] != char:
+                j += 2 if text[j] == "\\" else 1
+            out.append(text[i : j + 1])
+            i = j + 1
+        elif text.startswith("//", i):
+            j = text.find("\n", i)
+            i = n if j < 0 else j
+        elif text.startswith("/*", i):
+            j = text.find("*/", i + 2)
+            i = n if j < 0 else j + 2
+        else:
+            out.append(char)
+            i += 1
+    return "".join(out)
+
+
 def import_specifiers(text: str) -> list[str]:
-    return SPECIFIER.findall(COMMENT.sub("", text))
+    return SPECIFIER.findall(strip_comments(text))
 
 
 def test_the_specifier_pattern_sees_every_import_form():
@@ -346,3 +371,91 @@ def test_each_shared_library_has_its_peer_range_and_owners_across_the_set():
         }
         assert set(declared) == expected_owners, f"{library}: peer owners"
         assert set(declared.values()) == {expected_range}, f"{library}: one peer range across the set"
+
+
+# --------------------------------------------------------------------------------------------------------------------
+# declared imports (Slice 3b, analysis D9): tsup externalizes only dependencies and peers and bundles the rest
+
+import sys
+
+# Node's built-in modules (`require("module").builtinModules`, Node 22, without the `_` internals).
+NODE_BUILTINS = set(
+    "assert async_hooks buffer child_process cluster console constants crypto dgram diagnostics_channel dns domain "
+    "events fs http http2 https inspector module net os path perf_hooks process punycode querystring readline repl "
+    "stream string_decoder sys timers tls trace_events tty url util v8 vm wasi worker_threads zlib".split()
+)
+# (package, dependency) -> reason. "imported" entries: imported but not declared; "declared": declared, not imported.
+ALLOWED_UNDECLARED_IMPORTS = {
+    ("miroir-core", "vitest"): "type-only, QueryRunnerTestTools; left to the 'Public API of core' item of #621",
+    ("miroir-app-miroir", "miroir-core"): "type-only; a runtime dependency would make a core <-> app-miroir cycle (#621 D7)",
+}
+ALLOWED_UNIMPORTED_DECLARATIONS = {
+    ("miroir-store-postgres", "pg"): "Sequelize loads the driver by name",
+    ("miroir-store-postgres", "pg-hstore"): "Sequelize loads it by name",
+    ("miroir-localcache-redux", "react"): "peer of react-redux (D1)",
+    ("miroir-react", "@emotion/styled"): "peer of @mui/material (D1)",
+}
+
+
+def package_of(specifier: str) -> str | None:
+    if specifier.startswith((".", "/", "node:", "virtual:")):
+        return None
+    parts = specifier.split("/")
+    name = "/".join(parts[:2]) if specifier.startswith("@") else parts[0]
+    return None if name in NODE_BUILTINS else name
+
+
+@functools.lru_cache(maxsize=None)
+def imported_packages(folder: str) -> frozenset[str]:
+    own = manifest(folder)["name"]
+    found = set()
+    for path in source_files(f"{folder}/src"):
+        if path.name.endswith(".d.ts") or ".test." in path.name:
+            continue  # ambient declarations (lodash-es.d.ts) are not imports of the build
+        for specifier in import_specifiers(path.read_text(encoding="utf-8", errors="replace")):
+            name = package_of(specifier)
+            if name and name != own:
+                found.add(name)
+    return frozenset(found)
+
+
+def runtime_declarations(folder: str) -> set[str]:
+    data = manifest(folder)
+    return set(data.get("dependencies", {})) | set(data.get("peerDependencies", {}))
+
+
+def test_package_of_reads_bare_specifiers_only():
+    assert [package_of(s) for s in ["zod", "@mui/material/styles", "./x.js", "node:fs", "fs/promises", "lodash/merge", "uuid"]] == [
+        "zod", "@mui/material", None, None, None, "lodash", "uuid",
+    ]  # fmt: skip
+
+
+@pytest.mark.parametrize("folder", published_folders())
+def test_a_published_package_declares_what_its_sources_import(folder):
+    name = manifest(folder)["name"]
+    undeclared = sorted(
+        package
+        for package in imported_packages(folder) - runtime_declarations(folder)
+        if (name, package) not in ALLOWED_UNDECLARED_IMPORTS
+    )
+    assert undeclared == [], f"{folder}: tsup bundles these into dist/; declare them (D9)"
+
+
+@pytest.mark.parametrize("folder", published_folders())
+def test_a_published_package_imports_what_it_declares(folder):
+    name = manifest(folder)["name"]
+    unused = sorted(
+        package
+        for package in runtime_declarations(folder) - imported_packages(folder)
+        if (name, package) not in ALLOWED_UNIMPORTED_DECLARATIONS
+    )
+    assert unused == [], f"{folder}: npm installs these for consumers but src/ never imports them (D9)"
+
+
+def test_localcache_redux_dist_does_not_inline_its_dependencies():
+    folder = "packages/miroir-localcache-redux"
+    require_built(folder)
+    built_code = "\n".join(path.read_text(encoding="utf-8") for path in (ROOT / folder / "dist").glob("*.js"))
+    assert "function enablePatches" not in built_code, "immer is bundled into dist/"
+    assert re.search(r"""from\s*['"]immer['"]""", built_code)
+    assert re.search(r"""from\s*['"]miroir-app-admin['"]""", built_code)
