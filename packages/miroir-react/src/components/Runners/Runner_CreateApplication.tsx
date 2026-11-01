@@ -40,8 +40,8 @@ import { getMemoizedReduxDeploymentsStateSelectorMap, useSelector } from "../../
 import { useMiroirContextService } from "../../contexts/MiroirContextReactProvider.js";
 import {
   entityDeployment
-} from "miroir-app-admin";
-import { selfApplicationMiroir } from "miroir-app-miroir";
+} from "@miroir-framework/core/admin";
+import { selfApplicationMiroir } from "@miroir-framework/core/meta-model";
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "../../viewConstants.js";
 import { useCurrentModelEnvironment, useReduxDeploymentsStateQuerySelectorForCleanedResult } from "../../ReduxHooks.js";

@@ -24,8 +24,8 @@ import {
   reportMiroirSandboxHome,
   reportMiroirWebAppOrDesktopHome,
   selfApplicationMiroir
-} from "miroir-app-miroir";
-import { deployment_Miroir } from "miroir-app-admin";
+} from "@miroir-framework/core/meta-model";
+import { deployment_Miroir } from "@miroir-framework/core/admin";
 import { packageName } from "../constants.js";
 import type { ReportUrlParamKeys } from "../reportUrlParams.js";
 import { useQueryTemplateResults } from "../components/Reports/ReportHooks.js";

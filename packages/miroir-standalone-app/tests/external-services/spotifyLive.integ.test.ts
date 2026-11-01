@@ -42,9 +42,9 @@ import { miroirFileSystemStoreSectionStartup } from "@miroir-framework/store-fil
 import { miroirIndexedDbStoreSectionStartup } from "@miroir-framework/store-indexeddb";
 import { miroirMongoDbStoreSectionStartup } from "@miroir-framework/store-mongodb";
 import { miroirPostgresStoreSectionStartup } from "@miroir-framework/store-postgres";
-import { deployment_Admin, deployment_Miroir } from "miroir-app-admin";
+import { deployment_Admin, deployment_Miroir } from "@miroir-framework/core/admin";
 import { deployment_Library_DO_NO_USE, selfApplicationLibrary } from "miroir-example-library";
-import { defaultMiroirMetaModel } from "miroir-app-miroir";
+import { defaultMiroirMetaModel } from "@miroir-framework/core/meta-model";
 import {
   defaultSpotifyAppModel,
   selfApplicationModelBranchSpotifyMasterBranch,

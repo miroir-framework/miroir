@@ -75,6 +75,25 @@ describe("bundleReportCore: packages of a module id", () => {
     expect(attributeModule("__vite-browser-external", context).kind).toBe("virtual");
   });
 
+  it("names an exports subpath entry of a workspace after its subpath (#652)", () => {
+    const withSubpaths = {
+      ...context,
+      workspaces: context.workspaces.map((workspace) =>
+        workspace.name === "@miroir-framework/core"
+          ? { ...workspace, subpaths: { "dist/meta-model.js": "meta-model", "dist/admin.js": "admin" } }
+          : workspace,
+      ),
+    };
+    expect(attributeModule(`${root}/packages/miroir-core/dist/meta-model.js`, withSubpaths)).toEqual({
+      name: "@miroir-framework/core/meta-model",
+      kind: "workspace",
+    });
+    expect(attributeModule(`${root}/node_modules/@miroir-framework/core/dist/admin.js`, withSubpaths).name).toBe(
+      "@miroir-framework/core/admin",
+    );
+    expect(attributeModule(miroirCore, withSubpaths).name).toBe("@miroir-framework/core");
+  });
+
   it("attributes Windows paths the same way", () => {
     const windows = { ...context, root: "C:\\dev\\miroir" };
     expect(attributeModule("C:\\dev\\miroir\\packages\\miroir-core\\dist\\index.js", windows).name).toBe("@miroir-framework/core");

@@ -1,5 +1,5 @@
 import type { Uuid } from "@miroir-framework/core";
-import { selfApplicationMiroir } from "miroir-app-miroir";
+import { selfApplicationMiroir } from "@miroir-framework/core/meta-model";
 
 // #633 D4: the tool pages (search, transformer builder) open on the application the user works on,
 // not on an example application miroir-react cannot depend on.

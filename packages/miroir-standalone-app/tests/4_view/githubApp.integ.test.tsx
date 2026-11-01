@@ -20,7 +20,7 @@ import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } 
 import type { DomainControllerInterface, Report } from "@miroir-framework/core";
 import { clearSecrets, MiroirContext, registerSecrets } from "@miroir-framework/core";
 import { LocalCacheProvider, MiroirContextReactProvider } from "@miroir-framework/react";
-import { defaultStoredMiroirTheme } from "miroir-app-miroir";
+import { defaultStoredMiroirTheme } from "@miroir-framework/core/meta-model";
 import {
   deployment_GitHub_DO_NOT_USE,
   reportGitHubRepositories,

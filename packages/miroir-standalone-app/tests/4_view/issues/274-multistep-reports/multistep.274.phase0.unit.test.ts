@@ -29,7 +29,7 @@ import {
   resolveOpenReportPageParams,
 } from "@miroir-framework/react";
 import { reportMultistepCountryCreate } from "miroir-example-library";
-import { selfApplicationMiroir } from "miroir-app-miroir";
+import { selfApplicationMiroir } from "@miroir-framework/core/meta-model";
 import { resolveRepoRoot } from "../../../helpers/integrationTestProfiles.js";
 
 const RUN_TEST = process.env.RUN_TEST;

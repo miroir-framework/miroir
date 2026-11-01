@@ -25,7 +25,7 @@ import {
   type ReportTestRunnerResult,
   type ReportTestSuiteContext,
 } from "@miroir-framework/core";
-import { entityReport, selfApplicationMiroir } from "miroir-app-miroir";
+import { entityReport, selfApplicationMiroir } from "@miroir-framework/core/meta-model";
 
 import { packageName } from "../../../constants.js";
 import { cleanLevel } from "../../4_view/constants.js";

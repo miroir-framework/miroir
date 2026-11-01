@@ -14,7 +14,7 @@ import {
   type EntityInstance,
   type ReportQueryLoadRequest,
 } from "@miroir-framework/core";
-import { entityBlob, entityDefinitionBlob } from "miroir-app-miroir";
+import { entityBlob, entityDefinitionBlob } from "@miroir-framework/core/meta-model";
 
 import { LocalCache } from "../src/index.js";
 

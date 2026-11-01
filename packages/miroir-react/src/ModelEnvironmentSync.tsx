@@ -10,7 +10,7 @@ import { useMiroirContextService } from "./contexts/MiroirContextReactProvider.j
 
 import { useCurrentModel } from "./ReduxHooks.js";
 
-import { selfApplicationMiroir } from "miroir-app-miroir";
+import { selfApplicationMiroir } from "@miroir-framework/core/meta-model";
 export type ModelEnvironmentSyncProps = {
   applicationDeploymentMap: ApplicationDeploymentMap;
   /** Applications whose deployment schemas this owner keeps warm (typically Miroir meta + current app). */

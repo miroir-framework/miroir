@@ -2813,13 +2813,13 @@
       "id": "build-636-server-release",
       "scopes": ["external", "tooling"],
       "tier": "default",
-      "title": "#636 \u2014 miroir-server release bundle (ncc, server library inlined) answers its HTTP surface on bench-agent; production mode serves release/client when present",
+      "title": "#636 \u2014 miroir-server release bundle (ncc, server library inlined) answers its HTTP surface on bench-agent; production mode serves release/client when present; holds no meta-model data next to the external core (#652)",
       "requires": "none",
       "parallel": false,
       "argv": [
         "bash",
         "-c",
-        "npm run build -w @miroir-framework/server && npm run build:server -w miroir-server && MIROIR_RELEASE_SMOKE=1 python -m pytest scripts/tests/test_server_release_smoke.py scripts/tests/test_server_release_smoke_production.py -q"
+        "npm run build -w @miroir-framework/server && npm run build:server -w miroir-server && MIROIR_RELEASE_SMOKE=1 python -m pytest scripts/tests/test_server_release_smoke.py scripts/tests/test_server_release_smoke_production.py scripts/tests/test_bundled_packages.py -q"
       ]
     },
     {

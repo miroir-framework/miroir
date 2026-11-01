@@ -40,7 +40,7 @@ import {
   entityTheme,
   entityTransformerDefinition,
   selfApplicationMiroir,
-} from "miroir-app-miroir";
+} from "@miroir-framework/core/meta-model";
 import {
   selectCurrentReduxDeploymentsStateFromReduxState,
   selectMiroirSelectorQueryParams,

@@ -24,14 +24,14 @@ import {
   resetAndInitApplicationDeployment,
   type StoreOrBundleAction,
 } from "@miroir-framework/core";
-import { deployment_Miroir } from "miroir-app-admin";
+import { deployment_Miroir } from "@miroir-framework/core/admin";
 import {
   deployment_Library_DO_NO_USE,
   selfApplicationLibrary,
 } from "miroir-example-library";
 import {
   selfApplicationMiroir,
-} from "miroir-app-miroir";
+} from "@miroir-framework/core/meta-model";
 
 import { setupMiroirTest } from "./setupMiroirTest.js";
 import { createMiroirDeploymentGetPersistenceStoreController } from "./tests-utils.js";

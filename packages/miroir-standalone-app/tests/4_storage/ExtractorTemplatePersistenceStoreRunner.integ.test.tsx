@@ -37,7 +37,7 @@ import { miroirPostgresStoreSectionStartup } from '@miroir-framework/store-postg
 import {
   deployment_Admin,
   deployment_Miroir,
-} from "miroir-app-admin";
+} from "@miroir-framework/core/admin";
 import {
   author1,
   author2,
@@ -72,7 +72,7 @@ import { AppStackIntegrationTestSession } from '../helpers/IntegrationTestSessio
 import {
   defaultMiroirMetaModel,
   entityEntity,
-} from "miroir-app-miroir";
+} from "@miroir-framework/core/meta-model";
 let domainController: DomainControllerInterface;
 let localCache: LocalCacheInterface;
 let localMiroirPersistenceStoreController: PersistenceStoreControllerInterface;

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import type { EndpointDefinition } from "@miroir-framework/core";
-import { queryEndpointVersionV1 } from "miroir-app-miroir";
+import { queryEndpointVersionV1 } from "@miroir-framework/core/meta-model";
 import { entityBook, selfApplicationLibrary } from "miroir-example-library";
 
 import { mcpToolEntry } from "../../src/tools/mcpHandlersForEndpoint.js";

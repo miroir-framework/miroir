@@ -8,7 +8,7 @@ import {
   modelEndpointV1,
   RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY,
   transformer_metaModel_entityDefinition_extractAttributes_json,
-} from "miroir-app-miroir";
+} from "@miroir-framework/core/meta-model";
 import React, { Suspense, useCallback, useState } from "react";
 
 import { BlockEditorDisplayContext, LazyBlockEditorView } from "@miroir-framework/react";

@@ -104,7 +104,9 @@ STAGE_CACHES_STORES=(
   miroir-store-mongodb
 )
 STAGE_UI_SERVICES=(miroir-react miroir-mcp miroir-diagram-class)
-STAGE_APPS=(miroir-cli miroir-ai miroir-server-library)
+# #652: the server library carries the Node startup call (`@miroir-framework/server/startup`) that the CLI imports
+STAGE_SERVER_LIBRARY=(miroir-server-library)
+STAGE_APPS=(miroir-cli miroir-ai)
 STAGE_STANDALONE_DEPS=(miroir-example-library miroir-example-spotify miroir-example-github miroir-app-meta miroir-fixture-appForTest)
 STAGE_STANDALONE=(miroir-standalone-app)
 STAGE_DEPLOY_TEST=(miroir-example-library miroir-example-spotify miroir-example-github miroir-app-meta miroir-fixture-appForTest miroir-example-postgres)
@@ -681,10 +683,11 @@ record_time "6/9  miroir-react, miroir-mcp, miroir-diagram-class" "$t0"
 # ---------------------------------------------------------------------------
 # Step 7 – Application-level packages
 # ---------------------------------------------------------------------------
-step "7/9 · miroir-cli, miroir-ai, miroir-server-library"
+step "7/9 · miroir-server-library, then miroir-cli, miroir-ai"
 t0=$(now_secs)
+run_stage_packages "server library" "${STAGE_SERVER_LIBRARY[@]}"
 run_stage_packages "apps" "${STAGE_APPS[@]}"
-record_time "7/9  miroir-cli, miroir-ai, miroir-server-library" "$t0"
+record_time "7/9  miroir-server-library, miroir-cli, miroir-ai" "$t0"
 
 # ---------------------------------------------------------------------------
 # Step 8 – Application-level packages

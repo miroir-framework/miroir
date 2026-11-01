@@ -34,7 +34,7 @@ import {
   seedEnvironmentStateAtStart,
   type ResolvedEnvironment,
 } from "@miroir-framework/env";
-import { startMiroirNode } from "miroir-localcache-redux/node";
+import { startMiroirNode } from "@miroir-framework/server/startup";
 
 import { registerStoreOnDemand } from "./storesOnDemand.js";
 

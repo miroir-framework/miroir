@@ -171,6 +171,11 @@ def test_every_name_index_ts_exports_has_a_declaration():
 IMPORT_FROM_CORE = re.compile(
     r"\bimport\s+(type\s+)?\{([^}]*)\}\s*from\s*([\"'])(?:@miroir-framework/core|miroir-core)\3"
 )
+# #652: the meta-model subpaths carry the Miroir and Admin model data (every export `any`, no API): the template may
+# import them, by name or as a namespace, outside the @public marks
+IMPORT_FROM_META_MODEL = re.compile(
+    r"\bimport\s+(?:type\s+)?(?:\{[^}]*\}|\*\s*as\s+\w+)\s*from\s*([\"'])@miroir-framework/core/(?:meta-model|admin)\1"
+)
 # any string naming core or a subpath of it: each must be the specifier of a plain named import
 CORE_SPECIFIER = re.compile(r"([\"'`])(?:@miroir-framework/core|miroir-core)(?:/[^\"'`]*)?\1")
 TEMPLATE_SUFFIXES = {".ts", ".tsx", ".mts", ".cts", ".js", ".jsx", ".mjs", ".cjs"}
@@ -193,6 +198,7 @@ def named_imports(text: str) -> tuple[set[str], list[str]]:
                 words = words[1:]
             if words:
                 names.add(words[0])
+    plain_ends |= {match.end() for match in IMPORT_FROM_META_MODEL.finditer(code)}
     others = [
         code[code.rfind("\n", 0, m.start()) + 1 : m.end()].strip()
         for m in CORE_SPECIFIER.finditer(code)
@@ -225,10 +231,13 @@ export { F } from "@miroir-framework/core";
 const g = await import("@miroir-framework/core");
 const h = await import(`@miroir-framework/core`);
 import { H } from "@miroir-framework/core/model-validation-fs";
+import { entityEntity } from "@miroir-framework/core/meta-model";
+import * as admin from "@miroir-framework/core/admin";
+export { I } from "@miroir-framework/core/meta-model";
 """
     names, others = named_imports(text)
-    assert names == {"A", "B", "C"}
-    assert len(others) == 6
+    assert names == {"A", "B", "C"}  # meta-model data imports are neither API names nor violations (#652)
+    assert len(others) == 7  # ... but a re-export of them is
 
 
 def test_the_template_only_imports_public_exports_of_core():

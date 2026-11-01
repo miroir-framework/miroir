@@ -31,7 +31,7 @@ import {
 import { miroirBundledStoreSectionStartup } from "@miroir-framework/store-bundled";
 import type { BundledDeploymentData } from "@miroir-framework/store-bundled";
 import { miroirIndexedDbStoreSectionStartup } from "@miroir-framework/store-indexeddb";
-import { deployment_Admin } from "miroir-app-admin";
+import { deployment_Admin } from "@miroir-framework/core/admin";
 import { loadLocalCacheImplementation } from "./localCacheImplementation";
 // Node-only store drivers (filesystem / postgres / mongodb) must NOT be static
 // imports here — evaluating them in the Vite webApp pulls the MongoDB Node
@@ -71,7 +71,7 @@ import {
   type Uuid,
 } from "@miroir-framework/core";
 
-import { defaultMiroirMetaModel } from "miroir-app-miroir";
+import { defaultMiroirMetaModel } from "@miroir-framework/core/meta-model";
 
 import type {
   AdminStoreOptions,

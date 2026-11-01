@@ -61,11 +61,11 @@ Sibling repos, linked locally only when regenerating types from schemas: **jzod*
 Build order (`build-all.sh` is canonical; folders are `packages/miroir-*`, published names `@miroir-framework/*`):
 
 1. Optional siblings: `jzod`, `jzod-ts` (when linked locally)
-2. `miroir-app-miroir`, `miroir-app-admin` (core types and concepts as ML schemas)
+2. `miroir-app-miroir`, `miroir-app-admin` (ML schemas, bundled into core)
 3. `@miroir-framework/core` (foundation, generated types)
 4. `miroir-localcache*`, `@miroir-framework/store-*` (`filesystem`, `indexeddb`, `postgres`, `mongodb`, `bundled`; see `docs/reference/data-architecture-deployments.md`)
 5. `@miroir-framework/react`, `@miroir-framework/mcp`, `miroir-diagram-class`
-6. `@miroir-framework/cli`, `miroir-ai`
+6. `@miroir-framework/server`, `/cli`, `miroir-ai`
 7. `miroir-standalone-app`
 8. `miroir-example-*` (example applications), `miroir-fixture-*` (test fixtures)
 

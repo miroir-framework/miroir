@@ -189,7 +189,7 @@ import {
   storeManagementEndpoint,
   undoRedoEndpointVersionV1,
   entityCommit
-} from "..";
+} from "../index";
 
 export const defaultMiroirMetaModelEntityNameToAttributeName: Record<string, string> = {
   Entity: "entities",

@@ -16,7 +16,7 @@ import { buildModelValidationGroupsFromFilesystem } from "@miroir-framework/core
 
 import {
   defaultMiroirMetaModel
-} from "miroir-app-miroir";
+} from "@miroir-framework/core/meta-model";
 
 // ================================================================================================
 // Model environments

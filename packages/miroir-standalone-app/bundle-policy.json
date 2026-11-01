@@ -24,6 +24,7 @@
     "d3*",
     "diff",
     "@miroir-framework/mcp",
+    "@miroir-framework/mcp/client",
     "miroir-diagram-class",
     "mermaid",
     "svg-toolbelt"
@@ -66,10 +67,9 @@
     "immer",
     "lodash-es",
     "loglevelnext",
-    "miroir-app-admin",
-    "miroir-app-miroir",
+    "@miroir-framework/core/admin",
+    "@miroir-framework/core/meta-model",
     "@miroir-framework/core",
-    "miroir-localcache-redux",
     "@miroir-framework/react",
     "@miroir-framework/store-indexeddb",
     "mustache",
@@ -421,7 +421,8 @@
     "miroir-example-github",
     "miroir-example-library",
     "miroir-fixture-appForTest",
-    "@miroir-framework/mcp",
+    "@miroir-framework/mcp/client",
+    "@miroir-framework/react/local-cache",
     "@miroir-framework/store-bundled",
     "module-error",
     "node:buffer via bn.js",
@@ -530,6 +531,6 @@
   ],
   "defeatedDynamicImports": [],
   "eagerPackageMaxBytes": {
-    "miroir-app-miroir": 3400000
+    "@miroir-framework/core/meta-model": 3400000
   }
 }

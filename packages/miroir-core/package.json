@@ -28,6 +28,14 @@
     "./ml-to-ts": {
       "types": "./dist/ml-to-ts.d.ts",
       "import": "./dist/ml-to-ts.js"
+    },
+    "./meta-model": {
+      "types": "./dist/meta-model.d.ts",
+      "import": "./dist/meta-model.js"
+    },
+    "./admin": {
+      "types": "./dist/admin.d.ts",
+      "import": "./dist/admin.js"
     }
   },
   "files": [
@@ -39,11 +47,15 @@
     "dist/model-validation-fs.js",
     "dist/model-validation-fs.js.map",
     "dist/ml-to-ts.js",
-    "dist/ml-to-ts.js.map"
+    "dist/ml-to-ts.js.map",
+    "dist/meta-model.js",
+    "dist/meta-model.js.map",
+    "dist/admin.js",
+    "dist/admin.js.map"
   ],
   "scripts": {
     "copy-files": "copyfiles -u 1 src/**/*.json src/**/*.css dist/src",
-    "build": "npm run copy-files && tsup",
+    "build": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\" && npm run copy-files && tsup",
     "devBuild": "npm run generate-ts-types && echo DONE PRE-BUILD && npm run build",
     "generate-ts-types": "tsx ./scripts/generate-ts-types.ts",
     "testByFileBailOut": "vitest run --maxWorkers=1 --reporter=verbose --bail=1",
@@ -64,8 +76,6 @@
     "fast-json-stable-stringify": "2.1.0",
     "immer": "11.1.21",
     "json-diff": "1.0.6",
-    "miroir-app-admin": "*",
-    "miroir-app-miroir": "*",
     "mustache": "4.2.0",
     "serialize-error": "13.0.2",
     "uuid": "14.0.3",
@@ -74,6 +84,9 @@
   "devDependencies": {
     "@babel/plugin-syntax-import-attributes": "7.29.7",
     "@babel/preset-typescript": "8.0.7",
+    "@miroir-framework/store-bundled": "*",
+    "@miroir-framework/store-filesystem": "*",
+    "@miroir-framework/store-postgres": "*",
     "@rollup/plugin-commonjs": "29.0.3",
     "@types/jest": "30.0.0",
     "@types/json-diff": "1.0.3",
@@ -81,10 +94,9 @@
     "@types/node": "26.6.5",
     "copyfiles": "2.4.1",
     "jest": "30.5.2",
+    "miroir-app-admin": "*",
+    "miroir-app-miroir": "*",
     "miroir-example-library": "*",
-    "@miroir-framework/store-bundled": "*",
-    "@miroir-framework/store-filesystem": "*",
-    "@miroir-framework/store-postgres": "*",
     "pg": "8.23.1",
     "pg-hstore": "2.3.4",
     "sequelize": "6.37.8",

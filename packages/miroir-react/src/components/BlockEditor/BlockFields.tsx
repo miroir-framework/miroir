@@ -2,7 +2,7 @@
 import { css } from "@emotion/react";
 import { Popover } from "@mui/material";
 import { Formik } from "formik";
-import { selfApplicationMiroir } from "miroir-app-miroir";
+import { selfApplicationMiroir } from "@miroir-framework/core/meta-model";
 import {
   defaultSelfApplicationDeploymentMap,
   miroirFundamentalMlSchemaUuid,

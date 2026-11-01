@@ -9,7 +9,7 @@ import {
 import {
   entityEntity,
   entityEntityVersion,
-} from "miroir-app-miroir";
+} from "@miroir-framework/core/meta-model";
 import {
   entityAuthor,
   entityBook,

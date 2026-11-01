@@ -50,7 +50,8 @@ export function npmPackageOfId(id) {
 }
 
 /**
- * @typedef {{ dir: string, name: string }} Workspace  `dir` relative to the repository root
+ * @typedef {{ dir: string, name: string, subpaths?: Record<string, string> }} Workspace  `dir` relative to the
+ *   repository root; `subpaths`: file (relative to `dir`) -> `exports` subpath it is the entry of (#652)
  * @typedef {{ root: string, workspaces: Workspace[], app: string }} AttributionContext
  *   `root`: repository root (absolute); `app`: name of the workspace package being built
  * @typedef {{ name: string, kind: "app" | "workspace" | "npm" | "virtual" }} Attribution
@@ -71,19 +72,31 @@ export function attributeModule(id, context) {
   const npmPackage = npmPackageOfId(id);
   if (npmPackage) {
     const workspace = context.workspaces.find((candidate) => candidate.name === npmPackage);
-    return workspace ? workspaceAttribution(workspace, context) : { name: npmPackage, kind: "npm" };
+    if (!workspace) {
+      return { name: npmPackage, kind: "npm" };
+    }
+    const modulePathText = modulePath(id).replace(/\\/g, "/");
+    const marker = `node_modules/${npmPackage}/`;
+    const inPackage = modulePathText.slice(modulePathText.lastIndexOf(marker) + marker.length);
+    return workspaceAttribution(workspace, context, inPackage);
   }
   const path = relativePath(id, context.root);
   const workspace = context.workspaces.find((candidate) => path.startsWith(`${candidate.dir}/`));
   if (workspace) {
-    return workspaceAttribution(workspace, context);
+    return workspaceAttribution(workspace, context, path.slice(workspace.dir.length + 1));
   }
   return { name: "(bundler runtime)", kind: "virtual" };
 }
 
-/** @param {Workspace} workspace @param {AttributionContext} context @returns {Attribution} */
-function workspaceAttribution(workspace, context) {
-  return { name: workspace.name, kind: workspace.name === context.app ? "app" : "workspace" };
+/**
+ * A workspace module, named after the `exports` subpath it is the entry of, if any (#652: core's
+ * `dist/meta-model.js` is `@miroir-framework/core/meta-model`, so the meta-model keeps its own line and cap).
+ * @param {Workspace} workspace @param {AttributionContext} context @param {string} [inPackage] @returns {Attribution}
+ */
+function workspaceAttribution(workspace, context, inPackage) {
+  const subpath = inPackage === undefined ? undefined : workspace.subpaths?.[inPackage];
+  const name = subpath ? `${workspace.name}/${subpath}` : workspace.name;
+  return { name, kind: workspace.name === context.app ? "app" : "workspace" };
 }
 
 /**

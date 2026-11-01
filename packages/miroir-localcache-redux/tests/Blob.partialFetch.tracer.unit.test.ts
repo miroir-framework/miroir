@@ -28,7 +28,7 @@ import {
   reportBlobDetails,
   reportBlobList,
   selfApplicationMiroir,
-} from "miroir-app-miroir";
+} from "@miroir-framework/core/meta-model";
 
 import { LocalCache } from "../src/index.js";
 

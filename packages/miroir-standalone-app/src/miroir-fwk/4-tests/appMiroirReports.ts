@@ -4,7 +4,7 @@ import {
   type DomainControllerInterface,
   type EntityInstance,
 } from "@miroir-framework/core";
-import { entityReport, selfApplicationMiroir } from "miroir-app-miroir";
+import { entityReport, selfApplicationMiroir } from "@miroir-framework/core/meta-model";
 
 /**
  * The Miroir Reports loaded in the app (#330), read when a run starts: an in-app run of a suite of

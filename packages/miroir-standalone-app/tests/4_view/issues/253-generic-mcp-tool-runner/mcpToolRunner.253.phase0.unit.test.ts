@@ -14,7 +14,7 @@ import {
   runnerFreezeApplicationVersion,
   runnerMcpGetInstances,
   selfApplicationMiroir,
-} from "miroir-app-miroir";
+} from "@miroir-framework/core/meta-model";
 import {
   lendDocument,
   mcpLendDocument,

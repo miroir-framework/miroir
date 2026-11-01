@@ -11,7 +11,7 @@ import {
 } from "@miroir-framework/core";
 import { buildModelValidationGroupsFromFilesystem } from "@miroir-framework/core/model-validation-fs";
 
-import { defaultMiroirMetaModel } from "miroir-app-miroir";
+import { defaultMiroirMetaModel } from "@miroir-framework/core/meta-model";
 
 // ================================================================================================
 // Model + data validation groups (filesystem-driven)

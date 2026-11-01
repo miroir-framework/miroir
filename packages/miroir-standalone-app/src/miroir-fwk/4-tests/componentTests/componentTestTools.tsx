@@ -60,7 +60,7 @@ import {
   reportPublisherList,
   selfApplicationLibrary,
 } from "miroir-example-library";
-import { adminSelfApplication } from "miroir-app-admin";
+import { adminSelfApplication } from "@miroir-framework/core/admin";
 import {
   defaultMiroirMetaModel,
   entityEndpointVersion,
@@ -71,7 +71,7 @@ import {
   entityReport,
   entitySelfApplicationVersion,
   selfApplicationMiroir,
-} from "miroir-app-miroir";
+} from "@miroir-framework/core/meta-model";
 
 import { packageName } from "../../../constants.js";
 import { BlockViewModeProvider } from "@miroir-framework/react";

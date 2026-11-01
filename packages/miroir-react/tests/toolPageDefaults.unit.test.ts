@@ -7,7 +7,7 @@ import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
-import { entityEntity, entityTransformerDefinition, selfApplicationMiroir } from "miroir-app-miroir";
+import { entityEntity, entityTransformerDefinition, selfApplicationMiroir } from "@miroir-framework/core/meta-model";
 import { entityAuthor, selfApplicationLibrary } from "miroir-example-library";
 
 import { defaultToolApplication, defaultToolEntity } from "../src/routes/applicationDefaults.js";

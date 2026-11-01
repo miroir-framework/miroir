@@ -27,7 +27,6 @@
     "node": ">=22"
   },
   "dependencies": {
-    "miroir-app-miroir": "*",
     "@miroir-framework/core": "*",
     "mongodb": "7.7.0"
   },

@@ -24,7 +24,7 @@ import { cleanLevel } from "../viewConstants.js";
 import { usePageConfiguration } from "../services/usePageConfiguration.js";
 import { emptyObject } from "../tools/emptyObject.js";
 
-import { deployment_Miroir } from "miroir-app-admin";
+import { deployment_Miroir } from "@miroir-framework/core/admin";
 import { useCurrentModel } from "../ReduxHooks.js";
 import { defaultToolEntity } from "./applicationDefaults.js";
 import { ReportPageContextProvider } from "../components/Reports/ReportPageContext.js";
@@ -36,7 +36,7 @@ import {
   entityTransformerDefinition,
   miroirTest_tr_resolveConditionalSchema,
   selfApplicationMiroir,
-} from "miroir-app-miroir";
+} from "@miroir-framework/core/meta-model";
 // ################################################################################################
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "TransformerBuilderPage");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);

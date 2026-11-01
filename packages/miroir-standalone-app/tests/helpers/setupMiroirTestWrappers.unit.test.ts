@@ -18,8 +18,8 @@ import { MiroirActivityTracker, MiroirEventService } from "@miroir-framework/cor
 import { selfApplicationLibrary } from "miroir-example-library";
 import {
   selfApplicationMiroir,
-} from "miroir-app-miroir";
-import { deployment_Miroir } from "miroir-app-admin";
+} from "@miroir-framework/core/meta-model";
+import { deployment_Miroir } from "@miroir-framework/core/admin";
 
 describe("setupMiroirTest wrappers (Gap E B2)", () => {
   const miroirConfig = { client: { emulateServer: true } } as MiroirConfigClient;

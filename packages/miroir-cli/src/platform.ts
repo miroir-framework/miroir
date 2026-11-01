@@ -16,7 +16,7 @@ import {
   type ResolvedEnvironment,
 } from "@miroir-framework/env";
 
-import { startMiroirNode } from "miroir-localcache-redux/node";
+import { startMiroirNode } from "@miroir-framework/server/startup";
 
 import { loadStoreStartups } from "./startup/storeStartup.js";
 
