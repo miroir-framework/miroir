@@ -30,7 +30,7 @@ Out (analysis §2): duplicate-core detection and `@public` TSDoc (#621 items), `
 | 2 | Packages carry their metadata and their TSDoc | ✅ | `test_package_manifests.py` (metadata, TSDoc cases) |
 | 3 | Shared libraries are peers, checked by the dependency policy | ✅ | `test_package_manifests.py` (peer cases), `test_check_dependency_policy.py` (peers rule) |
 | 3b | Every import is declared, every declared runtime dependency is imported | ✅ | `test_package_manifests.py` (declared-imports cases) |
-| 4 | Nonreg step, docs, AC | ⬜ | `unit-643-package-manifests`, full filesystem nonreg |
+| 4 | Nonreg step, docs, AC | ✅ | `unit-643-package-manifests`, full filesystem nonreg |
 
 ## Locked implementation defaults
 
@@ -405,7 +405,7 @@ npm run nonreg:filesystem -- --runner shared
 
 ## Slice 4 — Nonreg step, docs, AC
 
-**Status:** ⬜ pending
+**Status:** ✅ done
 
 ### Goal
 
@@ -438,5 +438,18 @@ npm run nonreg:filesystem -- --runner shared
 | Dependency policy accepts the peers | `test_check_dependency_policy.py` (peers), `check_dependency_policy.py` green |
 | (D9, from the analysis review) no undeclared or unused runtime dependency in the set | `test_a_published_package_declares_what_its_sources_import`, `test_a_published_package_imports_what_it_declares` |
 | `npm install`, gate, release tests, filesystem nonreg | Slice 3 and 4 validation |
+| (code review) each tarball carries the MIT licence text | `test_a_published_tarball_holds_its_entry_points_and_no_sources` (a `LICENSE*` in the pack list) |
 
 ### Realization
+
+- Nonreg step `unit-643-package-manifests` passes. The `bundle` job of `pr-checks.yml` builds `miroir-server-library` and `miroir-cli` after the apps, installs pytest, then runs the manifest test with `MIROIR_REQUIRE_PACK=1`. The `bundle-paths` filter includes `published-packages.json` and the test file.
+- Docs: `docs/reference/release-process.md` §10a, the `peers` row of `docs/contributing/development-setup.md`, the policy docstring. Epic: I5 rows 2 and 3 ✅ #643, D10 Accepted.
+- Release pipeline: the first `release_version.py --bump patch --since 0.5.0-rc.1 --apply --worktree` run failed at the P3 clean consumer with ERESOLVE. npm picked `react` 19.3.1 for the `@emotion/*` peers (`>=16.8.0`), then refused `miroir-react`'s `react` `^18.2.0`. A bisect in a scratch consumer showed `>=18.2.0` installs `react` 18.3.1. Both owners now use `>=18.2.0` (analysis D1, v4). The rerun on `60b0a53d8` built 24 packages, packed P0 to P5, and passed every clean-consumer install (exit 0).
+- Adversarial code review, five findings fixed:
+  - the bundle job had no pytest;
+  - 13 of 14 tarballs shipped no licence, because npm packs a `LICENSE*` only when the folder holds one: each package now has the root `LICENSE.md`, and the pack case asserts it;
+  - `tsconfig_chain_value` used a comment regex that globs such as `./dist/**` could fool: it uses `strip_comments`;
+  - `satisfies` read `^0.0.z`, `>1.2` and `<=1.2` wrongly: fixed or refused, with tests;
+  - the import scanner missed `require()` and the root `index.ts` build entries of the meta-model packages, and could scan nothing: both read, and an empty scan fails.
+- Not changed: `miroir-core/LICENSE.md` names another copyright holder than the root licence; left for the maintainer.
+- Validation: `MIROIR_REQUIRE_PACK=1 pytest scripts/tests` 502 passed, 12 skipped (non-pack cases); policy clean.
