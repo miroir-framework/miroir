@@ -13,7 +13,7 @@ Unblocks: [#483 test run history for any application](https://github.com/miroir-
 Key sources: [`Model.ts` (core)](../../../packages/miroir-core/src/1_core/Model.ts) · [`PersistenceStoreController.ts`](../../../packages/miroir-core/src/4_services/PersistenceStoreController.ts) · [`Environment.ts`](../../../packages/miroir-core/src/1_core/environment/Environment.ts) · [`Deployment.ts`](../../../packages/miroir-core/src/1_core/Deployment.ts) · [`DomainController.ts`](../../../packages/miroir-core/src/3_controllers/DomainController.ts) · [`getMiroirFundamentalMlSchema.ts`](../../../packages/miroir-core/src/0_interfaces/1_core/bootstrapMlSchemas/getMiroirFundamentalMlSchema.ts) · [`runnerIntegTestSupport.ts`](../../../packages/miroir-standalone-app/src/miroir-fwk/4-tests/runnerIntegTestSupport.ts) · [`packages/miroir-app-meta/`](../../../packages/miroir-app-meta/)
 
 **Document role:** analysis and decision record.
-**Status:** D1–D12 are A's decisions from the grilling (2026-11-01, two rounds, recorded in the issue). D13–D23 are mechanism choices found while mapping the code. They are proposed here and wait for A's review. Three of A's decisions are corrected by facts found later: D7 (folders), D9 (no Miroir testbed exists, see D14) and D4 (`PageLoadMeasurement` is already lazy). They are marked "Corrected" below.
+**Status:** D1–D12 are A's decisions from the grilling (2026-11-01, two rounds, recorded in the issue). D13–D24 are mechanism choices found while mapping the code. They are proposed here and wait for A's review. Three of A's decisions are corrected by facts found later: D7 (folders), D9 (no Miroir testbed exists, see D14) and D4 (`PageLoadMeasurement` is already lazy). They are marked "Corrected" below.
 
 **Document history:** first draft 2026-11-01, then revised the same day after an adversarial review against the code. The review found that Reports live in `miroir_data/`, not `miroir_model/` (D7). It also found that a non-Miroir application's `devData` store cannot find its Entities at boot (D21), that the rollback fetches `devData` Entities for every application (D22), that a testbed gets its stores from test storage helpers rather than from init parameters (D14), and 9 wrong counts or missed references, all corrected below.
 
@@ -58,7 +58,7 @@ Facts checked on `_integration` at `0563762` (2026-11-01).
 | D7 | Model location | **Entities in `miroir_model/16dbfe28/`, Reports in `miroir_data/3f2baa83/`, MiroirTests in `miroir_data/a311f363/`**, where Miroir keeps each kind; uuids unchanged. The Meta SelfApplication, Deployment, ModelBranch and Menu rows are deleted, with `metaInitApplicationVersion` (a code object) | G2, G5 | Accepted (A), corrected |
 | D8 | Menu | **"Dev data" items in `MiroirMenu`, section `devData`**; generic per-application entry in #483. Where the section is absent (deliveries), the items open empty Reports | G3 | Accepted (A) |
 | D9 | MiroirTests testbed | ~~Miroir testbed~~ → D14 | G3 | Corrected |
-| D10 | Environments | **`dev` live, every `test-*` copy, for Miroir; not docker, desktop, bundled.** `self-test` extends `dev` and inherits it | G3, G4 | Accepted (A) |
+| D10 | Environments | **`dev` live, every `test-*` copy, for Miroir; not docker, desktop, bundled.** `self-test`, `cloud-agent` and `local` extend `dev`, and `bench-agent` extends `test-filesystem`, so they inherit it. On a non-filesystem store, `copy` starts empty: `ModelInitializer` seeds only exported JSON, and the rows are not exported (D17). The browser profile `miroirConfig.browser-emulatedServer-indexedDb.json` gets a Miroir `devData` entry in place of its Meta entry | G3, G4 | Accepted (A) |
 | D11 | Package | **`miroir-app-meta` deleted; helpers, scripts, tests move to `miroir-app-miroir`** | G5 | Accepted (A) |
 | D12 | #239 | **separate; a regression test checks `devData` rows land in `devData` only** | G1 | Accepted (A) |
 | D13 | Code shape for a second optional section | **one list of optional sections, used where code names `modelVersion` as an optional store** | G2 | Proposed |
@@ -72,8 +72,9 @@ Facts checked on `_integration` at `0563762` (2026-11-01).
 | D21 | Entity definitions for a `devData` store | **a static `devDataEntityDefinitions` map, used to boot the section and to create tables lazily; `devData` Entities filtered out of the `model` and `data` boots** | G1, G2 | Proposed |
 | D22 | Rollback of `devData` Entities | **generalise the absent-section mapping; apply the cache flag to `devData` Entities; fetch nothing when the deployment has no `devData` store** | G3, G4 | Proposed |
 | D23 | A `devData` row written to another section | **rejected with a named error by `PersistenceStoreController`** | G1 | Proposed |
+| D24 | `clear` and `resetModel` on a deployment with `devData` | **`clear` leaves `devData` alone; only `deleteStore` drops it** | G3 | Proposed |
 
-**Rationale.** D1–D12 settle what A asked for. D13–D23 come from §4: the `modelVersion` pattern is spread over about 35 places, one of them (`Environment.ts:164`) would silently put `devData` in the model/data store if left as is, the `devData` Entities live in Miroir's model while their rows live in another application's deployment, no Miroir testbed exists, and `miroir-app-miroir` cannot import `miroir-core` at runtime from its `index.ts`.
+**Rationale.** D1–D12 settle what A asked for. D13–D24 come from §4: the `modelVersion` pattern is spread over about 35 places, one of them (`Environment.ts:164`) would silently put `devData` in the model/data store if left as is, the `devData` Entities live in Miroir's model while their rows live in another application's deployment, no Miroir testbed exists, and `miroir-app-miroir` cannot import `miroir-core` at runtime from its `index.ts`.
 
 ### D7 correction — folders
 
@@ -90,7 +91,7 @@ A's answer was "Reports in `miroir-app-miroir`'s model". In the Miroir applicati
 | D13-a. Copy each branch | a `devData` branch next to each `modelVersion` branch (`devDataStoreSection` field, `ensureDevDataStorageForEntity`, `isAbsentDevDataSectionError`, one more factory per store) | smallest diff per site; `modelVersion` code untouched | about 25 duplicated branches; the next optional section copies them again |
 | **D13-b. One list of optional sections** ★ | `optionalApplicationSections = ["modelVersion", "devData"] as const` in core. `PersistenceStoreController` keeps a `Partial<Record<OptionalApplicationSection, Store>>`. The manager, `ActionRunner` create/delete, `environmentSections`, the `sectionConfiguration` suffix, `testbedStorageConfiguration`, `testApplicationStorageConfiguration`, `testApplicationStoreTeardown`, `deployExample.SECTIONS`, Electron `storesOnDemand.SECTIONS`, `Deployment.ts:549` and `IndexedDb.levelDatabaseDirectoryNames` iterate it. The absent-section error marker names the section | one mechanism; a new optional section is one list entry, its routing set and its definitions map | touches working `modelVersion` code; the `modelVersion` tests (§5) must stay green |
 
-**Decision (proposed):** D13-b. Each store's `startup.ts` registers its optional-section factories in a loop over the list, naming the store from the section (`-modelVersion`, `-devData`). `isAbsentModelVersionSectionError` stays exported as a wrapper, because `miroir-core/src/index.ts:1046-1050` exports it.
+**Decision (proposed):** D13-b. Each store's `startup.ts` registers its optional-section factories in a loop over the list, and names the store the way it names the `modelVersion` store, with `devData` in place of `modelVersion` (the `_modelVersion` suffix from `Environment.ts:164`, plus the store's own `-modelVersion` suffix where it adds one). All 4 stores register the factory in the same slice: `test-sql`, `test-indexedDb` and `test-mongodb` extend `test-filesystem`, so they inherit Miroir's `devData` declaration at once, and `storeSectionFactory` throws for an unregistered section (`PersistenceStoreController.ts:86-95`). `isAbsentModelVersionSectionError` stays exported as a wrapper, because `miroir-core/src/index.ts:1046-1050` exports it.
 
 ### D14 — Testbed of the 3 moved MiroirTests (corrects D9)
 
@@ -102,13 +103,15 @@ A testbed's stores do not come from its init parameters. `InitApplicationParamet
 
 | Run | Helper | Sections today |
 |---|---|---|
-| UI integration (vitest, nonreg `integ-*`) | `testApplicationStorageConfiguration`, `runnerIntegTestSupport.ts:202-310` | `model`, `data`, `modelVersion` hard-coded per store type; IndexedDb `model` and `data` share one name |
+| UI integration (vitest, nonreg `integ-*`, through `RunnerTestSession`) | `testApplicationStorageConfiguration`, `runnerIntegTestSupport.ts:202-310` | `model`, `data`, `modelVersion` hard-coded per store type; IndexedDb `model` and `data` share one name |
 | In-app Miroir Tests menu | `testbedStorageConfiguration`, `miroir-core/src/5_tests/testbedStorageConfiguration.ts:50-67`, from `RunMiroirTestAction.ts:367` | copies the live application's configuration, adding `modelVersion` with suffix `_modelVersion` when present |
+
+The 3 report MiroirTests are `reportTest` suites, which `RunMiroirTestAction` refuses (`RunMiroirTestAction.ts:99`); they run only through `RunnerTestSession`. So only `testApplicationStorageConfiguration` needs a `devData` section for D14. `testbedStorageConfiguration` stays as it is, and the in-app path for `devData` belongs to #483 (its filesystem branch names a directory after the source section's last segment, `testbedStorageConfiguration.ts:28-38`, so a `devData` copy would need its own naming).
 
 | Option | Mechanism | Pros | Cons |
 |---|---|---|---|
 | D14-a. A Miroir testbed | a new `miroirTestbedInitParams` deploying a copy of the Miroir application | matches D9 literally | a testbed of the meta-model itself is new; the assets are 5.6 MB; no other test needs it |
-| **D14-b. Library testbed, `devData` in every testbed** ★ | the 3 MiroirTests use `libraryTestbedInitParams`. Both helpers above always give a testbed a `devData` section (suffix `_devData`), whatever the source configuration says, and `testApplicationStoreTeardown.ts` drops it. The seeds go to the testbed's `devData` (D15); the Reports are shown against the testbed with section `devData` | proves G1 ("any application") on the application #483 will use; no new init parameters; testbeds are temporary, so an extra empty store costs nothing outside tests | the Reports show "Library" measurements, which are fixed seeds anyway; every testbed opens one more store |
+| **D14-b. Library testbed, `devData` in every testbed** ★ | the 3 MiroirTests use `libraryTestbedInitParams`. `testApplicationStorageConfiguration` always gives a testbed a `devData` section (suffix `_devData`), and `testApplicationStoreTeardown.ts` drops it. The seeds go to the testbed's `devData` (D15); the Reports are shown against the testbed with section `devData` | proves G1 ("any application") on the application #483 will use; no new init parameters; testbeds are temporary, so an extra empty store costs nothing outside tests | the Reports show "Library" measurements, which are fixed seeds anyway; every testbed opens one more store |
 | D14-c. Declare `devData` for Library in the environments | amend D10 so Library declares `devData` in `dev` and `test-*`; `testbedStorageConfiguration` then copies it | the live configuration says the truth | changes A's D10; `dev` gets an empty `library_devData/` before #483 needs it |
 
 **Decision (proposed):** D14-b. The `runTarget` of the 3 MiroirTests changes from the Meta application to Library, `report.application` becomes Library and `report.applicationSection` becomes `devData`. `metaTestbedInitParams` is deleted.
@@ -184,6 +187,7 @@ Not declaring `devData` keeps it unloaded, but the files still ship: `Dockerfile
 | Report Entity inline section enums | `miroir_model/16dbfe28-.../3f2baa83-....json:1078, 1722, 1810` | add `devData` |
 | Report Entity `storedReportDisplay…applicationSection` | same file, `["data", "model"]` | unchanged (stored display parameters, no `modelVersion` either) |
 | Report EntityVersion | `miroir_modelVersion/54b9c72f-.../952d2c65-....json` | unchanged: its `mlSchema` already differs from the Report Entity's, so it is a frozen history row, not a copy to keep in sync |
+| MiroirTest `localCacheInstances…applicationSection` | `a311f363-....json:550`, `["model", "data"]` | unchanged (no `modelVersion` there either) |
 | MiroirTest `testbedInitApplicationParameters` | Entity `miroir_model/16dbfe28-.../a311f363-....json` and its EntityVersion `miroir_modelVersion/54b9c72f-.../51c647fe-....json:413` | remove `metaTestbedInitParams` from both. `miroirTestTags.unit.test.ts:111, 181` validate MiroirTest instances against the EntityVersion's schema, so the plan checks first whether that row is a frozen version or the current one |
 | `generate-ts-types.ts:330` | quotes `modelVersion:` keys by regex | add `devData:` if jzod-ts emits it unquoted |
 
@@ -206,6 +210,12 @@ For every deployment other than Miroir, the rollback fetches `metaModelEntities`
 - The absent-section mapping covers every optional section (D13-b).
 - `resolveEntitiesToFetchOnRefresh` applies `shouldCacheAllInstancesOnRefresh` to `devData` Entities from either list.
 - `PersistenceStoreController.getInstances` already returns an empty collection without I/O when the optional store is absent (L837-857). The plan measures whether the remaining 2 empty fetches per non-Miroir rollback need a gate like the `versioningMode` one at L906; the default is no gate.
+
+### D24 — `clear` and `resetModel` on a deployment with `devData`
+
+**Status:** Proposed. **Serves:** G3.
+
+`resetModel` calls `clear()` (`PersistenceStoreController.ts:283-286`), which clears `modelVersion` when present (L595-601). If D13-b loops `clear()` over every optional section, a `resetModel` of Miroir in `dev` (live) deletes the tracked rows of `miroir_devData/`. **Decision (proposed):** `clear` leaves `devData` alone, because development history is not part of the model being reset. `deleteStore` (`ActionRunner.ts:165-192`, test teardown) still drops it.
 
 ### D23 — A `devData` row written to another section
 
@@ -329,6 +339,10 @@ Branches that name `modelVersion` as an optional store, or hard-code the list of
 | `miroir-sandbox/src/bundledData.ts:160-166` | excludes `versionHistoryEntityUuids` from bundled data; `devDataEntityUuids` too |
 | `miroir-react`: `ReportSectionViewWithEditor.tsx:95`, `OpenReportLaunch.tsx:17`, `EntityInstanceGridInterface.ts:81`, `reportInputApplication.ts:61` | hand-written section unions |
 | `miroir-app-miroir/index.d.ts` | hand-written declarations of every export |
+| `miroir-localcache-zustand/src/4_services/localCache/LocalCacheSlice.ts:161, 607-618, 640-676` | `model`/`data` loops, as in redux |
+| `miroir-mcp/tests/unit/mlElementToTS.unit.test.ts:394` | expects exactly `"model" \| "data" \| "modelVersion"` |
+| `miroir-env/tests/fixtures/dev-deployments.today.json` (`miroirEnvShow.unit.test.ts:22-44`) | the derived `dev` deployments |
+| `DomainController.ts:1288` | the keyless guard checks only `data`; the `devData` Entities have uuid keys, so it is left as is |
 
 The local cache needs no per-section declaration: keys are `${deploymentUuid}_${section}_${entityUuid}` (`ReduxDeploymentsState.ts:11-19`), and the section is parsed with `([^_]+)` (L41-55), so a section name must not contain `_` (`devData` does not). `registerEntityAdapterFromPresentModelSource` (`miroir-localcache-redux/.../LocalCacheSlice.ts:337`) registers custom-PK adapters for `model` and `data` only; the 3 measurement Entities use uuid keys, so this does not matter here.
 
@@ -383,4 +397,4 @@ The 3 Entities and 6 Reports are 43 457 bytes raw, about 5.4 KB gzipped. Added t
 
 ---
 
-Next: [`tdd-implementation-plan.md`](./tdd-implementation-plan.md) (to be written).
+Next: [`tdd-implementation-plan.md`](./tdd-implementation-plan.md) (5 slices, reviewed adversarially; the review added D24, D13's same-slice store registration and D14's narrowing to `testApplicationStorageConfiguration`).
