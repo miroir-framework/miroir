@@ -14,7 +14,7 @@ import { getReduxDeploymentsStateIndex } from "../../2_domain/ReduxDeploymentsSt
 import type { ReportQueryLoadRequest } from "../../2_domain/ReportQueryLoadService.js";
 import type { ApplicationSection } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { queryContainsExternalExtractor } from "../queryContainsExternalExtractor.js";
-import { defaultReportLoadSection } from "../Model.js";
+import { reportLoadSection } from "../Model.js";
 
 /** One persistence read target derived from a resolved report query. */
 export type ReportQueryLoadTarget = {
@@ -266,7 +266,7 @@ export function isReportQueryLoadSegmentSufficient(
   for (const target of targets) {
     const lookupResult = lookup(
       request.deploymentUuid,
-      request.applicationSection ?? defaultReportLoadSection(target.parentUuid),
+      reportLoadSection(target.parentUuid, request.applicationSection),
       target.parentUuid,
       kind
     );

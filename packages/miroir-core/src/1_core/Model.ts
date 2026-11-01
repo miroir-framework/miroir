@@ -37,6 +37,12 @@ import {
   reportEntityList,
   reportApplicationVersionList,
   reportApplicationVersionDetails,
+  reportAgentRunHistory,
+  reportAgentRunMeasurementDetails,
+  reportBundleSizeHistory,
+  reportBundleSizeMeasurementDetails,
+  reportPageLoadHistory,
+  reportPageLoadMeasurementDetails,
   selfApplicationMiroir,
   defaultMiroirMetaModel as defaultMiroirMetaModelRaw,
 } from "miroir-app-miroir";
@@ -158,12 +164,12 @@ const metaModelVersionReports = [
  * Miroir's, and open on the devData section of any application.
  */
 export const metaModelDevDataReports: readonly string[] = [
-  "e8c6faa5-a117-4afd-b7ae-4a40c6111f95", // BundleSizeHistory
-  "85077493-0fea-4969-96c8-b994272de284", // BundleSizeMeasurementDetails
-  "02dd2ead-7b8d-4160-99c9-9f4e9a1c051b", // PageLoadHistory
-  "193c3dea-792d-471a-88a0-546e4b5e81cf", // PageLoadMeasurementDetails
-  "7a695632-338e-4c33-8b39-dba7f6d4c988", // AgentRunHistory
-  "49a3c09a-c7cd-4438-9730-c691c70741af", // AgentRunMeasurementDetails
+  reportBundleSizeHistory.uuid,
+  reportBundleSizeMeasurementDetails.uuid,
+  reportPageLoadHistory.uuid,
+  reportPageLoadMeasurementDetails.uuid,
+  reportAgentRunHistory.uuid,
+  reportAgentRunMeasurementDetails.uuid,
 ];
 
 // ################################################################################################
@@ -292,11 +298,12 @@ export function getApplicationSection(
 }
 
 /**
- * #647: the section a report load reads an Entity's rows from when the request names none: `devData`
- * for a devData Entity, `data` otherwise (the report default).
+ * #647: the section a report load reads an Entity's rows from. A devData Entity's rows live in
+ * `devData` only (the local cache selectors look for them there too), whatever section the request
+ * or the page names; another Entity is read from the requested section, `data` by default.
  */
-export function defaultReportLoadSection(entityUuid: Uuid): ApplicationSection {
-  return devDataEntityUuids.has(entityUuid) ? "devData" : "data";
+export function reportLoadSection(entityUuid: Uuid, requestedSection?: ApplicationSection): ApplicationSection {
+  return devDataEntityUuids.has(entityUuid) ? "devData" : requestedSection ?? "data";
 }
 
 // ################################################################################################

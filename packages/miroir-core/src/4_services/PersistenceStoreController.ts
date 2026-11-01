@@ -52,6 +52,7 @@ import type { ApplicationDeploymentMap } from "../1_core/Deployment";
 import { resolveInstanceParentUuid } from "../1_core/Entity/EntityPrimaryKey";
 import {
   devDataEntityUuids,
+  getDevDataEntityDefinition,
   getOptionalSectionEntityDefinition,
   isOptionalApplicationSection,
   optionalApplicationSections,
@@ -132,8 +133,13 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
 
   /** #647 — the stores of the optional sections this deployment declares. */
   private optionalStoreSections: Partial<Record<OptionalApplicationSection, PersistenceStoreDataSectionInterface>>;
-  /** #647: devData Entities whose storage this controller found or created (see ensureOptionalSectionStorageForEntity). */
-  private devDataStorageReady = new Set<string>();
+  /**
+   * #647: whether the devData storage of an Entity exists, as this controller found or made it (see
+   * ensureOptionalSectionStorageForEntity): one probe per Entity, and one creation even when writes
+   * arrive together, since a store may create by dropping (SQL `sync({ force: true })`).
+   */
+  private devDataStorage = new Map<string, Promise<boolean>>();
+  private devDataStorageCreation = new Map<string, Promise<Action2VoidReturnType>>();
 
   private presentOptionalStoreSections(): [OptionalApplicationSection, PersistenceStoreDataSectionInterface][] {
     return optionalApplicationSections.flatMap((section) => {
@@ -632,7 +638,8 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
 
   // ##############################################################################################
   async close(): Promise<Action2VoidReturnType> {
-    this.devDataStorageReady.clear();
+    this.devDataStorage.clear();
+    this.devDataStorageCreation.clear();
     await this.adminStore.close();
     await this.modelStoreSection.close();
     await this.dataStoreSection.close();
@@ -693,7 +700,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     // Other apps may get an unused empty EntityVersion data table; reads still use getApplicationSection.
     const dataSectionFilteredEntities: Entity[] = (
       dataSectionEntities.returnedDomainElement.instances as Entity[]
-    ).filter((e: EntityInstanceWithName) => e.name !== "Entity");
+    ).filter((e: EntityInstanceWithName) => e.name !== "Entity" && !devDataEntityUuids.has(e.uuid!)); // #647: devData Entities have no data storage
     log.trace(
       this.logHeader,
       "clearDataInstances found entities to clear:",
@@ -744,22 +751,61 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
 
   /**
    * #647: whether the devData storage of an Entity exists, asked of the store once per Entity and
-   * controller: a store that lists the Entities it was booted with (SQL) answers with its probe.
+   * controller (a "no" too, until this controller creates it): a store that lists the Entities it was
+   * booted with (SQL) answers with its probe.
    */
-  private async devDataStorageExists(
-    sectionStore: PersistenceStoreDataSectionInterface,
+  private devDataStorageExists(sectionStore: PersistenceStoreDataSectionInterface, entity: Entity): Promise<boolean> {
+    const known = this.devDataStorage.get(entity.uuid);
+    if (known) {
+      return known;
+    }
+    const probe = sectionStore.hasStorageSpaceForInstancesOfEntity
+      ? sectionStore.hasStorageSpaceForInstancesOfEntity(entity)
+      : Promise.resolve(sectionStore.getEntityUuids().includes(entity.uuid));
+    this.devDataStorage.set(entity.uuid, probe);
+    probe.catch(() => this.devDataStorage.delete(entity.uuid));
+    return probe;
+  }
+
+  /** #647: a read of a devData Entity whose storage was never created (no row written yet). */
+  private async devDataStorageMissing(
+    section: ApplicationSection,
+    sectionStore: PersistenceStoreDataSectionInterface | PersistenceStoreModelSectionInterface,
     entityUuid: string,
   ): Promise<boolean> {
-    if (this.devDataStorageReady.has(entityUuid)) {
-      return true;
+    const entity = section === "devData" ? getDevDataEntityDefinition(entityUuid) : undefined;
+    return !!entity && !(await this.devDataStorageExists(sectionStore as PersistenceStoreDataSectionInterface, entity));
+  }
+
+  /** #647: creates the devData storage of an Entity unless it exists; concurrent writes share one creation. */
+  private ensureDevDataStorage(
+    sectionStore: PersistenceStoreDataSectionInterface,
+    entity: Entity,
+  ): Promise<Action2VoidReturnType> {
+    const pending = this.devDataStorageCreation.get(entity.uuid);
+    if (pending) {
+      return pending;
     }
-    const exists = sectionStore.hasStorageSpaceForInstancesOfEntity
-      ? await sectionStore.hasStorageSpaceForInstancesOfEntity(entityUuid)
-      : sectionStore.getEntityUuids().includes(entityUuid);
-    if (exists) {
-      this.devDataStorageReady.add(entityUuid);
-    }
-    return exists;
+    const creation = (async (): Promise<Action2VoidReturnType> => {
+      if (await this.devDataStorageExists(sectionStore, entity)) {
+        return ACTION_OK;
+      }
+      const created = await sectionStore.createStorageSpaceForInstancesOfEntity(entity);
+      if (!(created instanceof Action2Error)) {
+        this.devDataStorage.set(entity.uuid, Promise.resolve(true));
+      }
+      return created;
+    })();
+    this.devDataStorageCreation.set(entity.uuid, creation);
+    creation.then(
+      (result) => {
+        if (result instanceof Action2Error) {
+          this.devDataStorageCreation.delete(entity.uuid);
+        }
+      },
+      () => this.devDataStorageCreation.delete(entity.uuid),
+    );
+    return creation;
   }
 
   /**
@@ -785,14 +831,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     const fixedEntityDef =
       section === "devData" ? getOptionalSectionEntityDefinition(section, parentEntityUuid) : undefined;
     if (fixedEntityDef) {
-      if (await this.devDataStorageExists(sectionStore, parentEntityUuid)) {
-        return ACTION_OK;
-      }
-      const created = await sectionStore.createStorageSpaceForInstancesOfEntity(fixedEntityDef);
-      if (!(created instanceof Action2Error)) {
-        this.devDataStorageReady.add(parentEntityUuid);
-      }
-      return created;
+      return this.ensureDevDataStorage(sectionStore, fixedEntityDef);
     }
     if (sectionStore.getEntityUuids().includes(parentEntityUuid)) {
       return ACTION_OK;
@@ -894,6 +933,12 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
       }
       return currentStore;
     }
+    if (await this.devDataStorageMissing(section, currentStore, entityUuid)) {
+      return new Action2Error(
+        "FailedToGetInstance",
+        `no instance ${instancePrimaryKey} for entity ${entityUuid}: no ${section} row was written yet.`,
+      );
+    }
     const result: Action2EntityInstanceReturnType = await currentStore.getInstance(
       entityUuid,
       instancePrimaryKey,
@@ -960,12 +1005,8 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
       return currentStore;
     }
     // #647: a devData Entity with no row written yet has no storage: nothing to read.
-    if (
-      section === "devData" &&
-      devDataEntityUuids.has(entityUuid) &&
-      !(await this.devDataStorageExists(currentStore as PersistenceStoreDataSectionInterface, entityUuid))
-    ) {
-      return this.emptyOptionalSectionCollection(section, entityUuid);
+    if (await this.devDataStorageMissing(section, currentStore, entityUuid)) {
+      return this.emptyOptionalSectionCollection("devData", entityUuid);
     }
     log.debug(
       this.logHeader,

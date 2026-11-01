@@ -186,6 +186,57 @@ describe(`devData section on ${ENVIRONMENT} (#647)`, () => {
     });
   });
 
+  // The filesystem store creates a directory on first write, and its deleteStore keeps the rows of a
+  // previous run (FileSystemAdminStore): the database stores are the ones that create by dropping.
+  it.skipIf(ENVIRONMENT === "test-filesystem")("creates a fresh devData store once for concurrent first writes, and reads nothing before them", async () => {
+    const testApplication = "6a4e1c9e-8f0b-4c47-9a39-647000000320";
+    const testDeployment = "6a4e1c9e-8f0b-4c47-9a39-647000000321";
+    const configuration = testApplicationStorageConfiguration(
+      deploymentStorageConfig[LIBRARY_DEPLOYMENT],
+      "DevData647c",
+      testDeployment,
+      deploymentStorageConfig[MIROIR_DEPLOYMENT],
+    );
+    const applicationDeploymentMap = { [testApplication]: testDeployment };
+    const storeAction = (actionType: string, payload: Record<string, unknown>) =>
+      wired.domainControllerForServer!.handleAction(
+        { actionType, endpoint: STORE_ENDPOINT, payload: { application: testApplication, ...payload } } as any,
+        applicationDeploymentMap,
+      );
+    expect(
+      await storeAction("storeManagementAction_openStore", {
+        configuration: { [testDeployment]: configuration },
+        deploymentUuid: testDeployment,
+      }),
+    ).not.toBeInstanceOf(Action2Error);
+    expect(
+      await storeAction("storeManagementAction_createStore", { configuration, deploymentUuid: testDeployment }),
+    ).not.toBeInstanceOf(Action2Error);
+    const controller = serverController(testDeployment);
+
+    expect(await instanceUuids(controller, "devData", BUNDLE_SIZE_MEASUREMENT)).toEqual([]);
+    // not found, as each store says it (an error, or no element), and no failure of a missing table
+    const missing = await controller.getInstance("devData", BUNDLE_SIZE_MEASUREMENT, "7d0b6f4e-6f8e-4d3e-9d55-647000000320");
+    if (missing instanceof Action2Error) {
+      expect(missing.errorMessage).not.toMatch(/relation|does not exist/);
+    } else {
+      expect(missing.returnedDomainElement ?? undefined).toBeUndefined();
+    }
+
+    // a store may create its storage by dropping it (SQL): concurrent first writes must not lose rows
+    const rows = [1, 2, 3].map((n) => bundleSizeRow(`7d0b6f4e-6f8e-4d3e-9d55-64700000032${n}`));
+    const written = await Promise.all(rows.map((row) => controller.upsertInstance("devData", row)));
+    for (const result of written) {
+      expect(result instanceof Action2Error, JSON.stringify(result)).toBe(false);
+    }
+    expect((await instanceUuids(controller, "devData", BUNDLE_SIZE_MEASUREMENT)).sort()).toEqual(
+      rows.map((row) => row.uuid).sort(),
+    );
+
+    await storeAction("storeManagementAction_deleteStore", { configuration, deploymentUuid: testDeployment });
+    await storeAction("storeManagementAction_closeStore", {});
+  });
+
   // The filesystem store's deleteStore keeps its directories, for every section (FileSystemAdminStore).
   it.skipIf(ENVIRONMENT === "test-filesystem")("drops a test application's devData store on teardown (D14)", async () => {
     const testApplication = "6a4e1c9e-8f0b-4c47-9a39-647000000310";

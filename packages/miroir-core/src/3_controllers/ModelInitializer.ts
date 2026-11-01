@@ -24,6 +24,7 @@ import { DataStoreApplicationType } from "../0_interfaces/3_controllers/Applicat
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
 import { PersistenceStoreControllerInterface } from "../0_interfaces/4-services/PersistenceStoreControllerInterface.js";
 import { ACTION_OK } from "../1_core/constants.js";
+import { devDataEntityUuids } from "../1_core/Model.js";
 import { resolveVersioningMode } from "../1_core/versioning/versioningMode.js";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory.js";
 import { packageName } from "../constants.js";
@@ -62,6 +63,11 @@ async function createEntityAndBootstrapVersions(
   entityVersionInstances: readonly EntityVersion[],
   logHeader: string,
 ): Promise<Action2Error | null> {
+  // #647: a devData Entity's instances live in the devData section, whose storage is created on first
+  // write: Miroir's model gets the Entity row, its data section no storage.
+  if (devDataEntityUuids.has(entity.uuid!)) {
+    return abortOnError(await persistenceStoreController.upsertInstance("model", entity as EntityInstance));
+  }
   const createError = abortOnError(await persistenceStoreController.createEntity(entity));
   if (createError) {
     return createError;

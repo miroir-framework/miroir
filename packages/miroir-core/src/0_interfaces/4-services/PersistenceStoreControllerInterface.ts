@@ -82,8 +82,9 @@ export interface StorageSpaceHandlerInterface {
    * #647: whether the storage space of an Entity's instances exists. Only for a store whose
    * `getEntityUuids` lists the Entities it was booted with rather than the storage it holds (SQL):
    * the devData section boots from fixed Entity rows and creates their storage on first write.
+   * The answer comes from the storage itself, whether the store registered the Entity or not.
    */
-  hasStorageSpaceForInstancesOfEntity?(entityUuid: Uuid): Promise<boolean>;
+  hasStorageSpaceForInstancesOfEntity?(entity: Entity): Promise<boolean>;
 }
 
 // ###########################################################################################

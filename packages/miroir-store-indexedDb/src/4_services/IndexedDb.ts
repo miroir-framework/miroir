@@ -11,6 +11,7 @@ import {
   ApplicationSection,
   LoggerInterface,
   MiroirLoggerFactory,
+  optionalApplicationSections,
 } from "@miroir-framework/core";
 
 import { packageName } from "../constants.js";
@@ -43,7 +44,7 @@ export class IndexedDb {
 
   /** On-disk Level database directory name(s) for a store-section `indexedDbName`. */
   static levelDatabaseDirectoryNames(indexedDbName: string): string[] {
-    for (const optionalSection of ["modelVersion", "devData"]) {
+    for (const optionalSection of optionalApplicationSections) {
       if (indexedDbName.endsWith(`_${optionalSection}`)) {
         return [`${indexedDbName}-${optionalSection}`];
       }

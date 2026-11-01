@@ -507,3 +507,17 @@ npm run nonreg:default -- --runner shared
 - **Docs:** besides the planned pages, `loadTimingsTour.integ.test.ts` expected the tour's old output ("recorded in the Meta app"); it now expects "recorded in Miroir's devData", which the tour has printed since Slice 1. That tour is on demand, outside nonreg.
 - `bundle-policy.json` had already lost `miroir-app-meta` in Slice 2, and the nonreg manifest's Meta validation step had become `default-miroir-devData-validation` in Slice 1; it now also runs `devDataLayout`.
 
+
+**Code review (before the PR), fixed:**
+
+- On SQL, the storage probe answered "no" for an Entity the section had not registered (a controller opened but not booted), and a "no" leads to `createStorageSpaceForInstancesOfEntity`, which drops the table (`sync({ force: true })`). `hasStorageSpaceForInstancesOfEntity` now takes the Entity and asks the schema whether its table exists, registered or not.
+- Concurrent first writes of a devData Entity (two tabs flushing page loads) each probed "no" and each created the table, the second dropping the first one's rows. The controller now shares one creation per Entity, and keeps a negative probe until it creates the storage, so reads of an empty section do not probe again. Test: "creates a fresh devData store once for concurrent first writes" in `devDataSection.integ` (IndexedDb, SQL; skipped on filesystem, whose test application rows outlive `deleteStore`).
+- `getInstance` of a devData Entity with no storage yet returned the store's missing-table error; it now says no row was written yet.
+- `resetData` (`clearDataInstances`) and Miroir's model initialization created data storage for the devData Entities (phantom tables, the #234 problem). Both now leave them out: the initialization writes their Entity rows to the model only.
+- A report load read a devData Entity from the requested section when one was named (a page or link on `data`), while the local cache selectors look for its rows in `devData`. `reportLoadSection` (was `defaultReportLoadSection`) now always reads devData Entities from `devData`.
+- `metaModelDevDataReports` lists the exported Report objects' uuids instead of literals; the IndexedDb store's Level directory names use `optionalApplicationSections`.
+
+**Code review, kept as decided:**
+
+- `clear` (resetModel) keeps the devData rows on every deployment, test ones included: D24. A test application's devData store goes with `deleteStore`.
+- The refresh reads the refresh-cached devData Entities of every application, which costs one empty read each where the section is absent (the controller answers without store I/O): D16 lets any application open the history Reports on its devData.
