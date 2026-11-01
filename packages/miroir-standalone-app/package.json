@@ -32,7 +32,7 @@
     "@emotion/styled": "11.14.1",
     "@glideapps/glide-data-grid": "6.0.3",
     "@hilla/react-components": "2.3.22",
-    "@hookform/resolvers": "5.9.2",
+    "@hookform/resolvers": "6.0.0",
     "@mui/material": "9.5.0",
     "@redux-devtools/core": "5.0.0",
     "@testing-library/dom": "10.4.2",
