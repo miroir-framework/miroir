@@ -45,7 +45,7 @@
   "dependencies": {
     "cross-fetch": "4.1.0",
     "diff": "9.0.0",
-    "isomorphic-git": "1.44.3",
+    "isomorphic-git": "1.44.4",
     "json-diff": "1.0.6",
     "loglevelnext": "6.0.0",
     "miroir-ai": "*",
@@ -64,7 +64,7 @@
     "zod": "4.6.7"
   },
   "devDependencies": {
-    "@babel/core": "8.0.7",
+    "@babel/core": "8.0.9",
     "@babel/preset-env": "8.0.7",
     "@babel/register": "8.0.6",
     "@types/node": "26.6.5",
@@ -76,7 +76,7 @@
     "tsconfig-paths": "4.2.0",
     "tsup": "9.0.0",
     "vite-plugin-node": "8.0.0",
-    "webpack": "5.112.0",
+    "webpack": "5.112.2",
     "webpack-cli": "7.2.3",
     "webpack-node-externals": "3.0.0"
   }

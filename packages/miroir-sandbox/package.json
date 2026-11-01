@@ -21,7 +21,7 @@
     "@mui/material": "9.5.0",
     "formik": "2.4.9",
     "loglevelnext": "6.0.0",
-    "material-symbols": "0.48.0",
+    "material-symbols": "0.48.1",
     "miroir-app-admin": "*",
     "miroir-app-miroir": "*",
     "@miroir-framework/core": "*",
