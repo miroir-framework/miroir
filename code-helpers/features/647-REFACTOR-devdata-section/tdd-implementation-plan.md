@@ -16,7 +16,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Pattern: [`../232-FEATURE-dedicated-model-version-storage/`](../232-FEATURE-dedicated-model-version-storage/) ✅
 Working branch: `claude/647-devdata-section`
 
-**Resume note:** plan written 2026-11-01 and revised after an adversarial review the same day (slices regrouped so that no store profile, guard or recorder is broken between slices); no slice started.
+**Resume note:** plan written 2026-11-01, revised after an adversarial review the same day (slices regrouped so that no store profile, guard or recorder is broken between slices), accepted by A the same day; no slice started.
 
 ---
 
@@ -48,7 +48,7 @@ Between Slice 1 and the end of Slice 2, the Meta application still holds the 6 R
 
 ## Locked implementation defaults
 
-From [`analysis.md` §3](./analysis.md#3-decision-record). D13–D24 are proposals reviewed by A with this plan; a change of decision updates this table before the slice that depends on it.
+From [`analysis.md` §3](./analysis.md#3-decision-record). D1–D24 were accepted by A on 2026-11-01. A change of decision updates this table before the slice that depends on it.
 
 | Decision | Choice | Serves |
 |---|---|---|
