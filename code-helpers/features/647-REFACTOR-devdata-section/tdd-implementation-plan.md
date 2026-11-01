@@ -39,7 +39,7 @@ This plan does **not** add test run Entities or the Miroir Tests recorder (#483)
 | 0 | Characterize the Meta content and the `modelVersion` contracts | ✅ | `devDataInventory.647.phase0.unit.test.ts` + existing `modelVersion` suites green |
 | 1 | Tracer: Miroir's measurement rows live in `miroir_devData`, and every reader and writer follows | ✅ | `devDataSection.647.phase1.integ.test.ts`, moved recorder tests, `test_check_bundle_policy.py`, `loadTimingWriter.integ` |
 | 2 | The history Reports open on any application's `devData` | ✅ | MiroirTests `report.bundleSizeHistory`, `report.pageLoadHistory`, `report.agentRunHistory` on Library |
-| 3 | `devData` on IndexedDb, Postgres and MongoDB in its own store; bundled refuses it | ⬜ | `devDataSection.647.phase3.integ.test.ts` per profile, restart and teardown cases |
+| 3 | `devData` on IndexedDb, Postgres and MongoDB in its own store; bundled refuses it | ✅ | `devDataSection.647.phase3.integ.test.ts` per profile, restart and teardown cases |
 | 4 | Delete `miroir-app-meta`; deliveries, docs, nonreg, cleanup, AC | ⬜ | full `nonreg:filesystem` and `nonreg:default`, delivery check |
 
 Between Slice 1 and the end of Slice 2, the Meta application still holds the 6 Reports and the 3 report MiroirTests, but their Entities and rows have moved to Miroir, so those 3 MiroirTests fail. Slices 1 and 2 are done back to back. Slice 1's scoped nonreg leaves out the 3 `integ-report.*` steps with `--skip` (or runs the scopes without them, see Slice 1 Validation), and the full nonreg runs at the end of Slice 2.
@@ -369,7 +369,7 @@ Validation, all green: `tsc` on miroir-core, miroir-react, miroir-app-miroir, mi
 
 ## Slice 3 — `devData` on IndexedDb, Postgres and MongoDB in its own store; bundled refuses it
 
-**Status:** ⬜ pending
+**Status:** ✅ done
 
 ### Goal
 
@@ -423,6 +423,20 @@ npm run nonreg:default -- --runner shared --scope smoke,actions
 SQL and MongoDB runs need a running PostgreSQL and MongoDB. Where they are not available, the Realization says which store was not run.
 
 ### Realization
+
+2026-11-01. Done, with these differences:
+
+- **Test A** (`devDataSection.647.phase3.integ.test.ts`, 7 tests) is green on `emulatedServer-indexedDb` and `emulatedServer-sql` (a local PostgreSQL 16), and on `test-filesystem` with the teardown case skipped: the filesystem store's `deleteStore` keeps the directories of every section, which predates #647. **MongoDB was not run**: this container has no MongoDB server. The test checks the stores through the controller (rows, restart, D23, D24, absent section, teardown) and each store's name (directory, schema, database or Level name), not through each database's catalog.
+- **Restart on SQL** is `storeManagementAction_openStore` (a new controller); a closed SQL controller cannot be opened again (Sequelize closes its connection manager), on every section.
+- **Two fixes Test A found on SQL:**
+  - The devData boot no longer waits for the model's Entity catalog: on a deployment whose model store is not initialized, `bootFromPersistedState` returned at `getInstances(Entity)` and never booted devData, so a restart read nothing (D21). devData now boots first, from its fixed rows; modelVersion keeps booting from the model's rows.
+  - The SQL section lists the Entities it was booted with, not the tables it has, so the devData lazy creation took a missing table for an existing one and the first write failed (the first `PageLoadMeasurement` row of any SQL deployment would have failed the same way). The data section interface gets an optional `hasStorageSpaceForInstancesOfEntity`, implemented by the SQL section (`tableExists`); the controller asks it once per devData Entity (`devDataStorageExists`, reset on `close`), creates the table on first write, and reads nothing before it exists.
+- **Test B** tests `BundledUnsupportedOptionalSectionStore` (the new name; `BundledUnsupportedModelVersionStore` stays exported) for the devData refusal, and the bundled Miroir controller for the empty read: the sandbox's bundled configuration declares no devData section, so a write there gets the controller's "not configured" error, not the bundled message. The sandbox's bundled data excludes devData rows along with version history.
+- **Test C** deploys GitHub with a `github_devData/` folder. `stateCommands` rebuilds `sections` from every optional section of the Deployment row.
+- `runnerIntegTestSupport.ts` needs no length change: `_modelVersion` is the longest suffix the Postgres budget reserves, and `_devData` is shorter.
+- Refactor checkpoint: the 5 `startup.ts` loops iterate over `optionalApplicationSections`; each body builds its own store, so no shared helper.
+
+Validation: `tsc` on the 5 store packages, miroir-env, miroir-sandbox (standalone: its 2 pre-existing errors); `versioningModes.bundled` (4); miroir-env `testEnvironments`, `miroirEnvDeploy`, `miroirEnvShow` (33); Test A on IndexedDb (7), SQL (7), filesystem (6 + 1 skipped) with the Slice 1 test (10). Scoped nonreg `nonreg:filesystem --runner shared --scope smoke,actions,tooling`: 46 passed, 1 failed, `build-636-server-release`, the container issue of Slice 1 (no `miroir-server-library` workspace link). Four steps failed in the shared runner and passed when re-run alone, which the runner does by design. The IndexedDb and SQL nonreg runs come with the full runs before the PR.
 
 ---
 

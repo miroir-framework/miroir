@@ -77,6 +77,13 @@ export interface StorageSpaceHandlerInterface {
     newName: string,
     entity: Entity,
   ): Promise<Action2VoidReturnType>;
+
+  /**
+   * #647: whether the storage space of an Entity's instances exists. Only for a store whose
+   * `getEntityUuids` lists the Entities it was booted with rather than the storage it holds (SQL):
+   * the devData section boots from fixed Entity rows and creates their storage on first write.
+   */
+  hasStorageSpaceForInstancesOfEntity?(entityUuid: Uuid): Promise<boolean>;
 }
 
 // ###########################################################################################

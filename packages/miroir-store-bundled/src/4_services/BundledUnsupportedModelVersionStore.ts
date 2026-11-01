@@ -31,7 +31,7 @@ const unsupportedMessages: Record<BundledUnsupportedSection, string> = {
  * #232 — explicit rejection of version-history writes on read-only bundled deployments; #647 —
  * the same for devData.
  */
-export class BundledUnsupportedModelVersionStore implements PersistenceStoreDataSectionInterface {
+export class BundledUnsupportedOptionalSectionStore implements PersistenceStoreDataSectionInterface {
   constructor(
     private readonly deploymentUuid: string,
     private readonly section: BundledUnsupportedSection = "modelVersion",
@@ -124,3 +124,7 @@ export class BundledUnsupportedModelVersionStore implements PersistenceStoreData
     return this.unsupported();
   }
 }
+
+/** The #232 name, from when modelVersion was the only optional section. */
+export const BundledUnsupportedModelVersionStore = BundledUnsupportedOptionalSectionStore;
+export type BundledUnsupportedModelVersionStore = BundledUnsupportedOptionalSectionStore;

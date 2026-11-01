@@ -9,7 +9,8 @@ import {
   type PersistenceStoreDataSectionInterface,
   type PersistenceStoreModelSectionInterface,
   type StoreSectionConfiguration,
-  type ConfigurationServiceInner
+  type ConfigurationServiceInner,
+  optionalApplicationSections,
 } from "miroir-core";
 import { SqlDbDataStoreSection } from "./4_services/SqlDbDataStoreSection.js";
 import { SqlDbModelStoreSection } from "./4_services/SqlDbModelStoreSection.js";
@@ -106,7 +107,7 @@ export function miroirPostgresStoreSectionStartup(configurationService: Configur
     }
   );
   // optional sections (#232 modelVersion, #647 devData): same data store shape, own storage
-  for (const optionalSection of ["modelVersion", "devData"] as const) {
+  for (const optionalSection of optionalApplicationSections) {
     configurationService.registerStoreSectionFactory(
       "sql",
       optionalSection,

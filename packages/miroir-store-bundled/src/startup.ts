@@ -12,12 +12,13 @@ import {
   PersistenceStoreDataSectionInterface,
   StoreSectionConfiguration,
   type ConfigurationServiceInner,
+  optionalApplicationSections,
 } from "miroir-core";
 import { cleanLevel } from "./4_services/constants.js";
 import { BundledAdminStore } from "./4_services/BundledAdminStore.js";
 import { BundledDataStoreSection } from "./4_services/BundledDataStoreSection.js";
 import { BundledModelStoreSection } from "./4_services/BundledModelStoreSection.js";
-import { BundledUnsupportedModelVersionStore } from "./4_services/BundledUnsupportedModelVersionStore.js";
+import { BundledUnsupportedOptionalSectionStore } from "./4_services/BundledUnsupportedModelVersionStore.js";
 import { packageName } from "./constants.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "startup");
@@ -140,7 +141,7 @@ export function miroirBundledStoreSectionStartup(
   );
 
   // optional sections (#232 modelVersion, #647 devData): a bundled deployment refuses writes
-  for (const optionalSection of ["modelVersion", "devData"] as const) {
+  for (const optionalSection of optionalApplicationSections) {
     configurationService.registerStoreSectionFactory(
       "bundled",
       optionalSection,
@@ -157,7 +158,7 @@ export function miroirBundledStoreSectionStartup(
             bundledConfig.deploymentUuid,
           );
           return Promise.resolve(
-            new BundledUnsupportedModelVersionStore(bundledConfig.deploymentUuid, optionalSection),
+            new BundledUnsupportedOptionalSectionStore(bundledConfig.deploymentUuid, optionalSection),
           );
         }
         log.warn("registerStoreSectionFactory bundled", optionalSection, ": unexpected config", config);

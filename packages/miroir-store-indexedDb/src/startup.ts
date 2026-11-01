@@ -9,7 +9,8 @@ import {
   PersistenceStoreDataOrModelSectionInterface,
   PersistenceStoreDataSectionInterface,
   StoreSectionConfiguration,
-  type ConfigurationServiceInner
+  type ConfigurationServiceInner,
+  optionalApplicationSections,
 } from "miroir-core";
 import { cleanLevel } from "./4_services/constants.js";
 import { packageName } from "./constants.js";
@@ -106,7 +107,7 @@ export function miroirIndexedDbStoreSectionStartup(
     }
   );
   // optional sections (#232 modelVersion, #647 devData): same data store shape, own storage
-  for (const optionalSection of ["modelVersion", "devData"] as const) {
+  for (const optionalSection of optionalApplicationSections) {
     configurationService.registerStoreSectionFactory(
       "indexedDb",
       optionalSection,

@@ -279,6 +279,21 @@ export class SqlDbStoreSection
   }
 
   // ##############################################################################################
+  /** #647: the table of a registered Entity exists in this schema (boot registers without creating). */
+  async hasStorageSpaceForInstancesOfEntity(entityUuid: string): Promise<boolean> {
+    const access = this.sqlSchemaTableAccess[entityUuid];
+    if (!access) {
+      return false;
+    }
+    if (access.isExternal) {
+      return true;
+    }
+    return this.sequelize
+      .getQueryInterface()
+      .tableExists({ tableName: access.sequelizeModel.tableName, schema: this.schema });
+  }
+
+  // ##############################################################################################
   async renameStorageSpaceForInstancesOfEntity(
     oldName: string,
     newName: string,

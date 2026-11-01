@@ -9,7 +9,8 @@ import {
   PersistenceStoreAdminSectionInterface,
   PersistenceStoreDataSectionInterface,
   PersistenceStoreModelSectionInterface,
-  StoreSectionConfiguration
+  StoreSectionConfiguration,
+  optionalApplicationSections,
 } from "miroir-core";
 import { FileSystemAdminStore } from "./4_services/FileSystemAdminStore.js";
 import { FileSystemDataStoreSection } from "./4_services/FileSystemDataStoreSection.js";
@@ -115,7 +116,7 @@ export function miroirFileSystemStoreSectionStartup(
     }
   );
   // optional sections (#232 modelVersion, #647 devData): same data store shape, own storage
-  for (const optionalSection of ["modelVersion", "devData"] as const) {
+  for (const optionalSection of optionalApplicationSections) {
     configurationService.registerStoreSectionFactory(
       "filesystem",
       optionalSection,
