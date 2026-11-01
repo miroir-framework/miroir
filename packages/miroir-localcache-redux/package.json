@@ -55,7 +55,7 @@
   "dependencies": {
     "@reduxjs/toolkit": "2.13.0",
     "@teroneko/redux-saga-promise": "4.0.0",
-    "immer": "11.1.21",
+    "immer": "11.2.9",
     "miroir-app-admin": "*",
     "miroir-app-miroir": "*",
     "@miroir-framework/core": "*",
