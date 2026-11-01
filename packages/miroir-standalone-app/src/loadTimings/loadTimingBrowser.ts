@@ -1,12 +1,12 @@
 import type { DomainControllerInterface, MiroirConfigClient } from "miroir-core";
 
-import { META_DEPLOYMENT_UUID } from "./loadTimingConstants.js";
+import { MIROIR_DEPLOYMENT_UUID } from "./loadTimingConstants.js";
 import {
   createLoadTimingRecorder,
   type LoadTimingNavigation,
   type LoadTimingRecorder,
 } from "./loadTimingRecorder.js";
-import { configurationListsDeployment, LOAD_TIMINGS_URL_PARAMETER, resolveLoadTimingsSwitch } from "./loadTimingSwitch.js";
+import { configurationHasSection, LOAD_TIMINGS_URL_PARAMETER, resolveLoadTimingsSwitch } from "./loadTimingSwitch.js";
 import type { LoadTimingStep } from "./loadTimingTypes.js";
 
 // ################################################################################################
@@ -91,7 +91,7 @@ function startObserving() {
       window.__miroirLoadTimings = steps;
       logStep(step);
     },
-    onWriteError: (error) => console.warn(LOG_PREFIX, "recording in the Meta app failed, not recording any more:", error),
+    onWriteError: (error) => console.warn(LOG_PREFIX, "recording in the Miroir devData section failed, not recording any more:", error),
   });
   recorder.mark("entryScript", entryScript);
 
@@ -240,7 +240,7 @@ export function configureLoadTimings(params: {
   const value = resolveLoadTimingsSwitch(params.config, window.location.search, storage);
   const domainController = params.domainController;
   const writes =
-    value.enabled && value.record && domainController && configurationListsDeployment(params.config, META_DEPLOYMENT_UUID);
+    value.enabled && value.record && domainController && configurationHasSection(params.config, MIROIR_DEPLOYMENT_UUID, "devData");
   recorder.configure(
     value,
     {
@@ -261,7 +261,7 @@ export function configureLoadTimings(params: {
   }
   window.__miroirLoadTimings ??= [];
   if (value.record && !writes) {
-    console.info(LOG_PREFIX, "the client configuration has no Meta deployment: steps are kept on window.__miroirLoadTimings only");
+    console.info(LOG_PREFIX, "the client configuration gives the Miroir deployment no devData section: steps are kept on window.__miroirLoadTimings only");
   }
 }
 

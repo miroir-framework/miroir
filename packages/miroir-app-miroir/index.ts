@@ -42,6 +42,10 @@ export { default as entityMiroirTest } from "./assets/miroir_model/16dbfe28-e1d7
 export { default as entityTestConfiguration } from "./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/675ccd46-7dd3-400b-a2bd-1319c39e11da.json" with { type: "json" };
 export { default as entityBlob } from "./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/62209e4a-e429-4d7d-9b28-dcc1da6b51a2.json" with { type: "json" };
 export { default as entityCommit } from "./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/73bb0c69-e636-4e3b-a230-51f25469c089.json" with { type: "json" };
+// #647 — devData Entities: defined in the Miroir model, their rows live in each application's devData section.
+export { default as entityBundleSizeMeasurement } from "./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/90d603f9-58f8-4ac4-b2eb-cb1d718e8b3b.json" with { type: "json" };
+export { default as entityPageLoadMeasurement } from "./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/0266c0b8-4dc8-4a14-bcef-239a85a5de2d.json" with { type: "json" };
+export { default as entityAgentRunMeasurement } from "./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/954de789-6350-4f54-a809-5f2b8b91d067.json" with { type: "json" };
 export { default as entityApplicationVersionCrossEntityVersion } from "./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/8bec933d-6287-4de7-8a88-5c24216de9f4.json" with { type: "json" };
 /** @deprecated Use entityApplicationVersionCrossEntityVersion */
 export { default as entityApplicationVersionCrossEntityDefinition } from "./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/8bec933d-6287-4de7-8a88-5c24216de9f4.json" with { type: "json" };

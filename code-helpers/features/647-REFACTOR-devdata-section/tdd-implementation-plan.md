@@ -16,7 +16,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Pattern: [`../232-FEATURE-dedicated-model-version-storage/`](../232-FEATURE-dedicated-model-version-storage/) ✅
 Working branch: `claude/647-devdata-section`
 
-**Resume note:** plan written 2026-11-01, revised after an adversarial review the same day (slices regrouped so that no store profile, guard or recorder is broken between slices), accepted by A the same day; no slice started.
+**Resume note:** plan written 2026-11-01, revised after an adversarial review the same day (slices regrouped so that no store profile, guard or recorder is broken between slices), accepted by A the same day. Slices 0 and 1 done on 2026-11-01 (A asked to go up to reviewed, merge-ready PRs).
 
 ---
 
@@ -36,8 +36,8 @@ This plan does **not** add test run Entities or the Miroir Tests recorder (#483)
 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
-| 0 | Characterize the Meta content and the `modelVersion` contracts | ⬜ | `devDataInventory.647.phase0.unit.test.ts` + existing `modelVersion` suites green |
-| 1 | Tracer: Miroir's measurement rows live in `miroir_devData`, and every reader and writer follows | ⬜ | `devDataSection.647.phase1.integ.test.ts`, moved recorder tests, `test_check_bundle_policy.py`, `loadTimingWriter.integ` |
+| 0 | Characterize the Meta content and the `modelVersion` contracts | ✅ | `devDataInventory.647.phase0.unit.test.ts` + existing `modelVersion` suites green |
+| 1 | Tracer: Miroir's measurement rows live in `miroir_devData`, and every reader and writer follows | ✅ | `devDataSection.647.phase1.integ.test.ts`, moved recorder tests, `test_check_bundle_policy.py`, `loadTimingWriter.integ` |
 | 2 | The history Reports open on any application's `devData` | ⬜ | MiroirTests `report.bundleSizeHistory`, `report.pageLoadHistory`, `report.agentRunHistory` on Library |
 | 3 | `devData` on IndexedDb, Postgres and MongoDB in its own store; bundled refuses it | ⬜ | `devDataSection.647.phase3.integ.test.ts` per profile, restart and teardown cases |
 | 4 | Delete `miroir-app-meta`; deliveries, docs, nonreg, cleanup, AC | ⬜ | full `nonreg:filesystem` and `nonreg:default`, delivery check |
@@ -123,7 +123,7 @@ No new model element is created: every moved element keeps its uuid (analysis §
 
 ## Slice 0 — Characterize the Meta content and the `modelVersion` contracts
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -156,11 +156,13 @@ npm run testMiroir -w miroir-core -- --suites fn.environment.deriveDeployments -
 
 ### Realization
 
+2026-11-01. `devDataInventory.647.phase0.unit.test.ts` written and green (6 tests) on the Meta layout. Baselines green: the miroir-core `modelVersion` suites (63 passed, 1 skipped), `miroir-env` (32), `RunnerIntegTestTools` (16), `fn.environment.deriveDeployments` (14).
+
 ---
 
 ## Slice 1 — Tracer: Miroir's measurement rows live in `miroir_devData`, and every reader and writer follows
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -248,6 +250,21 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core,actions,tooling,
 If the scoped nonreg still selects an `integ-report.*` step, the Realization records it as an expected failure, to be green at the end of Slice 2.
 
 ### Realization
+
+2026-11-01. Done as planned, with these differences:
+
+- **Test A** checks the store controller of the server for reads, the D23 guard, the absent-section cases, restart (close, open, boot) and `clear` (D24), and the client DomainController for `createInstance` and the two rollbacks. 10 tests, green. It was written after the code, not before.
+- **`resolveEntitiesToFetchOnRefresh`** applies the cache flag to `devData` Entities from the model list; from the data list it already did.
+- **D16 moved forward from Slice 2:** `miroir-react` indexes `DeploymentUuidToReportsEntities` with `ApplicationSection`, so the type needs its optional `devData` key as soon as the enum has `devData`. `getReportsAndEntitiesForDeploymentUuid` gives every application a `devData` entry filtered by `metaModelDevDataReports`; it is empty until Slice 2 moves the Reports. Report loads through `getApplicationSection` stay in Slice 2.
+- **Bundled refusal moved forward from Slice 3:** `BundledUnsupportedModelVersionStore` takes the section, and the bundled store registers both optional sections in the same loop as the 4 other stores.
+- **Enums moved forward from Slice 2 (D20):** `devData` in the 3 Report section enums of `miroir-react`, in `storesOnDemand.ts` (Electron) and in `miroir-env`'s `deployExample.ts`.
+- **`loadTimingConstants.ts` keeps copies** of Miroir's uuids instead of importing them: `loadTimingBrowser.ts` loads with the page and imports no package but types. `loadTimingContract.unit.test.ts` checks the copies against `miroir-app-miroir` and `miroir-app-admin`. The gate is `configurationHasSection(config, Miroir deployment, "devData")`, which replaces `configurationListsDeployment`.
+- **Recorder flag kept:** the moved scripts keep `--data-dir`, which now means the devData folder; `check_bundle_policy.py` renames its flag to `--dev-data-dir`, and `load-timings.mjs` to `--dev-data-folder`.
+- **Meta seeds** use a loose row type (`EntityInstance & Record<string, any>`) until Slice 2 moves them, since the measurement types are in `miroir-app-miroir/scripts/devData/`, outside Meta's `rootDir`.
+- **Other tests updated:** `miroir-env` `testEnvironments` accepts the `_devData` schema suffix; `mlElementToTS` expects the 4-value union; the `miroirEnvShow` fixture has Miroir's `devData` directory.
+- Refactor checkpoint: `getSectionInstanceStore` gives every optional section its own branch (store or named error), so only `model` and `data` remain for the fallback, and `ApplicationSection` is closed; `getVersionHistoryEntityDefinition` stays exported, with `getOptionalSectionEntityDefinition(section, uuid)` as the shared lookup. The `devDataFolder(entityUuid)` helper was not extracted: the two history modules each take the folder as a parameter already.
+
+Validation, all green: `tsc` on miroir-core, miroir-app-miroir, the localcache and store packages, miroir-react, miroir-mcp, miroir-env, miroir-app-meta; `miroir-standalone-app` and `miroir-standalone-app-electron` show only the 3 errors they show without this change (MUI `Stack` props, CopilotKit options). `npm run test -w miroir-core -- ''` (3285 passed, 1 skipped); inventory (7); Test A (10); `fn.environment.deriveDeployments` (19, with 5 new `devData` cases); miroir-app-miroir `modelValidation` and `tests/devData` (192); `4_view/loadTimings/` (30); `RunnerIntegTestTools`, `testEnvironmentConfig` (20); miroir-env (32); `mlElementToTS` (21); Meta `modelValidation` (12); `pytest scripts/tests` (499 passed, 15 skipped); `miroir-env check --strict`. Scoped nonreg: see the commit that follows.
 
 ---
 

@@ -4,19 +4,19 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
-import { ENTITY_AGENT_RUN_MEASUREMENT_UUID } from "../src/agentRunHistory";
-import { main } from "../scripts/recordAgentRun";
+import { ENTITY_AGENT_RUN_MEASUREMENT_UUID } from "../../scripts/devData/agentRunHistory";
+import { main } from "../../scripts/devData/recordAgentRun";
 
 // Agent cost benchmark (#550): `npm run agent-run:record` turns the run.json of a benchmark run
-// into an AgentRunMeasurement instance of miroir-app-meta.
+// into an AgentRunMeasurement instance of the Miroir devData section.
 
-const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "../../..");
+const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "../../../..");
 const fixture = join(repoRoot, "scripts/tests/fixtures/agent_bench/run.json");
 
 const readFixture = () => JSON.parse(readFileSync(fixture, "utf-8"));
 
 function tempDir(prefix: string): string {
-  return mkdtempSync(join(tmpdir(), `meta-${prefix}-`));
+  return mkdtempSync(join(tmpdir(), `devData-${prefix}-`));
 }
 
 function writeRun(dir: string, change: (run: any) => void = () => {}): string {

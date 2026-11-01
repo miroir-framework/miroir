@@ -8,11 +8,11 @@ import {
   type MlElement,
 } from "miroir-core";
 
-import agentRunMeasurementEntityJson from "../assets/meta_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/954de789-6350-4f54-a809-5f2b8b91d067.json" with { type: "json" };
+import agentRunMeasurementEntityJson from "../../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/954de789-6350-4f54-a809-5f2b8b91d067.json" with { type: "json" };
 
 // ################################################################################################
 // Agent cost benchmark (#550): one AgentRunMeasurement instance per run of a coding agent, written
-// in the tracked data section of miroir-app-meta by `npm run agent-run:record` from the run.json
+// in the tracked devData section of the Miroir application (#647) by `npm run agent-run:record` from the run.json
 // that `scripts/agent_bench/run.py` writes.
 // ################################################################################################
 

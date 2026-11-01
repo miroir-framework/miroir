@@ -151,7 +151,7 @@ describe("test environment state names (#477)", () => {
     const schemas = sections(resolved).flatMap((s) => (s.schema ? [s.schema] : []));
     expect(schemas.length).toBeGreaterThan(0);
     for (const schema of schemas) {
-      expect(schema).toMatch(/^test_sql_[A-Za-z]+(_modelVersion|_admin)?$/);
+      expect(schema).toMatch(/^test_sql_[A-Za-z]+(_modelVersion|_devData|_admin)?$/);
     }
   });
 });

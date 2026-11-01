@@ -1280,11 +1280,11 @@ export function getMiroirFundamentalMlSchema(
           tag: {
             value: {
               defaultLabel: "Application Section",
-              description: "A section of the application (model, data, or modelVersion for version history)",
+              description: "A section of the application (model, data, modelVersion for version history, or devData for information about the application that is not needed to deploy or use it, #647)",
               initializeTo: { initializeToType: "value", value: "data" },
             },
           },
-          definition: ["model", "data", "modelVersion"],
+          definition: ["model", "data", "modelVersion", "devData"],
         },
         dataStoreApplicationType: {
           type: "enum",
@@ -1847,6 +1847,14 @@ export function getMiroirFundamentalMlSchema(
                 relativePath: "storeSectionConfiguration",
               },
             },
+            "devData": {
+              type: "schemaReference",
+              optional: true,
+              definition: {
+                absolutePath: miroirFundamentalMlSchemaUuid,
+                relativePath: "storeSectionConfiguration",
+              },
+            },
           },
         },
         deploymentStorageConfig: {
@@ -2158,6 +2166,14 @@ export function getMiroirFundamentalMlSchema(
                   },
                 },
                 modelVersion: {
+                  type: "schemaReference",
+                  optional: true,
+                  definition: {
+                    absolutePath: miroirFundamentalMlSchemaUuid,
+                    relativePath: "miroirEnvironmentSectionOverride",
+                  },
+                },
+                devData: {
                   type: "schemaReference",
                   optional: true,
                   definition: {

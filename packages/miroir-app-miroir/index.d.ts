@@ -33,6 +33,10 @@ export declare const entityApplicationVersionCrossTransformerDefinitionVersion: 
 export declare const entityTest: any;
 export declare const entityTransformerDefinition: any;
 export declare const entityMiroirTest: any;
+/** #647 — devData Entities. */
+export declare const entityBundleSizeMeasurement: any;
+export declare const entityPageLoadMeasurement: any;
+export declare const entityAgentRunMeasurement: any;
 export declare const entityTestConfiguration: any;
 export declare const entityBlob: any;
 export declare const entityCommit: any;

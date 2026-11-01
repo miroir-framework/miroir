@@ -12,13 +12,13 @@ import {
   writeMeasurement,
   type BundleReport,
   type BundleSizeMeasurement,
-} from "../src/bundleSizeHistory";
-import { repoInfo, repoRoot } from "../src/repoInfo";
+} from "./bundleSizeHistory";
+import { repoInfo, repoRoot } from "./repoInfo";
 
 // ################################################################################################
-// `npm run bundle-size:record -w miroir-app-meta -- <bundle-report.json> [options]` (#473): records
+// `npm run bundle-size:record -w miroir-app-miroir -- <bundle-report.json> [options]` (#473): records
 // the size of a build as the new baseline of the bundle guard. It writes `eagerGzipBaseline` in the
-// application's bundle-policy.json and a BundleSizeMeasurement instance of miroir-app-meta, after
+// application's bundle-policy.json and a BundleSizeMeasurement instance of the Miroir devData section, after
 // checking with the guard (scripts/check_bundle_policy.py, its history rule skipped) that the build
 // passes with the new baseline; when it does not, it prints the guard's violations and writes nothing.
 //
@@ -26,12 +26,12 @@ import { repoInfo, repoRoot } from "../src/repoInfo";
 //   --reason TEXT     why the size moved
 //   --init            also rewrite the policy's package lists from the report (the guard's --init)
 //   --policy FILE     the policy to update (default: the bundle-policy.json of the report's app)
-//   --data-dir DIR    data section to write in (default: miroir-app-meta/assets/meta_data)
+//   --data-dir DIR    devData section to write in (default: miroir-app-miroir/assets/miroir_devData)
 //   --no-policy       write the instance only, leave the policy alone
 // ################################################################################################
 
-const packageRoot = join(dirname(fileURLToPath(import.meta.url)), "..");
-const defaultDataDir = join(packageRoot, "assets/meta_data");
+const packageRoot = join(dirname(fileURLToPath(import.meta.url)), "../..");
+const defaultDataDir = join(packageRoot, "assets/miroir_devData");
 const guard = join(repoRoot, "scripts/check_bundle_policy.py");
 const python = process.env.PYTHON ?? "python3";
 

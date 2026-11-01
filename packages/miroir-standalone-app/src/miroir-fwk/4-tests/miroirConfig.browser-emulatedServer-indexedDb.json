@@ -35,6 +35,10 @@
         "modelVersion": {
           "emulatedServerType": "indexedDb",
           "indexedDbName": "ui-integ-miroir_modelVersion"
+        },
+        "devData": {
+          "emulatedServerType": "indexedDb",
+          "indexedDbName": "ui-integ-miroir_devData"
         }
       },
       "f714bb2f-a12d-4e71-a03b-74dcedea6eb4": {

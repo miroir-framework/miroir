@@ -546,7 +546,7 @@ export function buildResetAndinitializeDeploymentActionSequence(
             const section = parentUuid ? getApplicationSection(applicationUuid, parentUuid) : "model";
             (bySection[section] ??= []).push(obj);
           }
-          return (["model", "data", "modelVersion"] as const)
+          return (["model", "data", "modelVersion", "devData"] as const)
             .filter((section) => (bySection[section]?.length ?? 0) > 0)
             .map((section) => ({
               actionType: "createInstance" as const,

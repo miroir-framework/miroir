@@ -368,19 +368,19 @@
       ]
     },
     {
-      "id": "default-meta-modelValidation",
+      "id": "default-miroir-devData-validation",
       "scopes": ["core"],
       "tier": "default",
-      "title": "Deployment modelValidation — meta (#473)",
+      "title": "Miroir devData rows validated against their Entities (#473, #647)",
       "requires": "none",
       "argv": [
         "npm",
         "run",
         "testByFile",
         "-w",
-        "miroir-app-meta",
+        "miroir-app-miroir",
         "--",
-        "tests/modelValidation.unit.test.ts"
+        "devData/devDataRows.unit"
       ]
     },
     {
@@ -2640,17 +2640,18 @@
       "id": "unit-473-bundle-size-scripts",
       "scopes": ["tooling"],
       "tier": "unit",
-      "title": "#473 — bundle size history: bundle-size:record and bundle-size:backfill (they run the bundle guard with python3)",
+      "title": "#473, #550 — Miroir devData recorders: bundle-size:record, bundle-size:backfill (they run the bundle guard with python3), agent-run:record",
       "requires": "none",
       "argv": [
         "npm",
         "run",
         "testByFile",
         "-w",
-        "miroir-app-meta",
+        "miroir-app-miroir",
         "--",
         "bundleSizeRecord.unit",
-        "bundleSizeBackfill.unit"
+        "bundleSizeBackfill.unit",
+        "agentRunRecord.unit"
       ]
     },
     {
@@ -2714,7 +2715,7 @@
       "id": "unit-580-load-timings",
       "scopes": ["ui", "actions"],
       "tier": "unit",
-      "title": "#580 load timings: the recorder, the switch, the Meta contract, and the writer on the test-filesystem platform",
+      "title": "#580 load timings: the recorder, the switch, the contract with Miroir's devData (#647), and the writer on the test-filesystem platform",
       "requires": "none",
       "argv": [
         "npm",

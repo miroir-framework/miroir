@@ -8,11 +8,11 @@ import {
   type MlElement,
 } from "miroir-core";
 
-import bundleSizeMeasurementEntityJson from "../assets/meta_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/90d603f9-58f8-4ac4-b2eb-cb1d718e8b3b.json" with { type: "json" };
+import bundleSizeMeasurementEntityJson from "../../assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/90d603f9-58f8-4ac4-b2eb-cb1d718e8b3b.json" with { type: "json" };
 
 // ################################################################################################
 // Bundle size history (#473): one BundleSizeMeasurement instance per recorded bundle size, written
-// in the tracked data section of miroir-app-meta by `npm run bundle-size:record` (from a bundle
+// in the tracked devData section of the Miroir application (#647) by `npm run bundle-size:record` (from a bundle
 // report) and `npm run bundle-size:backfill` (from the git history of the bundle policies).
 // ################################################################################################
 

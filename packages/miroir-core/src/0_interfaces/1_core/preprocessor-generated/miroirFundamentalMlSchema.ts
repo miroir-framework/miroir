@@ -6398,7 +6398,7 @@ export const miroirFundamentalMlSchema = {
         "tag": {
           "value": {
             "defaultLabel": "Application Section",
-            "description": "A section of the application (model, data, or modelVersion for version history)",
+            "description": "A section of the application (model, data, modelVersion for version history, or devData for information about the application that is not needed to deploy or use it, #647)",
             "initializeTo": {
               "initializeToType": "value",
               "value": "data"
@@ -6408,7 +6408,8 @@ export const miroirFundamentalMlSchema = {
         "definition": [
           "model",
           "data",
-          "modelVersion"
+          "modelVersion",
+          "devData"
         ]
       },
       "dataStoreApplicationType": {
@@ -17270,6 +17271,14 @@ export const miroirFundamentalMlSchema = {
               "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
               "relativePath": "storeSectionConfiguration"
             }
+          },
+          "devData": {
+            "type": "schemaReference",
+            "optional": true,
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "storeSectionConfiguration"
+            }
           }
         }
       },
@@ -17664,6 +17673,14 @@ export const miroirFundamentalMlSchema = {
                 }
               },
               "modelVersion": {
+                "type": "schemaReference",
+                "optional": true,
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "miroirEnvironmentSectionOverride"
+                }
+              },
+              "devData": {
                 "type": "schemaReference",
                 "optional": true,
                 "definition": {
@@ -35059,7 +35076,7 @@ export const miroirFundamentalMlSchema = {
         "tag": {
           "value": {
             "defaultLabel": "Application Section",
-            "description": "A section of the application (model, data, or modelVersion for version history)",
+            "description": "A section of the application (model, data, modelVersion for version history, or devData for information about the application that is not needed to deploy or use it, #647)",
             "initializeTo": {
               "initializeToType": "value",
               "value": "data"
@@ -35069,7 +35086,8 @@ export const miroirFundamentalMlSchema = {
         "definition": [
           "model",
           "data",
-          "modelVersion"
+          "modelVersion",
+          "devData"
         ]
       },
       "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_shippingBox_extend": {
@@ -46532,6 +46550,14 @@ export const miroirFundamentalMlSchema = {
             }
           },
           "modelVersion": {
+            "type": "schemaReference",
+            "optional": true,
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "miroirTemplate_fe9b7d99$f216$44de$bb6e$60e1a1ebb739_storeSectionConfiguration"
+            }
+          },
+          "devData": {
             "type": "schemaReference",
             "optional": true,
             "definition": {

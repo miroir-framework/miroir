@@ -9,14 +9,19 @@ import {
   type SelfApplication,
 } from "miroir-core";
 
-import type { AgentRunMeasurement } from "./agentRunHistory";
-import type { BundleSizeMeasurement } from "./bundleSizeHistory";
+import {
+  entityAgentRunMeasurement as entityAgentRunMeasurementMiroir,
+  entityBundleSizeMeasurement as entityBundleSizeMeasurementMiroir,
+  entityPageLoadMeasurement as entityPageLoadMeasurementMiroir,
+} from "miroir-app-miroir";
+
+// #647: the measurement Entities are Miroir's (devData section); their recording helpers live in
+// miroir-app-miroir/scripts/devData and are not exported, so the seeds below use loose row types.
+type BundleSizeMeasurement = EntityInstance & Record<string, any>;
+type AgentRunMeasurement = EntityInstance & Record<string, any>;
 
 import selfApplicationMetaJson from "../assets/meta_model/a659d350-dd97-4da9-91de-524fa01745dc/9ff432a9-89a1-460b-a263-1672d084a9e0.json" with { type: "json" };
 import menuDefaultMetaJson from "../assets/meta_model/dde4c883-ae6d-47c3-b6df-26bc6e3c1842/c95bfb70-62bd-4f40-ac2b-04857124f133.json" with { type: "json" };
-import entityAgentRunMeasurementJson from "../assets/meta_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/954de789-6350-4f54-a809-5f2b8b91d067.json" with { type: "json" };
-import entityBundleSizeMeasurementJson from "../assets/meta_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/90d603f9-58f8-4ac4-b2eb-cb1d718e8b3b.json" with { type: "json" };
-import entityPageLoadMeasurementJson from "../assets/meta_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/0266c0b8-4dc8-4a14-bcef-239a85a5de2d.json" with { type: "json" };
 import reportBundleSizeMeasurementDetailsJson from "../assets/meta_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/85077493-0fea-4969-96c8-b994272de284.json" with { type: "json" };
 import reportPageLoadHistoryJson from "../assets/meta_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/02dd2ead-7b8d-4160-99c9-9f4e9a1c051b.json" with { type: "json" };
 import reportPageLoadMeasurementDetailsJson from "../assets/meta_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/193c3dea-792d-471a-88a0-546e4b5e81cf.json" with { type: "json" };
@@ -28,13 +33,13 @@ import selfApplicationModelBranchMetaMasterBranchJson from "../assets/meta_model
 export const selfApplicationMeta = selfApplicationMetaJson as SelfApplication;
 export const selfApplicationModelBranchMetaMasterBranch = selfApplicationModelBranchMetaMasterBranchJson;
 export const menuDefaultMeta = menuDefaultMetaJson as Menu;
-export const entityBundleSizeMeasurement = entityBundleSizeMeasurementJson as Entity;
-export const entityPageLoadMeasurement = entityPageLoadMeasurementJson as Entity;
+export const entityBundleSizeMeasurement = entityBundleSizeMeasurementMiroir as Entity;
+export const entityPageLoadMeasurement = entityPageLoadMeasurementMiroir as Entity;
 export const reportBundleSizeHistory = reportBundleSizeHistoryJson as Report;
 export const reportBundleSizeMeasurementDetails = reportBundleSizeMeasurementDetailsJson as Report;
 export const reportPageLoadHistory = reportPageLoadHistoryJson as Report;
 export const reportPageLoadMeasurementDetails = reportPageLoadMeasurementDetailsJson as Report;
-export const entityAgentRunMeasurement = entityAgentRunMeasurementJson as Entity;
+export const entityAgentRunMeasurement = entityAgentRunMeasurementMiroir as Entity;
 export const reportAgentRunHistory = reportAgentRunHistoryJson as Report;
 export const reportAgentRunMeasurementDetails = reportAgentRunMeasurementDetailsJson as Report;
 

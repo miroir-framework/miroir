@@ -139,23 +139,30 @@ export function miroirBundledStoreSectionStartup(
     },
   );
 
-  configurationService.registerStoreSectionFactory(
-    "bundled",
-    "modelVersion",
-    async (
-      _section: ApplicationSection,
-      config: StoreSectionConfiguration,
-    ): Promise<PersistenceStoreDataOrModelSectionInterface> => {
-      if (config.emulatedServerType === "bundled") {
-        const bundledConfig = config as BundledStoreSectionConfiguration;
-        log.warn(
-          "registerStoreSectionFactory bundled modelVersion: read-only bundled deployment cannot persist version history",
-          bundledConfig.deploymentUuid,
-        );
-        return Promise.resolve(new BundledUnsupportedModelVersionStore(bundledConfig.deploymentUuid));
-      }
-      log.warn("registerStoreSectionFactory bundled modelVersion: unexpected config", config);
-      return Promise.resolve(new ErrorDataStore());
-    },
-  );
+  // optional sections (#232 modelVersion, #647 devData): a bundled deployment refuses writes
+  for (const optionalSection of ["modelVersion", "devData"] as const) {
+    configurationService.registerStoreSectionFactory(
+      "bundled",
+      optionalSection,
+      async (
+        _section: ApplicationSection,
+        config: StoreSectionConfiguration,
+      ): Promise<PersistenceStoreDataOrModelSectionInterface> => {
+        if (config.emulatedServerType === "bundled") {
+          const bundledConfig = config as BundledStoreSectionConfiguration;
+          log.warn(
+            "registerStoreSectionFactory bundled",
+            optionalSection,
+            ": read-only bundled deployment cannot persist it",
+            bundledConfig.deploymentUuid,
+          );
+          return Promise.resolve(
+            new BundledUnsupportedModelVersionStore(bundledConfig.deploymentUuid, optionalSection),
+          );
+        }
+        log.warn("registerStoreSectionFactory bundled", optionalSection, ": unexpected config", config);
+        return Promise.resolve(new ErrorDataStore());
+      },
+    );
+  }
 }

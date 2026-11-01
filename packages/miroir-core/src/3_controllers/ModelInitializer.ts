@@ -9,6 +9,7 @@ import {
 } from "miroir-app-miroir";
 
 import {
+  ApplicationSection,
   Entity,
   EntityInstance,
   EntityVersion,
@@ -41,7 +42,7 @@ function abortOnError(result: Action2VoidReturnType): Action2Error | null {
 
 async function upsertInstances(
   persistenceStoreController: PersistenceStoreControllerInterface,
-  section: "model" | "data" | "modelVersion",
+  section: ApplicationSection,
   instances: readonly EntityInstance[],
 ): Promise<Action2Error | null> {
   for (const instance of instances) {

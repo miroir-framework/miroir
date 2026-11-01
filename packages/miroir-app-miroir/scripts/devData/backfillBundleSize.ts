@@ -9,10 +9,10 @@ import {
   readMeasurements,
   writeMeasurement,
   type BundleSizeMeasurement,
-} from "../src/bundleSizeHistory";
+} from "./bundleSizeHistory";
 
 // ################################################################################################
-// `npm run bundle-size:backfill -w miroir-app-meta [-- --dry-run]` (#473): one BundleSizeMeasurement
+// `npm run bundle-size:backfill -w miroir-app-miroir [-- --dry-run]` (#473): one BundleSizeMeasurement
 // per change of eagerGzipBaseline in the git history of the bundle policies, oldest first. The
 // baseline is the only size the history keeps, so it is also the measured size. A commit already
 // recorded for an application is skipped, so the backfill can run again. So is a policy commit whose
@@ -20,11 +20,11 @@ import {
 // of the policy commit, and the same baseline.
 //
 //   --repo-root DIR   repository to read (default: this monorepo)
-//   --data-dir DIR    data section to write in (default: miroir-app-meta/assets/meta_data)
+//   --data-dir DIR    devData section to write in (default: miroir-app-miroir/assets/miroir_devData)
 //   --dry-run         print the measurements, write nothing
 // ################################################################################################
 
-const packageRoot = join(dirname(fileURLToPath(import.meta.url)), "..");
+const packageRoot = join(dirname(fileURLToPath(import.meta.url)), "../..");
 
 type PolicyCommit = { commit: string; committedAt: string; subject: string };
 
@@ -109,7 +109,7 @@ export async function main(argv: string[]): Promise<number> {
     },
   });
   const repoRoot = resolve(values["repo-root"] ?? join(packageRoot, "../.."));
-  const dataDir = resolve(values["data-dir"] ?? join(packageRoot, "assets/meta_data"));
+  const dataDir = resolve(values["data-dir"] ?? join(packageRoot, "assets/miroir_devData"));
   const existing = readMeasurements(dataDir);
   const recorded = new Set(existing.map((m) => `${m.application} ${m.gitCommit}`));
 

@@ -4,11 +4,11 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 // ################################################################################################
-// Facts about the Miroir repository that the meta application's record scripts store with each
+// Facts about the Miroir repository that the devData record scripts store with each
 // measurement (#473 bundle sizes, #550 agent runs).
 // ################################################################################################
 
-export const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "../../..");
+export const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "../../../..");
 
 export function git(...args: string[]): string | undefined {
   try {

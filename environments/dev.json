@@ -24,7 +24,7 @@
       "deployment": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
       "store": "filesystem",
       "mode": "live",
-      "sections": { "modelVersion": {} }
+      "sections": { "modelVersion": {}, "devData": {} }
     },
     "admin": {
       "package": "miroir-app-admin",

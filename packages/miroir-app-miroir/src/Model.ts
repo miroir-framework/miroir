@@ -64,6 +64,9 @@ import {
   entityMlSchema,
   entityMenu,
   entityMiroirTest,
+  entityBundleSizeMeasurement,
+  entityPageLoadMeasurement,
+  entityAgentRunMeasurement,
   entityQueryVersion,
   entityReport,
   entityRunner,
@@ -261,6 +264,10 @@ export const defaultMiroirMetaModel: MetaModel = {
     entityHistoricalThemeVersion as Entity,
     entityApplicationVersionCrossTransformerDefinitionVersion as Entity,
     entityHistoricalTransformerDefinitionVersion as Entity,
+    // #647 — devData Entities (rows routed to the devData section by getApplicationSection)
+    entityBundleSizeMeasurement as Entity,
+    entityPageLoadMeasurement as Entity,
+    entityAgentRunMeasurement as Entity,
   ],
   entityVersions: [
     // bootstrap entities have to come first

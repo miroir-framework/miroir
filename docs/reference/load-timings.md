@@ -54,7 +54,7 @@ On demand, after `npm run build -w miroir-standalone-app` and `npm run build:rel
 npm run loadTimings -w miroir-standalone-app -- --serve
 ```
 
-It opens the home page with `loadTimings=on`, waits for the initial load, opens the Library Books report and the model page inside the app, prints the build mode and client it measured, then each step with its milestones and files, and waits for the steps to be recorded in the Meta app. `--clean` removes the instances it recorded, `--out <file>` writes the steps as JSON, `--meta-folder none` skips the recording check. The same options as the coverage tour apply (`--url`, `--browser`, `--headed`). It fails when a step is missing, did not settle, or measured another build mode than expected.
+It opens the home page with `loadTimings=on`, waits for the initial load, opens the Library Books report and the model page inside the app, prints the build mode and client it measured, then each step with its milestones and files, and waits for the steps to be recorded in the devData section of the Miroir application. `--clean` removes the instances it recorded, `--out <file>` writes the steps as JSON, `--dev-data-folder none` skips the recording check. The same options as the coverage tour apply (`--url`, `--browser`, `--headed`). It fails when a step is missing, did not settle, or measured another build mode than expected.
 
 ### Dev mode
 

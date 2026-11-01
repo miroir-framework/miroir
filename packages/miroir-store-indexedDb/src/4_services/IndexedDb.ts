@@ -43,8 +43,10 @@ export class IndexedDb {
 
   /** On-disk Level database directory name(s) for a store-section `indexedDbName`. */
   static levelDatabaseDirectoryNames(indexedDbName: string): string[] {
-    if (indexedDbName.endsWith("_modelVersion")) {
-      return [`${indexedDbName}-modelVersion`];
+    for (const optionalSection of ["modelVersion", "devData"]) {
+      if (indexedDbName.endsWith(`_${optionalSection}`)) {
+        return [`${indexedDbName}-${optionalSection}`];
+      }
     }
     return [`${indexedDbName}-model`, `${indexedDbName}-data`];
   }

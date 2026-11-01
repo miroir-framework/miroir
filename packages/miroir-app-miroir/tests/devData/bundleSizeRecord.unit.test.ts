@@ -5,20 +5,20 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
-import { ENTITY_BUNDLE_SIZE_MEASUREMENT_UUID } from "../src/bundleSizeHistory";
-import { main } from "../scripts/recordBundleSize";
+import { ENTITY_BUNDLE_SIZE_MEASUREMENT_UUID } from "../../scripts/devData/bundleSizeHistory";
+import { main } from "../../scripts/devData/recordBundleSize";
 
 // Bundle size history (#473): `npm run bundle-size:record` turns a bundle report into a
-// BundleSizeMeasurement instance of miroir-app-meta.
+// BundleSizeMeasurement instance of the Miroir devData section.
 
-const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "../../..");
+const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "../../../..");
 const fixture = join(repoRoot, "scripts/tests/fixtures/bundle_policy/bundle-report.json");
 const uuidV4 = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
 
 const readFixture = () => JSON.parse(readFileSync(fixture, "utf-8"));
 
 function tempDir(prefix: string): string {
-  return mkdtempSync(join(tmpdir(), `meta-${prefix}-`));
+  return mkdtempSync(join(tmpdir(), `devData-${prefix}-`));
 }
 
 function writeReport(dir: string, change: (report: any) => void = () => {}): string {
@@ -196,8 +196,8 @@ describe("bundle-size:record with the bundle policy", () => {
   });
 
   it("removes the instance when the policy cannot be written", async () => {
-    const { writeRecord } = await import("../scripts/recordBundleSize");
-    const { measurementFromReport } = await import("../src/bundleSizeHistory");
+    const { writeRecord } = await import("../../scripts/devData/recordBundleSize");
+    const { measurementFromReport } = await import("../../scripts/devData/bundleSizeHistory");
     const dataDir = tempDir("data");
     const instance = measurementFromReport(readFixture(), { measuredAt: new Date().toISOString() });
 
@@ -210,7 +210,7 @@ describe("bundle-size:record with the bundle policy", () => {
   });
 
   it("finds the policy of the report's application", async () => {
-    const { policyOf } = await import("../scripts/recordBundleSize");
+    const { policyOf } = await import("../../scripts/devData/recordBundleSize");
 
     expect(policyOf("miroir-standalone-app-electron")).toBe(
       join(repoRoot, "packages/miroir-standalone-app-electron/bundle-policy.json"),
