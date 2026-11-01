@@ -121,3 +121,15 @@ def test_the_server_release_holds_no_meta_model():
     assert not META_MODEL_MARKER.search(release.read_text(encoding="utf-8", errors="replace")), (
         "release/index.js inlines meta-model data: mark the @miroir-framework/core subpaths external in build:server"
     )
+
+
+def test_every_job_building_electron_builds_the_server_library_first():
+    """#652 (D4): the Electron main process imports `@miroir-framework/server/startup` (the server library's dist)."""
+    missing = []
+    for workflow in sorted((ROOT / ".github/workflows").glob("*.yml")):
+        text = workflow.read_text(encoding="utf-8")
+        for match in re.finditer(r"npm run build -w miroir-standalone-app-electron", text):
+            job_start = text.rfind("runs-on:", 0, match.start())
+            if "-w @miroir-framework/server" not in text[job_start : match.start()]:
+                missing.append(f"{workflow.relative_to(ROOT)}:{text.count(chr(10), 0, match.start()) + 1}")
+    assert missing == [], "build @miroir-framework/server before the Electron main process"

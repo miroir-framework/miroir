@@ -152,7 +152,7 @@ Each section (`admin`, `model`, `data`, and optionally `modelVersion`) of a depl
 ```
 
 - Used exclusively in the `miroir-sandbox` demo SPA.
-- All data is statically imported at build time from the deployment packages (`miroir-app-miroir`, `miroir-app-admin`).
+- All data is statically imported at build time from the deployment packages (`miroir-app-miroir`, `miroir-app-admin`, imported as `@miroir-framework/core/meta-model` and `/admin` since #652).
 - Read-only: no writes are persisted.
 - **No model history:** the bundled Miroir profile has no `modelVersion` section and cannot host one (see [Versioning reference](versioning.md)).
 - Registered at startup via `miroirBundledStoreSectionStartup(configurationService, bundledData)`.

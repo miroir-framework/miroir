@@ -36,6 +36,8 @@ const metaModelBuild = {
   sourcemap: true,
   treeshake: true,
   minify: true,
+  // admin importing the meta-model by name takes it from the subpath, not a second inlined copy
+  esbuildPlugins: [metaModelSubpathsPlugin],
   onSuccess: async () => {
     // the packages' hand-written declaration stubs (every export `any`), as the subpaths' types
     copyFileSync('../miroir-app-miroir/index.d.ts', 'dist/meta-model.d.ts')

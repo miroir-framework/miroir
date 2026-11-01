@@ -29,7 +29,7 @@ Out (analysis §2): `private` flags and publishing (I8); the meta-model size; th
 | 2 | Core carries the meta-model; everyone imports the subpaths | ✅ | core pack cases, `--check`, alias rule, bundle report, full build |
 | 3 | The server library exposes `./startup` | ✅ | server pack case, startup boundaries, release check |
 | 4 | React carries the local cache | ✅ | react pack cases, dependency rule, local cache source rule |
-| 5 | Docs, nonreg, acceptance | ⏳ | gate, `nonreg:filesystem`, AC table |
+| 5 | Docs, nonreg, acceptance | ✅ | gate, `nonreg:filesystem`, AC table |
 
 Slice 3 comes before 4: once react bundles the local cache, a Node process importing react's copy and the private package would hold two; moving the Node importers to the server first keeps every intermediate state at one copy.
 
@@ -242,7 +242,7 @@ npm run testByFile -w miroir-standalone-app -- localCacheImplementation Integrat
 
 ## Slice 5 — Docs, nonreg, acceptance
 
-**Status:** ⏳
+**Status:** ✅
 
 ### Work
 
@@ -256,6 +256,13 @@ npm run testByFile -w miroir-standalone-app -- localCacheImplementation Integrat
 # pre-push gate (AGENTS.md)
 npm run nonreg:filesystem
 ```
+
+### Realization
+
+- Docs: `AGENTS.md` build order (the server library before the CLI; the `miroir-app-*` packages bundled into core), kept under the file's size limit (`test_agent_instructions.py`); `release-process.md` §10d updated and §10e added; `data-architecture-deployments.md` (bundled store); epic plan I6 row 3 ✅; analysis v2.2.
+- Code review (adversarial, 5 findings): the Electron job of `self-test.yml` did not build the server library (fixed, and a guard: every workflow job building the Electron main process builds `@miroir-framework/server` first); the `AGENTS.md` wording failed `rename_packages.py --check` (fixed); the meta-model build lacked the subpath plugin, so a future import of the meta-model from `miroir-app-admin` would inline a second copy (fixed); `.github/actions/build-server-binary` built the CLI without the server library (fixed). Not changed: `dist/startup.d.ts` and `dist/local-cache.d.ts` import `redux` and `reselect` types, transitive dependencies of `@reduxjs/toolkit` that the packages do not declare (only a non-hoisted install with `skipLibCheck: false` sees it).
+- Validation: `./build-all.sh` (full, with the server binary) passed; gate: skills check, pytest 555 passed (pack cases required), `rename_packages.py --check`, dependency policy, lint, env check, tsc on core, core unit 3292 passed; `nonreg:filesystem` 125 passed, 1 failed (`unit-301-agent-tooling`: the `AGENTS.md` size limit, fixed afterwards, the test passes).
+- Docker: not run, the session has no Docker daemon.
 
 ---
 

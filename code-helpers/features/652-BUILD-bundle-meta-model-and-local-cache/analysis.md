@@ -185,5 +185,6 @@ Next: [`tdd-implementation-plan.md`](./tdd-implementation-plan.md).
 ## Revision history
 
 - v1 (2026-11-01): first version.
+- v2.2 (2026-11-01): from implementation (plan Realizations, Slices 3 and 4): react adds `./local-cache` (the local cache without the UI, for Node test setups); the declarations of `./startup` and react are inlined by a copy step and a `paths` mapping, tsup's `dts.resolve` leaving them external.
 - v2.1 (2026-11-01): from the plan review: ncc inlines `./startup`, build order.
 - v2 (2026-11-01): adversarial review, 12 findings applied: vite string aliases and ncc externals (D2), two tsup builds (D1), manifest rules that learn about bundling (D7), `dts.resolve` for the server, inlined type dependencies, Electron's dependency and policy, the `vi.mock` hand move, one local cache per test platform, corrected counts, G1 narrowed and the asset folders a non-goal, D5 a new scanner, D6 workspace `exports`, `CALL_PACKAGES`, lockfile.
