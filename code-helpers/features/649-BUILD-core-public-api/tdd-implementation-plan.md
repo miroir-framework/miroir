@@ -182,6 +182,15 @@ npm run nonreg:unit
 
 - `run-nonreg.py --tier default --only unit-649-core-public-api`: passed in 11 s.
 - Pre-push gate: skills sync, `pytest scripts/tests` (517 passed, 12 skipped), dependency policy, lint, `miroir-env check --strict --tracked-clean`, core tsc, bare console check all pass.
+- Core unit: 3292 passed. `nonreg:unit`: 62 passed and 6 failed in a run during which core was rebuilt (tsup's `clean` wiped `dist/` under the running steps); the 6 pass when rerun alone. An earlier core unit failure of `duplicateCoreGuard` came from a `git stash` round-trip that made `ConfigurationService.ts` newer than `dist/`; it passes after a rebuild.
+- Adversarial code review, 7 findings fixed:
+  - the template scan now covers every source file of the sandbox (`.js`, `.mjs` and others, not only `src/*.ts(x)`) and fails on any use of a core specifier other than a named import of the package root (namespace, default, re-export, dynamic, subpath); a sample case covers each form;
+  - the server-library pack case asserts the imported set equals the 6 names, reads the imported name rather than the alias, and rejects other forms;
+  - `marked_in_sources` reads block comments from `ts_source.comment_spans`, so a `/**` in a line comment does not count and a `"src/**"` string cannot swallow a real tag (sample cases);
+  - summaries are the TSDoc's first paragraph, not its first line (the `StoreSectionStartup` row was cut);
+  - case 4 checks all 34 names in their built declarations, not 2;
+  - the generator's new imports moved above the comment of the import they had split from;
+  - the `MiroirContext` and `ProcessCapabilities` summaries completed. The README's link to the list targets `main`, as the published package's links will.
 
 ---
 

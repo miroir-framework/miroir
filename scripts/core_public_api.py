@@ -19,7 +19,7 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
-from ts_source import mask_comments
+from ts_source import comment_spans, mask_comments
 
 ROOT = Path(__file__).resolve().parents[1]
 CORE_SRC = ROOT / "packages/miroir-core/src"
@@ -63,14 +63,20 @@ class Declaration:
 
     @property
     def summary(self) -> str:
-        """The first sentence-like line of the TSDoc, without tags."""
+        """The TSDoc's first paragraph, without tags, on one line."""
         if not self.tsdoc:
             return ""
+        words: list[str] = []
         for raw in self.tsdoc.splitlines():
             line = raw.strip().lstrip("*").strip()
-            if line and not line.startswith("@"):
-                return line
-        return ""
+            if line.startswith("@"):
+                break
+            if not line:
+                if words:
+                    break
+                continue
+            words.append(line)
+        return " ".join(words)
 
 
 def parse_exports(text: str) -> list[Export]:
@@ -165,6 +171,15 @@ TOP_LEVEL_DECLARATION = re.compile(
 def declarations_of(file: Path) -> dict[str, Declaration]:
     """The declarations of a file that start a line, exported or not, by name (the first one for overloads)."""
     text, masked = source(file)
+    return _declarations(text, masked, file)
+
+
+def declarations_in_text(text: str, file: Path = Path("<text>")) -> dict[str, Declaration]:
+    """Same as declarations_of, for a text (a built declaration file)."""
+    return _declarations(text, mask_comments(text), file)
+
+
+def _declarations(text: str, masked: str, file: Path) -> dict[str, Declaration]:
     found: dict[str, Declaration] = {}
     for match in TOP_LEVEL_DECLARATION.finditer(masked):
         name = match.group(2)
@@ -232,21 +247,22 @@ def public_declarations() -> list[Declaration]:
 
 def marked_in_sources() -> set[tuple[Path, str]]:
     """Every (file, declared name) of core's `src/` whose TSDoc carries `@public`. Raises when a tag is not on a
-    top-level declaration."""
+    top-level declaration. Reads the block comments found by ts_source, so a `/**` in a string or a line comment is
+    not a TSDoc."""
     marked: set[tuple[Path, str]] = set()
+    following_declaration = re.compile(
+        rf"\s*(?:export\s+)?{DECLARATION_PREFIX}(?:{DECLARATION_KINDS})\s+([A-Za-z_$][\w$]*)"
+    )
     for file in sorted(CORE_SRC.rglob("*.ts")):
-        text = file.read_text(encoding="utf-8")
+        text, masked = source(file)
         if "@public" not in text:
             continue
-        masked = mask_comments(text)
-        for doc in re.finditer(r"/\*\*(?:(?!\*/).)*\*/", text, re.DOTALL):
-            if not PUBLIC_TAG.search(doc.group(0)) or masked[doc.start()] != " ":
+        for start, end in comment_spans(text):
+            if not text.startswith("/**", start) or not PUBLIC_TAG.search(text, start, end):
                 continue
-            following = re.compile(
-                rf"\s*(?:export\s+)?{DECLARATION_PREFIX}(?:{DECLARATION_KINDS})\s+([A-Za-z_$][\w$]*)"
-            ).match(masked, doc.end())
+            following = following_declaration.match(masked, end)
             if not following:
-                line = text.count("\n", 0, doc.start()) + 1
+                line = text.count("\n", 0, start) + 1
                 raise ValueError(f"{display(file)}:{line}: @public is not on a top-level declaration")
             marked.add((file, following.group(1)))
     return marked

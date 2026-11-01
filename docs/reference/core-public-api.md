@@ -34,16 +34,16 @@ Why and how the list is chosen: [`code-helpers/features/649-BUILD-core-public-ap
 | `MiroirActivityTracker` | class | `src/3_controllers/MiroirActivityTracker.ts` | Tracks running actions, tests and transformers; passed to the startup call. |
 | `MiroirConfigClient` | type | `src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.ts` |  |
 | `MiroirConfigServer` | type | `src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.ts` |  |
-| `MiroirContext` | class | `src/3_controllers/MiroirContext.ts` | The activity tracker and event service of a host, shared by its controllers. |
+| `MiroirContext` | class | `src/3_controllers/MiroirContext.ts` | The activity tracker, event service and configuration of a host, shared by its controllers. |
 | `MiroirEventService` | class | `src/3_controllers/MiroirEventService.ts` | Service for capturing and managing logs associated with specific action executions |
 | `MiroirLoggerFactory` | class | `src/4_services/MiroirLoggerFactory.ts` | Core's logger factory: hosts set it up with their `LoggerFactoryInterface` and `LoggerOptions`. |
 | `PersistenceStoreControllerManager` | class | `src/4_services/PersistenceStoreControllerManager.ts` | Holds the persistence store controllers of the deployments open in this process. |
 | `PersistenceStoreControllerManagerInterface` | interface | `src/0_interfaces/4-services/PersistenceStoreControllerManagerInterface.ts` | handles many persistence store controllers, that can be added / removed dynamically at runtime. |
-| `ProcessCapabilities` | type | `src/1_core/processCapabilities.ts` | What the running process offers (AI, MCP, agent backend, available store types). |
+| `ProcessCapabilities` | type | `src/1_core/processCapabilities.ts` | What the running process offers: AI, MCP, the agent backend, the store types it can open or create, store administration and designer tools. |
 | `RestClientInterface` | interface | `src/0_interfaces/4-services/PersistenceInterface.ts` | The HTTP client the client-side platform uses to reach a Miroir server. |
 | `RestClientStub` | class | `src/4_services/RestClientStub.ts` | calls Rest Server directly, without going through the network. |
 | `SpecificLoggerOptionsMap` | type | `src/0_interfaces/4-services/LoggerInterface.ts` | Log level and template per logger name, overriding `LoggerOptions` defaults. |
 | `StoreOrBundleAction` | type | `src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.ts` |  |
-| `StoreSectionStartup` | type | `src/3_controllers/ConfigurationService.ts` | What a store package exports to make its sections available, such as |
+| `StoreSectionStartup` | type | `src/3_controllers/ConfigurationService.ts` | What a store package exports to make its sections available, such as `miroirFileSystemStoreSectionStartup`: it registers its factories on the given configuration service. Hosts pass these to `startMiroirNode` / `startMiroirClient` (#639). |
 | `StoreUnitConfiguration` | type | `src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.ts` |  |
-| `versionHistoryEntityUuids` | const | `src/1_core/Model.ts` | #232 — entity UUIDs whose instances always belong to `modelVersion`. |
+| `versionHistoryEntityUuids` | const | `src/1_core/Model.ts` | #232 — entity UUIDs whose instances always belong to `modelVersion`. Checked first in getApplicationSection; independent of application UUID. |

@@ -10,7 +10,8 @@ import type {
 export type AgentBackend = "cursor" | "claude" | "none";
 
 /**
- * What the running process offers (AI, MCP, agent backend, available store types).
+ * What the running process offers: AI, MCP, the agent backend, the store types it can open or create, store
+ * administration and designer tools.
  * @public
  */
 export type ProcessCapabilities = {

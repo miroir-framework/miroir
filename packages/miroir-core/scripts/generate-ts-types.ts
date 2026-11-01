@@ -9,10 +9,10 @@ import {
 import { mlToTs, mlToZodTextAndZodSchemaForTsGeneration } from "../src/1_core/mls/mlJzodTsAdapter";
 
 import { entityApplicationForAdmin, entityDeployment } from "miroir-app-admin";
-
-// Leftover Bundle EntityVersion (Entity counterpart not exported from admin package with this UUID).
 import { markPublicTypes } from "./markPublicTypes";
 import publicGeneratedTypes from "./public-generated-types.json";
+
+// Leftover Bundle EntityVersion (Entity counterpart not exported from admin package with this UUID).
 import entityDefinitionBundleV1 from "../src/assets/miroirAdmin/model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/01a051d8-d43c-430d-a98e-739048f54942.json";
 // import miroirTransformersMlSchemas from "../src/assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/a97756cf-dd93-42b9-a021-91a629b187b9.json";
 

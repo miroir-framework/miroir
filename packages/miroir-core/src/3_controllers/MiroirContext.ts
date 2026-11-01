@@ -5,7 +5,7 @@ import { MiroirEventService } from "./MiroirEventService";
 
 
 /**
- * The activity tracker and event service of a host, shared by its controllers.
+ * The activity tracker, event service and configuration of a host, shared by its controllers.
  * @public
  */
 export class MiroirContext implements MiroirContextInterface {

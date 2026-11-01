@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 
-def _comment_spans(text: str) -> list[tuple[int, int]]:
+def comment_spans(text: str) -> list[tuple[int, int]]:
     """Spans of // and /* */ comments outside string literals ('...', "...", `...`), so that a "/*" inside a string
     (a glob, a path) does not swallow the code that follows it. Regex literals and `${}` nesting in templates are not
     parsed: the sources read this way have no comment marker inside them."""
@@ -35,7 +35,7 @@ def strip_comments(text: str) -> str:
     """The text without its comments."""
     out: list[str] = []
     last = 0
-    for start, end in _comment_spans(text):
+    for start, end in comment_spans(text):
         out.append(text[last:start])
         last = end
     out.append(text[last:])
@@ -46,7 +46,7 @@ def mask_comments(text: str) -> str:
     """The text with each comment character replaced by a space (newlines kept), so offsets and line numbers match
     the original: a match found in the masked text is never inside a comment."""
     chars = list(text)
-    for start, end in _comment_spans(text):
+    for start, end in comment_spans(text):
         for k in range(start, end):
             if chars[k] != "\n":
                 chars[k] = " "

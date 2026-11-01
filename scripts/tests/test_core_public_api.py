@@ -144,12 +144,16 @@ export { deep } from "./inner";
 
 def test_a_public_tag_counts_only_on_a_top_level_declaration(tmp_path, monkeypatch):
     write(tmp_path, {
-        "good.ts": 'const s = "/** @public */";\n\n/**\n * Good.\n * @public\n */\nexport type Good = string;\n',
+        "good.ts": (
+            'const s = "/** @public */";\n// /** @public */\nconst commented = 1;\n'
+            'const glob = "src/**"; /** @public */\nexport type Glob = string;\n'
+            "\n/**\n * Good.\n * @public\n */\nexport type Good = string;\n"
+        ),
         "member.ts": "export class K {\n  /** @public */\n  method() {}\n}\n",
     })
     monkeypatch.setattr(api, "CORE_SRC", tmp_path)
     (tmp_path / "member.ts").rename(tmp_path / "member.ts.off")
-    assert api.marked_in_sources() == {(tmp_path / "good.ts", "Good")}
+    assert api.marked_in_sources() == {(tmp_path / "good.ts", "Good"), (tmp_path / "good.ts", "Glob")}
     (tmp_path / "member.ts.off").rename(tmp_path / "member.ts")
     with pytest.raises(ValueError, match=r"member\.ts:2: @public is not on a top-level declaration"):
         api.marked_in_sources()
@@ -165,23 +169,63 @@ def test_every_name_index_ts_exports_has_a_declaration():
 
 
 IMPORT_FROM_CORE = re.compile(r"\bimport\s+(type\s+)?\{([^}]*)\}\s*from\s*([\"'])miroir-core\3")
+# any string naming core or a subpath of it: each must be the specifier of a plain named import
+CORE_SPECIFIER = re.compile(r"([\"'])miroir-core(?:/[^\"']*)?\1")
+TEMPLATE_SUFFIXES = {".ts", ".tsx", ".mts", ".cts", ".js", ".jsx", ".mjs", ".cjs"}
+SANDBOX = ROOT / "packages/miroir-sandbox"
+
+
+def named_imports(text: str) -> tuple[set[str], list[str]]:
+    """The names of the plain named imports from "miroir-core" in `text` (comments stripped), and the other uses of
+    a core specifier: namespace or default imports, re-exports, dynamic imports, subpaths."""
+    from ts_source import strip_comments
+
+    code = strip_comments(text)
+    names: set[str] = set()
+    plain_ends: set[int] = set()
+    for match in IMPORT_FROM_CORE.finditer(code):
+        plain_ends.add(match.end())
+        for item in match.group(2).split(","):
+            words = item.split()
+            if words and words[0] == "type" and len(words) > 1:
+                words = words[1:]
+            if words:
+                names.add(words[0])
+    others = [
+        code[code.rfind("\n", 0, m.start()) + 1 : m.end()].strip()
+        for m in CORE_SPECIFIER.finditer(code)
+        if m.end() not in plain_ends
+    ]
+    return names, others
 
 
 def sandbox_core_imports() -> set[str]:
-    from ts_source import strip_comments
-
     names: set[str] = set()
-    for path in sorted(SANDBOX_SRC.rglob("*")):
-        if path.suffix not in {".ts", ".tsx"}:
+    others: list[str] = []
+    for path in sorted(SANDBOX.rglob("*")):
+        if path.suffix not in TEMPLATE_SUFFIXES or {"node_modules", "dist"} & set(path.parts):
             continue
-        for match in IMPORT_FROM_CORE.finditer(strip_comments(path.read_text(encoding="utf-8"))):
-            for item in match.group(2).split(","):
-                words = item.split()
-                if words and words[0] == "type" and len(words) > 1:
-                    words = words[1:]
-                if words:
-                    names.add(words[0])
+        found, other = named_imports(path.read_text(encoding="utf-8"))
+        names |= found
+        others += [f"{path.relative_to(ROOT)}: {line}" for line in other]
+    assert others == [], "the template reaches core other than by named imports of the package root"
     return names
+
+
+def test_the_template_import_scan_sees_every_form():
+    text = """
+import { A, type B } from "miroir-core";
+import type { C as D } from 'miroir-core';
+// import { Commented } from "miroir-core";
+import * as core from "miroir-core";
+import Def, { E } from "miroir-core";
+export { F } from "miroir-core";
+const g = await import("miroir-core");
+import { H } from "miroir-core/model-validation-fs";
+"""
+    names, others = named_imports(text)
+    assert names == {"A", "B", "C"}
+    assert len(others) == 5
 
 
 def test_the_template_only_imports_public_exports_of_core():
@@ -226,40 +270,36 @@ def test_the_generated_public_types_carry_the_tag():
         assert re.search(rf"/\*\* @public \*/\n^export type {name} =", text, re.MULTILINE), name
 
 
-@pytest.mark.parametrize(
-    ("declaration_file", "name"),
-    [
-        ("dist/4_services/MiroirLoggerFactory.d.ts", "MiroirLoggerFactory"),
-        ("dist/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.d.ts", "Entity"),
-    ],
-)
-def test_the_built_declarations_keep_the_tag(declaration_file, name):
-    """Case 4 (pack-style): consumers hover the built declarations."""
-    path = CORE / declaration_file
-    if not path.is_file():
-        message = f"{path.relative_to(ROOT)} is not built: npm run build -w miroir-core"
-        if REQUIRE_PACK:
-            pytest.fail(message)
-        pytest.skip(message)
-    text = path.read_text(encoding="utf-8")
-    match = re.search(rf"^export (?:declare )?(?:type|class) {name}\b", text, re.MULTILINE)
-    assert match, name
-    tsdoc = api._tsdoc_before(text, match.start())
-    assert tsdoc is not None and "@public" in tsdoc, f"{name}: no @public in its built TSDoc"
+def require_file(path: Path, build: str) -> None:
+    if path.is_file():
+        return
+    message = f"{path.relative_to(ROOT)} is not built: {build}"
+    if REQUIRE_PACK:
+        pytest.fail(message)
+    pytest.skip(message)
 
 
-def test_the_server_library_declarations_name_only_listed_core_types():
-    """Case 2, pack-style: the set above is what the published declarations import."""
+def test_the_built_declarations_keep_the_tag():
+    """Case 4 (pack-style): consumers hover the built declarations, emitted per file by tsc into dist/."""
+    require_file(CORE / "dist/index.d.ts", "npm run build -w miroir-core")
+    missing: list[str] = []
+    for declaration in api.public_declarations():
+        relative = declaration.file.relative_to(CORE / "src").with_suffix(".d.ts")
+        path = CORE / "dist" / relative
+        text = path.read_text(encoding="utf-8") if path.is_file() else ""
+        built = api.declarations_in_text(text).get(declaration.name)
+        if built is None or not built.public:
+            missing.append(f"{declaration.name} ({relative.as_posix()})")
+    assert missing == [], "built declarations without @public: rebuild core, or the tag does not survive tsc"
+
+
+def test_the_server_library_declarations_import_exactly_the_listed_core_types():
+    """Case 2, pack-style: the server library's published declarations import the set above, by name."""
     path = ROOT / "packages/miroir-server-library/dist/index.d.ts"
-    if not path.is_file():
-        message = "miroir-server-library is not built: npm run build -w miroir-server-library"
-        if REQUIRE_PACK:
-            pytest.fail(message)
-        pytest.skip(message)
-    imported: set[str] = set()
-    for match in IMPORT_FROM_CORE.finditer(path.read_text(encoding="utf-8")):
-        imported |= {item.split()[-1] for item in match.group(2).split(",") if item.split()}
-    assert imported <= SERVER_LIBRARY_NAMES | PUBLIC_NAMES, sorted(imported - PUBLIC_NAMES)
+    require_file(path, "npm run build -w miroir-server-library")
+    names, others = named_imports(path.read_text(encoding="utf-8"))
+    assert others == []
+    assert names == SERVER_LIBRARY_NAMES
 
 
 def test_the_core_readme_states_the_stance_and_links_the_list():
