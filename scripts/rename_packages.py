@@ -83,13 +83,18 @@ def matches_glob(path: str, patterns: list[str]) -> bool:
     return any(fnmatch.fnmatch(path, pattern) for pattern in patterns)
 
 
-def allowed_reason(path: str, line_text: str, allow: list[dict]) -> str | None:
+def allowed_reason(path: str, line_text: str, start: int, allow: list[dict]) -> str | None:
+    """The reason an occurrence starting at `start` is kept. An entry with "span": true keeps only an occurrence inside
+    its match (a bin key on a one-line manifest does not keep the package name next to it); others keep the line."""
     for entry in allow:
         if not matches_glob(path, entry.get("files", ["**"])):
             continue
         pattern = entry.get("line")
-        if pattern is None or re.search(pattern, line_text):
+        if pattern is None:
             return entry["reason"]
+        for match in re.finditer(pattern, line_text):
+            if not entry.get("span") or match.start() <= start < match.end():
+                return entry["reason"]
     return None
 
 
@@ -145,7 +150,7 @@ def scan(path: str, text: str, mapping: dict[str, str], allow: list[dict]) -> tu
         for match in pattern.finditer(line_text):
             name = match.group(1)
             context = context_of(line_text, match.start(), match.end())
-            reason = allowed_reason(path, line_text, allow)
+            reason = allowed_reason(path, line_text, match.start(), allow)
             if FOLDER_SUBPATH.match(line_text, match.end()):
                 kind = "folder-path"
             elif reason is not None:

@@ -237,3 +237,14 @@ def test_root_scripts_run_by_the_nonreg_runner_exist():
     assert "miroir-env" in run_names
     for name in run_names:
         assert name in scripts, name
+
+
+def test_a_bin_entry_keeps_only_the_command_on_a_one_line_manifest(tmp_path):
+    files = {"packages/miroir-cli/package.json": '{"name":"miroir-cli","bin":{"miroir-cli":"./dist/index.js"},'
+             '"dependencies":{"miroir-core":"0.5.0"}}\n'}
+    make_tree(tmp_path, files)
+    rp.main(["--apply", "--root", str(tmp_path)])
+    assert tree(tmp_path, files)["packages/miroir-cli/package.json"] == (
+        '{"name":"@miroir-framework/cli","bin":{"miroir-cli":"./dist/index.js"},'
+        '"dependencies":{"@miroir-framework/core":"0.5.0"}}\n'
+    )
