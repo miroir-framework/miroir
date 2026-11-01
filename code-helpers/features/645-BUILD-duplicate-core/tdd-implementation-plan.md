@@ -195,3 +195,4 @@ npm run nonreg:filesystem
 - Docs: `docs/reference/release-process.md` §10b. Epic plan I5 slice 1 row ✅ #645.
 - Pre-push gate: skills check, `pytest scripts/tests` (502 passed, 12 skipped), dependency policy, lint, `miroir-env check`, core `tsc`, core unit tests, all green.
 - Manual browser tracer: done in Slice 0 (self-test with a console listener).
+- Adversarial code review, 4 findings fixed: a frozen record array no longer makes core's import throw (checked with `Object.isExtensible`, new case); one temporary folder per run (`mkdtempSync`), so parallel runs in one checkout do not delete each other's copies; the stale-dist check also covers `ConfigurationService.ts`; "realm" instead of "process" in the message, and the Vite hot-context sentence of the analysis corrected. 9 cases pass.

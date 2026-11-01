@@ -59,7 +59,7 @@ Outside dev tooling, an ES module is evaluated once per module-map key (its URL,
 - Vite HMR, where `import.meta.hot` is defined;
 - vitest, where `process.env.VITEST` is set: it resets modules between test files and on `vi.resetModules` (one use, `componentTestMode.286.phase4.unit.test.tsx`).
 
-Under these, D2 falls back to B. Both are read without assuming Node: `import.meta.hot`, and `globalThis.process?.env?.VITEST` (browsers have no `process`). `import.meta.hot` is defined on every module Vite dev serves, not only on HMR, so all of Vite dev uses the location rule (accepted miss, §6). The location is kept in every record entry for the message, without query or hash (Vite adds `?t=…`). When `import.meta.url` is undefined (a CommonJS rebundle), the location is `"unknown"`.
+Under these, D2 falls back to B. Both are read without assuming Node: `import.meta.hot`, and `globalThis.process?.env?.VITEST` (browsers have no `process`). Vite dev gives a hot context to every served module whose source mentions `import.meta.hot`, which `ConfigurationService.ts` does, on its first evaluation as well as on HMR: all of Vite dev uses the location rule (accepted miss, §6). The location is kept in every record entry for the message, without query or hash (Vite adds `?t=…`). When `import.meta.url` is undefined (a CommonJS rebundle), the location is `"unknown"`.
 
 This changes one acceptance criterion of the issue as first written: the same file imported with a query string prints nothing only under dev tooling. In plain Node, `import("dist/index.js")` then `import("dist/index.js?copy=2")` gives two distinct module instances (checked during review), so two split singletons: D2 warns, and the issue text is updated.
 

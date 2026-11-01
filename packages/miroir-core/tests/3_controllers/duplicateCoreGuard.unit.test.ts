@@ -1,7 +1,7 @@
 // #645: two copies of miroir-core in one realm warn, the record of copies is on globalThis.
 // Vitest rather than MiroirTest: two module instances of the built core are not reachable through the ML.
 import { spawnSync } from "node:child_process";
-import { copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, statSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, statSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
@@ -15,12 +15,14 @@ import {
 
 const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const builtCore = join(packageRoot, "dist/index.js");
-const guardSource = join(packageRoot, "src/3_controllers/duplicateCoreGuard.ts");
+const guardSources = ["duplicateCoreGuard.ts", "ConfigurationService.ts"].map((file) =>
+  join(packageRoot, "src/3_controllers", file),
+);
 const copies = join(packageRoot, "tests/tmp");
-const copyA = join(copies, "645-a/index.js");
-const copyB = join(copies, "645-b/index.js");
-const hrefA = pathToFileURL(copyA).href;
-const hrefB = pathToFileURL(copyB).href;
+// one folder per run, so a core unit run and the nonreg step in the same checkout do not delete each other's copies
+let runFolder = "";
+let hrefA = "";
+let hrefB = "";
 
 const WARNING = "copies are loaded";
 
@@ -57,18 +59,23 @@ function runFresh(specifiers: string[], extraEnv: Record<string, string> = {}) {
 describe("two copies of the built core, each case in a fresh Node process", () => {
   beforeAll(() => {
     const built = existsSync(builtCore) && readFileSync(builtCore, "utf-8").includes("miroir-core.instances");
-    if (!built || statSync(builtCore).mtimeMs < statSync(guardSource).mtimeMs) {
-      throw new Error("dist/index.js predates the duplicate-core guard: rebuild core (npm run build -w miroir-core)");
+    if (!built || guardSources.some((source) => statSync(builtCore).mtimeMs < statSync(source).mtimeMs)) {
+      throw new Error("dist/index.js is older than the duplicate-core guard: rebuild core (npm run build -w miroir-core)");
     }
+    mkdirSync(copies, { recursive: true });
+    runFolder = mkdtempSync(join(copies, "645-"));
+    const copyA = join(runFolder, "a/index.js");
+    const copyB = join(runFolder, "b/index.js");
     for (const copy of [copyA, copyB]) {
       mkdirSync(dirname(copy), { recursive: true });
       copyFileSync(builtCore, copy);
     }
+    hrefA = pathToFileURL(copyA).href;
+    hrefB = pathToFileURL(copyB).href;
   });
 
   afterAll(() => {
-    rmSync(join(copies, "645-a"), { recursive: true, force: true });
-    rmSync(join(copies, "645-b"), { recursive: true, force: true });
+    if (runFolder) rmSync(runFolder, { recursive: true, force: true });
   });
 
   it("one copy is recorded and prints nothing", () => {
@@ -144,8 +151,10 @@ describe("registerMiroirCoreInstance", () => {
     expect(warnings).toHaveLength(1);
   });
 
-  it("a record in another shape is reported and left as it was, without throwing", () => {
-    const foreign = { copies: 3 };
+  it.each([
+    ["another shape", { copies: 3 }],
+    ["a frozen array", Object.freeze([] as MiroirCoreInstance[])],
+  ])("a record in %s is reported and left as it was, without throwing", (_label, foreign) => {
     const target: Record<symbol, unknown> = { [MIROIR_CORE_INSTANCES]: foreign };
     const warnings: string[] = [];
     expect(() =>

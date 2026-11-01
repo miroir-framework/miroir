@@ -28,8 +28,8 @@ function locationOf(moduleUrl: string | undefined): string {
  * evaluation is a second set of singletons, even from the same file. Under dev tooling (Vite dev and HMR, vitest),
  * modules are evaluated again on purpose: there, one location is one copy.
  *
- * Never throws: a value under the key that is not an array (written by a core with another contract) is reported
- * and left untouched.
+ * Never throws, since it runs while core's module is evaluated: a value under the key that is not an extensible array
+ * (written by a core with another contract, or frozen by a hardened realm) is reported and left untouched.
  */
 export function registerMiroirCoreInstance(
   version: string,
@@ -39,7 +39,7 @@ export function registerMiroirCoreInstance(
   warn: (message: string) => void,
 ): void {
   const existing: unknown = Reflect.get(target, MIROIR_CORE_INSTANCES);
-  if (existing !== undefined && !Array.isArray(existing)) {
+  if (existing !== undefined && !(Array.isArray(existing) && Object.isExtensible(existing))) {
     warn(
       `miroir-core ${version}: unrecognised record of loaded copies under Symbol.for("miroir-core.instances"); ` +
         "copies of miroir-core cannot be counted.",
@@ -48,6 +48,7 @@ export function registerMiroirCoreInstance(
   }
   const instances: MiroirCoreInstance[] = existing ?? [];
   if (existing === undefined) {
+    // returns false, without throwing, on a frozen globalThis: the copy then keeps a record nobody else sees
     Reflect.set(target, MIROIR_CORE_INSTANCES, instances);
   }
   const location = locationOf(moduleUrl);
@@ -59,7 +60,7 @@ export function registerMiroirCoreInstance(
     return;
   }
   warn(
-    `miroir-core: ${instances.length} copies are loaded in this process: ` +
+    `miroir-core: ${instances.length} copies are loaded in this realm (process, page or worker): ` +
       instances.map((instance) => `${instance.version} at ${instance.location}`).join(", ") +
       ". Each copy has its own configuration service, loggers, action implementations and secrets: what is " +
       "registered on one copy is missing from the other, and instanceof checks fail across copies. " +
