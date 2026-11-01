@@ -2470,7 +2470,7 @@
               {
                 "label": "the first group is DomainEndpoint",
                 "resultAccessPath": [
-                  0,
+                  "0",
                   "endpointName"
                 ],
                 "expectedValue": "DomainEndpoint"
@@ -2478,7 +2478,7 @@
               {
                 "label": "DomainEndpoint has no assertion",
                 "resultAccessPath": [
-                  0,
+                  "0",
                   "actionTypes"
                 ],
                 "expectedValue": [
@@ -2498,7 +2498,7 @@
               {
                 "label": "InstanceEndpoint comes next",
                 "resultAccessPath": [
-                  1
+                  "1"
                 ],
                 "expectedValue": {
                   "endpointUuid": "ed520de4-55a9-4550-ac50-b1b713b72a89",
@@ -2535,7 +2535,7 @@
               {
                 "label": "DomainEndpoint has the assertion",
                 "resultAccessPath": [
-                  0,
+                  "0",
                   "actionTypes"
                 ],
                 "expectedValue": [
@@ -2676,7 +2676,7 @@
                 "resultAccessPath": [
                   "payload",
                   "objects",
-                  0,
+                  "0",
                   "definition"
                 ],
                 "expectedValue": {
@@ -4358,10 +4358,10 @@
                   "compositeActionSequence",
                   "payload",
                   "actionSequence",
-                  0,
+                  "0",
                   "payload",
                   "objects",
-                  0
+                  "0"
                 ],
                 "expectedValue": {
                   "transformerType": "getFromParameters",
