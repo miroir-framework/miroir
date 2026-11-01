@@ -36,7 +36,7 @@ Key sources: [`scripts/check_dependency_policy.py`](../../../scripts/check_depen
 
 | Decision | Choice | Serves | Status |
 |---|---|---|---|
-| D1 Shared libraries | **peer dependencies with a caret range, the exact version in `devDependencies`**; `react-redux` joins the epic's D10-b list | G2 | Accepted |
+| D1 Shared libraries | **peer dependencies with a caret range (`react`: `>=18.2.0`), the exact version in `devDependencies`**; `react-redux` joins the epic's D10-b list | G2 | Accepted |
 | D2 Where the set is listed | **`scripts/published-packages.json`**, read by the manifest test | G4 | Accepted |
 | D3 `./src/*` in core and store-postgres | **remove; in-repo imports use `miroir-core/model-validation-fs` and relative paths** | G1 | Accepted |
 | D4 Declaration maps of core | **stop shipping `.d.ts.map`**; keep emitting them for the monorepo | G3 | Accepted |
@@ -61,7 +61,7 @@ The peers, per package. A package is a peer owner when its `src/` imports the li
 | Library | Range | Peer of |
 |---|---|---|
 | `zod` | `^4.6.7` | core, react, mcp, cli, store-postgres |
-| `react` | `^18.2.0` | react, localcache-redux † (peer of `react-redux`) |
+| `react` | `>=18.2.0` | react, localcache-redux † (peer of `react-redux`) |
 | `react-dom` | `^18.2.0` | react |
 | `react-redux` | `^9.3.0` | react, localcache-redux |
 | `@mui/material` | `>=5.17.1 <10` | react |
@@ -70,7 +70,7 @@ The peers, per package. A package is a peer owner when its `src/` imports the li
 | `react-router-dom` | `^7.18.4` | react |
 | `formik` | `^2.4.9` | react |
 
-`miroir-localcache-redux` lists `zod` and the `react-dom` peer without importing either (§4.3): both go (D9). Hosts outside the set (standalone app, sandbox, Electron, server binary, examples) already list the libraries they use as `dependencies` and keep them: they are the consumers that provide the peers. `react` keeps `^18.2.0` and not `>=18.0.0`: the repo has never run on 19 (`react` `18.3.1` installed).
+`miroir-localcache-redux` lists `zod` and the `react-dom` peer without importing either (§4.3): both go (D9). Hosts outside the set (standalone app, sandbox, Electron, server binary, examples) already list the libraries they use as `dependencies` and keep them: they are the consumers that provide the peers. `react` takes `>=18.2.0`, the only range without a caret: the release dry run (`release_version.py --apply`) showed that in a consumer without `react`, npm's peer resolver picks `react` 19 for the `@emotion/*` peers (`>=16.8.0`) and then fails with ERESOLVE on `^18.2.0`. `>=18.2.0` raises the floor from `>=18.0.0` and installs `react` `18.3.1` there; the repo has never run on 19, and `react-dom` `^18.2.0` still pins the major.
 
 ### D2 — Where the set is listed
 
@@ -269,6 +269,7 @@ A scan of `src/**/*.{ts,tsx}` (comments removed; static `import`/`export … fro
 ## Revision history
 
 - v1 (2026-10-31): first version.
+- v4 (2026-11-01): `react` peer `>=18.2.0` instead of `^18.2.0`, after the release dry run failed with ERESOLVE in a clean consumer (D1).
 - v3 (2026-10-31): after the plan review: `uuid` is used (core, react); `miroir-app-miroir`'s type-only `miroir-core` import joins the allowlist; mcp and cli test-only entries move to `devDependencies`.
 - v2 (2026-10-31): after the adversarial review. Added `react-router-dom` and `formik` to D1 and G2, the † peers, D9 (declared imports, §4.6), the `private` column and the non-goal correction (three packages of the set are public), the missing top-level effects (§4.5, D6), core's `files` entries that are not built, the corrected function list (§4.2), the D5 evidence from `miroir-server-library`.
 

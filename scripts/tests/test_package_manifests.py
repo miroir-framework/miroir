@@ -337,7 +337,7 @@ def test_published_declarations_carry_tsdoc():
 # library -> (peer range, owners). An owner either imports the library in src/ or needs it for a library it imports (†).
 SHARED_LIBRARIES = {
     "zod": ("^4.6.7", {"miroir-core", "miroir-react", "miroir-mcp", "miroir-cli", "miroir-store-postgres"}),
-    "react": ("^18.2.0", {"miroir-react", "miroir-localcache-redux"}),  # † localcache-redux: peer of react-redux
+    "react": (">=18.2.0", {"miroir-react", "miroir-localcache-redux"}),  # † localcache-redux: peer of react-redux
     "react-dom": ("^18.2.0", {"miroir-react"}),
     "react-redux": ("^9.3.0", {"miroir-react", "miroir-localcache-redux"}),
     "react-router-dom": ("^7.18.4", {"miroir-react"}),
