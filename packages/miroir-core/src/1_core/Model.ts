@@ -234,17 +234,18 @@ export function isOptionalApplicationSection(section: string): section is Option
   return (optionalApplicationSections as readonly string[]).includes(section);
 }
 
-/**
- * #647 — entity UUIDs whose instances always belong to `devData`, whatever the application.
- * The Entities are defined in the Miroir model; checked in getApplicationSection after
- * versionHistoryEntityUuids.
- */
+/** #647 — the fixed Entity rows of the devData section, defined in the Miroir model. */
 const devDataEntityDefinitions: ReadonlyMap<string, Entity> = new Map([
   [entityBundleSizeMeasurement.uuid!, entityBundleSizeMeasurement as Entity],
   [entityPageLoadMeasurement.uuid!, entityPageLoadMeasurement as Entity],
   [entityAgentRunMeasurement.uuid!, entityAgentRunMeasurement as Entity],
 ]);
 
+/**
+ * #647 — entity UUIDs whose instances always belong to `devData`, whatever the application.
+ * Checked in getApplicationSection after versionHistoryEntityUuids.
+ * @public
+ */
 export const devDataEntityUuids: ReadonlySet<string> = new Set(devDataEntityDefinitions.keys());
 
 /** Bootstrap Entity row for a devData entity: an application's devData store boots and creates tables from it. */
