@@ -299,6 +299,29 @@ describe("Phase 6 — performance acceptance (199)", () => {
     expect(carryOnSpy).not.toHaveBeenCalled();
     carryOnSpy.mockRestore();
   }, 120_000);
+
+  it("creating an Entity does not trigger carry-on: the schema depends on endpoints and composites only", () => {
+    const carryOnSpy = vi.spyOn(schemaHelpers, "applyDeploymentDomainActionCarryOn");
+
+    const warmSchema = resolveFundamentalSchemaForDeployment(
+      libraryDeploymentUuid,
+      defaultLibraryAppModel as MetaModel,
+      "extended",
+    );
+    carryOnSpy.mockClear();
+
+    const withNewEntity = structuredClone(defaultLibraryAppModel) as MetaModel;
+    withNewEntity.entities = [
+      ...withNewEntity.entities,
+      { ...withNewEntity.entities[0], uuid: "9b1f7c1e-3c55-4b8e-9a51-0d5f2a6e7c01", name: "NewEntity" },
+    ];
+
+    const schema = resolveFundamentalSchemaForDeployment(libraryDeploymentUuid, withNewEntity, "extended");
+
+    expect(carryOnSpy).not.toHaveBeenCalled();
+    expect(schema).toBe(warmSchema);
+    carryOnSpy.mockRestore();
+  }, 120_000);
 });
 
 describe("resolveFundamentalSchemaForDeployment (Phase 199 — revision cache)", () => {

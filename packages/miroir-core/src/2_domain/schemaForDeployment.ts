@@ -18,7 +18,6 @@ import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
 import { applicationTransformerBranches } from "./TransformerDefinitionRegistry";
-import { computeCombinedSchemaRevision } from "../1_core/mls/schemaChangeKind";
 import { resolveEffectiveSchemaMode } from "../1_core/mls/schemaModePolicy";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "schemaForDeployment");
@@ -34,12 +33,23 @@ export function clearSchemaCacheForTests(): void {
   schemaCacheByRevision.clear();
 }
 
+/**
+ * The extended schema depends only on the application's own endpoints and composite
+ * TransformerDefinitions (see `buildExtendedSchema`), so the key covers just those: a write of
+ * another model concept (an Entity created by a freeze, a Report) must not rebuild the carry-on.
+ */
 function cacheKey(
   deploymentUuid: Uuid,
   model: MetaModel,
   mode: SchemaResolutionMode,
 ): string {
-  return `${deploymentUuid}:${mode}:${computeCombinedSchemaRevision(deploymentUuid, model)}`;
+  return JSON.stringify([
+    deploymentUuid,
+    mode,
+    model.applicationUuid,
+    hasAppSpecificEndpoints(model) ? getAppSpecificEndpoints(model) : [],
+    getAppTransformerBranches(model),
+  ]);
 }
 
 function getCachedSchema(
