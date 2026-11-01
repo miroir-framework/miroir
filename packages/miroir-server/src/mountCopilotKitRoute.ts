@@ -1,5 +1,5 @@
-import type { ApplicationDeploymentMap, DomainControllerInterface, ProcessCapabilities } from "miroir-core";
-import { isAgentBackendAllowed, shouldMountCopilotKitRoute } from "miroir-core";
+import type { ApplicationDeploymentMap, DomainControllerInterface, ProcessCapabilities } from "@miroir-framework/core";
+import { isAgentBackendAllowed, shouldMountCopilotKitRoute } from "@miroir-framework/core";
 
 type RequestHandler = (request: any, response: any, next: any) => unknown;
 

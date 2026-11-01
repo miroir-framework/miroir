@@ -2,7 +2,7 @@
  * Browser side of the agent backend pick (#409). The server runs at most one agent backend,
  * chosen in the environment config; the browser only switches between token chat and "the agent".
  */
-import type { AgentBackend, ProcessCapabilities } from "miroir-core";
+import type { AgentBackend, ProcessCapabilities } from "@miroir-framework/core";
 
 import type { MiroirAiBackendPick } from "./miroirAiBackend.js";
 

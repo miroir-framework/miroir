@@ -6,8 +6,8 @@
 import { existsSync } from "node:fs";
 import path from "node:path";
 
-import { isTestEnvironment } from "miroir-core";
-import { environmentClientConfig, resolveEnvironmentFromFiles } from "miroir-env";
+import { isTestEnvironment } from "@miroir-framework/core";
+import { environmentClientConfig, resolveEnvironmentFromFiles } from "@miroir-framework/env";
 
 import { deriveTestSessionDefaultsFromMiroirConfig } from "./deriveTestSessionDefaultsFromMiroirConfig.js";
 

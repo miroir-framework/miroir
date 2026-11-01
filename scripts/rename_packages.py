@@ -49,7 +49,6 @@ SKIPPED = [
     "docs/reference/core-public-api.md",
     "scripts/tests/test_check_dependency_policy.py",
     "scripts/tests/test_fill_lockfile_integrity.py",
-    "scripts/tests/fixtures/**",
 ]
 FOLDER_SUBPATH = re.compile(r"/(?:src|dist|tests|scripts|assets|node_modules|release|public|certs|tmp|\.miroir)\b")
 TEXT_SUFFIXES = {
@@ -97,7 +96,7 @@ def allowed_reason(path: str, line_text: str, allow: list[dict]) -> str | None:
 # commands as well as packages: a bare mention is the command (`miroir-env prune`), so only specifier contexts rename
 BIN_NAMES = {"miroir-env", "miroir-cli"}
 QUOTES = "'\"`"
-SELECTOR_BEFORE = re.compile(r"(?:^|[\s(`])(?:-w|--workspace|-e|npm\s+ls)(?:=|\s+)$")
+SELECTOR_BEFORE = re.compile(r"(?:^|[\s(`'\"])(?:-w|--workspace|-e|npm\s+ls|via)(?:=|\s+)$")
 
 
 def context_of(line_text: str, start: int, end: int) -> str:

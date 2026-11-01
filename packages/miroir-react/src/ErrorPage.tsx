@@ -1,4 +1,4 @@
-import { LoggerInterface, MiroirLoggerFactory } from "miroir-core";
+import { LoggerInterface, MiroirLoggerFactory } from "@miroir-framework/core";
 
 import { useRouteError } from "react-router-dom";
 import { packageName } from "./constants.js";

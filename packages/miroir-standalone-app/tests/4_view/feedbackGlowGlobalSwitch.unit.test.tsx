@@ -2,17 +2,17 @@ import React from "react";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 
-import type { DomainControllerInterface } from "miroir-core";
-import { MiroirActivityTracker, MiroirEventService } from "miroir-core";
+import type { DomainControllerInterface } from "@miroir-framework/core";
+import { MiroirActivityTracker, MiroirEventService } from "@miroir-framework/core";
 import {
   feedbackGlowAttribute,
   feedbackGlowClass,
   feedbackGlowStorageKey,
   MiroirContextReactProvider,
-} from "miroir-react";
+} from "@miroir-framework/react";
 
-import { FeedbackGlowAppBarButton } from "miroir-react";
-import { GlobalFeedbackGlow } from "miroir-react";
+import { FeedbackGlowAppBarButton } from "@miroir-framework/react";
+import { GlobalFeedbackGlow } from "@miroir-framework/react";
 
 // Feedback glow (#438): the global switch. The AppBar button turns the glow on for the whole document
 // (portals to document.body included); the choice is kept in localStorage; off by default.

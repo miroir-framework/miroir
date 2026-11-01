@@ -3,7 +3,7 @@ import {
   type DeploymentUuidToReportsEntitiesMapping,
   type MetaModel,
   type Uuid,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   adminSelfApplication,
   deployment_Admin,

@@ -31,7 +31,7 @@ import {
   type ApplicationDeploymentMap,
   type ExtractorRunnerInMemory,
   type MiroirModelEnvironment
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   sqlStringForQuery
 } from "../1_core/SqlGenerator";

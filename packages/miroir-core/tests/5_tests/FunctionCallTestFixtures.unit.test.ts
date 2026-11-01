@@ -4,7 +4,7 @@ import {
   defaultMetaModelEnvironment,
   defaultMiroirModelEnvironment,
   miroirFundamentalMlSchema,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   resolveFunctionCallEnvironment,
   resolveFunctionCallFixture,

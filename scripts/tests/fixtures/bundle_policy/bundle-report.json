@@ -12,7 +12,7 @@
   },
   "packages": [
     {
-      "name": "miroir-core",
+      "name": "@miroir-framework/core",
       "kind": "workspace",
       "loadKind": "eager",
       "renderedBytes": 1879117,
@@ -68,7 +68,7 @@
       "via": "packages/miroir-standalone-app/src/miroir-fwk/4_view/routes/ai/AgentsCopilotKit.tsx \u2192 @copilotkit/react-core \u2192 import(@copilotkit/web-inspector) \u2192 lucide"
     },
     {
-      "name": "miroir-store-mongodb",
+      "name": "@miroir-framework/store-mongodb",
       "kind": "workspace",
       "loadKind": "lazy",
       "renderedBytes": 417310,
@@ -123,7 +123,7 @@
       "via": "packages/miroir-standalone-app/src/miroir-fwk/4-tests/componentTests/componentTestEnvironment.ts \u2192 @testing-library/dom"
     },
     {
-      "name": "miroir-store-indexedDb",
+      "name": "@miroir-framework/store-indexeddb",
       "kind": "workspace",
       "loadKind": "eager",
       "renderedBytes": 39203,
@@ -159,7 +159,7 @@
       "renderedBytes": 5941959,
       "packages": [
         {
-          "name": "miroir-core",
+          "name": "@miroir-framework/core",
           "kind": "workspace",
           "renderedBytes": 1879117,
           "modules": 1,
@@ -180,7 +180,7 @@
           "via": "packages/miroir-standalone-app/vite/manualChunks.js"
         },
         {
-          "name": "miroir-store-indexedDb",
+          "name": "@miroir-framework/store-indexeddb",
           "kind": "workspace",
           "renderedBytes": 39203,
           "modules": 1,
@@ -224,7 +224,7 @@
           "via": "packages/miroir-standalone-app/src/miroir-fwk/4-tests/IntegrationTestSession.ts \u2192 import(miroir-store-mongodb) \u2192 mongodb"
         },
         {
-          "name": "miroir-store-mongodb",
+          "name": "@miroir-framework/store-mongodb",
           "kind": "workspace",
           "renderedBytes": 417310,
           "modules": 1,
@@ -339,7 +339,7 @@
       "kind": "externalized-node-module",
       "module": "fs",
       "importer": "packages/miroir-store-indexedDb/dist/index.js",
-      "importerPackage": "miroir-store-indexedDb",
+      "importerPackage": "@miroir-framework/store-indexeddb",
       "chunk": "assets/index-Dsnkzr4h.js",
       "chain": [
         "packages/miroir-standalone-app/src/index.tsx",

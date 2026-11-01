@@ -9,7 +9,7 @@ import {
   type ApplicationDeploymentMap,
   type MiroirActivityTrackerInterface,
   type TestCompositeActionParams,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import { packageName } from '../../constants';
 import { cleanLevel } from '../4_view/constants';

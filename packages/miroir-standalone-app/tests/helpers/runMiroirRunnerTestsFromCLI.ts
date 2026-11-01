@@ -15,14 +15,14 @@ import {
   type VitestNamespace,
   resolveSuitesTestbedReset,
   withTestbedResetPolicy,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { timedTestPhase } from "./testTimingPhase.js";
 import { topLevelSuiteName } from "./testbedResetScope.js";
 import { onFailedRunExport } from "./writeFailedRunExport.js";
 import {
   listCliRunnerIntegrationSuiteKeysFromFolders,
   loadApplicationMiroirTestCatalog,
-} from "miroir-core/model-validation-fs";
+} from "@miroir-framework/core/model-validation-fs";
 
 const applicationMiroirTestCatalog = loadApplicationMiroirTestCatalog();
 const runnerSuitesByKey = indexApplicationMiroirTestsByKey(applicationMiroirTestCatalog);

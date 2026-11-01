@@ -23,7 +23,7 @@ import {
   type PersistenceStoreControllerAction,
   type PersistenceStoreControllerManagerInterface,
   isServerRoutedMiroirAction,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { packageName } from "../../constants.js";
 import type { LocalCache } from "../LocalCache.js";
 import { cleanLevel } from "../constants.js";

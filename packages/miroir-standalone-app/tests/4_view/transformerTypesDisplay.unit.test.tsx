@@ -30,8 +30,8 @@ import {
   type MiroirTestForReactComponent,
   type ReactComponentTestStep,
   type ReactComponentTestSuiteContext,
-} from "miroir-core";
-import { LocalCacheProvider, MiroirContextReactProvider } from "miroir-react";
+} from "@miroir-framework/core";
+import { LocalCacheProvider, MiroirContextReactProvider } from "@miroir-framework/react";
 
 vi.mock("../../src/miroir-fwk/4-tests/componentTests/index", async (importOriginal) => {
   const actual = await importOriginal<typeof import("../../src/miroir-fwk/4-tests/componentTests/index")>();
@@ -47,9 +47,9 @@ import {
   ComponentTestSandboxProvider,
   useComponentTestSandbox,
 } from "../../src/miroir-fwk/4_view/components/Reports/ComponentTestSandbox";
-import { transformerTypeBadges } from "miroir-react";
-import { useShowTransformerTypes } from "miroir-react";
-import type { TransformerTypeBadge } from "miroir-react";
+import { transformerTypeBadges } from "@miroir-framework/react";
+import { useShowTransformerTypes } from "@miroir-framework/react";
+import type { TransformerTypeBadge } from "@miroir-framework/react";
 import { buildAdminViewParamsHarness, loadViewParams } from "../helpers/adminViewParamsHarness";
 
 const RUN_TEST_TIMEOUT = 120_000;

@@ -21,7 +21,7 @@ import {
   ViewParams,
   defaultSelfApplicationDeploymentMap,
   getClientEnvironment,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import type { 
   LoggerInterface, 
   Uuid, 
@@ -37,7 +37,7 @@ import type {
   GridType, 
   MiroirEvent,
   ProcessCapabilities,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import {
   evaluateSchemaRevisionChange,
@@ -873,7 +873,7 @@ export function MiroirContextReactProvider(props: {
 // #############################################################################################
 /**
  * Provides a given MiroirReactContext value, without the services MiroirContextReactProvider builds.
- * For tests of components and hooks that read the context: a `vi.mock("miroir-react")` does not reach
+ * For tests of components and hooks that read the context: a `vi.mock("@miroir-framework/react")` does not reach
  * the modules of miroir-react that call these hooks (#600).
  */
 export function MiroirContextReactTestProvider({

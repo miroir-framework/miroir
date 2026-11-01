@@ -22,7 +22,7 @@
 import React, { Suspense, useEffect, useMemo } from "react";
 import { Navigate, type Params, useParams, useSearchParams } from "react-router-dom";
 
-import { isUsableBearerToken, LoggerInterface, MiroirLoggerFactory, nextPageWhenAccessDenied, nextPageWhenAuthGate, type ApplicationSection } from "miroir-core";
+import { isUsableBearerToken, LoggerInterface, MiroirLoggerFactory, nextPageWhenAccessDenied, nextPageWhenAuthGate, type ApplicationSection } from "@miroir-framework/core";
 import { useMiroirContextService } from "./contexts/MiroirContextReactProvider.js";
 import { getAuthenticationEnabled, getAuthToken } from "./auth/authSession.js";
 import { useApplicationAccess } from "./auth/useApplicationAccess.js";

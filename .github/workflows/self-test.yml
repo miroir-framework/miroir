@@ -34,10 +34,10 @@ jobs:
       - name: Build the packages the app and the server import
         run: |
           npm run build -w miroir-app-miroir -w miroir-app-admin
-          npm run build -w miroir-core
-          npm run build -w miroir-env -w miroir-localcache-redux -w miroir-store-bundled -w miroir-store-filesystem -w miroir-store-indexedDb -w miroir-store-postgres -w miroir-store-mongodb -w miroir-example-library -w miroir-example-spotify -w miroir-example-github -w miroir-app-meta -w miroir-fixture-appForTest
-          npm run build -w miroir-react -w miroir-mcp -w miroir-ai
-          npm run build -w miroir-diagram-class -w miroir-server-library
+          npm run build -w @miroir-framework/core
+          npm run build -w @miroir-framework/env -w miroir-localcache-redux -w @miroir-framework/store-bundled -w @miroir-framework/store-filesystem -w @miroir-framework/store-indexeddb -w @miroir-framework/store-postgres -w @miroir-framework/store-mongodb -w miroir-example-library -w miroir-example-spotify -w miroir-example-github -w miroir-app-meta -w miroir-fixture-appForTest
+          npm run build -w @miroir-framework/react -w @miroir-framework/mcp -w miroir-ai
+          npm run build -w miroir-diagram-class -w @miroir-framework/server
       - name: Build the client on the self-test environment
         run: npm run build -w miroir-standalone-app
       - name: Build the server release
@@ -71,9 +71,9 @@ jobs:
       - name: Build the packages the app and the main process import
         run: |
           npm run build -w miroir-app-miroir -w miroir-app-admin
-          npm run build -w miroir-core
-          npm run build -w miroir-env -w miroir-localcache-redux -w miroir-store-bundled -w miroir-store-filesystem -w miroir-store-indexedDb -w miroir-store-postgres -w miroir-store-mongodb -w miroir-example-library -w miroir-example-spotify -w miroir-example-github -w miroir-app-meta -w miroir-fixture-appForTest
-          npm run build -w miroir-react -w miroir-mcp -w miroir-ai
+          npm run build -w @miroir-framework/core
+          npm run build -w @miroir-framework/env -w miroir-localcache-redux -w @miroir-framework/store-bundled -w @miroir-framework/store-filesystem -w @miroir-framework/store-indexeddb -w @miroir-framework/store-postgres -w @miroir-framework/store-mongodb -w miroir-example-library -w miroir-example-spotify -w miroir-example-github -w miroir-app-meta -w miroir-fixture-appForTest
+          npm run build -w @miroir-framework/react -w @miroir-framework/mcp -w miroir-ai
           npm run build -w miroir-diagram-class
       - name: Build the client on the self-test environment
         run: npm run build -w miroir-standalone-app

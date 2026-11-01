@@ -4,7 +4,7 @@ import { deployment_Miroir } from "miroir-app-admin";
 import {
   getMiroirFundamentalSchemaForDeployment,
   miroirFundamentalMlSchema,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { defaultMiroirMetaModel, selfApplicationMiroir } from "miroir-app-miroir";
 
 import { currentModelEnvironment } from "../src/4_services/localCache/Model.js";

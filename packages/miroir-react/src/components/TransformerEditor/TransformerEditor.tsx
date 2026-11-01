@@ -27,7 +27,7 @@ import {
   type MlUnion,
   type MiroirModelEnvironment,
   valueToMl,
-} from 'miroir-core';
+} from '@miroir-framework/core';
 import {
   adminSelfApplication,
   entityApplicationForAdmin
@@ -37,7 +37,7 @@ import { Formik, useFormikContext, type FormikProps } from 'formik';
 import {
   type CoreTransformerForBuildPlusRuntime,
   type TransformerDefinition
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { JsonDisplayHelper } from "../helpers/DebugHelper.js";
 import { useMiroirContextService } from "../../contexts/MiroirContextReactProvider.js";
 import { packageName } from "../../constants.js";

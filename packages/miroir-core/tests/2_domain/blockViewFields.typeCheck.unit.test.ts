@@ -12,7 +12,7 @@ import {
   mlsTypeCheck,
   type MlElement,
   type MiroirModelEnvironment,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import runnerDetailsReport from "../../../miroir-app-miroir/assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/032fde52-9171-4313-be77-7e06d9c35240.json" with { type: "json" };
 

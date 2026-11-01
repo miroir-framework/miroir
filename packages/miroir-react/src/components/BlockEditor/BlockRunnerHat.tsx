@@ -6,7 +6,7 @@ import {
   renameRunnerFormField,
   RUNNER_FORM_FIELD_TYPES,
   runnerHat,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import React, { useMemo, useState } from "react";
 
 import { blockCategoryColor } from "../Themes/BlockEditorColors.js";

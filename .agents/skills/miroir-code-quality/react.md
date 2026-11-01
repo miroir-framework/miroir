@@ -184,7 +184,7 @@ A prop that components pass on as is (`x={x}`, `x={props.x}`) through many files
 const { transformerTypeBadges } = useEditorAnnotations();
 ```
 
-Sanctioned form: `TransformerTypesDisplayContext` (#453) hands a setting to the component test cases. The most drilled prop, `applicationDeploymentMap` (22 files), is also in the Miroir context (`useApplicationDeploymentMap()`, miroir-react), but `RootComponent` copies it there in an effect, one render late: give the context the value in the same render before removing the drilled copies.
+Sanctioned form: `TransformerTypesDisplayContext` (#453) hands a setting to the component test cases. The most drilled prop, `applicationDeploymentMap` (22 files), is also in the Miroir context (`useApplicationDeploymentMap()`, @miroir-framework/react), but `RootComponent` copies it there in an effect, one render late: give the context the value in the same render before removing the drilled copies.
 
 **Leave it** for one or two levels, and for the props a component hands to the element it wraps (`className`, `style`, `id`, `onChange` …: the runner skips them).
 

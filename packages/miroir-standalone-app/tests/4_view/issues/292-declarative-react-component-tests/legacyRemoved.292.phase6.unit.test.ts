@@ -20,7 +20,7 @@ import { join } from "node:path";
 
 import { afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
 
-import type { MiroirTestForReactComponent } from "miroir-core";
+import type { MiroirTestForReactComponent } from "@miroir-framework/core";
 
 import { createReactComponentTestRunner } from "../../../../src/miroir-fwk/4-tests/componentTests/runReactComponentTest";
 import { resolveRepoRoot } from "../../../helpers/integrationTestProfiles.js";

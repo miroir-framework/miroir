@@ -10,7 +10,7 @@ import {
   type LoadedAccessDirectory,
   type LoggerInterface,
   MiroirLoggerFactory,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import {
   handleMcpAction,

@@ -25,7 +25,7 @@ import {
   type MiroirModelEnvironment,
   RunBoxedQueryTemplateAction,
   type ApplicationDeploymentMap,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
 import { BundledStore } from "./BundledStore.js";

@@ -15,7 +15,7 @@ import {
   type TestbedUuids,
   type TestRunLogSnapshot,
   type TestSuiteResult,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import {
   getIntegTestRunCoordinator,

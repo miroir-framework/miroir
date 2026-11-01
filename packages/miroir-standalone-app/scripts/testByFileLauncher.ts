@@ -1,4 +1,4 @@
-import { parseProfileArg, parseStorageArg } from "miroir-core";
+import { parseProfileArg, parseStorageArg } from "@miroir-framework/core";
 
 import { applyIntegrationTestProfile } from "../tests/helpers/integrationTestProfiles.js";
 import { realServerProfileNameForStorage } from "../tests/helpers/resolveRealServerUiIntegrationProfile.js";

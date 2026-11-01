@@ -15,14 +15,14 @@ import * as RRDom from "react-router-dom";
 import {
   defaultSelfApplicationDeploymentMap,
   type Deployment,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   reportMultistepCountryCreate,
   selfApplicationLibrary,
 } from "miroir-example-library";
 
 import { ReportPage } from "../../../../src/miroir-fwk/4_view/routes/ReportPage";
-import type { ReportViewProps } from "miroir-react";
+import type { ReportViewProps } from "@miroir-framework/react";
 import {
   deleteLibraryCountryFromMlEditorTestCache,
   getLibraryCountryFromMlEditorTestCache,

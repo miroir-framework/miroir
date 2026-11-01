@@ -22,14 +22,14 @@ import {
   StoreUnitConfiguration,
   type Action2VoidReturnType,
   type ApplicationDeploymentMap
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   deployment_Admin,
   adminSelfApplication,
   entityDeployment,
 } from "miroir-app-admin";
 
-import type { Deployment } from 'miroir-core';
+import type { Deployment } from '@miroir-framework/core';
 
 import { packageName } from "../constants.js";
 import { cleanLevel } from "../viewConstants.js";

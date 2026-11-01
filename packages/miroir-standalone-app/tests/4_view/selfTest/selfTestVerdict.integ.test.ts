@@ -8,7 +8,7 @@
  */
 import { describe, expect, it } from "vitest";
 
-import type { MiroirConfigClient, MiroirTestDefinition } from "miroir-core";
+import type { MiroirConfigClient, MiroirTestDefinition } from "@miroir-framework/core";
 import { miroirTest_tr_menuBuild } from "miroir-app-miroir";
 import { deployment_Admin } from "miroir-app-admin";
 

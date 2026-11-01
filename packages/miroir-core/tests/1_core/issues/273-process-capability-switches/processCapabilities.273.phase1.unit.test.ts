@@ -8,7 +8,7 @@ import {
   Action2Error,
   assertProcessCapability,
   getProcessCapabilities,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 const RUN_TEST = process.env.RUN_TEST;
 const runThis =

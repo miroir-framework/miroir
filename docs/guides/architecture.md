@@ -10,7 +10,7 @@ Read the rings from the centre outwards:
 - **ML interpreters** (`2_domain`): pure code that gives the language its meaning, such as query runners, the transformer engine and templates.
 - **Controllers** (`3_controllers`): `DomainController` and `ActionRunner` carry out actions; they play the part of use cases.
 - **Services and views** (`4_services`, `4_views`): adapters to the outside world, such as `PersistenceStoreController`, the REST client and server, and logging.
-- **Packages**: the concrete stores (`miroir-store-*`), the local cache (`miroir-localcache-redux`), the UI (`miroir-react`, `miroir-standalone-app`), the server, and the MCP and CLI tools.
+- **Packages**: the concrete stores (`miroir-store-*`), the local cache (`miroir-localcache-redux`), the UI (`@miroir-framework/react`, `miroir-standalone-app`), the server, and the MCP and CLI tools.
 - **`5_setup`** (dashed line) is the composition root: it picks the implementations and wires them together.
 
 ```

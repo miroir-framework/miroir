@@ -8,7 +8,7 @@ import {
   getEndpointActions,
   getExternalService,
   type EndpointDefinition,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { entityDefinitionEndpoint } from "miroir-app-miroir";
 
 import { resolveRepoRoot } from "../helpers/integrationTestProfiles.js";

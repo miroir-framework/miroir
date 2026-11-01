@@ -27,7 +27,7 @@ describe("loadApplicationMiroirTestsFromFolders", () => {
     expect(deploymentPackageApplicationKey("miroir-app-admin")).toBe("admin");
     expect(deploymentPackageApplicationKey("miroir-example-library")).toBe("library");
     expect(deploymentPackageApplicationKey("miroir-fixture-appForTest")).toBe("appForTest");
-    expect(deploymentPackageApplicationKey("miroir-core")).toBeUndefined();
+    expect(deploymentPackageApplicationKey("@miroir-framework/core")).toBeUndefined();
   });
 
   it("discovers MiroirTest folders under deployment packages, covering the legacy snapshot", () => {

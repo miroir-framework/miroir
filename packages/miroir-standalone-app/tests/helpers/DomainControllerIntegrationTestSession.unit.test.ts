@@ -1,10 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import type { DomainControllerInterface, MiroirConfigClient } from "miroir-core";
+import type { DomainControllerInterface, MiroirConfigClient } from "@miroir-framework/core";
 import {
   getBootstrapPhasesForDomainControllerProfile,
   getPlayfieldForDomainControllerProfile,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { selfApplicationLibrary } from "miroir-example-library";
 import {
   selfApplicationMiroir,

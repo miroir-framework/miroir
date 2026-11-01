@@ -4,7 +4,7 @@
 import { describe, expect, it } from "vitest";
 import { z } from "zod";
 
-import type { DomainControllerInterface } from "miroir-core";
+import type { DomainControllerInterface } from "@miroir-framework/core";
 import { handleMcpAction } from "../../../../src/tools/mcpHandlersForEndpoint.js";
 
 const RUN_TEST = process.env.RUN_TEST;

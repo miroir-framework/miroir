@@ -27,8 +27,8 @@ Artefact builds are handled by the separate multi-platform artefact pipeline. Gi
 
 | Track product SemVer? | Packages |
 |---|---|
-| **Yes — root + B+** | Root `package.json`, `miroir-standalone-app-electron`, `miroir-server`, `miroir-standalone-app`, `miroir-cli`, `miroir-mcp` |
-| **No** | Internals (`miroir-core`, stores, deployments, `miroir-ai`, …) stay at placeholders |
+| **Yes — root + B+** | Root `package.json`, `miroir-standalone-app-electron`, `miroir-server`, `miroir-standalone-app`, `@miroir-framework/cli`, `@miroir-framework/mcp` |
+| **No** | Internals (`@miroir-framework/core`, stores, deployments, `miroir-ai`, …) stay at placeholders |
 
 Do **not** use `lerna version` for product tags (rewrites all packages and `"*"` workspace ranges). See `code-helpers/features/223-BUILD-consistent-git-tagging/`.
 

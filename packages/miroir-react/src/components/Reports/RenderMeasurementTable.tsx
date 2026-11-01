@@ -1,6 +1,6 @@
 import React from "react";
 
-import type { ComponentRenderMeasurement } from "miroir-core";
+import type { ComponentRenderMeasurement } from "@miroir-framework/core";
 
 import { useMiroirTheme } from "../../contexts/MiroirThemeContext.js";
 import { ThemedLabel } from "../Themes/BasicComponents.js";

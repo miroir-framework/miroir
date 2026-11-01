@@ -22,7 +22,7 @@ import { join } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-import { defaultMiroirModelEnvironment, mlsTypeCheck, type MlElement } from "miroir-core";
+import { defaultMiroirModelEnvironment, mlsTypeCheck, type MlElement } from "@miroir-framework/core";
 
 import { resolveRepoRoot } from "../../../helpers/integrationTestProfiles.js";
 

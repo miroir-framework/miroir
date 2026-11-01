@@ -49,7 +49,7 @@ import {
   type CacheSegmentKind,
   type LocalCacheLoadSegmentHint,
   type LocalCacheSegmentHeader,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   entityEntity,
   entitySelfApplication,

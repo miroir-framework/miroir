@@ -19,7 +19,7 @@ import {
   type DeploymentUuidToReportsEntities,
   type Entity,
   type Report,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import { JsonDisplayHelper } from "./helpers/DebugHelper.js";
 import { useDomainControllerService, useMiroirContextInnerFormOutput, useMiroirContextService } from "../contexts/MiroirContextReactProvider.js";

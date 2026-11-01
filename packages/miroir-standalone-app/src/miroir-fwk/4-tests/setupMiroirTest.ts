@@ -10,7 +10,7 @@ import {
   type FakeOutboundHttp,
   type LocalCacheInterface,
   type MiroirConfigClient,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   ConfigurationService,
   LoggerInterface,
@@ -21,7 +21,7 @@ import {
   RestClientInterface,
   RestClientStub,
   RestPersistenceClientAndRestClientInterface
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import { loadLocalCacheImplementation } from "./localCacheImplementation";
 import { packageName } from "../../constants";

@@ -3,7 +3,7 @@
  * Pure counters + sample math; cleared when the monitor gate turns OFF.
  */
 
-import type { AttributedInstanceSize, LocalCacheMemoryBreakdown } from "miroir-core";
+import type { AttributedInstanceSize, LocalCacheMemoryBreakdown } from "@miroir-framework/core";
 import { isLocalCacheMonitorEnabled } from "./localCacheMonitorConfig.js";
 
 export type LocalCacheMonitorIndicators = {

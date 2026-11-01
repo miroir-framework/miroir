@@ -1,4 +1,4 @@
-import type { MiroirTestDefinition } from "miroir-core";
+import type { MiroirTestDefinition } from "@miroir-framework/core";
 
 export function getMiroirTestSuiteKey(instance: MiroirTestDefinition): string {
   return (

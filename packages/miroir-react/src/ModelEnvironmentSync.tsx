@@ -5,7 +5,7 @@ import {
   type ApplicationDeploymentMap,
   type MetaModel,
   type Uuid,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { useMiroirContextService } from "./contexts/MiroirContextReactProvider.js";
 
 import { useCurrentModel } from "./ReduxHooks.js";

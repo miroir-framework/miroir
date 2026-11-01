@@ -145,8 +145,8 @@ def write_check_command(workspace: Path) -> None:
     lines = VALIDATOR.read_text(encoding="utf-8").splitlines(keepends=True)
     source = "".join(lines[next(i for i, line in enumerate(lines) if not line.startswith("//")):])
     for package, entry in (
-        ('"miroir-core/model-validation-fs"', modules / "miroir-core" / "dist" / "model-validation-fs.js"),
-        ('"miroir-core"', modules / "miroir-core" / "dist" / "index.js"),
+        ('"@miroir-framework/core/model-validation-fs"', modules / "@miroir-framework/core" / "dist" / "model-validation-fs.js"),
+        ('"@miroir-framework/core"', modules / "@miroir-framework/core" / "dist" / "index.js"),
         ('"miroir-app-miroir"', modules / "miroir-app-miroir" / "dist" / "index.js"),
     ):
         source = source.replace(f"from {package};", f'from "{entry.resolve().as_uri()}";')

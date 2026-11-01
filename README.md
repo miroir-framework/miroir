@@ -285,13 +285,13 @@ Documentation organized by role: Executives, Project Managers, Architects, Devel
 
 - **jzod** - JSON schema definition language
 - **jzod-ts** - TypeScript type generation
-- **miroir-core** - Framework foundation
+- **@miroir-framework/core** - Framework foundation
 - **miroir-localcache-redux** - Client-side state management
 - **miroir-store-*** - Persistence adapters
-- **miroir-react** - UI components
+- **@miroir-framework/react** - UI components
 - **miroir-server** - Node.js backend
 - **miroir-standalone-app** - Web application
-- **miroir-mcp** - Model Context Protocol server
+- **@miroir-framework/mcp** - Model Context Protocol server
 
 **[Architecture Deep Dive →](docs/guides/architecture.md)**
 

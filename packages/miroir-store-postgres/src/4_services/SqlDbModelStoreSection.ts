@@ -8,7 +8,7 @@ import {
   MiroirLoggerFactory,
   PersistenceStoreDataSectionInterface,
   PersistenceStoreModelSectionInterface
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { MixedSqlDbEntityAndInstanceStoreSection } from "./sqlDbEntityStoreSectionMixin";
 
 import { packageName } from "../constants";

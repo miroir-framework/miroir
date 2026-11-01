@@ -32,7 +32,7 @@ import {
   type EndpointDefinition,
   type MlSchema,
   defaultSelfApplicationDeploymentMap,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   ALL_MCP_TEST_CASES,
   type McpToolTest

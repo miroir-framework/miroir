@@ -2,11 +2,11 @@
 import React from 'react';
 import { describe, expect, it } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import type { MiroirIcon } from 'miroir-core';
+import type { MiroirIcon } from '@miroir-framework/core';
 import { defaultStoredMiroirTheme } from 'miroir-app-miroir';
 
-import { ThemedIcon } from "miroir-react";
-import { MiroirThemeProvider } from "miroir-react";
+import { ThemedIcon } from "@miroir-framework/react";
+import { MiroirThemeProvider } from "@miroir-framework/react";
 
 const testThemeOptions = [
   {

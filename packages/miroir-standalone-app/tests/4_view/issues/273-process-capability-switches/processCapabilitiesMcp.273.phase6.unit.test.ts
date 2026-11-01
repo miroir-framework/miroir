@@ -6,8 +6,8 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
-import { shouldMountMcpHttp, type Runner } from "miroir-core";
-import type { McpHttpFetch } from "miroir-mcp/client";
+import { shouldMountMcpHttp, type Runner } from "@miroir-framework/core";
+import type { McpHttpFetch } from "@miroir-framework/mcp/client";
 import { runnerMcpGetInstances } from "miroir-app-miroir";
 
 import { runMcpToolRunner } from "../../../../src/miroir-fwk/4_view/components/Runners/runMcpToolRunner.js";

@@ -8,7 +8,7 @@ import {
   getMiroirFundamentalSchemaForDeployment,
   miroirFundamentalMlSchema,
   resolveFundamentalSchemaForDeployment,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import { defaultMiroirMetaModel } from "miroir-app-miroir";
 describe("defaultMiroirModelEnvironment (Phase 1)", () => {

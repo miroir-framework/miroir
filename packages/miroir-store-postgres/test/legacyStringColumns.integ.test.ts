@@ -4,13 +4,13 @@
  *
  * Needs PostgreSQL:
  * ```bash
- * MIROIR_POSTGRES_PASSWORD=... npm run vitest -w miroir-store-postgres -- legacyStringColumns
+ * MIROIR_POSTGRES_PASSWORD=... npm run vitest -w @miroir-framework/store-postgres -- legacyStringColumns
  * ```
  */
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { Sequelize } from "sequelize";
 
-import { ACTION_OK, type Entity } from "miroir-core";
+import { ACTION_OK, type Entity } from "@miroir-framework/core";
 
 import { SqlDbDataStoreSection } from "../src/4_services/SqlDbDataStoreSection.js";
 

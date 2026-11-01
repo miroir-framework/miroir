@@ -9,7 +9,7 @@ import {
   ENTITY_DEPLOYMENT_UUID,
   type AdminRowLabels,
   type StoreUnitConfiguration,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import { EnvironmentError, type ResolvedEnvironment } from "./environmentFiles.js";
 import { readRows } from "./stateCommands.js";

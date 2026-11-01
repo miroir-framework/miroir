@@ -26,7 +26,7 @@ Parts of the page that change on a timer carry `data-miroir-load-timing-ignore` 
 
 Each step has milestones (initial load: `responseEnd`, `domContentLoaded`, `entryScript`, `configReady`, `platformReady`, `firstRender`, `configurationsLoaded`, in ms from navigation start), the JavaScript and CSS files fetched during the step (start, duration, transferred and encoded bytes; `transferBytes` is 0 for a file from the browser cache), and the count and bytes of its data requests (`fetch`; Electron IPC calls keep a step open but are not counted). `buildMode` says whether the page came from a build or from the Vite dev server, whose unbundled modules make timings not comparable with a build.
 
-`configurationsLoaded` is marked by `usePageConfiguration`, in `miroir-react`, through `loadTimingMark`. The package records nothing itself: the client registers its recorder with `setLoadTimingMarkSink` (the standalone app does it in `src/index.tsx`); without a sink, a mark does nothing (#633).
+`configurationsLoaded` is marked by `usePageConfiguration`, in `@miroir-framework/react`, through `loadTimingMark`. The package records nothing itself: the client registers its recorder with `setLoadTimingMarkSink` (the standalone app does it in `src/index.tsx`); without a sink, a mark does nothing (#633).
 
 ## Where measurements go
 

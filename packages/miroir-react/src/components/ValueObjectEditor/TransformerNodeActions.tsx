@@ -12,7 +12,7 @@ import {
   wrapTransformerNode,
   type InputOutputType,
   type TransformerDefinitionRegistry,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import { ThemedDialog, ThemedDialogActions, ThemedDialogContent, ThemedDialogTitle, ThemedMenuItem } from "../Themes/MUIComponents.js";
 import { ThemedLabeledEditor, ThemedSelectWithPortal } from "../Themes/FormComponents.js";

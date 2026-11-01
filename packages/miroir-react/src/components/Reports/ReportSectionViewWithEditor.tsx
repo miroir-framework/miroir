@@ -16,7 +16,7 @@ import {
   Uuid,
   type ApplicationDeploymentMap,
   type MlObject,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import { useFormikContext } from 'formik';
 import { JsonDisplayHelper } from "../helpers/DebugHelper.js";

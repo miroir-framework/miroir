@@ -21,7 +21,7 @@ import type {
   EntityVersion,
   MetaModel,
   SelfApplication,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   Action2Error,
   APPLICATION_VERSION_CROSS_ENDPOINT_VERSION_UUID,
@@ -57,12 +57,12 @@ import {
   testUtils_resetApplicationDeployment,
   THEME_VERSION_ENTITY_UUID,
   TRANSFORMER_DEFINITION_VERSION_ENTITY_UUID,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
-import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
-import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
-import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
-import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
+import { miroirFileSystemStoreSectionStartup } from "@miroir-framework/store-filesystem";
+import { miroirIndexedDbStoreSectionStartup } from "@miroir-framework/store-indexeddb";
+import { miroirMongoDbStoreSectionStartup } from "@miroir-framework/store-mongodb";
+import { miroirPostgresStoreSectionStartup } from "@miroir-framework/store-postgres";
 import { miroirAppStartup } from "../../src/startup.js";
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import { DomainControllerIntegrationTestSession } from "../helpers/DomainControllerIntegrationTestSession.js";

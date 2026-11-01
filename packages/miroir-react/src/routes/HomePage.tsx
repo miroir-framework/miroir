@@ -11,7 +11,7 @@ import {
   type Domain2QueryReturnType,
   type MetaModel,
   type SelfApplication
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import { useMiroirContextService } from "../contexts/MiroirContextReactProvider.js";
 import { PageContainer } from "../components/Page/PageContainer.js";

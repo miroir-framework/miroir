@@ -30,7 +30,7 @@ import {
   getInstancePrimaryKeyValue,
   findEntityFromUuid,
   type Entity,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import { JsonDisplayHelper } from "../helpers/DebugHelper.js";
 import { getMemoizedReduxDeploymentsStateSelectorMap } from "../../miroir-localcache-imports.js";

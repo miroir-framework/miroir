@@ -22,7 +22,7 @@ import type {
   SyncQueryRunner,
   Uuid,
   ViewParams
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   defaultMiroirModelEnvironment,
   defaultSelfApplicationDeploymentMap,
@@ -32,10 +32,10 @@ import {
   MiroirLoggerFactory,
   noValue,
   transformer_extended_apply_wrapper,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   type AdminApplication
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { getMemoizedReduxDeploymentsStateSelectorMap, useSelector } from "../../miroir-localcache-imports.js";
 import { useMiroirContextService } from "../../contexts/MiroirContextReactProvider.js";
 import {

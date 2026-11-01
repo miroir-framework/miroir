@@ -6,7 +6,7 @@ import {
   type DomainControllerInterface,
   type LoggerFactoryInterface,
   type LoggerOptions,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   bootEnvironment,
   environmentClientConfig,
@@ -14,7 +14,7 @@ import {
   resolveEnvironmentFromFiles,
   seedEnvironmentState,
   type ResolvedEnvironment,
-} from "miroir-env";
+} from "@miroir-framework/env";
 
 import { startMiroirNode } from "miroir-localcache-redux/node";
 

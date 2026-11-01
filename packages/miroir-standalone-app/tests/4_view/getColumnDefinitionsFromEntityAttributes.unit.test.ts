@@ -3,10 +3,10 @@
  */
 import { describe, expect, it } from "vitest";
 
-import { entityMLSchema, type Entity } from "miroir-core";
+import { entityMLSchema, type Entity } from "@miroir-framework/core";
 import { entityMiroirTest } from "miroir-app-miroir";
 
-import { getMDataGridColumnDefinitionsFromEntity } from "miroir-react";
+import { getMDataGridColumnDefinitionsFromEntity } from "@miroir-framework/react";
 
 const bookEntityShape = {
   uuid: "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",

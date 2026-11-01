@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
-import { transformerPaletteGroups } from "miroir-core";
+import { transformerPaletteGroups } from "@miroir-framework/core";
 import React, { useMemo } from "react";
 
 import { blockCategoryColor, type BlockEditorColors } from "../Themes/BlockEditorColors.js";

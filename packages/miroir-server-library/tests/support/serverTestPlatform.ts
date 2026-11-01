@@ -16,10 +16,10 @@ import {
   type LoggerOptions,
   type MiroirConfigServer,
   type ProcessCapabilities,
-} from "miroir-core";
-import { bootEnvironment, environmentServerConfig, openTestEnvironment, selectedTestEnvironment } from "miroir-env";
+} from "@miroir-framework/core";
+import { bootEnvironment, environmentServerConfig, openTestEnvironment, selectedTestEnvironment } from "@miroir-framework/env";
 import { startMiroirNode } from "miroir-localcache-redux/node";
-import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
+import { miroirFileSystemStoreSectionStartup } from "@miroir-framework/store-filesystem";
 
 // #636: a server-side domain controller on a test environment (test-filesystem unless MIROIR_ENV names
 // another test-* environment), built the way miroir-server builds its own. Its stores are copies in

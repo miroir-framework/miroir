@@ -14,7 +14,7 @@ import {
   defaultMetaModelEnvironment,
   TransformerFailure,
   transformer_extended_apply,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 const packageRoot = join(dirname(fileURLToPath(import.meta.url)), "..");
 const excerptPath = join(

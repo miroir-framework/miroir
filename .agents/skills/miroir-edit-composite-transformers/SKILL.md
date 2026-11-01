@@ -20,7 +20,7 @@ This skill guides the creation and modification of **Composite** Miroir Transfor
 **BEFORE starting any transformer work, verify current test state:**
 
 ```bash
-npm run testMiroir -w miroir-core -- --suites tr.core --mode unit
+npm run testMiroir -w @miroir-framework/core -- --suites tr.core --mode unit
 npm run testMiroir -w miroir-standalone-app -- --suites tr.core --mode integration
 ```
 
@@ -57,7 +57,7 @@ Much simpler than library transformers - only JSON changes!
 ### Step 1: Run Pre-flight Tests ✅
 Establish baseline before any changes.
 ```bash
-npm run testMiroir -w miroir-core -- --suites tr.core --mode unit
+npm run testMiroir -w @miroir-framework/core -- --suites tr.core --mode unit
 ```
 
 ### Step 2: Write Test Cases First (TDD) 📝
@@ -69,7 +69,7 @@ Add test cases to the test suite:
 ### Step 3: Run Tests (Expect Failure) ❌
 Verify the test fails before implementation:
 ```bash
-npm run testMiroir -w miroir-core -- --suites tr.core --mode unit
+npm run testMiroir -w @miroir-framework/core -- --suites tr.core --mode unit
 ```
 
 ### Step 4: Create TransformerDefinition JSON 📄
@@ -89,7 +89,7 @@ In `packages/miroir-core/src/2_domain/Transformers.ts`:
 ### Step 6: Run Tests (Expect Success) ✅
 Verify everything works:
 ```bash
-npm run testMiroir -w miroir-core -- --suites tr.core --mode unit
+npm run testMiroir -w @miroir-framework/core -- --suites tr.core --mode unit
 npm run testMiroir -w miroir-standalone-app -- --suites tr.core --mode integration
 ```
 
@@ -453,12 +453,12 @@ Access nested object properties.
 
 ### Run Specific Tests Only
 ```bash
-npm run testMiroir -w miroir-core -- --suites tr.core --mode unit --filter '{"tr.core":["specific test case name"]}'
+npm run testMiroir -w @miroir-framework/core -- --suites tr.core --mode unit --filter '{"tr.core":["specific test case name"]}'
 ```
 
 ### Enable Debug Logging
 ```bash
-VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug npm run testMiroir -w miroir-core -- --suites tr.core --mode unit
+VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug npm run testMiroir -w @miroir-framework/core -- --suites tr.core --mode unit
 ```
 
 ---

@@ -16,7 +16,7 @@ import { join } from "node:path";
 import { render } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
-import { expect as miroirExpect } from "miroir-core";
+import { expect as miroirExpect } from "@miroir-framework/core";
 
 import { resolveRepoRoot } from "../../../helpers/integrationTestProfiles.js";
 import { extractValuesFromRenderedElements } from "../../MlElementEditorTestTools.js";

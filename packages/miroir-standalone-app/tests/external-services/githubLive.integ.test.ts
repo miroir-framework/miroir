@@ -12,7 +12,7 @@
  */
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-import { Action2Error, clearSecrets } from "miroir-core";
+import { Action2Error, clearSecrets } from "@miroir-framework/core";
 
 import {
   applicationDeploymentMap,

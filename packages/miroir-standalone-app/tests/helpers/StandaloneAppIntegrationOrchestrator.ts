@@ -10,20 +10,20 @@ import type {
   RealServerTransformerIntegrationSessionOptions,
   Runner,
   RunnerIntegrationSessionOptions,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   createDefaultMiroirTestIntegrationOrchestrator,
   isRealServerTransformerSessionOptions,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
-import type { IntegTestHostOptions } from "miroir-core";
+import type { IntegTestHostOptions } from "@miroir-framework/core";
 import { RealServerTransformerTestSession } from "../../src/miroir-fwk/4-tests/RealServerTransformerTestSession.js";
 import {
   AppStackIntegrationTestSession,
   IntegrationTestSession,
 } from "./IntegrationTestSession.js";
 import { DomainControllerIntegrationTestSession } from "./DomainControllerIntegrationTestSession.js";
-import { startEphemeralMcpHttpServer } from "miroir-mcp";
+import { startEphemeralMcpHttpServer } from "@miroir-framework/mcp";
 import { RunnerTestSession } from "./RunnerTestSession.js";
 
 function resolveLibraryPlayfieldEnsureMode(

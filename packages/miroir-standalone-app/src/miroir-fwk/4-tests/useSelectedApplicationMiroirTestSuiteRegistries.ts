@@ -13,11 +13,11 @@ import {
   type Runner,
   type UiIntegrationRunnerSuiteRegistryMap,
   type UiIntegrationTransformerSuiteRegistryMap,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   selectModelForDeploymentFromReduxState,
   useMiroirContextService,
-} from "miroir-react";
+} from "@miroir-framework/react";
 
 const emptySubscribe = () => () => {};
 

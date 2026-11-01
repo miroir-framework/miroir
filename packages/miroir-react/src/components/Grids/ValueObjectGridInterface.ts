@@ -5,7 +5,7 @@ import {
   mlElement,
   mlObject,
   type Uuid,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   gridDefaultSizingPropsSchema,
   gridPagedSizingPropsSchema,

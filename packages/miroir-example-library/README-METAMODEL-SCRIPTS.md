@@ -111,10 +111,10 @@ The script queries these Miroir meta-model entities:
 ### Dependencies
 
 The extraction script requires:
-- `miroir-core`
+- `@miroir-framework/core`
 - `miroir-app-admin`
-- `miroir-store-filesystem`
-- `miroir-store-indexedDb`
-- `miroir-store-postgres`
+- `@miroir-framework/store-filesystem`
+- `@miroir-framework/store-indexeddb`
+- `@miroir-framework/store-postgres`
 
 All are configured as devDependencies and linked in the monorepo.

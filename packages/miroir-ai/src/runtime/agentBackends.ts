@@ -4,7 +4,7 @@
  */
 
 import type { AbstractAgent } from "@ag-ui/client";
-import type { AgentBackend } from "miroir-core";
+import type { AgentBackend } from "@miroir-framework/core";
 
 import { createClaudeAbstractAgent, type ImportClaudeSdk } from "./claudeAgent.js";
 import { createCursorAbstractAgent, type ImportCursorSdk } from "./cursorAgent.js";

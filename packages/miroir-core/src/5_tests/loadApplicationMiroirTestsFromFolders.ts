@@ -1,6 +1,6 @@
 /**
  * Node-only: load MiroirTest instances from application asset folders.
- * Import via `miroir-core/model-validation-fs` — do not add to the browser entry.
+ * Import via `@miroir-framework/core/model-validation-fs` — do not add to the browser entry.
  */
 
 import { existsSync, readdirSync, readFileSync } from "node:fs";

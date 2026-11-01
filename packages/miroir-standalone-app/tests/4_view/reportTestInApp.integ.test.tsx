@@ -32,13 +32,13 @@ import {
   miroirCoreStartup,
   type DomainControllerInterface,
   type EntityInstance,
-} from "miroir-core";
-import { loadApplicationMiroirTestCatalog } from "miroir-core/model-validation-fs";
-import { LocalCache, LocalCacheProvider, MiroirContextReactProvider } from "miroir-react";
-import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
-import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
-import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
-import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
+} from "@miroir-framework/core";
+import { loadApplicationMiroirTestCatalog } from "@miroir-framework/core/model-validation-fs";
+import { LocalCache, LocalCacheProvider, MiroirContextReactProvider } from "@miroir-framework/react";
+import { miroirFileSystemStoreSectionStartup } from "@miroir-framework/store-filesystem";
+import { miroirIndexedDbStoreSectionStartup } from "@miroir-framework/store-indexeddb";
+import { miroirMongoDbStoreSectionStartup } from "@miroir-framework/store-mongodb";
+import { miroirPostgresStoreSectionStartup } from "@miroir-framework/store-postgres";
 import { entityReport, selfApplicationMiroir } from "miroir-app-miroir";
 
 import { resetIntegTestRunCoordinatorForTests } from "../../src/miroir-fwk/4-tests/integTestRunCoordinator.js";
@@ -51,12 +51,12 @@ import {
   resetLastUiIntegrationTestRunResultForTests,
 } from "../../src/miroir-fwk/4-tests/uiIntegrationTestRunState.js";
 import { MiroirTestDisplay } from "../../src/miroir-fwk/4_view/components/Reports/MiroirTestDisplay.js";
-import { ReportPageContextProvider } from "miroir-react";
+import { ReportPageContextProvider } from "@miroir-framework/react";
 import { miroirAppStartup } from "../../src/startup.js";
 
 vi.mock("../../src/miroir-fwk/4-tests/useSelectedApplicationMiroirTestSuiteRegistries.js", async () => {
   const { loadApplicationRunnerUuidIndexFromFolders } = await import(
-    "miroir-core/model-validation-fs"
+    "@miroir-framework/core/model-validation-fs"
   );
   const index = loadApplicationRunnerUuidIndexFromFolders();
   return {

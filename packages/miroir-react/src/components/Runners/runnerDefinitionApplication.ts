@@ -1,4 +1,4 @@
-import type { Uuid } from "miroir-core";
+import type { Uuid } from "@miroir-framework/core";
 import {
   runnerCreateEntity,
   runnerDeployApplication,

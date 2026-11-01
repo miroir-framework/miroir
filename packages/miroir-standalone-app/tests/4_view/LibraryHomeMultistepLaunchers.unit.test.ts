@@ -8,7 +8,7 @@ import { selfApplicationLibrary } from "miroir-example-library";
 import {
   openReportHref,
   resolveOpenReportPageParams,
-} from "miroir-react";
+} from "@miroir-framework/react";
 
 const MULTISTEP_COUNTRY_CREATE = "d2b2fbbd-6844-4422-8412-4e3c303296bc";
 const LIBRARY_DEPLOYMENT_UUID = "f714bb2f-a12d-4e71-a03b-74dcedea6eb4";

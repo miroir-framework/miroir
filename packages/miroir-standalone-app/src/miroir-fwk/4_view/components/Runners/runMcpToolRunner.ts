@@ -1,6 +1,6 @@
-import { browserMcpServerUrl, type ProcessCapabilities, type Runner } from "miroir-core";
-import { callMcpToolViaHttp, type McpHttpFetch } from "miroir-mcp/client";
-import type { McpToolRunnerEnvelope } from "miroir-react";
+import { browserMcpServerUrl, type ProcessCapabilities, type Runner } from "@miroir-framework/core";
+import { callMcpToolViaHttp, type McpHttpFetch } from "@miroir-framework/mcp/client";
+import type { McpToolRunnerEnvelope } from "@miroir-framework/react";
 
 export { browserMcpServerUrl };
 export type { McpToolRunnerEnvelope };

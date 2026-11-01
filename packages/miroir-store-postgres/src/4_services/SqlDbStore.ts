@@ -5,7 +5,7 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   PersistenceStoreAbstractInterface
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { Sequelize } from "sequelize";
 import { packageName } from "../constants";
 import { EntityUuidIndexedSequelizeModel } from "../utils";

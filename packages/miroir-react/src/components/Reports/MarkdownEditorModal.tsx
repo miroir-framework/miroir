@@ -13,7 +13,7 @@ import {
   resolvePathOnObject,
   Uuid,
   type ApplicationDeploymentMap
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import { useFormikContext } from 'formik';
 import { useDomainControllerService, useMiroirContextService } from "../../contexts/MiroirContextReactProvider.js";

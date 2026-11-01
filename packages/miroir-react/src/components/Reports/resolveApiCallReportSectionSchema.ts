@@ -2,7 +2,7 @@ import {
   getExternalService,
   type EndpointDefinitionLike,
   type MlElement,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 const EXTERNAL_SERVICE_EXTRACTOR_TYPES = new Set([
   "extractorTemplateForExternalService",

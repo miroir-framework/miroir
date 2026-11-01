@@ -23,7 +23,7 @@ import {
   type EntityVersion,
   type EntityInstanceCollection,
   type StoreUnitConfiguration,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import { entityEntity } from "miroir-app-miroir";
 import { packageName } from "./constants.js";

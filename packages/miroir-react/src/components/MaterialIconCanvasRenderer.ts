@@ -5,7 +5,7 @@
  * These paths are from the official Material Design Icons library (24x24 viewBox).
  */
 
-import { LoggerInterface, MiroirLoggerFactory } from 'miroir-core';
+import { LoggerInterface, MiroirLoggerFactory } from '@miroir-framework/core';
 import { packageName } from "../constants.js";
 import { cleanLevel } from "../viewConstants.js";
 

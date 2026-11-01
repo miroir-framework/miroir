@@ -16,7 +16,7 @@ import {
   createThrowingExpect,
   type LoggerInterface,
   type ThrowingExpect,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import { testSectionName } from "./componentTestTools.js";
 

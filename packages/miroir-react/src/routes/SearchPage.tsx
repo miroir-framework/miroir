@@ -7,7 +7,7 @@ import {
   MiroirLoggerFactory,
   defaultSelfApplicationDeploymentMap,
   type Uuid
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import { packageName } from "../constants.js";
 import type { ReportUrlParamKeys } from "../reportUrlParams.js";

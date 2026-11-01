@@ -40,23 +40,23 @@ ci/release/
 
 ## 2. Why this exists: the dev-only bootstrap edge
 
-`miroir-core` and the two lowest deployment packages have a **build-time circular
+`@miroir-framework/core` and the two lowest deployment packages have a **build-time circular
 reference** that is intentional in normal development:
 
-- `miroir-core`'s `devBuild` (`generate-ts-types`) does a real value-level `import`
+- `@miroir-framework/core`'s `devBuild` (`generate-ts-types`) does a real value-level `import`
   from the *built* `miroir-app-miroir` and
   `miroir-app-admin` packages, to regenerate TypeScript types from
   their ML schema assets.
 - Conversely, `miroir-app-miroir`'s `src/Model.ts` /
-  `runnerMiroirEntityTestRegistry.ts` `import type { ... } from "miroir-core"`.
+  `runnerMiroirEntityTestRegistry.ts` `import type { ... } from "@miroir-framework/core"`.
 
 In every package's manifest, this pair of edges is declared with two **different
 dependency kinds**, and that distinction is the crux of the whole release design:
 
 | Edge | Kind | Package.json field |
 |---|---|---|
-| `miroir-core` → `deployment-miroir` / `deployment-admin` | **runtime** | `dependencies` |
-| `deployment-miroir` / `deployment-admin` → `miroir-core` | **dev-only** | `devDependencies`, value `"*"` |
+| `@miroir-framework/core` → `deployment-miroir` / `deployment-admin` | **runtime** | `dependencies` |
+| `deployment-miroir` / `deployment-admin` → `@miroir-framework/core` | **dev-only** | `devDependencies`, value `"*"` |
 
 `"*"` is not an accident: it is the one static npm version specifier that npm's
 workspace linker special-cases to always resolve to the local workspace package by
@@ -83,10 +83,10 @@ one or the other deliberately:
 
 | Operation | Uses | Effect on the bootstrap edge |
 |---|---|---|
-| `release_closure()` | runtime only | Selecting `miroir-core` auto-adds `deployment-miroir`/`-admin` to the release set (they're its runtime deps); their dev-only edge *back* to `miroir-core` never pulls anything in and is never required to "already be releaseable". |
-| `topological_layers()` | runtime only | `deployment-miroir`/`-admin` have **no** runtime deps among selected packages → placed in the earliest layer (**P0**); `miroir-core` runtime-depends on them → placed in a later layer. This reproduces `build-all.sh`'s `STAGE_DEPLOY_BOOTSTRAP` → `STAGE_CORE` order, but derived automatically from dependency-kind classification instead of a hand-maintained stage list. |
+| `release_closure()` | runtime only | Selecting `@miroir-framework/core` auto-adds `deployment-miroir`/`-admin` to the release set (they're its runtime deps); their dev-only edge *back* to `@miroir-framework/core` never pulls anything in and is never required to "already be releaseable". |
+| `topological_layers()` | runtime only | `deployment-miroir`/`-admin` have **no** runtime deps among selected packages → placed in the earliest layer (**P0**); `@miroir-framework/core` runtime-depends on them → placed in a later layer. This reproduces `build-all.sh`'s `STAGE_DEPLOY_BOOTSTRAP` → `STAGE_CORE` order, but derived automatically from dependency-kind classification instead of a hand-maintained stage list. |
 | `find_cycles(..., runtime_only=True)` | runtime only | No cycle found (the dev-only back-edge is invisible here) → layering succeeds. |
-| `find_cycles(..., runtime_only=False)` | all kinds | **Finds** the `miroir-core` ↔ `deployment-miroir`/`-admin` cycle, exposed as `dev_cycles` on the plan — reported for build context, never aborts the release. |
+| `find_cycles(..., runtime_only=False)` | all kinds | **Finds** the `@miroir-framework/core` ↔ `deployment-miroir`/`-admin` cycle, exposed as `dev_cycles` on the plan — reported for build context, never aborts the release. |
 
 ```110:116:ci/release/release_lib/plan.py
     runtime_cycles = tuple(
@@ -168,7 +168,7 @@ def verify_release_ranges(repo_root: Path, plan: ReleasePlan) -> None:
                     )
 ```
 
-`deployment-miroir`'s `devDependencies["miroir-core"] = "*"` is never inspected by
+`deployment-miroir`'s `devDependencies["@miroir-framework/core"] = "*"` is never inspected by
 this check (or touched by the rewrite pass above) and is explicitly allowed to
 survive, untouched, into the frozen release tree. This is the direct enforcement of
 "never tighten the dev-only bootstrap edge to a concrete range."
@@ -177,7 +177,7 @@ survive, untouched, into the frozen release tree. This is the direct enforcement
 
 `create_release_worktree()` (`worktree.py`) uses `git worktree add --detach <tmp> HEAD`.
 Since `dist/` and `node_modules/` are both git-ignored, the fresh worktree starts with
-**neither** — no pre-built `miroir-core`, no symlinks.
+**neither** — no pre-built `@miroir-framework/core`, no symlinks.
 
 `apply_lerna_version()` (`lerna_ops.py`) runs, in order, inside that worktree:
 
@@ -199,7 +199,7 @@ By step 9, every selected package's internal runtime edges are the exact
 workspace matches — no bootstrap trick needed there anymore. The
 `"*"`-bypasses-pre-release-exclusion behavior from §2 is still relied on exactly
 once in this flow: for `deployment-miroir`/`deployment-admin`'s **dev-only**
-`"miroir-core": "*"` edge, which step 4 deliberately never touches.
+`"@miroir-framework/core": "*"` edge, which step 4 deliberately never touches.
 
 Any failure at any step restores every backed-up file before raising.
 
@@ -224,12 +224,12 @@ def build_selected_packages(repo_root: Path, plan: ReleasePlan) -> None:
 ```
 
 Layer **P0** (`deployment-miroir`, `deployment-admin`) builds first via
-`npm run build -w <pkg>`, with `miroir-core` having no `dist/` yet in this worktree.
+`npm run build -w <pkg>`, with `@miroir-framework/core` having no `dist/` yet in this worktree.
 This still succeeds because `deployment-miroir/tsup.config.js` declares
-`external: ['miroir-core']` and its only references to `miroir-core` are
+`external: ['@miroir-framework/core']` and its only references to `@miroir-framework/core` are
 `import type {...}` — fully erased by esbuild, so the JS build never resolves or
 reads anything from `node_modules/miroir-core` at all. Layer **P1** then builds
-`miroir-core` itself, which does genuine value-level imports of the now-built
+`@miroir-framework/core` itself, which does genuine value-level imports of the now-built
 `deployment-miroir`/`-admin` — by then they exist.
 
 After building, `pack_layer()` runs `npm pack --json` for every selected package
@@ -352,7 +352,7 @@ On a successful `--apply`, the release worktree contains:
             "Build platform artefacts only from this validated release worktree.",
 ```
 
-i.e. by the time the artefact pipeline (or any downstream consumer) reads this file, the `miroir-core` ↔
+i.e. by the time the artefact pipeline (or any downstream consumer) reads this file, the `@miroir-framework/core` ↔
 `deployment-miroir`/`-admin` bootstrap question described in §2–§6 has already been
 fully resolved and verified — the artefact pipeline never needs to reason about it.
 
@@ -374,7 +374,7 @@ with its target name. `scripts/tests/test_package_manifests.py` checks every one
 | Field or rule | Contract |
 |---|---|
 | `files` | present, `dist` (plus the stubs a package needs); no `src/`, no `.d.ts.map`, no entry the build does not produce |
-| `exports` | a map with `./package.json` and built targets only (`./dist/...`, or the `index.d.ts` stub of `miroir-app-*`); no `./src/*`. `miroir-cli` exports only `./package.json`: it is a `bin` |
+| `exports` | a map with `./package.json` and built targets only (`./dist/...`, or the `index.d.ts` stub of `miroir-app-*`); no `./src/*`. `@miroir-framework/cli` exports only `./package.json`: it is a `bin` |
 | `sideEffects`, `engines`, `repository`, `license` | `false`, `node >=22`, the monorepo with the package's `directory`, `MIT` |
 | TSDoc | the tsconfig that emits the declarations keeps comments (`removeComments` is `false` in the root `tsconfig.json`) |
 | shared libraries | `zod`, `react`, `react-dom`, `react-redux`, `react-router-dom`, `formik`, `@mui/material`, `@emotion/*` are peers with one caret range across the set, never `dependencies`; the dependency policy's `peers` rule asks for an exact devDependency inside the range |
@@ -387,17 +387,17 @@ unless `MIROIR_REQUIRE_PACK=1`, which the nonreg step `unit-643-package-manifest
 ## 10b. Two copies of core (#645)
 
 Core keeps module-level singletons: the configuration service, the logger factory, the action implementations and
-the secret stores. A project that loads two copies of `miroir-core` (two installs, or one bundle holding both) has
+the secret stores. A project that loads two copies of `@miroir-framework/core` (two installs, or one bundle holding both) has
 two of each, so what a store registers on one copy is missing from the other, and `instanceof` checks against
 core classes fail across copies. Each copy records itself, when its `ConfigurationService` module is evaluated,
 in `globalThis[Symbol.for("miroir-core.instances")]` (a list of `{ version, location }`), and the copy evaluated
 second logs, at WARN and before any logger is started:
 
 ```
-miroir-core: 2 copies are loaded in this realm (process, page or worker): 0.5.0 at file:///…/node_modules/miroir-core/dist/index.js, 0.5.0 at file:///…/node_modules/<package>/node_modules/miroir-core/dist/index.js. …
+@miroir-framework/core: 2 copies are loaded in this realm (process, page or worker): 0.5.0 at file:///…/node_modules/miroir-core/dist/index.js, 0.5.0 at file:///…/node_modules/<package>/node_modules/miroir-core/dist/index.js. …
 ```
 
-Run `npm ls miroir-core` and make the tree resolve one copy (same version everywhere, `npm dedupe`).
+Run `npm ls @miroir-framework/core` and make the tree resolve one copy (same version everywhere, `npm dedupe`).
 
 Under Vite dev and HMR and under vitest, modules are evaluated again on purpose, so there one location is one copy.
 Elsewhere every evaluation counts, even of the same file (an import with another query string is another module
@@ -407,7 +407,7 @@ URL with different `?v=` hashes. Test: `packages/miroir-core/tests/3_controllers
 
 ## 10c. Public API of core (#649)
 
-`miroir-core` is in 0.x and promises no stability. The exports an application is meant to use carry `@public`
+`@miroir-framework/core` is in 0.x and promises no stability. The exports an application is meant to use carry `@public`
 TSDoc: what the template (`miroir-sandbox`) imports from core, plus the core types named by the startup calls'
 signatures. They are listed in [`core-public-api.md`](./core-public-api.md), written by
 `python scripts/core_public_api.py --write`. Hand-written declarations are tagged in the source; the 9 generated
@@ -419,6 +419,20 @@ differ from the supported set, when a built declaration loses its tag, or when t
 in `pytest scripts/tests` and in the nonreg step `unit-649-core-public-api`. To make an export public: tag its
 declaration (or add a generated type to the list and regenerate), add it to the test's sets with the reason, and
 rewrite the document.
+
+## 10d. Package names (#650)
+
+The packages of the published set carry their published names in the repo: `@miroir-framework/core`, `/react`,
+`/server` (folder `packages/miroir-server-library`), `/store-postgres`, `/store-filesystem`, `/store-indexeddb`,
+`/store-mongodb`, `/store-bundled`, `/env`, `/mcp`, `/cli`. Folders keep their `miroir-*` names, so a script that
+lists folders selects a workspace with `-w packages/<folder>`. `miroir-app-miroir`, `miroir-app-admin` and
+`miroir-localcache-redux` keep their private names until #652 bundles them into core and react. Each published
+package declares `publishConfig.access: "public"`; `private` flags are lifted by the publish item.
+
+`scripts/rename_packages.py` did the rename from `scripts/package-rename-map.json`, leaving what is not an npm name
+(`scripts/package-rename-allow.json`: logger names, MiroirTest `functionRef.module` ids, bin names, …). A branch
+started before the rename runs `python scripts/rename_packages.py --apply` after merging, then
+`npm install`; `python scripts/rename_packages.py --check` (pre-push gate, pr-checks) reports any old name left.
 
 ## 11. Non-goals of the current implementation (v1)
 

@@ -3,7 +3,7 @@ import {
   runnerHat,
   type BlockEditorBuildMarking,
   type TransformerDefinition,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   modelEndpointV1,
   RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY,
@@ -11,10 +11,10 @@ import {
 } from "miroir-app-miroir";
 import React, { Suspense, useCallback, useState } from "react";
 
-import { BlockEditorDisplayContext, LazyBlockEditorView } from "miroir-react";
-import { useBlockDefineOfEndpointAction } from "miroir-react";
-import { useBlockRunnerOf } from "miroir-react";
-import { BlockDefineContext, BlockRunnerContext } from "miroir-react";
+import { BlockEditorDisplayContext, LazyBlockEditorView } from "@miroir-framework/react";
+import { useBlockDefineOfEndpointAction } from "@miroir-framework/react";
+import { useBlockRunnerOf } from "@miroir-framework/react";
+import { BlockDefineContext, BlockRunnerContext } from "@miroir-framework/react";
 
 // ################################################################################################
 // The block view of a stored TransformerDefinition's body, for the declarative component tests

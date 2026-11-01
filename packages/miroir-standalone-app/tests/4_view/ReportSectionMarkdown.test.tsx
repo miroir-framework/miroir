@@ -8,10 +8,10 @@ import {
   ApplicationSection,
   LoggerInterface,
   MiroirLoggerFactory,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
-import { MiroirThemeProvider } from "miroir-react";
-import { ReportSectionMarkdown } from "miroir-react";
+import { MiroirThemeProvider } from "@miroir-framework/react";
+import { ReportSectionMarkdown } from "@miroir-framework/react";
 import { packageName } from "../../src/constants";
 import { cleanLevel } from "../../src/miroir-fwk/4_view/constants";
 

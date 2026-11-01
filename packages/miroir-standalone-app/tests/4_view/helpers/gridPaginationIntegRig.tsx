@@ -7,7 +7,7 @@ import {
   defaultSelfApplicationDeploymentMap,
   getReportsAndEntitiesForDeploymentUuid,
   type EntityInstance,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   book1,
   defaultLibraryAppModel,
@@ -17,14 +17,14 @@ import {
   selfApplicationLibrary,
 } from "miroir-example-library";
 import { defaultMiroirMetaModel, defaultStoredMiroirTheme } from "miroir-app-miroir";
-import { useMiroirContextService } from "miroir-react";
+import { useMiroirContextService } from "@miroir-framework/react";
 
-import { EntityInstanceGrid } from "miroir-react";
-import { TableComponentTypeSchema } from "miroir-react";
-import { GlideDataGridComponent } from "miroir-react";
-import type { TableComponentRow } from "miroir-react";
-import { ValueObjectGrid } from "miroir-react";
-import { MiroirThemeProvider } from "miroir-react";
+import { EntityInstanceGrid } from "@miroir-framework/react";
+import { TableComponentTypeSchema } from "@miroir-framework/react";
+import { GlideDataGridComponent } from "@miroir-framework/react";
+import type { TableComponentRow } from "@miroir-framework/react";
+import { ValueObjectGrid } from "@miroir-framework/react";
+import { MiroirThemeProvider } from "@miroir-framework/react";
 import {
   buildBookListFormikValuesForCount,
   libraryApplicationDeploymentMap,

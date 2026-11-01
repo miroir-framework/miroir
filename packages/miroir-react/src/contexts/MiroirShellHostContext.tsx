@@ -1,6 +1,6 @@
 import { createContext, useContext, type ComponentType, type ReactNode } from "react";
 
-import type { ProcessCapabilities, Runner } from "miroir-core";
+import type { ProcessCapabilities, Runner } from "@miroir-framework/core";
 
 import { requestLoginTokenOverHttp } from "../auth/httpLogin.js";
 

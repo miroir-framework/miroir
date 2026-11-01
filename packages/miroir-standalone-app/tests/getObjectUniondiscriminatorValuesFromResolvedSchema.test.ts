@@ -1,4 +1,4 @@
-import type { MiroirModelEnvironment } from "miroir-core";
+import type { MiroirModelEnvironment } from "@miroir-framework/core";
 import { deployment_Miroir } from "miroir-app-admin";
 import {
   getObjectUniondiscriminatorValuesFromResolvedSchema,
@@ -12,7 +12,7 @@ import {
   MlSchema,
   unfoldMlSchemaOnce,
   UnfoldMlSchemaOnceReturnType,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { describe, expect, it } from "vitest";
 import currentMiroirModel from "./currentMiroirModel.json";
 import currentModel from "./currentModel.json";

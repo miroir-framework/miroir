@@ -12,8 +12,8 @@ import {
   type VitestNamespace,
   resolveSuitesTestbedReset,
   withTestbedResetPolicy,
-} from "miroir-core";
-import { loadMiroirCoreTestSuiteFromFolders } from "miroir-core/model-validation-fs";
+} from "@miroir-framework/core";
+import { loadMiroirCoreTestSuiteFromFolders } from "@miroir-framework/core/model-validation-fs";
 import { onFailedRunExport } from "./writeFailedRunExport.js";
 import { timedTestPhase } from "./testTimingPhase.js";
 import { topLevelSuiteName } from "./testbedResetScope.js";

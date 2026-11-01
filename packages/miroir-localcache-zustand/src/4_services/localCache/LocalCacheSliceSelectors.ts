@@ -20,7 +20,7 @@ import {
   SyncQueryTemplateRunnerParams,
   type ApplicationDeploymentMap,
   type MiroirModelEnvironment
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { localCacheStateToDomainState } from "./LocalCacheSlice.js";
 import { LocalCacheSliceState, ZustandStateWithUndoRedo } from "./localCacheZustandInterface.js";
 

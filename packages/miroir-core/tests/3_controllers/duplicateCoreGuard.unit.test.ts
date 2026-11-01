@@ -60,7 +60,7 @@ describe("two copies of the built core, each case in a fresh Node process", () =
   beforeAll(() => {
     const built = existsSync(builtCore) && readFileSync(builtCore, "utf-8").includes("miroir-core.instances");
     if (!built || guardSources.some((source) => statSync(builtCore).mtimeMs < statSync(source).mtimeMs)) {
-      throw new Error("dist/index.js is older than the duplicate-core guard: rebuild core (npm run build -w miroir-core)");
+      throw new Error("dist/index.js is older than the duplicate-core guard: rebuild core (npm run build -w @miroir-framework/core)");
     }
     mkdirSync(copies, { recursive: true });
     runFolder = mkdtempSync(join(copies, "645-"));

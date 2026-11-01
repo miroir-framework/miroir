@@ -16,7 +16,7 @@ import {
   issueBearerToken,
   type AuthenticationGate,
   type LoggerOptions,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import { MCP_HTTP_ENDPOINT, setupMcpServer } from "../../../../src/mcpServer.js";
 import { EndpointToolRegistry } from "../../../../src/tools/EndpointToolRegistry.js";

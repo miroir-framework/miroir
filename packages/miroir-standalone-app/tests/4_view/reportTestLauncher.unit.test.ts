@@ -9,8 +9,8 @@
  */
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-import { miroirTestSuiteMountsReport } from "miroir-core";
-import { loadApplicationMiroirTestCatalog } from "miroir-core/model-validation-fs";
+import { miroirTestSuiteMountsReport } from "@miroir-framework/core";
+import { loadApplicationMiroirTestCatalog } from "@miroir-framework/core/model-validation-fs";
 
 import {
   MIROIR_REPORT_TEST_VITEST_ENTRY,

@@ -13,7 +13,7 @@ import {
   type ApplicationDeploymentMap,
   type EntityInstance,
   type ReportQueryLoadRequest,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { entityBlob, entityDefinitionBlob } from "miroir-app-miroir";
 
 import { LocalCache } from "../src/index.js";

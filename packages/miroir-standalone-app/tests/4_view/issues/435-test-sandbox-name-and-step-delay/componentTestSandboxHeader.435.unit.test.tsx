@@ -34,8 +34,8 @@ import {
   type DomainControllerInterface,
   type LocalCacheInterface,
   type MiroirTestDefinition,
-} from "miroir-core";
-import { LocalCache, LocalCacheProvider, MiroirContextReactProvider, PersistenceReduxSaga } from "miroir-react";
+} from "@miroir-framework/core";
+import { LocalCache, LocalCacheProvider, MiroirContextReactProvider, PersistenceReduxSaga } from "@miroir-framework/react";
 import {
   defaultMiroirMetaModel,
   entityEntity,
@@ -58,9 +58,9 @@ vi.mock("../../../../src/miroir-fwk/4-tests/componentTests/index", async (import
 });
 
 import * as componentTestsEntry from "../../../../src/miroir-fwk/4-tests/componentTests/index";
-import type { TestResultData } from "miroir-react";
+import type { TestResultData } from "@miroir-framework/react";
 import { MiroirTestDisplay } from "../../../../src/miroir-fwk/4_view/components/Reports/MiroirTestDisplay";
-import { ReportPageContextProvider } from "miroir-react";
+import { ReportPageContextProvider } from "@miroir-framework/react";
 
 // ################################################################################################
 const enumInstance = miroirTest_ui_mlElementEditor_enum as unknown as MiroirTestDefinition;

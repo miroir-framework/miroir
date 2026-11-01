@@ -7,9 +7,10 @@
   {"reason": "bin name", "files": ["**/package.json"], "line": "\"miroir-(env|cli)\"\\s*:\\s*\"\\./"},
   {"reason": "folder list of the session setup", "files": ["scripts/agent_session_setup.py"], "line": "^\\s*\\[\"miroir-"},
   {"reason": "folder names in session setup tests", "files": ["scripts/tests/test_agent_session_setup.py"]},
-  {"reason": "agent bench arm id", "files": ["scripts/agent_bench/**", "scripts/tests/test_agent_bench*"], "line": "[\"']miroir-mcp[\"']"},
+  {"reason": "agent bench arm id", "files": ["scripts/agent_bench/**", "scripts/tests/test_agent_bench*", "scripts/tests/fixtures/agent_bench/**"], "line": "miroir-mcp"},
   {"reason": "vitest project name", "files": ["packages/*/vitest.config.*", "packages/*/vite.config.*"], "line": "^\\s*name\\s*:\\s*['\"]miroir-"},
   {"reason": "logger name", "files": ["**"], "line": "getLoggerName\\(\\s*[\"']miroir-"},
   {"reason": "agent bench arm id", "files": ["packages/miroir-app-meta/**"], "line": "[\"']miroir-mcp[\"']"},
-  {"reason": "bin link name", "files": ["packages/miroir-env/tests/**"], "line": "path\\.join\\([^)]*[\"']miroir-env[\"']\\)"}
+  {"reason": "bin link name", "files": ["packages/miroir-env/tests/**"], "line": "path\\.join\\([^)]*[\"']miroir-env[\"']\\)"},
+  {"reason": "build-all.sh stage arrays hold folder names", "files": ["scripts/tests/test_server_library_boundaries.py"], "line": "in stages\\.group"}
 ]

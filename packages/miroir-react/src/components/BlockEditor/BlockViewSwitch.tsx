@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
 import { getIn, useFormikContext } from "formik";
-import { runnerHat } from "miroir-core";
+import { runnerHat } from "@miroir-framework/core";
 import React, { lazy, Suspense, useCallback, useContext, useMemo } from "react";
 
 import { useMiroirTheme } from "../../contexts/MiroirThemeContext.js";

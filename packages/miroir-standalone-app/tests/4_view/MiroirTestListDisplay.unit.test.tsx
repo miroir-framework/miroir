@@ -6,7 +6,7 @@ import { fireEvent, render as rtlRender, screen } from '@testing-library/react';
 import type {
   MiroirTestDefinition,
   MiroirTestForTransformer,
-} from 'miroir-core';
+} from '@miroir-framework/core';
 import { miroirTest_runner_returnDocument } from 'miroir-example-library';
 import {
   miroirTest_fn_entityPrimaryKey,

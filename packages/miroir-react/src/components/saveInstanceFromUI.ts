@@ -7,7 +7,7 @@ import {
   type MiroirModelEnvironment,
   type TransactionalInstanceAction,
   type Uuid,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 // ################################################################################################
 // #502, #505: an editor saves an instance of the edited application, a composite

@@ -26,7 +26,7 @@ import type {
   MetaModel,
   SelfApplication,
   StoreUnitConfiguration,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   Action2Error,
   ConfigurationService,
@@ -41,11 +41,11 @@ import {
   resetAndinitializeDeploymentCompositeAction,
   testUtils_deleteApplicationDeployment,
   testUtils_resetApplicationDeployment,
-} from "miroir-core";
-import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
-import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
-import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
-import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
+} from "@miroir-framework/core";
+import { miroirFileSystemStoreSectionStartup } from "@miroir-framework/store-filesystem";
+import { miroirIndexedDbStoreSectionStartup } from "@miroir-framework/store-indexeddb";
+import { miroirMongoDbStoreSectionStartup } from "@miroir-framework/store-mongodb";
+import { miroirPostgresStoreSectionStartup } from "@miroir-framework/store-postgres";
 import { deployment_Admin } from "miroir-app-admin";
 import { defaultMiroirMetaModel, entityEntity } from "miroir-app-miroir";
 import {

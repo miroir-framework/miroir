@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import type { EndpointDefinition } from "miroir-core";
+import type { EndpointDefinition } from "@miroir-framework/core";
 import { queryEndpointVersionV1 } from "miroir-app-miroir";
 import { entityBook, selfApplicationLibrary } from "miroir-example-library";
 

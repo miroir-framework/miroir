@@ -12,8 +12,8 @@ import {
   PersistenceStoreControllerManager,
   type DomainControllerInterface,
   type LocalCacheInterface,
-} from "miroir-core";
-import { LocalCache, PersistenceReduxSaga } from "miroir-react";
+} from "@miroir-framework/core";
+import { LocalCache, PersistenceReduxSaga } from "@miroir-framework/react";
 import { adminSelfApplication, defaultAdminViewParams, entityViewParams } from "miroir-app-admin";
 
 /** Puts the Admin ViewParams, with `viewParams` over the defaults, in the local cache, as a save landing. */

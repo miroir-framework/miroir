@@ -1,4 +1,4 @@
-import type { TestSuiteResult } from "miroir-core";
+import type { TestSuiteResult } from "@miroir-framework/core";
 
 export interface TestResultData {
   testName: string;

@@ -16,4 +16,4 @@ export type {
   StoreWithUndoRedo,
   ZustandStateWithUndoRedo,
   ZustandStoreWithUndoRedo,
-} from "miroir-core";
+} from "@miroir-framework/core";

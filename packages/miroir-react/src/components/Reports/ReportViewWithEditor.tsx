@@ -21,7 +21,7 @@ import {
   type InstanceAction,
   type ReportQueryLoadRequest,
   findEntityFromUuid,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { JsonDisplayHelper } from "../helpers/DebugHelper.js";
 import { useDomainControllerService, useMiroirContextService, useSnackbar } from "../../contexts/MiroirContextReactProvider.js";
 import { packageName } from "../../constants.js";

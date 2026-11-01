@@ -13,8 +13,8 @@ import {
   ENTITY_ADMIN_APPLICATION_UUID,
   ENTITY_DEPLOYMENT_UUID,
   miroirCoreStartup,
-} from "miroir-core";
-import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
+} from "@miroir-framework/core";
+import { miroirFileSystemStoreSectionStartup } from "@miroir-framework/store-filesystem";
 
 import { boot, readRows } from "./bootTestSupport";
 import { repositoryRoot } from "./cliTestSupport";

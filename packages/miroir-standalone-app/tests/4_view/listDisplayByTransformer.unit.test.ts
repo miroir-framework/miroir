@@ -5,7 +5,7 @@ import {
   transformer_extended_apply_wrapper,
   type CoreTransformerForBuildPlusRuntime,
   type EntityInstancesUuidIndex,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { book1, book2 } from "miroir-example-library";
 import { describe, expect, it } from "vitest";
 
@@ -17,7 +17,7 @@ import {
   LIST_TRANSFORMER_PAGE_SIZE,
   resolveListTransformationResultDisplaySchema,
   sliceInstancesToPage,
-} from "miroir-react";
+} from "@miroir-framework/react";
 
 const identityRowTransformer: CoreTransformerForBuildPlusRuntime = {
   interpolation: "runtime",
