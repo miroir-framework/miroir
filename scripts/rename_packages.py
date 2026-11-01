@@ -96,12 +96,18 @@ def allowed_reason(path: str, line_text: str, allow: list[dict]) -> str | None:
 # commands as well as packages: a bare mention is the command (`miroir-env prune`), so only specifier contexts rename
 BIN_NAMES = {"miroir-env", "miroir-cli"}
 QUOTES = "'\"`"
-SELECTOR_BEFORE = re.compile(r"(?:^|[\s(`'\"])(?:-w|--workspace|-e|npm\s+ls|via)(?:=|\s+)$")
+SELECTOR_BEFORE = re.compile(
+    r"(?:^|[\s(`'\"])(?:-w|--workspace|--scope|-e|npm\s+(?:ls|view|explain|pack)|via)(?:=|\s+)$"
+)
+# a quoted name run as an npm script (`["npm", "run", "--silent", "miroir-env", ...]`): a root script, not a package
+ROOT_SCRIPT_BEFORE = re.compile(r"[\"']run[\"'],\s*(?:[\"']--silent[\"'],\s*)?[\"']$")
 
 
 def context_of(line_text: str, start: int, end: int) -> str:
-    """"quoted" for a whole specifier between quotes (with or without a subpath), "selector" after -w / --workspace,
-    else "bare"."""
+    """"quoted" for a whole specifier between quotes (with or without a subpath), "code" for one between backticks,
+    "root-script" for a quoted npm script name, "selector" after -w / --workspace / ..., else "bare"."""
+    if ROOT_SCRIPT_BEFORE.search(line_text[:start]):
+        return "root-script"
     before = line_text[start - 1] if start > 0 else ""
     if before == "!" and start > 1 and line_text[start - 2] in QUOTES:
         before = line_text[start - 2]  # an nx negation: "!miroir-core"
@@ -111,15 +117,20 @@ def context_of(line_text: str, start: int, end: int) -> str:
             while close < len(line_text) and line_text[close] not in QUOTES and not line_text[close].isspace():
                 close += 1
         if close < len(line_text) and line_text[close] == before:
-            return "quoted"
+            return "code" if before == "`" else "quoted"
     if SELECTOR_BEFORE.search(line_text[:start]):
         return "selector"
     return "bare"
 
 
 def renames(path: str, name: str, context: str) -> bool:
+    """A bin name in a doc is the command (`miroir-env check`, the `miroir-cli` command) unless it follows a selector."""
     if context in {"quoted", "selector"}:
         return True
+    if context == "root-script":
+        return False
+    if context == "code":
+        return not (path.endswith(".md") and name in BIN_NAMES)
     return path.endswith(".md") and name not in BIN_NAMES
 
 

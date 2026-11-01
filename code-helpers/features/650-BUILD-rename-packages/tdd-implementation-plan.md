@@ -26,8 +26,8 @@ Out (analysis §2): bundling (#652); folder renames; `private` flags (publish it
 |---|---|---|---|
 | 0 | Report every reference by context (characterization) | ✅ | `rename_packages.py --report`, committed report |
 | 1 | Rename script on a fixture tree | ✅ | `test_rename_packages.py` |
-| 2 | Name-independent scripts and guards (before the rename) | ⏳ | must-still-catch cases; build and setup scripts select by folder |
-| 3 | Apply the rename | ⏳ | manifest name rule, `--check`, full build, gate, `nonreg:filesystem` |
+| 2 | Name-independent scripts and guards (before the rename) | ✅ | must-still-catch cases; build and setup scripts select by folder |
+| 3 | Apply the rename | ✅ | manifest name rule, `--check`, full build, gate, `nonreg:filesystem` |
 
 ## Locked implementation defaults
 
@@ -65,7 +65,7 @@ Deviations found while implementing go to the slice's Realization.
 
 ## Slice 0 — Report every reference by context (characterization)
 
-**Status:** ⏳
+**Status:** ✅
 
 ### Goal
 
@@ -86,7 +86,7 @@ python scripts/rename_packages.py --report > code-helpers/features/650-BUILD-ren
 
 ## Slice 1 — Rename script on a fixture tree
 
-**Status:** ⏳
+**Status:** ✅
 
 ### Tests (RED first)
 
@@ -110,7 +110,7 @@ python -m pytest scripts/tests/test_rename_packages.py -q
 
 ## Slice 2 — Name-independent scripts and guards (before the rename)
 
-**Status:** ⏳
+**Status:** ✅
 
 ### Goal
 
@@ -137,11 +137,17 @@ node --test eslint-rules/
 ./build-all.sh   # still green under the old names
 ```
 
+### Realization
+
+- Every guard in the Work list accepts both forms, with a scoped case in `test_rename_packages.py::test_package_guards_still_catch_the_scoped_names`; `smell-lens.test.mjs` gained the scoped `vi.mock` case. The REDs were checked by stashing the guard changes.
+- `build-all.sh`, `ci/lib/common.sh` and `agent_session_setup.py` select `-w packages/<folder>`; `BUILD_GROUPS` keeps folder names (allow-listed by line).
+- `LIBRARY_TMP.ts` needed no change (its folder names are paths).
+
 ---
 
 ## Slice 3 — Apply the rename
 
-**Status:** ⏳
+**Status:** ✅
 
 ### Tests (RED first)
 
@@ -165,6 +171,15 @@ python scripts/rename_packages.py --check
 npm run nonreg:filesystem
 ```
 
+### Realization
+
+- `--apply` renamed about 2045 references in about 875 files; `publishConfig.access: "public"` on the 11; `package-lock.json` regenerated (only workspace link entries move).
+- Fallout fixed by hand or by widening the allow-list: agent bench arm ids and vitest project names (kept), the bundle-policy fixture (a `via` selector), the server-library stage test (expects folder names), `AGENTS.md` trimmed under its size limit.
+- Adversarial code review: a quoted name after `"run",` is a root npm script (`npm run miroir-env`), kept by a `root-script` context, with a test that every script the nonreg runner runs exists; a bin name between backticks in a doc is the command (`the miroir-env command`); `--scope` and `npm view|explain|pack` are selectors; the server-library stage test accepts both forms; eslint messages and a build-all label renamed.
+- `nonreg:filesystem`: all steps pass but two. `unit-645-duplicate-core` failed on a stale `dist` (the rename edits the guard's sources after the build; passes after a rebuild). `unit-326-build-tooling` failed on three expected `via` chains in `bundleReportCore.unit.test.ts` (a package name rendered bare in a `.ts` string, which the script keeps): renamed by hand, as in the bundle-policy fixture; the three test files pass.
+- Deviations (commented on #650): the 3 folders bundled by #652 keep their names; logger `packageName` strings kept; `private` flags unchanged.
+- `npx tsc -p packages/miroir-standalone-app` reports 2 MUI 9 `Stack` errors in files the rename does not touch; they predate it and the package is not in the gate.
+
 ---
 
 ## Acceptance criteria → proof
@@ -183,3 +198,4 @@ Deviations from the issue (also commented on #650): the 3 folders bundled by #65
 
 - v1 (2026-11-01): first version.
 - v2 (2026-11-01): adversarial plan review, 11 findings applied (see resume note).
+- v3 (2026-11-01): slices 2 and 3 done; Realizations and code-review fixes recorded.

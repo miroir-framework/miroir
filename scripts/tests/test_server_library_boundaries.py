@@ -115,4 +115,4 @@ def test_the_build_fails_on_a_store_import(tmp_path, external):
     shutil.rmtree(out_dir, ignore_errors=True)
     assert result.returncode != 0
     assert "miroir-server-library must not import stores" in result.stdout + result.stderr
-    assert "@miroir-framework/store-filesystem" in result.stdout + result.stderr
+    assert re.search(r"(@miroir-framework/|miroir-)store-filesystem", result.stdout + result.stderr)

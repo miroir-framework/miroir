@@ -657,10 +657,10 @@ record_time "3/9  miroir-app-miroir & miroir-app-admin" "$t0"
 # ---------------------------------------------------------------------------
 # Step 4 – miroir-core (optionally with type generation)
 # ---------------------------------------------------------------------------
-step "4/9 · miroir-core ($CORE_BUILD_MODE)"
+step "4/9 · @miroir-framework/core ($CORE_BUILD_MODE)"
 t0=$(now_secs)
 run_stage_packages "@miroir-framework/core" "${STAGE_CORE[@]}"
-record_time "4/9  miroir-core ($CORE_BUILD_MODE)" "$t0"
+record_time "4/9  @miroir-framework/core ($CORE_BUILD_MODE)" "$t0"
 
 # ---------------------------------------------------------------------------
 # Step 5 – Local caches & store backends (all depend only on miroir-core)

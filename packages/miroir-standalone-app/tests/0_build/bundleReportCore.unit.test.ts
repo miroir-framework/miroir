@@ -115,7 +115,7 @@ describe("bundleReportCore: import chains", () => {
   it("condenses a chain to one step per package", () => {
     const chain = importChain(mongodb, importerLinks(graph, sources), root);
     expect(condensedChain(chain, (path) => attributeModule(path, context).name)).toBe(
-      "packages/miroir-standalone-app/src/miroir-fwk/4-tests/IntegrationTestSession.ts → import(miroir-store-mongodb) → mongodb",
+      "packages/miroir-standalone-app/src/miroir-fwk/4-tests/IntegrationTestSession.ts → import(@miroir-framework/store-mongodb) → mongodb",
     );
   });
 });
@@ -186,7 +186,7 @@ describe("bundleReportCore: report", () => {
         importerPackage: "@miroir-framework/store-indexeddb",
         chunk: "index.js",
         chain: ["packages/miroir-standalone-app/src/index.tsx", "packages/miroir-store-indexedDb/dist/index.js"],
-        via: "packages/miroir-standalone-app/src/index.tsx → miroir-store-indexedDb",
+        via: "packages/miroir-standalone-app/src/index.tsx → @miroir-framework/store-indexeddb",
       },
     ]);
   });
@@ -273,7 +273,7 @@ describe("bundleReportCore: report from an esbuild metafile", () => {
     });
     const mongodbEntry = report.packages.find((entry) => entry.name === "mongodb")!;
     expect([mongodbEntry.kind, mongodbEntry.loadKind]).toEqual(["npm", "eager"]);
-    expect(mongodbEntry.via).toBe("packages/miroir-standalone-app-electron/src/ipcServerSetup.ts → miroir-store-mongodb → mongodb");
+    expect(mongodbEntry.via).toBe("packages/miroir-standalone-app-electron/src/ipcServerSetup.ts → @miroir-framework/store-mongodb → mongodb");
     expect(report.totals.eager).toEqual({ chunks: 2, rawBytes: 200, gzipBytes: 100 });
   });
 

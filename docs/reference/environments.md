@@ -1,7 +1,7 @@
 # Environments Reference
 
 **Audience:** framework contributors and anyone running Miroir from this repository (server, web client, tests, coding-agent sessions, miroir-cli, @miroir-framework/mcp, Electron, Docker).
-**Scope:** how an environment is selected, the definition file format, where running state lives, the `@miroir-framework/env` command, and how deviations are reported. Introduced by #321; every runtime adopted it with #345.
+**Scope:** how an environment is selected, the definition file format, where running state lives, the `miroir-env` command, and how deviations are reported. Introduced by #321; every runtime adopted it with #345.
 
 ---
 
@@ -57,7 +57,7 @@ Electron and Docker share one seeding rule: copy the seed into an empty root; on
 
 First match wins:
 
-1. `--name <environment>` (the `@miroir-framework/env` command only);
+1. `--name <environment>` (the `miroir-env` command only);
 2. `MIROIR_ENV`;
 3. `environments/local.json`;
 4. `dev`.
@@ -146,7 +146,7 @@ Paths are relative to the root (`MIROIR_ROOT`, else the repository root), which 
 
 ---
 
-## The `@miroir-framework/env` command
+## The `miroir-env` command
 
 `npm run miroir-env -- <command>` (after `npm run build -w @miroir-framework/env`). Every command takes `--name <environment>`.
 

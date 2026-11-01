@@ -142,7 +142,7 @@ export default tseslint.config(
         "error",
         ...["@miroir-framework/jzod", "@miroir-framework/jzod-ts"].map((name) => ({
           name,
-          message: "Use the ML adapter of miroir-core: valueToMl, mlToZod, mlToZodTextAndZodSchema, or mlToTs from miroir-core/ml-to-ts.",
+          message: "Use the ML adapter of @miroir-framework/core: valueToMl, mlToZod, mlToZodTextAndZodSchema, or mlToTs from @miroir-framework/core/ml-to-ts.",
         })),
       ],
     },
@@ -160,7 +160,7 @@ export default tseslint.config(
           paths: [
             ...["@miroir-framework/jzod", "@miroir-framework/jzod-ts"].map((name) => ({
               name,
-              message: "Use the ML adapter of miroir-core: valueToMl, mlToZod, mlToZodTextAndZodSchema, or mlToTs from miroir-core/ml-to-ts.",
+              message: "Use the ML adapter of @miroir-framework/core: valueToMl, mlToZod, mlToZodTextAndZodSchema, or mlToTs from @miroir-framework/core/ml-to-ts.",
             })),
             ...["electron", "@miroir-framework/mcp", "@miroir-framework/mcp/client", "miroir-diagram-class", "miroir-standalone-app"].map((name) => ({
               name,

@@ -24,7 +24,7 @@ When authentication is on (the server default), an MCP client must send `Authori
 
 ### Tools, CLI commands and assistant actions from Endpoints
 
-Every Endpoint action of every deployed application is an MCP tool, a `@miroir-framework/cli` command and, for applications other than Miroir and Admin, an in-app assistant action. Nothing is coded per application: deploy an application, or add an Endpoint to its model, and the action appears (live for MCP and the assistant, at the next run for the CLI). The list comes from the endpoint action catalog of `@miroir-framework/core` (`listEndpointActions`, #627).
+Every Endpoint action of every deployed application is an MCP tool, a `miroir-cli` command and, for applications other than Miroir and Admin, an in-app assistant action. Nothing is coded per application: deploy an application, or add an Endpoint to its model, and the action appears (live for MCP and the assistant, at the next run for the CLI). The list comes from the endpoint action catalog of `@miroir-framework/core` (`listEndpointActions`, #627).
 
 | Rule | Detail |
 |---|---|
@@ -35,7 +35,7 @@ Every Endpoint action of every deployed application is an MCP tool, a `@miroir-f
 | Access | with authentication on, a call runs as its caller and only on deployments the caller may open (MCP Bearer, CLI `--user` / `--token`, the assistant's session). |
 | Assistant | the assistant offers the actions of applications other than Miroir and Admin (their framework actions stay on MCP). A proposal form posts its accepted payload to `POST /api/copilotkit/endpointAction/<name>`, which only runs those actions. |
 
-An environment that installs an application package needs that package installed: `@miroir-framework/cli` on an environment naming `miroir-example-library` loads the Library assets from it. The CLI itself does not depend on any application package.
+An environment that installs an application package needs that package installed: `miroir-cli` on an environment naming `miroir-example-library` loads the Library assets from it. The CLI itself does not depend on any application package.
 
 ## Connecting AI Agents
 

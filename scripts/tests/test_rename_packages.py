@@ -4,6 +4,7 @@ renamed, every kept kind stays, a second run changes nothing, and --check report
 from __future__ import annotations
 
 import json
+import re
 import shutil
 from pathlib import Path
 
@@ -61,7 +62,9 @@ BEFORE = {
         "The miroir-env command (`miroir-env check`) reads packages/miroir-core/src/x.ts.\n"
         "See miroir-core/src/index.ts.\n"
     ),
-    "scripts/tool.py": 'CMD = ["npm", "run", "x", "-w", "miroir-core"]\n',
+    "scripts/tool.py": 'CMD = ["npm", "run", "x", "-w", "miroir-core"]\n'
+    'CLEAR = ["npm", "run", "--silent", "miroir-env", "--", "clear"]\n',
+    "docs/commands.md": "Run the `miroir-cli` command; `npm view miroir-core` and `nx run --scope miroir-react`.\n",
     "packages/miroir-app-miroir/assets/data/test.json": '{"functionRef": {"module": "miroir-core/tools"}}\n',
     "code-helpers/features/1-old/analysis.md": "Uses miroir-core.\n",
 }
@@ -122,7 +125,11 @@ AFTER = {
         "The miroir-env command (`miroir-env check`) reads packages/miroir-core/src/x.ts.\n"
         "See miroir-core/src/index.ts.\n"
     ),
-    "scripts/tool.py": 'CMD = ["npm", "run", "x", "-w", "@miroir-framework/core"]\n',
+    "scripts/tool.py": 'CMD = ["npm", "run", "x", "-w", "@miroir-framework/core"]\n'
+    'CLEAR = ["npm", "run", "--silent", "miroir-env", "--", "clear"]\n',
+    "docs/commands.md": (
+        "Run the `miroir-cli` command; `npm view @miroir-framework/core` and `nx run --scope @miroir-framework/react`.\n"
+    ),
     "packages/miroir-app-miroir/assets/data/test.json": '{"functionRef": {"module": "miroir-core/tools"}}\n',
     "code-helpers/features/1-old/analysis.md": "Uses miroir-core.\n",
 }
@@ -220,3 +227,13 @@ def test_package_guards_still_catch_the_scoped_names():
     tsup = (ROOT / "packages/miroir-server-library/tsup.config.js").read_text(encoding="utf-8")
     assert "/^(@miroir-framework\\/store-|miroir-store-)/" in tsup
     assert "/^(@miroir-framework\\/env|miroir-env)($|\\/)/" in tsup
+
+
+def test_root_scripts_run_by_the_nonreg_runner_exist():
+    """A quoted name after "run" is a root npm script, kept by the rename: it must still name one."""
+    scripts = json.loads((ROOT / "package.json").read_text(encoding="utf-8"))["scripts"]
+    runner = (ROOT / "scripts/run-nonreg.py").read_text(encoding="utf-8")
+    run_names = re.findall(r'"npm",\s*"run",\s*(?:"--silent",\s*)?"([^"]+)"', runner)
+    assert "miroir-env" in run_names
+    for name in run_names:
+        assert name in scripts, name

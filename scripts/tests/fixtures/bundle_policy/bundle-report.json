@@ -48,7 +48,7 @@
         "import(packages/miroir-store-mongodb/dist/index.js)",
         "node_modules/mongodb/lib/index.js"
       ],
-      "via": "packages/miroir-standalone-app/src/miroir-fwk/4-tests/IntegrationTestSession.ts \u2192 import(miroir-store-mongodb) \u2192 mongodb"
+      "via": "packages/miroir-standalone-app/src/miroir-fwk/4-tests/IntegrationTestSession.ts \u2192 import(@miroir-framework/store-mongodb) \u2192 mongodb"
     },
     {
       "name": "lucide",
@@ -78,7 +78,7 @@
         "packages/miroir-standalone-app/src/miroir-fwk/4-tests/IntegrationTestSession.ts",
         "import(packages/miroir-store-mongodb/dist/index.js)"
       ],
-      "via": "packages/miroir-standalone-app/src/miroir-fwk/4-tests/IntegrationTestSession.ts \u2192 import(miroir-store-mongodb)"
+      "via": "packages/miroir-standalone-app/src/miroir-fwk/4-tests/IntegrationTestSession.ts \u2192 import(@miroir-framework/store-mongodb)"
     },
     {
       "name": "zod",
@@ -221,7 +221,7 @@
             "import(packages/miroir-store-mongodb/dist/index.js)",
             "node_modules/mongodb/lib/index.js"
           ],
-          "via": "packages/miroir-standalone-app/src/miroir-fwk/4-tests/IntegrationTestSession.ts \u2192 import(miroir-store-mongodb) \u2192 mongodb"
+          "via": "packages/miroir-standalone-app/src/miroir-fwk/4-tests/IntegrationTestSession.ts \u2192 import(@miroir-framework/store-mongodb) \u2192 mongodb"
         },
         {
           "name": "@miroir-framework/store-mongodb",
@@ -232,7 +232,7 @@
             "packages/miroir-standalone-app/src/miroir-fwk/4-tests/IntegrationTestSession.ts",
             "import(packages/miroir-store-mongodb/dist/index.js)"
           ],
-          "via": "packages/miroir-standalone-app/src/miroir-fwk/4-tests/IntegrationTestSession.ts \u2192 import(miroir-store-mongodb)"
+          "via": "packages/miroir-standalone-app/src/miroir-fwk/4-tests/IntegrationTestSession.ts \u2192 import(@miroir-framework/store-mongodb)"
         },
         {
           "name": "(bundler runtime)",
@@ -247,7 +247,7 @@
             "node_modules/mongodb/lib/deps.js",
             "__vite-optional-peer-dep:kerberos:mongodb:true"
           ],
-          "via": "packages/miroir-standalone-app/src/miroir-fwk/4-tests/IntegrationTestSession.ts \u2192 import(miroir-store-mongodb) \u2192 mongodb \u2192 (bundler runtime)"
+          "via": "packages/miroir-standalone-app/src/miroir-fwk/4-tests/IntegrationTestSession.ts \u2192 import(@miroir-framework/store-mongodb) \u2192 mongodb \u2192 (bundler runtime)"
         }
       ]
     },
@@ -304,7 +304,7 @@
         "node_modules/mongodb/lib/cmap/auth/mongodb_oidc.js",
         "node_modules/mongodb/lib/cmap/auth/mongodb_oidc/token_machine_workflow.js"
       ],
-      "via": "packages/miroir-standalone-app/src/miroir-fwk/4-tests/IntegrationTestSession.ts \u2192 import(miroir-store-mongodb) \u2192 mongodb"
+      "via": "packages/miroir-standalone-app/src/miroir-fwk/4-tests/IntegrationTestSession.ts \u2192 import(@miroir-framework/store-mongodb) \u2192 mongodb"
     },
     {
       "kind": "externalized-node-module",
@@ -318,7 +318,7 @@
         "node_modules/mongodb/lib/index.js",
         "node_modules/mongodb/lib/mongo_client.js"
       ],
-      "via": "packages/miroir-standalone-app/src/miroir-fwk/4-tests/IntegrationTestSession.ts \u2192 import(miroir-store-mongodb) \u2192 mongodb"
+      "via": "packages/miroir-standalone-app/src/miroir-fwk/4-tests/IntegrationTestSession.ts \u2192 import(@miroir-framework/store-mongodb) \u2192 mongodb"
     },
     {
       "kind": "externalized-node-module",
@@ -333,7 +333,7 @@
         "node_modules/mongodb/lib/admin.js",
         "node_modules/mongodb/lib/utils.js"
       ],
-      "via": "packages/miroir-standalone-app/src/miroir-fwk/4-tests/IntegrationTestSession.ts \u2192 import(miroir-store-mongodb) \u2192 mongodb"
+      "via": "packages/miroir-standalone-app/src/miroir-fwk/4-tests/IntegrationTestSession.ts \u2192 import(@miroir-framework/store-mongodb) \u2192 mongodb"
     },
     {
       "kind": "externalized-node-module",

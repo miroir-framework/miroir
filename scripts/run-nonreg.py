@@ -1252,7 +1252,7 @@ def remove_worker_state(workers: list[str]) -> tuple[list[str], bool]:
                 shutil.rmtree(directory, ignore_errors=True)
                 lines.append(f"removed {repo_relative(directory)}")
                 continue
-            argv = resolve_argv(["npm", "run", "--silent", "@miroir-framework/env", "--", "clear", "--name", environment])
+            argv = resolve_argv(["npm", "run", "--silent", "miroir-env", "--", "clear", "--name", environment])
             proc = spawn(argv, {**os.environ, WORKER_ENV: worker})
             output = ((proc.stdout or "") + (proc.stderr or "")).strip()
             if proc.returncode != 0:
