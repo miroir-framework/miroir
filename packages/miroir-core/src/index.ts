@@ -1045,9 +1045,17 @@ export {
   getReportsAndEntitiesForDeploymentUuid, metaMetaModelEntities,
   metaMetaModelEntityUuids, metaModelEntities, metaModelEntityUuids, miroirModelEntities,
   versionHistoryEntityUuids,
+  devDataEntityUuids,
+  getDevDataEntityDefinition,
+  metaModelDevDataReports,
+  isOptionalApplicationSection,
+  optionalApplicationSections,
+  type OptionalApplicationSection,
 } from "./1_core/Model.js";
 export {
   isAbsentModelVersionSectionError,
+  isAbsentOptionalSectionError,
+  MISSING_OPTIONAL_SECTION_MARKER,
   MISSING_MODEL_VERSION_SECTION_MARKER,
   resolveCachePolicyCarrierForEntity,
   resolveEntitiesToFetchOnRefresh,

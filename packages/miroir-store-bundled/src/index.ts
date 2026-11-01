@@ -4,7 +4,10 @@ export { BundledModelStoreSection } from "./4_services/BundledModelStoreSection.
 export { BundledStore } from "./4_services/BundledStore.js";
 export {
   BUNDLED_MODEL_VERSION_UNSUPPORTED_MESSAGE,
+  BUNDLED_DEV_DATA_UNSUPPORTED_MESSAGE,
   BundledUnsupportedModelVersionStore,
+  BundledUnsupportedOptionalSectionStore,
+  type BundledUnsupportedSection,
 } from "./4_services/BundledUnsupportedModelVersionStore.js";
 export {
   miroirBundledStoreSectionStartup,

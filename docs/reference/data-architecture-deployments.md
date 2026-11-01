@@ -7,10 +7,10 @@ A Miroir application is always composed of at least two **Deployments**:
 | Deployment | UUID | Role |
 |---|---|---|
 | Admin | `18db21bf-f8d3-4f6a-8296-84b69f6dc48b` | Hosts meta-configuration: the list of deployments, their store configurations, the admin application itself (entities, reports, menus) |
-| Miroir | `10ff36f2-50a3-48d8-b80f-e48e5d13af8e` | Hosts the Miroir meta-model bootstrap (**Entity**) plus framework-level concepts. Also ships version history in **`miroir_modelVersion/`** (see [Versioning reference](versioning.md)) |
+| Miroir | `10ff36f2-50a3-48d8-b80f-e48e5d13af8e` | Hosts the Miroir meta-model bootstrap (**Entity**) plus framework-level concepts. Also ships version history in **`miroir_modelVersion/`** (see [Versioning reference](versioning.md)) and the measurements of its own development in **`miroir_devData/`** (see [`devData`](#devdata-development-data-optional)) |
 | App (optional) | e.g. `f714bb2f-a12d-4e71-a03b-74dcedea6eb4` | Hosts a user-defined application (e.g. Library). One or more per installation. |
 
-Each deployment is divided into **sections** (three for unversioned deployments; four when version history is enabled):
+Each deployment is divided into **sections**: `admin`, `model` and `data`, plus the optional `modelVersion` and `devData` when the deployment declares them:
 
 | Section | Purpose |
 |---|---|
@@ -18,6 +18,7 @@ Each deployment is divided into **sections** (three for unversioned deployments;
 | `model` | Live model definitions (Entity rows) and, for non-Miroir deployments, model-level instances (Reports, Menus, Queries, SelfApplication, etc.) |
 | `data` | Domain data instances (Application, Deployment, Book, Author, …) |
 | `modelVersion` | **Optional**, versioned-internal applications only: model history. See the [Versioning reference](versioning.md). |
+| `devData` | **Optional**: information about the application that is not needed to deploy or use it, such as the measurements of its development (bundle sizes, page loads, agent runs). See [`devData`](#devdata-development-data-optional). |
 
 Which applications need a `modelVersion` section depends on their versioning mode; see the [Versioning reference](versioning.md).
 
@@ -28,7 +29,6 @@ Each application's model and data live in a package whose name says its role (#3
 | Role | Prefix | Packages |
 |---|---|---|
 | Framework: applications every Miroir server needs | `miroir-app-` | `miroir-app-miroir` (meta-model, built before `@miroir-framework/core`), `miroir-app-admin` |
-| Framework: the Miroir development process | `miroir-app-` | `miroir-app-meta` (bundle size history, #473), installed in the `dev` environment (live) and the test environments only |
 | Example: demo applications | `miroir-example-` | `miroir-example-library`, `miroir-example-spotify`, `miroir-example-github`, `miroir-example-designer`, `miroir-example-postgres` |
 | Test fixture: exists only for tests | `miroir-fixture-` | `miroir-fixture-appForTest` |
 
@@ -43,9 +43,10 @@ Each application package under `packages/{miroir-app,miroir-example,miroir-fixtu
 | `{prefix}_model/` | `model` | Live Entity rows, Reports, Queries, Menus, SelfApplication, … |
 | `{prefix}_data/` | `data` | Domain / application data instances |
 | `{prefix}_modelVersion/` | `modelVersion` | **Optional.** Model history (see [Versioning reference](versioning.md)) |
+| `{prefix}_devData/` | `devData` | **Optional.** Development data, one folder per Entity uuid (see [`devData`](#devdata-development-data-optional)) |
 | `{prefix}_admin/` (admin package) | `admin` / nested admin model+data | Admin meta-configuration |
 
-Only **`miroir-app-miroir`** currently ships a `{prefix}_modelVersion/` tree (`miroir_modelVersion/`).
+Only **`miroir-app-miroir`** currently ships a `{prefix}_modelVersion/` tree (`miroir_modelVersion/`) and a `{prefix}_devData/` tree (`miroir_devData/`).
 
 ### Example: the Library application
 
@@ -109,7 +110,7 @@ A `RestClientStub` intercepts all HTTP-shaped calls and routes them directly to 
 
 ## Storage Backend Types (`emulatedServerType`)
 
-Each section (`admin`, `model`, `data`, and optionally `modelVersion`) of a deployment independently selects a backend via `emulatedServerType`.
+Each section (`admin`, `model`, `data`, and optionally `modelVersion` and `devData`) of a deployment independently selects a backend via `emulatedServerType`.
 
 ### `filesystem`
 
@@ -154,12 +155,23 @@ Each section (`admin`, `model`, `data`, and optionally `modelVersion`) of a depl
 - Used exclusively in the `miroir-sandbox` demo SPA.
 - All data is statically imported at build time from the deployment packages (`miroir-app-miroir`, `miroir-app-admin`).
 - Read-only: no writes are persisted.
-- **No model history:** the bundled Miroir profile has no `modelVersion` section and cannot host one (see [Versioning reference](versioning.md)).
+- **No model history, no development data:** the bundled Miroir profile has no `modelVersion` or `devData` section and cannot host one (see [Versioning reference](versioning.md)); a write there returns a named refusal.
 - Registered at startup via `miroirBundledStoreSectionStartup(configurationService, bundledData)`.
 
 ### `modelVersion` (version history, optional)
 
 Optional fourth section of versioned-internal deployments, on storage separate from `model`; supported by every backend except `bundled`. Configuration examples, routing rules and the backend matrix are in the [Versioning reference](versioning.md).
+
+### `devData` (development data, optional)
+
+Optional section for information about an application that is not needed to deploy or use it (#647): today, the measurements of Miroir's own development. Like `modelVersion`, it has storage separate from `model` and `data`, and every backend supports it except `bundled`, which refuses it.
+
+- **Entities.** `BundleSizeMeasurement` (`90d603f9-58f8-4ac4-b2eb-cb1d718e8b3b`), `PageLoadMeasurement` (`0266c0b8-4dc8-4a14-bcef-239a85a5de2d`, loaded on demand) and `AgentRunMeasurement` (`954de789-6350-4f54-a809-5f2b8b91d067`). They are Miroir's Entities (`miroir_model/`), listed in `devDataEntityUuids`: `getApplicationSection` sends their instances to `devData` whatever the application, and the store refuses them in any other section.
+- **Rows.** Miroir's are in `packages/miroir-app-miroir/assets/miroir_devData/<entityUuid>/`, written by the recorders (`npm run bundle-size:record -w miroir-app-miroir`, `agent-run:record`, the page load writer). Another application gets the same Entities in its own `devData` section once its deployment declares one (#483).
+- **Reports.** `BundleSizeHistory`, `PageLoadHistory`, `AgentRunHistory` and their details Reports are Miroir's (`miroir_data/`), listed under the `devData` section of every application (`metaModelDevDataReports`), and opened from the Miroir menu's "Dev data" group.
+- **Storage.** The section boots from the fixed Entity rows, not from the application's model, and creates an Entity's storage (folder, table, collection) on its first write: an absent or empty section reads nothing. A deployment without the section reads nothing and refuses writes with "devData section is not configured for this deployment". `clear` (resetModel) leaves it alone.
+- **Naming.** Filesystem `<prefix>_devData/` in a package or `.miroir/<env>/<application>/devData/` in an environment state; SQL schema and MongoDB database `<name>_devData`; IndexedDb `<name>_devData`.
+- **Declaring it.** `"sections": { "devData": {} }` in an environment definition (see [Environments](environments.md)). The Docker image and the Electron package ship no `miroir_devData/` rows.
 
 ---
 
@@ -176,6 +188,7 @@ Only **Entity** instances from `miroir_model/` go into the bundled **model** sec
 | model | `16dbfe28…` (Entity) only |
 | data | All other (non-history) parentUuids from star-import (reports, menus, selfApplication, … in `miroir_data/`) |
 | modelVersion | **Not configured** for bundled Miroir |
+| devData | **Not configured** for bundled Miroir; its rows are excluded |
 
 ### Admin deployment
 
@@ -318,7 +331,7 @@ flowchart LR
 
 | `--storage` | Where the application sections live |
 |---|---|
-| `filesystem` | `.miroir/test-filesystem/<application>/{model,data,modelVersion}/` |
+| `filesystem` | `.miroir/test-filesystem/<application>/{model,data,modelVersion,devData}/` |
 | `indexedDb` | Level databases in `.miroir/test-indexedDb/` (the `level` package writes to disk under Node) |
 | `sql` (default) | PostgreSQL schemas `test_sql_<application>` |
 | `mongodb` | MongoDB databases `test_mongodb_<application>` |

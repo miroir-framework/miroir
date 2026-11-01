@@ -57,11 +57,19 @@ export type EnvironmentDeploymentsResult =
   | { status: "ok"; deployments: EnvironmentDeployment[] }
   | { status: "error"; errors: string[] };
 
-export type EnvironmentSectionName = "admin" | "model" | "data" | "modelVersion";
+export type EnvironmentSectionName = "admin" | "model" | "data" | "modelVersion" | "devData";
 
-/** The store sections of an installed application: admin, model, data, and modelVersion when declared. */
+/**
+ * The store sections of an installed application: admin, model, data, then modelVersion and
+ * devData (#647) when declared.
+ */
 export function environmentSections(application: MiroirEnvironmentApplication): EnvironmentSectionName[] {
-  return application.sections?.modelVersion ? ["admin", "model", "data", "modelVersion"] : ["admin", "model", "data"];
+  return [
+    "admin",
+    "model",
+    "data",
+    ...(["modelVersion", "devData"] as const).filter((section) => application.sections?.[section]),
+  ];
 }
 
 /** An application derived from its package: package, store and mode are given. */
@@ -148,8 +156,8 @@ function postgresConnectionString(postgres: NonNullable<NonNullable<MiroirEnviro
  * `.miroir/<environment>/<application>/<section>` when `copy`). The other stores are always copies,
  * named after the environment and the application: SQL schema and MongoDB database
  * `<environment>_<application>`, IndexedDB `.miroir/<environment>/<application>/indexedDb`; the
- * modelVersion and admin sections add `_modelVersion` and `_admin` (an admin store opens, and on
- * deletion may drop, a database of its own).
+ * modelVersion, devData and admin sections add `_modelVersion`, `_devData` and `_admin` (an admin
+ * store opens, and on deletion may drop, a database of its own).
  */
 function sectionConfiguration(
   environment: MiroirEnvironment,
@@ -161,7 +169,7 @@ function sectionConfiguration(
   section: EnvironmentSectionName,
 ): StoreSectionConfiguration | string {
   const where = `application "${applicationKey}", section "${section}"`;
-  const suffix = section === "modelVersion" ? "_modelVersion" : section === "admin" ? "_admin" : "";
+  const suffix = section === "model" || section === "data" ? "" : `_${section}`;
   switch (store) {
     case "filesystem":
       return {

@@ -50,8 +50,16 @@ import {
 import { ACTION_OK } from "../1_core/constants";
 import type { ApplicationDeploymentMap } from "../1_core/Deployment";
 import { resolveInstanceParentUuid } from "../1_core/Entity/EntityPrimaryKey";
-import { versionHistoryEntityUuids } from "../1_core/Model.js";
-import { getVersionHistoryEntityDefinition } from "../1_core/Model.js";
+import {
+  devDataEntityUuids,
+  getDevDataEntityDefinition,
+  getOptionalSectionEntityDefinition,
+  isOptionalApplicationSection,
+  optionalApplicationSections,
+  optionalSectionEntityUuids,
+  versionHistoryEntityUuids,
+  type OptionalApplicationSection,
+} from "../1_core/Model.js";
 import { redactCredentialSecretsFromValue } from "./redactCredentialSecrets.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "PersistenceStoreController");
@@ -112,9 +120,32 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     private modelStoreSection: PersistenceStoreModelSectionInterface,
     private dataStoreSection: PersistenceStoreDataSectionInterface,
     /** #232 — optional; version-history section. Absence causes named error on modelVersion requests. */
-    private modelVersionStoreSection?: PersistenceStoreDataSectionInterface,
+    modelVersionStoreSection?: PersistenceStoreDataSectionInterface,
+    /** #647 — optional; development information section. Same rules as modelVersion. */
+    devDataStoreSection?: PersistenceStoreDataSectionInterface,
   ) {
     this.logHeader = "PersistenceStoreController " + modelStoreSection.getStoreName();
+    this.optionalStoreSections = {
+      ...(modelVersionStoreSection ? { modelVersion: modelVersionStoreSection } : {}),
+      ...(devDataStoreSection ? { devData: devDataStoreSection } : {}),
+    };
+  }
+
+  /** #647 — the stores of the optional sections this deployment declares. */
+  private optionalStoreSections: Partial<Record<OptionalApplicationSection, PersistenceStoreDataSectionInterface>>;
+  /**
+   * #647: whether the devData storage of an Entity exists, as this controller found or made it (see
+   * ensureOptionalSectionStorageForEntity): one probe per Entity, and one creation even when writes
+   * arrive together, since a store may create by dropping (SQL `sync({ force: true })`).
+   */
+  private devDataStorage = new Map<string, Promise<boolean>>();
+  private devDataStorageCreation = new Map<string, Promise<Action2VoidReturnType>>();
+
+  private presentOptionalStoreSections(): [OptionalApplicationSection, PersistenceStoreDataSectionInterface][] {
+    return optionalApplicationSections.flatMap((section) => {
+      const store = this.optionalStoreSections[section];
+      return store ? [[section, store] as [OptionalApplicationSection, PersistenceStoreDataSectionInterface]] : [];
+    });
   }
 
   // #########################################################################################
@@ -123,8 +154,8 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   }
 
   /**
-   * #232 — resolve a section to its backing store, or return Action2Error for an unconfigured
-   * modelVersion section (instead of silently falling through to data or model).
+   * #232, #647 — resolve a section to its backing store, or return Action2Error for an
+   * unconfigured optional section (modelVersion, devData) instead of falling through to data.
    * Reads (getInstances / getInstance) treat absence as empty — unversioned satellites omit
    * the section (#234). Writes still surface the named error.
    */
@@ -134,29 +165,48 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     | PersistenceStoreDataSectionInterface
     | PersistenceStoreModelSectionInterface
     | Action2Error {
-    if (section === "modelVersion") {
-      if (!this.modelVersionStoreSection) {
+    if (isOptionalApplicationSection(section)) {
+      const store = this.optionalStoreSections[section];
+      if (!store) {
         return new Action2Error(
           "FailedToOpenStore",
-          `modelVersion section is not configured for this deployment (store: ${this.logHeader}). Add a modelVersion section to the deployment configuration to persist version history.`,
+          `${section} section is not configured for this deployment (store: ${this.logHeader}). Add a ${section} section to the deployment configuration to persist its instances.`,
         );
       }
-      return this.modelVersionStoreSection;
+      return store;
     }
     return section === "model" ? this.modelStoreSection : this.dataStoreSection;
   }
 
-  private emptyModelVersionCollection(
+  private emptyOptionalSectionCollection(
+    section: OptionalApplicationSection,
     entityUuid: string,
   ): Action2EntityInstanceCollectionOrFailure {
     return {
       status: "ok",
       returnedDomainElement: {
         parentUuid: entityUuid,
-        applicationSection: "modelVersion",
+        applicationSection: section,
         instances: [],
       },
     };
+  }
+
+  /**
+   * #647 — the instances of a devData Entity live in devData only: a write naming another section
+   * is refused, so it can not land silently in model or data (#239 for modelVersion).
+   */
+  private refuseDevDataEntityOutsideDevData(
+    section: ApplicationSection,
+    entityUuid: string,
+  ): Action2Error | undefined {
+    if (section !== "devData" && devDataEntityUuids.has(entityUuid)) {
+      return new Action2Error(
+        "FailedToUpsertInstance",
+        `instances of devData Entity ${entityUuid} belong to the devData section, not ${section}.`,
+      );
+    }
+    return undefined;
   }
 
   // #############################################################################################
@@ -488,9 +538,11 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   ): Promise<Action2VoidReturnType> {
     // #232/#234 — VH parents belong on modelVersion only. Commit instances live in data (Miroir)
     // and are not created for satellite apps — do not register a phantom model SQL table for them.
+    // #647 — devData Entities belong to devData only.
     const modelSectionEntities = metaModelEntities.filter(
       (entity) =>
         !versionHistoryEntityUuids.has(entity.uuid!) &&
+        !devDataEntityUuids.has(entity.uuid!) &&
         entity.uuid !== entityCommit.uuid,
     );
     const modelBootFromPersistedState: Action2ReturnType =
@@ -503,6 +555,22 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
         "FailedToGetInstances",
         `bootFromPersistedState failed for section model: ${modelBootFromPersistedState.errorMessage}`
       );
+    }
+    // devData (#647): its Entities are Miroir's fixed rows, not the application's, so it boots
+    // whatever the model holds, even a model store not initialized yet (D21).
+    const devDataStore = this.optionalStoreSections.devData;
+    if (devDataStore) {
+      const devDataBootFromPersistedState = await devDataStore.bootFromPersistedState(
+        [...optionalSectionEntityUuids("devData")].map(
+          (uuid) => getOptionalSectionEntityDefinition("devData", uuid)!,
+        ),
+      );
+      if (devDataBootFromPersistedState instanceof Action2Error) {
+        return new Action2Error(
+          "FailedToGetInstances",
+          `bootFromPersistedState failed for section devData: ${devDataBootFromPersistedState.errorMessage}`,
+        );
+      }
     }
     const dataEntities: Action2EntityInstanceCollectionOrFailure =
       await this.modelStoreSection.getInstances(entityEntity.uuid);
@@ -526,7 +594,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     );
     const dataBootFromPersistedState = await this.dataStoreSection.bootFromPersistedState(
       ((dataEntities as any).returnedDomainElement?.instances as Entity[]).filter(
-        (e) => e.name !== "Entity",
+        (e) => e.name !== "Entity" && !devDataEntityUuids.has(e.uuid!),
       ),
     );
     if (
@@ -539,13 +607,13 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
       );
     }
 
-    if (this.modelVersionStoreSection) {
+    // modelVersion (#232): the application's own version-history Entity rows.
+    const modelVersionStore = this.optionalStoreSections.modelVersion;
+    if (modelVersionStore) {
       const modelEntities = ((dataEntities as any).returnedDomainElement?.instances as Entity[]) ?? [];
-      const versionHistoryEntities = modelEntities.filter((entity) =>
-        versionHistoryEntityUuids.has(entity.uuid!),
+      const modelVersionBootFromPersistedState = await modelVersionStore.bootFromPersistedState(
+        modelEntities.filter((entity) => versionHistoryEntityUuids.has(entity.uuid!)),
       );
-      const modelVersionBootFromPersistedState =
-        await this.modelVersionStoreSection.bootFromPersistedState(versionHistoryEntities);
       if (modelVersionBootFromPersistedState instanceof Action2Error) {
         return new Action2Error(
           "FailedToGetInstances",
@@ -562,19 +630,21 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     await this.adminStore.open();
     await this.dataStoreSection.open();
     await this.modelStoreSection.open();
-    if (this.modelVersionStoreSection) {
-      await this.modelVersionStoreSection.open();
+    for (const [, store] of this.presentOptionalStoreSections()) {
+      await store.open();
     }
     return Promise.resolve(ACTION_OK);
   }
 
   // ##############################################################################################
   async close(): Promise<Action2VoidReturnType> {
+    this.devDataStorage.clear();
+    this.devDataStorageCreation.clear();
     await this.adminStore.close();
     await this.modelStoreSection.close();
     await this.dataStoreSection.close();
-    if (this.modelVersionStoreSection) {
-      await this.modelVersionStoreSection.close();
+    for (const [, store] of this.presentOptionalStoreSections()) {
+      await store.close();
     }
     return Promise.resolve(ACTION_OK);
   }
@@ -596,8 +666,12 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     log.info(this.logHeader, "clear", this.getEntityUuids());
     await this.dataStoreSection.clear();
     await this.modelStoreSection.clear();
-    if (this.modelVersionStoreSection) {
-      await this.modelVersionStoreSection.clear();
+    // #647 (D24) — devData is not part of the model being reset: a resetModel of Miroir in a live
+    // environment must not delete its tracked development history. deleteStore still drops it.
+    for (const [section, store] of this.presentOptionalStoreSections()) {
+      if (section !== "devData") {
+        await store.clear();
+      }
     }
     return Promise.resolve(ACTION_OK);
   }
@@ -626,7 +700,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     // Other apps may get an unused empty EntityVersion data table; reads still use getApplicationSection.
     const dataSectionFilteredEntities: Entity[] = (
       dataSectionEntities.returnedDomainElement.instances as Entity[]
-    ).filter((e: EntityInstanceWithName) => e.name !== "Entity");
+    ).filter((e: EntityInstanceWithName) => e.name !== "Entity" && !devDataEntityUuids.has(e.uuid!)); // #647: devData Entities have no data storage
     log.trace(
       this.logHeader,
       "clearDataInstances found entities to clear:",
@@ -676,21 +750,100 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   }
 
   /**
+   * #647: whether the devData storage of an Entity exists. A "yes" is kept for the controller's life;
+   * a "no" is asked again next time, since another server may create the storage meanwhile. A store
+   * that lists the Entities it was booted with (SQL) answers with its probe.
+   */
+  private devDataStorageExists(sectionStore: PersistenceStoreDataSectionInterface, entity: Entity): Promise<boolean> {
+    const known = this.devDataStorage.get(entity.uuid);
+    if (known) {
+      return known;
+    }
+    const probe = sectionStore.hasStorageSpaceForInstancesOfEntity
+      ? sectionStore.hasStorageSpaceForInstancesOfEntity(entity)
+      : Promise.resolve(sectionStore.getEntityUuids().includes(entity.uuid));
+    this.devDataStorage.set(entity.uuid, probe);
+    probe.then(
+      (exists) => {
+        if (!exists && this.devDataStorage.get(entity.uuid) === probe) {
+          this.devDataStorage.delete(entity.uuid);
+        }
+      },
+      () => this.devDataStorage.delete(entity.uuid),
+    );
+    return probe;
+  }
+
+  /** #647: a read of a devData Entity whose storage was never created (no row written yet). */
+  private async devDataStorageMissing(
+    section: ApplicationSection,
+    sectionStore: PersistenceStoreDataSectionInterface | PersistenceStoreModelSectionInterface,
+    entityUuid: string,
+  ): Promise<boolean> {
+    const entity = section === "devData" ? getDevDataEntityDefinition(entityUuid) : undefined;
+    return !!entity && !(await this.devDataStorageExists(sectionStore as PersistenceStoreDataSectionInterface, entity));
+  }
+
+  /** #647: creates the devData storage of an Entity unless it exists; concurrent writes share one creation. */
+  private ensureDevDataStorage(
+    sectionStore: PersistenceStoreDataSectionInterface,
+    entity: Entity,
+  ): Promise<Action2VoidReturnType> {
+    const pending = this.devDataStorageCreation.get(entity.uuid);
+    if (pending) {
+      return pending;
+    }
+    const creation = (async (): Promise<Action2VoidReturnType> => {
+      if (await this.devDataStorageExists(sectionStore, entity)) {
+        return ACTION_OK;
+      }
+      // a store that creates by dropping offers a creation that keeps what another server created
+      const created = sectionStore.createStorageSpaceForInstancesOfEntityIfMissing
+        ? await sectionStore.createStorageSpaceForInstancesOfEntityIfMissing(entity)
+        : await sectionStore.createStorageSpaceForInstancesOfEntity(entity);
+      if (!(created instanceof Action2Error)) {
+        this.devDataStorage.set(entity.uuid, Promise.resolve(true));
+      }
+      return created;
+    })();
+    this.devDataStorageCreation.set(entity.uuid, creation);
+    creation.then(
+      (result) => {
+        if (result instanceof Action2Error) {
+          this.devDataStorageCreation.delete(entity.uuid);
+        }
+      },
+      () => this.devDataStorageCreation.delete(entity.uuid),
+    );
+    return creation;
+  }
+
+  /**
    * #232 — SQL (and other structured backends) require entity tables in the modelVersion
    * schema before instance upserts. Filesystem creates directories lazily on upsert.
    * TODO: Filesystem should create directories eagerly on Entity creation
    * TODO: this is called at upsert, this is HIGHLY inefficient. Create operation should void theneed for this.
    */
-  private async ensureModelVersionStorageForEntity(
+  private async ensureOptionalSectionStorageForEntity(
+    section: OptionalApplicationSection,
     parentEntityUuid: string,
   ): Promise<Action2VoidReturnType> {
-    if (!this.modelVersionStoreSection) {
+    const sectionStore = this.optionalStoreSections[section];
+    if (!sectionStore) {
       return new Action2Error(
         "FailedToUpsertInstance",
-        "modelVersion section is not configured for this deployment.",
+        `${section} section is not configured for this deployment.`,
       );
     }
-    if (this.modelVersionStoreSection.getEntityUuids().includes(parentEntityUuid)) {
+    // #647 — devData Entities are Miroir's: their fixed rows are the definition, whatever the application.
+    // The section boots from them, so a store that lists booted Entities (SQL) is asked whether the
+    // storage exists, once per Entity and controller.
+    const fixedEntityDef =
+      section === "devData" ? getOptionalSectionEntityDefinition(section, parentEntityUuid) : undefined;
+    if (fixedEntityDef) {
+      return this.ensureDevDataStorage(sectionStore, fixedEntityDef);
+    }
+    if (sectionStore.getEntityUuids().includes(parentEntityUuid)) {
       return ACTION_OK;
     }
     const entitiesResult = await this.modelStoreSection.getInstances(entityEntity.uuid);
@@ -701,21 +854,21 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     if (!collection || collection instanceof Domain2ElementFailed) {
       return new Action2Error(
         "FailedToUpsertInstance",
-        `modelVersion upsert: could not load model Entity catalog for ${parentEntityUuid}.`,
+        `${section} upsert: could not load model Entity catalog for ${parentEntityUuid}.`,
       );
     }
     const entityDef = (collection.instances ?? []).find(
       (candidate) => candidate.uuid === parentEntityUuid,
     ) as Entity | undefined;
     const resolvedEntityDef =
-      entityDef ?? getVersionHistoryEntityDefinition(parentEntityUuid);
+      entityDef ?? getOptionalSectionEntityDefinition(section, parentEntityUuid);
     if (!resolvedEntityDef) {
       return new Action2Error(
         "FailedToUpsertInstance",
-        `modelVersion upsert: Entity ${parentEntityUuid} not registered in model section.`,
+        `${section} upsert: Entity ${parentEntityUuid} not registered in model section.`,
       );
     }
-    return this.modelVersionStoreSection.createStorageSpaceForInstancesOfEntity(resolvedEntityDef);
+    return sectionStore.createStorageSpaceForInstancesOfEntity(resolvedEntityDef);
   }
 
   // ##############################################################################################
@@ -781,14 +934,20 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
 
     const currentStore = this.getSectionInstanceStore(section);
     if (currentStore instanceof Action2Error) {
-      // Unversioned deployments: no history rows to fetch (#234).
-      if (section === "modelVersion") {
+      // Unversioned deployments: no history rows to fetch (#234); same for devData (#647).
+      if (isOptionalApplicationSection(section)) {
         return new Action2Error(
           "FailedToGetInstance",
-          `modelVersion section is not configured; no instance ${instancePrimaryKey} for entity ${entityUuid}.`,
+          `${section} section is not configured; no instance ${instancePrimaryKey} for entity ${entityUuid}.`,
         );
       }
       return currentStore;
+    }
+    if (await this.devDataStorageMissing(section, currentStore, entityUuid)) {
+      return new Action2Error(
+        "FailedToGetInstance",
+        `no instance ${instancePrimaryKey} for entity ${entityUuid}: no ${section} row was written yet.`,
+      );
     }
     const result: Action2EntityInstanceReturnType = await currentStore.getInstance(
       entityUuid,
@@ -843,16 +1002,21 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     if (currentStore instanceof Action2Error) {
       // Unversioned / bundled deployments omit modelVersion (#232 Slice 4 / #234).
       // REST refresh GETs /CRUD/.../modelVersion/entity/.../all — return empty, not 500.
-      if (section === "modelVersion") {
+      if (isOptionalApplicationSection(section)) {
         log.info(
           this.logHeader,
           "getInstances",
-          "modelVersion section not configured — returning empty collection for",
+          section,
+          "section not configured — returning empty collection for",
           entityUuid,
         );
-        return this.emptyModelVersionCollection(entityUuid);
+        return this.emptyOptionalSectionCollection(section, entityUuid);
       }
       return currentStore;
+    }
+    // #647: a devData Entity with no row written yet has no storage: nothing to read.
+    if (await this.devDataStorageMissing(section, currentStore, entityUuid)) {
+      return this.emptyOptionalSectionCollection("devData", entityUuid);
     }
     log.debug(
       this.logHeader,
@@ -945,13 +1109,18 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
       this.getEntityUuids()
     );
 
+    const refused = this.refuseDevDataEntityOutsideDevData(section, resolvedParentUuid);
+    if (refused) {
+      return refused;
+    }
+
     const currentStore = this.getSectionInstanceStore(section);
     if (currentStore instanceof Action2Error) {
       return currentStore;
     }
 
-    if (section === "modelVersion") {
-      const ensureStorage = await this.ensureModelVersionStorageForEntity(resolvedParentUuid);
+    if (isOptionalApplicationSection(section)) {
+      const ensureStorage = await this.ensureOptionalSectionStorageForEntity(section, resolvedParentUuid);
       if (ensureStorage instanceof Action2Error) {
         return ensureStorage;
       }

@@ -1,5 +1,5 @@
 // ################################################################################################
-// #580: one measured load step, as the recorder produces it and the Meta app's
+// #580: one measured load step, as the recorder produces it and Miroir's devData
 // PageLoadMeasurement Entity stores it (without uuid, parentName, parentUuid). No imports: the
 // recorder is loaded with the page.
 // ################################################################################################

@@ -9,7 +9,8 @@ import {
   type PersistenceStoreDataSectionInterface,
   type PersistenceStoreModelSectionInterface,
   type StoreSectionConfiguration,
-  type ConfigurationServiceInner
+  type ConfigurationServiceInner,
+  optionalApplicationSections,
 } from "@miroir-framework/core";
 import { SqlDbDataStoreSection } from "./4_services/SqlDbDataStoreSection.js";
 import { SqlDbModelStoreSection } from "./4_services/SqlDbModelStoreSection.js";
@@ -105,28 +106,31 @@ export function miroirPostgresStoreSectionStartup(configurationService: Configur
 
     }
   );
-  configurationService.registerStoreSectionFactory(
-    "sql",
-    "modelVersion",
-    async (
-      section: ApplicationSection,
-      config: StoreSectionConfiguration,
-      filesystemDeploymentRootDirectory: string,
-    ): Promise<PersistenceStoreDataSectionInterface | PersistenceStoreModelSectionInterface> => {
-      log.info("called registerStoreSectionFactory function for", section, "sql", config);
-      if (config.emulatedServerType == "sql") {
-        const sqlDbStoreName: string = config.connectionString + ":" + config.schema;
-        return Promise.resolve(
-          new SqlDbDataStoreSection(
-            "modelVersion",
-            sqlDbStoreName,
-            config.connectionString,
-            config.schema,
-            config.forceNullOptionalAttributeToUndefined ?? false,
-          ),
-        );
-      }
-      return Promise.resolve(new ErrorDataStore());
-    },
-  );
+  // optional sections (#232 modelVersion, #647 devData): same data store shape, own storage
+  for (const optionalSection of optionalApplicationSections) {
+    configurationService.registerStoreSectionFactory(
+      "sql",
+      optionalSection,
+      async (
+        section: ApplicationSection,
+        config: StoreSectionConfiguration,
+        filesystemDeploymentRootDirectory: string,
+      ): Promise<PersistenceStoreDataSectionInterface | PersistenceStoreModelSectionInterface> => {
+        log.info("called registerStoreSectionFactory function for", section, "sql", config);
+        if (config.emulatedServerType == "sql") {
+          const sqlDbStoreName: string = config.connectionString + ":" + config.schema;
+          return Promise.resolve(
+            new SqlDbDataStoreSection(
+              optionalSection,
+              sqlDbStoreName,
+              config.connectionString,
+              config.schema,
+              config.forceNullOptionalAttributeToUndefined ?? false,
+            ),
+          );
+        }
+        return Promise.resolve(new ErrorDataStore());
+      },
+    );
+  }
 }

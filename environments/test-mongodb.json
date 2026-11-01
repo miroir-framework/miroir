@@ -10,7 +10,6 @@
     "library": { "store": "mongodb" },
     "appForTest": { "store": "mongodb" },
     "spotify": { "store": "mongodb" },
-    "github": { "store": "mongodb" },
-    "meta": { "store": "mongodb" }
+    "github": { "store": "mongodb" }
   }
 }

@@ -1,6 +1,6 @@
 /**
  * #580 D1, D8: the environment's `client.loadTimings`, the per-tab URL override, the self-test veto,
- * and whether the client configuration lists the Meta deployment.
+ * and whether the client configuration gives the Miroir deployment a devData section (#647).
  *
  * Not reachable through MiroirTest: it reads the page URL and sessionStorage.
  * ```bash
@@ -11,9 +11,9 @@ import { describe, expect, it } from "vitest";
 
 import type { MiroirConfigClient } from "@miroir-framework/core";
 
-import { META_DEPLOYMENT_UUID } from "../../../src/loadTimings/loadTimingConstants.js";
+import { MIROIR_DEPLOYMENT_UUID } from "../../../src/loadTimings/loadTimingConstants.js";
 import {
-  configurationListsDeployment,
+  configurationHasSection,
   resolveLoadTimingsSwitch,
   type LoadTimingSwitchStorage,
 } from "../../../src/loadTimings/loadTimingSwitch.js";
@@ -56,16 +56,19 @@ describe("load timings switch (#580)", () => {
     ).toBe(false);
   });
 
-  it("knows whether the client configuration lists the Meta deployment", () => {
-    const listing = (deployments: string[]) =>
+  it("knows whether the client configuration gives the Miroir deployment a devData section", () => {
+    const listing = (deployments: Record<string, Record<string, unknown>>) =>
       ({
         miroirConfigType: "client",
         client: {
           emulateServer: false,
-          serverConfig: { rootApiUrl: "https://localhost:3080", storeSectionConfiguration: Object.fromEntries(deployments.map((d) => [d, {}])) },
+          serverConfig: { rootApiUrl: "https://localhost:3080", storeSectionConfiguration: deployments },
         },
       }) as unknown as MiroirConfigClient;
-    expect(configurationListsDeployment(listing([META_DEPLOYMENT_UUID]), META_DEPLOYMENT_UUID)).toBe(true);
-    expect(configurationListsDeployment(listing(["10ff36f2-50a3-48d8-b80f-e48e5d13af8e"]), META_DEPLOYMENT_UUID)).toBe(false);
+    const section = { emulatedServerType: "filesystem", directory: "x" };
+    expect(configurationHasSection(listing({ [MIROIR_DEPLOYMENT_UUID]: { data: section, devData: section } }), MIROIR_DEPLOYMENT_UUID, "devData")).toBe(true);
+    expect(configurationHasSection(listing({ [MIROIR_DEPLOYMENT_UUID]: { data: section } }), MIROIR_DEPLOYMENT_UUID, "devData")).toBe(false);
+    expect(configurationHasSection(listing({ "f714bb2f-a12d-4e71-a03b-74dcedea6eb4": { devData: section } }), MIROIR_DEPLOYMENT_UUID, "devData")).toBe(false);
+    expect(configurationHasSection(undefined, MIROIR_DEPLOYMENT_UUID, "devData")).toBe(false);
   });
 });

@@ -22,6 +22,10 @@
     "modelVersion": {
       "emulatedServerType": "filesystem",
       "directory":"miroir-app-miroir/assets/miroir_modelVersion"
+    },
+    "devData": {
+      "emulatedServerType": "filesystem",
+      "directory":"miroir-app-miroir/assets/miroir_devData"
     }
   }
 }

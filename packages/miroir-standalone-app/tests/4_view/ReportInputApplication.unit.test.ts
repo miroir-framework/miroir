@@ -75,4 +75,19 @@ describe("reportInputApplication (#225 Versioning input)", () => {
     });
     expect(url).toContain("applicationSection=data");
   });
+
+  it("uses the devData section for a devData Report, on any application (#647)", () => {
+    for (const application of [MIROIR_APP, LIBRARY_APP]) {
+      const url = buildReportApplicationSwitchUrl({
+        application,
+        applicationDeploymentMap: {
+          [LIBRARY_APP]: LIBRARY_DEPLOYMENT,
+          [MIROIR_APP]: "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
+        },
+        reportUuid: "e8c6faa5-a117-4afd-b7ae-4a40c6111f95", // BundleSizeHistory
+        reportUrl: (a, d, s, r) => `/?page=report&application=${a}&deploymentUuid=${d}&applicationSection=${s}&reportUuid=${r}`,
+      });
+      expect(url, application).toContain("applicationSection=devData");
+    }
+  });
 });

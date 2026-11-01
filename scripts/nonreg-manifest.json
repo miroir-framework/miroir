@@ -368,19 +368,20 @@
       ]
     },
     {
-      "id": "default-meta-modelValidation",
+      "id": "default-miroir-devData-validation",
       "scopes": ["core"],
       "tier": "default",
-      "title": "Deployment modelValidation — meta (#473)",
+      "title": "Miroir devData rows validated against their Entities, and where the devData Entities, Reports and MiroirTests live, with no Meta application left (#473, #647)",
       "requires": "none",
       "argv": [
         "npm",
         "run",
         "testByFile",
         "-w",
-        "miroir-app-meta",
+        "miroir-app-miroir",
         "--",
-        "tests/modelValidation.unit.test.ts"
+        "devData/devDataRows.unit",
+        "devData/devDataLayout.unit"
       ]
     },
     {
@@ -1551,7 +1552,7 @@
       "id": "integ-report.bundleSizeHistory",
       "scopes": ["ui"],
       "tier": "default",
-      "title": "MiroirTest integ — report.bundleSizeHistory (Meta bundle size Reports on fixed measurements) (#473)",
+      "title": "MiroirTest integ — report.bundleSizeHistory (Miroir's bundle size Reports on a Library testbed's devData, fixed measurements) (#473)",
       "requires": "storage",
       "argv": [
         "npm",
@@ -1589,7 +1590,7 @@
       "id": "integ-report.pageLoadHistory",
       "scopes": ["ui"],
       "tier": "default",
-      "title": "MiroirTest integ — report.pageLoadHistory (Meta page load Reports on fixed measurements) (#580)",
+      "title": "MiroirTest integ — report.pageLoadHistory (Miroir's page load Reports on a Library testbed's devData, fixed measurements) (#580)",
       "requires": "storage",
       "argv": [
         "npm",
@@ -1622,6 +1623,80 @@
         ],
         "suites": ["report.pageLoadHistory"]
       }
+    },
+    {
+      "id": "integ-report.agentRunHistory",
+      "scopes": ["ui"],
+      "tier": "default",
+      "title": "MiroirTest integ — report.agentRunHistory (Miroir's agent run Reports on a Library testbed's devData, fixed runs) (#550, #647)",
+      "requires": "storage",
+      "argv": [
+        "npm",
+        "run",
+        "testMiroir",
+        "-w",
+        "miroir-standalone-app",
+        "--",
+        "--profile",
+        "{profile}",
+        "--suites",
+        "report.agentRunHistory",
+        "--mode",
+        "integ"
+      ],
+      "shared": {
+        "group": "standalone-app-report-suites",
+        "argv": [
+          "npm",
+          "run",
+          "testMiroir",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--profile",
+          "{profile}",
+          "--mode",
+          "integ",
+          "--shared"
+        ],
+        "suites": ["report.agentRunHistory"]
+      }
+    },
+    {
+      "id": "integ-devData-section",
+      "scopes": ["actions"],
+      "tier": "default",
+      "title": "#647 devData section on the store of the run: its own store, restart, refused writes, clear, teardown",
+      "requires": "storage",
+      "argv": [
+        "npm",
+        "run",
+        "testByFile",
+        "-w",
+        "miroir-standalone-app",
+        "--",
+        "--profile",
+        "{profile}",
+        "devDataSection.integ"
+      ]
+    },
+    {
+      "id": "integ-devData-section-filesystem",
+      "scopes": ["actions"],
+      "tier": "default",
+      "title": "#647 devData section on the test-filesystem copy: tracked rows, files on disk, rollback without page load rows, close and reopen",
+      "requires": "none",
+      "argv": [
+        "npm",
+        "run",
+        "testByFile",
+        "-w",
+        "miroir-standalone-app",
+        "--",
+        "--profile",
+        "emulatedServer-filesystem",
+        "devDataSection.filesystem.integ"
+      ]
     },
     {
       "id": "integ-report.queryDetails",
@@ -2640,17 +2715,18 @@
       "id": "unit-473-bundle-size-scripts",
       "scopes": ["tooling"],
       "tier": "unit",
-      "title": "#473 — bundle size history: bundle-size:record and bundle-size:backfill (they run the bundle guard with python3)",
+      "title": "#473, #550 — Miroir devData recorders: bundle-size:record, bundle-size:backfill (they run the bundle guard with python3), agent-run:record",
       "requires": "none",
       "argv": [
         "npm",
         "run",
         "testByFile",
         "-w",
-        "miroir-app-meta",
+        "miroir-app-miroir",
         "--",
         "bundleSizeRecord.unit",
-        "bundleSizeBackfill.unit"
+        "bundleSizeBackfill.unit",
+        "agentRunRecord.unit"
       ]
     },
     {
@@ -2714,7 +2790,7 @@
       "id": "unit-580-load-timings",
       "scopes": ["ui", "actions"],
       "tier": "unit",
-      "title": "#580 load timings: the recorder, the switch, the Meta contract, and the writer on the test-filesystem platform",
+      "title": "#580 load timings: the recorder, the switch, the contract with Miroir's devData (#647), and the writer on the test-filesystem platform",
       "requires": "none",
       "argv": [
         "npm",

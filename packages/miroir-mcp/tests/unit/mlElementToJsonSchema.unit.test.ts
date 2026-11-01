@@ -96,16 +96,16 @@ describe('mlElementToJsonSchema', () => {
     expect(result.allOf).toEqual([
       {
         type: 'string',
-        enum: ['model', 'data', 'modelVersion'],
+        enum: ['model', 'data', 'modelVersion', 'devData'],
         description:
-          'A section of the application (model, data, or modelVersion for version history)',
+          'A section of the application (model, data, modelVersion for version history, or devData for information about the application that is not needed to deploy or use it, #647)',
       },
     ]);
     expect(result.$defs[defKey]).toEqual({
       type: 'string',
-      enum: ['model', 'data', 'modelVersion'],
+      enum: ['model', 'data', 'modelVersion', 'devData'],
       description:
-        'A section of the application (model, data, or modelVersion for version history)',
+        'A section of the application (model, data, modelVersion for version history, or devData for information about the application that is not needed to deploy or use it, #647)',
     });
   });
 
@@ -339,9 +339,9 @@ describe('mlElementToJsonSchema', () => {
     expect(result.properties.section).toEqual({ $ref: `#/$defs/${sectionKey}` });
     expect(result.$defs[sectionKey]).toEqual({
       type: 'string',
-      enum: ['model', 'data', 'modelVersion'],
+      enum: ['model', 'data', 'modelVersion', 'devData'],
       description:
-        'A section of the application (model, data, or modelVersion for version history)',
+        'A section of the application (model, data, modelVersion for version history, or devData for information about the application that is not needed to deploy or use it, #647)',
     });
     expect(result.properties.name).toEqual({
       type: 'string',
@@ -1013,9 +1013,9 @@ describe('mlElementToJsonSchema', () => {
       expect(result.anyOf[1]).toEqual({ $ref: `#/$defs/${sectionKey}` });
       expect(result.$defs[sectionKey]).toEqual({
         type: 'string',
-        enum: ['model', 'data', 'modelVersion'],
+        enum: ['model', 'data', 'modelVersion', 'devData'],
         description:
-          'A section of the application (model, data, or modelVersion for version history)',
+          'A section of the application (model, data, modelVersion for version history, or devData for information about the application that is not needed to deploy or use it, #647)',
       });
     });
   });

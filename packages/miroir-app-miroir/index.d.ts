@@ -33,6 +33,10 @@ export declare const entityApplicationVersionCrossTransformerDefinitionVersion: 
 export declare const entityTest: any;
 export declare const entityTransformerDefinition: any;
 export declare const entityMiroirTest: any;
+/** #647 — devData Entities. */
+export declare const entityBundleSizeMeasurement: any;
+export declare const entityPageLoadMeasurement: any;
+export declare const entityAgentRunMeasurement: any;
 export declare const entityTestConfiguration: any;
 export declare const entityBlob: any;
 export declare const entityCommit: any;
@@ -197,6 +201,13 @@ export declare const reportTransformerList: any;
 export declare const reportMiroirWebAppOrDesktopHome: any;
 export declare const reportMiroirSandboxHome: any;
 export declare const reportMiroirRunners: any;
+/** #647 — devData Reports. */
+export declare const reportBundleSizeHistory: any;
+export declare const reportBundleSizeMeasurementDetails: any;
+export declare const reportPageLoadHistory: any;
+export declare const reportPageLoadMeasurementDetails: any;
+export declare const reportAgentRunHistory: any;
+export declare const reportAgentRunMeasurementDetails: any;
 export declare const instanceEndpointV1: any;
 export declare const modelEndpointV1: any;
 export declare const domainEndpointVersionV1: any;

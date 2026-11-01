@@ -29,7 +29,7 @@ import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory.js";
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
 import type { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface.js";
-import { defaultMiroirModelEnvironment } from "../1_core/Model.js";
+import { defaultMiroirModelEnvironment, reportLoadSection } from "../1_core/Model.js";
 import { queryContainsExternalExtractor } from "../1_core/queryContainsExternalExtractor.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "createReportQueryLoadExecutor");
@@ -228,8 +228,7 @@ export function createReportQueryLoadExecutor(
       return;
     }
 
-    const section =
-      request.applicationSection ?? options?.applicationSection ?? "data";
+    const requestedSection = request.applicationSection ?? options?.applicationSection;
     const projectionAttributes = resolveReportQueryLoadAttributes(request);
     const store = withStore.getRemoteStore();
     const collections: EntityInstanceCollection[] = [];
@@ -246,6 +245,7 @@ export function createReportQueryLoadExecutor(
 
     for (const target of loadTargets) {
       let result: Action2ReturnType;
+      const section = reportLoadSection(target.parentUuid, requestedSection);
 
       if (target.instanceUuid && target.extractorKey) {
         const extractor = resolvedExtractors?.[target.extractorKey];

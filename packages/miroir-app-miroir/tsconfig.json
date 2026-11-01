@@ -11,6 +11,7 @@
   "include": [
     "index.ts",
     "assets/**/*.json",
+    "scripts/**/*.ts",
     "src/**/*.ts"
   ],
   "exclude": [

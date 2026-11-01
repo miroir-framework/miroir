@@ -9,7 +9,8 @@ import {
   PersistenceStoreDataOrModelSectionInterface,
   PersistenceStoreDataSectionInterface,
   StoreSectionConfiguration,
-  type ConfigurationServiceInner
+  type ConfigurationServiceInner,
+  optionalApplicationSections,
 } from "@miroir-framework/core";
 import { cleanLevel } from "./4_services/constants.js";
 import { packageName } from "./constants.js";
@@ -105,29 +106,32 @@ export function miroirIndexedDbStoreSectionStartup(
       }
     }
   );
-  configurationService.registerStoreSectionFactory(
-    "indexedDb",
-    "modelVersion",
-    async (
-      section: ApplicationSection,
-      config: StoreSectionConfiguration,
-      filesystemDeploymentRootDirectory: string,
-    ): Promise<PersistenceStoreDataOrModelSectionInterface> => {
-      if (config.emulatedServerType == "indexedDb") {
-        log.info("called registerStoreSectionFactory modelVersion function for", section, config);
-        const [{ IndexedDb }, { IndexedDbDataStoreSection }] = await Promise.all([
-          loadIndexedDb(),
-          import("./4_services/IndexedDbDataStoreSection.js"),
-        ]);
-        const indexedDbStoreName = config.indexedDbName + "-modelVersion";
-        return Promise.resolve(
-          new IndexedDbDataStoreSection(
-            indexedDbStoreName,
-            new IndexedDb("modelVersion", filesystemDeploymentRootDirectory, indexedDbStoreName),
-          ),
-        );
-      }
-      return Promise.resolve(new ErrorDataStore());
-    },
-  );
+  // optional sections (#232 modelVersion, #647 devData): same data store shape, own storage
+  for (const optionalSection of optionalApplicationSections) {
+    configurationService.registerStoreSectionFactory(
+      "indexedDb",
+      optionalSection,
+      async (
+        section: ApplicationSection,
+        config: StoreSectionConfiguration,
+        filesystemDeploymentRootDirectory: string,
+      ): Promise<PersistenceStoreDataOrModelSectionInterface> => {
+        if (config.emulatedServerType == "indexedDb") {
+          log.info("called registerStoreSectionFactory", optionalSection, "function for", section, config);
+          const [{ IndexedDb }, { IndexedDbDataStoreSection }] = await Promise.all([
+            loadIndexedDb(),
+            import("./4_services/IndexedDbDataStoreSection.js"),
+          ]);
+          const indexedDbStoreName = config.indexedDbName + "-" + optionalSection;
+          return Promise.resolve(
+            new IndexedDbDataStoreSection(
+              indexedDbStoreName,
+              new IndexedDb(optionalSection, filesystemDeploymentRootDirectory, indexedDbStoreName),
+            ),
+          );
+        }
+        return Promise.resolve(new ErrorDataStore());
+      },
+    );
+  }
 }

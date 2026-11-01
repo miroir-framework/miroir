@@ -25,7 +25,7 @@ import { readRows } from "./stateCommands.js";
 const EXAMPLE_PREFIX = "miroir-example-";
 const SELF_APPLICATION_ENTITY = "a659d350-dd97-4da9-91de-524fa01745dc";
 // Store sections of the Deployment, after admin, when the package assets have them.
-const SECTIONS = ["model", "data", "modelVersion"] as const;
+const SECTIONS = ["model", "data", "modelVersion", "devData"] as const;
 
 export type DeployOptions = {
   dryRun?: boolean;

@@ -35,6 +35,10 @@
         "modelVersion": {
           "emulatedServerType": "indexedDb",
           "indexedDbName": "ui-integ-miroir_modelVersion"
+        },
+        "devData": {
+          "emulatedServerType": "indexedDb",
+          "indexedDbName": "ui-integ-miroir_devData"
         }
       },
       "f714bb2f-a12d-4e71-a03b-74dcedea6eb4": {
@@ -107,20 +111,6 @@
         "modelVersion": {
           "emulatedServerType": "indexedDb",
           "indexedDbName": "ui-integ-github_modelVersion"
-        }
-      },
-      "40b74910-4c63-4bd9-8e7d-2bc051342908": {
-        "admin": {
-          "emulatedServerType": "indexedDb",
-          "indexedDbName": "ui-integ-admin"
-        },
-        "model": {
-          "emulatedServerType": "indexedDb",
-          "indexedDbName": "ui-integ-meta"
-        },
-        "data": {
-          "emulatedServerType": "indexedDb",
-          "indexedDbName": "ui-integ-meta"
         }
       }
     },

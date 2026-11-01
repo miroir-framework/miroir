@@ -16,18 +16,35 @@ import {
 export const BUNDLED_MODEL_VERSION_UNSUPPORTED_MESSAGE =
   "Bundled deployments are read-only; the modelVersion section cannot persist version history.";
 
-function unsupported<T>(): Promise<T> {
-  return Promise.resolve(
-    new Action2Error("FailedToUpsertInstance", BUNDLED_MODEL_VERSION_UNSUPPORTED_MESSAGE) as T,
-  );
-}
+/** #647 — a bundled deployment has no devData either: measurements are recorded in development. */
+export const BUNDLED_DEV_DATA_UNSUPPORTED_MESSAGE =
+  "Bundled deployments are read-only; the devData section cannot persist development data.";
 
-/** #232 — explicit rejection of version-history writes on read-only bundled deployments. */
-export class BundledUnsupportedModelVersionStore implements PersistenceStoreDataSectionInterface {
-  constructor(private readonly deploymentUuid: string) {}
+export type BundledUnsupportedSection = "modelVersion" | "devData";
+
+const unsupportedMessages: Record<BundledUnsupportedSection, string> = {
+  modelVersion: BUNDLED_MODEL_VERSION_UNSUPPORTED_MESSAGE,
+  devData: BUNDLED_DEV_DATA_UNSUPPORTED_MESSAGE,
+};
+
+/**
+ * #232 — explicit rejection of version-history writes on read-only bundled deployments; #647 —
+ * the same for devData.
+ */
+export class BundledUnsupportedOptionalSectionStore implements PersistenceStoreDataSectionInterface {
+  constructor(
+    private readonly deploymentUuid: string,
+    private readonly section: BundledUnsupportedSection = "modelVersion",
+  ) {}
 
   getStoreName(): string {
-    return `${this.deploymentUuid}-modelVersion-unsupported`;
+    return `${this.deploymentUuid}-${this.section}-unsupported`;
+  }
+
+  private unsupported<T>(): Promise<T> {
+    return Promise.resolve(
+      new Action2Error("FailedToUpsertInstance", unsupportedMessages[this.section]) as T,
+    );
   }
 
   async open(): Promise<Action2VoidReturnType> {
@@ -43,7 +60,7 @@ export class BundledUnsupportedModelVersionStore implements PersistenceStoreData
   }
 
   async clear(): Promise<Action2VoidReturnType> {
-    return unsupported();
+    return this.unsupported();
   }
 
   getEntityUuids(): string[] {
@@ -62,41 +79,41 @@ export class BundledUnsupportedModelVersionStore implements PersistenceStoreData
     _parentUuid: string,
     _instancePrimaryKey: string,
   ): Promise<Action2EntityInstanceSuccess> {
-    return unsupported();
+    return this.unsupported();
   }
 
   async getInstances(_parentUuid: string): Promise<Action2EntityInstanceCollection> {
-    return unsupported();
+    return this.unsupported();
   }
 
   async handleQueryTemplateActionForServerONLY(
     _query: RunBoxedQueryTemplateAction,
   ): Promise<Action2ReturnType> {
-    return unsupported();
+    return this.unsupported();
   }
 
   async handleBoxedQueryAction(_query: RunBoxedQueryAction): Promise<Action2ReturnType> {
-    return unsupported();
+    return this.unsupported();
   }
 
   async upsertInstance(_parentUuid: string, _instance: EntityInstance): Promise<Action2VoidReturnType> {
-    return unsupported();
+    return this.unsupported();
   }
 
   async deleteInstances(_parentUuid: string, _instances: EntityInstance[]): Promise<Action2VoidReturnType> {
-    return unsupported();
+    return this.unsupported();
   }
 
   async deleteInstance(_parentUuid: string, _instance: EntityInstance): Promise<Action2VoidReturnType> {
-    return unsupported();
+    return this.unsupported();
   }
 
   async createStorageSpaceForInstancesOfEntity(_entity: Entity): Promise<Action2VoidReturnType> {
-    return unsupported();
+    return this.unsupported();
   }
 
   async dropStorageSpaceForInstancesOfEntity(_entityUuid: string): Promise<Action2VoidReturnType> {
-    return unsupported();
+    return this.unsupported();
   }
 
   async renameStorageSpaceForInstancesOfEntity(
@@ -104,6 +121,10 @@ export class BundledUnsupportedModelVersionStore implements PersistenceStoreData
     _newName: string,
     _entity: Entity,
   ): Promise<Action2VoidReturnType> {
-    return unsupported();
+    return this.unsupported();
   }
 }
+
+/** The #232 name, from when modelVersion was the only optional section. */
+export const BundledUnsupportedModelVersionStore = BundledUnsupportedOptionalSectionStore;
+export type BundledUnsupportedModelVersionStore = BundledUnsupportedOptionalSectionStore;

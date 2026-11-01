@@ -12,12 +12,13 @@ import {
   PersistenceStoreDataSectionInterface,
   StoreSectionConfiguration,
   type ConfigurationServiceInner,
+  optionalApplicationSections,
 } from "@miroir-framework/core";
 import { cleanLevel } from "./4_services/constants.js";
 import { BundledAdminStore } from "./4_services/BundledAdminStore.js";
 import { BundledDataStoreSection } from "./4_services/BundledDataStoreSection.js";
 import { BundledModelStoreSection } from "./4_services/BundledModelStoreSection.js";
-import { BundledUnsupportedModelVersionStore } from "./4_services/BundledUnsupportedModelVersionStore.js";
+import { BundledUnsupportedOptionalSectionStore } from "./4_services/BundledUnsupportedModelVersionStore.js";
 import { packageName } from "./constants.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "startup");
@@ -139,23 +140,30 @@ export function miroirBundledStoreSectionStartup(
     },
   );
 
-  configurationService.registerStoreSectionFactory(
-    "bundled",
-    "modelVersion",
-    async (
-      _section: ApplicationSection,
-      config: StoreSectionConfiguration,
-    ): Promise<PersistenceStoreDataOrModelSectionInterface> => {
-      if (config.emulatedServerType === "bundled") {
-        const bundledConfig = config as BundledStoreSectionConfiguration;
-        log.warn(
-          "registerStoreSectionFactory bundled modelVersion: read-only bundled deployment cannot persist version history",
-          bundledConfig.deploymentUuid,
-        );
-        return Promise.resolve(new BundledUnsupportedModelVersionStore(bundledConfig.deploymentUuid));
-      }
-      log.warn("registerStoreSectionFactory bundled modelVersion: unexpected config", config);
-      return Promise.resolve(new ErrorDataStore());
-    },
-  );
+  // optional sections (#232 modelVersion, #647 devData): a bundled deployment refuses writes
+  for (const optionalSection of optionalApplicationSections) {
+    configurationService.registerStoreSectionFactory(
+      "bundled",
+      optionalSection,
+      async (
+        _section: ApplicationSection,
+        config: StoreSectionConfiguration,
+      ): Promise<PersistenceStoreDataOrModelSectionInterface> => {
+        if (config.emulatedServerType === "bundled") {
+          const bundledConfig = config as BundledStoreSectionConfiguration;
+          log.warn(
+            "registerStoreSectionFactory bundled",
+            optionalSection,
+            ": read-only bundled deployment cannot persist it",
+            bundledConfig.deploymentUuid,
+          );
+          return Promise.resolve(
+            new BundledUnsupportedOptionalSectionStore(bundledConfig.deploymentUuid, optionalSection),
+          );
+        }
+        log.warn("registerStoreSectionFactory bundled", optionalSection, ": unexpected config", config);
+        return Promise.resolve(new ErrorDataStore());
+      },
+    );
+  }
 }

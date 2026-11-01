@@ -45,6 +45,22 @@ describe("testbedStorageConfiguration (#575)", () => {
     });
   });
 
+  it("copies the devData section beside the others, with its own suffix (#647)", () => {
+    const sql = { emulatedServerType: "sql", connectionString: "postgres://db", schema: "library" } as const;
+    const live = {
+      admin,
+      model: sql,
+      data: sql,
+      devData: { ...sql, schema: "library_devData" },
+    } as StoreUnitConfiguration;
+    expect(testbedStorageConfiguration(live, TESTBED)).toEqual({
+      admin,
+      model: { ...sql, schema: STORE },
+      data: { ...sql, schema: STORE },
+      devData: { ...sql, schema: `${STORE}_devData` },
+    });
+  });
+
   it("leaves modelVersion out when the live deployment has none", () => {
     const live = {
       admin,
@@ -52,6 +68,7 @@ describe("testbedStorageConfiguration (#575)", () => {
       data: { emulatedServerType: "filesystem", directory: ".miroir/bench/library/data" },
     } as StoreUnitConfiguration;
     expect(testbedStorageConfiguration(live, TESTBED)).not.toHaveProperty("modelVersion");
+    expect(testbedStorageConfiguration(live, TESTBED)).not.toHaveProperty("devData");
   });
 
   it("refuses a bundled store, which is read-only", () => {

@@ -8,7 +8,6 @@
   "applications": {
     "miroir": { "mode": "copy" },
     "library": null,
-    "designer": null,
-    "meta": null
+    "designer": null
   }
 }

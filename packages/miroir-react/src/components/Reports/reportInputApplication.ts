@@ -1,5 +1,5 @@
-import type { ApplicationDeploymentMap, Uuid } from "@miroir-framework/core";
-import { noValue } from "@miroir-framework/core";
+import type { ApplicationDeploymentMap, ApplicationSection, Uuid } from "@miroir-framework/core";
+import { metaModelDevDataReports, noValue } from "@miroir-framework/core";
 import { selfApplicationMiroir } from "miroir-app-miroir";
 
 /**
@@ -55,10 +55,16 @@ export function seedReportInputApplicationFromPageParams(
  *
  * Miroir: Versioning lives in the data-section report list (not metaModelReports).
  * Other apps: Miroir reports are exposed via the model-section mapping.
+ * #647: a devData Report (bundle size, page load, agent runs) opens on the devData section of any
+ * application, where its rows are.
  */
 export function resolveScaffoldingReportApplicationSection(
   application: Uuid,
-): "model" | "data" {
+  reportUuid?: Uuid,
+): ApplicationSection {
+  if (reportUuid && metaModelDevDataReports.includes(reportUuid)) {
+    return "devData";
+  }
   return application === selfApplicationMiroir.uuid ? "data" : "model";
 }
 
@@ -91,7 +97,7 @@ export function buildReportApplicationSwitchUrl(params: {
   return params.reportUrl(
     params.application,
     deploymentUuid,
-    resolveScaffoldingReportApplicationSection(params.application),
+    resolveScaffoldingReportApplicationSection(params.application, params.reportUuid),
     params.reportUuid,
     params.instanceUuid,
   );

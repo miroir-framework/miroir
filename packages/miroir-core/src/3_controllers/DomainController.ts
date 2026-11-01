@@ -98,7 +98,7 @@ import {
 import { type MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import {
-  isAbsentModelVersionSectionError,
+  isAbsentOptionalSectionError,
   isLazyCacheOnRefreshEntity,
   resolveEntitiesToFetchOnRefresh,
   shouldCacheAllInstancesOnRefresh,
@@ -121,6 +121,7 @@ import { resolveVersioningMode } from "../1_core/versioning/versioningMode.js";
 import {
   defaultMiroirModelEnvironment,
   getApplicationSection,
+  isOptionalApplicationSection,
   metaModelEntities,
   miroirModelEntities,
 } from "../1_core/Model";
@@ -783,16 +784,17 @@ export class DomainController implements DomainControllerInterface, DomainContro
               )
               .then((fetchContext: Record<string, any> | Action2Error) => {
                 if (fetchContext instanceof Action2Error) {
-                  // Bundled / unversioned deployments may omit modelVersion (#232 Slice 4).
+                  // Bundled / unversioned deployments may omit modelVersion (#232 Slice 4), and
+                  // any deployment may omit devData (#647): an absent optional section is empty.
                   // Marker is often nested under FailedToHandlePersistenceAction.innerError.
                   if (
-                    e.section === "modelVersion" &&
-                    isAbsentModelVersionSectionError(fetchContext)
+                    isOptionalApplicationSection(e.section) &&
+                    isAbsentOptionalSectionError(e.section, fetchContext)
                   ) {
                     return {
                       parentName: e.entity.name,
                       parentUuid: e.entity.uuid,
-                      applicationSection: "modelVersion" as ApplicationSection,
+                      applicationSection: e.section,
                       instances: [],
                     };
                   }
@@ -803,13 +805,13 @@ export class DomainController implements DomainControllerInterface, DomainContro
               })
               .catch((reason) => {
                 if (
-                  e.section === "modelVersion" &&
-                  isAbsentModelVersionSectionError(reason)
+                  isOptionalApplicationSection(e.section) &&
+                  isAbsentOptionalSectionError(e.section, reason)
                 ) {
                   return {
                     parentName: e.entity.name,
                     parentUuid: e.entity.uuid,
-                    applicationSection: "modelVersion" as ApplicationSection,
+                    applicationSection: e.section,
                     instances: [],
                   };
                 }

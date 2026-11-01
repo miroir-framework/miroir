@@ -1,8 +1,8 @@
 /**
  * The load timings tour (scripts/load-timings.mjs, #580) on the real production build, served by the
- * real server release on the selected environment (dev: the Meta app is installed), in a real browser:
+ * real server release on the selected environment (dev: Miroir's devData section is configured), in a real browser:
  * the page measures its initial load, its first report display and its first model page display, and
- * records them in the Meta app. With --dev (#583), the same tour on the Vite dev client.
+ * records them in Miroir's devData section (#647). With --dev (#583), the same tour on the Vite dev client.
  *
  * Not reachable through MiroirTest: it needs the browser's timing APIs on a served client. On demand,
  * one tour per run (both use port 3080): MIROIR_LOAD_TIMINGS_TOUR=1 runs the production tour, which
@@ -79,8 +79,8 @@ function describeTour(
       expect(tour.run.stdout).toMatch(new RegExp(`^build mode: ${buildMode}, client: webApp `, "m"));
     });
 
-    it("records every step in the Meta app", () => {
-      expect(tour.run.stdout).toMatch(/recorded in the Meta app: 3 of 3 steps/);
+    it("records every step in Miroir's devData section", () => {
+      expect(tour.run.stdout).toMatch(/recorded in Miroir's devData: 3 of 3 steps/);
       expect(tour.run.status).toBe(0);
     });
 

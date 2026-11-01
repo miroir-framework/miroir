@@ -4,7 +4,7 @@
     python scripts/agent_bench/batch.py --run-indexes 1 2 3 4 5      # the full runs
 
 Sequential: the runs share the `bench-agent` store. Each run's `run.json` gets `acceptance: {passed, total}`, the
-acceptance report goes next to it (`acceptance.json`), then the run is recorded in miroir-app-meta
+acceptance report goes next to it (`acceptance.json`), then the run is recorded in the devData section of miroir-app-miroir
 (`agent-run:record`). Prints one line per run.
 """
 
@@ -76,7 +76,7 @@ def main(argv: list[str] | None = None) -> int:
                 except (json.JSONDecodeError, KeyError) as error:
                     print(f"{new[-1].name}: acceptance failed ({error}), see acceptance.stderr", flush=True)
                     continue
-                subprocess.run(["npm", "run", "-s", "agent-run:record", "-w", "miroir-app-meta", "--", str(new[-1] / "run.json")], cwd=REPO_ROOT, check=False)
+                subprocess.run(["npm", "run", "-s", "agent-run:record", "-w", "miroir-app-miroir", "--", str(new[-1] / "run.json")], cwd=REPO_ROOT, check=False)
                 print(run_line(run), flush=True)
     return 0
 
