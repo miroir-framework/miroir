@@ -17,8 +17,8 @@ const MIROIR_TEST = "a311f363-e238-4203-bdfc-29e8c160c26b";
 /** Where each kind lives, relative to packages/. */
 const LOCATION = {
   entities: `miroir-app-miroir/assets/miroir_model/${ENTITY}`,
-  reports: `miroir-app-meta/assets/meta_model/${REPORT}`,
-  miroirTests: `miroir-app-meta/assets/meta_model/${MIROIR_TEST}`,
+  reports: `miroir-app-miroir/assets/miroir_data/${REPORT}`,
+  miroirTests: `miroir-app-miroir/assets/miroir_data/${MIROIR_TEST}`,
   rows: "miroir-app-miroir/assets/miroir_devData",
 };
 

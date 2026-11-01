@@ -9,7 +9,10 @@ import {
 } from "miroir-example-library";
 import { testConfiguration_libraryPublisherAndCountry } from "miroir-app-miroir";
 import { testConfiguration_githubModel } from "miroir-example-github";
-import { testConfiguration_metaBundleSizeSeed, testConfiguration_metaPageLoadSeed } from "miroir-app-meta";
+import {
+  testConfiguration_devDataBundleSizeSeed,
+  testConfiguration_devDataPageLoadSeed,
+} from "./devDataTestSeeds.js";
 
 function playfieldFromInstance(instance: {
   uuid: string;
@@ -36,10 +39,10 @@ export const TEST_CONFIGURATION_INSTANCE_INDEX: Record<string, TestConfiguration
   ),
   // #472: the GitHub model, for the GitHub report MiroirTests
   [testConfiguration_githubModel.uuid]: playfieldFromInstance(testConfiguration_githubModel as any),
-  // #473: the Meta model and fixed bundle size measurements, for the bundle size history MiroirTest
-  [testConfiguration_metaBundleSizeSeed.uuid]: playfieldFromInstance(testConfiguration_metaBundleSizeSeed as any),
-  // #580: the Meta model and fixed page load measurements, for the page load history MiroirTest
-  [testConfiguration_metaPageLoadSeed.uuid]: playfieldFromInstance(testConfiguration_metaPageLoadSeed as any),
+  // #473, #550, #647: fixed bundle size measurements and agent runs in Library's devData section
+  [testConfiguration_devDataBundleSizeSeed.uuid]: playfieldFromInstance(testConfiguration_devDataBundleSizeSeed as any),
+  // #580, #647: fixed page load measurements in Library's devData section
+  [testConfiguration_devDataPageLoadSeed.uuid]: playfieldFromInstance(testConfiguration_devDataPageLoadSeed as any),
 };
 
 export function getTestConfigurationFromIndex(

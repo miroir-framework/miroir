@@ -2,10 +2,10 @@
   "uuid": "24f5c213-c384-47b3-9648-0f91ddaa89ee",
   "parentName": "MiroirTest",
   "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
-  "selfApplication": "9ff432a9-89a1-460b-a263-1672d084a9e0",
-  "branch": "4408382d-daee-41d0-a53d-80a44c0f79e6",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
   "name": "report.pageLoadHistory",
-  "description": "The Meta app's page load Reports on fixed measurements of four page loads (production web page twice, development web page, production Electron): the history shows one initial load graph and one first report display graph per (build mode, client) pair, each with its own rows only, and the lists of initial loads and route steps with their build mode and client; the details Report shows one step, its build mode, client, environment and files.",
+  "description": "Miroir's page load Reports, opened on the devData section of a Library testbed, on fixed measurements of four page loads (production web page twice, development web page, production Electron): the history shows one initial load graph and one first report display graph per (build mode, client) pair, each with its own rows only, and the lists of initial loads and route steps with their build mode and client; the details Report shows one step, its build mode, client, environment and files.",
   "tags": [
     "integ",
     "ui",
@@ -16,19 +16,19 @@
     "miroirTestType": "miroirTestSuite",
     "miroirTestLabel": "report.pageLoadHistory",
     "runTarget": {
-      "applicationUuid": "9ff432a9-89a1-460b-a263-1672d084a9e0",
-      "applicationName": "Meta",
-      "deploymentUuid": "40b74910-4c63-4bd9-8e7d-2bc051342908"
+      "applicationUuid": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+      "applicationName": "Library",
+      "deploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
     },
     "testConfiguration": "a8dd8a49-97de-426c-beb7-c32d0f1beb26",
-    "testbedInitApplicationParameters": "metaTestbedInitParams",
+    "testbedInitApplicationParameters": "libraryTestbedInitParams",
     "miroirTests": [
       {
         "miroirTestType": "reportTestSuite",
         "miroirTestLabel": "PageLoadHistory",
         "report": {
-          "application": "9ff432a9-89a1-460b-a263-1672d084a9e0",
-          "applicationSection": "data",
+          "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+          "applicationSection": "devData",
           "reportUuid": "02dd2ead-7b8d-4160-99c9-9f4e9a1c051b"
         },
         "miroirTests": [
@@ -180,8 +180,8 @@
         "miroirTestType": "reportTestSuite",
         "miroirTestLabel": "PageLoadMeasurementDetails",
         "report": {
-          "application": "9ff432a9-89a1-460b-a263-1672d084a9e0",
-          "applicationSection": "data",
+          "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+          "applicationSection": "devData",
           "reportUuid": "193c3dea-792d-471a-88a0-546e4b5e81cf",
           "instanceUuid": "691c8330-7349-467b-9d28-6e06b7e707ec"
         },

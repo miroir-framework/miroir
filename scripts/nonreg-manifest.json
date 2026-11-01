@@ -1551,7 +1551,7 @@
       "id": "integ-report.bundleSizeHistory",
       "scopes": ["ui"],
       "tier": "default",
-      "title": "MiroirTest integ — report.bundleSizeHistory (Meta bundle size Reports on fixed measurements) (#473)",
+      "title": "MiroirTest integ — report.bundleSizeHistory (Miroir's bundle size Reports on a Library testbed's devData, fixed measurements) (#473)",
       "requires": "storage",
       "argv": [
         "npm",
@@ -1589,7 +1589,7 @@
       "id": "integ-report.pageLoadHistory",
       "scopes": ["ui"],
       "tier": "default",
-      "title": "MiroirTest integ — report.pageLoadHistory (Meta page load Reports on fixed measurements) (#580)",
+      "title": "MiroirTest integ — report.pageLoadHistory (Miroir's page load Reports on a Library testbed's devData, fixed measurements) (#580)",
       "requires": "storage",
       "argv": [
         "npm",
@@ -1621,6 +1621,44 @@
           "--shared"
         ],
         "suites": ["report.pageLoadHistory"]
+      }
+    },
+    {
+      "id": "integ-report.agentRunHistory",
+      "scopes": ["ui"],
+      "tier": "default",
+      "title": "MiroirTest integ — report.agentRunHistory (Miroir's agent run Reports on a Library testbed's devData, fixed runs) (#550, #647)",
+      "requires": "storage",
+      "argv": [
+        "npm",
+        "run",
+        "testMiroir",
+        "-w",
+        "miroir-standalone-app",
+        "--",
+        "--profile",
+        "{profile}",
+        "--suites",
+        "report.agentRunHistory",
+        "--mode",
+        "integ"
+      ],
+      "shared": {
+        "group": "standalone-app-report-suites",
+        "argv": [
+          "npm",
+          "run",
+          "testMiroir",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--profile",
+          "{profile}",
+          "--mode",
+          "integ",
+          "--shared"
+        ],
+        "suites": ["report.agentRunHistory"]
       }
     },
     {

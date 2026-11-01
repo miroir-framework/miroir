@@ -38,7 +38,7 @@ This plan does **not** add test run Entities or the Miroir Tests recorder (#483)
 |---|---|---|---|
 | 0 | Characterize the Meta content and the `modelVersion` contracts | ✅ | `devDataInventory.647.phase0.unit.test.ts` + existing `modelVersion` suites green |
 | 1 | Tracer: Miroir's measurement rows live in `miroir_devData`, and every reader and writer follows | ✅ | `devDataSection.647.phase1.integ.test.ts`, moved recorder tests, `test_check_bundle_policy.py`, `loadTimingWriter.integ` |
-| 2 | The history Reports open on any application's `devData` | ⬜ | MiroirTests `report.bundleSizeHistory`, `report.pageLoadHistory`, `report.agentRunHistory` on Library |
+| 2 | The history Reports open on any application's `devData` | ✅ | MiroirTests `report.bundleSizeHistory`, `report.pageLoadHistory`, `report.agentRunHistory` on Library |
 | 3 | `devData` on IndexedDb, Postgres and MongoDB in its own store; bundled refuses it | ⬜ | `devDataSection.647.phase3.integ.test.ts` per profile, restart and teardown cases |
 | 4 | Delete `miroir-app-meta`; deliveries, docs, nonreg, cleanup, AC | ⬜ | full `nonreg:filesystem` and `nonreg:default`, delivery check |
 
@@ -272,7 +272,7 @@ Scoped nonreg (`--scope smoke,core,actions,tooling,localcache`) found 5 failures
 
 ## Slice 2 — The history Reports open on any application's `devData`
 
-**Status:** ⬜ pending
+**Status:** ✅ done
 
 ### Goal
 
@@ -347,6 +347,23 @@ npm run nonreg:filesystem -- --runner shared
 Manual: `npm run dev -w miroir-standalone-app` on `dev`, open Miroir → Dev data → Bundle size history; the graph shows every recorded point.
 
 ### Realization
+
+2026-11-01. Done as planned, with these differences:
+
+- **Test A** (the 3 report MiroirTests, rewritten per the table) is green on `emulatedServer-filesystem`: 6 tests. The page load history needed one more fix the plan did not foresee: its graphs filter on the virtual attribute `series`, which the selectors compute from the Entity row of the deployment's present model. A Library testbed has no `PageLoadMeasurement` in its model, so `findPresentModelEntityFromDomainState` and `findPresentModelEntityFromReduxState` fall back to the fixed devData definition (`getDevDataEntityDefinition`).
+- **Test B and C** are one vitest file, `miroir-core/tests/1_core/issues/647-devdata-section/devDataReports.647.phase2.unit.test.ts`, and not MiroirTests: `getReportsAndEntitiesForDeploymentUuid` takes two whole MetaModels, which a JSON fixture would have to copy. 4 tests.
+- **Test D** covers the 4 store types in `RunnerIntegTestTools.unit.test.ts`; `testbedStorageConfiguration` (#575 throwaway testbeds) also copies a live `devData` section, with its own case.
+- **Seeding (D15)** routes only the devData Entities to `devData`; the other seeded collections stay in `data`, as before. `getApplicationSection` would have sent a seeded meta-model Entity (a Report, for instance) to `model`, which changes what existing suites seed.
+- **Report loads** use `defaultReportLoadSection(entityUuid)` per load target when the request names no section (`isReportQueryLoadSegmentSufficient`, `createReportQueryLoadExecutor`). The Report page always names one, so the MiroirTests do not depend on it; a case in `reportQueryLoadSegment.unit.test.ts` does. The miroir-react unions were already `ApplicationSection` (Slice 1).
+- **`resolveScaffoldingReportApplicationSection(application, reportUuid?)`** returns `devData` for a devData Report; `buildReportApplicationSwitchUrl` passes the Report. A case in `ReportInputApplication.unit.test.ts`.
+- **Seeds (D17):** `devDataTestSeeds.ts` holds the rows and the 2 TestConfigurations (renamed `testConfiguration_devDataBundleSizeSeed` / `_devDataPageLoadSeed`, same uuids), with `testbedModel: defaultLibraryAppModel`: `resolveSuitePlayfieldSeed` requires a model.
+- **Menu:** the "Dev data" group's "Agent runs" item opens `AgentRunHistory` (`7a695632`); Meta's menu opened the page load history there.
+- **Meta** keeps its SelfApplication, branch and model with the 3 Entities, and no Reports, MiroirTests, menu or seeds; nothing imports it any more. The page bundle policy drops it from its allowlist.
+- **Nonreg:** the 2 report steps are retitled, and `integ-report.agentRunHistory` is added (the suite had no step).
+- **Bundle baselines:** within their 2% band, no new record. Page 844977 bytes gzipped (baseline 841981, +0.4%); Electron 923982 (baseline 908129, +1.7%). The Electron guard first reported `miroir-example-library` as new: stale `miroir-ai` and `miroir-mcp` dists from before #627; rebuilt, 0 violations.
+- Refactor checkpoint: `testApplicationStorageConfiguration` builds `modelVersion` and `devData` from one rule (`optionalSectionStores`). The "Reports of a section" helper was not extracted: `getReportsAndEntitiesForDeploymentUuid` already filters each section in one expression.
+
+Validation, all green: `tsc` on miroir-core, miroir-react, miroir-app-miroir, miroir-app-meta (standalone shows only its 2 pre-existing MUI `Stack` errors); `npm run test -w miroir-core -- ''` (3301 passed, 1 skipped); the 3 report MiroirTests (6); `RunnerIntegTestTools`, `ReportInputApplication`, `componentMiroirTests.consistency`, `multistep.274.phase0` (48); miroir-app-miroir `modelValidation` and `tests/devData` (198); Meta `modelValidation` (2); `pytest scripts/tests -k "nonreg or manifest"` (181). Full `nonreg:filesystem` runs before the PR.
 
 ---
 

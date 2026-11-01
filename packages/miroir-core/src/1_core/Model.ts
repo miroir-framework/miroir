@@ -285,6 +285,14 @@ export function getApplicationSection(
   return metaModelEntityUuids.includes(entityUuid) ? "model" : "data";
 }
 
+/**
+ * #647: the section a report load reads an Entity's rows from when the request names none: `devData`
+ * for a devData Entity, `data` otherwise (the report default).
+ */
+export function defaultReportLoadSection(entityUuid: Uuid): ApplicationSection {
+  return devDataEntityUuids.has(entityUuid) ? "devData" : "data";
+}
+
 // ################################################################################################
 /**
  * just filters the model / meta-model reports in the Miroir app for now

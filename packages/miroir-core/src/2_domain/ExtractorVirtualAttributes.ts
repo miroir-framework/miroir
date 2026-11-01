@@ -13,6 +13,7 @@ import {
   getInstancePrimaryKeyValue,
   indexInstancesByCacheKey,
 } from "../1_core/Entity/EntityPrimaryKey";
+import { getDevDataEntityDefinition } from "../1_core/Model";
 import { applyExtractorFilterAndOrderBy } from "./ExtractorByEntityReturningObjectListTools";
 import { getReduxDeploymentsStateIndex } from "./ReduxDeploymentsState";
 import {
@@ -31,12 +32,20 @@ export function extractorVirtualAttributeNeed(
   };
 }
 
+/**
+ * The Entity row of `entityUuid` in the present model of a deployment. #647: a devData Entity is
+ * Miroir's and absent from the model of the other applications whose devData section holds its rows;
+ * its fixed definition (virtual attributes, primary key) stands in.
+ */
 export function findPresentModelEntityFromDomainState(
   domainState: DomainState,
   deploymentUuid: string,
   entityUuid: string,
 ): Entity | undefined {
-  return domainState[deploymentUuid]?.model?.[entityEntity.uuid]?.[entityUuid] as Entity | undefined;
+  return (
+    (domainState[deploymentUuid]?.model?.[entityEntity.uuid]?.[entityUuid] as Entity | undefined) ??
+    getDevDataEntityDefinition(entityUuid)
+  );
 }
 
 export function findPresentModelEntityFromReduxState(
@@ -45,7 +54,7 @@ export function findPresentModelEntityFromReduxState(
   entityUuid: string,
 ): Entity | undefined {
   const index = getReduxDeploymentsStateIndex(deploymentUuid, "model", entityEntity.uuid);
-  return state[index]?.entities?.[entityUuid] as Entity | undefined;
+  return (state[index]?.entities?.[entityUuid] as Entity | undefined) ?? getDevDataEntityDefinition(entityUuid);
 }
 
 export function findEntityFromExtractorState(

@@ -225,6 +225,13 @@ export { default as reportTransformerList } from "./assets/miroir_data/3f2baa83-
 export { default as reportMiroirWebAppOrDesktopHome } from "./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/29ef8018-43fc-4ee9-a736-6f9d625be7b7.json" with { type: "json" };
 export { default as reportMiroirSandboxHome } from "./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/1c306453-7958-47e9-ba6c-9b79a7b37c92.json" with { type: "json" };
 export { default as reportMiroirRunners } from "./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/ac75382d-00fc-4f93-a169-3f76ef85834e.json" with { type: "json" };
+// #647: devData Reports (history and details of the measurement Entities of the devData section)
+export { default as reportBundleSizeHistory } from "./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/e8c6faa5-a117-4afd-b7ae-4a40c6111f95.json" with { type: "json" };
+export { default as reportBundleSizeMeasurementDetails } from "./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/85077493-0fea-4969-96c8-b994272de284.json" with { type: "json" };
+export { default as reportPageLoadHistory } from "./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/02dd2ead-7b8d-4160-99c9-9f4e9a1c051b.json" with { type: "json" };
+export { default as reportPageLoadMeasurementDetails } from "./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/193c3dea-792d-471a-88a0-546e4b5e81cf.json" with { type: "json" };
+export { default as reportAgentRunHistory } from "./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/7a695632-338e-4c33-8b39-dba7f6d4c988.json" with { type: "json" };
+export { default as reportAgentRunMeasurementDetails } from "./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/49a3c09a-c7cd-4438-9730-c691c70741af.json" with { type: "json" };
 
 // ################################################################################################
 // Miroir Data - Endpoints (parentUuid = entityEndpointVersion = 3d8da4d4)

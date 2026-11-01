@@ -7144,10 +7144,6 @@ export const miroirFundamentalMlSchema = {
               {
                 "type": "literal",
                 "definition": "githubTestbedInitParams"
-              },
-              {
-                "type": "literal",
-                "definition": "metaTestbedInitParams"
               }
             ]
           },
@@ -9487,10 +9483,6 @@ export const miroirFundamentalMlSchema = {
                       {
                         "type": "literal",
                         "definition": "githubTestbedInitParams"
-                      },
-                      {
-                        "type": "literal",
-                        "definition": "metaTestbedInitParams"
                       }
                     ]
                   },
@@ -16012,7 +16004,8 @@ export const miroirFundamentalMlSchema = {
                     "definition": [
                       "data",
                       "model",
-                      "modelVersion"
+                      "modelVersion",
+                      "devData"
                     ],
                     "tag": {
                       "value": {
@@ -16689,7 +16682,8 @@ export const miroirFundamentalMlSchema = {
                 "definition": [
                   "data",
                   "model",
-                  "modelVersion"
+                  "modelVersion",
+                  "devData"
                 ],
                 "tag": {
                   "value": {
@@ -16981,7 +16975,8 @@ export const miroirFundamentalMlSchema = {
                 "definition": [
                   "data",
                   "model",
-                  "modelVersion"
+                  "modelVersion",
+                  "devData"
                 ],
                 "tag": {
                   "value": {

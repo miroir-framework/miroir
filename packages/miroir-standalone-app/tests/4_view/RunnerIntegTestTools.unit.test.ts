@@ -221,6 +221,10 @@ describe("testApplicationStorageConfiguration", () => {
         emulatedServerType: "filesystem",
         directory: ".miroir/test-filesystem/Library_0e776954723b4718b32049a83a1d2b08/modelVersion",
       },
+      devData: {
+        emulatedServerType: "filesystem",
+        directory: ".miroir/test-filesystem/Library_0e776954723b4718b32049a83a1d2b08/devData",
+      },
     });
   });
 
@@ -356,4 +360,59 @@ describe("test applications of a test environment on SQL and MongoDB (#477)", ()
     expect(schema.startsWith("test_sql_w12_")).toBe(true);
     expect(schema.endsWith(`_${key.replace(/-/g, "")}_modelVersion`)).toBe(true);
   });
+});
+
+// #647 D14: every test application has a devData section, named by the same per-store rule as its
+// modelVersion section, so the devData Report MiroirTests can seed and read it on any store.
+describe("testApplicationStorageConfiguration devData section (#647)", () => {
+  const isolationKey = "0e776954-723b-4718-b320-49a83a1d2b08";
+  const cases: [string, StoreUnitConfiguration, Record<string, string>, Record<string, string>][] = [
+    [
+      "filesystem",
+      {
+        admin: { emulatedServerType: "filesystem", directory: ".miroir/test-filesystem/library" },
+        model: { emulatedServerType: "filesystem", directory: ".miroir/test-filesystem/library/model" },
+        data: { emulatedServerType: "filesystem", directory: ".miroir/test-filesystem/library/data" },
+      },
+      { directory: ".miroir/test-filesystem/Library_0e776954723b4718b32049a83a1d2b08/modelVersion" },
+      { directory: ".miroir/test-filesystem/Library_0e776954723b4718b32049a83a1d2b08/devData" },
+    ],
+    [
+      "indexedDb",
+      {
+        admin: { emulatedServerType: "indexedDb", indexedDbName: "ui-integ-admin" },
+        model: { emulatedServerType: "indexedDb", indexedDbName: "ui-integ-library" },
+        data: { emulatedServerType: "indexedDb", indexedDbName: "ui-integ-library" },
+      },
+      { indexedDbName: "Library_0e776954723b4718b32049a83a1d2b08_modelVersion" },
+      { indexedDbName: "Library_0e776954723b4718b32049a83a1d2b08_devData" },
+    ],
+    [
+      "sql",
+      {
+        admin: { emulatedServerType: "sql", connectionString: "postgres://db", schema: "library" },
+        model: { emulatedServerType: "sql", connectionString: "postgres://db", schema: "library" },
+        data: { emulatedServerType: "sql", connectionString: "postgres://db", schema: "library" },
+      },
+      { schema: "Library_0e776954723b4718b32049a83a1d2b08_modelVersion" },
+      { schema: "Library_0e776954723b4718b32049a83a1d2b08_devData" },
+    ],
+    [
+      "mongodb",
+      {
+        admin: { emulatedServerType: "mongodb", connectionString: "mongodb://db", database: "library" },
+        model: { emulatedServerType: "mongodb", connectionString: "mongodb://db", database: "library" },
+        data: { emulatedServerType: "mongodb", connectionString: "mongodb://db", database: "library" },
+      },
+      { database: "Library_0e776954723b4718b32049a83a1d2b08_modelVersion" },
+      { database: "Library_0e776954723b4718b32049a83a1d2b08_devData" },
+    ],
+  ];
+  for (const [storeType, template, modelVersion, devData] of cases) {
+    it(`gives a ${storeType} test application a devData store beside its modelVersion store`, () => {
+      const configuration = testApplicationStorageConfiguration(template, "Library", isolationKey);
+      expect(configuration.modelVersion).toMatchObject({ emulatedServerType: storeType, ...modelVersion });
+      expect(configuration.devData).toMatchObject({ emulatedServerType: storeType, ...devData });
+    });
+  }
 });

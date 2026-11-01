@@ -196,6 +196,29 @@ describe("isReportQueryLoadSegmentSufficient (3.3)", () => {
     ).toBe(false);
   });
 
+  it("reads a devData Entity from devData when the request names no section (#647)", () => {
+    const PAGE_LOAD_MEASUREMENT = "0266c0b8-4dc8-4a14-bcef-239a85a5de2d";
+    const lookedUp: string[] = [];
+    isReportQueryLoadSegmentSufficient(
+      request({
+        applicationSection: undefined,
+        resolvedQuery: {
+          queryType: "boxedQueryWithExtractorCombinerTransformer",
+          application: APP,
+          extractors: {
+            pageLoads: { extractorOrCombinerType: "extractorInstancesByEntity", parentUuid: PAGE_LOAD_MEASUREMENT },
+            blobs: { extractorOrCombinerType: "extractorInstancesByEntity", parentUuid: ENT },
+          },
+        } as any,
+      }),
+      (_deploymentUuid, section, entityUuid) => {
+        lookedUp.push(`${section}:${entityUuid}`);
+        return undefined;
+      },
+    );
+    expect(lookedUp).toContain(`devData:${PAGE_LOAD_MEASUREMENT}`);
+  });
+
   it("collects combiner parentUuid targets for entity collections", () => {
     const crossTable = "8bec933d-6287-4de7-8a88-5c24216de9f4";
     const entityVersion = "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd";
