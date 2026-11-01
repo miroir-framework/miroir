@@ -123,11 +123,15 @@ if (runThis) {
         join(REPO_ROOT, "packages/miroir-server/src/server.ts"),
         "utf8",
       );
+      // #636: the Express routes are in miroir-server-library
+      const serverLibrarySrc = readFileSync(join(REPO_ROOT, "packages/miroir-server-library/src/createMiroirServerApp.ts"), "utf8");
       expect(stubSrc).not.toContain("handleSecretsHttpRoute");
-      expect(serverSrc).not.toContain("handleSecretsHttpRoute");
-      expect(serverSrc).not.toContain('app.get("/secrets"');
-      expect(serverSrc).not.toContain('app.post("/secrets"');
-      expect(serverSrc).not.toContain('app.delete("/secrets"');
+      for (const src of [serverSrc, serverLibrarySrc]) {
+        expect(src).not.toContain("handleSecretsHttpRoute");
+        expect(src).not.toContain('app.get("/secrets"');
+        expect(src).not.toContain('app.post("/secrets"');
+        expect(src).not.toContain('app.delete("/secrets"');
+      }
     });
   });
 
