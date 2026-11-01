@@ -11,6 +11,8 @@ import { mlToTs, mlToZodTextAndZodSchemaForTsGeneration } from "../src/1_core/ml
 import { entityApplicationForAdmin, entityDeployment } from "miroir-app-admin";
 
 // Leftover Bundle EntityVersion (Entity counterpart not exported from admin package with this UUID).
+import { markPublicTypes } from "./markPublicTypes";
+import publicGeneratedTypes from "./public-generated-types.json";
 import entityDefinitionBundleV1 from "../src/assets/miroirAdmin/model/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/01a051d8-d43c-430d-a98e-739048f54942.json";
 // import miroirTransformersMlSchemas from "../src/assets/miroir_data/5e81e1b9-38be-487c-b3e5-53796c57fccf/a97756cf-dd93-42b9-a021-91a629b187b9.json";
 
@@ -328,6 +330,16 @@ export const coreTransformerForBuildPlusRuntime: z.ZodType<CoreTransformerForBui
   }
   // #232 — jzod-ts emits unquoted hyphenated object keys; quote them for valid TS/Zod.
   newFileContents = newFileContents.replace(/modelVersion:/g, '"modelVersion":');
+  if (targetFileName.includes("miroirFundamentalType")) {
+    // #649: the generated types of core's public API carry @public. A missing name throws before the write; the
+    // caller's catch only logs, so the exit code is what stops devBuild from building on the stale file.
+    try {
+      newFileContents = markPublicTypes(newFileContents, publicGeneratedTypes);
+    } catch (error) {
+      process.exitCode = 1;
+      throw error;
+    }
+  }
   console.log(
     "generateTsTypeFileFromMlSchemaInParallel generateTypes took",
     Date.now() - generateTypesStart,

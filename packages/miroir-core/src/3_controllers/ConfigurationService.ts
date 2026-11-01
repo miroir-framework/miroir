@@ -109,9 +109,14 @@ export class ConfigurationServiceInner {
  * What a store package exports to make its sections available, such as
  * `miroirFileSystemStoreSectionStartup`: it registers its factories on the given configuration
  * service. Hosts pass these to `startMiroirNode` / `startMiroirClient` (#639).
+ * @public
  */
 export type StoreSectionStartup = (configurationService: ConfigurationServiceInner) => void;
 
+/**
+ * Holds core's process-wide configuration service, on which store packages register their sections.
+ * @public
+ */
 export class ConfigurationService {
   public static configurationService = new ConfigurationServiceInner();
 }

@@ -127,6 +127,10 @@ export interface IDomain2ElementFailed {
   instanceUuid?: string | undefined;
 }
 
+/**
+ * The failure value of a query or transformer result, with its failure type and context.
+ * @public
+ */
 export class Domain2ElementFailed implements IDomain2ElementFailed {
   public get elementType() {
     return "failure";
@@ -208,6 +212,10 @@ export type ActionErrorType =
 ;
 
 // export class Action2Error extends Error {
+/**
+ * The error result of an action (`Action2ReturnType`), with its error type and message.
+ * @public
+ */
 export class Action2Error {
   public status: string = "error";
 

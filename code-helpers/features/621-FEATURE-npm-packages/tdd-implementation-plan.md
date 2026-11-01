@@ -82,7 +82,7 @@ Order: I1, I4 and I5 can start now and run in parallel. I2 and I3 next. I6 waits
 | I4 | 3 | Server and Electron on `startMiroirNode` | ✅ #639 | `environmentBoot`, server phase0 test |
 | I5 | 1 | Duplicate copies of core are reported | ✅ #645 | `duplicateCoreGuard.unit.test.ts`, `unit-645-duplicate-core` |
 | I5 | 2 | Manifest contract for the published set | ✅ #643 | `scripts/tests/test_package_manifests.py`, `unit-643-package-manifests` |
-| I5 | 3 | Named subpaths replace `./src/*` | ✅ #643 (`./src/*` part; `@public` TSDoc left to "Public API of core") | pack cases of `test_package_manifests.py` |
+| I5 | 3 | Named subpaths replace `./src/*` | ✅ #643 (`./src/*` part), ✅ #649 (`@public` TSDoc) | pack cases of `test_package_manifests.py`; `test_core_public_api.py`, `unit-649-core-public-api` |
 | I5 | 4 | No `import.meta.env` in published code | ⬜ | `tools.<I5>.phase4.unit.test.ts` |
 | I6 | 0 | Characterize every package-name reference | ⬜ | rename script `--report` |
 | I6 | 1 | Rename script, rerunnable on open branches | ⬜ | `scripts/tests/test_rename_packages.py` |
@@ -747,7 +747,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core,ui
 
 ## I5 Slice 3 — Named subpaths replace `./src/*`
 
-**Status:** superseded by #643 (see slice 2); `@public` TSDoc (D11-a) stays with the "Public API of core" item.
+**Status:** superseded by #643 (see slice 2); `@public` TSDoc (D11-a) done in #649 (34 exports, `docs/reference/core-public-api.md`).
 
 **RED:** a `test_package_manifests.py` case fails while `miroir-core` exports `./src/*`. **GREEN:** `./testing` (for `loadApplicationMiroirTestsFromFolders`, 16 imports) and `./generated` (one import); move the imports; either ship `src/` in `files` or drop the declaration maps (D11). `@public` TSDoc on the supported exports (D11-a).
 

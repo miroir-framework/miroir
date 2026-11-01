@@ -84,6 +84,10 @@ export interface RegisteredLoggerToStart {
 // ################################################################################################
 // ################################################################################################
 // ################################################################################################
+/**
+ * Core's logger factory: hosts set it up with their `LoggerFactoryInterface` and `LoggerOptions`.
+ * @public
+ */
 export class MiroirLoggerFactory implements LoggerFactoryAsyncInterface {
   static logLevelNextAsFactory: LoggerFactoryInterface | undefined = undefined;
   static loggerOptions?: LoggerOptions;

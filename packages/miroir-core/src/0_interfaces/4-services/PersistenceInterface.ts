@@ -65,6 +65,10 @@ export declare type RestServiceHandler = {
 };
 
 // ################################################################################################
+/**
+ * The HTTP client the client-side platform uses to reach a Miroir server.
+ * @public
+ */
 export interface RestClientInterface {
   get(rawUrl:string, endpoint: string, customConfig?: any): Promise<RestClientCallReturnType>;
   post(rawUrl:string, endpoint: string, body: any, customConfig?: any): Promise<RestClientCallReturnType>;
