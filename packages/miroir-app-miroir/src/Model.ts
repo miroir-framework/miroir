@@ -527,6 +527,10 @@ export const miroirModelInitializeCreateEntityOrder: Entity[] = entitiesInBootst
   entityHistoricalThemeVersion.uuid!,
   entityApplicationVersionCrossTransformerDefinitionVersion.uuid!,
   entityHistoricalTransformerDefinitionVersion.uuid!,
+  // #647: devData Entities; their instances live in the devData section, created there on first write
+  entityBundleSizeMeasurement.uuid!,
+  entityPageLoadMeasurement.uuid!,
+  entityAgentRunMeasurement.uuid!,
 ]);
 
 /** Non-entity instances upserted to Miroir data during bootstrap. */
