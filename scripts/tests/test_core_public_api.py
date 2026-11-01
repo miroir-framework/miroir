@@ -170,7 +170,7 @@ def test_every_name_index_ts_exports_has_a_declaration():
 
 IMPORT_FROM_CORE = re.compile(r"\bimport\s+(type\s+)?\{([^}]*)\}\s*from\s*([\"'])miroir-core\3")
 # any string naming core or a subpath of it: each must be the specifier of a plain named import
-CORE_SPECIFIER = re.compile(r"([\"'])miroir-core(?:/[^\"']*)?\1")
+CORE_SPECIFIER = re.compile(r"([\"'`])miroir-core(?:/[^\"'`]*)?\1")
 TEMPLATE_SUFFIXES = {".ts", ".tsx", ".mts", ".cts", ".js", ".jsx", ".mjs", ".cjs"}
 SANDBOX = ROOT / "packages/miroir-sandbox"
 
@@ -221,11 +221,12 @@ import * as core from "miroir-core";
 import Def, { E } from "miroir-core";
 export { F } from "miroir-core";
 const g = await import("miroir-core");
+const h = await import(`miroir-core`);
 import { H } from "miroir-core/model-validation-fs";
 """
     names, others = named_imports(text)
     assert names == {"A", "B", "C"}
-    assert len(others) == 5
+    assert len(others) == 6
 
 
 def test_the_template_only_imports_public_exports_of_core():
