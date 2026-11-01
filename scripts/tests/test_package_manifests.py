@@ -405,6 +405,83 @@ def runtime_declarations(folder: str) -> set[str]:
     return set(data.get("dependencies", {})) | set(data.get("peerDependencies", {}))
 
 
+# #652: a package bundles the folders it owns. Owners come from published-packages.json (a bundled folder shares its
+# owner's published name), plus owners of one entry of a folder: the server library bundles the local cache's Node
+# entry (`miroir-localcache-redux/node`), not its React half.
+ENTRY_OWNERS = {"packages/miroir-server-library": [("packages/miroir-localcache-redux", "src/node.ts")]}
+RELATIVE_SPECIFIER = re.compile(r"^\.\.?/")
+
+
+def owned_folders(folder: str) -> list[tuple[str, str | None]]:
+    """The (folder, entry) pairs `folder` owns; entry None for the whole folder."""
+    entries = published_set()
+    published_name = next((e["publishedName"] for e in entries if e["folder"] == folder), None)
+    owned: list[tuple[str, str | None]] = []
+    if published_name and folder not in BUNDLED_INTO_ANOTHER:
+        owned += [(e["folder"], None) for e in entries if e["publishedName"] == published_name and e["folder"] in BUNDLED_INTO_ANOTHER]
+    return owned + ENTRY_OWNERS.get(folder, [])
+
+
+def reachable_sources(folder: str, entry: str) -> list[Path]:
+    """The source files reached from `entry` through relative imports (`./x.js` resolves to `./x.ts` / `.tsx`)."""
+    seen: dict[Path, None] = {}
+    pending = [ROOT / folder / entry]
+    while pending:
+        path = pending.pop()
+        if path in seen or not path.is_file():
+            continue
+        seen[path] = None
+        for specifier in import_specifiers(path.read_text(encoding="utf-8", errors="replace")):
+            if not RELATIVE_SPECIFIER.match(specifier):
+                continue
+            target = (path.parent / specifier).resolve()
+            stem = target.with_suffix("") if target.suffix in {".js", ".ts", ".tsx", ".jsx"} else target
+            pending += [stem.with_suffix(suffix) for suffix in (".ts", ".tsx")] + [stem / "index.ts"]
+    return list(seen)
+
+
+def bundled_owned(folder: str) -> list[tuple[str, str | None]]:
+    """The owned folders this package bundles: those its sources import without declaring them (a declared one is
+    left external by tsup)."""
+    declared = runtime_declarations(folder)
+    imported = imported_packages(folder)
+    return [
+        (owned, entry)
+        for owned, entry in owned_folders(folder)
+        if manifest(owned)["name"] in imported and manifest(owned)["name"] not in declared
+    ]
+
+
+def owner_imports(folder: str) -> frozenset[str]:
+    """What the built package imports: its own sources' imports, plus those of the owned folders it bundles, without
+    the bundled folders themselves."""
+    found = set(imported_packages(folder))
+    own = manifest(folder)["name"]
+    for owned, entry in bundled_owned(folder):
+        found.discard(manifest(owned)["name"])
+        if entry is None:
+            found |= imported_packages(owned)
+            continue
+        for path in reachable_sources(owned, entry):
+            for specifier in import_specifiers(path.read_text(encoding="utf-8", errors="replace")):
+                name = package_of(specifier)
+                if name:
+                    found.add(name)
+    found.discard(own)
+    return frozenset(found - {manifest(owned)["name"] for owned, _ in bundled_owned(folder)})
+
+
+def test_an_owner_counts_the_imports_of_what_it_bundles():
+    """#652: the server library owns the local cache's Node entry only; react and core own whole folders."""
+    assert ("packages/miroir-localcache-redux", "src/node.ts") in owned_folders("packages/miroir-server-library")
+    assert ("packages/miroir-localcache-redux", None) in owned_folders("packages/miroir-react")
+    assert {f for f, _ in owned_folders("packages/miroir-core")} == {"packages/miroir-app-miroir", "packages/miroir-app-admin"}
+    assert owned_folders("packages/miroir-cli") == []
+    node_entry = {p.name for p in reachable_sources("packages/miroir-localcache-redux", "src/node.ts")}
+    assert "startMiroirPlatform.ts" in node_entry and "node.ts" in node_entry
+    assert "index.ts" not in node_entry  # the React half (react-redux Provider, hooks) stays out of the server library
+
+
 def test_package_of_reads_bare_specifiers_only():
     assert [package_of(s) for s in ["zod", "@mui/material/styles", "./x.js", "node:fs", "fs/promises", "lodash/merge", "uuid"]] == [
         "zod", "@mui/material", None, None, None, "lodash", "uuid",
@@ -416,7 +493,7 @@ def test_a_published_package_declares_what_its_sources_import(folder):
     name = manifest(folder)["name"]
     undeclared = sorted(
         package
-        for package in imported_packages(folder) - runtime_declarations(folder)
+        for package in owner_imports(folder) - runtime_declarations(folder)
         if (name, package) not in ALLOWED_UNDECLARED_IMPORTS
     )
     assert undeclared == [], f"{folder}: tsup bundles these into dist/; declare them (D9)"
@@ -427,7 +504,7 @@ def test_a_published_package_imports_what_it_declares(folder):
     name = manifest(folder)["name"]
     unused = sorted(
         package
-        for package in runtime_declarations(folder) - imported_packages(folder)
+        for package in runtime_declarations(folder) - owner_imports(folder)
         if (name, package) not in ALLOWED_UNIMPORTED_DECLARATIONS
     )
     assert unused == [], f"{folder}: npm installs these for consumers but src/ never imports them (D9)"
