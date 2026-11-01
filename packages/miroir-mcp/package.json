@@ -4,6 +4,9 @@
   "description": "Model Context Protocol (MCP) server for Miroir Framework - exposes InstanceEndpoint actions as MCP tools",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "type": "module",
   "exports": {
     "./package.json": "./package.json",
@@ -24,10 +27,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/miroir-framework/miroir.git"
+    "url": "git+https://github.com/miroir-framework/miroir.git",
+    "directory": "packages/miroir-mcp"
   },
   "author": "Miroir Framework <miroir-framework@protonmail.com>",
   "license": "MIT",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=22"
+  },
   "keywords": [
     "mcp",
     "model-context-protocol",
@@ -38,37 +46,26 @@
     "@modelcontextprotocol/sdk": "1.32.1",
     "express": "5.3.0",
     "loglevelnext": "6.0.0",
-    "miroir-core": "*",
-    "miroir-localcache-redux": "*",
-    "miroir-app-admin": "*",
-    "miroir-app-miroir": "*",
-    "uuid": "14.0.3",
-    "zod": "4.6.7"
+    "miroir-core": "*"
   },
   "peerDependencies": {
-    "miroir-store-filesystem": "*",
-    "miroir-store-indexedDb": "*",
-    "miroir-store-postgres": "*"
-  },
-  "peerDependenciesMeta": {
-    "miroir-store-filesystem": {
-      "optional": true
-    },
-    "miroir-store-indexedDb": {
-      "optional": true
-    },
-    "miroir-store-postgres": {
-      "optional": true
-    }
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@types/express": "5.0.6",
     "@types/node": "26.6.5",
     "@types/uuid": "11.0.0",
     "cross-env": "10.1.0",
+    "miroir-app-admin": "*",
+    "miroir-app-miroir": "*",
     "miroir-env": "*",
     "miroir-example-library": "*",
+    "miroir-localcache-redux": "*",
+    "miroir-store-filesystem": "*",
+    "miroir-store-indexedDb": "*",
+    "miroir-store-postgres": "*",
     "tsup": "9.0.0",
-    "vitest": "5.0.5"
+    "vitest": "5.0.5",
+    "zod": "4.6.7"
   }
 }

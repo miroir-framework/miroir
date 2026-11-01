@@ -5,6 +5,16 @@
   "description": "The Miroir implementation for accessing indexedDb databases (on web browser, or file-based on nodejs server).",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
   "module": "dist/index.js",
   "type": "module",
   "scripts": {
@@ -28,5 +38,14 @@
     "tsup": "9.0.0"
   },
   "author": "Miroir Framework <miroir-framework@protonmail.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=22"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/miroir-framework/miroir.git",
+    "directory": "packages/miroir-store-indexedDb"
+  }
 }

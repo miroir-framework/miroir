@@ -5,11 +5,26 @@
   "description": "The Miroir implementation for accessing MongoDB databases.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
   "module": "dist/index.js",
   "type": "module",
   "author": "Miroir Framework <miroir-framework@protonmail.com>",
   "license": "MIT",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=22"
+  },
   "dependencies": {
+    "miroir-app-miroir": "*",
     "miroir-core": "*",
     "mongodb": "7.7.0"
   },
@@ -26,5 +41,10 @@
     "devBuild": "npm run build",
     "copy-files": "copyfiles -u 1 src/**/*.json src/**/*.css dist/src",
     "test": "vitest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/miroir-framework/miroir.git",
+    "directory": "packages/miroir-store-mongodb"
   }
 }

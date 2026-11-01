@@ -20,10 +20,19 @@ if (runThis) {
       // #409: server.ts passes the gate to mountCopilotKitRoute, which mounts it before the router.
       const server = readFileSync(join(REPO_ROOT, "packages/miroir-server/src/server.ts"), "utf8");
       const mount = readFileSync(join(REPO_ROOT, "packages/miroir-server/src/mountCopilotKitRoute.ts"), "utf8");
-      const mountIdx = server.indexOf("await mountCopilotKitRoute(app");
+      const mountIdx = server.indexOf("await mountCopilotKitRoute(miroirApp");
       expect(mountIdx).toBeGreaterThanOrEqual(0);
       // #263: the gate is the shared identity middleware, built on assertRequestAllowed.
-      expect(server.slice(mountIdx)).toMatch(/requestGate:\s*createIdentityGateMiddleware\(authenticationGate\)/);
+      // #636: miroir-server-library's factory builds it and hands it to the binary's assistant slot
+      // (behaviour: createMiroirServerApp.integ in miroir-server-library).
+      const library = readFileSync(
+        join(REPO_ROOT, "packages/miroir-server-library/src/createMiroirServerApp.ts"),
+        "utf8",
+      );
+      expect(library).toMatch(/const identityGate = createIdentityGateMiddleware\(authenticationGate\)/);
+      expect(library).toContain("options.assistantRoute?.(app, { requestGate,");
+      expect(server).toMatch(/assistantRoute: async \(miroirApp, \{ requestGate \}\)/);
+      expect(server.indexOf("requestGate,", mountIdx)).toBeGreaterThan(mountIdx);
       const accessGate = readFileSync(
         join(REPO_ROOT, "packages/miroir-core/src/1_core/authentication/AccessGate.ts"),
         "utf8",

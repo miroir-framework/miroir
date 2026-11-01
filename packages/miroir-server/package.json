@@ -12,7 +12,8 @@
   "homepage": "https://github.com/XXXXXXXXXXXXXXXXXXXXXXXXXXX#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/XXXXXXXXXXXXXXXXXXXXXXXX.git"
+    "url": "git+https://github.com/miroir-framework/miroir.git",
+    "directory": "packages/miroir-server"
   },
   "scripts": {
     "build:client": "cross-env NODE_OPTIONS=--max-old-space-size=6144 npm run build -w miroir-standalone-app",
@@ -42,34 +43,30 @@
     ]
   },
   "dependencies": {
-    "body-parser": "2.4.0",
-    "cors": "2.8.6",
     "cross-fetch": "4.1.0",
     "diff": "9.0.0",
-    "express": "5.3.0",
     "isomorphic-git": "1.44.3",
     "json-diff": "1.0.6",
     "loglevelnext": "6.0.0",
     "miroir-ai": "*",
+    "miroir-app-admin": "*",
+    "miroir-app-miroir": "*",
     "miroir-core": "*",
     "miroir-env": "*",
+    "miroir-example-library": "*",
     "miroir-localcache-redux": "*",
     "miroir-mcp": "*",
+    "miroir-server-library": "*",
     "miroir-store-filesystem": "*",
     "miroir-store-indexedDb": "*",
     "miroir-store-mongodb": "*",
     "miroir-store-postgres": "*",
-    "miroir-app-admin": "*",
-    "miroir-example-library": "*",
-    "miroir-app-miroir": "*"
+    "zod": "4.6.7"
   },
   "devDependencies": {
     "@babel/core": "8.0.7",
     "@babel/preset-env": "8.0.7",
     "@babel/register": "8.0.6",
-    "@types/body-parser": "1.19.6",
-    "@types/cors": "2.8.19",
-    "@types/express": "5.0.6",
     "@types/node": "26.6.5",
     "@vercel/ncc": "0.45.0",
     "babel-loader": "10.1.1",

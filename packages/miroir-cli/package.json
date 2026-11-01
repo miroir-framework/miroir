@@ -2,17 +2,27 @@
   "name": "miroir-cli",
   "version": "0.5.0-rc.1",
   "description": "Command Line Interface for Miroir Framework - exposes Endpoint Actions as CLI commands",
-  "main": "dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    "./package.json": "./package.json"
+  },
   "type": "module",
   "bin": {
     "miroir-cli": "./dist/index.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/miroir-framework/miroir.git"
+    "url": "git+https://github.com/miroir-framework/miroir.git",
+    "directory": "packages/miroir-cli"
   },
   "author": "Miroir Framework <miroir-framework@protonmail.com>",
   "license": "MIT",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=22"
+  },
   "keywords": [
     "cli",
     "miroir",
@@ -29,18 +39,15 @@
   "dependencies": {
     "commander": "15.0.0",
     "loglevelnext": "6.0.0",
-    "miroir-app-admin": "*",
-    "miroir-app-miroir": "*",
     "miroir-core": "*",
     "miroir-env": "*",
-    "miroir-localcache-redux": "*",
-    "uuid": "14.0.3",
-    "zod": "4.6.7"
+    "miroir-localcache-redux": "*"
   },
   "peerDependencies": {
     "miroir-store-filesystem": "*",
     "miroir-store-indexedDb": "*",
-    "miroir-store-postgres": "*"
+    "miroir-store-postgres": "*",
+    "zod": "^4.6.7"
   },
   "peerDependenciesMeta": {
     "miroir-store-filesystem": {
@@ -57,8 +64,11 @@
     "@types/node": "26.6.5",
     "@types/uuid": "11.0.0",
     "cross-env": "10.1.0",
+    "miroir-app-admin": "*",
+    "miroir-app-miroir": "*",
     "miroir-example-library": "*",
     "tsup": "9.0.0",
-    "vitest": "5.0.5"
+    "vitest": "5.0.5",
+    "zod": "4.6.7"
   }
 }

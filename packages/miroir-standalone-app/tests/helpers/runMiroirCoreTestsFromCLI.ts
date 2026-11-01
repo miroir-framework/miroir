@@ -13,7 +13,7 @@ import {
   resolveSuitesTestbedReset,
   withTestbedResetPolicy,
 } from "miroir-core";
-import { loadMiroirCoreTestSuiteFromFolders } from "miroir-core/src/5_tests/loadApplicationMiroirTestsFromFolders.js";
+import { loadMiroirCoreTestSuiteFromFolders } from "miroir-core/model-validation-fs";
 import { onFailedRunExport } from "./writeFailedRunExport.js";
 import { timedTestPhase } from "./testTimingPhase.js";
 import { topLevelSuiteName } from "./testbedResetScope.js";

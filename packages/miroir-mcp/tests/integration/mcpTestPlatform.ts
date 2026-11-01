@@ -2,19 +2,17 @@ import loglevelNextLog from "loglevelnext";
 
 import {
   ConfigurationService,
-  MiroirActivityTracker,
-  miroirCoreStartup,
-  MiroirEventService,
-  MiroirLoggerFactory,
   type ApplicationDeploymentMap,
   type DomainControllerInterface,
   type LoggerFactoryInterface,
   type LoggerOptions,
+  type MiroirConfigClient,
+  type StoreSectionStartup,
+  type StoreUnitConfiguration,
 } from "miroir-core";
 import { bootEnvironment, openTestEnvironment, selectedTestEnvironment, type TestEnvironment } from "miroir-env";
 
-import { setupMiroirPlatform } from "../../src/startup/setup.js";
-import { initializeStoreStartup } from "../../src/startup/storeStartup.js";
+import { startMiroirNode } from "miroir-localcache-redux/node";
 
 // #345: the MCP integration tests run on a test environment (environments/test-*.json), like the
 // standalone-app tests: MIROIR_ENV when it names one, else test-filesystem. Its filesystem copies in
@@ -29,6 +27,41 @@ export type McpTestPlatform = {
   applicationDeploymentMap: ApplicationDeploymentMap;
 };
 
+// dynamic imports: the indexedDb and postgres stores are optional peers, loaded only for their test environment
+const storeStartups: Record<string, () => Promise<StoreSectionStartup>> = {
+  filesystem: async () => (await import("miroir-store-filesystem")).miroirFileSystemStoreSectionStartup,
+  indexedDb: async () => (await import("miroir-store-indexedDb")).miroirIndexedDbStoreSectionStartup,
+  sql: async () => (await import("miroir-store-postgres")).miroirPostgresStoreSectionStartup,
+};
+
+/**
+ * The startups of the stores the test environment uses: the emulated server's, or those a
+ * real-server client names (MIROIR_TEST_CLIENT=realServer), like the CLI's loader.
+ */
+async function testEnvironmentStores(miroirConfig: MiroirConfigClient): Promise<StoreSectionStartup[]> {
+  const deployments: Record<string, StoreUnitConfiguration> = miroirConfig.client.emulateServer
+    ? miroirConfig.client.deploymentStorageConfig
+    : (miroirConfig.client.serverConfig.storeSectionConfiguration ?? {});
+  const storeTypes = new Set<string>();
+  for (const storeUnitConfiguration of Object.values(deployments)) {
+    for (const section of Object.values(storeUnitConfiguration) as { emulatedServerType?: string }[]) {
+      if (section?.emulatedServerType) {
+        storeTypes.add(section.emulatedServerType);
+      }
+    }
+  }
+  const startups: StoreSectionStartup[] = [];
+  for (const storeType of storeTypes) {
+    const load = storeStartups[storeType];
+    if (!load) {
+      console.warn(`[mcpTestPlatform] no store startup for ${storeType} - skipping`);
+      continue;
+    }
+    startups.push(await load());
+  }
+  return startups;
+}
+
 export async function startMcpTestPlatform(
   expect: unknown,
   loggerOptions: LoggerOptions,
@@ -40,24 +73,11 @@ export async function startMcpTestPlatform(
     console.warn(warning);
   }
 
-  miroirCoreStartup();
-  await initializeStoreStartup(environment.miroirConfig);
   ConfigurationService.configurationService.registerTestImplementation({ expect: expect as any });
-
-  const miroirActivityTracker = new MiroirActivityTracker();
-  const miroirEventService = new MiroirEventService(miroirActivityTracker);
-  MiroirLoggerFactory.startRegisteredLoggers(
-    miroirActivityTracker,
-    miroirEventService,
-    loglevelNextLog as any as LoggerFactoryInterface,
-    loggerOptions,
-  );
-
-  const { domainController } = await setupMiroirPlatform(
-    environment.miroirConfig,
-    miroirActivityTracker,
-    miroirEventService,
-  );
+  const { domainController } = await startMiroirNode(environment.miroirConfig, {
+    stores: await testEnvironmentStores(environment.miroirConfig),
+    loggers: { factory: loglevelNextLog as any as LoggerFactoryInterface, options: loggerOptions },
+  });
   const { applicationDeploymentMap } = await bootEnvironment(domainController, environment.resolved, process.env);
   return { environment, domainController, applicationDeploymentMap };
 }

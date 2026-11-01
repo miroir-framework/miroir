@@ -14,12 +14,9 @@ import { cpSync, existsSync, mkdirSync, readdirSync, rmSync } from "node:fs";
 import path from "node:path";
 
 import {
-  ConfigurationService,
   ELECTRON_LOOPBACK_ROOT_API_URL,
-  MiroirActivityTracker,
-  MiroirContext,
-  MiroirEventService,
-  PersistenceStoreControllerManager,
+  type MiroirContext,
+  type PersistenceStoreControllerManager,
   type ApplicationDeploymentMap,
   type DomainControllerInterface,
   type MiroirConfigClient,
@@ -37,7 +34,7 @@ import {
   seedEnvironmentStateAtStart,
   type ResolvedEnvironment,
 } from "miroir-env";
-import { setupMiroirDomainController } from "miroir-localcache-redux/node";
+import { startMiroirNode } from "miroir-localcache-redux/node";
 
 import { registerStoreOnDemand } from "./storesOnDemand.js";
 
@@ -88,28 +85,23 @@ export async function bootElectronServer(
   }
 
   // #370: each store package (and its database driver) loads when a section on that store opens.
-  const configurationService = ConfigurationService.configurationService;
-  registerStoreOnDemand(configurationService, "filesystem", async () =>
-    (await import("miroir-store-filesystem")).miroirFileSystemStoreSectionStartup);
-  registerStoreOnDemand(configurationService, "indexedDb", async () =>
-    (await import("miroir-store-indexedDb")).miroirIndexedDbStoreSectionStartup);
-  registerStoreOnDemand(configurationService, "mongodb", async () =>
-    (await import("miroir-store-mongodb")).miroirMongoDbStoreSectionStartup);
-  registerStoreOnDemand(configurationService, "sql", async () =>
-    (await import("miroir-store-postgres")).miroirPostgresStoreSectionStartup);
-
   const serverConfig = electronServerConfig(environment);
-  const miroirActivityTracker = new MiroirActivityTracker();
-  const miroirContext = new MiroirContext(miroirActivityTracker, new MiroirEventService(miroirActivityTracker), serverConfig);
-  const persistenceStoreControllerManager = new PersistenceStoreControllerManager(
-    ConfigurationService.configurationService.adminStoreFactoryRegister,
-    ConfigurationService.configurationService.StoreSectionFactoryRegister,
-    serverConfig.server.filesystemDeploymentRootDirectory,
-  );
-  const domainController = await setupMiroirDomainController(miroirContext, {
-    persistenceStoreAccessMode: "local",
-    localPersistenceStoreControllerManager: persistenceStoreControllerManager,
+  // #639: one startup call; the main process starts no loggers, as before
+  const { domainController, persistenceStoreControllerManager, miroirContext } = await startMiroirNode(serverConfig, {
+    stores: [
+      (configurationService) => registerStoreOnDemand(configurationService, "filesystem", async () =>
+        (await import("miroir-store-filesystem")).miroirFileSystemStoreSectionStartup),
+      (configurationService) => registerStoreOnDemand(configurationService, "indexedDb", async () =>
+        (await import("miroir-store-indexedDb")).miroirIndexedDbStoreSectionStartup),
+      (configurationService) => registerStoreOnDemand(configurationService, "mongodb", async () =>
+        (await import("miroir-store-mongodb")).miroirMongoDbStoreSectionStartup),
+      (configurationService) => registerStoreOnDemand(configurationService, "sql", async () =>
+        (await import("miroir-store-postgres")).miroirPostgresStoreSectionStartup),
+    ],
   });
+  if (!persistenceStoreControllerManager) {
+    throw new Error("startMiroirNode returned no store manager for a server configuration");
+  }
 
   const reconciliation = await bootEnvironment(domainController, environment, options.env);
   reconciliation.changes.forEach((change) => log(change));

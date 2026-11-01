@@ -3,7 +3,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
-import { sqlCreateSchemaIfNotExists } from "miroir-store-postgres/src/4_services/sqlCreateSchemaIfNotExists.js";
+import { sqlCreateSchemaIfNotExists } from "../../../miroir-store-postgres/src/4_services/sqlCreateSchemaIfNotExists.js";
 
 const POSTGRES_SERVICES = join(
   dirname(fileURLToPath(import.meta.url)),

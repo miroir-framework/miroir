@@ -1,6 +1,3 @@
-import bodyParser from 'body-parser';
-import cors from 'cors';
-import express, { Request } from 'express';
 import { existsSync, readFileSync } from 'fs';
 import * as https from 'https';
 import loglevelnextLib from 'loglevelnext'; // TODO: use this? or plain "console" log?
@@ -12,7 +9,6 @@ import {
   type ApplicationDeploymentMap,
   circularReplacer,
   ConfigurationService,
-  defaultLevels,
   defaultMetaModelEnvironment,
   defaultSelfApplicationDeploymentMap,
   type Deployment,
@@ -23,32 +19,12 @@ import {
   LoggerFactoryInterface,
   LoggerInterface,
   LoggerOptions,
-  MiroirActivityTracker,
   MiroirConfigServer,
-  MiroirContext,
-  miroirCoreStartup,
-  MiroirEventService,
   MiroirLoggerFactory,
-  PersistenceStoreControllerManager,
-  ACCESS_DENIED,
-  accessDirectoryLoader,
-  authenticateRequest,
-  createIdentityGateMiddleware,
-  authorizeDeployment,
-  type AuthenticationGate,
-  type AuthPrincipal,
-  loadAccessDirectory,
-  persistPasswordChange,
-  buildAuthStatusBody,
   ENTITY_MIROIR_SECRET_UUID,
-  deploymentUuidsFromHttpRequest,
   getProcessTokenSecret,
-  loginWithPassword,
-  persistChangedPasswordHash,
   ParseServerArgsError,
   assembleSecretImportSet,
-  bigintJsonReplacer,
-  bigintJsonReviver,
   hydrateSecrets,
   importProcessSecrets,
   parseServerArgs,
@@ -56,13 +32,10 @@ import {
   persistRotatedSecretRow,
   requireWrappingKeyForSecretImport,
   defaultExternalServiceClient,
-  type DomainControllerInterface,
   resolveAuthenticationEnabled,
   resolveMcpAuthenticationEnabled,
-  restServerDefaultHandlers,
   setProcessTokenSecret,
   setSecretsMasterKey,
-  SpecificLoggerOptionsMap,
   StoreOrBundleAction,
   StoreUnitConfiguration,
   templateEvaluationParams,
@@ -88,8 +61,8 @@ import {
   seedEnvironmentStateAtStart,
   type ResolvedEnvironment,
 } from "miroir-env";
-import { EndpointToolRegistry, setupMcpServer } from "miroir-mcp";
-import { setupMiroirDomainController } from 'miroir-localcache-redux/node';
+import { createMiroirServerApp } from "miroir-server-library";
+import { startMiroirNode } from 'miroir-localcache-redux/node';
 import { miroirFileSystemStoreSectionStartup } from 'miroir-store-filesystem';
 import { miroirIndexedDbStoreSectionStartup } from 'miroir-store-indexedDb';
 import { miroirMongoDbStoreSectionStartup } from 'miroir-store-mongodb';
@@ -292,17 +265,6 @@ const corsAllowedOrigins: string[] =
   (miroirConfig.server as any).corsAllowedOrigins ?? defaultCorsOrigins;
 myLogger.info('CORS allowed origins:', corsAllowedOrigins);
 
-const app = express();
-app.use(cors({
-  origin: corsAllowedOrigins,
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
-
-// BigInt values cross the wire as {"$bigint": "<digits>"}, both ways, so none loses digits (#48)
-app.set("json replacer", bigintJsonReplacer);
-app.use(bodyParser.json({ limit: '50mb', reviver: bigintJsonReviver }));
 
 const serverAuthentication = (
   miroirConfig.server as { authentication?: { enabled?: boolean; tokenSecret?: string; mcp?: boolean } }
@@ -326,20 +288,6 @@ if (serverAuthentication?.tokenSecret) {
   getProcessTokenSecret();
 }
 
-app.get("/auth/status", (_req: any, res: any) => {
-  res.json(buildAuthStatusBody(authenticationEnabled));
-});
-
-app.get("/capabilities", (_req: any, res: any) => {
-  const capabilities = getProcessCapabilities({
-    config: miroirConfig,
-    environment: getClientEnvironment(),
-    storeSectionFactoryRegister:
-      ConfigurationService.configurationService.StoreSectionFactoryRegister,
-    adminStoreFactoryRegister: ConfigurationService.configurationService.adminStoreFactoryRegister,
-  });
-  res.status(200).json({ status: "ok", capabilities });
-});
 
 myLogger.info(`Server being set-up, going to execute on the port::${restPortFromConfig}`);
 
@@ -368,24 +316,6 @@ try {
   myLogger.warn(`Error while checking sample static asset: ${e}`);
 }
 
-// set long cache headers for static assets (1 day) and fall back to no-cache for HTML-like responses
-app.use(
-  assetsMountPath,
-  express.static(pathToPublic, {
-    maxAge: "1d",
-    // express.static expects a Node http.ServerResponse here; using that type ensures setHeader is available
-    setHeaders: (
-      res: import("http").ServerResponse,
-      filePath: string,
-      // stat: import("fs").Stats
-    ) => {
-      // If it's an HTML file, don't cache
-      if (filePath.endsWith(".html")) {
-        res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-      }
-    },
-  })
-);
 
 // // Expose server configuration to browser clients.
 // // Currently exposes the filesystem deployment root directory so clients don't need to guess it.
@@ -396,51 +326,30 @@ const filesystemDeploymentRootDirectory: string =
 //   res.json({ filesystemDeploymentRootDirectory });
 // });
 
-miroirCoreStartup();
-miroirFileSystemStoreSectionStartup(ConfigurationService.configurationService);
-miroirIndexedDbStoreSectionStartup(ConfigurationService.configurationService);
-miroirMongoDbStoreSectionStartup(ConfigurationService.configurationService);
-miroirPostgresStoreSectionStartup(ConfigurationService.configurationService);
-
-const miroirActivityTracker = new MiroirActivityTracker();
-const miroirEventService = new MiroirEventService(miroirActivityTracker);
-
-await MiroirLoggerFactory.startRegisteredLoggers(
-  miroirActivityTracker,
-  miroirEventService,
-  loglevelnext,
-  loggerOptions
-  // (defaultLevels as any)[(miroirConfig as any).server.defaultLevel],
-  // (miroirConfig as any).server.defaultTemplate,
-  // (miroirConfig as any).server.specificLoggerOptions
-);
-
-const miroirContext = new MiroirContext(
-  miroirActivityTracker,
-  miroirEventService,
-  miroirConfig
-);
-
-const persistenceStoreControllerManager = new PersistenceStoreControllerManager(
-  ConfigurationService.configurationService.adminStoreFactoryRegister,
-  ConfigurationService.configurationService.StoreSectionFactoryRegister,
-  miroirConfig.server.filesystemDeploymentRootDirectory,
-);
-
-const domainController: DomainControllerInterface = await setupMiroirDomainController(
-  miroirContext, 
-  {
-    persistenceStoreAccessMode: "local",
-    localPersistenceStoreControllerManager: persistenceStoreControllerManager
-  },
-  defaultExternalServiceClient({
+// #639: one startup call builds the local domain controller on the four Node stores
+const {
+  domainController,
+  persistenceStoreControllerManager: serverPersistenceStoreControllerManager,
+} = await startMiroirNode(miroirConfig, {
+  stores: [
+    miroirFileSystemStoreSectionStartup,
+    miroirIndexedDbStoreSectionStartup,
+    miroirMongoDbStoreSectionStartup,
+    miroirPostgresStoreSectionStartup,
+  ],
+  loggers: { factory: loglevelnext, options: loggerOptions },
+  externalServiceClient: defaultExternalServiceClient({
     // a rotated refresh token of a persisted secret row goes back to its row; called only by an
     // external service call, once the server has opened its deployments
     persistRotatedSecret: async (args) => {
       await persistRotatedSecretRow(domainController, args, applicationDeploymentMap);
     },
   }),
-); // even when emulating server, we use remote persistence store, since MSW makes it appear as if we are using a remote server.
+});
+if (!serverPersistenceStoreControllerManager) {
+  throw new Error("startMiroirNode returned no store manager for a server configuration");
+}
+const persistenceStoreControllerManager = serverPersistenceStoreControllerManager;
 
 // without an environment: Admin and Miroir from the Deployment rows of the Admin package
 const configurations: Record<string, Deployment> = resolvedEnvironment
@@ -610,194 +519,6 @@ if (resolvedEnvironment) {
   recordInstallsOf(domainController, resolvedEnvironment, (line) => console.log(`[miroir-env] ${line}`));
 }
 
-// #263: one gate for REST, CopilotKit and MCP; the Admin directory is read on every gated request.
-const authenticationGate: AuthenticationGate = {
-  enabled: authenticationEnabled,
-  loadDirectory: accessDirectoryLoader(domainController, applicationDeploymentMap),
-};
-
-async function resolveGatedPrincipal(
-  authorizationHeader: string | undefined,
-): Promise<AuthPrincipal | undefined> {
-  const authenticated = await authenticateRequest({ ...authenticationGate, enabled: true }, authorizationHeader);
-  return authenticated.allowed ? authenticated.principal : undefined;
-}
-
-// ##############################################################################################
-// CREATING ENDPOINTS SERVICING CRUD HANDLERS
-for (const op of restServerDefaultHandlers) {
-  const operationHandler = async (request: CustomRequest, response: any, context: any) => {
-    const authorizationHeader =
-      typeof request.headers?.authorization === "string" ? request.headers.authorization : undefined;
-    const authenticated = await authenticateRequest(authenticationGate, authorizationHeader);
-    if (!authenticated.allowed) {
-      response.status(authenticated.status).json(authenticated.body);
-      return;
-    }
-    const principal = authenticated.principal;
-    const access = authorizeDeployment(
-      authenticationEnabled,
-      authenticated,
-      deploymentUuidsFromHttpRequest(request),
-    );
-    if (!access.allowed) {
-      myLogger.warn(
-        `access denied: user=${principal?.username ?? "anonymous"} deployments=${deploymentUuidsFromHttpRequest(request).join(",") || "(none)"} url=${request.originalUrl}`
-      );
-      response.status(access.status).json(access.body ?? ACCESS_DENIED);
-      return;
-    }
-    const body = request.body;
-    myLogger.info(`[CONSOLE DEBUG] Request received: ${op.method} ${request.originalUrl}`);
-    myLogger.info(
-      `[REQUEST START] ${op.method} ${request.originalUrl} - params:`,
-      JSON.stringify(request.params)
-    );
-
-    try {
-      myLogger.info(`[CONSOLE DEBUG] About to call handler`);
-      myLogger.info(
-        `[BEFORE HANDLER] About to call handler for ${op.method} ${request.originalUrl}`
-      );
-
-      await op.handler(
-        true, // useDomainControllerToHandleModelAndInstanceActions: since we're on the server, we use the localCache as intermediate step, to access the persistenceStore
-        (response: any) => response.json.bind(response),
-        response,
-        persistenceStoreControllerManager,
-        domainController,
-        op.method,
-        request.originalUrl,
-        body,
-        { ...request.params, ...request.query, authPrincipal: principal }
-      );
-
-      myLogger.info(`[CONSOLE DEBUG] Handler completed successfully`);
-      myLogger.info(
-        `[AFTER HANDLER] Handler completed successfully for ${op.method} ${request.originalUrl}`
-      );
-      // Don't return anything - the handler should have already sent the response
-    } catch (error) {
-      myLogger.info(`[CONSOLE DEBUG] Error caught:`, error);
-      myLogger.error(
-        `[ERROR CAUGHT] server could not handle action: ${op.method} on URL: ${op.url} error: ${error}`
-      );
-
-      // Send proper error response to client
-      if (!response.headersSent) {
-        myLogger.info(`[CONSOLE DEBUG] Sending error response`);
-        myLogger.info(
-          `[SENDING ERROR RESPONSE] Headers not sent, sending 500 error response for ${request.originalUrl}`
-        );
-        const errorMessage = error instanceof Error ? error.message : String(error);
-        try {
-          response.status(500).json({
-            status: "error",
-            errorType: "ServerError",
-            errorMessage: `Failed to handle ${op.method} request on ${request.originalUrl}: ${errorMessage}`,
-            timestamp: new Date().toISOString(),
-          });
-          myLogger.info(`[CONSOLE DEBUG] Error response sent successfully`);
-          myLogger.info(
-            `[ERROR RESPONSE SENT] Error response sent successfully for ${request.originalUrl}`
-          );
-        } catch (responseError) {
-          myLogger.info(`[CONSOLE DEBUG] Failed to send error response:`, responseError);
-          myLogger.error(
-            `[ERROR SENDING RESPONSE] Failed to send error response: ${responseError}`
-          );
-        }
-      } else {
-        myLogger.info(`[CONSOLE DEBUG] Headers already sent, cannot send error response`);
-        myLogger.warn(
-          `[HEADERS ALREADY SENT] Cannot send error response for ${request.originalUrl} - headers already sent`
-        );
-      }
-      // Don't return anything - we've already handled the response
-    }
-  };
-
-  (app as any)[op.method](
-    op.url,
-    operationHandler,
-  );
-}
-
-app.post("/auth/login", async (request: CustomRequest, response: any) => {
-  const identity = await loadAccessDirectory(domainController, applicationDeploymentMap);
-  if (!identity.ok) {
-    response.status(500).json({
-      status: "error",
-      errorType: "AuthenticationDirectoryMissing",
-      errorMessage: identity.errorMessage,
-    });
-    return;
-  }
-  const result = await loginWithPassword(
-    {
-      username: String(request.body?.username ?? ""),
-      password: String(request.body?.password ?? ""),
-    },
-    identity.directory,
-    getProcessTokenSecret(),
-  );
-  if (!result.ok) {
-    response.status(result.status).json(result.body);
-    return;
-  }
-  response.json({ token: result.token, principal: result.principal });
-});
-
-app.post("/auth/change-password", async (request: CustomRequest, response: any) => {
-  const principal = await resolveGatedPrincipal(
-    typeof request.headers?.authorization === "string" ? request.headers.authorization : undefined,
-  );
-  if (!principal) {
-    response.status(401).json({
-      status: "error",
-      errorType: "AuthenticationRequired",
-    });
-    return;
-  }
-  const identity = await loadAccessDirectory(domainController, applicationDeploymentMap);
-  if (!identity.ok) {
-    response.status(500).json({
-      status: "error",
-      errorType: "AuthenticationDirectoryMissing",
-      errorMessage: identity.errorMessage,
-    });
-    return;
-  }
-  const changed = await persistChangedPasswordHash({
-    directory: identity.directory,
-    principal,
-    currentPassword: String(request.body?.currentPassword ?? ""),
-    newPassword: String(request.body?.newPassword ?? ""),
-  });
-  if (!changed.ok) {
-    response.status(changed.status).json(changed.body);
-    return;
-  }
-  const updatedHash = changed.directory.credentials.find(
-    (row) => row.miroirUser === principal.miroirUserUuid,
-  )?.passwordHash;
-  const persisted =
-    !!updatedHash &&
-    (await persistPasswordChange(domainController, applicationDeploymentMap, {
-      principal,
-      credentialsValue: identity.credentialsValue,
-      passwordHash: updatedHash,
-    }));
-  if (!persisted) {
-    response.status(401).json({
-      status: "error",
-      errorType: "AuthenticationFailed",
-    });
-    return;
-  }
-  response.json({ changed: true });
-});
-
 const capabilities = getProcessCapabilities({
   config: miroirConfig,
   environment: getClientEnvironment(),
@@ -807,31 +528,6 @@ const capabilities = getProcessCapabilities({
 });
 domainController.setProcessCapabilities(capabilities);
 
-const endpointToolRegistry = new EndpointToolRegistry(domainController, applicationDeploymentMap);
-myLogger.info("Setting up MCP server with dynamic EndpointToolRegistry");
-const mcpApp = express();
-mcpApp.use(cors({
-  origin: corsAllowedOrigins,
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
-
-mcpApp.use(bodyParser.json({limit: '50mb'}));
-
-myLogger.info(`MCP Server being set-up, going to execute on the port::${mcpPortFromConfig}`);
-const mcpAuthenticationGate: AuthenticationGate = { ...authenticationGate, enabled: mcpAuthenticationEnabled };
-const mcpServer = await setupMcpServer(
-  mcpApp,
-  applicationDeploymentMap,
-  endpointToolRegistry,
-  domainController,
-  mcpAuthenticationGate,
-);
-if (shouldMountMcpHttp(capabilities.mcp)) {
-  mcpServer.mountHttpRoutes(app, mcpAuthenticationGate);
-}
-
 // TLS certificates: present → HTTPS on the API port (listener at the end of this file).
 // run scripts/setup-https.sh (or .ps1) once to generate the certificates.
 const defaultCertsDir = argCertsDir ?? path.resolve(__dirname, '../../../certs');
@@ -839,53 +535,42 @@ const certFile = argCertFile ?? process.env.MIROIR_TLS_CERT ?? path.join(default
 const keyFile  = argKeyFile  ?? process.env.MIROIR_TLS_KEY  ?? path.join(defaultCertsDir, 'localhost-key.pem');
 const tlsEnabled = existsSync(certFile) && existsSync(keyFile);
 
-// AI / CopilotKit endpoint — MUST be after API routes and MCP, before SPA catch-all.
-// miroir-ai is imported only when the ai capability is on (#409).
-await mountCopilotKitRoute(app, {
-  capabilities,
+// In production the server serves the React client from release/client (scripts/copy-client.mjs)
+// after every API and MCP route; otherwise the Vite dev server serves it.
+const pathToClient = path.join(__dirname, 'client');
+if (getMiroirEnvironmentMode() === 'prod') {
+  myLogger.info(`Running in production mode - serving React SPA from ${pathToClient}`);
+}
+
+// #636: Miroir's HTTP surface (REST behind the gate, authentication and capabilities routes, assets, /mcp,
+// the CopilotKit route, the client folder) comes from miroir-server-library. mcpServer.run starts the
+// dedicated MCP listener at the end of this file.
+const { app, mcpServer } = await createMiroirServerApp({
   domainController,
+  persistenceStoreControllerManager,
   applicationDeploymentMap,
-  mcpHttpUrl: agentMcpHttpUrl({ restPort: restPortFromConfig, mcpPort: mcpPortFromConfig, tls: tlsEnabled }),
-  agentModel: miroirConfig.features?.agentModel,
-  requestGate: createIdentityGateMiddleware(authenticationGate) as any,
-  authenticationEnabled,
+  miroirConfig,
+  capabilities,
+  authentication: { enabled: authenticationEnabled, mcpEnabled: mcpAuthenticationEnabled },
+  corsAllowedOrigins,
+  assets: { directory: pathToPublic, mountPath: assetsMountPath },
+  ...(getMiroirEnvironmentMode() === 'prod' ? { clientDirectory: pathToClient } : {}),
+  // miroir-ai is imported only when the ai capability is on (#409)
+  assistantRoute: async (miroirApp, { requestGate }) => {
+    await mountCopilotKitRoute(miroirApp, {
+      capabilities,
+      domainController,
+      applicationDeploymentMap,
+      mcpHttpUrl: agentMcpHttpUrl({ restPort: restPortFromConfig, mcpPort: mcpPortFromConfig, tls: tlsEnabled }),
+      agentModel: miroirConfig.features?.agentModel,
+      requestGate,
+      authenticationEnabled,
+    });
+  },
 });
 
-// ##############################################################################################
-// ##############################################################################################
-// Serve React SPA — MUST be registered AFTER all API/MCP routes.
-// Static files are served from dist/client/ (built from miroir-standalone-app).
-// All unmatched routes fall through to index.html to support client-side routing.
-if (getMiroirEnvironmentMode() === 'prod') {
-  myLogger.info('Running in production mode - serving React SPA');
-  myLogger.info(`Found dirname: ${__dirname}`);
-  const pathToClient = path.join(__dirname, 'client');
-  myLogger.info(`Serving React SPA from ${pathToClient}`);
-  
-  const indexPath = path.join(pathToClient, 'index.html');
-   if (!existsSync(indexPath)) {
-    throw new Error(`React client build not found at ${indexPath}. Please run "npm run build" in the miroir-standalone-app package and ensure the output is copied to the server's client directory.`);
-  }
-  app.use(express.static(pathToClient, {
-    maxAge: "1d",
-    setHeaders: (res: import("http").ServerResponse, filePath: string) => {
-      if (filePath.endsWith(".html")) {
-        res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-      }
-    },
-  }));
-  
-  // SPA catch-all: serve index.html for all routes not matched above
-  app.get('/{*splat}', (req: any, res: any) => {
-    
-    if (existsSync(indexPath)) {
-      res.sendFile(indexPath);
-    } else {
-      res.status(404).send('React client build not found. Run "npm run build" first.');
-    }
-  });
-} else {
-  myLogger.info('Not in production mode - skipping React SPA setup');
+if (getMiroirEnvironmentMode() !== 'prod') {
+  myLogger.info('Not in production mode - no client folder');
   app.get('/', (req: any,res: any) => {
     res.send('App Works !!!!');
   });
@@ -932,15 +617,9 @@ if (tlsEnabled) {
 }
 if ( mcpPortFromConfig) {
   if (shouldMountMcpHttp(capabilities.mcp)) {
+    myLogger.info(`MCP Server being set-up, going to execute on the port::${mcpPortFromConfig}`);
     mcpServer.run(mcpPortFromConfig);
   }
 } else {
   myLogger.warn(`MCP port not configured, skipping MCP server startup`);
-}
-
-// Adjust Request type
-interface CustomRequest extends Request {
-  body: any;
-  originalUrl: string;
-  params: Record<string, any>;
 }

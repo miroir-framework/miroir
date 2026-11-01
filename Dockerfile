@@ -68,6 +68,8 @@ RUN npm run extract-library-model -w miroir-example-library
 # 4. UI / MCP / diagram packages
 RUN npm run build -w miroir-react
 RUN npm run build -w miroir-mcp
+# #636: Miroir's HTTP surface; ncc inlines it into the server release
+RUN npm run build -w miroir-server-library
 RUN npm run build -w miroir-diagram-class
 RUN npm run build -w miroir-ai
 

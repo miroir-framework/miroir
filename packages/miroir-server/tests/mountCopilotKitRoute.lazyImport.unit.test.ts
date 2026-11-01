@@ -83,9 +83,12 @@ if (runThis) {
       expect(probe.resolved.has("miroir-ai")).toBe(true);
     }, 60_000);
 
-    it("server.ts has no static import of miroir-ai", () => {
-      const source = readFileSync(join(SERVER_DIR, "src/server.ts"), "utf8");
-      expect(source).not.toMatch(/^import[^;]*from\s+["']miroir-ai["']/m);
+    it("server.ts and the server library have no static import of miroir-ai", () => {
+      // #636: the server library builds the HTTP surface; the binary plugs CopilotKit in.
+      for (const file of [join(SERVER_DIR, "src/server.ts"), join(SERVER_DIR, "../miroir-server-library/src/createMiroirServerApp.ts")]) {
+        const source = readFileSync(file, "utf8");
+        expect(source).not.toMatch(/^import[^;]*from\s+["']miroir-ai["']/m);
+      }
     });
 
     it("the release bundle keeps the miroir-ai import dynamic", () => {

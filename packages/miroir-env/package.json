@@ -4,16 +4,31 @@
   "description": "Environment definitions for Miroir: which applications are installed, on which stores, for development and tests (#321)",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
   "type": "module",
   "bin": {
     "miroir-env": "./dist/cli.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/miroir-framework/miroir.git"
+    "url": "git+https://github.com/miroir-framework/miroir.git",
+    "directory": "packages/miroir-env"
   },
   "author": "Miroir Framework <miroir-framework@protonmail.com>",
   "license": "MIT",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "build": "tsup",
     "devBuild": "npm run build",

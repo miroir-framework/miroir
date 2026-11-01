@@ -134,6 +134,8 @@ run_parallel_builds \
   miroir-react \
   miroir-mcp \
   miroir-diagram-class
+# #636: Miroir's HTTP surface, after miroir-mcp; ncc inlines it into the release
+npm run build -w miroir-server-library
 record_time "6/7  miroir-react, miroir-mcp, miroir-diagram-class" "$t0"
 
 # ---------------------------------------------------------------------------

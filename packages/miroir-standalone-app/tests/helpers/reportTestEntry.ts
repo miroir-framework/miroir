@@ -15,7 +15,7 @@ import {
   type MiroirTestSuite,
   type RunnerTestSessionInterface,
 } from "miroir-core";
-import { loadApplicationRunnerUuidIndexFromFolders } from "miroir-core/src/5_tests/loadApplicationMiroirTestsFromFolders.js";
+import { loadApplicationRunnerUuidIndexFromFolders } from "miroir-core/model-validation-fs";
 import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
 import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";

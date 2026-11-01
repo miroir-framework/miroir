@@ -10,7 +10,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { miroirTestSuiteMountsReport } from "miroir-core";
-import { loadApplicationMiroirTestCatalog } from "miroir-core/src/5_tests/loadApplicationMiroirTestsFromFolders.js";
+import { loadApplicationMiroirTestCatalog } from "miroir-core/model-validation-fs";
 
 import {
   MIROIR_REPORT_TEST_VITEST_ENTRY,

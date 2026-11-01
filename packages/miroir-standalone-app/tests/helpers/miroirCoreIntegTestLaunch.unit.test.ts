@@ -5,7 +5,7 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 import { listMiroirTestSuiteKeys } from "miroir-core";
-import { listCliTransformerIntegrationSuiteKeysFromFolders } from "miroir-core/src/5_tests/loadApplicationMiroirTestsFromFolders.js";
+import { listCliTransformerIntegrationSuiteKeysFromFolders } from "miroir-core/model-validation-fs";
 
 import { applyIntegrationTestProfile } from "./integrationTestProfiles.js";
 import {

@@ -5,6 +5,10 @@
   "description": "Miroir deployment assets (miroir_model and miroir_data) for the Miroir Framework",
   "author": "Miroir Framework <miroir-framework@protonmail.com>",
   "license": "MIT",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=22"
+  },
   "main": "dist/index.js",
   "types": "index.d.ts",
   "type": "module",
@@ -40,5 +44,10 @@
     "tsx": "4.23.15",
     "vite": "8.3.5",
     "vitest": "5.0.5"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/miroir-framework/miroir.git",
+    "directory": "packages/miroir-app-miroir"
   }
 }

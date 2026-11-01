@@ -2797,6 +2797,61 @@
       ]
     },
     {
+      "id": "unit-636-server-library",
+      "scopes": ["core", "actions", "runners", "tooling"],
+      "tier": "default",
+      "title": "#636 \u2014 miroir-server-library: the HTTP surface in-process on a test environment (REST, auth, capabilities, MCP, assets, client folder, assistant slot, mount rules) and its forbidden-import build guard",
+      "requires": "none",
+      "parallel": false,
+      "argv": [
+        "bash",
+        "-c",
+        "npm run build -w miroir-server-library && MIROIR_ENV=test-filesystem npm run testByFile -w miroir-server-library && MIROIR_LIBRARY_BUILD_CHECKS=1 python -m pytest scripts/tests/test_server_library_boundaries.py -q"
+      ]
+    },
+    {
+      "id": "build-636-server-release",
+      "scopes": ["external", "tooling"],
+      "tier": "default",
+      "title": "#636 \u2014 miroir-server release bundle (ncc, server library inlined) answers its HTTP surface on bench-agent; production mode serves release/client when present",
+      "requires": "none",
+      "parallel": false,
+      "argv": [
+        "bash",
+        "-c",
+        "npm run build -w miroir-server-library && npm run build:server -w miroir-server && MIROIR_RELEASE_SMOKE=1 python -m pytest scripts/tests/test_server_release_smoke.py scripts/tests/test_server_release_smoke_production.py -q"
+      ]
+    },
+    {
+      "id": "unit-639-startup-calls",
+      "scopes": ["localcache", "tooling", "ui"],
+      "tier": "default",
+      "title": "#639 \u2014 one startup call per side: startMiroirNode (client with emulated server, server config) and startMiroirClient (React providers, passed client) on a test environment; neither imports a store",
+      "requires": "none",
+      "parallel": false,
+      "argv": [
+        "bash",
+        "-c",
+        "npm run testByFile -w miroir-cli -- startMiroirNode && npm run testByFile -w miroir-react -- startMiroirClient && python -m pytest scripts/tests/test_startup_calls_boundaries.py -q"
+      ]
+    },
+    {
+      "id": "unit-643-package-manifests",
+      "scopes": [
+        "tooling",
+        "core"
+      ],
+      "tier": "default",
+      "title": "#643 \u2014 manifests of the published set: files, exports without ./src/*, sideEffects, engines, repository, TSDoc in declarations, shared libraries as peers, declared imports; pack cases required on the built packages",
+      "requires": "none",
+      "parallel": false,
+      "argv": [
+        "bash",
+        "-c",
+        "MIROIR_REQUIRE_PACK=1 python -m pytest scripts/tests/test_package_manifests.py -q"
+      ]
+    },
+    {
       "id": "unit-345-cli",
       "scopes": ["tooling"],
       "tier": "default",
