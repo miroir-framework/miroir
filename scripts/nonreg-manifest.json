@@ -2836,6 +2836,22 @@
       ]
     },
     {
+      "id": "unit-643-package-manifests",
+      "scopes": [
+        "tooling",
+        "core"
+      ],
+      "tier": "default",
+      "title": "#643 \u2014 manifests of the published set: files, exports without ./src/*, sideEffects, engines, repository, TSDoc in declarations, shared libraries as peers, declared imports; pack cases required on the built packages",
+      "requires": "none",
+      "parallel": false,
+      "argv": [
+        "bash",
+        "-c",
+        "MIROIR_REQUIRE_PACK=1 python -m pytest scripts/tests/test_package_manifests.py -q"
+      ]
+    },
+    {
       "id": "unit-345-cli",
       "scopes": ["tooling"],
       "tier": "default",

@@ -9,7 +9,12 @@ Analysis and plan: code-helpers/features/643-BUILD-manifest-hygiene/
 
 from __future__ import annotations
 
+import fnmatch
+import functools
 import json
+import os
+import re
+import subprocess
 from pathlib import Path
 
 import pytest
@@ -91,11 +96,6 @@ def test_each_package_of_the_set_has_a_scoped_published_name():
 # --------------------------------------------------------------------------------------------------------------------
 # helpers: built packages and their pack lists
 
-import fnmatch
-import functools
-import os
-import re
-import subprocess
 
 REQUIRE_PACK = os.environ.get("MIROIR_REQUIRE_PACK") == "1"
 # Files npm always adds to a tarball, whatever `files` says.
@@ -375,8 +375,6 @@ def test_each_shared_library_has_its_peer_range_and_owners_across_the_set():
 
 # --------------------------------------------------------------------------------------------------------------------
 # declared imports (Slice 3b, analysis D9): tsup externalizes only dependencies and peers and bundles the rest
-
-import sys
 
 # Node's built-in modules (`require("module").builtinModules`, Node 22, without the `_` internals).
 NODE_BUILTINS = set(
