@@ -28,7 +28,7 @@ Out (analysis §2): `private` flags and publishing (I8); the meta-model size; th
 | 1 | Import scanner on a fixture tree | ✅ | `test_rename_packages.py` import cases |
 | 2 | Core carries the meta-model; everyone imports the subpaths | ✅ | core pack cases, `--check`, alias rule, bundle report, full build |
 | 3 | The server library exposes `./startup` | ✅ | server pack case, startup boundaries, release check |
-| 4 | React carries the local cache | ⏳ | react pack cases, dependency rule, local cache source rule |
+| 4 | React carries the local cache | ✅ | react pack cases, dependency rule, local cache source rule |
 | 5 | Docs, nonreg, acceptance | ⏳ | gate, `nonreg:filesystem`, AC table |
 
 Slice 3 comes before 4: once react bundles the local cache, a Node process importing react's copy and the private package would hold two; moving the Node importers to the server first keeps every intermediate state at one copy.
@@ -205,7 +205,7 @@ npm run testByFile -w @miroir-framework/cli -- startMiroirNode
 
 ## Slice 4 — React carries the local cache
 
-**Status:** ⏳
+**Status:** ✅
 
 ### Tests (RED first)
 
@@ -227,6 +227,16 @@ npm run build -w packages/miroir-react
 npm run testByFile -w miroir-standalone-app -- localCacheImplementation IntegrationTestSession useCurrentModelEnvironment ReportComponent.test
 # bundle guards (conventions table)
 ```
+
+### Realization
+
+- Deviation: a Node test setup cannot load react's root (it imports CSS and the whole UI: `ERR_UNKNOWN_FILE_EXTENSION` under plain Node). React exposes the local cache without the UI as `@miroir-framework/react/local-cache` (`dist/miroir-localcache-imports.js`, react's existing per-module output); the standalone app's `localCacheImplementation.ts`, its unit test and the `IntegrationTestSession.unit` mock take it from there. `useCurrentModelEnvironment.unit` takes `LocalCache` from the root, next to its other react imports. `view/ReportComponent.test` only names the package in a comment: unchanged.
+- Deviation: `dts.resolve` leaves the local cache external (tsup resolves it through `node_modules`, where its relative re-export `./node.js` counts as an external library import; `resolve: true` runs out of memory on MUI's types). The declaration build maps `miroir-localcache-redux` to its `dist/index.d.ts` with `compilerOptions.paths`: rollup inlines it once, in `dist/local-cache.d.ts`, which `dist/index.d.ts` imports.
+- Declaring the redux runtime dependencies is what keeps them external: a react built before they were declared bundled `@reduxjs/toolkit`, `redux-saga` and `immer` into a 230 KB chunk (eager page 861 964 bytes gzipped); after, 838 750 (baseline 841 981).
+- Policy: `miroir-localcache-redux` leaves `eager`; `@miroir-framework/react/local-cache` joins `lazy` (the Miroir Tests route).
+- Guards: `BUNDLED_NAMES` holds the local cache, so the dependency rule and the built-owner rule (now core, react, server library) cover it; react pack case; sources outside react, the server library and the local cache import neither entry; no file imports it next to `@miroir-framework/react` or `/server/startup`.
+- Pre-existing, not from this slice: `IntegrationTestSession.unit` fails on `PersistenceStoreControllerManager is not a constructor` (an arrow `mockImplementation` under `new`), before and after the change; `tsc` on the standalone app reports the 2 `justifyContent` errors of `AiEntityProposalForm` / `AiLendProposalForm` before and after.
+- Validation: pytest 554 passed (pack cases required); `rename_packages.py --check`; lint; tsc on react; `localCacheImplementation.unit` and `useCurrentModelEnvironment.unit` pass; standalone bundle guard 0 violations.
 
 ---
 

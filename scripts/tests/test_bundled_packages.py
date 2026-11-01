@@ -5,6 +5,8 @@
   core's sources import: otherwise `@miroir-framework/core/meta-model` resolves to `src/index.ts/meta-model`.
 - The server release (`miroir-server/release/index.js`, ncc) leaves core and its subpaths external: it holds no meta-model
   data next to core's own. Runs when `MIROIR_RELEASE_SMOKE=1` (nonreg step `build-636-server-release`), after a build.
+- The redux local cache is bundled into `@miroir-framework/react` (and its `/local-cache` entry) and, for its Node entry,
+  into `@miroir-framework/server/startup`: no other source imports it, and no file imports it next to one of those.
 
 Analysis and plan: code-helpers/features/652-BUILD-bundle-meta-model-and-local-cache/
 """
@@ -78,13 +80,32 @@ def test_node_sources_take_the_startup_call_from_the_server_library():
     assert found == [], "import startMiroirNode from @miroir-framework/server/startup"
 
 
+REACT_IMPORT = re.compile(r"""(?:from|import\()\s*['"]@miroir-framework/react(/[^'"]*)?['"]""")
+# the packages that bundle the local cache (#652 D3, D4), and the local cache itself
+LOCAL_CACHE_OWNERS = ("packages/miroir-react", "packages/miroir-server-library", "packages/miroir-localcache-redux")
+
+
+def test_only_its_owners_import_the_local_cache_in_sources():
+    """#652 (D3): the redux local cache reaches an application through `@miroir-framework/react` (or `/local-cache`),
+    a Node process through `@miroir-framework/server/startup`."""
+    found = [
+        str(path.relative_to(ROOT))
+        for path in code_files("*/src/**/*")
+        if not any(path.is_relative_to(ROOT / owner) for owner in LOCAL_CACHE_OWNERS)
+        and LOCAL_CACHE_IMPORT.search(path.read_text(encoding="utf-8"))
+    ]
+    assert found == [], "import the local cache from @miroir-framework/react or @miroir-framework/server/startup"
+
+
 def test_no_file_holds_two_local_caches():
     found = [
         str(path.relative_to(ROOT))
         for path in code_files("*/src/**/*", "*/tests/**/*")
-        if LOCAL_CACHE_IMPORT.search(text := path.read_text(encoding="utf-8")) and SERVER_STARTUP_IMPORT.search(text)
+        if not any(path.is_relative_to(ROOT / owner) for owner in LOCAL_CACHE_OWNERS)
+        and LOCAL_CACHE_IMPORT.search(text := path.read_text(encoding="utf-8"))
+        and (SERVER_STARTUP_IMPORT.search(text) or REACT_IMPORT.search(text))
     ]
-    assert found == [], "a file imports the local cache next to @miroir-framework/server/startup, which bundles it"
+    assert found == [], "a file imports the local cache next to a package that bundles it"
 
 
 def test_the_meta_model_marker_matches_the_meta_model_data():

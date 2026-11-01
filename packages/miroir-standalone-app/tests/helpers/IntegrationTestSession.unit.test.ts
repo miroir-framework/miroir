@@ -8,7 +8,7 @@ import { deployment_Admin } from "@miroir-framework/core/admin";
 
 const setupMiroirDomainControllerMock = vi.fn();
 
-vi.mock("miroir-localcache-redux", () => ({
+vi.mock("@miroir-framework/react/local-cache", () => ({
   setupMiroirDomainController: (...args: unknown[]) => setupMiroirDomainControllerMock(...args),
 }));
 

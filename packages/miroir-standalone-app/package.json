@@ -56,7 +56,6 @@
     "miroir-example-library": "*",
     "miroir-example-spotify": "*",
     "miroir-fixture-appForTest": "*",
-    "miroir-localcache-redux": "*",
     "miroir-localcache-zustand": "*",
     "@miroir-framework/mcp": "*",
     "@miroir-framework/react": "*",

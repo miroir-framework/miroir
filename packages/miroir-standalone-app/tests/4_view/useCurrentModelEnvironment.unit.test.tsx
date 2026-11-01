@@ -20,8 +20,8 @@ import {
   type DomainControllerInterface,
   type EntityInstance,
 } from "@miroir-framework/core";
-import { LocalCache } from "miroir-localcache-redux";
 import {
+  LocalCache,
   LocalCacheProvider,
   MiroirContextReactProvider,
   reduxStoreWithUndoRedoGetInitialState,

@@ -5,7 +5,8 @@ import type {
   RestClientInterface,
   RestPersistenceClientAndRestClientInterface,
 } from "@miroir-framework/core";
-import * as LocalCacheRedux from "miroir-localcache-redux";
+// #652: the redux local cache, bundled into @miroir-framework/react; this entry carries no UI (Node test setups)
+import * as LocalCacheRedux from "@miroir-framework/react/local-cache";
 
 // #446: the LocalCache implementation the tests build their DomainControllers on, chosen by
 // MIROIR_TEST_LOCAL_CACHE (set by `run-nonreg.py --local-cache`). Unset means redux.

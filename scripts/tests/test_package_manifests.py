@@ -522,7 +522,7 @@ def test_localcache_redux_dist_does_not_inline_its_dependencies():
 # --------------------------------------------------------------------------------------------------------------------
 # bundled folders (#652): no published package depends on one; the owners carry them
 
-BUNDLED_NAMES = {"miroir-app-miroir", "miroir-app-admin"}
+BUNDLED_NAMES = {"miroir-app-miroir", "miroir-app-admin", "miroir-localcache-redux"}
 MODULE_REFERENCE = re.compile(
     r"""(?:from|import|require\()\s*['"](""" + "|".join(sorted(BUNDLED_NAMES)) + r""")(?:/[^'"]*)?['"]"""
 )
@@ -557,7 +557,7 @@ def test_core_carries_the_meta_model_subpaths():
     assert "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad" in meta_model, "the Entity entity is not in dist/meta-model.js"
 
 
-@pytest.mark.parametrize("folder", ["packages/miroir-core"])
+@pytest.mark.parametrize("folder", ["packages/miroir-core", "packages/miroir-react", "packages/miroir-server-library"])
 def test_a_built_owner_names_no_bundled_folder_as_a_module(folder):
     require_built(folder)
     found = [
@@ -566,9 +566,6 @@ def test_a_built_owner_names_no_bundled_folder_as_a_module(folder):
         for match in MODULE_REFERENCE.finditer(path.read_text(encoding="utf-8"))
     ]
     assert found == [], f"{folder}: the built package still imports a private package"
-
-
-LOCAL_CACHE_REFERENCE = re.compile(r"""(?:from|import|require\()\s*['"](miroir-localcache-redux(?:/[^'"]*)?)['"]""")
 
 
 def test_the_server_library_carries_the_node_startup_call():
@@ -580,6 +577,24 @@ def test_the_server_library_carries_the_node_startup_call():
     assert "dist/startup.js" in packed and "dist/startup.d.ts" in packed
     built = [ROOT / folder / "dist/startup.js", ROOT / folder / "dist/startup.d.ts"]
     # a module reference, not the logger names and source comments that keep the package's name
-    found = [f"{path.name}: {m.group(1)}" for path in built for m in LOCAL_CACHE_REFERENCE.finditer(path.read_text(encoding="utf-8"))]
+    found = [f"{path.name}: {m.group(1)}" for path in built for m in MODULE_REFERENCE.finditer(path.read_text(encoding="utf-8"))]
     assert found == [], "dist/startup.* still imports a private package"
     assert "startMiroirNode" in (ROOT / folder / "dist/startup.d.ts").read_text(encoding="utf-8")
+
+
+def test_react_carries_the_local_cache():
+    """#652 (D3): react bundles the redux local cache; `./local-cache` exposes it without the UI (Node test setups)."""
+    folder = "packages/miroir-react"
+    data = manifest(folder)
+    assert data["exports"].get("./local-cache") == {
+        "types": "./dist/local-cache.d.ts",
+        "import": "./dist/miroir-localcache-imports.js",
+    }
+    assert "miroir-localcache-redux" in data.get("devDependencies", {})
+    require_built(folder)
+    packed = pack_list(folder)
+    assert "dist/local-cache.d.ts" in packed and "dist/miroir-localcache-imports.js" in packed
+    declarations = (ROOT / folder / "dist/local-cache.d.ts").read_text(encoding="utf-8")
+    assert "declare class LocalCache" in declarations, "the local cache's declarations are not inlined"
+    # one declaration of the local cache: the root's types take it from the subpath's
+    assert "declare class LocalCache" not in (ROOT / folder / "dist/index.d.ts").read_text(encoding="utf-8")
