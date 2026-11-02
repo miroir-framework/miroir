@@ -11,7 +11,7 @@ import {
   miroirTest_tr_core,
   miroirTest_runner_createEntity,
   miroirTest_runner_dropEntity,
-} from 'miroir-app-miroir';
+} from '@miroir-framework/core/meta-model';
 
 import {
   classifyMiroirTestListExecutionCapabilities,

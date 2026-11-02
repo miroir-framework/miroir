@@ -17,8 +17,8 @@ import { cleanLevel } from "../viewConstants.js";
 import { usePageConfiguration } from "../services/usePageConfiguration.js";
 import { formikPath_EntityInstanceSelectorPanel, useMiroirContextService } from "../contexts/MiroirContextReactProvider.js";
 import { formikPath_TransformerEditorInputModeSelector } from "../components/TransformerEditor/TransformerEditorInterface.js";
-import { deployment_Miroir } from "miroir-app-admin";
-import { entityEntity } from "miroir-app-miroir";
+import { deployment_Miroir } from "@miroir-framework/core/admin";
+import { entityEntity } from "@miroir-framework/core/meta-model";
 import { useCurrentModel } from "../ReduxHooks.js";
 import { defaultToolApplication, defaultToolEntity } from "./applicationDefaults.js";
 

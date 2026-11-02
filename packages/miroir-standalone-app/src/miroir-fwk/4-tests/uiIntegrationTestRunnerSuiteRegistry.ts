@@ -41,7 +41,7 @@ import {
   miroirTest_runner_freezeApplicationVersion,
   miroirTest_runner_mcp_getInstances,
   RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY,
-} from "miroir-app-miroir";
+} from "@miroir-framework/core/meta-model";
 
 import { getTestConfigurationFromIndex } from "./testConfigurationInstanceIndex.js";
 import { getTestbedInitApplicationParametersFromRef } from "./testbedInitApplicationParametersIndex.js";

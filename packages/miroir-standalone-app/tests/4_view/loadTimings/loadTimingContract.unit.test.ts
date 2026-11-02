@@ -11,8 +11,8 @@
 import { describe, expect, it } from "vitest";
 
 import { checkModelValidationInstance, defaultMiroirModelEnvironment, type MlElement } from "@miroir-framework/core";
-import { deployment_Miroir } from "miroir-app-admin";
-import { entityPageLoadMeasurement, selfApplicationMiroir } from "miroir-app-miroir";
+import { deployment_Miroir } from "@miroir-framework/core/admin";
+import { entityPageLoadMeasurement, selfApplicationMiroir } from "@miroir-framework/core/meta-model";
 
 import {
   ENTITY_PAGE_LOAD_MEASUREMENT_UUID,

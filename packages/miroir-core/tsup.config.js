@@ -1,8 +1,51 @@
 import { execSync } from 'node:child_process'
-import { writeFileSync } from 'node:fs'
+import { copyFileSync, writeFileSync } from 'node:fs'
 import { defineConfig } from 'tsup'
 
-export default defineConfig({
+// #652: core carries the meta-model packages (private workspace packages) as two subpath entries,
+// `@miroir-framework/core/meta-model` and `@miroir-framework/core/admin`. The other entries import them by core's
+// own name, left external, so a process or a bundle holds one copy (stable file names: the bundle report names
+// them). tsup runs the two builds concurrently, so neither cleans `dist`: the `build` script empties it first.
+const META_MODEL_SUBPATHS = {
+  'miroir-app-miroir': '@miroir-framework/core/meta-model',
+  'miroir-app-admin': '@miroir-framework/core/admin',
+}
+
+/** Imports of the meta-model packages from core's sources resolve to core's own subpaths, left external. */
+const metaModelSubpathsPlugin = {
+  name: 'miroir-core-meta-model-subpaths',
+  setup(build) {
+    build.onResolve({ filter: /^miroir-app-(miroir|admin)$/ }, (args) => ({
+      path: META_MODEL_SUBPATHS[args.path],
+      external: true,
+    }))
+  },
+}
+
+const metaModelBuild = {
+  entry: {
+    // from the packages' sources, not their dist/ (whose stale .map files broke the tree-shaking pass)
+    'meta-model': '../miroir-app-miroir/index.ts',
+    admin: '../miroir-app-admin/index.ts',
+  },
+  format: ['esm'],
+  bundle: true,
+  splitting: false,
+  clean: false,
+  dts: false,
+  sourcemap: true,
+  treeshake: true,
+  minify: true,
+  // admin importing the meta-model by name takes it from the subpath, not a second inlined copy
+  esbuildPlugins: [metaModelSubpathsPlugin],
+  onSuccess: async () => {
+    // the packages' hand-written declaration stubs (every export `any`), as the subpaths' types
+    copyFileSync('../miroir-app-miroir/index.d.ts', 'dist/meta-model.d.ts')
+    copyFileSync('../miroir-app-admin/index.d.ts', 'dist/admin.d.ts')
+  },
+}
+
+export default defineConfig([metaModelBuild, {
   entry: {
     index: 'src/index.ts',
     // Node-only: filesystem model-validation helpers (node:fs). Not part of the
@@ -14,7 +57,8 @@ export default defineConfig({
   format: ['esm'],
   bundle: true,
   splitting: false,
-  clean: true,
+  clean: false,
+  esbuildPlugins: [metaModelSubpathsPlugin],
   // rollup-plugin-dts (tsup `dts: true`) cannot emit `.d.ts.map` files, which are
   // required for Go to Definition to jump from consumers into `src/`. Emit
   // declarations + declaration maps with tsc in onSuccess instead.
@@ -23,14 +67,13 @@ export default defineConfig({
   treeshake: true,
   minify: true,
   // The Rollup treeShakingPlugin second pass collapseSourcemaps failed because
-  // workspace symlink packages (miroir-app-*, miroir-example-*, miroir-fixture-*) were being bundled
+  // workspace symlink packages (miroir-app-* until #652, miroir-example-*, miroir-fixture-*) were being bundled
   // with their dist/index.js.map included. Those stale maps embed an older version
   // of getMiroirFundamentalMlSchemaHelpers.ts, conflicting with the current
   // esbuild transform of the same file. Making them explicit externals prevents
   // esbuild from following the symlinks and reading their stale sourcemaps.
   external: [
-    'miroir-app-admin',
-    'miroir-app-miroir',
+    // miroir-app-miroir, miroir-app-admin: rewritten to core's subpaths by metaModelSubpathsPlugin (#652)
     'miroir-example-library',
     // json-diff → @ewoudenberg/difflib uses dynamic require('assert'); must stay external for ncc/ESM consumers
     'json-diff',
@@ -57,4 +100,4 @@ export default defineConfig({
     )
     writeFileSync('dist/ml-to-ts.d.ts', "export * from './1_core/mls/mlJzodTsAdapter.js';\n")
   },
-})
+}])

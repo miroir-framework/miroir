@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { instanceEndpointV1 } from 'miroir-app-miroir';
+import { instanceEndpointV1 } from '@miroir-framework/core/meta-model';
 import { mcpToolDescriptionFromActionDefinition } from '../../src/tools/mcpToolDescriptionFromActionDefinition';
 
 const APPLICATION_SECTION_DEF =

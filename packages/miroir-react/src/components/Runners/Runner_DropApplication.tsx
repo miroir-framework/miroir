@@ -8,7 +8,7 @@ import { packageName } from "../../constants.js";
 import { cleanLevel } from "../../viewConstants.js";
 import { StoredRunnerView } from "./RunnerView.js";
 
-import { selfApplicationMiroir } from "miroir-app-miroir";
+import { selfApplicationMiroir } from "@miroir-framework/core/meta-model";
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Runner_DropApplication");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName,

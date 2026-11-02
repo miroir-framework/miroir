@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import * as localCacheRedux from "miroir-localcache-redux";
+import * as localCacheRedux from "@miroir-framework/react/local-cache";
 import * as localCacheZustand from "miroir-localcache-zustand";
 
 import {

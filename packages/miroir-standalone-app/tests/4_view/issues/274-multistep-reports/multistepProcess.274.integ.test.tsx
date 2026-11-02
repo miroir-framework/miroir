@@ -14,7 +14,7 @@ import {
 } from "miroir-example-library";
 import {
   selfApplicationMiroir,
-} from "miroir-app-miroir";
+} from "@miroir-framework/core/meta-model";
 
 import { ReportPage } from "../../../../src/miroir-fwk/4_view/routes/ReportPage";
 import type { ReportViewProps } from "@miroir-framework/react";

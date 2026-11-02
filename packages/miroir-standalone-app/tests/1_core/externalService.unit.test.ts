@@ -17,7 +17,7 @@ import {
   instanceEndpointV1,
   instanceEndpointVersionV1,
   storeManagementEndpoint,
-} from "miroir-app-miroir";
+} from "@miroir-framework/core/meta-model";
 
 import { reportPageParamsFromSearchParams } from "@miroir-framework/react";
 import { resolveRepoRoot } from "../helpers/integrationTestProfiles.js";

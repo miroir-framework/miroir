@@ -13,6 +13,10 @@ a `-w` / `--workspace` selector, a quoted name in a config, list or policy file,
 
 Idempotent: a renamed reference starts with `@miroir-framework/`, which the word boundaries never match again.
 
+#652: when scripts/package-import-map.json exists, import specifiers of the packages bundled into another (the meta-model
+packages into core) move to the owner's subpath (`@miroir-framework/core/meta-model`), in code files outside the owners;
+`--check` reports the ones left.
+
     python scripts/rename_packages.py --report     # counts by name and context, and every occurrence to review
     python scripts/rename_packages.py --apply      # rename in place
     python scripts/rename_packages.py --check      # exit 1 when an old name is left outside the allow-list
@@ -32,6 +36,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 MAP_FILE = ROOT / "scripts" / "package-rename-map.json"
+IMPORT_MAP_FILE = ROOT / "scripts" / "package-import-map.json"
 ALLOW_FILE = ROOT / "scripts" / "package-rename-allow.json"
 
 SKIPPED = [
@@ -44,6 +49,7 @@ SKIPPED = [
     "graphify-out/**",
     "scripts/package-rename-map.json",
     "scripts/package-rename-allow.json",
+    "scripts/package-import-map.json",
     "scripts/rename_packages.py",
     "scripts/tests/test_rename_packages.py",
     "docs/reference/core-public-api.md",
@@ -168,6 +174,39 @@ def scan(path: str, text: str, mapping: dict[str, str], allow: list[dict]) -> tu
     return occurrences, "".join(out)
 
 
+# #652: imports of a package bundled into another move to that package's subpath. Only import specifiers change (a
+# manifest key, a workspace selector, an application name or a folder path stays), and not inside the owners.
+CODE_SUFFIXES = {".ts", ".tsx", ".mts", ".cts", ".js", ".jsx", ".mjs", ".cjs"}
+
+
+def load_import_map(import_map_file: Path = IMPORT_MAP_FILE) -> dict | None:
+    return json.loads(import_map_file.read_text(encoding="utf-8")) if import_map_file.is_file() else None
+
+
+def import_pattern(mapping: dict[str, str]) -> re.Pattern[str]:
+    names = "|".join(map(re.escape, sorted(mapping, key=len, reverse=True)))
+    before = r"(?:\bfrom\s*|\bimport\s*\(\s*|\brequire\s*\(\s*|\bvi\.mock\s*\(\s*|^\s*import\s+)"
+    return re.compile(before + r"""(['"])(""" + names + r""")\1""", re.MULTILINE)
+
+
+def scan_imports(path: str, text: str, import_map: dict | None) -> tuple[list[Occurrence], str]:
+    """The import specifiers of bundled packages in a code file outside their owners, and the text with them moved."""
+    if not import_map or Path(path).suffix not in CODE_SUFFIXES:
+        return [], text
+    if any(path.startswith(owner) for owner in import_map["owners"]):
+        return [], text
+    mapping: dict[str, str] = import_map["imports"]
+    occurrences: list[Occurrence] = []
+
+    def move(match: re.Match[str]) -> str:
+        name = match.group(2)
+        line = text.count("\n", 0, match.start()) + 1
+        occurrences.append(Occurrence(path, line, name, "renamed:import", text.splitlines()[line - 1].strip()))
+        return match.group(0)[: match.start(2) - match.start()] + mapping[name] + match.group(1)
+
+    return occurrences, import_pattern(mapping).sub(move, text)
+
+
 def tracked_files(root: Path) -> list[str]:
     result = subprocess.run(["git", "ls-files"], cwd=root, capture_output=True, text=True, check=False)
     if result.returncode == 0:
@@ -183,7 +222,9 @@ def candidate_files(root: Path) -> list[str]:
     ]
 
 
-def run(root: Path, mapping: dict[str, str], allow: list[dict], apply: bool) -> list[Occurrence]:
+def run(
+    root: Path, mapping: dict[str, str], allow: list[dict], apply: bool, import_map: dict | None = None
+) -> list[Occurrence]:
     occurrences: list[Occurrence] = []
     for path in candidate_files(root):
         file = root / path
@@ -192,7 +233,8 @@ def run(root: Path, mapping: dict[str, str], allow: list[dict], apply: bool) -> 
         except (UnicodeDecodeError, OSError):
             continue
         found, renamed = scan(path, text, mapping, allow)
-        occurrences += found
+        moved, renamed = scan_imports(path, renamed, import_map)
+        occurrences += found + moved
         if apply and renamed != text:
             file.write_text(renamed, encoding="utf-8")
     return occurrences
@@ -224,7 +266,8 @@ def main(argv: list[str] | None = None) -> int:
     root: Path = args.root
     mapping = load_map(root / "scripts" / "package-rename-map.json")
     allow = load_allow(root / "scripts" / "package-rename-allow.json")
-    occurrences = run(root, mapping, allow, apply=args.apply)
+    import_map = load_import_map(root / "scripts" / "package-import-map.json")
+    occurrences = run(root, mapping, allow, apply=args.apply, import_map=import_map)
     renamed = [o for o in occurrences if o.kind.startswith("renamed")]
     if args.report:
         if args.list:

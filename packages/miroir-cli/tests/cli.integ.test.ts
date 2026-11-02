@@ -65,8 +65,8 @@ import { openTestEnvironment, selectedTestEnvironment } from "@miroir-framework/
 import { initializePlatform } from "../src/platform.js";
 import { getAllCommands, getCommandByName } from "../src/commands/commandsFromEndpoint.js";
 
-import { defaultMiroirMetaModel, instanceEndpointV1 } from "miroir-app-miroir";
-import { deployment_Miroir } from 'miroir-app-admin';
+import { defaultMiroirMetaModel, instanceEndpointV1 } from "@miroir-framework/core/meta-model";
+import { deployment_Miroir } from '@miroir-framework/core/admin';
 const packageName = "miroir-cli";
 const fileName = "cli.integ.test";
 

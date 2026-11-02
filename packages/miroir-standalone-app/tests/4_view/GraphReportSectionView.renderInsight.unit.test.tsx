@@ -6,8 +6,8 @@ import "@testing-library/jest-dom";
 
 import type { GraphReportSection } from "@miroir-framework/core";
 import { ApplicationSection } from "@miroir-framework/core";
-import { deployment_Miroir } from "miroir-app-admin";
-import { defaultStoredMiroirTheme } from "miroir-app-miroir";
+import { deployment_Miroir } from "@miroir-framework/core/admin";
+import { defaultStoredMiroirTheme } from "@miroir-framework/core/meta-model";
 
 const showPerformanceDisplayRef = { current: false };
 

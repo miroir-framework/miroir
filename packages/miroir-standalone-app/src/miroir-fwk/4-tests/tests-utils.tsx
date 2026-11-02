@@ -30,10 +30,10 @@ import {
 } from "@miroir-framework/core";
 import {
   deployment_Miroir
-} from "miroir-app-admin";
+} from "@miroir-framework/core/admin";
 import {
   selfApplicationMiroir
-} from "miroir-app-miroir";
+} from "@miroir-framework/core/meta-model";
 
 import {
   LocalCache,

@@ -3,7 +3,7 @@ import React from 'react';
 import { describe, expect, it } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import type { MiroirIcon } from '@miroir-framework/core';
-import { defaultStoredMiroirTheme } from 'miroir-app-miroir';
+import { defaultStoredMiroirTheme } from '@miroir-framework/core/meta-model';
 
 import { ThemedIcon } from "@miroir-framework/react";
 import { MiroirThemeProvider } from "@miroir-framework/react";

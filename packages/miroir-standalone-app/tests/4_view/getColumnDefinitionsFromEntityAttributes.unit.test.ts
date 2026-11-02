@@ -4,7 +4,7 @@
 import { describe, expect, it } from "vitest";
 
 import { entityMLSchema, type Entity } from "@miroir-framework/core";
-import { entityMiroirTest } from "miroir-app-miroir";
+import { entityMiroirTest } from "@miroir-framework/core/meta-model";
 
 import { getMDataGridColumnDefinitionsFromEntity } from "@miroir-framework/react";
 

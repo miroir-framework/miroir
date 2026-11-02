@@ -73,7 +73,7 @@ import {
 import { loadTestConfigFiles } from "../utils/fileTools.js";
 import { cleanLevel, packageName } from "./constants.js";
 
-import { deployment_Admin } from "miroir-app-admin";
+import { deployment_Admin } from "@miroir-framework/core/admin";
 import {
   entityBook,
   getDefaultLibraryModelEnvironmentDEFUNCT,
@@ -86,7 +86,7 @@ import {
   entityApplicationVersionCrossEntityVersion,
   entityEntityVersion,
   entitySelfApplicationVersion,
-} from "miroir-app-miroir";
+} from "@miroir-framework/core/meta-model";
 
 const REPO_ROOT = join(import.meta.dirname, "../../../..");
 const bookCountByPublisherQuery = JSON.parse(

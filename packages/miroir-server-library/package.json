@@ -14,6 +14,10 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./startup": {
+      "types": "./dist/startup.d.ts",
+      "import": "./dist/startup.js"
     }
   },
   "files": [
@@ -37,11 +41,16 @@
     "node": ">=22"
   },
   "dependencies": {
+    "@miroir-framework/core": "*",
+    "@miroir-framework/mcp": "*",
+    "@reduxjs/toolkit": "2.13.0",
+    "@teroneko/redux-saga-promise": "4.0.0",
     "body-parser": "2.4.0",
     "cors": "2.8.6",
     "express": "5.3.0",
-    "@miroir-framework/core": "*",
-    "@miroir-framework/mcp": "*"
+    "immer": "11.1.21",
+    "redux-saga": "1.5.1",
+    "typed-redux-saga": "1.5.0"
   },
   "devDependencies": {
     "@types/body-parser": "1.19.6",

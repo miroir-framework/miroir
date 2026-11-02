@@ -23,6 +23,29 @@ export const BUNDLE_REPORT_FILE = ".vite/bundle-report.json";
 const TREEMAP_FILE = ".vite/bundle-report.html";
 
 /**
+ * The entry files of a manifest's `exports` subpaths (not `.` nor `./package.json`): file relative to the package
+ * -> subpath, e.g. `{ "dist/meta-model.js": "meta-model" }` (#652).
+ * @param {unknown} exports
+ * @returns {Record<string, string>}
+ */
+export function exportSubpaths(exports) {
+  const subpaths = {};
+  if (!exports || typeof exports !== "object") {
+    return subpaths;
+  }
+  for (const [key, target] of Object.entries(exports)) {
+    if (key === "." || key === "./package.json" || !key.startsWith("./")) {
+      continue;
+    }
+    const file = typeof target === "string" ? target : target?.import ?? target?.default;
+    if (typeof file === "string" && file.endsWith(".js")) {
+      subpaths[file.replace(/^\.\//, "")] = key.slice(2);
+    }
+  }
+  return subpaths;
+}
+
+/**
  * The workspace packages of the repository, from the root `package.json` `workspaces` globs
  * (`packages/*`).
  * @param {string} root
@@ -40,7 +63,8 @@ export function readWorkspaces(root) {
     for (const dir of directories) {
       const manifest = path.join(root, dir, "package.json");
       if (existsSync(manifest)) {
-        workspaces.push({ dir, name: JSON.parse(readFileSync(manifest, "utf-8")).name });
+        const { name, exports } = JSON.parse(readFileSync(manifest, "utf-8"));
+        workspaces.push({ dir, name, subpaths: exportSubpaths(exports) });
       }
     }
   }

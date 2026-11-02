@@ -8,8 +8,8 @@ import {
   adminSelfApplication,
   deployment_Admin,
   deployment_Miroir,
-} from "miroir-app-admin";
-import { selfApplicationMiroir } from "miroir-app-miroir";
+} from "@miroir-framework/core/admin";
+import { selfApplicationMiroir } from "@miroir-framework/core/meta-model";
 
 /**
  * The reports and entities offered to the pages, by deployment: Admin, Miroir and the current

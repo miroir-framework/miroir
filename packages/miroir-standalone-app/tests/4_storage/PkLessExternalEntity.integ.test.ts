@@ -46,8 +46,8 @@ import { miroirFileSystemStoreSectionStartup } from "@miroir-framework/store-fil
 import { miroirIndexedDbStoreSectionStartup } from "@miroir-framework/store-indexeddb";
 import { miroirMongoDbStoreSectionStartup } from "@miroir-framework/store-mongodb";
 import { miroirPostgresStoreSectionStartup } from "@miroir-framework/store-postgres";
-import { deployment_Admin } from "miroir-app-admin";
-import { defaultMiroirMetaModel, entityEntity } from "miroir-app-miroir";
+import { deployment_Admin } from "@miroir-framework/core/admin";
+import { defaultMiroirMetaModel, entityEntity } from "@miroir-framework/core/meta-model";
 import {
   deployment_Library_DO_NO_USE,
   getDefaultLibraryModelEnvironmentDEFUNCT,

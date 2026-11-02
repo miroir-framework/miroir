@@ -4,7 +4,7 @@ import * as path from "path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { Action2Error, Entity } from "@miroir-framework/core";
-import { entityEntity } from "miroir-app-miroir";
+import { entityEntity } from "@miroir-framework/core/meta-model";
 
 import { FileSystemDataStoreSection } from "../src/4_services/FileSystemDataStoreSection.js";
 import { FileSystemModelStoreSection } from "../src/4_services/FileSystemModelStoreSection.js";

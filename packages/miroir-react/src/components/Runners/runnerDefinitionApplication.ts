@@ -7,7 +7,7 @@ import {
   runnerFreezeApplicationVersion,
   runnerMcpGetInstances,
   selfApplicationMiroir,
-} from "miroir-app-miroir";
+} from "@miroir-framework/core/meta-model";
 
 /**
  * Runner instances stored in Miroir data (`miroir_data/e54d7dc1…`), regardless of

@@ -8,7 +8,7 @@ import {
   ViewParamsData,
   type DomainAction,
 } from "@miroir-framework/core";
-import { adminSelfApplication, entityViewParams } from "miroir-app-admin";
+import { adminSelfApplication, entityViewParams } from "@miroir-framework/core/admin";
 
 export interface ViewParamsUpdate {
   currentValue: ViewParamsData | undefined;

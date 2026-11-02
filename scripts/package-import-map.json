@@ -1,0 +1,7 @@
+{
+  "imports": {
+    "miroir-app-miroir": "@miroir-framework/core/meta-model",
+    "miroir-app-admin": "@miroir-framework/core/admin"
+  },
+  "owners": ["packages/miroir-core/", "packages/miroir-app-miroir/", "packages/miroir-app-admin/"]
+}

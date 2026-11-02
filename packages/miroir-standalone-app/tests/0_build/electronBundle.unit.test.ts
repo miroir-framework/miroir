@@ -67,7 +67,8 @@ describe("electronBundle", () => {
     }
   });
 
-  // #337: the main process imports "miroir-localcache-redux/node", which re-exports no react-redux.
+  // #337: the main process imports the local cache's Node entry (since #652 through "@miroir-framework/server/startup"),
+  // which re-exports no react-redux.
   it("bundles no browser UI library, React included", () => {
     const ui = [...names].filter(
       (name) =>

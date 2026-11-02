@@ -29,7 +29,7 @@ import { miroirFileSystemStoreSectionStartup } from "@miroir-framework/store-fil
 import { miroirIndexedDbStoreSectionStartup } from "@miroir-framework/store-indexeddb";
 import { miroirMongoDbStoreSectionStartup } from "@miroir-framework/store-mongodb";
 import { miroirPostgresStoreSectionStartup } from "@miroir-framework/store-postgres";
-import { entityEntity, runnerDeployApplication } from "miroir-app-miroir";
+import { entityEntity, runnerDeployApplication } from "@miroir-framework/core/meta-model";
 import { env } from "process";
 import { loglevelnext } from "../../src/loglevelnextImporter";
 import { runTestOrTestSuite } from "../../src/miroir-fwk/4-tests/runTestOrTestSuite";

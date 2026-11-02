@@ -9,8 +9,8 @@
 import { describe, expect, it } from "vitest";
 
 import type { MiroirConfigClient, MiroirTestDefinition } from "@miroir-framework/core";
-import { miroirTest_tr_menuBuild } from "miroir-app-miroir";
-import { deployment_Admin } from "miroir-app-admin";
+import { miroirTest_tr_menuBuild } from "@miroir-framework/core/meta-model";
+import { deployment_Admin } from "@miroir-framework/core/admin";
 
 import { runUnitMiroirTestBatch } from "../../../src/miroir-fwk/4-tests/miroirTestBatch.js";
 import {

@@ -426,13 +426,38 @@ The packages of the published set carry their published names in the repo: `@mir
 `/server` (folder `packages/miroir-server-library`), `/store-postgres`, `/store-filesystem`, `/store-indexeddb`,
 `/store-mongodb`, `/store-bundled`, `/env`, `/mcp`, `/cli`. Folders keep their `miroir-*` names, so a script that
 lists folders selects a workspace with `-w packages/<folder>`. `miroir-app-miroir`, `miroir-app-admin` and
-`miroir-localcache-redux` keep their private names until #652 bundles them into core and react. Each published
+`miroir-localcache-redux` stay private: #652 bundles them into published packages (§10e). Each published
 package declares `publishConfig.access: "public"`; `private` flags are lifted by the publish item.
 
 `scripts/rename_packages.py` did the rename from `scripts/package-rename-map.json`, leaving what is not an npm name
 (`scripts/package-rename-allow.json`: logger names, MiroirTest `functionRef.module` ids, bin names, …). A branch
 started before the rename runs `python scripts/rename_packages.py --apply` after merging, then
 `npm install`; `python scripts/rename_packages.py --check` (pre-push gate, pr-checks) reports any old name left.
+
+## 10e. Packages bundled into another (#652)
+
+Three workspace packages are never published: their owners bundle them, so a registry install needs none of them and a
+process or a page holds one copy.
+
+| Private package | Bundled into | Import it as |
+|---|---|---|
+| `miroir-app-miroir` (meta-model) | `@miroir-framework/core` | `@miroir-framework/core/meta-model` |
+| `miroir-app-admin` | `@miroir-framework/core` | `@miroir-framework/core/admin` |
+| `miroir-localcache-redux` | `@miroir-framework/react` | `@miroir-framework/react`, or `@miroir-framework/react/local-cache` (no UI, for Node test setups) |
+| `miroir-localcache-redux/node` | `@miroir-framework/server` | `@miroir-framework/server/startup` (`startMiroirNode`, `startMiroirPlatform`) |
+
+Only core and the two `miroir-app-*` packages import the meta-model packages by their private names; only react, the
+server library and the local cache import the local cache (test files of other packages may, when they load none of
+its owners). Core's build bundles the two meta-model packages into `dist/meta-model.js` and `dist/admin.js` and
+rewrites its own imports of them to the subpaths. The vite configs that alias core to its sources alias the two
+subpaths to the private packages, before the root alias. The server library builds in its own stage, before the CLI.
+
+`python scripts/rename_packages.py --apply` moves the imports of the meta-model packages to the subpaths
+(`scripts/package-import-map.json`); `--check` reports any left. Guards: `scripts/tests/test_package_manifests.py`
+(no published package depends on a bundled one; a built owner names none as a module; pack cases of the subpaths),
+`scripts/tests/test_bundled_packages.py` (vite aliases, local cache importers, the server release holds no
+meta-model data under `MIROIR_RELEASE_SMOKE=1`). The bundle report names a file reached through an `exports` subpath
+`<name>/<subpath>`. Analysis: `code-helpers/features/652-BUILD-bundle-meta-model-and-local-cache/`.
 
 ## 11. Non-goals of the current implementation (v1)
 

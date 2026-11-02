@@ -14,7 +14,7 @@ import {
   resetAndinitializeDeploymentCompositeAction,
   type Deployment,
 } from "@miroir-framework/core";
-import { deployment_Admin } from "miroir-app-admin";
+import { deployment_Admin } from "@miroir-framework/core/admin";
 import { selfApplicationLibrary } from "miroir-example-library";
 
 import {
@@ -22,7 +22,7 @@ import {
   entityEntityVersion,
   entityMenu,
   entityReport,
-} from "miroir-app-miroir";
+} from "@miroir-framework/core/meta-model";
 // ################################################################################################
 export const testSuiteNameForBuildPlusRuntimeCompositeAction: string =
   "applicative.Library.BuildPlusRuntimeCompositeAction.integ.test";

@@ -18,7 +18,7 @@ import {
   type ProcessCapabilities,
 } from "@miroir-framework/core";
 import { bootEnvironment, environmentServerConfig, openTestEnvironment, selectedTestEnvironment } from "@miroir-framework/env";
-import { startMiroirNode } from "miroir-localcache-redux/node";
+import { startMiroirNode } from "../../src/startup.js";
 import { miroirFileSystemStoreSectionStartup } from "@miroir-framework/store-filesystem";
 
 // #636: a server-side domain controller on a test environment (test-filesystem unless MIROIR_ENV names
