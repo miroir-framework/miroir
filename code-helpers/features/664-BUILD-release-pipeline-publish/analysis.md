@@ -7,7 +7,7 @@ Parent issue: [#621](https://github.com/miroir-framework/miroir/issues/621) (pla
 Related analyses: [`../621-FEATURE-npm-packages/analysis.md`](../621-FEATURE-npm-packages/analysis.md) (W10, D2, D4), [`../658-FEATURE-create-app-consumer-test/analysis.md`](../658-FEATURE-create-app-consumer-test/analysis.md) (D7, D9: the flag flip left to this item)
 Key sources: [`ci/release/release_version.py`](../../../ci/release/release_version.py), [`ci/release/release_lib/plan.py`](../../../ci/release/release_lib/plan.py), [`ci/release/release_lib/tarballs.py`](../../../ci/release/release_lib/tarballs.py), [`ci/release/release_lib/lerna_ops.py`](../../../ci/release/release_lib/lerna_ops.py), [`ci/release/release_lib/handoff.py`](../../../ci/release/release_lib/handoff.py), [`scripts/published-packages.json`](../../../scripts/published-packages.json), [`.github/workflows/release-tree.yml`](../../../.github/workflows/release-tree.yml)
 
-**Status:** analysis, for review. Decisions D1 to D6 confirmed in grilling round 1 (all as recommended). D9 is waiting for your answer (recommendation used in the meantime). D7, D8 and D10 are new: they came out of reading the code and are proposed here.
+**Status:** implemented (2026-11-02), see [`tdd-implementation-plan.md`](./tdd-implementation-plan.md). D1 to D6 confirmed in grilling round 1, D9 by decision card, D7, D8 and D10 with the analysis review, all as recommended. Realization notes: D4 check 1 also reads the tarball's manifest (`npm publish --dry-run` ignores `private` on a tarball); the publish tests use a Python local registry, not Verdaccio (audit gate).
 
 **Document history.** This item revises #621 D4 ("the pipeline stops at validated tarballs, the maintainer runs `npm publish`"). Provenance can only be produced from CI, so the publish runs in a workflow that the maintainer starts by hand (round 1, Q3-c). The pipeline still never publishes on its own: no push, tag or schedule starts it. The written commands remain, as the fallback without provenance.
 
@@ -41,10 +41,10 @@ Key sources: [`ci/release/release_version.py`](../../../ci/release/release_versi
 | D4 | Checks before publishing | **`npm publish --dry-run` per tarball; version not on the registry; external dependencies on the registry; clean-consumer check on all 12; #658 consumer test** | G3 | Accepted (Q4) |
 | D5 | dist-tag | **prerelease → `next`, release → `latest`** | G4 | Accepted (Q5) |
 | D6 | Registry credentials | **trusted publishing (OIDC) once each package exists; a granular `NPM_TOKEN` secret for the first publish** | G1 | Accepted (Q6) |
-| D7 | Product version of a release | **new `--version <exact>`, exclusive with `--bump`** | G1 | Proposed |
-| D8 | What a publish run does on a version that already exists | **skip a package whose registry integrity equals the tarball's, stop on any other** | G1, G3 | Proposed |
-| D9 | Release commit and tag after publishing | **push the tag and a `release/<version>` branch, only after every package is published** (recommended; waiting for your answer) | G1 | Pending |
-| D10 | Safety of the workflow itself | **`publish` input off by default (dry run), a GitHub environment `npm-publish`, one run at a time** | G2 | Proposed |
+| D7 | Product version of a release | **new `--version <exact>`, exclusive with `--bump`** | G1 | Accepted |
+| D8 | What a publish run does on a version that already exists | **skip a package whose registry integrity equals the tarball's, stop on any other** | G1, G3 | Accepted |
+| D9 | Release commit and tag after publishing | **push the tag and a `release/<version>` branch, only after every package is published** | G1 | Accepted |
+| D10 | Safety of the workflow itself | **`publish` input off by default (dry run), a GitHub environment `npm-publish`, one run at a time** | G2 | Accepted |
 
 ### D1 — Publishable packages
 

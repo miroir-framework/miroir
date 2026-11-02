@@ -92,6 +92,21 @@ def json_loads_list(text: str) -> list[Any]:
 PUBLISHED_SET_FILE = Path("scripts") / "published-packages.json"
 
 
+def bundled_folders(repo_root: Path, packages: dict[str, Workspace]) -> dict[str, set[str]]:
+    """#664: owner published name -> the workspace packages bundled into it (#652, #656), from the published-set
+    entries whose folder carries another name. A release builds them before their owner, which resolves them
+    through their built `dist/`."""
+    by_folder = {workspace.path.parent.name: name for name, workspace in packages.items()}
+    owners: dict[str, set[str]] = {}
+    for entry in load_json(repo_root / PUBLISHED_SET_FILE):
+        name = by_folder.get(Path(entry["folder"]).name)
+        if name is None:
+            raise ReleaseError(f"published set lists an unknown folder: {entry['folder']}")
+        if name != entry["publishedName"]:
+            owners.setdefault(entry["publishedName"], set()).add(name)
+    return owners
+
+
 def published_names(repo_root: Path) -> set[str]:
     """#664: the names a release publishes, from scripts/published-packages.json (folders bundled into another
     package list that package's name, so a name can appear more than once)."""
@@ -183,6 +198,9 @@ def build_plan(
     # #664 D2: the whole published set at every release, so exact internal pins always resolve
     initial = (raw_candidates | set(force) | published) - disabled_set
     selected = release_closure(initial, packages)
+    bundled = bundled_folders(repo_root, packages)
+    for owner in sorted(selected & set(bundled)):
+        selected |= release_closure(bundled[owner], packages)
     disabled_in_closure = selected & disabled_set
     if disabled_in_closure:
         raise ReleaseError(
@@ -190,7 +208,7 @@ def build_plan(
             + ", ".join(sorted(disabled_in_closure))
         )
 
-    layers = topological_layers(packages, selected)
+    layers = topological_layers(packages, selected, build_edges=bundled)
     runtime_cycles = tuple(
         find_cycles(packages, selected=selected, runtime_only=True)
     )

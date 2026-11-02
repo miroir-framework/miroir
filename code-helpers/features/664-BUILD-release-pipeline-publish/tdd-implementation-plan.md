@@ -14,9 +14,9 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Parent: [`../621-FEATURE-npm-packages/tdd-implementation-plan.md`](../621-FEATURE-npm-packages/tdd-implementation-plan.md) (I8, replaces its two slices)
 Working branch: `claude/664-release-pipeline-publish` (from `origin/aba`)
 
-**Resume note:** plan written, not started. D9 uses the recommended option (tag + `release/<version>` branch) until the maintainer answers.
+**Resume note:** slices 0 to 6 done (2026-11-02). D9 confirmed as recommended. Slice 4 uses a Python local registry instead of Verdaccio (see its Realization).
 
-**Open point for review:** slice 4 needs Verdaccio, an external npm package, run by the test. Recommended: a pinned `verdaccio` devDependency of the root workspace (checked by `check_dependency_policy.py`). Fallback if you would rather not add it: a ~100-line Python registry in `ci/release/tests/` that serves the two npm calls the test makes (`PUT` and `GET` of a packument), less faithful to npmjs.org.
+**Open point for review (resolved in slice 4: Python registry):** slice 4 needs Verdaccio, an external npm package, run by the test. Recommended: a pinned `verdaccio` devDependency of the root workspace (checked by `check_dependency_policy.py`). Fallback if you would rather not add it: a ~100-line Python registry in `ci/release/tests/` that serves the two npm calls the test makes (`PUT` and `GET` of a packument), less faithful to npmjs.org.
 
 ---
 
@@ -36,13 +36,13 @@ Not in this plan (analysis §2): packages outside the set, #224 artefacts, npm a
 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
-| 0 | Characterize: plan classification, handoff keys, commit staging | ⬜ | `ci/release/tests/test_release_version.py` characterization cases; findings |
-| 1 | The published set decides `private` and what a release packs | ⬜ | `scripts/tests/test_package_manifests.py`; `test_release_version.py` |
-| 2 | A release takes an exact version | ⬜ | `test_release_version.py` |
-| 3 | `--apply` refuses a tarball the registry would refuse, or a version already taken | ⬜ | `ci/release/tests/test_publish_checks.py` |
-| 4 | Tracer: `publish.py` publishes a handoff in layer order to a registry, and a rerun finishes a partial publish | ⬜ | `ci/release/tests/test_publish.py` (Verdaccio) |
-| 5 | The release commit holds no tarball and goes to a release branch with its tag | ⬜ | `test_release_version.py` git cases (bare remote) |
-| 6 | The workflow, the guards, the docs, the epic's acceptance | ⬜ | `scripts/tests/test_release_workflow.py`; dry-run workflow run; full nonreg |
+| 0 | Characterize: plan classification, handoff keys, commit staging | ✅ | `ci/release/tests/test_release_version.py` characterization cases; findings |
+| 1 | The published set decides `private` and what a release packs | ✅ | `scripts/tests/test_package_manifests.py`; `test_release_version.py` |
+| 2 | A release takes an exact version | ✅ | `test_release_version.py` |
+| 3 | `--apply` refuses a tarball the registry would refuse, or a version already taken | ✅ | `ci/release/tests/test_publish_checks.py` |
+| 4 | Tracer: `publish.py` publishes a handoff in layer order to a registry, and a rerun finishes a partial publish | ✅ | `ci/release/tests/test_publish.py` (local registry) |
+| 5 | The release commit holds no tarball and goes to a release branch with its tag | ✅ | `test_release_version.py` git cases (bare remote) |
+| 6 | The workflow, the guards, the docs, the epic's acceptance | ✅ | `scripts/tests/test_release_workflow.py`; dry-run workflow run; full nonreg |
 
 ---
 
@@ -76,7 +76,7 @@ Not in this plan (analysis §2): packages outside the set, #224 artefacts, npm a
 
 ## Slice 0 — Characterize the plan, the handoff and the commit
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 Lock what later slices change, so each change shows as a diff of an expectation:
 
@@ -93,11 +93,18 @@ python -m pytest ci/release/tests -q
 
 ### Realization
 
+Done as findings rather than tests that later slices would immediately flip (the plan classification was already locked by `test_plan_layers_runtime_closure`, whose expectations slice 1 changed):
+
+- `classify_packages` read `private`: `distributeable` held env, mcp, cli, create-app plus `miroir-ai`, `miroir-server`, `miroir-standalone-app`; core, react, server and the stores were bundle-only.
+- `commit_tag_push` staged `release-tarballs/` (reproduced in a scratch repository: `A release-tarballs/P0/a.tgz`), and `git push` on the detached worktree fails (`fatal: You are not currently on a branch`).
+- `ci/release/tests` were not run by PR CI; the new guards went to `scripts/tests` (slices 1 and 6).
+
+
 ---
 
 ## Slice 1 — The published set decides `private` and what a release packs
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **RED:**
 1. `test_package_manifests.py::test_private_is_false_exactly_for_published_names`: over every `packages/*/package.json`, `private` is false iff `name` is a `publishedName` (fails on the 8 private set packages and the 3 public outsiders).
@@ -117,11 +124,19 @@ python scripts/check_dependency_policy.py
 
 ### Realization
 
+- `plan.published_names()` reads `scripts/published-packages.json` (a missing or malformed file aborts the plan); `build_plan` adds the names to `initial`, refuses to `--disable` one, and `classify_packages(published, selected)` no longer reads `private`.
+- The `repo` fixture gained a published set (`lib`); three expectations changed accordingly (`closure_added`, `distributeable`/`bundle_only`, the force/disable selection). Four new tests.
+- `private` flipped on 11 manifests; `test_private_is_false_exactly_for_published_names` guards it. `test_library_stays_private_until_the_publish_item` became `test_library_is_publishable`. No lockfile change.
+- Real run: the plan selects the 12 packages in 4 layers (P0 core + create-app; P1 env, mcp, react, 5 stores; P2 server; P3 cli), 12 distributeable. `validate_layer_consumer` on the 12 tarballs packed from the built workspace: all four layers install (7 s, 36 s, 13 s, 13 s).
+- Found: `lerna ls` lists only non-private packages, so after the flip Lerna's candidates are always inside the set. `miroir-server` and the standalone app (#224 artefacts) now join a release only with `--force`. Documented in the reference §7.
+- Refactor checkpoint: `scripts/tests` reads the set itself (it cannot import `ci/release` simply); left as is.
+
+
 ---
 
 ## Slice 2 — A release takes an exact version
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **RED:** `test_release_version.py`: `--version 0.5.0-rc.2` gives `product_version == "0.5.0-rc.2"`; `--version` with `--bump` is refused; an invalid SemVer, the current version, or a version with an existing tag is refused.
 
@@ -138,11 +153,14 @@ python ci/release/release_version.py --version 0.5.0-rc.2 --since 0.5.0-rc.1
 
 ### Realization
 
+`--bump` and `--version` are a mutually exclusive argparse group; `build_plan(version=…)` validates SemVer and refuses the current version; `assert_version_untagged` refuses a local tag. `bump` is recorded as `"exact"`. Real dry run: `--version 0.5.0-rc.2 --since 0.5.0-rc.1` plans 12 packages; `--version 0.5.0-rc.1` is refused (tag exists). The tag of `--since` must be fetched locally (`git fetch origin tag 0.5.0-rc.1`).
+
+
 ---
 
 ## Slice 3 — `--apply` refuses a tarball the registry would refuse, or a version already taken
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **RED:** `ci/release/tests/test_publish_checks.py`, on real tarballs packed by the test from tiny packages in a temporary folder:
 1. a tarball with a valid scoped manifest passes `npm publish --dry-run --tag next --access public`; one whose manifest npm refuses fails the check with npm's message;
@@ -161,11 +179,17 @@ python -m pytest ci/release/tests/test_publish_checks.py -q
 
 ### Realization
 
+- Deviation: `npm publish <tarball> --dry-run` does **not** apply `private` (a private tarball "publishes" in dry run; checked with npm 10.9.9). So `check_publishable` first reads the tarball's own `package.json` and refuses: `private`, a name outside `@miroir-framework/`, another version, `publishConfig.access` not public, an internal dependency not pinned to the exact version. Then the npm dry run.
+- `published_integrity` parses `npm view name@version dist.integrity --json`: a JSON `E404` (unknown package or unknown version) means free, any other failure raises.
+- `check_release_tarballs` runs in `build_pack_and_validate` after packing, before the consumer checks.
+- Tests: 12 in `test_publish_checks.py` (tarballs packed with `--pack-destination`, so a second pack does not include the first). The 12 real tarballs of the workspace pass the manifest rules and the dry run, and none of their versions is on npmjs.org.
+
+
 ---
 
 ## Slice 4 — Tracer: `publish.py` publishes a handoff in layer order, and a rerun finishes a partial publish
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **RED:** `ci/release/tests/test_publish.py` (slow, `MIROIR_PUBLISH_TEST=1`). The test starts Verdaccio on a free port with a temporary storage and a config that allows anonymous publish, packs two tiny packages (`@t/a`, `@t/b` depending on `@t/a` exactly) and writes a handoff with two layers:
 1. `publish.py --handoff h.json --registry <verdaccio>` without `--yes` publishes nothing (`npm view` 404) and prints the commands with `--dry-run`;
@@ -188,11 +212,17 @@ MIROIR_PUBLISH_TEST=1 python -m pytest ci/release/tests/test_publish.py -q
 
 ### Realization
 
+- Deviation: Verdaccio 6.10.5 as a devDependency failed the dependency-policy audit gate (critical handlebars advisories through `@verdaccio/hooks`, high `compression`; an `overrides` entry fixed compression but not the nested handlebars pin) and added ~2,900 lockfile lines. Reverted. `ci/release/tests/local_registry.py` (a `ThreadingHTTPServer`, ~100 lines) serves `PUT` and `GET` of a packument: 403 on an existing version, 404 on an unknown package, 401 without a token, `dist.integrity` computed from the stored tarball. The real `npm publish` and `npm view` talk to it through a temporary `.npmrc`.
+- `release_lib/publish.py`: `publish_entries`, `publish_script`, `publish_handoff` (D8 skip-identical / stop-different); `ci/release/publish.py` CLI. `handoff.py` writes the `publish` entries and `publish-commands.sh` (chmod 755).
+- `--verify` refuses a publish entry whose tarball is missing or whose SHA-256 differs from `tarballs`.
+- 8 tests in `test_publish.py`, not gated (11 s): fast enough for every run.
+
+
 ---
 
 ## Slice 5 — The release commit holds no tarball and goes to a release branch with its tag
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **RED:** `test_release_version.py`, in a real git repository with a bare remote and a detached worktree: after `commit_tag_push(commit, tag, push)`, the commit has no `release-tarballs/` path; the remote has the tag and `refs/heads/release/<version>` pointing at the release commit; other local tags are not pushed. (Slice 0's characterization flips.)
 
@@ -208,11 +238,14 @@ python -m pytest ci/release/tests/test_release_version.py -q
 
 ### Realization
 
+`commit_tag_push` split into `commit_and_tag` (stages `RELEASE_COMMIT_PATHS`, existing ones only, so a missing lockfile no longer makes the whole `git add` fail silently) and `push_release` (checks the tag points at HEAD, refuses when the remote has the branch or tag, pushes `HEAD:refs/heads/release/<v>` and `refs/tags/<v>` only). `release_version.py --record <handoff>` calls it; `--push` is refused with a message naming `--record`. 5 tests on a real repository, bare remote and detached worktree.
+
+
 ---
 
 ## Slice 6 — The workflow, the guards, the docs, the epic's acceptance
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **RED:**
 1. `scripts/tests/test_release_workflow.py` (PR CI) on `publish-npm.yml`: the only trigger is `workflow_dispatch`; input `publish` is a boolean defaulting to false; the publish job has `environment: npm-publish`, `concurrency` without cancel, `permissions` exactly `contents: write` and `id-token: write`; npm is upgraded to a pinned version ≥ 11.5.1; `publish.py` gets `--yes` only behind `inputs.publish`; the record step runs only after the publish step and only when `publish` is true.
@@ -234,3 +267,8 @@ npm run nonreg:filesystem -- --runner shared
 ```
 
 ### Realization
+
+- `publish-npm.yml` as planned, with one change: instead of `npm install -g npm@…` (refused by the `workflows` rule of `check_dependency_policy.py`), a step asserts that Node 24's npm is 11.5.1 or later. The release worktree is found by its `miroir-release-worktree-` prefix and exported as `RELEASE_WORKTREE`/`HANDOFF`; handoff, plan and `publish-commands.sh` are uploaded as an artifact.
+- `scripts/tests/test_release_workflow.py`: 7 tests (triggers, dry-run default, permissions/environment/concurrency, `--yes` and `--record` only behind `inputs.publish`, provenance, the token only in the publish step, no other `npm publish`). The last one was checked against two planted calls.
+- Docs: `ci/release/README.md` (Publish), `HANDOFF.md`, reference §1, §6, §6b, §7, §8, §8a, §9, §10e, §11, §12, the contributing page; #621 analysis (D4 revised) and plan (I8 ✅).
+

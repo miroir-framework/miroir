@@ -465,3 +465,19 @@ def test_the_command_refuses_push_and_names_record() -> None:
     import release_version
 
     assert release_version.main(["--version", "9.9.9", "--push"]) == 1
+
+
+def test_a_folder_bundled_into_a_published_package_is_built_before_it(repo: Path) -> None:
+    # #664: react resolves the local caches it bundles (#652, #656) through their dist/, so they build first
+    write_manifest(repo / "packages" / "inner" / "package.json", "inner", "0.2.0", dependencies={"core": "*"},
+                   private=True)
+    (repo / "scripts" / "published-packages.json").write_text(
+        json.dumps([
+            {"folder": "packages/lib", "publishedName": "lib"},
+            {"folder": "packages/inner", "publishedName": "lib"},
+        ]),
+        encoding="utf-8",
+    )
+    plan = build_plan(repo, bump="patch", since="1.2.2", force=[], disable=[], candidate_provider=candidates([]))
+    assert plan.layers == (("core",), ("inner",), ("lib",))
+    assert (plan.distributeable, plan.bundle_only) == (("lib",), ("core", "inner"))

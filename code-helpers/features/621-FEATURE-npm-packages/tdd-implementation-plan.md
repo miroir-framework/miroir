@@ -90,8 +90,8 @@ Order: I1, I4 and I5 can start now and run in parallel. I2 and I3 next. I6 waits
 | I6 | 3 | Meta-model and local cache join core and react (D7, D8) | ✅ #652 | packed core exposes `./meta-model`, `./admin` |
 | I7 | 1 | Generator writes a runnable project | ✅ #658 | `packages/miroir-create-app/tests/createApp.unit.test.ts` (`@miroir-framework/create-app`) |
 | I7 | 2 | Consumer test builds and starts the generated project from tarballs | ✅ #658 | `ci/release/tests/test_consumer_project.py`, nonreg `full-658-consumer-project` |
-| I8 | 1 | Published set selected, consumer check covers it | ⬜ | `ci/release/tests/test_release_version.py` |
-| I8 | 2 | Handoff lists the manual publish commands, pipeline never publishes | ⬜ | `ci/release/tests/test_tarballs.py` |
+| I8 | 1 | Published set selected, consumer check covers it | ✅ #664 | `ci/release/tests/test_release_version.py`, `scripts/tests/test_package_manifests.py` |
+| I8 | 2 | Handoff lists the publish commands; only a maintainer-started run publishes | ✅ #664 | `ci/release/tests/test_publish.py`, `test_publish_checks.py`, `scripts/tests/test_release_workflow.py` |
 
 ---
 
@@ -911,9 +911,14 @@ python -m pytest ci/release/tests -q -m slow
 
 # I8 — Publish-ready release pipeline
 
+Done in #664, which replaced these two slices with six of its own:
+[`../664-BUILD-release-pipeline-publish/tdd-implementation-plan.md`](../664-BUILD-release-pipeline-publish/tdd-implementation-plan.md).
+D4 was revised there: provenance needs CI, so a `workflow_dispatch` workflow that the maintainer starts publishes;
+the pipeline still never publishes on its own, and `publish-commands.sh` is the fallback without CI.
+
 ## I8 Slice 1 — Published set selected, consumer check covers it
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE in #664
 
 **RED:** `test_release_version.py` expects the plan's `distributeable` set to equal the published set of analysis §4.1 and every private package to be bundle-only. Today private packages skip the consumer check and `miroir-core` is private. **GREEN:** `classify_packages` reads the published set; the consumer check runs for every published package.
 
@@ -929,7 +934,7 @@ python -m pytest ci/release/tests -q
 
 ## I8 Slice 2 — The handoff lists the manual publish commands; the pipeline never publishes
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE in #664
 
 **RED:** `test_tarballs.py` expects `release-handoff.json` to list, layer by layer, `npm publish <tarball> --access public --provenance`, and a guard to fail if any pipeline code path runs `npm publish` without `--dry-run`. **GREEN:** the handoff entries, an `npm publish --dry-run` per tarball in validation, and `ci/release/README.md` describing the manual publish (order, `npm login`, provenance from GitHub Actions or not).
 

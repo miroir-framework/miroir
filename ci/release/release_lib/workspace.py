@@ -100,8 +100,10 @@ def find_cycles(
 def topological_layers(
     packages: dict[str, Workspace],
     selected: Iterable[str],
+    build_edges: dict[str, set[str]] | None = None,
 ) -> tuple[tuple[str, ...], ...]:
-    """Partition selected packages into P0…Pn by runtime/peer dependencies."""
+    """Partition selected packages into P0…Pn by runtime/peer dependencies, plus `build_edges` (package -> the
+    packages it must be built after: #664, an owner after the folders it bundles)."""
     names = set(selected)
     unknown = names - set(packages)
     if unknown:
@@ -116,7 +118,7 @@ def topological_layers(
     deps = {
         name: {
             dep
-            for dep in packages[name].runtime_dependencies
+            for dep in (*packages[name].runtime_dependencies, *(build_edges or {}).get(name, ()))
             if dep in names
         }
         for name in names
