@@ -7,32 +7,35 @@ Parent issue: #621 (npm packages epic) · Prerequisite: #652 ✅ (bundling, PR #
 Related analyses: [`../652-BUILD-bundle-meta-model-and-local-cache/analysis.md`](../652-BUILD-bundle-meta-model-and-local-cache/analysis.md)
 Key sources: [`packages/miroir-react/src/miroir-localcache-imports.ts`](../../../packages/miroir-react/src/miroir-localcache-imports.ts), [`packages/miroir-localcache-redux/src/startMiroirPlatform.ts`](../../../packages/miroir-localcache-redux/src/startMiroirPlatform.ts), [`packages/miroir-localcache-zustand/src/index.ts`](../../../packages/miroir-localcache-zustand/src/index.ts), [`packages/miroir-standalone-app/src/miroir-fwk/4-tests/localCacheImplementation.ts`](../../../packages/miroir-standalone-app/src/miroir-fwk/4-tests/localCacheImplementation.ts)
 
-**Status:** draft. Goals and decisions to confirm with the user (grilling in the project thread).
+**Status:** goals and decisions confirmed with the user (2026-11-02, grilling round 1: every recommendation accepted).
 
 ---
 
-## 1. Goals (draft, to confirm)
+## 1. Goals
 
 - **G1 — Pick the local cache at startup.** In order to use the state library that suits my application as an application developer, I can choose `redux` or `zustand` in the startup call (`startMiroirClient`, `startMiroirNode`) without editing framework sources.
 - **G2 — Pay for one.** In order to keep my page and my process small as an application developer, I load only the implementation I chose.
 - **G3 — Test the whole stack on either.** In order to trust both implementations as a framework maintainer, I can run `nonreg --local-cache zustand` and have the UI tests and the CLI, MCP and server test platforms run on Zustand.
 
-## 2. Non-goals (draft)
+## 2. Non-goals
 
 - A third implementation, or a plug-in API for user-provided local caches.
 - Changing the state shape (`LocalCacheSliceState`, `ReduxDeploymentsState`) or the selector semantics.
 - Switching implementation while a page or a process runs.
-- Publishing `miroir-localcache-zustand` as its own npm package (decision D3 below may revisit).
+- Publishing `miroir-localcache-zustand` as its own npm package (D3).
+- A `MiroirConfig` / environment default for the choice, so the server binary and Electron follow a deployment setting (D1-b; later, when a deployment needs it). The binaries keep redux.
+- One shared copy of the selectors in core (D6-b; follow-up issue).
 
-## 3. Decision record (open)
+## 3. Decision record
 
-| Decision | Recommendation | Serves |
+| Decision | Choice (Accepted) | Serves |
 |---|---|---|
 | D1 Where the choice is made | **Startup option** `localCache: "redux" \| "zustand"` of `startMiroirClient` / `startMiroirNode` / `startMiroirPlatform`, default `redux` | G1 |
 | D2 What the UI depends on | **A local cache module interface in core** (`LocalCacheImplementation`: provider, `useSelector`, selectors, `setupMiroirDomainController`, REST client), implemented by both packages; react's hooks delegate to the implementation in a React context | G1, G2 |
 | D3 Packaging | **Both bundled into react and into `server/startup`, each behind a lazy entry** (`import()` of the chosen one), following #652 | G2 |
 | D4 Test reach | **`MIROIR_TEST_LOCAL_CACHE` read by one shared helper in core**, passed as the startup option by every test platform and UI test setup | G3 |
 | D5 Where `startMiroirPlatform` lives | **Core**, parameterized by the implementation (it only needs `setupMiroirDomainController` and `RestPersistenceClientAndRestClient`) | G1 |
+| D6 Behavior gaps of zustand | **Fixed in #656 when the zustand runs expose them**; merging the selectors into core is a follow-up | G3 |
 
 Details and options: §5.
 
@@ -83,7 +86,7 @@ Nonreg: `run-nonreg.py --local-cache zustand` sets `MIROIR_TEST_LOCAL_CACHE` for
 | D1-b. `MiroirConfig` / environment field | `miroirConfig.client.localCache` read by the startup calls | a deployment setting, the server and Electron follow it without code | one more config field; config validation; the UI and the server could disagree |
 | D1-c. Build-time flag | react/server built with one or the other | no runtime switch | two builds; not a runtime choice (fails G1) |
 
-D1-a and D1-b combine: the option wins, the config gives the default. Recommended: D1-a now, D1-b only if a deployment needs it.
+**Decision:** D1-a. D1-b may be added later (the option wins, the config gives the default).
 
 ### D2 — What the UI depends on
 
@@ -91,7 +94,9 @@ D1-a and D1-b combine: the option wins, the config gives the default. Recommende
 |---|---|---|---|
 | **D2-a. Module interface in core + context** ★ | core declares `LocalCacheImplementation` (provider component, `useSelector`, the selector functions, `setupMiroirDomainController`, `RestPersistenceClientAndRestClient`); both packages export an object satisfying it; react's `LocalCacheProvider` puts the chosen one in a context and `useSelector` calls its hook | the contract is typed, a drift fails the build; one UI code path | the hook called depends on the provider (stable for a tree: hook rules hold); selectors used outside React need the implementation passed |
 | D2-b. Keep the comment switch, add a second react build | `@miroir-framework/react` and `@miroir-framework/react-zustand` | no runtime indirection | duplicated package; not a startup choice |
-| D2-c. Shared selectors moved to core | the pure selectors (over core state types) live once in core; only provider, hook and store differ | removes the drift of §4.3 at the source | large move (≈1 000 lines with diverged copies to reconcile); could be a later step of D2-a |
+| D2-c. Shared selectors moved to core | the pure selectors (over core state types) live once in core; only provider, hook and store differ | removes the drift of §4.3 at the source | large move (≈1 000 lines with diverged copies to reconcile); deferred (D6) |
+
+**Decision:** D2-a; the comment switch in `miroir-localcache-imports.ts` goes.
 
 ### D3 — Packaging
 
@@ -100,6 +105,8 @@ D1-a and D1-b combine: the option wins, the config gives the default. Recommende
 | **D3-a. Both bundled, lazy entries** ★ | react bundles both (`noExternal`), the startup call `import()`s the chosen one; `server/startup` gets a zustand Node entry the same way | follows #652; one copy loaded per page/process; guards extend naturally | react's tarball grows by the zustand code; zustand needs a Node entry without React |
 | D3-b. Zustand as its own published package, optional peer | `@miroir-framework/localcache-zustand` | react stays small | a new published package; the duplicate-copy risk returns |
 
+**Decision:** D3-a.
+
 ### D4 — Test reach
 
 | Option | Mechanism | Pros | Cons |
@@ -107,9 +114,22 @@ D1-a and D1-b combine: the option wins, the config gives the default. Recommende
 | **D4-a. One helper, read everywhere** ★ | core exports `testLocalCacheImplementation(env)` (moved from the standalone app); every test platform and UI test helper passes its result as the D1 option | one place; the nonreg flag means the whole stack | touches 6 test platforms and the UI helpers |
 | D4-b. Each platform reads the variable | as today in the standalone app | local | 7 copies of the same parsing |
 
+**Decision:** D4-a, the UI helpers (`renderWithProviders`, `componentTestTools`) included.
+
 ### D5 — Where `startMiroirPlatform` lives
 
 | Option | Mechanism | Pros | Cons |
 |---|---|---|---|
 | **D5-a. Core, parameterized** ★ | `startMiroirPlatform(config, options, implementation)` in core; packages pass themselves | one copy; zustand gets it for free | core gains a startup module (no new dependency: it uses only the two injected functions) |
 | D5-b. Copy into zustand | a second `startMiroirPlatform` | no core change | a third copy of drifting code |
+
+**Decision:** D5-a.
+
+### D6 — Behavior gaps of zustand
+
+| Option | Mechanism | Pros | Cons |
+|---|---|---|---|
+| **D6-a. Fix what the zustand runs expose, in #656** ★ | G3 makes UI and platform tests run on zustand; their failures are fixed in the zustand package | G3 is met by green runs, not by exclusions | scope depends on what the runs find |
+| D6-b. Merge the selectors into core first | one copy of the pure selectors | removes the drift at the source | ≈1 000 diverged lines to reconcile; a follow-up issue |
+
+**Decision:** D6-a; D6-b becomes a follow-up issue.
