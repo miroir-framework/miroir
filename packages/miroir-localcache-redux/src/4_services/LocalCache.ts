@@ -141,6 +141,7 @@ export class LocalCache implements LocalCacheInterface {
       localCacheSize: estimateObjectBytes(
         this.innerReduxStore.getState().presentModelSnapshot
       ),
+      implementation: "redux",
     };
   }
 

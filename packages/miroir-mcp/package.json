@@ -62,6 +62,7 @@
     "@miroir-framework/env": "*",
     "miroir-example-library": "*",
     "miroir-localcache-redux": "*",
+    "miroir-localcache-zustand": "*",
     "@miroir-framework/store-filesystem": "*",
     "@miroir-framework/store-indexeddb": "*",
     "@miroir-framework/store-postgres": "*",

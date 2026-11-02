@@ -7,6 +7,7 @@ import {
   ConfigurationService,
   type ApplicationDeploymentMap,
   type DomainControllerInterface,
+  localCacheKindFromEnvironment,
 } from "@miroir-framework/core";
 import { openTestEnvironment, selectedTestEnvironment } from "@miroir-framework/env";
 
@@ -43,7 +44,11 @@ describe("CLI commands from the endpoint action catalog", () => {
     const environmentName = selectedTestEnvironment(process.env) ?? "test-filesystem";
     openTestEnvironment(environmentName, { reseed: true });
     ConfigurationService.configurationService.registerTestImplementation({ expect: expect as any });
-    const platform = await initializePlatform({ env: { ...process.env, MIROIR_ENV: environmentName } });
+    const platform = await initializePlatform({
+      env: { ...process.env, MIROIR_ENV: environmentName },
+      // #656: the local cache MIROIR_TEST_LOCAL_CACHE names (run-nonreg.py --local-cache), redux when unset
+      localCache: localCacheKindFromEnvironment(process.env),
+    });
     domainController = platform.domainController;
     applicationDeploymentMap = platform.applicationDeploymentMap;
     commands = getAllCommands(domainController, applicationDeploymentMap);

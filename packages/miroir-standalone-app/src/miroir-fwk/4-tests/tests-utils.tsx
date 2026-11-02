@@ -36,14 +36,15 @@ import {
 } from "@miroir-framework/core/meta-model";
 
 import {
-  LocalCache,
   LocalCacheProvider,
   MiroirContextReactProvider,
-  ReduxStoreWithUndoRedo,
+  type LocalCacheStoreHandle,
 } from '@miroir-framework/react';
 import { packageName } from '../../constants';
 import { cleanLevel } from '../4_view/constants';
 
+// #656: the local cache MIROIR_TEST_LOCAL_CACHE names (tests/setup.ts), redux by default
+import { testLocalCache } from "./testLocalCache";
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "tests-utils");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {log = logger});
@@ -129,10 +130,10 @@ export const adminApplicationDeploymentConfigurations: AdminApplicationDeploymen
 // This type interface extends the default options for render from RTL, as well
 // as allows the user to specify other things such as initialState, store.
 interface ExtendedRenderOptions extends Omit<RenderOptions, 'queries'> {
-  store: ReduxStoreWithUndoRedo | undefined,
+  store: LocalCacheStoreHandle | undefined,
 }
 interface ExtendedRenderOptionsWithContextProvider extends Omit<RenderOptions, 'queries'> {
-  store: ReduxStoreWithUndoRedo | undefined,
+  store: LocalCacheStoreHandle | undefined,
   miroirContext: MiroirContextInterface,
   domainController: DomainControllerInterface,
 }
@@ -146,7 +147,7 @@ export function renderWithProviders(
 ) {
   function Wrapper({ children }: PropsWithChildren<{}>): JSX.Element {
     return store ? (
-    <LocalCacheProvider store={store}>
+    <LocalCacheProvider binding={testLocalCache().localCacheBinding} store={store}>
       {children}
       </LocalCacheProvider>
     ) : <div>{children}</div>;
@@ -168,7 +169,7 @@ export function renderWithProvidersWithContextProvider(
 ) {
   function Wrapper({ children }: PropsWithChildren<{}>): JSX.Element {
     return store ? (
-      <LocalCacheProvider store={store}> 
+      <LocalCacheProvider binding={testLocalCache().localCacheBinding} store={store}> 
         <MiroirContextReactProvider miroirContext={miroirContext} domainController={domainController}>
           {children}
         </MiroirContextReactProvider>
@@ -260,7 +261,7 @@ export interface MiroirIntegrationTestEnvironment {
   localAppPersistenceStoreController: PersistenceStoreControllerInterface,
   localDataStoreWorker?: any /* SetupWorkerApi still useful? */,
   localDataStoreServer?: any /**SetupServerApi*/,
-  localCache: LocalCache,
+  localCache: LocalCacheInterface,
   domainController: DomainControllerInterface,
   miroirContext: MiroirContext,
 }

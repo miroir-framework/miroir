@@ -42,6 +42,8 @@ import {
 } from "../../src/miroir-fwk/4_view/components/Reports/ComponentTestRunSettings";
 import { buildAdminViewParamsHarness, loadViewParams } from "../helpers/adminViewParamsHarness";
 
+// #656: the local cache MIROIR_TEST_LOCAL_CACHE names (tests/setup.ts), redux by default
+import { testLocalCache } from "../../src/miroir-fwk/4-tests/testLocalCache";
 const TEST_TIMEOUT = 60_000;
 const typesSwitch = () => screen.getByRole("checkbox", { name: "Show transformer types in component test runs" });
 const sandboxSwitch = () => screen.getByRole("checkbox", { name: "Show test sandbox" });
@@ -66,7 +68,7 @@ const RunProbe: React.FC = () => {
 function renderApp(viewParams: Record<string, unknown>) {
   const harness = buildAdminViewParamsHarness(viewParams);
   const rendered = render(
-    <LocalCacheProvider store={harness.localCache.getInnerStore()}>
+    <LocalCacheProvider binding={testLocalCache().localCacheBinding} store={harness.localCache.getInnerStore()}>
       <MiroirContextReactProvider miroirContext={harness.miroirContext} domainController={harness.domainController}>
         <ComponentTestSandboxProvider>
           <ComponentTestRunSettings />
@@ -161,7 +163,7 @@ describe("component test run settings: Report suites and the hidden sandbox (PR 
     () => {
       const harness = buildAdminViewParamsHarness({});
       const { unmount } = render(
-        <LocalCacheProvider store={harness.localCache.getInnerStore()}>
+        <LocalCacheProvider binding={testLocalCache().localCacheBinding} store={harness.localCache.getInnerStore()}>
           <MiroirContextReactProvider miroirContext={harness.miroirContext} domainController={harness.domainController}>
             <ComponentTestSandboxProvider>
               <ComponentTestRunSettings showTransformerTypesSetting={false} />
@@ -225,7 +227,7 @@ it("without a sandbox, the run preparation is empty", () => {
   };
   const harness = buildAdminViewParamsHarness({});
   const { unmount } = render(
-    <LocalCacheProvider store={harness.localCache.getInnerStore()}>
+    <LocalCacheProvider binding={testLocalCache().localCacheBinding} store={harness.localCache.getInnerStore()}>
       <MiroirContextReactProvider miroirContext={harness.miroirContext} domainController={harness.domainController}>
         <Probe />
       </MiroirContextReactProvider>

@@ -3,6 +3,7 @@
   { "folder": "packages/miroir-app-admin", "publishedName": "@miroir-framework/core" },
   { "folder": "packages/miroir-core", "publishedName": "@miroir-framework/core" },
   { "folder": "packages/miroir-localcache-redux", "publishedName": "@miroir-framework/react" },
+  { "folder": "packages/miroir-localcache-zustand", "publishedName": "@miroir-framework/react" },
   { "folder": "packages/miroir-store-postgres", "publishedName": "@miroir-framework/store-postgres" },
   { "folder": "packages/miroir-store-filesystem", "publishedName": "@miroir-framework/store-filesystem" },
   { "folder": "packages/miroir-store-indexedDb", "publishedName": "@miroir-framework/store-indexeddb" },
@@ -12,5 +13,6 @@
   { "folder": "packages/miroir-react", "publishedName": "@miroir-framework/react" },
   { "folder": "packages/miroir-mcp", "publishedName": "@miroir-framework/mcp" },
   { "folder": "packages/miroir-server-library", "publishedName": "@miroir-framework/server" },
-  { "folder": "packages/miroir-cli", "publishedName": "@miroir-framework/cli" }
+  { "folder": "packages/miroir-cli", "publishedName": "@miroir-framework/cli" },
+  { "folder": "packages/miroir-create-app", "publishedName": "@miroir-framework/create-app" }
 ]

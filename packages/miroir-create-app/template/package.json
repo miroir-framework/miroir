@@ -1,0 +1,41 @@
+{
+  "name": "miroir-app",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.server.json && vite build",
+    "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.server.json",
+    "start": "node dist-server/server.js",
+    "dev:client": "vite"
+  },
+  "dependencies": {
+    "@emotion/react": "11.14.0",
+    "@emotion/styled": "11.14.1",
+    "@miroir-framework/core": "0.0.0-template",
+    "@miroir-framework/env": "0.0.0-template",
+    "@miroir-framework/react": "0.0.0-template",
+    "@miroir-framework/server": "0.0.0-template",
+    "@miroir-framework/store-filesystem": "0.0.0-template",
+    "@mui/material": "9.5.0",
+    "formik": "2.4.9",
+    "loglevelnext": "6.0.0",
+    "material-symbols": "0.48.0",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "react-redux": "9.3.0",
+    "react-router-dom": "7.18.4",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@emotion/babel-plugin": "11.13.5",
+    "@rolldown/plugin-babel": "0.2.4",
+    "@types/node": "26.6.5",
+    "@types/react": "18.3.23",
+    "@types/react-dom": "18.3.7",
+    "@vitejs/plugin-react": "6.1.2",
+    "typescript": "7.0.2",
+    "vite": "8.3.5",
+    "vite-plugin-node-polyfills": "0.28.0"
+  }
+}

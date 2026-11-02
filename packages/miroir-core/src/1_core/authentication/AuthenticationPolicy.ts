@@ -196,6 +196,11 @@ export function setProcessTokenSecret(secret: string): void {
   processTokenSecret = secret;
 }
 
+/**
+ * The key signing this process's session tokens: the one set by `setProcessTokenSecret`, else `MIROIR_AUTH_TOKEN_SECRET`,
+ * else one generated for the process.
+ * @public
+ */
 export function getProcessTokenSecret(env: Record<string, string | undefined> = process.env): string {
   if (processTokenSecret) {
     return processTokenSecret;

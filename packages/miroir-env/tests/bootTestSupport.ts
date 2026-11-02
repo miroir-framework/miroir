@@ -9,8 +9,10 @@ import {
   MiroirContext,
   MiroirEventService,
   PersistenceStoreControllerManager,
+  localCacheKindFromEnvironment,
+  type DomainControllerInterface,
+  type LocalCacheModule,
 } from "@miroir-framework/core";
-import { setupMiroirDomainController } from "miroir-localcache-redux";
 
 import {
   bootEnvironment,
@@ -68,6 +70,23 @@ export function readRows(directory: string): Record<string, any> {
   );
 }
 
+// #656: the local cache MIROIR_TEST_LOCAL_CACHE names (run-nonreg.py --local-cache), redux when unset. From the
+// caches' Node entries (test code): this package cannot depend on @miroir-framework/server, which depends on it.
+async function testLocalCacheModule(): Promise<LocalCacheModule> {
+  return localCacheKindFromEnvironment(process.env) === "zustand"
+    ? (await import("miroir-localcache-zustand/node")).localCacheModule
+    : (await import("miroir-localcache-redux/node")).localCacheModule;
+}
+
+/** #656: a platform built on another local cache than the one asked for would test the wrong one. */
+function expectLocalCache(domainController: DomainControllerInterface): void {
+  const expected = localCacheKindFromEnvironment(process.env);
+  const actual = domainController.currentLocalCacheInfo().implementation;
+  if (actual !== expected) {
+    throw new Error(`test platform started on the ${actual} local cache, MIROIR_TEST_LOCAL_CACHE asks for ${expected}`);
+  }
+}
+
 /** Seeds the selected environment and opens its deployments, like a server start. */
 export async function boot(root: string, env: Record<string, string | undefined> = {}) {
   const resolved = resolveEnvironmentFromFiles({ cwd: root, env });
@@ -80,10 +99,11 @@ export async function boot(root: string, env: Record<string, string | undefined>
     ConfigurationService.configurationService.StoreSectionFactoryRegister,
     miroirConfig.server.filesystemDeploymentRootDirectory,
   );
-  const domainController = await setupMiroirDomainController(miroirContext, {
+  const domainController = (await testLocalCacheModule()).setupMiroirDomainController(miroirContext, {
     persistenceStoreAccessMode: "local",
     localPersistenceStoreControllerManager: persistenceStoreControllerManager,
   });
+  expectLocalCache(domainController);
   const reconciliation = await bootEnvironment(domainController, resolved, env);
   return { resolved, seed, domainController, persistenceStoreControllerManager, reconciliation };
 }

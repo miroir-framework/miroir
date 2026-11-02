@@ -33,6 +33,13 @@ SANDBOX_NAMES = {
     "SpecificLoggerOptionsMap", "StoreOrBundleAction", "StoreUnitConfiguration", "defaultMetaModelEnvironment",
     "defaultSelfApplicationDeploymentMap", "devDataEntityUuids", "expect", "versionHistoryEntityUuids",
 }
+# #658: the core names the create-app template imports (its client and its server)
+CREATE_APP_NAMES = {
+    "ConfigurationService", "LoggerFactoryInterface", "MiroirActivityTracker", "MiroirConfigClient",
+    "MiroirEventService", "MiroirLoggerFactory", "defaultExternalServiceClient", "getClientEnvironment",
+    "getProcessCapabilities", "getProcessTokenSecret", "setRestClientAuthorizationInvalidationHandler",
+    "setRestClientAuthorizationTokenGetter",
+}
 # the core names of miroir-server-library's published declarations (dist/index.d.ts)
 SERVER_LIBRARY_NAMES = {
     "ApplicationDeploymentMap", "AuthenticationGate", "DomainControllerInterface", "MiroirConfigServer",
@@ -45,8 +52,11 @@ STARTUP_NAMES = {
     "MiroirActivityTracker", "MiroirConfigClient", "MiroirConfigServer", "MiroirContext", "MiroirEventService",
     "PersistenceStoreControllerManager", "ProcessCapabilities", "RestClientInterface", "RestClientStub",
     "StoreSectionStartup",
+    # #656: the `localCache` startup option, and the startup itself, moved from the redux local cache
+    "LocalCacheKind", "MiroirEmulatedServer", "MiroirNodeOptions", "MiroirPlatform", "MiroirPlatformOptions",
+    "startMiroirNodeWith", "startMiroirPlatformWith",
 }
-PUBLIC_NAMES = SANDBOX_NAMES | SERVER_LIBRARY_NAMES | STARTUP_NAMES
+PUBLIC_NAMES = SANDBOX_NAMES | CREATE_APP_NAMES | SERVER_LIBRARY_NAMES | STARTUP_NAMES
 GENERATED_NAMES = {
     "Deployment", "Entity", "EntityInstance", "EntityInstanceCollection", "EntityVersion", "MiroirConfigClient",
     "MiroirConfigServer", "StoreOrBundleAction", "StoreUnitConfiguration",
@@ -180,6 +190,7 @@ IMPORT_FROM_META_MODEL = re.compile(
 CORE_SPECIFIER = re.compile(r"([\"'`])(?:@miroir-framework/core|miroir-core)(?:/[^\"'`]*)?\1")
 TEMPLATE_SUFFIXES = {".ts", ".tsx", ".mts", ".cts", ".js", ".jsx", ".mjs", ".cjs"}
 SANDBOX = ROOT / "packages/miroir-sandbox"
+CREATE_APP_TEMPLATE = ROOT / "packages/miroir-create-app/template"  # #658
 
 
 def named_imports(text: str) -> tuple[set[str], list[str]]:
@@ -207,10 +218,10 @@ def named_imports(text: str) -> tuple[set[str], list[str]]:
     return names, others
 
 
-def sandbox_core_imports() -> set[str]:
+def template_core_imports(template: Path) -> set[str]:
     names: set[str] = set()
     others: list[str] = []
-    for path in sorted(SANDBOX.rglob("*")):
+    for path in sorted(template.rglob("*")):
         if path.suffix not in TEMPLATE_SUFFIXES or {"node_modules", "dist"} & set(path.parts):
             continue
         found, other = named_imports(path.read_text(encoding="utf-8"))
@@ -240,13 +251,19 @@ export { I } from "@miroir-framework/core/meta-model";
     assert len(others) == 7  # ... but a re-export of them is
 
 
-def test_the_template_only_imports_public_exports_of_core():
-    """Case 1 (G2): a new import of an unmarked core export by the template fails here."""
-    imported = sandbox_core_imports()
+@pytest.mark.parametrize(
+    ("template", "expected"),
+    [(SANDBOX, SANDBOX_NAMES), (CREATE_APP_TEMPLATE, CREATE_APP_NAMES)],
+    ids=["sandbox", "create-app"],
+)
+def test_the_template_only_imports_public_exports_of_core(template, expected):
+    """Case 1 (G2): a new import of an unmarked core export by a template (the sandbox, and since #658 the project
+    create-app writes) fails here."""
+    imported = template_core_imports(template)
     declarations = api.index_declarations()
     unmarked = sorted(name for name in imported if name not in declarations or not declarations[name].public)
     assert unmarked == [], "the template imports core exports that are not @public: mark them (D2) or drop the import"
-    assert imported == SANDBOX_NAMES, "the template's core imports changed: update SANDBOX_NAMES and analysis §4.3"
+    assert imported == expected, "the template's core imports changed: update its names here and in the analyses"
 
 
 @pytest.mark.parametrize("names", [SERVER_LIBRARY_NAMES, STARTUP_NAMES], ids=["server-library", "startup-calls"])
@@ -318,6 +335,17 @@ def test_the_core_readme_states_the_stance_and_links_the_list():
     readme = (CORE / "README.md").read_text(encoding="utf-8")
     assert "0.x" in readme and "@public" in readme
     assert "docs/reference/core-public-api.md" in readme
+    # the repo has no `main` branch: a README link to it is a 404 on GitHub and npm
+    assert "/blob/main/" not in readme
+
+
+def test_the_core_readme_gives_the_status_of_every_subpath():
+    readme = (CORE / "README.md").read_text(encoding="utf-8")
+    manifest = json.loads((CORE / "package.json").read_text(encoding="utf-8"))
+    subpaths = [key[2:] for key in manifest["exports"] if key.startswith("./") and key != "./package.json"]
+    assert subpaths, "core declares no subpath"
+    missing = [s for s in subpaths if f"@miroir-framework/core/{s}" not in readme]
+    assert missing == [], f"README says nothing about these subpaths: {missing}"
 
 
 def test_the_public_api_document_is_in_sync():

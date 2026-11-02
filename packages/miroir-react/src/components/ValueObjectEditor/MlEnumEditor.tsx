@@ -27,8 +27,7 @@ import { ThemedDisplayValue } from "../Themes/DisplayComponents.js";
 import { ThemedLabeledEditor, ThemedSelectWithPortal } from "../Themes/FormComponents.js";
 import { MlEnumEditorProps } from "./MlElementEditorInterface.js";
 import { isPrimaryUnionDiscriminatorField } from "./unionDiscriminatorField.js";
-import { useSelector } from "react-redux";
-import { getMemoizedReduxDeploymentsStateSelectorMap } from "miroir-localcache-redux";
+import { getMemoizedReduxDeploymentsStateSelectorMap, useSelector } from "../../miroir-localcache-imports.js";
 import { JsonDisplayHelper } from "../helpers/DebugHelper.js";
 import { editorNavigationKey, useTrackedRender } from "../../tools/useTrackedRender.js";
 

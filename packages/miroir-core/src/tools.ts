@@ -30,6 +30,10 @@ export const prodRelativePathPrefix = ".";
 
 // export type ClientEnvironment = "webApp" | "electron" | "node" | "sandbox";
 
+/**
+ * Where this code runs (web app, Electron, Node, sandbox), for the process capabilities.
+ * @public
+ */
 export const getClientEnvironment = (): ClientEnvironment => {
   if ((import.meta as any).env?.MIROIR_IS_SANDBOX) {
     return "sandbox";

@@ -4,6 +4,7 @@ import {
   type RestClientStub,
   type ApplicationDeploymentMap,
   type DomainControllerInterface,
+  type LocalCacheKind,
   type LoggerFactoryInterface,
   type LoggerOptions,
 } from "@miroir-framework/core";
@@ -68,7 +69,13 @@ async function loadDeployedApplications(
 }
 
 export async function initializePlatform(
-  options: { cwd?: string; env?: Record<string, string | undefined>; name?: string } = {},
+  options: {
+    cwd?: string;
+    env?: Record<string, string | undefined>;
+    name?: string;
+    /** #656: the local cache the platform starts on, redux when absent (tests pass MIROIR_TEST_LOCAL_CACHE's). */
+    localCache?: LocalCacheKind;
+  } = {},
   log: (line: string) => void = console.error,
 ): Promise<CliPlatform> {
   const env = options.env ?? process.env;
@@ -85,6 +92,7 @@ export async function initializePlatform(
   const miroirConfig = environmentClientConfig(environment, env);
 
   const { domainController, emulatedServer } = await startMiroirNode(miroirConfig, {
+    localCache: options.localCache,
     stores: await loadStoreStartups(miroirConfig),
     loggers: { factory: loglevelNextLog as any as LoggerFactoryInterface, options: loggerOptions },
   });

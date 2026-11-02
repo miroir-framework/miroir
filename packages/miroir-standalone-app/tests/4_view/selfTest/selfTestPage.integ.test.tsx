@@ -24,6 +24,8 @@ import {
 } from "../../../src/miroir-fwk/4-tests/selfTest/selfTestResult.js";
 import { bootSelfTestPlatform, miroirActivityTracker, miroirEventService } from "./selfTestPlatform.js";
 
+// #656: the local cache MIROIR_TEST_LOCAL_CACHE names (tests/setup.ts), redux by default
+import { testLocalCache } from "../../../src/miroir-fwk/4-tests/testLocalCache";
 describe("self-test page (#487)", () => {
   let container: HTMLDivElement;
   let root: Root;
@@ -40,7 +42,7 @@ describe("self-test page (#487)", () => {
     const run = startSelfTest({
       root,
       withProviders: (page) => (
-        <LocalCacheProvider store={domainController.getLocalCache().getInnerStore()}>
+        <LocalCacheProvider binding={testLocalCache().localCacheBinding} store={domainController.getLocalCache().getInnerStore()}>
           <MiroirContextReactProvider miroirContext={miroirContext} domainController={domainController}>
             {page}
           </MiroirContextReactProvider>

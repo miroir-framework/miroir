@@ -52,6 +52,8 @@ import { useShowTransformerTypes } from "@miroir-framework/react";
 import type { TransformerTypeBadge } from "@miroir-framework/react";
 import { buildAdminViewParamsHarness, loadViewParams } from "../helpers/adminViewParamsHarness";
 
+// #656: the local cache MIROIR_TEST_LOCAL_CACHE names (tests/setup.ts), redux by default
+import { testLocalCache } from "../../src/miroir-fwk/4-tests/testLocalCache";
 const RUN_TEST_TIMEOUT = 120_000;
 const switchTarget = { byTestId: "transformer-editor-show-types-switch" };
 const rootBadgeTarget = { byTestId: "transformer-type-badge-transformer" };
@@ -388,7 +390,7 @@ describe("transformerTypesDisplay: the sandbox host", () => {
     async () => {
       const harness = buildAdminViewParamsHarness({ showTransformerTypes: false });
       const { unmount } = render(
-        <LocalCacheProvider store={harness.localCache.getInnerStore()}>
+        <LocalCacheProvider binding={testLocalCache().localCacheBinding} store={harness.localCache.getInnerStore()}>
           <MiroirContextReactProvider miroirContext={harness.miroirContext} domainController={harness.domainController}>
             <ComponentTestSandboxProvider>
               <PrepareButton />
@@ -427,7 +429,7 @@ describe("transformerTypesDisplay: the editor's switch and the app's ViewParams"
     async () => {
       const harness = buildAdminViewParamsHarness({ showTransformerTypes: false });
       const { unmount } = render(
-        <LocalCacheProvider store={harness.localCache.getInnerStore()}>
+        <LocalCacheProvider binding={testLocalCache().localCacheBinding} store={harness.localCache.getInnerStore()}>
           <MiroirContextReactProvider miroirContext={harness.miroirContext} domainController={harness.domainController}>
             <SwitchProbe />
           </MiroirContextReactProvider>

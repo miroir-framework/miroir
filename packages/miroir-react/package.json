@@ -24,9 +24,13 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     },
-    "./local-cache": {
-      "types": "./dist/local-cache.d.ts",
-      "import": "./dist/miroir-localcache-imports.js"
+    "./local-cache/redux": {
+      "types": "./dist/local-cache-redux.d.ts",
+      "import": "./dist/local-cache-redux.js"
+    },
+    "./local-cache/zustand": {
+      "types": "./dist/local-cache-zustand.d.ts",
+      "import": "./dist/local-cache-zustand.js"
     }
   },
   "scripts": {
@@ -56,7 +60,8 @@
     "@teroneko/redux-saga-promise": "4.0.0",
     "immer": "11.1.21",
     "redux-saga": "1.5.1",
-    "typed-redux-saga": "1.5.0"
+    "typed-redux-saga": "1.5.0",
+    "zustand": "5.0.15"
   },
   "peerDependencies": {
     "@emotion/react": "^11.10.5",
@@ -82,6 +87,7 @@
     "happy-dom": "21.0.4",
     "@miroir-framework/env": "*",
     "miroir-localcache-redux": "*",
+    "miroir-localcache-zustand": "*",
     "miroir-example-library": "*",
     "@miroir-framework/store-filesystem": "*",
     "react": "18.3.1",

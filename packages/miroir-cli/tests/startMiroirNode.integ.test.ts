@@ -4,6 +4,7 @@ import {
   ConfigurationServiceInner,
   defaultExternalServiceClient,
   defaultMiroirModelEnvironment,
+  localCacheKindFromEnvironment,
   type ApplicationDeploymentMap,
   type DomainControllerInterface,
   type MiroirConfigClient,
@@ -19,6 +20,8 @@ const TEST_ENVIRONMENT = "test-filesystem";
 const LIBRARY_APPLICATION = "5af03c98-fe5e-490b-b08f-e1230971c57f";
 const LIBRARY_DEPLOYMENT = "f714bb2f-a12d-4e71-a03b-74dcedea6eb4";
 const BOOK_ENTITY = "e8ba151b-d68e-4cc3-9a83-3459d309ccf5";
+// #656: the local cache MIROIR_TEST_LOCAL_CACHE names (run-nonreg.py --local-cache), redux when unset
+const LOCAL_CACHE = localCacheKindFromEnvironment(process.env);
 const MODEL_ENDPOINT = "7947ae40-eb34-4149-887b-15a9021e714e";
 const OPENAPI_DOCUMENT_ENDPOINT = "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5"; // prepareOpenApiDocument
 
@@ -48,7 +51,13 @@ describe("startMiroirNode", () => {
     const miroirConfig = environment.miroirConfig as MiroirConfigClient;
     expect(miroirConfig.client.emulateServer).toBe(true);
 
-    const platform = await startMiroirNode(miroirConfig, { stores: [miroirFileSystemStoreSectionStartup] });
+    const platform = await startMiroirNode(miroirConfig, {
+      localCache: LOCAL_CACHE,
+      stores: [miroirFileSystemStoreSectionStartup],
+    });
+    // #656: both domain controllers run on the chosen local cache
+    expect(platform.domainController.currentLocalCacheInfo().implementation).toBe(LOCAL_CACHE);
+    expect(platform.emulatedServer?.domainController.currentLocalCacheInfo().implementation).toBe(LOCAL_CACHE);
     const reconciliation = await bootEnvironment(platform.domainController, environment.resolved, process.env);
 
     // the client domain controller is remote: its books come through the stub, from the emulated server's stores
@@ -79,6 +88,7 @@ describe("startMiroirNode", () => {
 
     const fetched: string[] = [];
     const platform = await startMiroirNode(serverConfig, {
+      localCache: LOCAL_CACHE,
       stores: [miroirFileSystemStoreSectionStartup],
       // the domain controller calls out through the client it is given (server.ts passes its rotated-secrets client this way)
       externalServiceClient: defaultExternalServiceClient({
@@ -88,6 +98,7 @@ describe("startMiroirNode", () => {
         },
       }),
     });
+    expect(platform.domainController.currentLocalCacheInfo().implementation).toBe(LOCAL_CACHE);
     const reconciliation = await bootEnvironment(platform.domainController, environment.resolved, process.env);
 
     expect(Object.keys(await libraryBooks(platform.domainController, reconciliation.applicationDeploymentMap)).length).toBeGreaterThan(0);
