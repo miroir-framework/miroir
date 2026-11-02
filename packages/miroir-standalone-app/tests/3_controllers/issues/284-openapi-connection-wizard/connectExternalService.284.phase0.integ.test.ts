@@ -20,9 +20,9 @@ import {
   defaultExternalServiceClient,
   registerSecrets,
   type EndpointDefinition,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
-import { allGatedStepsAllowFinish } from "miroir-react";
+import { allGatedStepsAllowFinish } from "@miroir-framework/react";
 import { resolveRepoRoot } from "../../../helpers/integrationTestProfiles.js";
 import {
   startFakeExternalServiceServer,

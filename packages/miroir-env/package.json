@@ -1,6 +1,9 @@
 {
-  "name": "miroir-env",
+  "name": "@miroir-framework/env",
   "version": "0.5.0-rc.1",
+  "publishConfig": {
+    "access": "public"
+  },
   "description": "Environment definitions for Miroir: which applications are installed, on which stores, for development and tests (#321)",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -36,13 +39,13 @@
     "testByFile": "cross-env NODE_ENV=test vitest run"
   },
   "dependencies": {
-    "miroir-core": "*",
+    "@miroir-framework/core": "*",
     "mongodb": "7.7.0",
     "pg": "8.23.1"
   },
   "devDependencies": {
     "miroir-localcache-redux": "*",
-    "miroir-store-filesystem": "*",
+    "@miroir-framework/store-filesystem": "*",
     "tsup": "9.0.0"
   }
 }

@@ -33,11 +33,11 @@
   },
   "nx": {
     "implicitDependencies": [
-      "!miroir-core"
+      "!@miroir-framework/core"
     ]
   },
   "devDependencies": {
-    "miroir-core": "*",
+    "@miroir-framework/core": "*",
     "miroir-app-admin": "*",
     "miroir-app-miroir": "*",
     "tsup": "9.0.0",

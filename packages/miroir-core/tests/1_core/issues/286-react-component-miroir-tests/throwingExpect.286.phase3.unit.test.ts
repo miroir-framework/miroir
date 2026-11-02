@@ -8,7 +8,7 @@
  *
  * Run:
  * ```bash
- * npm run testByFile -w miroir-core -- throwingExpect.286.phase3
+ * npm run testByFile -w @miroir-framework/core -- throwingExpect.286.phase3
  * ```
  */
 import { describe, expect, it } from "vitest";

@@ -1,7 +1,10 @@
 {
-  "name": "miroir-store-bundled",
+  "name": "@miroir-framework/store-bundled",
   "private": true,
   "version": "0.5.0-rc.1",
+  "publishConfig": {
+    "access": "public"
+  },
   "description": "The Miroir read-only bundled store, serving pre-loaded JSON data for static (GitHub Pages) deployments.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -22,7 +25,7 @@
     "devBuild": "npm run build"
   },
   "dependencies": {
-    "miroir-core": "*"
+    "@miroir-framework/core": "*"
   },
   "devDependencies": {
     "tsup": "9.0.0"

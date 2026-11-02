@@ -47,29 +47,29 @@ RUN npm run build -w miroir-example-postgres
 RUN npm run build -w miroir-example-designer
 
 # 2. miroir-core — includes devBuild step to generate TypeScript types from schemas
-RUN npm run devBuild -w miroir-core
+RUN npm run devBuild -w @miroir-framework/core
 
 # 2'. miroir-env — environment resolution, imported by the server and by the
 #     standalone-app vite.config.js
-RUN npm run build -w miroir-env
+RUN npm run build -w @miroir-framework/env
 
 # 3. Local-cache and store packages (can run in parallel, all only depend on miroir-core)
 RUN npm run build -w miroir-localcache-redux \
- && npm run build -w miroir-store-bundled \
- && npm run build -w miroir-store-filesystem \
- && npm run build -w miroir-store-indexedDb \
- && npm run build -w miroir-store-mongodb \
- && npm run build -w miroir-store-postgres
+ && npm run build -w @miroir-framework/store-bundled \
+ && npm run build -w @miroir-framework/store-filesystem \
+ && npm run build -w @miroir-framework/store-indexeddb \
+ && npm run build -w @miroir-framework/store-mongodb \
+ && npm run build -w @miroir-framework/store-postgres
 
 # 3'. extract model bundles from example applications
 RUN npm run extract-library-model -w miroir-example-library
 # RUN npm run extract-postgresManager-model -w miroir-example-postgres
 
 # 4. UI / MCP / diagram packages
-RUN npm run build -w miroir-react
-RUN npm run build -w miroir-mcp
+RUN npm run build -w @miroir-framework/react
+RUN npm run build -w @miroir-framework/mcp
 # #636: Miroir's HTTP surface; ncc inlines it into the server release
-RUN npm run build -w miroir-server-library
+RUN npm run build -w @miroir-framework/server
 RUN npm run build -w miroir-diagram-class
 RUN npm run build -w miroir-ai
 

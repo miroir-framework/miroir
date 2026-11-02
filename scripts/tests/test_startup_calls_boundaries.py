@@ -19,11 +19,11 @@ CALL_SOURCES = [
     "packages/miroir-localcache-redux/src/startMiroirPlatform.ts",
     "packages/miroir-react/src/startMiroirClient.ts",
 ]
-CALL_PACKAGES = ["miroir-localcache-redux", "miroir-react"]
+CALL_PACKAGES = ["packages/miroir-localcache-redux", "packages/miroir-react"]
 
 # static `from "..."` and dynamic `import("...")` specifiers
 SPECIFIER = re.compile(r"""(?:\bfrom\s+|\bimport\s*\(\s*)["']([^"']+)["']""")
-STORE = re.compile(r"^miroir-store-")
+STORE = re.compile(r"^(@miroir-framework/store-|miroir-store-)")
 
 
 @pytest.mark.parametrize("source", CALL_SOURCES)
@@ -37,6 +37,6 @@ def test_a_startup_call_imports_no_store_and_reads_no_environment(source):
 
 @pytest.mark.parametrize("package", CALL_PACKAGES)
 def test_a_startup_call_package_declares_no_store_at_runtime(package):
-    manifest = json.loads((REPO_ROOT / "packages" / package / "package.json").read_text(encoding="utf-8"))
+    manifest = json.loads((REPO_ROOT / package / "package.json").read_text(encoding="utf-8"))
     runtime = {**manifest.get("dependencies", {}), **manifest.get("peerDependencies", {})}
     assert sorted(name for name in runtime if STORE.match(name)) == []

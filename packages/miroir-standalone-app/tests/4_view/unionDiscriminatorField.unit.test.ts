@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   isPrimaryUnionDiscriminatorField,
   primaryUnionDiscriminatorField,
-} from "miroir-react";
+} from "@miroir-framework/react";
 
 describe("unionDiscriminatorField", () => {
   it("treats transformerType as the primary field of the transformer union", () => {

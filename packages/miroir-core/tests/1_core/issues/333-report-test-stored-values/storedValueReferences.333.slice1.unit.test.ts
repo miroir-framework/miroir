@@ -4,7 +4,7 @@
  *
  * Run:
  * ```bash
- * npm run testByFile -w miroir-core -- storedValueReferences.333.slice1
+ * npm run testByFile -w @miroir-framework/core -- storedValueReferences.333.slice1
  * ```
  */
 import { describe, expect, it } from "vitest";

@@ -19,7 +19,7 @@ import type {
   ApplicationDeploymentMap,
   Deployment,
   StoreUnitConfiguration,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   Action2Error,
   clearSecrets,
@@ -37,11 +37,11 @@ import {
   registerSecrets,
   resetAndinitializeDeploymentCompositeAction,
   resetAndInitApplicationDeployment,
-} from "miroir-core";
-import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
-import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
-import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
-import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
+} from "@miroir-framework/core";
+import { miroirFileSystemStoreSectionStartup } from "@miroir-framework/store-filesystem";
+import { miroirIndexedDbStoreSectionStartup } from "@miroir-framework/store-indexeddb";
+import { miroirMongoDbStoreSectionStartup } from "@miroir-framework/store-mongodb";
+import { miroirPostgresStoreSectionStartup } from "@miroir-framework/store-postgres";
 import { deployment_Admin, deployment_Miroir } from "miroir-app-admin";
 import { deployment_Library_DO_NO_USE, selfApplicationLibrary } from "miroir-example-library";
 import { defaultMiroirMetaModel } from "miroir-app-miroir";

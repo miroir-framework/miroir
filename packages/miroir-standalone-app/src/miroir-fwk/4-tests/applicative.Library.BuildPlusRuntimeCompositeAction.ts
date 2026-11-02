@@ -13,7 +13,7 @@ import {
   getBasicStoreUnitConfiguration,
   resetAndinitializeDeploymentCompositeAction,
   type Deployment,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { deployment_Admin } from "miroir-app-admin";
 import { selfApplicationLibrary } from "miroir-example-library";
 

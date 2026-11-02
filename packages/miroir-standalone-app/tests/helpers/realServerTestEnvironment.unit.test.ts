@@ -4,7 +4,7 @@
 // vitest, not MiroirTest: test-launcher wiring that reads files and environment variables.
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-import type { MiroirConfigForRestClient } from "miroir-core";
+import type { MiroirConfigForRestClient } from "@miroir-framework/core";
 
 import { loadTestConfigFiles } from "../utils/fileTools.js";
 import { applyIntegrationTestProfile, INTEGRATION_TEST_PROFILES } from "./integrationTestProfiles.js";

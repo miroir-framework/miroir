@@ -101,14 +101,14 @@ def test_a_package_listed_twice_fails(report: dict, policy: dict) -> None:
 
 
 def test_a_node_built_in_emptied_for_the_browser_counts_as_a_package(report: dict, policy: dict) -> None:
-    assert "node:fs via miroir-store-indexedDb" in policy["eager"]
+    assert "node:fs via @miroir-framework/store-indexeddb" in policy["eager"]
     assert "node:fs via mongodb" in policy["lazy"]
     assert not any(name.startswith("node:") and "node-fetch" in name for name in policy["eager"] + policy["lazy"])
-    finding = copy.deepcopy(next(f for f in report["findings"] if f["importerPackage"] == "miroir-store-indexedDb"))
+    finding = copy.deepcopy(next(f for f in report["findings"] if f["importerPackage"] == "@miroir-framework/store-indexeddb"))
     finding.update(module="path")
     report["findings"].append(finding)
     [message] = violations(report, policy)
-    assert message.startswith("[allowlist] node:path via miroir-store-indexedDb is new in the build and loads with the page")
+    assert message.startswith("[allowlist] node:path via @miroir-framework/store-indexeddb is new in the build and loads with the page")
 
 
 def test_testing_library_loading_with_the_page_fails_even_when_listed(report: dict, policy: dict) -> None:

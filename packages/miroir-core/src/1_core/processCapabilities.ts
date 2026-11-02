@@ -9,6 +9,11 @@ import type {
 /** Agent backend picked in the environment config before start (#409). */
 export type AgentBackend = "cursor" | "claude" | "none";
 
+/**
+ * What the running process offers: AI, MCP, the agent backend, the store types it can open or create, store
+ * administration and designer tools.
+ * @public
+ */
 export type ProcessCapabilities = {
   ai: boolean;
   mcp: boolean;

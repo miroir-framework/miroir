@@ -3,10 +3,10 @@ import {
   getPerformanceConfig,
   resetPerformanceConfig,
   updatePerformanceConfig,
-} from "miroir-react";
-import { applyPerformanceDisplayGate } from "miroir-react";
-import { renderInsightRegistry } from "miroir-react";
-import { RenderPerformanceMetrics } from "miroir-react";
+} from "@miroir-framework/react";
+import { applyPerformanceDisplayGate } from "@miroir-framework/react";
+import { renderInsightRegistry } from "@miroir-framework/react";
+import { RenderPerformanceMetrics } from "@miroir-framework/react";
 
 describe("applyPerformanceDisplayGate (Phase 1.4)", () => {
   beforeEach(() => {

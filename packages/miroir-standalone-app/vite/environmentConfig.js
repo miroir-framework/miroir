@@ -4,7 +4,7 @@
  * (read by src/index.tsx), and the configurations of the in-app realServer-* test runs, injected as
  * __MIROIR_TEST_CLIENT_CONFIGS__ (read by src/miroir-fwk/4-tests/integrationTestProfileAssets.ts).
  */
-import { environmentRealServerClientConfig, resolveEnvironmentFromFiles, seedEnvironmentState } from "miroir-env";
+import { environmentRealServerClientConfig, resolveEnvironmentFromFiles, seedEnvironmentState } from "@miroir-framework/env";
 
 /** The global src/index.tsx reads its configuration from. */
 export const MIROIR_CLIENT_CONFIG = "__MIROIR_CLIENT_CONFIG__";

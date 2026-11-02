@@ -7,7 +7,7 @@ import {
   type EntityInstanceCollection,
   type InstanceAction,
   type ModelAction,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   book1,
   book2,

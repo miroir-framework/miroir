@@ -21,7 +21,7 @@ import {
   type ReportSection,
   previewOpenApiGetCall,
   type Uuid,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { useDomainControllerService, useMiroirContextService } from "../../contexts/MiroirContextReactProvider.js";
 
 import { packageName } from "../../constants.js";

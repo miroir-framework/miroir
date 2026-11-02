@@ -20,7 +20,7 @@ import {
   PersistenceStoreInstanceSectionAbstractInterface,
   applyEntityOnlyRename,
   applyMlSchemaColumnChanges
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { FileSystemInstanceStoreSectionMixin, MixedFileSystemInstanceStoreSection, fullName } from "./FileSystemInstanceStoreSectionMixin.js";
 import { FileSystemStoreSection } from "./FileSystemStoreSection.js";
 

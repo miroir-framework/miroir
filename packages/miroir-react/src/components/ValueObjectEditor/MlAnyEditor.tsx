@@ -8,7 +8,7 @@ import {
   transformer_extended_apply_wrapper,
   type MetaModel,
   type MiroirModelEnvironment
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import { JsonDisplayHelper } from "../helpers/DebugHelper.js";
 import { useMiroirContextService } from "../../contexts/MiroirContextReactProvider.js";

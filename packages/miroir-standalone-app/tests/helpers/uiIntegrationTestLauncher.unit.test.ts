@@ -9,11 +9,11 @@ import {
   resolveDefaultApplicationNameFromMiroirTestSuite,
   type MiroirTestDefinition,
   type MiroirTestSuite,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   loadApplicationMiroirTestCatalog,
   loadApplicationRunnerUuidIndexFromFolders,
-} from "miroir-core/model-validation-fs";
+} from "@miroir-framework/core/model-validation-fs";
 
 import {
   isUiIntegrationSuiteRunSuccessful,

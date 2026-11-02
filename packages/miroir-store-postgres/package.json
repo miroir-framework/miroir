@@ -1,7 +1,10 @@
 {
-  "name": "miroir-store-postgres",
+  "name": "@miroir-framework/store-postgres",
   "private": true,
   "version": "0.5.0-rc.1",
+  "publishConfig": {
+    "access": "public"
+  },
   "author": "Miroir Framework <miroir-framework@protonmail.com>",
   "license": "MIT",
   "sideEffects": false,
@@ -24,7 +27,7 @@
     "./package.json": "./package.json"
   },
   "scripts": {
-    "watch": "lerna watch --scope='miroir-store-postgres' --include-dependencies -- lerna run build --scope='miroir-store-postgres'",
+    "watch": "lerna watch --scope='@miroir-framework/store-postgres' --include-dependencies -- lerna run build --scope='@miroir-framework/store-postgres'",
     "build-tsup": "tsup",
     "build": "npm run build-tsup",
     "devBuild": "npm run build",
@@ -35,7 +38,7 @@
   },
   "dependencies": {
     "miroir-app-miroir": "*",
-    "miroir-core": "*",
+    "@miroir-framework/core": "*",
     "pg": "8.23.1",
     "pg-hstore": "2.3.4",
     "sequelize": "6.37.8"

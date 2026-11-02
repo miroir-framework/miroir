@@ -2,7 +2,7 @@ import {
   describeIntegrationTestSession,
   type IntegrationTestSessionDescriptor,
   type TestSuiteResult,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import { getIntegrationTestProfileCatalogEntry } from "./integrationTestProfileCatalog.js";
 import type { UiIntegrationTestRunResult } from "./uiIntegrationTestLauncherTypes.js";

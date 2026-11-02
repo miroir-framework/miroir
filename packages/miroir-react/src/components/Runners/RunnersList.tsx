@@ -6,7 +6,7 @@ import {
   defaultSelfApplicationDeploymentMap,
   MiroirLoggerFactory,
   type LoggerInterface
-} from "miroir-core";
+} from "@miroir-framework/core";
 // import { Runner_CreateApplication } from './Runner_CreateApplication';
 import { Runner_CreateEntity } from './Runner_CreateEntity';
 import { Runner_DropEntity } from './Runner_DropEntity';

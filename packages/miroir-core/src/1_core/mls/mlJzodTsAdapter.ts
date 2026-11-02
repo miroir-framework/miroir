@@ -1,5 +1,5 @@
 // The TypeScript generation half of the Jzod adapter (#145), see mlJzodAdapter.ts. @miroir-framework/jzod-ts needs
-// the TypeScript compiler, so this file is the Node-only entry point `miroir-core/ml-to-ts`, kept out of the main
+// the TypeScript compiler, so this file is the Node-only entry point `@miroir-framework/core/ml-to-ts`, kept out of the main
 // (browser) entry. Used by the type generators of miroir-core and miroir-store-postgres.
 import { jzodToTsCode, jzodToZodTextAndZodSchemaForTsGeneration } from "@miroir-framework/jzod-ts";
 

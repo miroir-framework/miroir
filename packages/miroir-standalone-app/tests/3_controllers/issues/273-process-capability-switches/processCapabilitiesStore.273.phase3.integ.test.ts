@@ -15,7 +15,7 @@ import type {
   ProcessCapabilities,
   StoreManagementAction,
   StoreUnitConfiguration,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   Action2Error,
   ConfigurationService,
@@ -26,8 +26,8 @@ import {
   miroirCoreStartup,
   MiroirEventService,
   MiroirLoggerFactory,
-} from "miroir-core";
-import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
+} from "@miroir-framework/core";
+import { miroirFileSystemStoreSectionStartup } from "@miroir-framework/store-filesystem";
 
 import { loglevelnext } from "../../../../src/loglevelnextImporter.js";
 import { setupMiroirTest } from "../../../../src/miroir-fwk/4-tests/setupMiroirTest.js";

@@ -25,7 +25,7 @@ import {
   type RunnerTestSessionInterface,
   type StoreUnitConfiguration,
   type TestbedUuids,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { deployment_Miroir } from "miroir-app-admin";
 import {
   defaultAppForTestModel,
@@ -40,7 +40,7 @@ import {
 import { defaultMiroirMetaModel, selfApplicationMiroir } from "miroir-app-miroir";
 import { browserMcpServerUrl, runMcpToolRunner } from "../4_view/components/Runners/runMcpToolRunner.js";
 import { runRealServerClientBootstrap } from "./runRealServerClientBootstrap.js";
-import { runTeardownTestApplicationStores } from "miroir-core";
+import { runTeardownTestApplicationStores } from "@miroir-framework/core";
 import { testbedAccessGrantFromAuthSession } from "./testbedAccessGrantFromAuthSession.js";
 import { resolveCanonicalTestDeploymentUuid } from "./resolveCanonicalTestDeploymentUuid.js";
 import {
@@ -83,7 +83,7 @@ export type RunnerTestSessionOptions = IntegTestHostOptions & {
   customFetch?: typeof fetch;
   /**
    * Node-only MCP HTTP server for mcpToolRunner host tests. Must not be imported
-   * from `miroir-mcp` in this file — that package root is the Node CLI and
+   * from `@miroir-framework/mcp` in this file — that package root is the Node CLI and
    * breaks the Vite client build. Browser sessions omit this and call same-origin `/mcp`.
    */
   startMcpHttpServer?: (

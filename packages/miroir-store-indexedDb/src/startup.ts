@@ -10,7 +10,7 @@ import {
   PersistenceStoreDataSectionInterface,
   StoreSectionConfiguration,
   type ConfigurationServiceInner
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { cleanLevel } from "./4_services/constants.js";
 import { packageName } from "./constants.js";
 

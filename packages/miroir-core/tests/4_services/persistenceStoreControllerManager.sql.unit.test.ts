@@ -13,7 +13,7 @@ import { Action2Error } from "../../src/0_interfaces/2_domain/DomainElement.js";
 import { ACTION_OK } from "../../src/1_core/constants.js";
 import { ConfigurationService } from "../../src/3_controllers/ConfigurationService.js";
 import { PersistenceStoreControllerManager } from "../../src/4_services/PersistenceStoreControllerManager.js";
-import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
+import { miroirPostgresStoreSectionStartup } from "@miroir-framework/store-postgres";
 
 const DEPLOYMENT_UUID = "dddddddd-dddd-4ddd-8ddd-dddddddddddd";
 const PARENT_ENTITY_UUID = "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24";

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import type { Menu, MiroirMenuItem } from "miroir-core";
+import type { Menu, MiroirMenuItem } from "@miroir-framework/core";
 import { adminSelfApplication } from "miroir-app-admin";
 import {
   menuApplicationModelScopeTemplate,
@@ -13,7 +13,7 @@ import {
   mergeApplicationModelScopeMenuItems,
   shouldShowAppMenuItem,
   type ApplicationModelScopeMenuItemContext,
-} from "miroir-react";
+} from "@miroir-framework/react";
 
 const APPLICATION_DETAILS_REPORT = "cd24df86-204c-4a72-9ac0-87f2b92f25fe";
 const ENTITY_LIST_REPORT = "c9ea3359-690c-4620-9603-b5b402e4a2b9";

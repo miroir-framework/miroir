@@ -18,7 +18,7 @@ import type {
   EndpointDefinition,
   EntityInstance,
   StoreUnitConfiguration,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   Action2Error,
   asyncInnerSelectElementFromQuery,
@@ -41,14 +41,14 @@ import {
   resetIntegTestbed,
   resolveExtractorTemplate,
   runQuery,
-} from "miroir-core";
-import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
+} from "@miroir-framework/core";
+import { miroirFileSystemStoreSectionStartup } from "@miroir-framework/store-filesystem";
 import { FileSystemExtractorRunner } from "../../../miroir-store-filesystem/src/4_services/FileSystemExtractorRunner.js";
 import { sqlStringForExtractor } from "../../../miroir-store-postgres/src/1_core/SqlGenerator.js";
 import { MixedSqlDbInstanceStoreSection } from "../../../miroir-store-postgres/src/4_services/sqlDbInstanceStoreSectionMixin.js";
-import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
-import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
-import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
+import { miroirIndexedDbStoreSectionStartup } from "@miroir-framework/store-indexeddb";
+import { miroirMongoDbStoreSectionStartup } from "@miroir-framework/store-mongodb";
+import { miroirPostgresStoreSectionStartup } from "@miroir-framework/store-postgres";
 import { deployment_Admin, deployment_Miroir } from "miroir-app-admin";
 import {
   deployment_Library_DO_NO_USE,

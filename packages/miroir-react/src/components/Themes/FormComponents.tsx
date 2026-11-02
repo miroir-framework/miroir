@@ -6,7 +6,7 @@ import { createPortal } from 'react-dom';
 import { useMiroirTheme } from "../../contexts/MiroirThemeContext.js";
 import { usePortalContainer } from "../../tools/PortalContainerContext.js";
 import { ThemedComponentProps } from "../helpers/BaseTypes.js";
-import { type LoggerInterface, MiroirLoggerFactory } from 'miroir-core';
+import { type LoggerInterface, MiroirLoggerFactory } from '@miroir-framework/core';
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "../../viewConstants.js";
 

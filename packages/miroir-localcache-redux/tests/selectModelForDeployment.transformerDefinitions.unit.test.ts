@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { deployment_Library, deployment_Miroir } from "miroir-app-admin";
 import { entityTransformerDefinition, selfApplicationMiroir } from "miroir-app-miroir";
-import { getReduxDeploymentsStateIndex, type ApplicationSection, type TransformerDefinition, type Uuid } from "miroir-core";
+import { getReduxDeploymentsStateIndex, type ApplicationSection, type TransformerDefinition, type Uuid } from "@miroir-framework/core";
 
 import { selectModelForDeploymentFromReduxState } from "../src/4_services/localCache/LocalCacheSliceModelSelector.js";
 import { buildMinimalLocalCacheStateForDeployment } from "./helpers/minimalLocalCacheStateForModel.js";

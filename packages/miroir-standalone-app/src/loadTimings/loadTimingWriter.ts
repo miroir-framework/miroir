@@ -7,7 +7,7 @@ import {
   type EntityInstance,
   type InstanceAction,
   type LoggerInterface,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import { packageName } from "../constants.js";
 import { cleanLevel } from "../miroir-fwk/4_view/constants.js";

@@ -6,7 +6,7 @@ import {
   suggestedFailedTestLogsFilename,
   type FailedTestLogsExportTestResult,
   type TestRunLogSnapshot,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 export interface ExportFailedTestLogsButtonProps {
   testLabel: string;

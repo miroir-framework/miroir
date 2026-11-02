@@ -13,7 +13,7 @@ import {
   type MiroirConfigClient,
   type StoreUnitConfiguration,
   type Uuid,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { deployment_Admin, deployment_Miroir } from "miroir-app-admin";
 import { deployment_Library_DO_NO_USE } from "miroir-example-library";
 

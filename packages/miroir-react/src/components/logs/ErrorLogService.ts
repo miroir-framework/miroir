@@ -2,7 +2,7 @@
 // Global Error Log Service for consistent error handling and tracking
 // ##############################################################################################
 
-import { LoggerInterface, MiroirLoggerFactory } from "miroir-core";
+import { LoggerInterface, MiroirLoggerFactory } from "@miroir-framework/core";
 import { packageName, cleanLevel } from "../../constants.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ErrorLogService");

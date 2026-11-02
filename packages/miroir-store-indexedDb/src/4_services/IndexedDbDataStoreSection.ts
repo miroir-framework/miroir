@@ -6,7 +6,7 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   PersistenceStoreDataSectionInterface
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { IndexedDb } from "./IndexedDb.js";
 import { MixedIndexedDbInstanceStoreSection } from "./IndexedDbInstanceStoreSectionMixin.js";
 

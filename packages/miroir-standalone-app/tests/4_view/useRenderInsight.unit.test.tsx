@@ -6,7 +6,7 @@ import {
   MiroirContextReactTestProvider,
   NOOP_RENDER_COUNTS,
   renderInsightRegistry,
-} from "miroir-react";
+} from "@miroir-framework/react";
 
 const showPerformanceDisplayRef = { current: false };
 
@@ -16,7 +16,7 @@ const TestContext = ({ children }: { children: React.ReactNode }) => (
   </MiroirContextReactTestProvider>
 );
 const renderHook = <Result,>(hook: () => Result) => rtlRenderHook(hook, { wrapper: TestContext });
-import { useRenderInsight } from "miroir-react";
+import { useRenderInsight } from "@miroir-framework/react";
 
 describe("useRenderInsight (Phase 1.2)", () => {
   beforeEach(() => {

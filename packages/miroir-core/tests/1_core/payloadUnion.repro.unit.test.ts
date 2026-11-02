@@ -4,7 +4,7 @@ import {
   mlsTypeCheck,
   type MlElement,
   type MiroirModelEnvironment,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 describe("payload union resolution repro", () => {
   it("getFromParameters value resolves against payload union", () => {

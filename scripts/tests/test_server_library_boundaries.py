@@ -17,13 +17,13 @@ from pathlib import Path
 import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-LIBRARY = REPO_ROOT / "packages" / "miroir-server-library"
+LIBRARY = REPO_ROOT / "packages/miroir-server-library"
 LIBRARY_DIST = LIBRARY / "dist"
 TSUP = REPO_ROOT / "node_modules" / ".bin" / "tsup"
 
 # the same list as tsup.config.js, matched on a whole specifier, subpaths included
 FORBIDDEN = re.compile(
-    r"^(miroir-store-[^/]+|pg(-[^/]+)?|@?sequelize|mongodb|([a-z-]+-)?level|miroir-env|miroir-ai|@copilotkit/[^/]+)(/.*)?$"
+    r"^(@miroir-framework/store-[^/]+|@miroir-framework/env|miroir-store-[^/]+|pg(-[^/]+)?|@?sequelize|mongodb|([a-z-]+-)?level|miroir-env|miroir-ai|@copilotkit/[^/]+)(/.*)?$"
 )
 # the probe builds run tsup twice: only in the unit-636-server-library nonreg step
 BUILD_CHECKS = os.environ.get("MIROIR_LIBRARY_BUILD_CHECKS") == "1"
@@ -39,23 +39,24 @@ def test_library_declares_no_store_driver_or_binary_dependency():
     assert sorted(name for name in declared if FORBIDDEN.match(name)) == []
 
 
-def test_library_stays_private_until_the_rename():
-    # ci/release/release_lib/plan.py treats a non-private package as distributable (#621 I5, I6)
+def test_library_stays_private_until_the_publish_item():
+    # ci/release/release_lib/plan.py treats a non-private package as distributable; the rename (#650 D6) keeps
+    # `private`, the epic's publish item lifts it
     assert json.loads((LIBRARY / "package.json").read_text(encoding="utf-8"))["private"] is True
 
 
 @pytest.mark.parametrize(
     "build_file, library_build, after, before",
     [
-        ("Dockerfile", "RUN npm run build -w miroir-server-library", "RUN npm run build -w miroir-mcp", "build:release"),
+        ("Dockerfile", "RUN npm run build -w @miroir-framework/server", "RUN npm run build -w @miroir-framework/mcp", "build:release"),
         (
             ".github/workflows/build-linux-runnables.yml",
-            "npm run build -w miroir-server-library",
-            "npm run build -w miroir-mcp",
+            "npm run build -w @miroir-framework/server",
+            "npm run build -w @miroir-framework/mcp",
             "build:release",
         ),
-        (".github/workflows/self-test.yml", "-w miroir-server-library", "-w miroir-mcp", "build:release"),
-        ("ci/build/build_server.sh", "npm run build -w miroir-server-library", "  miroir-mcp \\", "build:release"),
+        (".github/workflows/self-test.yml", "-w @miroir-framework/server", "-w @miroir-framework/mcp", "build:release"),
+        ("ci/build/build_server.sh", "npm run build -w @miroir-framework/server", "  miroir-mcp \\", "build:release"),
     ],
 )
 def test_every_server_build_path_builds_the_library_after_mcp_and_before_the_release(
@@ -79,12 +80,12 @@ def test_the_release_artifact_list_carries_the_library_dist():
 
 def test_the_release_bundle_inlines_the_library():
     build_server = json.loads(_read("packages/miroir-server/package.json"))["scripts"]["build:server"]
-    assert "-e miroir-server-library" not in build_server
+    assert "-e @miroir-framework/server" not in build_server
 
 
 needs_workspace = pytest.mark.skipif(not TSUP.exists(), reason="workspace not installed (npm ci)")
 needs_dist = pytest.mark.skipif(
-    not (LIBRARY_DIST / "metafile-esm.json").exists(), reason="library not built: npm run build -w miroir-server-library"
+    not (LIBRARY_DIST / "metafile-esm.json").exists(), reason="library not built: npm run build -w @miroir-framework/server"
 )
 
 
@@ -104,7 +105,7 @@ def test_the_build_fails_on_a_store_import(tmp_path, external):
     if external:
         env["MIROIR_SERVER_LIBRARY_PROBE_EXTERNAL"] = "1"
     result = subprocess.run(
-        ["npm", "run", "build", "-w", "miroir-server-library"],
+        ["npm", "run", "build", "-w", "@miroir-framework/server"],
         cwd=REPO_ROOT,
         env=env,
         capture_output=True,
@@ -114,4 +115,4 @@ def test_the_build_fails_on_a_store_import(tmp_path, external):
     shutil.rmtree(out_dir, ignore_errors=True)
     assert result.returncode != 0
     assert "miroir-server-library must not import stores" in result.stdout + result.stderr
-    assert "miroir-store-filesystem" in result.stdout + result.stderr
+    assert re.search(r"(@miroir-framework/|miroir-)store-filesystem", result.stdout + result.stderr)

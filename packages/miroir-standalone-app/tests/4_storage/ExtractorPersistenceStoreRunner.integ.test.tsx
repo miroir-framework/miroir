@@ -21,14 +21,14 @@ import {
   resetAndInitApplicationDeployment,
   resetIntegTestbed,
   StoreUnitConfiguration
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { deployment_Admin, deployment_Miroir } from "miroir-app-admin";
 import { deployment_Library_DO_NO_USE } from "miroir-example-library";
 
-import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
-import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
-import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
-import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
+import { miroirFileSystemStoreSectionStartup } from "@miroir-framework/store-filesystem";
+import { miroirIndexedDbStoreSectionStartup } from "@miroir-framework/store-indexeddb";
+import { miroirMongoDbStoreSectionStartup } from "@miroir-framework/store-mongodb";
+import { miroirPostgresStoreSectionStartup } from "@miroir-framework/store-postgres";
 import {
   author2,
   book1,
@@ -50,7 +50,7 @@ import type {
   Deployment,
   EndpointDefinition,
   Entity
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import {
   selfApplicationDeploymentConfigurationsTO_REMOVE,

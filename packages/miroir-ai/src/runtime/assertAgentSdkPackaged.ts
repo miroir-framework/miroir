@@ -7,7 +7,7 @@
 import { existsSync } from "node:fs";
 import { createRequire } from "node:module";
 
-import type { AgentBackend } from "miroir-core";
+import type { AgentBackend } from "@miroir-framework/core";
 
 export const AGENT_SDK_PACKAGES: Record<Exclude<AgentBackend, "none">, string> = {
   cursor: "@cursor/sdk",

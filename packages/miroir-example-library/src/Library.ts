@@ -9,7 +9,7 @@ import {
   type Report,
   type Runner,
   type SelfApplication,
-} from "miroir-core";
+} from "@miroir-framework/core";
 // Library Model - Entities
 import entityPublisher from "../assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/a027c379-8468-43a5-ba4d-bf618be25cab.json" with { type: "json" };
 import entityUser from "../assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/ca794e28-b2dc-45b3-8137-00151557eea8.json" with { type: "json" };

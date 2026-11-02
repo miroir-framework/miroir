@@ -10,14 +10,14 @@ import {
   splitSuiteKeys,
   splitTags,
   walkMiroirTestLeaves,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   listCliRunnerIntegrationSuiteKeysFromFolders,
   listCliTransformerIntegrationSuiteKeysFromFolders,
   listCliUnitSuiteKeysFromFolders,
   loadApplicationMiroirTestCatalog,
   resolveCliSuiteKeysFromCatalog,
-} from "miroir-core/model-validation-fs";
+} from "@miroir-framework/core/model-validation-fs";
 
 import { applyIntegrationTestProfile } from "../tests/helpers/integrationTestProfiles.js";
 

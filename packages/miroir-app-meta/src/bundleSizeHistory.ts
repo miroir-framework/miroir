@@ -6,7 +6,7 @@ import {
   checkModelValidationInstance,
   defaultMiroirModelEnvironment,
   type MlElement,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import bundleSizeMeasurementEntityJson from "../assets/meta_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/90d603f9-58f8-4ac4-b2eb-cb1d718e8b3b.json" with { type: "json" };
 

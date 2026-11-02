@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { setNodeFolded, isNodeFolded, type FoldedStateTree } from "miroir-react";
+import { setNodeFolded, isNodeFolded, type FoldedStateTree } from "@miroir-framework/react";
 
 describe('setNodeFolded', () => {
   describe('when folding nodes', () => {

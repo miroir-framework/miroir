@@ -1,4 +1,4 @@
-import { effectiveShowModelTools, isDesignerToolsVisible } from "miroir-core";
+import { effectiveShowModelTools, isDesignerToolsVisible } from "@miroir-framework/core";
 import { useMiroirContextService } from "../contexts/MiroirContextReactProvider.js";
 
 import { useAuthSession } from "./authSession.js";

@@ -2,7 +2,7 @@
  * Static host map of TestConfiguration instances for UI/CLI integ (#252).
  * Lives in standalone-app so miroir-core does not import the application packages.
  */
-import type { TestConfigurationPlayfield } from "miroir-core";
+import type { TestConfigurationPlayfield } from "@miroir-framework/core";
 import {
   testConfiguration_libraryBookDetailsSeed,
   testConfiguration_libraryDocumentSeed,

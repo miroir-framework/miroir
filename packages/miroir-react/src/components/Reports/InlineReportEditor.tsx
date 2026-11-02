@@ -11,7 +11,7 @@ import {
   Uuid,
   type ApplicationDeploymentMap,
   type MlObject
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import { ThemedOnScreenHelper } from "../helpers/ThemedHelper.js";
 import { packageName } from "../../constants.js";

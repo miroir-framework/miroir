@@ -7,7 +7,7 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 
-import type { MiroirConfigForRestClient } from "miroir-core";
+import type { MiroirConfigForRestClient } from "@miroir-framework/core";
 
 import viteConfig from "../../vite.config.js";
 import {

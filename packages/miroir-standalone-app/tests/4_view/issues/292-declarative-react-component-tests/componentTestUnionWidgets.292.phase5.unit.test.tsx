@@ -25,7 +25,7 @@ import type {
   MiroirTestForReactComponent,
   ReactComponentTestStep,
   ReactComponentTestSuiteContext,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import {
   createComponentTestEnvironment,

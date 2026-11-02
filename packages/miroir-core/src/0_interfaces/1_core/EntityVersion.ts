@@ -29,7 +29,6 @@ export type MetaEntity = z.infer<typeof MetaEntitySchema>;
 
 /**
 * duplicated from Redux
-* @public
 */
 export interface InstanceDictionaryNum<T> {
   [id: number]: T | undefined;
@@ -37,7 +36,6 @@ export interface InstanceDictionaryNum<T> {
 
 /**
 * duplicated from Redux
-* @public
 */
 export interface InstanceDictionary<T> extends InstanceDictionaryNum<T> {
   [id: string]: T | undefined;

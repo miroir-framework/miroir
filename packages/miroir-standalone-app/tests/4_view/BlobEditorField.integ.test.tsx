@@ -7,10 +7,10 @@ import React from "react";
 import {
   LoggerInterface,
   MiroirLoggerFactory,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
-import { BlobEditorField, BlobEditorFieldProps } from "miroir-react";
-import { MiroirThemeProvider } from "miroir-react";
+import { BlobEditorField, BlobEditorFieldProps } from "@miroir-framework/react";
+import { MiroirThemeProvider } from "@miroir-framework/react";
 import { cleanLevel } from "../3_controllers/constants";
 
 // ################################################################################################

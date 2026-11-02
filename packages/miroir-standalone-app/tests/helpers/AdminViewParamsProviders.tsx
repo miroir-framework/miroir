@@ -6,8 +6,8 @@
  */
 import React, { useState } from "react";
 
-import type { DomainControllerInterface } from "miroir-core";
-import { LocalCacheProvider, MiroirContextReactProvider } from "miroir-react";
+import type { DomainControllerInterface } from "@miroir-framework/core";
+import { LocalCacheProvider, MiroirContextReactProvider } from "@miroir-framework/react";
 
 import { buildAdminViewParamsHarness } from "./adminViewParamsHarness";
 

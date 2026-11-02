@@ -5,7 +5,7 @@ import {
   type MiroirModelEnvironment,
   type MlElement,
   type TransformerDefinitionRegistry,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import React, { createContext, useCallback, useContext, useMemo, useState } from "react";
 
 // ################################################################################################

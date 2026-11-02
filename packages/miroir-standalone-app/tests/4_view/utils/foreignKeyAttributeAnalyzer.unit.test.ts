@@ -1,10 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import type { Entity } from 'miroir-core';
+import type { Entity } from '@miroir-framework/core';
 import { 
   analyzeForeignKeyAttributes, 
   convertToLegacyFormat,
   ForeignKeyAttributeDefinition 
-} from "miroir-react";
+} from "@miroir-framework/react";
 
 describe('analyzeForeignKeyAttributes', () => {
   const createEntity = (

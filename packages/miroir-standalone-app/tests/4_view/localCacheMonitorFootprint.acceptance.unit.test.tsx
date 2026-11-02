@@ -7,18 +7,18 @@
 import React from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { render as rtlRender, screen } from "@testing-library/react";
-import { MiroirContextReactTestProvider } from "miroir-react";
+import { MiroirContextReactTestProvider } from "@miroir-framework/react";
 import "@testing-library/jest-dom";
 
 const showLocalCacheMonitorRef = { current: false };
 
-import { LocalCacheMonitorSummary } from "miroir-react";
-import { applyLocalCacheMonitorGate } from "miroir-react";
+import { LocalCacheMonitorSummary } from "@miroir-framework/react";
+import { applyLocalCacheMonitorGate } from "@miroir-framework/react";
 import {
   LOCAL_CACHE_MONITOR_SESSION_KEY,
   resetLocalCacheMonitorConfig,
-} from "miroir-react";
-import { localCacheMonitorRegistry } from "miroir-react";
+} from "@miroir-framework/react";
+import { localCacheMonitorRegistry } from "@miroir-framework/react";
 
 const TestContext = ({ children }: { children: React.ReactNode }) => (
   <MiroirContextReactTestProvider value={{ showLocalCacheMonitor: showLocalCacheMonitorRef.current, domainController: undefined } as any}>

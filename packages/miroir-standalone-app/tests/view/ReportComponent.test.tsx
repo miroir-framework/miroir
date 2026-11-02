@@ -16,7 +16,7 @@
 //   miroirCoreStartup,
 //   reportEntityList,
 //   RestClient,
-// } from "miroir-core";
+// } from "@miroir-framework/core";
 // import {
 //   RestMswServerStub,
 //   PersistenceReduxSaga,

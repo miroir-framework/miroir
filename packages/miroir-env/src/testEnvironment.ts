@@ -1,7 +1,7 @@
 import { rmSync } from "node:fs";
 import path from "node:path";
 
-import { environmentAppsDirectory, isTestEnvironment, type MiroirConfigClient } from "miroir-core";
+import { environmentAppsDirectory, isTestEnvironment, type MiroirConfigClient } from "@miroir-framework/core";
 
 import { resolveEnvironmentFromFiles, type ResolvedEnvironment } from "./environmentFiles.js";
 import {

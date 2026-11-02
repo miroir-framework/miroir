@@ -22,7 +22,7 @@ import {
   type Domain2QueryReturnType,
   type MiroirModelEnvironment,
   keylessEntityInstanceActionError,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { MixableSqlDbStoreSection, SqlDbStoreSection } from "./SqlDbStoreSection";
 
 import { Op, Sequelize } from "sequelize";
@@ -287,7 +287,7 @@ export function SqlDbInstanceStoreSectionMixin<TBase extends MixableSqlDbStoreSe
           if (Array.isArray(idAttribute)) {
             // Composite PK: parse serialized key and use findOne with WHERE
             const pkAttributes = idAttribute;
-            const { parseCompositeKeyValue } = await import("miroir-core");
+            const { parseCompositeKeyValue } = await import("@miroir-framework/core");
             const pkValues = parseCompositeKeyValue(pkAttributes, instancePrimaryKey);
             result = (await scopedModel.findOne({ where: pkValues }))?.dataValues;
           } else {

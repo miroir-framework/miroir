@@ -1,7 +1,10 @@
 {
-  "name": "miroir-store-mongodb",
+  "name": "@miroir-framework/store-mongodb",
   "private": true,
   "version": "0.5.0-rc.1",
+  "publishConfig": {
+    "access": "public"
+  },
   "description": "The Miroir implementation for accessing MongoDB databases.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -25,7 +28,7 @@
   },
   "dependencies": {
     "miroir-app-miroir": "*",
-    "miroir-core": "*",
+    "@miroir-framework/core": "*",
     "mongodb": "7.7.0"
   },
   "devDependencies": {
@@ -36,7 +39,7 @@
     "tsup": "9.0.0"
   },
   "scripts": {
-    "watch": "lerna watch --scope='miroir-store-mongodb' --include-dependencies -- lerna run build --scope='miroir-store-mongodb'",
+    "watch": "lerna watch --scope='@miroir-framework/store-mongodb' --include-dependencies -- lerna run build --scope='@miroir-framework/store-mongodb'",
     "build": "tsup",
     "devBuild": "npm run build",
     "copy-files": "copyfiles -u 1 src/**/*.json src/**/*.css dist/src",

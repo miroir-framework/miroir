@@ -36,13 +36,13 @@ import {
   type DomainControllerInterface,
   type LocalCacheInterface,
   type MiroirTestDefinition,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   LocalCache,
   LocalCacheProvider,
   MiroirContextReactProvider,
   PersistenceReduxSaga,
-} from "miroir-react";
+} from "@miroir-framework/react";
 import {
   defaultMiroirMetaModel,
   entityEntity,
@@ -69,9 +69,9 @@ import {
   RunAllMiroirTestsButton,
   type MiroirTestSuiteResultsMap,
 } from "../../../../src/miroir-fwk/4_view/components/Buttons/RunAllMiroirTestsButton";
-import type { TestResultData } from "miroir-react";
+import type { TestResultData } from "@miroir-framework/react";
 import { MiroirTestListDisplay } from "../../../../src/miroir-fwk/4_view/components/Reports/MiroirTestListDisplay";
-import { ReportPageContextProvider } from "miroir-react";
+import { ReportPageContextProvider } from "@miroir-framework/react";
 import { resolveRepoRoot } from "../../../helpers/integrationTestProfiles.js";
 
 // ################################################################################################

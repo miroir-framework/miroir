@@ -3,7 +3,7 @@
 import {
   MiroirLoggerFactory,
   type LoggerInterface
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { packageName } from "../constants.js";
 import { PageContainer } from "../components/Page/PageContainer.js";
 import { ReportPageContextProvider } from "../components/Reports/ReportPageContext.js";

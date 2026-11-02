@@ -1,6 +1,6 @@
 import React from "react";
 
-import type { Entity, InputOutputPayloadType, InputOutputType } from "miroir-core";
+import type { Entity, InputOutputPayloadType, InputOutputType } from "@miroir-framework/core";
 
 import { ThemedButton, ThemedText } from "../Themes/BasicComponents.js";
 import { ThemedFlexRow } from "../Themes/LayoutComponents.js";

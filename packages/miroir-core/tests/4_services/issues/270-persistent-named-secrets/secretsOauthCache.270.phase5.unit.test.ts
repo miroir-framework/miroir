@@ -11,7 +11,7 @@ import {
   encryptSecret,
   hydrateSecrets,
   type OutboundFetch,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 const RUN_TEST = process.env.RUN_TEST;
 const runThis =

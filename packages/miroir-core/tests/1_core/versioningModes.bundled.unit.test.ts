@@ -11,8 +11,8 @@ import { ACTION_OK } from "../../src/1_core/constants.js";
 import { versionHistoryEntityUuids } from "../../src/1_core/Model.js";
 import { ConfigurationService } from "../../src/3_controllers/ConfigurationService.js";
 import { PersistenceStoreControllerManager } from "../../src/4_services/PersistenceStoreControllerManager.js";
-import type { BundledSectionData } from "miroir-store-bundled";
-import { miroirBundledStoreSectionStartup } from "miroir-store-bundled";
+import type { BundledSectionData } from "@miroir-framework/store-bundled";
+import { miroirBundledStoreSectionStartup } from "@miroir-framework/store-bundled";
 import {
   entityEntityVersion,
   entitySelfApplicationVersion,

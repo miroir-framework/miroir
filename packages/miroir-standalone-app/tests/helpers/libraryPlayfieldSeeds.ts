@@ -5,7 +5,7 @@ import type {
   EntityVersion,
   MiroirTestDefinition,
   Uuid,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import {
   author1,
@@ -49,7 +49,7 @@ import {
   entityCompositePK,
   libraryTestbedInitParams,
 } from "../../src/miroir-fwk/4-tests/uiIntegrationPlayfieldSeeds.js";
-import type { IntegTestbedResetParams } from "miroir-core";
+import type { IntegTestbedResetParams } from "@miroir-framework/core";
 
 export const ENTITY_COMPOSITE_PK_UUID = "44691d2c-d7c1-48e0-8363-71c51195e104";
 export const ENTITY_DEFINITION_COMPOSITE_PK_UUID = "fbec9082-5cdf-4877-bd78-66a434a8eebf";

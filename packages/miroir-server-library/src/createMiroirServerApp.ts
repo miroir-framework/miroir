@@ -34,8 +34,8 @@ import {
   type MiroirConfigServer,
   type PersistenceStoreControllerManagerInterface,
   type ProcessCapabilities,
-} from "miroir-core";
-import { EndpointToolRegistry, setupMcpServer, type MiroirMcpServer } from "miroir-mcp";
+} from "@miroir-framework/core";
+import { EndpointToolRegistry, setupMcpServer, type MiroirMcpServer } from "@miroir-framework/mcp";
 
 const packageName = "miroir-server-library";
 const loggerName = MiroirLoggerFactory.getLoggerName(packageName, "5", "createMiroirServerApp");

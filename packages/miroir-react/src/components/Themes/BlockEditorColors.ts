@@ -1,4 +1,4 @@
-import type { MiroirThemeFull } from "miroir-core";
+import type { MiroirThemeFull } from "@miroir-framework/core";
 
 // ################################################################################################
 // #498 (analysis #497, D3 and D11): block colors of the block editor, by category. A category is

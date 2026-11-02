@@ -18,8 +18,8 @@ import type {
   MiroirTestExecutionEnvironment,
   PersistenceStoreControllerManagerInterface,
   RunnerTestSessionInterface
-} from "miroir-core";
-import { getBootstrapPhasesForSessionKind, type StoreUnitConfiguration } from "miroir-core";
+} from "@miroir-framework/core";
+import { getBootstrapPhasesForSessionKind, type StoreUnitConfiguration } from "@miroir-framework/core";
 import { deployment_Admin, deployment_Miroir } from "miroir-app-admin";
 import { selfApplicationLibrary } from "miroir-example-library";
 

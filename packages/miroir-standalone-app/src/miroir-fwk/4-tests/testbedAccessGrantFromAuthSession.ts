@@ -2,9 +2,9 @@ import {
   readUsableBearerPrincipal,
   resolveTestbedAccessGrantPrincipal,
   type TestbedAccessGrantPrincipal,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
-import { getAuthenticationEnabled, getAuthToken } from "miroir-react";
+import { getAuthenticationEnabled, getAuthToken } from "@miroir-framework/react";
 
 /**
  * Gate for testbed MiroirRight rows: auth on (from /auth/status) and a usable

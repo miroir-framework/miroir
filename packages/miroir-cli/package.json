@@ -1,6 +1,9 @@
 {
-  "name": "miroir-cli",
+  "name": "@miroir-framework/cli",
   "version": "0.5.0-rc.1",
+  "publishConfig": {
+    "access": "public"
+  },
   "description": "Command Line Interface for Miroir Framework - exposes Endpoint Actions as CLI commands",
   "files": [
     "dist"
@@ -39,24 +42,24 @@
   "dependencies": {
     "commander": "15.0.0",
     "loglevelnext": "6.0.0",
-    "miroir-core": "*",
-    "miroir-env": "*",
+    "@miroir-framework/core": "*",
+    "@miroir-framework/env": "*",
     "miroir-localcache-redux": "*"
   },
   "peerDependencies": {
-    "miroir-store-filesystem": "*",
-    "miroir-store-indexedDb": "*",
-    "miroir-store-postgres": "*",
+    "@miroir-framework/store-filesystem": "*",
+    "@miroir-framework/store-indexeddb": "*",
+    "@miroir-framework/store-postgres": "*",
     "zod": "^4.6.7"
   },
   "peerDependenciesMeta": {
-    "miroir-store-filesystem": {
+    "@miroir-framework/store-filesystem": {
       "optional": true
     },
-    "miroir-store-indexedDb": {
+    "@miroir-framework/store-indexeddb": {
       "optional": true
     },
-    "miroir-store-postgres": {
+    "@miroir-framework/store-postgres": {
       "optional": true
     }
   },

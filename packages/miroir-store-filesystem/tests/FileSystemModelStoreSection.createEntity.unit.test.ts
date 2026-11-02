@@ -3,7 +3,7 @@ import * as os from "os";
 import * as path from "path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-import { Action2Error, Entity } from "miroir-core";
+import { Action2Error, Entity } from "@miroir-framework/core";
 import { entityEntity } from "miroir-app-miroir";
 
 import { FileSystemDataStoreSection } from "../src/4_services/FileSystemDataStoreSection.js";

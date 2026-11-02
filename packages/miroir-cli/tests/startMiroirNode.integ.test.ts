@@ -7,10 +7,10 @@ import {
   type ApplicationDeploymentMap,
   type DomainControllerInterface,
   type MiroirConfigClient,
-} from "miroir-core";
-import { bootEnvironment, environmentServerConfig, openTestEnvironment } from "miroir-env";
+} from "@miroir-framework/core";
+import { bootEnvironment, environmentServerConfig, openTestEnvironment } from "@miroir-framework/env";
 import { startMiroirNode } from "miroir-localcache-redux/node";
-import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
+import { miroirFileSystemStoreSectionStartup } from "@miroir-framework/store-filesystem";
 import { describe, expect, it } from "vitest";
 
 import { loadStoreStartups } from "../src/startup/storeStartup.js";

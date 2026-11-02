@@ -32,7 +32,7 @@ import {
   // compactTableTheme,
   // materialTableTheme,
 } from "./TableTheme.js";
-import type { StoredMiroirTheme } from "miroir-core";
+import type { StoredMiroirTheme } from "@miroir-framework/core";
 
 // Deep partial type for theme overrides
 export type DeepPartial<T> = {

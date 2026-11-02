@@ -14,7 +14,7 @@
 import React from "react";
 import { afterEach, beforeAll, describe, expect, it } from "vitest";
 
-import type { LoggerInterface, ReactComponentTestStep } from "miroir-core";
+import type { LoggerInterface, ReactComponentTestStep } from "@miroir-framework/core";
 
 import {
   createComponentTestEnvironment,

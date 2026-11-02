@@ -109,7 +109,7 @@ def plan_steps(root: Path, env: Environment, *, graphify: bool = False, cloud_ag
     for group in BUILD_GROUPS:
         missing = [p for p in group if not _is_built(root, p)]
         if missing:
-            workspaces = " ".join(f"-w {p}" for p in missing)
+            workspaces = " ".join(f"-w packages/{p}" for p in missing)
             steps.append(Step(f"build {' '.join(missing)}", f"npm run build {workspaces}"))
     if not env.has_pytest:
         steps.append(Step("install pytest", f"{sys.executable} -m pip install --quiet pytest"))

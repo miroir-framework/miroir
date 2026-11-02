@@ -15,7 +15,7 @@ import {
   type LocalCacheExtractor,
   type MlElement,
   type Uuid,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { useDomainControllerService } from "../../contexts/MiroirContextReactProvider.js";
 import React, { useCallback, useMemo, useState } from "react";
 import { v4 as uuidv4 } from "uuid";

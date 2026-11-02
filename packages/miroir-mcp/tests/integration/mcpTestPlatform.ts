@@ -9,8 +9,8 @@ import {
   type MiroirConfigClient,
   type StoreSectionStartup,
   type StoreUnitConfiguration,
-} from "miroir-core";
-import { bootEnvironment, openTestEnvironment, selectedTestEnvironment, type TestEnvironment } from "miroir-env";
+} from "@miroir-framework/core";
+import { bootEnvironment, openTestEnvironment, selectedTestEnvironment, type TestEnvironment } from "@miroir-framework/env";
 
 import { startMiroirNode } from "miroir-localcache-redux/node";
 
@@ -29,9 +29,9 @@ export type McpTestPlatform = {
 
 // dynamic imports: the indexedDb and postgres stores are optional peers, loaded only for their test environment
 const storeStartups: Record<string, () => Promise<StoreSectionStartup>> = {
-  filesystem: async () => (await import("miroir-store-filesystem")).miroirFileSystemStoreSectionStartup,
-  indexedDb: async () => (await import("miroir-store-indexedDb")).miroirIndexedDbStoreSectionStartup,
-  sql: async () => (await import("miroir-store-postgres")).miroirPostgresStoreSectionStartup,
+  filesystem: async () => (await import("@miroir-framework/store-filesystem")).miroirFileSystemStoreSectionStartup,
+  indexedDb: async () => (await import("@miroir-framework/store-indexeddb")).miroirIndexedDbStoreSectionStartup,
+  sql: async () => (await import("@miroir-framework/store-postgres")).miroirPostgresStoreSectionStartup,
 };
 
 /**

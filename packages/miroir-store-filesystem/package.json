@@ -1,7 +1,10 @@
 {
-  "name": "miroir-store-filesystem",
+  "name": "@miroir-framework/store-filesystem",
   "private": true,
   "version": "0.5.0-rc.1",
+  "publishConfig": {
+    "access": "public"
+  },
   "description": "The Miroir implementation for accessing filesystem databases.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -24,7 +27,7 @@
     "node": ">=22"
   },
   "scripts": {
-    "watch": "lerna watch --scope='miroir-store-filesystem' --include-dependencies -- lerna run build --scope='miroir-store-filesystem'",
+    "watch": "lerna watch --scope='@miroir-framework/store-filesystem' --include-dependencies -- lerna run build --scope='@miroir-framework/store-filesystem'",
     "build-tsup": "tsup",
     "build": "tsup",
     "devBuild": "npm run build",
@@ -33,7 +36,7 @@
   },
   "dependencies": {
     "miroir-app-miroir": "*",
-    "miroir-core": "*"
+    "@miroir-framework/core": "*"
   },
   "devDependencies": {
     "@jest/globals": "29.7.0",

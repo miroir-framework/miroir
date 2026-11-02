@@ -10,7 +10,7 @@ import {
   Runner,
   type StoreUnitConfiguration,
   displayTestSuiteResultsDetails,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   beforeEachTest,
   getTestConfig,

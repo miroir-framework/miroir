@@ -7,8 +7,8 @@ import {
   ConfigurationService,
   type ApplicationDeploymentMap,
   type DomainControllerInterface,
-} from "miroir-core";
-import { openTestEnvironment, selectedTestEnvironment } from "miroir-env";
+} from "@miroir-framework/core";
+import { openTestEnvironment, selectedTestEnvironment } from "@miroir-framework/env";
 
 import { getAllCommands, type CliCommandHandler } from "../src/commands/commandsFromEndpoint.js";
 import { registerCatalogCommands } from "../src/commands/registerCatalogCommands.js";

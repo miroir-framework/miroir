@@ -1,4 +1,4 @@
-import type { MiroirConfigClient } from "miroir-core";
+import type { MiroirConfigClient } from "@miroir-framework/core";
 
 import { DEFAULT_LOAD_TIMING_SWITCH, type LoadTimingSwitch } from "./loadTimingRecorder.js";
 

@@ -12,7 +12,7 @@
  */
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 
-import type { AuthPrincipal, DomainControllerInterface, EndpointDefinition } from "miroir-core";
+import type { AuthPrincipal, DomainControllerInterface, EndpointDefinition } from "@miroir-framework/core";
 import {
   accessGrantsFromInstances,
   Action2Error,
@@ -27,7 +27,7 @@ import {
   RestClientStub,
   setProcessTokenSecret,
   setSecretsMasterKey,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   miroirRight_AliceGitHubAppAdmin,
   miroirRight_AliceGitHubDeploymentRead,

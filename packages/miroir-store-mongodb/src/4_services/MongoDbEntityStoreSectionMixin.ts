@@ -16,7 +16,7 @@ import {
   PersistenceStoreInstanceSectionAbstractInterface,
   applyEntityOnlyRename,
   applyMlSchemaColumnChanges
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { entityEntity } from "miroir-app-miroir";
 import { MixedMongoDbInstanceStoreSection, MongoDbInstanceStoreSectionMixin } from "./MongoDbInstanceStoreSectionMixin.js";
 import { MongoDbStoreSection } from "./MongoDbStoreSection.js";

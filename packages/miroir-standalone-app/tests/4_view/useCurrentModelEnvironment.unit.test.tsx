@@ -19,7 +19,7 @@ import {
   type ApplicationDeploymentMap,
   type DomainControllerInterface,
   type EntityInstance,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { LocalCache } from "miroir-localcache-redux";
 import {
   LocalCacheProvider,
@@ -29,10 +29,10 @@ import {
   type LocalCacheSliceState,
   type MiroirReactContext,
   type ReduxStateWithUndoRedo,
-} from "miroir-react";
+} from "@miroir-framework/react";
 
-import { useCurrentModelEnvironment } from "miroir-react";
-import { ModelEnvironmentSync } from "miroir-react";
+import { useCurrentModelEnvironment } from "@miroir-framework/react";
+import { ModelEnvironmentSync } from "@miroir-framework/react";
 import {
   addEndpointToLocalCacheState,
   addEntityInstanceToLocalCacheState,
@@ -196,7 +196,7 @@ describe("useCurrentModelEnvironment (Phase 1)", () => {
 
   it("sets schemaReloadRequired when schemaRevision changes for meta endpoint add", async () => {
     const schemaSpy = vi.spyOn(
-      await import("miroir-core"),
+      await import("@miroir-framework/core"),
       "getMiroirFundamentalSchemaForDeployment",
     );
 
@@ -254,7 +254,7 @@ describe("useCurrentModelEnvironment (Phase 2.8 — schema caching)", () => {
 
   it("does not recompute schema when model reference is stable", async () => {
     const resolveSpy = vi.spyOn(
-      await import("miroir-core"),
+      await import("@miroir-framework/core"),
       "resolveFundamentalSchemaForDeployment",
     );
 
@@ -288,7 +288,7 @@ describe("useCurrentModelEnvironment (Phase 199 — schemaRevision policy)", () 
 
   it("does not call schema resolver when only instance data changes", async () => {
     const resolveSpy = vi.spyOn(
-      await import("miroir-core"),
+      await import("@miroir-framework/core"),
       "resolveFundamentalSchemaForDeployment",
     );
 
@@ -336,7 +336,7 @@ describe("useCurrentModelEnvironment (Phase 199 — schemaRevision policy)", () 
 
   it("calls resolver when app endpoint added (app-overlay revision change)", async () => {
     const resolveSpy = vi.spyOn(
-      await import("miroir-core"),
+      await import("@miroir-framework/core"),
       "resolveFundamentalSchemaForDeployment",
     );
 
@@ -384,7 +384,7 @@ describe("useCurrentModelEnvironment (Phase 199 — schemaRevision policy)", () 
 
   it("does not recompute when unrelated deployment's model changes in map", async () => {
     const resolveSpy = vi.spyOn(
-      await import("miroir-core"),
+      await import("@miroir-framework/core"),
       "resolveFundamentalSchemaForDeployment",
     );
 
@@ -445,7 +445,7 @@ describe("useCurrentModelEnvironment (Phase 199 — schemaRevision policy)", () 
 
   it("schema for Library application ignores Admin model mutations", async () => {
     const resolveSpy = vi.spyOn(
-      await import("miroir-core"),
+      await import("@miroir-framework/core"),
       "resolveFundamentalSchemaForDeployment",
     );
 
@@ -530,7 +530,7 @@ describe("useCurrentModelEnvironment (Phase 6 — performance acceptance)", () =
 
   it("invokes at most one extended resolve per deployment on mount until overlay revision change", async () => {
     const resolveSpy = vi.spyOn(
-      await import("miroir-core"),
+      await import("@miroir-framework/core"),
       "resolveFundamentalSchemaForDeployment",
     );
 
@@ -610,7 +610,7 @@ describe("useCurrentModelEnvironment (Phase 7 — ModelEnvironmentSync)", () => 
 
   it("N consumers without Sync still resolve at most once via ensureSchemaForDeployment", async () => {
     const resolveSpy = vi.spyOn(
-      await import("miroir-core"),
+      await import("@miroir-framework/core"),
       "resolveFundamentalSchemaForDeployment",
     );
 
@@ -639,7 +639,7 @@ describe("useCurrentModelEnvironment (Phase 7 — ModelEnvironmentSync)", () => 
 
   it("ModelEnvironmentSync + N consumers: ≤1 extended resolve; data-only no extra; overlay +1", async () => {
     const resolveSpy = vi.spyOn(
-      await import("miroir-core"),
+      await import("@miroir-framework/core"),
       "resolveFundamentalSchemaForDeployment",
     );
 

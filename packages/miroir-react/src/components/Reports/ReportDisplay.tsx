@@ -13,7 +13,7 @@ import {
   MiroirLoggerFactory,
   Report,
   type Domain2QueryReturnType
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { useMiroirContextService } from "../../contexts/MiroirContextReactProvider.js";
 
 import { JsonDisplayHelper } from "../helpers/DebugHelper.js";

@@ -11,7 +11,7 @@
  */
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-import { createThrowingExpect } from "miroir-core";
+import { createThrowingExpect } from "@miroir-framework/core";
 
 const throwingExpect = createThrowingExpect("domMatchersParity.286.phase3");
 

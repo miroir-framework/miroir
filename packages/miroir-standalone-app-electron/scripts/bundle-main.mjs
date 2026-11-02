@@ -31,7 +31,7 @@ import { bundleReportLines, readWorkspaces } from "../../miroir-standalone-app/v
  *   dynamically by `miroir-ai` only for the configured `agentBackend`. Not in `dependencies`, so
  *   the package ships neither (#275, #409): `assertAgentSdkPackaged` fails loud at start when the
  *   packaged app is configured with an agent backend, and the SDKs stay dependencies of `miroir-ai`.
- * - `classic-level`: native module (the Node side of `miroir-store-indexedDb`, through `level`),
+ * - `classic-level`: native module (the Node side of `@miroir-framework/store-indexeddb`, through `level`),
  *   found by `node-gyp-build` next to its own files; in `dependencies`, so electron-builder ships it.
  * - `pg`: sequelize loads its dialect driver with a computed `require("pg")`; in `dependencies`.
  * `electron-squirrel-startup` is not imported but required at run time by `main.ts`

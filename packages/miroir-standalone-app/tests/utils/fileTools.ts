@@ -3,7 +3,7 @@ import {
   MiroirLoggerFactory,
   type LoggerInterface,
   type LoggerOptions,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import path from "path";
 import { cleanLevel } from "../3_controllers/constants";
 import { packageName } from "../../src/constants";

@@ -7,7 +7,7 @@ import {
   inferIntegrationSessionKind,
   type MiroirTestDefinition,
   type MiroirTestSuite,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import type {
   UiIntegrationTestRunRequest,
@@ -62,7 +62,7 @@ describe("uiIntegrationTestLauncherTypes (B0)", () => {
   });
 });
 
-describe("inferIntegrationSessionKind via miroir-core (B0 smoke)", () => {
+describe("inferIntegrationSessionKind via @miroir-framework/core (B0 smoke)", () => {
   it("routes runner.returnDocument and tr.core", () => {
     expect(inferIntegrationSessionKind(suiteDefinition(miroirTest_runner_returnDocument))).toBe("runner");
     expect(inferIntegrationSessionKind(suiteDefinition(miroirTest_tr_core))).toBe(

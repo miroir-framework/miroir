@@ -1,6 +1,6 @@
 import express from "express";
 
-import type { ApplicationDeploymentMap, DomainControllerInterface } from "miroir-core";
+import type { ApplicationDeploymentMap, DomainControllerInterface } from "@miroir-framework/core";
 
 import { setupMcpServer } from "./mcpServer.js";
 import { EndpointToolRegistry } from "./tools/EndpointToolRegistry.js";

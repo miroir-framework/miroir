@@ -8,11 +8,11 @@ import {
   resolveMiroirTestCliConfigFromPartial,
   runMiroirTests,
   type MiroirConfigClient,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   listCliUnitSuiteKeysFromFolders,
   resolveCliSuiteKeysFromCatalog,
-} from "miroir-core/model-validation-fs";
+} from "@miroir-framework/core/model-validation-fs";
 import { runMiroirCoreTestsFromCLI } from "./helpers/runMiroirCoreTestsFromCLI.js";
 import {
   assertMiroirCoreIntegTestLaunchReady,

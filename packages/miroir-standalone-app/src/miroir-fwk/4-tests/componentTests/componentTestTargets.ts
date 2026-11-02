@@ -2,7 +2,7 @@ import type {
   ResolvedReactComponentTestTarget as ReactComponentTestTarget,
   WithoutStoredValueReferences,
   ReactComponentTestTextMatch as ReactComponentTestTextMatchWithReferences,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 // the targets of resolved steps: their stored value references are replaced by values (#333)
 type ReactComponentTestTextMatch = WithoutStoredValueReferences<ReactComponentTestTextMatchWithReferences>;

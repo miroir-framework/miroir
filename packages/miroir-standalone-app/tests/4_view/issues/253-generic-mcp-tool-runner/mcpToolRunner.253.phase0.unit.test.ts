@@ -23,8 +23,8 @@ import {
   selfApplicationLibrary,
 } from "miroir-example-library";
 
-import { resolveMcpToolAction } from "miroir-react";
-import { resolveRunnerDefinitionApplication } from "miroir-react";
+import { resolveMcpToolAction } from "@miroir-framework/react";
+import { resolveRunnerDefinitionApplication } from "@miroir-framework/react";
 import { resolveRepoRoot } from "../../../helpers/integrationTestProfiles.js";
 
 const RUN_TEST = process.env.RUN_TEST;

@@ -6,12 +6,12 @@ import {
   parseMiroirTestCliArgs,
   resolveApplicationMiroirTestSuiteKey,
   type MiroirTestCliConfig,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   listCliTransformerIntegrationSuiteKeysFromFolders,
   listCliUnitSuiteKeysFromFolders,
   loadApplicationMiroirTestCatalog,
-} from "miroir-core/model-validation-fs";
+} from "@miroir-framework/core/model-validation-fs";
 
 import type { TestSessionForIntegOptions } from "./IntegrationTestSession.js";
 import { resolveDefaultFilesystemDeploymentRoot } from "./IntegrationTestSession.js";

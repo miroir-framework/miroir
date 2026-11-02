@@ -18,7 +18,7 @@ import {
   type DomainControllerInterface,
   type EndpointActionCallContext,
   type EndpointActionEntry,
-} from "miroir-core";
+} from "@miroir-framework/core";
 // Convenience alias for a typed Action with known parameters
 type MiroirAction = Action<Parameter[]>;
 

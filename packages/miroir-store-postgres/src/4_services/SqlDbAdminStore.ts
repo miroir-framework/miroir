@@ -6,7 +6,7 @@ import {
   MiroirLoggerFactory,
   PersistenceStoreAdminSectionInterface,
   StoreSectionConfiguration
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { Sequelize } from "sequelize";
 import { packageName } from "../constants";
 import { SqlDbStore } from "./SqlDbStore";

@@ -21,12 +21,12 @@
   },
   "dependencies": {
     "mermaid": "12.2.0",
-    "miroir-core": "*",
+    "@miroir-framework/core": "*",
     "svg-toolbelt": "0.7.0"
   },
   "peerDependencies": {
     "@mui/material": "5.17.1",
-    "miroir-react": "*",
+    "@miroir-framework/react": "*",
     "react": ">=18.0.0"
   },
   "devDependencies": {

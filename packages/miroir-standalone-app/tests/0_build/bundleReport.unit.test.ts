@@ -108,7 +108,7 @@ describe("bundleReport", () => {
   });
 
   it("ships no Node store driver: vite build aliases the store packages to a stub (#337)", () => {
-    const nodeStorePackages = ["mongodb", "sequelize", "miroir-store-mongodb", "miroir-store-postgres", "miroir-store-filesystem"];
+    const nodeStorePackages = ["mongodb", "sequelize", "@miroir-framework/store-mongodb", "@miroir-framework/store-postgres", "@miroir-framework/store-filesystem"];
     const shipped = report.chunks.flatMap((chunk) =>
       nodeStorePackages.filter((name) => packageIn(chunk, name)).map((name) => `${name} in ${chunk.file}`),
     );
@@ -143,7 +143,7 @@ describe("bundleReport", () => {
         (finding) =>
           finding.kind === "externalized-node-module" &&
           finding.module === "fs" &&
-          finding.importerPackage === "miroir-store-indexedDb",
+          finding.importerPackage === "@miroir-framework/store-indexeddb",
       ).length,
     ).toBeGreaterThan(0);
     expect(

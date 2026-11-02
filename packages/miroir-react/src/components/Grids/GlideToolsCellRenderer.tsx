@@ -1,7 +1,7 @@
 import { CustomCell, CustomRenderer, GridCellKind } from '@glideapps/glide-data-grid';
 import { TableComponentRow } from "./EntityInstanceGridInterface.js";
 import { renderMaterialIconToCanvas, type MaterialIconName } from "../MaterialIconCanvasRenderer.js";
-import { LoggerInterface, MiroirLoggerFactory } from 'miroir-core';
+import { LoggerInterface, MiroirLoggerFactory } from '@miroir-framework/core';
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "../../viewConstants.js";
 

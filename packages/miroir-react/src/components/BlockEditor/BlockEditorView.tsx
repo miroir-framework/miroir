@@ -14,7 +14,7 @@ import {
   type TransformerBlock,
   type TransformerBlockParameter,
   type TransformerBlockRow,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import React, { useCallback, useContext, useMemo, useState } from "react";
 
 import { blockCategoryColor, defaultBlockEditorColors, type BlockEditorColors } from "../Themes/BlockEditorColors.js";

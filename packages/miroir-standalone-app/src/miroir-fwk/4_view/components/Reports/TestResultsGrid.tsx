@@ -1,8 +1,8 @@
 import React, { Suspense, useCallback, useMemo } from "react";
-import { MiroirLoggerFactory, type MlElement, type LoggerInterface, type ViewParams } from "miroir-core";
+import { MiroirLoggerFactory, type MlElement, type LoggerInterface, type ViewParams } from "@miroir-framework/core";
 
-import { CenteredSpinner } from "miroir-react";
-import { ValueObjectGrid } from "miroir-react";
+import { CenteredSpinner } from "@miroir-framework/react";
+import { ValueObjectGrid } from "@miroir-framework/react";
 import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";
 import { TestCellWithDetails } from "./TestCellWithDetails.js";
@@ -12,9 +12,9 @@ import {
   getTestSelectionSummary,
   type TestResultDataAndSelect,
   type TestSelectionState,
-} from "miroir-react";
-import { extractUnitTestLabelFromTestPath } from "miroir-react";
-import { useReportPageContext } from "miroir-react";
+} from "@miroir-framework/react";
+import { extractUnitTestLabelFromTestPath } from "@miroir-framework/react";
+import { useReportPageContext } from "@miroir-framework/react";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "TestResultsGrid");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);

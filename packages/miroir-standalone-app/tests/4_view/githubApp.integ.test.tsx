@@ -17,9 +17,9 @@ import { MemoryRouter, type Params } from "react-router-dom";
 import * as RRDom from "react-router-dom";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
-import type { DomainControllerInterface, Report } from "miroir-core";
-import { clearSecrets, MiroirContext, registerSecrets } from "miroir-core";
-import { LocalCacheProvider, MiroirContextReactProvider } from "miroir-react";
+import type { DomainControllerInterface, Report } from "@miroir-framework/core";
+import { clearSecrets, MiroirContext, registerSecrets } from "@miroir-framework/core";
+import { LocalCacheProvider, MiroirContextReactProvider } from "@miroir-framework/react";
 import { defaultStoredMiroirTheme } from "miroir-app-miroir";
 import {
   deployment_GitHub_DO_NOT_USE,
@@ -27,11 +27,11 @@ import {
   selfApplicationGitHub,
 } from "miroir-example-github";
 
-import { ReportPageContextProvider } from "miroir-react";
-import { ReportViewWithEditor } from "miroir-react";
-import { DocumentOutlineContextProvider } from "miroir-react";
-import { MiroirThemeProvider } from "miroir-react";
-import { ReportUrlParamKeys } from "miroir-react";
+import { ReportPageContextProvider } from "@miroir-framework/react";
+import { ReportViewWithEditor } from "@miroir-framework/react";
+import { DocumentOutlineContextProvider } from "@miroir-framework/react";
+import { MiroirThemeProvider } from "@miroir-framework/react";
+import { ReportUrlParamKeys } from "@miroir-framework/react";
 import {
   applicationDeploymentMap,
   bootGitHubTestbed,

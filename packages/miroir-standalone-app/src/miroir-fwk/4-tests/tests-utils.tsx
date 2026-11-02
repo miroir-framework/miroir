@@ -27,7 +27,7 @@ import {
   defaultMiroirModelEnvironment,
   type ApplicationDeploymentMap,
   type Deployment
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   deployment_Miroir
 } from "miroir-app-admin";
@@ -40,7 +40,7 @@ import {
   LocalCacheProvider,
   MiroirContextReactProvider,
   ReduxStoreWithUndoRedo,
-} from 'miroir-react';
+} from '@miroir-framework/react';
 import { packageName } from '../../constants';
 import { cleanLevel } from '../4_view/constants';
 

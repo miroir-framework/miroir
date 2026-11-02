@@ -102,7 +102,7 @@ record_time "3/7  deployment packages" "$t0"
 # ---------------------------------------------------------------------------
 step "4/7 · miroir-core devBuild"
 t0=$(now_secs)
-npm run devBuild -w miroir-core
+npm run devBuild -w @miroir-framework/core
 record_time "4/7  miroir-core devBuild" "$t0"
 
 
@@ -135,7 +135,7 @@ run_parallel_builds \
   miroir-mcp \
   miroir-diagram-class
 # #636: Miroir's HTTP surface, after miroir-mcp; ncc inlines it into the release
-npm run build -w miroir-server-library
+npm run build -w @miroir-framework/server
 record_time "6/7  miroir-react, miroir-mcp, miroir-diagram-class" "$t0"
 
 # ---------------------------------------------------------------------------

@@ -20,14 +20,14 @@ import {
   type RealServerTransformerIntegrationSessionOptions,
   type RunnerTestSessionInterface,
   type StoreUnitConfiguration,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   selfApplicationMiroir,
 } from "miroir-app-miroir";
 
 import { deployment_Miroir } from "miroir-app-admin";
 import { runRealServerClientBootstrap } from "./runRealServerClientBootstrap.js";
-import { runTeardownTestApplicationStores } from "miroir-core";
+import { runTeardownTestApplicationStores } from "@miroir-framework/core";
 import { testbedAccessGrantFromAuthSession } from "./testbedAccessGrantFromAuthSession.js";
 import {
   buildTransformerApplicationDeploymentMap,

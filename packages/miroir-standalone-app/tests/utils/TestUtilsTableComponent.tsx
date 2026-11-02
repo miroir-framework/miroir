@@ -17,16 +17,16 @@ import {
   type BoxedQueryTemplateWithExtractorCombinerTransformer,
   type BoxedQueryWithExtractorCombinerTransformer,
   type Domain2QueryReturnType
-} from 'miroir-core';
+} from '@miroir-framework/core';
 import {
   ReduxStateWithUndoRedo,
   selectInstanceArrayForDeploymentSectionEntity,
   useSelector,
-} from "miroir-react";
+} from "@miroir-framework/react";
 
 import { packageName } from "../../src/constants";
 import { cleanLevel } from "../../src/miroir-fwk/4_view/constants";
-import { useQueryTemplateResults } from "miroir-react";
+import { useQueryTemplateResults } from "@miroir-framework/react";
 export interface MiroirReportComponentProps {
   DisplayLoadingInfo:JSX.Element;
   application: Uuid;

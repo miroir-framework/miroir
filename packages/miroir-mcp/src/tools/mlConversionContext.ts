@@ -1,4 +1,4 @@
-import type { MlReference } from "miroir-core";
+import type { MlReference } from "@miroir-framework/core";
 
 /** Options threaded through ML → JSON-Schema / resolved-ML conversion. */
 export type MlConversionOptions = {

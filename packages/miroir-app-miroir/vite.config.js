@@ -10,7 +10,7 @@ const miroirCoreRoot = path.resolve(packageRoot, "../miroir-core");
 export default defineConfig({
   resolve: {
     alias: {
-      "miroir-core": path.resolve(miroirCoreRoot, "src/index.ts"),
+      "@miroir-framework/core": path.resolve(miroirCoreRoot, "src/index.ts"),
     },
   },
   test: {

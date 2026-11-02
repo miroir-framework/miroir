@@ -5,7 +5,7 @@ import {
   zodErrorFirstIssueLeaf,
   ZodParseError,
   type LoggerInterface,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { useState } from "react";
 import { z } from "zod";
 import { PageContainer } from "../components/Page/PageContainer.js";

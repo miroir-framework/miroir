@@ -21,7 +21,7 @@ import {
   type EntityInstance,
   type InstanceAction,
   type ReportQueryLoadRequest,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   entityBlob,
   entityDefinitionBlob,

@@ -1,4 +1,4 @@
-import type { Entity, EntityInstance, Menu, MetaModel, MiroirModelEnvironment, Report, SelfApplication } from "miroir-core";
+import type { Entity, EntityInstance, Menu, MetaModel, MiroirModelEnvironment, Report, SelfApplication } from "@miroir-framework/core";
 export declare const adminApplication_Meta_DO_NOT_USE: any;
 export declare const deployment_Meta_DO_NOT_USE: any;
 export declare const selfApplicationMeta: SelfApplication;

@@ -1,6 +1,6 @@
 """#633: the app shell moves from miroir-standalone-app to miroir-react.
 
-- miroir-react never imports its own entry ("miroir-react") from its sources: the moved modules import the
+- miroir-react never imports its own entry ("@miroir-framework/react") from its sources: the moved modules import the
   module that declares each symbol. A self-import is an entry cycle, and tsup would resolve it to dist.
 - miroir-sandbox builds from library packages: no `@miroir-app` alias into miroir-standalone-app sources in
   its Vite config, its tsconfig or its sources.
@@ -15,7 +15,7 @@ ROOT = Path(__file__).resolve().parents[2]
 REACT_SRC = ROOT / "packages/miroir-react/src"
 SANDBOX = ROOT / "packages/miroir-sandbox"
 
-SELF_IMPORT = re.compile(r"""(?:from\s*|import\s*\(\s*|^\s*import\s+)['"]miroir-react(?:/[^'"]*)?['"]""", re.M)
+SELF_IMPORT = re.compile(r"""(?:from\s*|import\s*\(\s*|^\s*import\s+)['"](?:@miroir-framework/react|miroir-react)(?:/[^'"]*)?['"]""", re.M)
 COMMENT = re.compile(r"/\*.*?\*/|//[^\n]*", re.S)
 
 

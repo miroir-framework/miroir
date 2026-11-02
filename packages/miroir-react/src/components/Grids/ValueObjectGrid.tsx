@@ -12,7 +12,7 @@ import { CenteredSpinner } from "../CenteredSpinner.js";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 
-import { MlElement, MlObject, LoggerInterface, MiroirLoggerFactory } from "miroir-core";
+import { MlElement, MlObject, LoggerInterface, MiroirLoggerFactory } from "@miroir-framework/core";
 
 import { useMiroirContextService } from "../../contexts/MiroirContextReactProvider.js";
 import { packageName } from "../../constants.js";

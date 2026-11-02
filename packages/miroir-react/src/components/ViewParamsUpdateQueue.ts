@@ -7,7 +7,7 @@ import {
   MiroirLoggerFactory,
   ViewParamsData,
   type DomainAction,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { adminSelfApplication, entityViewParams } from "miroir-app-admin";
 
 export interface ViewParamsUpdate {

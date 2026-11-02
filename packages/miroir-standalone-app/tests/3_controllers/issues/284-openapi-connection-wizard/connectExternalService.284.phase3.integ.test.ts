@@ -13,7 +13,7 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import {
   Action2Error,
   getExternalService,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import {
   bootConnectExternalService284Harness,

@@ -4,8 +4,8 @@ import { Container } from "react-dom";
 import * as RRDom from "react-router-dom";
 import { describe, vi, type ExpectStatic } from 'vitest';
 
-// import { reportCountryList, selfApplicationDeploymentLibrary } from "miroir-core";
-import type { ReportViewProps } from "miroir-react";
+// import { reportCountryList, selfApplicationDeploymentLibrary } from "@miroir-framework/core";
+import type { ReportViewProps } from "@miroir-framework/react";
 import { ReportPage } from '../../src/miroir-fwk/4_view/routes/ReportPage';
 import {
   extractValuesFromRenderedElements,
@@ -14,8 +14,8 @@ import {
   type ReactComponentTestSuitePrep,
   type ReactComponentTestSuites,
 } from "./MlElementEditorTestTools";
-import { defaultSelfApplicationDeploymentMap, type Deployment } from "miroir-core";
-// import { selfApplicationLibrary } from "miroir-core";
+import { defaultSelfApplicationDeploymentMap, type Deployment } from "@miroir-framework/core";
+// import { selfApplicationLibrary } from "@miroir-framework/core";
 const deployment_Library: Deployment = {
   "uuid":"f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
   "parentName":"Deployment",

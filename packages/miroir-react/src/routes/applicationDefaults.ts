@@ -1,4 +1,4 @@
-import type { Uuid } from "miroir-core";
+import type { Uuid } from "@miroir-framework/core";
 import { selfApplicationMiroir } from "miroir-app-miroir";
 
 // #633 D4: the tool pages (search, transformer builder) open on the application the user works on,

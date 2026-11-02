@@ -5,12 +5,12 @@ import { defineConfig } from 'tsup';
 // Checked on what the bundle really imports (external ones included), after tsup has marked every
 // declared dependency external: an onResolve hook would not see those.
 const FORBIDDEN_IMPORTS = [
-  /^miroir-store-/,
+  /^(@miroir-framework\/store-|miroir-store-)/,
   /^pg($|\/|-)/, // pg, pg-pool, pg-native, pg-hstore, pg-cursor, …
   /^@?sequelize($|\/)/,
   /^mongodb($|\/)/,
   /^([a-z-]+-)?level($|\/)/, // level, browser-level, classic-level, abstract-level, memory-level, …
-  /^miroir-env($|\/)/,
+  /^(@miroir-framework\/env|miroir-env)($|\/)/,
   /^miroir-ai($|\/)/,
   /^@copilotkit\//,
 ];
@@ -54,7 +54,7 @@ export const forbiddenImportsPlugin = {
 // to prove the guard fails the build (scripts/tests/test_server_library_boundaries.py).
 // MIROIR_SERVER_LIBRARY_PROBE_EXTERNAL=1 leaves the store external, as a declared dependency would be.
 const probeOutDir = process.env.MIROIR_SERVER_LIBRARY_PROBE;
-const probeExternal = probeOutDir && process.env.MIROIR_SERVER_LIBRARY_PROBE_EXTERNAL === '1' ? ['miroir-store-filesystem'] : [];
+const probeExternal = probeOutDir && process.env.MIROIR_SERVER_LIBRARY_PROBE_EXTERNAL === '1' ? ['@miroir-framework/store-filesystem'] : [];
 
 export default defineConfig({
   entry: probeOutDir ? { probe: 'tests/support/forbiddenImportProbe.ts' } : { index: 'src/index.ts' },
@@ -68,6 +68,6 @@ export default defineConfig({
   treeshake: true,
   minify: false,
   metafile: true,
-  external: ['miroir-core', 'miroir-mcp', ...probeExternal],
+  external: ['@miroir-framework/core', '@miroir-framework/mcp', ...probeExternal],
   esbuildPlugins: [forbiddenImportsPlugin],
 });

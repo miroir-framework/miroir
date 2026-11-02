@@ -12,7 +12,7 @@
  *
  * Run:
  * ```bash
- * npm run testByFile -w miroir-core -- 292-declarative-react-component-tests
+ * npm run testByFile -w @miroir-framework/core -- 292-declarative-react-component-tests
  * ```
  */
 import { describe, expect, it } from "vitest";

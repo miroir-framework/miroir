@@ -9,8 +9,8 @@ import { fileURLToPath } from "node:url";
 import express from "express";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-import { ConfigurationService, getClientEnvironment, getProcessCapabilities } from "miroir-core";
-import { listMcpToolsViaHttp } from "miroir-mcp";
+import { ConfigurationService, getClientEnvironment, getProcessCapabilities } from "@miroir-framework/core";
+import { listMcpToolsViaHttp } from "@miroir-framework/mcp";
 
 import { createMiroirServerApp, type MiroirServerApp, type MiroirServerAppOptions } from "../src/index.js";
 import {

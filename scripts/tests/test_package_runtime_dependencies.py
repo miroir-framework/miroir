@@ -16,12 +16,12 @@ import pytest
 ROOT = Path(__file__).resolve().parents[2]
 
 PUBLISHED_PACKAGES = [
-    "miroir-core",
-    "miroir-mcp",
-    "miroir-cli",
-    "miroir-ai",
-    "miroir-localcache-redux",
-    "miroir-localcache-zustand",
+    "packages/miroir-core",
+    "packages/miroir-mcp",
+    "packages/miroir-cli",
+    "packages/miroir-ai",
+    "packages/miroir-localcache-redux",
+    "packages/miroir-localcache-zustand",
 ]
 
 APPLICATION_PACKAGE = re.compile(r"^miroir-(example|fixture)-")
@@ -34,13 +34,13 @@ IMPORT_OF_APPLICATION_PACKAGE = re.compile(
 
 
 def application_dependencies(package: str) -> list[str]:
-    manifest = json.loads((ROOT / "packages" / package / "package.json").read_text(encoding="utf-8"))
+    manifest = json.loads((ROOT / package / "package.json").read_text(encoding="utf-8"))
     return sorted(name for name in manifest.get("dependencies", {}) if APPLICATION_PACKAGE.match(name))
 
 
 def application_imports(package: str) -> list[str]:
     found = []
-    for path in sorted((ROOT / "packages" / package / "src").rglob("*.ts*")):
+    for path in sorted((ROOT / package / "src").rglob("*.ts*")):
         text = path.read_text(encoding="utf-8")
         for match in IMPORT_OF_APPLICATION_PACKAGE.finditer(text):
             found.append(f"{path.relative_to(ROOT)}: {match.group(1) or match.group(2)}")

@@ -23,7 +23,7 @@ import {
   type MlElement,
   type MlUnion,
   type TransformerReturnType
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "../../viewConstants.js";

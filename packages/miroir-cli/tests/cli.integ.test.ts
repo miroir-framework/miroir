@@ -32,7 +32,7 @@ import {
   type EndpointDefinition,
   type SelfApplication,
   type Entity,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   getDefaultLibraryModelEnvironmentDEFUNCT,
   author1,
@@ -61,7 +61,7 @@ import {
 } from "miroir-example-library";
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 
-import { openTestEnvironment, selectedTestEnvironment } from "miroir-env";
+import { openTestEnvironment, selectedTestEnvironment } from "@miroir-framework/env";
 import { initializePlatform } from "../src/platform.js";
 import { getAllCommands, getCommandByName } from "../src/commands/commandsFromEndpoint.js";
 

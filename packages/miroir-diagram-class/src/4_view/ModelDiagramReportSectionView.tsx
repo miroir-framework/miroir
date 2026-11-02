@@ -5,8 +5,8 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   type Entity,
-} from "miroir-core";
-import { RenderInsightHeader, useRenderTracker } from "miroir-react";
+} from "@miroir-framework/core";
+import { RenderInsightHeader, useRenderTracker } from "@miroir-framework/react";
 
 import {
   buildEntityClickLinks,

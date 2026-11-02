@@ -29,20 +29,20 @@ runs:
     # 2. miroir-core with generated TypeScript types (devBuild)
     - name: Build miroir-core (with type generation)
       shell: bash
-      run: npm run devBuild -w miroir-core
+      run: npm run devBuild -w @miroir-framework/core
 
     - name: Build ai and mcp packages (depend on miroir-core)
       shell: bash
       run: |
         npm run build -w miroir-ai &
-        npm run build -w miroir-mcp &
+        npm run build -w @miroir-framework/mcp &
         wait
 
     - name: Build store, cache, and diagram packages
       shell: bash
       run: |
-        npm run build -w miroir-store-bundled &
-        npm run build -w miroir-store-indexedDb &
+        npm run build -w @miroir-framework/store-bundled &
+        npm run build -w @miroir-framework/store-indexeddb &
         npm run build -w miroir-localcache-redux &
         wait
 
@@ -50,7 +50,7 @@ runs:
     - name: Build miroir-react
       shell: bash
       run: |
-        npm run build -w miroir-react &
+        npm run build -w @miroir-framework/react &
         npm run build -w miroir-diagram-class &
         wait
 
@@ -58,7 +58,7 @@ runs:
     - name: Build server-side store packages
       shell: bash
       run: |
-        npm run build -w miroir-store-filesystem &
-        npm run build -w miroir-store-mongodb &
-        npm run build -w miroir-store-postgres &
+        npm run build -w @miroir-framework/store-filesystem &
+        npm run build -w @miroir-framework/store-mongodb &
+        npm run build -w @miroir-framework/store-postgres &
         wait

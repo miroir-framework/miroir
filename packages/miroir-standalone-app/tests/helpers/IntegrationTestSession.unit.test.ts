@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   defaultSelfApplicationDeploymentMap,
   type DomainControllerInterface,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { deployment_Admin } from "miroir-app-admin";
 
 const setupMiroirDomainControllerMock = vi.fn();
@@ -12,28 +12,28 @@ vi.mock("miroir-localcache-redux", () => ({
   setupMiroirDomainController: (...args: unknown[]) => setupMiroirDomainControllerMock(...args),
 }));
 
-vi.mock("miroir-store-postgres", () => ({
+vi.mock("@miroir-framework/store-postgres", () => ({
   miroirPostgresStoreSectionStartup: vi.fn(),
 }));
 
-vi.mock("miroir-store-filesystem", () => ({
+vi.mock("@miroir-framework/store-filesystem", () => ({
   miroirFileSystemStoreSectionStartup: vi.fn(),
 }));
 
-vi.mock("miroir-store-indexedDb", () => ({
+vi.mock("@miroir-framework/store-indexeddb", () => ({
   miroirIndexedDbStoreSectionStartup: vi.fn(),
 }));
 
-vi.mock("miroir-store-mongodb", () => ({
+vi.mock("@miroir-framework/store-mongodb", () => ({
   miroirMongoDbStoreSectionStartup: vi.fn(),
 }));
 
-vi.mock("miroir-store-bundled", () => ({
+vi.mock("@miroir-framework/store-bundled", () => ({
   miroirBundledStoreSectionStartup: vi.fn(),
 }));
 
-vi.mock("miroir-core", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("miroir-core")>();
+vi.mock("@miroir-framework/core", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@miroir-framework/core")>();
   return {
     ...actual,
     PersistenceStoreControllerManager: vi.fn().mockImplementation(() => ({
@@ -47,11 +47,11 @@ vi.mock("miroir-core", async (importOriginal) => {
   };
 });
 
-import { miroirBundledStoreSectionStartup } from "miroir-store-bundled";
-import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
-import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
-import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
-import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
+import { miroirBundledStoreSectionStartup } from "@miroir-framework/store-bundled";
+import { miroirFileSystemStoreSectionStartup } from "@miroir-framework/store-filesystem";
+import { miroirIndexedDbStoreSectionStartup } from "@miroir-framework/store-indexeddb";
+import { miroirMongoDbStoreSectionStartup } from "@miroir-framework/store-mongodb";
+import { miroirPostgresStoreSectionStartup } from "@miroir-framework/store-postgres";
 
 import {
   INTEG_TEST_APPLICATION_NAME,

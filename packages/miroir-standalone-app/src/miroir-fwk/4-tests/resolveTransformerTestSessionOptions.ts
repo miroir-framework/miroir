@@ -1,6 +1,6 @@
 import { deployment_Admin } from "miroir-app-admin";
-import type { BundledDeploymentData } from "miroir-store-bundled";
-import type { MiroirConfigClient } from "miroir-core";
+import type { BundledDeploymentData } from "@miroir-framework/store-bundled";
+import type { MiroirConfigClient } from "@miroir-framework/core";
 
 import {
   generateEphemeralIntegrationTestApplicationIdentity,

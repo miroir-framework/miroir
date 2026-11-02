@@ -25,15 +25,15 @@ import {
   type DomainControllerInterface,
   type MiroirConfigClient,
   type MiroirConfigForClientStub,
-} from "miroir-core";
-import { bootEnvironment } from "miroir-env";
-import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
+} from "@miroir-framework/core";
+import { bootEnvironment } from "@miroir-framework/env";
+import { miroirFileSystemStoreSectionStartup } from "@miroir-framework/store-filesystem";
 
 import { ENTITY_PAGE_LOAD_MEASUREMENT_UUID, META_DEPLOYMENT_UUID } from "../../../src/loadTimings/loadTimingConstants.js";
 import type { LoadTimingStep } from "../../../src/loadTimings/loadTimingTypes.js";
 import { loadTimingWriter } from "../../../src/loadTimings/loadTimingWriter.js";
 import { loglevelnext } from "../../../src/loglevelnextImporter.js";
-import { fetchMiroirAndAppConfigurations, setLoadTimingMarkSink } from "miroir-react";
+import { fetchMiroirAndAppConfigurations, setLoadTimingMarkSink } from "@miroir-framework/react";
 import { setupMiroirTest } from "../../../src/miroir-fwk/4-tests/setupMiroirTest.js";
 import { miroirAppStartup } from "../../../src/startup.js";
 import { openTestEnvironment } from "../../helpers/testEnvironment.js";

@@ -5,7 +5,7 @@ import {
   MiroirLoggerFactory,
   RUN_LOG_PREFIX_PATTERN,
   type PersistenceAction,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { PersistenceReduxSaga } from "../src/4_services/persistence/PersistenceReduxSaga";
 
 function boxedQueryAction(): PersistenceAction {

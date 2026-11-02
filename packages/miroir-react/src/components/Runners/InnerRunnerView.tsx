@@ -7,11 +7,11 @@ import type {
   MiroirModelEnvironment,
   CoreTransformerForBuildPlusRuntime,
   Uuid
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   MiroirLoggerFactory,
   transformer_extended_apply_wrapper
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "../../viewConstants.js";
 import { useMiroirContextService } from "../../contexts/MiroirContextReactProvider.js";

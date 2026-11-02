@@ -9,7 +9,7 @@ import {
   MiroirContext,
   defaultExternalServiceClient,
   type ExternalServiceClientInterface,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { call } from "typed-redux-saga";
 import { LocalCache } from "./4_services/LocalCache.js";
 import PersistenceReduxSaga, {

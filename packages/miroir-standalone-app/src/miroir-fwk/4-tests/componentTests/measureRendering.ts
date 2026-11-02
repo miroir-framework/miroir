@@ -1,6 +1,6 @@
-import type { ComponentRenderMeasurement, ResolvedReactComponentTestStep } from "miroir-core";
+import type { ComponentRenderMeasurement, ResolvedReactComponentTestStep } from "@miroir-framework/core";
 
-import { renderInsightRegistry, type RenderInsightNode } from "miroir-react";
+import { renderInsightRegistry, type RenderInsightNode } from "@miroir-framework/react";
 import type { ComponentTestEnvironment } from "./componentTestEnvironment.js";
 
 // ################################################################################################

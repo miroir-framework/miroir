@@ -1,4 +1,4 @@
-import type { Entity, MlElement } from "miroir-core";
+import type { Entity, MlElement } from "@miroir-framework/core";
 
 /**
  * Result of foreign key attribute analysis, containing both direct and transitive foreign key references

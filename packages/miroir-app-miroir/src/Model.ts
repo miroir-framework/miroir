@@ -10,7 +10,7 @@ import type {
   Report,
   Runner,
   SelfApplication,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   applicationVersionInitialMiroirVersionCrossEntityDefinitionApplication,
   applicationVersionInitialMiroirVersionCrossEntityDefinitionApplicationModelBranch,

@@ -59,7 +59,7 @@ function realServerTestClientConfigs(command, mode) {
   return { [MIROIR_TEST_CLIENT_CONFIGS]: JSON.stringify(configs) };
 }
 
-const NODE_STORE_PACKAGES = ["miroir-store-filesystem", "miroir-store-postgres", "miroir-store-mongodb"];
+const NODE_STORE_PACKAGES = ["@miroir-framework/store-filesystem", "@miroir-framework/store-postgres", "@miroir-framework/store-mongodb"];
 const nodeStoreAliases = NODE_STORE_PACKAGES.map((name) => ({
   find: new RegExp(`^${name}$`),
   replacement: path.resolve(__viteDirname, "vite/nodeStoreStub.js"),
@@ -130,9 +130,9 @@ export default defineConfig(({ command, mode }) => {
       // for CLI/Vitest. Must not be prebundled into the webApp (MongoDB driver crashes
       // in-browser: "Class extends value undefined is not a constructor").
       exclude: [
-        'miroir-store-filesystem',
-        'miroir-store-mongodb',
-        'miroir-store-postgres',
+        '@miroir-framework/store-filesystem',
+        '@miroir-framework/store-mongodb',
+        '@miroir-framework/store-postgres',
         'mongodb',
         'pg',
       ],

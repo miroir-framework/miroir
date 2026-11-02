@@ -8,6 +8,7 @@ import { InitApplicationParameters, PersistenceStoreControllerInterface } from "
 
 /**
  * handles many persistence store controllers, that can be added / removed dynamically at runtime.
+ * @public
  */
 export interface PersistenceStoreControllerManagerInterface {
 

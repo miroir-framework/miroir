@@ -13,7 +13,7 @@ import {
   type Entity,
   type MetaModel,
   type MiroirConfigClient
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 // import {
 //   deployment_Library_DO_NO_USE
@@ -29,9 +29,9 @@ import {
 //   selfApplicationLibrary,
 // } from "miroir-example-library";
 
-import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
-import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
-import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
+import { miroirFileSystemStoreSectionStartup } from "@miroir-framework/store-filesystem";
+import { miroirIndexedDbStoreSectionStartup } from "@miroir-framework/store-indexeddb";
+import { miroirPostgresStoreSectionStartup } from "@miroir-framework/store-postgres";
 import { applicationPostgres, deploymentPostgres } from "../src/Postgres";
 
 const __filename = fileURLToPath(import.meta.url);

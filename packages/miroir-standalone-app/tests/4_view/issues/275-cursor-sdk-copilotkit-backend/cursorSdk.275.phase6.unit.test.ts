@@ -10,7 +10,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import {
   readMiroirAiBackend,
   writeMiroirAiBackend,
-} from "miroir-react";
+} from "@miroir-framework/react";
 
 const RUN_TEST = process.env.RUN_TEST;
 const runThis =

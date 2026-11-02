@@ -17,7 +17,7 @@ import { fireEvent as domFireEvent, getConfig, configure } from "@testing-librar
 import React from "react";
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 
-import { MiroirLoggerFactory } from "miroir-core";
+import { MiroirLoggerFactory } from "@miroir-framework/core";
 
 import {
   configureComponentTestDom,

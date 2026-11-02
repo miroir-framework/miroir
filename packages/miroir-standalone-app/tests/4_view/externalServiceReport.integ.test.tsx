@@ -29,7 +29,7 @@ import type {
   EntityInstance,
   Report,
   StoreUnitConfiguration,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   Action2Error,
   clearSecrets,
@@ -47,15 +47,15 @@ import {
   registerSecrets,
   resetAndInitApplicationDeployment,
   resetIntegTestbed,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   LocalCacheProvider,
   MiroirContextReactProvider,
-} from "miroir-react";
-import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
-import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
-import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
-import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
+} from "@miroir-framework/react";
+import { miroirFileSystemStoreSectionStartup } from "@miroir-framework/store-filesystem";
+import { miroirIndexedDbStoreSectionStartup } from "@miroir-framework/store-indexeddb";
+import { miroirMongoDbStoreSectionStartup } from "@miroir-framework/store-mongodb";
+import { miroirPostgresStoreSectionStartup } from "@miroir-framework/store-postgres";
 import { deployment_Admin, deployment_Miroir } from "miroir-app-admin";
 import {
   Country3,
@@ -73,11 +73,11 @@ import {
 
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import { selfApplicationDeploymentConfigurationsTO_REMOVE } from "../../src/miroir-fwk/4-tests/tests-utils.js";
-import { ReportPageContextProvider } from "miroir-react";
-import { ReportViewWithEditor } from "miroir-react";
-import { DocumentOutlineContextProvider } from "miroir-react";
-import { MiroirThemeProvider } from "miroir-react";
-import { reportPageParamsFromSearchParams } from "miroir-react";
+import { ReportPageContextProvider } from "@miroir-framework/react";
+import { ReportViewWithEditor } from "@miroir-framework/react";
+import { DocumentOutlineContextProvider } from "@miroir-framework/react";
+import { MiroirThemeProvider } from "@miroir-framework/react";
+import { reportPageParamsFromSearchParams } from "@miroir-framework/react";
 import { miroirAppStartup } from "../../src/startup.js";
 import { cleanLevel, packageName } from "../3_controllers/constants.js";
 import { AppStackIntegrationTestSession } from "../helpers/IntegrationTestSession.js";

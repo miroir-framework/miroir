@@ -17,7 +17,7 @@ import {
   resolveSecret,
   type EndpointDefinition,
   type EntityInstance,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import {
   ADMIN_APPLICATION_UUID,

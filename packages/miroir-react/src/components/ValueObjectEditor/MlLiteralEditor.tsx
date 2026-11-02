@@ -30,7 +30,7 @@ import {
   type SyncQueryRunner,
   type Uuid,
   type ViewParams
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import { getMemoizedReduxDeploymentsStateSelectorMap, useSelector, type ReduxStateWithUndoRedo } from "../../miroir-localcache-imports.js";
 import { ThemedOnScreenHelper } from "../helpers/ThemedHelper.js";

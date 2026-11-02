@@ -7,7 +7,7 @@
  *
  * Run:
  * ```bash
- * RUN_TEST=syncExternalServiceSchema.281.phase3 npm run testByFile -w miroir-core -- syncExternalServiceSchema.281.phase3
+ * RUN_TEST=syncExternalServiceSchema.281.phase3 npm run testByFile -w @miroir-framework/core -- syncExternalServiceSchema.281.phase3
  * ```
  */
 import { readFileSync } from "node:fs";

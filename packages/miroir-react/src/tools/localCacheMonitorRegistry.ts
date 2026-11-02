@@ -7,7 +7,7 @@ import type {
   AttributedInstanceSize,
   LocalCacheMemoryBreakdown,
   LocalCacheMonitorSnapshot,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { isLocalCacheMonitorEnabled } from "./localCacheMonitorConfig.js";
 import { localCacheMonitorIndicators } from "./localCacheMonitorIndicators.js";
 

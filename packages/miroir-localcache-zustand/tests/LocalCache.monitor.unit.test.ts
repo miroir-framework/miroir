@@ -8,7 +8,7 @@ import {
   type InstanceAction,
   type ModelAction,
   type TransactionalInstanceAction,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   book1,
   book2,

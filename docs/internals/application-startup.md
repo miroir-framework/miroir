@@ -15,7 +15,7 @@ When `emulateServer: true`, two domain controllers exist in one process:
 
 ## `fetchMiroirAndAppConfigurations` flow
 
-Called from `DemoInitializer` (sandbox) or `usePageConfiguration({ autoFetchOnMount: true })` (standalone); both are in `miroir-react` since #633, so every client starts the same way:
+Called from `DemoInitializer` (sandbox) or `usePageConfiguration({ autoFetchOnMount: true })` (standalone); both are in `@miroir-framework/react` since #633, so every client starts the same way:
 
 ```
 Step 1: Rollback Admin
@@ -91,15 +91,15 @@ function loadConfigurationFromPersistenceStore(applicationUuid, deploymentUuid, 
 
 ## The shell and its host (#633)
 
-The app shell (`RootComponent`, `AppBar`, `PageDispatcher`, the generic pages, the runners, the login page) is in `miroir-react`. A client builds its page from the package and gives it the features the package cannot import:
+The app shell (`RootComponent`, `AppBar`, `PageDispatcher`, the generic pages, the runners, the login page) is in `@miroir-framework/react`. A client builds its page from the package and gives it the features the package cannot import:
 
 | Wiring | Standalone app | Sandbox |
 |---|---|---|
-| `MiroirShellHostProvider` | `appShellHost`: MCP tool calls (`miroir-mcp/client`, lazy), login over HTTP or Electron IPC, `assistantPanel` = lazy `AgentsCopilotKit` | none: no MCP, login over HTTP, no assistant |
+| `MiroirShellHostProvider` | `appShellHost`: MCP tool calls (`@miroir-framework/mcp/client`, lazy), login over HTTP or Electron IPC, `assistantPanel` = lazy `AgentsCopilotKit` | none: no MCP, login over HTTP, no assistant |
 | `ReportSectionRenderersProvider` | graph, model diagram (`miroir-diagram-class`, lazy), MiroirTest | model diagram (`miroir-diagram-class`, lazy) |
 | `setLoadTimingMarkSink` | the load-timing recorder | none |
 
-A missing slot falls back to its default (`useMiroirShellHost`): MCP calls answer `FeatureUnavailable`, login goes to `/auth/login` over HTTP, no assistant is mounted. The stored runner section is a built-in renderer (`defaultReportSectionRenderers`). The lint block of `eslint.config.mjs` for `packages/miroir-react/src` forbids importing CopilotKit, Electron, `miroir-mcp`, `miroir-diagram-class` or the app.
+A missing slot falls back to its default (`useMiroirShellHost`): MCP calls answer `FeatureUnavailable`, login goes to `/auth/login` over HTTP, no assistant is mounted. The stored runner section is a built-in renderer (`defaultReportSectionRenderers`). The lint block of `eslint.config.mjs` for `packages/miroir-react/src` forbids importing CopilotKit, Electron, `@miroir-framework/mcp`, `miroir-diagram-class` or the app.
 
 ## One startup call per side (#639)
 
@@ -114,7 +114,7 @@ const { domainController, emulatedServer, persistenceStoreControllerManager } = 
 });
 
 // React client: sandbox, standalone app
-import { startMiroirClient } from "miroir-react";
+import { startMiroirClient } from "@miroir-framework/react";
 const { domainController, miroirContext, processCapabilities } = await startMiroirClient(config, { stores: [miroirIndexedDbStoreSectionStartup] });
 ```
 
@@ -133,9 +133,9 @@ What stays with the host: its own startups (`miroirAppStartup`, `registerTestImp
 
 ## The server and its library (#636)
 
-On the server side, Miroir's HTTP surface comes from [`miroir-server-library`](../../packages/miroir-server-library/README.md). `createMiroirServerApp` takes a running domain controller and returns an Express app that does not listen: REST behind the authentication gate, the authentication and capabilities routes, `/mcp`, and optionally assets, an assistant route and a client folder. [`server.ts`](../../packages/miroir-server/src/server.ts) is a host of it:
+On the server side, Miroir's HTTP surface comes from [`@miroir-framework/server`](../../packages/miroir-server-library/README.md). `createMiroirServerApp` takes a running domain controller and returns an Express app that does not listen: REST behind the authentication gate, the authentication and capabilities routes, `/mcp`, and optionally assets, an assistant route and a client folder. [`server.ts`](../../packages/miroir-server/src/server.ts) is a host of it:
 
-| `miroir-server` (binary) | `miroir-server-library` |
+| `miroir-server` (binary) | `@miroir-framework/server` |
 |---|---|
 | command line, environment or configuration file, log preset | Express app, CORS, BigInt replacer and reviver, body parser |
 | ports, CORS origins, authentication switches, token secret | `/auth/status`, `/capabilities`, `/auth/login`, `/auth/change-password` |
@@ -144,4 +144,4 @@ On the server side, Miroir's HTTP surface comes from [`miroir-server-library`](.
 | TLS, the asset and client paths (ncc relocates them into `release/`) | assets, the `assistantRoute` slot, the client folder and its catch-all |
 | CopilotKit through the `assistantRoute` slot, the dev `GET /`, `listen`, `mcpServer.run` | |
 
-The library imports no store, driver, `miroir-env`, `miroir-ai` or CopilotKit, and its build fails if one appears. The release bundle inlines it, so it is built before `build:server`.
+The library imports no store, driver, `@miroir-framework/env`, `miroir-ai` or CopilotKit, and its build fails if one appears. The release bundle inlines it, so it is built before `build:server`.

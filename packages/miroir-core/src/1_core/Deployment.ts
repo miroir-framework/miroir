@@ -58,6 +58,10 @@ export const defaultDeployments: Deployment[] = [
 ];
 export const defaultDeploymentUuids = defaultDeployments.map(deployment => deployment.uuid);
 
+/**
+ * Maps each application uuid to the uuid of the deployment that holds it.
+ * @public
+ */
 export interface ApplicationDeploymentMap {
   [applicationUuid: Uuid]: Uuid; // deploymentUuid
 }
@@ -73,6 +77,10 @@ export interface EndpointApplicationMap {
   [endpointUuid: Uuid]: Uuid; // applicationUuid
 }
 
+/**
+ * The deployments of Miroir's own applications (Miroir and Admin), by application uuid.
+ * @public
+ */
 export const defaultSelfApplicationDeploymentMap: ApplicationDeploymentMap = {
   [selfApplicationMiroir.uuid]: deployment_Miroir.uuid,
   [adminSelfApplication.uuid]: deployment_Admin.uuid,

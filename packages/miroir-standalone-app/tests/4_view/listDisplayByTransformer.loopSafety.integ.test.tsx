@@ -7,7 +7,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import { book1 } from "miroir-example-library";
 
-import { GridComponentsProvider, ReportSectionListDisplay } from "miroir-react";
+import { GridComponentsProvider, ReportSectionListDisplay } from "@miroir-framework/react";
 import {
   buildBookListFormikValues,
   buildBooksIndex,
@@ -18,7 +18,7 @@ import {
   setPanelElementTransformerType,
 } from "./helpers/listTransformerIntegRig.js";
 import { waitForProgressiveRendering } from "./MlElementEditorTestTools.js";
-import { TableComponentTypeSchema } from "miroir-react";
+import { TableComponentTypeSchema } from "@miroir-framework/react";
 import {
   deployment_Library_DO_NO_USE,
   reportBookList,

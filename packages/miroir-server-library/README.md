@@ -1,4 +1,4 @@
-# miroir-server-library
+# @miroir-framework/server
 
 Miroir's HTTP surface as an Express application, built from a running domain controller (#636):
 
@@ -15,7 +15,7 @@ The package is private until it is renamed `@miroir-framework/server` (epic #621
 
 ```ts
 import express from "express";
-import { createMiroirServerApp } from "miroir-server-library";
+import { createMiroirServerApp } from "@miroir-framework/server";
 
 // Preconditions, set up by the host: store sections registered on
 // ConfigurationService.configurationService, the deployments open in domainController,
@@ -56,13 +56,13 @@ CORS and the body parser, `/auth/status`, `/capabilities`, assets, REST, `/auth/
 
 ## Boundaries
 
-The library imports no store package (`miroir-store-*`), no database driver (`pg`, `sequelize`, `mongodb`, `level`, …), no `miroir-env`, no `miroir-ai` and no `@copilotkit/*`. Its build fails if one appears (`tsup.config.js`), and `scripts/tests/test_server_library_boundaries.py` checks it. The `miroir-server` release bundle (ncc) inlines the library, so it must be built before `npm run build:server -w miroir-server`.
+The library imports no store package (`miroir-store-*`), no database driver (`pg`, `sequelize`, `mongodb`, `level`, …), no `@miroir-framework/env`, no `miroir-ai` and no `@copilotkit/*`. Its build fails if one appears (`tsup.config.js`), and `scripts/tests/test_server_library_boundaries.py` checks it. The `miroir-server` release bundle (ncc) inlines the library, so it must be built before `npm run build:server -w miroir-server`.
 
 ## Tests
 
 ```bash
-npm run build -w miroir-server-library
-MIROIR_ENV=test-filesystem npm run testByFile -w miroir-server-library
+npm run build -w @miroir-framework/server
+MIROIR_ENV=test-filesystem npm run testByFile -w @miroir-framework/server
 MIROIR_LIBRARY_BUILD_CHECKS=1 python -m pytest scripts/tests/test_server_library_boundaries.py -q
 ```
 

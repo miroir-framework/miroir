@@ -6,7 +6,7 @@ import { existsSync, readdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 
-import type { MiroirConfigForClientStub } from "miroir-core";
+import type { MiroirConfigForClientStub } from "@miroir-framework/core";
 
 import { loadTestConfigFiles } from "../utils/fileTools.js";
 import { resolveRepoRoot } from "./integrationTestProfiles.js";

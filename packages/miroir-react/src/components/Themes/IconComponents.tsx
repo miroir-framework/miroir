@@ -2,7 +2,7 @@
 import { css } from '@emotion/react';
 import React, { useMemo } from 'react';
 
-import { MiroirIcon, MiroirLoggerFactory, type LoggerInterface } from 'miroir-core';
+import { MiroirIcon, MiroirLoggerFactory, type LoggerInterface } from '@miroir-framework/core';
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "../../viewConstants.js";
 import { useMiroirTheme } from "../../contexts/MiroirThemeContext.js";

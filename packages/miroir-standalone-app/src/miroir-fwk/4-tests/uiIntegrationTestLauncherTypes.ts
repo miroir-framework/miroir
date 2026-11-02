@@ -10,7 +10,7 @@ import type {
   TestbedUuids,
   TestRunLogSnapshot,
   TestSuiteResult,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 /** D2 — user toggle for runTarget resolution in the UI launcher. */
 export type UiIntegrationTestRunTargetMode = "ephemeral" | "pinned";

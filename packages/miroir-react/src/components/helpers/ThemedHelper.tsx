@@ -7,7 +7,7 @@ import React from "react";
 
 import { useMiroirContextService } from "../../contexts/MiroirContextReactProvider";
 import { useMiroirTheme } from "../../contexts/MiroirThemeContext";
-import { LoggerInterface, MiroirLoggerFactory } from "miroir-core";
+import { LoggerInterface, MiroirLoggerFactory } from "@miroir-framework/core";
 import { packageName, cleanLevel } from "../../constants.js";
 import type { ThemedComponentProps } from "./BaseTypes";
 import { CodeBlock_ReadOnly } from '../CodeBlock_ReadOnly';

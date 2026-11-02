@@ -4,7 +4,7 @@ import {
   type AsyncQueryRunnerParams,
   type MiroirModelEnvironment,
   type TransformerDefinition,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { sqlStringForQuery } from "../src/1_core/SqlGenerator";
 
 // ################################################################################################

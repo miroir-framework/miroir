@@ -21,7 +21,7 @@ import {
   MiroirContextInterface,
   MiroirLoggerFactory,
   StoreOrBundleAction
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 
 import { MCP_HTTP_ENDPOINT } from "./mcpConstants.js";

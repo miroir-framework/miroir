@@ -1,5 +1,5 @@
 import { styled } from '@mui/material/styles';
-import { LoggerInterface, MiroirLoggerFactory } from "miroir-core";
+import { LoggerInterface, MiroirLoggerFactory } from "@miroir-framework/core";
 import React, { memo } from 'react';
 
 import { packageName } from "../../constants.js";

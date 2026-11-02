@@ -26,7 +26,7 @@ import {
   getClientEnvironment,
   LoggerInterface,
   MiroirLoggerFactory,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   useDomainControllerService,
   useMiroirContextService,
@@ -34,13 +34,13 @@ import {
   selectInstanceArrayForDeploymentSectionEntity,
   type ReduxStateWithUndoRedo,
   JsonDisplayHelper,
-} from "miroir-react";
+} from "@miroir-framework/react";
 import { entityEntity, entitySelfApplication, selfApplicationMiroir } from "miroir-app-miroir";
 import { adminSelfApplication, entityDeployment } from "miroir-app-admin";
 
 import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";
-import { useAuthSession } from "miroir-react";
+import { useAuthSession } from "@miroir-framework/react";
 import { MIROIR_SYSTEM_PROMPT } from "./miroirSystemPrompt.js";
 import { AiEntityProposalForm, type EntityProposal } from "./AiEntityProposalForm.js";
 import { AiLendProposalForm } from "./AiLendProposalForm.js";

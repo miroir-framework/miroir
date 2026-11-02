@@ -11,7 +11,7 @@ import { describe, expect, it } from "vitest";
 import {
   ADMIN_APPLICATION_UUID,
   ALWAYS_ALLOW_APPLICATION_TARGETS,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 const RUN_TEST = process.env.RUN_TEST;
 const runThis =

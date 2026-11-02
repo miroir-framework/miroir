@@ -1,11 +1,11 @@
 import React from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { render as rtlRender, screen } from "@testing-library/react";
-import { MiroirContextReactTestProvider } from "miroir-react";
+import { MiroirContextReactTestProvider } from "@miroir-framework/react";
 import "@testing-library/jest-dom";
 
-import type { GraphReportSection } from "miroir-core";
-import { ApplicationSection } from "miroir-core";
+import type { GraphReportSection } from "@miroir-framework/core";
+import { ApplicationSection } from "@miroir-framework/core";
 import { deployment_Miroir } from "miroir-app-admin";
 import { defaultStoredMiroirTheme } from "miroir-app-miroir";
 
@@ -17,7 +17,7 @@ vi.mock("../../src/miroir-fwk/4_view/components/Graph/GraphComponent.js", () => 
   ),
 }));
 
-import { MiroirThemeProvider } from "miroir-react";
+import { MiroirThemeProvider } from "@miroir-framework/react";
 import { GraphReportSectionView } from "../../src/miroir-fwk/4_view/components/Graph/GraphReportSectionView.js";
 
 const testThemeOptions = [

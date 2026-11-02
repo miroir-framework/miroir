@@ -10,7 +10,7 @@ import {
   type PersistenceStoreModelSectionInterface,
   type StoreSectionConfiguration,
   type ConfigurationServiceInner
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { SqlDbDataStoreSection } from "./4_services/SqlDbDataStoreSection.js";
 import { SqlDbModelStoreSection } from "./4_services/SqlDbModelStoreSection.js";
 

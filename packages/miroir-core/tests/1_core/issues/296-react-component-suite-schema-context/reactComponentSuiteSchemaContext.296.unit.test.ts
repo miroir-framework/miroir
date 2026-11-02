@@ -16,7 +16,7 @@
  *
  * Run:
  * ```bash
- * npm run testByFile -w miroir-core -- 296-react-component-suite-schema-context
+ * npm run testByFile -w @miroir-framework/core -- 296-react-component-suite-schema-context
  * ```
  */
 import { describe, expect, it } from "vitest";
@@ -36,7 +36,7 @@ import {
   type MlElement,
   type MiroirModelEnvironment,
   type ResolvedMlSchemaReturnType,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 // ################################################################################################
 const miroirTestMlSchema: MlElement = entityWithResolvedMLSchema(entityMiroirTest as Entity)

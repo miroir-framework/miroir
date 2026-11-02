@@ -3,7 +3,7 @@ import {
   type MetaModel,
   type MiroirModelEnvironment,
   type Uuid,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import { defaultMiroirMetaModel } from "miroir-app-miroir";
 /**

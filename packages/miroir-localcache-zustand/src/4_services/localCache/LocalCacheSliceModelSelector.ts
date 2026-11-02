@@ -24,7 +24,7 @@ import {
   type SelfApplication,
   type StoredMiroirTheme,
   type TransformerDefinition,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   entityEndpointVersion,
   entityEntity,

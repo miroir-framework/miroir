@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { DataTypes } from "sequelize";
 
-import type { Entity, MiroirModelEnvironment } from "miroir-core";
+import type { Entity, MiroirModelEnvironment } from "@miroir-framework/core";
 
 import { sqlStringForExtractor } from "../src/1_core/SqlGenerator.js";
 

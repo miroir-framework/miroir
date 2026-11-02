@@ -1,6 +1,6 @@
 import { useSyncExternalStore } from "react";
 
-import { readUsableBearerPrincipal, type AuthPrincipal } from "miroir-core";
+import { readUsableBearerPrincipal, type AuthPrincipal } from "@miroir-framework/core";
 
 const TOKEN_KEY = "miroir.auth.token";
 

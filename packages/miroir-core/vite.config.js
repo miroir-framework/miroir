@@ -49,7 +49,7 @@ export default defineConfig({
   // ],
   resolve: {
     alias: {
-      "miroir-core": path.resolve(packageRoot, "src/index.ts"),
+      "@miroir-framework/core": path.resolve(packageRoot, "src/index.ts"),
     },
   },
   test: {

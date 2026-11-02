@@ -21,7 +21,7 @@ npm ci
 
 `npm ci` installs exactly `package-lock.json`; to add or update a dependency, see [Dependency policy](#dependency-policy).
 
-For the minimum needed by `miroir-core` tests, `python scripts/agent_session_setup.py` builds the same package set as the PR checks and skips what is already built.
+For the minimum needed by `@miroir-framework/core` tests, `python scripts/agent_session_setup.py` builds the same package set as the PR checks and skips what is already built.
 
 ## Verify
 

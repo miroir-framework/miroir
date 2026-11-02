@@ -7,7 +7,7 @@ import {
   type MiroirModelEnvironment,
   type Report,
   type SelfApplication,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import type { AgentRunMeasurement } from "./agentRunHistory";
 import type { BundleSizeMeasurement } from "./bundleSizeHistory";

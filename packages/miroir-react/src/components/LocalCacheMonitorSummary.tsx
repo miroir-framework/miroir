@@ -4,7 +4,7 @@ import {
   buildAttributedInstanceIndex,
   measureLocalCacheMemory,
   type LocalCacheMemoryBreakdown,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { localCacheMonitorRegistry } from "../tools/localCacheMonitorRegistry.js";
 import { localCacheMonitorIndicators, type LocalCacheMonitorIndicators } from "../tools/localCacheMonitorIndicators.js";
 import { clearLocalCacheMonitorSession, downloadLocalCacheMonitorExport } from "../tools/localCacheMonitorSession.js";

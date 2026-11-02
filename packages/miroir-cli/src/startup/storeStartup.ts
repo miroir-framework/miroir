@@ -1,4 +1,4 @@
-import { type MiroirConfigClient, type StoreSectionStartup, type StoreUnitConfiguration } from "miroir-core";
+import { type MiroirConfigClient, type StoreSectionStartup, type StoreUnitConfiguration } from "@miroir-framework/core";
 
 const packageName = "miroir-cli";
 
@@ -36,16 +36,16 @@ export async function loadStoreStartups(config: MiroirConfigClient): Promise<Sto
 // dynamic imports: a store package is loaded only when a deployment uses it
 const storeStartups: Record<string, { storePackage: string; load: () => Promise<StoreSectionStartup> }> = {
   filesystem: {
-    storePackage: "miroir-store-filesystem",
-    load: async () => (await import("miroir-store-filesystem")).miroirFileSystemStoreSectionStartup,
+    storePackage: "@miroir-framework/store-filesystem",
+    load: async () => (await import("@miroir-framework/store-filesystem")).miroirFileSystemStoreSectionStartup,
   },
   indexedDb: {
-    storePackage: "miroir-store-indexedDb",
-    load: async () => (await import("miroir-store-indexedDb")).miroirIndexedDbStoreSectionStartup,
+    storePackage: "@miroir-framework/store-indexeddb",
+    load: async () => (await import("@miroir-framework/store-indexeddb")).miroirIndexedDbStoreSectionStartup,
   },
   sql: {
-    storePackage: "miroir-store-postgres",
-    load: async () => (await import("miroir-store-postgres")).miroirPostgresStoreSectionStartup,
+    storePackage: "@miroir-framework/store-postgres",
+    load: async () => (await import("@miroir-framework/store-postgres")).miroirPostgresStoreSectionStartup,
   },
 };
 

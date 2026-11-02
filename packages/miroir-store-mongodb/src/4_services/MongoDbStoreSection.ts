@@ -9,7 +9,7 @@ import {
   PersistenceStoreAbstractSectionInterface,
   StorageSpaceHandlerInterface,
   type Entity
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
 import { MongoDbStore } from "./MongoDbStore.js";

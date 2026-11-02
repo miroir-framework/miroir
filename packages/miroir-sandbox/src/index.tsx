@@ -20,9 +20,9 @@ import {
   type Deployment,
   type StoreOrBundleAction,
   type StoreUnitConfiguration,
-} from "miroir-core";
-import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
-import { miroirBundledStoreSectionStartup } from "miroir-store-bundled";
+} from "@miroir-framework/core";
+import { miroirIndexedDbStoreSectionStartup } from "@miroir-framework/store-indexeddb";
+import { miroirBundledStoreSectionStartup } from "@miroir-framework/store-bundled";
 import {
   LocalCacheProvider,
   MiroirContextReactProvider,
@@ -31,7 +31,7 @@ import {
   RootComponent,
   startMiroirClient,
   type ReportSectionRenderers,
-} from "miroir-react";
+} from "@miroir-framework/react";
 
 import { loglevelnext } from './loglevelnextImporter.js';
 import { DemoInitializer } from "./DemoInitializer.js";
@@ -40,7 +40,7 @@ import { cleanLevel } from "./4_view/constants.js";
 import { miroirDemoAppStartup } from "./startup.js";
 import { ADMIN_DEPLOYMENT_UUID, ADMIN_BUNDLED_CONFIG, ADMIN_MODEL_PARENT_UUIDS_ARRAY, demoBundledData, demoMiroirConfig, MIROIR_DEPLOYMENT_UUID } from "./bundledData.js";
 import { migrateAdminToIndexedDbIfNeeded } from "./adminMigration.js";
-import { ErrorPage } from "miroir-react";
+import { ErrorPage } from "@miroir-framework/react";
 import { deployment_Admin, deployment_Miroir } from "miroir-app-admin";
 
 // ---------------------------------------------------------------------------

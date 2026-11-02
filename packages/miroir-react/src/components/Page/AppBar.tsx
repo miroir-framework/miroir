@@ -9,7 +9,7 @@ import { styled } from '@mui/material/styles';
 import { ChevronLeftIcon, ChevronRightIcon, Edit, EditOff } from "../Themes/MaterialSymbolWrappers.js";
 import { useSyncExternalStore, type MouseEvent, type ReactNode } from 'react';
 
-import { defaultSelfApplicationDeploymentMap, isVersioningAppBarItemVisible, LoggerInterface, MiroirLoggerFactory, noValue, type MiroirMenuItem, type MiroirMenuPageLink, type ReportLink, type VersioningModeInput } from 'miroir-core';
+import { defaultSelfApplicationDeploymentMap, isVersioningAppBarItemVisible, LoggerInterface, MiroirLoggerFactory, noValue, type MiroirMenuItem, type MiroirMenuPageLink, type ReportLink, type VersioningModeInput } from '@miroir-framework/core';
 
 import { selectInstanceArrayForDeploymentSectionEntity, useSelector, type ReduxStateWithUndoRedo } from "../../miroir-localcache-imports.js";
 import { useMiroirContextService } from "../../contexts/MiroirContextReactProvider.js";

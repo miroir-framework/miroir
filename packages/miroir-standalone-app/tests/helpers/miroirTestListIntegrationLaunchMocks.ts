@@ -4,7 +4,7 @@ import type { UiIntegrationTestRunRequest } from '../../src/miroir-fwk/4-tests/u
 
 vi.mock('../../src/miroir-fwk/4-tests/useSelectedApplicationMiroirTestSuiteRegistries.js', async () => {
   const { loadApplicationRunnerUuidIndexFromFolders } = await import(
-    'miroir-core/model-validation-fs'
+    '@miroir-framework/core/model-validation-fs'
   );
   const index = loadApplicationRunnerUuidIndexFromFolders();
   return {
@@ -26,8 +26,8 @@ vi.mock('../../src/miroir-fwk/4_view/components/Reports/TestResultsGrid.js', () 
   TestResultsGrid: () => null,
 }));
 
-vi.mock('miroir-react', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('miroir-react')>()),
+vi.mock('@miroir-framework/react', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@miroir-framework/react')>()),
   UnitTestExecutionSummary: () => null,
 }));
 

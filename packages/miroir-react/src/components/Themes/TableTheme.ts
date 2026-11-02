@@ -36,8 +36,8 @@
 // ensuring visual consistency regardless of which grid implementation is used.
 // ################################################################################################
 
-import type { StoredMiroirTheme } from "miroir-core";
-import type { MiroirThemeFull } from "miroir-core";
+import type { StoredMiroirTheme } from "@miroir-framework/core";
+import type { MiroirThemeFull } from "@miroir-framework/core";
 import { defaultStoredMiroirTheme, tableThemeSchemaJson } from "miroir-app-miroir";
 
 // ################################################################################################

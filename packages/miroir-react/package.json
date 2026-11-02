@@ -1,6 +1,9 @@
 {
-  "name": "miroir-react",
+  "name": "@miroir-framework/react",
   "version": "0.5.0-rc.1",
+  "publishConfig": {
+    "access": "public"
+  },
   "description": "Reusable React context and theme system for the Miroir Framework",
   "author": "Miroir Framework <miroir-framework@protonmail.com>",
   "license": "MIT",
@@ -41,7 +44,7 @@
     "lodash-es": "4.18.1",
     "miroir-app-admin": "*",
     "miroir-app-miroir": "*",
-    "miroir-core": "*",
+    "@miroir-framework/core": "*",
     "miroir-localcache-redux": "*",
     "react-error-boundary": "6.1.6",
     "react-markdown": "10.1.0",
@@ -71,9 +74,9 @@
     "@types/react-dom": "18.3.7",
     "formik": "2.4.9",
     "happy-dom": "21.0.4",
-    "miroir-env": "*",
+    "@miroir-framework/env": "*",
     "miroir-example-library": "*",
-    "miroir-store-filesystem": "*",
+    "@miroir-framework/store-filesystem": "*",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "react-redux": "9.3.0",

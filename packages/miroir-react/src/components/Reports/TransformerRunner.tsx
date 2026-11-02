@@ -1,7 +1,7 @@
 import type React from "react";
 
 
-import type { ReportSection, Uuid, ApplicationDeploymentMap } from "miroir-core";
+import type { ReportSection, Uuid, ApplicationDeploymentMap } from "@miroir-framework/core";
 
 export const TransformerRunnerReportSectionView: React.FC<{
   reportSectionDefinition: Extract<ReportSection, { type: "transformerRunnerReportSection" }>;

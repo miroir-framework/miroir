@@ -1,13 +1,13 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 
-import { MiroirLoggerFactory, type LoggerInterface } from "miroir-core";
-import { FeedbackGlowBoundary } from "miroir-react";
+import { MiroirLoggerFactory, type LoggerInterface } from "@miroir-framework/core";
+import { FeedbackGlowBoundary } from "@miroir-framework/react";
 
 import { packageName } from "../../../../constants.js";
 import type { ComponentTestRegistration } from "../../../4-tests/componentTests/index.js";
 import type { UiIntegrationReportTestSession } from "../../../4-tests/uiIntegrationTestLauncherTypes.js";
 import { cleanLevel } from "../../constants.js";
-import { useAdminViewParams } from "miroir-react";
+import { useAdminViewParams } from "@miroir-framework/react";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ComponentTestSandbox");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);

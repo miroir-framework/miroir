@@ -1,8 +1,8 @@
 import path from "path";
 import fs from 'fs/promises';
-import { mlToTs } from "miroir-core/ml-to-ts";
+import { mlToTs } from "@miroir-framework/core/ml-to-ts";
 import { sqlQuerySelectSchema } from "../src/1_core/SqlQueryBuilder";
-import { LoggerInterface, MiroirLoggerFactory } from "miroir-core";
+import { LoggerInterface, MiroirLoggerFactory } from "@miroir-framework/core";
 import { packageName } from "../src/constants";
 import { cleanLevel } from "../src/4_services/constants";
 

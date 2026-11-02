@@ -17,18 +17,18 @@ import {
   type LoggerInterface,
   type LoggerOptions,
   type MiroirTestSuite,
-} from "miroir-core";
-import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
-import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
-import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
-import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
+} from "@miroir-framework/core";
+import { miroirFileSystemStoreSectionStartup } from "@miroir-framework/store-filesystem";
+import { miroirIndexedDbStoreSectionStartup } from "@miroir-framework/store-indexeddb";
+import { miroirMongoDbStoreSectionStartup } from "@miroir-framework/store-mongodb";
+import { miroirPostgresStoreSectionStartup } from "@miroir-framework/store-postgres";
 import { env } from "process";
 import { loglevelnext } from "../src/loglevelnextImporter.js";
 import {
   listCliRunnerIntegrationSuiteKeysFromFolders,
   resolveCliSuiteKeysFromCatalog,
   loadApplicationRunnerUuidIndexFromFolders,
-} from "miroir-core/model-validation-fs";
+} from "@miroir-framework/core/model-validation-fs";
 import { miroirAppStartup } from "../src/startup.js";
 import { runMiroirRunnerSuitesSharedFromCLI } from "./helpers/runMiroirRunnerSuitesSharedFromCLI.js";
 import { createRunnerSuiteSessionParams } from "./helpers/runnerSuiteSessionParams.js";

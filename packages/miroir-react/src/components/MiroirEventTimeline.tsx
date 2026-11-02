@@ -25,7 +25,7 @@ import {
   MiroirEventTrackingData,
   MiroirLoggerFactory,
   uniqueRunIds,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { useMiroirContextService, useMiroirEventTrackingData } from "../contexts/MiroirContextReactProvider.js";
 import { packageName } from "../constants.js";
 import { cleanLevel } from "../viewConstants.js";

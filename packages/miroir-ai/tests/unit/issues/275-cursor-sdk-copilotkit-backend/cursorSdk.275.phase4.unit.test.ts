@@ -12,7 +12,7 @@ import express, { type Router } from "express";
 import { afterEach, describe, expect, it } from "vitest";
 import { AbstractAgent } from "@ag-ui/client";
 import { EventType, type RunAgentInput } from "@ag-ui/core";
-import { clearSecrets, registerSecrets, type ProcessCapabilities } from "miroir-core";
+import { clearSecrets, registerSecrets, type ProcessCapabilities } from "@miroir-framework/core";
 
 import { createCopilotKitRouter } from "../../../../src/routes/copilotKitRoute.js";
 import {

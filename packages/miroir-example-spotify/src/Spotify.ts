@@ -7,7 +7,7 @@ import {
   type MiroirModelEnvironment,
   type Report,
   type SelfApplication,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import reportSpotifyPlaylistJson from "../assets/spotify_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/10ce3252-7840-4041-a769-9a0e2d5ee10b.json" with { type: "json" };
 import spotifyServiceEndpointJson from "../assets/spotify_model/3d8da4d4-8f76-4bb4-9212-14869d81c00c/0e5cb172-12ea-4467-8598-5889338ae454.json" with { type: "json" };
