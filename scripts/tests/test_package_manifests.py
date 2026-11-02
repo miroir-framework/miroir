@@ -1,7 +1,7 @@
 """#643: the manifests of the packages to publish (#621) are ones `npm pack` and a consumer install can rely on.
 
 The published set is listed in `scripts/published-packages.json`. Cases marked "pack" run
-`npm pack --dry-run --json` on a built package: they skip when the package's `dist/` is missing, unless
+`npm pack` on a built package and list its tarball: they skip when the package's `dist/` is missing, unless
 `MIROIR_REQUIRE_PACK=1` (set by the nonreg step `unit-643-package-manifests`), which makes that a failure.
 
 Analysis and plan: code-helpers/features/643-BUILD-manifest-hygiene/
@@ -16,6 +16,8 @@ import os
 import re
 import shutil
 import subprocess
+import tarfile
+import tempfile
 from pathlib import Path
 
 import pytest
@@ -128,18 +130,21 @@ def require_built(folder: str) -> None:
 
 @functools.lru_cache(maxsize=None)
 def pack_list(folder: str) -> tuple[str, ...]:
-    result = subprocess.run(
-        [shutil.which("npm") or "npm", "pack", "--dry-run", "--json", "--ignore-scripts"],
-        cwd=ROOT / folder,
-        capture_output=True,
-        text=True,
-        check=True,
-    )
-    # npm < 11 prints `[{...}]`; npm >= 11 prints `{"<package name>": {...}}`
-    stdout = result.stdout
-    packed = json.loads(stdout[min(i for i in (stdout.find("["), stdout.find("{")) if i >= 0) :])
-    entry = packed[0] if isinstance(packed, list) else next(iter(packed.values()))
-    return tuple(sorted(file["path"] for file in entry["files"]))
+    # The paths come from the tarball, not from `npm pack --dry-run --json`: npm >= 12 redacts every UUID in its
+    # output (as a legacy auth token), so the asset paths of the seed read `***/***.json` there.
+    with tempfile.TemporaryDirectory() as destination:
+        subprocess.run(
+            [shutil.which("npm") or "npm", "pack", "--ignore-scripts", "--pack-destination", destination],
+            cwd=ROOT / folder,
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        (tarball,) = Path(destination).glob("*.tgz")
+        with tarfile.open(tarball) as archive:
+            return tuple(
+                sorted(member.name.removeprefix("package/") for member in archive.getmembers() if member.isfile())
+            )
 
 
 def export_targets(exports: object) -> list[str]:
