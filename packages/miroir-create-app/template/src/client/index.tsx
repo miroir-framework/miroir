@@ -11,15 +11,21 @@ import {
   MiroirActivityTracker,
   MiroirEventService,
   MiroirLoggerFactory,
+  setRestClientAuthorizationInvalidationHandler,
+  setRestClientAuthorizationTokenGetter,
   type LoggerFactoryInterface,
   type MiroirConfigClient,
 } from "@miroir-framework/core";
 import {
   ErrorPage,
+  fetchAuthenticationEnabledOverHttp,
+  getAuthToken,
   LocalCacheProvider,
   MiroirContextReactProvider,
   PageDispatcher,
   RootComponent,
+  setAuthenticationEnabled,
+  setAuthToken,
   startMiroirClient,
   usePageConfiguration,
 } from "@miroir-framework/react";
@@ -61,6 +67,12 @@ async function start(): Promise<void> {
     defaultTemplate: "[{{time}}] {{level}} {{name}} ### ",
     specificLoggerOptions: {},
   });
+
+  // authentication (server.authentication in environments/local.json): every request carries the session's token, an
+  // expired session is dropped, and with authentication on the shell sends the user to its login page
+  setRestClientAuthorizationTokenGetter(() => getAuthToken());
+  setRestClientAuthorizationInvalidationHandler(() => setAuthToken(undefined));
+  setAuthenticationEnabled(await fetchAuthenticationEnabledOverHttp());
 
   // the server opens the deployments: the client registers no store
   const { miroirContext, domainController, processCapabilities, localCacheBinding } = await startMiroirClient(

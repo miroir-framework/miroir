@@ -9,7 +9,7 @@ serves the other Miroir packages, which are released with it. Types reached thro
 type of a property or a parameter) can be used as part of that name, without a promise of their own.
 Why and how the list is chosen: [`code-helpers/features/649-BUILD-core-public-api/analysis.md`](../../code-helpers/features/649-BUILD-core-public-api/analysis.md).
 
-46 exports.
+48 exports.
 
 | Name | Kind | Declared in | Summary |
 |---|---|---|---|
@@ -52,6 +52,8 @@ Why and how the list is chosen: [`code-helpers/features/649-BUILD-core-public-ap
 | `ProcessCapabilities` | type | `src/1_core/processCapabilities.ts` | What the running process offers: AI, MCP, the agent backend, the store types it can open or create, store administration and designer tools. |
 | `RestClientInterface` | interface | `src/0_interfaces/4-services/PersistenceInterface.ts` | The HTTP client the client-side platform uses to reach a Miroir server. |
 | `RestClientStub` | class | `src/4_services/RestClientStub.ts` | calls Rest Server directly, without going through the network. |
+| `setRestClientAuthorizationInvalidationHandler` | function | `src/4_services/RestClient.ts` | Called when the server answers 401 to a request that carried a token (the session expired). |
+| `setRestClientAuthorizationTokenGetter` | function | `src/4_services/RestClient.ts` | The function every RestClient calls for the Bearer token of a request (none when absent or when it returns undefined). |
 | `SpecificLoggerOptionsMap` | type | `src/0_interfaces/4-services/LoggerInterface.ts` | Log level and template per logger name, overriding `LoggerOptions` defaults. |
 | `startMiroirNodeWith` | function | `src/5_setup/startMiroirPlatform.ts` | The startup of a Node host (CLI, server, Electron main process, test platforms) on the given local cache: see {@link startMiroirPlatformWith}. With `loggers`, it also starts the registered loggers, after the stores and before the platform, the order of the CLI and the server. |
 | `startMiroirPlatformWith` | function | `src/5_setup/startMiroirPlatform.ts` | Builds the Miroir platform of a process from its configuration, on the given local cache: a `local` domain controller for a server configuration; a `remote` one for a client configuration, with its emulated server when `emulateServer` is on. It runs `miroirCoreStartup()` and the given store startups first. It reads no environment variable and imports no store or local cache package. |

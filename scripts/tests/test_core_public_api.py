@@ -37,7 +37,8 @@ SANDBOX_NAMES = {
 CREATE_APP_NAMES = {
     "ConfigurationService", "LoggerFactoryInterface", "MiroirActivityTracker", "MiroirConfigClient",
     "MiroirEventService", "MiroirLoggerFactory", "defaultExternalServiceClient", "getClientEnvironment",
-    "getProcessCapabilities", "getProcessTokenSecret",
+    "getProcessCapabilities", "getProcessTokenSecret", "setRestClientAuthorizationInvalidationHandler",
+    "setRestClientAuthorizationTokenGetter",
 }
 # the core names of miroir-server-library's published declarations (dist/index.d.ts)
 SERVER_LIBRARY_NAMES = {

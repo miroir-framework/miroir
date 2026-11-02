@@ -8,7 +8,8 @@ npm run build      # the server (tsc, into dist-server/) and the client (Vite, i
 npm start          # http://localhost:3080
 ```
 
-`PORT=4000 npm start` listens on another port. `npm run dev:client` serves the client with Vite on port 5173, against a
+`PORT=4000 npm start` listens on another port. The server listens on this machine only; `HOST=0.0.0.0 npm start`
+opens it to the network, with authentication on (below). `npm run dev:client` serves the client with Vite on port 5173, against a
 running server.
 
 ## Layout
@@ -36,4 +37,5 @@ then set `"store": "postgres"` on the application. The environment format is des
 ## Authentication
 
 Off in `environments/local.json` (`server.authentication.enabled`). Turn it on before the server is reachable by
-anyone else; set `MIROIR_AUTH_TOKEN_SECRET` so that sessions survive a restart.
+anyone else; the client then shows Miroir's login page. Set `MIROIR_AUTH_TOKEN_SECRET` so that sessions survive a
+restart.

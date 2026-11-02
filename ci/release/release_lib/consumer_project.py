@@ -66,8 +66,9 @@ def tarballs_from_manifest(repo_root: Path, tarball_dir: Path) -> dict[str, Path
     found: dict[str, Path] = {}
     for info in load_json(manifest_path).get("tarballs", []):
         recorded = Path(info["path"])
-        # paths are recorded relative to the repository root; a moved folder still holds them by layer
-        candidates = [repo_root / recorded, tarball_dir / recorded.parent.name / recorded.name]
+        # the tarball beside the manifest first (a kept or moved folder), then the recorded path (relative to the
+        # repository root): another build of the same version may have rewritten the latter
+        candidates = [tarball_dir / recorded.parent.name / recorded.name, repo_root / recorded]
         path = next((candidate for candidate in candidates if candidate.is_file()), None)
         if path is None:
             raise ReleaseError(f"tarball of {info['package']} not found: {recorded}")

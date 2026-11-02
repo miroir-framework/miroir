@@ -13,7 +13,13 @@ export default defineConfig(() => {
   // no process.env in the call: database passwords must never reach the browser
   const environment = resolveEnvironmentFromFiles({ cwd: projectRoot, env: { MIROIR_ROOT: projectRoot, MIROIR_ENV: process.env.MIROIR_ENV } });
   const clientConfig = environmentRealServerClientConfig(environment);
+  // `npm run dev:client`: the page's origin is Vite's, so Miroir's routes go to the running server
+  const server = clientConfig.client.emulateServer ? undefined : clientConfig.client.serverConfig.rootApiUrl;
+  const proxy = Object.fromEntries(
+    ["/CRUD", "/query", "/queryTemplate", "/action", "/auth", "/capabilities", "/mcp"].map((route) => [route, { target: server }]),
+  );
   return {
+    server: { proxy },
     root: "src/client",
     build: { outDir: "../../dist", emptyOutDir: true, target: "esnext" },
     define: { __MIROIR_CLIENT_CONFIG__: JSON.stringify(clientConfig) },

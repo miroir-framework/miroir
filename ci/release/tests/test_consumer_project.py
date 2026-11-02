@@ -85,6 +85,20 @@ def test_a_release_tarball_folder_is_read_from_its_manifest_even_when_moved(tmp_
     assert "@miroir-framework/create-app" in missing_tarballs(REPO_ROOT, found)
 
 
+def test_a_release_tarball_folder_prefers_its_own_tarball_over_the_recorded_path(tmp_path):
+    """A kept folder is tested as kept, even when a later build of the same version rewrote the recorded path."""
+    repository = tmp_path / "repository"
+    (repository / "release-tarballs" / "P0").mkdir(parents=True)
+    (repository / "release-tarballs" / "P0" / "core.tgz").write_bytes(b"newer build")
+    kept = tmp_path / "kept"
+    (kept / "P0").mkdir(parents=True)
+    (kept / "P0" / "core.tgz").write_bytes(b"kept build")
+    (kept / "manifest.json").write_text(
+        json.dumps({"tarballs": [{"package": "@miroir-framework/core", "layer": 0, "path": "release-tarballs/P0/core.tgz"}]})
+    )
+    assert tarballs_from_manifest(repository, kept) == {"@miroir-framework/core": (kept / "P0" / "core.tgz").resolve()}
+
+
 # ----------------------------------------------------------------------------------------------------------------
 # slow: a generated project, installed from tarballs, outside the repository
 

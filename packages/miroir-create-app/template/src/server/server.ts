@@ -1,6 +1,7 @@
 // The server: reads environments/local.json, seeds .miroir/ on first start, opens the deployments, then serves
 // Miroir's HTTP routes and the built client (dist/). `npm start` after `npm run build`; PORT overrides the port of
-// the environment's server.rootApiUrl.
+// the environment's server.rootApiUrl. It listens on this machine only (127.0.0.1); HOST=0.0.0.0 opens it to the
+// network, which needs authentication on (server.authentication.enabled in environments/local.json).
 import loglevelnext from "loglevelnext";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -69,6 +70,10 @@ const { app } = await createMiroirServerApp({
 });
 
 const port = Number(process.env.PORT ?? new URL(miroirConfig.server.rootApiUrl).port);
-app.listen(port, () => {
-  console.log(`Miroir server listening on http://localhost:${port}`);
+const host = process.env.HOST ?? "127.0.0.1";
+if (host !== "127.0.0.1" && host !== "localhost" && !authenticationEnabled) {
+  console.warn(`Miroir server: listening on ${host} with authentication off; anyone who reaches this port can change the data`);
+}
+app.listen(port, host, () => {
+  console.log(`Miroir server listening on http://${host === "127.0.0.1" ? "localhost" : host}:${port}`);
 });
