@@ -87,7 +87,8 @@
         "from": "../miroir-app-miroir/assets",
         "to": "miroir-assets/miroir-app-miroir/assets",
         "filter": [
-          "**/*"
+          "**/*",
+          "!miroir_devData/**"
         ]
       },
       {

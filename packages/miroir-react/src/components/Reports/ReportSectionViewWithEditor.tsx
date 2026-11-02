@@ -92,7 +92,7 @@ function OpenReportSectionView(props: {
     reportUuid: string;
     openAs: "modal" | "route";
     application?: string;
-    applicationSection?: "data" | "model" | "modelVersion";
+    applicationSection?: "data" | "model" | "modelVersion" | "devData";
     deploymentUuid?: string;
   };
   application: Uuid;

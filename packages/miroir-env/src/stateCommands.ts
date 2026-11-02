@@ -7,6 +7,7 @@ import {
   ENTITY_ADMIN_APPLICATION_UUID,
   ENTITY_DEPLOYMENT_UUID,
   isTestEnvironment,
+  optionalApplicationSections,
   type Deployment,
   type EnvironmentDefinition,
   type MiroirEnvironmentApplication,
@@ -195,6 +196,8 @@ function packageApplication(
     return undefined;
   }
   const key = uniqueKey(prefix, deployment.uuid, taken);
+  // optional sections (#232 modelVersion, #647 devData) the Deployment row declares
+  const declaredSections = optionalApplicationSections.filter((section) => configuration[section]);
   const application: MiroirEnvironmentApplication = {
     package: packageName,
     ...(key !== prefix ? { assetPrefix: prefix } : {}),
@@ -202,7 +205,7 @@ function packageApplication(
     deployment: deployment.uuid,
     store: "filesystem",
     mode: "live",
-    ...(configuration.modelVersion ? { sections: { modelVersion: {} } } : {}),
+    ...(declaredSections.length > 0 ? { sections: Object.fromEntries(declaredSections.map((section) => [section, {}])) } : {}),
   };
   const derived = deriveEnvironmentDeployments({ applications: { [key]: application } }, resolved.stateName);
   return derived.status === "ok" && stableJson(derived.deployments[0].configuration) === stableJson(configuration)

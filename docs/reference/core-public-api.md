@@ -9,7 +9,7 @@ serves the other Miroir packages, which are released with it. Types reached thro
 type of a property or a parameter) can be used as part of that name, without a promise of their own.
 Why and how the list is chosen: [`code-helpers/features/649-BUILD-core-public-api/analysis.md`](../../code-helpers/features/649-BUILD-core-public-api/analysis.md).
 
-34 exports.
+35 exports.
 
 | Name | Kind | Declared in | Summary |
 |---|---|---|---|
@@ -20,6 +20,7 @@ Why and how the list is chosen: [`code-helpers/features/649-BUILD-core-public-ap
 | `defaultMetaModelEnvironment` | const | `src/1_core/Model.ts` | The meta-model environment of Miroir's own model (fundamental schema, meta-model, endpoints). |
 | `defaultSelfApplicationDeploymentMap` | const | `src/1_core/Deployment.ts` | The deployments of Miroir's own applications (Miroir and Admin), by application uuid. |
 | `Deployment` | type | `src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.ts` |  |
+| `devDataEntityUuids` | const | `src/1_core/Model.ts` | #647 — entity UUIDs whose instances always belong to `devData`, whatever the application. Checked in getApplicationSection after versionHistoryEntityUuids. |
 | `Domain2ElementFailed` | class | `src/0_interfaces/2_domain/DomainElement.ts` | The failure value of a query or transformer result, with its failure type and context. |
 | `DomainControllerInterface` | interface | `src/0_interfaces/2_domain/DomainControllerInterface.ts` | Runs actions and queries on the deployments of a Miroir platform. |
 | `Entity` | type | `src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.ts` |  |

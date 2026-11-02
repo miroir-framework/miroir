@@ -1,0 +1,324 @@
+{
+  "uuid": "02dd2ead-7b8d-4160-99c9-9f4e9a1c051b",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "parentName": "Report",
+  "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+  "conceptLevel": "Model",
+  "name": "PageLoadHistory",
+  "defaultLabel": "Page load history",
+  "description": "Measured load steps of the web page and of the Electron renderer, recorded when the load timing measurement is on: the initial page load and the first display of each page kind, with the files fetched during each step (#580). Each graph shows one build mode and one client: a development build (Vite dev server) is not comparable with a production build (#583).",
+  "definition": {
+    "reportParameters": {},
+    "extractorTemplates": {
+      "initialLoads": {
+        "extractorOrCombinerType": "extractorInstancesByEntity",
+        "parentName": "PageLoadMeasurement",
+        "parentUuid": "0266c0b8-4dc8-4a14-bcef-239a85a5de2d",
+        "filter": {
+          "attributeName": "step",
+          "value": "^initialLoad$"
+        },
+        "orderBy": {
+          "attributeName": "measuredAt",
+          "direction": "ASC"
+        }
+      },
+      "routes": {
+        "extractorOrCombinerType": "extractorInstancesByEntity",
+        "parentName": "PageLoadMeasurement",
+        "parentUuid": "0266c0b8-4dc8-4a14-bcef-239a85a5de2d",
+        "filter": {
+          "attributeName": "step",
+          "value": "^route:"
+        },
+        "orderBy": {
+          "attributeName": "measuredAt",
+          "direction": "ASC"
+        }
+      },
+      "initialLoadsProductionWebApp": {
+        "extractorOrCombinerType": "extractorInstancesByEntity",
+        "parentName": "PageLoadMeasurement",
+        "parentUuid": "0266c0b8-4dc8-4a14-bcef-239a85a5de2d",
+        "filter": {
+          "attributeName": "series",
+          "value": "^initialLoad/production/webApp$"
+        },
+        "orderBy": {
+          "attributeName": "measuredAt",
+          "direction": "ASC"
+        }
+      },
+      "initialLoadsProductionElectron": {
+        "extractorOrCombinerType": "extractorInstancesByEntity",
+        "parentName": "PageLoadMeasurement",
+        "parentUuid": "0266c0b8-4dc8-4a14-bcef-239a85a5de2d",
+        "filter": {
+          "attributeName": "series",
+          "value": "^initialLoad/production/electron$"
+        },
+        "orderBy": {
+          "attributeName": "measuredAt",
+          "direction": "ASC"
+        }
+      },
+      "initialLoadsDevelopmentWebApp": {
+        "extractorOrCombinerType": "extractorInstancesByEntity",
+        "parentName": "PageLoadMeasurement",
+        "parentUuid": "0266c0b8-4dc8-4a14-bcef-239a85a5de2d",
+        "filter": {
+          "attributeName": "series",
+          "value": "^initialLoad/development/webApp$"
+        },
+        "orderBy": {
+          "attributeName": "measuredAt",
+          "direction": "ASC"
+        }
+      },
+      "initialLoadsDevelopmentElectron": {
+        "extractorOrCombinerType": "extractorInstancesByEntity",
+        "parentName": "PageLoadMeasurement",
+        "parentUuid": "0266c0b8-4dc8-4a14-bcef-239a85a5de2d",
+        "filter": {
+          "attributeName": "series",
+          "value": "^initialLoad/development/electron$"
+        },
+        "orderBy": {
+          "attributeName": "measuredAt",
+          "direction": "ASC"
+        }
+      },
+      "reportRoutesProductionWebApp": {
+        "extractorOrCombinerType": "extractorInstancesByEntity",
+        "parentName": "PageLoadMeasurement",
+        "parentUuid": "0266c0b8-4dc8-4a14-bcef-239a85a5de2d",
+        "filter": {
+          "attributeName": "series",
+          "value": "^route:report/production/webApp$"
+        },
+        "orderBy": {
+          "attributeName": "measuredAt",
+          "direction": "ASC"
+        }
+      },
+      "reportRoutesProductionElectron": {
+        "extractorOrCombinerType": "extractorInstancesByEntity",
+        "parentName": "PageLoadMeasurement",
+        "parentUuid": "0266c0b8-4dc8-4a14-bcef-239a85a5de2d",
+        "filter": {
+          "attributeName": "series",
+          "value": "^route:report/production/electron$"
+        },
+        "orderBy": {
+          "attributeName": "measuredAt",
+          "direction": "ASC"
+        }
+      },
+      "reportRoutesDevelopmentWebApp": {
+        "extractorOrCombinerType": "extractorInstancesByEntity",
+        "parentName": "PageLoadMeasurement",
+        "parentUuid": "0266c0b8-4dc8-4a14-bcef-239a85a5de2d",
+        "filter": {
+          "attributeName": "series",
+          "value": "^route:report/development/webApp$"
+        },
+        "orderBy": {
+          "attributeName": "measuredAt",
+          "direction": "ASC"
+        }
+      },
+      "reportRoutesDevelopmentElectron": {
+        "extractorOrCombinerType": "extractorInstancesByEntity",
+        "parentName": "PageLoadMeasurement",
+        "parentUuid": "0266c0b8-4dc8-4a14-bcef-239a85a5de2d",
+        "filter": {
+          "attributeName": "series",
+          "value": "^route:report/development/electron$"
+        },
+        "orderBy": {
+          "attributeName": "measuredAt",
+          "direction": "ASC"
+        }
+      }
+    },
+    "section": {
+      "type": "list",
+      "definition": [
+        {
+          "type": "graphReportSection",
+          "definition": {
+            "label": "Initial page load, production build, web page: duration (ms)",
+            "fetchedDataReference": "initialLoadsProductionWebApp",
+            "graphType": "line",
+            "dataMapping": {
+              "labelField": "measuredAt",
+              "valueField": "durationMs"
+            },
+            "config": {
+              "width": 800,
+              "height": 300,
+              "showTooltips": true,
+              "showLegend": false,
+              "labelPresentation": "slanted"
+            }
+          }
+        },
+        {
+          "type": "graphReportSection",
+          "definition": {
+            "label": "Initial page load, production build, Electron: duration (ms)",
+            "fetchedDataReference": "initialLoadsProductionElectron",
+            "graphType": "line",
+            "dataMapping": {
+              "labelField": "measuredAt",
+              "valueField": "durationMs"
+            },
+            "config": {
+              "width": 800,
+              "height": 300,
+              "showTooltips": true,
+              "showLegend": false,
+              "labelPresentation": "slanted"
+            }
+          }
+        },
+        {
+          "type": "graphReportSection",
+          "definition": {
+            "label": "Initial page load, development build, web page: duration (ms)",
+            "fetchedDataReference": "initialLoadsDevelopmentWebApp",
+            "graphType": "line",
+            "dataMapping": {
+              "labelField": "measuredAt",
+              "valueField": "durationMs"
+            },
+            "config": {
+              "width": 800,
+              "height": 300,
+              "showTooltips": true,
+              "showLegend": false,
+              "labelPresentation": "slanted"
+            }
+          }
+        },
+        {
+          "type": "graphReportSection",
+          "definition": {
+            "label": "Initial page load, development build, Electron: duration (ms)",
+            "fetchedDataReference": "initialLoadsDevelopmentElectron",
+            "graphType": "line",
+            "dataMapping": {
+              "labelField": "measuredAt",
+              "valueField": "durationMs"
+            },
+            "config": {
+              "width": 800,
+              "height": 300,
+              "showTooltips": true,
+              "showLegend": false,
+              "labelPresentation": "slanted"
+            }
+          }
+        },
+        {
+          "type": "objectListReportSection",
+          "definition": {
+            "label": "Initial page loads",
+            "parentName": "PageLoadMeasurement",
+            "parentUuid": "0266c0b8-4dc8-4a14-bcef-239a85a5de2d",
+            "fetchedDataReference": "initialLoads",
+            "sortByAttribute": "measuredAt",
+            "sortOrder": "desc"
+          }
+        },
+        {
+          "type": "graphReportSection",
+          "definition": {
+            "label": "First report display, production build, web page: duration (ms)",
+            "fetchedDataReference": "reportRoutesProductionWebApp",
+            "graphType": "line",
+            "dataMapping": {
+              "labelField": "measuredAt",
+              "valueField": "durationMs"
+            },
+            "config": {
+              "width": 800,
+              "height": 300,
+              "showTooltips": true,
+              "showLegend": false,
+              "labelPresentation": "slanted"
+            }
+          }
+        },
+        {
+          "type": "graphReportSection",
+          "definition": {
+            "label": "First report display, production build, Electron: duration (ms)",
+            "fetchedDataReference": "reportRoutesProductionElectron",
+            "graphType": "line",
+            "dataMapping": {
+              "labelField": "measuredAt",
+              "valueField": "durationMs"
+            },
+            "config": {
+              "width": 800,
+              "height": 300,
+              "showTooltips": true,
+              "showLegend": false,
+              "labelPresentation": "slanted"
+            }
+          }
+        },
+        {
+          "type": "graphReportSection",
+          "definition": {
+            "label": "First report display, development build, web page: duration (ms)",
+            "fetchedDataReference": "reportRoutesDevelopmentWebApp",
+            "graphType": "line",
+            "dataMapping": {
+              "labelField": "measuredAt",
+              "valueField": "durationMs"
+            },
+            "config": {
+              "width": 800,
+              "height": 300,
+              "showTooltips": true,
+              "showLegend": false,
+              "labelPresentation": "slanted"
+            }
+          }
+        },
+        {
+          "type": "graphReportSection",
+          "definition": {
+            "label": "First report display, development build, Electron: duration (ms)",
+            "fetchedDataReference": "reportRoutesDevelopmentElectron",
+            "graphType": "line",
+            "dataMapping": {
+              "labelField": "measuredAt",
+              "valueField": "durationMs"
+            },
+            "config": {
+              "width": 800,
+              "height": 300,
+              "showTooltips": true,
+              "showLegend": false,
+              "labelPresentation": "slanted"
+            }
+          }
+        },
+        {
+          "type": "objectListReportSection",
+          "definition": {
+            "label": "First display of each page kind",
+            "parentName": "PageLoadMeasurement",
+            "parentUuid": "0266c0b8-4dc8-4a14-bcef-239a85a5de2d",
+            "fetchedDataReference": "routes",
+            "sortByAttribute": "measuredAt",
+            "sortOrder": "desc"
+          }
+        }
+      ]
+    }
+  }
+}

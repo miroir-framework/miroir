@@ -13,8 +13,8 @@ import { packageName } from "../constants.js";
 import { cleanLevel } from "../miroir-fwk/4_view/constants.js";
 import {
   ENTITY_PAGE_LOAD_MEASUREMENT_UUID,
-  META_DEPLOYMENT_UUID,
-  META_SELF_APPLICATION_UUID,
+  MIROIR_DEPLOYMENT_UUID,
+  MIROIR_SELF_APPLICATION_UUID,
 } from "./loadTimingConstants.js";
 import type { LoadTimingStep, LoadTimingWrite } from "./loadTimingTypes.js";
 
@@ -25,7 +25,8 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: Logge
 });
 
 // ################################################################################################
-// #580: writes finished load steps as PageLoadMeasurement instances of the Meta app, in one
+// #580: writes finished load steps as PageLoadMeasurement instances in the devData section of the
+// Miroir application (#647), in one
 // createInstance action. Loaded on demand by the recorder, at its first write, so that its parse
 // time falls outside every measured step.
 // ################################################################################################
@@ -33,7 +34,7 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: Logge
 const INSTANCE_ENDPOINT = "ed520de4-55a9-4550-ac50-b1b713b72a89";
 
 /** handleInstanceAction reads the deployment of the action's application only: one entry is enough. */
-const metaApplicationDeploymentMap = { [META_SELF_APPLICATION_UUID]: META_DEPLOYMENT_UUID };
+const miroirApplicationDeploymentMap = { [MIROIR_SELF_APPLICATION_UUID]: MIROIR_DEPLOYMENT_UUID };
 
 export function pageLoadMeasurementInstance(step: LoadTimingStep): EntityInstance {
   return {
@@ -44,22 +45,22 @@ export function pageLoadMeasurementInstance(step: LoadTimingStep): EntityInstanc
   } as EntityInstance;
 }
 
-/** The write of the recorder: one action for every queued step, on the Meta deployment. */
+/** The write of the recorder: one action for every queued step, in the Miroir deployment's devData. */
 export function loadTimingWriter(domainController: DomainControllerInterface): LoadTimingWrite {
   return async (steps: LoadTimingStep[]) => {
     const action: InstanceAction = {
       actionType: "createInstance",
       endpoint: INSTANCE_ENDPOINT,
       payload: {
-        application: META_SELF_APPLICATION_UUID,
-        applicationSection: "data",
+        application: MIROIR_SELF_APPLICATION_UUID,
+        applicationSection: "devData",
         objects: steps.map(pageLoadMeasurementInstance),
       },
     };
     try {
-      const result = await domainController.handleAction(action, metaApplicationDeploymentMap);
+      const result = await domainController.handleAction(action, miroirApplicationDeploymentMap);
       if (result instanceof Action2Error) {
-        log.warn("load timings: the Meta deployment refused the measurements", result.errorType, result.errorMessage);
+        log.warn("load timings: the Miroir deployment refused the measurements", result.errorType, result.errorMessage);
         return { ok: false, error: result.errorMessage ?? result.errorType };
       }
       return { ok: true };

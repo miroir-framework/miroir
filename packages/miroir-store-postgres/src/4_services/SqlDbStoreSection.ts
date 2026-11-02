@@ -279,6 +279,39 @@ export class SqlDbStoreSection
   }
 
   // ##############################################################################################
+  /**
+   * #647: the table of an Entity exists in this schema (boot registers without creating). Asked of
+   * the schema even when the Entity is not registered: a "no" leads to a create, which drops the
+   * table (`sync({ force: true })`).
+   */
+  async hasStorageSpaceForInstancesOfEntity(entity: Entity): Promise<boolean> {
+    const access =
+      this.sqlSchemaTableAccess[entity.uuid] ?? this.getAccessToDataSectionEntity(entity)[entity.uuid];
+    if (access.isExternal) {
+      return true;
+    }
+    const exists = await this.sequelize
+      .getQueryInterface()
+      .tableExists({ tableName: access.sequelizeModel.tableName, schema: this.schema });
+    if (exists && !this.sqlSchemaTableAccess[entity.uuid]) {
+      this.sqlSchemaTableAccess = { ...this.sqlSchemaTableAccess, [entity.uuid]: access };
+    }
+    return exists;
+  }
+
+  // ##############################################################################################
+  /** #647: `CREATE TABLE IF NOT EXISTS`: a table another server created, and its rows, are kept. */
+  async createStorageSpaceForInstancesOfEntityIfMissing(entity: Entity): Promise<Action2VoidReturnType> {
+    const access =
+      this.sqlSchemaTableAccess[entity.uuid] ?? this.getAccessToDataSectionEntity(entity)[entity.uuid];
+    this.sqlSchemaTableAccess = { ...this.sqlSchemaTableAccess, [entity.uuid]: access };
+    if (!access.isExternal) {
+      await access.sequelizeModel.sync();
+    }
+    return ACTION_OK;
+  }
+
+  // ##############################################################################################
   async renameStorageSpaceForInstancesOfEntity(
     oldName: string,
     newName: string,

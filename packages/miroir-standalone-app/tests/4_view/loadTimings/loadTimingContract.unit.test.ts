@@ -1,6 +1,7 @@
 /**
- * #580: the PageLoadMeasurement Entity of the Meta app, and the standalone app's copies of the Meta
- * uuids (the page cannot import miroir-app-meta, which the bundle policy keeps lazy).
+ * #580: the PageLoadMeasurement Entity, and the standalone app's copies of the uuids where page
+ * loads are recorded: the devData section of the Miroir application (#647). The page module that
+ * reads them imports no package but types.
  *
  * Not reachable through MiroirTest: it compares TypeScript constants of the client with model assets.
  * ```bash
@@ -10,12 +11,13 @@
 import { describe, expect, it } from "vitest";
 
 import { checkModelValidationInstance, defaultMiroirModelEnvironment, type MlElement } from "@miroir-framework/core";
-import { deployment_Meta_DO_NOT_USE, entityPageLoadMeasurement, selfApplicationMeta } from "miroir-app-meta";
+import { deployment_Miroir } from "miroir-app-admin";
+import { entityPageLoadMeasurement, selfApplicationMiroir } from "miroir-app-miroir";
 
 import {
   ENTITY_PAGE_LOAD_MEASUREMENT_UUID,
-  META_DEPLOYMENT_UUID,
-  META_SELF_APPLICATION_UUID,
+  MIROIR_DEPLOYMENT_UUID,
+  MIROIR_SELF_APPLICATION_UUID,
 } from "../../../src/loadTimings/loadTimingConstants.js";
 
 const record = {
@@ -42,7 +44,7 @@ const record = {
 
 function validate(instance: Record<string, unknown>) {
   return checkModelValidationInstance(
-    entityPageLoadMeasurement.mlSchema as MlElement,
+    (entityPageLoadMeasurement as { mlSchema: MlElement }).mlSchema,
     instance,
     String(instance.uuid),
     defaultMiroirModelEnvironment,
@@ -50,20 +52,20 @@ function validate(instance: Record<string, unknown>) {
 }
 
 describe("PageLoadMeasurement contract (#580)", () => {
-  it("the standalone app's Meta uuids are the Meta app's", () => {
+  it("the standalone app's uuids are Miroir's", () => {
     expect({
       entity: ENTITY_PAGE_LOAD_MEASUREMENT_UUID,
-      selfApplication: META_SELF_APPLICATION_UUID,
-      deployment: META_DEPLOYMENT_UUID,
+      selfApplication: MIROIR_SELF_APPLICATION_UUID,
+      deployment: MIROIR_DEPLOYMENT_UUID,
     }).toEqual({
       entity: entityPageLoadMeasurement.uuid,
-      selfApplication: selfApplicationMeta.uuid,
-      deployment: deployment_Meta_DO_NOT_USE.uuid,
+      selfApplication: selfApplicationMiroir.uuid,
+      deployment: deployment_Miroir.uuid,
     });
   });
 
-  it("is not loaded when the client refreshes the Meta deployment", () => {
-    expect(entityPageLoadMeasurement.cache?.cacheAllInstancesOnRefresh).toBe(false);
+  it("is not loaded when the client refreshes the Miroir deployment", () => {
+    expect((entityPageLoadMeasurement as { cache?: { cacheAllInstancesOnRefresh?: boolean } }).cache?.cacheAllInstancesOnRefresh).toBe(false);
   });
 
   it("accepts a step record", () => {

@@ -11,7 +11,7 @@
       "deployment": "10ff36f2-50a3-48d8-b80f-e48e5d13af8e",
       "store": "filesystem",
       "mode": "copy",
-      "sections": { "modelVersion": {} }
+      "sections": { "modelVersion": {}, "devData": {} }
     },
     "admin": {
       "package": "miroir-app-admin",
@@ -51,13 +51,6 @@
       "store": "filesystem",
       "mode": "copy",
       "sections": { "modelVersion": {} }
-    },
-    "meta": {
-      "package": "miroir-app-meta",
-      "selfApplication": "9ff432a9-89a1-460b-a263-1672d084a9e0",
-      "deployment": "40b74910-4c63-4bd9-8e7d-2bc051342908",
-      "store": "filesystem",
-      "mode": "copy"
     }
   }
 }

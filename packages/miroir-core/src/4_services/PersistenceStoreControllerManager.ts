@@ -22,6 +22,7 @@ import { DomainController } from "../3_controllers/DomainController";
 import { packageName } from "../constants";
 import { MiroirLoggerFactory } from "./MiroirLoggerFactory";
 import { cleanLevel } from "./constants";
+import { optionalApplicationSections, type OptionalApplicationSection } from "../1_core/Model.js";
 import { Action2Error, Action2VoidReturnType, type Action2ReturnType } from "../0_interfaces/2_domain/DomainElement";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "PersistenceStoreControllerManager");
@@ -190,17 +191,23 @@ export class PersistenceStoreControllerManager implements PersistenceStoreContro
         dataStore,
       )) as PersistenceStoreModelSectionInterface;
 
-      let modelVersionStore: PersistenceStoreDataSectionInterface | undefined;
-      const modelVersionConfig = config["modelVersion"];
-      if (modelVersionConfig) {
-        modelVersionStore = (await storeSectionFactory(
+      // optional sections (#232 modelVersion, #647 devData): a store exists only when configured
+      const optionalStores: Partial<
+        Record<OptionalApplicationSection, PersistenceStoreDataSectionInterface>
+      > = {};
+      for (const section of optionalApplicationSections) {
+        const sectionConfig = config[section];
+        if (!sectionConfig) continue;
+        optionalStores[section] = (await storeSectionFactory(
           this.storeSectionFactoryRegister,
-          "modelVersion",
-          modelVersionConfig,
+          section,
+          sectionConfig,
           this.filesystemDeploymentRootDirectory,
         )) as PersistenceStoreDataSectionInterface;
         log.info(
-          "addPersistenceStoreController created modelVersion store for deployment",
+          "addPersistenceStoreController created",
+          section,
+          "store for deployment",
           deploymentUuid,
         );
       }
@@ -209,7 +216,8 @@ export class PersistenceStoreControllerManager implements PersistenceStoreContro
         adminStore,
         modelStore,
         dataStore,
-        modelVersionStore,
+        optionalStores.modelVersion,
+        optionalStores.devData,
       );
       log.info("addPersistenceStoreController DONE for deployment", deploymentUuid);
     }
