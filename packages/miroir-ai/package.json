@@ -1,7 +1,7 @@
 {
   "name": "miroir-ai",
   "version": "0.5.0-rc.1",
-  "description": "LLM/AI assistant backend for Miroir Framework — CopilotKit Runtime endpoint exposing Miroir element generation tools",
+  "description": "LLM/AI assistant backend for Miroir Framework \u2014 CopilotKit Runtime endpoint exposing Miroir element generation tools",
   "main": "dist/index.js",
   "type": "module",
   "exports": {
@@ -57,6 +57,7 @@
     "cross-env": "10.1.0",
     "@miroir-framework/env": "*",
     "miroir-localcache-redux": "*",
+    "miroir-localcache-zustand": "*",
     "@miroir-framework/store-filesystem": "*",
     "tsup": "9.0.0",
     "vitest": "5.0.5"

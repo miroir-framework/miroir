@@ -342,11 +342,6 @@
       "count": 6
     }
   },
-  "packages/miroir-localcache-zustand/src/react/hooks.ts": {
-    "react-hooks/rules-of-hooks": {
-      "count": 2
-    }
-  },
   "packages/miroir-mcp/src/mcpServer.ts": {
     "miroir/type-escape": {
       "count": 1

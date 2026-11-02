@@ -242,29 +242,32 @@ export class PersistenceAsyncStore implements PersistenceStoreLocalOrRemoteInter
           update: "updateInstance",
           delete: "deleteInstance",
         };
-        const newActionType = actionMap[action.actionType.split("_")[1]];
+        // #656: the verb is the last segment (LocalPersistenceAction_read), mapped once, as in the redux local cache
+        const persistenceVerb = action.actionType.split("_").at(-1)!;
+        const newActionType = actionMap[persistenceVerb];
+        if (!newActionType) {
+          return new Action2Error(
+            "FailedToHandlePersistenceActionForLocalPersistenceStore",
+            `handlePersistenceActionForLocalPersistenceStore unsupported LocalPersistenceAction verb ${persistenceVerb} on ${action.actionType}`,
+          );
+        }
         const localStoreAction: PersistenceStoreControllerAction = {
-          actionType: actionMap[newActionType],
+          actionType: newActionType,
           parentName: action.payload.parentName ?? "",
           parentUuid: action.payload.parentUuid ?? "",
           endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
           payload: {
             application: action.payload.application,
             applicationSection: action.payload.section,
+            parentUuid: action.payload.parentUuid ?? "",
             objects: (Array.isArray(action.payload.objects)
-                  ? action.payload.objects
-                  : []) as EntityInstance[]
-            // objects: [
-            //   {
-            //     // type issue: read action does not have "objects" attribute
-            //     parentName: action.payload.parentName ?? "",
-            //     parentUuid: action.payload.parentUuid ?? "",
-            //     applicationSection: action.payload.section,
-            //     instances: (Array.isArray(action.payload.objects)
-            //       ? action.payload.objects
-            //       : []) as EntityInstance[],
-            //   },
-            // ],
+              ? action.payload.objects
+              : []) as EntityInstance[],
+            ...(newActionType === "getInstances" &&
+            Array.isArray((action.payload as { attributes?: string[] }).attributes) &&
+            (action.payload as { attributes?: string[] }).attributes!.length > 0
+              ? { attributes: (action.payload as { attributes?: string[] }).attributes }
+              : {}),
           },
         } as PersistenceStoreControllerAction;
         log.info(
@@ -335,7 +338,7 @@ export class PersistenceAsyncStore implements PersistenceStoreLocalOrRemoteInter
     }
 
     } catch (error: any) {
-      log.error("PersistenceAsyncStore handlePersistenceActionForLocalPersistenceStore error:", error);
+      log.error("PersistenceAsyncStore handlePersistenceActionForLocalPersistenceStore error:", error instanceof Error ? error.message : error);
       return new Action2Error("FailedToHandlePersistenceActionForLocalPersistenceStore", error.message, error.stack);
     }
   }

@@ -126,6 +126,7 @@ async function startDemoApp() {
     domainController: domainControllerForClient,
     emulatedServer,
     processCapabilities,
+    localCacheBinding,
   } = await startMiroirClient(demoMiroirConfig, {
     stores: [
       (configurationService) => miroirBundledStoreSectionStartup(configurationService, demoBundledData),
@@ -188,7 +189,7 @@ async function startDemoApp() {
     <StrictMode>
       <ThemeProvider theme={theme}>
         <StyledEngineProvider injectFirst>
-          <LocalCacheProvider store={domainControllerForClient.getLocalCache().getInnerStore()}>
+          <LocalCacheProvider binding={localCacheBinding} store={domainControllerForClient.getLocalCache().getInnerStore()}>
             <MiroirContextReactProvider
               miroirContext={miroirContext}
               domainController={domainControllerForClient}

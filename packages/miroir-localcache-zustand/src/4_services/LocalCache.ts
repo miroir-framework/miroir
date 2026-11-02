@@ -107,6 +107,7 @@ export class LocalCache implements LocalCacheInterface {
   public currentInfo(): LocalCacheInfo {
     return {
       localCacheSize: estimateObjectBytes(this.store.getState().presentModelSnapshot),
+      implementation: "zustand",
     };
   }
 

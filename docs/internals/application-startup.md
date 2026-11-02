@@ -107,16 +107,23 @@ Hosts no longer build the platform by hand. They pass their configuration and th
 
 ```ts
 // Node: CLI, server, Electron main process, test platforms
-import { startMiroirNode } from "miroir-localcache-redux/node";
+import { startMiroirNode } from "@miroir-framework/server/startup";
 const { domainController, emulatedServer, persistenceStoreControllerManager } = await startMiroirNode(config, {
+  localCache: "redux", // or "zustand"; redux when absent (#656)
   stores: [miroirFileSystemStoreSectionStartup],
   loggers: { factory: loglevelnext, options: loggerOptions }, // optional
 });
 
 // React client: sandbox, standalone app
-import { startMiroirClient } from "@miroir-framework/react";
-const { domainController, miroirContext, processCapabilities } = await startMiroirClient(config, { stores: [miroirIndexedDbStoreSectionStartup] });
+import { startMiroirClient, LocalCacheProvider } from "@miroir-framework/react";
+const { domainController, miroirContext, processCapabilities, localCacheBinding } = await startMiroirClient(config, {
+  localCache: "redux",
+  stores: [miroirIndexedDbStoreSectionStartup],
+});
+// <LocalCacheProvider binding={localCacheBinding} store={domainController.getLocalCache().getInnerStore()}>
 ```
+
+`localCache` picks the local cache implementation; each is loaded from its own entry, so a process or a page holds one (#656, [release process §10e](../reference/release-process.md)). Core's `startMiroirPlatformWith(localCacheModule, config, options)` is the call both wrap, for a host that already holds a `LocalCacheModule`.
 
 The call runs `miroirCoreStartup()`, the store startups, the optional logger start, then builds `MiroirContext`, the REST client, the store managers and the domain controllers. It switches on `miroirConfigType`:
 

@@ -39,6 +39,8 @@ import {
   type GitHubTestbed,
 } from "../helpers/githubAppTestbed.js";
 
+// #656: the local cache MIROIR_TEST_LOCAL_CACHE names (tests/setup.ts), redux by default
+import { testLocalCache } from "../../src/miroir-fwk/4-tests/testLocalCache";
 vi.mock("react-router-dom", async () => {
   const actual = await vi.importActual<typeof import("react-router-dom")>("react-router-dom");
   return {
@@ -109,7 +111,7 @@ function renderGitHubReport(reportDefinition: Report) {
       initialEntries={[`/?${search}`]}
     >
       <MiroirThemeProvider currentThemeOptions={testThemeOptions}>
-        <LocalCacheProvider store={domainController.getLocalCache().getInnerStore()}>
+        <LocalCacheProvider binding={testLocalCache().localCacheBinding} store={domainController.getLocalCache().getInnerStore()}>
           <MiroirContextReactProvider
             miroirContext={miroirContext}
             domainController={domainController}

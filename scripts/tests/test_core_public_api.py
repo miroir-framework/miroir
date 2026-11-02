@@ -45,6 +45,9 @@ STARTUP_NAMES = {
     "MiroirActivityTracker", "MiroirConfigClient", "MiroirConfigServer", "MiroirContext", "MiroirEventService",
     "PersistenceStoreControllerManager", "ProcessCapabilities", "RestClientInterface", "RestClientStub",
     "StoreSectionStartup",
+    # #656: the `localCache` startup option, and the startup itself, moved from the redux local cache
+    "LocalCacheKind", "MiroirEmulatedServer", "MiroirNodeOptions", "MiroirPlatform", "MiroirPlatformOptions",
+    "startMiroirNodeWith", "startMiroirPlatformWith",
 }
 PUBLIC_NAMES = SANDBOX_NAMES | SERVER_LIBRARY_NAMES | STARTUP_NAMES
 GENERATED_NAMES = {

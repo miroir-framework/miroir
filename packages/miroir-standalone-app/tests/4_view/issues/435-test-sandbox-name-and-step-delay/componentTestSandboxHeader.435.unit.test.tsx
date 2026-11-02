@@ -35,7 +35,7 @@ import {
   type LocalCacheInterface,
   type MiroirTestDefinition,
 } from "@miroir-framework/core";
-import { LocalCache, LocalCacheProvider, MiroirContextReactProvider, PersistenceReduxSaga } from "@miroir-framework/react";
+import { LocalCacheProvider, MiroirContextReactProvider } from "@miroir-framework/react";
 import {
   defaultMiroirMetaModel,
   entityEntity,
@@ -62,6 +62,8 @@ import type { TestResultData } from "@miroir-framework/react";
 import { MiroirTestDisplay } from "../../../../src/miroir-fwk/4_view/components/Reports/MiroirTestDisplay";
 import { ReportPageContextProvider } from "@miroir-framework/react";
 
+// #656: the local cache MIROIR_TEST_LOCAL_CACHE names (tests/setup.ts), redux by default
+import { testLocalCache } from "../../../../src/miroir-fwk/4-tests/testLocalCache";
 // ################################################################################################
 const enumInstance = miroirTest_ui_mlElementEditor_enum as unknown as MiroirTestDefinition;
 const RUN_TEST_TIMEOUT = 300_000;
@@ -84,7 +86,7 @@ function buildAppHarness() {
   const miroirActivityTracker = new MiroirActivityTracker();
   const miroirEventService = new MiroirEventService(miroirActivityTracker);
   const miroirContext = new MiroirContext(miroirActivityTracker, miroirEventService, undefined as any);
-  const persistenceSaga = new PersistenceReduxSaga({
+  const { localCache, persistenceStore: persistenceSaga } = testLocalCache().newLocalCache({
     persistenceStoreAccessMode: "remote",
     localPersistenceStoreControllerManager: new PersistenceStoreControllerManager(
       ConfigurationService.configurationService.adminStoreFactoryRegister,
@@ -92,7 +94,6 @@ function buildAppHarness() {
     ),
     remotePersistenceStoreRestClient: undefined as any,
   });
-  const localCache: LocalCacheInterface = new LocalCache(persistenceSaga);
   for (const action of [
     {
       application: selfApplicationMiroir.uuid,
@@ -151,7 +152,7 @@ function renderDisplay(onTestComplete: (key: string, results: TestResultData[]) 
   function HarnessProviders(props: { children: React.ReactNode }) {
     const [harness] = React.useState(buildAppHarness);
     return (
-      <LocalCacheProvider store={harness.localCache.getInnerStore()}>
+      <LocalCacheProvider binding={testLocalCache().localCacheBinding} store={harness.localCache.getInnerStore()}>
         <MiroirContextReactProvider miroirContext={harness.miroirContext} domainController={domainController}>
           <ReportPageContextProvider>{props.children}</ReportPageContextProvider>
         </MiroirContextReactProvider>

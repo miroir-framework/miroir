@@ -1,0 +1,19 @@
+{
+  "uuid": "6498a33b-5599-4aa8-a044-d6f732941b97",
+  "parentName": "BundleSizeMeasurement",
+  "parentUuid": "90d603f9-58f8-4ac4-b2eb-cb1d718e8b3b",
+  "application": "miroir-standalone-app",
+  "measuredAt": "2026-11-02T10:43:28.891Z",
+  "eagerGzipBytes": 827963,
+  "baseline": 827963,
+  "previousBaseline": 841981,
+  "baselineChange": -14018,
+  "gitCommit": "1c33728a9eb9f786aa2beb063c51c6451b0821fb",
+  "gitBranch": "claude/656-zustand-runtime-choice",
+  "miroirVersion": "0.5.0-rc.1",
+  "eagerChunks": 67,
+  "eagerRawBytes": 4598261,
+  "totalChunks": 438,
+  "totalRawBytes": 22623712,
+  "totalGzipBytes": 5717085
+}

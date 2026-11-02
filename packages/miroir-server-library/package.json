@@ -18,6 +18,14 @@
     "./startup": {
       "types": "./dist/startup.d.ts",
       "import": "./dist/startup.js"
+    },
+    "./startup/redux": {
+      "types": "./dist/startup-redux.d.ts",
+      "import": "./dist/startup-redux.js"
+    },
+    "./startup/zustand": {
+      "types": "./dist/startup-zustand.d.ts",
+      "import": "./dist/startup-zustand.js"
     }
   },
   "files": [
@@ -50,7 +58,8 @@
     "express": "5.3.0",
     "immer": "11.1.21",
     "redux-saga": "1.5.1",
-    "typed-redux-saga": "1.5.0"
+    "typed-redux-saga": "1.5.0",
+    "zustand": "5.0.15"
   },
   "devDependencies": {
     "@types/body-parser": "1.19.6",
@@ -66,6 +75,7 @@
     "miroir-localcache-redux": "*",
     "@miroir-framework/store-filesystem": "*",
     "tsup": "9.0.0",
-    "vitest": "5.0.5"
+    "vitest": "5.0.5",
+    "miroir-localcache-zustand": "*"
   }
 }

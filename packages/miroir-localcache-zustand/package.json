@@ -8,13 +8,23 @@
   "type": "module",
   "author": "Miroir Framework <miroir-framework@protonmail.com>",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/miroir-framework/miroir.git",
+    "directory": "packages/miroir-localcache-zustand"
+  },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     },
+    "./node": {
+      "types": "./dist/node.d.ts",
+      "import": "./dist/node.js"
+    },
     "./package.json": "./package.json"
   },
+  "sideEffects": false,
   "scripts": {
     "build": "tsup",
     "devBuild": "npm run build",
@@ -30,25 +40,26 @@
       "esm"
     ],
     "entry": [
-      "src/index.ts"
+      "src/index.ts",
+      "src/node.ts"
     ],
     "external": [
-      "fs"
+      "fs",
+      "react",
+      "react-dom"
     ]
   },
   "dependencies": {
-    "@reduxjs/toolkit": "2.13.0",
-    "fast-deep-equal": "3.1.3",
-    "immer": "11.1.21",
-    "lodash": "4.18.1",
     "@miroir-framework/core": "*",
-    "zod": "4.6.7",
+    "@reduxjs/toolkit": "2.13.0",
+    "immer": "11.1.21",
     "zustand": "5.0.15"
   },
   "devDependencies": {
     "copyfiles": "2.4.1",
     "cross-env": "10.1.0",
     "miroir-example-library": "*",
+    "react": "18.3.1",
     "rimraf": "6.1.3",
     "tsconfig-paths": "4.2.0",
     "tsup": "9.0.0",
@@ -56,6 +67,12 @@
     "vitest": "5.0.5"
   },
   "peerDependencies": {
-    "react": "^18.2.0"
+    "react": ">=18.2.0"
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=22"
   }
 }

@@ -45,6 +45,7 @@
   },
   "devDependencies": {
     "miroir-localcache-redux": "*",
+    "miroir-localcache-zustand": "*",
     "@miroir-framework/store-filesystem": "*",
     "tsup": "9.0.0"
   }

@@ -1,0 +1,19 @@
+{
+  "uuid": "8dfd5405-e2b5-4b2a-a79e-90721a324173",
+  "parentName": "BundleSizeMeasurement",
+  "parentUuid": "90d603f9-58f8-4ac4-b2eb-cb1d718e8b3b",
+  "application": "miroir-standalone-app-electron",
+  "measuredAt": "2026-11-02T10:43:15.646Z",
+  "eagerGzipBytes": 846128,
+  "baseline": 846128,
+  "previousBaseline": 908129,
+  "baselineChange": -62001,
+  "gitCommit": "1c33728a9eb9f786aa2beb063c51c6451b0821fb",
+  "gitBranch": "claude/656-zustand-runtime-choice",
+  "miroirVersion": "0.5.0-rc.1",
+  "eagerChunks": 7,
+  "eagerRawBytes": 4811629,
+  "totalChunks": 45,
+  "totalRawBytes": 14477862,
+  "totalGzipBytes": 3180067
+}

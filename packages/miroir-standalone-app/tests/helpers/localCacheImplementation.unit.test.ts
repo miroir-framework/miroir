@@ -1,40 +1,17 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import * as localCacheRedux from "@miroir-framework/react/local-cache";
-import * as localCacheZustand from "miroir-localcache-zustand";
+import { LOCAL_CACHE_ENV } from "@miroir-framework/core";
 
-import {
-  LOCAL_CACHE_ENV,
-  loadLocalCacheImplementation,
-  testLocalCacheImplementation,
-} from "../../src/miroir-fwk/4-tests/localCacheImplementation";
+import { loadLocalCacheImplementation } from "../../src/miroir-fwk/4-tests/localCacheImplementation";
 
-// #446: the tests' LocalCache implementation follows MIROIR_TEST_LOCAL_CACHE, redux when unset.
+// #446, #656: the tests' LocalCache implementation follows MIROIR_TEST_LOCAL_CACHE, redux when unset
+// (the value itself is parsed by core's localCacheKindFromEnvironment, tested there).
 
 describe("test LocalCache implementation (#446)", () => {
-  it.each([
-    [undefined, "redux"],
-    ["", "redux"],
-    ["redux", "redux"],
-    ["zustand", "zustand"],
-  ])("%s selects %s", (value, expected) => {
-    expect(testLocalCacheImplementation(value)).toBe(expected);
-  });
-
-  it("rejects an unknown implementation, naming the allowed ones", () => {
-    expect(() => testLocalCacheImplementation("mobx")).toThrow(
-      `${LOCAL_CACHE_ENV}=mobx is not a LocalCache implementation, use one of: redux, zustand`,
-    );
-  });
-
-  it.each([
-    ["redux", localCacheRedux],
-    ["zustand", localCacheZustand],
-  ] as const)("loads the %s package", async (implementation, expected) => {
+  it.each(["redux", "zustand"] as const)("loads the %s local cache", async (implementation) => {
     const module = await loadLocalCacheImplementation(implementation);
 
-    expect(module.setupMiroirDomainController).toBe(expected.setupMiroirDomainController);
-    expect(module.RestPersistenceClientAndRestClient).toBe(expected.RestPersistenceClientAndRestClient);
+    expect(module.kind).toBe(implementation);
   });
 
   describe("without an argument, from MIROIR_TEST_LOCAL_CACHE", () => {
@@ -43,15 +20,13 @@ describe("test LocalCache implementation (#446)", () => {
     });
 
     it.each([
-      [undefined, localCacheRedux],
-      ["redux", localCacheRedux],
-      ["zustand", localCacheZustand],
-    ] as const)("%s loads the matching package", async (value, expected) => {
+      [undefined, "redux"],
+      ["redux", "redux"],
+      ["zustand", "zustand"],
+    ] as const)("%s loads %s", async (value, expected) => {
       vi.stubEnv(LOCAL_CACHE_ENV, value);
 
-      const module = await loadLocalCacheImplementation();
-
-      expect(module.setupMiroirDomainController).toBe(expected.setupMiroirDomainController);
+      expect((await loadLocalCacheImplementation()).kind).toBe(expected);
     });
 
     it("throws on an unknown value", async () => {
