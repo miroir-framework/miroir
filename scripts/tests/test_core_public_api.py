@@ -318,6 +318,17 @@ def test_the_core_readme_states_the_stance_and_links_the_list():
     readme = (CORE / "README.md").read_text(encoding="utf-8")
     assert "0.x" in readme and "@public" in readme
     assert "docs/reference/core-public-api.md" in readme
+    # the repo has no `main` branch: a README link to it is a 404 on GitHub and npm
+    assert "/blob/main/" not in readme
+
+
+def test_the_core_readme_gives_the_status_of_every_subpath():
+    readme = (CORE / "README.md").read_text(encoding="utf-8")
+    manifest = json.loads((CORE / "package.json").read_text(encoding="utf-8"))
+    subpaths = [key[2:] for key in manifest["exports"] if key.startswith("./") and key != "./package.json"]
+    assert subpaths, "core declares no subpath"
+    missing = [s for s in subpaths if f"@miroir-framework/core/{s}" not in readme]
+    assert missing == [], f"README says nothing about these subpaths: {missing}"
 
 
 def test_the_public_api_document_is_in_sync():
