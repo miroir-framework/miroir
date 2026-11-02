@@ -3,18 +3,19 @@
 > Vertical TDD slices (RED → GREEN each), integration-first per `docs/contributing/testing.md`:
 > tests exercise the real DomainController, both local caches and the emulated server on the
 > `test-filesystem` environment, through the public startup calls (`startMiroirNode`,
-> `startMiroirClient`) and the React provider. No mocks. The tracer bullet proves a Node process
-> started with `localCache: "zustand"` runs its DomainController on Zustand, loaded on demand.
+> `startMiroirClient`), `DomainController.currentLocalCacheInfo()` and the React provider. No mocks.
+> The tracer bullet proves a Node process started with `localCache: "zustand"` runs its
+> DomainController on Zustand, loaded on demand.
 >
-> **Execution model:** commits per slice on the working branch (the user's standing workflow for
-> this epic). Each slice ends with its Validation commands; on success its Realization summary is
-> appended and its Status flips to ✅ DONE.
+> **Execution model:** the epic's standing workflow (#621, user's instruction for the slices of #645–#652):
+> one commit per slice on the working branch, pushed. Each slice ends with its Validation commands;
+> on success its Realization is appended and its Status flips to ✅ DONE.
 
 Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/656
 Prerequisite: [`../652-BUILD-bundle-meta-model-and-local-cache/`](../652-BUILD-bundle-meta-model-and-local-cache/) ✅
 Working branch: `claude/656-zustand-runtime-choice` (from `origin/aba`)
 
-**Resume note:** plan v1; no slice started.
+**Resume note:** plan v2 (adversarial review applied); no slice started.
 
 ---
 
@@ -24,7 +25,7 @@ Working branch: `claude/656-zustand-runtime-choice` (from `origin/aba`)
 - G2 — one local cache copy per page or process (D7: store, persistence, provider; RTK and reselect stay).
 - G3 — `nonreg --local-cache zustand` runs the UI tests and the CLI, MCP, server, ai and env test platforms on Zustand.
 
-This plan does **not** add a config default for the choice (D1-b, later), merge the selectors into core (D6-b, follow-up issue), or publish the zustand package (D3).
+Not in this plan: a config default for the choice (D1-b, later); the selectors in core (D6-b, follow-up issue, opened in Slice 5); publishing the zustand package (D3); redux's `"none"` access mode, which neither the contract nor zustand offers (R10: the contract is typed on `"local" | "remote"`, redux keeps `"none"` outside it); `miroir-localcache/tests/*` (R7: unit tests of the redux package, stay redux); `EndpointToolRegistry.ts:80-81` (R7: `getInnerStore().subscribe` works on both stores, unchanged).
 
 ---
 
@@ -32,12 +33,12 @@ This plan does **not** add a config default for the choice (D1-b, later), merge 
 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
-| 0 | Characterize: the redux paths of the UI, the module contract | ⬜ | `scripts/tests/test_local_cache_choice.py` (inventory), `localCacheModule.656.phase0.unit.test.ts` (both modules satisfy the contract) |
-| 1 | Tracer: a Node process starts on Zustand | ⬜ | `startMiroirNode.integ` (cli) with `MIROIR_TEST_LOCAL_CACHE=zustand` |
-| 2 | Every Node test platform follows `MIROIR_TEST_LOCAL_CACHE` | ⬜ | mcp, server-library, ai, env platforms; `nonreg --local-cache zustand --scope tooling,runners,external` |
-| 3 | A React client starts and renders on Zustand | ⬜ | `startMiroirClient.integ` (react) on both caches |
-| 4 | The standalone app's UI tests run on the chosen cache | ⬜ | `nonreg:filesystem --local-cache zustand --scope smoke,ui` |
-| 5 | Packaging, guards, docs, full nonreg on both caches, AC | ⬜ | `pytest scripts/tests`, bundle guards, `nonreg:filesystem` × 2 |
+| 0 | Each local cache names itself; the contract and the test switch in core | ⬜ | `currentLocalCacheInfo().implementation` on both caches; each cache's `node.ts` `satisfies LocalCacheModule` (tsc) |
+| 1 | Tracer: a Node process starts on Zustand | ⬜ | cli `startMiroirNode.integ` on both caches |
+| 2 | Every Node test platform follows `MIROIR_TEST_LOCAL_CACHE` | ⬜ | mcp, server-library, ai, env tests on both caches |
+| 3 | A React client starts and renders on Zustand | ⬜ | react `startMiroirClient.integ` on both caches; standalone bundle guard |
+| 4 | The standalone app's UI tests run on the chosen cache | ⬜ | `nonreg --local-cache zustand --scope smoke,ui,localcache` |
+| 5 | Docs, full nonreg on both caches, cleanup, AC | ⬜ | `nonreg:filesystem` and `nonreg:zustand` |
 
 ---
 
@@ -45,26 +46,27 @@ This plan does **not** add a config default for the choice (D1-b, later), merge 
 
 | Decision | Choice | Serves |
 |---|---|---|
-| D1 | Startup option `localCache?: LocalCacheKind` (`"redux" \| "zustand"`, default `"redux"`) on `startMiroirPlatform`, `startMiroirNode`, `startMiroirClient` | G1 |
-| D2 | Core declares `LocalCacheModule` (`setupMiroirDomainController` on `"local" \| "remote"`, `RestPersistenceClientAndRestClient`); react declares the React binding (`Provider`, `useSelector`, `shallowEqual`); `LocalCacheProvider` takes the binding the platform carries; no UI source imports `react-redux` or a local cache package | G1, G2 |
-| D3 | Both caches bundled into react (`./local-cache/redux`, `./local-cache/zustand`) and into `@miroir-framework/server/startup` (zustand gets a Node entry); the startup call `import()`s the chosen one | G2 |
-| D4 | `localCacheKindFromEnvironment(env)` in core reads `MIROIR_TEST_LOCAL_CACHE`; every test platform and UI test helper passes its result | G3 |
-| D5 | `startMiroirPlatform`, `startMiroirNode` move to core `5_setup`, parameterized by the `LocalCacheModule` | G1 |
+| D1 | Startup option `localCache?: LocalCacheKind` (`"redux" \| "zustand"`, default `"redux"`) on `startMiroirNode` (`@miroir-framework/server/startup`) and `startMiroirClient` (react) | G1 |
+| D2 | Core declares `LocalCacheKind`, `LocalCacheModule` (`setupMiroirDomainController` on `"local" \| "remote"`, `RestPersistenceClientAndRestClient`, `kind`); each cache's `node.ts` exports `localCacheModule … satisfies LocalCacheModule` (the cache's build enforces the contract). React declares the binding (`Provider`, `useSelector`, `shallowEqual`); `LocalCacheProvider` takes the binding the platform carries | G1, G2 |
+| D3 | Separate entries, never one module holding both: server `./startup` (the dispatching `startMiroirNode`, `loadLocalCacheModule`) imports `@miroir-framework/server/startup/redux` or `/startup/zustand` (external self-references, each bundling one cache); react the same with `./local-cache/redux`, `./local-cache/zustand` | G2 |
+| D4 | `localCacheKindFromEnvironment(env)` in core reads `MIROIR_TEST_LOCAL_CACHE`; every test platform and UI helper passes its result | G3 |
+| D5 | Core `5_setup` holds the implementation-free startup: `startMiroirPlatformWith(module, config, options)`, `startMiroirNodeWith(module, config, options)`; marked `@public`, in `core-public-api.md` | G1 |
 | D6 | Gaps the zustand runs expose are fixed in the zustand package in this issue | G3 |
-| D7 | G2 = one local cache copy | G2 |
-| D8 | The UI keeps one static selector set (redux's selector modules, bundled into react) over the shared core state type | G1, G2 |
-| D9 | React's root keeps provider, hooks, selectors, types; implementation classes move to `./local-cache/redux` and `./local-cache/zustand`; `./local-cache` becomes `./local-cache/redux` | G1, G2 |
-| D10 | `useCurrentModelEnvironment.unit` and `ListTransformerPanel.unit` build their store through the chosen implementation | G3 |
+| D7 | G2 = one local cache copy; checked by the bundle report: no `redux-saga` module eager on a zustand page, no zustand module eager on a redux page | G2 |
+| D8 | The UI keeps one static selector set, redux's selector modules (with `selectDomainStateFromlocalCacheEntityZone` moved into the selectors file, so `LocalCacheSlice`'s `createSlice` stays out) | G1, G2 |
+| D9 | React's root keeps provider, hooks, selectors, types; implementation classes move to `./local-cache/redux` and `./local-cache/zustand`; `./local-cache` removed; importers migrate in the same slice | G1, G2 |
+| D10 | `useCurrentModelEnvironment.unit`, `ListTransformerPanel.unit` build their store through the chosen implementation | G3 |
 
 ---
 
 ## Allocated keys
 
-- Core: `LocalCacheKind`, `LocalCacheModule`, `localCacheKindFromEnvironment`, `loadLocalCacheModule` (`src/5_setup/localCacheModule.ts`), `startMiroirPlatform`, `startMiroirNode` (`src/5_setup/startMiroirPlatform.ts`).
-- React: `LocalCacheBinding`, `LocalCacheProvider` (binding + store), exports `./local-cache/redux`, `./local-cache/zustand`.
-- Zustand: entry `./node` (`src/node.ts`, no React).
-- Tests: `scripts/tests/test_local_cache_choice.py`; `packages/miroir-core/tests/5_setup/issues/656-zustand-runtime/localCacheModule.656.phase0.unit.test.ts`.
-- No model element, no MiroirTest suite: the behavior is process wiring, not reachable through ML (vitest exception, as #639).
+- Core: `LocalCacheKind`, `LocalCacheModule`, `localCacheKindFromEnvironment` (`src/0_interfaces/4-services/LocalCacheModule.ts`, `src/1_core/localCacheKind.ts`), `LocalCacheInfo.implementation`, `startMiroirPlatformWith`, `startMiroirNodeWith`, the `MiroirPlatform*` types (`src/5_setup/startMiroirPlatform.ts`).
+- Caches: `localCacheModule` in each `node.ts`; zustand gains `./node` (no React).
+- Server: `./startup` (`startMiroirNode`, `loadLocalCacheModule`), `./startup/redux`, `./startup/zustand`.
+- React: `LocalCacheBinding`, `LocalCacheProvider({ binding, store })`, `./local-cache/redux`, `./local-cache/zustand`.
+- Tests: `scripts/tests/test_local_cache_choice.py`; assertions added to existing integration tests (no issue directory).
+- No model element, no MiroirTest suite: process wiring, not reachable through ML (vitest exception, as #639).
 
 ---
 
@@ -72,38 +74,47 @@ This plan does **not** add a config default for the choice (D1-b, later), merge 
 
 | Purpose | Command |
 |---|---|
-| Guards | `python -m pytest scripts/tests -q` |
-| A test on zustand | `MIROIR_TEST_LOCAL_CACHE=zustand npm run testByFile -w <pkg> -- <file>` |
-| Scoped nonreg | `npm run nonreg:filesystem -- --runner shared --local-cache zustand --scope smoke,<scopes>` |
-| Typecheck | `npx tsc --noEmit --skipLibCheck -p packages/<pkg>/tsconfig.json` |
+| Guards | `MIROIR_REQUIRE_PACK=1 python -m pytest scripts/tests -q` |
+| Build before a test of another package (vitest resolves `dist`) | `npm run build -w <pkg>…` |
+| A test on each cache | `for c in redux zustand; do MIROIR_TEST_LOCAL_CACHE=$c MIROIR_ENV=test-filesystem npm run testByFile -w <pkg> -- <file>; done` |
+| Scoped nonreg | `npm run nonreg:filesystem -- --runner shared [--local-cache zustand] --scope smoke,<scopes>` |
+| Core public API | `python scripts/core_public_api.py --write`, then `pytest scripts/tests/test_core_public_api.py` |
 | Bundle guards | `npm run build -w miroir-standalone-app -w miroir-standalone-app-electron`, then the two `check_bundle_policy.py` commands of `pr-checks.yml` |
 
 ---
 
-## Slice 0 — Characterize the redux paths and the module contract
+## Slice 0 — Each local cache names itself; the contract and the test switch in core
 
 **Status:** ⬜ pending
 
-### RED / characterization
+### RED
 
-- `scripts/tests/test_local_cache_choice.py`: list the UI sources (`miroir-react/src`, `miroir-standalone-app/src`) importing `react-redux`, `ReactReduxContext` or a local cache package outside the switch file. Today: `MlEnumEditor.tsx`, `MlElementEditorHooks.ts`, `useSelectedApplicationMiroirTestSuiteRegistries.ts`, `localCacheImplementation.ts`. The test pins this list (an `xfail`-free allowlist that later slices shrink to empty).
-- `localCacheModule.656.phase0.unit.test.ts` (core, vitest: a type contract): both packages' `setupMiroirDomainController` and `RestPersistenceClientAndRestClient` satisfy `LocalCacheModule`, checked with `satisfies` in a test that imports both (core devDependencies).
+- `scripts/tests/test_local_cache_choice.py`: the UI sources importing `react-redux`, `ReactReduxContext` or a local cache package outside the switch file are exactly `MlEnumEditor.tsx`, `MlElementEditorHooks.ts`, `useSelectedApplicationMiroirTestSuiteRegistries.ts`, `localCacheImplementation.ts` (an allowlist later slices shrink to empty); `localCacheKindFromEnvironment` maps unset/`redux`/`zustand` and rejects other values (ported from `localCacheImplementation.unit.test.ts`).
+- The existing local cache monitor tests (nonreg `unit-localCache-monitor`, `unit-localCache-monitor-zustand`) assert `currentLocalCacheInfo().implementation` is `"redux"` / `"zustand"`: fails (no field).
 
 ### GREEN
 
-- `LocalCacheKind`, `LocalCacheModule` in core `0_interfaces`.
+- Core: `LocalCacheKind`, `LocalCacheModule`, `localCacheKindFromEnvironment`, `LocalCacheInfo.implementation`; each `LocalCache` fills it.
+- Each cache's `node.ts` exports `localCacheModule = { kind, setupMiroirDomainController, RestPersistenceClientAndRestClient } satisfies LocalCacheModule`; zustand gets `src/node.ts` and `./node` (no React, R11).
+- Zustand manifest aligned with the published-set rules it will meet as a bundled package (R8): `react` peer `>=18.2.0`, `sideEffects: false`, unused `lodash`/`zod` removed, `use-sync-external-store` handled.
+- Standalone `localCacheImplementation.ts` uses core's helper; its `LocalCacheImplementation` union becomes `LocalCacheKind` (R9).
 
 ### Refactor checkpoint
 
-- `localCacheImplementation.ts`'s `LocalCacheImplementation` union becomes core's `LocalCacheKind` (R9).
+- The test switch has one parser (core).
 
 ### Validation
 
 ```bash
+npm run build -w @miroir-framework/core -w miroir-localcache-redux -w miroir-localcache-zustand
 python -m pytest scripts/tests/test_local_cache_choice.py -q
-npm run testByFile -w @miroir-framework/core -- localCacheModule.656
-npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
+npx tsc --noEmit --skipLibCheck -p packages/miroir-localcache-zustand/tsconfig.json
+npm run nonreg:filesystem -- --runner shared --scope smoke,localcache
 ```
+
+### Realization
+
+_(pending)_
 
 ---
 
@@ -113,28 +124,34 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
 
 ### RED
 
-- `packages/miroir-cli/tests/startMiroirNode.integ.test.ts`: a case passes `localCache: localCacheKindFromEnvironment(process.env)`; a new assertion checks that the DomainController's local cache is the chosen implementation (zustand's inner store has `getState` and no `dispatch`; redux's has `dispatch`). Run with `MIROIR_TEST_LOCAL_CACHE=zustand`: fails (option ignored, redux).
+- `packages/miroir-cli/tests/startMiroirNode.integ.test.ts`: passes `localCache: localCacheKindFromEnvironment(process.env)` and asserts `domainController.currentLocalCacheInfo().implementation` equals it. With `MIROIR_TEST_LOCAL_CACHE=zustand`: fails (option ignored).
 
 ### GREEN
 
-- Core `5_setup`: `startMiroirPlatform` and `startMiroirNode` moved from `miroir-localcache-redux/src/startMiroirPlatform.ts`, taking the `LocalCacheModule`; `loadLocalCacheModule(kind)` is given by the caller (core cannot import the packages).
-- `miroir-localcache-zustand/src/node.ts` (no React) and its `./node` export; redux's `node.ts` and zustand's `node.ts` export a `localCacheModule` object.
-- `@miroir-framework/server/startup`: `startMiroirNode(config, { localCache })` imports `miroir-localcache-redux/node` or `miroir-localcache-zustand/node` with `import()`; both bundled (`noExternal`), declarations generated as #652 does; `zustand` declared.
-- Redux keeps re-exporting `startMiroirPlatform` / `startMiroirNode` bound to itself until Slice 3 moves react.
+- Core `5_setup/startMiroirPlatform.ts`: `startMiroirPlatformWith(module, …)`, `startMiroirNodeWith(module, …)`, moved from `miroir-localcache-redux/src/startMiroirPlatform.ts`; `@public`; `STARTUP_NAMES` and `core-public-api.md` updated (`core_public_api.py --write`).
+- Server library: `src/startup.ts` = `startMiroirNode(config, { localCache, … })` + `loadLocalCacheModule(kind)`, importing `@miroir-framework/server/startup/redux` or `/zustand` (self-references, external); `src/startup-redux.ts`, `src/startup-zustand.ts` each bundle one cache's `node` entry (`noExternal`); declarations from tsup (the types now live in core; `writeStartupDeclarations` removed); `zustand` declared.
+- Redux's `node.ts` keeps `startMiroirPlatform` / `startMiroirNode` as thin bindings until Slice 3.
+- Guards in this slice (R8): `ENTRY_OWNERS` (server owns both `node` entries), `BUNDLED_INTO_ANOTHER` and `BUNDLED_NAMES` gain zustand, `LOCAL_CACHE_IMPORT` matches both caches, `test_startup_calls_boundaries.py` `CALL_SOURCES` follows the move, the TSDoc pin follows `startMiroirNode` to core, the server pack cases cover the three entries, `test_package_runtime_dependencies.py` no longer lists zustand as published.
+- CI builds zustand before react and the server: `pr-checks.yml`, `self-test.yml`, `Dockerfile`, `agent_session_setup.py`, `build-all.sh`.
+- Release: `build:server` ncc keeps one cache inlined per entry; release smoke test.
 
 ### Refactor checkpoint
 
-- `startMiroirPlatform.ts` leaves the redux package; `test_package_manifests.py`'s TSDoc pin follows `startMiroirNode` to core's declarations (R8).
+- `startMiroirPlatform.ts` leaves the redux package; one copy of the startup code (core).
 
 ### Validation
 
 ```bash
-for c in redux zustand; do MIROIR_TEST_LOCAL_CACHE=$c MIROIR_ENV=test-filesystem npm run testByFile -w @miroir-framework/cli -- startMiroirNode; done
 npm run build -w @miroir-framework/core -w miroir-localcache-redux -w miroir-localcache-zustand -w @miroir-framework/server -w @miroir-framework/cli
+for c in redux zustand; do MIROIR_TEST_LOCAL_CACHE=$c MIROIR_ENV=test-filesystem npm run testByFile -w @miroir-framework/cli -- startMiroirNode; done
 MIROIR_REQUIRE_PACK=1 python -m pytest scripts/tests -q
 npm run build:server -w miroir-server && MIROIR_RELEASE_SMOKE=1 python -m pytest scripts/tests/test_bundled_packages.py scripts/tests/test_server_release_smoke.py -q
 npm run nonreg:filesystem -- --runner shared --scope smoke,tooling,localcache
 ```
+
+### Realization
+
+_(pending)_
 
 ---
 
@@ -144,22 +161,27 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,tooling,localcache
 
 ### RED
 
-- With `MIROIR_TEST_LOCAL_CACHE=zustand`, each platform's existing integration test asserts the cache kind of its DomainController (one assertion added to an existing test per platform): `mcpTestPlatform.ts` (mcp), `serverTestPlatform.ts` (server-library), `aiTestPlatform.ts` (ai), `bootTestSupport.ts` (env). Fails: all on redux.
+- One assertion per platform's existing integration test, on `currentLocalCacheInfo().implementation`: `mcpTestPlatform.ts` (mcp), `serverTestPlatform.ts` (server-library), `aiTestPlatform.ts` (ai), `bootTestSupport.ts` (env). With `zustand`: fails.
 
 ### GREEN
 
-- The platforms pass `localCache: localCacheKindFromEnvironment(process.env)` to `startMiroirNode`; ai and env, which call `setupMiroirDomainController`, take it from the chosen `LocalCacheModule`.
+- mcp and server-library pass the option to `startMiroirNode`; ai and env take `setupMiroirDomainController` and the REST client from `loadLocalCacheModule(kind)` (all three stop importing a cache package). Check that env's new devDependency on the server library makes no cycle (the server library has env as a devDependency): if it does, env takes the module from the cache packages' `node` entries directly (test code).
 
 ### Refactor checkpoint
 
-- One helper per platform family if the four repeat the loading code.
+- A shared test helper if the four platforms repeat the loading.
 
 ### Validation
 
 ```bash
-for c in redux zustand; do MIROIR_TEST_LOCAL_CACHE=$c MIROIR_ENV=test-filesystem npm run testByFile -w @miroir-framework/server; done
-npm run nonreg:filesystem -- --runner shared --local-cache zustand --scope smoke,tooling,runners,external
+npm run build -w @miroir-framework/server
+for c in redux zustand; do for w in @miroir-framework/server @miroir-framework/mcp miroir-ai @miroir-framework/env; do MIROIR_TEST_LOCAL_CACHE=$c MIROIR_ENV=test-filesystem npm run testByFile -w $w || exit 1; done; done
+npm run nonreg:filesystem -- --runner shared --local-cache zustand --scope smoke,tooling,runners,external,localcache
 ```
+
+### Realization
+
+_(pending)_
 
 ---
 
@@ -169,25 +191,34 @@ npm run nonreg:filesystem -- --runner shared --local-cache zustand --scope smoke
 
 ### RED
 
-- `packages/miroir-react/tests/startMiroirClient.integ.test.tsx`: with the cache from the environment, `startMiroirClient` returns a platform whose binding renders a component reading the local cache through react's `useSelector` (an existing selector, e.g. the deployments state). Fails on zustand: the binding is react-redux's.
+- `packages/miroir-react/tests/startMiroirClient.integ.test.tsx`: `startMiroirClient(config, { localCache })` with the cache from the environment; renders, inside `LocalCacheProvider` with the returned binding, a component that reads the deployments state with react's `useSelector` and shows `currentLocalCacheInfo().implementation`. With `zustand`: fails (the platform is redux, the binding react-redux's).
 
 ### GREEN
 
-- `startMiroirClient(config, { localCache })` loads `./local-cache/<kind>`, returns `{ …platform, localCacheBinding }`.
-- `LocalCacheProvider({ binding, store })` puts the binding in a context; `useSelector` and `shallowEqual` call the binding's. `MlEnumEditor`, `MlElementEditorHooks` take them from react's binding (R1).
-- React exports (D9): root keeps provider, hooks, selectors (redux's selector modules, D8), types; `./local-cache/redux`, `./local-cache/zustand` export the implementation classes; `./local-cache` removed; tsup `noExternal` both, dts as #652.
+- `startMiroirClient` loads `./local-cache/<kind>` and returns `{ …platform, localCacheBinding }`.
+- `LocalCacheProvider({ binding, store })` puts the binding in a context; react's `useSelector` and `shallowEqual` call it. `MlEnumEditor`, `MlElementEditorHooks` use them (R1).
+- D9 exports: root = provider, hooks, selectors (D8), types; `./local-cache/redux`, `./local-cache/zustand` = implementation classes; `./local-cache` removed; tsup entries as #652, both caches `noExternal`, dts via `paths`.
+- Every importer of the removed names migrates in this slice (standalone `tests-utils.tsx`, `componentTestTools.tsx`, `localCacheImplementation.ts`, and the 8 tests that import `LocalCache` and the like from react), choosing `./local-cache/redux` or the environment's entry; `src/index.tsx` and the sandbox pass the binding to `LocalCacheProvider` (R4).
+- Pack cases and the `./local-cache` pins follow (R8); standalone and Electron bundle policies: the two entries `lazy`, the eager baseline recorded with its reason (`bundle-size:record`), the D7 check added to `test_bundled_packages.py` on the bundle report.
 
 ### Refactor checkpoint
 
-- `miroir-localcache-imports.ts` loses its comment switch: it keeps the selectors and types only.
+- `miroir-localcache-imports.ts` loses its comment switch; redux's `node.ts` drops its `startMiroirPlatform` bindings.
 
 ### Validation
 
 ```bash
+npm run build -w miroir-localcache-redux -w miroir-localcache-zustand -w @miroir-framework/react
 for c in redux zustand; do MIROIR_TEST_LOCAL_CACHE=$c MIROIR_ENV=test-filesystem npm run testByFile -w @miroir-framework/react -- startMiroirClient; done
-npm run build -w @miroir-framework/react && npx tsc --noEmit --skipLibCheck -p packages/miroir-react/tsconfig.json
+npx tsc --noEmit --skipLibCheck -p packages/miroir-react/tsconfig.json
+npm run build -w miroir-standalone-app -w miroir-standalone-app-electron   # then the two check_bundle_policy.py commands
+MIROIR_REQUIRE_PACK=1 python -m pytest scripts/tests -q
 npm run nonreg:filesystem -- --runner shared --scope smoke,ui,localcache
 ```
+
+### Realization
+
+_(pending)_
 
 ---
 
@@ -197,15 +228,14 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,ui,localcache
 
 ### RED
 
-- `nonreg --local-cache zustand --scope smoke,ui`: the UI tests pass the redux store type and provider today, so the zustand run either keeps them on redux (G3 not met: `test_local_cache_choice.py` lists them) or fails.
+- `test_local_cache_choice.py`: the UI helpers (`tests-utils.tsx`, `componentTestTools.tsx`, `tests/helpers/AdminViewParamsProviders.tsx`) and the two redux-built tests are listed as redux-only; the zustand UI run (`--scope smoke,ui`) exercises nothing on zustand.
 
 ### GREEN
 
-- `src/index.tsx`, the sandbox, `tests-utils.tsx`, `componentTestTools.tsx`, `tests/helpers/AdminViewParamsProviders.tsx` pass the platform's binding to `LocalCacheProvider` (R4).
+- The UI helpers build their store and binding through the environment's cache.
 - `useSelectedApplicationMiroirTestSuiteRegistries.ts` reads the store from react's context, not `ReactReduxContext` (R1).
-- `localCacheImplementation.ts` uses core's helper and the `./local-cache/<kind>` entries.
 - D10: `useCurrentModelEnvironment.unit`, `ListTransformerPanel.unit` build their store through the chosen implementation.
-- D6: zustand gaps exposed by the run are fixed in `miroir-localcache-zustand` (including `hooks.ts:47-51`, one hook per call site, R11).
+- D6: zustand gaps exposed by the run fixed in `miroir-localcache-zustand`, `hooks.ts:47-51` included (one hook per call, R11).
 
 ### Refactor checkpoint
 
@@ -219,18 +249,23 @@ npm run nonreg:filesystem -- --runner shared --local-cache zustand --scope smoke
 npm run nonreg:filesystem -- --runner shared --scope smoke,ui,localcache
 ```
 
+### Realization
+
+_(pending)_
+
 ---
 
-## Slice 5 — Packaging, guards, docs, full nonreg, AC
+## Slice 5 — Docs, full nonreg on both caches, cleanup, AC
 
 **Status:** ⬜ pending
 
 ### Work
 
-- Guards (R8): `BUNDLED_INTO_ANOTHER`, `ENTRY_OWNERS`, `BUNDLED_NAMES`, `LOCAL_CACHE_IMPORT`, `LOCAL_CACHE_OWNERS` learn zustand; react and server pack cases for both entries; `test_package_runtime_dependencies.py` no longer lists zustand as published.
-- Bundle policies: the zustand entry `lazy` in the standalone policy, the redux and zustand Node entries in Electron's; one local cache copy eager (G2).
-- Docs: `release-process.md` §10e, `docs/reference/testing.md` (`--local-cache`), `AGENTS.md` only if within its size limit.
-- Follow-up issue for D6-b (selectors in core).
+- Docs: `release-process.md` §10e (both caches, the entries), `docs/reference/testing.md` (`--local-cache` now reaches the whole stack), `AGENTS.md` only within its size limit.
+- Nonreg: `npm run nonreg:zustand` (exists, `package.json:58`) is the zustand safety net; no new step.
+- Follow-up issue: the selectors in core (D6-b).
+- No issue directory was created (assertions live in existing tests): nothing to clean.
+- Tracer narrative: `startMiroirNode(config, { localCache: "zustand" })` in the CLI test, then `startMiroirClient` in react's, then the full UI on zustand in nonreg.
 
 ### Validation
 
@@ -238,7 +273,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,ui,localcache
 ./build-all.sh
 # pre-push gate (AGENTS.md)
 npm run nonreg:filesystem
-npm run nonreg:filesystem -- --local-cache zustand
+npm run nonreg:zustand
 ```
 
 ### AC checklist
@@ -246,10 +281,15 @@ npm run nonreg:filesystem -- --local-cache zustand
 | Issue criterion | Proof |
 |---|---|
 | An application selects Zustand without editing framework sources | Slices 1 and 3 (`startMiroirNode`, `startMiroirClient` option) |
-| One local cache per process and page | bundle guards (Slice 5), `test_bundled_packages.py` |
-| `nonreg --local-cache zustand` covers UI and Node startup | Slices 2 and 4, full zustand nonreg (Slice 5) |
+| One local cache per process and page | D7 check on the bundle report (Slice 3), `test_bundled_packages.py` |
+| `nonreg --local-cache zustand` covers UI and Node startup | Slices 2 and 4, `nonreg:zustand` (Slice 5) |
 | Docs describe the choice | Slice 5 |
+
+### Realization
+
+_(pending)_
 
 ## Revision history
 
 - v1 (2026-11-02): first version.
+- v2 (2026-11-02): adversarial review, 12 findings applied: guards updated in the slice that changes a shape; server and react get one entry per cache (the server library builds without splitting); importers migrate in the slice that removes the names; the contract enforced by each cache's build (`satisfies` in `node.ts`), not a core test; RED tests on `currentLocalCacheInfo().implementation`; keys moved where they can live (loader in server and react, core's functions named `…With`); Slice 2 call sites and validation; core public API; zustand built in CI and its manifest aligned; build before test; G2 check on the bundle report and the eager baseline; Realization placeholders, nonreg step, out-of-scope items R7 and R10.
