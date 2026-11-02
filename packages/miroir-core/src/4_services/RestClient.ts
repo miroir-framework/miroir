@@ -15,6 +15,10 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: Logge
 let authorizationTokenGetter: (() => string | undefined) | undefined;
 let authorizationInvalidationHandler: (() => void) | undefined;
 
+/**
+ * The function every RestClient calls for the Bearer token of a request (none when absent or when it returns undefined).
+ * @public
+ */
 export function setRestClientAuthorizationTokenGetter(
   getter: (() => string | undefined) | undefined,
 ): void {
@@ -25,6 +29,10 @@ export function getRestClientAuthorizationToken(): string | undefined {
   return authorizationTokenGetter?.();
 }
 
+/**
+ * Called when the server answers 401 to a request that carried a token (the session expired).
+ * @public
+ */
 export function setRestClientAuthorizationInvalidationHandler(
   handler: (() => void) | undefined,
 ): void {

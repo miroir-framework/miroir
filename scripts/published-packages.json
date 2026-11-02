@@ -13,5 +13,6 @@
   { "folder": "packages/miroir-react", "publishedName": "@miroir-framework/react" },
   { "folder": "packages/miroir-mcp", "publishedName": "@miroir-framework/mcp" },
   { "folder": "packages/miroir-server-library", "publishedName": "@miroir-framework/server" },
-  { "folder": "packages/miroir-cli", "publishedName": "@miroir-framework/cli" }
+  { "folder": "packages/miroir-cli", "publishedName": "@miroir-framework/cli" },
+  { "folder": "packages/miroir-create-app", "publishedName": "@miroir-framework/create-app" }
 ]

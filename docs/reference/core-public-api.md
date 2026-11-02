@@ -9,7 +9,7 @@ serves the other Miroir packages, which are released with it. Types reached thro
 type of a property or a parameter) can be used as part of that name, without a promise of their own.
 Why and how the list is chosen: [`code-helpers/features/649-BUILD-core-public-api/analysis.md`](../../code-helpers/features/649-BUILD-core-public-api/analysis.md).
 
-42 exports.
+48 exports.
 
 | Name | Kind | Declared in | Summary |
 |---|---|---|---|
@@ -17,6 +17,7 @@ Why and how the list is chosen: [`code-helpers/features/649-BUILD-core-public-ap
 | `ApplicationDeploymentMap` | interface | `src/1_core/Deployment.ts` | Maps each application uuid to the uuid of the deployment that holds it. |
 | `AuthenticationGate` | type | `src/1_core/authentication/AccessGate.ts` | What the server needs to authenticate requests: whether it is on, and how to read the access directory. |
 | `ConfigurationService` | class | `src/3_controllers/ConfigurationService.ts` | Holds core's process-wide configuration service, on which store packages register their sections. |
+| `defaultExternalServiceClient` | function | `src/5_setup/externalServiceEnvironment.ts` | A client on `defaultExternalServiceEnvironment(overrides)`. |
 | `defaultMetaModelEnvironment` | const | `src/1_core/Model.ts` | The meta-model environment of Miroir's own model (fundamental schema, meta-model, endpoints). |
 | `defaultSelfApplicationDeploymentMap` | const | `src/1_core/Deployment.ts` | The deployments of Miroir's own applications (Miroir and Admin), by application uuid. |
 | `Deployment` | type | `src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.ts` |  |
@@ -29,6 +30,9 @@ Why and how the list is chosen: [`code-helpers/features/649-BUILD-core-public-ap
 | `EntityVersion` | type | `src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.ts` |  |
 | `expect` | function | `src/1_core/testing/test-expect.ts` | Assertions for MiroirTest implementations, in the style of vitest's `expect`. |
 | `ExternalServiceClientInterface` | interface | `src/0_interfaces/4-services/ExternalServiceClientInterface.ts` | Calls the operations of external services declared in the model. |
+| `getClientEnvironment` | const | `src/tools.ts` | Where this code runs (web app, Electron, Node, sandbox), for the process capabilities. |
+| `getProcessCapabilities` | function | `src/1_core/processCapabilities.ts` | The capabilities of this process (stores it can open, authentication, MCP, AI), from its configuration, where it runs and the store factories registered on its configuration service. |
+| `getProcessTokenSecret` | function | `src/1_core/authentication/AuthenticationPolicy.ts` | The key signing this process's session tokens: the one set by `setProcessTokenSecret`, else `MIROIR_AUTH_TOKEN_SECRET`, else one generated for the process. |
 | `LocalCacheKind` | type | `src/0_interfaces/4-services/LocalCacheModule.ts` | The local cache a Miroir process starts on: the `localCache` option of the startup calls. |
 | `LoggerFactoryInterface` | interface | `src/0_interfaces/4-services/LoggerInterface.ts` | Creates loggers; implemented by the host's logging library adapter (for example loglevelnext). |
 | `LoggerInterface` | interface | `src/0_interfaces/4-services/LoggerInterface.ts` | A logger, as created by a `LoggerFactoryInterface`. |
@@ -48,6 +52,8 @@ Why and how the list is chosen: [`code-helpers/features/649-BUILD-core-public-ap
 | `ProcessCapabilities` | type | `src/1_core/processCapabilities.ts` | What the running process offers: AI, MCP, the agent backend, the store types it can open or create, store administration and designer tools. |
 | `RestClientInterface` | interface | `src/0_interfaces/4-services/PersistenceInterface.ts` | The HTTP client the client-side platform uses to reach a Miroir server. |
 | `RestClientStub` | class | `src/4_services/RestClientStub.ts` | calls Rest Server directly, without going through the network. |
+| `setRestClientAuthorizationInvalidationHandler` | function | `src/4_services/RestClient.ts` | Called when the server answers 401 to a request that carried a token (the session expired). |
+| `setRestClientAuthorizationTokenGetter` | function | `src/4_services/RestClient.ts` | The function every RestClient calls for the Bearer token of a request (none when absent or when it returns undefined). |
 | `SpecificLoggerOptionsMap` | type | `src/0_interfaces/4-services/LoggerInterface.ts` | Log level and template per logger name, overriding `LoggerOptions` defaults. |
 | `startMiroirNodeWith` | function | `src/5_setup/startMiroirPlatform.ts` | The startup of a Node host (CLI, server, Electron main process, test platforms) on the given local cache: see {@link startMiroirPlatformWith}. With `loggers`, it also starts the registered loggers, after the stores and before the platform, the order of the CLI and the server. |
 | `startMiroirPlatformWith` | function | `src/5_setup/startMiroirPlatform.ts` | Builds the Miroir platform of a process from its configuration, on the given local cache: a `local` domain controller for a server configuration; a `remote` one for a client configuration, with its emulated server when `emulateServer` is on. It runs `miroirCoreStartup()` and the given store startups first. It reads no environment variable and imports no store or local cache package. |
