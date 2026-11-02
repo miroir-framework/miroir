@@ -53,7 +53,8 @@ def test_configs_aliasing_core_to_its_sources_alias_the_meta_model_subpaths():
     assert missing == [], "alias @miroir-framework/core/meta-model and /admin before @miroir-framework/core"
 
 
-LOCAL_CACHE_IMPORT = re.compile(r"""(?:from|import|require\()\s*['"]miroir-localcache-redux(/node)?['"]""")
+# #656: either local cache
+LOCAL_CACHE_IMPORT = re.compile(r"""(?:from|import|require\()\s*['"]miroir-localcache-(?:redux|zustand)(/node)?['"]""")
 SERVER_STARTUP_IMPORT = re.compile(r"""(?:from|import\()\s*['"]@miroir-framework/server/startup['"]""")
 CODE_SUFFIXES = {".ts", ".tsx", ".mts", ".js", ".mjs"}
 
@@ -75,6 +76,7 @@ def test_node_sources_take_the_startup_call_from_the_server_library():
         for path in code_files("*/src/**/*")
         if not path.is_relative_to(ROOT / "packages/miroir-server-library")
         and not path.is_relative_to(ROOT / "packages/miroir-localcache-redux")
+        and not path.is_relative_to(ROOT / "packages/miroir-localcache-zustand")
         and any(match.group(1) for match in LOCAL_CACHE_IMPORT.finditer(path.read_text(encoding="utf-8")))
     ]
     assert found == [], "import startMiroirNode from @miroir-framework/server/startup"
@@ -82,7 +84,12 @@ def test_node_sources_take_the_startup_call_from_the_server_library():
 
 REACT_IMPORT = re.compile(r"""(?:from|import\()\s*['"]@miroir-framework/react(/[^'"]*)?['"]""")
 # the packages that bundle the local cache (#652 D3, D4), and the local cache itself
-LOCAL_CACHE_OWNERS = ("packages/miroir-react", "packages/miroir-server-library", "packages/miroir-localcache-redux")
+LOCAL_CACHE_OWNERS = (
+    "packages/miroir-react",
+    "packages/miroir-server-library",
+    "packages/miroir-localcache-redux",
+    "packages/miroir-localcache-zustand",
+)
 
 
 def test_only_its_owners_import_the_local_cache_in_sources():

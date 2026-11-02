@@ -408,7 +408,13 @@ def runtime_declarations(folder: str) -> set[str]:
 # #652: a package bundles the folders it owns. Owners come from published-packages.json (a bundled folder shares its
 # owner's published name), plus owners of one entry of a folder: the server library bundles the local cache's Node
 # entry (`miroir-localcache-redux/node`), not its React half.
-ENTRY_OWNERS = {"packages/miroir-server-library": [("packages/miroir-localcache-redux", "src/node.ts")]}
+# #656: and the zustand local cache's Node entry, in its own startup entry.
+ENTRY_OWNERS = {
+    "packages/miroir-server-library": [
+        ("packages/miroir-localcache-redux", "src/node.ts"),
+        ("packages/miroir-localcache-zustand", "src/node.ts"),
+    ]
+}
 RELATIVE_SPECIFIER = re.compile(r"^\.\.?/")
 
 
@@ -474,12 +480,15 @@ def owner_imports(folder: str) -> frozenset[str]:
 def test_an_owner_counts_the_imports_of_what_it_bundles():
     """#652: the server library owns the local cache's Node entry only; react and core own whole folders."""
     assert ("packages/miroir-localcache-redux", "src/node.ts") in owned_folders("packages/miroir-server-library")
+    assert ("packages/miroir-localcache-zustand", "src/node.ts") in owned_folders("packages/miroir-server-library")
     assert ("packages/miroir-localcache-redux", None) in owned_folders("packages/miroir-react")
     assert {f for f, _ in owned_folders("packages/miroir-core")} == {"packages/miroir-app-miroir", "packages/miroir-app-admin"}
     assert owned_folders("packages/miroir-cli") == []
-    node_entry = {p.name for p in reachable_sources("packages/miroir-localcache-redux", "src/node.ts")}
-    assert "startMiroirPlatform.ts" in node_entry and "node.ts" in node_entry
-    assert "index.ts" not in node_entry  # the React half (react-redux Provider, hooks) stays out of the server library
+    for local_cache, setup in [("redux", "sagaTools.ts"), ("zustand", "setupTools.ts")]:
+        node_entry = {p.name for p in reachable_sources(f"packages/miroir-localcache-{local_cache}", "src/node.ts")}
+        assert setup in node_entry and "node.ts" in node_entry
+        # the React half (Provider, hooks) stays out of the server library
+        assert "index.ts" not in node_entry and "hooks.ts" not in node_entry
 
 
 def test_package_of_reads_bare_specifiers_only():
@@ -522,7 +531,7 @@ def test_localcache_redux_dist_does_not_inline_its_dependencies():
 # --------------------------------------------------------------------------------------------------------------------
 # bundled folders (#652): no published package depends on one; the owners carry them
 
-BUNDLED_NAMES = {"miroir-app-miroir", "miroir-app-admin", "miroir-localcache-redux"}
+BUNDLED_NAMES = {"miroir-app-miroir", "miroir-app-admin", "miroir-localcache-redux", "miroir-localcache-zustand"}
 MODULE_REFERENCE = re.compile(
     r"""(?:from|import|require\()\s*['"](""" + "|".join(sorted(BUNDLED_NAMES)) + r""")(?:/[^'"]*)?['"]"""
 )
@@ -580,6 +589,25 @@ def test_the_server_library_carries_the_node_startup_call():
     found = [f"{path.name}: {m.group(1)}" for path in built for m in MODULE_REFERENCE.finditer(path.read_text(encoding="utf-8"))]
     assert found == [], "dist/startup.* still imports a private package"
     assert "startMiroirNode" in (ROOT / folder / "dist/startup.d.ts").read_text(encoding="utf-8")
+
+
+@pytest.mark.parametrize("local_cache", ["redux", "zustand"])
+def test_the_server_library_carries_each_local_cache_in_its_own_entry(local_cache):
+    """#656 (D3): `./startup/<cache>` bundles one local cache's Node entry; `./startup` imports it, never bundles it."""
+    folder = "packages/miroir-server-library"
+    entry = f"dist/startup-{local_cache}"
+    assert manifest(folder)["exports"].get(f"./startup/{local_cache}") == {"types": f"./{entry}.d.ts", "import": f"./{entry}.js"}
+    require_built(folder)
+    packed = pack_list(folder)
+    assert f"{entry}.js" in packed and f"{entry}.d.ts" in packed
+    built = [ROOT / folder / f"{entry}.js", ROOT / folder / f"{entry}.d.ts"]
+    found = [f"{path.name}: {m.group(1)}" for path in built for m in MODULE_REFERENCE.finditer(path.read_text(encoding="utf-8"))]
+    assert found == [], f"{entry}.* still imports a private package"
+    startup = (ROOT / folder / "dist/startup.js").read_text(encoding="utf-8")
+    assert f'import("@miroir-framework/server/startup/{local_cache}")' in startup.replace("'", '"')
+    # one local cache per entry: the redux saga runtime only in the redux one
+    assert ("redux-saga" in (ROOT / folder / f"{entry}.js").read_text(encoding="utf-8")) == (local_cache == "redux")
+    assert "redux-saga" not in startup
 
 
 def test_react_carries_the_local_cache():

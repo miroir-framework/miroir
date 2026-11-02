@@ -1714,6 +1714,14 @@ export {
   defaultExternalServiceEnvironment,
 } from "./5_setup/externalServiceEnvironment.js";
 export {
+  startMiroirNodeWith,
+  startMiroirPlatformWith,
+  type MiroirEmulatedServer,
+  type MiroirNodeOptions,
+  type MiroirPlatform,
+  type MiroirPlatformOptions,
+} from "./5_setup/startMiroirPlatform.js";
+export {
   boundPathsForOperation,
   listConvertibleGetOperations,
   materializeExternalServiceOperations,

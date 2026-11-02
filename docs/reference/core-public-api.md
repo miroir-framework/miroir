@@ -9,7 +9,7 @@ serves the other Miroir packages, which are released with it. Types reached thro
 type of a property or a parameter) can be used as part of that name, without a promise of their own.
 Why and how the list is chosen: [`code-helpers/features/649-BUILD-core-public-api/analysis.md`](../../code-helpers/features/649-BUILD-core-public-api/analysis.md).
 
-36 exports.
+42 exports.
 
 | Name | Kind | Declared in | Summary |
 |---|---|---|---|
@@ -37,14 +37,20 @@ Why and how the list is chosen: [`code-helpers/features/649-BUILD-core-public-ap
 | `MiroirConfigClient` | type | `src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.ts` |  |
 | `MiroirConfigServer` | type | `src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.ts` |  |
 | `MiroirContext` | class | `src/3_controllers/MiroirContext.ts` | The activity tracker, event service and configuration of a host, shared by its controllers. |
+| `MiroirEmulatedServer` | type | `src/5_setup/startMiroirPlatform.ts` | The emulated server of a client configuration with `emulateServer: true`. |
 | `MiroirEventService` | class | `src/3_controllers/MiroirEventService.ts` | Service for capturing and managing logs associated with specific action executions |
 | `MiroirLoggerFactory` | class | `src/4_services/MiroirLoggerFactory.ts` | Core's logger factory: hosts set it up with their `LoggerFactoryInterface` and `LoggerOptions`. |
+| `MiroirNodeOptions` | type | `src/5_setup/startMiroirPlatform.ts` | The options of the Node startup: the platform options and the host's loggers. |
+| `MiroirPlatform` | type | `src/5_setup/startMiroirPlatform.ts` | What the startup calls build. Each field means the same thing whatever the configuration. |
+| `MiroirPlatformOptions` | type | `src/5_setup/startMiroirPlatform.ts` | The options of the startup calls: the stores, and what a host provides instead of the defaults. |
 | `PersistenceStoreControllerManager` | class | `src/4_services/PersistenceStoreControllerManager.ts` | Holds the persistence store controllers of the deployments open in this process. |
 | `PersistenceStoreControllerManagerInterface` | interface | `src/0_interfaces/4-services/PersistenceStoreControllerManagerInterface.ts` | handles many persistence store controllers, that can be added / removed dynamically at runtime. |
 | `ProcessCapabilities` | type | `src/1_core/processCapabilities.ts` | What the running process offers: AI, MCP, the agent backend, the store types it can open or create, store administration and designer tools. |
 | `RestClientInterface` | interface | `src/0_interfaces/4-services/PersistenceInterface.ts` | The HTTP client the client-side platform uses to reach a Miroir server. |
 | `RestClientStub` | class | `src/4_services/RestClientStub.ts` | calls Rest Server directly, without going through the network. |
 | `SpecificLoggerOptionsMap` | type | `src/0_interfaces/4-services/LoggerInterface.ts` | Log level and template per logger name, overriding `LoggerOptions` defaults. |
+| `startMiroirNodeWith` | function | `src/5_setup/startMiroirPlatform.ts` | The startup of a Node host (CLI, server, Electron main process, test platforms) on the given local cache: see {@link startMiroirPlatformWith}. With `loggers`, it also starts the registered loggers, after the stores and before the platform, the order of the CLI and the server. |
+| `startMiroirPlatformWith` | function | `src/5_setup/startMiroirPlatform.ts` | Builds the Miroir platform of a process from its configuration, on the given local cache: a `local` domain controller for a server configuration; a `remote` one for a client configuration, with its emulated server when `emulateServer` is on. It runs `miroirCoreStartup()` and the given store startups first. It reads no environment variable and imports no store or local cache package. |
 | `StoreOrBundleAction` | type | `src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.ts` |  |
 | `StoreSectionStartup` | type | `src/3_controllers/ConfigurationService.ts` | What a store package exports to make its sections available, such as `miroirFileSystemStoreSectionStartup`: it registers its factories on the given configuration service. Hosts pass these to `startMiroirNode` / `startMiroirClient` (#639). |
 | `StoreUnitConfiguration` | type | `src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.ts` |  |

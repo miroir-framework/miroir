@@ -34,7 +34,7 @@ Not in this plan: a config default for the choice (D1-b, later); the selectors i
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
 | 0 | Each local cache names itself; the contract and the test switch in core | ✅ | `currentLocalCacheInfo().implementation` on both caches; each cache's `node.ts` `satisfies LocalCacheModule` (tsc) |
-| 1 | Tracer: a Node process starts on Zustand | ⬜ | cli `startMiroirNode.integ` on both caches |
+| 1 | Tracer: a Node process starts on Zustand | ✅ | cli `startMiroirNode.integ` on both caches |
 | 2 | Every Node test platform follows `MIROIR_TEST_LOCAL_CACHE` | ⬜ | mcp, server-library, ai, env tests on both caches |
 | 3 | A React client starts and renders on Zustand | ⬜ | react `startMiroirClient.integ` on both caches; standalone bundle guard |
 | 4 | The standalone app's UI tests run on the chosen cache | ⬜ | `nonreg --local-cache zustand --scope smoke,ui,localcache` |
@@ -127,7 +127,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,localcache
 
 ## Slice 1 — Tracer: a Node process starts on Zustand
 
-**Status:** ⬜ pending
+**Status:** ✅ done
 
 ### RED
 
@@ -158,7 +158,13 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,tooling,localcache
 
 ### Realization
 
-_(pending)_
+- RED seen: with `MIROIR_TEST_LOCAL_CACHE=zustand`, the cli test failed. Once the option was wired, it failed again on a real zustand gap (D6): `PersistenceAsyncStore` mapped the `LocalPersistenceAction_*` verb twice (`actionMap[actionMap[verb]]`), so every local read sent an `undefined` action type to the store controller. Fixed as in redux (last segment, mapped once, `attributes` passed on); the error log now prints the message instead of `{}`.
+- Core `5_setup/startMiroirPlatform.ts`: `startMiroirPlatformWith`, `startMiroirNodeWith` and the `MiroirPlatform*` / `MiroirEmulatedServer` / `MiroirNodeOptions` types, `@public`; redux's `startMiroirPlatform.ts` is deleted, its `node.ts` keeps `startMiroirPlatform` / `startMiroirNode` as one-line bindings (react still uses them until Slice 3).
+- Server library: `src/startup.ts` holds `startMiroirNode`, `startMiroirPlatform` (both take `localCache`), `loadLocalCacheModule`; `src/startup-redux.ts` and `src/startup-zustand.ts` each bundle one cache (`./startup/redux`, `./startup/zustand`), typed as core's `LocalCacheModule` so their declarations name no private package. `startup.ts` imports them by the package's own name (external); `src/startup-entries.d.ts` declares those two modules so typechecking needs no prior build. `writeStartupDeclarations` is gone: tsup builds all four declarations.
+- `dist/startup.js` is 1 KB and imports only core; `redux-saga` is only in `startup-redux.js`. The ncc release splits the two caches into lazy chunks (`index.js` holds no `redux-saga`).
+- Guards: `ENTRY_OWNERS`, `BUNDLED_NAMES`, `LOCAL_CACHE_IMPORT`, `LOCAL_CACHE_OWNERS` cover zustand; `CALL_SOURCES` follows the move; new `test_the_core_startup_imports_no_local_cache`; pack cases for both entries; `STARTUP_NAMES` gains the moved names. `test_package_runtime_dependencies.py` needed no change. Zustand manifest also drops the unused `fast-deep-equal`.
+- CI builds zustand: `pr-checks.yml`, `self-test.yml`, `Dockerfile` (`build-all.sh` already did; `agent_session_setup.py` builds no local cache).
+- Validation: both caches on the cli test (3/3 each); guards 563 passed; lint 0; core unit 3318 passed; `nonreg:filesystem --scope smoke,tooling,localcache` 47/47 (`integ-report.bookDetails` failed once in the shared runner and passed on its legacy rerun); tsc on core, both caches, server library, cli, react, mcp; release smoke 13 passed.
 
 ---
 
