@@ -35,7 +35,7 @@ Not in this plan: a config default for the choice (D1-b, later); the selectors i
 |---|---|---|---|
 | 0 | Each local cache names itself; the contract and the test switch in core | ✅ | `currentLocalCacheInfo().implementation` on both caches; each cache's `node.ts` `satisfies LocalCacheModule` (tsc) |
 | 1 | Tracer: a Node process starts on Zustand | ✅ | cli `startMiroirNode.integ` on both caches |
-| 2 | Every Node test platform follows `MIROIR_TEST_LOCAL_CACHE` | ⬜ | mcp, server-library, ai, env tests on both caches |
+| 2 | Every Node test platform follows `MIROIR_TEST_LOCAL_CACHE` | ✅ | mcp, server-library, ai, env tests on both caches |
 | 3 | A React client starts and renders on Zustand | ⬜ | react `startMiroirClient.integ` on both caches; standalone bundle guard |
 | 4 | The standalone app's UI tests run on the chosen cache | ⬜ | `nonreg --local-cache zustand --scope smoke,ui,localcache` |
 | 5 | Docs, full nonreg on both caches, cleanup, AC | ⬜ | `nonreg:filesystem` and `nonreg:zustand` |
@@ -170,7 +170,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,tooling,localcache
 
 ## Slice 2 — Every Node test platform follows `MIROIR_TEST_LOCAL_CACHE`
 
-**Status:** ⬜ pending
+**Status:** ✅ done
 
 ### RED
 
@@ -194,7 +194,10 @@ npm run nonreg:filesystem -- --runner shared --local-cache zustand --scope smoke
 
 ### Realization
 
-_(pending)_
+- The env↔server cycle is real (the server library depends on mcp at runtime, and env is a devDependency of the server library), so mcp, ai and env take the module from the caches' `node` entries (test code, devDependencies on both caches) and start through core's `startMiroirNodeWith` (mcp) or the module's `setupMiroirDomainController` (ai, env). The server library's platform passes `localCache` to its own `startMiroirNode`.
+- Each platform checks `currentLocalCacheInfo().implementation` against `MIROIR_TEST_LOCAL_CACHE` and throws on a mismatch, so every test built on it proves the choice. The loader is repeated in the three packages (8 lines): no shared place both can import without a cycle.
+- Validation: env 87, server library 24, mcp 109, ai integration 7 tests, each on both caches. `miroir-ai`'s `miroirTools.unit.test.ts` fails 13 of 19 on both caches and on the base branch (tool registry count), unrelated.
+- The scoped zustand nonreg ran while Slice 3 sources were being edited and its lockfile refreshed: 68 passed, 4 failed (`integ-runner.lendDocument`, `integ-runner.freezeApplicationVersion`, `build-636-server-release`, `unit-643-package-manifests`). `lendDocument` passed when rerun alone on both caches; all four are rerun in Slice 3's validation.
 
 ---
 

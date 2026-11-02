@@ -8,6 +8,7 @@ import {
   defaultExternalServiceClient,
   getClientEnvironment,
   getProcessCapabilities,
+  localCacheKindFromEnvironment,
   type PersistenceStoreControllerManager,
   setProcessTokenSecret,
   type ApplicationDeploymentMap,
@@ -53,13 +54,19 @@ export async function startServerTestPlatform(): Promise<ServerTestPlatform> {
   const miroirConfig = environmentServerConfig(environment.resolved);
 
   // #639: the same startup call as miroir-server
+  // #656: on the local cache MIROIR_TEST_LOCAL_CACHE names (run-nonreg.py --local-cache), redux when unset
+  const localCache = localCacheKindFromEnvironment(process.env);
   const { domainController, persistenceStoreControllerManager } = await startMiroirNode(miroirConfig, {
+    localCache,
     stores: [miroirFileSystemStoreSectionStartup],
     loggers: { factory: loglevelNextLog as any as LoggerFactoryInterface, options: quietLoggers },
     externalServiceClient: defaultExternalServiceClient({ persistRotatedSecret: async () => {} }),
   });
   if (!persistenceStoreControllerManager) {
     throw new Error("startMiroirNode returned no store manager for a server configuration");
+  }
+  if (domainController.currentLocalCacheInfo().implementation !== localCache) {
+    throw new Error(`startMiroirNode started on ${domainController.currentLocalCacheInfo().implementation}, not ${localCache}`);
   }
   const { applicationDeploymentMap } = await bootEnvironment(domainController, environment.resolved, process.env);
   setProcessTokenSecret(TEST_TOKEN_SECRET);

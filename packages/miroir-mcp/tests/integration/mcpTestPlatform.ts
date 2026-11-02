@@ -1,6 +1,9 @@
 import loglevelNextLog from "loglevelnext";
 
 import {
+  localCacheKindFromEnvironment,
+  startMiroirNodeWith,
+  type LocalCacheModule,
   ConfigurationService,
   type ApplicationDeploymentMap,
   type DomainControllerInterface,
@@ -12,7 +15,6 @@ import {
 } from "@miroir-framework/core";
 import { bootEnvironment, openTestEnvironment, selectedTestEnvironment, type TestEnvironment } from "@miroir-framework/env";
 
-import { startMiroirNode } from "miroir-localcache-redux/node";
 
 // #345: the MCP integration tests run on a test environment (environments/test-*.json), like the
 // standalone-app tests: MIROIR_ENV when it names one, else test-filesystem. Its filesystem copies in
@@ -62,6 +64,23 @@ async function testEnvironmentStores(miroirConfig: MiroirConfigClient): Promise<
   return startups;
 }
 
+// #656: the local cache MIROIR_TEST_LOCAL_CACHE names (run-nonreg.py --local-cache), redux when unset. From the
+// caches' Node entries (test code): this package cannot depend on @miroir-framework/server, which depends on it.
+async function testLocalCacheModule(): Promise<LocalCacheModule> {
+  return localCacheKindFromEnvironment(process.env) === "zustand"
+    ? (await import("miroir-localcache-zustand/node")).localCacheModule
+    : (await import("miroir-localcache-redux/node")).localCacheModule;
+}
+
+/** #656: a platform built on another local cache than the one asked for would test the wrong one. */
+function expectLocalCache(domainController: DomainControllerInterface): void {
+  const expected = localCacheKindFromEnvironment(process.env);
+  const actual = domainController.currentLocalCacheInfo().implementation;
+  if (actual !== expected) {
+    throw new Error(`test platform started on the ${actual} local cache, MIROIR_TEST_LOCAL_CACHE asks for ${expected}`);
+  }
+}
+
 export async function startMcpTestPlatform(
   expect: unknown,
   loggerOptions: LoggerOptions,
@@ -74,10 +93,11 @@ export async function startMcpTestPlatform(
   }
 
   ConfigurationService.configurationService.registerTestImplementation({ expect: expect as any });
-  const { domainController } = await startMiroirNode(environment.miroirConfig, {
+  const { domainController } = await startMiroirNodeWith(await testLocalCacheModule(), environment.miroirConfig, {
     stores: await testEnvironmentStores(environment.miroirConfig),
     loggers: { factory: loglevelNextLog as any as LoggerFactoryInterface, options: loggerOptions },
   });
+  expectLocalCache(domainController);
   const { applicationDeploymentMap } = await bootEnvironment(domainController, environment.resolved, process.env);
   return { environment, domainController, applicationDeploymentMap };
 }
