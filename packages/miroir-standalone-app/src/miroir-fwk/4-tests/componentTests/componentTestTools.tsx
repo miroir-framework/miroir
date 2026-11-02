@@ -33,10 +33,8 @@ import {
   type ProcessCapabilities,
 } from "@miroir-framework/core";
 import {
-  LocalCache,
   LocalCacheProvider,
   MiroirContextReactProvider,
-  PersistenceReduxSaga,
   MiroirShellHostProvider,
   ReportSectionRenderersProvider,
   useMiroirContextService,
@@ -89,6 +87,8 @@ import { cleanLevel } from "../../4_view/constants.js";
 import { useCurrentModel, useCurrentModelEnvironment } from "@miroir-framework/react";
 import { emptyObject } from "@miroir-framework/react";
 
+// #656: the redux local cache; Slice 4 makes the test helpers follow MIROIR_TEST_LOCAL_CACHE
+import { localCacheBinding as reduxLocalCacheBinding, LocalCache, PersistenceReduxSaga } from "@miroir-framework/react/local-cache/redux";
 // ################################################################################################
 // Browser-safe component test tools (#286). No vitest, no @testing-library/react, no process.env,
 // no registerTestImplementation: this module can be loaded by the running app.
@@ -555,7 +555,7 @@ export function MiroirTestProviders(props: MiroirTestProvidersProps) {
   return (
     <ThemeProvider theme={testTheme}>
       <StyledEngineProvider injectFirst>
-        <LocalCacheProvider store={props.localCache.getInnerStore()}>
+        <LocalCacheProvider binding={reduxLocalCacheBinding} store={props.localCache.getInnerStore()}>
           {props.offerReportsAndEntities ? (
             <MiroirTestContextWithReports {...props} />
           ) : (

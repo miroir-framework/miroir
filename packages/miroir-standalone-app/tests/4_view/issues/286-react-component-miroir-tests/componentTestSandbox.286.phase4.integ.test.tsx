@@ -41,10 +41,8 @@ import {
   type MiroirTestDefinition,
 } from "@miroir-framework/core";
 import {
-  LocalCache,
   LocalCacheProvider,
   MiroirContextReactProvider,
-  PersistenceReduxSaga,
 } from "@miroir-framework/react";
 import {
   defaultMiroirMetaModel,
@@ -77,6 +75,8 @@ import { MiroirTestDisplay } from "../../../../src/miroir-fwk/4_view/components/
 import { ReportPageContextProvider } from "@miroir-framework/react";
 import { resolveRepoRoot } from "../../../helpers/integrationTestProfiles.js";
 
+// #656: the redux local cache; Slice 4 makes the test helpers follow MIROIR_TEST_LOCAL_CACHE
+import { localCacheBinding as reduxLocalCacheBinding, LocalCache, PersistenceReduxSaga } from "@miroir-framework/react/local-cache/redux";
 // ################################################################################################
 const MIROIR_TEST_DATA_FOLDER = join(
   resolveRepoRoot(),
@@ -178,7 +178,7 @@ function renderDisplays(
   miroirTest: MiroirTestDefinition = componentTestSuiteInstance,
 ) {
   return render(
-    <LocalCacheProvider store={harness.localCache.getInnerStore()}>
+    <LocalCacheProvider binding={reduxLocalCacheBinding} store={harness.localCache.getInnerStore()}>
       {onTestCompletes.map((onTestComplete, index) => (
         <MiroirContextReactProvider
           key={index}

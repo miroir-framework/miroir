@@ -11,6 +11,8 @@ import { LocalCacheProvider, MiroirContextReactProvider } from "@miroir-framewor
 
 import { buildAdminViewParamsHarness } from "./adminViewParamsHarness";
 
+// #656: the redux local cache; Slice 4 makes the test helpers follow MIROIR_TEST_LOCAL_CACHE
+import { localCacheBinding as reduxLocalCacheBinding } from "@miroir-framework/react/local-cache/redux";
 export const AdminViewParamsProviders: React.FC<{
   children: React.ReactNode;
   viewParams?: Record<string, unknown>;
@@ -19,7 +21,7 @@ export const AdminViewParamsProviders: React.FC<{
 }> = ({ children, viewParams = {}, miroirContext, domainController }) => {
   const [harness] = useState(() => buildAdminViewParamsHarness(viewParams));
   return (
-    <LocalCacheProvider store={harness.localCache.getInnerStore()}>
+    <LocalCacheProvider binding={reduxLocalCacheBinding} store={harness.localCache.getInnerStore()}>
       <MiroirContextReactProvider
         miroirContext={miroirContext ?? harness.miroirContext}
         domainController={domainController ?? harness.domainController}

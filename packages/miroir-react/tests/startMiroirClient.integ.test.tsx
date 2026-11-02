@@ -12,6 +12,8 @@ import {
   getProcessCapabilities,
   FAIL_CLOSED_PROCESS_CAPABILITIES,
   fetchProcessCapabilities,
+  localCacheKindFromEnvironment,
+  startMiroirNodeWith,
   type ApplicationDeploymentMap,
   type DomainControllerInterface,
   type MiroirConfigClient,
@@ -19,19 +21,22 @@ import {
 } from "@miroir-framework/core";
 import { bootEnvironment, openTestEnvironment } from "@miroir-framework/env";
 import { book1 } from "miroir-example-library";
-import { startMiroirNode } from "miroir-localcache-redux/node";
 import { miroirFileSystemStoreSectionStartup } from "@miroir-framework/store-filesystem";
 
 import {
   LocalCacheProvider,
   MiroirContextReactProvider,
+  loadLocalCache,
   startMiroirClient,
   useEntityInstanceUuidIndexFromLocalCache,
+  useSelector,
 } from "../src/index.js";
 
 (globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
 
 const TEST_ENVIRONMENT = "test-filesystem";
+// #656: the local cache MIROIR_TEST_LOCAL_CACHE names (run-nonreg.py --local-cache), redux when unset
+const LOCAL_CACHE = localCacheKindFromEnvironment(process.env);
 const LIBRARY_APPLICATION = "5af03c98-fe5e-490b-b08f-e1230971c57f";
 const LIBRARY_DEPLOYMENT = "f714bb2f-a12d-4e71-a03b-74dcedea6eb4";
 const BOOK_ENTITY = "e8ba151b-d68e-4cc3-9a83-3459d309ccf5";
@@ -60,8 +65,10 @@ function BookTitles(props: { applicationDeploymentMap: ApplicationDeploymentMap 
     },
     props.applicationDeploymentMap,
   );
+  // #656: react's useSelector reads the store through the binding LocalCacheProvider was given
+  const transactionLength = useSelector((state) => state.pastModelPatches.length);
   return (
-    <ul id="books">
+    <ul id="books" data-transaction-length={transactionLength}>
       {Object.values(books ?? {}).map((book: any) => (
         <li key={book.uuid}>{book.name}</li>
       ))}
@@ -76,6 +83,7 @@ describe("startMiroirClient", () => {
     const capabilitiesSeenByTheHook: ProcessCapabilities[] = [];
 
     const platform = await startMiroirClient(miroirConfig, {
+      localCache: LOCAL_CACHE,
       stores: [miroirFileSystemStoreSectionStartup],
       configureEmulatedServer: async (server) => {
         capabilitiesSeenByTheHook.push(await fetchProcessCapabilities(server.restClientStub));
@@ -86,6 +94,10 @@ describe("startMiroirClient", () => {
     expect(capabilitiesSeenByTheHook).toEqual([FAIL_CLOSED_PROCESS_CAPABILITIES]);
     expect(platform.processCapabilities).not.toEqual(FAIL_CLOSED_PROCESS_CAPABILITIES);
     expect(platform.emulatedServer).toBeDefined();
+    // #656: both domain controllers and the binding are of the chosen local cache
+    expect(platform.domainController.currentLocalCacheInfo().implementation).toBe(LOCAL_CACHE);
+    expect(platform.emulatedServer?.domainController.currentLocalCacheInfo().implementation).toBe(LOCAL_CACHE);
+    expect(platform.localCacheBinding.kind).toBe(LOCAL_CACHE);
 
     const { applicationDeploymentMap } = await bootEnvironment(platform.domainController, environment.resolved, process.env);
     await loadLibrary(platform.domainController, applicationDeploymentMap);
@@ -96,7 +108,7 @@ describe("startMiroirClient", () => {
     const root = createRoot(container);
     await act(async () => {
       root.render(
-        <LocalCacheProvider store={platform.domainController.getLocalCache().getInnerStore()}>
+        <LocalCacheProvider binding={platform.localCacheBinding} store={platform.domainController.getLocalCache().getInnerStore()}>
           <MiroirContextReactProvider
             miroirContext={platform.miroirContext}
             domainController={platform.domainController}
@@ -108,6 +120,7 @@ describe("startMiroirClient", () => {
       );
     });
     expect(container.querySelector("#books")?.textContent).toContain(book1.name);
+    expect(container.querySelector("#books")?.getAttribute("data-transaction-length")).toBe("0");
     act(() => root.unmount());
     container.remove();
   });
@@ -116,7 +129,8 @@ describe("startMiroirClient", () => {
     const environment = openTestEnvironment(TEST_ENVIRONMENT, { reseed: true });
     const miroirConfig = environment.miroirConfig as MiroirConfigClient;
     // the process that owns the stores, reached through its stub
-    const owner = await startMiroirNode(miroirConfig, { stores: [miroirFileSystemStoreSectionStartup] });
+    const { localCacheModule } = await loadLocalCache(LOCAL_CACHE);
+    const owner = await startMiroirNodeWith(localCacheModule, miroirConfig, { stores: [miroirFileSystemStoreSectionStartup] });
     const { applicationDeploymentMap } = await bootEnvironment(owner.domainController, environment.resolved, process.env);
       const ownerCapabilities = getProcessCapabilities({
       config: { ...miroirConfig, features: { ...miroirConfig.features, designerTools: false } },
@@ -126,7 +140,12 @@ describe("startMiroirClient", () => {
     });
     owner.emulatedServer!.restClientStub.setProcessCapabilities(ownerCapabilities);
 
-    const platform = await startMiroirClient(miroirConfig, { stores: [], restClient: owner.emulatedServer!.restClientStub });
+    const platform = await startMiroirClient(miroirConfig, {
+      localCache: LOCAL_CACHE,
+      stores: [],
+      restClient: owner.emulatedServer!.restClientStub,
+    });
+    expect(platform.domainController.currentLocalCacheInfo().implementation).toBe(LOCAL_CACHE);
 
     expect(platform.emulatedServer).toBeUndefined();
     expect(platform.restClient).toBe(owner.emulatedServer!.restClientStub);

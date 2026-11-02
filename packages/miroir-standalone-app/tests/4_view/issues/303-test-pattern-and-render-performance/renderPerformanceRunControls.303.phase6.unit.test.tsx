@@ -41,10 +41,8 @@ import {
   type MiroirTestDefinition,
 } from "@miroir-framework/core";
 import {
-  LocalCache,
   LocalCacheProvider,
   MiroirContextReactProvider,
-  PersistenceReduxSaga,
 } from "@miroir-framework/react";
 import {
   defaultMiroirMetaModel,
@@ -77,6 +75,8 @@ import { MiroirTestDisplay } from "../../../../src/miroir-fwk/4_view/components/
 import { MiroirTestListDisplay } from "../../../../src/miroir-fwk/4_view/components/Reports/MiroirTestListDisplay";
 import { ReportPageContextProvider } from "@miroir-framework/react";
 
+// #656: the redux local cache; Slice 4 makes the test helpers follow MIROIR_TEST_LOCAL_CACHE
+import { localCacheBinding as reduxLocalCacheBinding, LocalCache, PersistenceReduxSaga } from "@miroir-framework/react/local-cache/redux";
 // ################################################################################################
 const perfInstance = miroirTest_ui_mlElementEditor_renderPerformance as unknown as MiroirTestDefinition;
 const enumInstance = miroirTest_ui_mlElementEditor_enum as unknown as MiroirTestDefinition;
@@ -149,7 +149,7 @@ function buildAppHarness() {
 function HarnessProviders(props: { children: React.ReactNode }) {
   const [harness] = React.useState(buildAppHarness);
   return (
-    <LocalCacheProvider store={harness.localCache.getInnerStore()}>
+    <LocalCacheProvider binding={reduxLocalCacheBinding} store={harness.localCache.getInnerStore()}>
       <MiroirContextReactProvider miroirContext={harness.miroirContext} domainController={{} as DomainControllerInterface}>
         <ReportPageContextProvider>{props.children}</ReportPageContextProvider>
       </MiroirContextReactProvider>

@@ -1,7 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { LOCAL_CACHE_ENV } from "@miroir-framework/core";
-import { localCacheModule as zustandLocalCacheModule } from "miroir-localcache-zustand/node";
 
 import { loadLocalCacheImplementation } from "../../src/miroir-fwk/4-tests/localCacheImplementation";
 
@@ -13,10 +12,6 @@ describe("test LocalCache implementation (#446)", () => {
     const module = await loadLocalCacheImplementation(implementation);
 
     expect(module.kind).toBe(implementation);
-  });
-
-  it("loads zustand from its Node entry", async () => {
-    expect(await loadLocalCacheImplementation("zustand")).toBe(zustandLocalCacheModule);
   });
 
   describe("without an argument, from MIROIR_TEST_LOCAL_CACHE", () => {

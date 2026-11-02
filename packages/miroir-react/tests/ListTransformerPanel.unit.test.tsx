@@ -20,7 +20,6 @@ import {
 import { getReduxDeploymentsStateIndex } from "@miroir-framework/core";
 import {
   LocalCacheProvider,
-  reduxStoreWithUndoRedoGetInitialState,
   type LocalCacheSliceState,
   type ReduxStateWithUndoRedo,
   GridComponentsProvider,
@@ -31,6 +30,9 @@ import {
   TableComponentTypeSchema,
 } from "../src/index.js";
 import { defaultStoredMiroirTheme } from "@miroir-framework/core/meta-model";
+
+// #656: the redux local cache; Slice 4 makes the test helpers follow MIROIR_TEST_LOCAL_CACHE
+import { localCacheBinding as reduxLocalCacheBinding, reduxStoreWithUndoRedoGetInitialState } from "../src/local-cache-redux.js";
 
 /** Given to the list section through `GridComponentsProvider` (#612). */
 const EntityInstanceGridStub = (props: Record<string, unknown>) => {
@@ -361,7 +363,7 @@ function renderBookListSection(pageParams: Record<string, unknown> = {}) {
   return render(
     <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <MiroirThemeProvider currentThemeOptions={testThemeOptions}>
-        <LocalCacheProvider store={store}>
+        <LocalCacheProvider binding={reduxLocalCacheBinding} store={store}>
           <Formik initialValues={formikInitialValues} onSubmit={vi.fn()}>
             <GridComponentsProvider components={{ EntityInstanceGrid: EntityInstanceGridStub }}>
               <ReportSectionListDisplay

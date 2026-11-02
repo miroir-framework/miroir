@@ -16,17 +16,19 @@ UI_SOURCE_ROOTS = ["packages/miroir-react/src", "packages/miroir-standalone-app/
 SWITCH_FILE = "packages/miroir-react/src/miroir-localcache-imports.ts"
 
 DIRECT_LOCAL_CACHE = re.compile(
-    r"""(?:\bfrom\s+|\bimport\s*\(\s*)["'](?:react-redux|miroir-localcache-(?:redux|zustand)(?:/[^"']*)?|@miroir-framework/react/local-cache(?:/[^"']*)?)["']"""
+    r"""(?:\bfrom\s+|\bimport\s*\(\s*)["'](?:react-redux|miroir-localcache-(?:redux|zustand)(?:/[^"']*)?|@miroir-framework/react/local-cache/(?:redux|zustand))["']"""
     r"""|\bReactReduxContext\b"""
 )
 
 # Shrinks slice by slice (Slices 3 and 4); empty at the end of #656.
 ALLOWLIST = {
-    "packages/miroir-react/src/components/ValueObjectEditor/MlElementEditorHooks.ts",
-    "packages/miroir-react/src/components/ValueObjectEditor/MlEnumEditor.tsx",
-    "packages/miroir-standalone-app/src/miroir-fwk/4-tests/localCacheImplementation.ts",
+    # the UI test helpers, on redux until Slice 4
+    "packages/miroir-standalone-app/src/miroir-fwk/4-tests/componentTests/componentTestTools.tsx",
+    "packages/miroir-standalone-app/src/miroir-fwk/4-tests/tests-utils.tsx",
     "packages/miroir-standalone-app/src/miroir-fwk/4-tests/useSelectedApplicationMiroirTestSuiteRegistries.ts",
 }
+# #656 (D9): the entries of @miroir-framework/react that hold one local cache each, with its React binding
+CACHE_ENTRIES = {"packages/miroir-react/src/local-cache-redux.ts", "packages/miroir-react/src/local-cache-zustand.ts"}
 
 
 def _ui_sources():
@@ -46,6 +48,7 @@ def test_only_allowlisted_ui_sources_reach_a_local_cache_directly():
         source
         for source in _ui_sources()
         if source != SWITCH_FILE
+        and source not in CACHE_ENTRIES
         and DIRECT_LOCAL_CACHE.search((REPO_ROOT / source).read_text(encoding="utf-8"))
     }
     assert direct == ALLOWLIST

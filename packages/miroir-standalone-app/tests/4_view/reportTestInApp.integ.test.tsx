@@ -34,7 +34,7 @@ import {
   type EntityInstance,
 } from "@miroir-framework/core";
 import { loadApplicationMiroirTestCatalog } from "@miroir-framework/core/model-validation-fs";
-import { LocalCache, LocalCacheProvider, MiroirContextReactProvider } from "@miroir-framework/react";
+import { LocalCacheProvider, MiroirContextReactProvider } from "@miroir-framework/react";
 import { miroirFileSystemStoreSectionStartup } from "@miroir-framework/store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "@miroir-framework/store-indexeddb";
 import { miroirMongoDbStoreSectionStartup } from "@miroir-framework/store-mongodb";
@@ -54,6 +54,8 @@ import { MiroirTestDisplay } from "../../src/miroir-fwk/4_view/components/Report
 import { ReportPageContextProvider } from "@miroir-framework/react";
 import { miroirAppStartup } from "../../src/startup.js";
 
+// #656: the redux local cache; Slice 4 makes the test helpers follow MIROIR_TEST_LOCAL_CACHE
+import { localCacheBinding as reduxLocalCacheBinding, LocalCache } from "@miroir-framework/react/local-cache/redux";
 vi.mock("../../src/miroir-fwk/4-tests/useSelectedApplicationMiroirTestSuiteRegistries.js", async () => {
   const { loadApplicationRunnerUuidIndexFromFolders } = await import(
     "@miroir-framework/core/model-validation-fs"
@@ -156,7 +158,7 @@ describe("Report MiroirTests from the Miroir Tests page (#330)", () => {
     expect(catalogEntry?.uiRunnerKind).toBe("reportTest");
 
     render(
-      <LocalCacheProvider store={appLocalCacheStore()}>
+      <LocalCacheProvider binding={reduxLocalCacheBinding} store={appLocalCacheStore()}>
         <MiroirContextReactProvider miroirContext={miroirContext} domainController={appDomainController()}>
           <ReportPageContextProvider>
             <MiroirTestDisplay

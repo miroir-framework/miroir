@@ -260,6 +260,7 @@ async function startWebApp(root: Root) {
     emulatedServer,
     miroirContext,
     processCapabilities,
+    localCacheBinding,
   } = await startMiroirClient(miroirConfigToUse, {
     stores: [miroirIndexedDbStoreSectionStartup],
     activityTracker: miroirActivityTracker,
@@ -288,7 +289,7 @@ async function startWebApp(root: Root) {
     <StrictMode>
       <ThemeProvider theme={theme}>
         <StyledEngineProvider injectFirst>
-          <LocalCacheProvider store={domainControllerForClient.getLocalCache().getInnerStore()}>
+          <LocalCacheProvider binding={localCacheBinding} store={domainControllerForClient.getLocalCache().getInnerStore()}>
             <MiroirContextReactProvider
               miroirContext={miroirContext}
               domainController={domainControllerForClient}

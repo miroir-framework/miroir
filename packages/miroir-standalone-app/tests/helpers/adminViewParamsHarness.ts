@@ -13,7 +13,8 @@ import {
   type DomainControllerInterface,
   type LocalCacheInterface,
 } from "@miroir-framework/core";
-import { LocalCache, PersistenceReduxSaga } from "@miroir-framework/react";
+// #656: the redux local cache; Slice 4 makes the test helpers follow MIROIR_TEST_LOCAL_CACHE
+import { LocalCache, PersistenceReduxSaga } from "@miroir-framework/react/local-cache/redux";
 import { adminSelfApplication, defaultAdminViewParams, entityViewParams } from "@miroir-framework/core/admin";
 
 /** Puts the Admin ViewParams, with `viewParams` over the defaults, in the local cache, as a save landing. */

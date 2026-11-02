@@ -90,6 +90,8 @@ import {
   type FakeExternalServiceServer,
 } from "../../../utils/fakeExternalServiceServer.js";
 
+// #656: the redux local cache; Slice 4 makes the test helpers follow MIROIR_TEST_LOCAL_CACHE
+import { localCacheBinding as reduxLocalCacheBinding } from "@miroir-framework/react/local-cache/redux";
 vi.mock("react-router-dom", async () => {
   const actual = await vi.importActual<typeof import("react-router-dom")>("react-router-dom");
   return {
@@ -395,7 +397,7 @@ function renderObjectInstancePlaylistReport(reportDefinition: Report, playlistId
       initialEntries={[`/?${search}`]}
     >
       <MiroirThemeProvider currentThemeOptions={testThemeOptions}>
-        <LocalCacheProvider store={domainController.getLocalCache().getInnerStore()}>
+        <LocalCacheProvider binding={reduxLocalCacheBinding} store={domainController.getLocalCache().getInnerStore()}>
           <MiroirContextReactProvider
             miroirContext={miroirContext}
             domainController={domainController}

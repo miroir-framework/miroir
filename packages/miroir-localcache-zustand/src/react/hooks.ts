@@ -2,10 +2,8 @@
  * React hooks for Zustand-based local cache.
  * Provides useSelector and LocalCacheProvider for React integration.
  */
-import { createContext, useContext, createElement, ReactNode, useRef, useMemo } from "react";
-import type { StoreApi } from "zustand";
-import { useStoreWithEqualityFn } from "zustand/traditional";
-import { shallow } from "zustand/shallow";
+import { createContext, useContext, createElement, ReactNode, useRef } from "react";
+import { useStore, type StoreApi } from "zustand";
 
 import { LocalCacheStore } from "../4_services/localCache/UndoRedoStore.js";
 import { ZustandStateWithUndoRedo } from "../4_services/localCache/localCacheZustandInterface.js";
@@ -43,8 +41,18 @@ export function useSelector<T>(
     );
   }
 
-  // One hook call whatever the arguments (rules of hooks); without equalityFn, Object.is as useStore
-  return useStoreWithEqualityFn(store, selector, equalityFn);
+  // #656: one hook call whatever the arguments (rules of hooks). With `equalityFn`, the selection keeps its previous
+  // value while equal, so the snapshot stays stable (zustand's `useShallow` pattern), without `zustand/traditional`
+  // and its `use-sync-external-store` dependency.
+  const previous = useRef<{ value: T } | undefined>(undefined);
+  return useStore(store, (state) => {
+    const next = selector(state);
+    if (equalityFn && previous.current && equalityFn(previous.current.value, next)) {
+      return previous.current.value;
+    }
+    previous.current = { value: next };
+    return next;
+  });
 }
 
 // ###############################################################################

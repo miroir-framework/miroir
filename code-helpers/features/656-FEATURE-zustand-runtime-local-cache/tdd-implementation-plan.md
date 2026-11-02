@@ -36,7 +36,7 @@ Not in this plan: a config default for the choice (D1-b, later); the selectors i
 | 0 | Each local cache names itself; the contract and the test switch in core | ✅ | `currentLocalCacheInfo().implementation` on both caches; each cache's `node.ts` `satisfies LocalCacheModule` (tsc) |
 | 1 | Tracer: a Node process starts on Zustand | ✅ | cli `startMiroirNode.integ` on both caches |
 | 2 | Every Node test platform follows `MIROIR_TEST_LOCAL_CACHE` | ✅ | mcp, server-library, ai, env tests on both caches |
-| 3 | A React client starts and renders on Zustand | ⬜ | react `startMiroirClient.integ` on both caches; standalone bundle guard |
+| 3 | A React client starts and renders on Zustand | ✅ | react `startMiroirClient.integ` on both caches; standalone bundle guard |
 | 4 | The standalone app's UI tests run on the chosen cache | ⬜ | `nonreg --local-cache zustand --scope smoke,ui,localcache` |
 | 5 | Docs, full nonreg on both caches, cleanup, AC | ⬜ | `nonreg:filesystem` and `nonreg:zustand` |
 
@@ -203,7 +203,7 @@ npm run nonreg:filesystem -- --runner shared --local-cache zustand --scope smoke
 
 ## Slice 3 — A React client starts and renders on Zustand
 
-**Status:** ⬜ pending
+**Status:** ✅ done
 
 ### RED
 
@@ -234,7 +234,13 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,ui,localcache
 
 ### Realization
 
-_(pending)_
+- RED seen: with `MIROIR_TEST_LOCAL_CACHE=zustand`, `startMiroirClient.integ` failed (no `localCache` option, no binding).
+- React: `src/localCacheBinding.ts` (`LocalCacheBinding`, `LocalCacheProvider({ binding, store })`, `useSelector`, `useLocalCacheBinding`, `shallowEqual`); `src/local-cache-redux.ts`, `src/local-cache-zustand.ts` (`./local-cache/redux`, `./local-cache/zustand`: binding, `localCacheModule`, implementation classes); `startMiroirClient(config, { localCache })` loads one through `loadLocalCache(kind)` (two dynamic imports, lazy chunks) and returns `localCacheBinding`; `./local-cache` removed. `MlEnumEditor`, `MlElementEditorHooks` use react's hooks (R1).
+- D8 went one step further than planned: tsup bundles the redux package from its `dist`, where `node.js` is one module, so the root's selectors dragged the saga and the slice into a shared chunk. The redux package gained a `./selectors` entry (`src/selectors.ts`, with its own chunk), and the key helpers and `selectDomainStateFromlocalCacheEntityZone` moved to `localCacheKeys.ts` (re-exported by `LocalCacheSlice`). React's root now reaches no `redux-saga`, no `react-redux` and no zustand module.
+- Zustand's `useSelector` keeps the previous selection while `equalityFn` holds it equal (zustand's `useShallow` pattern) over `zustand`'s `useStore`, so neither package needs `use-sync-external-store`. The zustand folder joins the published set as bundled into react (`published-packages.json`, `BUNDLED_INTO_ANOTHER`), with `files`, `engines`, `repository`, `LICENSE.md`, a `react` devDependency.
+- Importers: the app and the sandbox pass `platform.localCacheBinding`; the test helpers and 19 tests import the classes and `localCacheBinding` from `./local-cache/redux` (Slice 4 routes them through the environment). Standalone `localCacheImplementation.ts` loads through react's `loadLocalCache`.
+- Bundles: both apps' start is smaller, the local caches off the page (`redux-saga`, `react-redux`, `@reduxjs/toolkit` in Electron now lazy): standalone 841981 → 827963 bytes gzipped, Electron 908129 → 846128; baselines recorded. `forbiddenEager` gains `redux-saga`, `@redux-saga/*`, `zustand` (and `react-redux` in the webapp): the D7 check, pinned by `test_no_local_cache_loads_with_the_page`.
+- Validation: react `startMiroirClient.integ` on both caches (2/2 each); react suite 76 of 78 (the 2 `schemaReloadPolicy` failures also fail on the base); guards 574 passed; lint 0; tsc on react, both caches, sandbox, standalone (2 errors in `Ai*ProposalForm.tsx`, present before); `nonreg:filesystem --scope smoke,ui,localcache,tooling,runners` 90 of 91: `integ-runner.lendDocument` fails after the ui steps (its Library reseed finds no Author entity) and passes alone and in `--scope runners` (16/16). To compare against the base in Slice 5.
 
 ---
 

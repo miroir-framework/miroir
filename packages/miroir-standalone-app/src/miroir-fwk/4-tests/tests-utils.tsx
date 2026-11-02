@@ -36,11 +36,15 @@ import {
 } from "@miroir-framework/core/meta-model";
 
 import {
-  LocalCache,
   LocalCacheProvider,
   MiroirContextReactProvider,
-  ReduxStoreWithUndoRedo,
 } from '@miroir-framework/react';
+// #656: the redux local cache; Slice 4 makes the test helpers follow MIROIR_TEST_LOCAL_CACHE
+import {
+  LocalCache,
+  localCacheBinding as reduxLocalCacheBinding,
+  type ReduxStoreWithUndoRedo,
+} from "@miroir-framework/react/local-cache/redux";
 import { packageName } from '../../constants';
 import { cleanLevel } from '../4_view/constants';
 
@@ -146,7 +150,7 @@ export function renderWithProviders(
 ) {
   function Wrapper({ children }: PropsWithChildren<{}>): JSX.Element {
     return store ? (
-    <LocalCacheProvider store={store}>
+    <LocalCacheProvider binding={reduxLocalCacheBinding} store={store}>
       {children}
       </LocalCacheProvider>
     ) : <div>{children}</div>;
@@ -168,7 +172,7 @@ export function renderWithProvidersWithContextProvider(
 ) {
   function Wrapper({ children }: PropsWithChildren<{}>): JSX.Element {
     return store ? (
-      <LocalCacheProvider store={store}> 
+      <LocalCacheProvider binding={reduxLocalCacheBinding} store={store}> 
         <MiroirContextReactProvider miroirContext={miroirContext} domainController={domainController}>
           {children}
         </MiroirContextReactProvider>

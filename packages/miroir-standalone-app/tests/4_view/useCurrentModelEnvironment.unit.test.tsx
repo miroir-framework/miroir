@@ -21,10 +21,8 @@ import {
   type EntityInstance,
 } from "@miroir-framework/core";
 import {
-  LocalCache,
   LocalCacheProvider,
   MiroirContextReactProvider,
-  reduxStoreWithUndoRedoGetInitialState,
   useMiroirContextService,
   type LocalCacheSliceState,
   type MiroirReactContext,
@@ -41,6 +39,8 @@ import {
 } from "../helpers/minimalLocalCacheStateForModel.js";
 
 import { instanceEndpointV1, selfApplicationMiroir } from "@miroir-framework/core/meta-model";
+// #656: the redux local cache; Slice 4 makes the test helpers follow MIROIR_TEST_LOCAL_CACHE
+import { localCacheBinding as reduxLocalCacheBinding, LocalCache, reduxStoreWithUndoRedoGetInitialState } from "@miroir-framework/react/local-cache/redux";
 const TEST_UPDATE_PRESENT_MODEL = "TEST_UPDATE_PRESENT_MODEL";
 
 const miroirActivityTracker = new MiroirActivityTracker();
@@ -89,7 +89,7 @@ function TestProviders({
   syncApplications?: string[];
 }) {
   return (
-    <LocalCacheProvider store={store}>
+    <LocalCacheProvider binding={reduxLocalCacheBinding} store={store}>
       <MiroirContextReactProvider
         miroirContext={miroirContext}
         domainController={{} as DomainControllerInterface}
