@@ -154,7 +154,10 @@ export {
 } from "./miroir-localcache-imports.js";
 export {
   useLocalCacheBinding,
+  useOptionalLocalCacheStore,
   type LocalCacheBinding,
+  type LocalCacheStoreHandle,
+  type LocalCacheStateStore,
   type LocalCacheProviderProps,
   type LocalCacheSelectorHook,
 } from "./localCacheBinding.js";

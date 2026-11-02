@@ -7,13 +7,14 @@ import {
   startMiroirPlatformWith,
   type LocalCacheKind,
   type LocalCacheModule,
+  type LocalCacheSliceState,
   type MiroirConfigClient,
   type MiroirPlatform,
   type MiroirPlatformOptions,
   type ProcessCapabilities,
 } from "@miroir-framework/core";
 
-import type { LocalCacheBinding } from "./localCacheBinding.js";
+import type { LocalCacheBinding, LocalCacheStateStore } from "./localCacheBinding.js";
 
 /**
  * What a React client passes to `MiroirContextReactProvider` and `LocalCacheProvider` (#639): with the
@@ -30,8 +31,15 @@ export type MiroirClientOptions = MiroirPlatformOptions & {
   localCache?: LocalCacheKind;
 };
 
-/** A local cache implementation, as the client takes it: the module to start on, the binding to render with. */
-export type LoadedLocalCache = { localCacheModule: LocalCacheModule; localCacheBinding: LocalCacheBinding };
+/**
+ * A local cache implementation, as the client takes it: the module to start on, the binding to render with, and
+ * stores on a given state for tests and sandboxes.
+ */
+export type LoadedLocalCache = {
+  localCacheModule: LocalCacheModule;
+  localCacheBinding: LocalCacheBinding;
+  createLocalCacheStateStore: (presentModelSnapshot: LocalCacheSliceState) => LocalCacheStateStore;
+};
 
 /**
  * #656: loads one local cache implementation, from its own entry; a bundler makes each a lazy chunk, so a

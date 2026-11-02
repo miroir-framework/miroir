@@ -2,7 +2,6 @@ import { describe, expect, it, vi, afterEach } from "vitest";
 import { render, renderHook, screen, waitFor, act } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import React, { useEffect } from "react";
-import { configureStore, type Store } from "@reduxjs/toolkit";
 
 import { deployment_Miroir } from "@miroir-framework/core/admin";
 import {
@@ -26,7 +25,7 @@ import {
   useMiroirContextService,
   type LocalCacheSliceState,
   type MiroirReactContext,
-  type ReduxStateWithUndoRedo,
+  type LocalCacheStateStore,
 } from "@miroir-framework/react";
 
 import { useCurrentModelEnvironment } from "@miroir-framework/react";
@@ -39,9 +38,8 @@ import {
 } from "../helpers/minimalLocalCacheStateForModel.js";
 
 import { instanceEndpointV1, selfApplicationMiroir } from "@miroir-framework/core/meta-model";
-// #656: the redux local cache; Slice 4 makes the test helpers follow MIROIR_TEST_LOCAL_CACHE
-import { localCacheBinding as reduxLocalCacheBinding, LocalCache, reduxStoreWithUndoRedoGetInitialState } from "@miroir-framework/react/local-cache/redux";
-const TEST_UPDATE_PRESENT_MODEL = "TEST_UPDATE_PRESENT_MODEL";
+// #656: the local cache MIROIR_TEST_LOCAL_CACHE names (tests/setup.ts), redux by default
+import { testLocalCache } from "../../src/miroir-fwk/4-tests/testLocalCache";
 
 const miroirActivityTracker = new MiroirActivityTracker();
 const miroirEventService = new MiroirEventService(miroirActivityTracker);
@@ -56,26 +54,9 @@ const applicationDeploymentMap: ApplicationDeploymentMap = {
   [defaultLibraryAppModel.applicationUuid]: deployment_Library_DO_NO_USE.uuid,
 };
 
-function createTestStore(initialSlice: LocalCacheSliceState): Store {
-  const baseState: ReduxStateWithUndoRedo = reduxStoreWithUndoRedoGetInitialState(() => initialSlice);
-  baseState.presentModelSnapshot = initialSlice;
-
-  return configureStore({
-    reducer: {
-      presentModelSnapshot: (state = baseState.presentModelSnapshot, action: any) => {
-        if (action.type === TEST_UPDATE_PRESENT_MODEL) {
-          return action.payload as LocalCacheSliceState;
-        }
-        return state;
-      },
-      currentTransaction: (state = baseState.currentTransaction) => state,
-      previousModelSnapshot: (state = baseState.previousModelSnapshot) => state,
-      pastModelPatches: (state = baseState.pastModelPatches) => state,
-      futureModelPatches: (state = baseState.futureModelPatches) => state,
-      queriesResultsCache: (state = baseState.queriesResultsCache) => state,
-    },
-    preloadedState: baseState,
-  });
+// #656 (D10): the store of the local cache MIROIR_TEST_LOCAL_CACHE names, holding the given model snapshot
+function createTestStore(initialSlice: LocalCacheSliceState): LocalCacheStateStore {
+  return testLocalCache().createLocalCacheStateStore(initialSlice);
 }
 
 function TestProviders({
@@ -83,13 +64,13 @@ function TestProviders({
   children,
   syncApplications,
 }: {
-  store: Store;
+  store: LocalCacheStateStore;
   children: React.ReactNode;
   /** When set, mounts ModelEnvironmentSync for these apps (Proposal 3). */
   syncApplications?: string[];
 }) {
   return (
-    <LocalCacheProvider binding={reduxLocalCacheBinding} store={store}>
+    <LocalCacheProvider binding={testLocalCache().localCacheBinding} store={store.store}>
       <MiroirContextReactProvider
         miroirContext={miroirContext}
         domainController={{} as DomainControllerInterface}
@@ -225,15 +206,12 @@ describe("useCurrentModelEnvironment (Phase 1)", () => {
     const callsAfterMount = schemaSpy.mock.calls.length;
 
     act(() => {
-      store.dispatch({
-        type: TEST_UPDATE_PRESENT_MODEL,
-        payload: addEndpointToLocalCacheState(
+      store.setPresentModelSnapshot(addEndpointToLocalCacheState(
           emptySlice,
           deployment_Miroir.uuid,
           "data",
           { uuid: instanceEndpointV1.uuid! },
-        ),
-      });
+        ));
     });
 
     await waitFor(() => {
@@ -317,16 +295,13 @@ describe("useCurrentModelEnvironment (Phase 199 — schemaRevision policy)", () 
     const callsAfterMount = resolveSpy.mock.calls.length;
 
     act(() => {
-      store.dispatch({
-        type: TEST_UPDATE_PRESENT_MODEL,
-        payload: mutateEntityDescriptionInLocalCacheState(
+      store.setPresentModelSnapshot(mutateEntityDescriptionInLocalCacheState(
           librarySlice,
           deployment_Library_DO_NO_USE.uuid,
           "model",
           book1.uuid,
           "Runtime-only change",
-        ),
-      });
+        ));
     });
 
     await waitFor(() => {
@@ -364,15 +339,12 @@ describe("useCurrentModelEnvironment (Phase 199 — schemaRevision policy)", () 
     const callsAfterMount = resolveSpy.mock.calls.length;
 
     act(() => {
-      store.dispatch({
-        type: TEST_UPDATE_PRESENT_MODEL,
-        payload: addEndpointToLocalCacheState(
+      store.setPresentModelSnapshot(addEndpointToLocalCacheState(
           librarySlice,
           deployment_Library_DO_NO_USE.uuid,
           "model",
           { uuid: "overlay-endpoint-uuid", application: defaultLibraryAppModel.applicationUuid },
-        ),
-      });
+        ));
     });
 
     await waitFor(() => {
@@ -426,15 +398,12 @@ describe("useCurrentModelEnvironment (Phase 199 — schemaRevision policy)", () 
     const schemaBeforeAdminMutation = capturedLibrarySchema;
 
     act(() => {
-      store.dispatch({
-        type: TEST_UPDATE_PRESENT_MODEL,
-        payload: addEndpointToLocalCacheState(
+      store.setPresentModelSnapshot(addEndpointToLocalCacheState(
           miroirSlice,
           deployment_Miroir.uuid,
           "data",
           { uuid: instanceEndpointV1.uuid! },
-        ),
-      });
+        ));
     });
 
     await waitFor(() => {
@@ -486,15 +455,12 @@ describe("useCurrentModelEnvironment (Phase 199 — schemaRevision policy)", () 
     const schemaBefore = capturedEnv!.miroirFundamentalMlSchema;
 
     act(() => {
-      store.dispatch({
-        type: TEST_UPDATE_PRESENT_MODEL,
-        payload: addEndpointToLocalCacheState(
+      store.setPresentModelSnapshot(addEndpointToLocalCacheState(
           miroirSlice,
           deployment_Miroir.uuid,
           "data",
           { uuid: instanceEndpointV1.uuid! },
-        ),
-      });
+        ));
     });
 
     await waitFor(() => {
@@ -504,7 +470,7 @@ describe("useCurrentModelEnvironment (Phase 199 — schemaRevision policy)", () 
   });
 
   it("does not call localCache.currentModelEnvironment", async () => {
-    const envSpy = vi.spyOn(LocalCache.prototype, "currentModelEnvironment");
+    const envSpy = vi.spyOn(testLocalCache().LocalCache.prototype, "currentModelEnvironment");
 
     const store = createTestStore(
       buildMinimalLocalCacheStateForDeployment(deployment_Miroir.uuid, "data"),
@@ -564,15 +530,12 @@ describe("useCurrentModelEnvironment (Phase 6 — performance acceptance)", () =
     const callsAfterMount = resolveSpy.mock.calls.length;
 
     act(() => {
-      store.dispatch({
-        type: TEST_UPDATE_PRESENT_MODEL,
-        payload: addEndpointToLocalCacheState(
+      store.setPresentModelSnapshot(addEndpointToLocalCacheState(
           librarySlice,
           deployment_Library_DO_NO_USE.uuid,
           "model",
           { uuid: "phase6-overlay-endpoint", application: defaultLibraryAppModel.applicationUuid },
-        ),
-      });
+        ));
     });
 
     await waitFor(() => {
@@ -677,16 +640,13 @@ describe("useCurrentModelEnvironment (Phase 7 — ModelEnvironmentSync)", () => 
     const callsAfterMount = resolveSpy.mock.calls.length;
 
     act(() => {
-      store.dispatch({
-        type: TEST_UPDATE_PRESENT_MODEL,
-        payload: mutateEntityDescriptionInLocalCacheState(
+      store.setPresentModelSnapshot(mutateEntityDescriptionInLocalCacheState(
           librarySlice,
           deployment_Library_DO_NO_USE.uuid,
           "model",
           book1.uuid,
           "Runtime-only change",
-        ),
-      });
+        ));
     });
 
     await waitFor(() => {
@@ -694,9 +654,7 @@ describe("useCurrentModelEnvironment (Phase 7 — ModelEnvironmentSync)", () => 
     });
 
     act(() => {
-      store.dispatch({
-        type: TEST_UPDATE_PRESENT_MODEL,
-        payload: addEndpointToLocalCacheState(
+      store.setPresentModelSnapshot(addEndpointToLocalCacheState(
           librarySlice,
           deployment_Library_DO_NO_USE.uuid,
           "model",
@@ -704,8 +662,7 @@ describe("useCurrentModelEnvironment (Phase 7 — ModelEnvironmentSync)", () => 
             uuid: "phase7-overlay-endpoint",
             application: defaultLibraryAppModel.applicationUuid,
           },
-        ),
-      });
+        ));
     });
 
     await waitFor(() => {

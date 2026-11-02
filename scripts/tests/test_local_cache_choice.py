@@ -1,9 +1,9 @@
 """#656: the local cache is chosen at startup, not by editing framework sources.
 
 UI sources reach the local cache through one switch file
-(`packages/miroir-react/src/miroir-localcache-imports.ts`). The sources that still import
-`react-redux`, `ReactReduxContext` or a local cache package directly are an allowlist the issue's
-slices shrink; it ends empty.
+(`packages/miroir-react/src/miroir-localcache-imports.ts`), the binding `LocalCacheProvider` is given, or
+`loadLocalCache`; no other UI source imports `react-redux`, `ReactReduxContext` or a local cache package.
+A type-only import loads nothing, so it is allowed.
 """
 
 from __future__ import annotations
@@ -20,13 +20,8 @@ DIRECT_LOCAL_CACHE = re.compile(
     r"""|\bReactReduxContext\b"""
 )
 
-# Shrinks slice by slice (Slices 3 and 4); empty at the end of #656.
-ALLOWLIST = {
-    # the UI test helpers, on redux until Slice 4
-    "packages/miroir-standalone-app/src/miroir-fwk/4-tests/componentTests/componentTestTools.tsx",
-    "packages/miroir-standalone-app/src/miroir-fwk/4-tests/tests-utils.tsx",
-    "packages/miroir-standalone-app/src/miroir-fwk/4-tests/useSelectedApplicationMiroirTestSuiteRegistries.ts",
-}
+# `import type ... from "...";`: erased by the compiler, it loads no local cache
+TYPE_ONLY_IMPORT = re.compile(r"""\bimport\s+type\s[^;]*?\bfrom\s+["'][^"']*["']""")
 # #656 (D9): the entries of @miroir-framework/react that hold one local cache each, with its React binding
 CACHE_ENTRIES = {"packages/miroir-react/src/local-cache-redux.ts", "packages/miroir-react/src/local-cache-zustand.ts"}
 
@@ -38,17 +33,26 @@ def _ui_sources():
                 yield path.relative_to(REPO_ROOT).as_posix()
 
 
+def _loads_a_local_cache(text: str) -> bool:
+    return bool(DIRECT_LOCAL_CACHE.search(TYPE_ONLY_IMPORT.sub("", text)))
+
+
 def test_the_pattern_finds_the_switch_file():
     text = (REPO_ROOT / SWITCH_FILE).read_text(encoding="utf-8")
-    assert DIRECT_LOCAL_CACHE.search(text), "the switch file no longer matches: the pattern is stale"
+    assert _loads_a_local_cache(text), "the switch file no longer matches: the pattern is stale"
 
 
-def test_only_allowlisted_ui_sources_reach_a_local_cache_directly():
+def test_a_type_only_import_loads_no_local_cache():
+    assert not _loads_a_local_cache('import type * as Entry from "@miroir-framework/react/local-cache/redux";')
+    assert _loads_a_local_cache('import { LocalCache } from "@miroir-framework/react/local-cache/redux";')
+
+
+def test_no_ui_source_reaches_a_local_cache_directly():
     direct = {
         source
         for source in _ui_sources()
         if source != SWITCH_FILE
         and source not in CACHE_ENTRIES
-        and DIRECT_LOCAL_CACHE.search((REPO_ROOT / source).read_text(encoding="utf-8"))
+        and _loads_a_local_cache((REPO_ROOT / source).read_text(encoding="utf-8"))
     }
-    assert direct == ALLOWLIST
+    assert direct == set()

@@ -87,8 +87,8 @@ import { cleanLevel } from "../../4_view/constants.js";
 import { useCurrentModel, useCurrentModelEnvironment } from "@miroir-framework/react";
 import { emptyObject } from "@miroir-framework/react";
 
-// #656: the redux local cache; Slice 4 makes the test helpers follow MIROIR_TEST_LOCAL_CACHE
-import { localCacheBinding as reduxLocalCacheBinding, LocalCache, PersistenceReduxSaga } from "@miroir-framework/react/local-cache/redux";
+// #656: the local cache MIROIR_TEST_LOCAL_CACHE names (tests/setup.ts), redux by default
+import { testLocalCache } from "../testLocalCache";
 // ################################################################################################
 // Browser-safe component test tools (#286). No vitest, no @testing-library/react, no process.env,
 // no registerTestImplementation: this module can be loaded by the running app.
@@ -555,7 +555,7 @@ export function MiroirTestProviders(props: MiroirTestProvidersProps) {
   return (
     <ThemeProvider theme={testTheme}>
       <StyledEngineProvider injectFirst>
-        <LocalCacheProvider binding={reduxLocalCacheBinding} store={props.localCache.getInnerStore()}>
+        <LocalCacheProvider binding={testLocalCache().localCacheBinding} store={props.localCache.getInnerStore()}>
           {props.offerReportsAndEntities ? (
             <MiroirTestContextWithReports {...props} />
           ) : (
@@ -662,7 +662,7 @@ export function buildComponentTestWrapper(
     }) as ReturnType<MiroirContext["extendMiroirConfigWithExtraDeploymentConfiguration"]>;
   const handleAction = createRecordingFunction();
 
-  const persistenceSaga:PersistenceReduxSaga  = new PersistenceReduxSaga({
+  const { localCache, persistenceStore: persistenceSaga, runPersistenceStore } = testLocalCache().newLocalCache({
     persistenceStoreAccessMode: "remote",
     localPersistenceStoreControllerManager: new PersistenceStoreControllerManager(
       ConfigurationService.configurationService.adminStoreFactoryRegister,
@@ -670,8 +670,6 @@ export function buildComponentTestWrapper(
     ),
     remotePersistenceStoreRestClient: undefined as any,
   });
-
-  const localCache: LocalCacheInterface = new LocalCache(persistenceSaga);
 
   log.debug("buildComponentTestWrapper", "defaultMiroirMetaModel.entities", JSON.stringify(defaultMiroirMetaModel.entities));
   const resultForLoadingMiroirMetaModel: Action2ReturnType = localCache.handleLocalCacheAction({
@@ -855,7 +853,7 @@ export function buildComponentTestWrapper(
   );
 
   if (options.wireLocalCacheCompositeAction) {
-    persistenceSaga.run(localCache as any);
+    runPersistenceStore();
   }
 
   const wiredDomainController: DomainControllerInterface | undefined =

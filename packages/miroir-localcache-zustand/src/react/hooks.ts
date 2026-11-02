@@ -41,17 +41,22 @@ export function useSelector<T>(
     );
   }
 
-  // #656: one hook call whatever the arguments (rules of hooks). With `equalityFn`, the selection keeps its previous
-  // value while equal, so the snapshot stays stable (zustand's `useShallow` pattern), without `zustand/traditional`
-  // and its `use-sync-external-store` dependency.
-  const previous = useRef<{ value: T } | undefined>(undefined);
+  // #656: one hook call whatever the arguments (rules of hooks), and react-redux's semantics:
+  // - the selection is computed once per (state, selector): zustand's `useStore` calls the selector on every snapshot
+  //   read, so a selector that builds a new object or array would give React a new snapshot on each read and loop
+  //   ("Maximum update depth exceeded"), where react-redux memoizes it;
+  // - with `equalityFn`, the selection keeps its previous value while equal (zustand's `useShallow` pattern), without
+  //   `zustand/traditional` and its `use-sync-external-store` dependency.
+  const memo = useRef<{ state: ZustandStateWithUndoRedo; selector: typeof selector; value: T } | undefined>(undefined);
   return useStore(store, (state) => {
-    const next = selector(state);
-    if (equalityFn && previous.current && equalityFn(previous.current.value, next)) {
-      return previous.current.value;
+    const previous = memo.current;
+    if (previous && previous.state === state && previous.selector === selector) {
+      return previous.value;
     }
-    previous.current = { value: next };
-    return next;
+    const next = selector(state);
+    const value = equalityFn && previous && equalityFn(previous.value, next) ? previous.value : next;
+    memo.current = { state, selector, value };
+    return value;
   });
 }
 

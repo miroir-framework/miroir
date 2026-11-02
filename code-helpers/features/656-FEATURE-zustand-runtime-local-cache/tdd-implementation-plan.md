@@ -37,7 +37,7 @@ Not in this plan: a config default for the choice (D1-b, later); the selectors i
 | 1 | Tracer: a Node process starts on Zustand | ✅ | cli `startMiroirNode.integ` on both caches |
 | 2 | Every Node test platform follows `MIROIR_TEST_LOCAL_CACHE` | ✅ | mcp, server-library, ai, env tests on both caches |
 | 3 | A React client starts and renders on Zustand | ✅ | react `startMiroirClient.integ` on both caches; standalone bundle guard |
-| 4 | The standalone app's UI tests run on the chosen cache | ⬜ | `nonreg --local-cache zustand --scope smoke,ui,localcache` |
+| 4 | The standalone app's UI tests run on the chosen cache | ✅ | `nonreg --local-cache zustand --scope smoke,ui,localcache` |
 | 5 | Docs, full nonreg on both caches, cleanup, AC | ⬜ | `nonreg:filesystem` and `nonreg:zustand` |
 
 ---
@@ -246,7 +246,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,ui,localcache
 
 ## Slice 4 — The standalone app's UI tests run on the chosen cache
 
-**Status:** ⬜ pending
+**Status:** ✅ done
 
 ### RED
 
@@ -273,7 +273,14 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,ui,localcache
 
 ### Realization
 
-_(pending)_
+- RED seen: the first zustand UI run (`--scope smoke,ui,localcache`, 20261102T110659Z) passed 55 of 58. `assistantPanel.integ` looped ("Maximum update depth exceeded") on zustand only. `componentTestMode.286.phase4` (it calls `vi.resetModules`) and `multistepProcess.274` (its `vi.mock("react-router-dom")` no longer reached react, which the setup had loaded first) failed on both caches, through the first version of the test switch.
+- Test switch: `src/miroir-fwk/4-tests/testLocalCache.ts` (`TestLocalCache`: `kind`, `localCacheBinding`, `newLocalCache(params?)` with `runPersistenceStore()`, `createLocalCacheStateStore`, `LocalCache` for prototype spies). It imports types only. The vitest setup hands it the entry `MIROIR_TEST_LOCAL_CACHE` names (`@miroir-framework/react/local-cache/<kind>`, which does not load react's root), and the app hands it `loadLocalCache(localCacheBinding.kind)` after `startMiroirClient`, so the in-app Miroir Tests use the app's cache. The selection is kept on `globalThis` so that it survives `vi.resetModules`.
+- Helpers and tests: `tests-utils.tsx` (store typed `LocalCacheStoreHandle`, `localCache: LocalCacheInterface`), `componentTestTools.tsx`, `AdminViewParamsProviders.tsx`, `adminViewParamsHarness.ts` and 16 tests build through `testLocalCache()`. `useSelectedApplicationMiroirTestSuiteRegistries.ts` reads the store through react's new `useOptionalLocalCacheStore()` (R1).
+- D10: react gained `LocalCacheStateStore` and a `createLocalCacheStateStore(presentModelSnapshot)` in each cache entry (redux `configureStore`, zustand `createStore`), also returned by `loadLocalCache`. `useCurrentModelEnvironment.unit` and react's `ListTransformerPanel.unit` build their store with it.
+- D6: zustand's `useSelector` now memoizes the selection per (state, selector), as react-redux does. Zustand's `useStore` calls the selector on every snapshot read, so a selector that builds an array gave React a new snapshot on each read. Pinned by react's `localCacheBinding.unit` on both caches (RED on zustand before the fix: 2 failures).
+- `test_local_cache_choice.py`: allowlist removed (no UI source loads a local cache); a type-only import is allowed.
+- Validation: _(below, after the rerun)_
+
 
 ---
 

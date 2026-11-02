@@ -75,8 +75,8 @@ import { MiroirTestDisplay } from "../../../../src/miroir-fwk/4_view/components/
 import { ReportPageContextProvider } from "@miroir-framework/react";
 import { resolveRepoRoot } from "../../../helpers/integrationTestProfiles.js";
 
-// #656: the redux local cache; Slice 4 makes the test helpers follow MIROIR_TEST_LOCAL_CACHE
-import { localCacheBinding as reduxLocalCacheBinding, LocalCache, PersistenceReduxSaga } from "@miroir-framework/react/local-cache/redux";
+// #656: the local cache MIROIR_TEST_LOCAL_CACHE names (tests/setup.ts), redux by default
+import { testLocalCache } from "../../../../src/miroir-fwk/4-tests/testLocalCache";
 // ################################################################################################
 const MIROIR_TEST_DATA_FOLDER = join(
   resolveRepoRoot(),
@@ -122,7 +122,7 @@ function buildAppHarness() {
   const miroirActivityTracker = new MiroirActivityTracker();
   const miroirEventService = new MiroirEventService(miroirActivityTracker);
   const miroirContext = new MiroirContext(miroirActivityTracker, miroirEventService, undefined as any);
-  const persistenceSaga = new PersistenceReduxSaga({
+  const { localCache, persistenceStore: persistenceSaga } = testLocalCache().newLocalCache({
     persistenceStoreAccessMode: "remote",
     localPersistenceStoreControllerManager: new PersistenceStoreControllerManager(
       ConfigurationService.configurationService.adminStoreFactoryRegister,
@@ -130,7 +130,6 @@ function buildAppHarness() {
     ),
     remotePersistenceStoreRestClient: undefined as any,
   });
-  const localCache: LocalCacheInterface = new LocalCache(persistenceSaga);
   const loadResult = localCache.handleLocalCacheAction(
     {
       actionType: "loadNewInstancesInLocalCache",
@@ -178,7 +177,7 @@ function renderDisplays(
   miroirTest: MiroirTestDefinition = componentTestSuiteInstance,
 ) {
   return render(
-    <LocalCacheProvider binding={reduxLocalCacheBinding} store={harness.localCache.getInnerStore()}>
+    <LocalCacheProvider binding={testLocalCache().localCacheBinding} store={harness.localCache.getInnerStore()}>
       {onTestCompletes.map((onTestComplete, index) => (
         <MiroirContextReactProvider
           key={index}

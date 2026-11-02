@@ -13,10 +13,10 @@ import {
   type DomainControllerInterface,
   type LocalCacheInterface,
 } from "@miroir-framework/core";
-// #656: the redux local cache; Slice 4 makes the test helpers follow MIROIR_TEST_LOCAL_CACHE
-import { LocalCache, PersistenceReduxSaga } from "@miroir-framework/react/local-cache/redux";
 import { adminSelfApplication, defaultAdminViewParams, entityViewParams } from "@miroir-framework/core/admin";
 
+// #656: the local cache MIROIR_TEST_LOCAL_CACHE names (tests/setup.ts), redux by default
+import { testLocalCache } from "../../src/miroir-fwk/4-tests/testLocalCache";
 /** Puts the Admin ViewParams, with `viewParams` over the defaults, in the local cache, as a save landing. */
 export function loadViewParams(localCache: LocalCacheInterface, viewParams: Record<string, unknown>): void {
   // no rollback: a rollback of the admin application drops the ViewParams instance just loaded
@@ -55,7 +55,7 @@ export function buildAdminViewParamsHarness(viewParams: Record<string, unknown>)
   const miroirActivityTracker = new MiroirActivityTracker();
   const miroirEventService = new MiroirEventService(miroirActivityTracker);
   const miroirContext = new MiroirContext(miroirActivityTracker, miroirEventService, undefined as any);
-  const persistenceSaga = new PersistenceReduxSaga({
+  const { localCache, persistenceStore: persistenceSaga } = testLocalCache().newLocalCache({
     persistenceStoreAccessMode: "remote",
     localPersistenceStoreControllerManager: new PersistenceStoreControllerManager(
       ConfigurationService.configurationService.adminStoreFactoryRegister,
@@ -63,7 +63,6 @@ export function buildAdminViewParamsHarness(viewParams: Record<string, unknown>)
     ),
     remotePersistenceStoreRestClient: undefined as any,
   });
-  const localCache: LocalCacheInterface = new LocalCache(persistenceSaga);
   loadViewParams(localCache, viewParams);
   const handledActions: any[] = [];
   const domainController = {
