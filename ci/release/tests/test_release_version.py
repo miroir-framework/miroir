@@ -59,7 +59,18 @@ def repo(tmp_path: Path) -> Path:
         "0.1.0",
         private=False,
     )
+    write_published_set(tmp_path, ["lib"])
     return tmp_path
+
+
+def write_published_set(root: Path, names: list[str]) -> None:
+    """#664: scripts/published-packages.json, the set every release packs; here a folder's name is its package's."""
+    path = root / "scripts" / "published-packages.json"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        json.dumps([{"folder": f"packages/{name}", "publishedName": name} for name in names]),
+        encoding="utf-8",
+    )
 
 
 def candidates(names: list[str]):
@@ -91,11 +102,12 @@ def test_plan_layers_runtime_closure(repo: Path) -> None:
 
     assert plan.product_version == "1.3.0"
     assert plan.lerna_candidates == ("app",)
-    assert plan.closure_added == ("core", "lib")
+    assert plan.closure_added == ("core",)  # lib is in the published set, selected before the closure
     assert plan.selected == ("app", "core", "lib")
     assert plan.layers == (("core",), ("lib",), ("app",))
-    assert plan.distributeable == ("app", "lib")
-    assert plan.bundle_only == ("core",)
+    # #664: the published set is distributeable, whatever `private` says; app is not in it
+    assert plan.distributeable == ("lib",)
+    assert plan.bundle_only == ("app", "core")
 
 
 def test_plan_force_adds_package_and_disable_removes_candidate(repo: Path) -> None:
@@ -110,8 +122,44 @@ def test_plan_force_adds_package_and_disable_removes_candidate(repo: Path) -> No
 
     assert plan.forced == ("docs",)
     assert plan.disabled == ("app",)
-    assert plan.selected == ("docs",)
-    assert plan.layers == (("docs",),)
+    # #664: lib (published) and its closure ride along with every release
+    assert plan.selected == ("core", "docs", "lib")
+    assert plan.layers == (("core", "docs"), ("lib",))
+
+
+def test_a_plan_with_no_change_still_selects_the_whole_published_set(repo: Path) -> None:
+    # #664 D2: exact internal pins need every published package at the new version, changed or not
+    plan = build_plan(
+        repo, bump="patch", since="1.2.2", force=[], disable=[], candidate_provider=candidates([])
+    )
+    assert plan.selected == ("core", "lib")
+    assert plan.closure_added == ("core",)
+
+
+def test_a_published_package_is_distributeable_even_when_marked_private(repo: Path) -> None:
+    # #664 D1: the published set decides, the `private` flag no longer does
+    write_manifest(
+        repo / "packages" / "lib" / "package.json", "lib", "0.2.0", dependencies={"core": "*"}, private=True
+    )
+    plan = build_plan(
+        repo, bump="patch", since="1.2.2", force=[], disable=[], candidate_provider=candidates([])
+    )
+    assert plan.distributeable == ("lib",)
+
+
+def test_a_published_package_cannot_be_disabled(repo: Path) -> None:
+    with pytest.raises(ReleaseError, match="published set"):
+        build_plan(
+            repo, bump="patch", since="1.2.2", force=[], disable=["lib"], candidate_provider=candidates(["lib"])
+        )
+
+
+def test_a_plan_needs_the_published_set(repo: Path) -> None:
+    (repo / "scripts" / "published-packages.json").unlink()
+    with pytest.raises(ReleaseError, match="published-packages.json"):
+        build_plan(
+            repo, bump="patch", since="1.2.2", force=[], disable=[], candidate_provider=candidates([])
+        )
 
 
 def test_plan_rejects_disabling_required_dependency(repo: Path) -> None:
@@ -286,3 +334,47 @@ def test_handoff_contract_written(repo: Path) -> None:
     assert data["consumerIssue"] == 224
     assert data["productVersion"] == plan.product_version
     assert Path(data["releasePlan"]) == plan_path
+
+
+# ---------------------------------------------------------------------------------------------------------------
+# #664 D7: an exact product version, so a release candidate (0.5.0-rc.2) can be produced
+
+
+def test_an_exact_version_is_the_product_version(repo: Path) -> None:
+    plan = build_plan(
+        repo, version="1.3.0-rc.1", since="1.2.2", force=[], disable=[], candidate_provider=candidates([])
+    )
+    assert (plan.product_version, plan.bump) == ("1.3.0-rc.1", "exact")
+
+
+@pytest.mark.parametrize("version, message", [("1.3", "invalid SemVer"), ("1.2.3", "already the current")])
+def test_an_exact_version_must_be_valid_and_new(repo: Path, version: str, message: str) -> None:
+    with pytest.raises(ReleaseError, match=message):
+        build_plan(repo, version=version, since="1.2.2", force=[], disable=[], candidate_provider=candidates([]))
+
+
+def test_a_plan_takes_a_bump_or_a_version_not_both(repo: Path) -> None:
+    with pytest.raises(ReleaseError, match="--bump or --version"):
+        build_plan(
+            repo, bump="patch", version="1.3.0", since="1.2.2", force=[], disable=[],
+            candidate_provider=candidates([]),
+        )
+
+
+def test_the_command_refuses_a_bump_with_a_version() -> None:
+    import release_version
+
+    with pytest.raises(SystemExit):
+        release_version.parse_args(["--bump", "patch", "--version", "1.3.0"])
+    assert release_version.parse_args(["--version", "1.3.0"]).version == "1.3.0"
+
+
+def test_the_command_refuses_a_version_whose_tag_exists(tmp_path: Path) -> None:
+    import release_version
+
+    run(["git", "init", "-q"], cwd=tmp_path)
+    run(["git", "-c", "user.email=t@t", "-c", "user.name=t", "commit", "-q", "--allow-empty", "-m", "x"], cwd=tmp_path)
+    run(["git", "tag", "1.3.0"], cwd=tmp_path)
+    with pytest.raises(ReleaseError, match="tag 1.3.0 already exists"):
+        release_version.assert_version_untagged(tmp_path, "1.3.0")
+    release_version.assert_version_untagged(tmp_path, "1.3.1")

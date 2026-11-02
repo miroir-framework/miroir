@@ -9,6 +9,7 @@ emitted here.
 
 Examples:
   python ci/release/release_version.py --bump patch --since 0.5.0-rc.1
+  python ci/release/release_version.py --version 0.5.0-rc.2 --since 0.5.0-rc.1
   python ci/release/release_version.py --bump minor --since 0.5.0-rc.1 --apply --worktree
   python ci/release/release_version.py --bump patch --since 0.5.0-rc.1 --verify release-handoff.json
 """
@@ -40,7 +41,12 @@ REPO_ROOT = RELEASE_DIR.parents[1]
 
 def parse_args(argv: list[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--bump", choices=("major", "minor", "patch"))
+    target = parser.add_mutually_exclusive_group()
+    target.add_argument("--bump", choices=("major", "minor", "patch"))
+    target.add_argument(
+        "--version",
+        help="Exact product version, e.g. 0.5.0-rc.2 (#664): --bump cannot produce a release candidate",
+    )
     parser.add_argument("--since")
     parser.add_argument("--force", action="append", default=[])
     parser.add_argument("--disable", action="append", default=[])
@@ -93,6 +99,20 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     return parser.parse_args(argv)
 
 
+def assert_version_untagged(repo_root: Path, version: str) -> None:
+    """A version whose tag exists was released already (or is being released)."""
+    import subprocess
+
+    found = subprocess.run(
+        ["git", "rev-parse", "-q", "--verify", f"refs/tags/{version}"],
+        cwd=repo_root,
+        capture_output=True,
+        text=True,
+    )
+    if found.returncode == 0:
+        raise ReleaseError(f"tag {version} already exists")
+
+
 def verify_handoff(path: Path) -> None:
     data = read_handoff(path)
     required = (
@@ -125,13 +145,16 @@ def main(argv: list[str] | None = None) -> int:
             return 0
         if args.dry_run and args.apply:
             raise ReleaseError("--dry-run cannot be combined with --apply")
-        if not args.bump:
-            raise ReleaseError("--bump is required unless --verify is used")
+        if not args.bump and not args.version:
+            raise ReleaseError("--bump or --version is required unless --verify is used")
+        if args.version:
+            assert_version_untagged(REPO_ROOT, args.version)
 
         source_root = REPO_ROOT
         plan = build_plan(
             source_root,
             bump=args.bump,
+            version=args.version,
             since=args.since,
             force=args.force,
             disable=args.disable,
@@ -159,6 +182,7 @@ def main(argv: list[str] | None = None) -> int:
                 plan = build_plan(
                     apply_root,
                     bump=args.bump,
+                    version=args.version,
                     since=args.since,
                     force=args.force,
                     disable=args.disable,

@@ -39,10 +39,9 @@ def test_library_declares_no_store_driver_or_binary_dependency():
     assert sorted(name for name in declared if FORBIDDEN.match(name)) == []
 
 
-def test_library_stays_private_until_the_publish_item():
-    # ci/release/release_lib/plan.py treats a non-private package as distributable; the rename (#650 D6) keeps
-    # `private`, the epic's publish item lifts it
-    assert json.loads((LIBRARY / "package.json").read_text(encoding="utf-8"))["private"] is True
+def test_library_is_publishable():
+    # #664: the publish item lifted the `private` the rename (#650 D6) kept; the published set decides
+    assert "private" not in json.loads((LIBRARY / "package.json").read_text(encoding="utf-8"))
 
 
 @pytest.mark.parametrize(

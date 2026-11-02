@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Any, Callable
 
 from release_lib.common import ReleaseError, load_json, log_step, run, executable
-from release_lib.semver import SEMVER, increment
+from release_lib.semver import SEMVER, increment, parse_semver
 from release_lib.workspace import (
     Workspace,
     find_cycles,
@@ -89,22 +89,40 @@ def json_loads_list(text: str) -> list[Any]:
     return entries
 
 
+PUBLISHED_SET_FILE = Path("scripts") / "published-packages.json"
+
+
+def published_names(repo_root: Path) -> set[str]:
+    """#664: the names a release publishes, from scripts/published-packages.json (folders bundled into another
+    package list that package's name, so a name can appear more than once)."""
+    path = repo_root / PUBLISHED_SET_FILE
+    if not path.is_file():
+        raise ReleaseError(f"missing {PUBLISHED_SET_FILE.as_posix()}: the release cannot tell what it publishes")
+    entries = load_json(path)
+    if not isinstance(entries, list) or not all(
+        isinstance(entry, dict) and isinstance(entry.get("publishedName"), str) for entry in entries
+    ):
+        raise ReleaseError(f"{PUBLISHED_SET_FILE.as_posix()}: expected a list of {{folder, publishedName}}")
+    return {entry["publishedName"] for entry in entries}
+
+
 def classify_packages(
-    packages: dict[str, Workspace],
+    published: set[str],
     selected: set[str],
 ) -> tuple[tuple[str, ...], tuple[str, ...]]:
-    """Non-private packages are treated as distributeable; private as bundle-only."""
-    distributeable = tuple(
-        sorted(name for name in selected if not packages[name].private)
-    )
-    bundle_only = tuple(sorted(name for name in selected if packages[name].private))
+    """#664 D1: the published set is distributeable; every other selected package is bundle-only (packed for the
+    artefacts and the consumer checks, never published). The `private` flag follows the set (a guard in
+    scripts/tests checks it) but does not decide here."""
+    distributeable = tuple(sorted(selected & published))
+    bundle_only = tuple(sorted(selected - published))
     return distributeable, bundle_only
 
 
 def build_plan(
     repo_root: Path,
     *,
-    bump: str,
+    bump: str | None = None,
+    version: str | None = None,
     since: str | None,
     force: list[str],
     disable: list[str],
@@ -114,6 +132,13 @@ def build_plan(
     root_version = root.get("version")
     if not isinstance(root_version, str):
         raise ReleaseError("root package.json has no string version")
+    if (bump is None) == (version is None):
+        raise ReleaseError("a release takes --bump or --version, exactly one")
+    if version is not None:
+        # #664 D7: --bump cannot reach a release candidate (0.5.0-rc.1 --patch--> 0.5.0)
+        parse_semver(version)
+        if version == root_version:
+            raise ReleaseError(f"{version} is already the current version")
     packages = workspace_packages(repo_root)
     unknown = (set(force) | set(disable)) - set(packages)
     if unknown:
@@ -125,6 +150,19 @@ def build_plan(
         )
     if len(force) != len(set(force)) or len(disable) != len(set(disable)):
         raise ReleaseError("duplicate --force or --disable package")
+
+    published = published_names(repo_root)
+    unknown_published = published - set(packages)
+    if unknown_published:
+        raise ReleaseError(
+            "published set names unknown workspace package(s): " + ", ".join(sorted(unknown_published))
+        )
+    disabled_published = set(disable) & published
+    if disabled_published:
+        raise ReleaseError(
+            "cannot disable a package of the published set (every release publishes all of it): "
+            + ", ".join(sorted(disabled_published))
+        )
 
     base_ref = since or previous_release_tag(repo_root)
     raw_candidates = set(candidate_provider(repo_root, base_ref))
@@ -142,7 +180,8 @@ def build_plan(
             + ", ".join(sorted(non_candidates))
         )
 
-    initial = (raw_candidates | set(force)) - disabled_set
+    # #664 D2: the whole published set at every release, so exact internal pins always resolve
+    initial = (raw_candidates | set(force) | published) - disabled_set
     selected = release_closure(initial, packages)
     disabled_in_closure = selected & disabled_set
     if disabled_in_closure:
@@ -160,8 +199,9 @@ def build_plan(
         raise ReleaseError(f"runtime dependency cycle: {rendered}")
     # Dev cycles are reported for build context; they do not abort release layering.
     dev_cycles = tuple(find_cycles(packages, selected=selected, runtime_only=False))
-    distributeable, bundle_only = classify_packages(packages, selected)
-    product_version = increment(root_version, bump)
+    distributeable, bundle_only = classify_packages(published, selected)
+    product_version = version if version is not None else increment(root_version, bump)
+    bump_kind = "exact" if version is not None else bump
 
     if dev_cycles:
         log_step(
@@ -170,14 +210,14 @@ def build_plan(
             "see plan.dev_cycles"
         )
     log_step(
-        f"plan: {root_version} --{bump}--> {product_version}; "
+        f"plan: {root_version} --{bump_kind}--> {product_version}; "
         f"{len(selected)} package(s) selected in {len(layers)} layer(s) "
         f"({len(distributeable)} distributeable, {len(bundle_only)} bundle-only)"
     )
 
     return ReleasePlan(
         base_ref=base_ref,
-        bump=bump,
+        bump=bump_kind,
         product_version=product_version,
         lerna_candidates=tuple(sorted(raw_candidates)),
         forced=tuple(sorted(set(force))),

@@ -61,6 +61,20 @@ BUNDLED_INTO_ANOTHER = {
 }
 
 
+def test_private_is_false_exactly_for_published_names():
+    """#664 D1: `private` follows the published set. A published name can be published; every other workspace
+    package (bundled folders, examples, fixtures, binaries, apps) is `private`, so no stray `npm publish` can
+    put it on the registry. A package joins the set by an entry in published-packages.json and this flag."""
+    published = {entry["publishedName"] for entry in published_set()}
+    mismatched = {}
+    for path in sorted((ROOT / "packages").glob("*/package.json")):
+        data = json.loads(path.read_text(encoding="utf-8"))
+        publishable = not data.get("private", False)
+        if publishable != (data["name"] in published):
+            mismatched[data["name"]] = "private" if not publishable else "not private"
+    assert mismatched == {}
+
+
 def test_each_published_package_carries_its_published_name():
     """#650: each published name is the `name` of exactly one folder; the folders bundled into it (#652) keep a
     private miroir-* name. Each published package declares public access, which a scoped package needs."""
