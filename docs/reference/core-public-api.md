@@ -9,7 +9,7 @@ serves the other Miroir packages, which are released with it. Types reached thro
 type of a property or a parameter) can be used as part of that name, without a promise of their own.
 Why and how the list is chosen: [`code-helpers/features/649-BUILD-core-public-api/analysis.md`](../../code-helpers/features/649-BUILD-core-public-api/analysis.md).
 
-35 exports.
+36 exports.
 
 | Name | Kind | Declared in | Summary |
 |---|---|---|---|
@@ -29,6 +29,7 @@ Why and how the list is chosen: [`code-helpers/features/649-BUILD-core-public-ap
 | `EntityVersion` | type | `src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.ts` |  |
 | `expect` | function | `src/1_core/testing/test-expect.ts` | Assertions for MiroirTest implementations, in the style of vitest's `expect`. |
 | `ExternalServiceClientInterface` | interface | `src/0_interfaces/4-services/ExternalServiceClientInterface.ts` | Calls the operations of external services declared in the model. |
+| `LocalCacheKind` | type | `src/0_interfaces/4-services/LocalCacheModule.ts` | The local cache a Miroir process starts on: the `localCache` option of the startup calls. |
 | `LoggerFactoryInterface` | interface | `src/0_interfaces/4-services/LoggerInterface.ts` | Creates loggers; implemented by the host's logging library adapter (for example loglevelnext). |
 | `LoggerInterface` | interface | `src/0_interfaces/4-services/LoggerInterface.ts` | A logger, as created by a `LoggerFactoryInterface`. |
 | `LoggerOptions` | interface | `src/0_interfaces/4-services/LoggerInterface.ts` | The log levels and templates of a host, by default and per logger. |

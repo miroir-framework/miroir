@@ -3,7 +3,7 @@
  * Provides useSelector and LocalCacheProvider for React integration.
  */
 import { createContext, useContext, createElement, ReactNode, useRef, useMemo } from "react";
-import { StoreApi, useStore } from "zustand";
+import type { StoreApi } from "zustand";
 import { useStoreWithEqualityFn } from "zustand/traditional";
 import { shallow } from "zustand/shallow";
 
@@ -43,12 +43,8 @@ export function useSelector<T>(
     );
   }
 
-  // Use the store with optional equality function
-  if (equalityFn) {
-    return useStoreWithEqualityFn(store, selector, equalityFn);
-  }
-  
-  return useStore(store, selector);
+  // One hook call whatever the arguments (rules of hooks); without equalityFn, Object.is as useStore
+  return useStoreWithEqualityFn(store, selector, equalityFn);
 }
 
 // ###############################################################################

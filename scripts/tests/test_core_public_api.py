@@ -45,6 +45,8 @@ STARTUP_NAMES = {
     "MiroirActivityTracker", "MiroirConfigClient", "MiroirConfigServer", "MiroirContext", "MiroirEventService",
     "PersistenceStoreControllerManager", "ProcessCapabilities", "RestClientInterface", "RestClientStub",
     "StoreSectionStartup",
+    # #656: the `localCache` startup option
+    "LocalCacheKind",
 }
 PUBLIC_NAMES = SANDBOX_NAMES | SERVER_LIBRARY_NAMES | STARTUP_NAMES
 GENERATED_NAMES = {

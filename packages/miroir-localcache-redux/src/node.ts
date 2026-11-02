@@ -1,6 +1,17 @@
 // Entry without React (#337): Node processes (server, CLI, MCP, the Electron main process) import
 // "miroir-localcache-redux/node", so their bundles do not pull react-redux and react-dom.
 
+import type { LocalCacheModule } from "@miroir-framework/core";
+import { RestPersistenceClientAndRestClient } from "./4_services/persistence/RestPersistenceClientAndRestClient.js";
+import { setupMiroirDomainController } from "./sagaTools.js";
+
+/** #656: what the startup code takes from this local cache; the build checks the contract. */
+export const localCacheModule = {
+  kind: "redux",
+  setupMiroirDomainController,
+  RestPersistenceClientAndRestClient,
+} as const satisfies LocalCacheModule;
+
 export { LocalCache } from "./4_services/LocalCache.js";
 export {
   getLocalCacheKeysDeploymentSectionEntitiesList,

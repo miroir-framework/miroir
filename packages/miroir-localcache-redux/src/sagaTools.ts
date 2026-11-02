@@ -6,7 +6,7 @@ import {
 import {
   DomainController,
   DomainControllerInterface,
-  MiroirContext,
+  MiroirContextInterface,
   defaultExternalServiceClient,
   type ExternalServiceClientInterface,
 } from "@miroir-framework/core";
@@ -26,7 +26,7 @@ import PersistenceReduxSaga, {
  * @returns 
  */
 export function setupMiroirDomainController(
-  miroirContext: MiroirContext,
+  miroirContext: MiroirContextInterface,
   persistenceReduxSagaParams: PersistenceStoreAccessParams,
   /** #339: the client of the external services; defaults to the global fetch and the process secrets. */
   externalServiceClient: ExternalServiceClientInterface = defaultExternalServiceClient(),

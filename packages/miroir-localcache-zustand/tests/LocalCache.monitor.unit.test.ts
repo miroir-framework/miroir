@@ -65,6 +65,10 @@ describe("LocalCache monitor API (Phase 3, zustand)", () => {
     expect(info.localCacheSize).toBe(estimateObjectBytes(state.presentModelSnapshot));
   });
 
+  it("currentInfo names the implementation (#656)", () => {
+    expect(new LocalCache().currentInfo().implementation).toBe("zustand");
+  });
+
   it("currentInfo stays present-only (does not report effective/history size)", () => {
     const localCache = new LocalCache();
     bootstrapLibraryBooks(localCache, [book1 as EntityInstance]);

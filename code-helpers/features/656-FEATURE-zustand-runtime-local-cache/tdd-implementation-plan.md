@@ -33,7 +33,7 @@ Not in this plan: a config default for the choice (D1-b, later); the selectors i
 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
-| 0 | Each local cache names itself; the contract and the test switch in core | ⬜ | `currentLocalCacheInfo().implementation` on both caches; each cache's `node.ts` `satisfies LocalCacheModule` (tsc) |
+| 0 | Each local cache names itself; the contract and the test switch in core | ✅ | `currentLocalCacheInfo().implementation` on both caches; each cache's `node.ts` `satisfies LocalCacheModule` (tsc) |
 | 1 | Tracer: a Node process starts on Zustand | ⬜ | cli `startMiroirNode.integ` on both caches |
 | 2 | Every Node test platform follows `MIROIR_TEST_LOCAL_CACHE` | ⬜ | mcp, server-library, ai, env tests on both caches |
 | 3 | A React client starts and renders on Zustand | ⬜ | react `startMiroirClient.integ` on both caches; standalone bundle guard |
@@ -85,7 +85,7 @@ Not in this plan: a config default for the choice (D1-b, later); the selectors i
 
 ## Slice 0 — Each local cache names itself; the contract and the test switch in core
 
-**Status:** ⬜ pending
+**Status:** ✅ done
 
 ### RED
 
@@ -114,7 +114,14 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,localcache
 
 ### Realization
 
-_(pending)_
+- RED seen: both monitor tests failed on `currentInfo().implementation` before the field existed.
+- Core: `LocalCacheKind` (`@public`, the startup option), `LocalCacheModule`, `LocalCachePersistenceStoreAccessParams` (`0_interfaces/4-services/LocalCacheModule.ts`); `localCacheKindFromEnvironment(env)` and `localCacheKindFromValue` in `1_core/localCache/localCacheKind.ts`. The environment is a required parameter: the core lint (`miroir/global-environment`) forbids reading `process.env` outside a composition root. Its unit test is core's `tests/1_core/localCacheKind.unit.test.ts` (vitest, not Python: the parser is TypeScript).
+- Each cache's `node.ts` exports `localCacheModule … satisfies LocalCacheModule`; redux's `setupMiroirDomainController` takes `MiroirContextInterface`. Zustand gained `src/node.ts` and `./node`; its index re-exports it plus the React hooks.
+- Zustand manifest: `react >=18.2.0`, `sideEffects: false`, `lodash` and `zod` removed, `use-sync-external-store` 1.6.0 declared (needed by `zustand/traditional`).
+- Pulled forward from Slice 4: zustand's `useSelector` makes one hook call (`useStoreWithEqualityFn` with an optional equality function); the 2 `rules-of-hooks` suppressions are pruned.
+- Standalone `localCacheImplementation.ts` returns a core `LocalCacheModule`; zustand is loaded from `miroir-localcache-zustand/node`.
+- `scripts/tests/test_local_cache_choice.py`: allowlist of 4 UI sources.
+- Validation: core, redux, zustand built; guards 559 passed; lint 0; `nonreg:filesystem --scope smoke,localcache` 22/22.
 
 ---
 
