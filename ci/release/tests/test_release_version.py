@@ -378,3 +378,90 @@ def test_the_command_refuses_a_version_whose_tag_exists(tmp_path: Path) -> None:
     with pytest.raises(ReleaseError, match="tag 1.3.0 already exists"):
         release_version.assert_version_untagged(tmp_path, "1.3.0")
     release_version.assert_version_untagged(tmp_path, "1.3.1")
+
+
+# ---------------------------------------------------------------------------------------------------------------
+# #664 D9: the release commit and where it goes. A real repository, a bare remote, a detached release worktree.
+
+
+def git(cwd: Path, *args: str) -> str:
+    return run(["git", "-c", "user.email=t@t", "-c", "user.name=t", *args], cwd=cwd).stdout.strip()
+
+
+@pytest.fixture
+def release_worktree(tmp_path: Path) -> tuple[Path, Path]:
+    remote = tmp_path / "remote.git"
+    run(["git", "init", "-q", "--bare", str(remote)], cwd=tmp_path)
+    source = tmp_path / "source"
+    source.mkdir()
+    git(source, "init", "-q")
+    write_manifest(source / "package.json", "root", "1.2.3")
+    write_manifest(source / "packages" / "lib" / "package.json", "lib", "1.2.3")
+    git(source, "add", "-A")
+    git(source, "commit", "-q", "-m", "init")
+    git(source, "tag", "unrelated")
+    git(source, "remote", "add", "origin", str(remote))
+    git(source, "push", "-q", "origin", "HEAD:refs/heads/main")
+    worktree = tmp_path / "worktree"
+    git(source, "worktree", "add", "-q", "--detach", str(worktree), "HEAD")
+    write_manifest(worktree / "package.json", "root", "1.3.0")
+    (worktree / "release-plan.json").write_text("{}", encoding="utf-8")
+    (worktree / "release-tarballs" / "P0").mkdir(parents=True)
+    (worktree / "release-tarballs" / "P0" / "lib-1.3.0.tgz").write_bytes(b"tarball")
+    (worktree / "publish-commands.sh").write_text("npm publish\n", encoding="utf-8")
+    return worktree, remote
+
+
+def release_plan_for(version: str):
+    from release_lib.plan import ReleasePlan
+
+    return ReleasePlan(
+        base_ref="x", bump="exact", product_version=version, lerna_candidates=(), forced=(), disabled=(),
+        closure_added=(), selected=("lib",), layers=(("lib",),),
+    )
+
+
+def test_the_release_commit_holds_no_tarball(release_worktree) -> None:
+    from release_lib.lerna_ops import commit_and_tag
+
+    worktree, _ = release_worktree
+    commit_and_tag(worktree, release_plan_for("1.3.0"), commit=True, tag=True)
+    files = git(worktree, "show", "--name-only", "--format=", "HEAD").splitlines()
+    assert sorted(files) == ["package.json", "release-plan.json"]
+
+
+def test_record_pushes_only_the_release_tag_and_its_branch(release_worktree) -> None:
+    from release_lib.lerna_ops import commit_and_tag, push_release
+
+    worktree, remote = release_worktree
+    commit_and_tag(worktree, release_plan_for("1.3.0"), commit=True, tag=True)
+    push_release(worktree, "1.3.0")
+    head = git(worktree, "rev-parse", "HEAD")
+    refs = {ref: sha for ref, sha in (line.split(" ")[::-1] for line in git(remote, "show-ref").splitlines())}
+    assert refs["refs/heads/release/1.3.0"] == head
+    assert git(remote, "rev-list", "-n", "1", "refs/tags/1.3.0") == head
+    assert "refs/tags/unrelated" not in refs
+
+
+def test_record_refuses_a_release_already_pushed(release_worktree) -> None:
+    from release_lib.lerna_ops import commit_and_tag, push_release
+
+    worktree, _ = release_worktree
+    commit_and_tag(worktree, release_plan_for("1.3.0"), commit=True, tag=True)
+    push_release(worktree, "1.3.0")
+    with pytest.raises(ReleaseError, match="already has release/1.3.0"):
+        push_release(worktree, "1.3.0")
+
+
+def test_record_refuses_an_untagged_worktree(release_worktree) -> None:
+    from release_lib.lerna_ops import push_release
+
+    worktree, _ = release_worktree
+    with pytest.raises(ReleaseError, match="tag 1.3.0 is missing"):
+        push_release(worktree, "1.3.0")
+
+
+def test_the_command_refuses_push_and_names_record() -> None:
+    import release_version
+
+    assert release_version.main(["--version", "9.9.9", "--push"]) == 1

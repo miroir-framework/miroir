@@ -124,3 +124,84 @@ class PublishEntry:
         if dry_run:
             command.append("--dry-run")
         return command
+
+
+def publish_entries(plan_version: str, layers: list[dict[str, Any]], tarballs: list[dict[str, Any]]) -> list[PublishEntry]:
+    """The distributeable tarballs of a release, layer by layer: a layer's dependencies are published before it."""
+    order = {name: layer["index"] for layer in layers for name in layer["packages"]}
+    entries = [
+        PublishEntry(layer=order[info["package"]], package=info["package"], tarball=info["path"], tag=dist_tag(plan_version))
+        for info in tarballs
+        if info.get("distributeable")
+    ]
+    return sorted(entries, key=lambda entry: (entry.layer, entry.package))
+
+
+def publish_script(entries: list[PublishEntry]) -> str:
+    """#664 D3 fallback: the commands for a maintainer's machine, run from the release worktree. No --provenance:
+    npm can only sign provenance from a CI job's OIDC token."""
+    lines = [
+        "#!/bin/sh",
+        "# Publish this release by hand (#664): run from anywhere, after `npm login` on the @miroir-framework scope.",
+        "# Prefer the publish-npm workflow, which adds provenance. Stop at the first failure; ci/release/publish.py",
+        "# --handoff release-handoff.json --yes resumes a partial publish (it skips what is already published).",
+        "set -e",
+        'cd "$(dirname "$0")"',
+    ]
+    for entry in entries:
+        lines.append(f"# P{entry.layer} {entry.package}")
+        lines.append(" ".join(entry.command(provenance=False, dry_run=False)))
+    return "\n".join(lines) + "\n"
+
+
+@dataclass(frozen=True)
+class PublishOutcome:
+    package: str
+    state: str  # "published", "dry-run", "already published"
+
+
+def publish_handoff(
+    handoff: dict[str, Any],
+    *,
+    execute: bool,
+    provenance: bool = False,
+    registry: str | None = None,
+) -> list[PublishOutcome]:
+    """Publish a validated release, layer by layer. Without `execute`, every `npm publish` runs with --dry-run.
+
+    #664 D8: a version already on the registry with this tarball's integrity was published by this release (a
+    rerun after a partial publish): skipped. Any other content at that version stops the run before it publishes."""
+    root = Path(handoff["releaseWorktree"])
+    version = handoff["productVersion"]
+    entries = [
+        PublishEntry(layer=e["layer"], package=e["package"], tarball=e["tarball"], tag=e["tag"])
+        for e in handoff.get("publish", [])
+    ]
+    if not entries:
+        raise ReleaseError("the handoff lists nothing to publish (no `publish` entries)")
+    outcomes: list[PublishOutcome] = []
+    for entry in sorted(entries, key=lambda e: (e.layer, e.package)):
+        tarball = root / entry.tarball
+        if not tarball.is_file():
+            raise ReleaseError(f"{entry.package}: tarball missing: {tarball}")
+        if tarball_manifest(tarball).get("version") != version:
+            raise ReleaseError(f"{entry.package}: {tarball.name} is not version {version}")
+        existing = published_integrity(entry.package, version, registry=registry)
+        if existing is not None:
+            if existing != tarball_integrity(tarball):
+                raise ReleaseError(
+                    f"{entry.package}@{version} is on the registry with other content; nothing more was published"
+                )
+            log_step(f"[P{entry.layer}] {entry.package}@{version}: already published, identical; skipped")
+            outcomes.append(PublishOutcome(entry.package, "already published"))
+            continue
+        command = entry.command(provenance=provenance, dry_run=not execute, registry=registry)
+        log_step(f"[P{entry.layer}] " + " ".join(command))
+        result = run([executable("npm"), *command[1:]], cwd=root, check=False)
+        if result.returncode != 0:
+            raise ReleaseError(
+                f"npm publish failed for {entry.package}; packages before it are published, rerun to resume:\n"
+                + (result.stderr or result.stdout or "")
+            )
+        outcomes.append(PublishOutcome(entry.package, "published" if execute else "dry-run"))
+    return outcomes

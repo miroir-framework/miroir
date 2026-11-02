@@ -8,6 +8,7 @@ from typing import Any
 
 from release_lib.common import dump_json, load_json
 from release_lib.plan import ReleasePlan
+from release_lib.publish import publish_entries, publish_script
 from release_lib.tarballs import TarballInfo
 
 HANDOFF_SCHEMA_VERSION = 1
@@ -40,6 +41,8 @@ def write_handoff_contract(
 ) -> Path:
     """Write the #227 → #224 validated release-tree handoff descriptor."""
     path = repo_root / "release-handoff.json"
+    layers = [{"index": index, "packages": list(layer)} for index, layer in enumerate(plan.layers)]
+    entries = publish_entries(plan.product_version, layers, [asdict(info) for info in tarballs])
     payload: dict[str, Any] = {
         "schemaVersion": HANDOFF_SCHEMA_VERSION,
         "issue": 227,
@@ -49,14 +52,16 @@ def write_handoff_contract(
         "releaseWorktree": str(repo_root),
         "releasePlan": str(repo_root / "release-plan.json"),
         "tarballDir": str(repo_root / "release-tarballs"),
-        "layers": [
-            {"index": index, "packages": list(layer)}
-            for index, layer in enumerate(plan.layers)
-        ],
+        "layers": layers,
         "selected": list(plan.selected),
         "distributeable": list(plan.distributeable),
         "bundleOnly": list(plan.bundle_only),
         "tarballs": [asdict(info) for info in tarballs],
+        # #664: what ci/release/publish.py publishes, in order (also written as publish-commands.sh)
+        "publish": [
+            {**asdict(entry), "command": " ".join(entry.command(provenance=False, dry_run=False))}
+            for entry in entries
+        ],
         "constraints": [
             "Do not choose package versions or rewrite dependency ranges in #224.",
             "Build platform artefacts only from this validated release worktree.",
@@ -65,6 +70,9 @@ def write_handoff_contract(
         ],
     }
     dump_json(path, payload)
+    script = repo_root / "publish-commands.sh"
+    script.write_text(publish_script(entries), encoding="utf-8")
+    script.chmod(0o755)
     return path
 
 

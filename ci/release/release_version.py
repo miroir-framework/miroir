@@ -27,7 +27,7 @@ if str(RELEASE_DIR) not in sys.path:
 
 from release_lib.common import ReleaseError, log_step
 from release_lib.handoff import read_handoff, write_handoff_contract, write_release_plan
-from release_lib.lerna_ops import apply_lerna_version, commit_tag_push
+from release_lib.lerna_ops import apply_lerna_version, commit_and_tag, push_release
 from release_lib.plan import build_plan
 from release_lib.tarballs import build_pack_and_validate
 from release_lib.worktree import (
@@ -85,7 +85,17 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     )
     parser.add_argument("--commit", action="store_true")
     parser.add_argument("--tag", action="store_true")
-    parser.add_argument("--push", action="store_true")
+    parser.add_argument(
+        "--push",
+        action="store_true",
+        help="Refused since #664: the push happens after publishing, with --record",
+    )
+    parser.add_argument(
+        "--record",
+        metavar="HANDOFF_JSON",
+        help="After a successful publish: push the release worktree's tag and release/<version> branch (#664)",
+    )
+    parser.add_argument("--remote", default="origin", help="Remote for --record (default: origin)")
     parser.add_argument(
         "--allow-dirty",
         action="store_true",
@@ -134,6 +144,16 @@ def verify_handoff(path: Path) -> None:
     tarball_dir = Path(data["tarballDir"])
     if not tarball_dir.is_dir():
         raise ReleaseError(f"handoff tarball dir missing: {tarball_dir}")
+    # #664: what publish.py would publish is exactly what the release packed and hashed
+    from release_lib.tarballs import sha256_file
+
+    hashes = {info["path"]: info["sha256"] for info in data.get("tarballs", [])}
+    for entry in data.get("publish", []):
+        tarball = worktree / entry["tarball"]
+        if not tarball.is_file():
+            raise ReleaseError(f"handoff publish entry {entry['package']}: tarball missing: {tarball}")
+        if sha256_file(tarball) != hashes.get(entry["tarball"]):
+            raise ReleaseError(f"handoff publish entry {entry['package']}: {tarball.name} changed since it was packed")
     print(json.dumps({"ok": True, "handoff": data}, indent=2))
 
 
@@ -143,6 +163,15 @@ def main(argv: list[str] | None = None) -> int:
         if args.verify:
             verify_handoff(Path(args.verify))
             return 0
+        if args.record:
+            handoff = read_handoff(Path(args.record))
+            push_release(Path(handoff["releaseWorktree"]), handoff["productVersion"], remote=args.remote)
+            return 0
+        if args.push:
+            raise ReleaseError(
+                "--push is gone (#664): publish first (ci/release/publish.py), then "
+                "`release_version.py --record <worktree>/release-handoff.json` pushes the tag and release branch"
+            )
         if args.dry_run and args.apply:
             raise ReleaseError("--dry-run cannot be combined with --apply")
         if not args.bump and not args.version:
@@ -207,13 +236,7 @@ def main(argv: list[str] | None = None) -> int:
             handoff = write_handoff_contract(apply_root, plan, tarballs=tarballs)
             log_step(f"wrote release-plan.json and release-handoff.json under {apply_root}")
             print(json.dumps({"handoff": str(handoff)}, indent=2))
-            commit_tag_push(
-                apply_root,
-                plan,
-                commit=args.commit,
-                tag=args.tag,
-                push=args.push,
-            )
+            commit_and_tag(apply_root, plan, commit=args.commit, tag=args.tag)
             if worktree and args.keep_worktree:
                 print(json.dumps({"worktree": str(worktree)}, indent=2))
             return 0
