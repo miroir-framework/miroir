@@ -5,8 +5,8 @@ import { z } from "zod";
 
 import { book1 } from "miroir-example-library";
 
-import { tableComponentCorePropsSchema } from "miroir-react";
-import { valueObjectGridPropsSchema } from "miroir-react";
+import { tableComponentCorePropsSchema } from "@miroir-framework/react";
+import { valueObjectGridPropsSchema } from "@miroir-framework/react";
 import {
   agGridModeProps,
   computeAgGridScrollHeight,
@@ -19,7 +19,7 @@ import {
   paginateRows,
   resolveGridSizingMode,
   useClientPagination,
-} from "miroir-react";
+} from "@miroir-framework/react";
 import { waitForProgressiveRendering } from "./MlElementEditorTestTools.js";
 import {
   renderEntityInstanceGridHarness,

@@ -8,7 +8,7 @@ import {
   type AttributedEntitySize,
   type AttributedInstanceSize,
   type LocalCacheMemoryBreakdown,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   getLocalCacheMonitorConfig,
   type LocalCacheMonitorConfig,

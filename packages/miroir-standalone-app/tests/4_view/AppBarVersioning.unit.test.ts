@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { resolveAppBarReportLinkApplication } from "miroir-react";
+import { resolveAppBarReportLinkApplication } from "@miroir-framework/react";
 
 const VERSIONING_UUID = "c2b89408-bed7-473d-ab0a-2f4adc6a85e1";
 const MIROIR_APP = "360fcf1f-f0d4-4f8a-9262-07886e70fa15";

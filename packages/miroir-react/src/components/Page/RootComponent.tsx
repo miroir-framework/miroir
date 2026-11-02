@@ -35,7 +35,7 @@ import {
   type ApplicationDeploymentMap,
   type Deployment,
   type SyncQueryRunnerExtractorAndParams,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   adminSelfApplication,
   defaultAdminViewParams,

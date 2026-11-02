@@ -10,7 +10,7 @@ import {
   selfApplicationLibrary,
 } from "miroir-example-library";
 
-import { ReportSectionEntityInstance } from "miroir-react";
+import { ReportSectionEntityInstance } from "@miroir-framework/react";
 import { waitForProgressiveRendering } from "./MlElementEditorTestTools.js";
 import {
   buildBookListFormikValues,

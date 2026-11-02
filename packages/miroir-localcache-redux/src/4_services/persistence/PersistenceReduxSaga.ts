@@ -30,7 +30,7 @@ import {
   type MiroirModelEnvironment,
   trackQueryHop,
   isServerRoutedMiroirAction,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { packageName } from '../../constants.js';
 import { handlePromiseActionForSaga } from '../../sagaTools.js';
 import { LocalCache } from '../LocalCache.js';

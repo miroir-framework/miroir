@@ -8,17 +8,17 @@ import { act, fireEvent, render, waitFor } from "@testing-library/react";
 import React, { useMemo, useState } from "react";
 import { describe, expect, it, vi } from "vitest";
 
-import type { Entity, EntityInstance } from "miroir-core";
+import type { Entity, EntityInstance } from "@miroir-framework/core";
 import {
   defaultLibraryAppModel,
   deployment_Library_DO_NO_USE,
   selfApplicationLibrary,
 } from "miroir-example-library";
 
-import { EntityInstanceGrid } from "miroir-react";
-import { TableComponentTypeSchema } from "miroir-react";
-import type { TableComponentRow } from "miroir-react";
-import { toolsCellActions } from "miroir-react";
+import { EntityInstanceGrid } from "@miroir-framework/react";
+import { TableComponentTypeSchema } from "@miroir-framework/react";
+import type { TableComponentRow } from "@miroir-framework/react";
+import { toolsCellActions } from "@miroir-framework/react";
 import { waitForProgressiveRendering } from "./MlElementEditorTestTools.js";
 import { GridPaginationIntegShell } from "./helpers/gridPaginationIntegRig.js";
 import { libraryApplicationDeploymentMap } from "./helpers/listTransformerIntegRig.js";

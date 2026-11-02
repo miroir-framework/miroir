@@ -5,7 +5,7 @@ import {
   formikPath_TransformerEditorInputModeSelector,
   transformerEditorPersistedUpdateMatchesPersistedState,
   type TransformerEditorFormikValueType,
-} from "miroir-react";
+} from "@miroir-framework/react";
 
 describe("transformerEditorPersistedUpdateMatchesPersistedState", () => {
   const sampleValues: TransformerEditorFormikValueType = {

@@ -3,7 +3,7 @@
  * class diagram from Miroir Entities (`mlSchema`).
  *
  * Uses the `mermaid` library for SVG rendering and integrates with the
- * Miroir theme system via `useMiroirTheme()` from `miroir-react`.
+ * Miroir theme system via `useMiroirTheme()` from `@miroir-framework/react`.
  */
 
 import React, { useRef, useCallback, useState, useEffect, useMemo } from "react";
@@ -17,7 +17,7 @@ import {
 } from "@mui/material";
 import { SvgToolbelt } from "svg-toolbelt";
 import "svg-toolbelt/dist/svg-toolbelt.css";
-import { MiroirLoggerFactory, LoggerInterface } from "miroir-core";
+import { MiroirLoggerFactory, LoggerInterface } from "@miroir-framework/core";
 import {
   entitiesToMermaidClassDiagram,
   type ClassDiagramOptions,
@@ -27,7 +27,7 @@ import {
   entitiesToMermaidErDiagram,
   type ErDiagramOptions,
 } from "../2_domain/entitiesToMermaidErDiagram.js";
-import { JsonDisplayHelper, useMiroirTheme } from "miroir-react";
+import { JsonDisplayHelper, useMiroirTheme } from "@miroir-framework/react";
 import { cleanLevel, packageName } from "../constants.js";
 
 

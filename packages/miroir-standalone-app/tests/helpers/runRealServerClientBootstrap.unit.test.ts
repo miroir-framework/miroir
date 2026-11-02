@@ -5,7 +5,7 @@ import type {
   DomainControllerInterface,
   MiroirConfigClient,
   PersistenceStoreControllerManagerInterface,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { selfApplicationLibrary } from "miroir-example-library";
 
 const setupMiroirTestMock = vi.fn();
@@ -15,8 +15,8 @@ vi.mock("../../src/miroir-fwk/4-tests/setupMiroirTest.js", () => ({
   setupMiroirTest: (...args: unknown[]) => setupMiroirTestMock(...args),
 }));
 
-vi.mock("miroir-core", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("miroir-core")>();
+vi.mock("@miroir-framework/core", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@miroir-framework/core")>();
   return {
     ...actual,
     ensureMiroirPlatform: (...args: unknown[]) => ensureMiroirPlatformMock(...args),

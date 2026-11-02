@@ -1,4 +1,4 @@
-import type { BlockEditorBuildMarking } from "miroir-core";
+import type { BlockEditorBuildMarking } from "@miroir-framework/core";
 import { createContext, useContext } from "react";
 
 import { useAdminViewParams } from "../useAdminViewParams.js";

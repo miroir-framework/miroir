@@ -9,7 +9,7 @@ import {
   defaultMiroirModelEnvironment,
   DomainController,
   type EndpointDefinition,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   defaultMiroirMetaModel,
   deploymentEndpointV1,
@@ -19,7 +19,7 @@ import {
   storeManagementEndpoint,
 } from "miroir-app-miroir";
 
-import { reportPageParamsFromSearchParams } from "miroir-react";
+import { reportPageParamsFromSearchParams } from "@miroir-framework/react";
 import { resolveRepoRoot } from "../helpers/integrationTestProfiles.js";
 
 const RUN_TEST = process.env.RUN_TEST;

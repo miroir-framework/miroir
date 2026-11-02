@@ -1,5 +1,5 @@
 import { useMiroirContextService } from "../contexts/MiroirContextReactProvider.js";
-import { LoggerInterface, MiroirLoggerFactory } from 'miroir-core';
+import { LoggerInterface, MiroirLoggerFactory } from '@miroir-framework/core';
 import { packageName } from "../constants.js";
 import { cleanLevel } from "../viewConstants.js";
 import { DraggableContainer } from "./DraggableContainer.js";

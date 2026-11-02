@@ -8,7 +8,7 @@ Key sources: [`ci/release/`](../../../ci/release/), [`docs/reference/release-pro
 Target diagram: [`target-packages.architecture.json`](./target-packages.architecture.json) (archify source; rendered as `issue-621/target-packages.html` in the project files)
 
 **Document role:** analysis and decision record for an epic. Each work item gets its own issue, and the larger ones (W1, W2, W3) their own analysis.
-**Status:** D1 to D6 confirmed with A on 2026-10-31. D7 to D11 open.
+**Status:** D1 to D6 confirmed with A on 2026-10-31. D8 accepted in #639, D10 in #643. D7, D9 and D11 open (#643 applies D11's "`./src/*` goes" part).
 **Baseline:** `_integration` at `46b4e7e`, all packages at `0.5.0-rc.1`.
 
 ---
@@ -43,9 +43,9 @@ Revised after the decisions of 2026-10-31: the standalone app stays the only cli
 | D5 Client | **The standalone app stays the only client** for now | scope | Accepted |
 | D6 Sequencing | **All work items land before any publish** | G1, G5 | Accepted |
 | D7 How meta-model packages join core | open, recommend **D7-b** | G1, G5 | Open |
-| D8 Local cache in react | open, recommend **D8-a** | G1 | Open |
+| D8 Local cache in react | **D8-a** (#639 D1, D2) | G1 | Accepted |
 | D9 Endpoint surface mechanism | open, recommend **D9-b** | G3 | Open |
-| D10 `zod` and other shared libraries | open, recommend **D10-b** | G1, G5 | Open |
+| D10 `zod` and other shared libraries | **D10-b** (#643 D1, with `react-redux`, `react-router-dom`, `formik`) | G1, G5 | Accepted |
 | D11 Public API of core | open, recommend **D11-a** | G5 | Open |
 
 D1 to D6 are recorded in the options note and in #621. The rest of this section covers the open ones.

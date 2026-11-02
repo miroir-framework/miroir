@@ -27,9 +27,11 @@ def reset_state() -> None:
 
 
 class MiroirServer:
-    def __init__(self, log_file: Path, timeout_s: float = 240.0):
+    def __init__(self, log_file: Path, timeout_s: float = 240.0, node_env: str = "development"):
         self.log_file = log_file
         self.timeout_s = timeout_s
+        # "production" serves the client built into release/client (#636 release smoke)
+        self.node_env = node_env
         self.process: subprocess.Popen | None = None
 
     def __enter__(self) -> "MiroirServer":
@@ -42,7 +44,7 @@ class MiroirServer:
     def start(self) -> None:
         if not SERVER_ENTRY.exists():
             raise FileNotFoundError(f"{SERVER_ENTRY} is missing: run `npm run build:server -w miroir-server`")
-        env = {**os.environ, "MIROIR_ENV": ENVIRONMENT, "NODE_ENV": "development"}
+        env = {**os.environ, "MIROIR_ENV": ENVIRONMENT, "NODE_ENV": self.node_env}
         self.log_file.parent.mkdir(parents=True, exist_ok=True)
         log = self.log_file.open("w", encoding="utf-8")
         self.process = subprocess.Popen(

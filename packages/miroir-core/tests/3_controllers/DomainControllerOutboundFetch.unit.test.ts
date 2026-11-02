@@ -4,7 +4,7 @@
  */
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { Action2Error } from "miroir-core";
+import { Action2Error } from "@miroir-framework/core";
 import { DomainController } from "../../src/3_controllers/DomainController";
 import type { OutboundFetch } from "../../src/0_interfaces/4-services/ExternalServiceClientInterface";
 import { defaultExternalServiceClient } from "../../src/5_setup/externalServiceEnvironment";

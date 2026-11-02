@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from "react";
 
 import type { UiIntegrationReportTestSession } from "../../../4-tests/uiIntegrationTestLauncherTypes.js";
-import { useAdminViewParams } from "miroir-react";
+import { useAdminViewParams } from "@miroir-framework/react";
 import {
   useComponentTestSandbox,
   type ComponentTestRunOptions,

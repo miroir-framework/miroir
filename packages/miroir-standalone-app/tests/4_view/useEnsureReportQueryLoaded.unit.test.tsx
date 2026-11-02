@@ -6,7 +6,7 @@ import {
   type ReportQueryLoadRequest,
 } from "../../../miroir-core/src/2_domain/ReportQueryLoadService.js";
 
-import { useEnsureReportQueryLoaded } from "miroir-react";
+import { useEnsureReportQueryLoaded } from "@miroir-framework/react";
 
 function baseRequest(
   overrides: Partial<ReportQueryLoadRequest> = {},

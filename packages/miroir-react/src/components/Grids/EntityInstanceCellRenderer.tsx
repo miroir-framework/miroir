@@ -1,5 +1,5 @@
 import { ICellRendererParams } from "ag-grid-community";
-import { LoggerInterface, MiroirLoggerFactory } from "miroir-core";
+import { LoggerInterface, MiroirLoggerFactory } from "@miroir-framework/core";
 import { memo } from "react";
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "../../viewConstants.js";

@@ -613,6 +613,7 @@ export {
   ServerSqlStorage,
   ServerStorageLocation,
   StorageLocation,
+  StorageType,
   StorageTypeSchema
 } from "./0_interfaces/1_core/StorageConfiguration.js";
 export {
@@ -1044,9 +1045,17 @@ export {
   getReportsAndEntitiesForDeploymentUuid, metaMetaModelEntities,
   metaMetaModelEntityUuids, metaModelEntities, metaModelEntityUuids, miroirModelEntities,
   versionHistoryEntityUuids,
+  devDataEntityUuids,
+  getDevDataEntityDefinition,
+  metaModelDevDataReports,
+  isOptionalApplicationSection,
+  optionalApplicationSections,
+  type OptionalApplicationSection,
 } from "./1_core/Model.js";
 export {
   isAbsentModelVersionSectionError,
+  isAbsentOptionalSectionError,
+  MISSING_OPTIONAL_SECTION_MARKER,
   MISSING_MODEL_VERSION_SECTION_MARKER,
   resolveCachePolicyCarrierForEntity,
   resolveEntitiesToFetchOnRefresh,
@@ -1575,6 +1584,7 @@ export {
   ConfigurationService,
   ConfigurationServiceInner,
   PackageConfiguration,
+  StoreSectionStartup,
   undoRedoHistorization
 } from "./3_controllers/ConfigurationService";
 export {
@@ -1600,6 +1610,7 @@ export {
   LoggerGlobalContext,
   RUN_LOG_PREFIX_PATTERN,
   emptyLoggerContextElement,
+  type LoggerContextElement,
   type LogPhase,
 } from "./4_services/LoggerContext.js";
 export {
@@ -2005,7 +2016,7 @@ export {
   type ModelValidationInstanceModule,
   type ModelValidationPlan,
 } from "./5_tests/ModelValidationTools.js";
-// Node-only filesystem loaders: import from "miroir-core/model-validation-fs"
+// Node-only filesystem loaders: import from "@miroir-framework/core/model-validation-fs"
 // (kept off the main browser entry — Vite cannot bundle node:fs).
 export {
   buildModelValidationRunnableSuites,

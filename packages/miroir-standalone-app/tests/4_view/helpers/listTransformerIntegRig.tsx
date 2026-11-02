@@ -7,7 +7,7 @@ import {
   defaultSelfApplicationDeploymentMap,
   entityMLSchema,
   getReportsAndEntitiesForDeploymentUuid,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   book1,
   book2,
@@ -18,12 +18,12 @@ import {
   selfApplicationLibrary,
 } from "miroir-example-library";
 import { defaultMiroirMetaModel, defaultStoredMiroirTheme } from "miroir-app-miroir";
-import { useMiroirContextService } from "miroir-react";
+import { useMiroirContextService } from "@miroir-framework/react";
 
-import { ReportSectionListDisplay } from "miroir-react";
-import { ListTransformerPanel } from "miroir-react";
-import { TableComponentTypeSchema } from "miroir-react";
-import { MiroirThemeProvider } from "miroir-react";
+import { ReportSectionListDisplay } from "@miroir-framework/react";
+import { ListTransformerPanel } from "@miroir-framework/react";
+import { TableComponentTypeSchema } from "@miroir-framework/react";
+import { MiroirThemeProvider } from "@miroir-framework/react";
 
 import { getWrapperLoadingLocalCache } from "../MlElementEditorTestTools.js";
 

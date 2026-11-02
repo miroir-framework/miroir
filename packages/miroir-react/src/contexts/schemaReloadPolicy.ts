@@ -4,7 +4,7 @@ import {
   type MetaModel,
   type MlSchema,
   type Uuid,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 export type DeploymentSchemaRevisions = {
   meta: string;

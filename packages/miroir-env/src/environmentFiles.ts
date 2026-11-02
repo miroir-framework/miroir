@@ -8,7 +8,7 @@ import {
   type EnvironmentDefinition,
   type EnvironmentDeployment,
   type MiroirEnvironment,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 // ################################################################################################
 // Environment definitions live in <repository root>/environments/<name>.json (#321).

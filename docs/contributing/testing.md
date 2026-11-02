@@ -8,7 +8,7 @@
 
 ```bash
 npm run build -w miroir-app-miroir
-npm run devBuild -w miroir-core   # includes generated types
+npm run devBuild -w @miroir-framework/core   # includes generated types
 ```
 
 Integration tests need a reachable store when using SQL/ MongoDB configs:
@@ -72,29 +72,29 @@ npm run nonreg -- --compare test-results/nonreg/<newer> test-results/nonreg/<old
 
 Snapshots land in `test-results/nonreg/<UTC-stamp>/` (`summary.json`, `summary.md`, per-step `logs/`). End-of-run prints passed / failed / skipped / not_run. Edit the step list in [`scripts/nonreg-manifest.json`](../../scripts/nonreg-manifest.json). Full detail: [reference/testing.md § Repo-wide non-regression](../reference/testing.md#repo-wide-non-regression-npm-run-nonreg).
 
-Default `npm run nonreg` includes deployment `modelValidation` for **miroir**, **admin**, and **library** (early steps, right after miroir-core unit). `--tier full` also runs **postgres** `modelValidation` (see [Deployment modelValidation](../reference/testing.md#deployment-modelvalidation)).
+Default `npm run nonreg` includes deployment `modelValidation` for **miroir**, **admin**, and **library** (early steps, right after @miroir-framework/core unit). `--tier full` also runs **postgres** `modelValidation` (see [Deployment modelValidation](../reference/testing.md#deployment-modelvalidation)).
 
 ### Unit (no database)
 
 ```bash
 # Preferred — argv
-npm run testMiroir -w miroir-core -- --suites fn.mustache.extractDoubleBracePatterns --mode unit
+npm run testMiroir -w @miroir-framework/core -- --suites fn.mustache.extractDoubleBracePatterns --mode unit
 
 # Legacy — env (still supported)
-MIROIR_TEST_SUITES=fn.mustache.extractDoubleBracePatterns MIROIR_TEST_MODE=unit npm run testMiroir -w miroir-core
+MIROIR_TEST_SUITES=fn.mustache.extractDoubleBracePatterns MIROIR_TEST_MODE=unit npm run testMiroir -w @miroir-framework/core
 
 # Multiple suites
-npm run testMiroir -w miroir-core -- --suites fn.tools.alterObjectAtPath,fn.entityPrimaryKey --mode unit
+npm run testMiroir -w @miroir-framework/core -- --suites fn.tools.alterObjectAtPath,fn.entityPrimaryKey --mode unit
 
 # Every unit suite carrying a tag
-npm run testMiroir -w miroir-core -- --tags ml-union --mode unit
+npm run testMiroir -w @miroir-framework/core -- --tags ml-union --mode unit
 
 # All catalog suites
-npm run testMiroir -w miroir-core -- --mode unit
+npm run testMiroir -w @miroir-framework/core -- --mode unit
 
 # LocalCache memory measure — also in nonreg:unit
-npm run testByFile -w miroir-core -- tests/2_domain/localCacheMemoryMeasure.unit.test.ts
-npm run testByFile -w miroir-core -- tests/2_domain/localCacheMemoryAttributed.unit.test.ts
+npm run testByFile -w @miroir-framework/core -- tests/2_domain/localCacheMemoryMeasure.unit.test.ts
+npm run testByFile -w @miroir-framework/core -- tests/2_domain/localCacheMemoryAttributed.unit.test.ts
 npm run testByFile -w miroir-standalone-app -- tests/4_view/localCacheMonitorGate.unit.test.ts
 npm run testByFile -w miroir-standalone-app -- tests/4_view/LocalCacheMonitorSummary.unit.test.tsx
 npm run testByFile -w miroir-standalone-app -- tests/4_view/localCacheMonitorIndicators.unit.test.ts
@@ -106,21 +106,21 @@ npm run vitest -w miroir-localcache-redux -- tests/LocalCache.memoryMeasure.stat
 npm run vitest -w miroir-localcache-zustand -- tests/LocalCache.memoryMeasure.static.unit.test.ts
 
 # Attribute projection — unit (no store)
-npm run testByFile -w miroir-core -- tests/1_core/instanceProjection.unit.test.ts
-npm run testByFile -w miroir-core -- tests/1_core/instanceProjectionSchema.unit.test.ts
-npm run testByFile -w miroir-core -- tests/4_services/PersistenceStoreController.projection.unit.test.ts
+npm run testByFile -w @miroir-framework/core -- tests/1_core/instanceProjection.unit.test.ts
+npm run testByFile -w @miroir-framework/core -- tests/1_core/instanceProjectionSchema.unit.test.ts
+npm run testByFile -w @miroir-framework/core -- tests/4_services/PersistenceStoreController.projection.unit.test.ts
 ```
 
 After changing Query / Endpoint ML schemas for `attributes` (or any fundamental schema), rebuild before these tests:
 
 ```bash
 npm run build -w miroir-app-miroir
-npm run devBuild -w miroir-core
+npm run devBuild -w @miroir-framework/core
 ```
 
 ### MiroirTest integration (`testMiroir`)
 
-Runs in `miroir-standalone-app`, not `miroir-core`. Prefer **`--profile`** / **`--suites`** / **`--mode`**:
+Runs in `miroir-standalone-app`, not `@miroir-framework/core`. Prefer **`--profile`** / **`--suites`** / **`--mode`**:
 
 | Kind | Command |
 |------|---------|
@@ -228,7 +228,7 @@ Requires Postgres (Node emulated SQL via test mocks). Full detail: [reference/te
 
 ```bash
 # Unit catalog host (prefer `testMiroir --mode unit`)
-npm run testByFile -w miroir-core -- miroir-core-tests.unit.test
+npm run testByFile -w @miroir-framework/core -- miroir-core-tests.unit.test
 
 # Integration entry directly
 MIROIR_TEST_SUITES=tr.core MIROIR_TEST_MODE=integ \
@@ -250,11 +250,11 @@ VITE_TEST_MODE=true npx vitest run tests/helpers/miroirCoreIntegTestLaunch.unit.
 
 # CLI config parsing
 VITE_TEST_MODE=true npx vitest run tests/5-tests/parseMiroirTestCliConfig.unit.test.ts \
-  -w miroir-core
+  -w @miroir-framework/core
 
 # Catalog characterization
 VITE_TEST_MODE=true npx vitest run tests/5-tests/loadApplicationMiroirTestsFromFolders.unit.test.ts \
-  -w miroir-core
+  -w @miroir-framework/core
 ```
 
 ### Schema validation
@@ -263,14 +263,14 @@ Run after any change to MiroirTest JSON assets:
 
 ```bash
 VITE_TEST_MODE=true npx vitest run tests/4_services/miroirTest.schema.unit.test.ts \
-  -w miroir-core
+  -w @miroir-framework/core
 ```
 
 ---
 
 ## Key source files
 
-### miroir-core
+### @miroir-framework/core
 
 | File | Role |
 |------|------|
@@ -311,7 +311,7 @@ Do **not** modify `UnitTestTools.ts` or `TestTools.ts` for new features — exte
 
 ```bash
 # MiroirTest unit — verbose
-npm run testByFile -w miroir-core -- miroir-core-tests.unit.test
+npm run testByFile -w @miroir-framework/core -- miroir-core-tests.unit.test
 
 # DomainController integ — with debug logging
 MIROIR_ENV=test-sql \

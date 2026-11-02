@@ -15,8 +15,8 @@ import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { createMemoryRouter, RouterProvider } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-import { defaultSelfApplicationDeploymentMap, type ProcessCapabilities } from "miroir-core";
-import { MiroirShellHostProvider, RootComponent, type MiroirShellHost } from "miroir-react";
+import { defaultSelfApplicationDeploymentMap, type ProcessCapabilities } from "@miroir-framework/core";
+import { MiroirShellHostProvider, RootComponent, type MiroirShellHost } from "@miroir-framework/react";
 
 import {
   buildComponentTestWrapper,

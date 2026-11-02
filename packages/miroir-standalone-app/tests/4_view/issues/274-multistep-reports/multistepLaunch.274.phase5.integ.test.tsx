@@ -7,7 +7,7 @@ import * as RRDom from "react-router-dom";
 import {
   defaultSelfApplicationDeploymentMap,
   type Deployment,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   reportMultistepCountryCreate,
   reportMultistepLaunchPad,
@@ -15,8 +15,8 @@ import {
 } from "miroir-example-library";
 
 import { ReportPage } from "../../../../src/miroir-fwk/4_view/routes/ReportPage";
-import { reportUrl } from "miroir-react";
-import type { ReportViewProps } from "miroir-react";
+import { reportUrl } from "@miroir-framework/react";
+import type { ReportViewProps } from "@miroir-framework/react";
 import {
   deleteLibraryCountryFromMlEditorTestCache,
   getLibraryCountryFromMlEditorTestCache,

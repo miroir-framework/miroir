@@ -7,7 +7,7 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { beforeEach, describe, expect, it } from "vitest";
 
-import { ENTITY_ADMIN_APPLICATION_UUID, ENTITY_DEPLOYMENT_UUID } from "miroir-core";
+import { ENTITY_ADMIN_APPLICATION_UUID, ENTITY_DEPLOYMENT_UUID } from "@miroir-framework/core";
 
 import { repositoryRoot, run } from "./cliTestSupport";
 
@@ -106,6 +106,18 @@ describe("miroir-env deploy", () => {
     expect(readJson(adminData(root, ENTITY_DEPLOYMENT_UUID, file)).configuration.modelVersion).toEqual({
       emulatedServerType: "filesystem",
       directory: "packages/miroir-example-postgres/assets/postgres_modelVersion",
+    });
+  });
+
+  it("deploys the devData section when the package has a devData folder (#647)", async () => {
+    mkdirSync(path.join(root, "packages/miroir-example-github/assets/github_devData"), { recursive: true });
+
+    await run(["deploy", "github"], root);
+
+    const deployment = readJson(adminData(root, ENTITY_DEPLOYMENT_UUID, `${GITHUB_DEPLOYMENT}.json`));
+    expect(deployment.configuration.devData).toEqual({
+      emulatedServerType: "filesystem",
+      directory: "packages/miroir-example-github/assets/github_devData",
     });
   });
 

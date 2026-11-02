@@ -1,4 +1,4 @@
-import { MiroirLoggerFactory, type KeyMapEntry, type LoggerInterface } from "miroir-core";
+import { MiroirLoggerFactory, type KeyMapEntry, type LoggerInterface } from "@miroir-framework/core";
 import { createContext, useContext, useMemo, useState } from "react";
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "../../viewConstants.js";

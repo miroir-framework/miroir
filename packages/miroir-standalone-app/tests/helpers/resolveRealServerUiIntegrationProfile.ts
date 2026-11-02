@@ -14,7 +14,7 @@ import {
   parseProfileArg,
   parseStorageArg,
   type MiroirTestStorageType,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 export const REAL_SERVER_UI_INTEGRATION_PROFILE_PREFIX = "realServer-";
 

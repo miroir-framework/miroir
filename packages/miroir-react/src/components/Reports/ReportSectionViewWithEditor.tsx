@@ -16,7 +16,7 @@ import {
   Uuid,
   type ApplicationDeploymentMap,
   type MlObject,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import { useFormikContext } from 'formik';
 import { JsonDisplayHelper } from "../helpers/DebugHelper.js";
@@ -92,7 +92,7 @@ function OpenReportSectionView(props: {
     reportUuid: string;
     openAs: "modal" | "route";
     application?: string;
-    applicationSection?: "data" | "model" | "modelVersion";
+    applicationSection?: "data" | "model" | "modelVersion" | "devData";
     deploymentUuid?: string;
   };
   application: Uuid;

@@ -4,7 +4,7 @@ import {
   MiroirLoggerFactory,
   type LoggerFactoryInterface,
   type LoggerOptions,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 export class IntegTestRunAlreadyActiveError extends Error {
   constructor() {

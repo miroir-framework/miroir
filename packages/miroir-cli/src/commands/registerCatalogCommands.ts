@@ -4,7 +4,7 @@ import {
   type ApplicationDeploymentMap,
   type DomainControllerInterface,
   type LoggerInterface,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import {
   cliCommandAliases,

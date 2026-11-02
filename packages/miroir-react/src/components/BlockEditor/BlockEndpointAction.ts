@@ -3,7 +3,7 @@ import {
   endpointActionHat,
   removeEndpointActionParameter,
   renameEndpointActionParameter,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { useMemo } from "react";
 
 import type { BlockDefine } from "./BlockViewMode.js";

@@ -9,7 +9,7 @@ import type { AddressInfo } from "node:net";
 import express, { type Router } from "express";
 import { afterEach, describe, expect, it } from "vitest";
 import { AbstractAgent } from "@ag-ui/client";
-import { clearSecrets, FAIL_CLOSED_PROCESS_CAPABILITIES, registerSecrets } from "miroir-core";
+import { clearSecrets, FAIL_CLOSED_PROCESS_CAPABILITIES, registerSecrets } from "@miroir-framework/core";
 
 import { createCopilotKitRouter, type AgentRunRequest } from "../../../../src/routes/copilotKitRoute.js";
 import { createClaudeAbstractAgent } from "../../../../src/runtime/claudeAgent.js";

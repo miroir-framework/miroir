@@ -3,7 +3,7 @@ import {
   type ApplicationDeploymentMap,
   type DomainControllerInterface,
   type EntityInstance,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { entityReport, selfApplicationMiroir } from "miroir-app-miroir";
 
 /**

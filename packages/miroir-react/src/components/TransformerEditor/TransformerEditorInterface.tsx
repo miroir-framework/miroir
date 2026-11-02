@@ -1,5 +1,5 @@
-import type { EntityInstance, CoreTransformerForBuildPlusRuntime, Uuid } from "miroir-core";
-import { noValue, safeStringify } from "miroir-core";
+import type { EntityInstance, CoreTransformerForBuildPlusRuntime, Uuid } from "@miroir-framework/core";
+import { noValue, safeStringify } from "@miroir-framework/core";
 import type { formikPath_EntityInstanceSelectorPanel, ToolsPageState } from "../../contexts/MiroirContextReactProvider.js";
 
 

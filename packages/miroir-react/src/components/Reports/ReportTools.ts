@@ -14,7 +14,7 @@ import {
   type MiroirModelEnvironment,
   type ReportSection,
   type Uuid,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "../../viewConstants.js";
 import { editedQueryParameterValueKey } from "./ReportSectionEntityInstance.js";

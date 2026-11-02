@@ -2,7 +2,7 @@ import type {
   EndpointDefinition,
   MetaModel,
   MiroirModelEnvironment,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 export declare const adminApplication_Library_DO_NOT_USE: any;
 export declare const deployment_Library_DO_NO_USE: any;

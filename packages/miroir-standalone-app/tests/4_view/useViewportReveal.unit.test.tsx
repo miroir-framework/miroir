@@ -3,12 +3,12 @@ import { renderHook } from "@testing-library/react";
 import {
   findScrollParent,
   useViewportReveal,
-} from "miroir-react";
+} from "@miroir-framework/react";
 import {
   flushProgressiveRevealQueueForTests,
   progressiveRevealQueueSizeForTests,
   scheduleProgressiveReveal,
-} from "miroir-react";
+} from "@miroir-framework/react";
 
 describe("useViewportReveal", () => {
   it("reveals immediately when disabled", () => {

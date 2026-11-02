@@ -1,4 +1,4 @@
-import type { EntityInstance, EntityInstanceCollection } from "miroir-core";
+import type { EntityInstance, EntityInstanceCollection } from "@miroir-framework/core";
 import entityPublisher from "../assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/a027c379-8468-43a5-ba4d-bf618be25cab.json" with { type: "json" };
 import entityCountry from "../assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/d3139a6d-0486-4ec8-bded-2a83a3c3cee4.json" with { type: "json" };
 import entityAuthor from "../assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/d7a144ff-d1b9-4135-800c-a7cfc1f38733.json" with { type: "json" };

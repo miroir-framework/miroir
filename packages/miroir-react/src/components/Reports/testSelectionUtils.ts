@@ -2,7 +2,7 @@ import {
   alterObjectAtPathWithCreate,
   safeResolvePathOnObject,
   type TestSuiteListFilter,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import type { TestResultData } from "../Buttons/testResultReport.js";
 

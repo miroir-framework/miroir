@@ -8,7 +8,7 @@ import {
   type ApplicationSection,
   type MlObject,
   type Uuid,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import { TypedValueObjectEditor } from "./TypedValueObjectEditor.js";
 import { useOptionalMultistepReportHost } from "./MultistepReportHost.js";

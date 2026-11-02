@@ -22,7 +22,7 @@ import {
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
-import { getApplicationSection } from "./Model.js";
+import { devDataEntityUuids, getApplicationSection } from "./Model.js";
 
 import {
   adminApplication_Admin,
@@ -58,6 +58,10 @@ export const defaultDeployments: Deployment[] = [
 ];
 export const defaultDeploymentUuids = defaultDeployments.map(deployment => deployment.uuid);
 
+/**
+ * Maps each application uuid to the uuid of the deployment that holds it.
+ * @public
+ */
 export interface ApplicationDeploymentMap {
   [applicationUuid: Uuid]: Uuid; // deploymentUuid
 }
@@ -73,6 +77,10 @@ export interface EndpointApplicationMap {
   [endpointUuid: Uuid]: Uuid; // applicationUuid
 }
 
+/**
+ * The deployments of Miroir's own applications (Miroir and Admin), by application uuid.
+ * @public
+ */
 export const defaultSelfApplicationDeploymentMap: ApplicationDeploymentMap = {
   [selfApplicationMiroir.uuid]: deployment_Miroir.uuid,
   [adminSelfApplication.uuid]: deployment_Admin.uuid,
@@ -546,7 +554,7 @@ export function buildResetAndinitializeDeploymentActionSequence(
             const section = parentUuid ? getApplicationSection(applicationUuid, parentUuid) : "model";
             (bySection[section] ??= []).push(obj);
           }
-          return (["model", "data", "modelVersion"] as const)
+          return (["model", "data", "modelVersion", "devData"] as const)
             .filter((section) => (bySection[section]?.length ?? 0) > 0)
             .map((section) => ({
               actionType: "createInstance" as const,
@@ -573,7 +581,9 @@ export function buildResetAndinitializeDeploymentActionSequence(
           endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89" as const,
           payload: {
             application: applicationUuid,
-            applicationSection: "data" as const,
+            // #647 D15: devData Entities are seeded in the devData section; the others stay in data,
+            // as before (getApplicationSection would send a meta-model Entity to model).
+            applicationSection: devDataEntityUuids.has(e.entity.uuid) ? ("devData" as const) : ("data" as const),
             parentUuid: e.entity.uuid,
             objects: e.instances,
           },

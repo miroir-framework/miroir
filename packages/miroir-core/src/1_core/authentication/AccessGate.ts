@@ -32,6 +32,10 @@ export type LoadedAccessDirectory = {
 /** Reads the Admin directory; undefined when it cannot be read (every request is then refused). */
 export type AccessDirectoryLoader = () => Promise<LoadedAccessDirectory | undefined>;
 
+/**
+ * What the server needs to authenticate requests: whether it is on, and how to read the access directory.
+ * @public
+ */
 export type AuthenticationGate = {
   enabled: boolean;
   loadDirectory: AccessDirectoryLoader;

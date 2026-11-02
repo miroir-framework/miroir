@@ -3,8 +3,8 @@ import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { Formik } from 'formik';
-import { MiroirThemeProvider } from "miroir-react";
-import { BlobEditorField } from "miroir-react";
+import { MiroirThemeProvider } from "@miroir-framework/react";
+import { BlobEditorField } from "@miroir-framework/react";
 
 const log = console;
 

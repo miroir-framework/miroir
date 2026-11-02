@@ -8,7 +8,7 @@ import {
   type ApplicationDeploymentMap,
   type DomainControllerInterface,
   type ReportQueryLoadExecutor,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 /**
  * Lifetime-stable ReportQueryLoadService for a report view.

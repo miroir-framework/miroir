@@ -14,9 +14,9 @@ import {
   type MiroirTestDefinition,
   type TestRunLogSnapshot,
   type TestSuiteListFilter,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
-import { useMiroirContextService, useSnackbar } from "miroir-react";
+import { useMiroirContextService, useSnackbar } from "@miroir-framework/react";
 import { useSelectedApplicationRunnerUuidIndex } from "../../../4-tests/useSelectedApplicationMiroirTestSuiteRegistries.js";
 import { packageName } from "../../../../constants.js";
 import {
@@ -31,9 +31,9 @@ import { readAppMiroirReports } from "../../../4-tests/appMiroirReports.js";
 import { setLastUiIntegrationTestRunResult } from "../../../4-tests/uiIntegrationTestRunState.js";
 import { miroirTestDefinitionHasReactComponentTest } from "../../../4-tests/miroirTestSuiteUiExecution.js";
 import { useIntegTestRunCoordinator } from "../../../4-tests/useIntegTestRunCoordinator.js";
-import { ActionButtonWithSnackbar } from "miroir-react";
+import { ActionButtonWithSnackbar } from "@miroir-framework/react";
 import { cleanLevel } from "../../constants.js";
-import { generateTestReport, type TestResultData } from "miroir-react";
+import { generateTestReport, type TestResultData } from "@miroir-framework/react";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "RunMiroirTestSuiteButton");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);

@@ -53,7 +53,7 @@ import {
   entityHasNoPrimaryKey,
   getEntityPrimaryKeyAttribute,
   keylessEntityQueryFailure,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { RecursiveStringRecords } from "../4_services/SqlDbQueryTemplateRunner";
 import { cleanLevel } from "../4_services/constants";
 import { packageName } from "../constants";

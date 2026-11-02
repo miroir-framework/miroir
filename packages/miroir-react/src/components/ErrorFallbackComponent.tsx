@@ -2,7 +2,7 @@ import {
   LoggerInterface,
   MiroirLoggerFactory,
   resolvePathOnObject
-} from "miroir-core";
+} from "@miroir-framework/core";
 import React from "react";
 import { packageName } from "../constants.js";
 import { cleanLevel } from "../viewConstants.js";

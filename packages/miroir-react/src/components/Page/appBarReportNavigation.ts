@@ -1,4 +1,4 @@
-import type { ReportLink } from "miroir-core";
+import type { ReportLink } from "@miroir-framework/core";
 import { pageUrl, reportUrl } from "../../navigation.js";
 
 /**

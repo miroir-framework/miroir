@@ -1,11 +1,11 @@
 import React from "react";
-import type { TestRunLogSnapshot, ViewParams } from "miroir-core";
+import type { TestRunLogSnapshot, ViewParams } from "@miroir-framework/core";
 
-import { ExportFailedTestLogsButton } from "miroir-react";
-import { UnitTestExecutionSummary } from "miroir-react";
+import { ExportFailedTestLogsButton } from "@miroir-framework/react";
+import { UnitTestExecutionSummary } from "@miroir-framework/react";
 import { TestResultsGrid } from "./TestResultsGrid.js";
-import { RenderMeasurementsPanel } from "miroir-react";
-import type { TestResultDataAndSelect, TestSelectionState } from "miroir-react";
+import { RenderMeasurementsPanel } from "@miroir-framework/react";
+import type { TestResultDataAndSelect, TestSelectionState } from "@miroir-framework/react";
 
 export interface TestExecutionPanelProps {
   testLabel: string;

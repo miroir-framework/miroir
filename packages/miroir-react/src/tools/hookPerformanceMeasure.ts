@@ -6,7 +6,7 @@ import {
   measurePerformance,
   // rootLessListKeyMapDEFUNCT,
   unfoldMlSchemaOnce,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { useMlElementEditorHooks } from "../components/ValueObjectEditor/MlElementEditorHooks.js";
 
 // Create measured versions of key functions used in this component

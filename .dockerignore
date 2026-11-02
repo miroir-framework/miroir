@@ -37,3 +37,7 @@ tmp
 # Environment state and a developer's own environment (#345): the image seeds its own
 .miroir
 environments/local.json
+
+# devData rows (#647): measurements of the development process, recorded in a checkout; the image
+# neither builds from them nor seeds them
+packages/*/assets/*_devData

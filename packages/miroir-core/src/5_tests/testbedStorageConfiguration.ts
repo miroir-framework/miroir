@@ -3,8 +3,10 @@ import type {
   StoreUnitConfiguration,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { Uuid } from "../0_interfaces/1_core/EntityVersion";
+import { optionalApplicationSections } from "../1_core/Model";
 
-/** The name of a throwaway testbed's stores (#575): a Postgres identifier, `_modelVersion` included. */
+/** The name of a throwaway testbed's stores (#575): a Postgres identifier, `_modelVersion` (the longest
+ * optional section suffix) included. */
 export function testbedStoreName(testbedDeploymentUuid: Uuid): string {
   return `testbed_${testbedDeploymentUuid.replace(/-/g, "")}`;
 }
@@ -61,8 +63,12 @@ export function testbedStorageConfiguration(
     admin: liveConfiguration.admin,
     model: testbedSection(liveConfiguration.model, storeName, ""),
     data: testbedSection(liveConfiguration.data, storeName, ""),
-    ...(liveConfiguration.modelVersion
-      ? { modelVersion: testbedSection(liveConfiguration.modelVersion, storeName, "_modelVersion") }
-      : {}),
+    // optional sections (#232 modelVersion, #647 devData): only those the live deployment has
+    ...Object.fromEntries(
+      optionalApplicationSections.flatMap((section) => {
+        const liveSection = liveConfiguration[section];
+        return liveSection ? [[section, testbedSection(liveSection, storeName, `_${section}`)]] : [];
+      }),
+    ),
   };
 }

@@ -43,7 +43,7 @@ if (runThis) {
     it("the server passes capabilities into createCopilotKitRouter (mountCopilotKitRoute.ts since #409)", () => {
       const src = readRepoFile("packages/miroir-server/src/mountCopilotKitRoute.ts");
       expect(src).toContain("capabilities: options.capabilities");
-      expect(readRepoFile("packages/miroir-server/src/server.ts")).toMatch(/mountCopilotKitRoute\(app, \{\s*capabilities,/);
+      expect(readRepoFile("packages/miroir-server/src/server.ts")).toMatch(/mountCopilotKitRoute\(miroirApp, \{\s*capabilities,/); // #636: in the assistant slot
     });
 
     it("ipcServerSetup.ts passes capabilities into createCopilotKitRouter", () => {

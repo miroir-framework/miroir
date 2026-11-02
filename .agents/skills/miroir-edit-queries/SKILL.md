@@ -30,7 +30,7 @@ There are two main query types:
 **BEFORE starting any query work, verify current test state to avoid investigating unrelated issues:**
 
 ```bash
-npm run testMiroir -w miroir-core -- --suites query.library.instances,fn.templates.resolveQueryTemplates --mode unit
+npm run testMiroir -w @miroir-framework/core -- --suites query.library.instances,fn.templates.resolveQueryTemplates --mode unit
 npm run testMiroir -w miroir-standalone-app -- --suites query.library.instances --mode integration
 ```
 
@@ -57,13 +57,13 @@ npm run build -w miroir-app-miroir
 
 ```bash
 # Unit (in-memory, fast)
-npm run testMiroir -w miroir-core -- --suites query.library.instances --mode unit
+npm run testMiroir -w @miroir-framework/core -- --suites query.library.instances --mode unit
 
 # Integration (runs in miroir-standalone-app against a store profile)
 npm run testMiroir -w miroir-standalone-app -- --suites query.library.instances --mode integration
 
 # Only some leaves: catalog-root key = suite name, values = miroirTestLabel
-npm run testMiroir -w miroir-core -- --suites query.library.instances --mode unit \
+npm run testMiroir -w @miroir-framework/core -- --suites query.library.instances --mode unit \
   --filter '{"query.library.instances":["select Authors with values filter (multiple values) (extractorInstancesByEntity)"]}'
 ```
 
@@ -104,7 +104,7 @@ Copy an existing leaf close to what you need; the suite file shows the templated
 ### Step 3: Run the Test (Expect Failure)
 ```bash
 npm run build -w miroir-app-miroir
-npm run testMiroir -w miroir-core -- --suites query.library.instances --mode unit \
+npm run testMiroir -w @miroir-framework/core -- --suites query.library.instances --mode unit \
   --filter '{"query.library.instances":["my new query test"]}'
 ```
 
@@ -509,7 +509,7 @@ Commonly used UUIDs from the Library example application:
 ### Enable Debug Logging
 
 ```bash
-VITE_MIROIR_LOG_CONFIG_FILENAME=scope-query npm run testMiroir -w miroir-core -- --suites query.library.instances --mode unit
+VITE_MIROIR_LOG_CONFIG_FILENAME=scope-query npm run testMiroir -w @miroir-framework/core -- --suites query.library.instances --mode unit
 ```
 
 ### Check Query Resolution
@@ -566,7 +566,7 @@ Before submitting query changes:
 - [ ] Test case(s) written first (TDD)
 - [ ] Both `queryTemplate` and `query` provided (when applicable)
 - [ ] `assertions` defined with expected results
-- [ ] Unit tests pass: `npm run testMiroir -w miroir-core -- --suites query.library.instances --mode unit`
+- [ ] Unit tests pass: `npm run testMiroir -w @miroir-framework/core -- --suites query.library.instances --mode unit`
 - [ ] Query template resolution tested (if using templates)
 - [ ] Integration tests pass on at least one storage backend
 

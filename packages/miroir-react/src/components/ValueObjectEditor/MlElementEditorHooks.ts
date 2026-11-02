@@ -28,7 +28,7 @@ import {
   type Uuid,
   type MlObject,
   valueToMl,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { getMemoizedReduxDeploymentsStateSelectorMap } from "../../miroir-localcache-imports.js";
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "../../viewConstants.js";

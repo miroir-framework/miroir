@@ -8,7 +8,7 @@ import {
   SECRETS_DELETE_ACTION_LABEL,
   SECRETS_SET_ACTION_LABEL,
   assertSecretInstanceMutationAllowed,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 const RUN_TEST = process.env.RUN_TEST;
 const runThis =

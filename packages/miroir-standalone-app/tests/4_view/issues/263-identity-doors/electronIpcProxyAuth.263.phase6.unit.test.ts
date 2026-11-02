@@ -7,7 +7,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
   setRestClientAuthorizationInvalidationHandler,
   setRestClientAuthorizationTokenGetter,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import { fetchAuthenticationEnabled, requestLoginToken } from "../../../../src/miroir-fwk/4_view/auth/authTransport.js";
 import {

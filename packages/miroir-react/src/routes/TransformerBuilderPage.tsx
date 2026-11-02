@@ -15,7 +15,7 @@ import {
   type Domain2QueryReturnType,
   type ReduxDeploymentsState,
   type SyncBoxedExtractorOrQueryRunnerMap
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import { getMemoizedReduxDeploymentsStateSelectorMap, useSelector, type ReduxStateWithUndoRedo } from "../miroir-localcache-imports.js";
 import { useMiroirContextService } from "../contexts/MiroirContextReactProvider.js";

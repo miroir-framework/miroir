@@ -1,0 +1,348 @@
+{
+  "uuid": "954de789-6350-4f54-a809-5f2b8b91d067",
+  "parentName": "Entity",
+  "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "name": "AgentRunMeasurement",
+  "conceptLevel": "Model",
+  "description": "One run of a coding agent building a Library feature in one arm of the agent cost benchmark, with its measures (#550).",
+  "defaultInstanceDetailsReportUuid": "49a3c09a-c7cd-4438-9730-c691c70741af",
+  "viewAttributes": [
+    "startedAt",
+    "feature",
+    "arm",
+    "costUsd",
+    "turns",
+    "acceptancePassed",
+    "valid"
+  ],
+  "cache": {
+    "cacheAllInstancesOnRefresh": true
+  },
+  "mlSchema": {
+    "type": "object",
+    "extend": {
+      "type": "schemaReference",
+      "definition": {
+        "eager": true,
+        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        "relativePath": "entityDefinitionRoot"
+      }
+    },
+    "definition": {
+      "runId": {
+        "type": "string",
+        "tag": {
+          "value": {
+            "id": 4,
+            "defaultLabel": "Run id",
+            "description": "Identifier of the run, also the name of its folder in the runs folder."
+          }
+        }
+      },
+      "arm": {
+        "type": "string",
+        "tag": {
+          "value": {
+            "id": 5,
+            "defaultLabel": "Arm",
+            "description": "How the agent worked: miroir-mcp (Miroir MCP tools only), miroir-files (Miroir deployment files), conventional (Next.js, Prisma, SQLite)."
+          }
+        }
+      },
+      "feature": {
+        "type": "string",
+        "tag": {
+          "value": {
+            "id": 6,
+            "defaultLabel": "Feature",
+            "description": "The Library feature built: overdue-loans or lending-limit."
+          }
+        }
+      },
+      "runIndex": {
+        "type": "number",
+        "tag": {
+          "value": {
+            "id": 7,
+            "defaultLabel": "Run index",
+            "description": "Index of the run among the runs of the same arm and feature."
+          }
+        }
+      },
+      "pilot": {
+        "type": "boolean",
+        "tag": {
+          "value": {
+            "id": 8,
+            "defaultLabel": "Pilot",
+            "description": "True for a pilot run."
+          }
+        }
+      },
+      "startedAt": {
+        "type": "date",
+        "tag": {
+          "value": {
+            "id": 9,
+            "defaultLabel": "Started at",
+            "description": "When the run started."
+          }
+        }
+      },
+      "model": {
+        "type": "string",
+        "tag": {
+          "value": {
+            "id": 10,
+            "defaultLabel": "Model",
+            "description": "Model the agent ran on."
+          }
+        }
+      },
+      "effort": {
+        "type": "string",
+        "tag": {
+          "value": {
+            "id": 11,
+            "defaultLabel": "Effort",
+            "description": "Effort level given to the agent."
+          }
+        }
+      },
+      "turns": {
+        "type": "number",
+        "tag": {
+          "value": {
+            "id": 12,
+            "defaultLabel": "Turns",
+            "description": "Agent turns, as Claude Code reports them."
+          }
+        }
+      },
+      "stopReason": {
+        "type": "string",
+        "tag": {
+          "value": {
+            "id": 13,
+            "defaultLabel": "Stop reason",
+            "description": "success, or the limit or error that stopped the agent (error_max_turns, error_max_budget_usd...)."
+          }
+        }
+      },
+      "durationMs": {
+        "type": "number",
+        "tag": {
+          "value": {
+            "id": 14,
+            "defaultLabel": "Duration (ms)",
+            "description": "Wall-clock time of the agent run."
+          }
+        }
+      },
+      "apiDurationMs": {
+        "type": "number",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 15,
+            "defaultLabel": "API duration (ms)",
+            "description": "Time spent in API calls."
+          }
+        }
+      },
+      "inputTokens": {
+        "type": "number",
+        "tag": {
+          "value": {
+            "id": 16,
+            "defaultLabel": "Input tokens",
+            "description": "Uncached input tokens."
+          }
+        }
+      },
+      "outputTokens": {
+        "type": "number",
+        "tag": {
+          "value": {
+            "id": 17,
+            "defaultLabel": "Output tokens",
+            "description": "Output tokens."
+          }
+        }
+      },
+      "cacheReadTokens": {
+        "type": "number",
+        "tag": {
+          "value": {
+            "id": 18,
+            "defaultLabel": "Cache read tokens",
+            "description": "Input tokens read from the prompt cache."
+          }
+        }
+      },
+      "cacheCreationTokens": {
+        "type": "number",
+        "tag": {
+          "value": {
+            "id": 19,
+            "defaultLabel": "Cache creation tokens",
+            "description": "Input tokens written to the prompt cache."
+          }
+        }
+      },
+      "costUsd": {
+        "type": "number",
+        "tag": {
+          "value": {
+            "id": 20,
+            "defaultLabel": "Cost (USD, list price)",
+            "description": "Cost at API list price, as Claude Code reports it."
+          }
+        }
+      },
+      "toolCalls": {
+        "type": "number",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 21,
+            "defaultLabel": "Tool calls",
+            "description": "Number of tool calls of the agent."
+          }
+        }
+      },
+      "uuidCharShare": {
+        "type": "number",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 22,
+            "defaultLabel": "UUID share",
+            "description": "Share of the characters of tool inputs and outputs taken by UUIDs (0 to 1)."
+          }
+        }
+      },
+      "acceptancePassed": {
+        "type": "boolean",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 23,
+            "defaultLabel": "Acceptance passed",
+            "description": "True when every hidden acceptance scenario passed; absent when acceptance did not run."
+          }
+        }
+      },
+      "acceptanceScenariosPassed": {
+        "type": "number",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 24,
+            "defaultLabel": "Scenarios passed",
+            "description": "Hidden acceptance scenarios passed."
+          }
+        }
+      },
+      "acceptanceScenariosTotal": {
+        "type": "number",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 25,
+            "defaultLabel": "Scenarios",
+            "description": "Hidden acceptance scenarios run."
+          }
+        }
+      },
+      "valid": {
+        "type": "boolean",
+        "tag": {
+          "value": {
+            "id": 26,
+            "defaultLabel": "Valid",
+            "description": "False when the agent had a tool, server or skill outside its arm, or read the harness files."
+          }
+        }
+      },
+      "invalidReason": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 27,
+            "defaultLabel": "Invalid reason",
+            "description": "Why the run is not valid."
+          }
+        }
+      },
+      "taskHash": {
+        "type": "string",
+        "tag": {
+          "value": {
+            "id": 28,
+            "defaultLabel": "Task hash",
+            "description": "Hash of the task prompt and the arm's AGENTS.md: runs compare only with the same hash."
+          }
+        }
+      },
+      "transcript": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 29,
+            "defaultLabel": "Transcript",
+            "description": "Path of the transcript in the project folder (not in git)."
+          }
+        }
+      },
+      "claudeCodeVersion": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 30,
+            "defaultLabel": "Claude Code version",
+            "description": "Version of Claude Code that ran the agent."
+          }
+        }
+      },
+      "gitCommit": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 31,
+            "defaultLabel": "Git commit",
+            "description": "Commit of the Miroir repository the run used."
+          }
+        }
+      },
+      "gitBranch": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 32,
+            "defaultLabel": "Git branch",
+            "description": "Branch of the Miroir repository the run used."
+          }
+        }
+      },
+      "miroirVersion": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 33,
+            "defaultLabel": "Miroir version",
+            "description": "Version of the Miroir monorepo."
+          }
+        }
+      }
+    }
+  }
+}

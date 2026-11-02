@@ -19,8 +19,8 @@ import React from "react";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { ConfigurationService } from "miroir-core";
-import { LocalCacheProvider, MiroirContextReactProvider } from "miroir-react";
+import { ConfigurationService } from "@miroir-framework/core";
+import { LocalCacheProvider, MiroirContextReactProvider } from "@miroir-framework/react";
 import { defaultAdminViewParams } from "miroir-app-admin";
 
 vi.mock("../../src/miroir-fwk/4-tests/componentTests/index", async (importOriginal) => {

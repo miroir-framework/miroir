@@ -12,8 +12,8 @@ import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { beforeAll, describe, expect, it } from "vitest";
 
-import type { DomainControllerInterface } from "miroir-core";
-import { environmentClientConfig, environmentRealServerClientConfig } from "miroir-env";
+import type { DomainControllerInterface } from "@miroir-framework/core";
+import { environmentClientConfig, environmentRealServerClientConfig } from "@miroir-framework/env";
 import { deployment_Admin, deployment_Miroir } from "miroir-app-admin";
 
 import { runSelfTest } from "../../../src/miroir-fwk/4-tests/selfTest/runSelfTest.js";

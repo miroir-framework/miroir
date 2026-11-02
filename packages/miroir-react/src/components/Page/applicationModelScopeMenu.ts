@@ -1,4 +1,4 @@
-import type { Menu, MiroirMenuItem } from "miroir-core";
+import type { Menu, MiroirMenuItem } from "@miroir-framework/core";
 import { adminSelfApplication } from "miroir-app-admin";
 import { selfApplicationMiroir } from "miroir-app-miroir";
 

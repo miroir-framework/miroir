@@ -3,7 +3,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
-import { materializeExternalServiceOperations } from "miroir-core";
+import { materializeExternalServiceOperations } from "@miroir-framework/core";
 
 const assetsDir = join(dirname(fileURLToPath(import.meta.url)), "../assets");
 const excerpt = JSON.parse(

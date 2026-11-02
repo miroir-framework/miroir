@@ -9,8 +9,8 @@ import {
   indexApplicationMiroirTestsByKey,
   inferUiIntegrationRunnerSuiteKind,
   resolveSkipRunTargetPlayfieldResetFromMiroirTestSuite,
-} from "miroir-core";
-import { loadApplicationMiroirTestCatalog } from "miroir-core/src/5_tests/loadApplicationMiroirTestsFromFolders.js";
+} from "@miroir-framework/core";
+import { loadApplicationMiroirTestCatalog } from "@miroir-framework/core/model-validation-fs";
 
 import {
   listUiIntegrationRunnerSuiteKeys,

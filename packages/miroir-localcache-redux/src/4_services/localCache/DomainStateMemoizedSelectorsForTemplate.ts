@@ -13,7 +13,7 @@ import {
   type MiroirModelEnvironment,
   type ApplicationDeploymentMap,
   applyExtractorTransformerInMemory
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 const deploymentEntityStateSelector = (
   domainState: ReduxDeploymentsState,

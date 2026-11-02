@@ -4,7 +4,7 @@ import {
   type ReactComponentTestStep,
   type ResolvedReactComponentTestStep,
   type ResolvedReactComponentTestTarget,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import {
   componentTestAct,
@@ -21,7 +21,7 @@ import {
 import {
   EMPTY_CONTAINER_ATTRIBUTE,
   ML_NAME_ATTRIBUTE,
-} from "miroir-react";
+} from "@miroir-framework/react";
 
 // ################################################################################################
 // Interpreter of the declarative component test steps (#292, analysis §5.3, §5.4).

@@ -11,7 +11,7 @@ import { join } from "node:path";
 import { AbstractAgent } from "@ag-ui/client";
 import type { BaseEvent, RunAgentInput } from "@ag-ui/core";
 import { EventType } from "@ag-ui/core";
-import { resolveSecret } from "miroir-core";
+import { resolveSecret } from "@miroir-framework/core";
 import { Observable } from "rxjs";
 
 /** Name of the Miroir MCP server in every agent's MCP configuration. */

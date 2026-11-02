@@ -1,7 +1,7 @@
 import type {
   InitApplicationParameters,
   SelfApplication,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import {
   appForTestInitialApplicationVersion,

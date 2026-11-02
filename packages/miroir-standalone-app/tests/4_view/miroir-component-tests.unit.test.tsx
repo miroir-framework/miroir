@@ -46,9 +46,9 @@ import {
   runMiroirTests,
   splitSuiteKeys,
   type MiroirTestSuite,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
-import { attachFeedbackGlow } from "miroir-react";
+import { attachFeedbackGlow } from "@miroir-framework/react";
 
 import { createReactComponentTestRunner } from "../../src/miroir-fwk/4-tests/componentTests/runReactComponentTest";
 import { resolveRepoRoot } from "../helpers/integrationTestProfiles.js";

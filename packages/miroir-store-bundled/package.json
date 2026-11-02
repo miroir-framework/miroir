@@ -1,10 +1,23 @@
 {
-  "name": "miroir-store-bundled",
+  "name": "@miroir-framework/store-bundled",
   "private": true,
   "version": "0.5.0-rc.1",
+  "publishConfig": {
+    "access": "public"
+  },
   "description": "The Miroir read-only bundled store, serving pre-loaded JSON data for static (GitHub Pages) deployments.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
   "module": "dist/index.js",
   "type": "module",
   "scripts": {
@@ -12,11 +25,20 @@
     "devBuild": "npm run build"
   },
   "dependencies": {
-    "miroir-core": "*"
+    "@miroir-framework/core": "*"
   },
   "devDependencies": {
     "tsup": "9.0.0"
   },
   "author": "Miroir Framework <miroir-framework@protonmail.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=22"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/miroir-framework/miroir.git",
+    "directory": "packages/miroir-store-bundled"
+  }
 }

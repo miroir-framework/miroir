@@ -1,4 +1,4 @@
-import { ConfigurationService } from "miroir-core";
+import { ConfigurationService } from "@miroir-framework/core";
 
 import {
   createReactComponentTestRunner,

@@ -12,7 +12,7 @@ import type {
   ActionImplementationHandler,
   DomainControllerActionHost,
 } from "../0_interfaces/3_controllers/DomainControllerActionHost";
-import { defaultMiroirModelEnvironment, getApplicationSection } from "../1_core/Model";
+import { defaultMiroirModelEnvironment, devDataEntityUuids, getApplicationSection } from "../1_core/Model";
 import { innermostFailureMessage } from "../2_domain/AsyncQuerySelectors";
 import { mergeReportData, reportDataParts, type ReportDataPart } from "../2_domain/ReportData";
 import { resolveQueryTemplateWithExtractorCombinerTransformer } from "../2_domain/Templates";
@@ -109,7 +109,18 @@ async function runPart(
   } catch (error) {
     return { ok: false, message: error instanceof Error ? error.message : String(error) };
   }
-  return runQuery(host, query, "data", context);
+  return runQuery(host, query, partSection(query), context);
+}
+
+/**
+ * #647: the section whose store runs a part's query. The server runs a query on one store, so a
+ * query that reads only devData Entities (the history Reports) runs on `devData`; any other on `data`.
+ */
+export function partSection(query: BoxedQueryWithExtractorCombinerTransformer): ApplicationSection {
+  const entityUuids = [...Object.values(query.extractors ?? {}), ...Object.values(query.combiners ?? {})]
+    .map((extractorOrCombiner) => (extractorOrCombiner as { parentUuid?: unknown }).parentUuid)
+    .filter((parentUuid): parentUuid is string => typeof parentUuid == "string");
+  return entityUuids.length > 0 && entityUuids.every((uuid) => devDataEntityUuids.has(uuid)) ? "devData" : "data";
 }
 
 /** A query reading the Report or the Queries, under the entry `result`. */

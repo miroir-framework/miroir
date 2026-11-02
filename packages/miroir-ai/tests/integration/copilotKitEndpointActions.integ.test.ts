@@ -10,7 +10,7 @@ import {
   type ApplicationDeploymentMap,
   type AuthenticatedRequest,
   type DomainControllerInterface,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import { createCopilotKitRouter } from "../../src/routes/copilotKitRoute.js";
 import { createMiroirCopilotKitActions } from "../../src/tools/miroirCopilotKitActions.js";

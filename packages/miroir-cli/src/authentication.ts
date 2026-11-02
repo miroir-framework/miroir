@@ -7,7 +7,7 @@ import {
   setRestClientAuthorizationTokenGetter,
   type AuthenticationGate,
   type AuthPrincipal,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import type { CliPlatform } from "./platform.js";
 

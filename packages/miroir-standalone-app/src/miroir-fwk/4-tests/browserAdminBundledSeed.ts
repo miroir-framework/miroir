@@ -5,8 +5,8 @@
  * seed from `miroir-app-admin` (see packages/miroir-sandbox/src/bundledData.ts).
  */
 
-import type { EntityInstance, StoreUnitConfiguration } from 'miroir-core';
-import type { BundledDeploymentData, BundledSectionData } from 'miroir-store-bundled';
+import type { EntityInstance, StoreUnitConfiguration } from '@miroir-framework/core';
+import type { BundledDeploymentData, BundledSectionData } from '@miroir-framework/store-bundled';
 import * as adminDeployment from 'miroir-app-admin';
 import {
   deployment_Admin as localDeploymentAdmin,

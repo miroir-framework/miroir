@@ -17,8 +17,8 @@ test("miroir-react sources cannot import a host feature", async () => {
   for (const code of [
     `import { CopilotKit } from "@copilotkit/react-core";\n`,
     `import { ipcRenderer } from "electron";\n`,
-    `import { x } from "miroir-mcp";\n`,
-    `import { callMcpTool } from "miroir-mcp/client";\n`,
+    `import { x } from "@miroir-framework/mcp";\n`,
+    `import { callMcpTool } from "@miroir-framework/mcp/client";\n`,
     `import { ModelDiagramReportSectionView } from "miroir-diagram-class";\n`,
     `import { appShellHost } from "../../../../miroir-standalone-app/src/miroir-fwk/4_view/reportSectionRenderers";\n`,
   ]) {
@@ -32,7 +32,7 @@ test("miroir-react sources still cannot import the external ML packages", async 
 });
 
 test("miroir-react sources import miroir-core and their own modules", async () => {
-  assert.equal((await errorsFor(reactSrc, `import { Uuid } from "miroir-core";\nimport { b } from "./b.js";\n`)).length, 0);
+  assert.equal((await errorsFor(reactSrc, `import { Uuid } from "@miroir-framework/core";\nimport { b } from "./b.js";\n`)).length, 0);
 });
 
 test("the app may import host features", async () => {

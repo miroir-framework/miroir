@@ -8,7 +8,7 @@ import express, { type Request, type Router } from "express";
 import { afterEach, describe, expect, it } from "vitest";
 import { AbstractAgent } from "@ag-ui/client";
 import { CopilotRuntime } from "@copilotkit/runtime";
-import { clearSecrets, isAgentBackendAllowed, registerSecrets, type ProcessCapabilities } from "miroir-core";
+import { clearSecrets, isAgentBackendAllowed, registerSecrets, type ProcessCapabilities } from "@miroir-framework/core";
 
 import {
   createCopilotKitRouter,

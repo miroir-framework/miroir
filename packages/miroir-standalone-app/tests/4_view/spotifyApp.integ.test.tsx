@@ -28,7 +28,7 @@ import type {
   MlObject,
   Report,
   StoreUnitConfiguration,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   Action2Error,
   clearSecrets,
@@ -51,12 +51,12 @@ import {
   registerSecrets,
   resetAndinitializeDeploymentCompositeAction,
   resetAndInitApplicationDeployment,
-} from "miroir-core";
-import { LocalCacheProvider, MiroirContextReactProvider, useMiroirContextService } from "miroir-react";
-import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
-import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
-import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
-import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
+} from "@miroir-framework/core";
+import { LocalCacheProvider, MiroirContextReactProvider, useMiroirContextService } from "@miroir-framework/react";
+import { miroirFileSystemStoreSectionStartup } from "@miroir-framework/store-filesystem";
+import { miroirIndexedDbStoreSectionStartup } from "@miroir-framework/store-indexeddb";
+import { miroirMongoDbStoreSectionStartup } from "@miroir-framework/store-mongodb";
+import { miroirPostgresStoreSectionStartup } from "@miroir-framework/store-postgres";
 import { deployment_Admin, deployment_Miroir } from "miroir-app-admin";
 import {
   deployment_Library_DO_NO_USE,
@@ -75,12 +75,12 @@ import {
 } from "miroir-example-spotify";
 
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
-import { ReportPageContextProvider } from "miroir-react";
-import { ReportViewWithEditor } from "miroir-react";
-import { DocumentOutlineContextProvider } from "miroir-react";
-import { MiroirThemeProvider } from "miroir-react";
+import { ReportPageContextProvider } from "@miroir-framework/react";
+import { ReportViewWithEditor } from "@miroir-framework/react";
+import { DocumentOutlineContextProvider } from "@miroir-framework/react";
+import { MiroirThemeProvider } from "@miroir-framework/react";
 import { miroirAppStartup } from "../../src/startup.js";
-import { ReportUrlParamKeys } from "miroir-react";
+import { ReportUrlParamKeys } from "@miroir-framework/react";
 import { cleanLevel, packageName } from "../3_controllers/constants.js";
 import { AppStackIntegrationTestSession } from "../helpers/IntegrationTestSession.js";
 import { resolveRepoRoot } from "../helpers/integrationTestProfiles.js";

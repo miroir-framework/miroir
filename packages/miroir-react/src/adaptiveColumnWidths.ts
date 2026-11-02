@@ -1,4 +1,4 @@
-import { MlElement, MiroirLoggerFactory, type LoggerInterface } from "miroir-core";
+import { MlElement, MiroirLoggerFactory, type LoggerInterface } from "@miroir-framework/core";
 import { TableComponentRow } from "./components/Grids/EntityInstanceGridInterface.js";
 import { packageName } from "./constants.js";
 import { cleanLevel } from "./viewConstants.js";

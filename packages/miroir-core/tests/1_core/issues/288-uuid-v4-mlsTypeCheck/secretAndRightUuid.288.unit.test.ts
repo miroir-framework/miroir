@@ -19,7 +19,7 @@ import {
   importProcessSecrets,
   type MlElement,
   type MiroirModelEnvironment,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 const WRAPPING_KEY = "test-secrets-master-288";
 const ALICE_UUID = "1c39328c-7de4-44ae-bcf1-5bbc38d8e267";

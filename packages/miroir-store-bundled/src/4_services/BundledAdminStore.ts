@@ -5,7 +5,7 @@ import {
   MiroirLoggerFactory,
   PersistenceStoreAdminSectionInterface,
   StoreSectionConfiguration,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { packageName } from "../constants.js";
 import { cleanLevel } from "./constants.js";
 import { BundledStore } from "./BundledStore.js";

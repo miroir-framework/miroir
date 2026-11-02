@@ -1,16 +1,16 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { applyLocalCacheMonitorGate } from "miroir-react";
+import { applyLocalCacheMonitorGate } from "@miroir-framework/react";
 import {
   LOCAL_CACHE_MONITOR_SESSION_KEY,
   resetLocalCacheMonitorConfig,
-} from "miroir-react";
-import { localCacheMonitorIndicators } from "miroir-react";
-import { localCacheMonitorRegistry } from "miroir-react";
+} from "@miroir-framework/react";
+import { localCacheMonitorIndicators } from "@miroir-framework/react";
+import { localCacheMonitorRegistry } from "@miroir-framework/react";
 import {
   buildLocalCacheMonitorExportPayload,
   clearLocalCacheMonitorSession,
-} from "miroir-react";
-import { readLocalCacheMonitorBreakdown } from "miroir-react";
+} from "@miroir-framework/react";
+import { readLocalCacheMonitorBreakdown } from "@miroir-framework/react";
 
 describe("LocalCache monitor session clear/export (Phase 8)", () => {
   beforeEach(() => {

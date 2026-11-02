@@ -1,7 +1,7 @@
 import { useState, type ReactNode } from "react";
 import type { Params } from "react-router-dom";
 
-import type { ApplicationSection, Uuid } from "miroir-core";
+import type { ApplicationSection, Uuid } from "@miroir-framework/core";
 
 import { REPORT_URL_KNOWN_PARAM_KEYS, type ReportUrlParamKeys } from "../../reportUrlParams.js";
 import { reportUrl } from "../../navigation.js";
@@ -14,7 +14,7 @@ export type OpenReportSpec = {
   reportUuid: string;
   openAs: "modal" | "route";
   application?: string;
-  applicationSection?: "data" | "model" | "modelVersion";
+  applicationSection?: "data" | "model" | "modelVersion" | "devData";
   deploymentUuid?: string;
 };
 

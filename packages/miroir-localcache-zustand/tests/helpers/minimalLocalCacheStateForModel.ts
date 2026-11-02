@@ -2,7 +2,7 @@ import {
   getReduxDeploymentsStateIndex,
   type ApplicationSection,
   type Uuid,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   entityEndpointVersion,
   entityEntity,

@@ -1,4 +1,4 @@
-import { MlElement } from "miroir-core";
+import { MlElement } from "@miroir-framework/core";
 import { useState } from "react";
 
 export const ChangeValueTypeSelect: React.FC<{ onChange: (type: MlElement) => void }> = ({

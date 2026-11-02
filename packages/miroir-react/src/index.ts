@@ -155,6 +155,9 @@ export {
   setupMiroirDomainController,
   useSelector,
 } from "./miroir-localcache-imports.js";
+// #639: the startup call of a React client
+export { startMiroirClient, type MiroirClientPlatform } from "./startMiroirClient.js";
+export type { MiroirEmulatedServer, MiroirPlatform, MiroirPlatformOptions } from "./miroir-localcache-imports.js";
 
 export { ThemedComponentProps } from "./components/helpers/BaseTypes.js";
 

@@ -13,7 +13,7 @@ export default defineConfig({
   splitting: false,
   treeshake: false,
   minify: false,
-  external: ['miroir-core', 'json-diff'],
+  external: ['@miroir-framework/core', 'json-diff'],
   noExternal: [],
   loader: {
     '.json': 'copy',

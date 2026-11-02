@@ -1,7 +1,7 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import type { RunExportBundle } from "miroir-core";
+import type { RunExportBundle } from "@miroir-framework/core";
 
 /** `<repo>/test-results/run-exports`: gitignored, unlike the cwd (the package folder under npm -w). */
 export const defaultRunExportDirectory = resolve(

@@ -7,7 +7,7 @@ import type {
   Entity,
   GraphReportSection,
   Uuid,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 // ################################################################################################
 // Report section kinds rendered through a registry (#13 Q3-a). miroir-react renders every other

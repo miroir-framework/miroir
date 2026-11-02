@@ -2,11 +2,11 @@
 import type {
   ApplicationDeploymentMap,
   LoggerInterface
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   defaultSelfApplicationDeploymentMap,
   MiroirLoggerFactory
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { selfApplicationMiroir } from "miroir-app-miroir";
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "../../viewConstants.js";

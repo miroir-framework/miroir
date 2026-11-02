@@ -3,7 +3,7 @@ Package Created: miroir-cli
 A command-line interface for the Miroir Framework that automatically exposes Endpoint Actions as CLI commands.
 
 ## Key Features
-Auto-generated commands from Endpoints - Using the cliCommandEntry() factory pattern (similar to miroir-mcp's mcpToolEntry())
+Auto-generated commands from Endpoints - Using the cliCommandEntry() factory pattern (similar to @miroir-framework/mcp's mcpToolEntry())
 
 ## 8 Commands Available:
 

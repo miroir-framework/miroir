@@ -24,7 +24,7 @@ import {
   type Query,
   type Report,
   type Runner,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   adminSelfApplication,
   deployment_Admin,
@@ -33,7 +33,7 @@ import {
 
 import { useReduxDeploymentsStateQuerySelector } from "../../ReduxHooks.js";
 
-import type { RunStoredQuery, TransformerDefinition } from 'miroir-core';
+import type { RunStoredQuery, TransformerDefinition } from '@miroir-framework/core';
 import { getMemoizedReduxDeploymentsStateSelectorMap } from "../../miroir-localcache-imports.js";
 import { packageName } from "../../constants.js";
 import { ReportUrlParamKeys } from "../../reportUrlParams.js";

@@ -32,7 +32,7 @@ import {
   type SelfApplication,
   type SpecificLoggerOptionsMap,
   defaultSelfApplicationDeploymentMap,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   deployment_Library_DO_NO_USE,
   author1,

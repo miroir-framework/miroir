@@ -1,4 +1,4 @@
-import { LoggerInterface, MiroirLoggerFactory } from "miroir-core";
+import { LoggerInterface, MiroirLoggerFactory } from "@miroir-framework/core";
 import { useMiroirContextService, type FoldedStateTree } from "../../contexts/MiroirContextReactProvider.js";
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { packageName } from "../../constants.js";

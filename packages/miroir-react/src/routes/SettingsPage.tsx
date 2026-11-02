@@ -15,7 +15,7 @@ import {
   defaultSelfApplicationDeploymentMap,
   MiroirLoggerFactory,
   type LoggerInterface
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   deployment_Admin,
   adminSelfApplication,
@@ -32,7 +32,7 @@ import {
   SyncBoxedExtractorOrQueryRunnerMap,
   SyncQueryRunner,
   ViewParamsData,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { useMemo } from "react";
 import { packageName } from "../constants.js";
 import { getMemoizedReduxDeploymentsStateSelectorMap } from "../miroir-localcache-imports.js";

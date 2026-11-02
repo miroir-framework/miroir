@@ -5,7 +5,7 @@ import type {
   InitApplicationParameters,
   MetaModelPartial,
   SelfApplication,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import {
   author1,
@@ -39,11 +39,6 @@ import {
   selfApplicationGitHub,
   selfApplicationModelBranchGitHubMasterBranch,
 } from "miroir-example-github";
-import {
-  metaInitApplicationVersion,
-  selfApplicationMeta,
-  selfApplicationModelBranchMetaMasterBranch,
-} from "miroir-app-meta";
 
 import { defaultMiroirMetaModel } from "miroir-app-miroir";
 
@@ -51,7 +46,7 @@ import { defaultMiroirMetaModel } from "miroir-app-miroir";
  * Session playfield triple (model + instances + init). Alias of miroir-core IntegTestbedResetParams.
  * @deprecated Prefer IntegTestbedResetParams from miroir-core.
  */
-export type TestbedSetupParameters = import("miroir-core").IntegTestbedResetParams;
+export type TestbedSetupParameters = import("@miroir-framework/core").IntegTestbedResetParams;
 
 /** Composite-PK test entity — PK is `["region", "code"]` (matches legacy integ file). */
 const ENTITY_COMPOSITE_PK_UUID = "44691d2c-d7c1-48e0-8363-71c51195e104";
@@ -147,15 +142,6 @@ export const githubTestbedInitParams: InitApplicationParameters = {
   selfApplication: selfApplicationGitHub,
   applicationModelBranch: selfApplicationModelBranchGitHubMasterBranch as any,
   applicationVersion: githubInitApplicationVersion,
-};
-
-/** Meta app (#473): report MiroirTests walk the bundle size history Reports on fixed measurements. */
-export const metaTestbedInitParams: InitApplicationParameters = {
-  dataStoreType: "app",
-  metaModel: defaultMiroirMetaModel,
-  selfApplication: selfApplicationMeta,
-  applicationModelBranch: selfApplicationModelBranchMetaMasterBranch as any,
-  applicationVersion: metaInitApplicationVersion,
 };
 
 /** Library seed for lendDocument / returnDocument runner suites (users + catalog data). */

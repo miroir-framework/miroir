@@ -8,7 +8,7 @@ import {
   type Query,
   type Report,
   type SelfApplication,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import reportGitHubConnectJson from "../assets/github_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/295d0905-3480-49cd-9b92-6318a96dce01.json" with { type: "json" };
 import reportGitHubRepositoriesJson from "../assets/github_model/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/9bd8a57a-19e4-4911-b4ae-d1bbebbde338.json" with { type: "json" };

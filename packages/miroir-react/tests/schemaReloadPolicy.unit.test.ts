@@ -9,7 +9,7 @@ import {
   classifySchemaChange,
   computeSchemaRevision,
   type MetaModel,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   selfApplicationMiroir,
   defaultMiroirMetaModel,

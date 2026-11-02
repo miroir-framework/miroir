@@ -14,7 +14,7 @@ import {
   type DragEndEvent,
   type DragStartEvent,
 } from "@dnd-kit/core";
-import type { BlockPath } from "miroir-core";
+import type { BlockPath } from "@miroir-framework/core";
 import React, { useCallback, useState } from "react";
 
 import { armedLabel, pathKey, useBlockEditing, valueAtPath, type ArmedBlock, type BlockEditing } from "./BlockEditing.js";

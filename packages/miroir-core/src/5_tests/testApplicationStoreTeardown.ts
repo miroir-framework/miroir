@@ -40,7 +40,8 @@ function compositeSequence(
 /**
  * Browser-safe — no Node built-ins. Shared by runner sessions and IntegrationTestSession.
  *
- * Drops the ephemeral run-target store (model, data, and modelVersion when configured).
+ * Drops the ephemeral run-target store (model, data, and the optional sections modelVersion and
+ * devData when configured: `storeManagementAction_deleteStore` deletes each configured section).
  * Admin Application / Deployment / MiroirRight cleanup is a separate sequence so a
  * FailedToDeleteStore does not skip metadata removal.
  * those Admin rows.

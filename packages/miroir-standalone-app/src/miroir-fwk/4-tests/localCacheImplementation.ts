@@ -4,7 +4,7 @@ import type {
   MiroirContext,
   RestClientInterface,
   RestPersistenceClientAndRestClientInterface,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import * as LocalCacheRedux from "miroir-localcache-redux";
 
 // #446: the LocalCache implementation the tests build their DomainControllers on, chosen by

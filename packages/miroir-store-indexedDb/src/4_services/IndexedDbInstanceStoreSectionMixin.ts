@@ -16,7 +16,7 @@ import {
   type MiroirModelEnvironment,
   RunBoxedQueryTemplateAction,
   type ApplicationDeploymentMap
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { IndexedDbStoreSection, MixableIndexedDbStoreSection } from "./IndexedDbStoreSection.js";
 
 import { packageName } from "../constants.js";

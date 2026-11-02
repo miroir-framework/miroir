@@ -28,7 +28,7 @@ import {
   type MiroirConfigClient,
   type RestClientCallReturnType,
   type RestClientInterface,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import { trackLoadTimingRequest } from "../../../loadTimings/loadTimingBrowser.js";
 // ################################################################################################

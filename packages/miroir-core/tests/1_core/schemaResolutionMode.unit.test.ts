@@ -13,7 +13,7 @@ import {
   miroirFundamentalMlSchema,
   resolveFundamentalSchemaForDeployment,
   type MetaModel,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import { defaultMiroirMetaModel } from "miroir-app-miroir";
 describe("resolveFundamentalSchemaForDeployment — static mode", () => {

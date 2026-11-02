@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { type MiroirModelEnvironment } from "miroir-core";
+import { type MiroirModelEnvironment } from "@miroir-framework/core";
 import { sqlStringForExtractor } from "../src/1_core/SqlGenerator";
 
 // ################################################################################################

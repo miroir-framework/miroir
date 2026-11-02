@@ -14,9 +14,9 @@
  * Admin section = empty (no admin-level data needed for read-only demo)
  */
 
-import type { EntityInstance, MiroirConfigClient, StoreUnitConfiguration } from "miroir-core";
-import { versionHistoryEntityUuids } from "miroir-core";
-import type { BundledDeploymentData, BundledSectionData } from "miroir-store-bundled";
+import type { EntityInstance, MiroirConfigClient, StoreUnitConfiguration } from "@miroir-framework/core";
+import { devDataEntityUuids, versionHistoryEntityUuids } from "@miroir-framework/core";
+import type { BundledDeploymentData, BundledSectionData } from "@miroir-framework/store-bundled";
 
 import * as adminDeployment from "miroir-app-admin";
 import {
@@ -162,7 +162,8 @@ export const demoBundledData: Record<string, BundledDeploymentData> = {
     miroirDeployment as unknown as Record<string, unknown>,
     {},
     MIROIR_MODEL_PARENT_UUIDS,
-    versionHistoryEntityUuids,
+    // #232 version history and #647 devData rows: a bundled deployment has neither section
+    new Set([...versionHistoryEntityUuids, ...devDataEntityUuids]),
   ),
   [ADMIN_DEPLOYMENT_UUID]: makeBundledDeploymentData(
     adminDeployment as unknown as Record<string, unknown>,

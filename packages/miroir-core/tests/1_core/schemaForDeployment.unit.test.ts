@@ -21,7 +21,7 @@ import {
   defaultTransformerNode,
   transformerUnionTypes,
   LIBRARY_TMP,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import { defaultMiroirMetaModel } from "miroir-app-miroir";
 describe("getMiroirFundamentalSchemaForDeployment (Phase 1)", () => {

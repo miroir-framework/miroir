@@ -15,9 +15,9 @@ import {
   MiroirLoggerFactory,
   type DomainControllerInterface,
   type MiroirConfigClient,
-} from "miroir-core";
-import { bootEnvironment, resolveEnvironmentFromFiles, type ResolvedEnvironment } from "miroir-env";
-import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
+} from "@miroir-framework/core";
+import { bootEnvironment, resolveEnvironmentFromFiles, type ResolvedEnvironment } from "@miroir-framework/env";
+import { miroirFileSystemStoreSectionStartup } from "@miroir-framework/store-filesystem";
 
 import { loglevelnext } from "../../../src/loglevelnextImporter.js";
 import { setupMiroirTest } from "../../../src/miroir-fwk/4-tests/setupMiroirTest.js";

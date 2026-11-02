@@ -5,7 +5,7 @@
 // 3. getDefaultRuntimeConfig reads from environment variables
 
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import { clearSecrets, registerSecrets } from "miroir-core";
+import { clearSecrets, registerSecrets } from "@miroir-framework/core";
 import {
   buildCopilotRuntime,
   getApiKey,

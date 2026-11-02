@@ -10,10 +10,10 @@ export default defineConfig({
   treeshake: true,
   minify: false, // Keep unminified for better debugging
   external: [
-    'miroir-core',
+    '@miroir-framework/core',
     'miroir-localcache-redux',
-    'miroir-store-filesystem',
-    'miroir-store-indexedDb', 
-    'miroir-store-postgres'
+    '@miroir-framework/store-filesystem',
+    '@miroir-framework/store-indexeddb', 
+    '@miroir-framework/store-postgres'
   ],
 });

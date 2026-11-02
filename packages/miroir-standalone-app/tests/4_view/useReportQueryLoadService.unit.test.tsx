@@ -5,10 +5,10 @@ import type {
   ApplicationDeploymentMap,
   DomainControllerInterface,
   ReportQueryLoadRequest,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
-import { useEnsureReportQueryLoaded } from "miroir-react";
-import { useReportQueryLoadService } from "miroir-react";
+import { useEnsureReportQueryLoaded } from "@miroir-framework/react";
+import { useReportQueryLoadService } from "@miroir-framework/react";
 
 function stubDomainController(): DomainControllerInterface {
   return {

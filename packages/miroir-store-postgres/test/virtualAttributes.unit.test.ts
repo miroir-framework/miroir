@@ -7,7 +7,7 @@ import {
   type ExtractorInstancesByEntity,
   type MlElement,
   type MiroirModelEnvironment,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import entityBookJson from "../../miroir-example-library/assets/library_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e8ba151b-d68e-4cc3-9a83-3459d309ccf5.json" with { type: "json" };
 
 import { sqlStringForExtractor } from "../src/1_core/SqlGenerator.js";

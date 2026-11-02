@@ -3,7 +3,7 @@ import {
   type ApplicationSection,
   type Entity,
   type Uuid,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   entityEndpointVersion,
   entityEntity,
@@ -14,7 +14,7 @@ import {
   entityReport,
   entitySelfApplicationVersion,
 } from "miroir-app-miroir";
-import type { LocalCacheSliceState } from "miroir-react";
+import type { LocalCacheSliceState } from "@miroir-framework/react";
 
 function emptyCollection() {
   return { entities: {}, ids: [] as string[] };

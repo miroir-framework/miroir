@@ -5,6 +5,10 @@
   "description": "Miroir deployment assets (miroir_model and miroir_data) for the Miroir Framework",
   "author": "Miroir Framework <miroir-framework@protonmail.com>",
   "license": "MIT",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=22"
+  },
   "main": "dist/index.js",
   "types": "index.d.ts",
   "type": "module",
@@ -25,20 +29,28 @@
   "scripts": {
     "build": "tsup",
     "devBuild": "npm run build",
+    "bundle-size:record": "tsx ./scripts/devData/recordBundleSize.ts",
+    "bundle-size:backfill": "tsx ./scripts/devData/backfillBundleSize.ts",
+    "agent-run:record": "tsx ./scripts/devData/recordAgentRun.ts",
     "test": "vitest run -t",
     "testByFile": "vitest run --maxWorkers=1 --reporter=verbose"
   },
   "nx": {
     "implicitDependencies": [
-      "!miroir-core"
+      "!@miroir-framework/core"
     ]
   },
   "devDependencies": {
     "copyfiles": "2.4.1",
-    "miroir-core": "*",
+    "@miroir-framework/core": "*",
     "tsup": "9.0.0",
     "tsx": "4.23.15",
     "vite": "8.3.5",
     "vitest": "5.0.5"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/miroir-framework/miroir.git",
+    "directory": "packages/miroir-app-miroir"
   }
 }

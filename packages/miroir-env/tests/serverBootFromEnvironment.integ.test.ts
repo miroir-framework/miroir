@@ -16,8 +16,8 @@ import {
   ENTITY_DEPLOYMENT_UUID,
   miroirCoreStartup,
   type DomainControllerInterface,
-} from "miroir-core";
-import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
+} from "@miroir-framework/core";
+import { miroirFileSystemStoreSectionStartup } from "@miroir-framework/store-filesystem";
 
 import { boot, contentHashes, readRows, temporaryCheckout } from "./bootTestSupport";
 

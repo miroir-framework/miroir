@@ -14,7 +14,7 @@ import {
   type MlElement,
   type TransformerReturnType,
   valueToMl,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import { paginateRows } from "../Grids/gridPagination.js";
 

@@ -20,7 +20,7 @@ import {
   type MiroirTestForReactComponent,
   type ReactComponentTestStep,
   type ReactComponentTestSuiteContext,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import { createReactComponentTestRunner } from "../../../../src/miroir-fwk/4-tests/componentTests/runReactComponentTest";
 import { optionFormikName } from "../../../../src/miroir-fwk/4-tests/componentTests/runComponentTestSteps";

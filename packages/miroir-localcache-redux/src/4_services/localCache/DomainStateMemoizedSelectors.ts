@@ -14,7 +14,7 @@ import {
   type ApplicationDeploymentMap,
   asyncApplyExtractorTransformerInMemory,
   applyExtractorTransformerInMemory
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 // TODO: isn't this duplicating ReduxDeploymentsStateQueryTemplateSelectors.ts ?
 const deploymentEntityStateSelector = (

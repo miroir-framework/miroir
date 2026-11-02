@@ -3,8 +3,8 @@ import { useCallback } from "react";
 import type {
   ApplicationDeploymentMap,
   LoggerInterface
-} from "miroir-core";
-import { defaultSelfApplicationDeploymentMap, MiroirLoggerFactory } from "miroir-core";
+} from "@miroir-framework/core";
+import { defaultSelfApplicationDeploymentMap, MiroirLoggerFactory } from "@miroir-framework/core";
 import { runnerDeployApplication, selfApplicationMiroir } from "miroir-app-miroir";
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "../../viewConstants.js";

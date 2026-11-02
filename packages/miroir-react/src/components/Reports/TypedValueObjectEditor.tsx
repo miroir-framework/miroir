@@ -30,7 +30,7 @@ import {
   type CoreTransformerForBuildPlusRuntime,
   type MlElement,
   type MiroirModelEnvironment,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { CodeBlock_ReadOnly } from "../CodeBlock_ReadOnly.js";
 import { getMemoizedReduxDeploymentsStateSelectorMap, ReduxStateWithUndoRedo, useSelector } from "../../miroir-localcache-imports.js";
 import { JsonDisplayHelper } from "../helpers/DebugHelper.js";

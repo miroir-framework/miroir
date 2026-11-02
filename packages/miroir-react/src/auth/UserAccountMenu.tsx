@@ -2,7 +2,7 @@ import { Avatar, IconButton, Menu, MenuItem, Tooltip, Typography } from "@mui/ma
 import { useState, type MouseEvent } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
-import { nextPageWhenAuthGate } from "miroir-core";
+import { nextPageWhenAuthGate } from "@miroir-framework/core";
 
 import { useMiroirTheme } from "../contexts/MiroirThemeContext.js";
 import { setAuthToken, useAuthSession } from "./authSession.js";

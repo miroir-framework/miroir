@@ -21,7 +21,7 @@ import {
   type EndpointActionCallContext,
   type ProcessCapabilities,
   type ProcessCapabilityName,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   buildCopilotRuntime,
   buildMinimalCopilotRuntime,

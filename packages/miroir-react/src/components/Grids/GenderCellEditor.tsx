@@ -14,7 +14,7 @@ import {
 } from 'react';
 import ReactDOM from 'react-dom';
 
-import { LoggerInterface, MiroirLoggerFactory } from 'miroir-core';
+import { LoggerInterface, MiroirLoggerFactory } from '@miroir-framework/core';
 
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "../../viewConstants.js";

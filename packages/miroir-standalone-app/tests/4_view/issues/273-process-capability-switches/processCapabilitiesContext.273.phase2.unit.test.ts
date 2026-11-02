@@ -14,8 +14,8 @@ import {
   RestClientStub,
   type DomainControllerInterface,
   type ProcessCapabilities,
-} from "miroir-core";
-import { MiroirContextReactProvider, useMiroirContextService } from "miroir-react";
+} from "@miroir-framework/core";
+import { MiroirContextReactProvider, useMiroirContextService } from "@miroir-framework/react";
 
 const RUN_TEST = process.env.RUN_TEST;
 const runThis =
@@ -147,18 +147,13 @@ if (runThis) {
       );
     });
 
-    it("sandbox index.tsx installs fetchProcessCapabilities on both DomainControllers", () => {
-      const src = readFileSync(
-        join(REPO_ROOT, "packages/miroir-sandbox/src/index.tsx"),
-        "utf8",
-      );
-      const afterFetch = src.slice(src.indexOf("fetchProcessCapabilities"));
-      expect(afterFetch).toContain(
-        "domainControllerForClient.setProcessCapabilities(processCapabilities)",
-      );
-      expect(afterFetch).toContain(
-        "domainControllerForServer.setProcessCapabilities(processCapabilities)",
-      );
+    it("the sandbox starts through startMiroirClient, which installs fetchProcessCapabilities on both DomainControllers (#639)", () => {
+      const sandbox = readFileSync(join(REPO_ROOT, "packages/miroir-sandbox/src/index.tsx"), "utf8");
+      expect(sandbox).toContain("await startMiroirClient(demoMiroirConfig, {");
+      const src = readFileSync(join(REPO_ROOT, "packages/miroir-react/src/startMiroirClient.ts"), "utf8");
+      const afterFetch = src.slice(src.indexOf("await fetchProcessCapabilities("));
+      expect(afterFetch).toContain("platform.domainController.setProcessCapabilities(processCapabilities)");
+      expect(afterFetch).toContain("platform.emulatedServer?.domainController.setProcessCapabilities(processCapabilities)");
     });
   });
 }

@@ -24,58 +24,47 @@ import {
   deploymentsFromInstances,
   ELECTRON_LOOPBACK_ROOT_API_URL,
   expect,
-  fetchProcessCapabilities,
-  getClientEnvironment,
   getMiroirEnvironmentMode,
-  getProcessCapabilities,
   identityDirectoryFromInstances,
   LoggerInterface,
   MiroirActivityTracker,
   MiroirConfigClient,
-  MiroirContext,
-  miroirCoreStartup,
   MiroirEventService,
   MiroirLoggerFactory,
-  PersistenceStoreControllerManager,
-  RestClient,
-  RestClientStub,
   setRestClientAuthorizationInvalidationHandler,
   setRestClientAuthorizationTokenGetter,
   SpecificLoggerOptionsMap,
-  templateEvaluationParams,
   type ApplicationDeploymentMap,
   type Deployment,
   type DomainControllerInterface,
-  type RestClientInterface,
-  type RestPersistenceClientAndRestClientInterface,
   type StoreOrBundleAction,
   type StoreUnitConfiguration,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   LocalCacheProvider,
   MiroirContextReactProvider,
   MiroirShellHostProvider,
   ReportSectionRenderersProvider,
-  RestPersistenceClientAndRestClient,
-  setupMiroirDomainController,
-} from "miroir-react";
-import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
+  startMiroirClient,
+  type MiroirEmulatedServer,
+} from "@miroir-framework/react";
+import { miroirIndexedDbStoreSectionStartup } from "@miroir-framework/store-indexeddb";
 
 import { loglevelnext } from "./loglevelnextImporter.js";
-import { getAuthToken, setAuthenticationEnabled, setAuthToken } from "miroir-react";
+import { getAuthToken, setAuthenticationEnabled, setAuthToken } from "@miroir-framework/react";
 import { fetchAuthenticationEnabled } from "./miroir-fwk/4_view/auth/authTransport.js";
-import { RootComponent } from "miroir-react";
-import { ErrorPage, setLoadTimingMarkSink } from "miroir-react";
+import { RootComponent } from "@miroir-framework/react";
+import { ErrorPage, setLoadTimingMarkSink } from "@miroir-framework/react";
 
 // #633 D6: marks from miroir-react code (configurationsLoaded) reach the browser recorder.
 setLoadTimingMarkSink(loadTimingMark);
-import { PageDispatcher } from "miroir-react";
+import { PageDispatcher } from "@miroir-framework/react";
 import { appReportSectionRenderers, appShellHost } from "./miroir-fwk/4_view/reportSectionRenderers.js";
 import {
   ElectronRestClient,
   ElectronServerDomainControllerProxy,
 } from "./miroir-fwk/4_view/services/ElectronIpcProxy.js";
-import { initializePerformanceConfig } from "miroir-react";
+import { initializePerformanceConfig } from "@miroir-framework/react";
 import {
   failedSelfTestResult,
   publishSelfTestResult,
@@ -202,184 +191,25 @@ export const themeParams: ThemeOptions = {
 };
 
 // ################################################################################################
-// ################################################################################################
-// ################################################################################################
 /**
- * Setup Miroir platform for CLI usage
- * @param miroirConfig - CLI configuration
- * @returns Platform components including domainController and localCache
+ * #263: the emulated server's test users and rights (alice, bob, carol, dave), when the client
+ * emulates the server (#639: run by startMiroirClient before the capabilities are set).
  */
-export async function setupMiroirPlatform(
-  miroirConfig: MiroirConfigClient,
-  miroirActivityTracker?: MiroirActivityTracker,
-  miroirEventService?: MiroirEventService,
-  customfetch?: any,
-  options?: { customRestClient?: RestClientInterface },
-) {
-  ConfigurationService.configurationService.registerTestImplementation({ expect: expect as any });
-
-  const localMiroirActivityTracker = miroirActivityTracker ?? new MiroirActivityTracker();
-  const localMiroirEventService =
-    miroirEventService ?? new MiroirEventService(localMiroirActivityTracker);
-  const miroirContext = new MiroirContext(
-    localMiroirActivityTracker,
-    localMiroirEventService,
-    miroirConfig,
+function configureEmulatedServerTestDirectories(emulatedServer: MiroirEmulatedServer): void {
+  emulatedServer.restClientStub.setIdentityDirectory(
+    identityDirectoryFromInstances(
+      [miroirUser_AliceAdmin, miroirUser_BobInactive, miroirUser_Carol, miroirUser_Dave],
+      [miroirUserCredential_AliceDev, miroirUserCredential_CarolDev, miroirUserCredential_DaveDev],
+    ),
   );
-  log.debug("setupMiroirPlatform miroirConfig", JSON.stringify(miroirConfig, null, 2));
-  log.debug(
-    "setupMiroirPlatform import.meta.env",
-    JSON.stringify((import.meta as any).env, null, 2),
-  );
-  log.debug("setupMiroirPlatform getMiroirEnvironmentMode", getMiroirEnvironmentMode());
-  log.debug(
-    "setupMiroirPlatform templateEvaluationParams",
-    JSON.stringify(templateEvaluationParams, null, 2),
-  );
-
-  let restClient: RestClientInterface | undefined = undefined;
-  let persistenceStoreRestClient: RestPersistenceClientAndRestClientInterface | undefined =
-    undefined;
-
-  if (options?.customRestClient) {
-    // Electron IPC mode: the renderer uses a proxy client that forwards calls to the main process.
-    // No server-side setup is needed on the renderer side.
-    restClient = options.customRestClient;
-    persistenceStoreRestClient = new RestPersistenceClientAndRestClient(
-      miroirConfig.client.emulateServer
-        ? miroirConfig.client.rootApiUrl
-        : miroirConfig.client.serverConfig.rootApiUrl,
-      restClient,
-    );
-  } else if (miroirConfig.client.emulateServer) {
-    restClient = new RestClientStub(miroirConfig.client.rootApiUrl);
-    persistenceStoreRestClient = new RestPersistenceClientAndRestClient(
-      miroirConfig.client.rootApiUrl,
-      restClient,
-    );
-  } else {
-    restClient = new RestClient(customfetch ?? window.fetch.bind(window));
-    persistenceStoreRestClient = new RestPersistenceClientAndRestClient(
-      miroirConfig.client.serverConfig.rootApiUrl,
-      restClient,
-    );
-  }
-
-  if (!restClient) {
-    throw new Error("miroir-cli setupMiroirPlatform could not create client");
-  }
-  if (!persistenceStoreRestClient) {
-    throw new Error(
-      "miroir-cli setupMiroirPlatform could not create remotePersistenceStoreRestClient",
-    );
-  }
-
-  const persistenceStoreControllerManagerForClient = new PersistenceStoreControllerManager(
-    ConfigurationService.configurationService.adminStoreFactoryRegister,
-    ConfigurationService.configurationService.StoreSectionFactoryRegister,
-  );
-
-  const domainControllerForClient = await setupMiroirDomainController(miroirContext, {
-    persistenceStoreAccessMode: "remote",
-    localPersistenceStoreControllerManager: persistenceStoreControllerManagerForClient,
-    remotePersistenceStoreRestClient: persistenceStoreRestClient,
+  emulatedServer.restClientStub.setAccessDirectory({
+    grants: accessGrantsFromInstances([
+      miroirRight_AliceLibraryAppAdmin,
+      miroirRight_AliceLibraryDeploymentRead,
+      miroirRight_DaveLibraryDeployment,
+    ]),
+    deployments: deploymentsFromInstances([deployment_Admin, deployment_Miroir]),
   });
-
-  let persistenceStoreControllerManagerForServer: PersistenceStoreControllerManager | undefined =
-    undefined;
-  let domainControllerForServer: DomainControllerInterface | undefined = undefined;
-  if (miroirConfig.client.emulateServer && !options?.customRestClient) {
-    persistenceStoreControllerManagerForServer = new PersistenceStoreControllerManager(
-      ConfigurationService.configurationService.adminStoreFactoryRegister,
-      ConfigurationService.configurationService.StoreSectionFactoryRegister,
-      miroirConfig.client.filesystemDeploymentRootDirectory,
-    );
-
-    domainControllerForServer = await setupMiroirDomainController(miroirContext, {
-      persistenceStoreAccessMode: "local",
-      localPersistenceStoreControllerManager: persistenceStoreControllerManagerForServer,
-    });
-
-    (restClient as RestClientStub).setServerDomainController(domainControllerForServer);
-    (restClient as RestClientStub).setPersistenceStoreControllerManager(
-      persistenceStoreControllerManagerForServer,
-    );
-    (restClient as RestClientStub).setIdentityDirectory(
-      identityDirectoryFromInstances(
-        [miroirUser_AliceAdmin, miroirUser_BobInactive, miroirUser_Carol, miroirUser_Dave],
-        [miroirUserCredential_AliceDev, miroirUserCredential_CarolDev, miroirUserCredential_DaveDev],
-      ),
-    );
-    (restClient as RestClientStub).setAccessDirectory({
-      grants: accessGrantsFromInstances([
-        miroirRight_AliceLibraryAppAdmin,
-        miroirRight_AliceLibraryDeploymentRead,
-        miroirRight_DaveLibraryDeployment,
-      ]),
-      deployments: deploymentsFromInstances([
-        deployment_Admin,
-        deployment_Miroir,
-        // deployment_Library,
-        // deployment_Spotify,
-        // deployment_Designer,
-      ]),
-    });
-    (restClient as RestClientStub).setProcessCapabilities(
-      getProcessCapabilities({
-        config: miroirConfig,
-        environment: getClientEnvironment(),
-        storeSectionFactoryRegister:
-          ConfigurationService.configurationService.StoreSectionFactoryRegister,
-        adminStoreFactoryRegister:
-          ConfigurationService.configurationService.adminStoreFactoryRegister,
-      }),
-    );
-  }
-
-  const processCapabilities = await fetchProcessCapabilities(restClient);
-  domainControllerForClient.setProcessCapabilities(processCapabilities);
-  domainControllerForServer?.setProcessCapabilities(processCapabilities);
-
-  return {
-    // persistenceStoreControllerManagerForClient: persistenceStoreControllerManagerForClient,
-    // persistenceStoreControllerManagerForServer: persistenceStoreControllerManagerForServer,
-    domainControllerForClient,
-    domainControllerForServer,
-    // localCache: domainControllerForClient.getLocalCache(),
-    miroirContext,
-    restClient,
-    processCapabilities,
-  };
-}
-
-// ################################################################################################
-// ################################################################################################
-async function setupClient(
-  currentMiroirConfig: MiroirConfigClient,
-  miroirActivityTracker: MiroirActivityTracker,
-  miroirEventService: MiroirEventService,
-  options?: { customRestClient?: RestClientInterface },
-) {
-  ConfigurationService.configurationService.registerTestImplementation({ expect: expect as any });
-
-  const {
-    // persistenceStoreControllerManagerForClient,
-    // persistenceStoreControllerManagerForServer,
-    domainControllerForClient,
-    domainControllerForServer,
-    // localCache,
-    miroirContext,
-    restClient,
-    processCapabilities,
-  } = await setupMiroirPlatform(
-    currentMiroirConfig,
-    miroirActivityTracker,
-    miroirEventService,
-    window.fetch.bind(window),
-    options,
-  );
-
-  return { domainControllerForClient, domainControllerForServer, miroirContext, restClient, processCapabilities };
 }
 
 // ###################################################################################
@@ -396,8 +226,6 @@ async function startWebApp(root: Root) {
   // const mServer: IndexedDbObjectStore = new IndexedDbObjectStore(miroirConfig.rootApiUrl);
 
   miroirAppStartup();
-  miroirCoreStartup();
-  miroirIndexedDbStoreSectionStartup(ConfigurationService.configurationService);
 
   // Electron IPC mode: the main process owns all store factories and the server-side domain
   // controller.  The renderer detects this via window.electronAPI.callMiroirIpc (injected by
@@ -425,17 +253,21 @@ async function startWebApp(root: Root) {
   const miroirConfigToUse = electronMiroirConfig ?? webMiroirConfig!;
   selfTestRequested = shouldStartSelfTest(miroirConfigToUse);
   loadTimingMark("configReady");
+  ConfigurationService.configurationService.registerTestImplementation({ expect: expect as any });
+  // #639: one startup call; in Electron the main process owns the stores, reached over IPC
   const {
-    domainControllerForClient,
-    domainControllerForServer: rawDomainControllerForServer,
+    domainController: domainControllerForClient,
+    emulatedServer,
     miroirContext,
     processCapabilities,
-  } = await setupClient(
-    miroirConfigToUse,
-    miroirActivityTracker,
-    miroirEventService,
-    electronRestClient ? { customRestClient: electronRestClient } : undefined,
-  );
+  } = await startMiroirClient(miroirConfigToUse, {
+    stores: [miroirIndexedDbStoreSectionStartup],
+    activityTracker: miroirActivityTracker,
+    eventService: miroirEventService,
+    restClient: electronRestClient,
+    configureEmulatedServer: configureEmulatedServerTestDirectories,
+  });
+  const rawDomainControllerForServer = emulatedServer?.domainController;
 
   loadTimingMark("platformReady");
   configureLoadTimings({

@@ -2,9 +2,9 @@
  * #487: the result of a self-test run, the one shape the page, `window`, the Electron main process
  * and the drivers read.
  */
-import type { MiroirConfigClient } from "miroir-core";
+import type { MiroirConfigClient } from "@miroir-framework/core";
 
-import { countTestResults } from "miroir-react";
+import { countTestResults } from "@miroir-framework/react";
 import type { MiroirTestSuiteResultsMap, SkippedMiroirTestSuite } from "../miroirTestBatch.js";
 
 export type MiroirSelfTestVerdict = "running" | "passed" | "failed";

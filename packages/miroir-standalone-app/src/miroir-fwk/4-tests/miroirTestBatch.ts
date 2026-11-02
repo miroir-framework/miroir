@@ -13,15 +13,15 @@ import {
   type MiroirActivityTrackerInterface,
   type MiroirTestDefinition,
   type Runner,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import { packageName } from "../../constants.js";
 import {
   countTestResults,
   generateTestReport,
   type TestResultData,
-} from "miroir-react";
-import { getMiroirTestSuiteKey, sortMiroirTestInstances } from "miroir-react";
+} from "@miroir-framework/react";
+import { getMiroirTestSuiteKey, sortMiroirTestInstances } from "@miroir-framework/react";
 import { cleanLevel } from "../4_view/constants.js";
 import {
   DEFAULT_UI_INTEGRATION_PROFILE_NAME,

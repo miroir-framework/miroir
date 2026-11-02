@@ -4,7 +4,7 @@ import {
   MiroirLoggerFactory,
   defaultSelfApplicationDeploymentMap,
   noValue,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { useMiroirContextService } from "../../contexts/MiroirContextReactProvider.js";
 import { useApplicationAccess } from "../../auth/useApplicationAccess.js";
 import {

@@ -9,7 +9,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import express, { type Router } from "express";
 import { afterEach, describe, expect, it } from "vitest";
-import { clearSecrets } from "miroir-core";
+import { clearSecrets } from "@miroir-framework/core";
 
 import { createCopilotKitRouter } from "../../../../src/routes/copilotKitRoute.js";
 import { getApiKey } from "../../../../src/runtime/copilotRuntimeFactory.js";

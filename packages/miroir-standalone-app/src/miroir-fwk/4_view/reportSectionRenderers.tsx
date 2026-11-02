@@ -1,6 +1,6 @@
 import { lazy } from "react";
 
-import type { MiroirShellHost, ReportSectionRenderers } from "miroir-react";
+import type { MiroirShellHost, ReportSectionRenderers } from "@miroir-framework/react";
 
 import { requestLoginToken } from "./auth/authTransport.js";
 

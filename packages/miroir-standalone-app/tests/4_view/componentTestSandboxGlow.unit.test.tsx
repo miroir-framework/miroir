@@ -2,7 +2,7 @@ import React from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 
-import { defaultFeedbackGlow, FeedbackGlowBoundary, feedbackGlowAttribute, feedbackGlowClass } from "miroir-react";
+import { defaultFeedbackGlow, FeedbackGlowBoundary, feedbackGlowAttribute, feedbackGlowClass } from "@miroir-framework/react";
 
 import { ComponentTestSandboxProvider } from "../../src/miroir-fwk/4_view/components/Reports/ComponentTestSandbox.js";
 

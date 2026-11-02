@@ -5,7 +5,7 @@ import {
   MiroirLoggerFactory,
   RUN_LOG_PREFIX_PATTERN,
   type RunBoxedQueryAction,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { SqlDbQueryRunner } from "../src/4_services/SqlDbQueryRunner";
 
 function boxedQueryAction(): RunBoxedQueryAction {

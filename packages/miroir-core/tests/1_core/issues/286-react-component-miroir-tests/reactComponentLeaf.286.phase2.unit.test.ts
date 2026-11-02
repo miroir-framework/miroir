@@ -6,7 +6,7 @@
  *
  * Run:
  * ```bash
- * npm run testByFile -w miroir-core -- reactComponentLeaf.286.phase2
+ * npm run testByFile -w @miroir-framework/core -- reactComponentLeaf.286.phase2
  * ```
  */
 import { describe, expect, it } from "vitest";

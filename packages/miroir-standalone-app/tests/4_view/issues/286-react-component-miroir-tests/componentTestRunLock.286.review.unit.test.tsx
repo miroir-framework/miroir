@@ -25,7 +25,7 @@ import {
   MiroirEventService,
   type MiroirTestForReactComponent,
   type ReactComponentTestSuiteContext,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import {
   componentTestRunInProgressMessage,

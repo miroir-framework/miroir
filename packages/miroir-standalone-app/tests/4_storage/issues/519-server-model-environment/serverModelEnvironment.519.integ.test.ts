@@ -32,7 +32,7 @@ import {
   resetIntegTestbed,
   type StoreUnitConfiguration,
   type TransformerDefinition,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { deployment_Admin, deployment_Miroir } from "miroir-app-admin";
 import { defaultMiroirMetaModel, entityTransformerDefinition } from "miroir-app-miroir";
 import {
@@ -42,10 +42,10 @@ import {
   getDefaultLibraryModelEnvironmentDEFUNCT,
   selfApplicationLibrary,
 } from "miroir-example-library";
-import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
-import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
-import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
-import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
+import { miroirFileSystemStoreSectionStartup } from "@miroir-framework/store-filesystem";
+import { miroirIndexedDbStoreSectionStartup } from "@miroir-framework/store-indexeddb";
+import { miroirMongoDbStoreSectionStartup } from "@miroir-framework/store-mongodb";
+import { miroirPostgresStoreSectionStartup } from "@miroir-framework/store-postgres";
 
 import { loglevelnext } from "../../../../src/loglevelnextImporter.js";
 import { selfApplicationDeploymentConfigurationsTO_REMOVE } from "../../../../src/miroir-fwk/4-tests/tests-utils.js";

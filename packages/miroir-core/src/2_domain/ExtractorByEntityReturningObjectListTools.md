@@ -36,10 +36,10 @@ To run non-regression tests for filter functionality:
 
 ```bash
 # Run the queries.unit.test with filter test
-npm run test -w miroir-core -- queries.unit
+npm run test -w @miroir-framework/core -- queries.unit
 
 # Or run the specific filter test
-npm run vitest -w miroir-core -- --testNamePattern="select Authors with filter"
+npm run vitest -w @miroir-framework/core -- --testNamePattern="select Authors with filter"
 ```
 
 The test "select Authors with filter" in `packages/miroir-core/tests/2_domain/queries.unit.test.ts` exercises:

@@ -1,13 +1,13 @@
 import React from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { render as rtlRender, screen } from "@testing-library/react";
-import { MiroirContextReactTestProvider, MiroirThemeContext, resetPerformanceConfig, updatePerformanceConfig } from "miroir-react";
+import { MiroirContextReactTestProvider, MiroirThemeContext, resetPerformanceConfig, updatePerformanceConfig } from "@miroir-framework/react";
 import "@testing-library/jest-dom";
 
 const showPerformanceDisplayRef = { current: false };
 const showDebugInfoRef = { current: false };
 
-import { RenderInsightHeader } from "miroir-react";
+import { RenderInsightHeader } from "@miroir-framework/react";
 
 const testTheme = {
   currentTheme: {

@@ -28,7 +28,7 @@ import {
   type TransformerDefinitionRegistry,
   type TransformerEnvironment,
   type TransformerTypeChange,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import React, { createContext, useCallback, useContext, useMemo, useState } from "react";
 
 import { BlockActionDefaultsContext, useBlockModelEnvironment, type BlockRunInput } from "./BlockViewMode.js";

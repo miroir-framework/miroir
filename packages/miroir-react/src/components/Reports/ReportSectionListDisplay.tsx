@@ -44,7 +44,7 @@ import {
   type MiroirModelEnvironment,
   type ReportSection,
   type ViewParamsData,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import { useFormikContext } from "formik";
 import { getMemoizedReduxDeploymentsStateSelectorMap, ReduxStateWithUndoRedo, useSelector } from "../../miroir-localcache-imports.js";

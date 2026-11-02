@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { getEndpointActions } from "miroir-core";
+import { getEndpointActions } from "@miroir-framework/core";
 
 const REPO_ROOT = join(import.meta.dirname, "../../../..");
 

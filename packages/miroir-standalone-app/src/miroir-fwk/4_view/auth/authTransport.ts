@@ -1,4 +1,4 @@
-import { fetchAuthenticationEnabledOverHttp, requestLoginTokenOverHttp } from "miroir-react";
+import { fetchAuthenticationEnabledOverHttp, requestLoginTokenOverHttp } from "@miroir-framework/react";
 
 import { ElectronRestClient } from "../services/ElectronIpcProxy.js";
 

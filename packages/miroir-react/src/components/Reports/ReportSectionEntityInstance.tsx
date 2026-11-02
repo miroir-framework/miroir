@@ -26,7 +26,7 @@ import {
   type ObjectInstanceReportSection,
   type ReportSection,
   type SyncQueryTemplateRunnerParams,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import { JsonDisplayHelper, type DebugElements } from "../helpers/DebugHelper.js";
 import { ThemedOnScreenHelper } from "../helpers/ThemedHelper.js";

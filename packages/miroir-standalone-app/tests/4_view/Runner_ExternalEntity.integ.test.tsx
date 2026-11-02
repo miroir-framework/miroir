@@ -24,11 +24,11 @@ import {
   type MiroirConfigClient,
   type Runner,
   type StoreUnitConfiguration
-} from "miroir-core";
-import { miroirFileSystemStoreSectionStartup } from "miroir-store-filesystem";
-import { miroirIndexedDbStoreSectionStartup } from "miroir-store-indexedDb";
-import { miroirMongoDbStoreSectionStartup } from "miroir-store-mongodb";
-import { miroirPostgresStoreSectionStartup } from "miroir-store-postgres";
+} from "@miroir-framework/core";
+import { miroirFileSystemStoreSectionStartup } from "@miroir-framework/store-filesystem";
+import { miroirIndexedDbStoreSectionStartup } from "@miroir-framework/store-indexeddb";
+import { miroirMongoDbStoreSectionStartup } from "@miroir-framework/store-mongodb";
+import { miroirPostgresStoreSectionStartup } from "@miroir-framework/store-postgres";
 import { entityEntity, runnerDeployApplication } from "miroir-app-miroir";
 import { env } from "process";
 import { loglevelnext } from "../../src/loglevelnextImporter";

@@ -28,7 +28,7 @@
       "es2022",
       "dom"
     ],
-    "removeComments": true,
+    "removeComments": false,
     "jsx": "react-jsx",
     "allowJs": true
   }

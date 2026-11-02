@@ -40,8 +40,7 @@ import {
   shouldListenLoopbackHttp,
   shouldMountCopilotKitRoute,
   shouldMountMcpHttp,
-  miroirCoreStartup
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { log } from "console";
 import { bootElectronServer, DESKTOP_ENVIRONMENT, prepareDesktopRoot } from "./environmentBoot.js";
 import { electronAuthenticationGates, handleMiroirIpc, type MiroirIpcPayload } from "./miroirIpcHandler.js";
@@ -78,7 +77,7 @@ export async function setupIpcServer(selfTest?: ElectronSelfTestOptions): Promis
   // Store factories are registered in the main-process ConfigurationService instance.
   // (The renderer process has a different ConfigurationService instance and can only register
   //  IndexedDb — which is why IPC is needed for filesystem / postgres / mongodb.)
-  miroirCoreStartup();
+  // #639: bootElectronServer runs miroirCoreStartup through startMiroirNode.
   const location = electronEnvironmentLocation();
   const {
     domainController,
@@ -165,7 +164,7 @@ export async function setupIpcServer(selfTest?: ElectronSelfTestOptions): Promis
     }
 
     if (shouldMountMcpHttp(capabilities.mcp)) {
-      const { EndpointToolRegistry, setupMcpServer } = await import("miroir-mcp");
+      const { EndpointToolRegistry, setupMcpServer } = await import("@miroir-framework/mcp");
       const endpointToolRegistry = new EndpointToolRegistry(
         domainController,
         defaultSelfApplicationDeploymentMap,

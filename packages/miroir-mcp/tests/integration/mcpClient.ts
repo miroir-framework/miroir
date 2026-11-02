@@ -10,7 +10,7 @@ import {
   type LoggerFactoryInterface,
   type LoggerOptions,
   type SpecificLoggerOptionsMap
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import { MCP_HTTP_ENDPOINT } from "../../src/mcpServer.js";
 

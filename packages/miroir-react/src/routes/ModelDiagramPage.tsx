@@ -15,7 +15,7 @@ import {
   noValue,
   type MlElement,
   type MetaModel,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import { packageName } from "../constants.js";
 import { PageContainer } from "../components/Page/PageContainer.js";

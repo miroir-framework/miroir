@@ -3,7 +3,7 @@ import {
   suiteKeyFromMiroirTestInstance,
   type MiroirTestDefinition,
   type MiroirTestSuite,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import type { UiIntegrationRunnerSuiteEntry } from "./uiIntegrationTestRunnerSuiteRegistry.js";
 import type { UiIntegrationTransformerSuiteEntry } from "./uiIntegrationTestTransformerSuiteRegistry.js";

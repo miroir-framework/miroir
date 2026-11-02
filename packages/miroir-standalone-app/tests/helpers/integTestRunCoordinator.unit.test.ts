@@ -10,7 +10,7 @@ import {
   MiroirLoggerFactory,
   type LoggerFactoryInterface,
   type LoggerOptions,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 describe("IntegTestRunCoordinator (B1)", () => {
   it("starts idle", () => {

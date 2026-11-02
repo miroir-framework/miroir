@@ -12,8 +12,8 @@ import { act } from "@testing-library/react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-import { MiroirContext, type MiroirConfigClient } from "miroir-core";
-import { LocalCacheProvider, MiroirContextReactProvider } from "miroir-react";
+import { MiroirContext, type MiroirConfigClient } from "@miroir-framework/core";
+import { LocalCacheProvider, MiroirContextReactProvider } from "@miroir-framework/react";
 
 import { startSelfTest } from "../../../src/miroir-fwk/4-tests/selfTest/startSelfTest.js";
 import {

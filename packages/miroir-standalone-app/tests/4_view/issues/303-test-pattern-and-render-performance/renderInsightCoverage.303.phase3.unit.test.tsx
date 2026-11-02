@@ -26,10 +26,10 @@ import {
   type MiroirTestForReactComponent,
   type ReactComponentTestSuite,
   type ReactComponentTestSuiteContext,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import { createReactComponentTestRunner } from "../../../../src/miroir-fwk/4-tests/componentTests/runReactComponentTest";
-import { renderInsightRegistry } from "miroir-react";
+import { renderInsightRegistry } from "@miroir-framework/react";
 import { resolveRepoRoot } from "../../../helpers/integrationTestProfiles.js";
 
 const TEST_PATTERN_INSTANCE_FILE = join(

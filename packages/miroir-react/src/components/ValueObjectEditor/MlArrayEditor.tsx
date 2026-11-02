@@ -20,7 +20,7 @@ import {
   type MiroirModelEnvironment,
   type Uuid,
   valueToMl,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { JsonDisplayHelper } from "../helpers/DebugHelper.js";
 import { getMemoizedReduxDeploymentsStateSelectorMap, ReduxStateWithUndoRedo, useSelector } from "../../miroir-localcache-imports.js";
 import { useMiroirContextService } from "../../contexts/MiroirContextReactProvider.js";

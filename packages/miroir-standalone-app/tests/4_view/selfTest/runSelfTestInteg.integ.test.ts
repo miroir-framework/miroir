@@ -11,8 +11,8 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 
-import type { MiroirTestDefinition } from "miroir-core";
-import { environmentRealServerClientConfig, resolveEnvironmentFromFiles } from "miroir-env";
+import type { MiroirTestDefinition } from "@miroir-framework/core";
+import { environmentRealServerClientConfig, resolveEnvironmentFromFiles } from "@miroir-framework/env";
 
 import {
   FILESYSTEM_TESTS_NEED_A_FILESYSTEM_STORE,

@@ -4,7 +4,7 @@
  */
 import { describe, expect, it } from "vitest";
 
-import { AI_SECRET_IMPORT_ALIASES, assembleSecretImportSet } from "miroir-core";
+import { AI_SECRET_IMPORT_ALIASES, assembleSecretImportSet } from "@miroir-framework/core";
 
 const RUN_TEST = process.env.RUN_TEST;
 const runThis =

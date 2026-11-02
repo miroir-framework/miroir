@@ -1,10 +1,10 @@
-# miroir-mcp
+# @miroir-framework/mcp
 
 Model Context Protocol (MCP) server for the Miroir Framework. Exposes the Endpoint actions of the deployed Miroir applications as MCP tools, enabling external systems to interact with Miroir applications through the standardized MCP interface.
 
 ## Where MCP runs
 
-miroir-mcp is a library. The MCP endpoint is served by:
+@miroir-framework/mcp is a library. The MCP endpoint is served by:
 
 - **miroir-server**, on the port of `server.mcpUrl` of the selected environment, when `features.mcp` is on;
 - **the Electron main process**, on its loopback server.
@@ -115,9 +115,9 @@ Load instances into local cache without persistence.
 ## Development
 
 ```bash
-npm run build -w miroir-mcp
-npm run testByFile -w miroir-mcp                        # all tests
-npm run testByFile -w miroir-mcp -- mcpTools.integ      # one file
+npm run build -w @miroir-framework/mcp
+npm run testByFile -w @miroir-framework/mcp                        # all tests
+npm run testByFile -w @miroir-framework/mcp -- mcpTools.integ      # one file
 ```
 
 ## Architecture

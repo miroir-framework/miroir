@@ -1,0 +1,1011 @@
+{
+  "schemaVersion": 1,
+  "ok": true,
+  "command": "finalize",
+  "status": "pass",
+  "type": "explainer",
+  "quality": "showcase",
+  "startedAt": "2026-11-02T10:16:50.818Z",
+  "specification": {
+    "path": "C:\\Users\\nono\\Documents\\devhome\\miroir-integration\\.archify\\explainer-miroir-cache-20261102-111507\\candidate.archify.md",
+    "sha256": "a845db2ae973980376386d040fffc419f6b6fc84fa5613078097d34818da4ec6",
+    "bytes": 16014
+  },
+  "artifact": {
+    "path": "C:\\Users\\nono\\Documents\\devhome\\miroir-integration\\.archify\\explainer-miroir-cache-20261102-111507\\miroir-cache-today.html",
+    "sha256": "ed754699666b32ee94d8961bfa4b9c5814a694579db35204fadd56b3feaf5b19",
+    "bytes": 4345387
+  },
+  "stages": {
+    "browser-check": {
+      "status": "not-run",
+      "execution": "not-requested"
+    },
+    "validate": {
+      "status": "pass",
+      "exitCode": 0,
+      "durationMs": null,
+      "execution": "embedded-in-deliver",
+      "command": [
+        "C:\\Program Files\\nodejs\\node.exe",
+        "C:\\Users\\nono\\.agents\\skills\\archify\\bin\\archify.mjs",
+        "deliver",
+        "explainer",
+        "C:\\Users\\nono\\Documents\\devhome\\miroir-integration\\.archify\\explainer-miroir-cache-20261102-111507\\candidate.archify.md",
+        "C:\\Users\\nono\\Documents\\devhome\\miroir-integration\\.archify\\explainer-miroir-cache-20261102-111507\\miroir-cache-today.html",
+        "--quality",
+        "showcase",
+        "--repo-root",
+        "C:\\Users\\nono\\Documents\\devhome\\miroir-integration",
+        "--json"
+      ],
+      "receipt": {
+        "schemaVersion": 1,
+        "ok": true,
+        "command": "validate",
+        "specification": {
+          "sha256": "a845db2ae973980376386d040fffc419f6b6fc84fa5613078097d34818da4ec6",
+          "bytes": 16014
+        },
+        "validation": {
+          "checksPassed": 4,
+          "checkCount": 4,
+          "compositionProfile": "showcase",
+          "compositionStatus": "pass",
+          "errors": 0,
+          "warnings": 0
+        }
+      }
+    },
+    "deliver": {
+      "status": "pass",
+      "exitCode": 0,
+      "durationMs": 4066,
+      "command": [
+        "C:\\Program Files\\nodejs\\node.exe",
+        "C:\\Users\\nono\\.agents\\skills\\archify\\bin\\archify.mjs",
+        "deliver",
+        "explainer",
+        "C:\\Users\\nono\\Documents\\devhome\\miroir-integration\\.archify\\explainer-miroir-cache-20261102-111507\\candidate.archify.md",
+        "C:\\Users\\nono\\Documents\\devhome\\miroir-integration\\.archify\\explainer-miroir-cache-20261102-111507\\miroir-cache-today.html",
+        "--quality",
+        "showcase",
+        "--repo-root",
+        "C:\\Users\\nono\\Documents\\devhome\\miroir-integration",
+        "--json"
+      ],
+      "receipt": {
+        "schemaVersion": 1,
+        "receiptId": "9214d983-2a13-4296-ab1a-a60211ecadd0",
+        "ok": true,
+        "command": "deliver",
+        "type": "explainer",
+        "input": "C:\\Users\\nono\\Documents\\devhome\\miroir-integration\\.archify\\explainer-miroir-cache-20261102-111507\\candidate.archify.md",
+        "output": "C:\\Users\\nono\\Documents\\devhome\\miroir-integration\\.archify\\explainer-miroir-cache-20261102-111507\\miroir-cache-today.html",
+        "explainer": {
+          "preparedSha256": "09be681c6153999cb658cabdc9858bceacb5185be592acd6317b47719850085a",
+          "dependencies": [
+            {
+              "kind": "repository",
+              "id": "cache-state",
+              "path": "packages/miroir-core/src/0_interfaces/2_domain/LocalCacheInterface.ts",
+              "revision": "fd3d9790cc917fd49c62eb708a453fcf9b290677",
+              "sha256": "0a3734e4d1cdf8620067b6b2501ec363e72df51117a11b52b24fbbb57bc9231c",
+              "bytes": 4561
+            },
+            {
+              "kind": "repository",
+              "id": "cache-key",
+              "path": "packages/miroir-core/src/2_domain/ReduxDeploymentsState.ts",
+              "revision": "fd3d9790cc917fd49c62eb708a453fcf9b290677",
+              "sha256": "0e2df80e1fb0b2e74375ab8ea8b20049d7a9af31667e0e8df08da28807fce422",
+              "bytes": 2516
+            },
+            {
+              "kind": "repository",
+              "id": "segment",
+              "path": "packages/miroir-core/src/1_core/localCache/localCacheSegment.ts",
+              "revision": "fd3d9790cc917fd49c62eb708a453fcf9b290677",
+              "sha256": "bef4726bf4891f51f1b334e71b00e67ca412739a6aa79408c2f6ded0eb373764",
+              "bytes": 4826
+            },
+            {
+              "kind": "repository",
+              "id": "refresh-policy",
+              "path": "packages/miroir-core/src/1_core/localCache/cacheRefreshPolicy.ts",
+              "revision": "fd3d9790cc917fd49c62eb708a453fcf9b290677",
+              "sha256": "54cdfdfdb802c4758bb8872db7eb367facb6d5eeaa29efe6f67fd716f1277955",
+              "bytes": 5384
+            },
+            {
+              "kind": "repository",
+              "id": "refresh-loop",
+              "path": "packages/miroir-core/src/3_controllers/DomainController.ts",
+              "revision": "fd3d9790cc917fd49c62eb708a453fcf9b290677",
+              "sha256": "7fb4b89e3f3a27cca21de94bdeca46616da21aa2e0870c92512498219f98e249",
+              "bytes": 256099
+            },
+            {
+              "kind": "repository",
+              "id": "rollback-reducer",
+              "path": "packages/miroir-localcache-redux/src/4_services/localCache/LocalCacheSlice.ts",
+              "revision": "fd3d9790cc917fd49c62eb708a453fcf9b290677",
+              "sha256": "8865adc166e0dd2b31112b65274237b29ffa5acd2bfc1ad6fdec30354848e046",
+              "bytes": 41624
+            },
+            {
+              "kind": "repository",
+              "id": "load-reducer",
+              "path": "packages/miroir-localcache-redux/src/4_services/localCache/LocalCacheSlice.ts",
+              "revision": "fd3d9790cc917fd49c62eb708a453fcf9b290677",
+              "sha256": "8865adc166e0dd2b31112b65274237b29ffa5acd2bfc1ad6fdec30354848e046",
+              "bytes": 41624
+            },
+            {
+              "kind": "repository",
+              "id": "undo-reducer",
+              "path": "packages/miroir-localcache-redux/src/4_services/localCache/UndoRedoReducer.ts",
+              "revision": "fd3d9790cc917fd49c62eb708a453fcf9b290677",
+              "sha256": "b823297a95c4a83f445110e82148b65366999f19551a4e858a3579a478f41000",
+              "bytes": 20533
+            },
+            {
+              "kind": "repository",
+              "id": "startup",
+              "path": "packages/miroir-react/src/services/ConfigurationService.ts",
+              "revision": "fd3d9790cc917fd49c62eb708a453fcf9b290677",
+              "sha256": "eb4134ae48e391dde6348d22c4fff3ba8a822c70b0038a47fc8abdf204947617",
+              "bytes": 15254
+            },
+            {
+              "kind": "repository",
+              "id": "page-config",
+              "path": "packages/miroir-react/src/services/usePageConfiguration.ts",
+              "revision": "fd3d9790cc917fd49c62eb708a453fcf9b290677",
+              "sha256": "c4664d0a7a358f38c20306fe4bd078d3265017a76fdf68c385df1adbcf792e19",
+              "bytes": 4748
+            },
+            {
+              "kind": "repository",
+              "id": "refresh-button",
+              "path": "packages/miroir-react/src/components/Page/AppBar.tsx",
+              "revision": "fd3d9790cc917fd49c62eb708a453fcf9b290677",
+              "sha256": "51d794472132cf2e3b003f715b0debae3214f278b6ca380e69ded4a37cef59f5",
+              "bytes": 30830
+            },
+            {
+              "kind": "repository",
+              "id": "report-view",
+              "path": "packages/miroir-react/src/components/Reports/ReportViewWithEditor.tsx",
+              "revision": "fd3d9790cc917fd49c62eb708a453fcf9b290677",
+              "sha256": "08a8ecf1633bb7b402d9d19a56a4fea60e658aafe3506b386e630afc2673e5e0",
+              "bytes": 27462
+            },
+            {
+              "kind": "repository",
+              "id": "ensure-hook",
+              "path": "packages/miroir-react/src/components/Reports/useEnsureReportQueryLoaded.ts",
+              "revision": "fd3d9790cc917fd49c62eb708a453fcf9b290677",
+              "sha256": "1a98b0258eb11ded43a7f8561580b2e70cd41eec91a634d73a86f0927a96c158",
+              "bytes": 1523
+            },
+            {
+              "kind": "repository",
+              "id": "report-loader",
+              "path": "packages/miroir-core/src/2_domain/ReportQueryLoadService.ts",
+              "revision": "fd3d9790cc917fd49c62eb708a453fcf9b290677",
+              "sha256": "a5d0ad63f0ed70b1e3a5851556739dd3af1c123fe3d8e6f6b342e57ccf61ed62",
+              "bytes": 5841
+            },
+            {
+              "kind": "repository",
+              "id": "load-executor",
+              "path": "packages/miroir-core/src/2_domain/createReportQueryLoadExecutor.ts",
+              "revision": "fd3d9790cc917fd49c62eb708a453fcf9b290677",
+              "sha256": "6e3c7b936114cd5e7aa1816441b96fe4e09c4468c64ff5cbb4a0eda3739b4a00",
+              "bytes": 12559
+            },
+            {
+              "kind": "repository",
+              "id": "lazy-selector",
+              "path": "packages/miroir-core/src/2_domain/ReduxDeploymentsStateQuerySelectors.ts",
+              "revision": "fd3d9790cc917fd49c62eb708a453fcf9b290677",
+              "sha256": "7880c24f63c58554e19280818399358fe1eff428df1b757cc735c654430be862",
+              "bytes": 24151
+            },
+            {
+              "kind": "repository",
+              "id": "write-through",
+              "path": "packages/miroir-core/src/3_controllers/DomainController.ts",
+              "revision": "fd3d9790cc917fd49c62eb708a453fcf9b290677",
+              "sha256": "7fb4b89e3f3a27cca21de94bdeca46616da21aa2e0870c92512498219f98e249",
+              "bytes": 256099
+            },
+            {
+              "kind": "repository",
+              "id": "tx-action",
+              "path": "packages/miroir-core/src/3_controllers/DomainController.ts",
+              "revision": "fd3d9790cc917fd49c62eb708a453fcf9b290677",
+              "sha256": "7fb4b89e3f3a27cca21de94bdeca46616da21aa2e0870c92512498219f98e249",
+              "bytes": 256099
+            },
+            {
+              "kind": "repository",
+              "id": "commit",
+              "path": "packages/miroir-core/src/3_controllers/DomainController.ts",
+              "revision": "fd3d9790cc917fd49c62eb708a453fcf9b290677",
+              "sha256": "7fb4b89e3f3a27cca21de94bdeca46616da21aa2e0870c92512498219f98e249",
+              "bytes": 256099
+            },
+            {
+              "kind": "repository",
+              "id": "strategies",
+              "path": "packages/miroir-core/src/3_controllers/DomainController.ts",
+              "revision": "fd3d9790cc917fd49c62eb708a453fcf9b290677",
+              "sha256": "7fb4b89e3f3a27cca21de94bdeca46616da21aa2e0870c92512498219f98e249",
+              "bytes": 256099
+            },
+            {
+              "kind": "repository",
+              "id": "selectors",
+              "path": "packages/miroir-localcache-redux/src/4_services/localCache/LocalCacheSliceSelectors.ts",
+              "revision": "fd3d9790cc917fd49c62eb708a453fcf9b290677",
+              "sha256": "0529a67bcf12be46cba8cabbfac9a9f4894e40b3d96ffa16a96fb3c4139a0e62",
+              "bytes": 23792
+            },
+            {
+              "kind": "repository",
+              "id": "list-display",
+              "path": "packages/miroir-react/src/components/Reports/ReportSectionListDisplay.tsx",
+              "revision": "fd3d9790cc917fd49c62eb708a453fcf9b290677",
+              "sha256": "8e07b841965d16c6ef896e25f82b8e633a488c6babd584af9207fd64ed4a85c9",
+              "bytes": 39838
+            },
+            {
+              "kind": "repository",
+              "id": "entity-cache",
+              "path": "packages/miroir-app-miroir/assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json",
+              "revision": "fd3d9790cc917fd49c62eb708a453fcf9b290677",
+              "sha256": "ad90cd5f801df20da85a5466f251ce1e900379f575e40ff033843aed504b4822",
+              "bytes": 9102
+            },
+            {
+              "kind": "repository",
+              "id": "server-env",
+              "path": "packages/miroir-core/src/4_services/ServerModelEnvironments.ts",
+              "revision": "fd3d9790cc917fd49c62eb708a453fcf9b290677",
+              "sha256": "26607d907020c6c03187afbea6b4751cfad171cd998f126fd68cc5be77eacfea",
+              "bytes": 9471
+            },
+            {
+              "kind": "repository",
+              "id": "autocommit",
+              "path": "packages/miroir-core/src/3_controllers/DomainController.ts",
+              "revision": "fd3d9790cc917fd49c62eb708a453fcf9b290677",
+              "sha256": "7fb4b89e3f3a27cca21de94bdeca46616da21aa2e0870c92512498219f98e249",
+              "bytes": 256099
+            },
+            {
+              "kind": "diagram-spec",
+              "id": "cache-parts",
+              "inline": true,
+              "sha256": "c43d53bee5c8eae50d90b33b155984ca690d3533bad0559205ec5d732c11d78f",
+              "bytes": 1753
+            },
+            {
+              "kind": "diagram-spec",
+              "id": "refresh-flow",
+              "inline": true,
+              "sha256": "ce2847dee4ef3930b9c1af68e8c58f0343c2359863939ad12f671b46568e049a",
+              "bytes": 1644
+            },
+            {
+              "kind": "diagram-spec",
+              "id": "report-load-flow",
+              "inline": true,
+              "sha256": "6259037a126ef10326181fa5d101050c6569ec33a9290be8c9f0c69424523d83",
+              "bytes": 1534
+            },
+            {
+              "kind": "diagram-spec",
+              "id": "write-flow",
+              "inline": true,
+              "sha256": "811987827e0f4e3a7be1915eef1cb368b92aea96e19bd334f74845b2fd48eb9a",
+              "bytes": 1553
+            }
+          ]
+        },
+        "specification": {
+          "sha256": "a845db2ae973980376386d040fffc419f6b6fc84fa5613078097d34818da4ec6",
+          "bytes": 16014
+        },
+        "artifact": {
+          "sha256": "ed754699666b32ee94d8961bfa4b9c5814a694579db35204fadd56b3feaf5b19",
+          "bytes": 4345387
+        },
+        "validation": {
+          "checksPassed": 4,
+          "checkCount": 4,
+          "compositionProfile": "showcase",
+          "compositionStatus": "pass",
+          "errors": 0,
+          "warnings": 0
+        },
+        "update": {
+          "status": "unavailable",
+          "installedVersion": null,
+          "availableVersion": null,
+          "releaseNotes": null,
+          "checkedAt": null,
+          "source": null,
+          "noticeRequired": false,
+          "noticeText": null,
+          "reason": "disabled"
+        }
+      }
+    },
+    "check": {
+      "status": "pass",
+      "exitCode": 0,
+      "durationMs": 1998,
+      "command": [
+        "C:\\Program Files\\nodejs\\node.exe",
+        "C:\\Users\\nono\\.agents\\skills\\archify\\bin\\archify.mjs",
+        "check",
+        "C:\\Users\\nono\\Documents\\devhome\\miroir-integration\\.archify\\explainer-miroir-cache-20261102-111507\\miroir-cache-today.html",
+        "--require-provenance"
+      ],
+      "receipt": {
+        "ok": true,
+        "file": "C:\\Users\\nono\\Documents\\devhome\\miroir-integration\\.archify\\explainer-miroir-cache-20261102-111507\\miroir-cache-today.html",
+        "family": "explainer",
+        "artifact": {
+          "sha256": "ed754699666b32ee94d8961bfa4b9c5814a694579db35204fadd56b3feaf5b19",
+          "bytes": 4345387
+        },
+        "checks": [
+          {
+            "name": "explainer_structure",
+            "ok": true,
+            "details": [
+              "136 unique DOM IDs"
+            ]
+          },
+          {
+            "name": "explainer_payload_identity",
+            "ok": true,
+            "details": []
+          },
+          {
+            "name": "explainer_dependencies",
+            "ok": true,
+            "details": [
+              "29 frozen dependencies"
+            ]
+          },
+          {
+            "name": "explainer_native_diagrams",
+            "ok": true,
+            "details": [
+              "cache-parts: pass",
+              "refresh-flow: pass",
+              "report-load-flow: pass",
+              "write-flow: pass"
+            ]
+          }
+        ],
+        "composition": {
+          "schemaVersion": 1,
+          "profile": "showcase",
+          "status": "pass",
+          "summary": {
+            "errors": 0,
+            "warnings": 0
+          },
+          "issues": [],
+          "nativeDiagrams": [
+            {
+              "id": "cache-parts",
+              "receipt": {
+                "ok": true,
+                "file": "C:\\Users\\nono\\AppData\\Local\\Temp\\archify-explainer-check-k71jCb\\child.html",
+                "artifact": {
+                  "sha256": "ecd88592b7f0aa612aac538fb477feeabcb496c4cd540d5d0c36937b1cd7bb07",
+                  "bytes": 821648
+                },
+                "checks": [
+                  {
+                    "name": "single_svg",
+                    "ok": true,
+                    "details": [
+                      "found 1 <svg> block(s)"
+                    ]
+                  },
+                  {
+                    "name": "finite_svg",
+                    "ok": true,
+                    "details": []
+                  },
+                  {
+                    "name": "orthogonal_arrows",
+                    "ok": true,
+                    "details": []
+                  },
+                  {
+                    "name": "label_route_clearance",
+                    "ok": true,
+                    "details": []
+                  },
+                  {
+                    "name": "relationship_crossings",
+                    "ok": true,
+                    "details": []
+                  },
+                  {
+                    "name": "relationship_corridors",
+                    "ok": true,
+                    "details": []
+                  },
+                  {
+                    "name": "container_border_runs",
+                    "ok": true,
+                    "details": []
+                  },
+                  {
+                    "name": "route_rhythm",
+                    "ok": true,
+                    "details": []
+                  },
+                  {
+                    "name": "legend_clearance",
+                    "ok": true,
+                    "details": []
+                  }
+                ],
+                "composition": {
+                  "schemaVersion": 1,
+                  "profile": "showcase",
+                  "status": "pass",
+                  "summary": {
+                    "errors": 0,
+                    "warnings": 0
+                  },
+                  "metrics": {
+                    "properCrossings": 0,
+                    "resolvedCrossovers": 1,
+                    "ambiguousCorridors": 0,
+                    "arrowheadCollisions": 0,
+                    "containerBorderRuns": 0,
+                    "labelRouteClearanceIssues": 0,
+                    "labelCanvasOverflowIssues": 0,
+                    "minLabelRouteClearance": 20.2,
+                    "desktopReadabilityIssues": 0,
+                    "viewportHeightIssues": 0,
+                    "minProjectedNodeTextPx": 7.5,
+                    "maxBends": 4,
+                    "routesOverSuggestedBends": 1,
+                    "maxStretch": 1,
+                    "routesOverSuggestedStretch": 0,
+                    "minSegmentPx": 24,
+                    "minInteriorSegmentPx": 64,
+                    "shortSegmentCount": 0,
+                    "shortEndpointSegmentCount": 0,
+                    "shortInteriorSegmentCount": 0,
+                    "microSegmentCount": 0
+                  },
+                  "suggestedLimits": {
+                    "bendsPerRelationship": 2,
+                    "stretch": 1.35,
+                    "segmentPx": 16,
+                    "microSegmentPx": 8
+                  },
+                  "routeReview": {
+                    "crossings": [
+                      {
+                        "left": {
+                          "id": "loader-to-saga-1",
+                          "from": "loader",
+                          "to": "saga",
+                          "label": "read missing",
+                          "collectionIndex": 3,
+                          "artifactIndex": 4
+                        },
+                        "right": {
+                          "id": "dc-to-cache-1",
+                          "from": "dc",
+                          "to": "cache",
+                          "label": "cache actions",
+                          "collectionIndex": 7,
+                          "artifactIndex": 8
+                        },
+                        "point": [
+                          589,
+                          304.0500000000001
+                        ]
+                      }
+                    ],
+                    "detours": [
+                      {
+                        "relationship": {
+                          "id": "dc-to-cache-1",
+                          "from": "dc",
+                          "to": "cache",
+                          "label": "cache actions",
+                          "collectionIndex": 7,
+                          "artifactIndex": 8
+                        },
+                        "bends": 4,
+                        "stretch": 1
+                      }
+                    ]
+                  },
+                  "leadingSpace": {
+                    "measured": true,
+                    "emptyTopPx": 80,
+                    "emptyTopRatio": 0.138,
+                    "occupiedTop": 80,
+                    "viewBoxTop": 0,
+                    "canvasHeight": 580,
+                    "typicalNodeHeight": 60,
+                    "reviewSuggested": false
+                  },
+                  "desktopReadability": {
+                    "budgetBasis": "recognized-declared-wide",
+                    "readerContract": "declared-wide-v1",
+                    "availableDiagramWidth": 1236.5625,
+                    "actualBudgetPx": 1236.5625,
+                    "actualReaderWidth": 1266.5625,
+                    "desiredReaderWidth": 1266.5625,
+                    "viewportCap": 1376,
+                    "limit": "source-size",
+                    "requestedTargetPx": 7.5,
+                    "requestedTargetMet": true,
+                    "hardFloorPx": 6,
+                    "hardFloorMet": true,
+                    "minimumOwner": {
+                      "kind": "edge",
+                      "id": "ui-to-sel-1",
+                      "from": "ui",
+                      "to": "sel"
+                    },
+                    "minimumSourceTextPx": 8,
+                    "minimumProjectedTextPx": 7.5,
+                    "semanticTextCount": 18
+                  },
+                  "issues": []
+                }
+              }
+            },
+            {
+              "id": "refresh-flow",
+              "receipt": {
+                "ok": true,
+                "file": "C:\\Users\\nono\\AppData\\Local\\Temp\\archify-explainer-check-UmF7Ur\\child.html",
+                "artifact": {
+                  "sha256": "3c7ed8d39e034dbbf1e0c99bf8b3ae5c9aa683df138caeb4084bcf0d7b0fbd4f",
+                  "bytes": 812333
+                },
+                "checks": [
+                  {
+                    "name": "single_svg",
+                    "ok": true,
+                    "details": [
+                      "found 1 <svg> block(s)"
+                    ]
+                  },
+                  {
+                    "name": "finite_svg",
+                    "ok": true,
+                    "details": []
+                  },
+                  {
+                    "name": "orthogonal_arrows",
+                    "ok": true,
+                    "details": []
+                  },
+                  {
+                    "name": "label_route_clearance",
+                    "ok": true,
+                    "details": []
+                  },
+                  {
+                    "name": "relationship_crossings",
+                    "ok": true,
+                    "details": []
+                  },
+                  {
+                    "name": "relationship_corridors",
+                    "ok": true,
+                    "details": []
+                  },
+                  {
+                    "name": "container_border_runs",
+                    "ok": true,
+                    "details": []
+                  },
+                  {
+                    "name": "route_rhythm",
+                    "ok": true,
+                    "details": []
+                  },
+                  {
+                    "name": "legend_clearance",
+                    "ok": true,
+                    "details": []
+                  }
+                ],
+                "composition": {
+                  "schemaVersion": 1,
+                  "profile": "showcase",
+                  "status": "pass",
+                  "summary": {
+                    "errors": 0,
+                    "warnings": 0
+                  },
+                  "metrics": {
+                    "properCrossings": 0,
+                    "resolvedCrossovers": 0,
+                    "ambiguousCorridors": 0,
+                    "arrowheadCollisions": 0,
+                    "containerBorderRuns": 0,
+                    "labelRouteClearanceIssues": 0,
+                    "labelCanvasOverflowIssues": 0,
+                    "minLabelRouteClearance": 28,
+                    "desktopReadabilityIssues": 0,
+                    "viewportHeightIssues": 0,
+                    "minProjectedNodeTextPx": 8.914285714285715,
+                    "maxBends": 0,
+                    "routesOverSuggestedBends": 0,
+                    "maxStretch": 1,
+                    "routesOverSuggestedStretch": 0,
+                    "minSegmentPx": 187.3,
+                    "minInteriorSegmentPx": null,
+                    "shortSegmentCount": 0,
+                    "shortEndpointSegmentCount": 0,
+                    "shortInteriorSegmentCount": 0,
+                    "microSegmentCount": 0
+                  },
+                  "suggestedLimits": {
+                    "bendsPerRelationship": 2,
+                    "stretch": 1.35,
+                    "segmentPx": 16,
+                    "microSegmentPx": 8
+                  },
+                  "routeReview": {
+                    "crossings": [],
+                    "detours": []
+                  },
+                  "leadingSpace": {
+                    "measured": false,
+                    "reviewSuggested": false
+                  },
+                  "sequenceColumnSpace": {
+                    "measured": true,
+                    "columnFit": "spread",
+                    "participantCount": 5,
+                    "occupiedRight": 1045,
+                    "viewBoxLeft": 0,
+                    "canvasWidth": 1085,
+                    "emptyRightPx": 40,
+                    "emptyRightRatio": 0.037,
+                    "typicalParticipantWidth": 178,
+                    "reviewSuggested": false
+                  },
+                  "desktopReadability": {
+                    "budgetBasis": "legacy-930",
+                    "readerContract": "declared-wide-v1",
+                    "availableDiagramWidth": 930,
+                    "actualBudgetPx": 930,
+                    "limit": "legacy",
+                    "requestedTargetPx": null,
+                    "requestedTargetMet": null,
+                    "hardFloorPx": 6,
+                    "hardFloorMet": true,
+                    "minimumOwner": {
+                      "kind": "node",
+                      "id": "page"
+                    },
+                    "minimumSourceTextPx": 10.4,
+                    "minimumProjectedTextPx": 8.914285714285715,
+                    "semanticTextCount": 15
+                  },
+                  "issues": []
+                }
+              }
+            },
+            {
+              "id": "report-load-flow",
+              "receipt": {
+                "ok": true,
+                "file": "C:\\Users\\nono\\AppData\\Local\\Temp\\archify-explainer-check-FFrfqI\\child.html",
+                "artifact": {
+                  "sha256": "0a3fc96a2eb4a12b39a113f1bcf1f0b89cf3e2882e3e49844b39156ee07cea65",
+                  "bytes": 811989
+                },
+                "checks": [
+                  {
+                    "name": "single_svg",
+                    "ok": true,
+                    "details": [
+                      "found 1 <svg> block(s)"
+                    ]
+                  },
+                  {
+                    "name": "finite_svg",
+                    "ok": true,
+                    "details": []
+                  },
+                  {
+                    "name": "orthogonal_arrows",
+                    "ok": true,
+                    "details": []
+                  },
+                  {
+                    "name": "label_route_clearance",
+                    "ok": true,
+                    "details": []
+                  },
+                  {
+                    "name": "relationship_crossings",
+                    "ok": true,
+                    "details": []
+                  },
+                  {
+                    "name": "relationship_corridors",
+                    "ok": true,
+                    "details": []
+                  },
+                  {
+                    "name": "container_border_runs",
+                    "ok": true,
+                    "details": []
+                  },
+                  {
+                    "name": "route_rhythm",
+                    "ok": true,
+                    "details": []
+                  },
+                  {
+                    "name": "legend_clearance",
+                    "ok": true,
+                    "details": []
+                  }
+                ],
+                "composition": {
+                  "schemaVersion": 1,
+                  "profile": "showcase",
+                  "status": "pass",
+                  "summary": {
+                    "errors": 0,
+                    "warnings": 0
+                  },
+                  "metrics": {
+                    "properCrossings": 0,
+                    "resolvedCrossovers": 0,
+                    "ambiguousCorridors": 0,
+                    "arrowheadCollisions": 0,
+                    "containerBorderRuns": 0,
+                    "labelRouteClearanceIssues": 0,
+                    "labelCanvasOverflowIssues": 0,
+                    "minLabelRouteClearance": 28,
+                    "desktopReadabilityIssues": 0,
+                    "viewportHeightIssues": 0,
+                    "minProjectedNodeTextPx": 9.905894519131333,
+                    "maxBends": 0,
+                    "routesOverSuggestedBends": 0,
+                    "maxStretch": 1,
+                    "routesOverSuggestedStretch": 0,
+                    "minSegmentPx": 166,
+                    "minInteriorSegmentPx": null,
+                    "shortSegmentCount": 0,
+                    "shortEndpointSegmentCount": 0,
+                    "shortInteriorSegmentCount": 0,
+                    "microSegmentCount": 0
+                  },
+                  "suggestedLimits": {
+                    "bendsPerRelationship": 2,
+                    "stretch": 1.35,
+                    "segmentPx": 16,
+                    "microSegmentPx": 8
+                  },
+                  "routeReview": {
+                    "crossings": [],
+                    "detours": []
+                  },
+                  "leadingSpace": {
+                    "measured": false,
+                    "reviewSuggested": false
+                  },
+                  "sequenceColumnSpace": {
+                    "measured": true,
+                    "columnFit": "spread",
+                    "participantCount": 5,
+                    "occupiedRight": 927,
+                    "viewBoxLeft": 0,
+                    "canvasWidth": 967,
+                    "emptyRightPx": 40,
+                    "emptyRightRatio": 0.041,
+                    "typicalParticipantWidth": 145,
+                    "reviewSuggested": false
+                  },
+                  "desktopReadability": {
+                    "budgetBasis": "legacy-930",
+                    "readerContract": "declared-wide-v1",
+                    "availableDiagramWidth": 930,
+                    "actualBudgetPx": 930,
+                    "limit": "legacy",
+                    "requestedTargetPx": null,
+                    "requestedTargetMet": null,
+                    "hardFloorPx": 6,
+                    "hardFloorMet": true,
+                    "minimumOwner": {
+                      "kind": "node",
+                      "id": "svc"
+                    },
+                    "minimumSourceTextPx": 10.3,
+                    "minimumProjectedTextPx": 9.905894519131333,
+                    "semanticTextCount": 16
+                  },
+                  "issues": []
+                }
+              }
+            },
+            {
+              "id": "write-flow",
+              "receipt": {
+                "ok": true,
+                "file": "C:\\Users\\nono\\AppData\\Local\\Temp\\archify-explainer-check-2LSego\\child.html",
+                "artifact": {
+                  "sha256": "bd9f8805ddfa14764df59abfbf8f1be21e14443f064812ec200bd18f3f89dc20",
+                  "bytes": 815584
+                },
+                "checks": [
+                  {
+                    "name": "single_svg",
+                    "ok": true,
+                    "details": [
+                      "found 1 <svg> block(s)"
+                    ]
+                  },
+                  {
+                    "name": "finite_svg",
+                    "ok": true,
+                    "details": []
+                  },
+                  {
+                    "name": "orthogonal_arrows",
+                    "ok": true,
+                    "details": []
+                  },
+                  {
+                    "name": "label_route_clearance",
+                    "ok": true,
+                    "details": []
+                  },
+                  {
+                    "name": "relationship_crossings",
+                    "ok": true,
+                    "details": []
+                  },
+                  {
+                    "name": "relationship_corridors",
+                    "ok": true,
+                    "details": []
+                  },
+                  {
+                    "name": "container_border_runs",
+                    "ok": true,
+                    "details": []
+                  },
+                  {
+                    "name": "route_rhythm",
+                    "ok": true,
+                    "details": []
+                  },
+                  {
+                    "name": "legend_clearance",
+                    "ok": true,
+                    "details": []
+                  }
+                ],
+                "composition": {
+                  "schemaVersion": 1,
+                  "profile": "showcase",
+                  "status": "pass",
+                  "summary": {
+                    "errors": 0,
+                    "warnings": 0
+                  },
+                  "metrics": {
+                    "properCrossings": 0,
+                    "resolvedCrossovers": 0,
+                    "ambiguousCorridors": 0,
+                    "arrowheadCollisions": 0,
+                    "containerBorderRuns": 0,
+                    "labelRouteClearanceIssues": 0,
+                    "labelCanvasOverflowIssues": 0,
+                    "minLabelRouteClearance": 27,
+                    "desktopReadabilityIssues": 0,
+                    "viewportHeightIssues": 0,
+                    "minProjectedNodeTextPx": 7.373637264618434,
+                    "maxBends": 0,
+                    "routesOverSuggestedBends": 0,
+                    "maxStretch": 1,
+                    "routesOverSuggestedStretch": 0,
+                    "minSegmentPx": 13,
+                    "minInteriorSegmentPx": null,
+                    "shortSegmentCount": 1,
+                    "shortEndpointSegmentCount": 1,
+                    "shortInteriorSegmentCount": 0,
+                    "microSegmentCount": 0
+                  },
+                  "suggestedLimits": {
+                    "bendsPerRelationship": 2,
+                    "stretch": 1.35,
+                    "segmentPx": 16,
+                    "microSegmentPx": 8
+                  },
+                  "routeReview": {
+                    "crossings": [],
+                    "detours": []
+                  },
+                  "leadingSpace": {
+                    "measured": false,
+                    "reviewSuggested": false
+                  },
+                  "desktopReadability": {
+                    "budgetBasis": "legacy-930",
+                    "readerContract": "declared-wide-v1",
+                    "availableDiagramWidth": 930,
+                    "actualBudgetPx": 930,
+                    "limit": "legacy",
+                    "requestedTargetPx": null,
+                    "requestedTargetMet": null,
+                    "hardFloorPx": 6,
+                    "hardFloorMet": true,
+                    "minimumOwner": {
+                      "kind": "edge",
+                      "id": "patch-to-commit-1",
+                      "from": "patch",
+                      "to": "commit"
+                    },
+                    "minimumSourceTextPx": 8,
+                    "minimumProjectedTextPx": 7.373637264618434,
+                    "semanticTextCount": 12
+                  },
+                  "issues": []
+                }
+              }
+            }
+          ]
+        },
+        "diagnostics": [],
+        "provenance": "current",
+        "deliveryReceiptId": "9214d983-2a13-4296-ab1a-a60211ecadd0"
+      }
+    }
+  },
+  "browserCheck": {
+    "requested": false,
+    "ran": false
+  },
+  "diagnostics": [],
+  "evidence": {
+    "receipt": "C:\\Users\\nono\\Documents\\devhome\\miroir-integration\\.archify\\explainer-miroir-cache-20261102-111507\\miroir-cache-today.finalize.json",
+    "summaryReceipt": "C:\\Users\\nono\\Documents\\devhome\\miroir-integration\\.archify\\explainer-miroir-cache-20261102-111507\\miroir-cache-today.finalize-summary.json"
+  },
+  "visualReview": "not-requested",
+  "finishedAt": "2026-11-02T10:16:58.212Z",
+  "durationMs": 7393,
+  "update": {
+    "status": "unavailable",
+    "installedVersion": null,
+    "availableVersion": null,
+    "releaseNotes": null,
+    "checkedAt": null,
+    "source": null,
+    "noticeRequired": false,
+    "noticeText": null,
+    "reason": "check-failed"
+  }
+}

@@ -13,7 +13,7 @@ import {
   type DomainControllerInterface,
   type EntityInstance,
   type StoreUnitConfiguration,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 import {
   appliedChange,

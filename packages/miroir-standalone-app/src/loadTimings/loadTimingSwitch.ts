@@ -1,4 +1,4 @@
-import type { MiroirConfigClient } from "miroir-core";
+import type { MiroirConfigClient } from "@miroir-framework/core";
 
 import { DEFAULT_LOAD_TIMING_SWITCH, type LoadTimingSwitch } from "./loadTimingRecorder.js";
 
@@ -50,13 +50,20 @@ export function resolveLoadTimingsSwitch(
   };
 }
 
-/** Whether the client configuration lists the Meta deployment, where the steps are recorded (D8). */
-export function configurationListsDeployment(config: MiroirConfigClient | undefined, deploymentUuid: string): boolean {
+/**
+ * Whether the client configuration gives the deployment the store section, where the steps are
+ * recorded (#580 D8; #647: the devData section of the Miroir deployment).
+ */
+export function configurationHasSection(
+  config: MiroirConfigClient | undefined,
+  deploymentUuid: string,
+  section: string,
+): boolean {
   if (!config) {
     return false;
   }
   const deployments = config.client.emulateServer
     ? config.client.deploymentStorageConfig
     : config.client.serverConfig.storeSectionConfiguration;
-  return !!deployments?.[deploymentUuid];
+  return !!(deployments?.[deploymentUuid] as Record<string, unknown> | undefined)?.[section];
 }

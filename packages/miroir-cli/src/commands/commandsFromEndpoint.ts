@@ -13,7 +13,7 @@ import {
   endpointActionEntryZodSchema,
   type EndpointActionEntry,
   type MlObject,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 const packageName = "miroir-cli";
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, "info", "commandsFromEndpoint");

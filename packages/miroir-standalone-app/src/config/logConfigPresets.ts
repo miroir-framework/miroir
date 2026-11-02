@@ -7,7 +7,7 @@
  * import map) go through here so the same named config behaves identically.
  */
 
-import type { LoggerOptions } from "miroir-core";
+import type { LoggerOptions } from "@miroir-framework/core";
 
 import catchAll from "../../config/logging/catch-all.json";
 import catchAllDetailed from "../../config/logging/catch-all-detailed.json";

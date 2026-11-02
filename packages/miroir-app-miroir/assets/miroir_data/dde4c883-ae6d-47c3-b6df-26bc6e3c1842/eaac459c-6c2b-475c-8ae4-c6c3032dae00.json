@@ -147,6 +147,36 @@
             "icon": "history"
           }
         ]
+      },
+      {
+        "title": "Dev data",
+        "label": "devData",
+        "items": [
+          {
+            "miroirMenuItemType": "miroirMenuReportLink",
+            "label": "Bundle size history",
+            "section": "devData",
+            "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+            "reportUuid": "e8c6faa5-a117-4afd-b7ae-4a40c6111f95",
+            "icon": "show_chart"
+          },
+          {
+            "miroirMenuItemType": "miroirMenuReportLink",
+            "label": "Page load history",
+            "section": "devData",
+            "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+            "reportUuid": "02dd2ead-7b8d-4160-99c9-9f4e9a1c051b",
+            "icon": "speed"
+          },
+          {
+            "miroirMenuItemType": "miroirMenuReportLink",
+            "label": "Agent runs",
+            "section": "devData",
+            "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+            "reportUuid": "7a695632-338e-4c33-8b39-dba7f6d4c988",
+            "icon": "smart_toy"
+          }
+        ]
       }
     ]
   }

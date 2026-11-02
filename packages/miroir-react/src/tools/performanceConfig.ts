@@ -3,7 +3,7 @@
  * These settings can be adjusted at startup or runtime
  */
 
-import { LoggerInterface, MiroirLoggerFactory } from 'miroir-core';
+import { LoggerInterface, MiroirLoggerFactory } from '@miroir-framework/core';
 import { packageName } from "../constants.js";
 import { cleanLevel } from "../viewConstants.js";
 

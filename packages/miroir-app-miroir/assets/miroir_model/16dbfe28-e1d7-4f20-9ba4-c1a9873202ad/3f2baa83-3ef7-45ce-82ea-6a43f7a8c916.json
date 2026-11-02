@@ -1075,7 +1075,8 @@
                         "definition": [
                           "data",
                           "model",
-                          "modelVersion"
+                          "modelVersion",
+                          "devData"
                         ],
                         "tag": {
                           "value": {
@@ -1719,7 +1720,8 @@
                     "definition": [
                       "data",
                       "model",
-                      "modelVersion"
+                      "modelVersion",
+                      "devData"
                     ],
                     "tag": {
                       "value": {
@@ -1807,7 +1809,8 @@
                     "definition": [
                       "data",
                       "model",
-                      "modelVersion"
+                      "modelVersion",
+                      "devData"
                     ],
                     "tag": {
                       "value": {

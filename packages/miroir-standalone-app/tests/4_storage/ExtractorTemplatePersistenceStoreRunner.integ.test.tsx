@@ -28,12 +28,12 @@ import {
   type ApplicationDeploymentMap,
   type Deployment,
   type Entity,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
-import { LocalCacheInterface } from 'miroir-core';
-import { miroirFileSystemStoreSectionStartup } from 'miroir-store-filesystem';
-import { miroirIndexedDbStoreSectionStartup } from 'miroir-store-indexedDb';
-import { miroirPostgresStoreSectionStartup } from 'miroir-store-postgres';
+import { LocalCacheInterface } from '@miroir-framework/core';
+import { miroirFileSystemStoreSectionStartup } from '@miroir-framework/store-filesystem';
+import { miroirIndexedDbStoreSectionStartup } from '@miroir-framework/store-indexeddb';
+import { miroirPostgresStoreSectionStartup } from '@miroir-framework/store-postgres';
 import {
   deployment_Admin,
   deployment_Miroir,

@@ -33,7 +33,7 @@ import {
   type LocalCacheExtractor,
   type Menu,
   type ViewParams
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { 
   entityEndpointVersion,
   entityMenu,

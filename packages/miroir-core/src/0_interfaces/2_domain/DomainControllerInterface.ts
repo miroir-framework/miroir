@@ -94,6 +94,10 @@ export type DomainStateMetaModelSelector = (domainState: DomainState) => MetaMod
 export type EntityInstancesUuidIndexEntityInstanceArraySelector = (entityInstancesUuidIndex: EntityInstancesUuidIndex) => EntityInstance[];
 
 // ###################################################################################
+/**
+ * Runs actions and queries on the deployments of a Miroir platform.
+ * @public
+ */
 export interface DomainControllerInterface {
   // handleAction(deploymentUuid: Uuid, action: DomainAction, currentModel?: MetaModel): Promise<void>;
   handleBoxedExtractorOrQueryAction(

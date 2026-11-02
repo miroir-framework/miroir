@@ -13,7 +13,7 @@ import {
   RunBoxedQueryTemplateAction,
   type MiroirModelEnvironment,
   type ApplicationDeploymentMap
-} from "miroir-core";
+} from "@miroir-framework/core";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
 import { SqlDbDataStoreSection } from "./SqlDbDataStoreSection";

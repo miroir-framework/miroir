@@ -3,7 +3,7 @@ import {
   resolveMlSchemaReferenceInContext,
   type MlReference,
   defaultMiroirModelEnvironment,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import type { McpToolDescriptionProperty } from "./mcpHandlersForEndpoint.js";
 import {
   jsonSchemaRefPointer,

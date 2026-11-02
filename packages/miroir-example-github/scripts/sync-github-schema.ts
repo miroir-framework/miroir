@@ -10,7 +10,7 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { materializeExternalServiceOperations } from "miroir-core";
+import { materializeExternalServiceOperations } from "@miroir-framework/core";
 
 const packageRoot = join(dirname(fileURLToPath(import.meta.url)), "..");
 const excerptPath = join(packageRoot, "assets/test-resources/githubOpenApiExcerpt.json");

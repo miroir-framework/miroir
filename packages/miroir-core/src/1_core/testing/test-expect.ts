@@ -134,6 +134,10 @@ export function failedExpectationMessage(outcome: unknown, defaultMessage: strin
 }
 
 // ################################################################################################
+/**
+ * Assertions for MiroirTest implementations, in the style of vitest's `expect`.
+ * @public
+ */
 export function expect(actual: any, testName?: string) {
   // console.log(`@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ Expect called with actual: ${actual}, testName: ${testName}`);
   const matchers = {

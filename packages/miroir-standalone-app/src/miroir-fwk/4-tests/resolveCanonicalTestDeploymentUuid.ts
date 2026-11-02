@@ -1,4 +1,4 @@
-import type { Uuid } from "miroir-core";
+import type { Uuid } from "@miroir-framework/core";
 import { deployment_AppForTest_DO_NO_USE } from "miroir-fixture-appForTest";
 import { deployment_Library_DO_NO_USE } from "miroir-example-library";
 

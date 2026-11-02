@@ -23,7 +23,7 @@ import {
   type TransformerDefinition,
   type SelfApplication,
   type MiroirTestDefinition
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   entityEndpointVersion,
   entityEntity,

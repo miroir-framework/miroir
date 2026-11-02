@@ -5,8 +5,8 @@ import type {
   DomainControllerInterface,
   MiroirConfigClient,
   PersistenceStoreControllerManagerInterface,
-} from "miroir-core";
-import { getBootstrapPhasesForSessionKind } from "miroir-core";
+} from "@miroir-framework/core";
+import { getBootstrapPhasesForSessionKind } from "@miroir-framework/core";
 import { deployment_Library_DO_NO_USE, selfApplicationLibrary } from "miroir-example-library";
 
 import { runAppStackIntegrationBootstrap } from "./appStackIntegrationBootstrap.js";
@@ -26,8 +26,8 @@ vi.mock("../../src/miroir-fwk/4-tests/tests-utils.js", () => ({
     createMiroirDeploymentGetPersistenceStoreControllerMock(...args),
 }));
 
-vi.mock("miroir-core", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("miroir-core")>();
+vi.mock("@miroir-framework/core", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@miroir-framework/core")>();
   return {
     ...actual,
     createDeploymentCompositeAction: (...args: unknown[]) =>

@@ -5,7 +5,7 @@
  * the first time the demo application mounts.  Must be placed inside
  * <MiroirContextReactProvider> so the hooks it uses are available.
  */
-import { usePageConfiguration } from "miroir-react";
+import { usePageConfiguration } from "@miroir-framework/react";
 
 export function DemoInitializer(): null {
   usePageConfiguration({

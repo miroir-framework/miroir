@@ -3,7 +3,7 @@ import '@testing-library/jest-dom';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { render as rtlRender, screen } from '@testing-library/react';
 
-import type { MiroirTestDefinition } from 'miroir-core';
+import type { MiroirTestDefinition } from '@miroir-framework/core';
 import { miroirTest_runner_returnDocument } from 'miroir-example-library';
 import {
   miroirTest_fn_entityPrimaryKey,

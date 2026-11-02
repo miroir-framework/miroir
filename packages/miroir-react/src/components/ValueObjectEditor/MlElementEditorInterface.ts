@@ -13,7 +13,7 @@ import {
   type ApplicationDeploymentMap,
   type InputOutputType,
   type TransformerNodeTypeStatus,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import type { ValueObjectEditMode } from "../Reports/ReportSectionEntityInstance.js";
 
 export interface UnionInformation {

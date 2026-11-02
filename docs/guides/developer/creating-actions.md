@@ -38,7 +38,7 @@ To add an action with a library implementation:
 
 1. Declare it in an Endpoint JSON: `actionParameters`, then `actionImplementation` with `inMemoryImplementationFunctionName: "handleAction_<actionType>"`.
 2. Add `handleAction_<actionType>` to `miroirActionImplementations`. A handler receives the `DomainControllerActionHost` (`packages/miroir-core/src/0_interfaces/3_controllers/DomainControllerActionHost.ts`), the action and an `ActionImplementationContext` (deployment map, model environment, principal), and returns an `Action2ReturnType`. If it needs a `DomainController` capability the host interface does not offer yet, add that method to the interface.
-3. Rebuild (`npm run build -w miroir-app-miroir && npm run build -w miroir-core`) and send the action through `handleAction`. `DomainController` itself is not edited.
+3. Rebuild (`npm run build -w miroir-app-miroir && npm run build -w @miroir-framework/core`) and send the action through `handleAction`. `DomainController` itself is not edited.
 
 A name missing from the map makes `handleAction` return an `InvalidAction` error naming it. `packages/miroir-core/tests/3_controllers/ActionImplementations.unit.test.ts` checks that every declared name resolves and that every action of the Model, Instance, Domain, StoreManagement, UndoRedo and Query Endpoints declares an implementation.
 

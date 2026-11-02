@@ -23,7 +23,7 @@ import {
   type MiroirConfigClient,
   type MiroirConfigServer,
   type RestClientStub,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 export type MiroirIpcPayload = { type: string; authorization?: string; [key: string]: any };
 

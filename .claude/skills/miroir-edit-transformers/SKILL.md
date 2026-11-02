@@ -20,7 +20,7 @@ This skill guides the creation and modification of **Library-Implemented** Miroi
 **BEFORE starting any transformer work, verify current test state:**
 
 ```bash
-npm run testMiroir -w miroir-core -- --suites tr.core --mode unit
+npm run testMiroir -w @miroir-framework/core -- --suites tr.core --mode unit
 npm run testMiroir -w miroir-standalone-app -- --suites tr.core --mode integration
 ```
 
@@ -37,7 +37,7 @@ Follow these steps in order for creating or modifying a library-implemented tran
 ### Step 1: Run Pre-flight Tests ✅
 Establish baseline before any changes.
 ```bash
-npm run testMiroir -w miroir-core -- --suites tr.core --mode unit
+npm run testMiroir -w @miroir-framework/core -- --suites tr.core --mode unit
 ```
 
 ### Step 2: Write Test Cases First (TDD) 📝
@@ -49,7 +49,7 @@ Add test cases to the test suite:
 ### Step 3: Run Tests (Expect Failure) ❌
 Verify the test fails before implementation:
 ```bash
-npm run testMiroir -w miroir-core -- --suites tr.core --mode unit
+npm run testMiroir -w @miroir-framework/core -- --suites tr.core --mode unit
 ```
 
 ### Step 4: Create TransformerDefinition JSON 📄
@@ -188,7 +188,7 @@ return new Domain2ElementFailed({
 #### Rebuild required after changes
 After modifying `SqlGenerator.ts`, always rebuild:
 ```bash
-npm run build -w miroir-store-postgres
+npm run build -w @miroir-framework/store-postgres
 ```
 
 ---
@@ -221,7 +221,7 @@ File: `packages/miroir-core/scripts/generate-ts-types.ts`
 Generate types and verify everything works:
 ```bash
 npm run build -w miroir-example-library
-npm run devBuild -w miroir-core && npm run testMiroir -w miroir-core -- --suites tr.core --mode unit && npm run testMiroir -w miroir-standalone-app -- --suites tr.core --mode integration
+npm run devBuild -w @miroir-framework/core && npm run testMiroir -w @miroir-framework/core -- --suites tr.core --mode unit && npm run testMiroir -w miroir-standalone-app -- --suites tr.core --mode integration
 ```
 
 ### Step 9: Create or Update Documentation 📚
@@ -239,7 +239,7 @@ Documentation is in folder `docs-OLD/transformers`
 | `0_interfaces/1_core/bootstrapMlSchemas/getMiroirFundamentalMlSchema.ts` | Schema registration | 2 transformer entries + 1 dependency entry |
 | `scripts/generate-ts-types.ts` | Pre-generated types | 4 transformer entries |
 | `miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/33f60ac8-6511-43b1-b153-6b86e3177532.json` | Test cases (`miroirTest_tr_core`) | New `miroirTest` leaf objects |
-| `miroir-store-postgres/src/1_core/SqlGenerator.ts` | SQL implementation (optional) | `sqlStringFor<Name>Transformer` function + registration in `sqlTransformerImplementations`, then rebuild with `npm run build -w miroir-store-postgres` |
+| `miroir-store-postgres/src/1_core/SqlGenerator.ts` | SQL implementation (optional) | `sqlStringFor<Name>Transformer` function + registration in `sqlTransformerImplementations`, then rebuild with `npm run build -w @miroir-framework/store-postgres` |
 
 ---
 
@@ -370,12 +370,12 @@ return {
 
 ### Run Specific Tests Only
 ```bash
-npm run testMiroir -w miroir-core -- --suites tr.core --mode unit --filter '{"tr.core":["specific test case name"]}'
+npm run testMiroir -w @miroir-framework/core -- --suites tr.core --mode unit --filter '{"tr.core":["specific test case name"]}'
 ```
 
 ### Enable Debug Logging
 ```bash
-VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug npm run testMiroir -w miroir-core -- --suites tr.core --mode unit
+VITE_MIROIR_LOG_CONFIG_FILENAME=./packages/miroir-standalone-app/tests/specificLoggersConfig_DomainController_debug npm run testMiroir -w @miroir-framework/core -- --suites tr.core --mode unit
 ```
 
 ---

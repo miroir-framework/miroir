@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   isAbsentModelVersionSectionError,
+  isAbsentOptionalSectionError,
   isLazyCacheOnRefreshEntity,
   resolveEntitiesToFetchOnRefresh,
   shouldCacheAllInstancesOnRefresh,
@@ -105,6 +106,47 @@ describe("isAbsentModelVersionSectionError (#232/#234 wrapped soft-skip)", () =>
       isAbsentModelVersionSectionError(
         new Action2Error("FailedToGetInstances", "relation Commit does not exist"),
       ),
+    ).toBe(false);
+  });
+});
+
+describe("isAbsentOptionalSectionError (#647: every optional section)", () => {
+  // Messages as PersistenceStoreController words them for an absent optional section.
+  const absent = (section: string) =>
+    new Action2Error(
+      "FailedToHandlePersistenceAction",
+      "could not handle action LocalPersistenceAction_read",
+      [],
+      new Action2Error(
+        "FailedToGetInstances",
+        `${section} section is not configured for this deployment (store: PersistenceStoreController …). Add a ${section} section to the deployment configuration to persist its instances.`,
+      ),
+    );
+
+  it("detects an absent devData section, nested or not", () => {
+    expect(isAbsentOptionalSectionError("devData", absent("devData"))).toBe(true);
+    expect(
+      isAbsentOptionalSectionError(
+        "devData",
+        new Action2Error("FailedToUpsertInstance", "devData section is not configured for this deployment."),
+      ),
+    ).toBe(true);
+  });
+
+  it("detects an absent modelVersion section, and the wrapper still does", () => {
+    expect(isAbsentOptionalSectionError("modelVersion", absent("modelVersion"))).toBe(true);
+    expect(isAbsentModelVersionSectionError(absent("modelVersion"))).toBe(true);
+  });
+
+  it("does not take one section's absence for another's", () => {
+    expect(isAbsentOptionalSectionError("modelVersion", absent("devData"))).toBe(false);
+    expect(isAbsentOptionalSectionError("devData", absent("modelVersion"))).toBe(false);
+    expect(isAbsentModelVersionSectionError(absent("devData"))).toBe(false);
+  });
+
+  it("returns false for unrelated errors", () => {
+    expect(
+      isAbsentOptionalSectionError("devData", new Action2Error("FailedToGetInstances", "relation Commit does not exist")),
     ).toBe(false);
   });
 });
@@ -245,6 +287,33 @@ describe("resolveEntitiesToFetchOnRefresh (1.2–1.3)", () => {
       expect(byUuid[entityApplicationVersionCrossMenuVersion.uuid]).toBe("modelVersion");
       expect(byUuid[entityHistoricalMenuVersion.uuid]).toBe("modelVersion");
       expect(byUuid[modelEntity.uuid]).toBe("model");
+    }
+  });
+
+  it("routes devData Entities to devData and drops the lazy one, from either list (#647 D22)", async () => {
+    // Satellite apps list Miroir's meta-model Entities (devData ones included) as model entities;
+    // Miroir lists its own Entities as data entities.
+    const {
+      entityAgentRunMeasurement,
+      entityBundleSizeMeasurement,
+      entityPageLoadMeasurement,
+      selfApplicationMiroir,
+    } = await import("miroir-app-miroir");
+    const devDataEntities = [
+      entityBundleSizeMeasurement as Entity,
+      entityPageLoadMeasurement as Entity,
+      entityAgentRunMeasurement as Entity,
+    ];
+
+    for (const [appUuid, modelEntities, dataEntities] of [
+      [applicationUuid, devDataEntities, []],
+      [selfApplicationMiroir.uuid as string, [], devDataEntities],
+    ] as [string, Entity[], Entity[]][]) {
+      const result = resolveEntitiesToFetchOnRefresh(appUuid, modelEntities, dataEntities);
+      expect(result.map((e) => [e.entity.uuid, e.section])).toEqual([
+        [entityBundleSizeMeasurement.uuid, "devData"],
+        [entityAgentRunMeasurement.uuid, "devData"],
+      ]);
     }
   });
 

@@ -13,6 +13,7 @@ import { Action2Error, Action2ReturnType } from "../0_interfaces/2_domain/Domain
 import type { ApplicationDeploymentMap } from "../1_core/Deployment";
 import { defaultMiroirMetaModel as defaultMiroirMetaModelRaw } from "miroir-app-miroir";
 import { ACTION_OK } from "../1_core/constants";
+import { optionalApplicationSections } from "../1_core/Model";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ActionRunner");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
@@ -81,27 +82,31 @@ export async function storeActionOrBundleActionStoreRunner(
       const appDataStoreCreated: Action2ReturnType =
         await localAppPersistenceStoreController.createStore(action.payload.configuration.data);
 
-      let appModelVersionStoreCreated: Action2ReturnType = ACTION_OK;
-      const modelVersionConfig = action.payload.configuration.modelVersion;
-      if (modelVersionConfig) {
-        appModelVersionStoreCreated =
-          await localAppPersistenceStoreController.createStore(modelVersionConfig);
+      // optional sections (#232 modelVersion, #647 devData): created only when configured
+      const optionalStoresCreated: [string, Action2ReturnType][] = [];
+      for (const section of optionalApplicationSections) {
+        const sectionConfig = action.payload.configuration[section];
+        if (!sectionConfig) continue;
+        optionalStoresCreated.push([
+          section,
+          await localAppPersistenceStoreController.createStore(sectionConfig),
+        ]);
       }
 
       if (
         appModelStoreCreated instanceof Action2Error ||
         appDataStoreCreated instanceof Action2Error ||
-        appModelVersionStoreCreated instanceof Action2Error
+        optionalStoresCreated.some(([, result]) => result instanceof Action2Error)
       ) {
         return new Action2Error(
           "FailedToCreateStore",
-          (appModelStoreCreated instanceof Action2Error ? appModelStoreCreated.errorMessage : "model store created OK") +
-            " --- " +
-            (appDataStoreCreated instanceof Action2Error ? appDataStoreCreated.errorMessage : "data store created OK") +
-            " --- " +
-            (appModelVersionStoreCreated instanceof Action2Error
-              ? appModelVersionStoreCreated.errorMessage
-              : "modelVersion store created OK")
+          [
+            appModelStoreCreated instanceof Action2Error ? appModelStoreCreated.errorMessage : "model store created OK",
+            appDataStoreCreated instanceof Action2Error ? appDataStoreCreated.errorMessage : "data store created OK",
+            ...optionalStoresCreated.map(([section, result]) =>
+              result instanceof Action2Error ? result.errorMessage : section + " store created OK",
+            ),
+          ].join(" --- "),
         );
       }
       log.info(
@@ -162,40 +167,46 @@ export async function storeActionOrBundleActionStoreRunner(
         "appDataStoreDeleted",
         appDataStoreDeleted
       );
-      const modelVersionConfig = action.payload.configuration.modelVersion;
-      let appModelVersionStoreDeleted: Action2ReturnType = ACTION_OK;
-      if (modelVersionConfig) {
-        appModelVersionStoreDeleted =
-          await localAppPersistenceStoreController.deleteStore(modelVersionConfig);
+      // optional sections (#232 modelVersion, #647 devData): deleted only when configured
+      const optionalStoresDeleted: [string, Action2ReturnType][] = [];
+      for (const section of optionalApplicationSections) {
+        const sectionConfig = action.payload.configuration[section];
+        if (!sectionConfig) continue;
+        const sectionStoreDeleted = await localAppPersistenceStoreController.deleteStore(sectionConfig);
+        optionalStoresDeleted.push([section, sectionStoreDeleted]);
         log.info(
           "storeActionOrBundleActionStoreRunner deleteStore for application",
           action.payload.application,
           "deployment",
           deploymentUuid,
-          "appModelVersionStoreDeleted",
-          appModelVersionStoreDeleted
+          section,
+          "store deleted",
+          sectionStoreDeleted
         );
       }
+      const firstOptionalStoreDeletionError = optionalStoresDeleted.find(
+        ([, result]) => result instanceof Action2Error,
+      )?.[1] as Action2Error | undefined;
       if (
         appModelStoreDeleted instanceof Action2Error ||
         appDataStoreDeleted instanceof Action2Error ||
-        appModelVersionStoreDeleted instanceof Action2Error
+        firstOptionalStoreDeletionError
       ) {
         return new Action2Error(
           "FailedToDeleteStore",
-          (appModelStoreDeleted instanceof Action2Error ? appModelStoreDeleted.errorMessage : "model store deleted OK") +
-            " --- " +
-            (appDataStoreDeleted instanceof Action2Error ? appDataStoreDeleted.errorMessage : "data store deleted OK") +
-            " --- " +
-            (appModelVersionStoreDeleted instanceof Action2Error
-              ? appModelVersionStoreDeleted.errorMessage
-              : "modelVersion store deleted OK"),
+          [
+            appModelStoreDeleted instanceof Action2Error ? appModelStoreDeleted.errorMessage : "model store deleted OK",
+            appDataStoreDeleted instanceof Action2Error ? appDataStoreDeleted.errorMessage : "data store deleted OK",
+            ...optionalStoresDeleted.map(([section, result]) =>
+              result instanceof Action2Error ? result.errorMessage : section + " store deleted OK",
+            ),
+          ].join(" --- "),
             [], // errorStack,
           appModelStoreDeleted instanceof Action2Error
             ? appModelStoreDeleted
             : appDataStoreDeleted instanceof Action2Error
               ? appDataStoreDeleted
-              : (appModelVersionStoreDeleted as Action2Error)
+              : firstOptionalStoreDeletionError
         );
       }
       break;

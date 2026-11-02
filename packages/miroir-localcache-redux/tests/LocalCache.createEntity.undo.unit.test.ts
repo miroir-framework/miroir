@@ -5,7 +5,7 @@ import {
   type InstanceAction,
   type ModelAction,
   type UndoRedoAction,
-} from "miroir-core";
+} from "@miroir-framework/core";
 import {
   entityEntity,
   entityEntityVersion,

@@ -2,7 +2,7 @@
 import { css } from '@emotion/react';
 import * as React from 'react';
 import { useMiroirTheme } from "../contexts/MiroirThemeContext.js";
-import { LoggerInterface, MiroirLoggerFactory } from 'miroir-core';
+import { LoggerInterface, MiroirLoggerFactory } from '@miroir-framework/core';
 import { packageName } from "../constants.js";
 import { cleanLevel } from "../viewConstants.js";
 

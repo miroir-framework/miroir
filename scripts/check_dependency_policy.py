@@ -15,6 +15,9 @@ Rules (all run by default; --rule selects some):
   workflows       GitHub workflows and composite actions install with `npm ci`, never `npm install`.
   actions         GitHub workflows and composite actions use each action at a commit SHA (`owner/repo@<sha> # v4`),
                   which Dependabot updates; a tag or branch can be moved to other code.
+  peers           every third-party peer of a package of the published set (scripts/published-packages.json, #643)
+                  has an exact devDependency inside its range, so the package is built and tested against a version
+                  its consumers may install. Ranges read: ^x.y.z, x.y.z, and space-separated >=, >, <=, < comparators.
   audit           `npm audit` reports no advisory at or above --level (default high), except the dated entries of
                   dependency-policy/audit-exceptions.json; lower severities are printed, not blocking. Needs the network.
 
@@ -380,6 +383,93 @@ def check_audit(root: Path, audit: dict, level: str, today: dt.date) -> tuple[li
 
 
 # --------------------------------------------------------------------------------------------------------------------
+# peers
+
+PUBLISHED_SET = Path("scripts") / "published-packages.json"
+_VERSION_RE = re.compile(r"^(\d+)\.(\d+)\.(\d+)$")
+_COMPARATOR_RE = re.compile(r"^(>=|<=|>|<|=)?(\d+)(?:\.(\d+))?(?:\.(\d+))?$")
+
+
+def _version(text: str) -> tuple[int, int, int] | None:
+    match = _VERSION_RE.match(text)
+    return (int(match[1]), int(match[2]), int(match[3])) if match else None
+
+
+def _comparators(range_spec: str) -> list[tuple[str, tuple[int, int, int]]] | None:
+    """The forms the repo uses: `^x.y.z`, an exact `x.y.z`, and space-separated `>=`/`<`/`>`/`<=` comparators.
+
+    Anything else (`||`, `~`, x-ranges, hyphen ranges, prereleases) is None, which the rule reports.
+    """
+    spec = range_spec.strip()
+    if spec.startswith("^"):
+        base = _version(spec[1:])
+        if base is None:
+            return None
+        major, minor, patch = base
+        upper = (major + 1, 0, 0) if major else (0, minor + 1, 0) if minor else (0, 0, patch + 1)
+        return [(">=", base), ("<", upper)]
+    if _version(spec):
+        return [("=", _version(spec))]  # type: ignore[list-item]
+    comparators = []
+    for part in spec.split():
+        match = _COMPARATOR_RE.match(part)
+        if not match or not match[1]:
+            return None
+        if match[4] is None and match[1] in {">", "<="}:
+            return None  # `>1.2` means `>=1.3.0` and `<=1.2` means `<1.3.0`: partial bounds are read only for >= and <
+        comparators.append((match[1], (int(match[2]), int(match[3] or 0), int(match[4] or 0))))
+    return comparators or None
+
+
+def satisfies(version: str, range_spec: str) -> bool | None:
+    """Whether the exact `version` is in `range_spec`; None when either is a form this check does not read."""
+    parsed, comparators = _version(version), _comparators(range_spec)
+    if parsed is None or comparators is None:
+        return None
+    tests = {
+        "=": lambda a, b: a == b,
+        ">=": lambda a, b: a >= b,
+        ">": lambda a, b: a > b,
+        "<=": lambda a, b: a <= b,
+        "<": lambda a, b: a < b,
+    }
+    return all(tests[op](parsed, bound) for op, bound in comparators)
+
+
+def published_folders(root: Path) -> list[str]:
+    path = root / PUBLISHED_SET
+    return [entry["folder"] for entry in _load_json(path)] if path.is_file() else []
+
+
+def check_peers(root: Path) -> list[Violation]:
+    """A third-party peer of a published package has an exact devDependency inside its range (#643), so the package
+    is built and tested against one version the peer range accepts."""
+    violations: list[Violation] = []
+    internal = workspace_names(root)
+    for folder in published_folders(root):
+        path = root / folder / "package.json"
+        manifest = _load_json(path)
+        where = _rel(root, path)
+        dev = manifest.get("devDependencies", {})
+        for name, peer in manifest.get("peerDependencies", {}).items():
+            if name in internal:
+                continue
+            if name not in dev:
+                violations.append(Violation("peers", where, f'peerDependencies.{name} "{peer}" has no devDependency to build and test with'))
+                continue
+            inside = satisfies(dev[name], peer)
+            if inside is None:
+                violations.append(
+                    Violation("peers", where, f'peerDependencies.{name} "{peer}": a range form the policy cannot check against devDependencies.{name} "{dev[name]}"')
+                )
+            elif not inside:
+                violations.append(
+                    Violation("peers", where, f'peerDependencies.{name} "{peer}": devDependencies.{name} "{dev[name]}" is outside the range')
+                )
+    return violations
+
+
+# --------------------------------------------------------------------------------------------------------------------
 # CLI
 
 RULES: dict[str, Callable[[Path], list[Violation]]] = {
@@ -388,6 +478,7 @@ RULES: dict[str, Callable[[Path], list[Violation]]] = {
     "lockfile": check_lockfile,
     "workflows": check_workflows,
     "actions": check_actions,
+    "peers": check_peers,
 }
 
 

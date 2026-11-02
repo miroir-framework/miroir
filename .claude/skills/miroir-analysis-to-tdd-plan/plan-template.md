@@ -61,11 +61,11 @@ This plan does **not** <excluded work> (owned by #<NNN> / deferred).
 
 | Purpose | Command |
 |---|---|
-| <suite> (MiroirTest unit) | `npm run testMiroir -w miroir-core -- --suites <suite> --mode unit` |
+| <suite> (MiroirTest unit) | `npm run testMiroir -w @miroir-framework/core -- --suites <suite> --mode unit` |
 | <suite> (MiroirTest integ) | `npm run testMiroir -w miroir-standalone-app -- --suites <suite> --mode integration` |
 | <internal> vitest | `RUN_TEST=<name> npm run testByFile -w <pkg> -- <name>` |
 | Deployment validation | `npm run testByFile -w miroir-<app|example|fixture>-<name> -- tests/modelValidation.unit.test.ts` |
-| Schema rebuild (if schemas touched) | `npm run build -w miroir-app-miroir && npm run devBuild -w miroir-core` |
+| Schema rebuild (if schemas touched) | `npm run build -w miroir-app-miroir && npm run devBuild -w @miroir-framework/core` |
 | Type check | `npx tsc --noEmit --skipLibCheck -p packages/<pkg>/tsconfig.json` |
 | Scoped nonreg (per slice) | `npm run nonreg:filesystem -- --runner shared --scope smoke,<scopes>` |
 | Full nonreg (every 2 or 3 slices, final slice) | `npm run nonreg:filesystem -- --runner shared` |

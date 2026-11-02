@@ -24,9 +24,9 @@ import {
   type MountedComponent,
 } from "../../../../src/miroir-fwk/4-tests/componentTests/componentTestEnvironment";
 import { extractValuesFromRenderedElements } from "../../../../src/miroir-fwk/4-tests/componentTests/componentTestTools";
-import { ThemedSelectWithPortal } from "miroir-react";
-import { MiroirThemeProvider } from "miroir-react";
-import { PortalContainerProvider } from "miroir-react";
+import { ThemedSelectWithPortal } from "@miroir-framework/react";
+import { MiroirThemeProvider } from "@miroir-framework/react";
+import { PortalContainerProvider } from "@miroir-framework/react";
 
 const attachedElements: HTMLElement[] = [];
 const mounted: MountedComponent[] = [];

@@ -12,7 +12,7 @@ import express, { type Router } from "express";
 import { afterEach, describe, expect, it } from "vitest";
 import { AbstractAgent } from "@ag-ui/client";
 import { EventType, type RunAgentInput } from "@ag-ui/core";
-import { clearSecrets, registerSecrets, type ProcessCapabilities } from "miroir-core";
+import { clearSecrets, registerSecrets, type ProcessCapabilities } from "@miroir-framework/core";
 
 import { createCopilotKitRouter } from "../../../../src/routes/copilotKitRoute.js";
 import {
@@ -600,12 +600,13 @@ if (runThis) {
   });
 
   describe("cursorSdk.275.phase4 — no static @cursor/sdk import on persistence entrypoints", () => {
-    it("server.ts and ipcServerSetup.ts do not statically import @cursor/sdk", () => {
+    it("server.ts, the server library and ipcServerSetup.ts do not statically import @cursor/sdk", () => {
       const serverSrc = readRepoFile("packages/miroir-server/src/server.ts");
+      const serverLibrarySrc = readRepoFile("packages/miroir-server-library/src/createMiroirServerApp.ts"); // #636
       const electronSrc = readRepoFile(
         "packages/miroir-standalone-app-electron/src/ipcServerSetup.ts",
       );
-      for (const src of [serverSrc, electronSrc]) {
+      for (const src of [serverSrc, serverLibrarySrc, electronSrc]) {
         expect(src).not.toContain('import "@cursor/sdk"');
         expect(src).not.toContain('from "@cursor/sdk"');
       }

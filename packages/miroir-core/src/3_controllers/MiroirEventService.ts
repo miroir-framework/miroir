@@ -141,6 +141,7 @@ export interface MiroirEventServiceInterface {
 // ################################################################################################
 /**
  * Service for capturing and managing logs associated with specific action executions
+ * @public
  */
 export class MiroirEventService implements MiroirEventServiceInterface {
   // written only here, so the sorted cache below stays valid

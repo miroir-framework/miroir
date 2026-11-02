@@ -10,7 +10,7 @@ import {
   ADMIN_APPLICATION_UUID,
   effectiveShowModelTools,
   isDesignerToolsVisible,
-} from "miroir-core";
+} from "@miroir-framework/core";
 
 const RUN_TEST = process.env.RUN_TEST;
 const runThis =

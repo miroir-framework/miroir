@@ -13,14 +13,14 @@ runs:
     - name: Build server-side store packages
       shell: bash
       run: |
-        npm run build -w miroir-store-filesystem &
-        npm run build -w miroir-store-mongodb &
-        npm run build -w miroir-store-postgres &
+        npm run build -w @miroir-framework/store-filesystem &
+        npm run build -w @miroir-framework/store-mongodb &
+        npm run build -w @miroir-framework/store-postgres &
         wait
 
     - name: Build miroir-cli
       shell: bash
-      run: npm run build -w miroir-cli
+      run: npm run build -w @miroir-framework/cli
 
     - name: Produce server release binary
       shell: bash

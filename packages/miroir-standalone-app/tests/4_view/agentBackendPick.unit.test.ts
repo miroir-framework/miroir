@@ -6,17 +6,17 @@ import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { beforeEach, describe, expect, it } from "vitest";
-import { FAIL_CLOSED_PROCESS_CAPABILITIES, type ProcessCapabilities } from "miroir-core";
+import { FAIL_CLOSED_PROCESS_CAPABILITIES, type ProcessCapabilities } from "@miroir-framework/core";
 
 import {
   agentBackendLabel,
   agentRequestProperties,
-} from "miroir-react";
+} from "@miroir-framework/react";
 import {
   MIROIR_AI_BACKEND_STORAGE_KEY,
   readMiroirAiBackend,
   writeMiroirAiBackend,
-} from "miroir-react";
+} from "@miroir-framework/react";
 
 const RUN_TEST = process.env.RUN_TEST;
 const runThis = !RUN_TEST || RUN_TEST.startsWith("agentBackendPick");
