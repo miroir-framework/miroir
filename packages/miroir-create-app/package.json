@@ -1,0 +1,39 @@
+{
+  "name": "@miroir-framework/create-app",
+  "version": "0.5.0-rc.1",
+  "publishConfig": {
+    "access": "public"
+  },
+  "description": "Creates a Miroir project: a Vite client and a Node server on the filesystem store (npm create @miroir-framework/app <dir>)",
+  "type": "module",
+  "bin": {
+    "create-app": "./bin/create-app.js"
+  },
+  "exports": {
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "bin",
+    "template"
+  ],
+  "scripts": {
+    "test": "cross-env NODE_ENV=test vitest run",
+    "testByFile": "cross-env NODE_ENV=test vitest run"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/miroir-framework/miroir.git",
+    "directory": "packages/miroir-create-app"
+  },
+  "author": "Miroir Framework <miroir-framework@protonmail.com>",
+  "license": "MIT",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=22"
+  },
+  "keywords": [
+    "miroir",
+    "create",
+    "template"
+  ]
+}

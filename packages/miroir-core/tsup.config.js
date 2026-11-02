@@ -1,5 +1,5 @@
 import { execSync } from 'node:child_process'
-import { copyFileSync, writeFileSync } from 'node:fs'
+import { copyFileSync, cpSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { defineConfig } from 'tsup'
 
 // #652: core carries the meta-model packages (private workspace packages) as two subpath entries,
@@ -22,6 +22,18 @@ const metaModelSubpathsPlugin = {
   },
 }
 
+// #658 (D10): the asset folders a project outside the repository seeds its filesystem stores from, laid out as an
+// environment's `packagesDirectory` expects them (<package>/assets/<section>). Listed in seed-sections.json.
+function copySeed() {
+  const { '//': _comment, ...sections } = JSON.parse(readFileSync('seed-sections.json', 'utf-8'))
+  rmSync('dist/seed', { recursive: true, force: true })
+  for (const [pkg, names] of Object.entries(sections)) {
+    for (const name of names) {
+      cpSync(`../${pkg}/assets/${name}`, `dist/seed/${pkg}/assets/${name}`, { recursive: true })
+    }
+  }
+}
+
 const metaModelBuild = {
   entry: {
     // from the packages' sources, not their dist/ (whose stale .map files broke the tree-shaking pass)
@@ -42,6 +54,7 @@ const metaModelBuild = {
     // the packages' hand-written declaration stubs (every export `any`), as the subpaths' types
     copyFileSync('../miroir-app-miroir/index.d.ts', 'dist/meta-model.d.ts')
     copyFileSync('../miroir-app-admin/index.d.ts', 'dist/admin.d.ts')
+    copySeed()
   },
 }
 

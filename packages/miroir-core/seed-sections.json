@@ -1,0 +1,5 @@
+{
+  "//": "#658: the asset folders core ships under dist/seed/<package>/assets/, from which a project outside the repository seeds its filesystem stores (environments: packagesDirectory = node_modules/@miroir-framework/core/dist/seed). Copied by tsup.config.js; checked by scripts/tests/test_package_manifests.py.",
+  "miroir-app-miroir": ["miroir_model", "miroir_data"],
+  "miroir-app-admin": ["admin_model", "admin_data"]
+}
