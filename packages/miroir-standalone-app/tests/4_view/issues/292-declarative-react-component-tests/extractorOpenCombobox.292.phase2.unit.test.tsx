@@ -16,7 +16,7 @@ import React, { useState } from "react";
 import { afterEach, beforeAll, describe, expect, it } from "vitest";
 import { waitFor } from "@testing-library/dom";
 
-import { defaultStoredMiroirTheme } from "miroir-app-miroir";
+import { defaultStoredMiroirTheme } from "@miroir-framework/core/meta-model";
 
 import {
   componentTestFireEvent,

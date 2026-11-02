@@ -27,8 +27,8 @@ import { join } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-import * as deploymentMiroir from "miroir-app-miroir";
-import { defaultMiroirMetaModel } from "miroir-app-miroir";
+import * as deploymentMiroir from "@miroir-framework/core/meta-model";
+import { defaultMiroirMetaModel } from "@miroir-framework/core/meta-model";
 
 import { miroirTestDefinitionHasReactComponentTest } from "../../../../src/miroir-fwk/4-tests/miroirTestSuiteUiExecution";
 import { resolveRepoRoot } from "../../../helpers/integrationTestProfiles.js";

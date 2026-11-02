@@ -1,6 +1,6 @@
 import type { Menu, MiroirMenuItem } from "@miroir-framework/core";
-import { adminSelfApplication } from "miroir-app-admin";
-import { selfApplicationMiroir } from "miroir-app-miroir";
+import { adminSelfApplication } from "@miroir-framework/core/admin";
+import { selfApplicationMiroir } from "@miroir-framework/core/meta-model";
 
 const APPLICATION_DETAILS_REPORT_UUID = "cd24df86-204c-4a72-9ac0-87f2b92f25fe";
 

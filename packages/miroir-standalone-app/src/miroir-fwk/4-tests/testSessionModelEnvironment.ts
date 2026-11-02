@@ -5,7 +5,7 @@ import {
   type Uuid,
 } from "@miroir-framework/core";
 
-import { defaultMiroirMetaModel } from "miroir-app-miroir";
+import { defaultMiroirMetaModel } from "@miroir-framework/core/meta-model";
 /**
  * Builds a MiroirModelEnvironment for test sessions using getMiroirFundamentalSchemaForDeployment explicitly
  * (Feature 198 Phase 1 — avoids opaque defaultMiroirModelEnvironment import at call sites).

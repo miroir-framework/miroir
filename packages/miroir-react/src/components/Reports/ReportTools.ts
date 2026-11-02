@@ -20,7 +20,7 @@ import { cleanLevel } from "../../viewConstants.js";
 import { editedQueryParameterValueKey } from "./ReportSectionEntityInstance.js";
 import { isMultistepStepEnvelope, unwrapMultistepListChild, type MultistepListChild } from "./MultistepReportHost.js";
 
-import { entityQueryVersion } from "miroir-app-miroir";
+import { entityQueryVersion } from "@miroir-framework/core/meta-model";
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportTools");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",

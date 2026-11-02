@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
 
-import { deployment_Miroir } from "miroir-app-admin";
+import { deployment_Miroir } from "@miroir-framework/core/admin";
 import { getMiroirFundamentalSchemaForDeployment, miroirFundamentalMlSchema } from "@miroir-framework/core";
 
 import { buildTestSessionModelEnvironment } from "./testSessionModelEnvironment.js";
 
-import { defaultMiroirMetaModel } from "miroir-app-miroir";
+import { defaultMiroirMetaModel } from "@miroir-framework/core/meta-model";
 describe("buildTestSessionModelEnvironment (Feature 198 D5)", () => {
   it("uses getMiroirFundamentalSchemaForDeployment explicitly for the given deployment and model", () => {
     const env = buildTestSessionModelEnvironment(deployment_Miroir.uuid, defaultMiroirMetaModel);

@@ -17,7 +17,7 @@ import {
   applyEntityOnlyRename,
   applyMlSchemaColumnChanges
 } from "@miroir-framework/core";
-import { entityEntity } from "miroir-app-miroir";
+import { entityEntity } from "@miroir-framework/core/meta-model";
 import { EntityUuidIndexedSequelizeModel, fromMiroirPresentModelToSequelizeEntityDefinition } from "../utils";
 import { SqlDbStoreSection } from "./SqlDbStoreSection";
 import { MixedSqlDbInstanceStoreSection, SqlDbInstanceStoreSectionMixin } from "./sqlDbInstanceStoreSectionMixin";

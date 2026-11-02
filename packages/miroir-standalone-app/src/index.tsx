@@ -91,7 +91,7 @@ import {
   miroirUserCredential_AliceDev,
   miroirUserCredential_CarolDev,
   miroirUserCredential_DaveDev
-} from "miroir-app-admin";
+} from "@miroir-framework/core/admin";
 
 const specificLoggerOptions: SpecificLoggerOptionsMap = {
   // "5_miroir-core_DomainController": {level:defaultLevels.INFO, template:"[{{time}}] {{level}} ({{name}}) BBBBB-"},

@@ -18,9 +18,12 @@ runs:
         npm run build -w @miroir-framework/store-postgres &
         wait
 
-    - name: Build miroir-cli
+    # #652: the CLI imports @miroir-framework/server/startup
+    - name: Build the server library, then miroir-cli
       shell: bash
-      run: npm run build -w @miroir-framework/cli
+      run: |
+        npm run build -w @miroir-framework/server
+        npm run build -w @miroir-framework/cli
 
     - name: Produce server release binary
       shell: bash

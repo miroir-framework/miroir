@@ -46,8 +46,8 @@ import {
   entitySelfApplicationVersion,
   miroirTest_ui_mlElementEditor_enum,
   selfApplicationMiroir,
-} from "miroir-app-miroir";
-import { adminSelfApplication, defaultAdminViewParams, entityViewParams } from "miroir-app-admin";
+} from "@miroir-framework/core/meta-model";
+import { adminSelfApplication, defaultAdminViewParams, entityViewParams } from "@miroir-framework/core/admin";
 
 vi.mock("../../../../src/miroir-fwk/4-tests/componentTests/index", async (importOriginal) => {
   const actual = await importOriginal<typeof import("../../../../src/miroir-fwk/4-tests/componentTests/index")>();

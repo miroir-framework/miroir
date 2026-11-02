@@ -1,6 +1,6 @@
 import { LoggerInterface, MiroirLoggerFactory } from "@miroir-framework/core";
 import type { MiroirThemeFull } from "@miroir-framework/core";
-import { defaultStoredMiroirTheme } from "miroir-app-miroir";
+import { defaultStoredMiroirTheme } from "@miroir-framework/core/meta-model";
 import React, { ReactNode, createContext, useCallback, useContext, useMemo, useState } from "react";
 import {
   MiroirThemeOption,

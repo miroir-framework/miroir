@@ -20,7 +20,7 @@ import { miroirFileSystemStoreSectionStartup } from "@miroir-framework/store-fil
 import { miroirIndexedDbStoreSectionStartup } from "@miroir-framework/store-indexeddb";
 import { miroirMongoDbStoreSectionStartup } from "@miroir-framework/store-mongodb";
 import { miroirPostgresStoreSectionStartup } from "@miroir-framework/store-postgres";
-import { entityReport } from "miroir-app-miroir";
+import { entityReport } from "@miroir-framework/core/meta-model";
 import { env } from "process";
 
 import { createReportTestRunner } from "../../src/miroir-fwk/4-tests/componentTests/runReportTest.js";

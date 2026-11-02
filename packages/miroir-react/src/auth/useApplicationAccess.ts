@@ -15,7 +15,7 @@ import {
 } from "@miroir-framework/core";
 import { selectInstanceArrayForDeploymentSectionEntity, useSelector, type ReduxStateWithUndoRedo } from "../miroir-localcache-imports.js";
 import { useMiroirContextService } from "../contexts/MiroirContextReactProvider.js";
-import { adminSelfApplication } from "miroir-app-admin";
+import { adminSelfApplication } from "@miroir-framework/core/admin";
 
 import { useAuthSession } from "./authSession.js";
 

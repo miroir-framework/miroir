@@ -30,7 +30,7 @@ import {
   ReportSectionListDisplay,
   TableComponentTypeSchema,
 } from "../src/index.js";
-import { defaultStoredMiroirTheme } from "miroir-app-miroir";
+import { defaultStoredMiroirTheme } from "@miroir-framework/core/meta-model";
 
 /** Given to the list section through `GridComponentsProvider` (#612). */
 const EntityInstanceGridStub = (props: Record<string, unknown>) => {

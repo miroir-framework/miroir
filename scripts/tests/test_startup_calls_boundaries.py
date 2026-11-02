@@ -19,7 +19,9 @@ CALL_SOURCES = [
     "packages/miroir-localcache-redux/src/startMiroirPlatform.ts",
     "packages/miroir-react/src/startMiroirClient.ts",
 ]
-CALL_PACKAGES = ["packages/miroir-localcache-redux", "packages/miroir-react"]
+# #652: the server library carries startMiroirNode (`@miroir-framework/server/startup`)
+CALL_SOURCES.append("packages/miroir-server-library/src/startup.ts")
+CALL_PACKAGES = ["packages/miroir-localcache-redux", "packages/miroir-react", "packages/miroir-server-library"]
 
 # static `from "..."` and dynamic `import("...")` specifiers
 SPECIFIER = re.compile(r"""(?:\bfrom\s+|\bimport\s*\(\s*)["']([^"']+)["']""")

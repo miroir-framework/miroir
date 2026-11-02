@@ -3,7 +3,7 @@ import "@testing-library/jest-dom";
 import React from "react";
 import { beforeEach, describe, expect, it } from "vitest";
 
-import { entityEntity, selfApplicationMiroir } from "miroir-app-miroir";
+import { entityEntity, selfApplicationMiroir } from "@miroir-framework/core/meta-model";
 
 import { TransformerEditor } from "@miroir-framework/react";
 import { ReportPageContextProvider } from "@miroir-framework/react";

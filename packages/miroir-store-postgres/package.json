@@ -37,7 +37,6 @@
     "generate-ts-types": "tsx ./scripts/postgres-generate-ts-types.ts"
   },
   "dependencies": {
-    "miroir-app-miroir": "*",
     "@miroir-framework/core": "*",
     "pg": "8.23.1",
     "pg-hstore": "2.3.4",

@@ -58,8 +58,8 @@ import {
   user3,
   defaultLibraryAppModel,
 } from "miroir-example-library";
-import { defaultMiroirMetaModel } from "miroir-app-miroir";
-import { adminSelfApplication, deployment_Admin, deployment_Miroir } from "miroir-app-admin";
+import { defaultMiroirMetaModel } from "@miroir-framework/core/meta-model";
+import { adminSelfApplication, deployment_Admin, deployment_Miroir } from "@miroir-framework/core/admin";
 
 import { MiroirMcpServer, setupMcpServer } from "../../src/mcpServer.js";
 import { EndpointToolRegistry } from "../../src/tools/EndpointToolRegistry.js";

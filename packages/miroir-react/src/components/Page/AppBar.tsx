@@ -25,7 +25,7 @@ import { applyPerformanceDisplayGate } from "../../tools/performanceDisplayGate.
 import { applyLocalCacheMonitorGate } from "../../tools/localCacheMonitorGate.js";
 import { ThemedIcon } from "../Themes/IconComponents.js";
 import { SidebarWidth } from "./SidebarSection.js";
-import { entitySelfApplication, reportMiroirRunners, reportVersioning } from 'miroir-app-miroir';
+import { entitySelfApplication, reportMiroirRunners, reportVersioning } from '@miroir-framework/core/meta-model';
 import { resolveAppBarHomeNavigationUrl, resolveAppBarReportLinkApplication } from "./appBarReportNavigation.js";
 import {
   readMiroirAiBackend,

@@ -29,7 +29,7 @@ import {
   adminSelfApplication,
   deployment_Admin,
   entityDeployment,
-} from "miroir-app-admin";
+} from "@miroir-framework/core/admin";
 
 import { useReduxDeploymentsStateQuerySelector } from "../../ReduxHooks.js";
 
@@ -39,7 +39,7 @@ import { packageName } from "../../constants.js";
 import { ReportUrlParamKeys } from "../../reportUrlParams.js";
 import { cleanLevel } from "../../viewConstants.js";
 
-import { entityRunner, entityTransformerDefinition } from "miroir-app-miroir";
+import { entityRunner, entityTransformerDefinition } from "@miroir-framework/core/meta-model";
 // Entity constants
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "ReportHooks");
