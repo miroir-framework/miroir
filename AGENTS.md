@@ -150,7 +150,7 @@ Core concept Entities, in `packages/miroir-app-miroir/assets/miroir_model/16dbfe
 
 **Deployments** store each Application as **model** (`{prefix}_model/`: Entities, Queries, Reports, …) and **data** (`{prefix}_data/`: instances) under `packages/<package>/assets/`, whatever the store backend. The package prefix gives the application's role: `miroir-app-` (framework), `miroir-example-`, `miroir-fixture-` (tests only). `miroir-core/src/assets/` holds only leftover fixtures. Layout, store backends and the Library example: `docs/reference/data-architecture-deployments.md`.
 
-State management: Redux + Redux-Sagas for async flows, domain state isolated from UI state, query selectors exposed as React hooks.
+State management: Redux + Redux-Sagas, or Zustand (startup option `localCache`); domain state isolated from UI state; selectors as React hooks.
 
 ## Key files
 
