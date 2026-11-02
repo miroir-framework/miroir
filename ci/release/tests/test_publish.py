@@ -154,3 +154,14 @@ def test_verify_refuses_a_tarball_changed_after_packing(release) -> None:
     (root / handoff["publish"][0]["tarball"]).write_bytes(b"tampered")
     with pytest.raises(ReleaseError, match="changed since it was packed"):
         release_version.verify_handoff(root / "release-handoff.json")
+
+
+def test_a_tarball_changed_after_packing_stops_the_run_before_any_publish(registry, release) -> None:
+    url, store = registry
+    root, handoff = release
+    # the last layer's tarball repacked: the first layer must not go out either
+    store_entry = handoff["publish"][1]
+    rebuilt = pack_into(root.parent / "other", 1, STORE, content="2", dependencies={CORE: VERSION})
+    (root / store_entry["tarball"]).write_bytes((root.parent / "other" / rebuilt.path).read_bytes())
+    assert publish(root / "release-handoff.json", "--registry", url, "--yes") == 1
+    assert store.publish_order == []

@@ -481,3 +481,16 @@ def test_a_folder_bundled_into_a_published_package_is_built_before_it(repo: Path
     plan = build_plan(repo, bump="patch", since="1.2.2", force=[], disable=[], candidate_provider=candidates([]))
     assert plan.layers == (("core",), ("inner",), ("lib",))
     assert (plan.distributeable, plan.bundle_only) == (("lib",), ("core", "inner"))
+
+
+def test_record_pushes_neither_ref_when_the_remote_refuses_one(release_worktree, tmp_path: Path) -> None:
+    from release_lib.lerna_ops import commit_and_tag, push_release
+
+    worktree, remote = release_worktree
+    hook = remote / "hooks" / "update"
+    hook.write_text('#!/bin/sh\ncase "$1" in refs/tags/*) exit 1;; esac\nexit 0\n', encoding="utf-8")
+    hook.chmod(0o755)
+    commit_and_tag(worktree, release_plan_for("1.3.0"), commit=True, tag=True)
+    with pytest.raises(Exception):
+        push_release(worktree, "1.3.0")
+    assert "release/1.3.0" not in git(remote, "branch", "--list")

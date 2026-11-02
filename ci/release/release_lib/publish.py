@@ -41,6 +41,10 @@ def tarball_manifest(tarball: Path) -> dict[str, Any]:
         return json.loads(member.read().decode("utf-8"))
 
 
+def sha256_of(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
 def tarball_integrity(tarball: Path) -> str:
     """The `dist.integrity` the registry records for this exact file."""
     return "sha512-" + base64.b64encode(hashlib.sha512(tarball.read_bytes()).digest()).decode("ascii")
@@ -179,13 +183,19 @@ def publish_handoff(
     ]
     if not entries:
         raise ReleaseError("the handoff lists nothing to publish (no `publish` entries)")
-    outcomes: list[PublishOutcome] = []
-    for entry in sorted(entries, key=lambda e: (e.layer, e.package)):
+    # every tarball is the one the release packed and checked, before the first publish
+    hashes = {info["path"]: info["sha256"] for info in handoff.get("tarballs", [])}
+    for entry in entries:
         tarball = root / entry.tarball
         if not tarball.is_file():
             raise ReleaseError(f"{entry.package}: tarball missing: {tarball}")
+        if sha256_of(tarball) != hashes.get(entry.tarball):
+            raise ReleaseError(f"{entry.package}: {tarball.name} changed since the release packed it; nothing was published")
         if tarball_manifest(tarball).get("version") != version:
             raise ReleaseError(f"{entry.package}: {tarball.name} is not version {version}")
+    outcomes: list[PublishOutcome] = []
+    for entry in sorted(entries, key=lambda e: (e.layer, e.package)):
+        tarball = root / entry.tarball
         existing = published_integrity(entry.package, version, registry=registry)
         if existing is not None:
             if existing != tarball_integrity(tarball):

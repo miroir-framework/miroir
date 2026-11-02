@@ -337,4 +337,5 @@ def push_release(repo_root: Path, version: str, *, remote: str = "origin") -> No
     if existing.stdout.strip():
         raise ReleaseError(f"{remote} already has {branch} or tag {version}:\n{existing.stdout}")
     log_step(f"pushing tag {version} and branch {branch} to {remote}")
-    run(["git", "push", remote, f"HEAD:refs/heads/{branch}", f"refs/tags/{version}"], cwd=repo_root)
+    # atomic: a remote that refuses one ref gets neither, so a retry starts from a clean remote
+    run(["git", "push", "--atomic", remote, f"HEAD:refs/heads/{branch}", f"refs/tags/{version}"], cwd=repo_root)
