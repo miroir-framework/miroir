@@ -2,10 +2,8 @@
  * React hooks for Zustand-based local cache.
  * Provides useSelector and LocalCacheProvider for React integration.
  */
-import { createContext, useContext, createElement, ReactNode, useRef, useMemo } from "react";
-import { StoreApi, useStore } from "zustand";
-import { useStoreWithEqualityFn } from "zustand/traditional";
-import { shallow } from "zustand/shallow";
+import { createContext, useContext, createElement, ReactNode, useRef } from "react";
+import { useStore, type StoreApi } from "zustand";
 
 import { LocalCacheStore } from "../4_services/localCache/UndoRedoStore.js";
 import { ZustandStateWithUndoRedo } from "../4_services/localCache/localCacheZustandInterface.js";
@@ -43,12 +41,23 @@ export function useSelector<T>(
     );
   }
 
-  // Use the store with optional equality function
-  if (equalityFn) {
-    return useStoreWithEqualityFn(store, selector, equalityFn);
-  }
-  
-  return useStore(store, selector);
+  // #656: one hook call whatever the arguments (rules of hooks), and react-redux's semantics:
+  // - the selection is computed once per (state, selector): zustand's `useStore` calls the selector on every snapshot
+  //   read, so a selector that builds a new object or array would give React a new snapshot on each read and loop
+  //   ("Maximum update depth exceeded"), where react-redux memoizes it;
+  // - with `equalityFn`, the selection keeps its previous value while equal (zustand's `useShallow` pattern), without
+  //   `zustand/traditional` and its `use-sync-external-store` dependency.
+  const memo = useRef<{ state: ZustandStateWithUndoRedo; selector: typeof selector; value: T } | undefined>(undefined);
+  return useStore(store, (state) => {
+    const previous = memo.current;
+    if (previous && previous.state === state && previous.selector === selector) {
+      return previous.value;
+    }
+    const next = selector(state);
+    const value = equalityFn && previous && equalityFn(previous.value, next) ? previous.value : next;
+    memo.current = { state, selector, value };
+    return value;
+  });
 }
 
 // ###############################################################################

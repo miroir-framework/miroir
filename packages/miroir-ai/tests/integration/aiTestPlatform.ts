@@ -12,13 +12,14 @@ import {
   PersistenceStoreControllerManager,
   RestClientStub,
   defaultMiroirModelEnvironment,
+  localCacheKindFromEnvironment,
+  type LocalCacheModule,
   type ApplicationDeploymentMap,
   type DomainControllerInterface,
   type LoggerFactoryInterface,
   type LoggerOptions,
 } from "@miroir-framework/core";
 import { bootEnvironment, openTestEnvironment, selectedTestEnvironment } from "@miroir-framework/env";
-import { RestPersistenceClientAndRestClient, setupMiroirDomainController } from "miroir-localcache-redux/node";
 import { miroirFileSystemStoreSectionStartup } from "@miroir-framework/store-filesystem";
 
 export type AiTestPlatform = {
@@ -31,6 +32,23 @@ const loggerOptions: LoggerOptions = {
   defaultTemplate: "[{{time}}] {{level}} ({{name}}) -",
   specificLoggerOptions: {},
 };
+
+// #656: the local cache MIROIR_TEST_LOCAL_CACHE names (run-nonreg.py --local-cache), redux when unset. From the
+// caches' Node entries (test code): this package cannot depend on @miroir-framework/server, which depends on it.
+async function testLocalCacheModule(): Promise<LocalCacheModule> {
+  return localCacheKindFromEnvironment(process.env) === "zustand"
+    ? (await import("miroir-localcache-zustand/node")).localCacheModule
+    : (await import("miroir-localcache-redux/node")).localCacheModule;
+}
+
+/** #656: a platform built on another local cache than the one asked for would test the wrong one. */
+function expectLocalCache(domainController: DomainControllerInterface): void {
+  const expected = localCacheKindFromEnvironment(process.env);
+  const actual = domainController.currentLocalCacheInfo().implementation;
+  if (actual !== expected) {
+    throw new Error(`test platform started on the ${actual} local cache, MIROIR_TEST_LOCAL_CACHE asks for ${expected}`);
+  }
+}
 
 export async function startAiTestPlatform(expect: unknown): Promise<AiTestPlatform> {
   const environment = openTestEnvironment(selectedTestEnvironment(process.env) ?? "test-filesystem", { reseed: true });
@@ -53,8 +71,9 @@ export async function startAiTestPlatform(expect: unknown): Promise<AiTestPlatfo
   );
   const miroirContext = new MiroirContext(miroirActivityTracker, miroirEventService, miroirConfig);
 
+  const { setupMiroirDomainController, RestPersistenceClientAndRestClient } = await testLocalCacheModule();
   const client = new RestClientStub(miroirConfig.client.rootApiUrl);
-  const domainController = await setupMiroirDomainController(miroirContext, {
+  const domainController = setupMiroirDomainController(miroirContext, {
     persistenceStoreAccessMode: "remote",
     localPersistenceStoreControllerManager: new PersistenceStoreControllerManager(
       ConfigurationService.configurationService.adminStoreFactoryRegister,
@@ -67,12 +86,14 @@ export async function startAiTestPlatform(expect: unknown): Promise<AiTestPlatfo
     ConfigurationService.configurationService.StoreSectionFactoryRegister,
     miroirConfig.client.filesystemDeploymentRootDirectory,
   );
-  const domainControllerForServer = await setupMiroirDomainController(miroirContext, {
+  const domainControllerForServer = setupMiroirDomainController(miroirContext, {
     persistenceStoreAccessMode: "local",
     localPersistenceStoreControllerManager: persistenceStoreControllerManagerForServer,
   });
   client.setServerDomainController(domainControllerForServer);
   client.setPersistenceStoreControllerManager(persistenceStoreControllerManagerForServer);
+  expectLocalCache(domainController);
+  expectLocalCache(domainControllerForServer);
 
   const { applicationDeploymentMap } = await bootEnvironment(domainController, environment.resolved, process.env);
   for (const application of Object.keys(applicationDeploymentMap).sort()) {

@@ -16,16 +16,25 @@ import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 CALL_SOURCES = [
-    "packages/miroir-localcache-redux/src/startMiroirPlatform.ts",
+    # #656: the startup moved to core, which imports no local cache either
+    "packages/miroir-core/src/5_setup/startMiroirPlatform.ts",
     "packages/miroir-react/src/startMiroirClient.ts",
 ]
 # #652: the server library carries startMiroirNode (`@miroir-framework/server/startup`)
 CALL_SOURCES.append("packages/miroir-server-library/src/startup.ts")
-CALL_PACKAGES = ["packages/miroir-localcache-redux", "packages/miroir-react", "packages/miroir-server-library"]
+CALL_PACKAGES = ["packages/miroir-core", "packages/miroir-localcache-redux", "packages/miroir-react", "packages/miroir-server-library"]
 
 # static `from "..."` and dynamic `import("...")` specifiers
 SPECIFIER = re.compile(r"""(?:\bfrom\s+|\bimport\s*\(\s*)["']([^"']+)["']""")
 STORE = re.compile(r"^(@miroir-framework/store-|miroir-store-)")
+LOCAL_CACHE = re.compile(r"^miroir-localcache-")
+
+
+def test_the_core_startup_imports_no_local_cache():
+    """#656: core builds domain controllers through the `LocalCacheModule` it is given."""
+    text = (REPO_ROOT / "packages/miroir-core/src/5_setup/startMiroirPlatform.ts").read_text(encoding="utf-8")
+    assert "LocalCacheModule" in text
+    assert [s for s in SPECIFIER.findall(text) if LOCAL_CACHE.match(s)] == []
 
 
 @pytest.mark.parametrize("source", CALL_SOURCES)

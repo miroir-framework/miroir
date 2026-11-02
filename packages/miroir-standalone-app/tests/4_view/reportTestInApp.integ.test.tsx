@@ -34,7 +34,7 @@ import {
   type EntityInstance,
 } from "@miroir-framework/core";
 import { loadApplicationMiroirTestCatalog } from "@miroir-framework/core/model-validation-fs";
-import { LocalCache, LocalCacheProvider, MiroirContextReactProvider } from "@miroir-framework/react";
+import { LocalCacheProvider, MiroirContextReactProvider } from "@miroir-framework/react";
 import { miroirFileSystemStoreSectionStartup } from "@miroir-framework/store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "@miroir-framework/store-indexeddb";
 import { miroirMongoDbStoreSectionStartup } from "@miroir-framework/store-mongodb";
@@ -54,6 +54,8 @@ import { MiroirTestDisplay } from "../../src/miroir-fwk/4_view/components/Report
 import { ReportPageContextProvider } from "@miroir-framework/react";
 import { miroirAppStartup } from "../../src/startup.js";
 
+// #656: the local cache MIROIR_TEST_LOCAL_CACHE names (tests/setup.ts), redux by default
+import { testLocalCache } from "../../src/miroir-fwk/4-tests/testLocalCache";
 vi.mock("../../src/miroir-fwk/4-tests/useSelectedApplicationMiroirTestSuiteRegistries.js", async () => {
   const { loadApplicationRunnerUuidIndexFromFolders } = await import(
     "@miroir-framework/core/model-validation-fs"
@@ -117,7 +119,7 @@ function appDomainController(): DomainControllerInterface {
 
 /** The app's store, empty: the step-delay slider then shows 0 ms. */
 function appLocalCacheStore() {
-  return new LocalCache().getInnerStore();
+  return testLocalCache().newLocalCache().localCache.getInnerStore();
 }
 
 const miroirActivityTracker = new MiroirActivityTracker();
@@ -156,7 +158,7 @@ describe("Report MiroirTests from the Miroir Tests page (#330)", () => {
     expect(catalogEntry?.uiRunnerKind).toBe("reportTest");
 
     render(
-      <LocalCacheProvider store={appLocalCacheStore()}>
+      <LocalCacheProvider binding={testLocalCache().localCacheBinding} store={appLocalCacheStore()}>
         <MiroirContextReactProvider miroirContext={miroirContext} domainController={appDomainController()}>
           <ReportPageContextProvider>
             <MiroirTestDisplay

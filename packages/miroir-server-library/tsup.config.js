@@ -1,6 +1,3 @@
-import { readFileSync, writeFileSync } from 'node:fs';
-import { createRequire } from 'node:module';
-import { dirname, join } from 'node:path';
 import { defineConfig } from 'tsup';
 
 // #636 (G3): the server library takes a running domain controller and never opens a store itself, so
@@ -59,47 +56,39 @@ export const forbiddenImportsPlugin = {
 const probeOutDir = process.env.MIROIR_SERVER_LIBRARY_PROBE;
 const probeExternal = probeOutDir && process.env.MIROIR_SERVER_LIBRARY_PROBE_EXTERNAL === '1' ? ['@miroir-framework/store-filesystem'] : [];
 
-// #652 (D4): `dist/startup.d.ts`. tsup's declaration bundler resolves packages without their `exports` map, so it
-// leaves `miroir-localcache-redux/node` (a private package, absent for a consumer) as an import. The local cache's own
-// bundled declarations (`dist/node.d.ts`) import only declared dependencies: they are copied, exporting only what
-// `src/startup.ts` re-exports.
-export function writeStartupDeclarations(outDir = 'dist') {
-  const require = createRequire(import.meta.url);
-  const localCache = dirname(require.resolve('miroir-localcache-redux/package.json'));
-  const declarations = readFileSync(join(localCache, 'dist/node.d.ts'), 'utf8');
-  const startup = readFileSync('src/startup.ts', 'utf8');
-  const exported = startup.match(/export\s*\{([^}]*)\}\s*from\s*["']miroir-localcache-redux\/node["']/);
-  if (!exported) throw new Error('src/startup.ts: expected `export { … } from "miroir-localcache-redux/node"`');
-  const names = exported[1].split(',').map((name) => name.trim()).filter(Boolean);
-  const values = names.filter((name) => !name.startsWith('type '));
-  const types = names.filter((name) => name.startsWith('type ')).map((name) => name.slice('type '.length).trim());
-  const body = declarations
-    .split('\n')
-    // the re-exports go (replaced below), and the side-effect imports of packages the server library does not declare
-    .filter((line) => !/^export (type )?\{/.test(line) && !/^import ['"][^'"]+['"];$/.test(line))
-    .join('\n')
-    .trimEnd();
-  writeFileSync(
-    join(outDir, 'startup.d.ts'),
-    `${body}\n\nexport { ${values.join(', ')} };\nexport type { ${types.join(', ')} };\n`,
-  );
-}
-
 export default defineConfig({
-  // #652: `startup` bundles the local cache's Node entry (a private workspace package), `index` the HTTP app
-  entry: probeOutDir ? { probe: 'tests/support/forbiddenImportProbe.ts' } : { index: 'src/index.ts', startup: 'src/startup.ts' },
+  // #652: `index` is the HTTP app, `startup` the startup call. #656: `startup-redux` and `startup-zustand` each bundle
+  // one local cache's Node entry (a private workspace package); `startup` imports them through the package name.
+  entry: probeOutDir
+    ? { probe: 'tests/support/forbiddenImportProbe.ts' }
+    : {
+        index: 'src/index.ts',
+        startup: 'src/startup.ts',
+        'startup-redux': 'src/startup-redux.ts',
+        'startup-zustand': 'src/startup-zustand.ts',
+      },
   outDir: probeOutDir ?? 'dist',
   splitting: false,
   format: ['esm'],
   target: 'node20',
   bundle: true,
-  dts: probeOutDir ? false : { entry: { index: 'src/index.ts' } },
-  onSuccess: probeOutDir ? undefined : async () => writeStartupDeclarations(),
+  // #656: the startup entries declare core types only, so tsup builds their declarations
+  dts: probeOutDir
+    ? false
+    : {
+        entry: {
+          index: 'src/index.ts',
+          startup: 'src/startup.ts',
+          'startup-redux': 'src/startup-redux.ts',
+          'startup-zustand': 'src/startup-zustand.ts',
+        },
+      },
   sourcemap: true,
   treeshake: true,
   minify: false,
   metafile: true,
-  external: ['@miroir-framework/core', '@miroir-framework/mcp', ...probeExternal],
-  noExternal: ['miroir-localcache-redux'],
+  // #656: `@miroir-framework/server/startup/*`, this package's own entries, stay imports
+  external: ['@miroir-framework/core', '@miroir-framework/mcp', /^@miroir-framework\/server\//, ...probeExternal],
+  noExternal: ['miroir-localcache-redux', 'miroir-localcache-zustand'],
   esbuildPlugins: [forbiddenImportsPlugin],
 });

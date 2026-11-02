@@ -731,6 +731,17 @@ export { MiroirContextInterface } from "./0_interfaces/3_controllers/MiroirConte
 // } from "./0_interfaces/3_controllers/TransformerEventInterface.js";
 export { LocalCacheInterface } from "./0_interfaces/4-services/LocalCacheInterface.js";
 export {
+  localCacheKinds,
+  type LocalCacheKind,
+  type LocalCacheModule,
+  type LocalCachePersistenceStoreAccessParams,
+} from "./0_interfaces/4-services/LocalCacheModule.js";
+export {
+  LOCAL_CACHE_ENV,
+  localCacheKindFromEnvironment,
+  localCacheKindFromValue,
+} from "./1_core/localCache/localCacheKind.js";
+export {
   defaultLevels,
   LoggerFactoryAsyncInterface,
   LoggerFactoryInterface,
@@ -1702,6 +1713,14 @@ export {
   defaultExternalServiceClient,
   defaultExternalServiceEnvironment,
 } from "./5_setup/externalServiceEnvironment.js";
+export {
+  startMiroirNodeWith,
+  startMiroirPlatformWith,
+  type MiroirEmulatedServer,
+  type MiroirNodeOptions,
+  type MiroirPlatform,
+  type MiroirPlatformOptions,
+} from "./5_setup/startMiroirPlatform.js";
 export {
   boundPathsForOperation,
   listConvertibleGetOperations,

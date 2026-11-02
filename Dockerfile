@@ -55,6 +55,7 @@ RUN npm run build -w @miroir-framework/env
 
 # 3. Local-cache and store packages (can run in parallel, all only depend on miroir-core)
 RUN npm run build -w miroir-localcache-redux \
+ && npm run build -w miroir-localcache-zustand \
  && npm run build -w @miroir-framework/store-bundled \
  && npm run build -w @miroir-framework/store-filesystem \
  && npm run build -w @miroir-framework/store-indexeddb \

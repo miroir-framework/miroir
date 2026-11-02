@@ -27,7 +27,7 @@ import {
 } from "@miroir-framework/core";
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "../constants.js";
-import { selectDomainStateFromlocalCacheEntityZone } from "./LocalCacheSlice.js";
+import { selectDomainStateFromlocalCacheEntityZone } from "./localCacheKeys.js";
 import { ReduxStateWithUndoRedo } from "./localCacheReduxSliceInterface.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "LocalCacheSliceSelectors");

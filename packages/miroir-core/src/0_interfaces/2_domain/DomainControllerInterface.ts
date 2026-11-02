@@ -22,6 +22,7 @@ import {
 } from "../1_core/preprocessor-generated/miroirFundamentalType";
 import type { MiroirModelEnvironment } from "../1_core/Transformer";
 import { LocalCacheInterface } from "../4-services/LocalCacheInterface";
+import type { LocalCacheKind } from "../4-services/LocalCacheModule";
 import { PersistenceStoreLocalOrRemoteInterface } from "../4-services/PersistenceInterface";
 import { Action2ReturnType, Action2VoidReturnType } from "./DomainElement";
 
@@ -45,6 +46,8 @@ export type InstanceActionListener = (
 // #############################################################################################
 export interface LocalCacheInfo {
   localCacheSize: number;
+  /** #656: the local cache implementation the domain controller runs on. */
+  implementation: LocalCacheKind;
 }
 
 // #############################################################################################

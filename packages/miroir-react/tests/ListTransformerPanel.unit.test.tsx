@@ -6,7 +6,6 @@ import "@testing-library/jest-dom";
 import React from "react";
 import { Formik } from "formik";
 import { MemoryRouter } from "react-router-dom";
-import { configureStore } from "@reduxjs/toolkit";
 import { describe, expect, it, vi } from "vitest";
 
 import {
@@ -17,12 +16,11 @@ import {
   reportBookList,
   selfApplicationLibrary,
 } from "miroir-example-library";
-import { getReduxDeploymentsStateIndex } from "@miroir-framework/core";
+import { getReduxDeploymentsStateIndex, localCacheKindFromEnvironment } from "@miroir-framework/core";
 import {
   LocalCacheProvider,
-  reduxStoreWithUndoRedoGetInitialState,
   type LocalCacheSliceState,
-  type ReduxStateWithUndoRedo,
+  loadLocalCache,
   GridComponentsProvider,
   LIST_TRANSFORMER_PAGE_SIZE,
   MiroirContextReactTestProvider,
@@ -31,6 +29,9 @@ import {
   TableComponentTypeSchema,
 } from "../src/index.js";
 import { defaultStoredMiroirTheme } from "@miroir-framework/core/meta-model";
+
+// #656 (D10): the local cache MIROIR_TEST_LOCAL_CACHE names (run-nonreg.py --local-cache), redux when unset
+const testLocalCache = await loadLocalCache(localCacheKindFromEnvironment(process.env));
 
 /** Given to the list section through `GridComponentsProvider` (#612). */
 const EntityInstanceGridStub = (props: Record<string, unknown>) => {
@@ -321,21 +322,7 @@ function createLibraryBookListStore() {
     },
   };
 
-  const mockState: ReduxStateWithUndoRedo =
-    reduxStoreWithUndoRedoGetInitialState(() => mockLocalCacheSliceState);
-  mockState.presentModelSnapshot = mockLocalCacheSliceState;
-
-  return configureStore({
-    reducer: {
-      presentModelSnapshot: (state = mockState.presentModelSnapshot) => state,
-      currentTransaction: (state = mockState.currentTransaction) => state,
-      previousModelSnapshot: (state = mockState.previousModelSnapshot) => state,
-      pastModelPatches: (state = mockState.pastModelPatches) => state,
-      futureModelPatches: (state = mockState.futureModelPatches) => state,
-      queriesResultsCache: (state = mockState.queriesResultsCache) => state,
-    },
-    preloadedState: mockState,
-  });
+  return testLocalCache.createLocalCacheStateStore(mockLocalCacheSliceState).store;
 }
 
 const reportSectionPath = ["definition", "section", "definition", 0] as const;
@@ -361,7 +348,7 @@ function renderBookListSection(pageParams: Record<string, unknown> = {}) {
   return render(
     <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <MiroirThemeProvider currentThemeOptions={testThemeOptions}>
-        <LocalCacheProvider store={store}>
+        <LocalCacheProvider binding={testLocalCache.localCacheBinding} store={store}>
           <Formik initialValues={formikInitialValues} onSubmit={vi.fn()}>
             <GridComponentsProvider components={{ EntityInstanceGrid: EntityInstanceGridStub }}>
               <ReportSectionListDisplay

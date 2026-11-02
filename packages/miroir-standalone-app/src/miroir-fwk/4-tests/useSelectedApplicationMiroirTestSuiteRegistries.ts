@@ -1,5 +1,4 @@
-import { useContext, useMemo, useSyncExternalStore } from "react";
-import { ReactReduxContext } from "react-redux";
+import { useMemo, useSyncExternalStore } from "react";
 
 import {
   buildRunnerUuidIndex,
@@ -17,6 +16,7 @@ import {
 import {
   selectModelForDeploymentFromReduxState,
   useMiroirContextService,
+  useOptionalLocalCacheStore,
 } from "@miroir-framework/react";
 
 const emptySubscribe = () => () => {};
@@ -31,8 +31,8 @@ function useSelectedApplicationCurrentModel(): MetaModel | undefined {
   const applicationDeploymentMap: ApplicationDeploymentMap =
     context.applicationDeploymentMap ?? {};
 
-  const reduxContext = useContext(ReactReduxContext);
-  const store = reduxContext?.store;
+  // #656: the store of whichever local cache the page started on; none under RTL without a provider
+  const store = useOptionalLocalCacheStore();
   const localSelectModelForDeployment = useMemo(selectModelForDeploymentFromReduxState, []);
   const foreignKeyParams: LocalCacheExtractor = useMemo(
     () => ({
@@ -68,7 +68,7 @@ export function useSelectedApplicationMiroirTests(): MiroirTestDefinition[] {
   );
 }
 
-/** Selected-app Runners when Redux is mounted; empty index when the store is absent (RTL). */
+/** Selected-app Runners when a local cache is provided; empty index when the store is absent (RTL). */
 export function useSelectedApplicationRunnerUuidIndex(): Record<string, Runner> {
   const currentModel = useSelectedApplicationCurrentModel();
   return useMemo(

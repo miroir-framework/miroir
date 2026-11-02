@@ -10,15 +10,24 @@ export default defineConfig({
   bundle: true,
   splitting: true,
   clean: true,
-  // #652 (D3): the local cache (a private workspace package) is bundled, its declarations inlined. `local-cache`: its
-  // implementation without the UI, for Node test setups (`@miroir-framework/react/local-cache`).
-  noExternal: ["miroir-localcache-redux"],
+  // #652 (D3): the local caches (private workspace packages) are bundled, their declarations inlined. #656 (D9):
+  // `local-cache-redux` and `local-cache-zustand` (`@miroir-framework/react/local-cache/redux`, `/zustand`) hold one
+  // each, with its React binding; the root holds the selectors only, from the redux package's selector modules.
+  noExternal: ["miroir-localcache-redux", "miroir-localcache-zustand"],
   dts: {
-    entry: { index: "src/index.ts", "local-cache": "src/miroir-localcache-imports.ts" },
+    entry: {
+      index: "src/index.ts",
+      "local-cache-redux": "src/local-cache-redux.ts",
+      "local-cache-zustand": "src/local-cache-zustand.ts",
+    },
     // tsup's own `resolve` goes through node_modules, where the local cache's relative re-exports count as external
     // library imports: a path to its declarations inlines them, the relative ones included.
     compilerOptions: {
-      paths: { "miroir-localcache-redux": [fileURLToPath(new URL("../miroir-localcache-redux/dist/index.d.ts", import.meta.url))] },
+      paths: {
+        "miroir-localcache-redux/node": [fileURLToPath(new URL("../miroir-localcache-redux/dist/node.d.ts", import.meta.url))],
+        "miroir-localcache-redux/selectors": [fileURLToPath(new URL("../miroir-localcache-redux/dist/selectors.d.ts", import.meta.url))],
+        "miroir-localcache-zustand": [fileURLToPath(new URL("../miroir-localcache-zustand/dist/index.d.ts", import.meta.url))],
+      },
     },
   },
   sourcemap: true,

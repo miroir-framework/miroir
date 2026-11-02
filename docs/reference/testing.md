@@ -49,11 +49,11 @@ npm run nonreg:zustand                 # filesystem store, zustand LocalCache
 
 Steps that run on the store of the run say `"requires": "storage"` in the manifest. When the run selects one of them and the store needs a database (PostgreSQL for `sql`, MongoDB for `mongodb`), the runner first opens a connection to the address in the `connections` of the test environment, or to the one the tests use instead: `MIROIR_TEST_POSTGRES_HOST` replaces the PostgreSQL host, `MIROIR_TEST_MONGODB_CONNECTION_STRING` the MongoDB url. If that fails, it prints the address and exits with code 2 before running any step. `--dry-run` and unit-tier runs skip the check. `summary.json` and `summary.md` record `storage` (`null` for a profile that is not `emulatedServer-*`).
 
-#### Local cache (#446)
+#### Local cache (#446, #656)
 
-`--local-cache redux|zustand` chooses the LocalCache implementation of the DomainControllers the tests build (`setupMiroirTest`, `IntegrationTestSession`). The runner passes it to every step in `MIROIR_TEST_LOCAL_CACHE`; without the option it sets `redux`, so a value left in the shell does not leak into the run. Outside nonreg, an unset `MIROIR_TEST_LOCAL_CACHE` also means redux, and an unknown value makes the test setup throw. `summary.json` and `summary.md` record `local_cache`. The shortcut `nonreg:zustand` runs the default tier on the filesystem store with zustand.
+`--local-cache redux|zustand` chooses the LocalCache implementation of the whole stack under test: the DomainControllers the tests build (`setupMiroirTest`, `IntegrationTestSession`), the Node test platforms (CLI, MCP, AI, server library, `@miroir-framework/env`), `startMiroirClient` in react's tests, and the stores and binding the UI tests render on (`src/miroir-fwk/4-tests/testLocalCache.ts`, selected by `tests/setup.ts`). The runner passes it to every step in `MIROIR_TEST_LOCAL_CACHE`; without the option it sets `redux`, so a value left in the shell does not leak into the run. Outside nonreg, an unset `MIROIR_TEST_LOCAL_CACHE` also means redux, and an unknown value makes the test setup throw. `summary.json` and `summary.md` record `local_cache`. The shortcut `nonreg:zustand` runs the default tier on the filesystem store with zustand.
 
-The React components still read the cache through `@miroir-framework/react`, which imports `miroir-localcache-redux` at build time, so the option changes what the DomainController-level tests exercise, not the UI layer.
+The React components read the cache through the binding `LocalCacheProvider` is given, so they run on the chosen implementation. A UI test that renders on a state of its own builds its store with `createLocalCacheStateStore` of the chosen implementation (`testLocalCache().createLocalCacheStateStore`, or `loadLocalCache(kind)` in react's tests). In the app, the in-app Miroir Tests use the cache the app started on.
 
 #### Parallel jobs (#477)
 

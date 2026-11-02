@@ -13,6 +13,7 @@ Analysis and plan: code-helpers/features/652-BUILD-bundle-meta-model-and-local-c
 
 from __future__ import annotations
 
+import json
 import os
 import re
 from pathlib import Path
@@ -53,7 +54,8 @@ def test_configs_aliasing_core_to_its_sources_alias_the_meta_model_subpaths():
     assert missing == [], "alias @miroir-framework/core/meta-model and /admin before @miroir-framework/core"
 
 
-LOCAL_CACHE_IMPORT = re.compile(r"""(?:from|import|require\()\s*['"]miroir-localcache-redux(/node)?['"]""")
+# #656: either local cache
+LOCAL_CACHE_IMPORT = re.compile(r"""(?:from|import|require\()\s*['"]miroir-localcache-(?:redux|zustand)(/node)?['"]""")
 SERVER_STARTUP_IMPORT = re.compile(r"""(?:from|import\()\s*['"]@miroir-framework/server/startup['"]""")
 CODE_SUFFIXES = {".ts", ".tsx", ".mts", ".js", ".mjs"}
 
@@ -75,6 +77,9 @@ def test_node_sources_take_the_startup_call_from_the_server_library():
         for path in code_files("*/src/**/*")
         if not path.is_relative_to(ROOT / "packages/miroir-server-library")
         and not path.is_relative_to(ROOT / "packages/miroir-localcache-redux")
+        and not path.is_relative_to(ROOT / "packages/miroir-localcache-zustand")
+        # #656 (D9): react's `./local-cache/<cache>` entries bundle a local cache, binding included
+        and not path.is_relative_to(ROOT / "packages/miroir-react")
         and any(match.group(1) for match in LOCAL_CACHE_IMPORT.finditer(path.read_text(encoding="utf-8")))
     ]
     assert found == [], "import startMiroirNode from @miroir-framework/server/startup"
@@ -82,7 +87,12 @@ def test_node_sources_take_the_startup_call_from_the_server_library():
 
 REACT_IMPORT = re.compile(r"""(?:from|import\()\s*['"]@miroir-framework/react(/[^'"]*)?['"]""")
 # the packages that bundle the local cache (#652 D3, D4), and the local cache itself
-LOCAL_CACHE_OWNERS = ("packages/miroir-react", "packages/miroir-server-library", "packages/miroir-localcache-redux")
+LOCAL_CACHE_OWNERS = (
+    "packages/miroir-react",
+    "packages/miroir-server-library",
+    "packages/miroir-localcache-redux",
+    "packages/miroir-localcache-zustand",
+)
 
 
 def test_only_its_owners_import_the_local_cache_in_sources():
@@ -133,3 +143,18 @@ def test_every_job_building_electron_builds_the_server_library_first():
             if "-w @miroir-framework/server" not in text[job_start : match.start()]:
                 missing.append(f"{workflow.relative_to(ROOT)}:{text.count(chr(10), 0, match.start()) + 1}")
     assert missing == [], "build @miroir-framework/server before the Electron main process"
+
+
+@pytest.mark.parametrize(
+    "policy, forbidden",
+    [
+        ("packages/miroir-standalone-app/bundle-policy.json", {"redux-saga", "@redux-saga/*", "react-redux", "zustand"}),
+        ("packages/miroir-standalone-app-electron/bundle-policy.json", {"redux-saga", "@redux-saga/*", "zustand"}),
+    ],
+)
+def test_no_local_cache_loads_with_the_page(policy, forbidden):
+    """#656 (D7): one local cache per page or process. Neither is on the page: the startup call loads the chosen one
+    from its lazy entry (`@miroir-framework/react/local-cache/<cache>`, `@miroir-framework/server/startup/<cache>`);
+    check_bundle_policy.py fails the build when a forbidden package becomes eager."""
+    data = json.loads((ROOT / policy).read_text(encoding="utf-8"))
+    assert forbidden <= set(data["forbiddenEager"])

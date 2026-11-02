@@ -46,6 +46,7 @@ import {
   MiroirShellHostProvider,
   ReportSectionRenderersProvider,
   startMiroirClient,
+  loadLocalCache,
   type MiroirEmulatedServer,
 } from "@miroir-framework/react";
 import { miroirIndexedDbStoreSectionStartup } from "@miroir-framework/store-indexeddb";
@@ -71,6 +72,7 @@ import {
   shouldStartSelfTest,
 } from "./miroir-fwk/4-tests/selfTest/selfTestResult.js";
 import { miroirAppStartup } from "./startup.js";
+import { selectTestLocalCache } from "./miroir-fwk/4-tests/testLocalCache.js";
 
 import { resolveWebLogConfigWithMeta, VITE_MIROIR_LOG_CONFIG_VALUES } from "./config/logConfigPresets.js";
 import { packageName } from "./constants.js";
@@ -260,6 +262,7 @@ async function startWebApp(root: Root) {
     emulatedServer,
     miroirContext,
     processCapabilities,
+    localCacheBinding,
   } = await startMiroirClient(miroirConfigToUse, {
     stores: [miroirIndexedDbStoreSectionStartup],
     activityTracker: miroirActivityTracker,
@@ -267,6 +270,8 @@ async function startWebApp(root: Root) {
     restClient: electronRestClient,
     configureEmulatedServer: configureEmulatedServerTestDirectories,
   });
+  // #656: the in-app Miroir Tests build their local caches on the one the app started on
+  selectTestLocalCache(await loadLocalCache(localCacheBinding.kind));
   const rawDomainControllerForServer = emulatedServer?.domainController;
 
   loadTimingMark("platformReady");
@@ -288,7 +293,7 @@ async function startWebApp(root: Root) {
     <StrictMode>
       <ThemeProvider theme={theme}>
         <StyledEngineProvider injectFirst>
-          <LocalCacheProvider store={domainControllerForClient.getLocalCache().getInnerStore()}>
+          <LocalCacheProvider binding={localCacheBinding} store={domainControllerForClient.getLocalCache().getInnerStore()}>
             <MiroirContextReactProvider
               miroirContext={miroirContext}
               domainController={domainControllerForClient}

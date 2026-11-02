@@ -128,17 +128,14 @@ export type {
   StoredRunnerRendererProps,
 } from "./contexts/ReportSectionRenderersContext.js";
 
+// #656 (D9): what the UI takes from the local cache, whatever the implementation; the implementation classes are in
+// `@miroir-framework/react/local-cache/redux` and `/local-cache/zustand`
 export {
-  LocalCache,
-  RestPersistenceClientAndRestClient,
   LocalCacheProvider,
   LocalCacheSliceState,
   LocalCacheSliceStateZone,
-  PersistenceReduxSaga,
   ReduxStateChanges,
   ReduxStateWithUndoRedo,
-  ReduxStoreWithUndoRedo,
-  reduxStoreWithUndoRedoGetInitialState,
   applyDomainStateQuerySelectorForCleanedResult,
   applyDomainStateQueryTemplateSelector,
   applyReduxDeploymentsStateQuerySelector,
@@ -152,12 +149,27 @@ export {
   selectModelForDeploymentFromReduxState,
   getMemoizedReduxDeploymentsStateSelectorForTemplateMap,
   getMemoizedReduxDeploymentsStateSelectorMap,
-  setupMiroirDomainController,
+  shallowEqual,
   useSelector,
 } from "./miroir-localcache-imports.js";
-// #639: the startup call of a React client
-export { startMiroirClient, type MiroirClientPlatform } from "./startMiroirClient.js";
-export type { MiroirEmulatedServer, MiroirPlatform, MiroirPlatformOptions } from "./miroir-localcache-imports.js";
+export {
+  useLocalCacheBinding,
+  useOptionalLocalCacheStore,
+  type LocalCacheBinding,
+  type LocalCacheStoreHandle,
+  type LocalCacheStateStore,
+  type LocalCacheProviderProps,
+  type LocalCacheSelectorHook,
+} from "./localCacheBinding.js";
+// #639: the startup call of a React client; #656: on the local cache its `localCache` option names
+export {
+  loadLocalCache,
+  startMiroirClient,
+  type LoadedLocalCache,
+  type MiroirClientOptions,
+  type MiroirClientPlatform,
+} from "./startMiroirClient.js";
+export type { LocalCacheKind, MiroirEmulatedServer, MiroirPlatform, MiroirPlatformOptions } from "@miroir-framework/core";
 
 export { ThemedComponentProps } from "./components/helpers/BaseTypes.js";
 

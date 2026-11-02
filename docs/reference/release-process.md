@@ -425,8 +425,9 @@ rewrite the document.
 The packages of the published set carry their published names in the repo: `@miroir-framework/core`, `/react`,
 `/server` (folder `packages/miroir-server-library`), `/store-postgres`, `/store-filesystem`, `/store-indexeddb`,
 `/store-mongodb`, `/store-bundled`, `/env`, `/mcp`, `/cli`. Folders keep their `miroir-*` names, so a script that
-lists folders selects a workspace with `-w packages/<folder>`. `miroir-app-miroir`, `miroir-app-admin` and
-`miroir-localcache-redux` stay private: #652 bundles them into published packages (§10e). Each published
+lists folders selects a workspace with `-w packages/<folder>`. `miroir-app-miroir`, `miroir-app-admin`,
+`miroir-localcache-redux` and `miroir-localcache-zustand` stay private: #652 and #656 bundle them into published
+packages (§10e). Each published
 package declares `publishConfig.access: "public"`; `private` flags are lifted by the publish item.
 
 `scripts/rename_packages.py` did the rename from `scripts/package-rename-map.json`, leaving what is not an npm name
@@ -434,20 +435,33 @@ package declares `publishConfig.access: "public"`; `private` flags are lifted by
 started before the rename runs `python scripts/rename_packages.py --apply` after merging, then
 `npm install`; `python scripts/rename_packages.py --check` (pre-push gate, pr-checks) reports any old name left.
 
-## 10e. Packages bundled into another (#652)
+## 10e. Packages bundled into another (#652, #656)
 
-Three workspace packages are never published: their owners bundle them, so a registry install needs none of them and a
+Four workspace packages are never published: their owners bundle them, so a registry install needs none of them and a
 process or a page holds one copy.
 
 | Private package | Bundled into | Import it as |
 |---|---|---|
 | `miroir-app-miroir` (meta-model) | `@miroir-framework/core` | `@miroir-framework/core/meta-model` |
 | `miroir-app-admin` | `@miroir-framework/core` | `@miroir-framework/core/admin` |
-| `miroir-localcache-redux` | `@miroir-framework/react` | `@miroir-framework/react`, or `@miroir-framework/react/local-cache` (no UI, for Node test setups) |
-| `miroir-localcache-redux/node` | `@miroir-framework/server` | `@miroir-framework/server/startup` (`startMiroirNode`, `startMiroirPlatform`) |
+| `miroir-localcache-redux` | `@miroir-framework/react` | `@miroir-framework/react/local-cache/redux`; its selectors (`/selectors`) are in react's root |
+| `miroir-localcache-zustand` | `@miroir-framework/react` | `@miroir-framework/react/local-cache/zustand` |
+| `miroir-localcache-redux/node`, `miroir-localcache-zustand/node` | `@miroir-framework/server` | `@miroir-framework/server/startup` (`startMiroirNode`, `startMiroirPlatform`, `loadLocalCacheModule`), which loads `/startup/redux` or `/startup/zustand` |
+
+**The local cache is a startup choice (#656).** `startMiroirClient(config, { localCache: "zustand" })` (react) and
+`startMiroirNode` / `startMiroirPlatform` (server) take `localCache: "redux" | "zustand"`, `redux` when absent. Each
+loads its implementation from its own entry with a dynamic import, so a page or a process holds one: a bundler makes
+each a lazy chunk, and the bundle guards forbid `redux-saga`, `zustand` and `react-redux` in the page's eager files.
+The client platform carries `localCacheBinding`, which `LocalCacheProvider({ binding, store })` puts in context;
+react's `useSelector` reads the store through it, so no UI source imports a local cache
+(`scripts/tests/test_local_cache_choice.py`). Core holds the contract: `LocalCacheKind`, `LocalCacheModule` (what each
+cache's `node.ts` exports as `localCacheModule`), and `startMiroirPlatformWith(module, …)`. The selectors are one set,
+pure functions of the `StateWithUndoRedo` state both caches share. Tests choose with `MIROIR_TEST_LOCAL_CACHE`
+(`run-nonreg.py --local-cache`, [testing](testing.md)). Analysis:
+`code-helpers/features/656-FEATURE-zustand-runtime-local-cache/`.
 
 Only core and the two `miroir-app-*` packages import the meta-model packages by their private names; only react, the
-server library and the local cache import the local cache (test files of other packages may, when they load none of
+server library and the local caches import a local cache (test files of other packages may, when they load none of
 its owners). Core's build bundles the two meta-model packages into `dist/meta-model.js` and `dist/admin.js` and
 rewrites its own imports of them to the subpaths. The vite configs that alias core to its sources alias the two
 subpaths to the private packages, before the root alias. The server library builds in its own stage, before the CLI.
