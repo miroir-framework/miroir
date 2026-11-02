@@ -50,14 +50,14 @@ import {
   adminSelfApplication,
   deployment_Admin,
   deployment_Miroir,
-} from "miroir-app-admin";
+} from "@miroir-framework/core/admin";
 import {
   deployment_Library_DO_NO_USE,
   endpointDocument,
   getDefaultLibraryModelEnvironmentDEFUNCT,
   selfApplicationLibrary,
 } from "miroir-example-library";
-import { defaultMiroirMetaModel } from "miroir-app-miroir";
+import { defaultMiroirMetaModel } from "@miroir-framework/core/meta-model";
 
 import { loglevelnext } from "../../../../src/loglevelnextImporter.js";
 import { selfApplicationDeploymentConfigurationsTO_REMOVE } from "../../../../src/miroir-fwk/4-tests/tests-utils.js";

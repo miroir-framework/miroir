@@ -9,7 +9,7 @@ import {
   entityAgentRunMeasurement as entityAgentRunMeasurementJson,
   entityBundleSizeMeasurement as entityBundleSizeMeasurementJson,
   entityPageLoadMeasurement as entityPageLoadMeasurementJson,
-} from "miroir-app-miroir";
+} from "@miroir-framework/core/meta-model";
 import { defaultLibraryAppModel } from "miroir-example-library";
 
 const entityBundleSizeMeasurement = entityBundleSizeMeasurementJson as Entity;

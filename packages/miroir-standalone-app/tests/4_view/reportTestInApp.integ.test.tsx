@@ -39,7 +39,7 @@ import { miroirFileSystemStoreSectionStartup } from "@miroir-framework/store-fil
 import { miroirIndexedDbStoreSectionStartup } from "@miroir-framework/store-indexeddb";
 import { miroirMongoDbStoreSectionStartup } from "@miroir-framework/store-mongodb";
 import { miroirPostgresStoreSectionStartup } from "@miroir-framework/store-postgres";
-import { entityReport, selfApplicationMiroir } from "miroir-app-miroir";
+import { entityReport, selfApplicationMiroir } from "@miroir-framework/core/meta-model";
 
 import { resetIntegTestRunCoordinatorForTests } from "../../src/miroir-fwk/4-tests/integTestRunCoordinator.js";
 import {

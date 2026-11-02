@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { resolveRunnerDefinitionApplication } from "@miroir-framework/react";
-import { runnerFreezeApplicationVersion } from "miroir-app-miroir";
+import { runnerFreezeApplicationVersion } from "@miroir-framework/core/meta-model";
 
 const MIROIR_APP = "360fcf1f-f0d4-4f8a-9262-07886e70fa15";
 const LIBRARY_APP = "5af03c98-fe5e-490b-b08f-e1230971c57f";

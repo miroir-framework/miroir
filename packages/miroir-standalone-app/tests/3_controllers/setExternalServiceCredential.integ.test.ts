@@ -35,7 +35,7 @@ import {
   miroirUser_Carol,
   miroirUserCredential_AliceDev,
   miroirUserCredential_CarolDev,
-} from "miroir-app-admin";
+} from "@miroir-framework/core/admin";
 import { deployment_GitHub_DO_NOT_USE, githubServiceEndpoint } from "miroir-example-github";
 
 import {

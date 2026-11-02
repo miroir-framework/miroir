@@ -14,7 +14,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 
 import type { DomainControllerInterface } from "@miroir-framework/core";
 import { environmentClientConfig, environmentRealServerClientConfig } from "@miroir-framework/env";
-import { deployment_Admin, deployment_Miroir } from "miroir-app-admin";
+import { deployment_Admin, deployment_Miroir } from "@miroir-framework/core/admin";
 
 import { runSelfTest } from "../../../src/miroir-fwk/4-tests/selfTest/runSelfTest.js";
 import type { MiroirSelfTestResult } from "../../../src/miroir-fwk/4-tests/selfTest/selfTestResult.js";

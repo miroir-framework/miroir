@@ -42,10 +42,10 @@ import {
 import { FieldValidationContext } from "./FieldValidationContext.js";
 import { BlockViewModeContext } from "../BlockEditor/BlockViewMode.js";
 
-import { entitySelfApplication, selfApplicationMiroir } from "miroir-app-miroir";
+import { entitySelfApplication, selfApplicationMiroir } from "@miroir-framework/core/meta-model";
 import { shallowEqual } from "react-redux";
 import { selectInstanceArrayForDeploymentSectionEntity, useSelector, type ReduxStateWithUndoRedo } from "../../miroir-localcache-imports.js";
-import { adminSelfApplication } from "miroir-app-admin";
+import { adminSelfApplication } from "@miroir-framework/core/admin";
 import { useApplicationAccess } from "../../auth/useApplicationAccess.js";
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "MlElementEditorHooks");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);

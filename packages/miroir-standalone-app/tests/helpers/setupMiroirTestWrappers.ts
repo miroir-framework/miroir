@@ -13,9 +13,9 @@ import {
   type PersistenceStoreControllerManager,
   type StoreUnitConfiguration,
 } from "@miroir-framework/core";
-import { deployment_Miroir } from "miroir-app-admin";
+import { deployment_Miroir } from "@miroir-framework/core/admin";
 import { selfApplicationLibrary } from "miroir-example-library";
-import { selfApplicationMiroir } from "miroir-app-miroir";
+import { selfApplicationMiroir } from "@miroir-framework/core/meta-model";
 
 import { runAppStackIntegrationBootstrap } from "./appStackIntegrationBootstrap.js";
 import { packageName } from "../../src/constants.js";

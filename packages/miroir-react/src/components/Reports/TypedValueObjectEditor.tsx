@@ -52,7 +52,7 @@ import { EditorRootHistory } from "../ValueObjectEditor/EditorRootHistory.js";
 import type { TransformerTypeBadge, TransformerTypeRestriction } from "../ValueObjectEditor/MlElementEditorInterface.js";
 import type { ValueObjectEditMode } from "./ReportSectionEntityInstance.js";
 
-import { selfApplicationMiroir } from "miroir-app-miroir";
+import { selfApplicationMiroir } from "@miroir-framework/core/meta-model";
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "TypedValueObjectEditor");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",

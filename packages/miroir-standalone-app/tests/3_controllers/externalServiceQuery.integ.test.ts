@@ -47,7 +47,7 @@ import { miroirFileSystemStoreSectionStartup } from "@miroir-framework/store-fil
 import { miroirIndexedDbStoreSectionStartup } from "@miroir-framework/store-indexeddb";
 import { miroirMongoDbStoreSectionStartup } from "@miroir-framework/store-mongodb";
 import { miroirPostgresStoreSectionStartup } from "@miroir-framework/store-postgres";
-import { deployment_Admin, deployment_Miroir } from "miroir-app-admin";
+import { deployment_Admin, deployment_Miroir } from "@miroir-framework/core/admin";
 import {
   deployment_Library_DO_NO_USE,
   endpointDocument,
@@ -59,7 +59,7 @@ import {
   selfApplicationMiroir,
   spotifyOpenApiExcerptGetPlaylist,
   spotifyServiceEndpointSyncInput,
-} from "miroir-app-miroir";
+} from "@miroir-framework/core/meta-model";
 
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import { selfApplicationDeploymentConfigurationsTO_REMOVE } from "../../src/miroir-fwk/4-tests/tests-utils.js";

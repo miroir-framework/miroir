@@ -248,3 +248,72 @@ def test_a_bin_entry_keeps_only_the_command_on_a_one_line_manifest(tmp_path):
         '{"name":"@miroir-framework/cli","bin":{"miroir-cli":"./dist/index.js"},'
         '"dependencies":{"@miroir-framework/core":"0.5.0"}}\n'
     )
+
+
+# ---------------------------------------------------------------------- #652: imports of packages bundled into another
+
+IMPORT_MAP = {
+    "imports": {"miroir-app-miroir": "@miroir-framework/core/meta-model", "miroir-app-admin": "@miroir-framework/core/admin"},
+    "owners": ["packages/miroir-core/", "packages/miroir-app-miroir/", "packages/miroir-app-admin/"],
+}
+IMPORTS_BEFORE = {
+    "packages/miroir-react/src/a.ts": (
+        'import { entityEntity } from "miroir-app-miroir";\n'
+        "import type { X } from 'miroir-app-admin';\n"
+        'const m = await import("miroir-app-miroir");\n'
+        'vi.mock("miroir-app-miroir");\n'
+        'export * from "miroir-app-admin";\n'
+        'import "miroir-app-miroir";\n'
+        'const folder = "miroir-app-admin/assets";\n'
+    ),
+    "packages/miroir-core/src/b.ts": 'import { entityEntity } from "miroir-app-miroir";\n',
+    "packages/miroir-app-admin/index.ts": 'export * from "miroir-app-miroir";\n',
+    "packages/miroir-react/package.json": '{"dependencies": {"miroir-app-miroir": "*"}}\n',
+    "environments/local.json": '{"applications": {"miroir": {"package": "miroir-app-miroir"}}}\n',
+    "packages/miroir-example-library/assets/deployment/x.json": '{"directory": "miroir-app-admin/assets"}\n',
+    "ci/build.sh": "npm run build -w miroir-app-miroir\n",
+}
+IMPORTS_AFTER = {
+    **IMPORTS_BEFORE,
+    "packages/miroir-react/src/a.ts": (
+        'import { entityEntity } from "@miroir-framework/core/meta-model";\n'
+        "import type { X } from '@miroir-framework/core/admin';\n"
+        'const m = await import("@miroir-framework/core/meta-model");\n'
+        'vi.mock("@miroir-framework/core/meta-model");\n'
+        'export * from "@miroir-framework/core/admin";\n'
+        'import "@miroir-framework/core/meta-model";\n'
+        'const folder = "miroir-app-admin/assets";\n'
+    ),
+}
+
+
+def make_import_tree(root: Path) -> None:
+    make_tree(root, IMPORTS_BEFORE)
+    (root / "scripts" / "package-import-map.json").write_text(json.dumps(IMPORT_MAP), encoding="utf-8")
+
+
+def test_imports_of_a_bundled_package_move_to_its_owner_subpath(tmp_path):
+    make_import_tree(tmp_path)
+    assert rp.main(["--apply", "--root", str(tmp_path)]) == 0
+    assert tree(tmp_path, IMPORTS_BEFORE) == IMPORTS_AFTER
+    once = tree(tmp_path, IMPORTS_BEFORE)
+    rp.main(["--apply", "--root", str(tmp_path)])
+    assert tree(tmp_path, IMPORTS_BEFORE) == once
+
+
+def test_check_reports_imports_of_a_bundled_package(tmp_path, capsys):
+    make_import_tree(tmp_path)
+    assert rp.main(["--check", "--root", str(tmp_path)]) == 1
+    output = capsys.readouterr().out
+    assert "packages/miroir-react/src/a.ts:1: miroir-app-miroir" in output
+    assert "packages/miroir-react/src/a.ts:2: miroir-app-admin" in output
+    assert "miroir-core/src/b.ts" not in output and "local.json" not in output and "build.sh" not in output
+    rp.main(["--apply", "--root", str(tmp_path)])
+    capsys.readouterr()
+    assert rp.main(["--check", "--root", str(tmp_path)]) == 0
+
+
+def test_without_an_import_map_imports_stay(tmp_path):
+    make_tree(tmp_path, IMPORTS_BEFORE)
+    rp.main(["--apply", "--root", str(tmp_path)])
+    assert tree(tmp_path, IMPORTS_BEFORE)["packages/miroir-react/src/a.ts"] == IMPORTS_BEFORE["packages/miroir-react/src/a.ts"]

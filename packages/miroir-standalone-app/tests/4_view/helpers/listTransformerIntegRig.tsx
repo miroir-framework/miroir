@@ -17,7 +17,7 @@ import {
   reportBookList,
   selfApplicationLibrary,
 } from "miroir-example-library";
-import { defaultMiroirMetaModel, defaultStoredMiroirTheme } from "miroir-app-miroir";
+import { defaultMiroirMetaModel, defaultStoredMiroirTheme } from "@miroir-framework/core/meta-model";
 import { useMiroirContextService } from "@miroir-framework/react";
 
 import { ReportSectionListDisplay } from "@miroir-framework/react";

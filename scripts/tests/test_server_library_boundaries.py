@@ -68,10 +68,14 @@ def test_every_server_build_path_builds_the_library_after_mcp_and_before_the_rel
 
 def test_build_all_builds_the_library_in_a_stage_after_mcp():
     text = _read("build-all.sh")
-    stages = re.search(r"STAGE_UI_SERVICES=\(([^)]*)\)\nSTAGE_APPS=\(([^)]*)\)", text)
+    stages = re.search(r"STAGE_UI_SERVICES=\(([^)]*)\)\n(?:#[^\n]*\n)*STAGE_SERVER_LIBRARY=\(([^)]*)\)\nSTAGE_APPS=\(([^)]*)\)", text)
     assert stages is not None
     assert "miroir-mcp" in stages.group(1).split()
-    assert "miroir-server-library" in stages.group(2).split()
+    # #652: its own stage, before the CLI, which imports `@miroir-framework/server/startup`
+    assert len(stages.group(2).split()) == 1 and "miroir-server-library" in stages.group(2).split()
+    assert "miroir-cli" in stages.group(3).split()
+    run_order = [m.group(1) for m in re.finditer(r'run_stage_packages "[^"]*" "\$\{(STAGE_[A-Z_]+)\[@\]\}"', text)]
+    assert run_order.index("STAGE_SERVER_LIBRARY") < run_order.index("STAGE_APPS")
 
 
 def test_the_release_artifact_list_carries_the_library_dist():

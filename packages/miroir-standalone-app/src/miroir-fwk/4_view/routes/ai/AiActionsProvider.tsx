@@ -35,8 +35,8 @@ import {
   type ReduxStateWithUndoRedo,
   JsonDisplayHelper,
 } from "@miroir-framework/react";
-import { entityEntity, entitySelfApplication, selfApplicationMiroir } from "miroir-app-miroir";
-import { adminSelfApplication, entityDeployment } from "miroir-app-admin";
+import { entityEntity, entitySelfApplication, selfApplicationMiroir } from "@miroir-framework/core/meta-model";
+import { adminSelfApplication, entityDeployment } from "@miroir-framework/core/admin";
 
 import { packageName } from "../../../../constants.js";
 import { cleanLevel } from "../../constants.js";

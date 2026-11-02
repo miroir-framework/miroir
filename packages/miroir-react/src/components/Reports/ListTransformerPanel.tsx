@@ -27,7 +27,7 @@ import {
   type Uuid,
 } from "@miroir-framework/core";
 import { ThemedOnScreenHelper } from "../helpers/ThemedHelper.js";
-import { entityEntity, reportEntityDetails } from "miroir-app-miroir";
+import { entityEntity, reportEntityDetails } from "@miroir-framework/core/meta-model";
 
 import { TypedValueObjectEditor } from "./TypedValueObjectEditor.js";
 import { TypedValueObjectEditorWithFormik } from "./TypedValueObjectEditorWithFormik.js";

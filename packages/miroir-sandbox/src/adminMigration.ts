@@ -25,7 +25,7 @@ import {
   type StoreUnitConfiguration,
 } from "@miroir-framework/core";
 
-import { entityEntity } from "miroir-app-miroir";
+import { entityEntity } from "@miroir-framework/core/meta-model";
 import { packageName } from "./constants.js";
 
 const cleanLevel = "5";

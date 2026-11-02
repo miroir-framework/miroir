@@ -15,7 +15,7 @@ import {
   type MiroirConfigClient,
   type Runner,
 } from "@miroir-framework/core";
-import { selfApplicationMiroir } from "miroir-app-miroir";
+import { selfApplicationMiroir } from "@miroir-framework/core/meta-model";
 
 import { packageName } from "../../../constants.js";
 import type { TestResultData } from "@miroir-framework/react";

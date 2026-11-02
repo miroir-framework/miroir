@@ -15,7 +15,7 @@ import { cleanLevel } from "../viewConstants.js";
 
 import {
   test_createEntityAndReportFromSpreadsheetAndUpdateMenu,
-} from "miroir-app-miroir";
+} from "@miroir-framework/core/meta-model";
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "Check");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",

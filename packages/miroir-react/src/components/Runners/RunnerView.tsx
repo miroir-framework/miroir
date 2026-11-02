@@ -52,7 +52,7 @@ import {
 import { browserMcpServerUrl } from "@miroir-framework/core";
 import { useMiroirShellHost } from "../../contexts/MiroirShellHostContext.js";
 
-import { selfApplicationMiroir } from "miroir-app-miroir";
+import { selfApplicationMiroir } from "@miroir-framework/core/meta-model";
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "RunnerView");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName,

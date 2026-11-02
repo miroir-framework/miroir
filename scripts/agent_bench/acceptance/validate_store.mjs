@@ -17,7 +17,7 @@ import {
   report,
 } from "@miroir-framework/core";
 import { buildModelValidationGroupsFromFilesystem } from "@miroir-framework/core/model-validation-fs";
-import { defaultMiroirMetaModel } from "miroir-app-miroir";
+import { defaultMiroirMetaModel } from "@miroir-framework/core/meta-model";
 
 const [modelPath, dataPath, ...uuids] = process.argv.slice(2);
 const only = new Set(uuids);

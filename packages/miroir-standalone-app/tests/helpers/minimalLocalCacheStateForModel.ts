@@ -13,7 +13,7 @@ import {
   entityQueryVersion,
   entityReport,
   entitySelfApplicationVersion,
-} from "miroir-app-miroir";
+} from "@miroir-framework/core/meta-model";
 import type { LocalCacheSliceState } from "@miroir-framework/react";
 
 function emptyCollection() {
