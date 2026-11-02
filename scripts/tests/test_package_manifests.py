@@ -14,6 +14,7 @@ import functools
 import json
 import os
 import re
+import shutil
 import subprocess
 from pathlib import Path
 
@@ -121,14 +122,17 @@ def require_built(folder: str) -> None:
 @functools.lru_cache(maxsize=None)
 def pack_list(folder: str) -> tuple[str, ...]:
     result = subprocess.run(
-        ["npm", "pack", "--dry-run", "--json", "--ignore-scripts"],
+        [shutil.which("npm") or "npm", "pack", "--dry-run", "--json", "--ignore-scripts"],
         cwd=ROOT / folder,
         capture_output=True,
         text=True,
         check=True,
     )
-    packed = json.loads(result.stdout[result.stdout.find("[") :])
-    return tuple(sorted(entry["path"] for entry in packed[0]["files"]))
+    # npm < 11 prints `[{...}]`; npm >= 11 prints `{"<package name>": {...}}`
+    stdout = result.stdout
+    packed = json.loads(stdout[min(i for i in (stdout.find("["), stdout.find("{")) if i >= 0) :])
+    entry = packed[0] if isinstance(packed, list) else next(iter(packed.values()))
+    return tuple(sorted(file["path"] for file in entry["files"]))
 
 
 def export_targets(exports: object) -> list[str]:

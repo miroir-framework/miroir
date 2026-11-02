@@ -109,7 +109,7 @@ def test_the_build_fails_on_a_store_import(tmp_path, external):
     if external:
         env["MIROIR_SERVER_LIBRARY_PROBE_EXTERNAL"] = "1"
     result = subprocess.run(
-        ["npm", "run", "build", "-w", "@miroir-framework/server"],
+        [shutil.which("npm") or "npm", "run", "build", "-w", "@miroir-framework/server"],
         cwd=REPO_ROOT,
         env=env,
         capture_output=True,
