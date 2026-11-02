@@ -228,7 +228,7 @@ Layer **P0** (`deployment-miroir`, `deployment-admin`) builds first via
 This still succeeds because `deployment-miroir/tsup.config.js` declares
 `external: ['@miroir-framework/core']` and its only references to `@miroir-framework/core` are
 `import type {...}` — fully erased by esbuild, so the JS build never resolves or
-reads anything from `node_modules/miroir-core` at all. Layer **P1** then builds
+reads anything from `node_modules/@miroir-framework/core` at all. Layer **P1** then builds
 `@miroir-framework/core` itself, which does genuine value-level imports of the now-built
 `deployment-miroir`/`-admin` — by then they exist.
 
@@ -418,7 +418,7 @@ in `globalThis[Symbol.for("miroir-core.instances")]` (a list of `{ version, loca
 second logs, at WARN and before any logger is started:
 
 ```
-@miroir-framework/core: 2 copies are loaded in this realm (process, page or worker): 0.5.0 at file:///…/node_modules/miroir-core/dist/index.js, 0.5.0 at file:///…/node_modules/<package>/node_modules/miroir-core/dist/index.js. …
+@miroir-framework/core: 2 copies are loaded in this realm (process, page or worker): 0.5.0 at file:///…/node_modules/@miroir-framework/core/dist/index.js, 0.5.0 at file:///…/node_modules/<package>/node_modules/@miroir-framework/core/dist/index.js. …
 ```
 
 Run `npm ls @miroir-framework/core` and make the tree resolve one copy (same version everywhere, `npm dedupe`).

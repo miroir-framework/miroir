@@ -138,7 +138,7 @@ describe("registerMiroirCoreInstance", () => {
     ]);
     expect(record).toHaveLength(2);
     expect(warnings).toHaveLength(1);
-    expect(warnings[0]).toContain("2 copies are loaded");
+    expect(warnings[0]).toContain("@miroir-framework/core: 2 copies are loaded");
     expect(warnings[0]).toContain("1.2.3 at file:///a/index.js, 1.2.3 at file:///b/index.js");
   });
 
