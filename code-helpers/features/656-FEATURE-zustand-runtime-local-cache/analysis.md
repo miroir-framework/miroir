@@ -7,7 +7,7 @@ Parent issue: #621 (npm packages epic) · Prerequisite: #652 ✅ (bundling, PR #
 Related analyses: [`../652-BUILD-bundle-meta-model-and-local-cache/analysis.md`](../652-BUILD-bundle-meta-model-and-local-cache/analysis.md)
 Key sources: [`packages/miroir-react/src/miroir-localcache-imports.ts`](../../../packages/miroir-react/src/miroir-localcache-imports.ts), [`packages/miroir-localcache-redux/src/startMiroirPlatform.ts`](../../../packages/miroir-localcache-redux/src/startMiroirPlatform.ts), [`packages/miroir-localcache-zustand/src/index.ts`](../../../packages/miroir-localcache-zustand/src/index.ts), [`packages/miroir-standalone-app/src/miroir-fwk/4-tests/localCacheImplementation.ts`](../../../packages/miroir-standalone-app/src/miroir-fwk/4-tests/localCacheImplementation.ts)
 
-**Status:** goals and decisions confirmed with the user (2026-11-02, grilling round 1: every recommendation accepted). v2 corrects the current state after an adversarial review (§6); round 2 questions open (§6.3).
+**Status:** goals and decisions confirmed with the user (2026-11-02, grilling round 1: every recommendation accepted). v2 corrects the current state after an adversarial review (§6); round 2 (§6.3) confirmed the same day: every recommendation accepted.
 
 ---
 
@@ -15,6 +15,7 @@ Key sources: [`packages/miroir-react/src/miroir-localcache-imports.ts`](../../..
 
 - **G1 — Pick the local cache at startup.** In order to use the state library that suits my application as an application developer, I can choose `redux` or `zustand` in the startup call (`startMiroirClient`, `startMiroirNode`) without editing framework sources.
 - **G2 — Pay for one.** In order to keep my page and my process small as an application developer, I load only the implementation I chose.
+- **G2 scope (D7).** One local cache copy: the store, its persistence and its provider. `@reduxjs/toolkit`, `redux` and `reselect` still load with zustand (its selectors use `createSelector`) until the selectors move to core.
 - **G3 — Test the whole stack on either.** In order to trust both implementations as a framework maintainer, I can run `nonreg --local-cache zustand` and have the UI tests and the CLI, MCP and server test platforms run on Zustand.
 
 ## 2. Non-goals
@@ -163,9 +164,13 @@ Nonreg: `run-nonreg.py --local-cache zustand` sets `MIROIR_TEST_LOCAL_CACHE` for
 - **D5.** `startMiroirPlatform` and `startMiroirNode` move to core's `5_setup`, typed on the `"local" | "remote"` modes both setups accept (R10).
 - **D3.** The guards learn zustand: owners, bundled names, the server's `./startup` declarations, the TSDoc pin, the published-package list (R8).
 
-### 6.3 Open questions (round 2)
+### 6.3 Round 2 decisions (Accepted, 2026-11-02)
 
-- **G2's scope** (R6): one local cache copy, not "no redux libraries" (zustand's selectors use RTK's `createSelector`).
-- **The UI's selectors** (R2, R13): static shared selectors over the core state type, or selectors read from the context.
-- **React's public re-exports** (R7): what `@miroir-framework/react` and `./local-cache` export once the implementation is chosen at startup.
-- **Redux-built UI tests** (R5): rewrite them on the chosen implementation, or keep them redux-only.
+| Decision | Choice | Serves |
+|---|---|---|
+| D7 G2's scope (R6) | **One local cache copy** (store, persistence, provider); the redux libraries stay while zustand's selectors use RTK | G2 |
+| D8 The UI's selectors (R2, R13) | **One shared static set, redux's selector modules**, over the core state type; only store, provider, `useSelector`, `shallowEqual` and setup switch. The zustand UI runs check it at runtime; moving the selectors to core removes the duplication later | G1, G2 |
+| D9 React's public exports (R7) | **The root keeps what does not depend on the implementation** (provider, `useSelector`, selectors, types); the implementation classes (`LocalCache`, `PersistenceReduxSaga`, `RestPersistenceClientAndRestClient`, `setupMiroirDomainController`, …) move to `./local-cache/redux` and `./local-cache/zustand`, also the lazy targets; `./local-cache` becomes `./local-cache/redux`. Importers move to the entry they need; tests choose theirs through `MIROIR_TEST_LOCAL_CACHE` | G1, G2 |
+| D10 Redux-built UI tests (R5) | **Rewritten** to build their store through the chosen implementation | G3 |
+
+Rejected: selectors read from the context (D8: ≈23 modules and 18 call sites for no gain while the state type is shared); keeping the redux names at react's root (D9: they would load the redux cache in a zustand page); redux-only UI tests (D10: G3 would not cover them).
