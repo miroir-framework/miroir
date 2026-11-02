@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "ok": true,
+  "command": "finalize",
+  "status": "pass",
+  "type": "explainer",
+  "quality": "showcase",
+  "specification": {
+    "path": "C:\\Users\\nono\\Documents\\devhome\\miroir-integration\\.archify\\explainer-miroir-cache-20261102-111507\\candidate.archify.md",
+    "sha256": "a845db2ae973980376386d040fffc419f6b6fc84fa5613078097d34818da4ec6",
+    "bytes": 16014
+  },
+  "artifact": {
+    "path": "C:\\Users\\nono\\Documents\\devhome\\miroir-integration\\.archify\\explainer-miroir-cache-20261102-111507\\miroir-cache-today.html",
+    "sha256": "ed754699666b32ee94d8961bfa4b9c5814a694579db35204fadd56b3feaf5b19",
+    "bytes": 4345387
+  },
+  "gates": {
+    "validate": "pass",
+    "deliver": "pass",
+    "check": "pass",
+    "browser-check": "not-run"
+  },
+  "diagnostics": [],
+  "diagnosticSummary": {
+    "total": 0,
+    "shown": 0,
+    "truncated": false
+  },
+  "evidence": {
+    "receipt": "C:\\Users\\nono\\Documents\\devhome\\miroir-integration\\.archify\\explainer-miroir-cache-20261102-111507\\miroir-cache-today.finalize.json",
+    "summaryReceipt": "C:\\Users\\nono\\Documents\\devhome\\miroir-integration\\.archify\\explainer-miroir-cache-20261102-111507\\miroir-cache-today.finalize-summary.json"
+  },
+  "visualReview": "not-requested",
+  "durationMs": 7393,
+  "browserCheck": {
+    "requested": false,
+    "ran": false
+  }
+}
