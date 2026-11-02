@@ -287,64 +287,55 @@ def apply_lerna_version(repo_root: Path, plan: ReleasePlan) -> None:
         raise
 
 
-def commit_tag_push(
+# #664: what the release commit records. Never release-tarballs/ (megabytes of build output, kept in the release
+# worktree and published from there) nor release-handoff.json / publish-commands.sh (absolute paths of one machine).
+RELEASE_COMMIT_PATHS = ("package.json", "package-lock.json", "lerna.json", "packages", "release-plan.json")
+
+
+def commit_and_tag(
     repo_root: Path,
     plan: ReleasePlan,
     *,
     commit: bool,
     tag: bool,
-    push: bool,
 ) -> None:
-    if push and not (commit and tag):
-        raise ReleaseError("--push requires --commit and --tag")
-    if not (commit or tag or push):
-        log_step("no --commit/--tag/--push requested; release tree left uncommitted")
+    if not (commit or tag):
+        log_step("no --commit/--tag requested; release tree left uncommitted")
         return
     if commit:
         log_step(f"creating release commit for {plan.product_version}")
-        run(
-            [
-                "git",
-                "add",
-                "package.json",
-                "package-lock.json",
-                "lerna.json",
-                "packages",
-                "release-plan.json",
-                "release-tarballs",
-            ],
-            cwd=repo_root,
-            check=False,
-        )
-        run(
-            ["git", "commit", "-m", f"release: {plan.product_version}"],
-            cwd=repo_root,
-        )
+        present = [path for path in RELEASE_COMMIT_PATHS if (repo_root / path).exists()]
+        run(["git", "add", "--", *present], cwd=repo_root)
+        run(["git", "commit", "-m", f"release: {plan.product_version}"], cwd=repo_root)
     if tag:
-        exists = run(
-            ["git", "tag", "-l", plan.product_version],
-            cwd=repo_root,
-        ).stdout.strip()
+        exists = run(["git", "tag", "-l", plan.product_version], cwd=repo_root).stdout.strip()
         if exists:
             raise ReleaseError(f"tag already exists: {plan.product_version}")
         log_step(f"creating annotated tag {plan.product_version}")
         run(
-            [
-                "git",
-                "tag",
-                "-a",
-                plan.product_version,
-                "-m",
-                f"release {plan.product_version}",
-            ],
+            ["git", "tag", "-a", plan.product_version, "-m", f"release {plan.product_version}"],
             cwd=repo_root,
         )
-    if push:
-        log_step(f"pushing commit and tag {plan.product_version} to the remote")
-        run(["git", "push"], cwd=repo_root)
-        run(["git", "push", "--tags"], cwd=repo_root)
-    else:
-        log_step(
-            "not pushing (no --push); commit/tag exist only in this "
-            f"{'worktree' if commit or tag else 'repository'} until pushed"
-        )
+    log_step("not pushed: `release_version.py --record <handoff>` pushes the tag and release branch after publishing")
+
+
+def release_branch(version: str) -> str:
+    return f"release/{version}"
+
+
+def push_release(repo_root: Path, version: str, *, remote: str = "origin") -> None:
+    """#664 D9: after every package is published, push the release tag and the release commit as
+    release/<version> (merged into the integration branch by a PR). Only this tag: never `--tags`. Works from the
+    detached release worktree, which has no branch for a plain `git push`."""
+    tagged = run(["git", "rev-list", "-n", "1", version], cwd=repo_root, check=False)
+    head = run(["git", "rev-parse", "HEAD"], cwd=repo_root).stdout.strip()
+    if tagged.returncode != 0 or tagged.stdout.strip() != head:
+        raise ReleaseError(f"tag {version} is missing or does not point at the release worktree's HEAD")
+    branch = release_branch(version)
+    existing = run(["git", "ls-remote", "--heads", "--tags", remote, f"refs/heads/{branch}", f"refs/tags/{version}"],
+                   cwd=repo_root)
+    if existing.stdout.strip():
+        raise ReleaseError(f"{remote} already has {branch} or tag {version}:\n{existing.stdout}")
+    log_step(f"pushing tag {version} and branch {branch} to {remote}")
+    # atomic: a remote that refuses one ref gets neither, so a retry starts from a clean remote
+    run(["git", "push", "--atomic", remote, f"HEAD:refs/heads/{branch}", f"refs/tags/{version}"], cwd=repo_root)
