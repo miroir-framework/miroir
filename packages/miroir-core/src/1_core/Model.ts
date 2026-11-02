@@ -28,12 +28,21 @@ import {
   entityApplicationVersionCrossTransformerDefinitionVersion,
   entityTheme,
   entityTransformerDefinition,
+  entityBundleSizeMeasurement,
+  entityPageLoadMeasurement,
+  entityAgentRunMeasurement,
   reportEntityDefinitionDetails,
   reportEntityDefinitionList,
   reportEntityDetails,
   reportEntityList,
   reportApplicationVersionList,
   reportApplicationVersionDetails,
+  reportAgentRunHistory,
+  reportAgentRunMeasurementDetails,
+  reportBundleSizeHistory,
+  reportBundleSizeMeasurementDetails,
+  reportPageLoadHistory,
+  reportPageLoadMeasurementDetails,
   selfApplicationMiroir,
   defaultMiroirMetaModel as defaultMiroirMetaModelRaw,
 } from "miroir-app-miroir";
@@ -150,6 +159,19 @@ const metaModelVersionReports = [
   reportApplicationVersionDetails.uuid,
 ];
 
+/**
+ * #647 — the Miroir Reports of the devData section (bundle sizes, page loads, agent runs). They are
+ * Miroir's, and open on the devData section of any application.
+ */
+export const metaModelDevDataReports: readonly string[] = [
+  reportBundleSizeHistory.uuid,
+  reportBundleSizeMeasurementDetails.uuid,
+  reportPageLoadHistory.uuid,
+  reportPageLoadMeasurementDetails.uuid,
+  reportAgentRunHistory.uuid,
+  reportAgentRunMeasurementDetails.uuid,
+];
+
 // ################################################################################################
 /**
  * #232 — entity UUIDs whose instances always belong to `modelVersion`.
@@ -205,12 +227,67 @@ export function getVersionHistoryEntityDefinition(entityUuid: string): Entity | 
 }
 
 // ################################################################################################
+/**
+ * #647 — sections that a deployment may or may not have. Each one gets its own store when its
+ * Deployment configuration declares it; reads of an absent one are empty, writes fail with a named
+ * error. modelVersion holds version history (#232), devData holds information about the application
+ * that is not needed to deploy or use it.
+ */
+export const optionalApplicationSections = ["modelVersion", "devData"] as const;
+export type OptionalApplicationSection = (typeof optionalApplicationSections)[number];
+
+export function isOptionalApplicationSection(section: string): section is OptionalApplicationSection {
+  return (optionalApplicationSections as readonly string[]).includes(section);
+}
+
+/** #647 — the fixed Entity rows of the devData section, defined in the Miroir model. */
+const devDataEntityDefinitions: ReadonlyMap<string, Entity> = new Map([
+  [entityBundleSizeMeasurement.uuid!, entityBundleSizeMeasurement as Entity],
+  [entityPageLoadMeasurement.uuid!, entityPageLoadMeasurement as Entity],
+  [entityAgentRunMeasurement.uuid!, entityAgentRunMeasurement as Entity],
+]);
+
+/**
+ * #647 — entity UUIDs whose instances always belong to `devData`, whatever the application.
+ * Checked in getApplicationSection after versionHistoryEntityUuids.
+ * @public
+ */
+export const devDataEntityUuids: ReadonlySet<string> = new Set(devDataEntityDefinitions.keys());
+
+/** Bootstrap Entity row for a devData entity: an application's devData store boots and creates tables from it. */
+export function getDevDataEntityDefinition(entityUuid: string): Entity | undefined {
+  return devDataEntityDefinitions.get(entityUuid);
+}
+
+/** The Entities whose instances always live in an optional section, by section. */
+export function optionalSectionEntityUuids(section: OptionalApplicationSection): ReadonlySet<string> {
+  return section === "modelVersion" ? versionHistoryEntityUuids : devDataEntityUuids;
+}
+
+/** The fixed Entity row of an entity that lives in an optional section (lazy store creation, boot). */
+export function getOptionalSectionEntityDefinition(
+  section: OptionalApplicationSection,
+  entityUuid: string,
+): Entity | undefined {
+  return section === "modelVersion"
+    ? versionHistoryEntityDefinitions.get(entityUuid)
+    : devDataEntityDefinitions.get(entityUuid);
+}
+
+/** The Entities of every optional section: they are never part of the model or data stores. */
+export function isOptionalSectionEntityUuid(entityUuid: string): boolean {
+  return versionHistoryEntityUuids.has(entityUuid) || devDataEntityUuids.has(entityUuid);
+}
+
+// ################################################################################################
 export function getApplicationSection(
   applicationUuid: Uuid,
   entityUuid: Uuid,
 ): ApplicationSection {
   // #232: version-history entities always live in modelVersion regardless of application
   if (versionHistoryEntityUuids.has(entityUuid)) return "modelVersion";
+  // #647: devData entities always live in devData regardless of application
+  if (devDataEntityUuids.has(entityUuid)) return "devData";
   if (applicationUuid == selfApplicationMiroir.uuid) {
     return metaMetaModelEntityUuids.includes(entityUuid) ? "model" : "data";
   }
@@ -218,6 +295,15 @@ export function getApplicationSection(
   // the local cache reads them, though the Entity is not in the meta-model's entity list
   if (entityUuid === entityTransformerDefinition.uuid) return "model";
   return metaModelEntityUuids.includes(entityUuid) ? "model" : "data";
+}
+
+/**
+ * #647: the section a report load reads an Entity's rows from. A devData Entity's rows live in
+ * `devData` only (the local cache selectors look for them there too), whatever section the request
+ * or the page names; another Entity is read from the requested section, `data` by default.
+ */
+export function reportLoadSection(entityUuid: Uuid, requestedSection?: ApplicationSection): ApplicationSection {
+  return devDataEntityUuids.has(entityUuid) ? "devData" : requestedSection ?? "data";
 }
 
 // ################################################################################################
@@ -235,8 +321,15 @@ export function getReportsAndEntitiesForDeploymentUuid(
   appModel: MetaModel
 ): DeploymentUuidToReportsEntities
 {
+  const devData = {
+    availableQueries: metaModel.storedQueries,
+    availableReports: metaModel.reports.filter((r: Report) => metaModelDevDataReports.includes(r.uuid)),
+    entities: metaModel.entities,
+    entityVersions: metaModel.entityVersions,
+  };
   if (application === selfApplicationMiroir.uuid) {
     return {
+      devData,
       model: {
         availableQueries: metaModel.storedQueries,
         availableReports: metaModel.reports.filter((r: Report) =>
@@ -258,7 +351,8 @@ export function getReportsAndEntitiesForDeploymentUuid(
         availableReports: metaModel.reports.filter(
           (r) =>
             !metaModelModelReports.includes(r.uuid) &&
-            !metaModelVersionReports.includes(r.uuid),
+            !metaModelVersionReports.includes(r.uuid) &&
+            !metaModelDevDataReports.includes(r.uuid),
         ),
         entities: metaModel.entities,
         entityVersions: metaModel.entityVersions,
@@ -266,6 +360,7 @@ export function getReportsAndEntitiesForDeploymentUuid(
     };
   } else {
     return {
+      devData,
       model: {
         availableQueries: metaModel.storedQueries,
         availableReports: metaModel.reports,

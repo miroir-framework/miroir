@@ -9,7 +9,8 @@ import {
   PersistenceStoreDataOrModelSectionInterface,
   PersistenceStoreDataSectionInterface,
   StoreSectionConfiguration,
-  type ConfigurationServiceInner
+  type ConfigurationServiceInner,
+  optionalApplicationSections,
 } from "@miroir-framework/core";
 import { MongoDb } from "./4_services/MongoDb.js";
 import { MongoDbAdminStore } from "./4_services/MongoDbAdminStore.js";
@@ -106,25 +107,28 @@ export function miroirMongoDbStoreSectionStartup(configurationService: Configura
     }
   );
 
-  configurationService.registerStoreSectionFactory(
-    "mongodb",
-    "modelVersion",
-    async (
-      section: ApplicationSection,
-      config: StoreSectionConfiguration,
-      filesystemDeploymentRootDirectory: string,
-    ): Promise<PersistenceStoreDataOrModelSectionInterface> => {
-      if (isMongoDbConfig(config)) {
-        log.info("called registerStoreSectionFactory modelVersion function for", section, config);
-        const mongoDbStoreName = config.database + "-modelVersion";
-        return Promise.resolve(
-          new MongoDbDataStoreSection(
-            mongoDbStoreName,
-            new MongoDb("modelVersion", config.connectionString, mongoDbStoreName),
-          ),
-        );
-      }
-      return Promise.resolve(new ErrorDataStore());
-    },
-  );
+  // optional sections (#232 modelVersion, #647 devData): same data store shape, own storage
+  for (const optionalSection of optionalApplicationSections) {
+    configurationService.registerStoreSectionFactory(
+      "mongodb",
+      optionalSection,
+      async (
+        section: ApplicationSection,
+        config: StoreSectionConfiguration,
+        filesystemDeploymentRootDirectory: string,
+      ): Promise<PersistenceStoreDataOrModelSectionInterface> => {
+        if (isMongoDbConfig(config)) {
+          log.info("called registerStoreSectionFactory", optionalSection, "function for", section, config);
+          const mongoDbStoreName = config.database + "-" + optionalSection;
+          return Promise.resolve(
+            new MongoDbDataStoreSection(
+              mongoDbStoreName,
+              new MongoDb(optionalSection, config.connectionString, mongoDbStoreName),
+            ),
+          );
+        }
+        return Promise.resolve(new ErrorDataStore());
+      },
+    );
+  }
 }

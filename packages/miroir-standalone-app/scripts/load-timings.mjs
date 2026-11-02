@@ -2,8 +2,8 @@
  * Load timings tour (#580): opens the production build in Chromium with the load timing
  * measurement on (`?loadTimings=on`), waits for the initial load to settle, then opens a Library
  * report and the model page inside the app, and prints the steps the page measured
- * (`window.__miroirLoadTimings`): duration, milestones, files fetched. With the Meta app installed
- * in the server's environment (dev), it also waits for the steps to be recorded there.
+ * (`window.__miroirLoadTimings`): duration, milestones, files fetched. When the server's environment
+ * gives Miroir a devData section (dev), it also waits for the steps to be recorded there (#647).
  *
  * Run, after `npm run build -w miroir-standalone-app` and `npm run build:release -w miroir-server`:
  *   npm run loadTimings -w miroir-standalone-app -- --serve
@@ -20,8 +20,8 @@
  *                        with --dev http(s)://localhost:5173, https when Vite has a certificate)
  *   --browser <path>     Chromium or Chrome executable (default: env MIROIR_TOUR_BROWSER, then the
  *                        browser playwright-core installs, then the installed Chrome)
- *   --meta-folder <dir>  where the server's environment stores PageLoadMeasurement instances
- *                        (default: the Meta package's data folder, as in the dev environment);
+ *   --dev-data-folder <dir>  where the server's environment stores PageLoadMeasurement instances
+ *                        (default: Miroir's devData folder, as in the dev environment);
  *                        "none" skips the check
  *   --clean              remove the instances this run recorded, once checked
  *   --out <file>         also write the steps as JSON to this file
@@ -60,9 +60,9 @@ const { values: options } = parseArgs({
     dev: { type: "boolean", default: false },
     url: { type: "string" },
     browser: { type: "string", default: process.env.MIROIR_TOUR_BROWSER },
-    "meta-folder": {
+    "dev-data-folder": {
       type: "string",
-      default: path.join(root, "packages/miroir-app-meta/assets/meta_data", ENTITY_PAGE_LOAD_MEASUREMENT),
+      default: path.join(root, "packages/miroir-app-miroir/assets/miroir_devData", ENTITY_PAGE_LOAD_MEASUREMENT),
     },
     clean: { type: "boolean", default: false },
     out: { type: "string" },
@@ -226,9 +226,9 @@ async function waitForStep(page, step) {
     .catch(() => console.error(`load-timings: no ${step} step within ${STEP_TIMEOUT / 1000}s`));
 }
 
-/** Waits until the steps of this page load are in the Meta folder; true when they are, or when not checked. */
+/** Waits until the steps of this page load are in the devData folder; true when they are, or when not checked. */
 async function checkRecorded(steps) {
-  const folder = options["meta-folder"];
+  const folder = options["dev-data-folder"];
   if (folder === "none" || steps.length === 0) {
     return true;
   }
@@ -243,7 +243,7 @@ async function checkRecorded(steps) {
   for (const start = Date.now(); files.length < steps.length && Date.now() - start < 20_000; files = ours()) {
     await new Promise((resolve) => setTimeout(resolve, 500));
   }
-  console.log(`  recorded in the Meta app: ${files.length} of ${steps.length} steps (${path.relative(root, folder)})`);
+  console.log(`  recorded in Miroir's devData: ${files.length} of ${steps.length} steps (${path.relative(root, folder)})`);
   if (options.clean) {
     files.forEach((file) => rmSync(path.join(folder, file)));
   }

@@ -1,6 +1,6 @@
 /**
- * #580: the load timing writer records finished steps as PageLoadMeasurement instances of the Meta
- * app, through the real DomainController, on the emulated filesystem server of `test-filesystem`
+ * #580: the load timing writer records finished steps as PageLoadMeasurement instances in the devData
+ * section of the Miroir application (#647), through the real DomainController, on the emulated filesystem server of `test-filesystem`
  * (copies in .miroir/test-filesystem/, seeded from the package assets).
  * #633: the configuration fetch, now in miroir-react, marks `configurationsLoaded` through the sink the
  * host registers (the app's index.tsx registers its browser recorder).
@@ -29,7 +29,7 @@ import {
 import { bootEnvironment } from "@miroir-framework/env";
 import { miroirFileSystemStoreSectionStartup } from "@miroir-framework/store-filesystem";
 
-import { ENTITY_PAGE_LOAD_MEASUREMENT_UUID, META_DEPLOYMENT_UUID } from "../../../src/loadTimings/loadTimingConstants.js";
+import { ENTITY_PAGE_LOAD_MEASUREMENT_UUID, MIROIR_DEPLOYMENT_UUID } from "../../../src/loadTimings/loadTimingConstants.js";
 import type { LoadTimingStep } from "../../../src/loadTimings/loadTimingTypes.js";
 import { loadTimingWriter } from "../../../src/loadTimings/loadTimingWriter.js";
 import { loglevelnext } from "../../../src/loglevelnextImporter.js";
@@ -87,10 +87,10 @@ async function bootPlatform(): Promise<{
   return { domainController: wired.domainControllerForClient, miroirConfig: testEnvironment.miroirConfig };
 }
 
-function metaEntityFolder(miroirConfig: MiroirConfigClient): string {
-  const storage = (miroirConfig.client as MiroirConfigForClientStub).deploymentStorageConfig[META_DEPLOYMENT_UUID];
-  const data = storage.data as { directory: string };
-  return path.resolve((miroirConfig.client as MiroirConfigForClientStub).filesystemDeploymentRootDirectory, data.directory, ENTITY_PAGE_LOAD_MEASUREMENT_UUID);
+function devDataEntityFolder(miroirConfig: MiroirConfigClient): string {
+  const storage = (miroirConfig.client as MiroirConfigForClientStub).deploymentStorageConfig[MIROIR_DEPLOYMENT_UUID];
+  const devData = storage.devData as { directory: string };
+  return path.resolve((miroirConfig.client as MiroirConfigForClientStub).filesystemDeploymentRootDirectory, devData.directory, ENTITY_PAGE_LOAD_MEASUREMENT_UUID);
 }
 
 describe("load timing writer (#580)", () => {
@@ -111,13 +111,13 @@ describe("load timing writer (#580)", () => {
     expect(marks).toContain("configurationsLoaded");
   });
 
-  it("writes every step as a PageLoadMeasurement instance of the Meta deployment", async () => {
+  it("writes every step as a PageLoadMeasurement instance in the Miroir deployment's devData", async () => {
     // The seed copies the package assets, which may hold a developer's own (gitignored) rows:
     // only the rows of this test's page load count.
     const result = await loadTimingWriter(domainController)([step("initialLoad", 1840), step("route:report", 620)]);
     expect(result).toEqual({ ok: true });
 
-    const folder = metaEntityFolder(miroirConfig);
+    const folder = devDataEntityFolder(miroirConfig);
     const written = readdirSync(folder)
       .filter((file) => file.endsWith(".json"))
       .map((file) => JSON.parse(readFileSync(path.join(folder, file), "utf-8")))
@@ -129,7 +129,7 @@ describe("load timing writer (#580)", () => {
   });
 
   it("writes into the test copy, not the package assets", () => {
-    expect(metaEntityFolder(miroirConfig)).toContain(path.join(".miroir", "test-filesystem"));
-    expect(existsSync(metaEntityFolder(miroirConfig))).toBe(true);
+    expect(devDataEntityFolder(miroirConfig)).toContain(path.join(".miroir", "test-filesystem"));
+    expect(existsSync(devDataEntityFolder(miroirConfig))).toBe(true);
   });
 });

@@ -2311,7 +2311,7 @@
                 "target": {
                   "byTestId": "transformation-result"
                 },
-                "containsHtml": "ApplicationEvolutionTrace",
+                "containsHtml": "AgentRunMeasurement",
                 "timeout": 2000
               },
               {
@@ -2412,7 +2412,7 @@
                 "target": {
                   "byTestId": "transformation-result"
                 },
-                "containsHtml": "ApplicationEvolutionTrace",
+                "containsHtml": "AgentRunMeasurement",
                 "timeout": 2000
               },
               {

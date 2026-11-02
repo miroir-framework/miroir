@@ -49,22 +49,21 @@ export function resolveCachePolicyCarrierForEntity(
   return entityDefinitionsByEntityUuid?.[entity.uuid];
 }
 
+/** Marker substring from PersistenceStoreController when an optional section is omitted (#232/#234/#647). */
+export const MISSING_OPTIONAL_SECTION_MARKER = "section is not configured for this deployment";
+
 /** Marker substring from PersistenceStoreController when modelVersion is omitted (#232/#234). */
 export const MISSING_MODEL_VERSION_SECTION_MARKER =
   "modelVersion section is not configured";
 
-/**
- * True when an Action2Error (or nested innerError chain) reports an absent modelVersion
- * section. Persistence wrappers often bury the marker under FailedToHandlePersistenceAction.
- */
-export function isAbsentModelVersionSectionError(error: unknown): boolean {
+function errorChainIncludes(error: unknown, marker: string): boolean {
   const seen = new Set<unknown>();
   const walk = (value: unknown): boolean => {
     if (value == null || seen.has(value)) {
       return false;
     }
     if (typeof value !== "object") {
-      return typeof value === "string" && value.includes(MISSING_MODEL_VERSION_SECTION_MARKER);
+      return typeof value === "string" && value.includes(marker);
     }
     seen.add(value);
     const record = value as {
@@ -72,16 +71,10 @@ export function isAbsentModelVersionSectionError(error: unknown): boolean {
       message?: unknown;
       innerError?: unknown;
     };
-    if (
-      typeof record.errorMessage === "string" &&
-      record.errorMessage.includes(MISSING_MODEL_VERSION_SECTION_MARKER)
-    ) {
+    if (typeof record.errorMessage === "string" && record.errorMessage.includes(marker)) {
       return true;
     }
-    if (
-      typeof record.message === "string" &&
-      record.message.includes(MISSING_MODEL_VERSION_SECTION_MARKER)
-    ) {
+    if (typeof record.message === "string" && record.message.includes(marker)) {
       return true;
     }
     if (Array.isArray(record.innerError)) {
@@ -90,6 +83,22 @@ export function isAbsentModelVersionSectionError(error: unknown): boolean {
     return walk(record.innerError);
   };
   return walk(error);
+}
+
+/**
+ * True when an Action2Error (or nested innerError chain) reports that `section` is absent from the
+ * deployment. Persistence wrappers often bury the marker under FailedToHandlePersistenceAction.
+ */
+export function isAbsentOptionalSectionError(section: string, error: unknown): boolean {
+  return errorChainIncludes(error, `${section} ${MISSING_OPTIONAL_SECTION_MARKER}`);
+}
+
+/**
+ * True when an Action2Error (or nested innerError chain) reports an absent modelVersion
+ * section. Persistence wrappers often bury the marker under FailedToHandlePersistenceAction.
+ */
+export function isAbsentModelVersionSectionError(error: unknown): boolean {
+  return errorChainIncludes(error, MISSING_MODEL_VERSION_SECTION_MARKER);
 }
 
 /**
@@ -108,10 +117,20 @@ export function resolveEntitiesToFetchOnRefresh(
   dataEntities: Entity[],
   entityDefinitionsByEntityUuid: Record<string, EntityVersion> = {},
 ): EntityFetchOnRefresh[] {
-  const modelFetches: EntityFetchOnRefresh[] = modelEntities.map((entity) => ({
-    section: getApplicationSection(applicationUuid, entity.uuid!),
-    entity,
-  }));
+  // devData Entities are listed with the model ones, but their instances are not model: they
+  // follow the Entity cache policy like data (#647, PageLoadMeasurement loads on demand).
+  const modelFetches: EntityFetchOnRefresh[] = modelEntities
+    .map((entity) => ({
+      section: getApplicationSection(applicationUuid, entity.uuid!),
+      entity,
+    }))
+    .filter(
+      (fetch) =>
+        fetch.section !== "devData" ||
+        shouldCacheAllInstancesOnRefresh(
+          resolveCachePolicyCarrierForEntity(fetch.entity, entityDefinitionsByEntityUuid),
+        ),
+    );
 
   const nonModelFetches: EntityFetchOnRefresh[] = dataEntities
     .filter((entity) =>

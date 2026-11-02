@@ -4,9 +4,12 @@ import {
   type DomainControllerInterface,
   type IntegTestbedResetParams,
   type MiroirConfigClient,
+  type OptionalApplicationSection,
+  type StoreSectionConfiguration,
   type StoreUnitConfiguration,
   type Uuid,
   defaultSelfApplicationDeploymentMap,
+  optionalApplicationSections,
   ENVIRONMENT_STATE_ROOT,
   resetIntegTestbed,
 } from "@miroir-framework/core";
@@ -195,6 +198,19 @@ export function canonicalStoreIdentifier(testApplicationName: string, environmen
 }
 
 /**
+ * #647: the optional sections of a test application (modelVersion, devData), each one named by the
+ * same per-store rule as its template's: the section name as a suffix or a subfolder. `_modelVersion`
+ * is the longest suffix, which the Postgres identifier budget above reserves.
+ */
+function optionalSectionStores(
+  sectionStore: (section: OptionalApplicationSection) => StoreSectionConfiguration,
+): Pick<StoreUnitConfiguration, OptionalApplicationSection> {
+  return Object.fromEntries(
+    optionalApplicationSections.map((section) => [section, sectionStore(section)]),
+  ) as Pick<StoreUnitConfiguration, OptionalApplicationSection>;
+}
+
+/**
  * The stores of a test application, cloned from its template's. `adminDeploymentStorageConfiguration`
  * (the Admin application's deployment) locates the test environment when no section of the template
  * does: without it, a template entirely on SQL or MongoDB gives schemas shared by parallel workers.
@@ -233,10 +249,10 @@ export function testApplicationStorageConfiguration(
           emulatedServerType: "indexedDb",
           indexedDbName: indexedDbBaseName,
         },
-        modelVersion: {
+        ...optionalSectionStores((section) => ({
           emulatedServerType: "indexedDb",
-          indexedDbName: `${indexedDbBaseName}_modelVersion`,
-        },
+          indexedDbName: `${indexedDbBaseName}_${section}`,
+        })),
       };
       break;
     }
@@ -247,10 +263,10 @@ export function testApplicationStorageConfiguration(
           admin: libraryDeploymentStorageConfiguration.admin,
           model: { emulatedServerType: "filesystem", directory: `${environmentDirectory}/${storeName}/model` },
           data: { emulatedServerType: "filesystem", directory: `${environmentDirectory}/${storeName}/data` },
-          modelVersion: {
+          ...optionalSectionStores((section) => ({
             emulatedServerType: "filesystem",
-            directory: `${environmentDirectory}/${storeName}/modelVersion`,
-          },
+            directory: `${environmentDirectory}/${storeName}/${section}`,
+          })),
         };
         break;
       }
@@ -265,10 +281,10 @@ export function testApplicationStorageConfiguration(
             emulatedServerType: "filesystem",
             directory: `${STANDALONE_APP_TESTS_TMP}/${storeName}_data`,
           },
-          modelVersion: {
+          ...optionalSectionStores((section) => ({
             emulatedServerType: "filesystem",
-            directory: `${STANDALONE_APP_TESTS_TMP}/${storeName}_modelVersion`,
-          },
+            directory: `${STANDALONE_APP_TESTS_TMP}/${storeName}_${section}`,
+          })),
         };
         break;
       }
@@ -282,10 +298,10 @@ export function testApplicationStorageConfiguration(
           emulatedServerType: "filesystem",
           directory: "./test_data/" + storeName,
         },
-        modelVersion: {
+        ...optionalSectionStores((section) => ({
           emulatedServerType: "filesystem",
-          directory: `./test_data/${storeName}_modelVersion`,
-        },
+          directory: `./test_data/${storeName}_${section}`,
+        })),
       };
       break;
     }
@@ -298,7 +314,7 @@ export function testApplicationStorageConfiguration(
         admin: libraryDeploymentStorageConfiguration.admin,
         model: { emulatedServerType: "sql", connectionString, schema: databaseName },
         data: { emulatedServerType: "sql", connectionString, schema: databaseName },
-        modelVersion: { emulatedServerType: "sql", connectionString, schema: `${databaseName}_modelVersion` },
+        ...optionalSectionStores((section) => ({ emulatedServerType: "sql", connectionString, schema: `${databaseName}_${section}` })),
       };
       break;
     }
@@ -309,7 +325,11 @@ export function testApplicationStorageConfiguration(
         admin: libraryDeploymentStorageConfiguration.admin,
         model: { emulatedServerType: "mongodb", connectionString, database: databaseName },
         data: { emulatedServerType: "mongodb", connectionString, database: databaseName },
-        modelVersion: { emulatedServerType: "mongodb", connectionString, database: `${databaseName}_modelVersion` },
+        ...optionalSectionStores((section) => ({
+          emulatedServerType: "mongodb",
+          connectionString,
+          database: `${databaseName}_${section}`,
+        })),
       };
       break;
     }

@@ -9,7 +9,8 @@ import {
   PersistenceStoreAdminSectionInterface,
   PersistenceStoreDataSectionInterface,
   PersistenceStoreModelSectionInterface,
-  StoreSectionConfiguration
+  StoreSectionConfiguration,
+  optionalApplicationSections,
 } from "@miroir-framework/core";
 import { FileSystemAdminStore } from "./4_services/FileSystemAdminStore.js";
 import { FileSystemDataStoreSection } from "./4_services/FileSystemDataStoreSection.js";
@@ -114,30 +115,35 @@ export function miroirFileSystemStoreSectionStartup(
       }
     }
   );
-  configurationService.registerStoreSectionFactory(
-    "filesystem",
-    "modelVersion",
-    async (
-      section: ApplicationSection,
-      config: StoreSectionConfiguration,
-      filesystemDeploymentRootDirectory: string,
-    ): Promise<PersistenceStoreDataSectionInterface | PersistenceStoreModelSectionInterface> => {
-      if (config.emulatedServerType == "filesystem") {
-        log.info(
-          "called registerStoreSectionFactory function for filesystem modelVersion store with filesystemDeploymentRootDirectory",
-          filesystemDeploymentRootDirectory,
-        );
-        const filesystemStoreName: string = config.directory;
-        return Promise.resolve(
-          new FileSystemDataStoreSection(
-            "modelVersion",
-            filesystemStoreName,
+  // optional sections (#232 modelVersion, #647 devData): same data store shape, own storage
+  for (const optionalSection of optionalApplicationSections) {
+    configurationService.registerStoreSectionFactory(
+      "filesystem",
+      optionalSection,
+      async (
+        section: ApplicationSection,
+        config: StoreSectionConfiguration,
+        filesystemDeploymentRootDirectory: string,
+      ): Promise<PersistenceStoreDataSectionInterface | PersistenceStoreModelSectionInterface> => {
+        if (config.emulatedServerType == "filesystem") {
+          log.info(
+            "called registerStoreSectionFactory function for filesystem",
+            optionalSection,
+            "store with filesystemDeploymentRootDirectory",
             filesystemDeploymentRootDirectory,
-            config.directory,
-          ),
-        );
-      }
-      return Promise.resolve(new ErrorDataStore());
-    },
-  );
+          );
+          const filesystemStoreName: string = config.directory;
+          return Promise.resolve(
+            new FileSystemDataStoreSection(
+              optionalSection,
+              filesystemStoreName,
+              filesystemDeploymentRootDirectory,
+              config.directory,
+            ),
+          );
+        }
+        return Promise.resolve(new ErrorDataStore());
+      },
+    );
+  }
 }

@@ -31,7 +31,7 @@ SANDBOX_NAMES = {
     "EntityInstanceCollection", "EntityVersion", "LoggerFactoryInterface", "LoggerInterface", "MiroirActivityTracker",
     "MiroirConfigClient", "MiroirEventService", "MiroirLoggerFactory", "PersistenceStoreControllerManager",
     "SpecificLoggerOptionsMap", "StoreOrBundleAction", "StoreUnitConfiguration", "defaultMetaModelEnvironment",
-    "defaultSelfApplicationDeploymentMap", "expect", "versionHistoryEntityUuids",
+    "defaultSelfApplicationDeploymentMap", "devDataEntityUuids", "expect", "versionHistoryEntityUuids",
 }
 # the core names of miroir-server-library's published declarations (dist/index.d.ts)
 SERVER_LIBRARY_NAMES = {

@@ -78,7 +78,7 @@ export const tableComponentEntityInstancePropsSchema = extendCoreProps({
       reportUuid: z.string().uuid(),
       openAs: z.enum(["modal", "route"]),
       application: z.string().uuid().optional(),
-      applicationSection: z.enum(["data", "model", "modelVersion"]).optional(),
+      applicationSection: z.enum(["data", "model", "modelVersion", "devData"]).optional(),
       deploymentUuid: z.string().uuid().optional(),
     })
     .optional(),

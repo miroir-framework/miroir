@@ -109,6 +109,18 @@ describe("miroir-env deploy", () => {
     });
   });
 
+  it("deploys the devData section when the package has a devData folder (#647)", async () => {
+    mkdirSync(path.join(root, "packages/miroir-example-github/assets/github_devData"), { recursive: true });
+
+    await run(["deploy", "github"], root);
+
+    const deployment = readJson(adminData(root, ENTITY_DEPLOYMENT_UUID, `${GITHUB_DEPLOYMENT}.json`));
+    expect(deployment.configuration.devData).toEqual({
+      emulatedServerType: "filesystem",
+      directory: "packages/miroir-example-github/assets/github_devData",
+    });
+  });
+
   it("names the known examples for an unknown application", async () => {
     const result = await run(["deploy", "nope"], root);
 
