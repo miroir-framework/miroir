@@ -7,7 +7,7 @@ Parent issue: #621 (npm packages epic) · Prerequisite: #652 ✅ (bundling, PR #
 Related analyses: [`../652-BUILD-bundle-meta-model-and-local-cache/analysis.md`](../652-BUILD-bundle-meta-model-and-local-cache/analysis.md)
 Key sources: [`packages/miroir-react/src/miroir-localcache-imports.ts`](../../../packages/miroir-react/src/miroir-localcache-imports.ts), [`packages/miroir-localcache-redux/src/startMiroirPlatform.ts`](../../../packages/miroir-localcache-redux/src/startMiroirPlatform.ts), [`packages/miroir-localcache-zustand/src/index.ts`](../../../packages/miroir-localcache-zustand/src/index.ts), [`packages/miroir-standalone-app/src/miroir-fwk/4-tests/localCacheImplementation.ts`](../../../packages/miroir-standalone-app/src/miroir-fwk/4-tests/localCacheImplementation.ts)
 
-**Status:** goals and decisions confirmed with the user (2026-11-02, grilling round 1: every recommendation accepted).
+**Status:** goals and decisions confirmed with the user (2026-11-02, grilling round 1: every recommendation accepted). v2 corrects the current state after an adversarial review (§6); round 2 questions open (§6.3).
 
 ---
 
@@ -50,7 +50,7 @@ Details and options: §5.
 - **Module-level parity by name, not by type.** `miroir-localcache-zustand/src/index.ts` presents itself as a "drop-in replacement for miroir-localcache-redux" and exports the same names, with aliases (`PersistenceAsyncStore as PersistenceReduxSaga`, `getInitialState as reduxStoreWithUndoRedoGetInitialState`). No TypeScript interface states the module contract; parity is checked only by the build when someone flips the switch below.
 - **The switch.** `packages/miroir-react/src/miroir-localcache-imports.ts` has two blocks, "Redux Implementation (default)" active and "Zustand Implementation (alternative)" commented out. Since #652, react bundles whichever block is active.
 
-Of the 29 names react takes from that file, zustand lacks 4: `startMiroirPlatform`, `MiroirPlatform`, `MiroirPlatformOptions`, `MiroirEmulatedServer`. Flipping the switch today breaks `startMiroirClient` (`packages/miroir-react/src/startMiroirClient.ts:12`), hence every client.
+Of the 29 names react takes from that file, zustand lacks 4: `startMiroirPlatform`, `MiroirPlatform`, `MiroirPlatformOptions`, `MiroirEmulatedServer`. Flipping the switch today breaks `startMiroirClient` (`packages/miroir-react/src/startMiroirClient.ts:12`), hence every client. The switch file is not the only redux path of the UI either (§6.1).
 
 ### 4.2 What only redux has
 
@@ -133,3 +133,39 @@ Nonreg: `run-nonreg.py --local-cache zustand` sets `MIROIR_TEST_LOCAL_CACHE` for
 | D6-b. Merge the selectors into core first | one copy of the pure selectors | removes the drift at the source | ≈1 000 diverged lines to reconcile; a follow-up issue |
 
 **Decision:** D6-a; D6-b becomes a follow-up issue.
+
+---
+
+## 6. Adversarial review (v2)
+
+### 6.1 Corrections to the current state
+
+| # | Finding | Evidence |
+|---|---|---|
+| R1 | The UI reaches redux outside the switch file | `miroir-react/src/components/ValueObjectEditor/MlEnumEditor.tsx:30-31` (`useSelector` from `react-redux`, a selector from `miroir-localcache-redux`); `MlElementEditorHooks.ts:46` (`shallowEqual` from `react-redux`); `standalone-app/src/miroir-fwk/4-tests/useSelectedApplicationMiroirTestSuiteRegistries.ts:2,34-52` reads `ReactReduxContext`, null under zustand, so the Miroir Tests registries would be empty without an error |
+| R2 | ≈23 react modules import the switch file statically; `getMemoizedReduxDeploymentsStateSelectorMap` alone has 16 importers and 18 call sites | `grep` over `miroir-react/src`; a lazily loaded implementation (D3) cannot stay out of the entry chunk while any of these static imports remains |
+| R3 | Core has no React dependency | `miroir-core/package.json`; a provider component type needs `ReactNode` |
+| R4 | Nothing ties `<LocalCacheProvider store={…getInnerStore()}>` to the implementation the DomainController was built with | `standalone-app/src/index.tsx:291`, `sandbox/src/index.tsx:191`, `componentTestTools.tsx:558`, `tests-utils.tsx:149`, `standalone-app/tests/helpers/AdminViewParamsProviders.tsx:22` |
+| R5 | Two UI tests build a raw redux store (`configureStore`) | `standalone-app/tests/4_view/useCurrentModelEnvironment.unit.test.tsx:5,63,92`, `miroir-react/tests/ListTransformerPanel.unit.test.tsx:9` |
+| R6 | Zustand's selectors use `createSelector` from `@reduxjs/toolkit`; RTK, redux and reselect load whichever cache is chosen | zustand `LocalCacheSliceSelectors.ts:5`, `DomainStateMemoizedSelectors.ts:1`, `…ForTemplate.ts:1`, `LocalCacheSliceModelSelector.ts:1`; both bundle policies list them `eager` |
+| R7 | Missed consumers | `miroir-mcp/src/tools/EndpointToolRegistry.ts:80-81` (`getInnerStore().subscribe`, both stores have it); `miroir-localcache/tests/*.unit.test.ts` (redux); react's root re-exports ≈25 local cache names (`miroir-react/src/index.ts:131-160`) and `./local-cache`; `ai/tests/integration/aiTestPlatform.ts:21` and `env/tests/bootTestSupport.ts:13` call `setupMiroirDomainController` |
+| R8 | The #652 guards name redux only; `test_package_manifests.py:300-304` pins `startMiroirNode`'s TSDoc in `localcache-redux/dist/node.d.ts` (moves with D5); `test_package_runtime_dependencies.py:24` lists zustand among published packages; `zustand` and `use-sync-external-store` become runtime dependencies of react and the server | `test_bundled_packages.py:56,85`, `test_package_manifests.py:55,411,525` |
+| R9 | `LocalCacheImplementation` already names the `"redux" \| "zustand"` union | `localCacheImplementation.ts:16` |
+| R10 | `startMiroirNode` builds on `startMiroirPlatform` and moves with it; everything else they use is in core (no cycle); the two `setupMiroirDomainController` differ: redux accepts `"none"` and throws on it (`sagaTools.ts:34`), zustand has no `"none"` | `startMiroirPlatform.ts:174` |
+| R11 | A zustand Node entry is cheap: only `src/react/hooks.ts` imports `react` / `zustand`; the store uses `zustand/vanilla` | `LocalCache.ts:5`, `UndoRedoStore.ts:5`; `hooks.ts:47-51` calls one of two hooks depending on `equalityFn` (rules of hooks, D6) |
+| R12 | Zustand's domain features are covered: non-UUID and composite keys (`LocalCacheSlice.ts:140-209`), undo/redo, freshness, the monitor; nonreg steps `unit-localCache-monitor-zustand`, `…modelUndoRedo`, `…nonUuidPk`, `…compositePk` pass in `20261102T075328Z`. The gaps are on the UI side (R1, R5) | |
+| R13 | Both state types are one core type: `ReduxStateWithUndoRedo = StateWithUndoRedo` and `ZustandStateWithUndoRedo = StateWithUndoRedo` (`miroir-core/src/0_interfaces/2_domain/LocalCacheInterface.ts:76-89`) | the redux selectors type-check on a zustand state |
+
+### 6.2 Refinements of the accepted decisions (no change of direction)
+
+- **D2 split.** Core declares `LocalCacheModule` (setup, REST client, the state types; no React). `@miroir-framework/react` declares the React binding (`Provider`, `useSelector`, `shallowEqual`). The `"redux" | "zustand"` union is named `LocalCacheKind` (R9).
+- **D2 provider.** `startMiroirClient` returns the chosen implementation with the platform; `LocalCacheProvider` takes the platform (or the binding) and the store, so they cannot disagree (R4). Every direct `react-redux` / `miroir-localcache-redux` import leaves UI sources, `ReactReduxContext` included (R1).
+- **D5.** `startMiroirPlatform` and `startMiroirNode` move to core's `5_setup`, typed on the `"local" | "remote"` modes both setups accept (R10).
+- **D3.** The guards learn zustand: owners, bundled names, the server's `./startup` declarations, the TSDoc pin, the published-package list (R8).
+
+### 6.3 Open questions (round 2)
+
+- **G2's scope** (R6): one local cache copy, not "no redux libraries" (zustand's selectors use RTK's `createSelector`).
+- **The UI's selectors** (R2, R13): static shared selectors over the core state type, or selectors read from the context.
+- **React's public re-exports** (R7): what `@miroir-framework/react` and `./local-cache` export once the implementation is chosen at startup.
+- **Redux-built UI tests** (R5): rewrite them on the chosen implementation, or keep them redux-only.
