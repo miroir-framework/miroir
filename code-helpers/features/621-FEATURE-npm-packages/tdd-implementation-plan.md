@@ -88,8 +88,8 @@ Order: I1, I4 and I5 can start now and run in parallel. I2 and I3 next. I6 waits
 | I6 | 1 | Rename script, rerunnable on open branches | ✅ #650 | `scripts/tests/test_rename_packages.py` |
 | I6 | 2 | Apply the rename | ✅ #650 | `build-all.sh`, full nonreg |
 | I6 | 3 | Meta-model and local cache join core and react (D7, D8) | ✅ #652 | packed core exposes `./meta-model`, `./admin` |
-| I7 | 1 | Generator writes a runnable project | ⬜ | `create-miroir-app` unit test on a temp folder |
-| I7 | 2 | Consumer test builds and starts the generated project from tarballs | ⬜ | `ci/release/tests/test_consumer_project.py` |
+| I7 | 1 | Generator writes a runnable project | ✅ #658 | `packages/miroir-create-app/tests/createApp.unit.test.ts` (`@miroir-framework/create-app`) |
+| I7 | 2 | Consumer test builds and starts the generated project from tarballs | ✅ #658 | `ci/release/tests/test_consumer_project.py`, nonreg `full-658-consumer-project` |
 | I8 | 1 | Published set selected, consumer check covers it | ⬜ | `ci/release/tests/test_release_version.py` |
 | I8 | 2 | Handoff lists the manual publish commands, pipeline never publishes | ⬜ | `ci/release/tests/test_tarballs.py` |
 

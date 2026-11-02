@@ -88,6 +88,11 @@ function hasNonBundledAdminStorageType(register: ReadonlyMap<string, unknown>): 
   return false;
 }
 
+/**
+ * The capabilities of this process (stores it can open, authentication, MCP, AI), from its configuration, where it runs
+ * and the store factories registered on its configuration service.
+ * @public
+ */
 export function getProcessCapabilities({
   config,
   environment,

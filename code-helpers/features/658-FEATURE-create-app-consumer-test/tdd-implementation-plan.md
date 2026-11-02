@@ -15,7 +15,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Parent: [`../621-FEATURE-npm-packages/tdd-implementation-plan.md`](../621-FEATURE-npm-packages/tdd-implementation-plan.md) (I7)
 Working branch: `claude/658-create-app-consumer-test` (from `origin/aba`)
 
-**Resume note:** plan written, no slice started.
+**Resume note:** slices 0 to 6 done (2026-11-02). Slices 3 and 4 landed together: the consumer test builds the whole project in one pass.
 
 ---
 
@@ -33,13 +33,13 @@ This plan does **not** flip `private`, select the whole set in the release plan,
 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
-| 0 | Characterize: core's pack has no seed, the release consumer imports nothing | ⬜ | findings in its Realization |
-| 1 | Core's tarball carries the seed; an environment outside the repo layout seeds and boots from it | ⬜ | `test_package_manifests.py` pack case; `miroir-env/tests/seedFromCorePackage.integ.test.ts` |
-| 2 | The generator writes a project | ⬜ | `packages/miroir-create-app/tests/createApp.unit.test.ts` |
-| 3 | Tracer: the generated project, installed from tarballs, type-checks and its server answers the Entity list | ⬜ | `ci/release/tests/test_consumer_project.py::test_generated_project_serves_the_entity_list` |
-| 4 | The generated server serves the built client | ⬜ | same file, `test_generated_project_serves_its_client` |
-| 5 | The release run and the command run the consumer test | ⬜ | `ci/release/tests/test_release_version.py`, `test_consumer_project.py` unit cases |
-| 6 | Template guard, nonreg step, docs, AC | ⬜ | `test_core_public_api.py`, nonreg `full-658-consumer-project`, full nonreg |
+| 0 | Characterize: core's pack has no seed, the release consumer imports nothing | ✅ | findings in its Realization |
+| 1 | Core's tarball carries the seed; an environment outside the repo layout seeds and boots from it | ✅ | `test_package_manifests.py` pack case; `miroir-env/tests/seedFromCorePackage.integ.test.ts` |
+| 2 | The generator writes a project | ✅ | `packages/miroir-create-app/tests/createApp.unit.test.ts` |
+| 3 | Tracer: the generated project, installed from tarballs, type-checks and its server answers the Entity list | ✅ | `ci/release/tests/test_consumer_project.py::test_generated_project_serves_the_entity_list` |
+| 4 | The generated server serves the built client | ✅ | same file, `test_generated_project_serves_its_client` |
+| 5 | The release run and the command run the consumer test | ✅ | `ci/release/tests/test_release_version.py`, `test_consumer_project.py` unit cases |
+| 6 | Template guard, nonreg step, docs, AC | ✅ | `test_core_public_api.py`, nonreg `full-658-consumer-project`, full nonreg |
 
 ---
 
@@ -92,7 +92,7 @@ This plan does **not** flip `private`, select the whole set in the release plan,
 
 ## Slice 0 — Characterize
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** record what the consumer of today's tarballs gets, so later slices change it knowingly.
 
@@ -104,11 +104,15 @@ No test file: findings go into this slice's Realization and, when they block a l
 
 **Validation:** the commands above, output summarized in the Realization.
 
+### Realization
+
+The six tarballs (core 2.9 MB, react 1.2 MB, server 101 KB, env 61 KB, mcp 29 KB, store-filesystem 8 KB), packed from the built workspace and installed in a folder outside the repository with `file:` dependencies and `overrides`, install (440 packages) and import: core (1091 exports), `core/meta-model` (346), `core/admin` (48), `server/startup`, `server`, `store-filesystem`, `env`. Core's pack holds no `assets` or `seed` path. Core, react, server and store-filesystem are `private`; `file:` installs them anyway (D9 holds).
+
 ---
 
 ## Slice 1 — Core's tarball carries the seed
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** a Miroir process whose environment lives outside the repository seeds and opens Miroir and Admin from an installed core package.
 
@@ -128,11 +132,15 @@ npm run testByFile -w @miroir-framework/env -- seedFromCorePackage
 npm run nonreg:filesystem -- --runner shared --scope smoke,core,tooling
 ```
 
+### Realization
+
+As planned. The shipped sections are listed once, in `packages/miroir-core/seed-sections.json`, read by `tsup.config.js` (`copySeed()`, after the meta-model build) and by the pack case. `dist/seed` is 6.0 MB unpacked. `packagesDirectory` is resolved under `MIROIR_ROOT`, so the test lays the project out as the generator does (the template's own `environments/local.json`, `node_modules/@miroir-framework/core` linked to the built package) instead of using an absolute path. Both env cases passed on the first run after the copy was added.
+
 ---
 
 ## Slice 2 — The generator writes a project
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** `create-app <dir>` writes the project of analysis §6.1.
 
@@ -155,11 +163,15 @@ python scripts/rename_packages.py --check
 npm run nonreg:filesystem -- --runner shared --scope smoke,tooling
 ```
 
+### Realization
+
+The bin is plain ESM JavaScript (`bin/create-app.js`, type-checked with `checkJs` by the package's `tsconfig.json`); it runs as a program only when `argv[1]` resolves to it (an npm `.bin` link is followed). Two manifest guards assumed a built package: `imported_packages` now also scans `bin/*.js`, and the published-name list gained `@miroir-framework/create-app`. The template's third-party versions are the workspace's (sandbox, standalone app, root `typescript` 7.0.2).
+
 ---
 
 ## Slice 3 — Tracer: installed from tarballs, the generated server answers
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** a project generated outside the repository, installed from tarballs only, type-checks and its server returns Miroir's Entity list.
 
@@ -176,11 +188,15 @@ MIROIR_CONSUMER_TEST=1 python -m pytest ci/release/tests/test_consumer_project.p
 python ci/release/consumer_project.py --pack
 ```
 
+### Realization
+
+Slices 3 and 4 landed together: `prepare_project` runs `npm run build` (server and client) once, so the module-scoped fixture serves both slow cases (about 40 s with a warm npm cache). Template fixes needed: none beyond the draft. The real-server client registers no store (`stores: []`), which answers the open question of analysis §4.4. The generator runs from its tarball (`npm exec --package=file:<tgz> -- create-app`), which also proves the bin and `files` of its tarball. Not planned but done once by hand: a Playwright screenshot of the generated project's home page (shell, menus, "Configurations loaded successfully"), kept out of the test per D8.
+
 ---
 
 ## Slice 4 — The generated server serves the built client
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** `npm run build` also builds the client with Vite, and the server serves it.
 
@@ -196,11 +212,15 @@ MIROIR_CONSUMER_TEST=1 python -m pytest ci/release/tests/test_consumer_project.p
 npm run nonreg:filesystem -- --runner shared --scope smoke,tooling
 ```
 
+### Realization
+
+As planned (`--skip-consumer-test`, `consumer_test_inputs` in `tarballs.py`). The cases are in `test_tarballs.py` next to `validate_layer_consumer`'s, not in `test_release_version.py`.
+
 ---
 
 ## Slice 5 — The release run runs the consumer test
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** `release_version.py --apply` runs the consumer test on its tarballs when they hold the generator and the five packages, and says why it skips otherwise.
 
@@ -216,11 +236,15 @@ python -m pytest ci/release/tests -q
 python ci/release/release_version.py --bump patch --since 0.5.0-rc.1 --force @miroir-framework/create-app   # plan only: lists the skip reason
 ```
 
+### Realization
+
+Merged into slices 3 and 4.
+
 ---
 
 ## Slice 6 — Template guard, nonreg step, docs, AC
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** the #649 guard covers the template; the consumer test runs in the `full` nonreg tier; the docs say how to start a project.
 
@@ -228,7 +252,7 @@ python ci/release/release_version.py --bump patch --since 0.5.0-rc.1 --force @mi
 
 **GREEN:** the scan's roots become a list; if the template imports a core name the sandbox does not, mark it `@public` (and update `docs/reference/core-public-api.md` through its sync test).
 
-**Docs:** `docs/guides/build-it-yourself.md` (or a new `docs/guides/start-a-project.md`, linked from the README): `npm create @miroir-framework/app`, the project layout, switching the store; `docs/reference/release-process.md`: the consumer test; `AGENTS.md` packages list; #621 plan rows I7 1–2 ✅.
+**Docs:** `docs/guides/build-it-yourself.md` (or a new `docs/guides/start-a-project.md`, linked from the README): `npm create @miroir-framework/app`, the project layout, switching the store; `docs/reference/release-process.md`: the consumer test; #621 plan rows I7 1–2 ✅.
 
 **Nonreg:** step `full-658-consumer-project` (`tier: full`, `scopes: ["tooling"]`, `argv: python ci/release/consumer_project.py --pack`).
 
@@ -254,3 +278,7 @@ npm run lint
 npm run nonreg:filesystem -- --runner shared
 npm run nonreg -- --runner shared --only full-658-consumer-project
 ```
+
+### Realization
+
+The guard is parametrized over the two templates (`sandbox`, `create-app`). The create-app template imports 10 core names; 4 were not `@public` and are now marked (`defaultExternalServiceClient`, `getClientEnvironment`, `getProcessCapabilities`, `getProcessTokenSecret`), with `docs/reference/core-public-api.md` regenerated. Nonreg: `unit-658-create-app` (unit tier: generator test and the release pytest) in addition to `full-658-consumer-project`. Docs: `docs/guides/start-a-project.md` (linked from `docs/index.md`), the template's `README.md`, `docs/reference/release-process.md` §6a and §10d. `AGENTS.md` unchanged (its size limit; the template has no build step).

@@ -25,7 +25,10 @@ export function defaultExternalServiceEnvironment(
   };
 }
 
-/** A client on `defaultExternalServiceEnvironment(overrides)`. */
+/**
+ * A client on `defaultExternalServiceEnvironment(overrides)`.
+ * @public
+ */
 export function defaultExternalServiceClient(
   overrides: Partial<ExternalServiceEnvironment> = {},
 ): ExternalServiceClientInterface {

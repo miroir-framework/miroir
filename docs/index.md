@@ -37,8 +37,9 @@ Welcome to the Miroir Framework documentation. This guide will help you find the
 3. [Core Concepts](guides/core-concepts.md) - Understanding the framework
 4. [Library Tutorial](tutorials/library-tutorial.md) - Hands-on walkthrough (20 min)
 5. [Creating Your First Application](guides/developer/creating-applications.md) - Build from scratch
-6. [Developer Guides](guides/developer/) - In-depth development topics
-7. [API Reference](reference/api/) - Complete API documentation
+6. [Start a Project from npm](guides/start-a-project.md) - `npm create @miroir-framework/app` (once the packages are published)
+7. [Developer Guides](guides/developer/) - In-depth development topics
+8. [API Reference](reference/api/) - Complete API documentation
 
 ### 🎨 Citizen Developers & Low-Code Users
 **Goal**: Build applications without deep programming knowledge

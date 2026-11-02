@@ -7,7 +7,7 @@ Parent issue: [#621](https://github.com/miroir-framework/miroir/issues/621) (pla
 Related analyses: [`../621-FEATURE-npm-packages/analysis.md`](../621-FEATURE-npm-packages/analysis.md) (W9, open question 4), [`../649-BUILD-core-public-api/analysis.md`](../649-BUILD-core-public-api/analysis.md) (G2: the template guard), [`../652-BUILD-bundle-meta-model-and-local-cache/analysis.md`](../652-BUILD-bundle-meta-model-and-local-cache/analysis.md) (core's subpaths)
 Key sources: [`ci/release/release_lib/tarballs.py`](../../../ci/release/release_lib/tarballs.py), [`packages/miroir-env/src/environmentState.ts`](../../../packages/miroir-env/src/environmentState.ts), [`packages/miroir-server/src/server.ts`](../../../packages/miroir-server/src/server.ts), [`packages/miroir-sandbox/src/index.tsx`](../../../packages/miroir-sandbox/src/index.tsx), [`packages/miroir-standalone-app/vite/environmentConfig.js`](../../../packages/miroir-standalone-app/vite/environmentConfig.js)
 
-**Status:** decisions confirmed (grilling rounds 1 and 2, 2026-11-02, all as recommended). Implementation: [`tdd-implementation-plan.md`](./tdd-implementation-plan.md).
+**Status:** implemented (2026-11-02), see [`tdd-implementation-plan.md`](./tdd-implementation-plan.md). Decisions confirmed in grilling rounds 1 and 2, all as recommended.
 
 ---
 
@@ -116,7 +116,7 @@ Core's `files` (`packages/miroir-core/package.json`) ship `dist/meta-model.js` a
 
 ### 4.4 Client in real-server mode (aligned, reused)
 
-`miroir-standalone-app/vite/environmentConfig.js`: `webClientEnvironment` calls `environmentRealServerClientConfig(resolved)` and injects it as `__MIROIR_CLIENT_CONFIG__`, read by `src/index.tsx` (line 128). `startMiroirClient` (`miroir-react/src/startMiroirClient.ts:76`) builds the platform, fetches the server's capabilities and returns `{ domainController, miroirContext, processCapabilities, localCacheBinding, emulatedServer? }`. The standalone app passes `stores: [miroirIndexedDbStoreSectionStartup]` even in real-server mode; whether a real-server client needs any store registered is to be checked in the implementation (the template should register none).
+`miroir-standalone-app/vite/environmentConfig.js`: `webClientEnvironment` calls `environmentRealServerClientConfig(resolved)` and injects it as `__MIROIR_CLIENT_CONFIG__`, read by `src/index.tsx` (line 128). `startMiroirClient` (`miroir-react/src/startMiroirClient.ts:76`) builds the platform, fetches the server's capabilities and returns `{ domainController, miroirContext, processCapabilities, localCacheBinding, emulatedServer? }`. The standalone app passes `stores: [miroirIndexedDbStoreSectionStartup]` even in real-server mode; a real-server client needs no store registered: the template passes `stores: []` (checked in the implementation, plan slice 4).
 
 ### 4.5 Packages the generated project needs
 
@@ -201,3 +201,4 @@ In `--apply`, it runs after the last layer check when the tarball set holds the 
 ## 8. Document history
 
 - v1 (2026-11-02): decisions D1–D9 from grilling round 1, D10–D11 from round 2, all as recommended.
+- v1.1 (2026-11-02): status implemented; §4.4 question answered.
