@@ -51,7 +51,8 @@
     "dist/meta-model.js",
     "dist/meta-model.js.map",
     "dist/admin.js",
-    "dist/admin.js.map"
+    "dist/admin.js.map",
+    "dist/seed"
   ],
   "scripts": {
     "copy-files": "copyfiles -u 1 src/**/*.json src/**/*.css dist/src",

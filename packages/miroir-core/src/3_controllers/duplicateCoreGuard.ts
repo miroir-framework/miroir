@@ -1,11 +1,11 @@
 /**
- * Two copies of miroir-core in one JavaScript realm each have their own singletons (the configuration service, the
+ * Two copies of @miroir-framework/core in one JavaScript realm each have their own singletons (the configuration service, the
  * logger factory, the action implementations, the secret stores): a store registers its loggers on one copy and the
  * host starts the other, `instanceof` checks against core classes fail across copies. Each copy records itself on
  * `globalThis` when its ConfigurationService module is evaluated, and warns when another copy is there (#645).
  */
 
-/** Key of the record of loaded miroir-core copies on `globalThis`; `Symbol.for` makes every copy share it. */
+/** Key of the record of loaded @miroir-framework/core copies on `globalThis`; `Symbol.for` makes every copy share it. */
 export const MIROIR_CORE_INSTANCES = Symbol.for("miroir-core.instances");
 
 /**
@@ -51,7 +51,7 @@ export function registerMiroirCoreInstance(
   try {
     record(version, moduleUrl, devTool, target, warn);
   } catch (error) {
-    warn(`miroir-core ${version}: could not record this copy of miroir-core: ${String(error)}`);
+    warn(`@miroir-framework/core ${version}: could not record this copy of @miroir-framework/core: ${String(error)}`);
   }
 }
 
@@ -68,8 +68,8 @@ function record(
     !(Array.isArray(existing) && Object.isExtensible(existing) && existing.every(isInstance))
   ) {
     warn(
-      `miroir-core ${version}: unrecognised record of loaded copies under Symbol.for("miroir-core.instances"); ` +
-        "copies of miroir-core cannot be counted.",
+      `@miroir-framework/core ${version}: unrecognised record of loaded copies under Symbol.for("miroir-core.instances"); ` +
+        "copies of @miroir-framework/core cannot be counted.",
     );
     return;
   }
@@ -87,10 +87,10 @@ function record(
     return;
   }
   warn(
-    `miroir-core: ${instances.length} copies are loaded in this realm (process, page or worker): ` +
+    `@miroir-framework/core: ${instances.length} copies are loaded in this realm (process, page or worker): ` +
       instances.map((instance) => `${instance.version} at ${instance.location}`).join(", ") +
       ". Each copy has its own configuration service, loggers, action implementations and secrets: what is " +
       "registered on one copy is missing from the other, and instanceof checks fail across copies. " +
-      "Install a single miroir-core (npm ls @miroir-framework/core).",
+      "Install a single @miroir-framework/core (npm ls @miroir-framework/core).",
   );
 }

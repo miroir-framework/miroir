@@ -64,10 +64,16 @@ def is_comment_or_string_only(line: str) -> bool:
     return stripped.startswith("//") or stripped.startswith("*")
 
 
+# #658: the project create-app writes is the user's code, not Miroir's: its server and client print to the console
+ALLOWLIST_REL_PREFIXES = ("packages/miroir-create-app/template/",)
+
+
 def is_allowed(path: Path, line: str) -> bool:
     if path.name in ALLOWLIST_FILES:
         return True
     rel = path.relative_to(ROOT).as_posix()
+    if rel.startswith(ALLOWLIST_REL_PREFIXES):
+        return True
     if rel in ALLOWLIST_REL_PATHS:
         return True
     if rel.endswith("packages/miroir-server/src/server.ts"):

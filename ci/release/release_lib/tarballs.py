@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Any
 
 from release_lib.common import ReleaseError, dump_json, executable, load_json, log_step, run
+from release_lib.consumer_project import missing_tarballs, run_consumer_project
 from release_lib.plan import ReleasePlan
 from release_lib.workspace import workspace_packages
 
@@ -197,11 +198,30 @@ def validate_layer_consumer(
                 )
 
 
+def consumer_test_inputs(repo_root: Path, infos: list[TarballInfo]) -> tuple[dict[str, Path], list[str]]:
+    """#658: the tarballs the generated-project consumer test installs, and the packages it needs that this release
+    did not pack (the test is skipped while that list is not empty)."""
+    tarballs = {info.package: (repo_root / info.path).resolve() for info in infos}
+    return tarballs, missing_tarballs(repo_root, tarballs)
+
+
+def run_consumer_test(repo_root: Path, infos: list[TarballInfo]) -> None:
+    tarballs, missing = consumer_test_inputs(repo_root, infos)
+    if missing:
+        log_step(
+            "consumer test (#658) skipped: this release packed no tarball for " + ", ".join(missing)
+        )
+        return
+    log_step("consumer test (#658): a generated project, installed from this release's tarballs")
+    run_consumer_project(tarballs)
+
+
 def build_pack_and_validate(
     repo_root: Path,
     plan: ReleasePlan,
     *,
     tarball_dir: Path | None = None,
+    consumer_test: bool = True,
 ) -> list[TarballInfo]:
     out = tarball_dir or (repo_root / "release-tarballs")
     if out.exists():
@@ -210,4 +230,8 @@ def build_pack_and_validate(
     infos = pack_layer(repo_root, plan, tarball_root=out)
     for layer_index in range(len(plan.layers)):
         validate_layer_consumer(repo_root, plan, infos, through_layer=layer_index)
+    if consumer_test:
+        run_consumer_test(repo_root, infos)
+    else:
+        log_step("--skip-consumer-test: the generated-project consumer test (#658) did not run")
     return infos

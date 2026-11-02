@@ -72,6 +72,11 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
         action="store_true",
         help="Skip layered build/pack/consumer validation (version + lockfile only)",
     )
+    parser.add_argument(
+        "--skip-consumer-test",
+        action="store_true",
+        help="Skip the generated-project consumer test (#658) after the layer checks",
+    )
     parser.add_argument("--commit", action="store_true")
     parser.add_argument("--tag", action="store_true")
     parser.add_argument("--push", action="store_true")
@@ -164,7 +169,9 @@ def main(argv: list[str] | None = None) -> int:
             apply_lerna_version(apply_root, plan)
             tarballs = []
             if not args.skip_build:
-                tarballs = build_pack_and_validate(apply_root, plan)
+                tarballs = build_pack_and_validate(
+                    apply_root, plan, consumer_test=not args.skip_consumer_test
+                )
             else:
                 log_step("--skip-build: versioned and range-rewritten only; no build/pack/consumer validation ran")
             write_release_plan(

@@ -228,7 +228,7 @@ Layer **P0** (`deployment-miroir`, `deployment-admin`) builds first via
 This still succeeds because `deployment-miroir/tsup.config.js` declares
 `external: ['@miroir-framework/core']` and its only references to `@miroir-framework/core` are
 `import type {...}` — fully erased by esbuild, so the JS build never resolves or
-reads anything from `node_modules/miroir-core` at all. Layer **P1** then builds
+reads anything from `node_modules/@miroir-framework/core` at all. Layer **P1** then builds
 `@miroir-framework/core` itself, which does genuine value-level imports of the now-built
 `deployment-miroir`/`-admin` — by then they exist.
 
@@ -246,6 +246,30 @@ have no standalone consumer contract"). `deployment-miroir`/`-admin` are `"priva
 true`, so `classify_packages()` marks them `bundle_only`, not `distributeable` — the
 per-package clean-consumer check never applies to them, matching the "this
 dependency is light / internal-only, no external contract" reasoning from §2.
+
+### 6a. The generated-project consumer test (#658)
+
+After the layer checks, `build_pack_and_validate()` runs the consumer test (`release_lib/consumer_project.py`) when
+this release packed the generator (`@miroir-framework/create-app`) and every package a generated project installs
+(`core`, `react`, `server`, `mcp`, `store-filesystem`, `env`); otherwise it logs which ones are missing and skips.
+`--skip-consumer-test` turns it off.
+
+In a temporary folder outside the repository, it runs the generator from its tarball
+(`npm exec --package=file:<tgz> -- create-app`), points every `@miroir-framework/*` dependency of the project at its
+tarball (direct dependencies, and `overrides` for the transitive ones), then `npm install`, `npm run typecheck`,
+`npm run build`, starts the server on a free port and checks that `GET /` (and a client route) returns the built
+client and that `GET /CRUD/<Miroir deployment>/model/entity/<Entity>/all` lists the `Entity` Entity. It fails when
+the server prints #645's two-copies warning. `private` flags do not matter here: `file:` installs a private tarball.
+
+The same test runs on its own:
+
+```bash
+python ci/release/consumer_project.py --pack                       # packs the built workspace packages it needs
+python ci/release/consumer_project.py --tarballs release-tarballs  # the tarballs of an --apply run
+```
+
+and as the nonreg step `full-658-consumer-project` (`MIROIR_CONSUMER_TEST=1 python -m pytest
+ci/release/tests/test_consumer_project.py`). Third-party dependencies come from the npm registry.
 
 ## 7. Selection & versioning semantics
 
@@ -394,7 +418,7 @@ in `globalThis[Symbol.for("miroir-core.instances")]` (a list of `{ version, loca
 second logs, at WARN and before any logger is started:
 
 ```
-@miroir-framework/core: 2 copies are loaded in this realm (process, page or worker): 0.5.0 at file:///…/node_modules/miroir-core/dist/index.js, 0.5.0 at file:///…/node_modules/<package>/node_modules/miroir-core/dist/index.js. …
+@miroir-framework/core: 2 copies are loaded in this realm (process, page or worker): 0.5.0 at file:///…/node_modules/@miroir-framework/core/dist/index.js, 0.5.0 at file:///…/node_modules/<package>/node_modules/@miroir-framework/core/dist/index.js. …
 ```
 
 Run `npm ls @miroir-framework/core` and make the tree resolve one copy (same version everywhere, `npm dedupe`).
@@ -424,7 +448,8 @@ rewrite the document.
 
 The packages of the published set carry their published names in the repo: `@miroir-framework/core`, `/react`,
 `/server` (folder `packages/miroir-server-library`), `/store-postgres`, `/store-filesystem`, `/store-indexeddb`,
-`/store-mongodb`, `/store-bundled`, `/env`, `/mcp`, `/cli`. Folders keep their `miroir-*` names, so a script that
+`/store-mongodb`, `/store-bundled`, `/env`, `/mcp`, `/cli`, and since #658 `/create-app` (folder
+`packages/miroir-create-app`). Folders keep their `miroir-*` names, so a script that
 lists folders selects a workspace with `-w packages/<folder>`. `miroir-app-miroir`, `miroir-app-admin`,
 `miroir-localcache-redux` and `miroir-localcache-zustand` stay private: #652 and #656 bundle them into published
 packages (§10e). Each published
@@ -493,4 +518,5 @@ python -m pytest ci/release/tests -v
 
 `ci/release/tests/test_release_version.py` and `test_tarballs.py` exercise plan
 construction, layering/cycle detection, Lerna range verification, and the
-build/pack/clean-consumer-validate pipeline.
+build/pack/clean-consumer-validate pipeline. `test_consumer_project.py` covers the
+consumer test (§6a); its slow cases run with `MIROIR_CONSUMER_TEST=1`.

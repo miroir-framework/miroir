@@ -96,6 +96,7 @@ def test_each_package_of_the_set_has_a_scoped_published_name():
             "@miroir-framework/mcp",
             "@miroir-framework/cli",
             "@miroir-framework/env",
+            "@miroir-framework/create-app",  # #658
         ]
     )
 
@@ -112,7 +113,8 @@ DECLARATION_STUBS = {"packages/miroir-app-miroir": "./index.d.ts", "packages/mir
 
 
 def built(folder: str) -> bool:
-    return (ROOT / folder / "dist").is_dir()
+    # #658: a package without a build script (create-app ships its sources) is always packable
+    return (ROOT / folder / "dist").is_dir() or "build" not in manifest(folder).get("scripts", {})
 
 
 def require_built(folder: str) -> None:
@@ -396,7 +398,12 @@ def imported_packages(folder: str) -> frozenset[str]:
     own = manifest(folder)["name"]
     found = set()
     # src/, plus the build entries at the package root (the meta-model packages build `index.ts` and have no src/).
-    paths = [*source_files(f"{folder}/src"), *(path for path in (ROOT / folder).glob("*.ts") if path.name == "index.ts")]
+    # #658: create-app ships its program unbuilt, as bin/*.js (its template/ is the generated project's code, not its own)
+    paths = [
+        *source_files(f"{folder}/src"),
+        *(path for path in (ROOT / folder).glob("*.ts") if path.name == "index.ts"),
+        *(ROOT / folder).glob("bin/*.js"),
+    ]
     scanned = 0
     for path in paths:
         if path.name.endswith(".d.ts") or ".test." in path.name:
@@ -574,6 +581,35 @@ def test_core_carries_the_meta_model_subpaths():
         assert path in packed, path
     meta_model = (ROOT / folder / "dist/meta-model.js").read_text(encoding="utf-8")
     assert "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad" in meta_model, "the Entity entity is not in dist/meta-model.js"
+
+
+SEED_SECTIONS_FILE = ROOT / "packages/miroir-core/seed-sections.json"
+
+
+def seed_sections() -> dict[str, list[str]]:
+    return {key: value for key, value in json.loads(SEED_SECTIONS_FILE.read_text(encoding="utf-8")).items() if key != "//"}
+
+
+def test_core_packs_the_seed_of_miroir_and_admin():
+    """#658 (D10): a project outside the repository seeds its filesystem stores from core's tarball."""
+    folder = "packages/miroir-core"
+    assert "dist/seed" in manifest(folder)["files"]
+    require_built(folder)
+    packed = pack_list(folder)
+    for package, sections in seed_sections().items():
+        for section in sections:
+            source = sorted((ROOT / "packages" / package / "assets" / section).rglob("*.json"))
+            assert source, f"{package}/assets/{section} holds no JSON file"
+            missing = [
+                str(path.relative_to(ROOT / "packages"))
+                for path in source
+                if f"dist/seed/{path.relative_to(ROOT / 'packages').as_posix()}" not in packed
+            ]
+            assert missing == [], f"not in core's tarball: {missing[:5]}"
+    entity = "dist/seed/miroir-app-miroir/assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad.json"
+    assert entity in packed
+    shipped = {path.split("/")[4] for path in packed if path.startswith("dist/seed/")}
+    assert shipped == {section for sections in seed_sections().values() for section in sections}
 
 
 @pytest.mark.parametrize("folder", ["packages/miroir-core", "packages/miroir-react", "packages/miroir-server-library"])
