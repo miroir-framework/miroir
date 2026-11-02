@@ -94,7 +94,8 @@ describe("devData layout (#647)", () => {
   });
 
   it("leaves no Meta application (#647 G5)", () => {
-    expect(existsSync(join(packagesRoot, "miroir-app" + "-meta"))).toBe(false);
+    // package.json, not the folder: an older checkout keeps its ignored node_modules/ there
+    expect(existsSync(join(packagesRoot, "miroir-app" + "-meta", "package.json"))).toBe(false);
     // built by concatenation, so that this file does not name them
     const names = [
       "miroir-app" + "-meta",
