@@ -32,6 +32,7 @@ import {
   type EndpointDefinition,
   type SelfApplication,
   type Entity,
+  localCacheKindFromEnvironment,
 } from "@miroir-framework/core";
 import {
   getDefaultLibraryModelEnvironmentDEFUNCT,
@@ -298,8 +299,15 @@ describe("CLI Commands Integration Tests", () => {
     openTestEnvironment(environmentName, { reseed: true });
     ConfigurationService.configurationService.registerTestImplementation({ expect: expect as any });
 
-    const platform = await initializePlatform({ env: { ...process.env, MIROIR_ENV: environmentName } });
+    const platform = await initializePlatform({
+      env: { ...process.env, MIROIR_ENV: environmentName },
+      // #656: the local cache MIROIR_TEST_LOCAL_CACHE names (run-nonreg.py --local-cache), redux when unset
+      localCache: localCacheKindFromEnvironment(process.env),
+    });
     expect(platform.environment.name).toBe(environmentName);
+    expect(platform.domainController.currentLocalCacheInfo().implementation).toBe(
+      localCacheKindFromEnvironment(process.env),
+    );
     domainController = platform.domainController;
     localCache = domainController.getLocalCache();
     applicationDeploymentMap = platform.applicationDeploymentMap;

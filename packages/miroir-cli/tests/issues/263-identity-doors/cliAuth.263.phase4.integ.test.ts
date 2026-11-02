@@ -8,6 +8,7 @@ import {
   ConfigurationService,
   issueBearerToken,
   setProcessTokenSecret,
+  localCacheKindFromEnvironment,
 } from "@miroir-framework/core";
 import { openTestEnvironment, selectedTestEnvironment } from "@miroir-framework/env";
 import { entityBook, selfApplicationLibrary } from "miroir-example-library";
@@ -62,7 +63,11 @@ if (runThis) {
       openTestEnvironment(environmentName, { reseed: true });
       ConfigurationService.configurationService.registerTestImplementation({ expect: expect as any });
       setProcessTokenSecret(SECRET);
-      platform = await initializePlatform({ env: { ...process.env, MIROIR_ENV: environmentName } });
+      platform = await initializePlatform({
+      env: { ...process.env, MIROIR_ENV: environmentName },
+      // #656: the local cache MIROIR_TEST_LOCAL_CACHE names (run-nonreg.py --local-cache), redux when unset
+      localCache: localCacheKindFromEnvironment(process.env),
+    });
     }, globalTimeOut);
 
     it("refuses to start without identity, and the gate refuses the command", async () => {

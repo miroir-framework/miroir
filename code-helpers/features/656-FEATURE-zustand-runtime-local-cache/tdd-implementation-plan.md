@@ -38,7 +38,7 @@ Not in this plan: a config default for the choice (D1-b, later); the selectors i
 | 2 | Every Node test platform follows `MIROIR_TEST_LOCAL_CACHE` | ✅ | mcp, server-library, ai, env tests on both caches |
 | 3 | A React client starts and renders on Zustand | ✅ | react `startMiroirClient.integ` on both caches; standalone bundle guard |
 | 4 | The standalone app's UI tests run on the chosen cache | ✅ | `nonreg --local-cache zustand --scope smoke,ui,localcache` |
-| 5 | Docs, full nonreg on both caches, cleanup, AC | ⬜ | `nonreg:filesystem` and `nonreg:zustand` |
+| 5 | Docs, full nonreg on both caches, cleanup, AC | ✅ | `nonreg:filesystem` and `nonreg:zustand` |
 
 ---
 
@@ -279,14 +279,14 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,ui,localcache
 - D10: react gained `LocalCacheStateStore` and a `createLocalCacheStateStore(presentModelSnapshot)` in each cache entry (redux `configureStore`, zustand `createStore`), also returned by `loadLocalCache`. `useCurrentModelEnvironment.unit` and react's `ListTransformerPanel.unit` build their store with it.
 - D6: zustand's `useSelector` now memoizes the selection per (state, selector), as react-redux does. Zustand's `useStore` calls the selector on every snapshot read, so a selector that builds an array gave React a new snapshot on each read. Pinned by react's `localCacheBinding.unit` on both caches (RED on zustand before the fix: 2 failures).
 - `test_local_cache_choice.py`: allowlist removed (no UI source loads a local cache); a type-only import is allowed.
-- Validation: _(below, after the rerun)_
+- Validation: after the fixes, `nonreg:filesystem --runner shared --scope smoke,ui,localcache` 58 of 58 on zustand (20261102T112236Z) and 58 of 58 on redux (20261102T113049Z); `test_local_cache_choice.py` 3 passed; react `localCacheBinding.unit` 4/4, `ListTransformerPanel.unit` and standalone `useCurrentModelEnvironment.unit` green on both caches; lint 0; standalone tsc unchanged (the 2 `Ai*ProposalForm.tsx` errors, and the tests project's 581 errors, as on the base).
 
 
 ---
 
 ## Slice 5 — Docs, full nonreg on both caches, cleanup, AC
 
-**Status:** ⬜ pending
+**Status:** ✅ done
 
 ### Work
 
@@ -316,7 +316,11 @@ npm run nonreg:zustand
 
 ### Realization
 
-_(pending)_
+- Docs: `release-process.md` §10d and §10e (both caches bundled into react and the server, the startup option, the contract in core), `testing.md` (`--local-cache` reaches the whole stack), `application-startup.md`, `code-splitting.md`, `architecture.md`, one line in `AGENTS.md` (12284 bytes).
+- Follow-up issue #657: one copy of the selectors, in core (D6-b).
+- Validation: `./build-all.sh full build server-binary`; both apps built, bundle guards 0 violations (standalone 828128 bytes gzipped at load for a 827963 baseline: the test switch's import in `index.tsx`; Electron unchanged); guards 575 passed (`MIROIR_REQUIRE_PACK=1`); lint 0; tsc on core, react, both caches, server library; core 3318 tests. `nonreg:filesystem` 128 of 129 (20261102T114447Z) and `nonreg:zustand` 128 of 129 (20261102T115813Z). The one failure on both is `default-miroir-devData-validation` › "leaves no Meta application (#647 G5)", which finds a leftover, untracked `packages/miroir-app-meta/` (only `dist/` and `node_modules/`) in this checkout. The same folder gives `miroir-env check --strict` its one error. `integ-runner.lendDocument` passes in both runs.
+- Packaging and the future: the local cache packages are MIT licensed and are expected to become public. The design does not depend on their staying private. Each cache is reached through its own entry and the `LocalCacheModule` contract, so publishing them means making them external dependencies of react and the server (`noExternal` → `dependencies`) without changing a caller.
+
 
 ## Revision history
 
