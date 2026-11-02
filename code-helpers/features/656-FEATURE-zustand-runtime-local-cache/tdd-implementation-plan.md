@@ -279,7 +279,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,ui,localcache
 - D10: react gained `LocalCacheStateStore` and a `createLocalCacheStateStore(presentModelSnapshot)` in each cache entry (redux `configureStore`, zustand `createStore`), also returned by `loadLocalCache`. `useCurrentModelEnvironment.unit` and react's `ListTransformerPanel.unit` build their store with it.
 - D6: zustand's `useSelector` now memoizes the selection per (state, selector), as react-redux does. Zustand's `useStore` calls the selector on every snapshot read, so a selector that builds an array gave React a new snapshot on each read. Pinned by react's `localCacheBinding.unit` on both caches (RED on zustand before the fix: 2 failures).
 - `test_local_cache_choice.py`: allowlist removed (no UI source loads a local cache); a type-only import is allowed.
-- Validation: _(below, after the rerun)_
+- Validation: after the fixes, `nonreg:filesystem --runner shared --scope smoke,ui,localcache` 58 of 58 on zustand (20261102T112236Z) and 58 of 58 on redux (20261102T113049Z); `test_local_cache_choice.py` 3 passed; react `localCacheBinding.unit` 4/4, `ListTransformerPanel.unit` and standalone `useCurrentModelEnvironment.unit` green on both caches; lint 0; standalone tsc unchanged (the 2 `Ai*ProposalForm.tsx` errors, and the tests project's 581 errors, as on the base).
 
 
 ---
