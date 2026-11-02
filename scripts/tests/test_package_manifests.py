@@ -113,7 +113,8 @@ DECLARATION_STUBS = {"packages/miroir-app-miroir": "./index.d.ts", "packages/mir
 
 
 def built(folder: str) -> bool:
-    return (ROOT / folder / "dist").is_dir()
+    # #658: a package without a build script (create-app ships its sources) is always packable
+    return (ROOT / folder / "dist").is_dir() or "build" not in manifest(folder).get("scripts", {})
 
 
 def require_built(folder: str) -> None:
