@@ -22,7 +22,9 @@ instructions see [`ci/release/README.md`](../../ci/release/README.md).
 
 ```text
 ci/release/
-  release_version.py       # CLI entrypoint (plan / --apply / --verify)
+  release_version.py       # CLI entrypoint (plan / --apply / --verify / --record)
+  publish.py               # Publish a validated handoff, layer by layer (#664; dry run unless --yes)
+  consumer_project.py      # The generated-project consumer test on its own (#658)
   release_lib/
     workspace.py            # Package inventory, runtime vs dev dependency graphs
     plan.py                 # Lerna candidate discovery, closure, layering
@@ -30,12 +32,14 @@ ci/release/
     tarballs.py              # Per-layer build, `npm pack`, hashing, consumer validation
     handoff.py                # release-plan.json / release-handoff.json emission
     worktree.py                # Disposable `git worktree` helpers
+    publish.py                  # Pre-publish checks, dist-tags, the only real `npm publish` (#664)
+    consumer_project.py         # Generated-project consumer test (#658)
     semver.py                   # Product SemVer parsing/increment
     common.py                    # ReleaseError, subprocess/JSON helpers
   HANDOFF.md                # release producer → artefact pipeline contract (schema reference)
   lerna-spike.md             # Encoded/proven Lerna invocation from the selection spike
   README.md
-  tests/                     # pytest suite (`test_release_version.py`, `test_tarballs.py`)
+  tests/                     # pytest suite (plan, tarballs, consumer test, publish checks, publish, local registry)
 ```
 
 ## 2. Why this exists: the dev-only bootstrap edge
@@ -241,11 +245,14 @@ consumer project with `file:` dependencies on every tarball packed so far and ru
 `npm install` there, asserting the installed `package.json` version matches the
 product version — proof that resolution used the packed tarball, not a stray `"*"`
 or registry hit. **Bundle-only layers are exempt**: if a layer contains no
-`distributeable` package it returns immediately ("Bundle-only layers still pack, but
-have no standalone consumer contract"). `deployment-miroir`/`-admin` are `"private":
-true`, so `classify_packages()` marks them `bundle_only`, not `distributeable` — the
-per-package clean-consumer check never applies to them, matching the "this
-dependency is light / internal-only, no external contract" reasoning from §2.
+`distributeable` package it returns immediately. Since #664 `distributeable` is the published set
+(`scripts/published-packages.json`), so all 12 `@miroir-framework/*` packages are checked from P0 on; the
+installs also fetch every external dependency of the set from the registry, which proves they exist there.
+
+Between packing and the consumer checks, `check_release_tarballs()` (#664) refuses the release when a
+distributeable tarball is one the release must not publish (marked `private`, outside the scope, another version,
+`publishConfig.access` not `public`, an internal dependency not pinned to the exact version), when
+`npm publish <tgz> --dry-run` refuses it, or when its version is already on the registry (`npm view`).
 
 ### 6a. The generated-project consumer test (#658)
 
@@ -271,6 +278,21 @@ python ci/release/consumer_project.py --tarballs release-tarballs  # the tarball
 and as the nonreg step `full-658-consumer-project` (`MIROIR_CONSUMER_TEST=1 python -m pytest
 ci/release/tests/test_consumer_project.py`). Third-party dependencies come from the npm registry.
 
+### 6b. Publishing (#664)
+
+`--apply` also writes, in the release worktree, the `publish` entries of `release-handoff.json` (distributeable
+tarballs in layer order, dist-tag `next` for a version with a `-`, `latest` otherwise) and `publish-commands.sh`
+(the same commands, without `--provenance`). Nothing in `--apply` publishes.
+
+`ci/release/publish.py --handoff <worktree>/release-handoff.json` publishes them, layer by layer: every
+`npm publish` is a `--dry-run` unless `--yes` is given. A version already on the registry with the tarball's
+integrity is skipped (a rerun after a partial publish), any other content at that version stops the run.
+`release_lib/publish.py` is the only code that runs `npm publish` for real (guard:
+`scripts/tests/test_release_workflow.py`). After a successful publish, `release_version.py --record <handoff>`
+pushes the release tag and the release commit as `release/<version>`, to merge into `_integration` by a PR.
+
+The normal path is the `publish-npm.yml` workflow (§8a); `publish-commands.sh` is the fallback without CI.
+
 ## 7. Selection & versioning semantics
 
 `build_plan()` (`plan.py`):
@@ -278,14 +300,19 @@ ci/release/tests/test_consumer_project.py`). Third-party dependencies come from 
 1. Resolve `base_ref` = `--since <ref>` or the latest reachable SemVer tag
    (`git tag --merged HEAD --sort=-version:refname`).
 2. `lerna ls --since <base_ref> --json` → raw candidates.
-3. `initial = (raw_candidates ∪ --force) − --disable` (validated: unknown names,
-   force/disable overlap, duplicates, and disabling a non-candidate all fail fast).
+3. `initial = (raw_candidates ∪ --force ∪ published set) − --disable` (validated: unknown names,
+   force/disable overlap, duplicates, disabling a non-candidate or a package of the published set all fail fast).
+   The published set rides along with every release (#664): exact internal pins need every package of it at the
+   new version. `lerna ls` lists only non-`private` packages, which since #664 are exactly the published set; any
+   other package (the server binary, Electron) joins with `--force`.
 4. `selected = release_closure(initial, packages)` — expands to the full runtime
    dependency closure (§3).
 5. Reject if any `--disable`d package ended up back in the closure (a required
    runtime dependency cannot be disabled).
 6. `topological_layers(packages, selected)` → `P0…Pn`; abort on a runtime cycle.
-7. `product_version = increment(root_version, bump)` (`semver.py`):
+7. `product_version = --version <exact>` (#664: the only way to a release candidate such as `0.5.0-rc.2`; it
+   must be valid SemVer, differ from the root version and have no tag yet), or `increment(root_version, bump)`
+   (`semver.py`):
 
    | Root before | `--bump` | Product version |
    |---|---|---|
@@ -293,8 +320,9 @@ ci/release/tests/test_consumer_project.py`). Third-party dependencies come from 
    | `0.5.0` | `minor` | `0.6.0` |
    | `0.5.0` | `major` | `1.0.0` |
 
-8. `classify_packages()` splits `selected` into `distributeable` (not `private`) and
-   `bundle_only` (`private: true`).
+8. `classify_packages()` splits `selected` into `distributeable` (the published set) and `bundle_only` (the
+   rest). `private` is not read here: `scripts/tests/test_package_manifests.py` keeps it false exactly for the
+   published names.
 
 The resulting `ReleasePlan` (dataclass) is printed as JSON on every invocation —
 `--bump ... --since ...` **without** `--apply` is a pure, read-only dry run.
@@ -302,7 +330,8 @@ The resulting `ReleasePlan` (dataclass) is printed as JSON on every invocation �
 ## 8. CLI reference (`release_version.py`)
 
 ```text
---bump major|minor|patch    Required unless --verify is used
+--bump major|minor|patch    One of --bump / --version is required unless --verify or --record is used
+--version <exact>            Exact product version, e.g. 0.5.0-rc.2 (#664)
 --since <ref>                Base ref for `lerna ls --since`; defaults to latest reachable tag
 --force <workspace>          Repeatable: add to Lerna candidates
 --disable <workspace>        Repeatable: remove from Lerna candidates (must be a raw candidate; fails if a required runtime dependency)
@@ -311,7 +340,8 @@ The resulting `ReleasePlan` (dataclass) is printed as JSON on every invocation �
 --worktree                   Run --apply inside a disposable `git worktree` (recommended)
 --keep-worktree               Do not delete the worktree after a successful --apply (a FAILED --apply always preserves it, regardless of this flag)
 --skip-build                  Version + lockfile only; skip build/pack/consumer validation
---commit / --tag / --push     Explicit release commit / annotated product tag / push (push requires both)
+--commit / --tag              Release commit (manifests, lockfile, lerna.json, release-plan.json; never the tarballs) / annotated product tag
+--record <release-handoff.json>  After publishing: push the tag and release/<version> from the release worktree (#664); --push is refused
 --allow-dirty                  Allow --apply directly in a dirty tree without --worktree
 --verify <release-handoff.json>  Validate an existing release→artefact handoff descriptor and exit
 ```
@@ -356,6 +386,23 @@ python ci/release/release_version.py --bump minor --since 0.5.0-rc.1 --apply --w
 python ci/release/release_version.py --verify /path/to/release-worktree/release-handoff.json
 ```
 
+## 8a. The publish workflow (`publish-npm.yml`, #664)
+
+Started by hand only (`workflow_dispatch`), inputs `version`, `since`, `publish` (default off). Job environment
+`npm-publish` (add required reviewers there), one run at a time, permissions `contents: write` and
+`id-token: write` only. Steps: `ci/release/tests`, `--version … --apply --worktree --keep-worktree --commit --tag`,
+`--verify`, then `publish.py --provenance` (with `--yes` only when `publish` is ticked), then `--record`; the
+handoff, plan and `publish-commands.sh` are kept as a run artifact. npm must be 11.5.1 or later (Node 24's).
+
+| Publish | Credentials |
+|---|---|
+| first publish of a package | the `NPM_TOKEN` secret (granular token with publish rights on `@miroir-framework`), passed as `NODE_AUTH_TOKEN`; provenance from the job's OIDC token |
+| afterwards | npm trusted publishing: on npmjs.org, each package's settings name this repository, `publish-npm.yml` and the `npm-publish` environment; the secret can then be deleted |
+
+A trusted publisher can only be added to a package that exists, hence the token for the first publish. After a
+partial publish in CI, the next run needs a new version (its tarballs are rebuilt, so they differ); from a kept
+worktree, `publish.py --yes` resumes.
+
 ## 9. Outputs and the artefact-pipeline handoff contract
 
 On a successful `--apply`, the release worktree contains:
@@ -366,6 +413,7 @@ On a successful `--apply`, the release worktree contains:
 | `release-handoff.json` | `handoff.write_handoff_contract()` | Stable, versioned (`schemaVersion: 1`) contract for the artefact pipeline |
 | `release-tarballs/P<n>/*.tgz` | `tarballs.pack_layer()` | Packed packages per runtime layer |
 | `release-tarballs/manifest.json` | `tarballs.pack_layer()` | Tarball paths + SHA-256 digests |
+| `publish-commands.sh` | `handoff.write_handoff_contract()` | The publish commands, layer by layer, without provenance (#664) |
 | Versioned `package.json` / `lerna.json` / `package-lock.json` | Lerna + `set_root_and_lerna_version()` | The release tree itself |
 
 `release-handoff.json` embeds explicit constraints for the consumer:
@@ -453,7 +501,7 @@ The packages of the published set carry their published names in the repo: `@mir
 lists folders selects a workspace with `-w packages/<folder>`. `miroir-app-miroir`, `miroir-app-admin`,
 `miroir-localcache-redux` and `miroir-localcache-zustand` stay private: #652 and #656 bundle them into published
 packages (§10e). Each published
-package declares `publishConfig.access: "public"`; `private` flags are lifted by the publish item.
+package declares `publishConfig.access: "public"`; #664 lifted their `private` flags.
 
 `scripts/rename_packages.py` did the rename from `scripts/package-rename-map.json`, leaving what is not an npm name
 (`scripts/package-rename-allow.json`: logger names, MiroirTest `functionRef.module` ids, bin names, …). A branch
@@ -503,9 +551,9 @@ meta-model data under `MIROIR_RELEASE_SMOKE=1`). The bundle report names a file 
 Per the v1 acceptance criteria, explicitly **out of scope** until follow-up work:
 
 - Pre-release lifecycle family (`premajor`/`preminor`/`prepatch`/`prerelease`,
-  promotion) — `increment()` only supports `major`/`minor`/`patch`.
-- Registry publish (`npm publish`) and GitHub Release upload — HITL/manual, and the artefact pipeline's
-  responsibility at the earliest.
+  promotion) — `increment()` only supports `major`/`minor`/`patch`; `--version` (#664) names a prerelease exactly.
+- GitHub Release upload — HITL/manual, the artefact pipeline's responsibility at the earliest. (Registry publish
+  landed with #664, §6b, §8a.)
 - A separate CI-only implementation — the same `ci/release/` entrypoint is meant to
   run locally and in CI.
 - Changelog / release notes generation.
@@ -519,4 +567,7 @@ python -m pytest ci/release/tests -v
 `ci/release/tests/test_release_version.py` and `test_tarballs.py` exercise plan
 construction, layering/cycle detection, Lerna range verification, and the
 build/pack/clean-consumer-validate pipeline. `test_consumer_project.py` covers the
-consumer test (§6a); its slow cases run with `MIROIR_CONSUMER_TEST=1`.
+consumer test (§6a); its slow cases run with `MIROIR_CONSUMER_TEST=1`. `test_publish_checks.py` (#664) checks
+real tarballs (`npm publish --dry-run`) and asks npmjs.org read-only (skipped when unreachable); `test_publish.py`
+publishes a two-layer handoff to a local registry (`tests/local_registry.py`). `scripts/tests/test_release_workflow.py`
+checks the workflow as data and that no other code runs `npm publish`.
