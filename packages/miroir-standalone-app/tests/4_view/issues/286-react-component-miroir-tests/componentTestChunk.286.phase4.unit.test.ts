@@ -40,6 +40,7 @@ const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../../../.
 const distDirectory = join(packageRoot, "dist");
 const manifestPath = join(distDirectory, ".vite", "manifest.json");
 const srcDirectory = join(packageRoot, "src");
+const testRuntimeSrcDirectory = join(packageRoot, "../miroir-react-testing/src");
 // #672: the component test runtime is in miroir-react-testing, whose build keeps one module per source module
 const componentTestEntryKey = "../../miroir-react-testing/dist/4-tests/componentTests/index.js";
 const buildFirstMessage = "run `npm run build -w miroir-standalone-app` first";
@@ -64,7 +65,10 @@ function readBuildManifest(): Manifest {
     throw new Error(`${manifestPath} is missing: ${buildFirstMessage}`);
   }
   const manifestTime = statSync(manifestPath).mtimeMs;
-  const newestSource = newestModificationTime(srcDirectory);
+  // #672: the component test runtime is built from miroir-react-testing's sources
+  const newestSource = [srcDirectory, testRuntimeSrcDirectory]
+    .map(newestModificationTime)
+    .reduce((newest, candidate) => (candidate.time > newest.time ? candidate : newest));
   if (newestSource.time > manifestTime) {
     throw new Error(
       `${manifestPath} is older than ${newestSource.path} (the build is stale): ${buildFirstMessage}`,

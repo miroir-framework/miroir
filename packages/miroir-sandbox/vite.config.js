@@ -27,7 +27,7 @@ export default defineConfig({
     target: 'esnext',
     // Smaller bundle for GitHub Pages; disable for local debugging
     sourcemap: process.env.VITE_SOURCEMAP === 'true',
-    // #672: dist/.vite/manifest.json, read by the smoke test's lazy-loading check
+    // #672: dist/.vite/manifest.json, next to the bundle report that the sandbox bundle guard reads
     manifest: true,
   },
   define: {

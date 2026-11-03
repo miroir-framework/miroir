@@ -133,9 +133,16 @@ function suiteUrl(baseUrl, suiteUuid) {
   return `${baseUrl}#/?${query}`;
 }
 
-/** The sandbox's own IndexedDB databases, with the record count of each object store. */
+/** The sandbox's own IndexedDB databases: the record count and a digest of the records of each object store. */
 async function sandboxDatabasesSnapshot(page) {
   return page.evaluate(async (prefix) => {
+    const encoder = new TextEncoder();
+    const bytes = (value) =>
+      value instanceof ArrayBuffer
+        ? new Uint8Array(value)
+        : ArrayBuffer.isView(value)
+          ? new Uint8Array(value.buffer, value.byteOffset, value.byteLength)
+          : encoder.encode(JSON.stringify(value));
     const names = (await indexedDB.databases()).map((d) => d.name).filter((n) => n?.includes(prefix)).sort();
     const snapshot = {};
     for (const name of names) {
@@ -146,11 +153,29 @@ async function sandboxDatabasesSnapshot(page) {
       });
       const stores = {};
       for (const storeName of Array.from(db.objectStoreNames).sort()) {
-        stores[storeName] = await new Promise((resolve, reject) => {
-          const request = db.transaction(storeName, "readonly").objectStore(storeName).count();
-          request.onsuccess = () => resolve(request.result);
+        // every key and value of the store, digested: an update in place changes it, not only an insert or a delete
+        const chunks = await new Promise((resolve, reject) => {
+          const collected = [];
+          const request = db.transaction(storeName, "readonly").objectStore(storeName).openCursor();
+          request.onsuccess = () => {
+            const cursor = request.result;
+            if (!cursor) return resolve(collected);
+            collected.push(bytes(cursor.key), bytes(cursor.value));
+            cursor.continue();
+          };
           request.onerror = () => reject(request.error);
         });
+        const all = new Uint8Array(chunks.reduce((size, chunk) => size + chunk.length + 1, 0));
+        let offset = 0;
+        for (const chunk of chunks) {
+          all.set(chunk, offset);
+          offset += chunk.length + 1; // a 0 separator
+        }
+        const digest = new Uint8Array(await crypto.subtle.digest("SHA-256", all));
+        stores[storeName] = {
+          records: chunks.length / 2,
+          sha256: Array.from(digest, (byte) => byte.toString(16).padStart(2, "0")).join(""),
+        };
       }
       db.close();
       snapshot[name] = stores;

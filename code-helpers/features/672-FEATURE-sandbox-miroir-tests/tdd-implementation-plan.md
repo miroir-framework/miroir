@@ -281,7 +281,7 @@ The workflow run on the PR; the commands above.
 
 ### Realization
 
-`.github/workflows/sandbox-smoke.yml`: builds as the Pages workflow does, runs the sandbox bundle guard and `npm run smoke -w miroir-sandbox`; the Pages workflow drops `dist/.vite` from the site. Docs: AGENTS.md build order, `docs/reference/testing.md` ("In the sandbox"), `docs/internals/code-splitting.md`, the two READMEs. Gate: lint, pytest, policy checks, `miroir-env check`, core typecheck pass; nonreg recorded in the PR.
+`.github/workflows/sandbox-smoke.yml`: builds as the Pages workflow does, runs the sandbox bundle guard and `npm run smoke -w miroir-sandbox`; the Pages workflow drops `dist/.vite` from the site. Docs: AGENTS.md build order, `docs/reference/testing.md` ("In the sandbox"), `docs/internals/code-splitting.md`, the two READMEs. Gate: lint, pytest (595 passed), policy checks, `miroir-env check`, core typecheck pass. `nonreg --tier default --storage filesystem --runner shared`: 123 steps passed, 7 failed only because `python` had no pytest module in the container; the 7 rerun with it: all pass. Adversarial review of the diff (fixed): AGENTS.md over its size cap, the Dockerfile not building the package, the app not declaring it, a run of only skipped tests read as passed, a narrow path filter on the workflow; the smoke now compares a digest of the sandbox databases' records, not only their counts. The CI run of the workflow is on the PR.
 
 ## AC checklist (issue #672)
 

@@ -78,6 +78,8 @@ RUN npm run build -w miroir-ai
 RUN npm run build -w miroir-example-spotify
 RUN npm run build -w miroir-example-github
 RUN npm run build -w miroir-fixture-appForTest
+# #672: the MiroirTest runtime the standalone app imports
+RUN npm run build -w miroir-react-testing
 
 # 5. Standalone app (Vite production build), then the server release bundle
 #    (ncc, packages/miroir-server/release/), which copies the client build into

@@ -71,7 +71,7 @@ export type MiroirTestRunStatus = {
   summary?: string;
 };
 
-/** A run passes when it has results and none of them is an error (skipped tests do not fail it). */
+/** A run passes when a test passed and none failed (skipped tests neither pass nor fail it). */
 export function runStatusOfResults(results: readonly MiroirTestResultData[]): MiroirTestRunStatus {
   const failed = results.filter((result) => result.testResult === "error").length;
   const skipped = results.filter((result) => result.testResult === "skipped").length;
@@ -79,6 +79,10 @@ export function runStatusOfResults(results: readonly MiroirTestResultData[]): Mi
   const summary = `${passed} passed, ${failed} failed, ${skipped} skipped`;
   if (results.length === 0) {
     return { status: "failed", summary: "no test result" };
+  }
+  if (passed === 0) {
+    // a run whose every test was skipped ran nothing: a driver must not read it as a pass
+    return { status: "failed", summary: `${summary}: no test ran` };
   }
   return { status: failed === 0 ? "passed" : "failed", summary };
 }

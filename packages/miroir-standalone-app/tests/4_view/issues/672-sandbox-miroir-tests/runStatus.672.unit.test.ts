@@ -31,6 +31,13 @@ describe("runStatusOfResults (#672)", () => {
     });
   });
 
+  it("fails a run whose every test was skipped", () => {
+    expect(runStatusOfResults([result("skipped"), result("skipped")])).toEqual({
+      status: "failed",
+      summary: "0 passed, 0 failed, 2 skipped: no test ran",
+    });
+  });
+
   it("fails when a result is an error", () => {
     expect(runStatusOfResults([result("ok"), result("error")]).status).toBe("failed");
   });
