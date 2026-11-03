@@ -13,3 +13,4 @@ produces them, outside `packages/`. The filesystem store opens the folders of `a
 - **Record a run:** `npm run agent-run:record -- <run.json>` (`scripts/recordAgentRun.ts`), called by
   `scripts/agent_bench/batch.py` after each run.
 - **Tests:** `npm run testByFile -w @miroir-framework/env -- agentRunsApplication agentRunRecord`.
+- **Typecheck the recorder:** `npx tsc --noEmit -p code-helpers/features/550-FEATURE-agent-cost-measurement/scripts/tsconfig.json` (no CI gate runs it; the tests run it through tsx).

@@ -123,7 +123,7 @@ export function applicationAssetsDirectory(
   packagesDirectory: string = DEFAULT_PACKAGES_DIRECTORY,
 ): string {
   // #671: an application may name its own packages directory (an application kept outside packages/)
-  const packages = (application.packagesDirectory ?? packagesDirectory).replace(/\/+$/, "");
+  const packages = (application.packagesDirectory ?? packagesDirectory).replace(/[\\/]+$/, "");
   const assets = packages === "." || packages === "" ? `${application.package}/assets` : `${packages}/${application.package}/assets`;
   return section === "admin" ? assets : `${assets}/${application.assetPrefix ?? applicationKey}_${section}`;
 }
@@ -331,7 +331,7 @@ function environmentRuleErrors(name: string, environment: MiroirEnvironment): st
   // #671: an application's own packagesDirectory stays inside the root, like the asset paths built from it
   for (const [applicationKey, application] of Object.entries(environment.applications ?? {})) {
     const directory = application?.packagesDirectory;
-    if (directory !== undefined && (/^([A-Za-z]:)?[\\/]/.test(directory) || directory.split(/[\\/]/).includes(".."))) {
+    if (directory !== undefined && (/^([A-Za-z]:|[\\/])/.test(directory) || directory.split(/[\\/]/).includes(".."))) {
       errors.push(
         `environment "${name}": application "${applicationKey}": packagesDirectory "${directory}" must be a path inside the root, without ".."`,
       );

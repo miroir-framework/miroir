@@ -36,6 +36,9 @@ export function temporaryCheckout(): string {
   cpSync(devFile, path.join(root, "environments/dev.json"));
   const dev = JSON.parse(readFileSync(devFile, "utf-8"));
   for (const [key, application] of Object.entries<any>(dev.applications)) {
+    if (!application?.package) {
+      continue; // an application that gives its configuration has no package folder to copy
+    }
     const assets = applicationAssetsDirectory(key, application, "admin", dev.packagesDirectory);
     cpSync(path.join(repositoryRoot, assets), path.join(root, assets), { recursive: true });
   }

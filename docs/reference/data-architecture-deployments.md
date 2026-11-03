@@ -18,7 +18,7 @@ Each deployment is divided into **sections**: `admin`, `model` and `data`, plus 
 | `model` | Live model definitions (Entity rows) and, for non-Miroir deployments, model-level instances (Reports, Menus, Queries, SelfApplication, etc.) |
 | `data` | Domain data instances (Application, Deployment, Book, Author, …) |
 | `modelVersion` | **Optional**, versioned-internal applications only: model history. See the [Versioning reference](versioning.md). |
-| `devData` | **Optional**: information about the application that is not needed to deploy or use it, such as the measurements of its development (bundle sizes, page loads, agent runs). See [`devData`](#devdata-development-data-optional). |
+| `devData` | **Optional**: information about the application that is not needed to deploy or use it, such as the measurements of its development (bundle sizes, page loads). See [`devData`](#devdata-development-data-optional). |
 
 Which applications need a `modelVersion` section depends on their versioning mode; see the [Versioning reference](versioning.md).
 

@@ -142,7 +142,7 @@ describe.skipIf(!shouldRun)("multistep reports #274 phase0 — current contracts
     expect(report.safeParse(multistepReport).success).toBe(true);
   });
 
-  it("seed inventory: 96 Reports including MultistepCountryCreate, MultistepLaunchPad, and ConnectExternalServiceWizard", () => {
+  it("seed inventory: 94 Reports including MultistepCountryCreate, MultistepLaunchPad, and ConnectExternalServiceWizard", () => {
     const reports = ASSET_TREES.flatMap((tree) =>
       collectReportInstances(join(REPO_ROOT, tree)),
     );
@@ -153,11 +153,12 @@ describe.skipIf(!shouldRun)("multistep reports #274 phase0 — current contracts
     const omittedTypeReports = reports.filter((entry) => entry.type === undefined);
     const nullTypeReports = reports.filter((entry) => entry.type === null);
 
-    expect(reports).toHaveLength(96);
+    // #671: the two agent run Reports left the package assets for the AgentRuns application
+    expect(reports).toHaveLength(94);
     expect(listReports).toHaveLength(12);
     expect(gridReports).toHaveLength(0);
     expect(multistepReports).toHaveLength(3);
-    expect(omittedTypeReports).toHaveLength(79);
+    expect(omittedTypeReports).toHaveLength(77);
     expect(nullTypeReports).toHaveLength(2);
     expect(nullTypeReports.map((entry) => ({ name: entry.name, uuid: entry.uuid }))).toEqual([
       { name: "TableDetails", uuid: TABLE_DETAILS_UUID },

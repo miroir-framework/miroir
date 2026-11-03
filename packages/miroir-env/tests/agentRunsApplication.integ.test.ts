@@ -24,6 +24,9 @@ const AGENT_RUNS_APPLICATION = "7f2c40ba-04e4-4204-9cb2-2cc5ca63593c";
 const AGENT_RUNS_DEPLOYMENT = "969b6e42-2023-4650-b3bc-4fe9d67f1cbb";
 const ENTITY_ENTITY = "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad";
 const ENTITY_REPORT = "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916";
+const ENTITY_MENU = "dde4c883-ae6d-47c3-b6df-26bc6e3c1842";
+const ENTITY_SELF_APPLICATION = "a659d350-dd97-4da9-91de-524fa01745dc";
+const AGENT_RUNS_MENU = "7a5c0405-7762-4a10-996b-8ce4d0728e35";
 const ENTITY_AGENT_RUN_MEASUREMENT = "954de789-6350-4f54-a809-5f2b8b91d067";
 const REPORT_AGENT_RUN_HISTORY = "7a695632-338e-4c33-8b39-dba7f6d4c988";
 const REPORT_AGENT_RUN_MEASUREMENT_DETAILS = "49a3c09a-c7cd-4438-9730-c691c70741af";
@@ -84,6 +87,23 @@ describe("AgentRuns application in the dev environment (#671)", () => {
       expect(check.status === "ok" ? "ok" : check.innermostError, run.uuid).toBe("ok");
     }
     expect(new Set(instances.map((run: any) => run.arm))).toEqual(new Set(["conventional", "miroir-files", "miroir-mcp"]));
+  });
+
+  it("opens on the Agent runs Report, from its home page and its menu", async () => {
+    const store = booted.persistenceStoreControllerManager.getPersistenceStoreController(AGENT_RUNS_DEPLOYMENT)!;
+    const selfApplications = (await store.getInstances("model", ENTITY_SELF_APPLICATION)) as any;
+    expect(selfApplications.returnedDomainElement.instances).toEqual([
+      expect.objectContaining({
+        uuid: AGENT_RUNS_APPLICATION,
+        homePageUrl: expect.objectContaining({ section: "data", reportUuid: REPORT_AGENT_RUN_HISTORY }),
+      }),
+    ]);
+    const menus = (await store.getInstances("model", ENTITY_MENU)) as any;
+    expect(menus.returnedDomainElement.instances.map((menu: any) => menu.uuid)).toEqual([AGENT_RUNS_MENU]);
+    const items = menus.returnedDomainElement.instances[0].definition.definition.flatMap((group: any) => group.items);
+    expect(items.map((item: any) => [item.section, item.selfApplication, item.reportUuid])).toEqual([
+      ["data", AGENT_RUNS_APPLICATION, REPORT_AGENT_RUN_HISTORY],
+    ]);
   });
 
   it("leaves its folder unchanged", () => {

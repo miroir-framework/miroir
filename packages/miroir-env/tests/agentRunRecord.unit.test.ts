@@ -1,9 +1,11 @@
 import { spawnSync } from "node:child_process";
-import { mkdtempSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { describe, expect, it } from "vitest";
+import { afterAll, describe, expect, it } from "vitest";
+
+import { applicationAssetsDirectory } from "@miroir-framework/core";
 
 // Agent cost benchmark (#550): `npm run agent-run:record` turns the run.json of a benchmark run
 // into an AgentRunMeasurement instance of the AgentRuns application (#671). Here, not next to the
@@ -23,9 +25,13 @@ function main(args: string[]): { code: number | null; stdout: string; stderr: st
 
 const readFixture = () => JSON.parse(readFileSync(fixture, "utf-8"));
 
+const tempDirs: string[] = [];
 function tempDir(prefix: string): string {
-  return mkdtempSync(join(tmpdir(), `agentRuns-${prefix}-`));
+  const dir = mkdtempSync(join(tmpdir(), `agentRuns-${prefix}-`));
+  tempDirs.push(dir);
+  return dir;
 }
+afterAll(() => tempDirs.forEach((dir) => rmSync(dir, { recursive: true, force: true })));
 
 function writeRun(dir: string, change: (run: any) => void = () => {}): string {
   const run = readFixture();
@@ -47,6 +53,16 @@ function instances(dataDir: string): any[] {
 }
 
 describe("agent-run:record", () => {
+  it("writes, by default, in the data section the dev environment opens for AgentRuns", () => {
+    const dev = JSON.parse(readFileSync(join(repoRoot, "environments/dev.json"), "utf-8"));
+    const expected = join(repoRoot, applicationAssetsDirectory("agentRuns", dev.applications.agentRuns, "data", dev.packagesDirectory));
+
+    const result = main(["--print-data-dir"]);
+
+    expect(result.code).toBe(0);
+    expect(result.stdout.trim()).toBe(expected);
+  });
+
   it("writes one instance with the measures of the run", () => {
     const dataDir = tempDir("data");
     const run = readFixture();

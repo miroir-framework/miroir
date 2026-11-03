@@ -11,20 +11,25 @@ import { repoInfo } from "./repoInfo";
 // cost benchmark as an AgentRunMeasurement instance of the AgentRuns application. A run already recorded
 // (same runId) is not written again.
 //
-//   --data-dir DIR    data section to write in (default: ../assets/agentRuns_data, next to this folder)
+//   --data-dir DIR      data section to write in (default: ../assets/agentRuns_data, next to this folder)
+//   --print-data-dir    prints the data section it would write in, and writes nothing
 // ################################################################################################
 
 const applicationRoot = join(dirname(fileURLToPath(import.meta.url)), "..");
 const defaultDataDir = join(applicationRoot, "assets/agentRuns_data");
 
-const USAGE = "usage: agent-run:record <run.json> [--data-dir DIR]";
+const USAGE = "usage: agent-run:record <run.json> [--data-dir DIR] | --print-data-dir";
 
 export async function main(argv: string[]): Promise<number> {
   const { values, positionals } = parseArgs({
     args: argv,
     allowPositionals: true,
-    options: { "data-dir": { type: "string" } },
+    options: { "data-dir": { type: "string" }, "print-data-dir": { type: "boolean" } },
   });
+  if (values["print-data-dir"]) {
+    console.log(resolve(values["data-dir"] ?? defaultDataDir));
+    return 0;
+  }
   if (positionals.length !== 1) {
     console.error(USAGE);
     return 2;
