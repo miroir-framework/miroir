@@ -9,6 +9,7 @@ emitted here.
 
 Examples:
   python ci/release/release_version.py --bump patch --since 0.5.0-rc.1
+  python ci/release/release_version.py --version 0.5.0-rc.2 --since 0.5.0-rc.1
   python ci/release/release_version.py --bump minor --since 0.5.0-rc.1 --apply --worktree
   python ci/release/release_version.py --bump patch --since 0.5.0-rc.1 --verify release-handoff.json
 """
@@ -26,7 +27,7 @@ if str(RELEASE_DIR) not in sys.path:
 
 from release_lib.common import ReleaseError, log_step
 from release_lib.handoff import read_handoff, write_handoff_contract, write_release_plan
-from release_lib.lerna_ops import apply_lerna_version, commit_tag_push
+from release_lib.lerna_ops import apply_lerna_version, commit_and_tag, push_release
 from release_lib.plan import build_plan
 from release_lib.tarballs import build_pack_and_validate
 from release_lib.worktree import (
@@ -40,7 +41,12 @@ REPO_ROOT = RELEASE_DIR.parents[1]
 
 def parse_args(argv: list[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--bump", choices=("major", "minor", "patch"))
+    target = parser.add_mutually_exclusive_group()
+    target.add_argument("--bump", choices=("major", "minor", "patch"))
+    target.add_argument(
+        "--version",
+        help="Exact product version, e.g. 0.5.0-rc.2 (#664): --bump cannot produce a release candidate",
+    )
     parser.add_argument("--since")
     parser.add_argument("--force", action="append", default=[])
     parser.add_argument("--disable", action="append", default=[])
@@ -79,7 +85,17 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     )
     parser.add_argument("--commit", action="store_true")
     parser.add_argument("--tag", action="store_true")
-    parser.add_argument("--push", action="store_true")
+    parser.add_argument(
+        "--push",
+        action="store_true",
+        help="Refused since #664: the push happens after publishing, with --record",
+    )
+    parser.add_argument(
+        "--record",
+        metavar="HANDOFF_JSON",
+        help="After a successful publish: push the release worktree's tag and release/<version> branch (#664)",
+    )
+    parser.add_argument("--remote", default="origin", help="Remote for --record (default: origin)")
     parser.add_argument(
         "--allow-dirty",
         action="store_true",
@@ -91,6 +107,20 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
         help="Validate an existing #227->#224 handoff descriptor and exit",
     )
     return parser.parse_args(argv)
+
+
+def assert_version_untagged(repo_root: Path, version: str) -> None:
+    """A version whose tag exists was released already (or is being released)."""
+    import subprocess
+
+    found = subprocess.run(
+        ["git", "rev-parse", "-q", "--verify", f"refs/tags/{version}"],
+        cwd=repo_root,
+        capture_output=True,
+        text=True,
+    )
+    if found.returncode == 0:
+        raise ReleaseError(f"tag {version} already exists")
 
 
 def verify_handoff(path: Path) -> None:
@@ -114,6 +144,16 @@ def verify_handoff(path: Path) -> None:
     tarball_dir = Path(data["tarballDir"])
     if not tarball_dir.is_dir():
         raise ReleaseError(f"handoff tarball dir missing: {tarball_dir}")
+    # #664: what publish.py would publish is exactly what the release packed and hashed
+    from release_lib.tarballs import sha256_file
+
+    hashes = {info["path"]: info["sha256"] for info in data.get("tarballs", [])}
+    for entry in data.get("publish", []):
+        tarball = worktree / entry["tarball"]
+        if not tarball.is_file():
+            raise ReleaseError(f"handoff publish entry {entry['package']}: tarball missing: {tarball}")
+        if sha256_file(tarball) != hashes.get(entry["tarball"]):
+            raise ReleaseError(f"handoff publish entry {entry['package']}: {tarball.name} changed since it was packed")
     print(json.dumps({"ok": True, "handoff": data}, indent=2))
 
 
@@ -123,15 +163,27 @@ def main(argv: list[str] | None = None) -> int:
         if args.verify:
             verify_handoff(Path(args.verify))
             return 0
+        if args.record:
+            handoff = read_handoff(Path(args.record))
+            push_release(Path(handoff["releaseWorktree"]), handoff["productVersion"], remote=args.remote)
+            return 0
+        if args.push:
+            raise ReleaseError(
+                "--push is gone (#664): publish first (ci/release/publish.py), then "
+                "`release_version.py --record <worktree>/release-handoff.json` pushes the tag and release branch"
+            )
         if args.dry_run and args.apply:
             raise ReleaseError("--dry-run cannot be combined with --apply")
-        if not args.bump:
-            raise ReleaseError("--bump is required unless --verify is used")
+        if not args.bump and not args.version:
+            raise ReleaseError("--bump or --version is required unless --verify is used")
+        if args.version:
+            assert_version_untagged(REPO_ROOT, args.version)
 
         source_root = REPO_ROOT
         plan = build_plan(
             source_root,
             bump=args.bump,
+            version=args.version,
             since=args.since,
             force=args.force,
             disable=args.disable,
@@ -159,6 +211,7 @@ def main(argv: list[str] | None = None) -> int:
                 plan = build_plan(
                     apply_root,
                     bump=args.bump,
+                    version=args.version,
                     since=args.since,
                     force=args.force,
                     disable=args.disable,
@@ -183,13 +236,7 @@ def main(argv: list[str] | None = None) -> int:
             handoff = write_handoff_contract(apply_root, plan, tarballs=tarballs)
             log_step(f"wrote release-plan.json and release-handoff.json under {apply_root}")
             print(json.dumps({"handoff": str(handoff)}, indent=2))
-            commit_tag_push(
-                apply_root,
-                plan,
-                commit=args.commit,
-                tag=args.tag,
-                push=args.push,
-            )
+            commit_and_tag(apply_root, plan, commit=args.commit, tag=args.tag)
             if worktree and args.keep_worktree:
                 print(json.dumps({"worktree": str(worktree)}, indent=2))
             return 0

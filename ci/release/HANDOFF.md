@@ -9,6 +9,7 @@ contains:
 | `release-handoff.json` | Stable contract for artefact builders (#224) |
 | `release-tarballs/Pn/*.tgz` | Packed packages for each runtime layer |
 | `release-tarballs/manifest.json` | Tarball paths + SHA-256 digests |
+| `publish-commands.sh` | The publish commands in layer order, without provenance (#664) |
 | Versioned `package.json` / `lerna.json` / `package-lock.json` | Release tree |
 
 ## Contract rules for #224
@@ -42,6 +43,12 @@ python ci/release/release_version.py --verify /path/to/release-worktree/release-
   "selected": ["..."],
   "distributeable": ["..."],
   "bundleOnly": ["..."],
-  "tarballs": [{"package": "...", "layer": 0, "path": "...", "sha256": "..."}]
+  "tarballs": [{"package": "...", "layer": 0, "path": "...", "sha256": "..."}],
+  "publish": [{"layer": 0, "package": "@miroir-framework/core", "tarball": "release-tarballs/P0/...tgz",
+               "tag": "next", "command": "npm publish release-tarballs/P0/...tgz --access public --tag next"}]
 }
 ```
+
+`publish` (#664) is additive: the distributeable tarballs in layer order, read by `ci/release/publish.py`.
+`--verify` checks that each one is the tarball recorded in `tarballs` (same SHA-256).
+

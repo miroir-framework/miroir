@@ -5,7 +5,6 @@
     "access": "public"
   },
   "description": "Miroir's HTTP surface (REST, authentication, capabilities, MCP, static assets, client folder) as an Express application built from a running domain controller",
-  "private": true,
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

@@ -21,7 +21,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterator
 
-from release_lib.common import ReleaseError, dump_json, executable, load_json, log_step, run
+from release_lib.common import ReleaseError, dump_json, executable, load_json, log_step, npm_pack_entries, run
 from release_lib.workspace import release_closure, workspace_packages
 
 GENERATOR = "@miroir-framework/create-app"
@@ -91,10 +91,7 @@ def pack_workspace(repo_root: Path, destination: Path) -> dict[str, Path]:
         )
         if result.returncode != 0:
             raise ReleaseError(f"npm pack failed for {name}:\n{result.stderr or result.stdout}")
-        stdout = result.stdout
-        packed = json.loads(stdout[min(i for i in (stdout.find("["), stdout.find("{")) if i >= 0) :])
-        entry = packed[0] if isinstance(packed, list) else next(iter(packed.values()))
-        found[name] = (destination / entry["filename"]).resolve()
+        found[name] = (destination / npm_pack_entries(result.stdout)[0]["filename"]).resolve()
         log_step(f"  packed {name} -> {found[name].name}")
     return found
 

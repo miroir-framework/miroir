@@ -1,6 +1,5 @@
 {
   "name": "@miroir-framework/store-mongodb",
-  "private": true,
   "version": "0.5.0-rc.1",
   "publishConfig": {
     "access": "public"

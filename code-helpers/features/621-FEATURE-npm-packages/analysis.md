@@ -26,7 +26,7 @@ Revised after the decisions of 2026-10-31: the standalone app stays the only cli
 
 ## 2. Non-goals
 
-- Running `npm publish` from CI (D4).
+- Running `npm publish` from CI on its own (D4). Revised in #664: CI publishes only when the maintainer starts the publish workflow.
 - A consumer-owned React shell: embedding Miroir pages and reports in another React application (D5). The shell still moves to `miroir-react` (W2), which keeps that door open.
 - **The next step after this epic**: a user builds their own application package and the server deploys it, choosing by parameter which React bundle it serves in production. Today the bundle path is fixed: `server.ts` serves `path.join(__dirname, 'client')` and throws when `index.html` is missing. A separate issue owns this. W3 should keep the client directory a parameter of the router so that issue starts from a library function, not a script.
 - Publishing the standalone app, Electron app, Docker image or server binary as libraries. They stay artefacts (`build-all.sh`).
@@ -39,7 +39,7 @@ Revised after the decisions of 2026-10-31: the standalone app stays the only cli
 | D1 Package cut | **Curated scoped set (option B)** | G1, G2, G5 | Accepted |
 | D2 Registry | **npmjs.org, public from the start**, no GitHub Packages pilot | G1 | Accepted |
 | D3 Names | **Rename in the repo** to `@miroir-framework/*` | G1 | Accepted |
-| D4 Publish step | **Manual**, the pipeline stops at validated tarballs | G6 | Accepted |
+| D4 Publish step | **Manual**, the pipeline stops at validated tarballs; revised in #664: a maintainer-started `workflow_dispatch` workflow publishes with provenance, `publish-commands.sh` is the fallback | G6 | Accepted, revised |
 | D5 Client | **The standalone app stays the only client** for now | scope | Accepted |
 | D6 Sequencing | **All work items land before any publish** | G1, G5 | Accepted |
 | D7 How meta-model packages join core | open, recommend **D7-b** | G1, G5 | Open |

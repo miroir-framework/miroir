@@ -1,0 +1,112 @@
+name: Publish to npm (#664)
+
+# Publishes the @miroir-framework/* set at one version, with provenance. Started by hand only: no push, tag or
+# schedule triggers it. With `publish` unticked (the default) every step runs and every `npm publish` is a
+# --dry-run, so a run shows what would go out. Docs: ci/release/README.md, "Publish".
+#
+# Credentials: the NPM_TOKEN secret (granular token, publish rights on @miroir-framework) for the first publish
+# of each package; afterwards npm trusted publishing (this repository, this workflow file, environment
+# `npm-publish`), and the secret can be deleted.
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Exact product version to publish, e.g. 0.5.0-rc.2 (a prerelease gets the `next` dist-tag)
+        required: true
+        type: string
+      since:
+        description: Previous release tag, for Lerna's change detection outside the published set
+        required: true
+        type: string
+      publish:
+        description: Really publish (unticked = dry run)
+        required: true
+        default: false
+        type: boolean
+
+concurrency:
+  group: npm-publish
+  cancel-in-progress: false
+
+permissions: {}
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    environment: npm-publish
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "24"
+          registry-url: https://registry.npmjs.org
+
+      - name: npm is 11.5.1 or later (trusted publishing)
+        # Node 24 bundles npm 11; a global npm upgrade would bypass the lockfile rule (check_dependency_policy.py)
+        run: |
+          npm --version
+          node -e "const [a,b,c]=process.argv[1].split('.').map(Number); process.exit(a>11||(a===11&&(b>5||(b===5&&c>=1)))?0:1)" "$(npm --version)"
+
+      - name: Setup Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+
+      - name: Install Python test deps
+        run: python -m pip install pytest
+
+      - name: Install npm dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Release pipeline tests
+        run: python -m pytest ci/release/tests -q
+
+      - name: Version, build, pack and check the release
+        env:
+          VERSION: ${{ inputs.version }}
+          SINCE: ${{ inputs.since }}
+        run: |
+          set -euo pipefail
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          python ci/release/release_version.py --version "$VERSION" --since "$SINCE" \
+            --apply --worktree --keep-worktree --commit --tag
+          # the kept disposable worktree (release_lib/worktree.py names it miroir-release-worktree-*)
+          WORKTREE=$(git worktree list --porcelain | awk '/^worktree / {print $2}' | grep miroir-release-worktree- | tail -1)
+          echo "RELEASE_WORKTREE=$WORKTREE" >> "$GITHUB_ENV"
+          echo "HANDOFF=$WORKTREE/release-handoff.json" >> "$GITHUB_ENV"
+          python ci/release/release_version.py --verify "$WORKTREE/release-handoff.json" > /dev/null
+
+      - name: Publish (dry run)
+        if: ${{ !inputs.publish }}
+        run: python ci/release/publish.py --handoff "$HANDOFF" --provenance
+
+      - name: Publish
+        if: ${{ inputs.publish }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: python ci/release/publish.py --handoff "$HANDOFF" --provenance --yes
+
+      - name: Record the release (tag and release branch)
+        if: ${{ inputs.publish }}
+        run: python ci/release/release_version.py --record "$HANDOFF"
+
+      - name: Keep the publish commands and the handoff
+        if: ${{ always() && env.HANDOFF != '' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: release-${{ inputs.version }}
+          path: |
+            ${{ env.RELEASE_WORKTREE }}/release-handoff.json
+            ${{ env.RELEASE_WORKTREE }}/release-plan.json
+            ${{ env.RELEASE_WORKTREE }}/publish-commands.sh

@@ -10,7 +10,23 @@ RELEASE_DIR = Path(__file__).resolve().parents[1]
 if str(RELEASE_DIR) not in sys.path:
     sys.path.insert(0, str(RELEASE_DIR))
 
+from release_lib.common import npm_pack_entries
 from release_lib.tarballs import TarballInfo, sha256_file, validate_layer_consumer
+
+
+ENTRY = {"name": "@miroir-framework/x", "filename": "miroir-framework-x-1.0.0.tgz", "files": [{"path": "index.js"}]}
+
+
+@pytest.mark.parametrize(
+    "printed",
+    [
+        pytest.param(json.dumps([ENTRY], indent=2), id="npm 11: an array"),
+        pytest.param(json.dumps({ENTRY["name"]: ENTRY}, indent=2), id="npm 12: an object keyed by name"),
+        pytest.param("> x@1.0.0 prepack\n> echo built\nbuilt\n" + json.dumps([ENTRY]), id="after script output"),
+    ],
+)
+def test_npm_pack_entries_reads_every_npm_format(printed: str) -> None:
+    assert npm_pack_entries(printed) == [ENTRY]
 
 
 def test_sha256_file(tmp_path: Path) -> None:

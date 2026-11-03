@@ -4,7 +4,8 @@
 > (`scripts/release_tag.py`), which is obsolete / on the wrong track. The current
 > release producer is `ci/release/` — see [Release Process Internals](../reference/release-process.md)
 > for the authoritative reference, including why it *does* use `lerna version`
-> (contradicting the "never use Lerna" guidance below).
+> (contradicting the "never use Lerna" guidance below). Publishing to npm: the `publish-npm.yml` workflow
+> ([`ci/release/README.md`](../../ci/release/README.md), "Publish", #664).
 
 Local-first product (pre-)release tagging for the Miroir monorepo (legacy `scripts/release_tag.py` flow).  
 Artefact builds are handled by the separate multi-platform artefact pipeline. GitHub Release upload stays **manual**.

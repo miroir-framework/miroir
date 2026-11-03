@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import hashlib
-import json
 import shutil
 import tempfile
 import time
@@ -11,9 +10,10 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
 
-from release_lib.common import ReleaseError, dump_json, executable, load_json, log_step, run
+from release_lib.common import ReleaseError, dump_json, executable, load_json, log_step, npm_pack_entries, run
 from release_lib.consumer_project import missing_tarballs, run_consumer_project
 from release_lib.plan import ReleasePlan
+from release_lib.publish import assert_version_free, check_publishable
 from release_lib.workspace import workspace_packages
 
 
@@ -92,12 +92,12 @@ def pack_layer(
                     f"npm pack failed for {name}:\n"
                     + (result.stderr or result.stdout or "")
                 )
-            # npm pack --json prints an array; the tarball is also written next to cwd.
+            # the tarball is also written next to cwd.
             try:
-                packed = json.loads(result.stdout[result.stdout.find("[") :])
-            except json.JSONDecodeError as exc:
+                packed = npm_pack_entries(result.stdout)
+            except ValueError as exc:
                 raise ReleaseError(f"cannot parse npm pack output for {name}: {exc}") from exc
-            if not packed or not isinstance(packed, list):
+            if not packed:
                 raise ReleaseError(f"npm pack returned no artefacts for {name}")
             filename = packed[0].get("filename")
             if not isinstance(filename, str):
@@ -216,18 +216,39 @@ def run_consumer_test(repo_root: Path, infos: list[TarballInfo]) -> None:
     run_consumer_project(tarballs)
 
 
+def check_release_tarballs(
+    repo_root: Path,
+    plan: ReleasePlan,
+    infos: list[TarballInfo],
+    *,
+    registry: str | None = None,
+) -> None:
+    """#664 D4 checks 1 and 2, on every distributeable tarball, before any consumer check: the tarball is one the
+    registry accepts and the release means to publish, and its version is not taken."""
+    internal = set(plan.selected)
+    distributeable = [info for info in infos if info.distributeable]
+    log_step(f"publish checks (#664): {len(distributeable)} tarball(s), npm publish --dry-run + registry version")
+    for info in distributeable:
+        check_publishable(
+            (repo_root / info.path).resolve(), version=plan.product_version, internal=internal, registry=registry
+        )
+        assert_version_free(info.package, plan.product_version, registry=registry)
+
+
 def build_pack_and_validate(
     repo_root: Path,
     plan: ReleasePlan,
     *,
     tarball_dir: Path | None = None,
     consumer_test: bool = True,
+    registry: str | None = None,
 ) -> list[TarballInfo]:
     out = tarball_dir or (repo_root / "release-tarballs")
     if out.exists():
         shutil.rmtree(out)
     build_selected_packages(repo_root, plan)
     infos = pack_layer(repo_root, plan, tarball_root=out)
+    check_release_tarballs(repo_root, plan, infos, registry=registry)
     for layer_index in range(len(plan.layers)):
         validate_layer_consumer(repo_root, plan, infos, through_layer=layer_index)
     if consumer_test:
