@@ -109,7 +109,17 @@ async function startPreview(port) {
   });
   const base = process.env.VITE_BASE_URL ?? "/";
   const url = `http://127.0.0.1:${port}${base}`;
-  await waitForHttp(url, 30_000);
+  // With --strictPort, a port taken by another server makes vite exit while that server still answers:
+  // fail rather than test a build that is not this one.
+  const exited = new Promise((_, reject) => {
+    child.once("error", (error) => reject(new ScriptError(`vite preview did not start: ${error.message}`)));
+    child.once("exit", (code) => reject(new ScriptError(`vite preview exited (code ${code}) before the smoke test`)));
+  });
+  exited.catch(() => {});
+  await Promise.race([waitForHttp(url, 30_000), exited]);
+  // vite answers before a port conflict could make it exit late: check it is still alive.
+  await Promise.race([new Promise((resolve) => setTimeout(resolve, 500)), exited]);
+  if (child.exitCode !== null) throw new ScriptError(`vite preview exited (code ${child.exitCode}) before the smoke test`);
   return {
     url,
     stop: () =>
