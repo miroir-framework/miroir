@@ -1,6 +1,6 @@
 {
   "name": "@miroir-framework/server",
-  "version": "0.5.0-rc.1",
+  "version": "0.5.0-rc.2",
   "publishConfig": {
     "access": "public"
   },
@@ -48,8 +48,8 @@
     "node": ">=22"
   },
   "dependencies": {
-    "@miroir-framework/core": "*",
-    "@miroir-framework/mcp": "*",
+    "@miroir-framework/core": "0.5.0-rc.2",
+    "@miroir-framework/mcp": "0.5.0-rc.2",
     "@reduxjs/toolkit": "2.13.0",
     "@teroneko/redux-saga-promise": "4.0.0",
     "body-parser": "2.4.0",
@@ -61,6 +61,8 @@
     "zustand": "5.0.15"
   },
   "devDependencies": {
+    "@miroir-framework/env": "*",
+    "@miroir-framework/store-filesystem": "*",
     "@types/body-parser": "1.19.6",
     "@types/cors": "2.8.19",
     "@types/express": "5.0.6",
@@ -69,12 +71,10 @@
     "loglevelnext": "6.0.0",
     "miroir-app-admin": "*",
     "miroir-app-miroir": "*",
-    "@miroir-framework/env": "*",
     "miroir-example-library": "*",
     "miroir-localcache-redux": "*",
-    "@miroir-framework/store-filesystem": "*",
+    "miroir-localcache-zustand": "*",
     "tsup": "9.0.0",
-    "vitest": "5.0.5",
-    "miroir-localcache-zustand": "*"
+    "vitest": "5.0.5"
   }
 }

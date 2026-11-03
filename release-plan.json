@@ -1,0 +1,254 @@
+{
+  "base_ref": "0.5.0-rc.1",
+  "bump": "exact",
+  "product_version": "0.5.0-rc.2",
+  "lerna_candidates": [
+    "@miroir-framework/cli",
+    "@miroir-framework/core",
+    "@miroir-framework/create-app",
+    "@miroir-framework/env",
+    "@miroir-framework/mcp",
+    "@miroir-framework/react",
+    "@miroir-framework/server",
+    "@miroir-framework/store-bundled",
+    "@miroir-framework/store-filesystem",
+    "@miroir-framework/store-indexeddb",
+    "@miroir-framework/store-mongodb",
+    "@miroir-framework/store-postgres"
+  ],
+  "forced": [],
+  "disabled": [],
+  "closure_added": [
+    "miroir-app-admin",
+    "miroir-app-miroir",
+    "miroir-localcache-redux",
+    "miroir-localcache-zustand"
+  ],
+  "selected": [
+    "@miroir-framework/cli",
+    "@miroir-framework/core",
+    "@miroir-framework/create-app",
+    "@miroir-framework/env",
+    "@miroir-framework/mcp",
+    "@miroir-framework/react",
+    "@miroir-framework/server",
+    "@miroir-framework/store-bundled",
+    "@miroir-framework/store-filesystem",
+    "@miroir-framework/store-indexeddb",
+    "@miroir-framework/store-mongodb",
+    "@miroir-framework/store-postgres",
+    "miroir-app-admin",
+    "miroir-app-miroir",
+    "miroir-localcache-redux",
+    "miroir-localcache-zustand"
+  ],
+  "layers": [
+    {
+      "index": 0,
+      "packages": [
+        "@miroir-framework/create-app",
+        "miroir-app-admin",
+        "miroir-app-miroir"
+      ]
+    },
+    {
+      "index": 1,
+      "packages": [
+        "@miroir-framework/core"
+      ]
+    },
+    {
+      "index": 2,
+      "packages": [
+        "@miroir-framework/env",
+        "@miroir-framework/mcp",
+        "@miroir-framework/store-bundled",
+        "@miroir-framework/store-filesystem",
+        "@miroir-framework/store-indexeddb",
+        "@miroir-framework/store-mongodb",
+        "@miroir-framework/store-postgres",
+        "miroir-localcache-redux",
+        "miroir-localcache-zustand"
+      ]
+    },
+    {
+      "index": 3,
+      "packages": [
+        "@miroir-framework/react",
+        "@miroir-framework/server"
+      ]
+    },
+    {
+      "index": 4,
+      "packages": [
+        "@miroir-framework/cli"
+      ]
+    }
+  ],
+  "runtime_cycles": [],
+  "dev_cycles": [
+    [
+      "@miroir-framework/core",
+      "@miroir-framework/store-bundled"
+    ],
+    [
+      "@miroir-framework/core",
+      "@miroir-framework/store-filesystem"
+    ],
+    [
+      "@miroir-framework/core",
+      "@miroir-framework/store-postgres"
+    ],
+    [
+      "@miroir-framework/core",
+      "miroir-app-admin"
+    ],
+    [
+      "@miroir-framework/core",
+      "miroir-app-admin",
+      "miroir-app-miroir"
+    ],
+    [
+      "@miroir-framework/core",
+      "miroir-app-miroir"
+    ]
+  ],
+  "distributeable": [
+    "@miroir-framework/cli",
+    "@miroir-framework/core",
+    "@miroir-framework/create-app",
+    "@miroir-framework/env",
+    "@miroir-framework/mcp",
+    "@miroir-framework/react",
+    "@miroir-framework/server",
+    "@miroir-framework/store-bundled",
+    "@miroir-framework/store-filesystem",
+    "@miroir-framework/store-indexeddb",
+    "@miroir-framework/store-mongodb",
+    "@miroir-framework/store-postgres"
+  ],
+  "bundle_only": [
+    "miroir-app-admin",
+    "miroir-app-miroir",
+    "miroir-localcache-redux",
+    "miroir-localcache-zustand"
+  ],
+  "worktree_path": "/tmp/miroir-release-worktree-6s9bv2ac/tree",
+  "release_plan_path": "/tmp/miroir-release-worktree-6s9bv2ac/tree/release-plan.json",
+  "tarball_dir": "/tmp/miroir-release-worktree-6s9bv2ac/tree/release-tarballs",
+  "schemaVersion": 1,
+  "tarballs": [
+    {
+      "package": "@miroir-framework/create-app",
+      "layer": 0,
+      "path": "release-tarballs/P0/miroir-framework-create-app-0.5.0-rc.2.tgz",
+      "sha256": "7953050dfc6817cbe23210e317c56071e4886b19693d04a70a9e583a1049001a",
+      "distributeable": true
+    },
+    {
+      "package": "miroir-app-admin",
+      "layer": 0,
+      "path": "release-tarballs/P0/miroir-app-admin-0.5.0-rc.2.tgz",
+      "sha256": "1cdfe727b2469ecddb2b129dc483bd76a520584224d681b877cd7dc57400a59b",
+      "distributeable": false
+    },
+    {
+      "package": "miroir-app-miroir",
+      "layer": 0,
+      "path": "release-tarballs/P0/miroir-app-miroir-0.5.0-rc.2.tgz",
+      "sha256": "0d6dc433d34fa2eac93bf51e6e6a4cdc48ecdfcbfacdd8d45ac7777de6fcfc59",
+      "distributeable": false
+    },
+    {
+      "package": "@miroir-framework/core",
+      "layer": 1,
+      "path": "release-tarballs/P1/miroir-framework-core-0.5.0-rc.2.tgz",
+      "sha256": "1ca01648e6eaee5d6cece0d3a8585cc2f4cea061e2e15fc825bd3f65abcfefe4",
+      "distributeable": true
+    },
+    {
+      "package": "@miroir-framework/env",
+      "layer": 2,
+      "path": "release-tarballs/P2/miroir-framework-env-0.5.0-rc.2.tgz",
+      "sha256": "6a907296594da77ab1f2c58591004e88dc053d528930c916c458887b7b0e4c5b",
+      "distributeable": true
+    },
+    {
+      "package": "@miroir-framework/mcp",
+      "layer": 2,
+      "path": "release-tarballs/P2/miroir-framework-mcp-0.5.0-rc.2.tgz",
+      "sha256": "305d78eecb316e8218fcd1dc63923aa3f62ff8e3f2fa921a04659d94cdf039f0",
+      "distributeable": true
+    },
+    {
+      "package": "@miroir-framework/store-bundled",
+      "layer": 2,
+      "path": "release-tarballs/P2/miroir-framework-store-bundled-0.5.0-rc.2.tgz",
+      "sha256": "71cb8875ed5c6a1239c9da39884e562d43dd6f966ad94569299252ec1eaba15d",
+      "distributeable": true
+    },
+    {
+      "package": "@miroir-framework/store-filesystem",
+      "layer": 2,
+      "path": "release-tarballs/P2/miroir-framework-store-filesystem-0.5.0-rc.2.tgz",
+      "sha256": "7656cfc9828abe285f287ef082cfae38e935d5646b862112af90a65c27d4ff38",
+      "distributeable": true
+    },
+    {
+      "package": "@miroir-framework/store-indexeddb",
+      "layer": 2,
+      "path": "release-tarballs/P2/miroir-framework-store-indexeddb-0.5.0-rc.2.tgz",
+      "sha256": "b96d6f30df5ecab9ef743e882546a3fdbab13ddb45ad3ad6257544952852119a",
+      "distributeable": true
+    },
+    {
+      "package": "@miroir-framework/store-mongodb",
+      "layer": 2,
+      "path": "release-tarballs/P2/miroir-framework-store-mongodb-0.5.0-rc.2.tgz",
+      "sha256": "c655a2065c03315b9da64ba0443a8ab612301037f4fc90eedcd8a4c3af4c1b0d",
+      "distributeable": true
+    },
+    {
+      "package": "@miroir-framework/store-postgres",
+      "layer": 2,
+      "path": "release-tarballs/P2/miroir-framework-store-postgres-0.5.0-rc.2.tgz",
+      "sha256": "413167844f73453aa8cc0c8d01243739ab4c329c2e221aea76919d9b0fd7907f",
+      "distributeable": true
+    },
+    {
+      "package": "miroir-localcache-redux",
+      "layer": 2,
+      "path": "release-tarballs/P2/miroir-localcache-redux-0.5.0-rc.2.tgz",
+      "sha256": "80d78e8a462174685f381a7f95abdcd95462cde18f672b499dcdd31b8bf1d662",
+      "distributeable": false
+    },
+    {
+      "package": "miroir-localcache-zustand",
+      "layer": 2,
+      "path": "release-tarballs/P2/miroir-localcache-zustand-0.5.0-rc.2.tgz",
+      "sha256": "75ced2a051e2d77977e94958ae51eb2e8dfda6d65bb5834f8e203f0268132ef1",
+      "distributeable": false
+    },
+    {
+      "package": "@miroir-framework/react",
+      "layer": 3,
+      "path": "release-tarballs/P3/miroir-framework-react-0.5.0-rc.2.tgz",
+      "sha256": "507637140e40c915ab3ffd9fda6b364923d98a0d7bd658e828387910c436e55f",
+      "distributeable": true
+    },
+    {
+      "package": "@miroir-framework/server",
+      "layer": 3,
+      "path": "release-tarballs/P3/miroir-framework-server-0.5.0-rc.2.tgz",
+      "sha256": "118be546d19619a9363a3ede6f114c24eb742059e25dd2553de5148ad966efc7",
+      "distributeable": true
+    },
+    {
+      "package": "@miroir-framework/cli",
+      "layer": 4,
+      "path": "release-tarballs/P4/miroir-framework-cli-0.5.0-rc.2.tgz",
+      "sha256": "83c42cb2d6398dc3c2bcf412f4ddad0cd7e6a94b1f0e9c7390deb5a9048fa9d2",
+      "distributeable": true
+    }
+  ]
+}

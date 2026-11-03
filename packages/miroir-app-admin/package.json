@@ -1,7 +1,7 @@
 {
   "name": "miroir-app-admin",
   "private": true,
-  "version": "0.5.0-rc.1",
+  "version": "0.5.0-rc.2",
   "description": "Admin deployment assets for the Miroir Framework",
   "author": "Miroir Framework <miroir-framework@protonmail.com>",
   "license": "MIT",
@@ -38,8 +38,8 @@
     ]
   },
   "devDependencies": {
-    "copyfiles": "2.4.1",
     "@miroir-framework/core": "*",
+    "copyfiles": "2.4.1",
     "miroir-app-miroir": "*",
     "tsup": "9.0.0",
     "tsx": "4.23.15",

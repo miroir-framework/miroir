@@ -1,6 +1,6 @@
 {
   "name": "@miroir-framework/cli",
-  "version": "0.5.0-rc.1",
+  "version": "0.5.0-rc.2",
   "publishConfig": {
     "access": "public"
   },
@@ -40,16 +40,16 @@
     "testByFile": "cross-env NODE_ENV=test vitest run"
   },
   "dependencies": {
+    "@miroir-framework/core": "0.5.0-rc.2",
+    "@miroir-framework/env": "0.5.0-rc.2",
+    "@miroir-framework/server": "0.5.0-rc.2",
     "commander": "15.0.0",
-    "loglevelnext": "6.0.0",
-    "@miroir-framework/core": "*",
-    "@miroir-framework/env": "*",
-    "@miroir-framework/server": "*"
+    "loglevelnext": "6.0.0"
   },
   "peerDependencies": {
-    "@miroir-framework/store-filesystem": "*",
-    "@miroir-framework/store-indexeddb": "*",
-    "@miroir-framework/store-postgres": "*",
+    "@miroir-framework/store-filesystem": "0.5.0-rc.2",
+    "@miroir-framework/store-indexeddb": "0.5.0-rc.2",
+    "@miroir-framework/store-postgres": "0.5.0-rc.2",
     "zod": "^4.6.7"
   },
   "peerDependenciesMeta": {

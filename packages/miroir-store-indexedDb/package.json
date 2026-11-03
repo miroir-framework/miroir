@@ -1,6 +1,6 @@
 {
   "name": "@miroir-framework/store-indexeddb",
-  "version": "0.5.0-rc.1",
+  "version": "0.5.0-rc.2",
   "publishConfig": {
     "access": "public"
   },
@@ -27,8 +27,8 @@
     "test": "jest --verbose --silent=false -t"
   },
   "dependencies": {
-    "level": "10.0.0",
-    "@miroir-framework/core": "*"
+    "@miroir-framework/core": "0.5.0-rc.2",
+    "level": "10.0.0"
   },
   "devDependencies": {
     "@jest/globals": "29.7.0",

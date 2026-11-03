@@ -1,6 +1,6 @@
 {
   "name": "@miroir-framework/mcp",
-  "version": "0.5.0-rc.1",
+  "version": "0.5.0-rc.2",
   "publishConfig": {
     "access": "public"
   },
@@ -46,26 +46,26 @@
     "framework"
   ],
   "dependencies": {
+    "@miroir-framework/core": "0.5.0-rc.2",
     "@modelcontextprotocol/sdk": "1.32.1",
     "express": "5.3.0",
-    "loglevelnext": "6.0.0",
-    "@miroir-framework/core": "*"
+    "loglevelnext": "6.0.0"
   },
   "peerDependencies": {
     "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@miroir-framework/env": "*",
+    "@miroir-framework/store-filesystem": "*",
+    "@miroir-framework/store-indexeddb": "*",
+    "@miroir-framework/store-postgres": "*",
     "@types/express": "5.0.6",
     "@types/node": "26.6.5",
     "@types/uuid": "11.0.0",
     "cross-env": "10.1.0",
-    "@miroir-framework/env": "*",
     "miroir-example-library": "*",
     "miroir-localcache-redux": "*",
     "miroir-localcache-zustand": "*",
-    "@miroir-framework/store-filesystem": "*",
-    "@miroir-framework/store-indexeddb": "*",
-    "@miroir-framework/store-postgres": "*",
     "tsup": "9.0.0",
     "vitest": "5.0.5",
     "zod": "4.6.7"

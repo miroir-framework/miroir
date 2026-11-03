@@ -1,6 +1,6 @@
 {
   "name": "@miroir-framework/store-bundled",
-  "version": "0.5.0-rc.1",
+  "version": "0.5.0-rc.2",
   "publishConfig": {
     "access": "public"
   },
@@ -24,7 +24,7 @@
     "devBuild": "npm run build"
   },
   "dependencies": {
-    "@miroir-framework/core": "*"
+    "@miroir-framework/core": "0.5.0-rc.2"
   },
   "devDependencies": {
     "tsup": "9.0.0"

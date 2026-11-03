@@ -1,6 +1,6 @@
 {
   "name": "@miroir-framework/store-mongodb",
-  "version": "0.5.0-rc.1",
+  "version": "0.5.0-rc.2",
   "publishConfig": {
     "access": "public"
   },
@@ -26,7 +26,7 @@
     "node": ">=22"
   },
   "dependencies": {
-    "@miroir-framework/core": "*",
+    "@miroir-framework/core": "0.5.0-rc.2",
     "mongodb": "7.7.0"
   },
   "devDependencies": {
