@@ -69,6 +69,8 @@ jobs:
           npm run build -w miroir-app-miroir & pids+=($!)
           npm run build -w miroir-app-admin & pids+=($!)
           npm run build -w miroir-example-library & pids+=($!)
+          npm run build -w miroir-example-github & pids+=($!)
+          npm run build -w miroir-fixture-appForTest & pids+=($!)
           for pid in "${pids[@]}"; do wait "$pid"; done
       - name: Verify deployment package dist dirs
         run: |
@@ -78,6 +80,10 @@ jobs:
           ls packages/miroir-app-admin/dist/
           echo "--- miroir-example-library ---"
           ls packages/miroir-example-library/dist/
+          echo "--- miroir-example-github ---"
+          ls packages/miroir-example-github/dist/
+          echo "--- miroir-fixture-appForTest ---"
+          ls packages/miroir-fixture-appForTest/dist/
       - name: Upload dist – deployment packages
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
@@ -86,6 +92,8 @@ jobs:
             packages/miroir-app-miroir/dist
             packages/miroir-app-admin/dist
             packages/miroir-example-library/dist
+            packages/miroir-example-github/dist
+            packages/miroir-fixture-appForTest/dist
           if-no-files-found: error
 
   # ──────────────────────────────────────────────────────────────────────────────
@@ -157,6 +165,9 @@ jobs:
         with:
           name: dist-miroir-core
           path: packages/miroir-core/dist
+      # @miroir-framework/react, miroir-server and miroir-standalone-app import it
+      - name: Build @miroir-framework/env
+        run: npm run build -w @miroir-framework/env
       - name: Build local caches and browser stores (parallel)
         run: |
           pids=()
@@ -187,6 +198,7 @@ jobs:
         with:
           name: dist-shared-libs
           path: |
+            packages/miroir-env/dist
             packages/miroir-localcache/dist
             packages/miroir-localcache-redux/dist
             packages/miroir-localcache-zustand/dist
