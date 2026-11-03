@@ -1,0 +1,15 @@
+{
+  "uuid": "7f2c40ba-04e4-4204-9cb2-2cc5ca63593c",
+  "parentName": "SelfApplication",
+  "parentUuid": "a659d350-dd97-4da9-91de-524fa01745dc",
+  "name": "AgentRuns",
+  "defaultLabel": "The AgentRuns selfApplication.",
+  "description": "Runs of the agent cost benchmark (#550): what building Library features with coding agents costs, per arm. Kept with the #550 feature folder, outside the platform packages (#671).",
+  "versioningMode": "unversioned",
+  "homePageUrl": {
+    "label": "Agent runs",
+    "section": "data",
+    "selfApplication": "7f2c40ba-04e4-4204-9cb2-2cc5ca63593c",
+    "reportUuid": "7a695632-338e-4c33-8b39-dba7f6d4c988"
+  }
+}

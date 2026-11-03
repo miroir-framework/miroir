@@ -328,6 +328,15 @@ function environmentRuleErrors(name: string, environment: MiroirEnvironment): st
     }
   }
   errors.push(...applicationFieldErrors(name, environment.applications));
+  // #671: an application's own packagesDirectory stays inside the root, like the asset paths built from it
+  for (const [applicationKey, application] of Object.entries(environment.applications ?? {})) {
+    const directory = application?.packagesDirectory;
+    if (directory !== undefined && (/^([A-Za-z]:)?[\\/]/.test(directory) || directory.split(/[\\/]/).includes(".."))) {
+      errors.push(
+        `environment "${name}": application "${applicationKey}": packagesDirectory "${directory}" must be a path inside the root, without ".."`,
+      );
+    }
+  }
   if (isTestEnvironment(name)) {
     for (const [applicationKey, application] of Object.entries(environment.applications ?? {})) {
       if (!application) {

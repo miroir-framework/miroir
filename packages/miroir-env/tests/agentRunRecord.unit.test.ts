@@ -1,22 +1,30 @@
+import { spawnSync } from "node:child_process";
 import { mkdtempSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
-import { ENTITY_AGENT_RUN_MEASUREMENT_UUID } from "../../scripts/devData/agentRunHistory";
-import { main } from "../../scripts/devData/recordAgentRun";
-
 // Agent cost benchmark (#550): `npm run agent-run:record` turns the run.json of a benchmark run
-// into an AgentRunMeasurement instance of the Miroir devData section.
+// into an AgentRunMeasurement instance of the AgentRuns application (#671). Here, not next to the
+// recorder: the AgentRuns folder is no package, and this package installs AgentRuns in dev. The
+// recorder runs as the npm script does, through tsx, so this package does not compile it.
 
-const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "../../../..");
+const ENTITY_AGENT_RUN_MEASUREMENT_UUID = "954de789-6350-4f54-a809-5f2b8b91d067";
+const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "../../..");
 const fixture = join(repoRoot, "scripts/tests/fixtures/agent_bench/run.json");
+const recorder = join(repoRoot, "code-helpers/features/550-FEATURE-agent-cost-measurement/scripts/recordAgentRun.ts");
+
+/** Runs the recorder; its exit code and what it printed. */
+function main(args: string[]): { code: number | null; stdout: string; stderr: string } {
+  const result = spawnSync(process.execPath, [join(repoRoot, "node_modules/tsx/dist/cli.mjs"), recorder, ...args], { cwd: repoRoot, encoding: "utf-8" });
+  return { code: result.status, stdout: result.stdout, stderr: result.stderr };
+}
 
 const readFixture = () => JSON.parse(readFileSync(fixture, "utf-8"));
 
 function tempDir(prefix: string): string {
-  return mkdtempSync(join(tmpdir(), `devData-${prefix}-`));
+  return mkdtempSync(join(tmpdir(), `agentRuns-${prefix}-`));
 }
 
 function writeRun(dir: string, change: (run: any) => void = () => {}): string {
@@ -39,11 +47,11 @@ function instances(dataDir: string): any[] {
 }
 
 describe("agent-run:record", () => {
-  it("writes one instance with the measures of the run", async () => {
+  it("writes one instance with the measures of the run", () => {
     const dataDir = tempDir("data");
     const run = readFixture();
 
-    expect(await main([fixture, "--data-dir", dataDir])).toBe(0);
+    expect(main([fixture, "--data-dir", dataDir]).code).toBe(0);
 
     const [instance, ...others] = instances(dataDir);
     expect(others).toEqual([]);
@@ -71,39 +79,33 @@ describe("agent-run:record", () => {
     expect(instance).not.toHaveProperty("workspace");
   });
 
-  it("records a failed acceptance as not passed", async () => {
+  it("records a failed acceptance as not passed", () => {
     const dataDir = tempDir("data");
     const file = writeRun(tempDir("runs"), (run) => (run.acceptance = { passed: 2, total: 4 }));
 
-    expect(await main([file, "--data-dir", dataDir])).toBe(0);
+    expect(main([file, "--data-dir", dataDir]).code).toBe(0);
 
     expect(instances(dataDir)[0]).toMatchObject({ acceptancePassed: false, acceptanceScenariosPassed: 2 });
   });
 
-  it("writes nothing the second time for the same run", async () => {
+  it("writes nothing the second time for the same run", () => {
     const dataDir = tempDir("data");
 
-    expect(await main([fixture, "--data-dir", dataDir])).toBe(0);
-    expect(await main([fixture, "--data-dir", dataDir])).toBe(0);
+    expect(main([fixture, "--data-dir", dataDir]).code).toBe(0);
+    expect(main([fixture, "--data-dir", dataDir]).code).toBe(0);
 
     expect(instances(dataDir)).toHaveLength(1);
   });
 
-  it("writes nothing when a measure is missing, and names it", async () => {
+  it("writes nothing when a measure is missing, and names it", () => {
     const dataDir = tempDir("data");
     const file = writeRun(tempDir("runs"), (run) => {
       delete run.costUsd;
     });
-    const errors: string[] = [];
-    const error = console.error;
-    console.error = (message: string) => errors.push(message);
-    try {
-      expect(await main([file, "--data-dir", dataDir])).toBe(1);
-    } finally {
-      console.error = error;
-    }
+    const result = main([file, "--data-dir", dataDir]);
+    expect(result.code).toBe(1);
 
     expect(instances(dataDir)).toEqual([]);
-    expect(errors.join("\n")).toContain("costUsd");
+    expect(result.stderr).toContain("costUsd");
   });
 });

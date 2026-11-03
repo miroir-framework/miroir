@@ -111,6 +111,7 @@ Tests select their environment through their profile (`--profile emulatedServer-
 | `connections.mongodb` | URL of MongoDB stores. |
 | `applications.<key>` | One installed application. The key names it in paths (`.miroir/<env>/<key>/…`) and in store names. |
 | `packagesDirectory` | Where the application packages are, relative to the root: `packages` by default, `.` when each package's `assets/` sits directly under the root (`docker`, `desktop`). |
+| `applications.<key>.packagesDirectory` | The same, for this application only: a folder inside the root, without `..` (#671). The `dev` environment installs the AgentRuns application this way, from `"packagesDirectory": "code-helpers/features"`, `"package": "550-FEATURE-agent-cost-measurement"`. The tracked-assets guards cover `code-helpers/features/*/assets/` too. |
 | `package` | The folder of `packagesDirectory` whose `assets/` hold the application's sections (`<key>_model`, `<key>_data`, `<key>_modelVersion`, `<key>_devData`; `assetPrefix` overrides `<key>`). |
 | `selfApplication`, `deployment` | The application and deployment uuids. Admin and Miroir must use the uuids the platform opens. |
 | `store` | `filesystem`, `sql`, `indexedDb` or `mongodb`. |

@@ -174,3 +174,16 @@ def test_tracked_file_deleted_in_the_working_tree_is_skipped(repo: Path) -> None
 def test_repository_has_no_duplicate_instance_uuids() -> None:
     result = _guard(ROOT)
     assert result.returncode == 0, result.stdout + result.stderr
+
+
+def test_application_kept_in_a_feature_folder_is_checked(repo: Path) -> None:
+    # #671: the AgentRuns application lives in code-helpers/features/550-…/assets
+    folder = f"code-helpers/features/550-x/assets/agentRuns_data/{BOOK}"
+    _write(repo, f"{folder}/{SHARED}.json", {"uuid": SHARED})
+    _write(repo, f"{folder}/other.json", {"uuid": SHARED})
+    _commit(repo)
+
+    result = _guard(repo)
+
+    assert result.returncode == 1
+    assert SHARED in result.stdout + result.stderr

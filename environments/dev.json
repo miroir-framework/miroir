@@ -47,6 +47,14 @@
       "deployment": "f0359240-e849-4546-8158-75f4a8ae5831",
       "store": "filesystem",
       "mode": "live"
+    },
+    "agentRuns": {
+      "packagesDirectory": "code-helpers/features",
+      "package": "550-FEATURE-agent-cost-measurement",
+      "selfApplication": "7f2c40ba-04e4-4204-9cb2-2cc5ca63593c",
+      "deployment": "969b6e42-2023-4650-b3bc-4fe9d67f1cbb",
+      "store": "filesystem",
+      "mode": "live"
     }
   }
 }

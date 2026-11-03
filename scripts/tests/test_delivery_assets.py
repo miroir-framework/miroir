@@ -1,7 +1,7 @@
 """#647 D19: the deliveries ship no devData rows.
 
-The devData section holds measurements of the development process (bundle sizes, page loads, agent
-runs), recorded in a checkout. The Electron package and the Docker image copy Miroir's assets, so
+The devData section holds measurements of the development process (bundle sizes, page loads),
+recorded in a checkout; agent runs are the AgentRuns application, outside packages/ (#671). The Electron package and the Docker image copy Miroir's assets, so
 both exclude its `miroir_devData/` folder. Building either is too slow for the gate: the test reads
 their copy rules.
 """

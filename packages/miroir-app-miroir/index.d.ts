@@ -36,7 +36,6 @@ export declare const entityMiroirTest: any;
 /** #647 — devData Entities. */
 export declare const entityBundleSizeMeasurement: any;
 export declare const entityPageLoadMeasurement: any;
-export declare const entityAgentRunMeasurement: any;
 export declare const entityTestConfiguration: any;
 export declare const entityBlob: any;
 export declare const entityCommit: any;
@@ -206,8 +205,6 @@ export declare const reportBundleSizeHistory: any;
 export declare const reportBundleSizeMeasurementDetails: any;
 export declare const reportPageLoadHistory: any;
 export declare const reportPageLoadMeasurementDetails: any;
-export declare const reportAgentRunHistory: any;
-export declare const reportAgentRunMeasurementDetails: any;
 export declare const instanceEndpointV1: any;
 export declare const modelEndpointV1: any;
 export declare const domainEndpointVersionV1: any;

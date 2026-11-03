@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 
 // ################################################################################################
 // Facts about the Miroir repository that the devData record scripts store with each
-// measurement (#473 bundle sizes, #550 agent runs).
+// measurement (#473 bundle sizes; agent-run:record keeps its own copy, #671).
 // ################################################################################################
 
 export const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "../../../..");
