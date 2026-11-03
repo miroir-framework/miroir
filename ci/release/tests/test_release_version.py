@@ -395,6 +395,10 @@ def release_worktree(tmp_path: Path) -> tuple[Path, Path]:
     source = tmp_path / "source"
     source.mkdir()
     git(source, "init", "-q")
+    # The code under test runs plain `git commit` / `git tag -a` in the worktree, which shares this config.
+    # CI runners have no global identity (publish-npm.yml sets one only after these tests run).
+    git(source, "config", "user.email", "t@t")
+    git(source, "config", "user.name", "t")
     write_manifest(source / "package.json", "root", "1.2.3")
     write_manifest(source / "packages" / "lib" / "package.json", "lib", "1.2.3")
     git(source, "add", "-A")
