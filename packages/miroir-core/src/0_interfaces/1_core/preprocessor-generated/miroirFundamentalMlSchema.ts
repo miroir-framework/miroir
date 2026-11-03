@@ -17621,6 +17621,10 @@ export const miroirFundamentalMlSchema = {
             "type": "string",
             "optional": true
           },
+          "packagesDirectory": {
+            "type": "string",
+            "optional": true
+          },
           "assetPrefix": {
             "type": "string",
             "optional": true

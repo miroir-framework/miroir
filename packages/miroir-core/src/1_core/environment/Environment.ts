@@ -113,15 +113,17 @@ export const DEFAULT_PACKAGES_DIRECTORY = "packages";
 /**
  * Where a section lives in the application package (root-relative): what a `live` section opens
  * and what a `copy` section is seeded from. `packagesDirectory` is the environment's (#345): `.`
- * for a root laid out as `<package>/assets` (a Docker volume, packaged Electron's user data).
+ * for a root laid out as `<package>/assets` (a Docker volume, packaged Electron's user data). The
+ * application's own `packagesDirectory`, when it gives one, wins (#671).
  */
 export function applicationAssetsDirectory(
   applicationKey: string,
-  application: { package: string; assetPrefix?: string },
+  application: { package: string; assetPrefix?: string; packagesDirectory?: string },
   section: EnvironmentSectionName,
   packagesDirectory: string = DEFAULT_PACKAGES_DIRECTORY,
 ): string {
-  const packages = packagesDirectory.replace(/\/+$/, "");
+  // #671: an application may name its own packages directory (an application kept outside packages/)
+  const packages = (application.packagesDirectory ?? packagesDirectory).replace(/\/+$/, "");
   const assets = packages === "." || packages === "" ? `${application.package}/assets` : `${packages}/${application.package}/assets`;
   return section === "admin" ? assets : `${assets}/${application.assetPrefix ?? applicationKey}_${section}`;
 }
