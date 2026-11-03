@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import hashlib
-import json
 import shutil
 import tempfile
 import time
@@ -11,7 +10,7 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
 
-from release_lib.common import ReleaseError, dump_json, executable, load_json, log_step, run
+from release_lib.common import ReleaseError, dump_json, executable, load_json, log_step, npm_pack_entries, run
 from release_lib.consumer_project import missing_tarballs, run_consumer_project
 from release_lib.plan import ReleasePlan
 from release_lib.publish import assert_version_free, check_publishable
@@ -93,12 +92,12 @@ def pack_layer(
                     f"npm pack failed for {name}:\n"
                     + (result.stderr or result.stdout or "")
                 )
-            # npm pack --json prints an array; the tarball is also written next to cwd.
+            # the tarball is also written next to cwd.
             try:
-                packed = json.loads(result.stdout[result.stdout.find("[") :])
-            except json.JSONDecodeError as exc:
+                packed = npm_pack_entries(result.stdout)
+            except ValueError as exc:
                 raise ReleaseError(f"cannot parse npm pack output for {name}: {exc}") from exc
-            if not packed or not isinstance(packed, list):
+            if not packed:
                 raise ReleaseError(f"npm pack returned no artefacts for {name}")
             filename = packed[0].get("filename")
             if not isinstance(filename, str):

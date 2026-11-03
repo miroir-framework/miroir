@@ -64,3 +64,19 @@ def load_json(path: Path) -> dict[str, Any]:
 def dump_json(path: Path, data: Any) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
+
+
+def npm_pack_entries(stdout: str) -> list[dict[str, Any]]:
+    """The packed tarballs that `npm pack --json` reports, whatever its npm version.
+
+    npm up to 11 prints an array of entries; npm 12 prints an object of entries keyed by package name.
+    Lifecycle scripts may print before the JSON, so parsing starts at its first bracket or brace."""
+    starts = [i for i in (stdout.find("["), stdout.find("{")) if i >= 0]
+    if not starts:
+        raise ValueError("npm pack printed no JSON")
+    packed, _ = json.JSONDecoder().raw_decode(stdout[min(starts) :])
+    if isinstance(packed, dict):
+        packed = list(packed.values())
+    if not isinstance(packed, list) or not all(isinstance(entry, dict) for entry in packed):
+        raise ValueError("npm pack JSON is neither a list nor an object of entries")
+    return packed

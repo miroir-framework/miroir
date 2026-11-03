@@ -97,6 +97,8 @@ def published_integrity(name: str, version: str, *, registry: str | None = None)
         if not text:
             return None  # npm prints nothing for a known package without this version on some versions
         value = json.loads(text)
+        if isinstance(value, list):  # npm 12 prints a one-field view as an array
+            value = value[0] if len(value) == 1 else None
         return value if isinstance(value, str) else None
     try:
         error = json.loads(text).get("error", {})

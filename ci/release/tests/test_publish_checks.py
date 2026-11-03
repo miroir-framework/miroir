@@ -15,7 +15,7 @@ RELEASE_DIR = Path(__file__).resolve().parents[1]
 if str(RELEASE_DIR) not in sys.path:
     sys.path.insert(0, str(RELEASE_DIR))
 
-from release_lib.common import ReleaseError, executable, run
+from release_lib.common import ReleaseError, executable, npm_pack_entries, run
 from release_lib.publish import (
     assert_version_free,
     check_publishable,
@@ -40,7 +40,7 @@ def pack(folder: Path, manifest: dict) -> Path:
     out = folder.parent / f"{folder.name}-out"
     out.mkdir(exist_ok=True)
     result = run([executable("npm"), "pack", "--json", "--pack-destination", str(out)], cwd=folder)
-    return out / json.loads(result.stdout[result.stdout.find("[") :])[0]["filename"]
+    return out / npm_pack_entries(result.stdout)[0]["filename"]
 
 
 def check(tarball: Path) -> None:
@@ -74,7 +74,7 @@ def test_the_integrity_of_a_tarball_is_the_one_npm_records(tmp_path: Path) -> No
     folder = tmp_path / "a"
     tarball = pack(folder, GOOD)
     result = run([executable("npm"), "pack", "--json", "--dry-run"], cwd=folder)
-    assert tarball_integrity(tarball) == json.loads(result.stdout[result.stdout.find("[") :])[0]["integrity"]
+    assert tarball_integrity(tarball) == npm_pack_entries(result.stdout)[0]["integrity"]
 
 
 @pytest.fixture

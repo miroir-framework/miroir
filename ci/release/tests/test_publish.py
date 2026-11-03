@@ -17,7 +17,7 @@ for entry in (RELEASE_DIR, TESTS_DIR):
         sys.path.insert(0, str(entry))
 
 from local_registry import local_registry
-from release_lib.common import ReleaseError, executable, run
+from release_lib.common import ReleaseError, executable, npm_pack_entries, run
 from release_lib.handoff import read_handoff, write_handoff_contract
 from release_lib.plan import ReleasePlan
 from release_lib.publish import published_integrity
@@ -39,7 +39,7 @@ def pack_into(release: Path, layer: int, name: str, *, content: str = "1", **man
     out = release / "release-tarballs" / f"P{layer}"
     out.mkdir(parents=True, exist_ok=True)
     result = run([executable("npm"), "pack", "--json", "--pack-destination", str(out)], cwd=source)
-    tarball = out / json.loads(result.stdout[result.stdout.find("[") :])[0]["filename"]
+    tarball = out / npm_pack_entries(result.stdout)[0]["filename"]
     return TarballInfo(
         package=name, layer=layer, path=tarball.relative_to(release).as_posix(), sha256=sha256_file(tarball),
         distributeable=True,
