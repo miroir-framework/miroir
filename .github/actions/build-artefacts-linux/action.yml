@@ -31,34 +31,42 @@ runs:
       shell: bash
       run: npm run devBuild -w @miroir-framework/core
 
+    # Parallel builds: a bare `wait` returns 0 whatever the jobs return, so each step waits on every pid and
+    # fails as soon as one build failed (the composite shell runs with -e).
     - name: Build ai and mcp packages (depend on miroir-core)
       shell: bash
       run: |
-        npm run build -w miroir-ai &
-        npm run build -w @miroir-framework/mcp &
-        wait
+        pids=()
+        npm run build -w miroir-ai & pids+=($!)
+        npm run build -w @miroir-framework/mcp & pids+=($!)
+        for pid in "${pids[@]}"; do wait "$pid"; done
 
     - name: Build store, cache, and diagram packages
       shell: bash
       run: |
-        npm run build -w @miroir-framework/store-bundled &
-        npm run build -w @miroir-framework/store-indexeddb &
-        npm run build -w miroir-localcache-redux &
-        wait
+        pids=()
+        npm run build -w @miroir-framework/store-bundled & pids+=($!)
+        npm run build -w @miroir-framework/store-indexeddb & pids+=($!)
+        npm run build -w @miroir-framework/env & pids+=($!)
+        npm run build -w miroir-localcache-redux & pids+=($!)
+        npm run build -w miroir-localcache-zustand & pids+=($!)
+        for pid in "${pids[@]}"; do wait "$pid"; done
 
     # 4. React bindings
     - name: Build miroir-react
       shell: bash
       run: |
-        npm run build -w @miroir-framework/react &
-        npm run build -w miroir-diagram-class &
-        wait
+        pids=()
+        npm run build -w @miroir-framework/react & pids+=($!)
+        npm run build -w miroir-diagram-class & pids+=($!)
+        for pid in "${pids[@]}"; do wait "$pid"; done
 
     # Server-side stores
     - name: Build server-side store packages
       shell: bash
       run: |
-        npm run build -w @miroir-framework/store-filesystem &
-        npm run build -w @miroir-framework/store-mongodb &
-        npm run build -w @miroir-framework/store-postgres &
-        wait
+        pids=()
+        npm run build -w @miroir-framework/store-filesystem & pids+=($!)
+        npm run build -w @miroir-framework/store-mongodb & pids+=($!)
+        npm run build -w @miroir-framework/store-postgres & pids+=($!)
+        for pid in "${pids[@]}"; do wait "$pid"; done
