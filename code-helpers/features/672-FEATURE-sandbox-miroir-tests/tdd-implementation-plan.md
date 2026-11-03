@@ -36,7 +36,7 @@ both apps, G4 no fixture apps or testing-library before a run starts, G5 the CI 
 | 6 | The sandbox runs unit suites | ✅ done | smoke: `fn`, `tr`, `ui` suites pass on the built sandbox |
 | 7 | The sandbox runs an integ suite on IndexedDB | ✅ done | smoke: `action` suite passes; sandbox data unchanged |
 | 8 | Fixture apps and testing-library load at run start only | ✅ done | smoke guard on the sandbox's bundle report |
-| 9 | CI smoke workflow, docs, full nonreg | 🟡 in progress | workflow run on the PR; nonreg |
+| 9 | CI smoke workflow, docs, full nonreg | ✅ done | workflow run on the PR; nonreg |
 
 ## Locked implementation defaults
 
@@ -268,7 +268,7 @@ The sandbox builds with `build.manifest` and the `miroirBundleReport` plugin; `p
 
 ## Slice 9 — CI smoke workflow, docs, full nonreg
 
-**Status:** 🟡 in progress (CI run and nonreg pending)
+**Status:** ✅ done
 
 - `.github/workflows/sandbox-smoke.yml` (D5).
 - AGENTS.md build order and package list; `docs/reference/testing.md` (running MiroirTests in the sandbox, D11 list);
@@ -281,7 +281,7 @@ The workflow run on the PR; the commands above.
 
 ### Realization
 
-`.github/workflows/sandbox-smoke.yml`: builds as the Pages workflow does, runs the sandbox bundle guard and `npm run smoke -w miroir-sandbox`; the Pages workflow drops `dist/.vite` from the site. Docs: AGENTS.md build order, `docs/reference/testing.md` ("In the sandbox"), `docs/internals/code-splitting.md`, the two READMEs. Gate: lint, pytest (595 passed), policy checks, `miroir-env check`, core typecheck pass. `nonreg --tier default --storage filesystem --runner shared`: 123 steps passed, 7 failed only because `python` had no pytest module in the container; the 7 rerun with it: all pass. Adversarial review of the diff (fixed): AGENTS.md over its size cap, the Dockerfile not building the package, the app not declaring it, a run of only skipped tests read as passed, a narrow path filter on the workflow; the smoke now compares a digest of the sandbox databases' records, not only their counts. The CI run of the workflow is on the PR.
+`.github/workflows/sandbox-smoke.yml`: builds as the Pages workflow does, runs the sandbox bundle guard and `npm run smoke -w miroir-sandbox`; the Pages workflow drops `dist/.vite` from the site. Docs: AGENTS.md build order, `docs/reference/testing.md` ("In the sandbox"), `docs/internals/code-splitting.md`, the two READMEs. Gate: lint, pytest (595 passed), policy checks, `miroir-env check`, core typecheck pass. `nonreg --tier default --storage filesystem --runner shared`: 123 steps passed, 7 failed only because `python` had no pytest module in the container; the 7 rerun with it: all pass. Adversarial review of the diff (fixed): AGENTS.md over its size cap, the Dockerfile not building the package, the app not declaring it, a run of only skipped tests read as passed, a narrow path filter on the workflow; the smoke now compares a digest of the sandbox databases' records, not only their counts. On PR #676, `sandbox-smoke.yml` and `pr-checks.yml` pass. Greptile review (fixed): the smoke test accepted a preview server already on its port when vite preview exited, and the #292 legacy-file checks watched the folder this move removed.
 
 ## AC checklist (issue #672)
 
