@@ -66,7 +66,6 @@ import {
   entityMiroirTest,
   entityBundleSizeMeasurement,
   entityPageLoadMeasurement,
-  entityAgentRunMeasurement,
   entityQueryVersion,
   entityReport,
   entityRunner,
@@ -184,8 +183,6 @@ import {
   reportRunnerDetails,
   reportRunnerList,
   reportTestConfigurationList,
-  reportAgentRunHistory,
-  reportAgentRunMeasurementDetails,
   reportBundleSizeHistory,
   reportBundleSizeMeasurementDetails,
   reportPageLoadHistory,
@@ -273,7 +270,6 @@ export const defaultMiroirMetaModel: MetaModel = {
     // #647 — devData Entities (rows routed to the devData section by getApplicationSection)
     entityBundleSizeMeasurement as Entity,
     entityPageLoadMeasurement as Entity,
-    entityAgentRunMeasurement as Entity,
   ],
   entityVersions: [
     // bootstrap entities have to come first
@@ -346,8 +342,6 @@ export const defaultMiroirMetaModel: MetaModel = {
     reportRunnerDetails as Report,
     reportTestConfigurationList as Report,
     // #647: devData Reports, listed under the devData section of every application
-    reportAgentRunHistory as Report,
-    reportAgentRunMeasurementDetails as Report,
     reportBundleSizeHistory as Report,
     reportBundleSizeMeasurementDetails as Report,
     reportPageLoadHistory as Report,
@@ -543,7 +537,6 @@ export const miroirModelInitializeCreateEntityOrder: Entity[] = entitiesInBootst
   // #647: devData Entities; their instances live in the devData section, created there on first write
   entityBundleSizeMeasurement.uuid!,
   entityPageLoadMeasurement.uuid!,
-  entityAgentRunMeasurement.uuid!,
 ]);
 
 /** Non-entity instances upserted to Miroir data during bootstrap. */

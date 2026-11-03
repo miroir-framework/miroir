@@ -1625,44 +1625,6 @@
       }
     },
     {
-      "id": "integ-report.agentRunHistory",
-      "scopes": ["ui"],
-      "tier": "default",
-      "title": "MiroirTest integ — report.agentRunHistory (Miroir's agent run Reports on a Library testbed's devData, fixed runs) (#550, #647)",
-      "requires": "storage",
-      "argv": [
-        "npm",
-        "run",
-        "testMiroir",
-        "-w",
-        "miroir-standalone-app",
-        "--",
-        "--profile",
-        "{profile}",
-        "--suites",
-        "report.agentRunHistory",
-        "--mode",
-        "integ"
-      ],
-      "shared": {
-        "group": "standalone-app-report-suites",
-        "argv": [
-          "npm",
-          "run",
-          "testMiroir",
-          "-w",
-          "miroir-standalone-app",
-          "--",
-          "--profile",
-          "{profile}",
-          "--mode",
-          "integ",
-          "--shared"
-        ],
-        "suites": ["report.agentRunHistory"]
-      }
-    },
-    {
       "id": "integ-devData-section",
       "scopes": ["actions"],
       "tier": "default",
@@ -2715,7 +2677,7 @@
       "id": "unit-473-bundle-size-scripts",
       "scopes": ["tooling"],
       "tier": "unit",
-      "title": "#473, #550 — Miroir devData recorders: bundle-size:record, bundle-size:backfill (they run the bundle guard with python3), agent-run:record",
+      "title": "#473 — Miroir devData recorders: bundle-size:record, bundle-size:backfill (they run the bundle guard with python3)",
       "requires": "none",
       "argv": [
         "npm",
@@ -2725,8 +2687,7 @@
         "miroir-app-miroir",
         "--",
         "bundleSizeRecord.unit",
-        "bundleSizeBackfill.unit",
-        "agentRunRecord.unit"
+        "bundleSizeBackfill.unit"
       ]
     },
     {
@@ -2806,7 +2767,7 @@
       "id": "unit-321-miroir-env",
       "scopes": ["tooling"],
       "tier": "unit",
-      "title": "#321 \u2014 environments: miroir-env commands, server boot from an environment, check / import / prune",
+      "title": "#321 \u2014 environments: miroir-env commands, server boot from an environment, check / import / prune; #671 AgentRuns application and agent-run:record",
       "requires": "none",
       "argv": [
         "npm",

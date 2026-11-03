@@ -294,7 +294,6 @@ describe("resolveEntitiesToFetchOnRefresh (1.2–1.3)", () => {
     // Satellite apps list Miroir's meta-model Entities (devData ones included) as model entities;
     // Miroir lists its own Entities as data entities.
     const {
-      entityAgentRunMeasurement,
       entityBundleSizeMeasurement,
       entityPageLoadMeasurement,
       selfApplicationMiroir,
@@ -302,7 +301,6 @@ describe("resolveEntitiesToFetchOnRefresh (1.2–1.3)", () => {
     const devDataEntities = [
       entityBundleSizeMeasurement as Entity,
       entityPageLoadMeasurement as Entity,
-      entityAgentRunMeasurement as Entity,
     ];
 
     for (const [appUuid, modelEntities, dataEntities] of [
@@ -312,7 +310,6 @@ describe("resolveEntitiesToFetchOnRefresh (1.2–1.3)", () => {
       const result = resolveEntitiesToFetchOnRefresh(appUuid, modelEntities, dataEntities);
       expect(result.map((e) => [e.entity.uuid, e.section])).toEqual([
         [entityBundleSizeMeasurement.uuid, "devData"],
-        [entityAgentRunMeasurement.uuid, "devData"],
       ]);
     }
   });

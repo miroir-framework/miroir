@@ -294,7 +294,7 @@ describe("miroir-env check, import and prune on the state of a server start", ()
     const git = (...args: string[]) =>
       execFileSync("git", ["-c", "user.name=t", "-c", "user.email=t@t", ...args], { cwd: root, stdio: "pipe" });
     git("init", "-q");
-    git("add", "packages", "environments/dev.json");
+    git("add", "packages", "code-helpers", "environments/dev.json");
     git("commit", "-qm", "checkout");
 
     const clean = await run(["check", "--tracked-clean"], root);

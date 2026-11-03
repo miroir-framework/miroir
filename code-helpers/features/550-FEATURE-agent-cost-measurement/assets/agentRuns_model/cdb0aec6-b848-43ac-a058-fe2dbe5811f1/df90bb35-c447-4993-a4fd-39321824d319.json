@@ -1,0 +1,9 @@
+{
+  "uuid": "df90bb35-c447-4993-a4fd-39321824d319",
+  "parentName": "ApplicationModelBranch",
+  "parentUuid": "cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
+  "selfApplication": "7f2c40ba-04e4-4204-9cb2-2cc5ca63593c",
+  "headVersion": "feeec60f-fb24-4371-8ece-3b9e1a4776b0",
+  "name": "master",
+  "description": "The master branch of the AgentRuns SelfApplication"
+}

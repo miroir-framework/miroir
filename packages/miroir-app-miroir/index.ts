@@ -45,7 +45,6 @@ export { default as entityCommit } from "./assets/miroir_model/16dbfe28-e1d7-4f2
 // #647 — devData Entities: defined in the Miroir model, their rows live in each application's devData section.
 export { default as entityBundleSizeMeasurement } from "./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/90d603f9-58f8-4ac4-b2eb-cb1d718e8b3b.json" with { type: "json" };
 export { default as entityPageLoadMeasurement } from "./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/0266c0b8-4dc8-4a14-bcef-239a85a5de2d.json" with { type: "json" };
-export { default as entityAgentRunMeasurement } from "./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/954de789-6350-4f54-a809-5f2b8b91d067.json" with { type: "json" };
 export { default as entityApplicationVersionCrossEntityVersion } from "./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/8bec933d-6287-4de7-8a88-5c24216de9f4.json" with { type: "json" };
 /** @deprecated Use entityApplicationVersionCrossEntityVersion */
 export { default as entityApplicationVersionCrossEntityDefinition } from "./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/8bec933d-6287-4de7-8a88-5c24216de9f4.json" with { type: "json" };
@@ -230,8 +229,6 @@ export { default as reportBundleSizeHistory } from "./assets/miroir_data/3f2baa8
 export { default as reportBundleSizeMeasurementDetails } from "./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/85077493-0fea-4969-96c8-b994272de284.json" with { type: "json" };
 export { default as reportPageLoadHistory } from "./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/02dd2ead-7b8d-4160-99c9-9f4e9a1c051b.json" with { type: "json" };
 export { default as reportPageLoadMeasurementDetails } from "./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/193c3dea-792d-471a-88a0-546e4b5e81cf.json" with { type: "json" };
-export { default as reportAgentRunHistory } from "./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/7a695632-338e-4c33-8b39-dba7f6d4c988.json" with { type: "json" };
-export { default as reportAgentRunMeasurementDetails } from "./assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/49a3c09a-c7cd-4438-9730-c691c70741af.json" with { type: "json" };
 
 // ################################################################################################
 // Miroir Data - Endpoints (parentUuid = entityEndpointVersion = 3d8da4d4)

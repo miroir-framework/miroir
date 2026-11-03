@@ -77,6 +77,6 @@ From branch `claude/550-agent-cost-measurement` (the harness, the baseline app a
    - the tasks, with one contract per arm, are in `scripts/agent_bench/tasks/`;
    - each arm's AGENTS.md and tools are in `scripts/agent_bench/arms/<arm>/`;
    - the model, effort and caps are at the top of `scripts/agent_bench/run.py`.
-5. Records: each run is an `AgentRunMeasurement` instance in `miroir-app-meta`, written by `npm run agent-run:record -w miroir-app-meta`. The Meta application's "Agent runs" Report shows them; the 24 pilot runs are recorded. The transcripts of the pilot runs are in the project folder `issue-550/runs/`, not in the repository.
+5. Records: each run is an `AgentRunMeasurement` instance of the AgentRuns application, whose JSON files are in [`assets/`](assets/) next to this file ([agent-runs-application.md](agent-runs-application.md)) (#671; before, in `miroir-app-meta`, then in Miroir's devData section, #647). `npm run agent-run:record -- <run.json>` writes them. In the `dev` environment, the AgentRuns application's "Agent runs" Report shows them; the 24 pilot runs are recorded. The transcripts of the pilot runs are in the project folder `issue-550/runs/`, not in the repository.
 
 Rerunning the fourth pilot needs Miroir with #575 (PR #579). The earlier pilots ran on earlier Miroir states, so they cannot be reproduced exactly from this branch.

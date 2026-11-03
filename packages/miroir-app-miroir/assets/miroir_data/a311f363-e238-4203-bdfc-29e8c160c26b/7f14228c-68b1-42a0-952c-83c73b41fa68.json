@@ -487,6 +487,81 @@
       },
       {
         "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "an application packagesDirectory replaces the environment's for that application only (#671)",
+        "functionRef": {
+          "module": "miroir-core/1_core/environment/Environment",
+          "export": "deriveEnvironmentDeployments"
+        },
+        "arguments": [
+          {
+            "applications": {
+              "library": {
+                "package": "miroir-example-library",
+                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                "deployment": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+                "store": "filesystem",
+                "mode": "live"
+              },
+              "agentRuns": {
+                "packagesDirectory": "code-helpers/features",
+                "package": "550-FEATURE-agent-cost-measurement",
+                "selfApplication": "7f2c40ba-04e4-4204-9cb2-2cc5ca63593c",
+                "deployment": "969b6e42-2023-4650-b3bc-4fe9d67f1cbb",
+                "store": "filesystem",
+                "mode": "live"
+              }
+            }
+          },
+          "dev"
+        ],
+        "expectedValue": {
+          "status": "ok",
+          "deployments": [
+            {
+              "applicationKey": "library",
+              "package": "miroir-example-library",
+              "deployment": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+              "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+              "configuration": {
+                "admin": {
+                  "emulatedServerType": "filesystem",
+                  "directory": "packages/miroir-example-library/assets"
+                },
+                "model": {
+                  "emulatedServerType": "filesystem",
+                  "directory": "packages/miroir-example-library/assets/library_model"
+                },
+                "data": {
+                  "emulatedServerType": "filesystem",
+                  "directory": "packages/miroir-example-library/assets/library_data"
+                }
+              }
+            },
+            {
+              "applicationKey": "agentRuns",
+              "package": "550-FEATURE-agent-cost-measurement",
+              "deployment": "969b6e42-2023-4650-b3bc-4fe9d67f1cbb",
+              "selfApplication": "7f2c40ba-04e4-4204-9cb2-2cc5ca63593c",
+              "configuration": {
+                "admin": {
+                  "emulatedServerType": "filesystem",
+                  "directory": "code-helpers/features/550-FEATURE-agent-cost-measurement/assets"
+                },
+                "model": {
+                  "emulatedServerType": "filesystem",
+                  "directory": "code-helpers/features/550-FEATURE-agent-cost-measurement/assets/agentRuns_model"
+                },
+                "data": {
+                  "emulatedServerType": "filesystem",
+                  "directory": "code-helpers/features/550-FEATURE-agent-cost-measurement/assets/agentRuns_data"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "miroirTestType": "functionCallTest",
         "miroirTestLabel": "a copy section lives in the environment state directory",
         "functionRef": {
           "module": "miroir-core/1_core/environment/Environment",

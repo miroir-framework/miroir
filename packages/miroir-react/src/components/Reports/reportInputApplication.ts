@@ -55,7 +55,7 @@ export function seedReportInputApplicationFromPageParams(
  *
  * Miroir: Versioning lives in the data-section report list (not metaModelReports).
  * Other apps: Miroir reports are exposed via the model-section mapping.
- * #647: a devData Report (bundle size, page load, agent runs) opens on the devData section of any
+ * #647: a devData Report (bundle size, page load) opens on the devData section of any
  * application, where its rows are.
  */
 export function resolveScaffoldingReportApplicationSection(

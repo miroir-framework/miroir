@@ -30,15 +30,12 @@ import {
   entityTransformerDefinition,
   entityBundleSizeMeasurement,
   entityPageLoadMeasurement,
-  entityAgentRunMeasurement,
   reportEntityDefinitionDetails,
   reportEntityDefinitionList,
   reportEntityDetails,
   reportEntityList,
   reportApplicationVersionList,
   reportApplicationVersionDetails,
-  reportAgentRunHistory,
-  reportAgentRunMeasurementDetails,
   reportBundleSizeHistory,
   reportBundleSizeMeasurementDetails,
   reportPageLoadHistory,
@@ -160,7 +157,8 @@ const metaModelVersionReports = [
 ];
 
 /**
- * #647 — the Miroir Reports of the devData section (bundle sizes, page loads, agent runs). They are
+ * #647 — the Miroir Reports of the devData section (bundle sizes, page loads; agent runs moved to
+ * the AgentRuns application in #671). They are
  * Miroir's, and open on the devData section of any application.
  */
 export const metaModelDevDataReports: readonly string[] = [
@@ -168,8 +166,6 @@ export const metaModelDevDataReports: readonly string[] = [
   reportBundleSizeMeasurementDetails.uuid,
   reportPageLoadHistory.uuid,
   reportPageLoadMeasurementDetails.uuid,
-  reportAgentRunHistory.uuid,
-  reportAgentRunMeasurementDetails.uuid,
 ];
 
 // ################################################################################################
@@ -244,7 +240,6 @@ export function isOptionalApplicationSection(section: string): section is Option
 const devDataEntityDefinitions: ReadonlyMap<string, Entity> = new Map([
   [entityBundleSizeMeasurement.uuid!, entityBundleSizeMeasurement as Entity],
   [entityPageLoadMeasurement.uuid!, entityPageLoadMeasurement as Entity],
-  [entityAgentRunMeasurement.uuid!, entityAgentRunMeasurement as Entity],
 ]);
 
 /**

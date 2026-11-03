@@ -1,6 +1,6 @@
 /**
- * #647: every row of the Miroir devData section (bundle sizes, agent runs, and any page load a
- * developer recorded) is an instance of its Entity, with the Entity's uuid as folder name (#473).
+ * #647: every row of the Miroir devData section (bundle sizes, and any page load a developer
+ * recorded; agent runs left for the AgentRuns application in #671) is an instance of its Entity, with the Entity's uuid as folder name (#473).
  *
  * Not reachable through MiroirTest: it reads the section's folder on disk.
  * ```bash
@@ -23,7 +23,7 @@ import { defaultMiroirMetaModel } from "../../src/Model";
 
 const devDataDir = join(dirname(fileURLToPath(import.meta.url)), "../../assets/miroir_devData");
 
-const devDataEntities: Entity[] = ["BundleSizeMeasurement", "PageLoadMeasurement", "AgentRunMeasurement"].map(
+const devDataEntities: Entity[] = ["BundleSizeMeasurement", "PageLoadMeasurement"].map(
   (name) => {
     const entity = (defaultMiroirMetaModel.entities as Entity[]).find((e) => e.name === name);
     if (!entity) {

@@ -39,7 +39,7 @@ export const TEST_CONFIGURATION_INSTANCE_INDEX: Record<string, TestConfiguration
   ),
   // #472: the GitHub model, for the GitHub report MiroirTests
   [testConfiguration_githubModel.uuid]: playfieldFromInstance(testConfiguration_githubModel as any),
-  // #473, #550, #647: fixed bundle size measurements and agent runs in Library's devData section
+  // #473, #647: fixed bundle size measurements in Library's devData section
   [testConfiguration_devDataBundleSizeSeed.uuid]: playfieldFromInstance(testConfiguration_devDataBundleSizeSeed as any),
   // #580, #647: fixed page load measurements in Library's devData section
   [testConfiguration_devDataPageLoadSeed.uuid]: playfieldFromInstance(testConfiguration_devDataPageLoadSeed as any),

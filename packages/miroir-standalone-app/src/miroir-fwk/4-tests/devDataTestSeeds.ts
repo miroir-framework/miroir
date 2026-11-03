@@ -1,12 +1,11 @@
 /**
- * #647 D17: seeds of the devData Report MiroirTests (report.bundleSizeHistory, report.pageLoadHistory,
- * report.agentRunHistory). The Reports are Miroir's; the tests open them on the devData section of a
+ * #647 D17: seeds of the devData Report MiroirTests (report.bundleSizeHistory, report.pageLoadHistory).
+ * The Reports are Miroir's; the tests open them on the devData section of a
  * Library testbed, seeded with the fixed rows below, so they do not depend on the real history, which
  * grows with every record.
  */
 import type { Entity, EntityInstance } from "@miroir-framework/core";
 import {
-  entityAgentRunMeasurement as entityAgentRunMeasurementJson,
   entityBundleSizeMeasurement as entityBundleSizeMeasurementJson,
   entityPageLoadMeasurement as entityPageLoadMeasurementJson,
 } from "@miroir-framework/core/meta-model";
@@ -14,11 +13,9 @@ import { defaultLibraryAppModel } from "miroir-example-library";
 
 const entityBundleSizeMeasurement = entityBundleSizeMeasurementJson as Entity;
 const entityPageLoadMeasurement = entityPageLoadMeasurementJson as Entity;
-const entityAgentRunMeasurement = entityAgentRunMeasurementJson as Entity;
 
 // The row types live in miroir-app-miroir/scripts/devData, which the package does not export.
 type BundleSizeMeasurement = EntityInstance & Record<string, any>;
-type AgentRunMeasurement = EntityInstance & Record<string, any>;
 
 /**
  * Fixed BundleSizeMeasurement instances for the report MiroirTests (#473): two web page records and
@@ -61,63 +58,14 @@ const bundleSizeMeasurementSeedRecords: BundleSizeMeasurement[] = [
 export const bundleSizeMeasurementSeed: EntityInstance[] = bundleSizeMeasurementSeedRecords;
 
 /**
- * Fixed AgentRunMeasurement instances for the report MiroirTests (#550): two overdue-loans runs in two
- * arms and one invalid lending-limit run.
- */
-function agentRunSeedRecord(
-  uuid: string,
-  arm: string,
-  feature: string,
-  costUsd: number,
-  extra: Partial<AgentRunMeasurement> = {},
-): AgentRunMeasurement {
-  return {
-    uuid,
-    parentName: "AgentRunMeasurement",
-    parentUuid: entityAgentRunMeasurement.uuid,
-    runId: `seed-${feature}-${arm}`,
-    arm,
-    feature,
-    runIndex: 0,
-    pilot: true,
-    startedAt: "2026-10-24T12:00:00.000Z",
-    model: "claude-sonnet-5-5",
-    effort: "medium",
-    turns: 30,
-    stopReason: "success",
-    durationMs: 300000,
-    inputTokens: 100,
-    outputTokens: 10000,
-    cacheReadTokens: 1000000,
-    cacheCreationTokens: 50000,
-    costUsd,
-    acceptancePassed: true,
-    valid: true,
-    taskHash: "seed",
-    ...extra,
-  };
-}
-const agentRunSeedRecords: AgentRunMeasurement[] = [
-  agentRunSeedRecord("3b5358a8-2407-491b-a3b4-1a64788776ab", "@miroir-framework/mcp", "overdue-loans", 1.25),
-  agentRunSeedRecord("24d23f7b-5d45-4453-8c02-5c0b2fdbf92f", "conventional", "overdue-loans", 2.5),
-  agentRunSeedRecord("2a6fe1c2-5b55-4f62-9688-fbcc406b6fcc", "miroir-files", "lending-limit", 0.75, {
-    valid: false,
-    invalidReason: "seed: tool Bash",
-    acceptancePassed: false,
-  }),
-];
-export const agentRunMeasurementSeed: EntityInstance[] = agentRunSeedRecords;
-
-/**
- * TestConfiguration of the bundle size and agent run Report MiroirTests: Library's model, and the fixed
- * measurements and agent runs above, seeded in Library's devData section (#647 D15).
+ * TestConfiguration of the bundle size Report MiroirTests: Library's model, and the fixed measurements
+ * above, seeded in Library's devData section (#647 D15).
  */
 export const testConfiguration_devDataBundleSizeSeed = {
   uuid: "8b8dfbd9-66e9-4afb-87e3-90aa07ccd11b",
   testbedModel: defaultLibraryAppModel,
   testbedEntitiesAndInstances: [
     { entity: entityBundleSizeMeasurement, instances: bundleSizeMeasurementSeed },
-    { entity: entityAgentRunMeasurement, instances: agentRunMeasurementSeed },
   ],
 };
 
