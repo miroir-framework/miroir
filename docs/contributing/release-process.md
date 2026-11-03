@@ -74,9 +74,8 @@ Same workflow, same inputs, `publish` **ticked**. It:
 1. publishes the packages in layer order, with provenance,
 2. pushes the tag `<version>` and the branch `release/<version>` (the release commit).
 
-If a package fails, the packages before it stay published. Rerunning resumes, as it skips a version already
-published with the same tarball. A version that is partly published cannot be built again from a new commit:
-release the next version.
+If a package fails, the packages before it stay published, and rerunning the workflow does not resume: its
+`--apply` step refuses a version already on npm. Release the next version instead.
 
 ### 3. Merge the release branch
 
@@ -159,7 +158,7 @@ staged publishing (#667) or a first publish from a maintainer's machine.
 | Failure | What to do |
 |---|---|
 | "Publish to npm" fails before publishing (tests, build, dry run) | Fix on `master`, run again with the same version. Nothing was published or tagged. |
-| It fails during publishing | Rerun with the same inputs. It resumes after the last published package. |
+| It fails during publishing | Release the next version. A rerun stops at the first package already on npm. |
 | A fix is needed after the tag exists | Merge the fix, release the next version. A tag is never moved. |
 | "Build Miroir Runnables" fails on the tag | Fix on `master` and release the next version, so the downloads match a tag. |
 
