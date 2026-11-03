@@ -179,7 +179,7 @@ def started_server(project: Path) -> Iterator[RunningServer]:
     env["PORT"] = str(port)
     with output_file.open("w", encoding="utf-8") as output:
         process = subprocess.Popen(
-            [executable("node"), "dist-server/server.js"], cwd=project, env=env, stdout=output, stderr=subprocess.STDOUT
+            ["node", "dist-server/server.js"], cwd=project, env=env, stdout=output, stderr=subprocess.STDOUT
         )
     server = RunningServer(base_url=f"http://127.0.0.1:{port}", output_file=output_file)
     try:
