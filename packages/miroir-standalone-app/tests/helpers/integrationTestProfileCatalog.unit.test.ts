@@ -6,7 +6,7 @@ import {
   isUiIntegrationProfileLaunchableInBrowser,
   listBrowserBundledIntegrationTestProfileNames,
   listUiIntegrationProfileCatalogForPicker,
-} from "../../src/miroir-fwk/4-tests/integrationTestProfileCatalog.js";
+} from "miroir-react-testing/src/4-tests/integrationTestProfileCatalog.js";
 
 describe("integrationTestProfileCatalog (B6)", () => {
   it("web picker excludes SQL emulated and CI profiles", () => {
@@ -71,12 +71,12 @@ describe("integrationTestProfileCatalog (B6)", () => {
 describe("resolveUiIntegrationRunnerSuiteKey (B6-d0)", () => {
   it("uses instance name as the UI suite key for Library return", async () => {
     const { resolveUiIntegrationRunnerSuiteKey, isUiIntegrationRunnerSuiteSupportedForInstance } =
-      await import("../../src/miroir-fwk/4-tests/resolveUiIntegrationRunnerSuiteKey.js");
+      await import("miroir-react-testing/src/4-tests/resolveUiIntegrationRunnerSuiteKey.js");
     const { UI_INTEGRATION_RUNNER_SUITE_REGISTRY } = await import(
-      "../../src/miroir-fwk/4-tests/uiIntegrationTestRunnerSuiteRegistry.js"
+      "miroir-react-testing/src/4-tests/uiIntegrationTestRunnerSuiteRegistry.js"
     );
     const { UI_INTEGRATION_TRANSFORMER_SUITE_REGISTRY } = await import(
-      "../../src/miroir-fwk/4-tests/uiIntegrationTestTransformerSuiteRegistry.js"
+      "miroir-react-testing/src/4-tests/uiIntegrationTestTransformerSuiteRegistry.js"
     );
 
     expect(

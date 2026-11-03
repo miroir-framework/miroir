@@ -1,1 +1,1 @@
-export * from "../../src/miroir-fwk/4-tests/resolveCanonicalTestDeploymentUuid.js";
+export * from "miroir-react-testing/src/4-tests/resolveCanonicalTestDeploymentUuid.js";

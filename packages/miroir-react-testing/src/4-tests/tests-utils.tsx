@@ -40,7 +40,7 @@ import {
   MiroirContextReactProvider,
   type LocalCacheStoreHandle,
 } from '@miroir-framework/react';
-import { packageName } from '../../constants';
+import { packageName } from '../constants';
 import { cleanLevel } from '../4_view/constants';
 
 // #656: the local cache MIROIR_TEST_LOCAL_CACHE names (tests/setup.ts), redux by default

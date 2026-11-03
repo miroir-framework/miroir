@@ -64,7 +64,7 @@ export async function setupMiroirTestAndCreateMiroirDeployment(
 
 /**
  * @deprecated Prefer `RunnerTestSession` (Gap E).
- * @see packages/miroir-standalone-app/src/miroir-fwk/4-tests/RunnerTestSession.ts
+ * @see packages/miroir-react-testing/src/4-tests/RunnerTestSession.ts
  */
 export async function setupMiroirTestAndDeployMiroirApp(
   miroirConfig: MiroirConfigClient,

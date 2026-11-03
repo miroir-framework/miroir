@@ -56,6 +56,8 @@ test("global-environment: process.env read outside a composition root", async ()
   await spared("packages/miroir-core/src/5_setup/sample.ts", read, "miroir/global-environment");
   await spared("packages/miroir-server/src/server.ts", read, "miroir/global-environment");
   await spared("packages/miroir-standalone-app/src/miroir-fwk/4-tests/sample.ts", read, "miroir/global-environment");
+  // #672: the MiroirTest runtime's 4-tests folder, in miroir-react-testing
+  await spared("packages/miroir-react-testing/src/4-tests/sample.ts", read, "miroir/global-environment");
   await spared("packages/miroir-core/tests/sample.unit.test.ts", read, "miroir/global-environment");
 });
 

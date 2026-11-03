@@ -29,8 +29,8 @@ import { miroirAppStartup } from "../../src/startup.js";
 import {
   assertMiroirServerReachable,
   MiroirServerUnreachableError,
-} from "../../src/miroir-fwk/4-tests/assertMiroirServerReachable.js";
-import { UI_INTEGRATION_RUNNER_SUITE_REGISTRY } from "../../src/miroir-fwk/4-tests/uiIntegrationTestRunnerSuiteRegistry.js";
+} from "miroir-react-testing/src/4-tests/assertMiroirServerReachable.js";
+import { UI_INTEGRATION_RUNNER_SUITE_REGISTRY } from "miroir-react-testing/src/4-tests/uiIntegrationTestRunnerSuiteRegistry.js";
 import { resolveRealServerUiIntegrationProfile } from "./resolveRealServerUiIntegrationProfile.js";
 import { runUiIntegrationTestSuiteInNode } from "./runUiIntegrationTestSuiteInNode.js";
 

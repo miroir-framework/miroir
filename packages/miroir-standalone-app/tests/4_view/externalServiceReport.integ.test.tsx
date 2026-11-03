@@ -72,7 +72,7 @@ import {
 } from "@miroir-framework/core/meta-model";
 
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
-import { selfApplicationDeploymentConfigurationsTO_REMOVE } from "../../src/miroir-fwk/4-tests/tests-utils.js";
+import { selfApplicationDeploymentConfigurationsTO_REMOVE } from "miroir-react-testing/src/4-tests/tests-utils.js";
 import { ReportPageContextProvider } from "@miroir-framework/react";
 import { ReportViewWithEditor } from "@miroir-framework/react";
 import { DocumentOutlineContextProvider } from "@miroir-framework/react";
@@ -92,7 +92,7 @@ import {
 } from "../utils/fakeExternalServiceServer.js";
 
 // #656: the local cache MIROIR_TEST_LOCAL_CACHE names (tests/setup.ts), redux by default
-import { testLocalCache } from "../../src/miroir-fwk/4-tests/testLocalCache";
+import { testLocalCache } from "miroir-react-testing/src/4-tests/testLocalCache.js";
 vi.mock("react-router-dom", async () => {
   const actual = await vi.importActual<typeof import("react-router-dom")>("react-router-dom");
   return {

@@ -21,13 +21,13 @@ import { packageName } from "../../../constants.js";
 import type { TestResultData } from "@miroir-framework/react";
 import { cleanLevel } from "../../4_view/constants.js";
 import { fetchMiroirAndAppConfigurations } from "@miroir-framework/react";
-import { readAppMiroirReports } from "../appMiroirReports.js";
+import { readAppMiroirReports } from "miroir-react-testing";
 import {
   runIntegrationMiroirTestBatch,
   runUnitMiroirTestBatch,
   type MiroirTestSuiteResultsMap,
   type SkippedMiroirTestSuite,
-} from "../miroirTestBatch.js";
+} from "miroir-react-testing";
 import {
   computeSelfTestResult,
   failedSelfTestResult,

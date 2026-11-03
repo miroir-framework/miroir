@@ -28,7 +28,7 @@ There is **no HTTP server process** and **no real network**. One Node process bu
 | **Server** | `domainControllerForServer` | `"local"` | `PersistenceStoreController` → Postgres |
 | **Network stand-in** | `RestClientStub` | — | In-process call to the same `restServerDefaultHandlers` a real `miroir-server` would use |
 
-Wiring lives in `packages/miroir-standalone-app/src/miroir-fwk/4-tests/setupMiroirTest.ts`. Both controllers share one `MiroirContext` (same activity tracker / logger context). The stub is given the **server** controller and the **server** `PersistenceStoreControllerManager`.
+Wiring lives in `packages/miroir-react-testing/src/4-tests/setupMiroirTest.ts`. Both controllers share one `MiroirContext` (same activity tracker / logger context). The stub is given the **server** controller and the **server** `PersistenceStoreControllerManager`.
 
 ```mermaid
 flowchart LR

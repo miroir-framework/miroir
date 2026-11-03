@@ -72,7 +72,7 @@ import {
   selfApplicationMiroir,
 } from "@miroir-framework/core/meta-model";
 
-import { packageName } from "../../../constants.js";
+import { packageName } from "../../constants.js";
 import { BlockViewModeProvider } from "@miroir-framework/react";
 import { deploymentReportsEntitiesMapping } from "@miroir-framework/react";
 import { ReportPageContextProvider } from "@miroir-framework/react";

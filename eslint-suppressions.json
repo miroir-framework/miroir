@@ -347,6 +347,56 @@
       "count": 1
     }
   },
+  "packages/miroir-react-testing/src/4-tests/RealServerTransformerTestSession.ts": {
+    "miroir/type-escape": {
+      "count": 1
+    }
+  },
+  "packages/miroir-react-testing/src/4-tests/RunnerTestSession.ts": {
+    "miroir/type-escape": {
+      "count": 1
+    }
+  },
+  "packages/miroir-react-testing/src/4-tests/browserAdminBundledSeed.ts": {
+    "miroir/type-escape": {
+      "count": 3
+    }
+  },
+  "packages/miroir-react-testing/src/4-tests/componentTests/componentTestTools.tsx": {
+    "max-depth": {
+      "count": 2
+    }
+  },
+  "packages/miroir-react-testing/src/4-tests/integrationTestProfileAssets.ts": {
+    "miroir/type-escape": {
+      "count": 1
+    }
+  },
+  "packages/miroir-react-testing/src/4-tests/loadBrowserUiIntegrationTestLauncherEnvironment.ts": {
+    "miroir/type-escape": {
+      "count": 1
+    }
+  },
+  "packages/miroir-react-testing/src/4-tests/useIntegTestRunCoordinator.ts": {
+    "miroir/pub-sub": {
+      "count": 1
+    }
+  },
+  "packages/miroir-react-testing/src/4_view/components/Buttons/RunAllMiroirTestsButton.tsx": {
+    "miroir/action-result": {
+      "count": 1
+    }
+  },
+  "packages/miroir-react-testing/src/4_view/components/Buttons/RunMiroirTestSuiteButton.tsx": {
+    "miroir/action-result": {
+      "count": 4
+    }
+  },
+  "packages/miroir-react-testing/src/loglevelnextImporter.ts": {
+    "miroir/type-escape": {
+      "count": 1
+    }
+  },
   "packages/miroir-react/src/ErrorLogsPageDEFUNCT.tsx": {
     "miroir/pub-sub": {
       "count": 1
@@ -546,51 +596,6 @@
   "packages/miroir-standalone-app/src/loglevelnextImporter.ts": {
     "miroir/type-escape": {
       "count": 1
-    }
-  },
-  "packages/miroir-standalone-app/src/miroir-fwk/4-tests/RealServerTransformerTestSession.ts": {
-    "miroir/type-escape": {
-      "count": 1
-    }
-  },
-  "packages/miroir-standalone-app/src/miroir-fwk/4-tests/RunnerTestSession.ts": {
-    "miroir/type-escape": {
-      "count": 1
-    }
-  },
-  "packages/miroir-standalone-app/src/miroir-fwk/4-tests/browserAdminBundledSeed.ts": {
-    "miroir/type-escape": {
-      "count": 3
-    }
-  },
-  "packages/miroir-standalone-app/src/miroir-fwk/4-tests/componentTests/componentTestTools.tsx": {
-    "max-depth": {
-      "count": 2
-    }
-  },
-  "packages/miroir-standalone-app/src/miroir-fwk/4-tests/integrationTestProfileAssets.ts": {
-    "miroir/type-escape": {
-      "count": 1
-    }
-  },
-  "packages/miroir-standalone-app/src/miroir-fwk/4-tests/loadBrowserUiIntegrationTestLauncherEnvironment.ts": {
-    "miroir/type-escape": {
-      "count": 1
-    }
-  },
-  "packages/miroir-standalone-app/src/miroir-fwk/4-tests/useIntegTestRunCoordinator.ts": {
-    "miroir/pub-sub": {
-      "count": 1
-    }
-  },
-  "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Buttons/RunAllMiroirTestsButton.tsx": {
-    "miroir/action-result": {
-      "count": 1
-    }
-  },
-  "packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Buttons/RunMiroirTestSuiteButton.tsx": {
-    "miroir/action-result": {
-      "count": 4
     }
   },
   "packages/miroir-standalone-app/src/miroir-fwk/4_view/routes/ai/AiActionsProvider.tsx": {

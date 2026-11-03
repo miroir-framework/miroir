@@ -34,7 +34,7 @@ import type { LoadTimingStep } from "../../../src/loadTimings/loadTimingTypes.js
 import { loadTimingWriter } from "../../../src/loadTimings/loadTimingWriter.js";
 import { loglevelnext } from "../../../src/loglevelnextImporter.js";
 import { fetchMiroirAndAppConfigurations, setLoadTimingMarkSink } from "@miroir-framework/react";
-import { setupMiroirTest } from "../../../src/miroir-fwk/4-tests/setupMiroirTest.js";
+import { setupMiroirTest } from "miroir-react-testing/src/4-tests/setupMiroirTest.js";
 import { miroirAppStartup } from "../../../src/startup.js";
 import { openTestEnvironment } from "../../helpers/testEnvironment.js";
 

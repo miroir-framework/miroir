@@ -5,7 +5,7 @@ import type {
   StoreUnitConfiguration,
 } from '@miroir-framework/core';
 
-import catchAllLogConfig from '../../../config/logging/catch-all.json';
+import catchAllLogConfig from '../../config/logging/catch-all.json';
 import {
   DEFAULT_UI_INTEGRATION_PROFILE_NAME,
   getIntegrationTestProfileCatalogEntry,

@@ -11,7 +11,7 @@ import {
   buildBrowserAdminBundledDeploymentData,
   MIROIR_DEPLOYMENT_UUID,
 } from "./browserAdminBundledSeed.js";
-import { loglevelnext } from "../../loglevelnextImporter.js";
+import { loglevelnext } from "../loglevelnextImporter.js";
 import {
   createIntegActivityTracker,
   getIntegTestRunCoordinator,

@@ -59,6 +59,13 @@ function realServerTestClientConfigs(command, mode) {
   return { [MIROIR_TEST_CLIENT_CONFIGS]: JSON.stringify(configs) };
 }
 
+const miroirReactTestingSrc = path.resolve(__viteDirname, "../miroir-react-testing/src");
+const miroirReactTestingSourceAliases = [
+  { find: /^miroir-react-testing$/, replacement: path.join(miroirReactTestingSrc, "index.ts") },
+  { find: /^miroir-react-testing\/report-section$/, replacement: path.join(miroirReactTestingSrc, "reportSection.ts") },
+  { find: /^miroir-react-testing\/src\/(.*)$/, replacement: `${miroirReactTestingSrc}/$1` },
+];
+
 const NODE_STORE_PACKAGES = ["@miroir-framework/store-filesystem", "@miroir-framework/store-postgres", "@miroir-framework/store-mongodb"];
 const nodeStoreAliases = NODE_STORE_PACKAGES.map((name) => ({
   find: new RegExp(`^${name}$`),
@@ -201,6 +208,9 @@ export default defineConfig(({ command, mode }) => {
       // cannot load; its ESM build is loaded instead (miroir-diagram-class imports it, and the
       // Report pages load miroir-diagram-class).
       alias: [
+        // #672 D8: the app's tests use the MiroirTest runtime from miroir-react-testing's sources, the
+        // app's own imports included, so that the tests and the app share one copy of each module.
+        ...miroirReactTestingSourceAliases,
         {
           find: /^svg-toolbelt$/,
           replacement: path.resolve(__viteDirname, '../../node_modules/svg-toolbelt/dist/svg-toolbelt.esm.js'),

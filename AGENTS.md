@@ -64,7 +64,7 @@ Build order (`build-all.sh` is canonical; folders are `packages/miroir-*`, publi
 2. `miroir-app-miroir`, `miroir-app-admin` (ML schemas, bundled into core)
 3. `@miroir-framework/core` (foundation, generated types)
 4. `miroir-localcache*`, `@miroir-framework/store-*` (`filesystem`, `indexeddb`, `postgres`, `mongodb`, `bundled`; see `docs/reference/data-architecture-deployments.md`)
-5. `@miroir-framework/react`, `@miroir-framework/mcp`, `miroir-diagram-class`
+5. `@miroir-framework/react`, `@miroir-framework/mcp`, `miroir-diagram-class`, then `miroir-react-testing` (the MiroirTest runtime the app and the sandbox share)
 6. `@miroir-framework/server`, `/cli`, `miroir-ai`
 7. `miroir-standalone-app`
 8. `miroir-example-*` (example applications), `miroir-fixture-*` (test fixtures)

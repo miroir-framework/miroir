@@ -7,8 +7,8 @@ import {
   isRealServerTransformerProfile,
   resolveBrowserTransformerTestSessionOptions,
   resolveRealServerTransformerTestSessionOptions,
-} from "../../src/miroir-fwk/4-tests/resolveTransformerTestSessionOptions.js";
-import { isRealServerTransformerSessionOptions } from "../../src/miroir-fwk/4-tests/RealServerTransformerTestSession.js";
+} from "miroir-react-testing/src/4-tests/resolveTransformerTestSessionOptions.js";
+import { isRealServerTransformerSessionOptions } from "miroir-react-testing/src/4-tests/RealServerTransformerTestSession.js";
 
 function realServerSqlConfig(): MiroirConfigClient {
   return {

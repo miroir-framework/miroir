@@ -19,11 +19,11 @@ const createDeploymentCompositeActionMock = vi.fn();
 const ensureLibraryPlayfieldMock = vi.fn();
 const ensureMiroirPlatformMock = vi.fn();
 
-vi.mock("../../src/miroir-fwk/4-tests/setupMiroirTest.js", () => ({
+vi.mock("miroir-react-testing/src/4-tests/setupMiroirTest.js", () => ({
   setupMiroirTest: (...args: unknown[]) => setupMiroirTestMock(...args),
 }));
 
-vi.mock("../../src/miroir-fwk/4-tests/tests-utils.js", () => ({
+vi.mock("miroir-react-testing/src/4-tests/tests-utils.js", () => ({
   createMiroirDeploymentGetPersistenceStoreController: (...args: unknown[]) =>
     createMiroirDeploymentGetPersistenceStoreControllerMock(...args),
 }));

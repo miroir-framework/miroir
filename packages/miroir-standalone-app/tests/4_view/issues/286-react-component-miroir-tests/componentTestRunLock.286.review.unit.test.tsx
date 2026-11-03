@@ -31,8 +31,8 @@ import {
   componentTestRunInProgressMessage,
   registerComponentTests,
   type ComponentTestRegistration,
-} from "../../../../src/miroir-fwk/4-tests/componentTests/index";
-import { createReactComponentTestRunner } from "../../../../src/miroir-fwk/4-tests/componentTests/runReactComponentTest";
+} from "miroir-react-testing/src/4-tests/componentTests/index.js";
+import { createReactComponentTestRunner } from "miroir-react-testing/src/4-tests/componentTests/runReactComponentTest.js";
 
 const fakeComponentRegistry = {
   FakeComponent: (props: { text: string }) => <div data-testid="fake-component">{props.text}</div>,

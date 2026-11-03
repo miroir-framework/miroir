@@ -6,7 +6,7 @@ import {
 import { fetch } from 'cross-fetch';
 import '@testing-library/jest-dom';
 import { localCacheKindFromEnvironment } from '@miroir-framework/core';
-import { selectTestLocalCache } from '../src/miroir-fwk/4-tests/testLocalCache';
+import { selectTestLocalCache } from 'miroir-react-testing/src/4-tests/testLocalCache.js';
 
 // #656: the UI test helpers build their local caches on the one MIROIR_TEST_LOCAL_CACHE names (redux when unset).
 // Only that cache's entry is loaded here: @miroir-framework/react's root must load after the test file's `vi.mock`s

@@ -15,7 +15,7 @@ import { loadApplicationMiroirTestCatalog } from "@miroir-framework/core/model-v
 import {
   listUiIntegrationRunnerSuiteKeys,
   UI_INTEGRATION_RUNNER_SUITE_REGISTRY,
-} from "../../src/miroir-fwk/4-tests/uiIntegrationTestRunnerSuiteRegistry.js";
+} from "miroir-react-testing/src/4-tests/uiIntegrationTestRunnerSuiteRegistry.js";
 
 const RUN_TEST = process.env.RUN_TEST;
 const shouldRun =

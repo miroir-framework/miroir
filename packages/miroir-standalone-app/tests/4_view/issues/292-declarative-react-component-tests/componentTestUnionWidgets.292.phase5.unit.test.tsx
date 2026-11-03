@@ -32,9 +32,9 @@ import {
   mountComponent,
   type ComponentTestEnvironment,
   type MountedComponent,
-} from "../../../../src/miroir-fwk/4-tests/componentTests/componentTestEnvironment";
-import { createReactComponentTestRunner } from "../../../../src/miroir-fwk/4-tests/componentTests/runReactComponentTest";
-import { runComponentTestSteps } from "../../../../src/miroir-fwk/4-tests/componentTests/runComponentTestSteps";
+} from "miroir-react-testing/src/4-tests/componentTests/componentTestEnvironment.js";
+import { createReactComponentTestRunner } from "miroir-react-testing/src/4-tests/componentTests/runReactComponentTest.js";
+import { runComponentTestSteps } from "miroir-react-testing/src/4-tests/componentTests/runComponentTestSteps.js";
 
 const caseLabel = "Fixture: case";
 

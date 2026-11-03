@@ -5,8 +5,8 @@ import {
   getUiIntegrationTestRunPreferences,
   resetUiIntegrationTestRunPreferencesForTests,
   setUiIntegrationTestRunPreferences,
-} from "../../src/miroir-fwk/4-tests/uiIntegrationTestRunPreferences.js";
-import type { UiIntegrationTestRunResult } from "../../src/miroir-fwk/4-tests/uiIntegrationTestLauncherTypes.js";
+} from "miroir-react-testing/src/4-tests/uiIntegrationTestRunPreferences.js";
+import type { UiIntegrationTestRunResult } from "miroir-react-testing/src/4-tests/uiIntegrationTestLauncherTypes.js";
 
 describe("uiIntegrationTestRunPreferences (B6)", () => {
   it("updates profile and run target mode", () => {

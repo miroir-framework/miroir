@@ -10,7 +10,7 @@ import {
   type ViewParams,
 } from '@miroir-framework/core';
 
-import { packageName } from '../../../../constants.js';
+import { packageName } from '../../../constants.js';
 import { isUiIntegrationProfileLaunchableInBrowser } from '../../../4-tests/integrationTestProfileCatalog.js';
 import { classifyMiroirTestListExecutionCapabilities } from '../../../4-tests/miroirTestSuiteUiExecution.js';
 import { useUiIntegrationTestRunPreferences } from '../../../4-tests/useUiIntegrationTestRunPreferences.js';

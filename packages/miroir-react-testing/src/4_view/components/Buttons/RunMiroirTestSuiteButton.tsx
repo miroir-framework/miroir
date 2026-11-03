@@ -18,7 +18,7 @@ import {
 
 import { useMiroirContextService, useSnackbar } from "@miroir-framework/react";
 import { useSelectedApplicationRunnerUuidIndex } from "../../../4-tests/useSelectedApplicationMiroirTestSuiteRegistries.js";
-import { packageName } from "../../../../constants.js";
+import { packageName } from "../../../constants.js";
 import {
   DEFAULT_UI_INTEGRATION_PROFILE_NAME,
   DEFAULT_UI_INTEGRATION_RUN_TARGET_MODE,
@@ -259,14 +259,12 @@ export const RunMiroirTestSuiteButton: React.FC<RunMiroirTestSuiteButtonProps> =
   };
 
   const runAction = resolvedRunMode === "integration" ? onIntegrationAction : onUnitAction;
-  const onAction = async (): Promise<Action2VoidReturnType> => {
+  const onAction = (): Promise<Action2VoidReturnType> => {
     onRunStart?.();
-    try {
-      return await runAction();
-    } catch (error) {
-      onRunError?.(error);
-      throw error;
-    }
+    const run = runAction();
+    // the caller (the snackbar) still gets the rejection
+    run.catch((error: unknown) => onRunError?.(error));
+    return run;
   };
 
   const defaultLabel =

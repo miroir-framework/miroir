@@ -9,8 +9,8 @@
  */
 import { describe, expect, it } from "vitest";
 
-import { runStatusOfResults } from "../../../../src/miroir-fwk/4_view/components/Reports/MiroirTestDisplay.js";
-import type { MiroirTestResultData } from "../../../../src/miroir-fwk/4_view/components/Buttons/RunMiroirTestSuiteButton.js";
+import { runStatusOfResults } from "miroir-react-testing/src/4_view/components/Reports/MiroirTestDisplay.js";
+import type { MiroirTestResultData } from "miroir-react-testing/src/4_view/components/Buttons/RunMiroirTestSuiteButton.js";
 
 const result = (testResult: MiroirTestResultData["testResult"]): MiroirTestResultData => ({
   testName: "t",

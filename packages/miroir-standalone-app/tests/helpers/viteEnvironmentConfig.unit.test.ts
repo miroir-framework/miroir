@@ -117,12 +117,13 @@ describe("the web client configuration comes from the selected environment", () 
   });
 
   it("the in-app test runner reads the injected realServer configurations, not configuration files", () => {
-    const source = readFileSync(
-      path.join(repositoryRoot, "packages/miroir-standalone-app/src/miroir-fwk/4-tests/integrationTestProfileAssets.ts"),
-      "utf-8",
-    );
+    // #672: the test runtime is in miroir-react-testing; realServerTestClientConfigs reads the define
+    const testRuntime = path.join(repositoryRoot, "packages/miroir-react-testing/src/4-tests");
+    const source = readFileSync(path.join(testRuntime, "realServerTestClientConfigs.ts"), "utf-8");
     expect(source).toContain(MIROIR_TEST_CLIENT_CONFIGS);
-    expect(source).not.toMatch(/miroirConfig\.browser-realServer/);
+    const assets = readFileSync(path.join(testRuntime, "integrationTestProfileAssets.ts"), "utf-8");
+    expect(assets).toContain("realServerTestClientConfigs");
+    expect(assets).not.toMatch(/miroirConfig\.browser-realServer/);
   });
 
   it("index.tsx reads the injected configuration, not configuration files of its own", () => {

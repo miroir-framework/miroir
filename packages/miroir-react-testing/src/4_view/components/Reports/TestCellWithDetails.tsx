@@ -10,7 +10,7 @@ import {
 } from "@miroir-framework/react"
 import { formatValue, SideBySideDiff } from './SideBySideDiff.js';
 import { LoggerInterface, MiroirLoggerFactory } from '@miroir-framework/core';
-import { packageName } from '../../../../constants.js';
+import { packageName } from '../../../constants.js';
 import { cleanLevel } from '../../constants.js';
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "TestCellWithDetails");

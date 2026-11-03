@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { canonicalStoreIdentifier, ephemeralStoreIdentifier } from "../../src/miroir-fwk/4-tests/runnerIntegTestSupport.js";
+import { canonicalStoreIdentifier, ephemeralStoreIdentifier } from "miroir-react-testing/src/4-tests/runnerIntegTestSupport.js";
 import {
   resolveEphemeralIndexedDbBaseName,
   testApplicationStorageConfiguration,

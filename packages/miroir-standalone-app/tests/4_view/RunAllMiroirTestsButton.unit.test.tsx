@@ -15,8 +15,8 @@ import {
   getIntegTestRunCoordinator,
   resetIntegTestRunCoordinatorForTests,
   type IntegTestRunCoordinator,
-} from '../../src/miroir-fwk/4-tests/integTestRunCoordinator.js';
-import type { UiIntegrationTestRunRequest } from '../../src/miroir-fwk/4-tests/uiIntegrationTestLauncherTypes.js';
+} from 'miroir-react-testing/src/4-tests/integTestRunCoordinator.js';
+import type { UiIntegrationTestRunRequest } from 'miroir-react-testing/src/4-tests/uiIntegrationTestLauncherTypes.js';
 
 const runMiroirTestSuiteMock = vi.fn(async (..._args: unknown[]) => undefined);
 
@@ -90,14 +90,14 @@ vi.mock("@miroir-framework/react", async (importOriginal) => ({
   ),
 }));
 
-vi.mock('../../src/miroir-fwk/4-tests/uiIntegrationTestLauncher.js', () => ({
+vi.mock('miroir-react-testing/src/4-tests/uiIntegrationTestLauncher.js', () => ({
   runUiIntegrationTestSuite: (
     request: Pick<UiIntegrationTestRunRequest, 'suiteKey'>,
     env?: MockLauncherEnv,
   ) => runUiIntegrationTestSuiteMock(request, env),
 }));
 
-vi.mock('../../src/miroir-fwk/4-tests/loadBrowserUiIntegrationTestLauncherEnvironment.js', () => ({
+vi.mock('miroir-react-testing/src/4-tests/loadBrowserUiIntegrationTestLauncherEnvironment.js', () => ({
   loadBrowserUiIntegrationTestLauncherEnvironment: async () => ({
     createOrchestrator: () => ({}),
     loadConfigForProfile: async () => ({ miroirConfig: {}, logConfig: {} }),
@@ -110,15 +110,15 @@ vi.mock('../../src/miroir-fwk/4-tests/loadBrowserUiIntegrationTestLauncherEnviro
   }),
 }));
 
-vi.mock('../../src/miroir-fwk/4-tests/uiIntegrationTestRunState.js', () => ({
+vi.mock('miroir-react-testing/src/4-tests/uiIntegrationTestRunState.js', () => ({
   setLastUiIntegrationTestRunResult: vi.fn(),
 }));
 
-vi.mock('../../src/miroir-fwk/4-tests/useSelectedApplicationMiroirTestSuiteRegistries.js', () => ({
+vi.mock('miroir-react-testing/src/4-tests/useSelectedApplicationMiroirTestSuiteRegistries.js', () => ({
   useSelectedApplicationRunnerUuidIndex: () => ({}),
 }));
 
-import { RunAllMiroirTestsButton } from '../../src/miroir-fwk/4_view/components/Buttons/RunAllMiroirTestsButton.js';
+import { RunAllMiroirTestsButton } from 'miroir-react-testing/src/4_view/components/Buttons/RunAllMiroirTestsButton.js';
 
 function asMiroirTest(instance: unknown): MiroirTestDefinition {
   return instance as MiroirTestDefinition;

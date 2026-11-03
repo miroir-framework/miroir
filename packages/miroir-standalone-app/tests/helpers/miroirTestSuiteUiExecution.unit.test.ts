@@ -19,9 +19,9 @@ import {
   isUiIntegrationRunnerSuiteSupportedForInstance,
   resolveMiroirTestSuiteUiExecutionMode,
   uiExecutionModeBadgeColors,
-} from '../../src/miroir-fwk/4-tests/miroirTestSuiteUiExecution.js';
-import { UI_INTEGRATION_RUNNER_SUITE_REGISTRY } from '../../src/miroir-fwk/4-tests/uiIntegrationTestRunnerSuiteRegistry.js';
-import { UI_INTEGRATION_TRANSFORMER_SUITE_REGISTRY } from '../../src/miroir-fwk/4-tests/uiIntegrationTestTransformerSuiteRegistry.js';
+} from 'miroir-react-testing/src/4-tests/miroirTestSuiteUiExecution.js';
+import { UI_INTEGRATION_RUNNER_SUITE_REGISTRY } from 'miroir-react-testing/src/4-tests/uiIntegrationTestRunnerSuiteRegistry.js';
+import { UI_INTEGRATION_TRANSFORMER_SUITE_REGISTRY } from 'miroir-react-testing/src/4-tests/uiIntegrationTestTransformerSuiteRegistry.js';
 
 function asMiroirTest(instance: unknown): MiroirTestDefinition {
   return instance as MiroirTestDefinition;

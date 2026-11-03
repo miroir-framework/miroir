@@ -10,7 +10,7 @@ import {
   type ReactComponentTestSuiteContext,
 } from "@miroir-framework/core";
 
-import { packageName } from "../../../constants.js";
+import { packageName } from "../../constants.js";
 import { cleanLevel } from "../../4_view/constants.js";
 import {
   ComponentTestModeContext,

@@ -53,7 +53,7 @@ import { cleanLevel, packageName } from "../../src/constants.js";
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import {
   selfApplicationDeploymentConfigurationsTO_REMOVE,
-} from "../../src/miroir-fwk/4-tests/tests-utils.js";
+} from "miroir-react-testing/src/4-tests/tests-utils.js";
 import { miroirAppStartup } from "../../src/startup.js";
 import { AppStackIntegrationTestSession } from "../helpers/IntegrationTestSession.js";
 import { loadTestConfigFiles } from "../utils/fileTools.js";

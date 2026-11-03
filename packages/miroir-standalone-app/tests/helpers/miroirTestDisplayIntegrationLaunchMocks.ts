@@ -1,8 +1,8 @@
 import { vi } from 'vitest';
 
-import type { UiIntegrationTestRunRequest } from '../../src/miroir-fwk/4-tests/uiIntegrationTestLauncherTypes.js';
+import type { UiIntegrationTestRunRequest } from 'miroir-react-testing/src/4-tests/uiIntegrationTestLauncherTypes.js';
 
-vi.mock('../../src/miroir-fwk/4-tests/useSelectedApplicationMiroirTestSuiteRegistries.js', async () => {
+vi.mock('miroir-react-testing/src/4-tests/useSelectedApplicationMiroirTestSuiteRegistries.js', async () => {
   const { loadApplicationRunnerUuidIndexFromFolders } = await import(
     '@miroir-framework/core/model-validation-fs'
   );
@@ -27,12 +27,12 @@ import {
 
 export { RETURN_BOOK_LEAF, RUNNER_RETURN_DOCUMENT_LABEL, RUNNER_RETURN_DOCUMENT_SUITE_KEY };
 
-vi.mock('../../src/miroir-fwk/4_view/components/Reports/TestExecutionPanel.js', () => ({
+vi.mock('miroir-react-testing/src/4_view/components/Reports/TestExecutionPanel.js', () => ({
   TestExecutionPanel: () => null,
 }));
 
 vi.mock(
-  '../../src/miroir-fwk/4-tests/loadBrowserUiIntegrationTestLauncherEnvironment.js',
+  'miroir-react-testing/src/4-tests/loadBrowserUiIntegrationTestLauncherEnvironment.js',
   async () => {
     const { createNodeUiIntegrationTestLauncherEnvironment } = await import(
       './runUiIntegrationTestSuiteInNode.js'
@@ -54,9 +54,9 @@ vi.mock(
   },
 );
 
-vi.mock('../../src/miroir-fwk/4-tests/uiIntegrationTestLauncher.js', async (importOriginal) => {
+vi.mock('miroir-react-testing/src/4-tests/uiIntegrationTestLauncher.js', async (importOriginal) => {
   const actual = await importOriginal<
-    typeof import('../../src/miroir-fwk/4-tests/uiIntegrationTestLauncher.js')
+    typeof import('miroir-react-testing/src/4-tests/uiIntegrationTestLauncher.js')
   >();
   return {
     ...actual,

@@ -25,7 +25,7 @@ import {
   mountComponent,
   nextMacrotask,
   type MountedComponent,
-} from "../../../../src/miroir-fwk/4-tests/componentTests/componentTestEnvironment.js";
+} from "miroir-react-testing/src/4-tests/componentTests/componentTestEnvironment.js";
 
 const log = MiroirLoggerFactory.getPreStartLogger("componentTestFireEvent.286.phase8");
 

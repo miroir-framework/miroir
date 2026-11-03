@@ -11,7 +11,7 @@ import {
 import { useMiroirContextService, useSnackbar } from '@miroir-framework/react';
 import { readAppMiroirReports } from '../../../4-tests/appMiroirReports.js';
 import { useSelectedApplicationRunnerUuidIndex } from '../../../4-tests/useSelectedApplicationMiroirTestSuiteRegistries.js';
-import { packageName } from '../../../../constants.js';
+import { packageName } from '../../../constants.js';
 import { miroirTestDefinitionHasReactComponentTest } from '../../../4-tests/miroirTestSuiteUiExecution.js';
 import type {
   UiIntegrationTestRunRequest,

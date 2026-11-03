@@ -10,7 +10,7 @@ import {
   listBrowserIntegrationTestProfileNames,
   listBrowserLaunchableIntegrationTestProfileNames,
   loadBrowserIntegrationTestProfileConfig,
-} from "../../src/miroir-fwk/4-tests/integrationTestProfileAssets.js";
+} from "miroir-react-testing/src/4-tests/integrationTestProfileAssets.js";
 
 describe("integrationTestProfileAssets (B5/B6-b/B6-c)", () => {
   it("lists the default emulatedServer-indexedDb profile", () => {

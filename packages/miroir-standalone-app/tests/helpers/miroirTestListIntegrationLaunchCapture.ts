@@ -1,4 +1,4 @@
-import type { UiIntegrationTestRunResult } from '../../src/miroir-fwk/4-tests/uiIntegrationTestLauncherTypes.js';
+import type { UiIntegrationTestRunResult } from 'miroir-react-testing/src/4-tests/uiIntegrationTestLauncherTypes.js';
 
 export const capturedUiIntegrationRunResults: UiIntegrationTestRunResult[] = [];
 

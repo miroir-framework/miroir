@@ -12,7 +12,7 @@ import {
   type ViewParams,
 } from "@miroir-framework/core";
 
-import { packageName } from "../../../../constants.js";
+import { packageName } from "../../../constants.js";
 import {
   miroirTestDefinitionHasReactComponentTest,
   miroirTestDefinitionHasStepKind,

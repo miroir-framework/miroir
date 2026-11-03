@@ -23,7 +23,7 @@ import { miroirPostgresStoreSectionStartup } from "@miroir-framework/store-postg
 import { entityReport } from "@miroir-framework/core/meta-model";
 import { env } from "process";
 
-import { createReportTestRunner } from "../../src/miroir-fwk/4-tests/componentTests/runReportTest.js";
+import { createReportTestRunner } from "miroir-react-testing/src/4-tests/componentTests/runReportTest.js";
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import { miroirAppStartup } from "../../src/startup.js";
 import { appReportSectionRenderers, appShellHost } from "../../src/miroir-fwk/4_view/reportSectionRenderers.js";

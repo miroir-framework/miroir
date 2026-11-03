@@ -275,8 +275,10 @@ npm run coverageTour -w miroir-standalone-app -- --serve
 | `packages/miroir-standalone-app/src/miroir-fwk/4_view/reportSectionRenderers.tsx` | `appShellHost` (lazy assistant, lazy MCP client) and the app's lazy report section renderers (#633) |
 | `packages/miroir-standalone-app/src/index.tsx` | Eager entry (imports no CopilotKit itself) |
 | `packages/miroir-standalone-app/src/miroir-fwk/4_view/routes/ai/AgentsCopilotKit.tsx` | Lazy CopilotKit provider (#244) |
-| `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/Reports/ComponentTestSandbox.tsx` | Dynamic import of the component test chunk (#286) |
-| `packages/miroir-standalone-app/src/miroir-fwk/4-tests/componentTests/index.ts` | Component test chunk entry, `registerComponentTests` (#286) |
+| `packages/miroir-react-testing/src/4_view/components/Reports/ComponentTestSandbox.tsx` | Dynamic import of the component test chunk (#286; the MiroirTest runtime is in `miroir-react-testing` since #672) |
+| `packages/miroir-react-testing/src/4-tests/componentTests/index.ts` | Component test chunk entry, `registerComponentTests` (#286) |
+| `packages/miroir-react-testing/src/reportSection.ts` | `miroir-react-testing/report-section`: the `miroirTestReportSection` renderer alone, lazy in the app and the sandbox (#672) |
+| `packages/miroir-sandbox/bundle-policy.json` | Sandbox bundle guard, checked with `--no-history` by the sandbox smoke workflow (#672) |
 | `packages/miroir-standalone-app/src/miroir-fwk/4_view/components/ValueObjectEditor/MlElementEditorReactCodeMirror.tsx` | Lazy CodeMirror editor (#337) |
 | `packages/miroir-react/src/components/CodeBlock_ReadOnly.tsx` | Lazy read-only CodeMirror block (#337) |
 | `packages/miroir-react/src/components/Grids/LazyGrids.tsx` | Lazy grids (#337) |

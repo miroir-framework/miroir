@@ -16,7 +16,7 @@ import {
 import { adminSelfApplication, defaultAdminViewParams, entityViewParams } from "@miroir-framework/core/admin";
 
 // #656: the local cache MIROIR_TEST_LOCAL_CACHE names (tests/setup.ts), redux by default
-import { testLocalCache } from "../../src/miroir-fwk/4-tests/testLocalCache";
+import { testLocalCache } from "miroir-react-testing/src/4-tests/testLocalCache.js";
 /** Puts the Admin ViewParams, with `viewParams` over the defaults, in the local cache, as a save landing. */
 export function loadViewParams(localCache: LocalCacheInterface, viewParams: Record<string, unknown>): void {
   // no rollback: a rollback of the admin application drops the ViewParams instance just loaded

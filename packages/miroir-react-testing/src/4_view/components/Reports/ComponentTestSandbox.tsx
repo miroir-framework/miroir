@@ -7,7 +7,7 @@ import {
   useReportSectionRenderers,
 } from "@miroir-framework/react";
 
-import { packageName } from "../../../../constants.js";
+import { packageName } from "../../../constants.js";
 import type { ComponentTestRegistration } from "../../../4-tests/componentTests/index.js";
 import type { UiIntegrationReportTestSession } from "../../../4-tests/uiIntegrationTestLauncherTypes.js";
 import { cleanLevel } from "../../constants.js";

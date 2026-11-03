@@ -11,7 +11,7 @@ import { selfApplicationLibrary } from "miroir-example-library";
 const setupMiroirTestMock = vi.fn();
 const ensureMiroirPlatformMock = vi.fn();
 
-vi.mock("../../src/miroir-fwk/4-tests/setupMiroirTest.js", () => ({
+vi.mock("miroir-react-testing/src/4-tests/setupMiroirTest.js", () => ({
   setupMiroirTest: (...args: unknown[]) => setupMiroirTestMock(...args),
 }));
 
@@ -23,7 +23,7 @@ vi.mock("@miroir-framework/core", async (importOriginal) => {
   };
 });
 
-import { runRealServerClientBootstrap } from "../../src/miroir-fwk/4-tests/runRealServerClientBootstrap.js";
+import { runRealServerClientBootstrap } from "miroir-react-testing/src/4-tests/runRealServerClientBootstrap.js";
 
 function createMockDomainController(): DomainControllerInterface {
   return {

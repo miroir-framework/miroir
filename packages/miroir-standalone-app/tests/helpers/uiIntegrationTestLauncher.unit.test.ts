@@ -23,9 +23,9 @@ import {
   runUiIntegrationTestSuite,
   teardownBesideRunResults,
   type UiIntegrationTestLauncherEnvironment,
-} from "../../src/miroir-fwk/4-tests/uiIntegrationTestLauncher.js";
-import { libraryTestbedInitParams } from "../../src/miroir-fwk/4-tests/uiIntegrationPlayfieldSeeds.js";
-import { appForTestTestbedInitParams } from "../../src/miroir-fwk/4-tests/uiIntegrationAppForTestPlayfieldSeed.js";
+} from "miroir-react-testing/src/4-tests/uiIntegrationTestLauncher.js";
+import { libraryTestbedInitParams } from "miroir-react-testing/src/4-tests/uiIntegrationPlayfieldSeeds.js";
+import { appForTestTestbedInitParams } from "miroir-react-testing/src/4-tests/uiIntegrationAppForTestPlayfieldSeed.js";
 import {
   buildUiIntegrationOrchestratorCreateSessionParams,
   listUiIntegrationRunnerSuiteKeys,
@@ -35,7 +35,7 @@ import {
   UI_INTEGRATION_RUNNER_UUID_INDEX,
   uiIntegrationRunnerSuiteEntryFromDefinition,
   type UiIntegrationRunnerSuiteEntry,
-} from "../../src/miroir-fwk/4-tests/uiIntegrationTestRunnerSuiteRegistry.js";
+} from "miroir-react-testing/src/4-tests/uiIntegrationTestRunnerSuiteRegistry.js";
 
 const applicationMiroirTestCatalogByKey = indexApplicationMiroirTestsByKey(
   loadApplicationMiroirTestCatalog(),
@@ -459,7 +459,7 @@ describe("uiIntegrationTestTransformerSuiteRegistry (B7)", () => {
     const {
       listUiIntegrationTransformerSuiteKeys,
       resolveUiIntegrationTransformerSuite,
-    } = await import("../../src/miroir-fwk/4-tests/uiIntegrationTestTransformerSuiteRegistry.js");
+    } = await import("miroir-react-testing/src/4-tests/uiIntegrationTestTransformerSuiteRegistry.js");
     expect(listUiIntegrationTransformerSuiteKeys()).toContain("tr.core");
     const entry = resolveUiIntegrationTransformerSuite("tr.core");
     expect(entry.suiteDefinition.miroirTestLabel).toBe("tr.core");

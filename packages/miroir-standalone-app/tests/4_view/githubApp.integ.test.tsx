@@ -40,7 +40,7 @@ import {
 } from "../helpers/githubAppTestbed.js";
 
 // #656: the local cache MIROIR_TEST_LOCAL_CACHE names (tests/setup.ts), redux by default
-import { testLocalCache } from "../../src/miroir-fwk/4-tests/testLocalCache";
+import { testLocalCache } from "miroir-react-testing/src/4-tests/testLocalCache.js";
 vi.mock("react-router-dom", async () => {
   const actual = await vi.importActual<typeof import("react-router-dom")>("react-router-dom");
   return {

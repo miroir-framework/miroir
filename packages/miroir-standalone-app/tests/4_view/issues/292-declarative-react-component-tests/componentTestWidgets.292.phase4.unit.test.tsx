@@ -24,7 +24,7 @@ import type {
   ReactComponentTestSuiteContext,
 } from "@miroir-framework/core";
 
-import { createReactComponentTestRunner } from "../../../../src/miroir-fwk/4-tests/componentTests/runReactComponentTest";
+import { createReactComponentTestRunner } from "miroir-react-testing/src/4-tests/componentTests/runReactComponentTest.js";
 
 const caseLabel = "Fixture: case";
 

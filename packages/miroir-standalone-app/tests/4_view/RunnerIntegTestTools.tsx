@@ -17,7 +17,7 @@ import {
   resolveEphemeralIndexedDbBaseName,
   testApplicationStorageConfiguration,
   type TestConfig,
-} from "../../src/miroir-fwk/4-tests/runnerIntegTestSupport.js";
+} from "miroir-react-testing/src/4-tests/runnerIntegTestSupport.js";
 
 export {
   beforeEachTest,

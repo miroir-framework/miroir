@@ -107,8 +107,11 @@ jobs:
           npm run build -w @miroir-framework/core
           npm run build -w @miroir-framework/env -w miroir-localcache-redux -w miroir-localcache-zustand -w @miroir-framework/store-bundled -w @miroir-framework/store-filesystem -w @miroir-framework/store-indexeddb -w @miroir-framework/store-postgres -w @miroir-framework/store-mongodb -w miroir-example-library -w miroir-example-spotify -w miroir-example-github -w miroir-fixture-appForTest
           npm run build -w @miroir-framework/react -w @miroir-framework/mcp -w miroir-ai
-          npm run build -w miroir-diagram-class
+          npm run build -w miroir-diagram-class -w miroir-react-testing
           npm run build -w @miroir-framework/server
+      # #672: the MiroirTest runtime the app and the sandbox share (its build does not typecheck)
+      - name: Typecheck miroir-react-testing
+        run: npx tsc --noEmit --skipLibCheck -p packages/miroir-react-testing/tsconfig.json
       - name: Build the standalone app (prints its bundle report)
         run: npm run build -w miroir-standalone-app
       - name: Build the Electron main process (prints its bundle report)

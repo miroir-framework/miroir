@@ -193,6 +193,9 @@ jobs:
           npm run build -w miroir-diagram-class & pids+=($!)
           npm run build -w @miroir-framework/server & pids+=($!)
           for pid in "${pids[@]}"; do wait "$pid"; done
+      # #672: the MiroirTest UI runtime imports @miroir-framework/react, @miroir-framework/mcp and the fixture apps
+      - name: Build miroir-react-testing
+        run: npm run build -w miroir-react-testing
       - name: Upload dist – shared libs
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
@@ -212,6 +215,7 @@ jobs:
             packages/miroir-server-library/dist
             packages/miroir-react/dist
             packages/miroir-diagram-class/dist
+            packages/miroir-react-testing/dist
           if-no-files-found: error
 
   # ──────────────────────────────────────────────────────────────────────────────

@@ -47,10 +47,10 @@ vi.mock("@miroir-framework/core", async (importOriginal) => {
   };
 });
 
-vi.mock("../../src/miroir-fwk/4-tests/appStackIntegrationBootstrap.js", async (importOriginal) => {
+vi.mock("miroir-react-testing/src/4-tests/appStackIntegrationBootstrap.js", async (importOriginal) => {
   const actual =
     await importOriginal<
-      typeof import("../../src/miroir-fwk/4-tests/appStackIntegrationBootstrap.js")
+      typeof import("miroir-react-testing/src/4-tests/appStackIntegrationBootstrap.js")
     >();
   return {
     ...actual,
@@ -59,15 +59,15 @@ vi.mock("../../src/miroir-fwk/4-tests/appStackIntegrationBootstrap.js", async (i
   };
 });
 
-vi.mock("../../src/miroir-fwk/4-tests/runRealServerClientBootstrap.js", () => ({
+vi.mock("miroir-react-testing/src/4-tests/runRealServerClientBootstrap.js", () => ({
   runRealServerClientBootstrap: (...args: unknown[]) =>
     runRealServerClientBootstrapMock(...args),
 }));
 
-vi.mock("../../src/miroir-fwk/4-tests/runnerIntegTestSupport.js", async (importOriginal) => {
+vi.mock("miroir-react-testing/src/4-tests/runnerIntegTestSupport.js", async (importOriginal) => {
   const actual =
     await importOriginal<
-      typeof import("../../src/miroir-fwk/4-tests/runnerIntegTestSupport.js")
+      typeof import("miroir-react-testing/src/4-tests/runnerIntegTestSupport.js")
     >();
   return {
     ...actual,
@@ -75,7 +75,7 @@ vi.mock("../../src/miroir-fwk/4-tests/runnerIntegTestSupport.js", async (importO
   };
 });
 
-vi.mock("../../src/miroir-fwk/4-tests/testbedAccessGrantFromAuthSession.js", () => ({
+vi.mock("miroir-react-testing/src/4-tests/testbedAccessGrantFromAuthSession.js", () => ({
   testbedAccessGrantFromAuthSession: (...args: unknown[]) =>
     testbedAccessGrantFromAuthSessionMock(...args),
 }));
@@ -84,7 +84,7 @@ import { getTestSessionConfig, RunnerTestSession } from "./RunnerTestSession.js"
 import {
   libraryTestbedInitParams,
   runnerLibraryDocumentEntitiesAndInstances,
-} from "../../src/miroir-fwk/4-tests/uiIntegrationPlayfieldSeeds.js";
+} from "miroir-react-testing/src/4-tests/uiIntegrationPlayfieldSeeds.js";
 import { buildTestSessionModelEnvironment } from "./testSessionModelEnvironment.js";
 
 const runnerLibraryDocumentPlayfieldSeed = composeIntegTestbedResetParams(

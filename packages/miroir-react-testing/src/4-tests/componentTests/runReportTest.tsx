@@ -27,7 +27,7 @@ import {
 } from "@miroir-framework/core";
 import { entityReport, selfApplicationMiroir } from "@miroir-framework/core/meta-model";
 
-import { packageName } from "../../../constants.js";
+import { packageName } from "../../constants.js";
 import { cleanLevel } from "../../4_view/constants.js";
 import { PageDispatcher } from "@miroir-framework/react";
 import { markPageConfigurationsLoaded } from "@miroir-framework/react";

@@ -11,7 +11,7 @@ import { useSelectedApplicationMiroirTests } from "../../../4-tests/useSelectedA
 import type { MiroirTestReportSection } from "@miroir-framework/core";
 import { useViewParams } from "@miroir-framework/react";
 
-import { packageName } from "../../../../constants.js";
+import { packageName } from "../../../constants.js";
 import { cleanLevel } from "../../constants.js";
 import { MiroirTestDisplay } from "./MiroirTestDisplay.js";
 import { MiroirTestListDisplay } from "./MiroirTestListDisplay.js";

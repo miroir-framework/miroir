@@ -12,7 +12,7 @@ import {
 import type {
   UiIntegrationTestRunRequest,
   UiIntegrationTestRunResult,
-} from "../../src/miroir-fwk/4-tests/uiIntegrationTestLauncherTypes.js";
+} from "miroir-react-testing/src/4-tests/uiIntegrationTestLauncherTypes.js";
 
 function suiteDefinition(instance: { definition: unknown }): MiroirTestSuite {
   return instance.definition as MiroirTestSuite;

@@ -3,7 +3,7 @@ import { MiroirLoggerFactory, type MlElement, type LoggerInterface, type ViewPar
 
 import { CenteredSpinner } from "@miroir-framework/react";
 import { ValueObjectGrid } from "@miroir-framework/react";
-import { packageName } from "../../../../constants.js";
+import { packageName } from "../../../constants.js";
 import { cleanLevel } from "../../constants.js";
 import { TestCellWithDetails } from "./TestCellWithDetails.js";
 import { TestResultCellWithActualValue } from "./TestResultCellWithActualValue.js";

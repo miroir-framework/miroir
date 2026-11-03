@@ -2,7 +2,7 @@
  * #321: the web client configuration of the selected environment (MIROIR_ENV, then
  * environments/local.json, then dev), injected by vite.config.js as __MIROIR_CLIENT_CONFIG__
  * (read by src/index.tsx), and the configurations of the in-app realServer-* test runs, injected as
- * __MIROIR_TEST_CLIENT_CONFIGS__ (read by src/miroir-fwk/4-tests/integrationTestProfileAssets.ts).
+ * __MIROIR_TEST_CLIENT_CONFIGS__ (read by miroir-react-testing, src/4-tests/realServerTestClientConfigs.ts).
  */
 import { environmentRealServerClientConfig, resolveEnvironmentFromFiles, seedEnvironmentState } from "@miroir-framework/env";
 

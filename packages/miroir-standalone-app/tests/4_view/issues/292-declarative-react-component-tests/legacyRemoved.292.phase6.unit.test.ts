@@ -22,7 +22,7 @@ import { afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
 
 import type { MiroirTestForReactComponent } from "@miroir-framework/core";
 
-import { createReactComponentTestRunner } from "../../../../src/miroir-fwk/4-tests/componentTests/runReactComponentTest";
+import { createReactComponentTestRunner } from "miroir-react-testing/src/4-tests/componentTests/runReactComponentTest.js";
 import { resolveRepoRoot } from "../../../helpers/integrationTestProfiles.js";
 
 const REPO_ROOT = resolveRepoRoot();

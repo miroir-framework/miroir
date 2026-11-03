@@ -1,1 +1,1 @@
-export * from "../../src/miroir-fwk/4-tests/uiIntegrationAppForTestPlayfieldSeed.js";
+export * from "miroir-react-testing/src/4-tests/uiIntegrationAppForTestPlayfieldSeed.js";

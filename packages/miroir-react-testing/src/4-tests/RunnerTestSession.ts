@@ -38,7 +38,7 @@ import {
   selfApplicationLibrary,
 } from "miroir-example-library";
 import { defaultMiroirMetaModel, selfApplicationMiroir } from "@miroir-framework/core/meta-model";
-import { browserMcpServerUrl, runMcpToolRunner } from "../4_view/components/Runners/runMcpToolRunner.js";
+import { browserMcpServerUrl, runMcpToolRunner } from "@miroir-framework/mcp/client";
 import { runRealServerClientBootstrap } from "./runRealServerClientBootstrap.js";
 import { runTeardownTestApplicationStores } from "@miroir-framework/core";
 import { testbedAccessGrantFromAuthSession } from "./testbedAccessGrantFromAuthSession.js";

@@ -5,7 +5,7 @@
 import type { MiroirConfigClient } from "@miroir-framework/core";
 
 import { countTestResults } from "@miroir-framework/react";
-import type { MiroirTestSuiteResultsMap, SkippedMiroirTestSuite } from "../miroirTestBatch.js";
+import type { MiroirTestSuiteResultsMap, SkippedMiroirTestSuite } from "miroir-react-testing";
 
 export type MiroirSelfTestVerdict = "running" | "passed" | "failed";
 

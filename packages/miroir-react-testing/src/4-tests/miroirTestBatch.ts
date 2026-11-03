@@ -15,7 +15,7 @@ import {
   type Runner,
 } from "@miroir-framework/core";
 
-import { packageName } from "../../constants.js";
+import { packageName } from "../constants.js";
 import {
   countTestResults,
   generateTestReport,

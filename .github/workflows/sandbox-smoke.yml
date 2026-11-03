@@ -1,0 +1,58 @@
+name: Sandbox smoke
+
+# #672: the static sandbox runs MiroirTests in the browser, unit and IndexedDB integration. This job builds it
+# as GitHub Pages does, checks that the test runtime stays off the page (bundle-policy.json), and runs one suite of
+# each kind through the Miroir Tests report (packages/miroir-sandbox/scripts/smoke.mjs). It fails when a suite
+# fails (exit 1) or when the smoke test cannot run (exit 2).
+on:
+  workflow_dispatch:
+  push:
+    branches: [_integration, main]
+  pull_request:
+    paths:
+      - "packages/miroir-sandbox/**"
+      - "packages/miroir-react-testing/**"
+      - "packages/miroir-react/**"
+      - "packages/miroir-mcp/**"
+      - "packages/miroir-core/src/**"
+      - "packages/miroir-app-miroir/assets/**"
+      - "package-lock.json"
+      - ".github/workflows/sandbox-smoke.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sandbox-smoke-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  smoke:
+    name: sandbox MiroirTests smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: Install dependencies
+        run: npm ci --no-audit
+      # As the bundle job of pr-checks.yml: each line needs the ones above it.
+      - name: Build the packages the sandbox imports
+        run: |
+          npm run build -w miroir-app-miroir -w miroir-app-admin
+          npm run build -w @miroir-framework/core
+          npm run build -w @miroir-framework/env -w miroir-localcache-redux -w miroir-localcache-zustand -w @miroir-framework/store-bundled -w @miroir-framework/store-filesystem -w @miroir-framework/store-indexeddb -w @miroir-framework/store-postgres -w @miroir-framework/store-mongodb -w miroir-example-library -w miroir-example-spotify -w miroir-example-github -w miroir-fixture-appForTest
+          npm run build -w @miroir-framework/react -w @miroir-framework/mcp
+          npm run build -w miroir-diagram-class -w miroir-react-testing
+      - name: Build the sandbox
+        run: npm run build -w miroir-sandbox
+      - name: Bundle guard (test runtime, fixtures and testing-library off the page)
+        run: python3 scripts/check_bundle_policy.py packages/miroir-sandbox/dist/.vite/bundle-report.json packages/miroir-sandbox/bundle-policy.json --no-history
+      # The browser: the runner's Chrome (smoke.mjs falls back to it).
+      - name: Run the smoke test
+        run: npm run smoke -w miroir-sandbox

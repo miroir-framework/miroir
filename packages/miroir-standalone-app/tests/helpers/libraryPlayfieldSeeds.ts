@@ -39,7 +39,7 @@ import {
   miroirTest_action_scenario_evolutionTrace,
 } from "@miroir-framework/core/meta-model";
 
-export * from "../../src/miroir-fwk/4-tests/uiIntegrationPlayfieldSeeds.js";
+export * from "miroir-react-testing/src/4-tests/uiIntegrationPlayfieldSeeds.js";
 
 import {
   compositeItem1,
@@ -48,7 +48,7 @@ import {
   emptyLibraryPlayfieldModel,
   entityCompositePK,
   libraryTestbedInitParams,
-} from "../../src/miroir-fwk/4-tests/uiIntegrationPlayfieldSeeds.js";
+} from "miroir-react-testing/src/4-tests/uiIntegrationPlayfieldSeeds.js";
 import type { IntegTestbedResetParams } from "@miroir-framework/core";
 
 export const ENTITY_COMPOSITE_PK_UUID = "44691d2c-d7c1-48e0-8363-71c51195e104";

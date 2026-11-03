@@ -24,7 +24,7 @@ import {
 } from "@miroir-framework/core";
 
 import { loadLocalCacheImplementation } from "./localCacheImplementation";
-import { packageName } from "../../constants";
+import { packageName } from "../constants";
 import { cleanLevel } from "../4_view/constants";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "setupMiroirTest");

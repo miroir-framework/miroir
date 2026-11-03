@@ -13,21 +13,23 @@
     "dev": "vite --host",
     "build": "node --max-old-space-size=4096 ../../node_modules/vite/bin/vite.js build --emptyOutDir",
     "build:static": "npm run build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "smoke": "node scripts/smoke.mjs"
   },
   "dependencies": {
     "@emotion/react": "11.14.0",
     "@emotion/styled": "11.14.1",
+    "@miroir-framework/core": "*",
+    "@miroir-framework/react": "*",
+    "@miroir-framework/store-bundled": "*",
+    "@miroir-framework/store-indexeddb": "*",
     "@mui/material": "9.5.0",
     "formik": "2.4.9",
     "loglevelnext": "6.0.0",
     "material-symbols": "0.48.0",
-    "@miroir-framework/core": "*",
     "miroir-diagram-class": "*",
     "miroir-localcache-redux": "*",
-    "@miroir-framework/react": "*",
-    "@miroir-framework/store-bundled": "*",
-    "@miroir-framework/store-indexeddb": "*",
+    "miroir-react-testing": "*",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "react-redux": "9.3.0",
@@ -41,6 +43,7 @@
     "@types/react": "18.3.23",
     "@types/react-dom": "18.3.7",
     "@vitejs/plugin-react": "6.1.2",
+    "playwright-core": "1.64.1",
     "vite": "8.3.5",
     "vite-plugin-node-polyfills": "0.28.0"
   }

@@ -24,7 +24,7 @@ import {
 import {
   buildComponentTestWrapper,
   type ComponentTestWrapper,
-} from "../../src/miroir-fwk/4-tests/componentTests/componentTestTools";
+} from "miroir-react-testing/src/4-tests/componentTests/componentTestTools.js";
 
 const HostMiroirTestSection: ReportSectionRenderers["miroirTestReportSection"] = () => null;
 const hostRenderers: ReportSectionRenderers = { miroirTestReportSection: HostMiroirTestSection };

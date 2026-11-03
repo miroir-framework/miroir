@@ -27,6 +27,8 @@ packages/miroir-diagram-class/node_modules*/
 packages/miroir-diagram-class/dist*/
 packages/miroir-react/node_modules*/
 packages/miroir-react/dist*/
+packages/miroir-react-testing/node_modules*/
+packages/miroir-react-testing/dist*/
 packages/miroir-server/dist*/
 packages/miroir-server/tmp*/
 packages/miroir-server/indexedDb*/

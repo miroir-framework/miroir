@@ -306,7 +306,7 @@ describe.skipIf(!shouldRun)("mcpToolRunner #253 phase0 — current contracts", (
     expect(resolveMcp).not.toMatch(/from ["']@miroir-framework\/mcp(\/[^"']*)?["']/);
 
     const runnerTestSession = readFileSync(
-      join(REPO_ROOT, "packages/miroir-standalone-app/src/miroir-fwk/4-tests/RunnerTestSession.ts"),
+      join(REPO_ROOT, "packages/miroir-react-testing/src/4-tests/RunnerTestSession.ts"),
       "utf8",
     );
     expect(runnerTestSession).not.toMatch(/from ["']@miroir-framework\/mcp["']/);
