@@ -366,6 +366,8 @@ export function createReportTestRunner(host: ReportTestSandboxHost): ClosableRep
             testingDeploymentUuid={deploymentUuid}
             testingApplicationDeploymentMap={applicationDeploymentMap}
             offerReportsAndEntities
+            reportSectionRenderers={host.reportSectionRenderers}
+            shellHost={host.shellHost}
           >
             <PortalContainerProvider portalElement={portalElement}>
               <MemoryRouter initialEntries={[url]}>

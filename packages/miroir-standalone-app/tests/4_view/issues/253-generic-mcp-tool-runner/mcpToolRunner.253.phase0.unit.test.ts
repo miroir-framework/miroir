@@ -289,7 +289,7 @@ describe.skipIf(!shouldRun)("mcpToolRunner #253 phase0 — current contracts", (
     expect(definition.application?.tag?.value?.initializeTo).toBeUndefined();
   });
 
-  it("only runMcpToolRunner imports miroir-mcp, through its browser entry miroir-mcp/client", () => {
+  it("only runMcpToolRunner imports @miroir-framework/mcp, through its browser entry @miroir-framework/mcp/client", () => {
     // #627 moved endpoint action naming to miroir-core: resolveMcpToolAction no longer imports miroir-mcp.
     const viewRoot = join(
       REPO_ROOT,
@@ -300,15 +300,16 @@ describe.skipIf(!shouldRun)("mcpToolRunner #253 phase0 — current contracts", (
       join(REPO_ROOT, "packages/miroir-react/src/components/Runners/resolveMcpToolAction.ts"),
       "utf8",
     );
-    expect(runMcp).toMatch(/from ["']miroir-mcp\/client["']/);
-    expect(runMcp).not.toMatch(/from ["']miroir-mcp["']/);
-    expect(resolveMcp).not.toMatch(/from ["']miroir-mcp(\/[^"']*)?["']/);
+    // #672 D6: the runner itself is in @miroir-framework/mcp/client; the app re-exports it from there
+    expect(runMcp).toMatch(/from ["']@miroir-framework\/mcp\/client["']/);
+    expect(runMcp).not.toMatch(/from ["']@miroir-framework\/mcp["']/);
+    expect(resolveMcp).not.toMatch(/from ["']@miroir-framework\/mcp(\/[^"']*)?["']/);
 
     const runnerTestSession = readFileSync(
       join(REPO_ROOT, "packages/miroir-standalone-app/src/miroir-fwk/4-tests/RunnerTestSession.ts"),
       "utf8",
     );
-    expect(runnerTestSession).not.toMatch(/from ["']miroir-mcp["']/);
+    expect(runnerTestSession).not.toMatch(/from ["']@miroir-framework\/mcp["']/);
   });
 
   it("vite.config.js server.proxy includes /mcp", () => {

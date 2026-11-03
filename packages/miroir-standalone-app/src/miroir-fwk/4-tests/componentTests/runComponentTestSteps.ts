@@ -11,6 +11,7 @@ import {
   waitAfterUserInteraction,
   type ComponentTestEnvironment,
 } from "./componentTestEnvironment.js";
+import type { MiroirShellHost, ReportSectionRenderers } from "@miroir-framework/react";
 import { describeTarget, queryAllTarget, resolveTarget } from "./componentTestTargets.js";
 import { runMeasureRendering } from "./measureRendering.js";
 import {
@@ -267,6 +268,12 @@ export interface ComponentTestRunControls {
   stepDelayMs?: () => number;
   /** Awaited before each step, after the step delay: resolves when the run is not paused. */
   waitWhilePaused?: () => Promise<void>;
+  /**
+   * #672 D7: the report section renderers and the shell host of the host (app, sandbox), given to
+   * the cases' providers. Absent: the miroir-react defaults.
+   */
+  reportSectionRenderers?: ReportSectionRenderers;
+  shellHost?: MiroirShellHost;
 }
 
 export interface ComponentTestStepsResult {

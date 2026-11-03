@@ -42,6 +42,27 @@ describe("integrationTestProfileCatalog (B6)", () => {
     expect(isUiIntegrationProfileLaunchableInBrowser("realServer-mongodb", "webApp")).toBe(true);
   });
 
+  // #672 D4: a bundle without the realServer client configs (the sandbox) neither offers nor
+  // launches the realServer-* profiles
+  it("offers only the realServer-* profiles whose client config is bundled (#672 D4)", () => {
+    const sandboxPicker = listUiIntegrationProfileCatalogForPicker("webApp", []).map((e) => e.name);
+    expect(sandboxPicker).toEqual(["emulatedServer-indexedDb"]);
+    const onePicker = listUiIntegrationProfileCatalogForPicker("webApp", ["realServer-sql"]).map(
+      (e) => e.name,
+    );
+    expect(onePicker).toEqual(["emulatedServer-indexedDb", "realServer-sql"]);
+  });
+
+  it("launches only the realServer-* profiles whose client config is bundled (#672 D4)", () => {
+    expect(isUiIntegrationProfileLaunchableInBrowser("realServer-sql", "webApp", [])).toBe(false);
+    expect(isUiIntegrationProfileLaunchableInBrowser("emulatedServer-indexedDb", "webApp", [])).toBe(
+      true,
+    );
+    expect(
+      isUiIntegrationProfileLaunchableInBrowser("realServer-sql", "webApp", ["realServer-sql"]),
+    ).toBe(true);
+  });
+
   it("bundled browser emulated config is indexedDb only", () => {
     expect(listBrowserBundledIntegrationTestProfileNames()).toEqual(["emulatedServer-indexedDb"]);
   });

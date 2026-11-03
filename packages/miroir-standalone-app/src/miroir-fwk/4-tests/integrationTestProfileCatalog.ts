@@ -7,10 +7,12 @@
  *   The realServer client is a pure REST client — it never loads a local store
  *   factory, so the store type used *on the server* (sql/filesystem/indexedDb/mongodb)
  *   is irrelevant to browser launchability. Only bundled config assets gate it
- *   (see `BROWSER_LAUNCHABLE_REAL_SERVER_PROFILES`).
+ *   (#672 D4: `listBundledRealServerProfileNames`, empty in the sandbox).
  * - **electron:** all emulatedServer-* (Node store drivers in main process) + real-server
  * - **cliEmulatedOnly** (CI presets): never in UI picker — testMiroir / testByFile only
  */
+
+import { listBundledRealServerProfileNames } from "./realServerTestClientConfigs.js";
 
 export const DEFAULT_UI_INTEGRATION_PROFILE_NAME = "emulatedServer-indexedDb";
 
@@ -86,13 +88,11 @@ export const INTEGRATION_TEST_PROFILE_CATALOG: readonly IntegrationTestProfileCa
   },
 ] as const;
 
-/** Real-server profiles with browser-bundled config assets (B6-c C3). */
-export const BROWSER_LAUNCHABLE_REAL_SERVER_PROFILES: readonly string[] = [
-  "realServer-sql",
-  "realServer-indexedDb",
-  "realServer-filesystem",
-  "realServer-mongodb",
-];
+/**
+ * Real-server profiles with browser-bundled config assets (B6-c C3). #672 D4: derived from the
+ * bundle, the app's has the four, the sandbox's none.
+ */
+export const BROWSER_LAUNCHABLE_REAL_SERVER_PROFILES: readonly string[] = listBundledRealServerProfileNames();
 
 export function detectUiIntegrationRuntime(): UiIntegrationRuntime {
   if (
@@ -111,9 +111,13 @@ export function listIntegrationTestProfileCatalogEntries(): IntegrationTestProfi
   );
 }
 
-/** Picker list — excludes CLI-only; filters emulated backends by runtime (B6-b2). */
+/**
+ * Picker list — excludes CLI-only; filters emulated backends by runtime (B6-b2) and realServer
+ * profiles by their bundled client config (#672 D4).
+ */
 export function listUiIntegrationProfileCatalogForPicker(
   runtime: UiIntegrationRuntime = detectUiIntegrationRuntime(),
+  bundledRealServerProfiles: readonly string[] = BROWSER_LAUNCHABLE_REAL_SERVER_PROFILES,
 ): IntegrationTestProfileCatalogEntry[] {
   return listIntegrationTestProfileCatalogEntries().filter((entry) => {
     if (entry.uiTransport === "cliEmulatedOnly") {
@@ -121,6 +125,9 @@ export function listUiIntegrationProfileCatalogForPicker(
     }
     if (entry.uiTransport === "electronEmulated") {
       return runtime === "electron";
+    }
+    if (entry.uiTransport === "realServer") {
+      return bundledRealServerProfiles.includes(entry.name);
     }
     return true;
   });
@@ -143,6 +150,7 @@ export function listBrowserBundledIntegrationTestProfileNames(): string[] {
 export function isUiIntegrationProfileLaunchableInBrowser(
   profileName: string,
   runtime: UiIntegrationRuntime = detectUiIntegrationRuntime(),
+  bundledRealServerProfiles: readonly string[] = BROWSER_LAUNCHABLE_REAL_SERVER_PROFILES,
 ): boolean {
   const entry = getIntegrationTestProfileCatalogEntry(profileName);
   if (!entry) {
@@ -154,8 +162,8 @@ export function isUiIntegrationProfileLaunchableInBrowser(
     case "electronEmulated":
       return false; // B6-b3: listed in Electron picker only; launch when bundled + wired
     case "realServer":
-      // B6-c: launchable when profile assets are bundled (see BROWSER_LAUNCHABLE_REAL_SERVER_PROFILES).
-      return BROWSER_LAUNCHABLE_REAL_SERVER_PROFILES.includes(profileName);
+      // B6-c, #672 D4: launchable when the profile's client config is bundled
+      return bundledRealServerProfiles.includes(profileName);
     case "cliEmulatedOnly":
       return false;
   }

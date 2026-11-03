@@ -408,6 +408,7 @@ export {
   mcpToolUnavailable,
   MiroirShellHostProvider,
   useMiroirShellHost,
+  useProvidedMiroirShellHost,
   type McpToolRunnerEnvelope,
   type MiroirShellHost,
   type RequestLoginToken,

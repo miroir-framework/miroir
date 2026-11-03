@@ -38,8 +38,9 @@ import {
   MiroirShellHostProvider,
   ReportSectionRenderersProvider,
   useMiroirContextService,
+  type MiroirShellHost,
+  type ReportSectionRenderers,
 } from "@miroir-framework/react";
-import { appReportSectionRenderers, appShellHost } from "../../4_view/reportSectionRenderers.js";
 import {
   deployment_Library_DO_NO_USE,
   entityAuthor,
@@ -485,6 +486,10 @@ export interface BuildComponentTestWrapperOptions {
    * current state of a deployment with what is loading.
    */
   localCacheInstances?: ReactComponentTestSuite["localCacheInstances"];
+  /** See `MiroirTestProvidersProps.reportSectionRenderers` (#672 D7). */
+  reportSectionRenderers?: ReportSectionRenderers;
+  /** See `MiroirTestProvidersProps.shellHost` (#672 D7). */
+  shellHost?: MiroirShellHost;
 }
 
 /** The objects of `localCacheInstances` for `application`, in the shape of `loadNewInstancesInLocalCache`. */
@@ -538,12 +543,21 @@ export interface MiroirTestProvidersProps {
   offerReportsAndEntities?: boolean;
   /** The process capabilities of the context (#633: the AI AppBar buttons); fail-closed by default. */
   processCapabilities?: ProcessCapabilities;
+  /**
+   * The report section renderers of the host (#672 D7): the app's, the sandbox's, a test helper's.
+   * Merged over the miroir-react defaults; absent: the defaults only.
+   */
+  reportSectionRenderers?: ReportSectionRenderers;
+  /** The shell host of the host (#672 D7). Absent: no slot, each replaced by its miroir-react default. */
+  shellHost?: MiroirShellHost;
   children?: React.ReactNode;
 }
 
 const testTheme = createTheme(testThemeParams);
 const emptyToolsPageState = {};
 const noOutlineAction = () => {};
+const noShellHost: MiroirShellHost = {};
+const noReportSectionRenderers: ReportSectionRenderers = {};
 
 /**
  * The providers of the app around a component or a Report under test: theme, local cache store,
@@ -591,8 +605,8 @@ function MiroirTestContext(
         onNavigateToPath={noOutlineAction}
       >
         <ReportPageContextProvider>
-          <MiroirShellHostProvider host={appShellHost}>
-            <ReportSectionRenderersProvider renderers={appReportSectionRenderers}>
+          <MiroirShellHostProvider host={props.shellHost ?? noShellHost}>
+            <ReportSectionRenderersProvider renderers={props.reportSectionRenderers ?? noReportSectionRenderers}>
               {props.children}
             </ReportSectionRenderersProvider>
           </MiroirShellHostProvider>
@@ -937,6 +951,8 @@ export function buildComponentTestWrapper(
         trackRenders={trackRenders}
         isolateToolsPageState={options.isolateToolsPageState}
         processCapabilities={options.processCapabilities}
+        reportSectionRenderers={options.reportSectionRenderers}
+        shellHost={options.shellHost}
       >
         {options.wireLocalCacheCompositeAction ? (
           <MemoryRouter>{props.children}</MemoryRouter>

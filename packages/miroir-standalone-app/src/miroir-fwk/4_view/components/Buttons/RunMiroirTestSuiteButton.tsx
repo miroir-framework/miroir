@@ -82,6 +82,10 @@ interface RunMiroirTestSuiteButtonProps {
   afterRun?: () => void;
   /** #330: mounts the Reports of an integration run of a suite with `reportTest` leaves. */
   prepareReportTests?: UiIntegrationTestRunRequest["prepareReportTests"];
+  /** #672: called when a run starts, before `beforeRun`. */
+  onRunStart?: () => void;
+  /** #672: called when a run throws (a failed integration run, a run that could not start). */
+  onRunError?: (error: unknown) => void;
   [key: string]: unknown;
 }
 
@@ -121,6 +125,8 @@ export const RunMiroirTestSuiteButton: React.FC<RunMiroirTestSuiteButtonProps> =
   afterRun,
   prepareReportTests,
   iterationsOverride,
+  onRunStart,
+  onRunError,
   ...buttonProps
 }) => {
   const { handleAsyncAction } = useSnackbar();
@@ -252,7 +258,16 @@ export const RunMiroirTestSuiteButton: React.FC<RunMiroirTestSuiteButtonProps> =
     return ACTION_OK;
   };
 
-  const onAction = resolvedRunMode === "integration" ? onIntegrationAction : onUnitAction;
+  const runAction = resolvedRunMode === "integration" ? onIntegrationAction : onUnitAction;
+  const onAction = async (): Promise<Action2VoidReturnType> => {
+    onRunStart?.();
+    try {
+      return await runAction();
+    } catch (error) {
+      onRunError?.(error);
+      throw error;
+    }
+  };
 
   const defaultLabel =
     resolvedRunMode === "integration"

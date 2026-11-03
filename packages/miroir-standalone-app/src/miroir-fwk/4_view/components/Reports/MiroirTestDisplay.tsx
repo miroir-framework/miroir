@@ -64,6 +64,25 @@ export function parseIterationsOverride(fieldValue: string): number | undefined 
   return trimmed === "" ? undefined : Number(trimmed);
 }
 
+/** #672: the state of a display's last run, shown as `data-miroir-test-status` on its root. */
+export type MiroirTestRunStatus = {
+  status: "idle" | "running" | "passed" | "failed";
+  /** For a finished run: its counts, or the error that ended it. */
+  summary?: string;
+};
+
+/** A run passes when it has results and none of them is an error (skipped tests do not fail it). */
+export function runStatusOfResults(results: readonly MiroirTestResultData[]): MiroirTestRunStatus {
+  const failed = results.filter((result) => result.testResult === "error").length;
+  const skipped = results.filter((result) => result.testResult === "skipped").length;
+  const passed = results.length - failed - skipped;
+  const summary = `${passed} passed, ${failed} failed, ${skipped} skipped`;
+  if (results.length === 0) {
+    return { status: "failed", summary: "no test result" };
+  }
+  return { status: failed === 0 ? "passed" : "failed", summary };
+}
+
 const runButtonStyle: React.CSSProperties = {
   backgroundColor: "#4527a0",
   color: "white",
@@ -93,6 +112,9 @@ const MiroirTestDisplayContent = (props: MiroirTestSectionProps) => {
   const [miroirTestResultsData, setMiroirTestResultsData] = useState<TestResultDataAndSelect[]>([]);
   // #490: logs of the last run, for "Export failed test logs"
   const [lastRun, setLastRun] = useState<{ runMode: string; runLogs?: TestRunLogSnapshot }>();
+  // #672: the state of the last run, on the display's root (data-miroir-test-status), for the
+  // sandbox smoke test and other drivers
+  const [runStatus, setRunStatus] = useState<MiroirTestRunStatus>({ status: "idle" });
   const [testSelectionState, setTestSelectionsState] = useState<TestSelectionState | undefined>(
     undefined,
   );
@@ -144,6 +166,7 @@ const MiroirTestDisplayContent = (props: MiroirTestSectionProps) => {
     runLogs?: TestRunLogSnapshot,
   ) => {
     setLastRun({ runMode, runLogs });
+    setRunStatus(runStatusOfResults(structuredResults));
     const withSelection: TestResultDataAndSelect[] = structuredResults.map((result) => ({
       ...result,
       selected: false,
@@ -167,8 +190,22 @@ const MiroirTestDisplayContent = (props: MiroirTestSectionProps) => {
     ...style,
   };
 
+  const onRunStart = () => setRunStatus({ status: "running" });
+  const onRunError = (error: unknown) =>
+    setRunStatus((current) =>
+      // a failed integration run throws after its results were shown: keep their summary
+      current.status === "failed"
+        ? current
+        : { status: "failed", summary: error instanceof Error ? error.message : String(error) },
+    );
+
   return (
-    <div style={defaultStyle}>
+    <div
+      style={defaultStyle}
+      data-miroir-test-suite={instance.uuid}
+      data-miroir-test-status={runStatus.status}
+      data-miroir-test-summary={runStatus.summary}
+    >
       <div
         style={{
           marginBottom: "8px",
@@ -205,6 +242,9 @@ const MiroirTestDisplayContent = (props: MiroirTestSectionProps) => {
             testFilter={currentTestFilter}
             onTestComplete={(...args) => handleTestComplete("unit", ...args)}
             runMode="unit"
+            data-testid="miroir-test-run-unit"
+            onRunStart={onRunStart}
+            onRunError={onRunError}
             beforeRun={componentTestRun.prepareComponentTests}
             afterRun={componentTestRun.finishComponentTests}
             iterationsOverride={
@@ -241,6 +281,9 @@ const MiroirTestDisplayContent = (props: MiroirTestSectionProps) => {
             testFilter={currentTestFilter}
             onTestComplete={(...args) => handleTestComplete("integration", ...args)}
             runMode="integration"
+            data-testid="miroir-test-run-integ"
+            onRunStart={onRunStart}
+            onRunError={onRunError}
             integrationProfileName={integrationPreferences.profileName}
             integrationRunTargetMode={integrationPreferences.runTargetMode}
             prepareReportTests={componentTestRun.prepareReportTests}

@@ -1,7 +1,11 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 
 import { MiroirLoggerFactory, type LoggerInterface } from "@miroir-framework/core";
-import { FeedbackGlowBoundary } from "@miroir-framework/react";
+import {
+  FeedbackGlowBoundary,
+  useProvidedMiroirShellHost,
+  useReportSectionRenderers,
+} from "@miroir-framework/react";
 
 import { packageName } from "../../../../constants.js";
 import type { ComponentTestRegistration } from "../../../4-tests/componentTests/index.js";
@@ -366,14 +370,20 @@ export const ComponentTestSandboxProvider: React.FC<{ children?: React.ReactNode
       focused.blur();
     }
   }, []);
+  // #672 D7: raw context values, stable across renders (useMiroirShellHost() builds a new object each render)
+  const reportSectionRenderers = useReportSectionRenderers();
+  const shellHost = useProvidedMiroirShellHost();
   const runControls = useMemo(
     () => ({
       onCaseStart: setTestName,
       stepDelayMs: () => stepDelayMsRef.current,
       waitWhilePaused: () => pauseGateRef.current.waitWhilePaused(),
       showTransformerTypes: () => showTransformerTypesRef.current,
+      // #672 D7: the cases get the renderers and shell host this sandbox is displayed with
+      reportSectionRenderers,
+      shellHost,
     }),
-    [],
+    [reportSectionRenderers, shellHost],
   );
 
   const closeRegistration = useCallback(() => {

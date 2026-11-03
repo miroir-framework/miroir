@@ -221,6 +221,9 @@ export function createReactComponentTestRunner(
         // #502: actions on the test local cache, and the suite's own instances
         wireLocalCacheCompositeAction: suite.wireLocalCacheCompositeAction,
         localCacheInstances: suite.localCacheInstances,
+        // #672 D7: the host's renderers and shell host
+        reportSectionRenderers: host.reportSectionRenderers,
+        shellHost: host.shellHost,
       });
       suiteWrappers.set(key, wrapper);
     }
