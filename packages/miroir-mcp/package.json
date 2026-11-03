@@ -46,7 +46,7 @@
     "framework"
   ],
   "dependencies": {
-    "@modelcontextprotocol/sdk": "1.32.1",
+    "@modelcontextprotocol/sdk": "1.32.2",
     "express": "5.3.0",
     "loglevelnext": "6.0.0",
     "@miroir-framework/core": "*"
