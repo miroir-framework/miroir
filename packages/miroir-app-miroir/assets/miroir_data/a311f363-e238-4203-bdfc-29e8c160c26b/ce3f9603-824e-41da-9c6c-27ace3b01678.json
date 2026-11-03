@@ -2218,7 +2218,7 @@
           },
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "TransformerEditor: a getFromContext on one Entity instance, wrapped in mapList after Show All, returns every name",
+            "miroirTestLabel": "TransformerEditor: a getFromContext on one Report instance, wrapped in mapList after Show All, returns every name",
             "steps": [
               {
                 "step": "selectOption",
@@ -2228,19 +2228,19 @@
               },
               {
                 "step": "change",
-                "label": "Entity instances are in the model section",
+                "label": "Report instances, in the default data section",
                 "target": {
                   "byRole": "combobox",
-                  "name": "Section"
+                  "name": "Entity"
                 },
-                "value": "model"
+                "value": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916"
               },
               {
                 "step": "expectElement",
-                "label": "Entity instances loaded",
+                "label": "Report instances loaded",
                 "target": {
                   "byText": {
-                    "regex": "\\([1-9][0-9]* instances available\\)"
+                    "regex": "\\([1-9][0-9] instances available\\)"
                   }
                 },
                 "timeout": 5000
@@ -2307,11 +2307,11 @@
               },
               {
                 "step": "expectElement",
-                "label": "the result is the name of the first Entity",
+                "label": "the result is the name of the first Report",
                 "target": {
                   "byTestId": "transformation-result"
                 },
-                "containsHtml": "AgentRunMeasurement",
+                "containsHtml": "AgentRunHistory",
                 "timeout": 2000
               },
               {
@@ -2412,16 +2412,16 @@
                 "target": {
                   "byTestId": "transformation-result"
                 },
-                "containsHtml": "AgentRunMeasurement",
+                "containsHtml": "AgentRunHistory",
                 "timeout": 2000
               },
               {
                 "step": "expectElement",
-                "label": "a later name",
+                "label": "the last name",
                 "target": {
                   "byTestId": "transformation-result"
                 },
-                "containsHtml": "TransformerDefinition",
+                "containsHtml": "Versioning",
                 "timeout": 2000
               }
             ]
