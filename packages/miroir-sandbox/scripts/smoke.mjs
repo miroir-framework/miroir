@@ -4,7 +4,8 @@
  *
  * It serves dist/ with `vite preview`, opens the MiroirTestDetails report of each suite, clicks its
  * Run button and waits for the result the page shows (`data-miroir-test-status`). An integration
- * run must leave the sandbox's own IndexedDB databases (sandbox-admin*) unchanged.
+ * run must find the IndexedDB profile alone in the profile picker, and leave the sandbox's own IndexedDB databases
+ * (sandbox-admin*) unchanged.
  *
  *   npm run build -w miroir-sandbox && npm run smoke -w miroir-sandbox
  *   npm run smoke -w miroir-sandbox -- --suite unit:<uuid> --suite integ:<uuid> [--headed] [--browser <path>]
@@ -37,7 +38,8 @@ export const DEFAULT_SUITES = [
   { mode: "integ", uuid: "c8e2a104-5b6d-4f91-a2c3-9d0e1f2a3b4c", label: "action.domainController.dataCrud" },
 ];
 
-const SANDBOX_DATABASE_PREFIX = "sandbox-admin";
+// the sandbox's own databases, named "level-js-<location>/sandbox-admin-<section>" by the IndexedDB store
+const SANDBOX_DATABASE_NAME = "sandbox-admin";
 
 class ScriptError extends Error {}
 
@@ -134,7 +136,7 @@ function suiteUrl(baseUrl, suiteUuid) {
 /** The sandbox's own IndexedDB databases, with the record count of each object store. */
 async function sandboxDatabasesSnapshot(page) {
   return page.evaluate(async (prefix) => {
-    const names = (await indexedDB.databases()).map((d) => d.name).filter((n) => n?.startsWith(prefix)).sort();
+    const names = (await indexedDB.databases()).map((d) => d.name).filter((n) => n?.includes(prefix)).sort();
     const snapshot = {};
     for (const name of names) {
       const db = await new Promise((resolve, reject) => {
@@ -154,7 +156,7 @@ async function sandboxDatabasesSnapshot(page) {
       snapshot[name] = stores;
     }
     return snapshot;
-  }, SANDBOX_DATABASE_PREFIX);
+  }, SANDBOX_DATABASE_NAME);
 }
 
 async function runSuite(page, baseUrl, suite, timeoutMs) {
@@ -172,7 +174,19 @@ async function runSuite(page, baseUrl, suite, timeoutMs) {
   if (await button.isDisabled()) {
     throw new ScriptError(`${suite.label}: the ${suite.mode} Run button is disabled (${await button.getAttribute("title")})`);
   }
+  if (suite.mode === "integ") {
+    // the sandbox has no realServer client configuration: its picker offers the IndexedDB profile only
+    const profiles = await display.locator("#integration-test-profile-select option").evaluateAll((options) =>
+      options.map((option) => option.getAttribute("value")),
+    );
+    if (JSON.stringify(profiles) !== JSON.stringify(["emulatedServer-indexedDb"])) {
+      return { ...suite, status: "failed", summary: `the profile picker offers ${JSON.stringify(profiles)}`, seconds: 0 };
+    }
+  }
   const before = suite.mode === "integ" ? await sandboxDatabasesSnapshot(page) : undefined;
+  if (before && Object.keys(before).length === 0) {
+    throw new ScriptError(`${suite.label}: no ${SANDBOX_DATABASE_NAME} database to compare before and after the run`);
+  }
   const started = Date.now();
   await button.click();
   await page.waitForFunction(
@@ -192,6 +206,7 @@ async function runSuite(page, baseUrl, suite, timeoutMs) {
   }
   if (before) {
     const after = await sandboxDatabasesSnapshot(page);
+    result.summary = `${summary ?? ""}; ${Object.keys(before).length} sandbox databases unchanged`;
     if (JSON.stringify(before) !== JSON.stringify(after)) {
       result.status = "failed";
       result.summary = `${summary ?? ""} sandbox databases changed: before ${JSON.stringify(before)}, after ${JSON.stringify(after)}`;

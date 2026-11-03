@@ -27,16 +27,16 @@ both apps, G4 no fixture apps or testing-library before a run starts, G5 the CI 
 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
-| 0 | Characterize the runtime's tests and the sandbox | ⬜ pending | per-file baseline of the app's runtime tests; sandbox shows "No renderer" |
-| 1 | `runMcpToolRunner` in `@miroir-framework/mcp/client` (D6) | ⬜ pending | mcp unit test; app tests of the MCP runner unchanged |
-| 2 | Test providers take the host's renderers and shell host (D7, in the app) | ⬜ pending | component test with custom renderers |
-| 3 | Only bundled realServer profiles are offered (D4, in the app) | ⬜ pending | `integrationTestProfileCatalog` unit test |
-| 4 | Package scaffold in every build path | ⬜ pending | package builds; build lists, policies, lockfile |
-| 5 | The runtime moves into the package | ⬜ pending | Slice 0 baseline, same results; bundle guards; self-test |
-| 6 | The sandbox runs unit suites | ⬜ pending | smoke: `fn`, `tr`, `ui` suites pass on the built sandbox |
-| 7 | The sandbox runs an integ suite on IndexedDB | ⬜ pending | smoke: `action` suite passes; sandbox data unchanged |
-| 8 | Fixture apps and testing-library load at run start only | ⬜ pending | smoke guard on the sandbox's bundle report |
-| 9 | CI smoke workflow, docs, full nonreg | ⬜ pending | workflow run on the PR; nonreg |
+| 0 | Characterize the runtime's tests and the sandbox | ✅ done | per-file baseline of the app's runtime tests; sandbox shows "No renderer" |
+| 1 | `runMcpToolRunner` in `@miroir-framework/mcp/client` (D6) | ✅ done | mcp unit test; app tests of the MCP runner unchanged |
+| 2 | Test providers take the host's renderers and shell host (D7, in the app) | ✅ done | component test with custom renderers |
+| 3 | Only bundled realServer profiles are offered (D4, in the app) | ✅ done | `integrationTestProfileCatalog` unit test |
+| 4 | Package scaffold in every build path | ✅ done | package builds; build lists, policies, lockfile |
+| 5 | The runtime moves into the package | ✅ done | Slice 0 baseline, same results; bundle guards; self-test |
+| 6 | The sandbox runs unit suites | ✅ done | smoke: `fn`, `tr`, `ui` suites pass on the built sandbox |
+| 7 | The sandbox runs an integ suite on IndexedDB | ✅ done | smoke: `action` suite passes; sandbox data unchanged |
+| 8 | Fixture apps and testing-library load at run start only | ✅ done | smoke guard on the sandbox's bundle report |
+| 9 | CI smoke workflow, docs, full nonreg | 🟡 in progress | workflow run on the PR; nonreg |
 
 ## Locked implementation defaults
 
@@ -80,7 +80,7 @@ package's Node tooling).
 
 ## Slice 0 — Characterize
 
-**Status:** ⬜ pending
+**Status:** ✅ done
 
 - Run the 79 test files of the app that import the moved modules (no bail, JSON reporter) and record pass / fail per
   file: the bar for Slice 5.
@@ -93,11 +93,11 @@ The two commands above.
 
 ### Realization
 
-(pending)
+Per-file baseline of the 79 app test files that import the runtime (vitest JSON): 7 tests already fail on `_integration` with `MIROIR_ENV=test-filesystem` (MiroirTestDisplayIntegrationLaunch, MiroirTestListIntegrationLaunch, reportTestInApp, uiIntegrationTestLauncher.integ ×3, uiIntegrationTestLauncher.unit ×1). The sandbox shows "No renderer for report sections of type miroirTestReportSection"; its page loads 5,430,185 bytes in 53 JS files. `mcpToolRunner.253.phase0` already failed (its guard still named `miroir-mcp`).
 
 ## Slice 1 — `runMcpToolRunner` in the MCP client
 
-**Status:** ⬜ pending
+**Status:** ✅ done
 
 **RED:** `packages/miroir-mcp/tests/mcpToolRunner.unit.test.ts`: `runMcpToolRunner` of `@miroir-framework/mcp/client`
 returns the FeatureUnavailable envelope when `mcp` is off and the parsed tool answer through an injected `fetch`
@@ -114,11 +114,11 @@ The RED test; `tests/4_view/issues/253-generic-mcp-tool-runner/mcpToolRunner.253
 
 ### Realization
 
-(pending)
+`packages/miroir-mcp/src/mcpToolRunner.ts`, exported by `@miroir-framework/mcp/client`; `tests/unit/mcpToolRunner.unit.test.ts` RED (3 failed) then GREEN. The app's `runMcpToolRunner.ts` re-exports it; `mcpToolRunner.253.phase0` updated to the `@miroir-framework/mcp` names (it was stale since the rename) and passes with `processCapabilitiesMcp.273.phase6`.
 
 ## Slice 2 — Test providers take the host's renderers
 
-**Status:** ⬜ pending
+**Status:** ✅ done
 
 **RED:** a case in `tests/4_view/reportTestActionsIdle.unit.test.ts`'s folder (new
 `tests/4_view/miroirTestProvidersRenderers.unit.test.tsx`): `MiroirTestProviders` given a `reportSectionRenderers`
@@ -138,11 +138,11 @@ The RED test; `miroir-component-tests.unit.test.tsx`, `reportTestInApp.integ.tes
 
 ### Realization
 
-(pending)
+`ComponentTestRunControls`, `BuildComponentTestWrapperOptions` and `MiroirTestProvidersProps` take `reportSectionRenderers` and `shellHost`; `MiroirTestProviders` no longer imports the app. `ComponentTestSandbox` passes the raw context values, read with `useReportSectionRenderers()` and the new `useProvidedMiroirShellHost()` of miroir-react (stable across renders). `tests/helpers/reportTestEntry.ts` passes the app's. RED: `tests/4_view/miroirTestProvidersRenderers.unit.test.tsx` (2 failed), then GREEN.
 
 ## Slice 3 — Only bundled realServer profiles are offered
 
-**Status:** ⬜ pending
+**Status:** ✅ done
 
 **RED:** new cases in `tests/helpers/integrationTestProfileCatalog.unit.test.ts`: with no realServer client configs,
 `listUiIntegrationProfileCatalogForPicker("webApp")` holds only `emulatedServer-indexedDb` and no realServer profile is
@@ -159,11 +159,11 @@ The RED test; `tests/4_view/UiIntegrationTestRunControls.unit.test.tsx`; scoped 
 
 ### Realization
 
-(pending)
+`realServerTestClientConfigs.ts` holds the `__MIROIR_TEST_CLIENT_CONFIGS__` define; `BROWSER_LAUNCHABLE_REAL_SERVER_PROFILES` derives from it; `listUiIntegrationProfileCatalogForPicker` and `isUiIntegrationProfileLaunchableInBrowser` take the bundled list (default: this bundle's). Two RED cases in `integrationTestProfileCatalog.unit.test.ts`, then 7/7 pass.
 
 ## Slice 4 — Package scaffold in every build path
 
-**Status:** ⬜ pending
+**Status:** ✅ done
 
 **RED:** `npm run build -w miroir-react-testing` fails (no package).
 
@@ -181,11 +181,11 @@ Build; `python scripts/check_dependency_policy.py`; `python scripts/rename_packa
 
 ### Realization
 
-(pending)
+Package `miroir-react-testing` (private): tsup per-module output, entries `.` and `./report-section`, `sideEffects: false`, Node stores as optional peers. `build-all.sh` stage `test-ui`, `pr-checks.yml` build and typecheck, `self-test.yml`, `build-linux-runnables.yml`, `build-artefacts-linux` action; `.gitignore`; lockfile from `npm install`. `check_dependency_policy`, `rename_packages --check`, `sync_agent_skills --check`, pytest `scripts/tests` (595 passed) pass.
 
 ## Slice 5 — The runtime moves into the package
 
-**Status:** ⬜ pending
+**Status:** ✅ done
 
 **RED:** the Slice 0 files keep their results only if the move is complete; `componentTestChunk.286.phase4` updated
 first to look up the package's `componentTests/index` module fails until the move.
@@ -205,11 +205,11 @@ full `npm run nonreg:filesystem -- --runner shared`.
 
 ### Realization
 
-(pending)
+71 files moved with `git mv` (the script rewrote 109 importers; app `src` imports the package entries, tests use `miroir-react-testing/src/...` through vitest aliases and `tsconfig.tests.json` paths). Package typecheck clean; app typecheck: only the 2 errors that predate the change (AI proposal forms); `tsconfig.tests.json`: 576 errors before, the same ones after. The 79 baseline files plus the new and path-reading tests: 727 passed, the same 7 failures as Slice 0, none new. Lint roots (`eslint-rules/smells.mjs`) and suppressions follow the move. Bundle guards: app policy lists `miroir-react-testing` eager (only `selectTestLocalCache`, about 1 kB), page gzip 827,739 bytes (baseline 827,963); Electron policy passes; `componentTestChunk.286.phase4` keys on the package's component test entry and passes.
 
 ## Slice 6 — The sandbox runs unit suites
 
-**Status:** ⬜ pending
+**Status:** ✅ done
 
 **RED:** `packages/miroir-sandbox/scripts/smoke.mjs` serves `dist/`, opens the MiroirTest report of a suite by URL
 (`#/?page=report&...&instanceUuid=<suite>`), clicks `miroir-test-run-unit`, and waits for
@@ -228,11 +228,11 @@ Smoke on an `fn`, a `tr` and a `ui` suite; a deliberately failing run (unknown s
 
 ### Realization
 
-(pending)
+Run markers on `MiroirTestDisplay` (`data-miroir-test-suite`, `data-miroir-test-status`, `data-miroir-test-summary`; buttons `miroir-test-run-unit` / `-integ`), `runStatusOfResults` unit-tested. The sandbox registers the renderer and calls `selectTestLocalCache` at startup (without it the `ui` cases failed: "no local cache selected"). Smoke picks: `fn.mustache.extractDoubleBracePatterns` (6 passed), `tr.core` (261 passed; `tr.mlsTypeCheck` and the other small `tr` suites have no unit leaves), `ui.mlElementEditor.literal` (3 passed). Negative runs: the `ui` failure above exited 1; an unknown suite exits 2.
 
 ## Slice 7 — The sandbox runs an integ suite on IndexedDB
 
-**Status:** ⬜ pending
+**Status:** ✅ done
 
 **RED:** smoke `--integ <action suite>`: integration mode on `emulatedServer-indexedDb`, passes; the `sandbox-admin*`
 databases have the same stores and record counts before and after; the picker offers one profile.
@@ -247,11 +247,11 @@ Smoke; scoped nonreg `--scope smoke,ui,actions`.
 
 ### Realization
 
-(pending)
+`action.domainController.dataCrud` passes in integration mode on `emulatedServer-indexedDb` (6 passed, about 6 s). The picker offers that profile alone; the 3 `sandbox-admin*` databases (named `level-js-…/sandbox-admin-*`) keep their stores and record counts. No other change was needed.
 
 ## Slice 8 — Fixture apps and testing-library load at run start only
 
-**Status:** ⬜ pending
+**Status:** ✅ done
 
 **Guard, not RED** (D2 already holds if the move kept the boundaries): the sandbox builds with `build.manifest` and the
 app's `miroirBundleReport` plugin; the smoke script reads `dist/.vite/bundle-report.json`, records the JS requests up
@@ -264,11 +264,11 @@ Smoke; initial sizes compared with Slice 0.
 
 ### Realization
 
-(pending)
+The sandbox builds with `build.manifest` and the `miroirBundleReport` plugin; `packages/miroir-sandbox/bundle-policy.json` forbids `@testing-library/*`, `miroir-example-*`, `miroir-fixture-*`, the MCP client and `diff` on the page, checked with `--no-history` (no sandbox size history). Page load: 5,470,096 bytes in 63 chunks (Slice 0: 5,430,185 bytes): +40 kB, of which 1 kB is `miroir-react-testing` and the rest the `stream` polyfill and chunking. The renderer chunk (78 kB), component tests (testing-library, 205 kB), the fixture apps and the integ launcher are lazy. The guard is the bundle policy rather than request recording in the smoke script: it reads the same report, before a browser starts.
 
 ## Slice 9 — CI smoke workflow, docs, full nonreg
 
-**Status:** ⬜ pending
+**Status:** 🟡 in progress (CI run and nonreg pending)
 
 - `.github/workflows/sandbox-smoke.yml` (D5).
 - AGENTS.md build order and package list; `docs/reference/testing.md` (running MiroirTests in the sandbox, D11 list);
@@ -281,7 +281,7 @@ The workflow run on the PR; the commands above.
 
 ### Realization
 
-(pending)
+`.github/workflows/sandbox-smoke.yml`: builds as the Pages workflow does, runs the sandbox bundle guard and `npm run smoke -w miroir-sandbox`; the Pages workflow drops `dist/.vite` from the site. Docs: AGENTS.md build order, `docs/reference/testing.md` ("In the sandbox"), `docs/internals/code-splitting.md`, the two READMEs. Gate: lint, pytest, policy checks, `miroir-env check`, core typecheck pass; nonreg recorded in the PR.
 
 ## AC checklist (issue #672)
 
