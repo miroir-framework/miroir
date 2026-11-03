@@ -21,14 +21,14 @@ applications outside `packages/`, AgentRuns in test or delivery environments).
 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
-| 1 | An environment application names its own `packagesDirectory` | ⬜ pending | `fn.environment.deriveDeployments` |
-| 2 | The `dev` environment opens AgentRuns with the 24 runs and its Reports | ⬜ pending | `agentRunsApplication.integ.test.ts` |
-| 3 | `agent-run:record` writes into AgentRuns | ⬜ pending | `agentRunRecord.unit.test.ts` (miroir-env) |
-| 4 | Miroir no longer knows agent runs; docs, nonreg | ⬜ pending | devData tests, `grep`, nonreg |
+| 1 | An environment application names its own `packagesDirectory` | ✅ DONE | `fn.environment.deriveDeployments` |
+| 2 | The `dev` environment opens AgentRuns with the 24 runs and its Reports | ✅ DONE | `agentRunsApplication.integ.test.ts` |
+| 3 | `agent-run:record` writes into AgentRuns | ✅ DONE | `agentRunRecord.unit.test.ts` (miroir-env) |
+| 4 | Miroir no longer knows agent runs; docs, nonreg | ✅ DONE | devData tests, `grep`, nonreg |
 
 ## Locked implementation defaults
 
-Analysis D1–D9, unchanged.
+Analysis D1–D10.
 
 ## Allocated UUIDs / keys
 
@@ -53,7 +53,7 @@ Environment application key: `agentRuns` (asset prefix `agentRuns`).
 
 ## Slice 1 — an environment application names its own `packagesDirectory`
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **RED:** new case in `fn.environment.deriveDeployments`: an application with `packagesDirectory: "code-helpers/features"`, `package: "550-FEATURE-agent-cost-measurement"`, `live`, gets `code-helpers/features/550-FEATURE-agent-cost-measurement/assets/agentRuns_model` (and `_data`, admin `…/assets`), while the other applications keep `packages/…`.
 
@@ -65,7 +65,7 @@ Environment application key: `agentRuns` (asset prefix `agentRuns`).
 
 ## Slice 2 — the `dev` environment opens AgentRuns
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **RED:** `packages/miroir-env/tests/agentRunsApplication.integ.test.ts` (vitest: boot wiring on a real DomainController, not reachable through MiroirTest). On a temporary checkout of the `dev` definition (bootTestSupport, plus the 550 folder): the AgentRuns deployment points at the 550 folder, is opened without warning, its AdminApplication row is named `AgentRuns`, its model holds the Entity and the two Reports, its data holds 24 `AgentRunMeasurement` rows, and nothing under the 550 folder changes.
 
@@ -77,7 +77,7 @@ Environment application key: `agentRuns` (asset prefix `agentRuns`).
 
 ## Slice 3 — `agent-run:record` writes into AgentRuns
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **RED:** `packages/miroir-env/tests/agentRunRecord.unit.test.ts`, the four #550 cases moved, calling the recorder from the 550 folder; default data folder = `agentRuns_data`.
 
@@ -87,7 +87,7 @@ Environment application key: `agentRuns` (asset prefix `agentRuns`).
 
 ## Slice 4 — Miroir no longer knows agent runs
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **RED:** devData layout and Report tests list the two remaining devData Entities and four Reports only; `grep -r 954de789` under `packages/miroir-app-miroir`, `packages/miroir-core/src` finds nothing.
 
@@ -104,3 +104,25 @@ Environment application key: `agentRuns` (asset prefix `agentRuns`).
 | No `954de789` under `miroir-app-miroir` and `miroir-core/src` | Slice 4 grep |
 | `report.agentRunHistory` passes on the new application | replaced (analysis D7) |
 | nonreg unit and filesystem pass | Slice 4 validation |
+
+## Realization
+
+Done AFK on 2026-11-03 in three commits (slice 1; slices 2–4 together, because removing the files from
+Miroir and adding them to AgentRuns only builds as one change; then the fixes of the diff review).
+
+- **Slice 1.** `packagesDirectory` on `miroirEnvironmentApplication`, types regenerated; `resolveEnvironment`
+  refuses an absolute one, a drive one or one with `..` (cases in `fn.environment.deriveDeployments` and
+  `fn.environment.resolveEnvironment`).
+- **Slice 2.** `agentRunsApplication.integ.test.ts` also checks the SelfApplication home page, the Menu,
+  and validates every run against the Entity. `bootTestSupport.temporaryCheckout` copies the asset folders
+  the dev definition names. `miroirEnvShow` and `miroirEnvReconcile` tests updated for the new deployment.
+- **Slice 3.** The recorder test runs `agent-run:record` through tsx (miroir-env `rootDir` refuses an import
+  from `code-helpers/`); `--print-data-dir` proves the default folder. `tsx` became a root devDependency.
+- **Slice 4.** Also changed, found by the reviews and nonreg: `ui.transformerEditor` (first Report name is
+  now `ApplicationEvolutionTraceDetails`), `devDataRows.unit`, the #274 seed inventory (94 Reports),
+  `self-test.json` (`agentRuns: null`), guards (`trackedAssets.ts`, `tracked_assets_guard.py`,
+  `check_instance_uuids.py`) and `package-rename-allow.json` (arm id `miroir-mcp` in the moved tests).
+- **Validation.** Pre-push gate green (the `tsc` errors of `miroir-app-miroir/src/Model.ts` and of two
+  `miroir-standalone-app` AI forms are on `_integration` too). `nonreg:unit` and `nonreg:filesystem`
+  (shared runner): every failed step passes on rerun after the fixes. Manual check: the dev server and
+  Vite client show the "Agent runs" Report of AgentRuns with both graphs and lists.
