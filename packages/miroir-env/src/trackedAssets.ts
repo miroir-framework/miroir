@@ -12,6 +12,8 @@ const ASSET_PATHSPECS = [
   ":(glob)packages/*/assets/**",
   ":(glob)packages/*/tests/assets/**",
   ":(glob)packages/*/tests/test_assets/**",
+  // #671: an application kept outside packages/, next to its feature analysis
+  ":(glob)code-helpers/features/*/assets/**",
 ];
 
 /** Asset files that differ from HEAD or are untracked, according to git (ignored files excluded). */

@@ -3,7 +3,7 @@
   "parentName": "Entity",
   "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
   "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
-  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "selfApplication": "7f2c40ba-04e4-4204-9cb2-2cc5ca63593c",
   "name": "AgentRunMeasurement",
   "conceptLevel": "Model",
   "description": "One run of a coding agent building a Library feature in one arm of the agent cost benchmark, with its measures (#550).",

@@ -27,8 +27,14 @@ describe("miroir-env show", () => {
         (d) => [d.deployment, d],
       ),
     );
-    // Meta, added by #473, was removed by #647: dev opens the deployments of #321 again
-    expect(Object.keys(shownByUuid).sort()).toEqual(Object.keys(today).sort());
+    // Meta, added by #473, was removed by #647: dev opens the deployments of #321 again, and the
+    // AgentRuns application of #671, kept outside packages/
+    const AGENT_RUNS_DEPLOYMENT = "969b6e42-2023-4650-b3bc-4fe9d67f1cbb";
+    expect(Object.keys(shownByUuid).sort()).toEqual([...Object.keys(today), AGENT_RUNS_DEPLOYMENT].sort());
+    expect(shownByUuid[AGENT_RUNS_DEPLOYMENT].configuration.data).toEqual({
+      emulatedServerType: "filesystem",
+      directory: "code-helpers/features/550-FEATURE-agent-cost-measurement/assets/agentRuns_data",
+    });
     // Slice 3: Admin data leaves the package assets for the environment state
     const ADMIN_DEPLOYMENT = "18db21bf-f8d3-4f6a-8296-84b69f6dc48b";
     today[ADMIN_DEPLOYMENT].configuration.data = { emulatedServerType: "filesystem", directory: ".miroir/dev/admin/data" };

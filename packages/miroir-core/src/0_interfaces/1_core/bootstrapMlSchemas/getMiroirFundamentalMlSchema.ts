@@ -2126,6 +2126,9 @@ export function getMiroirFundamentalMlSchema(
           definition: {
             // package, store and mode are required unless configuration is given (checked by the resolver)
             package: { type: "string", optional: true },
+            // #671: where this application's package folder is, relative to the root; overrides the
+            // environment's packagesDirectory (an application kept outside packages/)
+            packagesDirectory: { type: "string", optional: true },
             assetPrefix: { type: "string", optional: true },
             selfApplication: { type: "uuid" },
             deployment: { type: "uuid" },

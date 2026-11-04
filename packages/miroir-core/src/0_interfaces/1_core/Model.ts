@@ -45,7 +45,7 @@ export type DeploymentUuidToReportsEntities = {
     entities: Entity[];
     entityVersions: EntityVersion[];
   };
-  /** #647 — development data reports (bundle sizes, page loads, agent runs), for every application. */
+  /** #647 — development data reports (bundle sizes, page loads), for every application. */
   devData?: {
     availableQueries: Query[];
     availableReports: Report[];

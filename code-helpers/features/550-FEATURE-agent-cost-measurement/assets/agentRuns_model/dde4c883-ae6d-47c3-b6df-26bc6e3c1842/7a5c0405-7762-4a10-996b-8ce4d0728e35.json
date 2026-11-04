@@ -1,0 +1,27 @@
+{
+  "uuid": "7a5c0405-7762-4a10-996b-8ce4d0728e35",
+  "parentName": "Menu",
+  "parentUuid": "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
+  "name": "AgentRunsMenu",
+  "defaultLabel": "AgentRuns Menu",
+  "description": "Default menu for the AgentRuns SelfApplication.",
+  "definition": {
+    "menuType": "complexMenu",
+    "definition": [
+      {
+        "title": "Agent runs",
+        "label": "agentRuns",
+        "items": [
+          {
+            "miroirMenuItemType": "miroirMenuReportLink",
+            "label": "Agent runs",
+            "section": "data",
+            "selfApplication": "7f2c40ba-04e4-4204-9cb2-2cc5ca63593c",
+            "reportUuid": "7a695632-338e-4c33-8b39-dba7f6d4c988",
+            "icon": "smart_toy"
+          }
+        ]
+      }
+    ]
+  }
+}
