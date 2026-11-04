@@ -28,14 +28,14 @@ Survey of `_integration` at 143cb19 (2026-11-04).
 ## 2. Non-goals
 
 - ApplicationVersion-based versioning (version graph, snapshots, generated migrations). Section 7 records how this design relates to it; no issue owns it yet.
-- Merges with conflicts, rebase, cherry-pick, stash, submodules, worktrees. Pull is fast-forward only (D17).
-- SSH remotes (D20). isomorphic-git speaks HTTPS only.
-- Remote management (adding, renaming or removing remotes) and choosing a remote other than the upstream (D17).
-- Restoring one file or one instance from an older commit without moving HEAD (D16).
-- A file watcher that reloads Miroir on any outside change to the section folders (D13).
-- Semantic, field-by-field diffs of instances (D15). A later issue can reuse `json-diff`.
+- Merges with conflicts, rebase, cherry-pick, stash, submodules, worktrees. Pull is fast-forward only (D12).
+- SSH remotes (D21). isomorphic-git speaks HTTPS only.
+- Remote management (adding, renaming or removing remotes) and choosing a remote other than the upstream (D12).
+- Restoring one file or one instance from an older commit without moving HEAD (D11).
+- A file watcher that reloads Miroir on any outside change to the section folders (D8).
+- Semantic, field-by-field diffs of instances (D10). A later issue can reuse `json-diff`.
 - Git for non-filesystem stores (IndexedDB, PostgreSQL, MongoDB).
-- Per-deployment credential overrides (D18 option 3), a follow-up if two accounts on one host are needed.
+- Per-deployment credential overrides (round 2 Q2 option 3), a follow-up if two accounts on one host are needed.
 
 ---
 
@@ -93,6 +93,8 @@ Survey of `_integration` at 143cb19 (2026-11-04).
 
 `statusMatrix({ filepaths })` takes the application's section folders, which keeps status fast on the monorepo. The toggle runs a full `statusMatrix` on demand.
 
+**Files staged elsewhere.** A Git commit takes the whole index, so a file outside the application's folders staged from a terminal or from another application's Git page would go into the commit even though "stage all" skipped it. `gitAction_commit` therefore refuses when the index holds staged changes outside the application's folders, with `reason: "otherStagedChanges"` and the list of paths. The UI shows the list and offers "Include them" (the action's `includeOtherStagedChanges: true`) or "Unstage them". This refinement came from review of PR #684.
+
 ### D3. Git implementation
 
 **Status:** Accepted, D3-c with isomorphic-git first (A's answer to round 1 Q3). **Serves:** G5, G6.
@@ -143,6 +145,8 @@ Cost: the Endpoint is a `miroir-app-miroir` asset, and `miroir-app-miroir` is ea
 | checkout, pull, branch switch | refused (`Action2Error "InvalidAction"`, context `{ reason: "openMiroirTransaction" }`) |
 | commit | refused with the same reason; the UI offers "Commit Miroir changes first", which runs the Miroir `commit` action and retries |
 
+**Where the check runs.** Uncommitted Miroir edits live in the local cache of the process that made them. In `realServer` mode that is the browser, so the server cannot see them. The check therefore runs in the client's `DomainController`, before `forwardServerRoutedAction` sends the action to the server. In `emulatedServer` mode and in Electron the same code runs before the in-process call. Without this order, a checkout or pull would succeed on the server and the `rollback` of D8 would then drop the browser's pending edits (found in review of PR #684).
+
 ### D8. Reload after checkout or pull
 
 **Status:** Accepted, D8-a. **Serves:** G3, G4.
@@ -172,7 +176,7 @@ The filesystem store reads instance files from disk on each read (`FileSystemIns
 | `handleAction_gitAction_*` | `miroir-core/src/3_controllers/GitActions.ts`, registered in `miroirActionImplementations` | interface only |
 | Path to Entity mapping, application folder list | `miroir-core/src/2_domain/` | interface only |
 | isomorphic-git implementation | new package `packages/miroir-git-isomorphic` (`@miroir-framework/git-isomorphic`, layer 4) | `isomorphic-git`, `node:fs` |
-| Startup | `miroirGitIsomorphicStartup(configurationService)` registers a loader `() => import("@miroir-framework/git-isomorphic")`; called by `miroir-server`, Electron main and the test setup when `features.git` is on | |
+| Startup | each host (`miroir-server`, Electron main, the test setup) registers, when `features.git` is on, the loader `() => import("@miroir-framework/git-isomorphic").then((m) => m.createGitRepositoryFactory())`. The package exports no startup function: any static import of it, even to register a loader, would load `isomorphic-git` at startup (found in review of PR #684) | `ConfigurationService` only |
 
 Rejected: the implementation in `miroir-server` and again in Electron (D15-b), an interface outside core (D15-c, then `DomainController` could not check the capability or run the actions).
 

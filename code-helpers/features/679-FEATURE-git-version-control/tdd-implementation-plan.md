@@ -56,12 +56,12 @@ From the analysis decision record, binding for this plan. Deviations go into the
 | Decision | Choice | Serves |
 |---|---|---|
 | D1 | repository = `findRoot` of each filesystem section directory; `gitAction_init` when none | G1 |
-| D2 | history repo-wide; status and "stage all" limited to the application's section folders (`statusMatrix({ filepaths })`); `includeOtherChanges` flag for the toggle | G1, G2 |
+| D2 | history repo-wide; status and "stage all" limited to the application's section folders (`statusMatrix({ filepaths })`); `includeOtherChanges` flag for the toggle; commit refuses `otherStagedChanges` unless `includeOtherStagedChanges` | G1, G2 |
 | D3, D15 | `GitRepositoryInterface` / `GitRepositoryFactory` in `miroir-core/src/0_interfaces/4-services/`; implementation in `packages/miroir-git-isomorphic` (`@miroir-framework/git-isomorphic`), the only importer of `isomorphic-git` | G5, G6 |
 | D4 | `ProcessCapabilities.git`, from `features.git === true`; on in `dev.json`, `desktop.json` | G6 |
-| D5 | client `React.lazy` route chunk; server, Electron, emulated server `import()` behind `ConfigurationService.registerGitRepositoryFactory`; `forbiddenEager` gets both packages | G6, G7 |
+| D5 | client `React.lazy` route chunk; server, Electron, emulated server register an `import()` loader with `ConfigurationService.registerGitRepositoryFactory` (no startup function in the package); `forbiddenEager` gets both packages | G6, G7 |
 | D6 | `GitEndpoint` in `miroir-app-miroir` data, `libraryImplementation` actions; action types in `SERVER_ROUTED_MIROIR_ACTION_TYPES` | G1 to G5 |
-| D7 | checkout, pull, branch switch, commit refused with `reason: "openMiroirTransaction"` while a Miroir transaction is open | G2, G3 |
+| D7 | checkout, pull, branch switch, commit refused with `reason: "openMiroirTransaction"` while a Miroir transaction is open; checked in the client before forwarding | G2, G3 |
 | D8 | actions that move files return `touchedDeployments`; the client runs Miroir `rollback` on each | G3, G4 |
 | D10 | path to "Entity, instance" mapping in core layer 2 | G1 |
 | D11 | checkout of branch, tag, commit; conflict refused with `reason: "checkoutConflict"` | G3 |
@@ -166,6 +166,7 @@ Behavior asserted:
 
 - `features.git: true`: `gitAction_status` for the deployment returns `{ root, files: [ { path, head, workdir, stage } ] }` with exactly the modified and the added file, both inside the model section folder.
 - `features.git` absent: the same action returns `Action2Error "FeatureUnavailable"` with `errorContext.capability === "git"`, and the package loader registered on `ConfigurationService` was never called (the test registers a counting loader around the real `import()`).
+- `features.git: true` and no Git action run: after the full test startup (the same setup the server and Electron use), the counting loader was never called. A source check in the same test asserts that no file under `packages/*/src` outside `miroir-git-isomorphic` imports `@miroir-framework/git-isomorphic` or `isomorphic-git` statically (only `import(...)` expressions are allowed).
 
 ### 1.2 GREEN
 
@@ -174,7 +175,7 @@ Behavior asserted:
 - `ConfigurationService.registerGitRepositoryFactory(loader: () => Promise<GitRepositoryFactory>)` and `getGitRepositoryFactory()` (memoized `await loader()`).
 - `GitEndpoint` (`a7f243cb-…`) with `gitAction_status`; wire it in `getMiroirFundamentalMlSchema.ts` and `defaultEndpointApplicationMap`; schema rebuild.
 - `3_controllers/GitActions.ts`: `handleAction_gitAction_status` checks the capability, resolves the deployment's filesystem section directories, calls `findRoot`, `open`, `status(filepaths)`. Register it in `miroirActionImplementations`.
-- `packages/miroir-git-isomorphic`: `package.json` (`"type": "module"`, `isomorphic-git` 1.44.3 exact), `src/index.ts` exporting `createGitRepositoryFactory()` and `miroirGitIsomorphicStartup(configurationService)`; status maps `statusMatrix` rows to `GitFileStatus`.
+- `packages/miroir-git-isomorphic`: `package.json` (`"type": "module"`, `isomorphic-git` 1.44.3 exact), `src/index.ts` exporting `createGitRepositoryFactory()` only, no startup function (analysis D15); status maps `statusMatrix` rows to `GitFileStatus`.
 - Add the package to `build-all.sh` (step 4, with the stores), `scripts/published-packages.json`, `rename_packages.py` data if it lists packages; `forbiddenEager` gets `isomorphic-git` and `@miroir-framework/git-isomorphic`.
 
 ### 1.3 Refactor checkpoint
@@ -266,7 +267,7 @@ With `git` on, the designer opens a Git page for an application and sees the his
 
 - Add every `gitAction_*` type to `SERVER_ROUTED_MIROIR_ACTION_TYPES`; each handler starts with the `forwardServerRoutedAction` guard.
 - `GitPage` in `miroir-react/src/routes/GitPage.tsx`, `React.lazy` in `PageDispatcher`; data through a hook that dispatches the actions (no publish-subscribe, no new `useEffect` without asking A).
-- `miroir-server` and Electron main call `miroirGitIsomorphicStartup` when `features.git` is on.
+- `miroir-server` and Electron main register the loader `() => import("@miroir-framework/git-isomorphic").then((m) => m.createGitRepositoryFactory())` when `features.git` is on; neither imports the package statically.
 
 ### 3.3 Refactor checkpoint
 
@@ -341,14 +342,17 @@ The designer stages, unstages and commits the application's changes, with a know
 **Test:** `gitCommit.679.phase5.integ.test.ts`
 
 - `gitAction_stage` with `all: true` stages only files under the section folders, leaving a modified file elsewhere in the repo unstaged (D2).
+- A file outside the section folders already staged (by `git.add` in the test setup, as a terminal would): `gitAction_commit` returns `reason: "otherStagedChanges"` with that path and writes no commit; with `includeOtherStagedChanges: true` it commits both (analysis D2, files staged elsewhere).
 - `gitAction_unstage` returns a file to unstaged.
 - `gitAction_commit` with a logged-in principal writes a commit authored by the `MiroirUser` name and email; with no principal and `user.name` / `user.email` in `.git/config`, by those; with neither, returns `reason: "authorUnknown"`; with `author` and `rememberAuthor: true` in the payload, commits and writes the config.
 - With a Miroir transaction open (a `createInstance` in the local cache not yet committed), `gitAction_commit` returns `reason: "openMiroirTransaction"`; after the Miroir `commit` action, it succeeds and the new instance file is in the commit.
+- The same open-transaction case on `--profile realServer-filesystem`: the refusal comes from the client before any request reaches the server (the server's action log has no `gitAction_commit`), and the pending instance is still in the client's local cache.
 
 ### 5.2 GREEN
 
 - Interface `stage`, `unstage`, `commit`, `getConfig`, `setConfig`; adapter on `add` / `remove` (deleted files) / `resetIndex` / `commit`.
-- Open transaction check through the local cache's pending patches (the same state `rollback` drops).
+- Open transaction check through the local cache's pending patches (the same state `rollback` drops), run in the client's `DomainController` before the `forwardServerRoutedAction` guard (analysis D7, where the check runs).
+- Commit compares the staged paths with the application's folders and refuses on `otherStagedChanges` unless the payload says to include them.
 - Changes panel gets checkboxes, "Stage all", message field, author fields shown only when needed, and "Commit Miroir changes first" on the refusal.
 
 ### 5.3 Refactor checkpoint
@@ -384,7 +388,7 @@ The designer creates, deletes and checks out branches, tags and commits, and Mir
 - On the branch, commit a new instance; checkout `main`; the result lists the deployment in `touchedDeployments`; after the client's `rollback` on it, a `getInstances` on the Entity no longer returns the instance (read through the real local cache).
 - Checkout of a commit oid: `branches().current` is `undefined` (detached).
 - Checkout with an uncommitted change to a file the target changes returns `reason: "checkoutConflict"` and the file is unchanged on disk.
-- Checkout with an open Miroir transaction returns `reason: "openMiroirTransaction"`.
+- Checkout with an open Miroir transaction returns `reason: "openMiroirTransaction"`, also on `--profile realServer-filesystem`, where the files on the server stay unchanged and the pending edit stays in the client's local cache.
 - `gitAction_deleteBranch` of the current branch is refused; of another branch, succeeds.
 
 ### 6.2 GREEN
