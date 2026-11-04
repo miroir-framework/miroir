@@ -1,4 +1,4 @@
-import type { UiIntegrationTestRunRequest } from '../../src/miroir-fwk/4-tests/uiIntegrationTestLauncherTypes.js';
+import type { UiIntegrationTestRunRequest } from 'miroir-react-testing/src/4-tests/uiIntegrationTestLauncherTypes.js';
 
 export const RETURN_BOOK_LEAF = 'Return Book Test Composite Action';
 export const RUNNER_RETURN_DOCUMENT_SUITE_KEY = 'runner.returnDocument';

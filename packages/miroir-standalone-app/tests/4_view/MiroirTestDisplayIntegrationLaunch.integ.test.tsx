@@ -20,17 +20,17 @@ import { miroirIndexedDbStoreSectionStartup } from '@miroir-framework/store-inde
 import { miroirMongoDbStoreSectionStartup } from '@miroir-framework/store-mongodb';
 import { miroirPostgresStoreSectionStartup } from '@miroir-framework/store-postgres';
 
-import { MiroirTestDisplay } from '../../src/miroir-fwk/4_view/components/Reports/MiroirTestDisplay.js';
-import { resetIntegTestRunCoordinatorForTests } from '../../src/miroir-fwk/4-tests/integTestRunCoordinator.js';
+import { MiroirTestDisplay } from 'miroir-react-testing/src/4_view/components/Reports/MiroirTestDisplay.js';
+import { resetIntegTestRunCoordinatorForTests } from 'miroir-react-testing/src/4-tests/integTestRunCoordinator.js';
 import { AdminViewParamsProviders } from '../helpers/AdminViewParamsProviders.js';
 import {
   resetUiIntegrationTestRunPreferencesForTests,
   setUiIntegrationTestRunPreferences,
-} from '../../src/miroir-fwk/4-tests/uiIntegrationTestRunPreferences.js';
+} from 'miroir-react-testing/src/4-tests/uiIntegrationTestRunPreferences.js';
 import {
   getLastUiIntegrationTestRunResult,
   resetLastUiIntegrationTestRunResultForTests,
-} from '../../src/miroir-fwk/4-tests/uiIntegrationTestRunState.js';
+} from 'miroir-react-testing/src/4-tests/uiIntegrationTestRunState.js';
 import { miroirAppStartup } from '../../src/startup.js';
 
 import { RUNNER_RETURN_DOCUMENT_LABEL } from '../helpers/miroirTestDisplayIntegrationLaunchMocks.js';

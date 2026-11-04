@@ -23,8 +23,8 @@ import { miroirAppStartup } from "../../src/startup.js";
 import {
   assertMiroirServerReachable,
   MiroirServerUnreachableError,
-} from "../../src/miroir-fwk/4-tests/assertMiroirServerReachable.js";
-import { resolveUiIntegrationTransformerSuite } from "../../src/miroir-fwk/4-tests/uiIntegrationTestTransformerSuiteRegistry.js";
+} from "miroir-react-testing/src/4-tests/assertMiroirServerReachable.js";
+import { resolveUiIntegrationTransformerSuite } from "miroir-react-testing/src/4-tests/uiIntegrationTestTransformerSuiteRegistry.js";
 import { TRANSFORMER_LEAF_FILTER } from "./uiIntegrationTestLaunchFilterHelpers.js";
 import { resolveRealServerUiIntegrationProfile } from "./resolveRealServerUiIntegrationProfile.js";
 import { runUiIntegrationTestSuiteInNode } from "./runUiIntegrationTestSuiteInNode.js";

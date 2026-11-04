@@ -26,6 +26,11 @@ runs:
       shell: bash
       run: npm run build -w miroir-example-library
 
+    # #672: fixture applications of the MiroirTest UI runtime (miroir-react-testing)
+    - name: Build miroir-example-github and miroir-fixture-appForTest
+      shell: bash
+      run: npm run build -w miroir-example-github -w miroir-fixture-appForTest
+
     # 2. miroir-core with generated TypeScript types (devBuild)
     - name: Build miroir-core (with type generation)
       shell: bash
@@ -60,6 +65,11 @@ runs:
         npm run build -w @miroir-framework/react & pids+=($!)
         npm run build -w miroir-diagram-class & pids+=($!)
         for pid in "${pids[@]}"; do wait "$pid"; done
+
+    # #672: the MiroirTest UI runtime (imports @miroir-framework/react, @miroir-framework/mcp and the fixture apps)
+    - name: Build miroir-react-testing
+      shell: bash
+      run: npm run build -w miroir-react-testing
 
     # Server-side stores
     - name: Build server-side store packages

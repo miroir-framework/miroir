@@ -2,14 +2,30 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "noEmit": true,
-    "types": ["node", "vitest/globals"]
+    "types": [
+      "node",
+      "vitest/globals"
+    ],
+    "paths": {
+      "miroir-react-testing": [
+        "../miroir-react-testing/src/index.ts"
+      ],
+      "miroir-react-testing/report-section": [
+        "../miroir-react-testing/src/reportSection.ts"
+      ],
+      "miroir-react-testing/src/*": [
+        "../miroir-react-testing/src/*"
+      ]
+    }
   },
   "include": [
     "./env.d.ts",
     "./tests/**/*.ts",
     "./tests/**/*.tsx",
     "./src/**/*.ts",
-    "./src/**/*.tsx"
+    "./src/**/*.tsx",
+    "../miroir-react-testing/src/**/*.ts",
+    "../miroir-react-testing/src/**/*.tsx"
   ],
   "exclude": [
     "./node_modules",

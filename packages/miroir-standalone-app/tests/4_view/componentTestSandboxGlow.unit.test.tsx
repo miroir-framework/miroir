@@ -4,7 +4,7 @@ import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 
 import { defaultFeedbackGlow, FeedbackGlowBoundary, feedbackGlowAttribute, feedbackGlowClass } from "@miroir-framework/react";
 
-import { ComponentTestSandboxProvider } from "../../src/miroir-fwk/4_view/components/Reports/ComponentTestSandbox.js";
+import { ComponentTestSandboxProvider } from "miroir-react-testing/src/4_view/components/Reports/ComponentTestSandbox.js";
 
 // Feedback glow (#438): the Component Test Sandbox is an enabled feedback glow boundary, so the controls a
 // displayed test run clicks glow. The runner mounts each case in its own container and React root

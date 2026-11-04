@@ -6,7 +6,7 @@ import { requestLoginToken } from "./auth/authTransport.js";
 
 // ################################################################################################
 // The report section kinds that miroir-react leaves to the application (#13 Q3-a): d3, the class
-// diagram and the MiroirTest runtime stay in this app. Lazy, so that providing the registry at the
+// diagram and the MiroirTest runtime (miroir-react-testing, #672). Lazy, so that providing the registry at the
 // root does not load them with the page. The stored runner is a miroir-react default (#633 D8).
 export const appReportSectionRenderers: ReportSectionRenderers = {
   graphReportSection: lazy(() => import("./components/Graph/GraphReportSectionView.js")),
@@ -14,7 +14,7 @@ export const appReportSectionRenderers: ReportSectionRenderers = {
     default: (await import("miroir-diagram-class")).ModelDiagramReportSectionView,
   })),
   miroirTestReportSection: lazy(async () => ({
-    default: (await import("./components/Reports/ReportSectionMiroirTest.js")).ReportSectionMiroirTest,
+    default: (await import("miroir-react-testing/report-section")).ReportSectionMiroirTest,
   })),
 };
 

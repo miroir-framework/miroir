@@ -25,7 +25,7 @@ import {
 import { bootSelfTestPlatform, miroirActivityTracker, miroirEventService } from "./selfTestPlatform.js";
 
 // #656: the local cache MIROIR_TEST_LOCAL_CACHE names (tests/setup.ts), redux by default
-import { testLocalCache } from "../../../src/miroir-fwk/4-tests/testLocalCache";
+import { testLocalCache } from "miroir-react-testing/src/4-tests/testLocalCache.js";
 describe("self-test page (#487)", () => {
   let container: HTMLDivElement;
   let root: Root;

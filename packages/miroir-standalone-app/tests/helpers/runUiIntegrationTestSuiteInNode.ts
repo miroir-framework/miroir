@@ -6,12 +6,12 @@ import {
 import {
   createIntegActivityTracker,
   resetIntegTestRunCoordinatorForTests,
-} from "../../src/miroir-fwk/4-tests/integTestRunCoordinator.js";
+} from "miroir-react-testing/src/4-tests/integTestRunCoordinator.js";
 import {
   runUiIntegrationTestSuite,
   type UiIntegrationTestLauncherEnvironment,
-} from "../../src/miroir-fwk/4-tests/uiIntegrationTestLauncher.js";
-import type { UiIntegrationTestRunRequest } from "../../src/miroir-fwk/4-tests/uiIntegrationTestLauncherTypes.js";
+} from "miroir-react-testing/src/4-tests/uiIntegrationTestLauncher.js";
+import type { UiIntegrationTestRunRequest } from "miroir-react-testing/src/4-tests/uiIntegrationTestLauncherTypes.js";
 import {
   generateEphemeralIntegrationTestApplicationIdentity,
   PINNED_INTEG_TEST_APPLICATION_IDENTITY,
@@ -21,7 +21,7 @@ import { applyIntegrationTestProfile, resolveRepoRoot } from "./integrationTestP
 import { createStandaloneAppIntegrationOrchestrator } from "./StandaloneAppIntegrationOrchestrator.js";
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import { loadTestConfigFiles } from "../utils/fileTools.js";
-import { resolveRealServerTransformerTestSessionOptions } from "../../src/miroir-fwk/4-tests/resolveTransformerTestSessionOptions.js";
+import { resolveRealServerTransformerTestSessionOptions } from "miroir-react-testing/src/4-tests/resolveTransformerTestSessionOptions.js";
 
 export function createNodeUiIntegrationTestLauncherEnvironment(
   expectFn: UiIntegrationTestLauncherEnvironment["expect"],

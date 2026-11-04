@@ -58,6 +58,14 @@ export function MiroirShellHostProvider(props: { host: MiroirShellHost; children
   return <MiroirShellHostContext.Provider value={props.host}>{props.children}</MiroirShellHostContext.Provider>;
 }
 
+/**
+ * The host as its provider gave it, without defaults (#672): for a component that mounts another
+ * React root (the test sandbox) and provides the same host there.
+ */
+export function useProvidedMiroirShellHost(): MiroirShellHost {
+  return useContext(MiroirShellHostContext);
+}
+
 /** The host's slots, with each missing slot replaced by its default. */
 export function useMiroirShellHost(): Required<Omit<MiroirShellHost, "assistantPanel">> &
   Pick<MiroirShellHost, "assistantPanel"> {

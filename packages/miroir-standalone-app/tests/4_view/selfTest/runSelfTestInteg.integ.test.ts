@@ -20,7 +20,7 @@ import {
   runIntegrationMiroirTestBatch,
   runUnitMiroirTestBatch,
   skippedSuiteResults,
-} from "../../../src/miroir-fwk/4-tests/miroirTestBatch.js";
+} from "miroir-react-testing/src/4-tests/miroirTestBatch.js";
 import { computeSelfTestResult } from "../../../src/miroir-fwk/4-tests/selfTest/selfTestResult.js";
 import { integrationSuiteKey } from "../../../src/miroir-fwk/4-tests/selfTest/runSelfTest.js";
 import { miroirActivityTracker, repositoryRoot } from "./selfTestPlatform.js";

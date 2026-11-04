@@ -58,9 +58,9 @@ import {
   selfApplicationMiroir,
 } from "@miroir-framework/core/meta-model";
 
-vi.mock("../../../../src/miroir-fwk/4-tests/componentTests/index", async (importOriginal) => {
+vi.mock("miroir-react-testing/src/4-tests/componentTests/index.js", async (importOriginal) => {
   const actual = await importOriginal<
-    typeof import("../../../../src/miroir-fwk/4-tests/componentTests/index")
+    typeof import("miroir-react-testing/src/4-tests/componentTests/index.js")
   >();
   return {
     ...actual,
@@ -68,15 +68,15 @@ vi.mock("../../../../src/miroir-fwk/4-tests/componentTests/index", async (import
   };
 });
 
-import * as componentTestsEntry from "../../../../src/miroir-fwk/4-tests/componentTests/index";
-import type { MiroirTestSuiteResultsMap } from "../../../../src/miroir-fwk/4_view/components/Buttons/RunAllMiroirTestsButton";
+import * as componentTestsEntry from "miroir-react-testing/src/4-tests/componentTests/index.js";
+import type { MiroirTestSuiteResultsMap } from "miroir-react-testing/src/4_view/components/Buttons/RunAllMiroirTestsButton.js";
 import type { TestResultData } from "@miroir-framework/react";
-import { MiroirTestDisplay } from "../../../../src/miroir-fwk/4_view/components/Reports/MiroirTestDisplay";
-import { MiroirTestListDisplay } from "../../../../src/miroir-fwk/4_view/components/Reports/MiroirTestListDisplay";
+import { MiroirTestDisplay } from "miroir-react-testing/src/4_view/components/Reports/MiroirTestDisplay.js";
+import { MiroirTestListDisplay } from "miroir-react-testing/src/4_view/components/Reports/MiroirTestListDisplay.js";
 import { ReportPageContextProvider } from "@miroir-framework/react";
 
 // #656: the local cache MIROIR_TEST_LOCAL_CACHE names (tests/setup.ts), redux by default
-import { testLocalCache } from "../../../../src/miroir-fwk/4-tests/testLocalCache";
+import { testLocalCache } from "miroir-react-testing/src/4-tests/testLocalCache.js";
 // ################################################################################################
 const perfInstance = miroirTest_ui_mlElementEditor_renderPerformance as unknown as MiroirTestDefinition;
 const enumInstance = miroirTest_ui_mlElementEditor_enum as unknown as MiroirTestDefinition;

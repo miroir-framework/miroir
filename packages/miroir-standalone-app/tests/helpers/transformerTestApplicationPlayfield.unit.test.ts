@@ -6,7 +6,7 @@ import { deployment_Library_DO_NO_USE } from "miroir-example-library";
 
 import {
   PINNED_INTEG_TEST_APPLICATION_IDENTITY,
-} from "../../src/miroir-fwk/4-tests/IntegrationTestSession.js";
+} from "miroir-react-testing/src/4-tests/IntegrationTestSession.js";
 import {
   buildTransformerApplicationDeploymentMap,
   buildTransformerInitApplicationParameters,
@@ -14,7 +14,7 @@ import {
   resolveAdminDeploymentFromMiroirConfig,
   resolveLibraryTemplateStorageFromMiroirConfig,
   sanitizeStoreIdentifier,
-} from "../../src/miroir-fwk/4-tests/transformerTestApplicationPlayfield.js";
+} from "miroir-react-testing/src/4-tests/transformerTestApplicationPlayfield.js";
 
 describe("transformerTestApplicationPlayfield builders", () => {
   it("sanitizeStoreIdentifier replaces hyphens and leading digits", () => {

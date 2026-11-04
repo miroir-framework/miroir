@@ -6,7 +6,7 @@
  *   `51c647fe-…` has no `componentTestRef`, and its `steps` are required;
  * - the `reactComponentTestStep` union of the Entity and the EntityVersion has no `custom` member;
  * - the legacy files `componentTestManifest.ts`, `componentTestRegistry.ts`, and the folder
- *   `mlElementEditor/` are gone from `src/miroir-fwk/4-tests/componentTests/`;
+ *   `mlElementEditor/` are gone from `componentTests/` (in miroir-react-testing since #672);
  * - `customStepRegistry.ts` does not exist;
  * - a runner call without `suite` gives an `error` result.
  *
@@ -22,7 +22,7 @@ import { afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
 
 import type { MiroirTestForReactComponent } from "@miroir-framework/core";
 
-import { createReactComponentTestRunner } from "../../../../src/miroir-fwk/4-tests/componentTests/runReactComponentTest";
+import { createReactComponentTestRunner } from "miroir-react-testing/src/4-tests/componentTests/runReactComponentTest.js";
 import { resolveRepoRoot } from "../../../helpers/integrationTestProfiles.js";
 
 const REPO_ROOT = resolveRepoRoot();
@@ -35,10 +35,8 @@ const MIROIR_TEST_ENTITY_VERSION_PATH = join(
   REPO_ROOT,
   "packages/miroir-app-miroir/assets/miroir_modelVersion/54b9c72f-d4f3-4db9-9e0e-0dc840b530bd/51c647fe-07ec-411c-89cc-02689dc66d6a.json",
 );
-const COMPONENT_TESTS_FOLDER = join(
-  REPO_ROOT,
-  "packages/miroir-standalone-app/src/miroir-fwk/4-tests/componentTests",
-);
+// #672: the runner moved to miroir-react-testing; the legacy files must not come back beside it.
+const COMPONENT_TESTS_FOLDER = join(REPO_ROOT, "packages/miroir-react-testing/src/4-tests/componentTests");
 
 function miroirTestContext(path: string): any {
   const miroirTestModel = JSON.parse(readFileSync(path, { encoding: "utf-8" }));
@@ -76,6 +74,10 @@ describe("legacyRemoved.292.phase6: schema", () => {
 
 // ################################################################################################
 describe("legacyRemoved.292.phase6: legacy files", () => {
+  it("watches the folder that holds the runner", () => {
+    expect(existsSync(join(COMPONENT_TESTS_FOLDER, "runReactComponentTest.tsx"))).toBe(true);
+  });
+
   it.each([
     "componentTestManifest.ts",
     "componentTestRegistry.ts",

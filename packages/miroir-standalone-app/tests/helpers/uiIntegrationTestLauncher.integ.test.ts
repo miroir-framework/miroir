@@ -11,7 +11,7 @@ import { miroirPostgresStoreSectionStartup } from "@miroir-framework/store-postg
 import { selfApplicationLibrary } from "miroir-example-library";
 
 import { miroirAppStartup } from "../../src/startup.js";
-import { UI_INTEGRATION_RUNNER_SUITE_REGISTRY } from "../../src/miroir-fwk/4-tests/uiIntegrationTestRunnerSuiteRegistry.js";
+import { UI_INTEGRATION_RUNNER_SUITE_REGISTRY } from "miroir-react-testing/src/4-tests/uiIntegrationTestRunnerSuiteRegistry.js";
 import { resolveLaunchProfileName } from "./launchProfileName.js";
 import { runUiIntegrationTestSuiteInNode } from "./runUiIntegrationTestSuiteInNode.js";
 
@@ -73,7 +73,7 @@ describe("runUiIntegrationTestSuite (B3)", () => {
 describe("runUiIntegrationTestSuite transformer (B7)", () => {
   it("runs one tr.core integ leaf via in-process launcher", async () => {
     const { resolveUiIntegrationTransformerSuite } = await import(
-      "../../src/miroir-fwk/4-tests/uiIntegrationTestTransformerSuiteRegistry.js"
+      "miroir-react-testing/src/4-tests/uiIntegrationTestTransformerSuiteRegistry.js"
     );
     const { suiteDefinition } = resolveUiIntegrationTransformerSuite("tr.core");
 

@@ -40,7 +40,9 @@ const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../../../.
 const distDirectory = join(packageRoot, "dist");
 const manifestPath = join(distDirectory, ".vite", "manifest.json");
 const srcDirectory = join(packageRoot, "src");
-const componentTestEntryKey = "miroir-fwk/4-tests/componentTests/index.ts";
+const testRuntimeSrcDirectory = join(packageRoot, "../miroir-react-testing/src");
+// #672: the component test runtime is in miroir-react-testing, whose build keeps one module per source module
+const componentTestEntryKey = "../../miroir-react-testing/dist/4-tests/componentTests/index.js";
 const buildFirstMessage = "run `npm run build -w miroir-standalone-app` first";
 
 function newestModificationTime(directory: string): { time: number; path: string } {
@@ -63,7 +65,10 @@ function readBuildManifest(): Manifest {
     throw new Error(`${manifestPath} is missing: ${buildFirstMessage}`);
   }
   const manifestTime = statSync(manifestPath).mtimeMs;
-  const newestSource = newestModificationTime(srcDirectory);
+  // #672: the component test runtime is built from miroir-react-testing's sources
+  const newestSource = [srcDirectory, testRuntimeSrcDirectory]
+    .map(newestModificationTime)
+    .reduce((newest, candidate) => (candidate.time > newest.time ? candidate : newest));
   if (newestSource.time > manifestTime) {
     throw new Error(
       `${manifestPath} is older than ${newestSource.path} (the build is stale): ${buildFirstMessage}`,
@@ -140,8 +145,11 @@ describe("component test chunk bundle guard", () => {
     expect(
       sourcesMatching(manifest, addedKeys, "node_modules/@testing-library/user-event/").length,
     ).toBeGreaterThan(0);
-    // #292 Slice 4 deleted mlElementEditor/MlArrayEditor.tsx: the step interpreter stands for the
-    // component test code of the chunk.
-    expect(sourcesMatching(manifest, addedKeys, "componentTests/runComponentTestSteps").length).toBe(1);
+    // #292 Slice 4 deleted mlElementEditor/MlArrayEditor.tsx: the step interpreter stood for the
+    // component test code of the chunk. #672: that code is miroir-react-testing's build, whose
+    // modules the chunk holds (the app build does not chain the package's sourcemaps).
+    expect(
+      sourcesMatching(manifest, addedKeys, "miroir-react-testing/dist/4-tests/componentTests/index.js").length,
+    ).toBe(1);
   });
 });

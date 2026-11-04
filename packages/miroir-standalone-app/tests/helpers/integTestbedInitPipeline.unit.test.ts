@@ -6,13 +6,13 @@ import * as miroirCore from "@miroir-framework/core";
 import { indexApplicationMiroirTestsByKey } from "@miroir-framework/core";
 import { loadApplicationMiroirTestCatalog } from "@miroir-framework/core/model-validation-fs";
 
-import { appForTestTestbedInitParams } from "../../src/miroir-fwk/4-tests/uiIntegrationAppForTestPlayfieldSeed.js";
-import { libraryTestbedInitParams } from "../../src/miroir-fwk/4-tests/uiIntegrationPlayfieldSeeds.js";
-import { beforeEachTest } from "../../src/miroir-fwk/4-tests/runnerIntegTestSupport.js";
+import { appForTestTestbedInitParams } from "miroir-react-testing/src/4-tests/uiIntegrationAppForTestPlayfieldSeed.js";
+import { libraryTestbedInitParams } from "miroir-react-testing/src/4-tests/uiIntegrationPlayfieldSeeds.js";
+import { beforeEachTest } from "miroir-react-testing/src/4-tests/runnerIntegTestSupport.js";
 import {
   composeUiIntegrationTestbedResetParams,
   uiIntegrationRunnerSuiteEntryFromDefinition,
-} from "../../src/miroir-fwk/4-tests/uiIntegrationTestRunnerSuiteRegistry.js";
+} from "miroir-react-testing/src/4-tests/uiIntegrationTestRunnerSuiteRegistry.js";
 
 const applicationMiroirTestCatalogByKey = indexApplicationMiroirTestsByKey(
   loadApplicationMiroirTestCatalog(),

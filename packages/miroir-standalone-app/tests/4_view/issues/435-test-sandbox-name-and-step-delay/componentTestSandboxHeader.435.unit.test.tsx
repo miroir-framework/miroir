@@ -49,21 +49,21 @@ import {
 } from "@miroir-framework/core/meta-model";
 import { adminSelfApplication, defaultAdminViewParams, entityViewParams } from "@miroir-framework/core/admin";
 
-vi.mock("../../../../src/miroir-fwk/4-tests/componentTests/index", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("../../../../src/miroir-fwk/4-tests/componentTests/index")>();
+vi.mock("miroir-react-testing/src/4-tests/componentTests/index.js", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("miroir-react-testing/src/4-tests/componentTests/index.js")>();
   return {
     ...actual,
     registerComponentTests: vi.fn(actual.registerComponentTests),
   };
 });
 
-import * as componentTestsEntry from "../../../../src/miroir-fwk/4-tests/componentTests/index";
+import * as componentTestsEntry from "miroir-react-testing/src/4-tests/componentTests/index.js";
 import type { TestResultData } from "@miroir-framework/react";
-import { MiroirTestDisplay } from "../../../../src/miroir-fwk/4_view/components/Reports/MiroirTestDisplay";
+import { MiroirTestDisplay } from "miroir-react-testing/src/4_view/components/Reports/MiroirTestDisplay.js";
 import { ReportPageContextProvider } from "@miroir-framework/react";
 
 // #656: the local cache MIROIR_TEST_LOCAL_CACHE names (tests/setup.ts), redux by default
-import { testLocalCache } from "../../../../src/miroir-fwk/4-tests/testLocalCache";
+import { testLocalCache } from "miroir-react-testing/src/4-tests/testLocalCache.js";
 // ################################################################################################
 const enumInstance = miroirTest_ui_mlElementEditor_enum as unknown as MiroirTestDefinition;
 const RUN_TEST_TIMEOUT = 300_000;

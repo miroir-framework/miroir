@@ -21,8 +21,8 @@ import {
   mountComponent,
   type ComponentTestEnvironment,
   type MountedComponent,
-} from "../../../../src/miroir-fwk/4-tests/componentTests/componentTestEnvironment";
-import { runComponentTestSteps } from "../../../../src/miroir-fwk/4-tests/componentTests/runComponentTestSteps";
+} from "miroir-react-testing/src/4-tests/componentTests/componentTestEnvironment.js";
+import { runComponentTestSteps } from "miroir-react-testing/src/4-tests/componentTests/runComponentTestSteps.js";
 
 const silentLog = {
   trace: () => {},

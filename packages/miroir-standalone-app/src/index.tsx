@@ -72,7 +72,7 @@ import {
   shouldStartSelfTest,
 } from "./miroir-fwk/4-tests/selfTest/selfTestResult.js";
 import { miroirAppStartup } from "./startup.js";
-import { selectTestLocalCache } from "./miroir-fwk/4-tests/testLocalCache.js";
+import { selectTestLocalCache } from "miroir-react-testing";
 
 import { resolveWebLogConfigWithMeta, VITE_MIROIR_LOG_CONFIG_VALUES } from "./config/logConfigPresets.js";
 import { packageName } from "./constants.js";

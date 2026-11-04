@@ -3,7 +3,7 @@ import { getTestbedUuidsForTestSuite, type MiroirTestSuite } from "@miroir-frame
 import {
   buildUiIntegrationOrchestratorCreateSessionParams,
   uiIntegrationRunnerSuiteEntryFromDefinition,
-} from "../../src/miroir-fwk/4-tests/uiIntegrationTestRunnerSuiteRegistry.js";
+} from "miroir-react-testing/src/4-tests/uiIntegrationTestRunnerSuiteRegistry.js";
 
 type BuildParams = Parameters<typeof buildUiIntegrationOrchestratorCreateSessionParams>;
 

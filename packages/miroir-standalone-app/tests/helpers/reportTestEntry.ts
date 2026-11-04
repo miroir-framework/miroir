@@ -23,9 +23,10 @@ import { miroirPostgresStoreSectionStartup } from "@miroir-framework/store-postg
 import { entityReport } from "@miroir-framework/core/meta-model";
 import { env } from "process";
 
-import { createReportTestRunner } from "../../src/miroir-fwk/4-tests/componentTests/runReportTest.js";
+import { createReportTestRunner } from "miroir-react-testing/src/4-tests/componentTests/runReportTest.js";
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import { miroirAppStartup } from "../../src/startup.js";
+import { appReportSectionRenderers, appShellHost } from "../../src/miroir-fwk/4_view/reportSectionRenderers.js";
 import { loadTestConfigFiles } from "../utils/fileTools.js";
 import { createRunnerSuiteSessionParams } from "./runnerSuiteSessionParams.js";
 import { createStandaloneAppIntegrationOrchestrator } from "./StandaloneAppIntegrationOrchestrator.js";
@@ -93,6 +94,9 @@ export async function startReportTestEntry(): Promise<ReportTestEntry> {
       miroirActivityTracker,
       miroirEventService,
       miroirReports: readMiroirReports,
+      // #672 D7: the Reports under test get the app's renderers and shell host, as in the app
+      reportSectionRenderers: appReportSectionRenderers,
+      shellHost: appShellHost,
     });
     ConfigurationService.configurationService.registerReportTestRunner(reportTestRunner);
   });

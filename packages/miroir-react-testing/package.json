@@ -1,0 +1,72 @@
+{
+  "name": "miroir-react-testing",
+  "version": "0.5.0-rc.1",
+  "description": "The MiroirTest UI runtime (Miroir Tests report, component tests, UI integration runs), registered by the standalone app and the sandbox (#672)",
+  "author": "Miroir Framework <miroir-framework@protonmail.com>",
+  "license": "MIT",
+  "private": true,
+  "sideEffects": false,
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./report-section": {
+      "types": "./dist/reportSection.d.ts",
+      "import": "./dist/reportSection.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "devBuild": "npm run build",
+    "dev": "tsup --watch"
+  },
+  "dependencies": {
+    "@miroir-framework/core": "*",
+    "@miroir-framework/mcp": "*",
+    "@miroir-framework/react": "*",
+    "@miroir-framework/store-bundled": "*",
+    "@miroir-framework/store-indexeddb": "*",
+    "@testing-library/dom": "10.4.2",
+    "@testing-library/react": "16.3.3",
+    "@testing-library/user-event": "14.6.8",
+    "cross-fetch": "4.1.0",
+    "diff": "9.0.0",
+    "loglevelnext": "6.0.0",
+    "miroir-example-github": "*",
+    "miroir-example-library": "*",
+    "miroir-fixture-appForTest": "*",
+    "uuid": "14.0.3"
+  },
+  "peerDependencies": {
+    "@emotion/react": "^11.10.5",
+    "@miroir-framework/store-filesystem": "*",
+    "@miroir-framework/store-mongodb": "*",
+    "@miroir-framework/store-postgres": "*",
+    "@mui/material": ">=5.17.1 <10",
+    "formik": "^2.4.9",
+    "react": ">=18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^7.18.4"
+  },
+  "peerDependenciesMeta": {
+    "@miroir-framework/store-filesystem": { "optional": true },
+    "@miroir-framework/store-mongodb": { "optional": true },
+    "@miroir-framework/store-postgres": { "optional": true }
+  },
+  "devDependencies": {
+    "@emotion/react": "11.14.0",
+    "@mui/material": "9.5.0",
+    "@types/react": "18.3.23",
+    "@types/react-dom": "18.3.7",
+    "formik": "2.4.9",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "react-router-dom": "7.18.4",
+    "tsup": "9.0.0"
+  }
+}

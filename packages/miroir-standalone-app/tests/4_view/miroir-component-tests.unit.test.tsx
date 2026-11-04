@@ -50,7 +50,7 @@ import {
 
 import { attachFeedbackGlow } from "@miroir-framework/react";
 
-import { createReactComponentTestRunner } from "../../src/miroir-fwk/4-tests/componentTests/runReactComponentTest";
+import { createReactComponentTestRunner } from "miroir-react-testing/src/4-tests/componentTests/runReactComponentTest.js";
 import { resolveRepoRoot } from "../helpers/integrationTestProfiles.js";
 
 const MIROIR_TEST_DATA_FOLDER = join(

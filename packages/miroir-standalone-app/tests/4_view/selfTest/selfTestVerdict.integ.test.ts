@@ -12,7 +12,7 @@ import type { MiroirConfigClient, MiroirTestDefinition } from "@miroir-framework
 import { miroirTest_tr_menuBuild } from "@miroir-framework/core/meta-model";
 import { deployment_Admin } from "@miroir-framework/core/admin";
 
-import { runUnitMiroirTestBatch } from "../../../src/miroir-fwk/4-tests/miroirTestBatch.js";
+import { runUnitMiroirTestBatch } from "miroir-react-testing/src/4-tests/miroirTestBatch.js";
 import {
   runSelfTest,
   SELF_TEST_NEEDS_AUTHENTICATION_OFF,

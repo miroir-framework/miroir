@@ -5,7 +5,7 @@
  */
 import type { MiroirSelfTestResult } from '../../4-tests/selfTest/selfTestResult.js';
 import type { TestResultData } from "@miroir-framework/react";
-import { MiroirTestResultsDisplay } from '../components/Reports/MiroirTestResultsDisplay.js';
+import { MiroirTestResultsDisplay } from 'miroir-react-testing';
 import { ReportPageContextProvider } from "@miroir-framework/react";
 
 export interface SelfTestPageProps {

@@ -27,7 +27,7 @@ import { miroirFileSystemStoreSectionStartup } from "@miroir-framework/store-fil
 import { defaultMiroirMetaModel as deploymentMetaModel, entityEntityVersion } from "@miroir-framework/core/meta-model";
 
 import { miroirAppStartup } from "../../src/startup.js";
-import { setupMiroirTest } from "../../src/miroir-fwk/4-tests/setupMiroirTest.js";
+import { setupMiroirTest } from "miroir-react-testing/src/4-tests/setupMiroirTest.js";
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import { loadTestConfigFiles } from "../utils/fileTools.js";
 import { seedMiroirModelVersionFromPackageAssets } from "../helpers/seedMiroirModelVersionFromPackageAssets.js";

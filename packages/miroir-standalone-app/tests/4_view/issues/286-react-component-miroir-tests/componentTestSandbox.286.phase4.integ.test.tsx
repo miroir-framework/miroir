@@ -56,10 +56,10 @@ import {
 } from "@miroir-framework/core/meta-model";
 
 vi.mock(
-  "../../../../src/miroir-fwk/4-tests/componentTests/componentTestTools",
+  "miroir-react-testing/src/4-tests/componentTests/componentTestTools.js",
   async (importOriginal) => {
     const actual = await importOriginal<
-      typeof import("../../../../src/miroir-fwk/4-tests/componentTests/componentTestTools")
+      typeof import("miroir-react-testing/src/4-tests/componentTests/componentTestTools.js")
     >();
     return {
       ...actual,
@@ -68,15 +68,15 @@ vi.mock(
   },
 );
 
-import * as componentTestTools from "../../../../src/miroir-fwk/4-tests/componentTests/componentTestTools";
-import { componentTestRunInProgressMessage } from "../../../../src/miroir-fwk/4-tests/componentTests/index";
-import type { MiroirTestResultData } from "../../../../src/miroir-fwk/4_view/components/Buttons/RunMiroirTestSuiteButton";
-import { MiroirTestDisplay } from "../../../../src/miroir-fwk/4_view/components/Reports/MiroirTestDisplay";
+import * as componentTestTools from "miroir-react-testing/src/4-tests/componentTests/componentTestTools.js";
+import { componentTestRunInProgressMessage } from "miroir-react-testing/src/4-tests/componentTests/index.js";
+import type { MiroirTestResultData } from "miroir-react-testing/src/4_view/components/Buttons/RunMiroirTestSuiteButton.js";
+import { MiroirTestDisplay } from "miroir-react-testing/src/4_view/components/Reports/MiroirTestDisplay.js";
 import { ReportPageContextProvider } from "@miroir-framework/react";
 import { resolveRepoRoot } from "../../../helpers/integrationTestProfiles.js";
 
 // #656: the local cache MIROIR_TEST_LOCAL_CACHE names (tests/setup.ts), redux by default
-import { testLocalCache } from "../../../../src/miroir-fwk/4-tests/testLocalCache";
+import { testLocalCache } from "miroir-react-testing/src/4-tests/testLocalCache.js";
 // ################################################################################################
 const MIROIR_TEST_DATA_FOLDER = join(
   resolveRepoRoot(),

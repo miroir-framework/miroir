@@ -6,7 +6,7 @@ import {
   isUiIntegrationProfileLaunchableInBrowser,
   listBrowserBundledIntegrationTestProfileNames,
   listUiIntegrationProfileCatalogForPicker,
-} from "../../src/miroir-fwk/4-tests/integrationTestProfileCatalog.js";
+} from "miroir-react-testing/src/4-tests/integrationTestProfileCatalog.js";
 
 describe("integrationTestProfileCatalog (B6)", () => {
   it("web picker excludes SQL emulated and CI profiles", () => {
@@ -42,6 +42,27 @@ describe("integrationTestProfileCatalog (B6)", () => {
     expect(isUiIntegrationProfileLaunchableInBrowser("realServer-mongodb", "webApp")).toBe(true);
   });
 
+  // #672 D4: a bundle without the realServer client configs (the sandbox) neither offers nor
+  // launches the realServer-* profiles
+  it("offers only the realServer-* profiles whose client config is bundled (#672 D4)", () => {
+    const sandboxPicker = listUiIntegrationProfileCatalogForPicker("webApp", []).map((e) => e.name);
+    expect(sandboxPicker).toEqual(["emulatedServer-indexedDb"]);
+    const onePicker = listUiIntegrationProfileCatalogForPicker("webApp", ["realServer-sql"]).map(
+      (e) => e.name,
+    );
+    expect(onePicker).toEqual(["emulatedServer-indexedDb", "realServer-sql"]);
+  });
+
+  it("launches only the realServer-* profiles whose client config is bundled (#672 D4)", () => {
+    expect(isUiIntegrationProfileLaunchableInBrowser("realServer-sql", "webApp", [])).toBe(false);
+    expect(isUiIntegrationProfileLaunchableInBrowser("emulatedServer-indexedDb", "webApp", [])).toBe(
+      true,
+    );
+    expect(
+      isUiIntegrationProfileLaunchableInBrowser("realServer-sql", "webApp", ["realServer-sql"]),
+    ).toBe(true);
+  });
+
   it("bundled browser emulated config is indexedDb only", () => {
     expect(listBrowserBundledIntegrationTestProfileNames()).toEqual(["emulatedServer-indexedDb"]);
   });
@@ -50,12 +71,12 @@ describe("integrationTestProfileCatalog (B6)", () => {
 describe("resolveUiIntegrationRunnerSuiteKey (B6-d0)", () => {
   it("uses instance name as the UI suite key for Library return", async () => {
     const { resolveUiIntegrationRunnerSuiteKey, isUiIntegrationRunnerSuiteSupportedForInstance } =
-      await import("../../src/miroir-fwk/4-tests/resolveUiIntegrationRunnerSuiteKey.js");
+      await import("miroir-react-testing/src/4-tests/resolveUiIntegrationRunnerSuiteKey.js");
     const { UI_INTEGRATION_RUNNER_SUITE_REGISTRY } = await import(
-      "../../src/miroir-fwk/4-tests/uiIntegrationTestRunnerSuiteRegistry.js"
+      "miroir-react-testing/src/4-tests/uiIntegrationTestRunnerSuiteRegistry.js"
     );
     const { UI_INTEGRATION_TRANSFORMER_SUITE_REGISTRY } = await import(
-      "../../src/miroir-fwk/4-tests/uiIntegrationTestTransformerSuiteRegistry.js"
+      "miroir-react-testing/src/4-tests/uiIntegrationTestTransformerSuiteRegistry.js"
     );
 
     expect(

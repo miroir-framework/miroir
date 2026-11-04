@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 import {
   assertMiroirServerReachable,
   MiroirServerUnreachableError,
-} from "../../src/miroir-fwk/4-tests/assertMiroirServerReachable.js";
+} from "miroir-react-testing/src/4-tests/assertMiroirServerReachable.js";
 
 describe("assertMiroirServerReachable (B6-c C2)", () => {
   it("resolves when fetch returns any HTTP response", async () => {

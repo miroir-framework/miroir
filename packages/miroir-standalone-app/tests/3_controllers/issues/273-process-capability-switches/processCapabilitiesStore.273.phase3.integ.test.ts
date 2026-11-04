@@ -30,7 +30,7 @@ import {
 import { miroirFileSystemStoreSectionStartup } from "@miroir-framework/store-filesystem";
 
 import { loglevelnext } from "../../../../src/loglevelnextImporter.js";
-import { setupMiroirTest } from "../../../../src/miroir-fwk/4-tests/setupMiroirTest.js";
+import { setupMiroirTest } from "miroir-react-testing/src/4-tests/setupMiroirTest.js";
 import { miroirAppStartup } from "../../../../src/startup.js";
 import { loadTestConfigFiles } from "../../../utils/fileTools.js";
 import { cleanLevel, packageName } from "../../constants.js";

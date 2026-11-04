@@ -60,16 +60,16 @@ Sibling repos, linked locally only when regenerating types from schemas: **jzod*
 
 Build order (`build-all.sh` is canonical; folders are `packages/miroir-*`, published names `@miroir-framework/*`):
 
-1. Optional siblings: `jzod`, `jzod-ts` (when linked locally)
+1. Siblings `jzod`, `jzod-ts`, when linked locally
 2. `miroir-app-miroir`, `miroir-app-admin` (ML schemas, bundled into core)
 3. `@miroir-framework/core` (foundation, generated types)
 4. `miroir-localcache*`, `@miroir-framework/store-*` (`filesystem`, `indexeddb`, `postgres`, `mongodb`, `bundled`; see `docs/reference/data-architecture-deployments.md`)
-5. `@miroir-framework/react`, `@miroir-framework/mcp`, `miroir-diagram-class`
+5. `@miroir-framework/react`, `@miroir-framework/mcp`, `miroir-diagram-class`, `miroir-react-testing`
 6. `@miroir-framework/server`, `/cli`, `miroir-ai`
 7. `miroir-standalone-app`
 8. `miroir-example-*` (example applications), `miroir-fixture-*` (test fixtures)
 
-Artefacts: `miroir-server` release binary (`npm run build:release -w miroir-server`), `miroir-standalone-app-electron`, Docker image. `miroir-designer` and `miroir-runtime` are unused stubs.
+Artefacts: `miroir-server` release binary (`npm run build:release -w miroir-server`), `miroir-standalone-app-electron`, Docker image. Unused stubs: `miroir-designer`, `miroir-runtime`.
 
 **Generated types:** `npm run devBuild -w @miroir-framework/core` regenerates `packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/` (mainly `miroirFundamentalType.ts`) from the ML schemas, then builds. Run it after every change to a core schema in `packages/miroir-app-miroir/assets`, once `miroir-app-miroir` itself is rebuilt. Generator helpers: `packages/miroir-core/src/0_interfaces/1_core/bootstrapMlSchemas/`.
 
@@ -160,5 +160,5 @@ State management: Redux + Redux-Sagas, or Zustand (startup option `localCache`);
 
 ## Platform notes
 
-- Windows development uses git-bash.
+- Windows: develop in git-bash.
 - Some packages have circular development dependencies: follow the build order above.

@@ -38,7 +38,7 @@ import { miroirFileSystemStoreSectionStartup } from "@miroir-framework/store-fil
 
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import { fetchMiroirAndAppConfigurations } from "@miroir-framework/react";
-import { setupMiroirTest } from "../../src/miroir-fwk/4-tests/setupMiroirTest.js";
+import { setupMiroirTest } from "miroir-react-testing/src/4-tests/setupMiroirTest.js";
 import { miroirAppStartup } from "../../src/startup.js";
 import { openTestEnvironment } from "../helpers/testEnvironment.js";
 

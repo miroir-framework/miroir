@@ -37,8 +37,8 @@ import { miroirMongoDbStoreSectionStartup } from "@miroir-framework/store-mongod
 import { miroirPostgresStoreSectionStartup } from "@miroir-framework/store-postgres";
 
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
-import { setupMiroirTest } from "../../src/miroir-fwk/4-tests/setupMiroirTest.js";
-import { testApplicationStorageConfiguration } from "../../src/miroir-fwk/4-tests/runnerIntegTestSupport.js";
+import { setupMiroirTest } from "miroir-react-testing/src/4-tests/setupMiroirTest.js";
+import { testApplicationStorageConfiguration } from "miroir-react-testing/src/4-tests/runnerIntegTestSupport.js";
 import { miroirAppStartup } from "../../src/startup.js";
 import { openTestEnvironment, selectedTestEnvironment } from "../helpers/testEnvironment.js";
 

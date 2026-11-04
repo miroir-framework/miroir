@@ -17,7 +17,7 @@ import {
 } from "@miroir-framework/core";
 
 import type { IntegTestHostOptions } from "@miroir-framework/core";
-import { RealServerTransformerTestSession } from "../../src/miroir-fwk/4-tests/RealServerTransformerTestSession.js";
+import { RealServerTransformerTestSession } from "miroir-react-testing/src/4-tests/RealServerTransformerTestSession.js";
 import {
   AppStackIntegrationTestSession,
   IntegrationTestSession,

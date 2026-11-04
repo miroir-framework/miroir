@@ -55,6 +55,8 @@ jobs:
         run: |
           mkdir -p packages/miroir-homepage/dist/sandbox
           cp -r packages/miroir-sandbox/dist/. packages/miroir-homepage/dist/sandbox/
+          # #672: the build manifest and bundle report are for the CI guards, not the site
+          rm -rf packages/miroir-homepage/dist/sandbox/.vite
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0

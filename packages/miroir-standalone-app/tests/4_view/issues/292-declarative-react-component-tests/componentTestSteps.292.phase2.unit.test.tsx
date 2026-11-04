@@ -22,8 +22,8 @@ import {
   type ReactComponentTestSuiteContext,
 } from "@miroir-framework/core";
 
-import { createReactComponentTestRunner } from "../../../../src/miroir-fwk/4-tests/componentTests/runReactComponentTest";
-import { optionFormikName } from "../../../../src/miroir-fwk/4-tests/componentTests/runComponentTestSteps";
+import { createReactComponentTestRunner } from "miroir-react-testing/src/4-tests/componentTests/runReactComponentTest.js";
+import { optionFormikName } from "miroir-react-testing/src/4-tests/componentTests/runComponentTestSteps.js";
 
 const enumCaseLabel = "FixtureEnum: case";
 

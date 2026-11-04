@@ -30,7 +30,7 @@ import { describe, expect, it } from "vitest";
 import * as deploymentMiroir from "@miroir-framework/core/meta-model";
 import { defaultMiroirMetaModel } from "@miroir-framework/core/meta-model";
 
-import { miroirTestDefinitionHasReactComponentTest } from "../../../../src/miroir-fwk/4-tests/miroirTestSuiteUiExecution";
+import { miroirTestDefinitionHasReactComponentTest } from "miroir-react-testing/src/4-tests/miroirTestSuiteUiExecution.js";
 import { resolveRepoRoot } from "../../../helpers/integrationTestProfiles.js";
 
 const REPO_ROOT = resolveRepoRoot();

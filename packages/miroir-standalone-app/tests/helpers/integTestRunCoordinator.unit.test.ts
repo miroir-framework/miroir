@@ -5,7 +5,7 @@ import {
   createIntegActivityTrackerSync,
   IntegTestRunAlreadyActiveError,
   IntegTestRunCoordinator,
-} from "../../src/miroir-fwk/4-tests/integTestRunCoordinator.js";
+} from "miroir-react-testing/src/4-tests/integTestRunCoordinator.js";
 import {
   MiroirLoggerFactory,
   type LoggerFactoryInterface,
@@ -173,7 +173,7 @@ describe("createIntegActivityTracker (B1)", () => {
 describe("getIntegTestRunCoordinator (B1)", () => {
   it("returns a shared singleton for the UI launcher", async () => {
     const { getIntegTestRunCoordinator } = await import(
-      "../../src/miroir-fwk/4-tests/integTestRunCoordinator.js"
+      "miroir-react-testing/src/4-tests/integTestRunCoordinator.js"
     );
 
     expect(getIntegTestRunCoordinator()).toBe(getIntegTestRunCoordinator());

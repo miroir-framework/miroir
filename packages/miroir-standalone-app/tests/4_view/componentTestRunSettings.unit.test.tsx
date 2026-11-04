@@ -23,27 +23,27 @@ import { ConfigurationService } from "@miroir-framework/core";
 import { LocalCacheProvider, MiroirContextReactProvider } from "@miroir-framework/react";
 import { defaultAdminViewParams } from "@miroir-framework/core/admin";
 
-vi.mock("../../src/miroir-fwk/4-tests/componentTests/index", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("../../src/miroir-fwk/4-tests/componentTests/index")>();
+vi.mock("miroir-react-testing/src/4-tests/componentTests/index.js", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("miroir-react-testing/src/4-tests/componentTests/index.js")>();
   return {
     ...actual,
     registerComponentTests: vi.fn(actual.registerComponentTests),
   };
 });
 
-import * as componentTestsEntry from "../../src/miroir-fwk/4-tests/componentTests/index";
+import * as componentTestsEntry from "miroir-react-testing/src/4-tests/componentTests/index.js";
 import {
   ComponentTestSandboxProvider,
   useComponentTestSandbox,
-} from "../../src/miroir-fwk/4_view/components/Reports/ComponentTestSandbox";
+} from "miroir-react-testing/src/4_view/components/Reports/ComponentTestSandbox.js";
 import {
   ComponentTestRunSettings,
   useComponentTestRunPreparation,
-} from "../../src/miroir-fwk/4_view/components/Reports/ComponentTestRunSettings";
+} from "miroir-react-testing/src/4_view/components/Reports/ComponentTestRunSettings.js";
 import { buildAdminViewParamsHarness, loadViewParams } from "../helpers/adminViewParamsHarness";
 
 // #656: the local cache MIROIR_TEST_LOCAL_CACHE names (tests/setup.ts), redux by default
-import { testLocalCache } from "../../src/miroir-fwk/4-tests/testLocalCache";
+import { testLocalCache } from "miroir-react-testing/src/4-tests/testLocalCache.js";
 const TEST_TIMEOUT = 60_000;
 const typesSwitch = () => screen.getByRole("checkbox", { name: "Show transformer types in component test runs" });
 const sandboxSwitch = () => screen.getByRole("checkbox", { name: "Show test sandbox" });

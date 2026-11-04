@@ -41,22 +41,22 @@ import { miroirMongoDbStoreSectionStartup } from "@miroir-framework/store-mongod
 import { miroirPostgresStoreSectionStartup } from "@miroir-framework/store-postgres";
 import { entityReport, selfApplicationMiroir } from "@miroir-framework/core/meta-model";
 
-import { resetIntegTestRunCoordinatorForTests } from "../../src/miroir-fwk/4-tests/integTestRunCoordinator.js";
+import { resetIntegTestRunCoordinatorForTests } from "miroir-react-testing/src/4-tests/integTestRunCoordinator.js";
 import {
   resetUiIntegrationTestRunPreferencesForTests,
   setUiIntegrationTestRunPreferences,
-} from "../../src/miroir-fwk/4-tests/uiIntegrationTestRunPreferences.js";
+} from "miroir-react-testing/src/4-tests/uiIntegrationTestRunPreferences.js";
 import {
   getLastUiIntegrationTestRunResult,
   resetLastUiIntegrationTestRunResultForTests,
-} from "../../src/miroir-fwk/4-tests/uiIntegrationTestRunState.js";
-import { MiroirTestDisplay } from "../../src/miroir-fwk/4_view/components/Reports/MiroirTestDisplay.js";
+} from "miroir-react-testing/src/4-tests/uiIntegrationTestRunState.js";
+import { MiroirTestDisplay } from "miroir-react-testing/src/4_view/components/Reports/MiroirTestDisplay.js";
 import { ReportPageContextProvider } from "@miroir-framework/react";
 import { miroirAppStartup } from "../../src/startup.js";
 
 // #656: the local cache MIROIR_TEST_LOCAL_CACHE names (tests/setup.ts), redux by default
-import { testLocalCache } from "../../src/miroir-fwk/4-tests/testLocalCache";
-vi.mock("../../src/miroir-fwk/4-tests/useSelectedApplicationMiroirTestSuiteRegistries.js", async () => {
+import { testLocalCache } from "miroir-react-testing/src/4-tests/testLocalCache.js";
+vi.mock("miroir-react-testing/src/4-tests/useSelectedApplicationMiroirTestSuiteRegistries.js", async () => {
   const { loadApplicationRunnerUuidIndexFromFolders } = await import(
     "@miroir-framework/core/model-validation-fs"
   );
@@ -72,11 +72,11 @@ vi.mock("../../src/miroir-fwk/4-tests/useSelectedApplicationMiroirTestSuiteRegis
   };
 });
 
-vi.mock("../../src/miroir-fwk/4_view/components/Reports/TestExecutionPanel.js", () => ({
+vi.mock("miroir-react-testing/src/4_view/components/Reports/TestExecutionPanel.js", () => ({
   TestExecutionPanel: () => null,
 }));
 
-vi.mock("../../src/miroir-fwk/4-tests/loadBrowserUiIntegrationTestLauncherEnvironment.js", async () => {
+vi.mock("miroir-react-testing/src/4-tests/loadBrowserUiIntegrationTestLauncherEnvironment.js", async () => {
   const { createNodeUiIntegrationTestLauncherEnvironment } = await import(
     "../helpers/runUiIntegrationTestSuiteInNode.js"
   );

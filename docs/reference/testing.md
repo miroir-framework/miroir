@@ -1599,7 +1599,7 @@ npm run testMiroir -w @miroir-framework/core
 | `tests/helpers/miroirCoreIntegTestLaunch.ts` | Pre-flight validation + usage output |
 | `tests/helpers/runMiroirRunnerTestsFromCLI.ts` | Runner test CLI orchestration |
 | `tests/utils/fileTools.ts` | `loadTestConfigFiles` for app-stack tests |
-| `src/miroir-fwk/4-tests/setupMiroirTest.ts` | `setupMiroirTest` (public); deprecated `setupMiroirTestAnd*` wrappers |
+| `../miroir-react-testing/src/4-tests/setupMiroirTest.ts` | `setupMiroirTest` (public); deprecated `setupMiroirTestAnd*` wrappers (#672: the MiroirTest runtime is in `miroir-react-testing`) |
 | `src/miroir-fwk/4-tests/runTestOrTestSuite.ts` | Composite-action test tree runner |
 | `tests/helpers/integrationTestProfiles.ts` | Profiles → test environment (`MIROIR_ENV`) and client (`MIROIR_TEST_CLIENT`) |
 | `tests/helpers/testEnvironment.ts` | `openTestEnvironment`: seeds the copies of a test environment, derives its client configuration |
@@ -1898,7 +1898,25 @@ Browser-supported profiles:
 | `realServer-indexedDb` | IndexedDB behind `miroir-server` | ✅ | — |
 | `realServer-mongodb` | MongoDB behind `miroir-server` | ✅ | — |
 
-Real-server profiles require a reachable `miroir-server` and the selected backend on that server. The browser is REST-only for these profiles.
+Real-server profiles require a reachable `miroir-server` and the selected backend on that server. The browser is REST-only for these profiles. A client offers a `realServer-*` profile only when its build holds that profile's client configuration (#672): the standalone app's Vite build injects the four, the sandbox's none.
+
+### In the sandbox (#672)
+
+The static sandbox (`miroir-sandbox`, published on GitHub Pages) runs MiroirTests too, from the same **Miroir Tests** reports. The runtime is the package `miroir-react-testing`, shared with the standalone app: the sandbox registers its `miroirTestReportSection` renderer from `miroir-react-testing/report-section`, loaded when a MiroirTest report is shown; the test sessions, testing-library and the fixture applications load when a run starts.
+
+- Unit: `fn`, `tr` (unit leaves) and `ui` (component) suites run as in the app.
+- Integration: on `emulatedServer-indexedDb` only, the one profile the picker offers. A run writes to its own IndexedDB databases and leaves the sandbox's (`sandbox-admin*`) as they were.
+- Not runnable there: suites that need a server (`runner.mcp.getInstances` and the other MCP suites), suites tagged `filesystem`, and the Reports that need a graph renderer (`report.bundleSizeHistory`, `report.pageLoadHistory`, #635).
+
+Each `MiroirTestDisplay` shows its last run on its root element: `data-miroir-test-suite` (the suite's uuid), `data-miroir-test-status` (`idle`, `running`, `passed`, `failed`) and `data-miroir-test-summary`; its Run buttons have the test ids `miroir-test-run-unit` and `miroir-test-run-integ`. The sandbox smoke test drives them:
+
+```bash
+npm run build -w miroir-sandbox
+npm run smoke -w miroir-sandbox                 # fn, tr.core, ui (unit) and action.domainController.dataCrud (integ)
+npm run smoke -w miroir-sandbox -- --suite unit:<uuid> --suite integ:<uuid> [--headed] [--browser <chrome>]
+```
+
+It serves `dist/` with `vite preview`, opens the MiroirTestDetails report of each suite, clicks its Run button and waits for the status. Exit code 0: every suite passed; 1: a suite failed (its results and console errors are printed); 2: the smoke test could not run. The workflow `.github/workflows/sandbox-smoke.yml` runs it, after the bundle guard of the sandbox (`packages/miroir-sandbox/bundle-policy.json`, which forbids testing-library, the fixture applications and the MCP client on the page).
 
 ---
 

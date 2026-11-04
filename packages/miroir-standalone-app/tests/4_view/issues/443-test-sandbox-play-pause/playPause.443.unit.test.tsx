@@ -25,12 +25,12 @@ import {
   mountComponent,
   type ComponentTestEnvironment,
   type MountedComponent,
-} from "../../../../src/miroir-fwk/4-tests/componentTests/componentTestEnvironment";
-import { runComponentTestSteps } from "../../../../src/miroir-fwk/4-tests/componentTests/runComponentTestSteps";
+} from "miroir-react-testing/src/4-tests/componentTests/componentTestEnvironment.js";
+import { runComponentTestSteps } from "miroir-react-testing/src/4-tests/componentTests/runComponentTestSteps.js";
 import {
   ComponentTestSandbox,
   createComponentTestPauseGate,
-} from "../../../../src/miroir-fwk/4_view/components/Reports/ComponentTestSandbox";
+} from "miroir-react-testing/src/4_view/components/Reports/ComponentTestSandbox.js";
 
 const silentLog = {
   trace: () => {},

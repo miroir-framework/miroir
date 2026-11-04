@@ -12,7 +12,7 @@
  */
 import { afterEach, describe, expect, it } from "vitest";
 
-import { extractValuesFromRenderedElements } from "../../../../src/miroir-fwk/4-tests/componentTests/componentTestTools";
+import { extractValuesFromRenderedElements } from "miroir-react-testing/src/4-tests/componentTests/componentTestTools.js";
 
 const attachedElements: HTMLElement[] = [];
 

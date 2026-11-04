@@ -54,7 +54,7 @@ import type {
 import { loglevelnext } from "../../src/loglevelnextImporter.js";
 import {
   selfApplicationDeploymentConfigurationsTO_REMOVE,
-} from "../../src/miroir-fwk/4-tests/tests-utils.js";
+} from "miroir-react-testing/src/4-tests/tests-utils.js";
 import { chainVitestSteps } from "../../src/miroir-fwk/4-tests/vitest-utils.js";
 import { miroirAppStartup } from "../../src/startup.js";
 import { cleanLevel, packageName } from "../3_controllers/constants.js";

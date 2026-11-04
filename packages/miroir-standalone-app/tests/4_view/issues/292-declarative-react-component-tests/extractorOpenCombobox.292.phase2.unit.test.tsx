@@ -22,8 +22,8 @@ import {
   componentTestFireEvent,
   mountComponent,
   type MountedComponent,
-} from "../../../../src/miroir-fwk/4-tests/componentTests/componentTestEnvironment";
-import { extractValuesFromRenderedElements } from "../../../../src/miroir-fwk/4-tests/componentTests/componentTestTools";
+} from "miroir-react-testing/src/4-tests/componentTests/componentTestEnvironment.js";
+import { extractValuesFromRenderedElements } from "miroir-react-testing/src/4-tests/componentTests/componentTestTools.js";
 import { ThemedSelectWithPortal } from "@miroir-framework/react";
 import { MiroirThemeProvider } from "@miroir-framework/react";
 import { PortalContainerProvider } from "@miroir-framework/react";

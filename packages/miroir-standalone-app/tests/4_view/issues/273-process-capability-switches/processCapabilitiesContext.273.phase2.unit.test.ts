@@ -136,7 +136,7 @@ if (runThis) {
   describe("processCapabilitiesContext.273.phase2 DomainControllers get the fetched snapshot", () => {
     it("setupMiroirTest installs fetchProcessCapabilities on the real-server client DomainController", () => {
       const src = readFileSync(
-        join(REPO_ROOT, "packages/miroir-standalone-app/src/miroir-fwk/4-tests/setupMiroirTest.ts"),
+        join(REPO_ROOT, "packages/miroir-react-testing/src/4-tests/setupMiroirTest.ts"),
         "utf8",
       );
       const afterFetch = src.slice(src.indexOf("fetchProcessCapabilities"));

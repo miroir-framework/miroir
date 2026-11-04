@@ -84,6 +84,7 @@ ALL_PACKAGES=(
   miroir-example-spotify
   miroir-example-github
   miroir-fixture-appForTest
+  miroir-react-testing
   miroir-example-postgres
 )
 
@@ -107,6 +108,8 @@ STAGE_UI_SERVICES=(miroir-react miroir-mcp miroir-diagram-class)
 STAGE_SERVER_LIBRARY=(miroir-server-library)
 STAGE_APPS=(miroir-cli miroir-ai)
 STAGE_STANDALONE_DEPS=(miroir-example-library miroir-example-spotify miroir-example-github miroir-fixture-appForTest)
+# #672: the MiroirTest UI runtime, registered by the app and the sandbox; needs react, mcp and the fixture apps
+STAGE_TEST_UI=(miroir-react-testing)
 STAGE_STANDALONE=(miroir-standalone-app)
 STAGE_DEPLOY_TEST=(miroir-example-library miroir-example-spotify miroir-example-github miroir-fixture-appForTest miroir-example-postgres)
 
@@ -694,6 +697,7 @@ record_time "7/9  miroir-server-library, miroir-cli, miroir-ai" "$t0"
 step "8/9 · miroir-standalone-app (deps + app)"
 t0=$(now_secs)
 run_stage_packages "standalone-deps" "${STAGE_STANDALONE_DEPS[@]}"
+run_stage_packages "test-ui" "${STAGE_TEST_UI[@]}"
 run_stage_packages "standalone-app" "${STAGE_STANDALONE[@]}"
 record_time "8/9  miroir-standalone-app" "$t0"
 

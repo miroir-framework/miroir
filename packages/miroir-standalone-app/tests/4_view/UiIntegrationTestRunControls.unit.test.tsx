@@ -2,11 +2,11 @@ import '@testing-library/jest-dom';
 import { afterEach, describe, expect, it } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
 
-import { UiIntegrationTestRunControls } from '../../src/miroir-fwk/4_view/components/Reports/UiIntegrationTestRunControls.js';
+import { UiIntegrationTestRunControls } from 'miroir-react-testing/src/4_view/components/Reports/UiIntegrationTestRunControls.js';
 import {
   getUiIntegrationTestRunPreferences,
   resetUiIntegrationTestRunPreferencesForTests,
-} from '../../src/miroir-fwk/4-tests/uiIntegrationTestRunPreferences.js';
+} from 'miroir-react-testing/src/4-tests/uiIntegrationTestRunPreferences.js';
 
 afterEach(() => {
   resetUiIntegrationTestRunPreferencesForTests();

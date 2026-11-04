@@ -52,9 +52,9 @@ import {
   selfApplicationMiroir,
 } from "@miroir-framework/core/meta-model";
 
-vi.mock("../../../../src/miroir-fwk/4-tests/componentTests/index", async (importOriginal) => {
+vi.mock("miroir-react-testing/src/4-tests/componentTests/index.js", async (importOriginal) => {
   const actual = await importOriginal<
-    typeof import("../../../../src/miroir-fwk/4-tests/componentTests/index")
+    typeof import("miroir-react-testing/src/4-tests/componentTests/index.js")
   >();
   return {
     ...actual,
@@ -62,18 +62,18 @@ vi.mock("../../../../src/miroir-fwk/4-tests/componentTests/index", async (import
   };
 });
 
-import * as componentTestsEntry from "../../../../src/miroir-fwk/4-tests/componentTests/index";
+import * as componentTestsEntry from "miroir-react-testing/src/4-tests/componentTests/index.js";
 import {
   RunAllMiroirTestsButton,
   type MiroirTestSuiteResultsMap,
-} from "../../../../src/miroir-fwk/4_view/components/Buttons/RunAllMiroirTestsButton";
+} from "miroir-react-testing/src/4_view/components/Buttons/RunAllMiroirTestsButton.js";
 import type { TestResultData } from "@miroir-framework/react";
-import { MiroirTestListDisplay } from "../../../../src/miroir-fwk/4_view/components/Reports/MiroirTestListDisplay";
+import { MiroirTestListDisplay } from "miroir-react-testing/src/4_view/components/Reports/MiroirTestListDisplay.js";
 import { ReportPageContextProvider } from "@miroir-framework/react";
 import { resolveRepoRoot } from "../../../helpers/integrationTestProfiles.js";
 
 // #656: the local cache MIROIR_TEST_LOCAL_CACHE names (tests/setup.ts), redux by default
-import { testLocalCache } from "../../../../src/miroir-fwk/4-tests/testLocalCache";
+import { testLocalCache } from "miroir-react-testing/src/4-tests/testLocalCache.js";
 // ################################################################################################
 const MIROIR_TEST_DATA_FOLDER = join(
   resolveRepoRoot(),

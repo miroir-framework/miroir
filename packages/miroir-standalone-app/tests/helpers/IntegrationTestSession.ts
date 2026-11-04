@@ -33,10 +33,10 @@ import {
   type AdminStoreOptions,
   type TestApplicationStoreOptions,
   type TestSessionForIntegOptions,
-} from "../../src/miroir-fwk/4-tests/IntegrationTestSession.js";
+} from "miroir-react-testing/src/4-tests/IntegrationTestSession.js";
 
 // ################################################################################################
-// Browser-safe re-exports — kept in sync with src/miroir-fwk/4-tests/IntegrationTestSession.ts.
+// Browser-safe re-exports — kept in sync with miroir-react-testing/src/4-tests/IntegrationTestSession.ts.
 // The Node-only override of resolveDefaultFilesystemDeploymentRoot is defined below and takes
 // precedence over the src browser-emulated default.
 export {
@@ -56,7 +56,7 @@ export {
   POSTGRES_TEST_SELF_APPLICATION_UUID,
   /** @deprecated use INTEG_TEST_* */
   POSTGRES_TEST_VERSION_UUID, type AdminStoreOptions, type IntegrationTestApplicationIdentity, type TestApplicationStoreOptions, type TestSessionForIntegOptions
-} from "../../src/miroir-fwk/4-tests/IntegrationTestSession.js";
+} from "miroir-react-testing/src/4-tests/IntegrationTestSession.js";
 
 const DEFAULT_POSTGRES_HOST = "localhost";
 const DEFAULT_ADMIN_SQL_SCHEMA = "miroirAdmin";

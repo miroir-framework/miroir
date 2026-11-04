@@ -20,7 +20,7 @@ import { bootEnvironment, resolveEnvironmentFromFiles, type ResolvedEnvironment 
 import { miroirFileSystemStoreSectionStartup } from "@miroir-framework/store-filesystem";
 
 import { loglevelnext } from "../../../src/loglevelnextImporter.js";
-import { setupMiroirTest } from "../../../src/miroir-fwk/4-tests/setupMiroirTest.js";
+import { setupMiroirTest } from "miroir-react-testing/src/4-tests/setupMiroirTest.js";
 import { miroirAppStartup } from "../../../src/startup.js";
 import { resolveRepoRoot } from "../../helpers/integrationTestProfiles.js";
 import { openTestEnvironment } from "../../helpers/testEnvironment.js";

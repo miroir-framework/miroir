@@ -6,11 +6,13 @@
 export const SRC = ["packages/*/src/**/*.{ts,tsx}"];
 export const TESTS = ["packages/*/{test,tests}/**/*.{ts,tsx}", "packages/*/src/**/*.{test,spec}.{ts,tsx}"];
 // Composition roots build the object graph and read the process environment; elsewhere both are smells.
-// The standalone app's 4-tests folder builds test sessions, so it counts as a root.
+// The 4-tests folder builds test sessions, so it counts as a root: the standalone app's, and miroir-react-testing's
+// since the MiroirTest runtime moved there (#672).
 export const ROOTS = [
   "packages/*/src/5_setup/**",
   "packages/*/src/**/{setup,setupTools,sagaTools,startup,storeStartup,environmentBoot,main,cli,platform,server,index}.{ts,tsx}",
   "packages/*/src/miroir-fwk/4-tests/**",
+  "packages/*/src/4-tests/**",
 ];
 // React components and hooks.
 // miroir-react/src/services: client services moved from the standalone app 4_view (#633).
@@ -24,6 +26,8 @@ export const VIEW = [
 export const TEST_SESSION_VIEWS = [
   "packages/*/src/miroir-fwk/4-tests/**/*.tsx",
   "packages/*/src/miroir-fwk/4-tests/**/use[A-Z]*.ts",
+  "packages/*/src/4-tests/**/*.tsx",
+  "packages/*/src/4-tests/**/use[A-Z]*.ts",
 ];
 // The views that define the themes and the Themed components: where colors are written down.
 export const THEME_VIEWS = [

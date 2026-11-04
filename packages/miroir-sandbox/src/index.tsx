@@ -23,11 +23,13 @@ import {
 } from "@miroir-framework/core";
 import { miroirIndexedDbStoreSectionStartup } from "@miroir-framework/store-indexeddb";
 import { miroirBundledStoreSectionStartup } from "@miroir-framework/store-bundled";
+import { selectTestLocalCache } from "miroir-react-testing";
 import {
   LocalCacheProvider,
   MiroirContextReactProvider,
   PageDispatcher,
   ReportSectionRenderersProvider,
+  loadLocalCache,
   RootComponent,
   startMiroirClient,
   type ReportSectionRenderers,
@@ -67,11 +69,15 @@ const theme = createTheme({});
 
 // ---------------------------------------------------------------------------
 // Report sections the sandbox adds to the miroir-react defaults (#633 D3): the
-// model diagram comes from miroir-diagram-class, loaded on first display.
+// model diagram comes from miroir-diagram-class, the MiroirTest runner from
+// miroir-react-testing (#672), each loaded on first display.
 // ---------------------------------------------------------------------------
 const sandboxReportSectionRenderers: ReportSectionRenderers = {
   modelDiagramReportSection: lazy(async () => ({
     default: (await import("miroir-diagram-class")).ModelDiagramReportSectionView,
+  })),
+  miroirTestReportSection: lazy(async () => ({
+    default: (await import("miroir-react-testing/report-section")).ReportSectionMiroirTest,
   })),
 };
 
@@ -138,6 +144,8 @@ async function startDemoApp() {
   if (!emulatedServer) {
     throw new Error("startDemoApp: the sandbox configuration emulates the server");
   }
+  // #672: the MiroirTests run in the sandbox build their local caches on the one it started on
+  selectTestLocalCache(await loadLocalCache(localCacheBinding.kind));
   const domainControllerForServer = emulatedServer.domainController;
   const persistenceStoreControllerManagerForServer = emulatedServer.persistenceStoreControllerManager;
 

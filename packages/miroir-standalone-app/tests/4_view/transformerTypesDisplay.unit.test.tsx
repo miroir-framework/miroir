@@ -33,27 +33,27 @@ import {
 } from "@miroir-framework/core";
 import { LocalCacheProvider, MiroirContextReactProvider } from "@miroir-framework/react";
 
-vi.mock("../../src/miroir-fwk/4-tests/componentTests/index", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("../../src/miroir-fwk/4-tests/componentTests/index")>();
+vi.mock("miroir-react-testing/src/4-tests/componentTests/index.js", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("miroir-react-testing/src/4-tests/componentTests/index.js")>();
   return {
     ...actual,
     registerComponentTests: vi.fn(actual.registerComponentTests),
   };
 });
 
-import * as componentTestsEntry from "../../src/miroir-fwk/4-tests/componentTests/index";
-import { createReactComponentTestRunner } from "../../src/miroir-fwk/4-tests/componentTests/runReactComponentTest";
+import * as componentTestsEntry from "miroir-react-testing/src/4-tests/componentTests/index.js";
+import { createReactComponentTestRunner } from "miroir-react-testing/src/4-tests/componentTests/runReactComponentTest.js";
 import {
   ComponentTestSandboxProvider,
   useComponentTestSandbox,
-} from "../../src/miroir-fwk/4_view/components/Reports/ComponentTestSandbox";
+} from "miroir-react-testing/src/4_view/components/Reports/ComponentTestSandbox.js";
 import { transformerTypeBadges } from "@miroir-framework/react";
 import { useShowTransformerTypes } from "@miroir-framework/react";
 import type { TransformerTypeBadge } from "@miroir-framework/react";
 import { buildAdminViewParamsHarness, loadViewParams } from "../helpers/adminViewParamsHarness";
 
 // #656: the local cache MIROIR_TEST_LOCAL_CACHE names (tests/setup.ts), redux by default
-import { testLocalCache } from "../../src/miroir-fwk/4-tests/testLocalCache";
+import { testLocalCache } from "miroir-react-testing/src/4-tests/testLocalCache.js";
 const RUN_TEST_TIMEOUT = 120_000;
 const switchTarget = { byTestId: "transformer-editor-show-types-switch" };
 const rootBadgeTarget = { byTestId: "transformer-type-badge-transformer" };

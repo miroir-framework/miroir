@@ -13,7 +13,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { MiroirActivityTracker } from "@miroir-framework/core";
 
-import { createActionsIdleWaiter } from "../../src/miroir-fwk/4-tests/componentTests/waitForActionsIdle.js";
+import { createActionsIdleWaiter } from "miroir-react-testing/src/4-tests/componentTests/waitForActionsIdle.js";
 
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));

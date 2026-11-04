@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { LOCAL_CACHE_ENV } from "@miroir-framework/core";
 
-import { loadLocalCacheImplementation } from "../../src/miroir-fwk/4-tests/localCacheImplementation";
+import { loadLocalCacheImplementation } from "miroir-react-testing/src/4-tests/localCacheImplementation.js";
 
 // #446, #656: the tests' LocalCache implementation follows MIROIR_TEST_LOCAL_CACHE, redux when unset
 // (the value itself is parsed by core's localCacheKindFromEnvironment, tested there).

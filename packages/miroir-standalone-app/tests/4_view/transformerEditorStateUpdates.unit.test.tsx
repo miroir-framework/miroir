@@ -23,7 +23,7 @@ import { useMiroirContextService } from "@miroir-framework/react";
 import {
   buildComponentTestWrapper,
   type ComponentTestWrapper,
-} from "../../src/miroir-fwk/4-tests/componentTests/componentTestTools";
+} from "miroir-react-testing/src/4-tests/componentTests/componentTestTools.js";
 
 type EditorContext = ReturnType<typeof useMiroirContextService>;
 

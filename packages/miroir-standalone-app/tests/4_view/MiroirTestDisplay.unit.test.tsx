@@ -14,9 +14,9 @@ import {
 import {
   resetUiIntegrationTestRunPreferencesForTests,
   setUiIntegrationTestRunPreferences,
-} from '../../src/miroir-fwk/4-tests/uiIntegrationTestRunPreferences.js';
+} from 'miroir-react-testing/src/4-tests/uiIntegrationTestRunPreferences.js';
 
-vi.mock('../../src/miroir-fwk/4_view/components/Buttons/RunMiroirTestSuiteButton.js', () => ({
+vi.mock('miroir-react-testing/src/4_view/components/Buttons/RunMiroirTestSuiteButton.js', () => ({
   RunMiroirTestSuiteButton: ({
     label,
     runMode = 'unit',
@@ -34,19 +34,19 @@ vi.mock('../../src/miroir-fwk/4_view/components/Buttons/RunMiroirTestSuiteButton
   ),
 }));
 
-vi.mock('../../src/miroir-fwk/4_view/components/Reports/UiIntegrationTestRunControls.js', () => ({
+vi.mock('miroir-react-testing/src/4_view/components/Reports/UiIntegrationTestRunControls.js', () => ({
   UiIntegrationTestRunControls: () => <div>Integration run settings</div>,
 }));
 
-vi.mock('../../src/miroir-fwk/4_view/components/Reports/UiIntegrationTestRunInspectorSummary.js', () => ({
+vi.mock('miroir-react-testing/src/4_view/components/Reports/UiIntegrationTestRunInspectorSummary.js', () => ({
   UiIntegrationTestRunInspectorSummary: () => null,
 }));
 
-vi.mock('../../src/miroir-fwk/4_view/components/Reports/TestExecutionPanel.js', () => ({
+vi.mock('miroir-react-testing/src/4_view/components/Reports/TestExecutionPanel.js', () => ({
   TestExecutionPanel: () => null,
 }));
 
-import { MiroirTestDisplay } from '../../src/miroir-fwk/4_view/components/Reports/MiroirTestDisplay.js';
+import { MiroirTestDisplay } from 'miroir-react-testing/src/4_view/components/Reports/MiroirTestDisplay.js';
 import { AdminViewParamsProviders } from '../helpers/AdminViewParamsProviders.js';
 
 /** The display reads the component test run settings from the Admin ViewParams (#510). */

@@ -24,7 +24,7 @@ import {
   extractValuesFromRenderedElements as extractValuesFromRenderedElementsInRoot,
   MlElementEditorProps_Test,
   type ExtractValuesExpect,
-} from "../../src/miroir-fwk/4-tests/componentTests/componentTestTools";
+} from "miroir-react-testing/src/4-tests/componentTests/componentTestTools.js";
 
 import {
   entityQueryVersion,
@@ -45,7 +45,7 @@ export {
   type ExtractValuesExpect,
   type MlElementEditorProps_Test,
   type RecordingFunction,
-} from "../../src/miroir-fwk/4-tests/componentTests/componentTestTools";
+} from "miroir-react-testing/src/4-tests/componentTests/componentTestTools.js";
 
 // ################################################################################################
 /**
