@@ -9,7 +9,8 @@ state directory. This guard lists what changed in those folders, according to gi
   snapshot --output F         record the current changes (a developer's own edits) in F
   check --since F             only changes made after the snapshot F (since HEAD when F is absent)
 
-Scope: packages/*/assets/**, packages/*/tests/assets/**, packages/*/tests/test_assets/**.
+Scope: packages/*/assets/**, packages/*/tests/assets/**, packages/*/tests/test_assets/**,
+code-helpers/features/*/assets/** (#671).
 Files ignored by git are out of scope.
 """
 
@@ -26,6 +27,8 @@ ASSET_PATHSPECS = [
     ":(glob)packages/*/assets/**",
     ":(glob)packages/*/tests/assets/**",
     ":(glob)packages/*/tests/test_assets/**",
+    # #671: an application kept outside packages/, next to its feature analysis
+    ":(glob)code-helpers/features/*/assets/**",
 ]
 
 DELETED = "<deleted>"

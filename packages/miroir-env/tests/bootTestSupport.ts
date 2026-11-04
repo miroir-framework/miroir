@@ -4,6 +4,7 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 
 import {
+  applicationAssetsDirectory,
   ConfigurationService,
   MiroirActivityTracker,
   MiroirContext,
@@ -24,22 +25,22 @@ import { repositoryRoot } from "./cliTestSupport";
 
 // Boot of a server-side DomainController from an environment, as miroir-server does it (#321).
 
-const PACKAGES = [
-  "miroir-app-miroir",
-  "miroir-app-admin",
-  "miroir-example-library",
-  "miroir-example-designer",
-];
-
-/** A repository root holding the tracked dev environment and a copy of the packages it installs. */
+/**
+ * A repository root holding the tracked dev environment and a copy of the assets of the applications
+ * it installs, wherever their folder is (#671: AgentRuns lives under code-helpers/).
+ */
 export function temporaryCheckout(): string {
   const root = mkdtempSync(path.join(tmpdir(), "miroir-env-boot-"));
   writeFileSync(path.join(root, "package.json"), JSON.stringify({ name: "r", workspaces: ["packages/*"] }));
-  cpSync(path.join(repositoryRoot, "environments/dev.json"), path.join(root, "environments/dev.json"));
-  for (const name of PACKAGES) {
-    cpSync(path.join(repositoryRoot, "packages", name, "assets"), path.join(root, "packages", name, "assets"), {
-      recursive: true,
-    });
+  const devFile = path.join(repositoryRoot, "environments/dev.json");
+  cpSync(devFile, path.join(root, "environments/dev.json"));
+  const dev = JSON.parse(readFileSync(devFile, "utf-8"));
+  for (const [key, application] of Object.entries<any>(dev.applications)) {
+    if (!application?.package) {
+      continue; // an application that gives its configuration has no package folder to copy
+    }
+    const assets = applicationAssetsDirectory(key, application, "admin", dev.packagesDirectory);
+    cpSync(path.join(repositoryRoot, assets), path.join(root, assets), { recursive: true });
   }
   return root;
 }

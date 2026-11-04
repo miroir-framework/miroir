@@ -134,3 +134,12 @@ def test_former_runtime_write_paths_are_reported(repo: Path, written: str) -> No
     result = _guard(repo, "check", "--json")
     assert result.returncode == 1
     assert json.loads(result.stdout)["changed"] == [written]
+
+
+def test_asset_of_an_application_kept_in_a_feature_folder_is_reported(repo: Path) -> None:
+    # #671: the AgentRuns application lives in code-helpers/features/550-…/assets
+    _write(repo, "code-helpers/features/550-x/assets/agentRuns_data/d/1.json", "{}")
+    _write(repo, "code-helpers/features/550-x/analysis.md", "notes")
+    result = _guard(repo, "check", "--json")
+    assert result.returncode == 1
+    assert json.loads(result.stdout)["changed"] == ["code-helpers/features/550-x/assets/agentRuns_data/d/1.json"]

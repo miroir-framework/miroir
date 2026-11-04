@@ -4,7 +4,7 @@
 Stores keyed by uuid (Postgres, IndexedDb, MongoDB, the local cache) keep only one of two instances
 that share a uuid, so the other one silently disappears from the deployed application.
 
-Scope: tracked files packages/**/<folder>/<file>.json whose <folder> name is a uuid (the Entity uuid,
+Scope: tracked files packages/**/<folder>/<file>.json (and code-helpers/features/*/assets/**, #671) whose <folder> name is a uuid (the Entity uuid,
 in the model, data or modelVersion store of a deployment). Each folder is checked on its own, on the
 `uuid` attribute. A folder is skipped when its Entity declares an `idAttribute` other than "uuid"
 (composite or natural key, or none); the Entity definition of the folder's own package wins over one
@@ -30,7 +30,7 @@ ENTITY_ENTITY_UUID = "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad"
 
 def tracked_instance_files(repo: Path) -> list[PurePosixPath]:
     output = subprocess.run(
-        ["git", "ls-files", "-z", "--", ":(glob)packages/**/*.json"],
+        ["git", "ls-files", "-z", "--", ":(glob)packages/**/*.json", ":(glob)code-helpers/features/*/assets/**/*.json"],
         cwd=repo,
         check=True,
         capture_output=True,
@@ -42,7 +42,8 @@ def tracked_instance_files(repo: Path) -> list[PurePosixPath]:
 
 
 def _package(path: PurePosixPath) -> str:
-    return path.parts[1]
+    # packages/<package>/… or code-helpers/features/<feature>/assets/… (#671)
+    return path.parts[2] if path.parts[0] == "code-helpers" else path.parts[1]
 
 
 def _uuid_is_primary_key(entity: dict) -> bool:
