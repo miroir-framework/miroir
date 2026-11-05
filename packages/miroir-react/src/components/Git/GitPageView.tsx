@@ -325,14 +325,14 @@ export function GitPageView(props: GitPageViewProps): React.JSX.Element {
         </Box>
       )}
       {view === "branches" && !notARepository && (
-        <Panel title="Branches" testId="git-branches">
+        <Panel title="Branches" testId="git-branches" flex="0 0 auto">
           {status.status === "ok" && (
             <GitBranchList branches={status.value.branches} busy={checkoutBusy} command={command} onCheckout={checkout} />
           )}
         </Panel>
       )}
       {view === "setup" && !notARepository && status.status === "ok" && (
-        <Panel title="Remote" testId="git-remote">
+        <Panel title="Remote" testId="git-remote" flex="0 0 auto">
           <GitRemotePanel status={status.value} busy={checkoutBusy} command={command} />
         </Panel>
       )}
@@ -396,7 +396,10 @@ function Panel(props: {
   title: string;
   testId: string;
   actions?: React.ReactNode;
-  /** The CSS `flex` of the panel in its row: the diff takes more room than a list. */
+  /**
+   * The CSS `flex` of the panel: in a row, the diff takes more room than a list; alone in the page column, a
+   * panel takes the height of its content (`0 0 auto`).
+   */
   flex?: string;
   children: React.ReactNode;
 }) {

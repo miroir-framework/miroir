@@ -186,18 +186,21 @@ function GitRemoteLine(props: {
             </Typography>
           )
         )}
-        {(Object.keys(actionLabels) as RemoteActionType[]).map((actionType) => (
-          <Button
-            key={actionType}
-            size="small"
-            variant={actionType === "gitAction_fetch" ? "outlined" : "contained"}
-            data-testid={`git-${actionLabels[actionType].toLowerCase()}`}
-            disabled={props.busy || asking !== undefined}
-            onClick={() => runRemote(actionType)}
-          >
-            {actionLabels[actionType]}
-          </Button>
-        ))}
+        {/* the three buttons wrap together, not one by one */}
+        <Box sx={{ display: "flex", gap: 1 }}>
+          {(Object.keys(actionLabels) as RemoteActionType[]).map((actionType) => (
+            <Button
+              key={actionType}
+              size="small"
+              variant={actionType === "gitAction_fetch" ? "outlined" : "contained"}
+              data-testid={`git-${actionLabels[actionType].toLowerCase()}`}
+              disabled={props.busy || asking !== undefined}
+              onClick={() => runRemote(actionType)}
+            >
+              {actionLabels[actionType]}
+            </Button>
+          ))}
+        </Box>
       </Box>
       {asking && (
         <GitCredentialForm

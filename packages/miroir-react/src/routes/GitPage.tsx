@@ -22,6 +22,7 @@ import { adminSelfApplication, deployment_Miroir, entityApplicationForAdmin } fr
 import { selfApplicationMiroir } from "@miroir-framework/core/meta-model";
 
 import { GitClonePanel } from "../components/Git/GitClonePanel.js";
+import { GitSpacing } from "../components/Git/GitSpacing.js";
 import { GitPageView, type GitPageViewName } from "../components/Git/GitPageView.js";
 import type { RunGitAction } from "../components/Git/useGitRequest.js";
 import { PageContainer } from "../components/Page/PageContainer.js";
@@ -113,20 +114,22 @@ export function GitPage(): React.JSX.Element {
                 displaySubmitButton="noDisplay"
                 maxRenderDepth={3}
               />
-              {application && application !== noValue.uuid ? (
-                <GitPageForApplication
-                  key={application}
-                  application={application}
-                  applicationDeploymentMap={applicationDeploymentMap}
-                  view={searchParams.get("view") ?? undefined}
-                  onViewChange={(view) => onViewChange(application, view)}
-                />
-              ) : // #691: before an application is chosen, cloning one is all the page offers
-              gitEnabled ? (
-                <GitCloneSection />
-              ) : (
-                <GitUnavailable />
-              )}
+              <GitSpacing>
+                {application && application !== noValue.uuid ? (
+                  <GitPageForApplication
+                    key={application}
+                    application={application}
+                    applicationDeploymentMap={applicationDeploymentMap}
+                    view={searchParams.get("view") ?? undefined}
+                    onViewChange={(view) => onViewChange(application, view)}
+                  />
+                ) : // #691: before an application is chosen, cloning one is all the page offers
+                gitEnabled ? (
+                  <GitCloneSection />
+                ) : (
+                  <GitUnavailable />
+                )}
+              </GitSpacing>
             </Box>
           </PageContainer>
         );
