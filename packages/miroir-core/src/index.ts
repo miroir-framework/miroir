@@ -852,6 +852,11 @@ export type {
   GitRemoteResult,
   GitPullResult,
   GitSetCredentialResult,
+  GitCloneAction,
+  GitCloneResult,
+  GitClonedDeploymentSummary,
+  GitInstallClonedDeploymentAction,
+  GitInstallClonedDeploymentResult,
   GitCommitFilesAction,
   GitCommitFilesResult,
   GitDiffAction,
@@ -869,6 +874,8 @@ export { gitPathIsInSections, gitPathToInstance } from "./2_domain/GitPathNaming
 export type { GitPathInstance, GitSectionPaths } from "./2_domain/GitPathNaming";
 export { GIT_LINE_DIFF_CELL_LIMIT, gitLineDiff } from "./2_domain/GitLineDiff";
 export type { GitDiffLine } from "./2_domain/GitLineDiff";
+export { findClonedDeployments } from "./2_domain/GitClonedDeployments";
+export type { ClonedDeployment, ClonedDeploymentScan } from "./2_domain/GitClonedDeployments";
 export {
   FAIL_CLOSED_PROCESS_CAPABILITIES,
   fetchProcessCapabilities,

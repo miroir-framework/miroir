@@ -5,7 +5,7 @@
  *
  * Not reachable through MiroirTest: the test builds branches and commits on disk first.
  * ```bash
- * MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- gitCheckout.679.phase6
+ * MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- gitCheckout
  * ```
  */
 import fs from "node:fs";

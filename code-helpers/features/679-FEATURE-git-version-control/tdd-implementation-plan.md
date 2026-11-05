@@ -10,7 +10,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Sub-issues: #680 (A, slices 0 to 4), #681 (B, slices 5 and 6), #682 (C, slices 7 to 9), #683 (D, slices 10 and 11).
 Working branch: one branch per sub-issue, named `claude/<sub-issue number>-git-<slug>`, from `_integration`.
 
-**Resume note:** sub-issue A (#680, slices 0 to 4) done on `claude/680-git-read-only`; sub-issue B (#681, slices 5 and 6) done on `claude/681-git-commit-checkout`, chained from it; sub-issue C (#682, slices 7 to 9) done on `claude/682-git-fetch-pull-push`, chained from #681. Next: slice 10 (#683) on a branch chained from #682.
+**Resume note:** sub-issue A (#680, slices 0 to 4) done on `claude/680-git-read-only`; sub-issue B (#681, slices 5 and 6) done on `claude/681-git-commit-checkout`, chained from it; sub-issue C (#682, slices 7 to 9) done on `claude/682-git-fetch-pull-push`, chained from #681. Sub-issue D (#683, slices 10 and 11) done on `claude/683-git-clone`, chained from #682. Every slice is done.
 
 ---
 
@@ -655,7 +655,7 @@ Full nonreg: end of sub-issue C.
 
 ## Slice 10. Clone, scan deployments, pick, install, open
 
-**Status:** ⬜ pending (sub-issue D, #683)
+**Status:** ✅ done (sub-issue D, #683)
 
 ### Goal
 
@@ -686,19 +686,43 @@ A designer without Git installed clones a repository from the UI and opens the a
 **Nonreg scopes:** `smoke,actions,runners,external,ui`.
 
 ```bash
-RUN_TEST=gitClone.679.phase10 npm run testByFile -w @miroir-framework/git-isomorphic -- gitClone.679.phase10
 npm run build -w miroir-app-miroir
-npm run testMiroir -w miroir-standalone-app -- --suites runner.gitClone --mode integration
+MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- 3_controllers/git/gitClone
+npm run testMiroir -w miroir-standalone-app -- --suites ui.gitPage
 npm run nonreg:filesystem -- --runner shared --scope smoke,actions,runners,external,ui
 ```
 
 ### Realization
 
+- Port: `GitRepositoryFactory.clone` (`singleBranch: false`, every tag), `directoryState`, `removeDirectory`; `GitRepositoryInterface.listFiles` (the files of HEAD). New reasons `invalidFolderName`, `folderNotEmpty`, `noDeploymentFound`, `unknownClonedDeployment`, `severalDeploymentsFound`, `applicationAlreadyDeployed`.
+- Scan: `findClonedDeployments` in `2_domain/GitClonedDeployments.ts`, over the files of HEAD. A section directory written for the machine the repository came from (`<package>/assets/...`, `../<package>/...`) is looked up in the repository three ways: inside the package folder of the Deployment row, under the folder above it (a monorepo's `packages/`), or as is. Git keeps no empty folder, so a section with no file in the repository is placed next to the model section. A deployment whose model section is not in the repository, or with a non-filesystem section, or with no SelfApplication row, is listed in `skipped` with the reason.
+- `gitAction_clone { url, folderName, branch?, credential? }`: `folderName` is a path under the deployment root folder (no `..`, no absolute path, no `.git` segment), not inside an open deployment's folder (`sharedFolder`), and missing or empty. The URL takes the slice 7 checks, and is refused with a username or token in it. A clone that fails leaves no folder; a repository with no deployment is kept (`noDeploymentFound`). Credentials work as in slice 8, from the URL's host.
+- `gitAction_installClonedDeployment { folderName, deploymentUuid? }` reads the clone again (a client gives no directory), refuses an application that already has a deployment here, and hands the DomainController a `GitDeploymentInstallRequest`. The DomainController runs `createDeploymentCompositeAction` with the new options `skipCreateStore` and `labels`, and with `grantAccessTo` the logged-in user. The Admin section is the one of the process' Admin deployment. After it, each DomainController (server and client) rolls back Admin and the new application, so the client lists the deployment.
+- UI: the Clone panel (`GitClonePanel`, lazy) at the top of the Git page instead of the Runners page, which lists nothing today and is not hidden with `git` off. It installs a single deployment at once, lists several to pick from, and opens the credential form, now shared with the Remote panel (`GitCredentialForm`).
+- Stored Runner `cloneApplicationFromGit` (`02fa934a-…`): clone then install, from the URL and the folder. It passes them with `getFromParameters`: a mustache template HTML-escapes the `/` of a URL or a path.
+- Tests: `gitClone.integ.test.ts` (10, then 15 after the review), on copies of appForTest under new uuids (`test-filesystem` deploys appForTest), cloned into `.miroir/test-filesystem/git-clones/`. It covers one package, a monorepo with two deployments (one with no data file), no deployment, the folder and URL refusals, a remote asking for a token, the runner, and the capability off. `ui.gitPage` gets a `GitClonePanel` suite of 5 cases; component test leaves 232.
+- Not done: the MiroirTest `runner.gitClone`. A MiroirTest has no way to start the Git server the clone needs, and a public repository would make the test depend on the network. The integration test runs the stored Runner instead.
+
+### Review of sub-issue D
+
+An adversarial review of the clone and install found seven ways for a repository or a client to make the server write or register files it should not. The fixes:
+
+- A deployment uuid read from the repository must be a uuid before it names a folder or a row.
+- Every section folder is a plain relative path inside the clone, segment by segment; a placed section must not be a file of the repository, and a section that is a file is refused at install (`invalidPayload`).
+- Symbolic links: the clone runs without checkout, and a HEAD tree that holds a link is refused (`symbolicLink`) and removed. Install checks the files again.
+- The target folder is resolved through `realPath`: a folder under the root that is a link to somewhere else is refused (`outsideDeploymentRoot`).
+- Install checks the Admin rows (`GitDeploymentInstaller.registered`), not only the open stores, so a deployment registered but not open is not installed twice.
+- A failed install deletes its store controller and the Deployment and AdminApplication rows it wrote.
+- Two clones into one folder: the folder is created exclusively, the lock key ignores case, and a failed clone removes only what it wrote.
+- The page saves a typed token also when the clone holds no deployment, and install merges the reload failures of both reloads.
+
+`gitClone.integ.test.ts` has 15 tests. Not done: a failed install leaves the MiroirRight grant it wrote; the cleanup has no test, since a filesystem store does not fail to open on a folder Miroir checked.
+
 ---
 
 ## Slice 11. Nonreg, docs, dependency cleanup, issue-directory cleanup, AC
 
-**Status:** ⬜ pending (sub-issue D, #683)
+**Status:** ✅ done (sub-issue D, #683)
 
 ### 11.1 Nonreg
 
@@ -716,6 +740,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,actions,runners,exter
 ### 11.3 Issue-directory cleanup
 
 - Move the still-valuable tests from `tests/issues/679-git-version-control/` into feature-named files (`tests/gitActions.*.integ.test.ts`); delete the issue directory (#238 rule).
+- Done: the tests are in `packages/miroir-standalone-app/tests/3_controllers/git/` (`gitStatus`, `gitHistory`, `gitCommit`, `gitCheckout`, `gitFetch`, `gitCredentials`, `gitSync`, `gitClone`, `.integ.test.ts`), and `gitPendingChanges.unit.test.ts` in `packages/miroir-core/tests/3_controllers/`. The nonreg step `integ-git-version-control` runs `3_controllers/git/`. The phase names used in the slices above are the former file names.
 
 ### 11.4 Tracer bullet (narrative)
 
@@ -725,20 +750,20 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,actions,runners,exter
 4. Stage all, commit: the history shows the commit.
 5. Create a branch, check it out, edit, commit; check out `_integration`: the edit is gone in the UI.
 6. Fetch, push the branch (credential dialog on first push).
-7. On another machine with no Git, clone the repository from the Runners page and open Library.
+7. On another machine with no Git, clone the repository from the Clone panel of the Git page and open Library.
 
-Automated equivalent: slices 1, 5, 6, 9 and 10 tests; `runner.gitClone`.
+Automated equivalent: slices 1, 5, 6, 9 and 10 tests.
 
 ### AC checklist (#679)
 
 | Criterion | Proven by | Status |
 |---|---|---|
-| View the commit history and working tree changes | slices 1, 2, 3 | ⬜ |
-| Create and delete branches | slice 6 | ⬜ |
-| Check out a branch, a tag or a commit | slice 6 | ⬜ |
-| Stage and commit changes | slice 5 | ⬜ |
-| Fetch, push and pull to the upstream | slices 7, 9 | ⬜ |
-| Clone and install with no Git installed | slice 10 | ⬜ |
-| Credentials stored as Admin secrets | slice 8 | ⬜ |
-| `features.git` off: no Git code loads, actions refused | slices 1, 3 (bundle policy) | ⬜ |
-| Lazy loading on first use | slices 1, 3 | ⬜ |
+| View the commit history and working tree changes | slices 1, 2, 3 | ✅ |
+| Create and delete branches | slice 6 | ✅ |
+| Check out a branch, a tag or a commit | slice 6 | ✅ |
+| Stage and commit changes | slice 5 | ✅ |
+| Fetch, push and pull to the upstream | slices 7, 9 | ✅ |
+| Clone and install with no Git installed | slice 10 | ✅ |
+| Credentials stored as Admin secrets | slice 8 | ✅ |
+| `features.git` off: no Git code loads, actions refused | slices 1, 3 (bundle policy) | ✅ |
+| Lazy loading on first use | slices 1, 3 | ✅ |

@@ -106,7 +106,7 @@ Tests select their environment through their profile (`--profile emulatedServer-
 | `client.mode` | `realServer` (a client calls a running server) or `emulatedServer` (tests: the client runs the server in-process). |
 | `client.selfTest` | `{ "enabled": true, "tags": ["unit"] }`: page load runs the miroir app's MiroirTests carrying these tags (`unit` when none) and publishes a verdict, instead of showing the application ([Self-test mode](testing.md#self-test-mode)). `integ` adds the integration batch. |
 | `client.loadTimings` | `{ "enabled": true }`: the page measures its initial load and the first display of each page kind, and records the steps in Miroir's `devData` section when the environment declares it; also `record`, `quietWindowMs`, `maxStepMs` ([load-timings.md](load-timings.md)). Off by default; `?loadTimings=on` turns it on for one tab. |
-| `features` | Process capabilities of the server ([Process capabilities](process-capabilities.md)). Never sent to the web client. |
+| `features` | Process capabilities of the server ([Process capabilities](process-capabilities.md)). Never sent to the web client. `features.git: true` turns on the Git page ([Version control with Git](../guides/version-control-with-git.md)); `dev` and `desktop` set it. |
 | `connections.postgres` | Host, port, user and database of Postgres stores. `passwordEnv` names the variable that holds the password; a definition never contains a password. |
 | `connections.mongodb` | URL of MongoDB stores. |
 | `applications.<key>` | One installed application. The key names it in paths (`.miroir/<env>/<key>/…`) and in store names. |

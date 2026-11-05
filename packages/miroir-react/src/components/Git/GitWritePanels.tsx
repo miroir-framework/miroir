@@ -36,6 +36,18 @@ export function gitCommandErrorText(error: GitRequestError): string {
       return "This repository has no remote: set its URL first.";
     case "otherStagedChanges":
       return `Files outside this application are staged too: ${paths.join(", ")}.`;
+    case "folderNotEmpty":
+      return "That folder already exists: give the clone another folder name.";
+    case "outsideDeploymentRoot":
+      return "The clone must be a folder under the deployment root folder: no '..' and no absolute path.";
+    case "invalidFolderName":
+      return "Give the clone a folder name made of letters, digits, '.', '-' and '_' (with '/' between folders).";
+    case "sharedFolder":
+      return "That folder is inside the folder of an installed deployment: choose another one.";
+    case "noDeploymentFound":
+      return `The repository holds no Miroir deployment of the filesystem store. It is cloned in ${String(error.errorContext?.folderName ?? "its folder")}; nothing was installed.`;
+    case "applicationAlreadyDeployed":
+      return "This application is already installed here: drop it first to install the one of the clone.";
     case "branchNotMerged":
       return `${String(error.errorContext?.name ?? "This branch")} has commits the current branch does not have: deleting it loses them.`;
     default:

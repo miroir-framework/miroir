@@ -7,7 +7,7 @@
  * Not reachable through MiroirTest: the test starts a Git server asking for basic authentication.
  * Skipped when the `git` program, which the test server runs, is not on the PATH.
  * ```bash
- * MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- gitCredentials.679.phase8
+ * MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- gitCredentials
  * ```
  */
 import path from "node:path";
@@ -47,7 +47,7 @@ import {
 
 const gitMissing = gitProgramMissing();
 if (gitMissing) {
-  console.warn(`gitCredentials.679.phase8 skipped: ${gitMissing}`);
+  console.warn(`gitCredentials skipped: ${gitMissing}`);
 }
 
 const QUERY_ENDPOINT = "9e404b3c-368c-40cb-be8b-e3c28550c25e";

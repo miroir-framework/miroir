@@ -160,6 +160,8 @@ const expectedActionTypesByEndpoint: Record<string, string[]> = {
     "gitAction_pull",
     "gitAction_push",
     "gitAction_setCredential",
+    "gitAction_clone",
+    "gitAction_installClonedDeployment",
   ],
 };
 
