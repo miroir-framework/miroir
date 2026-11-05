@@ -220,8 +220,115 @@
           },
           {
             "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: opens on Changes, and shows the branches on their tab",
+            "componentProps": {},
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "the changes",
+                "target": {
+                  "byTestId": "git-changes"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "no branches",
+                "target": {
+                  "byTestId": "git-branches"
+                },
+                "present": false,
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "open branches",
+                "target": {
+                  "byTestId": "git-tab-branches"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the branches",
+                "target": {
+                  "byTestId": "git-branches"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "no changes",
+                "target": {
+                  "byTestId": "git-changes"
+                },
+                "present": false,
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: opens on the tab named by view",
+            "componentProps": {
+              "view": "branches"
+            },
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "the branches",
+                "target": {
+                  "byTestId": "git-branches"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "no changes",
+                "target": {
+                  "byTestId": "git-changes"
+                },
+                "present": false,
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: opens on Changes for an unknown view",
+            "componentProps": {
+              "view": "history"
+            },
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "the changes",
+                "target": {
+                  "byTestId": "git-changes"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "no branches",
+                "target": {
+                  "byTestId": "git-branches"
+                },
+                "present": false,
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
             "miroirTestLabel": "GitPage: lists the commits with their refs",
             "steps": [
+              {
+                "step": "click",
+                "label": "unfold the history",
+                "target": {
+                  "byTestId": "git-history-toggle"
+                }
+              },
               {
                 "step": "expectElement",
                 "label": "the last commit",
@@ -250,6 +357,119 @@
                 "target": {
                   "byText": "2222222"
                 }
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: shows the last commit, and the history on demand",
+            "componentProps": {},
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "the strip",
+                "target": {
+                  "byTestId": "git-history-strip"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the last commit",
+                "target": {
+                  "byText": "Ubik: year 1970"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "no history list",
+                "target": {
+                  "byTestId": "git-history"
+                },
+                "present": false,
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "not the first commit",
+                "target": {
+                  "byText": "initial"
+                },
+                "present": false,
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "unfold the history",
+                "target": {
+                  "byTestId": "git-history-toggle"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the history",
+                "target": {
+                  "byTestId": "git-history"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the first commit",
+                "target": {
+                  "byText": "initial"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the last commit, once",
+                "target": {
+                  "byText": "Ubik: year 1970"
+                },
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: says when the branch has no commit yet",
+            "componentProps": {
+              "log": {
+                "root": "/repo/library",
+                "sectionPaths": {
+                  "model": "model",
+                  "data": "data",
+                  "modelVersion": "modelVersion"
+                },
+                "branches": {
+                  "current": "main",
+                  "local": [
+                    "main"
+                  ],
+                  "remote": [],
+                  "tags": []
+                },
+                "commits": []
+              }
+            },
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "the strip",
+                "target": {
+                  "byTestId": "git-history-strip"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "no commit",
+                "target": {
+                  "byText": "No commit yet."
+                },
+                "timeout": 2000
               }
             ]
           },
@@ -294,8 +514,123 @@
           },
           {
             "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: shows the diff of a change on Changes only, and keeps it across tabs",
+            "componentProps": {},
+            "steps": [
+              {
+                "step": "click",
+                "label": "the modified book",
+                "target": {
+                  "byTestId": "git-change-data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/03ffcae1-b83f-4970-b3d9-04780d3d0780.json"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "its diff",
+                "target": {
+                  "byTestId": "git-diff"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "open branches",
+                "target": {
+                  "byTestId": "git-tab-branches"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "no diff on Branches",
+                "target": {
+                  "byTestId": "git-diff"
+                },
+                "present": false,
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "open changes",
+                "target": {
+                  "byTestId": "git-tab-changes"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the same diff",
+                "target": {
+                  "byText": "Diff: Book · Ubik"
+                },
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: keeps the history's selection apart from the change's",
+            "componentProps": {},
+            "steps": [
+              {
+                "step": "click",
+                "label": "the modified book",
+                "target": {
+                  "byTestId": "git-change-data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/03ffcae1-b83f-4970-b3d9-04780d3d0780.json"
+                }
+              },
+              {
+                "step": "click",
+                "label": "unfold the history",
+                "target": {
+                  "byTestId": "git-history-toggle"
+                }
+              },
+              {
+                "step": "click",
+                "label": "the last commit",
+                "target": {
+                  "byTestId": "git-commit-2222222222222222222222222222222222222222"
+                }
+              },
+              {
+                "step": "click",
+                "label": "its file",
+                "target": {
+                  "byTestId": "git-commit-file-data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/03ffcae1-b83f-4970-b3d9-04780d3d0780.json"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the change's added line",
+                "target": {
+                  "byText": {
+                    "regex": "^\\+ +\"year\": 1971$"
+                  }
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the commit's added line",
+                "target": {
+                  "byText": {
+                    "regex": "^\\+ +\"year\": 1970$"
+                  }
+                },
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
             "miroirTestLabel": "GitPage: shows the files of a commit and their diff against its parent",
             "steps": [
+              {
+                "step": "click",
+                "label": "unfold the history",
+                "target": {
+                  "byTestId": "git-history-toggle"
+                }
+              },
               {
                 "step": "click",
                 "label": "the last commit",
@@ -415,6 +750,32 @@
                   "byTestId": "git-no-repository"
                 },
                 "present": false
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: offers to create a repository on Changes and Branches",
+            "componentProps": {
+              "noRepository": "/repo/library",
+              "view": "branches"
+            },
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "the notice",
+                "target": {
+                  "byTestId": "git-no-repository"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the tabs",
+                "target": {
+                  "byTestId": "git-tab-setup"
+                },
+                "timeout": 2000
               }
             ]
           },
@@ -647,6 +1008,13 @@
             "miroirTestLabel": "GitPage: creates a branch and checks it out",
             "steps": [
               {
+                "step": "click",
+                "label": "open branches",
+                "target": {
+                  "byTestId": "git-tab-branches"
+                }
+              },
+              {
                 "step": "expectElement",
                 "label": "the branches",
                 "target": {
@@ -708,6 +1076,13 @@
             "steps": [
               {
                 "step": "click",
+                "label": "unfold the history",
+                "target": {
+                  "byTestId": "git-history-toggle"
+                }
+              },
+              {
+                "step": "click",
                 "label": "the first commit",
                 "target": {
                   "byTestId": "git-commit-1111111111111111111111111111111111111111"
@@ -757,6 +1132,13 @@
             "steps": [
               {
                 "step": "click",
+                "label": "open branches",
+                "target": {
+                  "byTestId": "git-tab-branches"
+                }
+              },
+              {
+                "step": "click",
                 "label": "check out feature",
                 "target": {
                   "byTestId": "git-checkout-feature"
@@ -783,6 +1165,13 @@
               ]
             },
             "steps": [
+              {
+                "step": "click",
+                "label": "open branches",
+                "target": {
+                  "byTestId": "git-tab-branches"
+                }
+              },
               {
                 "step": "click",
                 "label": "delete feature",
@@ -859,6 +1248,268 @@
           },
           {
             "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: keeps the branch and the remote in the header on every tab",
+            "componentProps": {},
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "the header on Changes",
+                "target": {
+                  "byTestId": "git-header"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the application on Changes",
+                "target": {
+                  "byText": "Library: Git"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the branch on Changes",
+                "target": {
+                  "byTestId": "git-current-branch"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the remote on Changes",
+                "target": {
+                  "byText": {
+                    "regex": "^origin: https://git\\.example\\.com/library\\.git$"
+                  }
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "to push on Changes",
+                "target": {
+                  "byText": "1 to push"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "to pull on Changes",
+                "target": {
+                  "byText": "0 to pull"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "open branches",
+                "target": {
+                  "byTestId": "git-tab-branches"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the header on Branches",
+                "target": {
+                  "byTestId": "git-header"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the application on Branches",
+                "target": {
+                  "byText": "Library: Git"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the branch on Branches",
+                "target": {
+                  "byTestId": "git-current-branch"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the remote on Branches",
+                "target": {
+                  "byText": {
+                    "regex": "^origin: https://git\\.example\\.com/library\\.git$"
+                  }
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "to push on Branches",
+                "target": {
+                  "byText": "1 to push"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "to pull on Branches",
+                "target": {
+                  "byText": "0 to pull"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "open setup",
+                "target": {
+                  "byTestId": "git-tab-setup"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the header on Setup",
+                "target": {
+                  "byTestId": "git-header"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the application on Setup",
+                "target": {
+                  "byText": "Library: Git"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the branch on Setup",
+                "target": {
+                  "byTestId": "git-current-branch"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the remote on Setup",
+                "target": {
+                  "byText": {
+                    "regex": "^origin: https://git\\.example\\.com/library\\.git$"
+                  }
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "to push on Setup",
+                "target": {
+                  "byText": "1 to push"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "to pull on Setup",
+                "target": {
+                  "byText": "0 to pull"
+                },
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: links to Setup when there is no remote",
+            "componentProps": {
+              "noRemote": true
+            },
+            "steps": [
+              {
+                "step": "click",
+                "label": "open branches",
+                "target": {
+                  "byTestId": "git-tab-branches"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "no remote",
+                "target": {
+                  "byTestId": "git-no-remote"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "no URL field on Branches",
+                "target": {
+                  "byTestId": "git-remote-url"
+                },
+                "present": false,
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "set one up",
+                "target": {
+                  "byTestId": "git-open-setup"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the URL field",
+                "target": {
+                  "byTestId": "git-remote-url"
+                },
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: shows only the title and Refresh for a folder with no repository",
+            "componentProps": {
+              "noRepository": "/repo/library"
+            },
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "the header",
+                "target": {
+                  "byTestId": "git-header"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the notice",
+                "target": {
+                  "byTestId": "git-no-repository"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "no Fetch",
+                "target": {
+                  "byTestId": "git-fetch"
+                },
+                "present": false,
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "no remote line",
+                "target": {
+                  "byTestId": "git-no-remote"
+                },
+                "present": false,
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
             "miroirTestLabel": "GitPage: fetches, then pulls the commits of the upstream",
             "componentProps": {
               "remoteBehind": 2
@@ -888,6 +1539,13 @@
                 "label": "pull",
                 "target": {
                   "byTestId": "git-pull"
+                }
+              },
+              {
+                "step": "click",
+                "label": "unfold the history",
+                "target": {
+                  "byTestId": "git-history-toggle"
                 }
               },
               {
@@ -974,6 +1632,49 @@
                 "target": {
                   "byText": {
                     "regex": "^The remote has commits this branch does not have"
+                  }
+                },
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: keeps a pull refusal on every tab",
+            "componentProps": {
+              "remoteDiverged": true
+            },
+            "steps": [
+              {
+                "step": "click",
+                "label": "pull",
+                "target": {
+                  "byTestId": "git-pull"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the explanation",
+                "target": {
+                  "byText": {
+                    "regex": "^The branch and its upstream have diverged"
+                  }
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "open branches",
+                "target": {
+                  "byTestId": "git-tab-branches"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "still shown on Branches",
+                "target": {
+                  "byText": {
+                    "regex": "^The branch and its upstream have diverged"
                   }
                 },
                 "timeout": 2000
@@ -1151,6 +1852,13 @@
                 "timeout": 2000
               },
               {
+                "step": "click",
+                "label": "open setup",
+                "target": {
+                  "byTestId": "git-tab-setup"
+                }
+              },
+              {
                 "step": "change",
                 "label": "an SSH URL",
                 "target": {
@@ -1198,6 +1906,65 @@
                     "regex": "^origin: https://github\\.com/owner/library\\.git$"
                   }
                 },
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: shows the set-URL refusal in Setup only",
+            "componentProps": {
+              "noRemote": true
+            },
+            "steps": [
+              {
+                "step": "click",
+                "label": "open setup",
+                "target": {
+                  "byTestId": "git-tab-setup"
+                }
+              },
+              {
+                "step": "change",
+                "label": "an SSH URL",
+                "target": {
+                  "byTestId": "git-remote-url"
+                },
+                "value": "git@github.com:owner/library.git"
+              },
+              {
+                "step": "click",
+                "label": "set it",
+                "target": {
+                  "byTestId": "git-set-remote"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the refusal",
+                "target": {
+                  "byText": {
+                    "regex": "^Only http and https remotes are supported"
+                  }
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "open changes",
+                "target": {
+                  "byTestId": "git-tab-changes"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "not on Changes",
+                "target": {
+                  "byText": {
+                    "regex": "^Only http and https remotes are supported"
+                  }
+                },
+                "present": false,
                 "timeout": 2000
               }
             ]

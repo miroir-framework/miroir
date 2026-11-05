@@ -4,7 +4,7 @@
  * `runGitAction`, so the page shows the same thing over a real server and over test fixtures; after a
  * checkout, the DomainController reloads the deployments whose files changed.
  */
-import { Alert, Box, Button, Checkbox, Chip, Typography } from "@mui/material";
+import { Alert, Box, Button, Checkbox, Chip, Tab, Tabs, Typography } from "@mui/material";
 import React, { useCallback, useMemo, useState } from "react";
 
 import {
@@ -25,6 +25,8 @@ import { useMiroirTheme } from "../../contexts/MiroirThemeContext.js";
 import { useGitCommand } from "./useGitCommand.js";
 import { useGitRequest, type GitRequestError, type GitRequestState, type RunGitAction } from "./useGitRequest.js";
 import { GitBranchList, GitCommandError, GitCommitForm, GitDetachedBanner } from "./GitWritePanels.js";
+import { GitHeader } from "./GitHeader.js";
+import { GitHistoryStrip } from "./GitHistoryStrip.js";
 import { GitRemotePanel } from "./GitRemotePanel.js";
 
 export interface GitPageViewProps {
@@ -34,7 +36,25 @@ export interface GitPageViewProps {
   runGitAction: RunGitAction;
   /** Entity names by uuid, to name the instance files. */
   entityNames: Record<string, string>;
+  /**
+   * #691: the activity shown, `changes` (the default, also for an unknown value), `branches` or `setup`.
+   * Without `onViewChange` the page keeps the tab it is switched to itself.
+   */
+  view?: string;
+  onViewChange?: (view: GitPageViewName) => void;
+  /** #691: more Setup content, such as the Clone panel, whose actions run on Admin. */
+  setupExtras?: React.ReactNode;
 }
+
+export const GIT_PAGE_VIEWS = ["changes", "branches", "setup"] as const;
+export type GitPageViewName = (typeof GIT_PAGE_VIEWS)[number];
+
+/** The activity named by a `view` URL parameter: Changes for a missing or unknown one. */
+export function gitPageView(view: string | undefined): GitPageViewName {
+  return (GIT_PAGE_VIEWS as readonly string[]).includes(view ?? "") ? (view as GitPageViewName) : "changes";
+}
+
+const viewLabels: Record<GitPageViewName, string> = { changes: "Changes", branches: "Branches", setup: "Setup" };
 
 type Selection =
   | { kind: "change"; path: string }
@@ -71,8 +91,16 @@ function Loading(props: { state: GitRequestState<unknown> }) {
 export function GitPageView(props: GitPageViewProps): React.JSX.Element {
   const miroirTheme = useMiroirTheme();
   const [generation, setGeneration] = useState(0);
-  const [selection, setSelection] = useState<Selection | undefined>(undefined);
+  /** #691: the change selected on the Changes tab, and the commit (and file) selected in the history. */
+  const [selectedChange, setSelectedChange] = useState<string | undefined>(undefined);
+  const [selectedCommit, setSelectedCommit] = useState<{ commit: GitCommitSummary; path?: string } | undefined>(
+    undefined,
+  );
+  const [historyUnfolded, setHistoryUnfolded] = useState(false);
   const [initError, setInitError] = useState<string | undefined>(undefined);
+  const [ownView, setOwnView] = useState<GitPageViewName>(() => gitPageView(props.view));
+  const view = props.onViewChange ? gitPageView(props.view) : ownView;
+  const changeView = props.onViewChange ?? setOwnView;
   const run = props.gitEnabled ? props.runGitAction : undefined;
   const status = useGitRequest<GitStatusResult>(props.runGitAction, "gitAction_status", run && {}, generation);
   const log = useGitRequest<GitLogResult>(props.runGitAction, "gitAction_log", run && {}, generation);
@@ -83,7 +111,8 @@ export function GitPageView(props: GitPageViewProps): React.JSX.Element {
   const [previousBranch, setPreviousBranch] = useState<string | undefined>(undefined);
 
   const refresh = useCallback(() => {
-    setSelection(undefined);
+    setSelectedChange(undefined);
+    setSelectedCommit(undefined);
     setGeneration((current) => current + 1);
   }, []);
   // a staging change keeps the selected file; any other change may remove it
@@ -146,27 +175,38 @@ export function GitPageView(props: GitPageViewProps): React.JSX.Element {
   const notARepository = status.status === "error" && status.error.reason === "notARepository";
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 2, color: textColor }} data-testid="git-page">
-      <Box sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap" }}>
-        <Typography variant="h5" sx={{ fontWeight: 600 }}>
-          {props.applicationName}: Git
-        </Typography>
-        {status.status === "ok" && (
-          <Chip
-            size="small"
-            label={status.value.branches.current ?? `detached at ${status.value.branches.head?.slice(0, 7) ?? "?"}`}
-            data-testid="git-current-branch"
-          />
-        )}
-        <Button size="small" onClick={refresh}>
-          Refresh
-        </Button>
-      </Box>
-      {status.status === "ok" && (
-        <Typography variant="body2" sx={{ opacity: 0.7 }} data-testid="git-root">
-          Repository: {status.value.root}
-        </Typography>
+      <GitHeader
+        applicationName={props.applicationName}
+        status={status.status === "ok" ? status.value : undefined}
+        onRefresh={refresh}
+        busy={checkoutBusy}
+        command={command}
+        onReloadFailures={showReloadFailures}
+        notice={remoteNotice}
+        onNotice={setRemoteNotice}
+        onOpenSetup={() => changeView("setup")}
+      />
+      {status.status !== "ok" && !notARepository && <Loading state={status} />}
+      {!notARepository && status.status === "ok" && (
+        <GitDetachedBanner
+          branches={status.value.branches}
+          backTo={backToBranch(status.value.branches, previousBranch)}
+          busy={checkoutBusy}
+          onCheckout={checkout}
+        />
       )}
-      {notARepository ? (
+      <GitCommandError error={checkoutError} testId="git-checkout-error" />
+      {reloadWarning && (
+        <Alert severity="warning" data-testid="git-reload-warning">
+          {reloadWarning}
+        </Alert>
+      )}
+      <Tabs value={view} onChange={(_event, value: GitPageViewName) => changeView(value)}>
+        {GIT_PAGE_VIEWS.map((name) => (
+          <Tab key={name} value={name} label={viewLabels[name]} data-testid={`git-tab-${name}`} />
+        ))}
+      </Tabs>
+      {view !== "setup" && notARepository && (
         <Box data-testid="git-no-repository">
           <Typography variant="body1">The files of this application are not in a Git repository.</Typography>
           {typeof status.error.errorContext?.directory === "string" && (
@@ -179,106 +219,100 @@ export function GitPageView(props: GitPageViewProps): React.JSX.Element {
           </Button>
           {initError && <Alert severity="error">{initError}</Alert>}
         </Box>
-      ) : (
-        <>
-          {status.status === "ok" && (
-            <GitDetachedBanner
-              branches={status.value.branches}
-              backTo={backToBranch(status.value.branches, previousBranch)}
-              busy={checkoutBusy}
-              onCheckout={checkout}
-            />
-          )}
-          <GitCommandError error={checkoutError} testId="git-checkout-error" />
-          {reloadWarning && (
-            <Alert severity="warning" data-testid="git-reload-warning">
-              {reloadWarning}
-            </Alert>
-          )}
-          <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap", alignItems: "flex-start" }}>
-            <Panel
-              title="Changes"
-              testId="git-changes"
-              actions={
-                status.status === "ok" &&
-                status.value.files.some((file) => file.inApplication && file.unstaged) && (
-                  <Button size="small" data-testid="git-stage-all" disabled={busy} onClick={() => stage({ all: true }, true)}>
-                    Stage all
-                  </Button>
-                )
-              }
-            >
-              {status.status === "ok" ? (
-                <>
-                  <ChangeList
-                    files={status.value.files}
-                    entityNames={props.entityNames}
-                    selected={selection?.kind === "change" ? selection.path : undefined}
-                    onSelect={(path) => setSelection({ kind: "change", path })}
-                    busy={busy}
-                    onToggleStaged={(file) => stage({ paths: [file.path] }, file.unstaged)}
-                  />
-                  <GitCommandError error={stageError} testId="git-stage-error" />
-                  <GitCommitForm status={status.value} busy={busy || statusStale} command={command} />
-                </>
-              ) : (
-                <Loading state={status} />
-              )}
-            </Panel>
-            <Panel title="Branches" testId="git-branches">
-              {status.status === "ok" ? (
-                <GitBranchList branches={status.value.branches} busy={checkoutBusy} command={command} onCheckout={checkout} />
-              ) : (
-                <Loading state={status} />
-              )}
-            </Panel>
-            <Panel title="Remote" testId="git-remote">
-              {status.status === "ok" ? (
-                <GitRemotePanel
-                  status={status.value}
-                  busy={checkoutBusy}
-                  command={command}
-                  onReloadFailures={showReloadFailures}
-                  notice={remoteNotice}
-                  onNotice={setRemoteNotice}
+      )}
+      {view === "changes" && !notARepository && (
+        <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap", alignItems: "flex-start" }}>
+          <Panel
+            title="Changes"
+            testId="git-changes"
+            actions={
+              status.status === "ok" &&
+              status.value.files.some((file) => file.inApplication && file.unstaged) && (
+                <Button size="small" data-testid="git-stage-all" disabled={busy} onClick={() => stage({ all: true }, true)}>
+                  Stage all
+                </Button>
+              )
+            }
+          >
+            {status.status === "ok" && (
+              <>
+                <ChangeList
+                  files={status.value.files}
+                  entityNames={props.entityNames}
+                  selected={selectedChange}
+                  onSelect={setSelectedChange}
+                  busy={busy}
+                  onToggleStaged={(file) => stage({ paths: [file.path] }, file.unstaged)}
                 />
-              ) : (
-                <Loading state={status} />
-              )}
-            </Panel>
-            <Panel title="History" testId="git-history">
-              {log.status === "ok" ? (
-                <CommitList
-                  commits={log.value.commits}
-                  selected={selection?.kind === "commit" ? selection.commit.oid : undefined}
-                  onSelect={(commit) => setSelection({ kind: "commit", commit })}
-                />
-              ) : (
-                <Loading state={log} />
-              )}
-            </Panel>
-          </Box>
-          {selection?.kind === "commit" && (
-            <CommitFilesPanel
-              runGitAction={props.runGitAction}
-              commit={selection.commit}
-              generation={generation}
-              entityNames={props.entityNames}
-              selected={selection.path}
-              onSelect={(path) => setSelection({ ...selection, path })}
-              busy={checkoutBusy}
-              onCheckout={checkout}
-            />
-          )}
-          {selection && (selection.kind === "change" || selection.path) && (
+                <GitCommandError error={stageError} testId="git-stage-error" />
+                <GitCommitForm status={status.value} busy={busy || statusStale} command={command} />
+              </>
+            )}
+          </Panel>
+          {selectedChange && (
             <DiffPanel
               runGitAction={props.runGitAction}
-              selection={selection}
+              selection={{ kind: "change", path: selectedChange }}
               generation={generation}
               entityNames={props.entityNames}
             />
           )}
-        </>
+        </Box>
+      )}
+      {view === "branches" && !notARepository && (
+        <Panel title="Branches" testId="git-branches">
+          {status.status === "ok" && (
+            <GitBranchList branches={status.value.branches} busy={checkoutBusy} command={command} onCheckout={checkout} />
+          )}
+        </Panel>
+      )}
+      {view === "setup" && !notARepository && status.status === "ok" && (
+        <Panel title="Remote" testId="git-remote">
+          <GitRemotePanel status={status.value} busy={checkoutBusy} command={command} />
+        </Panel>
+      )}
+      {view === "setup" && props.setupExtras && <Box data-testid="git-setup-extras">{props.setupExtras}</Box>}
+      {!notARepository && (
+        <GitHistoryStrip
+          commits={log.status === "ok" ? log.value.commits : undefined}
+          unfolded={historyUnfolded}
+          onToggle={() => setHistoryUnfolded((unfolded) => !unfolded)}
+        />
+      )}
+      {!notARepository && historyUnfolded && (
+        <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap", alignItems: "flex-start" }}>
+          <Panel title="History" testId="git-history">
+            {log.status === "ok" ? (
+              <CommitList
+                commits={log.value.commits}
+                selected={selectedCommit?.commit.oid}
+                onSelect={(commit) => setSelectedCommit({ commit })}
+              />
+            ) : (
+              <Loading state={log} />
+            )}
+          </Panel>
+          {selectedCommit && (
+            <CommitFilesPanel
+              runGitAction={props.runGitAction}
+              commit={selectedCommit.commit}
+              generation={generation}
+              entityNames={props.entityNames}
+              selected={selectedCommit.path}
+              onSelect={(path) => setSelectedCommit({ ...selectedCommit, path })}
+              busy={checkoutBusy}
+              onCheckout={checkout}
+            />
+          )}
+          {selectedCommit?.path && (
+            <DiffPanel
+              runGitAction={props.runGitAction}
+              selection={{ kind: "commit", commit: selectedCommit.commit, path: selectedCommit.path }}
+              generation={generation}
+              entityNames={props.entityNames}
+            />
+          )}
+        </Box>
       )}
     </Box>
   );
@@ -293,13 +327,20 @@ function backToBranch(branches: GitStatusResult["branches"], previousBranch: str
 }
 
 // ################################################################################################
-function Panel(props: { title: string; testId: string; actions?: React.ReactNode; children: React.ReactNode }) {
+function Panel(props: {
+  title: string;
+  testId: string;
+  actions?: React.ReactNode;
+  /** The CSS `flex` of the panel in its row: the diff takes more room than a list. */
+  flex?: string;
+  children: React.ReactNode;
+}) {
   const miroirTheme = useMiroirTheme();
   return (
     <Box
       data-testid={props.testId}
       sx={{
-        flex: "1 1 360px",
+        flex: props.flex ?? "1 1 360px",
         minWidth: 0,
         border: `1px solid ${miroirTheme.currentTheme.colors.border ?? "#ccc"}`,
         borderRadius: 1,
@@ -522,7 +563,11 @@ function DiffPanel(props: {
     [diff, rootCommit],
   );
   return (
-    <Panel title={diff.status === "ok" ? `Diff: ${gitFileLabel(diff.value, props.entityNames)}` : "Diff"} testId="git-diff">
+    <Panel
+      title={diff.status === "ok" ? `Diff: ${gitFileLabel(diff.value, props.entityNames)}` : "Diff"}
+      testId="git-diff"
+      flex="2 1 480px"
+    >
       {diff.status === "ok" ? <DiffLines lines={lines} /> : <Loading state={diff} />}
     </Panel>
   );

@@ -51,6 +51,8 @@ export interface GitPageForTestProps {
   remoteToken?: string;
   /** `gitAction_setCredential` is refused with `secretsUnavailable` (no wrapping key). */
   secretsUnavailable?: boolean;
+  /** #691: the tab the page opens on; the page keeps the tab it is then switched to. */
+  view?: string;
 }
 
 const REMOTE_HOST = "git.example.com";
@@ -301,6 +303,7 @@ export function GitPageForTest(props: GitPageForTestProps) {
         gitEnabled={props.gitEnabled ?? true}
         runGitAction={runGitAction}
         entityNames={props.entityNames ?? {}}
+        view={props.view}
       />
     </Suspense>
   );

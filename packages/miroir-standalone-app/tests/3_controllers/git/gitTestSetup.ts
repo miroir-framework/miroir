@@ -199,7 +199,18 @@ let editClock = Math.floor(Date.now() / 1000) + 10;
  */
 export function editUbik(context: GitTestContext, changes: Record<string, unknown>): void {
   const file = path.join(context.libraryRoot, bookPath(BOOK_UBIK));
-  fs.writeFileSync(file, JSON.stringify({ ...JSON.parse(fs.readFileSync(file, "utf8")), ...changes }, undefined, 2));
+  writeWorkTreeFile(
+    context,
+    bookPath(BOOK_UBIK),
+    JSON.stringify({ ...JSON.parse(fs.readFileSync(file, "utf8")), ...changes }, undefined, 2),
+  );
+}
+
+/** Writes a file of the Library repository, moving its modification time on as `editUbik` does. */
+export function writeWorkTreeFile(context: GitTestContext, relativePath: string, text: string): void {
+  const file = path.join(context.libraryRoot, relativePath);
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  fs.writeFileSync(file, text);
   fs.utimesSync(file, editClock, editClock);
   editClock += 2;
 }

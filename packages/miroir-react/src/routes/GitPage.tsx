@@ -22,7 +22,7 @@ import { adminSelfApplication, deployment_Miroir, entityApplicationForAdmin } fr
 import { selfApplicationMiroir } from "@miroir-framework/core/meta-model";
 
 import { GitClonePanel } from "../components/Git/GitClonePanel.js";
-import { GitPageView } from "../components/Git/GitPageView.js";
+import { GitPageView, type GitPageViewName } from "../components/Git/GitPageView.js";
 import type { RunGitAction } from "../components/Git/useGitRequest.js";
 import { PageContainer } from "../components/Page/PageContainer.js";
 import { TypedValueObjectEditor } from "../components/Reports/TypedValueObjectEditor.js";
@@ -63,7 +63,19 @@ const applicationSelectorSchema: MlElement = {
 export function GitPage(): React.JSX.Element {
   usePageConfiguration({ autoFetchOnMount: true, actionName: "git page configuration fetch" });
   const context = useMiroirContextService();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+  // #691: a tab change writes the tab and the application shown, keeping `page` and every other parameter,
+  // so that a copied link opens the same view
+  const onViewChange = useCallback(
+    (application: Uuid, view: GitPageViewName) =>
+      setSearchParams((current) => {
+        const next = new URLSearchParams(current);
+        next.set("application", application);
+        next.set("view", view);
+        return next;
+      }),
+    [setSearchParams],
+  );
   const applicationDeploymentMap = context.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap;
   const initialApplication = defaultToolApplication(
     searchParams.get("application") ?? undefined,
@@ -102,6 +114,8 @@ export function GitPage(): React.JSX.Element {
                   key={application}
                   application={application}
                   applicationDeploymentMap={applicationDeploymentMap}
+                  view={searchParams.get("view") ?? undefined}
+                  onViewChange={(view) => onViewChange(application, view)}
                 />
               ) : null}
             </Box>
@@ -140,7 +154,12 @@ function GitCloneSection() {
   );
 }
 
-function GitPageForApplication(props: { application: Uuid; applicationDeploymentMap: ApplicationDeploymentMap }) {
+function GitPageForApplication(props: {
+  application: Uuid;
+  applicationDeploymentMap: ApplicationDeploymentMap;
+  view: string | undefined;
+  onViewChange: (view: GitPageViewName) => void;
+}) {
   const context = useMiroirContextService();
   const domainController = useDomainControllerService();
   const model = useCurrentModel(props.application, props.applicationDeploymentMap);
@@ -170,6 +189,8 @@ function GitPageForApplication(props: { application: Uuid; applicationDeployment
       gitEnabled={context.processCapabilities.git === true}
       runGitAction={runGitAction}
       entityNames={entityNames}
+      view={props.view}
+      onViewChange={props.onViewChange}
     />
   );
 }
