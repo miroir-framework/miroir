@@ -162,7 +162,7 @@
         "miroirTests": [
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "lists the changes, named by Entity and instance",
+            "miroirTestLabel": "GitPage: lists the changes, named by Entity and instance",
             "steps": [
               {
                 "step": "expectElement",
@@ -214,7 +214,7 @@
           },
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "lists the commits with their refs",
+            "miroirTestLabel": "GitPage: lists the commits with their refs",
             "steps": [
               {
                 "step": "expectElement",
@@ -249,7 +249,7 @@
           },
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "shows the diff of a change against HEAD",
+            "miroirTestLabel": "GitPage: shows the diff of a change against HEAD",
             "steps": [
               {
                 "step": "click",
@@ -271,8 +271,8 @@
                 "label": "the removed line",
                 "target": {
                   "byText": {
-                  "regex": "^- +\"year\": 1970$"
-                }
+                    "regex": "^- +\"year\": 1970$"
+                  }
                 }
               },
               {
@@ -280,15 +280,15 @@
                 "label": "the added line",
                 "target": {
                   "byText": {
-                  "regex": "^\\+ +\"year\": 1971$"
-                }
+                    "regex": "^\\+ +\"year\": 1971$"
+                  }
                 }
               }
             ]
           },
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "shows the files of a commit and their diff against its parent",
+            "miroirTestLabel": "GitPage: shows the files of a commit and their diff against its parent",
             "steps": [
               {
                 "step": "click",
@@ -317,8 +317,8 @@
                 "label": "the removed line",
                 "target": {
                   "byText": {
-                  "regex": "^- +\"year\": 1969$"
-                }
+                    "regex": "^- +\"year\": 1969$"
+                  }
                 },
                 "timeout": 2000
               },
@@ -327,15 +327,15 @@
                 "label": "the added line",
                 "target": {
                   "byText": {
-                  "regex": "^\\+ +\"year\": 1970$"
-                }
+                    "regex": "^\\+ +\"year\": 1970$"
+                  }
                 }
               }
             ]
           },
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "shows nothing else while git is off",
+            "miroirTestLabel": "GitPage: shows nothing else while git is off",
             "componentProps": {
               "gitEnabled": false
             },
@@ -367,7 +367,7 @@
           },
           {
             "miroirTestType": "reactComponentTest",
-            "miroirTestLabel": "offers to create a repository, then lists the changes",
+            "miroirTestLabel": "GitPage: offers to create a repository, then lists the changes",
             "componentProps": {
               "noRepository": "/repo/library"
             },
