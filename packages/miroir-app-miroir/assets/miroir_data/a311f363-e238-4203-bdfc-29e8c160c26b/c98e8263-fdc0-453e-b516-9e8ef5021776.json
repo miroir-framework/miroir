@@ -5,7 +5,7 @@
   "name": "ui.gitPage",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "Git page: the changes of an application named by Entity and instance, staged and committed from the page, its history with refs, its branches created, checked out and left for a detached HEAD, the files of a commit, the diff of a file, the refusals it explains, nothing while git is off, and the creation of a repository.",
+  "description": "Git page: the changes of an application named by Entity and instance, staged and committed from the page, its history with refs, its branches created, checked out and left for a detached HEAD, the files of a commit, the diff of a file, the refusals it explains, its remote fetched, pulled and pushed with a token asked once and saved, nothing while git is off, and the creation of a repository.",
   "tags": [
     "ui"
   ],
@@ -42,6 +42,12 @@
                 "v1"
               ]
             },
+            "tracking": {
+              "upstream": "origin/main",
+              "ahead": 1,
+              "behind": 0
+            },
+            "remoteUrl": "https://git.example.com/library.git",
             "files": [
               {
                 "path": "data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/03ffcae1-b83f-4970-b3d9-04780d3d0780.json",
@@ -808,6 +814,390 @@
                   "byTestId": "git-branch-feature"
                 },
                 "present": false,
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: shows the remote and how far the branch is from its upstream",
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "the remote URL",
+                "target": {
+                  "byText": {
+                    "regex": "^origin: https://git\\.example\\.com/library\\.git$"
+                  }
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "one commit to push",
+                "target": {
+                  "byTestId": "git-tracking"
+                },
+                "attribute": {
+                  "name": "data-ahead",
+                  "value": "1"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "nothing to pull",
+                "target": {
+                  "byTestId": "git-tracking"
+                },
+                "attribute": {
+                  "name": "data-behind",
+                  "value": "0"
+                }
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: fetches, then pulls the commits of the upstream",
+            "componentProps": {
+              "remoteBehind": 2
+            },
+            "steps": [
+              {
+                "step": "click",
+                "label": "fetch",
+                "target": {
+                  "byTestId": "git-fetch"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "two commits to pull",
+                "target": {
+                  "byTestId": "git-tracking"
+                },
+                "attribute": {
+                  "name": "data-behind",
+                  "value": "2"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "pull",
+                "target": {
+                  "byTestId": "git-pull"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the pulled commit in the history",
+                "target": {
+                  "byTestId": "git-commit-ppppppppppppppppppppppppppppppppppppppp2"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "nothing left to pull",
+                "target": {
+                  "byTestId": "git-tracking"
+                },
+                "attribute": {
+                  "name": "data-behind",
+                  "value": "0"
+                },
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: pushes the commit of the branch",
+            "steps": [
+              {
+                "step": "click",
+                "label": "push",
+                "target": {
+                  "byTestId": "git-push"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "nothing left to push",
+                "target": {
+                  "byTestId": "git-tracking"
+                },
+                "attribute": {
+                  "name": "data-ahead",
+                  "value": "0"
+                },
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: explains a pull refused because the branches have diverged",
+            "componentProps": {
+              "remoteDiverged": true
+            },
+            "steps": [
+              {
+                "step": "click",
+                "label": "pull",
+                "target": {
+                  "byTestId": "git-pull"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the explanation",
+                "target": {
+                  "byText": {
+                    "regex": "^The branch and its upstream have diverged"
+                  }
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "push",
+                "target": {
+                  "byTestId": "git-push"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the push explanation",
+                "target": {
+                  "byText": {
+                    "regex": "^The remote has commits this branch does not have"
+                  }
+                },
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: asks for a token, retries with it and saves it",
+            "componentProps": {
+              "remoteToken": "t0ken"
+            },
+            "steps": [
+              {
+                "step": "click",
+                "label": "fetch",
+                "target": {
+                  "byTestId": "git-fetch"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the credential form",
+                "target": {
+                  "byTestId": "git-credential-form"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "change",
+                "label": "the username",
+                "target": {
+                  "byTestId": "git-credential-username"
+                },
+                "value": "designer"
+              },
+              {
+                "step": "change",
+                "label": "a wrong token",
+                "target": {
+                  "byTestId": "git-credential-token"
+                },
+                "value": "wrong"
+              },
+              {
+                "step": "click",
+                "label": "fetch with it",
+                "target": {
+                  "byTestId": "git-credential-retry"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the refusal",
+                "target": {
+                  "byText": {
+                    "regex": "^The remote refused this token for git\\.example\\.com"
+                  }
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "change",
+                "label": "the token",
+                "target": {
+                  "byTestId": "git-credential-token"
+                },
+                "value": "t0ken"
+              },
+              {
+                "step": "click",
+                "label": "fetch with it again",
+                "target": {
+                  "byTestId": "git-credential-retry"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the saved secret",
+                "target": {
+                  "byText": {
+                    "regex": "^Saved as the secret git\\.git\\.example\\.com"
+                  }
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "no form left",
+                "target": {
+                  "byTestId": "git-credential-form"
+                },
+                "present": false
+              },
+              {
+                "step": "click",
+                "label": "fetch again",
+                "target": {
+                  "byTestId": "git-fetch"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "no question asked",
+                "target": {
+                  "byTestId": "git-credential-form"
+                },
+                "present": false
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: says when a token that worked could not be saved",
+            "componentProps": {
+              "remoteToken": "t0ken",
+              "secretsUnavailable": true
+            },
+            "steps": [
+              {
+                "step": "click",
+                "label": "push",
+                "target": {
+                  "byTestId": "git-push"
+                }
+              },
+              {
+                "step": "change",
+                "label": "the username",
+                "target": {
+                  "byTestId": "git-credential-username"
+                },
+                "value": "designer"
+              },
+              {
+                "step": "change",
+                "label": "the token",
+                "target": {
+                  "byTestId": "git-credential-token"
+                },
+                "value": "t0ken"
+              },
+              {
+                "step": "click",
+                "label": "push with it",
+                "target": {
+                  "byTestId": "git-credential-retry"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the warning",
+                "target": {
+                  "byText": {
+                    "regex": "^The token worked but was not saved: gitAction_setCredential: a wrapping key is required"
+                  }
+                },
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: sets the remote of a repository with none, refusing SSH",
+            "componentProps": {
+              "noRemote": true
+            },
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "no remote",
+                "target": {
+                  "byTestId": "git-no-remote"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "change",
+                "label": "an SSH URL",
+                "target": {
+                  "byTestId": "git-remote-url"
+                },
+                "value": "git@github.com:owner/library.git"
+              },
+              {
+                "step": "click",
+                "label": "set it",
+                "target": {
+                  "byTestId": "git-set-remote"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the refusal",
+                "target": {
+                  "byText": {
+                    "regex": "^Only http and https remotes are supported"
+                  }
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "change",
+                "label": "the HTTPS URL",
+                "target": {
+                  "byTestId": "git-remote-url"
+                },
+                "value": "https://github.com/owner/library.git"
+              },
+              {
+                "step": "click",
+                "label": "set it",
+                "target": {
+                  "byTestId": "git-set-remote"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the remote URL",
+                "target": {
+                  "byText": {
+                    "regex": "^origin: https://github\\.com/owner/library\\.git$"
+                  }
+                },
                 "timeout": 2000
               }
             ]

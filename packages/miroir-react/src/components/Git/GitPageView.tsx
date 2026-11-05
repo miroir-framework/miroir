@@ -25,6 +25,7 @@ import { useMiroirTheme } from "../../contexts/MiroirThemeContext.js";
 import { useGitCommand } from "./useGitCommand.js";
 import { useGitRequest, type GitRequestError, type GitRequestState, type RunGitAction } from "./useGitRequest.js";
 import { GitBranchList, GitCommandError, GitCommitForm, GitDetachedBanner } from "./GitWritePanels.js";
+import { GitRemotePanel } from "./GitRemotePanel.js";
 
 export interface GitPageViewProps {
   applicationName: string;
@@ -103,21 +104,26 @@ export function GitPageView(props: GitPageViewProps): React.JSX.Element {
   );
   const currentBranch = status.status === "ok" ? status.value.branches.current : undefined;
   const [reloadWarning, setReloadWarning] = useState<string | undefined>(undefined);
+  const [remoteNotice, setRemoteNotice] = useState<string | undefined>(undefined);
+  const showReloadFailures = useCallback(
+    (failures: { application: string; errorMessage?: string }[]) =>
+      setReloadWarning(
+        failures.length > 0
+          ? `The files changed, but Miroir could not reload them: ${failures.map((failure) => failure.errorMessage ?? failure.application).join("; ")}`
+          : undefined,
+      ),
+    [],
+  );
   const checkout = useCallback(
     async (ref: string) => {
       const result = await command<GitCheckoutResult>("gitAction_checkout", { ref });
       setCheckoutError(result.status === "error" ? result.error : undefined);
-      const failures = result.status === "ok" ? (result.value.reloadFailures ?? []) : [];
-      setReloadWarning(
-        failures.length > 0
-          ? `The files are checked out, but Miroir could not reload them: ${failures.map((failure) => failure.errorMessage ?? failure.application).join("; ")}`
-          : undefined,
-      );
+      showReloadFailures(result.status === "ok" ? (result.value.reloadFailures ?? []) : []);
       if (result.status === "ok" && currentBranch) {
         setPreviousBranch(currentBranch);
       }
     },
-    [command, currentBranch],
+    [command, currentBranch, showReloadFailures],
   );
   // a checkout waits for the status, which tells which branch it leaves
   const statusStale = status.status === "ok" && status.stale === true;
@@ -222,6 +228,20 @@ export function GitPageView(props: GitPageViewProps): React.JSX.Element {
             <Panel title="Branches" testId="git-branches">
               {status.status === "ok" ? (
                 <GitBranchList branches={status.value.branches} busy={checkoutBusy} command={command} onCheckout={checkout} />
+              ) : (
+                <Loading state={status} />
+              )}
+            </Panel>
+            <Panel title="Remote" testId="git-remote">
+              {status.status === "ok" ? (
+                <GitRemotePanel
+                  status={status.value}
+                  busy={checkoutBusy}
+                  command={command}
+                  onReloadFailures={showReloadFailures}
+                  notice={remoteNotice}
+                  onNotice={setRemoteNotice}
+                />
               ) : (
                 <Loading state={status} />
               )}

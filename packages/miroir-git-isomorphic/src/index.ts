@@ -5,9 +5,11 @@
 import fs from "node:fs";
 import path from "node:path";
 import git from "isomorphic-git";
+import http from "isomorphic-git/http/node";
 
 import {
   GitRepositoryError,
+  type GitAheadBehind,
   type GitBranches,
   type GitCheckoutOutcome,
   type GitCommitSummary,
@@ -15,6 +17,7 @@ import {
   type GitFileStatus,
   type GitPerson,
   type GitRepositoryFactory,
+  type GitRemoteOptions,
   type GitRepositoryInterface,
 } from "@miroir-framework/core";
 
@@ -39,6 +42,67 @@ function asRepositoryError(error: unknown, ref: string): unknown {
     default:
       return error;
   }
+}
+
+/** Network failures of Node's HTTP client: the remote cannot be reached at all. */
+const UNREACHABLE_CODES = new Set([
+  "ECONNREFUSED",
+  "ECONNRESET",
+  "ECONNABORTED",
+  "EPIPE",
+  "ENOTFOUND",
+  "EAI_AGAIN",
+  "ETIMEDOUT",
+  "EHOSTUNREACH",
+  "ENETUNREACH",
+  // TLS: the remote's certificate is not trusted
+  "CERT_HAS_EXPIRED",
+  "DEPTH_ZERO_SELF_SIGNED_CERT",
+  "SELF_SIGNED_CERT_IN_CHAIN",
+  "UNABLE_TO_VERIFY_LEAF_SIGNATURE",
+  "UNABLE_TO_GET_ISSUER_CERT_LOCALLY",
+  "ERR_TLS_CERT_ALTNAME_INVALID",
+]);
+
+/** Rethrows an error of a remote operation as a `GitRepositoryError` the actions map to a reason. */
+function asRemoteError(error: unknown, remote: string): unknown {
+  const code = errorCode(error);
+  const statusCode = (error as { data?: { statusCode?: unknown } } | undefined)?.data?.statusCode;
+  if (code === "UserCanceledError" || (code === "HttpError" && (statusCode === 401 || statusCode === 403))) {
+    return new GitRepositoryError("authenticationRequired", `The remote ${remote} refused the credentials`);
+  }
+  if (code === "HttpError" || code === "SmartHttpError" || (code !== undefined && UNREACHABLE_CODES.has(code))) {
+    const detail = error instanceof Error ? error.message : String(error);
+    return new GitRepositoryError("remoteUnreachable", `The remote ${remote} could not be reached: ${detail}`);
+  }
+  if (code === "PushRejectedError") {
+    return new GitRepositoryError(
+      "pushRejected",
+      `The remote ${remote} has commits the branch does not have: pull first`,
+    );
+  }
+  if (code === "GitPushError") {
+    // the remote itself refused the update (a protected branch, a hook)
+    const detail = error instanceof Error ? error.message : String(error);
+    return new GitRepositoryError("pushRefused", `The remote ${remote} refused the push: ${detail}`);
+  }
+  return error;
+}
+
+/**
+ * isomorphic-git asks `onAuth` on a first 401, `onAuthFailure` when the credentials it gave were refused:
+ * with no credential, or a refused one, the operation stops (`UserCanceledError`) instead of retrying.
+ */
+function transport(options: GitRemoteOptions) {
+  return {
+    http,
+    // the URL the actions checked and took the credential's host from: never a `pushurl` or a
+    // `http.corsProxy` of the configuration, which would send the credential elsewhere
+    url: options.url,
+    corsProxy: "",
+    onAuth: () => options.onAuth?.() ?? { cancel: true },
+    onAuthFailure: () => ({ cancel: true }),
+  };
 }
 
 function toPosix(relative: string): string {
@@ -341,6 +405,159 @@ class IsomorphicGitRepository implements GitRepositoryInterface {
         return { conflicts: [...((error as { data?: { filepaths?: string[] } }).data?.filepaths ?? [])] };
       }
       throw asRepositoryError(error, ref);
+    }
+  }
+
+  async remoteUrl(remote: string): Promise<string | undefined> {
+    return this.getConfig(`remote.${remote}.url`);
+  }
+
+  async setRemote(remote: string, url: string): Promise<void> {
+    await git.addRemote({ fs, dir: this.root, remote, url, force: true });
+  }
+
+  async fetch(options: GitRemoteOptions): Promise<void> {
+    try {
+      await git.fetch({ fs, dir: this.root, remote: options.remote, tags: true, ...transport(options) });
+    } catch (error) {
+      throw asRemoteError(error, options.remote);
+    }
+  }
+
+  async upstream(branch: string): Promise<string | undefined> {
+    const remote = await this.getConfig(`branch.${branch}.remote`);
+    const merge = await this.getConfig(`branch.${branch}.merge`);
+    if (!remote || !merge?.startsWith("refs/heads/")) {
+      return undefined;
+    }
+    return `${remote}/${merge.slice("refs/heads/".length)}`;
+  }
+
+  /**
+   * Walks both histories newest commit first, marking each commit with the side(s) it is reached from, and
+   * stops once every commit left to walk is reached from both: what `git rev-list --left-right --count`
+   * does, without walking the shared history.
+   */
+  async aheadBehind(local: string, upstream: string): Promise<GitAheadBehind> {
+    const [localOid, upstreamOid] = [
+      await commitOf(this.root, this.branchRef(local)),
+      await commitOf(this.root, `refs/remotes/${upstream}`),
+    ];
+    if (!localOid || !upstreamOid) {
+      throw new GitRepositoryError("unknownRevision", `Unknown revision ${!localOid ? local : upstream}`);
+    }
+    const LOCAL = 1;
+    const UPSTREAM = 2;
+    const BOTH = LOCAL | UPSTREAM;
+    const flags = new Map<string, number>();
+    const times = new Map<string, number>();
+    const parents = new Map<string, string[]>();
+    const read = async (oid: string) => {
+      if (!times.has(oid)) {
+        const { commit } = await git.readCommit({ fs, dir: this.root, oid });
+        times.set(oid, commit.committer.timestamp);
+        parents.set(oid, commit.parent);
+      }
+    };
+    let queue: string[] = [];
+    const mark = async (oid: string, flag: number) => {
+      const previous = flags.get(oid) ?? 0;
+      if ((previous | flag) !== previous) {
+        flags.set(oid, previous | flag);
+        await read(oid);
+        queue.push(oid);
+      }
+    };
+    await mark(localOid, LOCAL);
+    await mark(upstreamOid, UPSTREAM);
+    while (queue.some((oid) => flags.get(oid) !== BOTH)) {
+      queue.sort((a, b) => times.get(a)! - times.get(b)!);
+      const oid = queue.pop()!;
+      queue = queue.filter((other) => other !== oid);
+      for (const parent of parents.get(oid)!) {
+        await mark(parent, flags.get(oid)!);
+      }
+    }
+    // a commit walked from one side before the other side reached it (same timestamps, skewed clocks) is
+    // shared all the same: the shared mark goes down to every walked ancestor
+    const shared = queue.filter((oid) => flags.get(oid) === BOTH);
+    while (shared.length > 0) {
+      for (const parent of parents.get(shared.pop()!) ?? []) {
+        if (flags.has(parent) && flags.get(parent) !== BOTH) {
+          flags.set(parent, BOTH);
+          shared.push(parent);
+        }
+      }
+    }
+    let ahead = 0;
+    let behind = 0;
+    for (const flag of flags.values()) {
+      ahead += flag === LOCAL ? 1 : 0;
+      behind += flag === UPSTREAM ? 1 : 0;
+    }
+    return { ahead, behind };
+  }
+
+  private branchRef(branch: string): string {
+    return `refs/heads/${branch}`;
+  }
+
+  async fastForward(branch: string, upstream: string): Promise<GitCheckoutOutcome & { upToDate: boolean }> {
+    const [current, target] = [
+      await commitOf(this.root, this.branchRef(branch)),
+      await commitOf(this.root, `refs/remotes/${upstream}`),
+    ];
+    if (!target) {
+      throw new GitRepositoryError("unknownRevision", `Unknown revision ${upstream}`);
+    }
+    if (current === target) {
+      return { conflicts: [], upToDate: true };
+    }
+    if (current) {
+      if (await git.isDescendent({ fs, dir: this.root, oid: current, ancestor: target, depth: -1 })) {
+        return { conflicts: [], upToDate: true }; // the branch is ahead: nothing to take
+      }
+      if (!(await git.isDescendent({ fs, dir: this.root, oid: target, ancestor: current, depth: -1 }))) {
+        throw new GitRepositoryError(
+          "notFastForward",
+          `${branch} and ${upstream} have diverged: resolve them outside Miroir (merge or rebase), then pull again`,
+        );
+      }
+    }
+    try {
+      // conflicts are looked for on the target before the branch moves
+      await git.checkout({ fs, dir: this.root, ref: target, dryRun: true });
+    } catch (error) {
+      if (errorCode(error) === "CheckoutConflictError") {
+        return { conflicts: [...((error as { data?: { filepaths?: string[] } }).data?.filepaths ?? [])], upToDate: false };
+      }
+      throw error;
+    }
+    // the files and the index first, HEAD left on the branch: if this fails, the branch has not moved
+    await git.checkout({ fs, dir: this.root, ref: target, noUpdateHead: true });
+    await git.writeRef({ fs, dir: this.root, ref: this.branchRef(branch), value: target, force: true });
+    return { conflicts: [], upToDate: false };
+  }
+
+  async push(options: GitRemoteOptions & { branch: string }): Promise<void> {
+    const upstream = await this.upstream(options.branch);
+    const remoteBranch =
+      upstream && upstream.startsWith(`${options.remote}/`) ? upstream.slice(options.remote.length + 1) : options.branch;
+    try {
+      await git.push({
+        fs,
+        dir: this.root,
+        remote: options.remote,
+        ref: options.branch,
+        remoteRef: remoteBranch,
+        ...transport(options),
+      });
+    } catch (error) {
+      throw asRemoteError(error, options.remote);
+    }
+    if (!upstream) {
+      await this.setConfig(`branch.${options.branch}.remote`, options.remote);
+      await this.setConfig(`branch.${options.branch}.merge`, this.branchRef(options.branch));
     }
   }
 

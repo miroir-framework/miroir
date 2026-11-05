@@ -2385,7 +2385,7 @@
       "id": "integ-git-version-control",
       "scopes": ["actions", "external"],
       "tier": "default",
-      "title": "#679 \u2014 Git version control: the gitAction_* actions on a Git repository around the Library copy of test-filesystem (capability gate, lazy loader, status, history, diff, init, stage, commit, branches, checkout)",
+      "title": "#679 \u2014 Git version control: the gitAction_* actions on a Git repository around the Library copy of test-filesystem (capability gate, lazy loader, status, history, diff, init, stage, commit, branches, checkout, fetch, pull and push against a test HTTP Git server, credentials as Admin secrets)",
       "requires": "none",
       "parallel": false,
       "argv": [

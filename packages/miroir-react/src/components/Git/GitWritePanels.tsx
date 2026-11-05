@@ -17,7 +17,23 @@ export function gitCommandErrorText(error: GitRequestError): string {
     case "openMiroirTransaction":
       return "Commit the Miroir changes first: some edits are not saved to the files yet.";
     case "checkoutConflict":
-      return `Uncommitted changes would be overwritten by the checkout: commit or discard them first (${paths.join(", ")}).`;
+      return `Uncommitted changes would be overwritten: commit or discard them first (${paths.join(", ")}).`;
+    case "notFastForward":
+      return "The branch and its upstream have diverged: merge or rebase them outside Miroir, then pull again.";
+    case "pushRejected":
+      return "The remote has commits this branch does not have: pull them first.";
+    case "pushRefused":
+      return error.errorMessage ?? "The remote refused the push.";
+    case "noUpstream":
+      return "This branch follows no remote branch: push it first.";
+    case "detachedHead":
+      return "HEAD is detached: check out a branch first.";
+    case "unsupportedRemoteProtocol":
+      return "Only http and https remotes are supported: give the repository's HTTPS URL.";
+    case "remoteUnreachable":
+      return `The remote could not be reached. ${error.errorMessage ?? ""}`.trim();
+    case "noRemote":
+      return "This repository has no remote: set its URL first.";
     case "otherStagedChanges":
       return `Files outside this application are staged too: ${paths.join(", ")}.`;
     case "branchNotMerged":
