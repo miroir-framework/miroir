@@ -587,6 +587,25 @@ class IsomorphicGitRepository implements GitRepositoryInterface {
     }
     return git.listFiles({ fs, dir: this.root, ref: "HEAD" });
   }
+
+  async symbolicLinks(): Promise<string[]> {
+    if (!(await commitOf(this.root, "HEAD"))) {
+      return [];
+    }
+    const links: string[] = [];
+    await git.walk({
+      fs,
+      dir: this.root,
+      trees: [git.TREE({ ref: "HEAD" })],
+      map: async (filepath, [entry]) => {
+        if (entry && (await entry.mode()) === 0o120000) {
+          links.push(filepath);
+        }
+        return undefined;
+      },
+    });
+    return links;
+  }
 }
 
 export function createGitRepositoryFactory(): GitRepositoryFactory {
@@ -612,7 +631,6 @@ export function createGitRepositoryFactory(): GitRepositoryFactory {
       options: GitRemoteOptions & { branch?: string },
     ): Promise<GitRepositoryInterface> {
       const root = path.resolve(directory);
-      fs.mkdirSync(root, { recursive: true });
       try {
         await git.clone({
           fs,
@@ -620,12 +638,27 @@ export function createGitRepositoryFactory(): GitRepositoryFactory {
           remote: options.remote,
           ref: options.branch,
           singleBranch: false,
+          // the files are written below, once the commit is known to hold no symbolic link
+          noCheckout: true,
           ...transport(options),
         });
       } catch (error) {
         throw asRemoteError(error, options.remote);
       }
-      return new IsomorphicGitRepository(root);
+      const repository = new IsomorphicGitRepository(root);
+      const links = await repository.symbolicLinks();
+      if (links.length > 0) {
+        // isomorphic-git would write them as links, and the stores opened on the clone would follow them
+        throw new GitRepositoryError(
+          "symbolicLink",
+          `The repository holds symbolic links, which Miroir does not check out: ${links.slice(0, 5).join(", ")}`,
+        );
+      }
+      const branch = await git.currentBranch({ fs, dir: root });
+      if (branch) {
+        await git.checkout({ fs, dir: root, ref: branch });
+      }
+      return repository;
     },
     async directoryState(directory: string): Promise<"missing" | "empty" | "notEmpty" | "notAFolder"> {
       const absolute = path.resolve(directory);
@@ -637,8 +670,41 @@ export function createGitRepositoryFactory(): GitRepositoryFactory {
       }
       return fs.readdirSync(absolute).length === 0 ? "empty" : "notEmpty";
     },
-    async removeDirectory(directory: string): Promise<void> {
-      fs.rmSync(path.resolve(directory), { recursive: true, force: true });
+    async createDirectory(directory: string): Promise<boolean> {
+      const absolute = path.resolve(directory);
+      fs.mkdirSync(path.dirname(absolute), { recursive: true });
+      try {
+        fs.mkdirSync(absolute); // not recursive: fails when another clone created it first
+        return true;
+      } catch (error) {
+        if ((error as NodeJS.ErrnoException).code === "EEXIST") {
+          return false;
+        }
+        throw error;
+      }
+    },
+    async removeDirectory(directory: string, options?: { contentsOnly?: boolean }): Promise<void> {
+      const absolute = path.resolve(directory);
+      if (!options?.contentsOnly) {
+        fs.rmSync(absolute, { recursive: true, force: true });
+        return;
+      }
+      for (const entry of fs.existsSync(absolute) ? fs.readdirSync(absolute) : []) {
+        fs.rmSync(path.join(absolute, entry), { recursive: true, force: true });
+      }
+    },
+    async realPath(target: string): Promise<string> {
+      let existing = path.resolve(target);
+      const rest: string[] = [];
+      while (!fs.existsSync(existing)) {
+        const parent = path.dirname(existing);
+        if (parent === existing) {
+          break;
+        }
+        rest.unshift(path.basename(existing));
+        existing = parent;
+      }
+      return path.join(fs.realpathSync(existing), ...rest);
     },
     resolvePath(base: string, relative: string): string {
       return path.resolve(base, relative);

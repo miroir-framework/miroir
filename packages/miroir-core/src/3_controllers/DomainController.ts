@@ -61,7 +61,7 @@ import {
   selfApplicationVersionInitialMiroirVersion
 } from "miroir-app-miroir";
 
-import { adminSelfApplication, deployment_Miroir } from "miroir-app-admin";
+import { adminSelfApplication, deployment_Miroir, entityApplicationForAdmin, entityDeployment } from "miroir-app-admin";
 import {
   ApplicationSection,
   CompositeActionSequence,
@@ -3817,7 +3817,61 @@ export class DomainController implements DomainControllerInterface, DomainContro
     applicationDeploymentMap: ApplicationDeploymentMap,
     principal?: AuthPrincipal,
   ): GitDeploymentInstaller {
+    const adminMap: ApplicationDeploymentMap = { ...defaultSelfApplicationDeploymentMap, ...applicationDeploymentMap };
+    const adminRows = async (entityUuid: string): Promise<Record<string, unknown>[]> => {
+      const result = await this.handleBoxedExtractorOrQueryAction(
+        {
+          actionType: "runBoxedQueryAction",
+          endpoint: "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+          payload: {
+            application: adminSelfApplication.uuid,
+            applicationSection: "data",
+            queryExecutionStrategy: "storage",
+            query: {
+              application: adminSelfApplication.uuid,
+              queryType: "boxedQueryWithExtractorCombinerTransformer",
+              extractors: { rows: { extractorOrCombinerType: "extractorInstancesByEntity", parentUuid: entityUuid } },
+            },
+          },
+        },
+        adminMap,
+        defaultMiroirModelEnvironment,
+      );
+      if (result instanceof Action2Error) {
+        throw new Error(result.errorMessage ?? "Failed to read the Admin rows");
+      }
+      const rows = (result as { returnedDomainElement?: { rows?: unknown } }).returnedDomainElement?.rows;
+      return (Array.isArray(rows) ? rows : Object.values((rows ?? {}) as object)) as Record<string, unknown>[];
+    };
+    const deleteRows = async (rows: { parentUuid: string; uuid: string }[]) => {
+      for (const row of rows) {
+        const deleted = await this.handleAction(
+          {
+            actionType: "deleteInstance",
+            endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+            payload: { application: adminSelfApplication.uuid, applicationSection: "data", objects: [row as any] },
+          },
+          adminMap,
+          defaultMiroirModelEnvironment,
+        );
+        if (deleted instanceof Action2Error) {
+          log.error("gitDeploymentInstaller: could not remove the Admin row", row, "of a failed install", deleted);
+        }
+      }
+    };
     return {
+      registered: async (selfApplication, deploymentUuid) => {
+        const [applications, deployments] = await Promise.all([
+          adminRows(entityApplicationForAdmin.uuid),
+          adminRows(entityDeployment.uuid),
+        ]);
+        return {
+          application:
+            applications.some((row) => row.uuid === selfApplication) ||
+            deployments.some((row) => row.selfApplication === selfApplication),
+          deployment: deployments.some((row) => row.uuid === deploymentUuid),
+        };
+      },
       install: async (request) => {
         const labels = (row: Record<string, unknown> | undefined) =>
           typeof row?.name === "string"
@@ -3840,17 +3894,24 @@ export class DomainController implements DomainControllerInterface, DomainContro
             labels: { adminApplication: labels(request.adminApplication), deployment: labels(request.deployment) },
           },
         );
-        return this.handleCompositeAction(
+        const installed = await this.handleCompositeAction(
           composite,
-          {
-            ...defaultSelfApplicationDeploymentMap,
-            ...applicationDeploymentMap,
-            [request.selfApplication]: request.deploymentUuid,
-          },
+          { ...adminMap, [request.selfApplication]: request.deploymentUuid },
           defaultMiroirModelEnvironment,
           {},
           principal,
         );
+        if (installed instanceof Action2Error || installed?.status !== "ok") {
+          // the rows are written before the stores open: a store that does not open leaves no half install
+          await this.persistenceStoreLocalOrRemote
+            .getLocalPersistenceStoreControllerManager?.()
+            ?.deletePersistenceStoreController(request.deploymentUuid);
+          await deleteRows([
+            { parentUuid: entityDeployment.uuid, uuid: request.deploymentUuid },
+            { parentUuid: entityApplicationForAdmin.uuid, uuid: request.selfApplication },
+          ]);
+        }
+        return installed;
       },
     };
   }
@@ -3873,7 +3934,8 @@ export class DomainController implements DomainControllerInterface, DomainContro
       ...applicationDeploymentMap,
       [installed.application]: installed.deploymentUuid,
     };
-    const reloadFailures: { application: string; errorMessage?: string }[] = [];
+    // the failures of the DomainController that ran the install, then this one's
+    const reloadFailures = [...(installed.reloadFailures ?? [])];
     for (const application of [adminSelfApplication.uuid, installed.application]) {
       const reload = await this.handleAction(
         { actionType: "rollback", endpoint: "7947ae40-eb34-4149-887b-15a9021e714e", payload: { application } },

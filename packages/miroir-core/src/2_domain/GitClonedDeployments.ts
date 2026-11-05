@@ -39,6 +39,18 @@ export type SkippedClonedDeployment = { deploymentFile: string; reason: string }
 export type ClonedDeploymentScan = { deployments: ClonedDeployment[]; skipped: SkippedClonedDeployment[] };
 
 const DEPLOYMENT_FILE = /^(?:(.*)\/)?assets\/deployment\/([^/]+)\.json$/;
+/** The uuids of a cloned row name files of the Admin store: nothing but a uuid is accepted. */
+const UUID_PATTERN = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+/** A folder name of a section directory. */
+const SEGMENT_PATTERN = /^[A-Za-z0-9._-]+$/;
+/** The sections a cloned deployment may open; `admin` is the process' own. */
+const CLONED_SECTIONS = new Set(["model", "data", "modelVersion", "devData"]);
+
+/** A path of plain folder names, with `/` separators: no `..`, no `.`, no backslash, not absolute. */
+function isPlainRelativePath(path: string): boolean {
+  const segments = path.split("/");
+  return segments.every((segment) => SEGMENT_PATTERN.test(segment) && segment !== "." && segment !== "..");
+}
 
 function dirname(path: string): string {
   const slash = path.lastIndexOf("/");
@@ -75,11 +87,12 @@ function sectionFolder(directory: string, packageFolder: string, folders: Set<st
   while (segments[0] === "..") {
     segments.shift();
   }
-  if (segments.length === 0 || segments.includes("..")) {
+  if (segments.length === 0 || !segments.every((segment) => SEGMENT_PATTERN.test(segment) && segment !== "..")) {
     return undefined;
   }
   const candidates = [
-    join(packageFolder, segments.slice(1).join("/")),
+    // `<package>/<rest>`: the rest, inside the package folder (never the package folder itself)
+    segments.length > 1 ? join(packageFolder, segments.slice(1).join("/")) : "",
     join(dirname(packageFolder), segments.join("/")),
     segments.join("/"),
   ];
@@ -127,12 +140,16 @@ export async function findClonedDeployments(
       skip("The Deployment row has no uuid, selfApplication or configuration");
       continue;
     }
+    if (!UUID_PATTERN.test(deploymentUuid) || !UUID_PATTERN.test(selfApplication)) {
+      skip("The uuid or selfApplication of the Deployment row is not a uuid");
+      continue;
+    }
     const packageFolder = dirname(dirname(dirname(deploymentFile)));
     const sections: Record<string, ClonedSectionConfiguration> = {};
     const missing: string[] = [];
     for (const [section, sectionConfiguration] of Object.entries(configuration)) {
-      if (section === "admin") {
-        continue; // the clone uses the Admin store of the process
+      if (!CLONED_SECTIONS.has(section)) {
+        continue; // `admin`: the clone uses the Admin store of the process; no other section is opened
       }
       if (sectionConfiguration?.emulatedServerType !== "filesystem" || typeof sectionConfiguration.directory !== "string") {
         missing.push(`${section} (${sectionConfiguration?.emulatedServerType ?? "no"} store)`);
@@ -151,13 +168,28 @@ export async function findClonedDeployments(
       continue;
     }
     const modelInRepository = sections.model.directory!.slice(join(cloneFolder).length).replace(/^\//, "");
+    const unplaceable: string[] = [];
     for (const section of missing.filter((name) => sections[name] && name !== "model")) {
-      const last = (sections[section].directory ?? section).split("/").filter(Boolean).pop() ?? section;
+      const last = (sections[section].directory ?? "").split("/").filter(Boolean).pop() ?? "";
+      // a file of the repository where the folder would go: the store could not use it
+      if (!SEGMENT_PATTERN.test(last) || last === "." || last === ".." || fileSet.has(join(dirname(modelInRepository), last))) {
+        unplaceable.push(section);
+        continue;
+      }
       sections[section] = { ...sections[section], directory: join(cloneFolder, dirname(modelInRepository), last) };
     }
-    const unopenable = missing.filter((name) => !sections[name]);
+    const unopenable = [...missing.filter((name) => !sections[name]), ...unplaceable];
     if (unopenable.length > 0) {
       skip(`Sections that are not files of the repository: ${unopenable.join(", ")}`);
+      continue;
+    }
+    // every store folder of the deployment is a plain folder of the clone
+    const inClone = (directory: string | undefined) =>
+      typeof directory === "string" &&
+      directory.startsWith(`${join(cloneFolder)}/`) &&
+      isPlainRelativePath(directory.slice(join(cloneFolder).length + 1));
+    if (!Object.values(sections).every((section) => inClone(section.directory))) {
+      skip("A section folder of the deployment is not a plain folder of the clone");
       continue;
     }
     const selfApplicationFile = join(modelInRepository, SELF_APPLICATION_ENTITY_UUID, `${selfApplication}.json`);

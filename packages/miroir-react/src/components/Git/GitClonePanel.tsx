@@ -56,8 +56,22 @@ export function GitClonePanel(props: {
     }
   };
 
+  /** Saves a typed token that the remote accepted, when asked to. */
+  const saveCredential = async (host: string | undefined, credential: GitTypedCredential | undefined) => {
+    if (!credential?.save || !host) {
+      return;
+    }
+    const saved = await command<{ name: string }>("gitAction_setCredential", {
+      host,
+      username: credential.username,
+      token: credential.token,
+    });
+    setNotice(savedCredentialNotice(host, saved));
+  };
+
   const runClone = async (credential?: GitTypedCredential) => {
     setNotice(undefined);
+    const host = asking;
     const state = await command<GitCloneResult>("gitAction_clone", {
       url: url.trim(),
       folderName: folder,
@@ -72,24 +86,19 @@ export function GitClonePanel(props: {
       }
       setAsking(undefined);
       setError(state.error);
+      if (state.error.reason === "noDeploymentFound") {
+        await saveCredential(host, credential); // the remote took the token: the clone is there
+      }
       return;
     }
     if (state.status !== "ok") {
       return;
     }
-    const host = asking;
     setAsking(undefined);
     setError(undefined);
     setCloned(state.value);
     setInstalled([]);
-    if (credential?.save && host) {
-      const saved = await command<{ name: string }>("gitAction_setCredential", {
-        host,
-        username: credential.username,
-        token: credential.token,
-      });
-      setNotice(savedCredentialNotice(host, saved));
-    }
+    await saveCredential(host, credential);
     const installable = state.value.deployments.filter((deployment) => !deployment.alreadyInstalled);
     if (state.value.deployments.length === 1 && installable.length === 1) {
       await install(state.value, installable[0]);

@@ -104,6 +104,11 @@ export type GitDeploymentInstallRequest = {
  * Deployment creation path as the install runner, without creating the stores (the clone holds them).
  */
 export type GitDeploymentInstaller = {
+  /**
+   * The Admin rows already there for the application or the deployment, read from the Admin store: a
+   * create would replace them.
+   */
+  registered(selfApplication: Uuid, deploymentUuid: Uuid): Promise<{ application: boolean; deployment: boolean }>;
   install(request: GitDeploymentInstallRequest): Promise<Action2ReturnType>;
 };
 
@@ -446,6 +451,7 @@ const REPOSITORY_ERROR_REASONS: Record<GitRepositoryErrorCode, GitActionErrorRea
   pushRejected: "pushRejected",
   pushRefused: "pushRefused",
   remoteUnreachable: "remoteUnreachable",
+  symbolicLink: "symbolicLink",
 };
 
 function repositoryErrorReason(error: unknown): GitActionErrorReason | undefined {
@@ -1071,7 +1077,10 @@ async function cloneTarget(folderName: unknown, context: GitActionContext): Prom
     );
   }
   const directory = factory.resolvePath(rootDirectory, name);
-  if (factory.relativePath(rootDirectory, directory) !== name) {
+  // checked on the real paths too: a symbolic link under the root must not lead the clone out of it
+  const [realRoot, realDirectory] = [await factory.realPath(rootDirectory), await factory.realPath(directory)];
+  const realRelative = factory.relativePath(realRoot, realDirectory);
+  if (factory.relativePath(rootDirectory, directory) !== name || realRelative === undefined || realRelative === "") {
     return gitActionError("outsideDeploymentRoot", `${name} is not a folder of the deployment root folder`, {
       folderName: name,
     });
@@ -1138,9 +1147,12 @@ async function clone(action: GitCloneAction, context: GitActionContext): Promise
   if (remote instanceof Action2Error) {
     return remote;
   }
-  return withRepositoryLock(target.directory, async () => {
+  // one key for `Foo` and `foo`, which a case-insensitive filesystem holds in one folder
+  return withRepositoryLock(target.directory.toLowerCase(), async () => {
     const state = await target.factory.directoryState(target.directory);
-    if (state === "notEmpty" || state === "notAFolder") {
+    // the folder this clone made, removed on a failure; an empty folder given is only emptied again
+    const created = state === "missing" && (await target.factory.createDirectory(target.directory));
+    if (state === "notEmpty" || state === "notAFolder" || (state === "missing" && !created)) {
       return gitActionError(
         "folderNotEmpty",
         `${target.folderName} already exists in the deployment root folder: give the clone another name`,
@@ -1157,7 +1169,12 @@ async function clone(action: GitCloneAction, context: GitActionContext): Promise
       });
     } catch (error) {
       // a refused or broken clone leaves no folder behind: the next attempt can use the same name
-      await target.factory.removeDirectory(target.directory);
+      await target.factory.removeDirectory(target.directory, { contentsOnly: !created });
+      if (repositoryErrorReason(error) === "symbolicLink") {
+        return gitActionError("symbolicLink", error instanceof Error ? error.message : String(error), {
+          folderName: target.folderName,
+        });
+      }
       return remoteActionError(error, remote, action.actionType);
     }
     const scan = await scanClone(repository, target.folderName);
@@ -1195,7 +1212,7 @@ async function installClonedDeployment(
   if (target instanceof Action2Error) {
     return target;
   }
-  return withRepositoryLock(target.directory, async () => {
+  return withRepositoryLock(target.directory.toLowerCase(), async () => {
     const root = await target.factory.findRoot(target.directory);
     if (!root || target.factory.relativePath(root, target.directory) !== "") {
       return gitActionError("notARepository", `${target.folderName} is not a cloned repository`, {
@@ -1203,7 +1220,15 @@ async function installClonedDeployment(
       });
     }
     // the deployment is read from the clone again: a client gives no directory of its own
-    const scan = await scanClone(await target.factory.open(root), target.folderName);
+    const repository = await target.factory.open(root);
+    const links = await repository.symbolicLinks();
+    if (links.length > 0) {
+      // a checkout since the clone may have brought some: the stores would follow them
+      return gitActionError("symbolicLink", `${target.folderName} holds symbolic links: ${links.slice(0, 5).join(", ")}`, {
+        folderName: target.folderName,
+      });
+    }
+    const scan = await scanClone(repository, target.folderName);
     const wanted = nonEmptyString(action.payload.deploymentUuid);
     const candidates = wanted
       ? scan.deployments.filter((deployment) => deployment.deploymentUuid === wanted)
@@ -1249,6 +1274,26 @@ async function installClonedDeployment(
     }
     if (!context.deployments) {
       return gitActionError("gitUnavailable", "This process cannot install deployments");
+    }
+    // the work tree may differ from HEAD: a store folder must not be a file
+    for (const [section, directory] of Object.entries(directoriesOf(deployment))) {
+      if ((await target.factory.directoryState(target.factory.resolvePath(target.rootDirectory, directory))) === "notAFolder") {
+        return gitActionError("invalidPayload", `The ${section} folder of the deployment, ${directory}, is a file`, {
+          folderName: target.folderName,
+          section,
+        });
+      }
+    }
+    // the client's map can miss an application Admin registers: Admin itself is asked
+    const registered = await context.deployments.registered(deployment.selfApplication, deployment.deploymentUuid);
+    if (registered.application || registered.deployment) {
+      return gitActionError(
+        "applicationAlreadyDeployed",
+        registered.deployment
+          ? `Admin already has a deployment ${deployment.deploymentUuid}: drop it before installing the one of the clone`
+          : `${deployment.name} is already registered in Admin: drop it before installing the one of the clone`,
+        { application: deployment.selfApplication, deploymentUuid: deployment.deploymentUuid },
+      );
     }
     const installed = await context.deployments.install({
       selfApplication: deployment.selfApplication,

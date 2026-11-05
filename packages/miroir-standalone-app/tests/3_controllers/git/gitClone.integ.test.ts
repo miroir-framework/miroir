@@ -21,7 +21,9 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import {
   Action2Error,
+  ADMIN_APPLICATION_UUID,
   defaultMiroirModelEnvironment,
+  defaultSelfApplicationDeploymentMap,
   type CompositeActionTemplate,
   type GitCloneResult,
   type GitInstallClonedDeploymentResult,
@@ -52,6 +54,7 @@ const FIXTURE_APPLICATION = "eef01001-0001-4000-8000-000000000001";
 const FIXTURE_DEPLOYMENT = "eef01001-0002-4000-8000-000000000002";
 /** An Entity of appForTest with instances in its data section. */
 const FIXTURE_DATA_ENTITY = "a027c379-8468-43a5-ba4d-bf618be25cab";
+const ADMIN_DEPLOYMENT_UUID = defaultSelfApplicationDeploymentMap[ADMIN_APPLICATION_UUID];
 const REMOTE_USER = { username: "miroir-designer", password: "ghp_test-token-679-clone" };
 
 /** A copy of appForTest under new uuids: its own application and deployment. */
@@ -70,6 +73,11 @@ const DELTA: ClonedApp = {
   application: "679a0010-0001-4000-8000-0000000000d1",
   deployment: "679a0010-0002-4000-8000-0000000000d2",
   name: "cloneDelta",
+};
+const ZETA: ClonedApp = {
+  application: "679a0010-0001-4000-8000-0000000000e1",
+  deployment: "679a0010-0002-4000-8000-0000000000e2",
+  name: "cloneZeta",
 };
 const GAMMA: ClonedApp = {
   application: "679a0010-0001-4000-8000-0000000000c1",
@@ -105,6 +113,14 @@ function writeApp(target: string, app: ClonedApp, options: { emptyData?: boolean
   };
   fs.mkdirSync(path.join(target, "assets"), { recursive: true });
   copy(FIXTURE_ASSETS, path.join(target, "assets"));
+}
+
+/** Rewrites the Deployment row of an app written by `writeApp`. */
+function editDeploymentRow(target: string, app: ClonedApp, edit: (row: Record<string, any>) => void): void {
+  const file = path.join(target, "assets", "deployment", `${app.deployment}.json`);
+  const row = JSON.parse(fs.readFileSync(file, "utf8"));
+  edit(row);
+  fs.writeFileSync(file, JSON.stringify(row, undefined, 2));
 }
 
 /** A bare repository of `remote` holding one commit of what `fill` writes in a work tree. */
@@ -280,6 +296,108 @@ describe.skipIf(gitMissing)("gitAction_clone and gitAction_installClonedDeployme
       "sharedFolder",
     );
     expect(fs.existsSync(path.join(REPOSITORY_ROOT, "outside"))).toBe(false);
+  });
+
+  it("skips a Deployment row whose uuid or section folders would lead out of the clone", async () => {
+    const url = publish(server, "tricked", (workTree) => {
+      writeApp(path.join(workTree, "packages", "uuid"), ZETA);
+      editDeploymentRow(path.join(workTree, "packages", "uuid"), ZETA, (row) => {
+        row.uuid = "../../../../../../../../tmp/miroir-git679-pwn";
+      });
+      writeApp(path.join(workTree, "packages", "section"), DELTA, { emptyData: true });
+      editDeploymentRow(path.join(workTree, "packages", "section"), DELTA, (row) => {
+        row.configuration.data.directory = "x/..";
+        row.configuration.devData = { emulatedServerType: "filesystem", directory: "..\\..\\..\\Windows" };
+      });
+    });
+    const error = expectGitError(
+      await gitAction(context, "gitAction_clone", { url, folderName: `${CLONES}/tricked` }),
+      "noDeploymentFound",
+    );
+    expect((error.errorContext?.skipped as { reason: string }[]).map((skipped) => skipped.reason).sort()).toEqual([
+      "Sections that are not files of the repository: data, devData",
+      "The uuid or selfApplication of the Deployment row is not a uuid",
+    ]);
+    expect(fs.existsSync("/tmp/miroir-git679-pwn.json")).toBe(false);
+  });
+
+  it("refuses a repository holding a symbolic link, leaving no folder", async () => {
+    const url = publish(server, "linked", (workTree) => {
+      writeApp(workTree, ZETA);
+      fs.symlinkSync("/", path.join(workTree, "assets", "appForTest_model", "root"));
+    });
+    expectGitError(await gitAction(context, "gitAction_clone", { url, folderName: `${CLONES}/linked` }), "symbolicLink");
+    expect(fs.existsSync(cloneFolder("linked"))).toBe(false);
+  });
+
+  it("refuses a folder reached through a symbolic link out of the deployment root", async () => {
+    const outside = fs.mkdtempSync(path.join(os.tmpdir(), "miroir-git679-outside-"));
+    workTrees.push(outside);
+    fs.symlinkSync(outside, cloneFolder("escape"));
+    expectGitError(
+      await gitAction(context, "gitAction_clone", { url: singleUrl, folderName: `${CLONES}/escape/x` }),
+      "outsideDeploymentRoot",
+    );
+    expect(fs.readdirSync(outside)).toEqual([]);
+  });
+
+  it("refuses to install an application Admin registers, even when its store is not open", async () => {
+    const url = publish(server, "zeta", (workTree) => writeApp(workTree, ZETA));
+    expectOk(await gitAction(context, "gitAction_clone", { url, folderName: `${CLONES}/zeta` }));
+    const adminMap = { ...applicationDeploymentMap, [ADMIN_APPLICATION_UUID]: ADMIN_DEPLOYMENT_UUID };
+    const createInstance = (actionType: "createInstance" | "deleteInstance") =>
+      context.domainController.handleAction(
+        {
+          actionType,
+          endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+          payload: {
+            application: ADMIN_APPLICATION_UUID,
+            applicationSection: "data",
+            objects: [
+              {
+                uuid: ZETA.application,
+                parentUuid: "25d935e7-9e93-42c2-aade-0472b883492b",
+                parentName: "AdminApplication",
+                name: "registered elsewhere",
+                defaultLabel: "registered elsewhere",
+                selfApplication: ZETA.application,
+              },
+            ],
+          },
+        } as any,
+        adminMap,
+      );
+    expectOk(await createInstance("createInstance"));
+    try {
+      expectGitError(
+        await gitAction(context, "gitAction_installClonedDeployment", { folderName: `${CLONES}/zeta` }),
+        "applicationAlreadyDeployed",
+      );
+    } finally {
+      expectOk(await createInstance("deleteInstance"));
+    }
+  });
+
+  it("skips a deployment whose data folder would be a file of the repository", async () => {
+    const ETA: ClonedApp = {
+      application: "679a0010-0001-4000-8000-0000000000f1",
+      deployment: "679a0010-0002-4000-8000-0000000000f2",
+      name: "cloneEta",
+    };
+    const url = publish(server, "broken", (workTree) => {
+      writeApp(workTree, ETA, { emptyData: true });
+      fs.writeFileSync(path.join(workTree, "assets", "appForTest_data"), "not a folder\n");
+    });
+    const error = expectGitError(
+      await gitAction(context, "gitAction_clone", { url, folderName: `${CLONES}/broken` }),
+      "noDeploymentFound",
+    );
+    expect(error.errorContext?.skipped).toEqual([
+      {
+        deploymentFile: `assets/deployment/${ETA.deployment}.json`,
+        reason: "Sections that are not files of the repository: data",
+      },
+    ]);
   });
 
   it("refuses a URL that is not http(s) or that holds a token", async () => {

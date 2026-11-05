@@ -112,6 +112,8 @@ export interface GitRepositoryInterface {
   push(options: GitRemoteOptions & { branch: string }): Promise<void>;
   /** The files of the commit HEAD points at, repository-relative; empty in a repository with no commit. */
   listFiles(): Promise<string[]>;
+  /** The symbolic links of the commit HEAD points at: a clone holding one is refused, its stores would follow it. */
+  symbolicLinks(): Promise<string[]>;
 }
 
 /** Commits on each side of a branch and its upstream, counted from their merge base. */
@@ -143,7 +145,8 @@ export type GitRepositoryErrorCode =
   | "notFastForward"
   | "pushRejected"
   | "pushRefused"
-  | "remoteUnreachable";
+  | "remoteUnreachable"
+  | "symbolicLink";
 
 export class GitRepositoryError extends Error {
   constructor(
@@ -162,15 +165,22 @@ export interface GitRepositoryFactory {
   /** Creates an empty repository (default branch `main`) in `directory`. */
   init(directory: string): Promise<GitRepositoryInterface>;
   /**
-   * Clones the remote into `directory`, which must be missing or empty, and checks out its default branch
-   * (or `branch`). The remote is named `options.remote`. Throws `authenticationRequired`,
-   * `remoteUnreachable` like `fetch`.
+   * Clones the remote into `directory`, an empty folder, and checks out its default branch (or `branch`).
+   * The remote is named `options.remote`. Throws `authenticationRequired`, `remoteUnreachable` like `fetch`,
+   * and `symbolicLink`, checking out nothing, when the commit holds a symbolic link.
    */
   clone(directory: string, options: GitRemoteOptions & { branch?: string }): Promise<GitRepositoryInterface>;
   /** `missing`, `empty` (a folder with no entry), `notEmpty`, or `notAFolder` (a file is there). */
   directoryState(directory: string): Promise<"missing" | "empty" | "notEmpty" | "notAFolder">;
-  /** Removes a folder and everything in it: a clone that failed half-way leaves nothing behind. */
-  removeDirectory(directory: string): Promise<void>;
+  /**
+   * Creates `directory` (and its missing parents); false, changing nothing, when it already exists. Of two
+   * clones into one folder, only the one that created it goes on.
+   */
+  createDirectory(directory: string): Promise<boolean>;
+  /** Removes a folder and everything in it, or only its contents: a failed clone leaves nothing behind. */
+  removeDirectory(directory: string, options?: { contentsOnly?: boolean }): Promise<void>;
+  /** `path` with every symbolic link of its existing part resolved; the missing rest is appended as is. */
+  realPath(path: string): Promise<string>;
   /** Resolves `relative` against `base`, as the host's filesystem does. */
   resolvePath(base: string, relative: string): string;
   /** `path` relative to `root` with `/` separators, or undefined when `path` is not inside `root`. */
@@ -221,4 +231,5 @@ export type GitActionErrorReason =
   | "unknownClonedDeployment"
   | "severalDeploymentsFound"
   | "applicationAlreadyDeployed"
+  | "symbolicLink"
   | "gitFailure";

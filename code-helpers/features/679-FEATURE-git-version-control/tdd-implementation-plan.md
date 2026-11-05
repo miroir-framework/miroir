@@ -700,8 +700,23 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,actions,runners,exter
 - `gitAction_installClonedDeployment { folderName, deploymentUuid? }` reads the clone again (a client gives no directory), refuses an application that already has a deployment here, and hands the DomainController a `GitDeploymentInstallRequest`. The DomainController runs `createDeploymentCompositeAction` with the new options `skipCreateStore` and `labels`, and with `grantAccessTo` the logged-in user. The Admin section is the one of the process' Admin deployment. After it, each DomainController (server and client) rolls back Admin and the new application, so the client lists the deployment.
 - UI: the Clone panel (`GitClonePanel`, lazy) at the top of the Git page instead of the Runners page, which lists nothing today and is not hidden with `git` off. It installs a single deployment at once, lists several to pick from, and opens the credential form, now shared with the Remote panel (`GitCredentialForm`).
 - Stored Runner `cloneApplicationFromGit` (`02fa934a-…`): clone then install, from the URL and the folder. It passes them with `getFromParameters`: a mustache template HTML-escapes the `/` of a URL or a path.
-- Tests: `gitClone.integ.test.ts` (10), on copies of appForTest under new uuids (`test-filesystem` deploys appForTest), cloned into `.miroir/test-filesystem/git-clones/`. It covers one package, a monorepo with two deployments (one with no data file), no deployment, the folder and URL refusals, a remote asking for a token, the runner, and the capability off. `ui.gitPage` gets a `GitClonePanel` suite of 5 cases; component test leaves 232.
+- Tests: `gitClone.integ.test.ts` (10, then 15 after the review), on copies of appForTest under new uuids (`test-filesystem` deploys appForTest), cloned into `.miroir/test-filesystem/git-clones/`. It covers one package, a monorepo with two deployments (one with no data file), no deployment, the folder and URL refusals, a remote asking for a token, the runner, and the capability off. `ui.gitPage` gets a `GitClonePanel` suite of 5 cases; component test leaves 232.
 - Not done: the MiroirTest `runner.gitClone`. A MiroirTest has no way to start the Git server the clone needs, and a public repository would make the test depend on the network. The integration test runs the stored Runner instead.
+
+### Review of sub-issue D
+
+An adversarial review of the clone and install found seven ways for a repository or a client to make the server write or register files it should not. The fixes:
+
+- A deployment uuid read from the repository must be a uuid before it names a folder or a row.
+- Every section folder is a plain relative path inside the clone, segment by segment; a placed section must not be a file of the repository, and a section that is a file is refused at install (`invalidPayload`).
+- Symbolic links: the clone runs without checkout, and a HEAD tree that holds a link is refused (`symbolicLink`) and removed. Install checks the files again.
+- The target folder is resolved through `realPath`: a folder under the root that is a link to somewhere else is refused (`outsideDeploymentRoot`).
+- Install checks the Admin rows (`GitDeploymentInstaller.registered`), not only the open stores, so a deployment registered but not open is not installed twice.
+- A failed install deletes its store controller and the Deployment and AdminApplication rows it wrote.
+- Two clones into one folder: the folder is created exclusively, the lock key ignores case, and a failed clone removes only what it wrote.
+- The page saves a typed token also when the clone holds no deployment, and install merges the reload failures of both reloads.
+
+`gitClone.integ.test.ts` has 15 tests. Not done: a failed install leaves the MiroirRight grant it wrote; the cleanup has no test, since a filesystem store does not fail to open on a folder Miroir checked.
 
 ---
 
