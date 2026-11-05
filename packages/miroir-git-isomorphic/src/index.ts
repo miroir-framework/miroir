@@ -3,6 +3,7 @@
  * dynamic `import()` registered on `ConfigurationService.registerGitRepositoryFactory`, never statically.
  */
 import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import git, { type FsClient, type PromiseFsClient } from "isomorphic-git";
 import http from "isomorphic-git/http/node";
@@ -154,13 +155,169 @@ export function isCommonGitPath(relative: string): boolean {
   return !isUnder(relative, WORKTREE_PATHS) && isUnder(relative, COMMON_PATHS);
 }
 
+function isTrue(value: string | undefined): boolean {
+  return value !== undefined && ["true", "yes", "on", "1"].includes(value.toLowerCase());
+}
+
 /**
- * isomorphic-git follows the `.git` file of a linked worktree to its gitdir but not that gitdir's
- * `commondir`: it would find the worktree's HEAD and index, and no branch, object or configuration. This
- * filesystem sends the shared paths of the gitdir to the common directory, as git does.
+ * #690: the system and global configuration files git reads before the repository's own, in that order
+ * (git-config(1), FILES), found with no Git binary: the system file is looked for where the usual
+ * installations put it. Exported for tests.
  */
-function worktreeFs(gitdir: string, commonDirectory: string): PromiseFsClient {
+export function inheritedConfigFiles(
+  env: NodeJS.ProcessEnv = process.env,
+  platform: NodeJS.Platform = process.platform,
+): string[] {
+  const files: string[] = [];
+  if (!isTrue(env.GIT_CONFIG_NOSYSTEM)) {
+    if (env.GIT_CONFIG_SYSTEM !== undefined) {
+      files.push(env.GIT_CONFIG_SYSTEM);
+    } else if (platform === "win32") {
+      // Git for Windows reads ProgramData's file before the one of its installation
+      for (const [variable, ...rest] of [
+        ["ProgramData", "Git", "config"],
+        ["ProgramFiles", "Git", "etc", "gitconfig"],
+        ["ProgramFiles(x86)", "Git", "etc", "gitconfig"],
+      ]) {
+        const base = env[variable];
+        if (base) {
+          files.push(path.join(base, ...rest));
+        }
+      }
+    } else {
+      files.push("/etc/gitconfig", "/usr/local/etc/gitconfig", "/opt/homebrew/etc/gitconfig");
+    }
+  }
+  if (env.GIT_CONFIG_GLOBAL !== undefined) {
+    files.push(env.GIT_CONFIG_GLOBAL);
+  } else {
+    const home = env.HOME || os.homedir();
+    files.push(
+      env.XDG_CONFIG_HOME ? path.join(env.XDG_CONFIG_HOME, "git", "config") : path.join(home, ".config", "git", "config"),
+      path.join(home, ".gitconfig"),
+    );
+  }
+  return files.filter((file) => file !== "");
+}
+
+/**
+ * The last value of `name` in the `[section]` of a git configuration text, or undefined when it has none.
+ * A key with no `=` is true. Subsections and `[include]` are not followed. Exported for tests.
+ */
+export function gitConfigValue(text: string, section: string, name: string): string | undefined {
+  let current: string | undefined;
+  let value: string | undefined;
+  for (const raw of text.split(/\r?\n/)) {
+    const line = raw.trim();
+    if (line === "" || line.startsWith("#") || line.startsWith(";")) {
+      continue;
+    }
+    const header = /^\[\s*([A-Za-z0-9.-]+)\s*("[^"]*")?\s*\]/.exec(line);
+    if (header) {
+      current = header[2] === undefined ? header[1].toLowerCase() : undefined;
+      continue;
+    }
+    if (current !== section) {
+      continue;
+    }
+    const entry = /^([A-Za-z][A-Za-z0-9-]*)\s*(?:=\s*(.*))?$/.exec(line);
+    if (entry && entry[1].toLowerCase() === name) {
+      value = entry[2] === undefined ? "true" : unquoteConfigValue(entry[2]);
+    }
+  }
+  return value;
+}
+
+/** A configuration value without its trailing comment and its quotes. */
+function unquoteConfigValue(raw: string): string {
+  let value = "";
+  let quoted = false;
+  for (const character of raw) {
+    if (character === '"') {
+      quoted = !quoted;
+    } else if (!quoted && (character === "#" || character === ";")) {
+      break;
+    } else {
+      value += character;
+    }
+  }
+  return value.trim();
+}
+
+/**
+ * #690: `core.autocrlf` as the system and global configurations set it, the later file winning: true for
+ * `true` and `input`, which mean the same when Git reads the work tree (CRLF becomes LF), and nothing here
+ * converts on checkout.
+ */
+function inheritedAutocrlf(): boolean {
+  let value: string | undefined;
+  for (const file of inheritedConfigFiles()) {
+    try {
+      value = gitConfigValue(fs.readFileSync(file, "utf8"), "core", "autocrlf") ?? value;
+    } catch {
+      // no such file
+    }
+  }
+  return value !== undefined && (value.toLowerCase() === "input" || isTrue(value));
+}
+
+/**
+ * A work-tree file's content as git stores it with `core.autocrlf`: CRLF becomes LF, byte for byte, unless
+ * the file looks binary to git (a NUL, or a CR alone). Exported for tests.
+ *
+ * isomorphic-git's own conversion (a repository whose `config` sets `core.autocrlf true`) goes through a
+ * `TextDecoder` that drops a UTF-8 BOM, so a file starting with one never matches its blob.
+ */
+export function withLfLineEndings(content: Buffer): Buffer {
+  if (content.indexOf(0) !== -1 || content.indexOf("\r\n") === -1) {
+    return content;
+  }
+  const lf = Buffer.from(content.toString("latin1").replace(/\r\n/g, "\n"), "latin1");
+  return lf.indexOf("\r") === -1 ? lf : content;
+}
+
+/** Where a repository's git files are: its gitdir, and the common directory of a linked worktree. */
+type GitdirLayout = { gitdir: string; commonDirectory?: string };
+
+function gitdirLayout(root: string): GitdirLayout | undefined {
+  const dotgit = path.join(root, ".git");
+  try {
+    if (fs.statSync(dotgit).isDirectory()) {
+      return { gitdir: dotgit };
+    }
+    const gitdirLine = /^gitdir:\s*(.+)$/m.exec(fs.readFileSync(dotgit, "utf8"));
+    if (!gitdirLine) {
+      return undefined;
+    }
+    const gitdir = path.resolve(root, gitdirLine[1].trim());
+    const commondirFile = path.join(gitdir, "commondir");
+    // a submodule has no commondir: its gitdir holds everything
+    return fs.existsSync(commondirFile)
+      ? { gitdir, commonDirectory: path.resolve(gitdir, fs.readFileSync(commondirFile, "utf8").trim()) }
+      : { gitdir };
+  } catch {
+    return undefined;
+  }
+}
+
+/**
+ * The filesystem isomorphic-git works with on a repository whose layout or inherited configuration it does
+ * not know of itself.
+ *
+ * #689: isomorphic-git follows the `.git` file of a linked worktree to its gitdir but not that gitdir's
+ * `commondir`: it would find the worktree's HEAD and index, and no branch, object or configuration. The
+ * shared paths of the gitdir are sent to the common directory, as git does.
+ *
+ * #690: isomorphic-git reads only the repository's own `config`. It hands the `core.autocrlf` found there
+ * to each read of a work-tree file, which converts it; with none there and `inheritAutocrlf`, the read
+ * converts the file here instead.
+ */
+function gitFs(layout: GitdirLayout, inheritAutocrlf: boolean): PromiseFsClient {
+  const { gitdir, commonDirectory } = layout;
   const at = (target: string): string => {
+    if (!commonDirectory) {
+      return target;
+    }
     const relative = path.relative(gitdir, path.resolve(target));
     if (relative === "" || relative === ".." || relative.startsWith(".." + path.sep) || path.isAbsolute(relative)) {
       return target;
@@ -172,7 +329,15 @@ function worktreeFs(gitdir: string, commonDirectory: string): PromiseFsClient {
   type Rest<F extends (...args: never[]) => unknown> = Parameters<F> extends [unknown, ...infer R] ? R : never;
   return {
     promises: {
-      readFile: (file: string, ...rest: Rest<typeof p.readFile>) => p.readFile(file === undefined ? file : at(file), ...rest),
+      readFile: async (file: string, options?: Parameters<typeof p.readFile>[1] & { autocrlf?: unknown }) => {
+        if (file === undefined) {
+          return p.readFile(file);
+        }
+        const content = await p.readFile(at(file), options ?? null);
+        // a work-tree read carries the repository's own core.autocrlf, undefined when its config has none
+        const converts = inheritAutocrlf && options !== null && typeof options === "object" && "autocrlf" in options;
+        return converts && options.autocrlf === undefined && Buffer.isBuffer(content) ? withLfLineEndings(content) : content;
+      },
       writeFile: (file: string, ...rest: Rest<typeof p.writeFile>) => p.writeFile(at(file), ...rest),
       mkdir: (dir: string, ...rest: Rest<typeof p.mkdir>) => p.mkdir(at(dir), ...rest),
       rmdir: (dir: string, ...rest: Rest<typeof p.rmdir>) => p.rmdir(at(dir), ...rest),
@@ -187,27 +352,17 @@ function worktreeFs(gitdir: string, commonDirectory: string): PromiseFsClient {
   };
 }
 
-/** The filesystem isomorphic-git reads the repository of `root` with: the Node one, unless `root` is a linked worktree. */
+/**
+ * The filesystem isomorphic-git reads the repository of `root` with: the Node one, unless `root` is a linked
+ * worktree or inherits `core.autocrlf` from the system or global configuration.
+ */
 function repositoryFs(root: string): FsClient {
-  const dotgit = path.join(root, ".git");
-  try {
-    if (!fs.statSync(dotgit).isFile()) {
-      return fs;
-    }
-    const gitdirLine = /^gitdir:\s*(.+)$/m.exec(fs.readFileSync(dotgit, "utf8"));
-    if (!gitdirLine) {
-      return fs;
-    }
-    const gitdir = path.resolve(root, gitdirLine[1].trim());
-    const commondirFile = path.join(gitdir, "commondir");
-    if (!fs.existsSync(commondirFile)) {
-      // a submodule: its gitdir holds everything
-      return fs;
-    }
-    return worktreeFs(gitdir, path.resolve(gitdir, fs.readFileSync(commondirFile, "utf8").trim()));
-  } catch {
+  const layout = gitdirLayout(root);
+  if (!layout) {
     return fs;
   }
+  const inheritAutocrlf = inheritedAutocrlf();
+  return layout.commonDirectory || inheritAutocrlf ? gitFs(layout, inheritAutocrlf) : fs;
 }
 
 async function resolveOrUndefined(repository: GitDir, ref: string): Promise<string | undefined> {
