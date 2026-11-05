@@ -16,6 +16,10 @@ export function gitCommandErrorText(error: GitRequestError): string {
   switch (error.reason) {
     case "openMiroirTransaction":
       return "Commit the Miroir changes first: some edits are not saved to the files yet.";
+    case "nothingToRevert":
+      return "None of these files has edits that are not staged: there is nothing to revert.";
+    case "symbolicLink":
+      return "A file to revert is a symbolic link, or is reached through one: revert it outside Miroir.";
     case "checkoutConflict":
       return `Uncommitted changes would be overwritten: commit or discard them first (${paths.join(", ")}).`;
     case "notFastForward":

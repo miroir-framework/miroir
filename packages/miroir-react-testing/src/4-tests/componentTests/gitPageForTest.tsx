@@ -55,6 +55,36 @@ export interface GitPageForTestProps {
   view?: string;
   /** #691: the Setup tab holds the real Clone panel, on the same answers as the page. */
   withClonePanel?: boolean;
+  /** #691: `gitAction_revert` succeeds, but reports that the local cache could not reload the application. */
+  revertReloadFailure?: boolean;
+}
+
+type FixtureFile = GitStatusResult["files"][number];
+
+/**
+ * #691: what a revert does to a file whose work tree differs from the index, as the status gives it: the
+ * fixture only knows the flags, so a file of the props without `revertOutcome` gets the usual one.
+ */
+function withRevertOutcome(file: FixtureFile): FixtureFile {
+  if (!file.unstaged) {
+    const { revertOutcome: _dropped, ...rest } = file;
+    return rest;
+  }
+  if (file.revertOutcome) {
+    return file;
+  }
+  const revertOutcome =
+    file.change === "added" && !file.staged ? "deleted" : file.change === "deleted" && !file.staged ? "recreated" : "rewritten";
+  return { ...file, revertOutcome };
+}
+
+/** The file after a revert, or undefined when it no longer differs from HEAD. */
+function reverted(file: FixtureFile): FixtureFile | undefined {
+  if (!file.staged) {
+    return undefined;
+  }
+  const { revertOutcome: _dropped, ...rest } = file;
+  return { ...rest, unstaged: false };
 }
 
 const REMOTE_HOST = "git.example.com";
@@ -82,6 +112,9 @@ export function GitPageForTest(props: GitPageForTestProps) {
     };
     // the repository as the actions change it
     let status: GitStatusResult | undefined = props.status && structuredClone(props.status);
+    if (status) {
+      status = { ...status, files: status.files.map(withRevertOutcome) };
+    }
     if (status && props.noRemote) {
       status = { ...status, remoteUrl: undefined, tracking: undefined };
     }
@@ -147,7 +180,9 @@ export function GitPageForTest(props: GitPageForTestProps) {
           status = {
             ...status,
             files: status.files.map((file) =>
-              paths.includes(file.path) && file.inApplication ? { ...file, staged: staging, unstaged: !staging } : file,
+              paths.includes(file.path) && file.inApplication
+                ? withRevertOutcome({ ...file, staged: staging, unstaged: !staging, revertOutcome: undefined })
+                : file,
             ),
           };
           return ok(status);
@@ -179,6 +214,39 @@ export function GitPageForTest(props: GitPageForTestProps) {
           }
           setBranches({ ...branches(), head: oid });
           return ok({ oid, author: author ?? { name: "Miroir Test", email: "t@example.com" }, files: committed.map((file) => file.path) });
+        }
+        case "gitAction_revert": {
+          if (!status) {
+            return missing(actionType);
+          }
+          if (props.openMiroirTransaction) {
+            return refusal("openMiroirTransaction", "Miroir changes are not saved yet");
+          }
+          const named = (payload.paths as string[] | undefined) ?? [];
+          const chosen = status.files.filter(
+            (file) => file.unstaged && file.inApplication && (payload.all === true || named.includes(file.path)),
+          );
+          if (chosen.length === 0) {
+            return refusal("nothingToRevert", "None of these files has unstaged edits to revert");
+          }
+          const chosenPaths = new Set(chosen.map((file) => file.path));
+          status = {
+            ...status,
+            files: status.files.flatMap((file) => {
+              if (!chosenPaths.has(file.path)) {
+                return [file];
+              }
+              const after = reverted(file);
+              return after ? [after] : [];
+            }),
+          };
+          return ok({
+            files: chosen.map((file) => ({ path: file.path, outcome: file.revertOutcome })),
+            touchedDeployments: [],
+            ...(props.revertReloadFailure
+              ? { reloadFailures: [{ application: "library", errorMessage: "the Library could not be read" }] }
+              : {}),
+          });
         }
         case "gitAction_createBranch": {
           const name = String(payload.name);
@@ -297,6 +365,7 @@ export function GitPageForTest(props: GitPageForTestProps) {
     props.remoteDiverged,
     props.remoteToken,
     props.secretsUnavailable,
+    props.revertReloadFailure,
   ]);
   return (
     <Suspense fallback={<span>Loading the Git page...</span>}>

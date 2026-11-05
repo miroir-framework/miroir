@@ -18,6 +18,8 @@ import {
   type GitPathDescription,
   type GitActionType,
   type GitCheckoutResult,
+  type GitRevertOutcome,
+  type GitRevertResult,
   type GitStatusResult,
 } from "@miroir-framework/core";
 
@@ -107,6 +109,11 @@ export function GitPageView(props: GitPageViewProps): React.JSX.Element {
 
   const [checkoutError, setCheckoutError] = useState<GitRequestError | undefined>(undefined);
   const [stageError, setStageError] = useState<GitRequestError | undefined>(undefined);
+  /** #691: the files a revert waits for confirmation on, `all` for "Revert all". */
+  const [revertRequest, setRevertRequest] = useState<
+    { files: GitStatusResult["files"]; all: boolean } | undefined
+  >(undefined);
+  const [revertError, setRevertError] = useState<GitRequestError | undefined>(undefined);
   /** The branch left by the last checkout, offered as the way back from a detached HEAD. */
   const [previousBranch, setPreviousBranch] = useState<string | undefined>(undefined);
 
@@ -142,6 +149,18 @@ export function GitPageView(props: GitPageViewProps): React.JSX.Element {
           : undefined,
       ),
     [],
+  );
+  const revert = useCallback(
+    async (request: { files: GitStatusResult["files"]; all: boolean }) => {
+      setRevertRequest(undefined);
+      const result = await command<GitRevertResult>(
+        "gitAction_revert",
+        request.all ? { all: true } : { paths: request.files.map((file) => file.path) },
+      );
+      setRevertError(result.status === "error" ? result.error : undefined);
+      showReloadFailures(result.status === "ok" ? (result.value.reloadFailures ?? []) : []);
+    },
+    [command, showReloadFailures],
   );
   const checkout = useCallback(
     async (ref: string) => {
@@ -228,9 +247,25 @@ export function GitPageView(props: GitPageViewProps): React.JSX.Element {
             actions={
               status.status === "ok" &&
               status.value.files.some((file) => file.inApplication && file.unstaged) && (
-                <Button size="small" data-testid="git-stage-all" disabled={busy} onClick={() => stage({ all: true }, true)}>
-                  Stage all
-                </Button>
+                <>
+                  <Button size="small" data-testid="git-stage-all" disabled={busy} onClick={() => stage({ all: true }, true)}>
+                    Stage all
+                  </Button>
+                  <Button
+                    size="small"
+                    color="warning"
+                    data-testid="git-revert-all"
+                    disabled={busy}
+                    onClick={() =>
+                      setRevertRequest({
+                        files: status.value.files.filter((file) => file.inApplication && file.unstaged),
+                        all: true,
+                      })
+                    }
+                  >
+                    Revert all
+                  </Button>
+                </>
               )
             }
           >
@@ -243,7 +278,18 @@ export function GitPageView(props: GitPageViewProps): React.JSX.Element {
                   onSelect={setSelectedChange}
                   busy={busy}
                   onToggleStaged={(file) => stage({ paths: [file.path] }, file.unstaged)}
+                  onRevert={(file) => setRevertRequest({ files: [file], all: false })}
                 />
+                {revertRequest && (
+                  <GitRevertConfirm
+                    files={revertRequest.files}
+                    entityNames={props.entityNames}
+                    busy={busy}
+                    onApply={() => revert(revertRequest)}
+                    onCancel={() => setRevertRequest(undefined)}
+                  />
+                )}
+                <GitCommandError error={revertError} testId="git-revert-error" />
                 <GitCommandError error={stageError} testId="git-stage-error" />
                 <GitCommitForm status={status.value} busy={busy || statusStale} command={command} />
               </>
@@ -397,6 +443,8 @@ function ChangeList(props: {
   busy: boolean;
   /** Stages a file with unstaged changes, unstages the others. */
   onToggleStaged: (file: GitStatusResult["files"][number]) => void;
+  /** #691: asks to revert the unstaged edits of a file. */
+  onRevert: (file: GitStatusResult["files"][number]) => void;
 }) {
   if (props.files.length === 0) {
     return <Typography variant="body2">No change since the last commit.</Typography>;
@@ -437,9 +485,69 @@ function ChangeList(props: {
             )}
           </Box>
           {file.staged && <Chip size="small" variant="outlined" label="staged" />}
+          {file.unstaged && file.inApplication && (
+            <Button
+              size="small"
+              color="warning"
+              sx={{ ml: "auto" }}
+              data-testid={`git-revert-${file.path}`}
+              disabled={props.busy}
+              onClick={(event) => {
+                event.stopPropagation();
+                props.onRevert(file);
+              }}
+            >
+              Revert
+            </Button>
+          )}
         </Row>
       ))}
     </Box>
+  );
+}
+
+const revertOutcomeLabels: Record<GitRevertOutcome, string> = {
+  rewritten: "rewritten",
+  recreated: "re-created",
+  deleted: "deleted",
+};
+
+/** #691: the confirmation of a revert, naming each file with what happens to it. */
+function GitRevertConfirm(props: {
+  files: GitStatusResult["files"];
+  entityNames: Record<string, string>;
+  busy: boolean;
+  onApply: () => void;
+  onCancel: () => void;
+}) {
+  return (
+    <Alert
+      severity="warning"
+      data-testid="git-revert-confirm"
+      sx={{ mt: 1 }}
+      action={
+        <Box sx={{ display: "flex", gap: 1 }}>
+          <Button size="small" color="warning" data-testid="git-revert-apply" disabled={props.busy} onClick={props.onApply}>
+            Revert
+          </Button>
+          <Button size="small" data-testid="git-revert-cancel" onClick={props.onCancel}>
+            Cancel
+          </Button>
+        </Box>
+      }
+    >
+      <Typography variant="body2">The edits not staged are lost; staged content is kept.</Typography>
+      {props.files.map((file) => (
+        <Box key={file.path} sx={{ display: "flex", gap: 1 }}>
+          <Typography variant="body2" noWrap>
+            {gitFileLabel(file, props.entityNames)}:
+          </Typography>
+          <Typography variant="body2" sx={{ fontWeight: 600 }} data-testid={`git-revert-outcome-${file.path}`}>
+            {revertOutcomeLabels[file.revertOutcome ?? "rewritten"]}
+          </Typography>
+        </Box>
+      ))}
+    </Alert>
   );
 }
 

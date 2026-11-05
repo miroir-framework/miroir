@@ -883,6 +883,383 @@
           },
           {
             "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: reverts a file after listing what happens to it",
+            "componentProps": {},
+            "steps": [
+              {
+                "step": "click",
+                "label": "revert the modified book",
+                "target": {
+                  "byTestId": "git-revert-data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/03ffcae1-b83f-4970-b3d9-04780d3d0780.json"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the confirmation",
+                "target": {
+                  "byTestId": "git-revert-confirm"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "what happens to it",
+                "target": {
+                  "byTestId": "git-revert-outcome-data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/03ffcae1-b83f-4970-b3d9-04780d3d0780.json"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "rewritten",
+                "target": {
+                  "byText": {
+                    "regex": "rewritten"
+                  }
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "apply",
+                "target": {
+                  "byTestId": "git-revert-apply"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the book left the list",
+                "target": {
+                  "byTestId": "git-change-data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/03ffcae1-b83f-4970-b3d9-04780d3d0780.json"
+                },
+                "present": false,
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the staged book is still there",
+                "target": {
+                  "byTestId": "git-change-data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/679a0001-0000-4000-8000-000000000001.json"
+                },
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: lists each file of Revert all with what happens to it",
+            "componentProps": {
+              "status": {
+                "root": "/repo/library",
+                "sectionPaths": {
+                  "model": "model",
+                  "data": "data",
+                  "modelVersion": "modelVersion"
+                },
+                "branches": {
+                  "current": "main",
+                  "head": "2222222222222222222222222222222222222222",
+                  "local": [
+                    "feature",
+                    "main"
+                  ],
+                  "remote": [],
+                  "tags": [
+                    "v1"
+                  ]
+                },
+                "tracking": {
+                  "upstream": "origin/main",
+                  "ahead": 1,
+                  "behind": 0
+                },
+                "remoteUrl": "https://git.example.com/library.git",
+                "files": [
+                  {
+                    "path": "data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/03ffcae1-b83f-4970-b3d9-04780d3d0780.json",
+                    "change": "modified",
+                    "staged": false,
+                    "unstaged": true,
+                    "section": "data",
+                    "entityUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                    "instanceKey": "03ffcae1-b83f-4970-b3d9-04780d3d0780",
+                    "instanceName": "Ubik",
+                    "inApplication": true,
+                    "revertOutcome": "rewritten"
+                  },
+                  {
+                    "path": "data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/679a0001-0000-4000-8000-000000000001.json",
+                    "change": "added",
+                    "staged": true,
+                    "unstaged": false,
+                    "section": "data",
+                    "entityUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                    "instanceKey": "679a0001-0000-4000-8000-000000000001",
+                    "instanceName": "Galactic Pot-Healer",
+                    "inApplication": true
+                  },
+                  {
+                    "path": "data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/691a0001-0000-4000-8000-0000000000d1.json",
+                    "change": "deleted",
+                    "staged": false,
+                    "unstaged": true,
+                    "section": "data",
+                    "entityUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                    "instanceKey": "691a0001-0000-4000-8000-0000000000d1",
+                    "instanceName": "The Man in the High Castle",
+                    "inApplication": true,
+                    "revertOutcome": "recreated"
+                  },
+                  {
+                    "path": "data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/691a0001-0000-4000-8000-0000000000e1.json",
+                    "change": "added",
+                    "staged": false,
+                    "unstaged": true,
+                    "section": "data",
+                    "entityUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                    "instanceKey": "691a0001-0000-4000-8000-0000000000e1",
+                    "instanceName": "Valis",
+                    "inApplication": true,
+                    "revertOutcome": "deleted"
+                  }
+                ]
+              }
+            },
+            "steps": [
+              {
+                "step": "click",
+                "label": "revert all",
+                "target": {
+                  "byTestId": "git-revert-all"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the edited book is rewritten",
+                "target": {
+                  "byTestId": "git-revert-outcome-data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/03ffcae1-b83f-4970-b3d9-04780d3d0780.json"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "rewritten",
+                "target": {
+                  "byText": {
+                    "regex": "rewritten"
+                  }
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "re-created",
+                "target": {
+                  "byText": {
+                    "regex": "re-created"
+                  }
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "deleted",
+                "target": {
+                  "byText": {
+                    "regex": "^deleted"
+                  }
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "not the staged book",
+                "target": {
+                  "byTestId": "git-revert-outcome-data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/679a0001-0000-4000-8000-000000000001.json"
+                },
+                "present": false,
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "apply",
+                "target": {
+                  "byTestId": "git-revert-apply"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "no edited book left",
+                "target": {
+                  "byTestId": "git-change-data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/03ffcae1-b83f-4970-b3d9-04780d3d0780.json"
+                },
+                "present": false,
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "no deleted book left",
+                "target": {
+                  "byTestId": "git-change-data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/691a0001-0000-4000-8000-0000000000d1.json"
+                },
+                "present": false,
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "no new book left",
+                "target": {
+                  "byTestId": "git-change-data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/691a0001-0000-4000-8000-0000000000e1.json"
+                },
+                "present": false,
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the staged book is still there",
+                "target": {
+                  "byTestId": "git-change-data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/679a0001-0000-4000-8000-000000000001.json"
+                },
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: keeps the file when the revert is cancelled",
+            "componentProps": {},
+            "steps": [
+              {
+                "step": "click",
+                "label": "revert the modified book",
+                "target": {
+                  "byTestId": "git-revert-data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/03ffcae1-b83f-4970-b3d9-04780d3d0780.json"
+                }
+              },
+              {
+                "step": "click",
+                "label": "cancel",
+                "target": {
+                  "byTestId": "git-revert-cancel"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "no confirmation",
+                "target": {
+                  "byTestId": "git-revert-confirm"
+                },
+                "present": false,
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the book is still listed",
+                "target": {
+                  "byTestId": "git-change-data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/03ffcae1-b83f-4970-b3d9-04780d3d0780.json"
+                },
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: offers no revert for a fully staged file",
+            "componentProps": {},
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "a revert for the edited book",
+                "target": {
+                  "byTestId": "git-revert-data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/03ffcae1-b83f-4970-b3d9-04780d3d0780.json"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "none for the staged book",
+                "target": {
+                  "byTestId": "git-revert-data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/679a0001-0000-4000-8000-000000000001.json"
+                },
+                "present": false,
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: explains a revert refused while Miroir changes are not saved",
+            "componentProps": {
+              "openMiroirTransaction": true
+            },
+            "steps": [
+              {
+                "step": "click",
+                "label": "revert the modified book",
+                "target": {
+                  "byTestId": "git-revert-data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/03ffcae1-b83f-4970-b3d9-04780d3d0780.json"
+                }
+              },
+              {
+                "step": "click",
+                "label": "apply",
+                "target": {
+                  "byTestId": "git-revert-apply"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the explanation",
+                "target": {
+                  "byText": {
+                    "regex": "^Commit the Miroir changes first"
+                  }
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the book is still listed",
+                "target": {
+                  "byTestId": "git-change-data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/03ffcae1-b83f-4970-b3d9-04780d3d0780.json"
+                },
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: warns when Miroir could not reload the reverted files",
+            "componentProps": {
+              "revertReloadFailure": true
+            },
+            "steps": [
+              {
+                "step": "click",
+                "label": "revert the modified book",
+                "target": {
+                  "byTestId": "git-revert-data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/03ffcae1-b83f-4970-b3d9-04780d3d0780.json"
+                }
+              },
+              {
+                "step": "click",
+                "label": "apply",
+                "target": {
+                  "byTestId": "git-revert-apply"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the warning",
+                "target": {
+                  "byTestId": "git-reload-warning"
+                },
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
             "miroirTestLabel": "GitPage: asks for the author when the repository has none",
             "componentProps": {
               "authorUnknown": true
