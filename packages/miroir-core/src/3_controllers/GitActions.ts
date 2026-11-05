@@ -33,6 +33,7 @@ import type {
 } from "../0_interfaces/4-services/GitRepositoryInterface";
 import type { PersistenceStoreControllerManagerInterface } from "../0_interfaces/4-services/PersistenceStoreControllerManagerInterface";
 import { gitPathIsInSections, gitPathToInstance, type GitSectionPaths } from "../2_domain/GitPathNaming";
+import { metaModelEntities } from "../1_core/Model";
 
 /** The sections whose folders belong to an application; Admin is shared by every application. */
 const APPLICATION_SECTIONS: ApplicationSection[] = ["model", "data", "modelVersion", "devData"];
@@ -418,12 +419,60 @@ function touchedDeployments(
     .map(([application, deploymentUuid]) => ({ application, deploymentUuid }));
 }
 
+/** The tail of the Git actions running on each repository, by root folder. */
+const repositoryLocks = new Map<string, Promise<unknown>>();
+
+/**
+ * Runs Git actions on one repository one after the other: a checkout's check for staged changes and the
+ * checkout itself must not interleave with a stage from another client. Covers this process, which is the
+ * one that owns the files.
+ */
+async function withRepositoryLock<T>(key: string, run: () => Promise<T>): Promise<T> {
+  const next = (repositoryLocks.get(key) ?? Promise.resolve()).then(run, run);
+  const settled = next.catch(() => undefined);
+  repositoryLocks.set(key, settled);
+  try {
+    return await next;
+  } finally {
+    if (repositoryLocks.get(key) === settled) {
+      repositoryLocks.delete(key);
+    }
+  }
+}
+
+/**
+ * After files changed under them, the filesystem stores of the touched deployments read the Entities of
+ * their model again: an Entity the checkout brought with a non-uuid `idAttribute` is then saved by it.
+ */
+async function rebootTouchedStores(touched: GitTouchedDeployment[], context: GitActionContext): Promise<void> {
+  for (const { deploymentUuid } of touched) {
+    try {
+      await context.manager?.getPersistenceStoreController?.(deploymentUuid)?.bootFromPersistedState(metaModelEntities);
+    } catch {
+      // the DomainController's reload reports a deployment that cannot be read
+    }
+  }
+}
+
 /** Runs one Git action in the process that owns the deployment's files. */
 export async function runGitAction(action: GitAction, context: GitActionContext): Promise<Action2ReturnType> {
   const resolved = await resolveDeployment(action, context);
   if (resolved instanceof Action2Error) {
     return resolved;
   }
+  const sectionDirectories = Object.values(resolved.sectionDirectories) as string[];
+  const anchor = resolved.sectionDirectories.model ?? sectionDirectories[0];
+  const lockKey =
+    (await resolved.factory.findRoot(anchor).catch(() => undefined)) ??
+    resolved.factory.commonDirectory(sectionDirectories);
+  return withRepositoryLock(lockKey, () => runOnDeployment(action, resolved, context));
+}
+
+async function runOnDeployment(
+  action: GitAction,
+  resolved: ResolvedDeployment,
+  context: GitActionContext,
+): Promise<Action2ReturnType> {
   try {
     if (action.actionType === "gitAction_init") {
       const directory = resolved.factory.commonDirectory(Object.values(resolved.sectionDirectories) as string[]);
@@ -524,7 +573,7 @@ export async function runGitAction(action: GitAction, context: GitActionContext)
         return ok(await status(opened, false));
       }
       case "gitAction_commit":
-        return commit(action, opened, context.principal);
+        return await commit(action, opened, context.principal);
       case "gitAction_createBranch": {
         const name = nonEmptyString(action.payload.name);
         if (!name) {
@@ -580,10 +629,9 @@ export async function runGitAction(action: GitAction, context: GitActionContext)
             { paths: conflicts },
           );
         }
-        const result: GitCheckoutResult = {
-          branches: await repository.branches(),
-          touchedDeployments: touchedDeployments(description.root, resolved, context),
-        };
+        const touched = touchedDeployments(description.root, resolved, context);
+        await rebootTouchedStores(touched, context);
+        const result: GitCheckoutResult = { branches: await repository.branches(), touchedDeployments: touched };
         return ok(result);
       }
       default:

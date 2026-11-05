@@ -205,6 +205,37 @@ describe("gitAction_checkout (#679 slice 6)", () => {
   });
 });
 
+describe("gitAction_checkout and the filesystem stores (#679 slice 6)", () => {
+  const SHELF_ENTITY = "679a0006-0000-4000-8000-0000000000e1";
+
+  /** The primary key the server's filesystem store uses to name the files of an Entity's instances. */
+  function storedIdAttribute(entityUuid: string): unknown {
+    const manager = (context.serverDomainController as any).persistenceStoreLocalOrRemote.getLocalPersistenceStoreControllerManager();
+    return manager.getPersistenceStoreController(LIBRARY_DEPLOYMENT).dataStoreSection.getEntityIdAttribute(entityUuid);
+  }
+
+  it("makes the store use the primary key of an Entity the checked-out branch brings", async () => {
+    expectOk(await gitAction(context, "gitAction_createBranch", { name: "shelves" }));
+    expectOk(await gitAction(context, "gitAction_checkout", { ref: "shelves" }));
+    const entityFolder = path.join(context.libraryRoot, "model", "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad");
+    const book = JSON.parse(fs.readFileSync(path.join(entityFolder, `${BOOK_ENTITY}.json`), "utf8"));
+    fs.writeFileSync(
+      path.join(entityFolder, `${SHELF_ENTITY}.json`),
+      JSON.stringify({ ...book, uuid: SHELF_ENTITY, name: "Shelf", idAttribute: "code" }, undefined, 2),
+    );
+    expectOk(await gitAction(context, "gitAction_stage", { all: true }));
+    expectOk(await gitAction(context, "gitAction_commit", { message: "Shelf", author: TEST_AUTHOR }));
+    expectOk(await gitAction(context, "gitAction_checkout", { ref: "main" }));
+    expect(storedIdAttribute(SHELF_ENTITY)).toBe("uuid");
+
+    expectOk(await gitAction(context, "gitAction_checkout", { ref: "shelves" }));
+
+    expect(storedIdAttribute(SHELF_ENTITY)).toBe("code");
+    expectOk(await gitAction(context, "gitAction_checkout", { ref: "main" }));
+    expectOk(await gitAction(context, "gitAction_deleteBranch", { name: "shelves", force: true }));
+  });
+});
+
 describe("gitAction_deleteBranch (#679 slice 6)", () => {
   it("refuses the current branch", async () => {
     expectGitError(await gitAction(context, "gitAction_deleteBranch", { name: "main" }), "currentBranch");

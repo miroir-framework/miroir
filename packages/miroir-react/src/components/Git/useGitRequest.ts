@@ -3,7 +3,7 @@
  * request runs the action when the page first subscribes to it, and notifies once it settles. A
  * `generation` change (a refresh, an action that changed the repository) makes a new request.
  */
-import { useMemo, useSyncExternalStore } from "react";
+import { useMemo, useRef, useSyncExternalStore } from "react";
 
 import { Action2Error, type Action2ReturnType, type GitActionType } from "@miroir-framework/core";
 
@@ -24,7 +24,8 @@ export type GitRequestError = {
 export type GitRequestState<T> =
   | { status: "idle" }
   | { status: "loading" }
-  | { status: "ok"; value: T }
+  /** `stale`: the value of the previous request, shown while the same request runs again. */
+  | { status: "ok"; value: T; stale?: boolean }
   | { status: "error"; error: GitRequestError };
 
 export interface GitRequestStore<T> {
@@ -49,9 +50,12 @@ export function gitRequestStateOf<T>(result: Action2ReturnType): GitRequestState
   return { status: "ok", value: (result as { returnedDomainElement: unknown }).returnedDomainElement as T };
 }
 
-/** A store that runs `run` once, on its first subscription. */
-export function createGitRequestStore<T>(run: () => Promise<Action2ReturnType>): GitRequestStore<T> {
-  let state: GitRequestState<T> = { status: "loading" };
+/** A store that runs `run` once, on its first subscription; `initial` is what it shows until then. */
+export function createGitRequestStore<T>(
+  run: () => Promise<Action2ReturnType>,
+  initial: GitRequestState<T> = { status: "loading" },
+): GitRequestStore<T> {
+  let state: GitRequestState<T> = initial;
   let started = false;
   const listeners = new Set<() => void>();
   const settle = (next: GitRequestState<T>) => {
@@ -93,12 +97,22 @@ export function useGitRequest<T>(
   generation: number,
 ): GitRequestState<T> {
   const payloadKey = payload === undefined ? undefined : JSON.stringify(payload);
-  const store = useMemo(
-    () =>
-      payloadKey === undefined
-        ? (idleStore as GitRequestStore<T>)
-        : createGitRequestStore<T>(() => run(actionType, JSON.parse(payloadKey))),
-    [run, actionType, payloadKey, generation],
-  );
+  // the previous store of the same request: a refresh keeps showing its value, so the panels built on it
+  // (and what is typed in them) stay mounted
+  const previous = useRef<{ key: string; store: GitRequestStore<T> } | undefined>(undefined);
+  const store = useMemo(() => {
+    if (payloadKey === undefined) {
+      previous.current = undefined;
+      return idleStore as GitRequestStore<T>;
+    }
+    const key = `${actionType} ${payloadKey}`;
+    const shown = previous.current?.key === key ? previous.current.store.getSnapshot() : undefined;
+    const created = createGitRequestStore<T>(
+      () => run(actionType, JSON.parse(payloadKey)),
+      shown?.status === "ok" ? { ...shown, stale: true } : undefined,
+    );
+    previous.current = { key, store: created };
+    return created;
+  }, [run, actionType, payloadKey, generation]);
   return useSyncExternalStore(store.subscribe, store.getSnapshot, store.getSnapshot);
 }

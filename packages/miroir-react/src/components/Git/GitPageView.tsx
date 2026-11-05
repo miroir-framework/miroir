@@ -120,7 +120,8 @@ export function GitPageView(props: GitPageViewProps): React.JSX.Element {
     [command, currentBranch],
   );
   // a checkout waits for the status, which tells which branch it leaves
-  const checkoutBusy = busy || status.status !== "ok";
+  const statusStale = status.status === "ok" && status.stale === true;
+  const checkoutBusy = busy || status.status !== "ok" || statusStale;
   const initRepository = useCallback(async () => {
     const result = await props.runGitAction("gitAction_init");
     const failed = (result as { status?: string })?.status !== "ok";
@@ -212,7 +213,7 @@ export function GitPageView(props: GitPageViewProps): React.JSX.Element {
                     onToggleStaged={(file) => stage({ paths: [file.path] }, file.unstaged)}
                   />
                   <GitCommandError error={stageError} testId="git-stage-error" />
-                  <GitCommitForm status={status.value} busy={busy} command={command} />
+                  <GitCommitForm status={status.value} busy={busy || statusStale} command={command} />
                 </>
               ) : (
                 <Loading state={status} />
