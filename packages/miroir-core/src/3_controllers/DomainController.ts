@@ -164,7 +164,7 @@ import {
   type LogPhase,
 } from "../4_services/rollbackLog.js";
 import type { GitAction, GitTouchedDeployment } from "../0_interfaces/3_controllers/GitAction";
-import { openMiroirTransactionError, runGitAction } from "./GitActions";
+import { openMiroirTransactionError, runGitAction, type GitCredentialStore } from "./GitActions";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory.js";
 import { packageName } from "../constants";
 
@@ -190,6 +190,7 @@ import {
 } from "../0_interfaces/2_domain/DomainElement.js";
 import {
   defaultEndpointApplicationMap,
+  defaultSelfApplicationDeploymentMap,
   type ApplicationDeploymentMap,
   type EndpointApplicationMap,
 } from "../1_core/Deployment.js";
@@ -3785,9 +3786,40 @@ export class DomainController implements DomainControllerInterface, DomainContro
         manager: this.persistenceStoreLocalOrRemote.getLocalPersistenceStoreControllerManager?.(),
         applicationDeploymentMap,
         principal,
+        credentials: this.gitCredentialStore(applicationDeploymentMap, principal),
       });
     }
     return this.reloadTouchedDeployments(result, applicationDeploymentMap);
+  }
+
+  /**
+   * #679 D16: the `git.<host>` secrets of the logged-in user, else of the process, as MiroirSecret rows of
+   * Admin. The Git actions get these three functions, never the secret store.
+   */
+  private gitCredentialStore(
+    applicationDeploymentMap: ApplicationDeploymentMap,
+    principal?: AuthPrincipal,
+  ): GitCredentialStore {
+    return {
+      resolve: (name) => {
+        try {
+          return resolveSecret(name, principal).value;
+        } catch {
+          return undefined; // no such secret
+        }
+      },
+      canSave: () => getSecretsMasterKey() !== undefined,
+      save: async (name, value) => {
+        const scope = principal?.miroirUserUuid ? "user" : "process";
+        await persistSecretRow(
+          this,
+          { name, value, scope, miroirUserUuid: principal?.miroirUserUuid },
+          // the rows are Admin's, whichever application's page saves them
+          { ...defaultSelfApplicationDeploymentMap, ...applicationDeploymentMap },
+        );
+        return scope;
+      },
+    };
   }
 
   /**

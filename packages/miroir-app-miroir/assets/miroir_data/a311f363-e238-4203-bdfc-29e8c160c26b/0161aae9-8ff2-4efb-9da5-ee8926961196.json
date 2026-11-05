@@ -2675,8 +2675,13 @@
                     "gitAction_createBranch",
                     "gitAction_deleteBranch",
                     "gitAction_diff",
+                    "gitAction_fetch",
                     "gitAction_init",
                     "gitAction_log",
+                    "gitAction_pull",
+                    "gitAction_push",
+                    "gitAction_setCredential",
+                    "gitAction_setRemote",
                     "gitAction_stage",
                     "gitAction_status",
                     "gitAction_unstage"

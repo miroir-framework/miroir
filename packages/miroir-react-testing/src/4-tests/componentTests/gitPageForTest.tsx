@@ -41,7 +41,19 @@ export interface GitPageForTestProps {
   checkoutConflicts?: string[];
   /** `gitAction_deleteBranch` of these branches is refused with `branchNotMerged` unless forced. */
   unmergedBranches?: string[];
+  /** The repository has no remote: `remoteUrl` and `tracking` of `status` are dropped. */
+  noRemote?: boolean;
+  /** Commits of the remote branch the local one lacks: `gitAction_fetch` shows them, `gitAction_pull` takes them. */
+  remoteBehind?: number;
+  /** Local and remote have diverged: `gitAction_pull` is refused with `notFastForward`, push with `pushRejected`. */
+  remoteDiverged?: boolean;
+  /** The remote asks for this token: the remote actions are refused with `authenticationRequired` without it. */
+  remoteToken?: string;
+  /** `gitAction_setCredential` is refused with `secretsUnavailable` (no wrapping key). */
+  secretsUnavailable?: boolean;
 }
+
+const REMOTE_HOST = "git.example.com";
 
 function refusal(reason: string, message: string, context: Record<string, unknown> = {}): Action2ReturnType {
   return new Action2Error("InvalidAction", message, undefined, undefined, { reason, ...context });
@@ -66,6 +78,11 @@ export function GitPageForTest(props: GitPageForTestProps) {
     };
     // the repository as the actions change it
     let status: GitStatusResult | undefined = props.status && structuredClone(props.status);
+    if (status && props.noRemote) {
+      status = { ...status, remoteUrl: undefined, tracking: undefined };
+    }
+    let credentialSaved = false;
+    let remoteCommits = props.remoteBehind ?? 0;
     let log: GitLogResult = structuredClone(props.log ?? emptyLog);
     const branches = (): GitBranches => status?.branches ?? log.branches;
     const setBranches = (next: GitBranches) => {
@@ -75,6 +92,32 @@ export function GitPageForTest(props: GitPageForTestProps) {
       log = { ...log, branches: next };
     };
     let commitCount = 0;
+    /** The refusal of a remote action, if any: no remote, or no accepted token. */
+    const remoteRefusal = (payload: Record<string, unknown>): Action2ReturnType | undefined => {
+      if (!status?.remoteUrl) {
+        return refusal("noRemote", "no remote");
+      }
+      const token = (payload.credential as { token?: string } | undefined)?.token;
+      if (props.remoteToken !== undefined && !credentialSaved && token !== props.remoteToken) {
+        return new Action2Error("ExternalServiceUnauthorized", "The remote refused the credentials", undefined, undefined, {
+          reason: "authenticationRequired",
+          host: REMOTE_HOST,
+        });
+      }
+      return undefined;
+    };
+    const remoteResult = (extra: Record<string, unknown> = {}) => ok({
+      branches: branches(),
+      remote: "origin",
+      url: status?.remoteUrl,
+      tracking: status?.tracking,
+      ...extra,
+    });
+    const setTracking = (ahead: number, behind: number) => {
+      if (status && branches().current) {
+        status = { ...status, tracking: { upstream: `origin/${branches().current}`, ahead, behind } };
+      }
+    };
     return async (actionType: GitActionType, payload: Record<string, unknown> = {}) => {
       if (!initialized && actionType !== "gitAction_init") {
         return new Action2Error("InvalidAction", "not a repository", undefined, undefined, {
@@ -165,6 +208,63 @@ export function GitPageForTest(props: GitPageForTestProps) {
           });
           return ok({ branches: branches(), touchedDeployments: [] });
         }
+        case "gitAction_setRemote": {
+          const url = String(payload.url ?? "");
+          if (!/^https?:\/\//.test(url)) {
+            return refusal("unsupportedRemoteProtocol", `Only http and https remotes are supported, not ${url}`);
+          }
+          if (status) {
+            status = { ...status, remoteUrl: url };
+          }
+          return remoteResult();
+        }
+        case "gitAction_fetch": {
+          const refused = remoteRefusal(payload);
+          if (refused) {
+            return refused;
+          }
+          setTracking(status?.tracking?.ahead ?? 0, remoteCommits);
+          return remoteResult();
+        }
+        case "gitAction_pull": {
+          const refused = remoteRefusal(payload);
+          if (refused) {
+            return refused;
+          }
+          if (props.remoteDiverged) {
+            return refusal("notFastForward", "diverged");
+          }
+          const pulled: GitCommitSummary[] = Array.from({ length: remoteCommits }, (_, index) => ({
+            oid: String(index + 1).padStart(40, "p"),
+            parents: [],
+            message: `Remote commit ${index + 1}\n`,
+            author: { name: "Other Machine", email: "other@example.com", timestamp: 1720000000 + index },
+            refs: [],
+          })).reverse();
+          const upToDate = remoteCommits === 0;
+          log = { ...log, commits: [...pulled, ...log.commits] };
+          remoteCommits = 0;
+          setTracking(status?.tracking?.ahead ?? 0, 0);
+          return remoteResult({ upToDate, touchedDeployments: [] });
+        }
+        case "gitAction_push": {
+          const refused = remoteRefusal(payload);
+          if (refused) {
+            return refused;
+          }
+          if (props.remoteDiverged) {
+            return refusal("pushRejected", "the remote has commits the branch does not have");
+          }
+          setTracking(0, remoteCommits);
+          return remoteResult();
+        }
+        case "gitAction_setCredential": {
+          if (props.secretsUnavailable) {
+            return refusal("secretsUnavailable", "gitAction_setCredential: a wrapping key is required to save the credential");
+          }
+          credentialSaved = true;
+          return ok({ name: `git.${String(payload.host)}`, scope: "process" });
+        }
         case "gitAction_commitFiles": {
           const files = props.commitFiles?.[String(payload.oid)];
           return files ? ok(files) : missing(`the files of ${payload.oid}`);
@@ -188,6 +288,11 @@ export function GitPageForTest(props: GitPageForTestProps) {
     props.openMiroirTransaction,
     props.checkoutConflicts,
     props.unmergedBranches,
+    props.noRemote,
+    props.remoteBehind,
+    props.remoteDiverged,
+    props.remoteToken,
+    props.secretsUnavailable,
   ]);
   return (
     <Suspense fallback={<span>Loading the Git page...</span>}>

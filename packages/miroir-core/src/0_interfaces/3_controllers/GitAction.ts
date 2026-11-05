@@ -27,6 +27,11 @@ export const GIT_ACTION_TYPES = [
   "gitAction_createBranch",
   "gitAction_deleteBranch",
   "gitAction_checkout",
+  "gitAction_setRemote",
+  "gitAction_fetch",
+  "gitAction_pull",
+  "gitAction_push",
+  "gitAction_setCredential",
 ] as const;
 
 export type GitActionType = (typeof GIT_ACTION_TYPES)[number];
@@ -46,6 +51,10 @@ export const GIT_ACTIONS_KEEPING_FILES: readonly GitActionType[] = [
   "gitAction_commit",
   "gitAction_createBranch",
   "gitAction_deleteBranch",
+  "gitAction_setRemote",
+  "gitAction_fetch",
+  "gitAction_push",
+  "gitAction_setCredential",
 ];
 
 /**
@@ -55,7 +64,9 @@ export const GIT_ACTIONS_KEEPING_FILES: readonly GitActionType[] = [
 export const GIT_ACTIONS_NEEDING_SAVED_MIROIR_CHANGES: readonly GitActionType[] = [
   "gitAction_commit",
   "gitAction_checkout",
+  "gitAction_pull",
 ];
+
 
 type GitActionOf<T extends GitActionType, P> = {
   actionType: T;
@@ -95,6 +106,23 @@ export type GitCreateBranchAction = GitActionOf<"gitAction_createBranch", { name
 export type GitDeleteBranchAction = GitActionOf<"gitAction_deleteBranch", { name: string; force?: boolean }>;
 /** `ref`: a local branch, or a tag, remote branch or commit oid (checked out as a detached HEAD). */
 export type GitCheckoutAction = GitActionOf<"gitAction_checkout", { ref: string }>;
+/** Sets the URL of `remote` (`origin` by default); only `http(s)` URLs are accepted. */
+export type GitSetRemoteAction = GitActionOf<"gitAction_setRemote", { url: string; remote?: string }>;
+/**
+ * A username and token typed for one remote action: used for it, never stored. Without one, the action uses
+ * the `git.<host>` secret of the logged-in user, or of the process.
+ */
+export type GitPayloadCredential = { username: string; token: string };
+export type GitFetchAction = GitActionOf<"gitAction_fetch", { remote?: string; credential?: GitPayloadCredential }>;
+/** Fetches the current branch's upstream, then fast-forwards the branch to it. */
+export type GitPullAction = GitActionOf<"gitAction_pull", { credential?: GitPayloadCredential }>;
+/** Pushes the current branch to `origin`, which becomes its upstream when it has none. */
+export type GitPushAction = GitActionOf<"gitAction_push", { credential?: GitPayloadCredential }>;
+/** Saves a username and token for `host` as the Admin secret `git.<host>` (the user's, or the process'). */
+export type GitSetCredentialAction = GitActionOf<
+  "gitAction_setCredential",
+  { host: string; username: string; token: string }
+>;
 
 export type GitAction =
   | GitStatusAction
@@ -107,7 +135,12 @@ export type GitAction =
   | GitCommitAction
   | GitCreateBranchAction
   | GitDeleteBranchAction
-  | GitCheckoutAction;
+  | GitCheckoutAction
+  | GitSetRemoteAction
+  | GitFetchAction
+  | GitPullAction
+  | GitPushAction
+  | GitSetCredentialAction;
 
 /** The instance a changed path stores, when it is an instance file of the deployment (D10). */
 export type GitPathDescription = {
@@ -127,8 +160,15 @@ export type GitRepositoryDescription = {
   sectionPaths: Partial<Record<ApplicationSection, string>>;
 };
 
+/** The current branch against its upstream, from the remote-tracking refs of the last fetch. */
+export type GitTracking = { upstream: string; ahead: number; behind: number };
+
 export type GitStatusResult = GitRepositoryDescription & {
   branches: GitBranches;
+  /** Absent with no current branch or no upstream. */
+  tracking?: GitTracking;
+  /** The URL of `origin`, when the repository has it. */
+  remoteUrl?: string;
   files: (GitFileStatus & GitPathDescription)[];
 };
 
@@ -169,6 +209,22 @@ export type GitCheckoutResult = GitBranchResult & {
    */
   reloadFailures?: { application: Uuid; errorMessage?: string }[];
 };
+
+export type GitRemoteResult = GitBranchResult & {
+  remote: string;
+  url: string;
+  tracking?: GitTracking;
+};
+
+export type GitPullResult = GitRemoteResult & {
+  /** The branch already had every commit of its upstream: no file changed. */
+  upToDate: boolean;
+  touchedDeployments: GitTouchedDeployment[];
+  reloadFailures?: { application: Uuid; errorMessage?: string }[];
+};
+
+/** The saved secret's name and scope; never its value. */
+export type GitSetCredentialResult = { name: string; scope: "user" | "process" };
 
 export function isGitAction(action: unknown): action is GitAction {
   const actionType = (action as { actionType?: unknown } | undefined)?.actionType;

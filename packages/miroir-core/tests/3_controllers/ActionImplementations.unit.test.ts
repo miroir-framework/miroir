@@ -155,6 +155,11 @@ const expectedActionTypesByEndpoint: Record<string, string[]> = {
     "gitAction_createBranch",
     "gitAction_deleteBranch",
     "gitAction_checkout",
+    "gitAction_setRemote",
+    "gitAction_fetch",
+    "gitAction_pull",
+    "gitAction_push",
+    "gitAction_setCredential",
   ],
 };
 

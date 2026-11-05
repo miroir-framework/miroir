@@ -679,6 +679,327 @@
           "actionImplementationType": "libraryImplementation",
           "inMemoryImplementationFunctionName": "handleAction_gitAction_checkout"
         }
+      },
+      {
+        "actionParameters": {
+          "actionType": {
+            "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false,
+                "defaultLabel": "Set the URL of a remote"
+              }
+            },
+            "definition": "gitAction_setRemote"
+          },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
+          },
+          "endpoint": {
+            "type": "literal",
+            "definition": "a7f243cb-9345-425a-918d-4e433a94f4bf"
+          },
+          "payload": {
+            "type": "object",
+            "tag": {
+              "value": {
+                "canBeTemplate": true
+              }
+            },
+            "definition": {
+              "application": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                }
+              },
+              "url": {
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                }
+              },
+              "remote": {
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                },
+                "optional": true
+              }
+            }
+          }
+        },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_gitAction_setRemote"
+        }
+      },
+      {
+        "actionParameters": {
+          "actionType": {
+            "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false,
+                "defaultLabel": "Fetch from a remote"
+              }
+            },
+            "definition": "gitAction_fetch"
+          },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
+          },
+          "endpoint": {
+            "type": "literal",
+            "definition": "a7f243cb-9345-425a-918d-4e433a94f4bf"
+          },
+          "payload": {
+            "type": "object",
+            "tag": {
+              "value": {
+                "canBeTemplate": true
+              }
+            },
+            "definition": {
+              "application": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                }
+              },
+              "remote": {
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                },
+                "optional": true
+              },
+              "credential": {
+                "type": "object",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                },
+                "definition": {
+                  "username": {
+                    "type": "string"
+                  },
+                  "token": {
+                    "type": "string"
+                  }
+                },
+                "optional": true
+              }
+            }
+          }
+        },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_gitAction_fetch"
+        }
+      },
+      {
+        "actionParameters": {
+          "actionType": {
+            "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false,
+                "defaultLabel": "Pull the upstream of the current branch (fast-forward)"
+              }
+            },
+            "definition": "gitAction_pull"
+          },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
+          },
+          "endpoint": {
+            "type": "literal",
+            "definition": "a7f243cb-9345-425a-918d-4e433a94f4bf"
+          },
+          "payload": {
+            "type": "object",
+            "tag": {
+              "value": {
+                "canBeTemplate": true
+              }
+            },
+            "definition": {
+              "application": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                }
+              },
+              "credential": {
+                "type": "object",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                },
+                "definition": {
+                  "username": {
+                    "type": "string"
+                  },
+                  "token": {
+                    "type": "string"
+                  }
+                },
+                "optional": true
+              }
+            }
+          }
+        },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_gitAction_pull"
+        }
+      },
+      {
+        "actionParameters": {
+          "actionType": {
+            "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false,
+                "defaultLabel": "Push the current branch"
+              }
+            },
+            "definition": "gitAction_push"
+          },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
+          },
+          "endpoint": {
+            "type": "literal",
+            "definition": "a7f243cb-9345-425a-918d-4e433a94f4bf"
+          },
+          "payload": {
+            "type": "object",
+            "tag": {
+              "value": {
+                "canBeTemplate": true
+              }
+            },
+            "definition": {
+              "application": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                }
+              },
+              "credential": {
+                "type": "object",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                },
+                "definition": {
+                  "username": {
+                    "type": "string"
+                  },
+                  "token": {
+                    "type": "string"
+                  }
+                },
+                "optional": true
+              }
+            }
+          }
+        },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_gitAction_push"
+        }
+      },
+      {
+        "actionParameters": {
+          "actionType": {
+            "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false,
+                "defaultLabel": "Save a Git credential as an Admin secret"
+              }
+            },
+            "definition": "gitAction_setCredential"
+          },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
+          },
+          "endpoint": {
+            "type": "literal",
+            "definition": "a7f243cb-9345-425a-918d-4e433a94f4bf"
+          },
+          "payload": {
+            "type": "object",
+            "tag": {
+              "value": {
+                "canBeTemplate": true
+              }
+            },
+            "definition": {
+              "application": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                }
+              },
+              "host": {
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                }
+              },
+              "username": {
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                }
+              },
+              "token": {
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_gitAction_setCredential"
+        }
       }
     ]
   }

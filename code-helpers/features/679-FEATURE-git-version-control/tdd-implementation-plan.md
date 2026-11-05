@@ -10,7 +10,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Sub-issues: #680 (A, slices 0 to 4), #681 (B, slices 5 and 6), #682 (C, slices 7 to 9), #683 (D, slices 10 and 11).
 Working branch: one branch per sub-issue, named `claude/<sub-issue number>-git-<slug>`, from `_integration`.
 
-**Resume note:** sub-issue A (#680, slices 0 to 4) done on `claude/680-git-read-only`; sub-issue B (#681, slices 5 and 6) done on `claude/681-git-commit-checkout`, chained from it. Next: slice 7 (#682) on a branch chained from #681.
+**Resume note:** sub-issue A (#680, slices 0 to 4) done on `claude/680-git-read-only`; sub-issue B (#681, slices 5 and 6) done on `claude/681-git-commit-checkout`, chained from it; sub-issue C (#682, slices 7 to 9) done on `claude/682-git-fetch-pull-push`, chained from #681. Next: slice 10 (#683) on a branch chained from #682.
 
 ---
 
@@ -41,9 +41,9 @@ Out (analysis section 2): ApplicationVersion-based versioning; merges with confl
 | 4 | A #680 | No repository: `notARepository`, `gitAction_init` | ✅ | `gitInit.679.phase4.integ.test.ts` |
 | 5 | B #681 | Stage, unstage, commit; author; open Miroir transaction | ✅ | `gitCommit.679.phase5.integ.test.ts` |
 | 6 | B #681 | Branches and checkout, conflict refusal, reload | ✅ | `gitCheckout.679.phase6.integ.test.ts` |
-| 7 | C #682 | Test remote, fetch with ahead / behind, SSH refusal | ⬜ | `gitFetch.679.phase7.integ.test.ts` |
-| 8 | C #682 | Credentials: `git.<host>` secret, 401 path, save from the dialog | ⬜ | `gitCredentials.679.phase8.integ.test.ts` |
-| 9 | C #682 | Pull (fast-forward) with reload, push with upstream | ⬜ | `gitSync.679.phase9.integ.test.ts` |
+| 7 | C #682 | Test remote, fetch with ahead / behind, SSH refusal | ✅ | `gitFetch.679.phase7.integ.test.ts` |
+| 8 | C #682 | Credentials: `git.<host>` secret, 401 path, save from the dialog | ✅ | `gitCredentials.679.phase8.integ.test.ts` |
+| 9 | C #682 | Pull (fast-forward) with reload, push with upstream | ✅ | `gitSync.679.phase9.integ.test.ts` |
 | 10 | D #683 | Clone, scan deployments, pick, install, open | ⬜ | `gitClone.679.phase10.integ.test.ts`, runner test `runner.gitClone` |
 | 11 | D #683 | Nonreg, docs, dependency cleanup, issue-directory cleanup, AC | ⬜ | nonreg step `integ-git-version-control` |
 
@@ -495,7 +495,7 @@ Full nonreg: end of sub-issue B.
 
 ## Slice 7. Test remote, fetch with ahead / behind, SSH refusal
 
-**Status:** ⬜ pending (sub-issue C, #682)
+**Status:** ✅ DONE (sub-issue C, #682)
 
 ### Goal
 
@@ -530,11 +530,20 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,actions,external
 
 ### Realization
 
+`gitFetch.679.phase7.integ.test.ts` (7 tests):
+
+- Test remote (D22): `tests/3_controllers/issues/679-git-version-control/gitHttpServer.ts`, next to the other Git tests of the standalone app rather than in `miroir-git-isomorphic` (the actions run through the real DomainController there). It is `git http-backend` behind Node's `http` server on a free port, so no new dependency; `commitOnRemote` plays the other machine with the `git` program, through the bare repository's folder. The tests skip with a message when `git` is not on the PATH.
+- The port gains `remoteUrl`, `setRemote`, `fetch`, `upstream`, `aheadBehind`, `fastForward` and `push`. Remote options carry an `onAuth` callback only (D16).
+- `aheadBehind` walks both histories newest commit first, marking each commit with the sides it is reached from, and stops when every commit left is reached from both (what `git rev-list --left-right --count` does), so the shared history is not walked.
+- `gitAction_setRemote` (new, not in the allocated list): sets `origin`, refusing a non-`http(s)` URL (`unsupportedRemoteProtocol`) and a URL holding a username or token (`invalidPayload`: `.git/config` is a plain file).
+- `gitAction_fetch` returns `{ branches, remote, url, tracking }`; `gitAction_status` also returns `tracking` and `remoteUrl`. A missing remote is `noRemote`; a remote that cannot be reached (connection refused, 404) is `remoteUnreachable`.
+- Refactor checkpoint: `checkRemoteUrl` in `GitActions.ts` is the one protocol check (setRemote, fetch, pull, push; clone in slice 10).
+
 ---
 
 ## Slice 8. Credentials: `git.<host>` secret, 401 path, save from the dialog
 
-**Status:** ⬜ pending (sub-issue C, #682)
+**Status:** ✅ DONE (sub-issue C, #682)
 
 ### Goal
 
@@ -571,11 +580,21 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,actions,external,ui
 
 ### Realization
 
+`gitCredentials.679.phase8.integ.test.ts` (8 tests):
+
+- The test server answers 401 to any request without the expected basic credentials.
+- The adapter turns isomorphic-git's `onAuth` / `onAuthFailure` into one attempt: no credential, or a refused one, stops the operation (`UserCanceledError`), so a fixed token is never retried in a loop. `UserCanceledError` and HTTP 401 / 403 map to `authenticationRequired`.
+- `GitActions` returns `ExternalServiceUnauthorized` with `{ reason: "authenticationRequired", host, remote }` (D17). The credential comes from the payload (used for that action, stored nowhere), else from the `git.<host>` secret, where `host` is the remote URL's host and port.
+- The actions get a `GitCredentialStore` (`resolve`, `canSave`, `save`) from `DomainController.gitCredentialStore`, which wraps `resolveSecret`, `getSecretsMasterKey` and `persistSecretRow`: core's action code holds no secret store, the adapter sees only `onAuth`.
+- `gitAction_setCredential` opens no repository. It refuses a host that is not `name[:port]` (`invalidPayload`) and, without a wrapping key, answers `secretsUnavailable` with the message of `setExternalServiceCredential`. It returns `{ name, scope }`; the test checks that no result holds the token or a row's ciphertext.
+- Refactor checkpoint: `handleSetExternalServiceCredential` probes then persists, `gitAction_setCredential` only persists (the retried action was the probe), so the shared part is `persistSecretRow` itself; nothing to extract.
+- UI: on `authenticationRequired` the Remote panel shows a username and token form, retries the action with the typed credential, then saves it with `gitAction_setCredential` unless "Save it" is unchecked. A token that works but cannot be saved is said so.
+
 ---
 
 ## Slice 9. Pull (fast-forward) with reload, push with upstream
 
-**Status:** ⬜ pending (sub-issue C, #682)
+**Status:** ✅ DONE (sub-issue C, #682)
 
 ### Goal
 
@@ -612,6 +631,25 @@ npm run nonreg:filesystem -- --runner shared
 Full nonreg: end of sub-issue C.
 
 ### Realization
+
+`gitSync.679.phase9.integ.test.ts` (10 tests):
+
+- `gitAction_pull`: refused on a detached HEAD (`detachedHead`, a new reason), a branch without upstream (`noUpstream`), staged changes (`checkoutConflict`, as for a checkout) and unsaved Miroir changes (`openMiroirTransaction`). Then fetch, and `fastForward`: equal or ahead is `upToDate`; diverged is `notFastForward`; otherwise a dry-run checkout on the upstream commit, which returns the conflicting paths without changing anything, then the branch ref moves and is checked out. The result has `touchedDeployments` unless up to date, and `DomainController.reloadTouchedDeployments` (slice 6) reloads them.
+- `gitAction_push`: pushes the current branch to its upstream, else to the branch of the same name on `origin`, then writes `branch.<name>.remote` / `.merge`. A remote with commits the branch lacks is `pushRejected`.
+- UI: the Remote panel (URL, "n to push / n to pull", Fetch, Pull, Push, the URL field, the token form). The text of the credential result is kept by the page, since a successful action refreshes the status and remounts the panel. The Electron bundle policy lists `simple-get` and its dependencies as lazy (they come with `isomorphic-git/http/node`).
+- MiroirTest `ui.gitPage`: 7 more cases (21 with the #681 review case); component test leaves 227.
+
+**Adversarial review of sub-issue C, and what changed:**
+
+- A token written in an existing remote URL (`https://user:token@host/...`, set outside Miroir) came back in every status and remote result and was shown on the page. Results now give the URL without its username and token (`displayedRemoteUrl`); the fetch still uses them.
+- Ahead / behind was wrong when shared commits had the timestamp of a side's commit, or the clocks differed (`{1, 11}` for `{1, 1}`). After the walk, the shared mark now goes down to every walked ancestor.
+- The credential could reach another host than the one checked: isomorphic-git pushes to `remote.<name>.pushurl` and goes through `http.corsProxy` when the configuration has them. Fetch and push now pass the checked URL and no proxy.
+- A pull that failed after the branch moved left the branch on the new commit and the files on the old one. The files and index are now checked out first (`noUpdateHead`), then the branch moves.
+- A push the remote itself refused (a hook, a protected branch) read "pull first". It is now `pushRefused` with the remote's message; TLS and more network errors are `remoteUnreachable`.
+- A credential saved for `GitHub.com` or `github.com:443` was never found. The secret is now named after the host as a URL gives it.
+- The credential form stayed open, every button disabled, when the retried action failed for another reason. It now closes; the token is saved only after a success.
+- After a pull, the touched stores read their model's Entities again, as after a checkout (#681 review).
+- Kept, as D16 says: a logged-in user with no `git.<host>` secret of their own uses the process one. With authentication on, every Git action has a principal, so `gitAction_setCredential` always saves a user secret; a process secret is saved only with authentication off.
 
 ---
 

@@ -20,12 +20,20 @@ import {
   type GitInitResult,
   type GitLogResult,
   type GitPathDescription,
+  type GitPayloadCredential,
+  type GitPullResult,
+  type GitRemoteResult,
   type GitRepositoryDescription,
+  type GitSetCredentialAction,
+  type GitSetCredentialResult,
   type GitStatusResult,
   type GitTouchedDeployment,
+  type GitTracking,
 } from "../0_interfaces/3_controllers/GitAction";
 import type {
   GitActionErrorReason,
+  GitBranches,
+  GitCredential,
   GitPerson,
   GitRepositoryErrorCode,
   GitRepositoryFactory,
@@ -41,12 +49,77 @@ const APPLICATION_SECTIONS: ApplicationSection[] = ["model", "data", "modelVersi
 /** Files whose instance name is read for the changes panel; the rest are listed by path only. */
 const NAMED_FILES_LIMIT = 500;
 
+/** The remote every action uses when the payload names none. */
+const DEFAULT_REMOTE = "origin";
+
+/**
+ * The `git.<host>` Admin secrets of the logged-in user (or of the process), reached through the
+ * DomainController: the actions hold no secret store, the Git implementation sees only `onAuth` (D16).
+ */
+export type GitCredentialStore = {
+  /** The secret's value, or undefined when there is none. */
+  resolve: (name: string) => string | undefined;
+  /** False without a wrapping key: nothing can be saved. */
+  canSave: () => boolean;
+  /** Saves the secret as a MiroirSecret row; returns its scope. */
+  save: (name: string, value: string) => Promise<"user" | "process">;
+};
+
 export type GitActionContext = {
   factory: Promise<GitRepositoryFactory> | undefined;
   manager: PersistenceStoreControllerManagerInterface | undefined;
   applicationDeploymentMap: ApplicationDeploymentMap;
   principal?: AuthPrincipal;
+  credentials?: GitCredentialStore;
 };
+
+/** The name of the Admin secret holding the credential for a remote host (`host[:port]`). */
+export function gitCredentialSecretName(host: string): string {
+  return `git.${host}`;
+}
+
+/**
+ * A remote URL as results show it: without the username and token a URL configured outside Miroir may hold
+ * (`https://user:token@host/...`), which would otherwise reach the client and the page.
+ */
+export function displayedRemoteUrl(url: string | undefined): string | undefined {
+  if (url === undefined) {
+    return undefined;
+  }
+  try {
+    const parsed = new URL(url);
+    if (!parsed.username && !parsed.password) {
+      return url;
+    }
+    parsed.username = "";
+    parsed.password = "";
+    return parsed.toString();
+  } catch {
+    // not a URL (an SCP-like SSH remote): `user@host:path` names no secret
+    return url;
+  }
+}
+
+/**
+ * #679 D21: the remotes Git actions talk to are `http(s)` URLs: the implementation has no SSH transport.
+ * Returns the parsed URL, or the refusal.
+ */
+export function checkRemoteUrl(url: unknown): URL | Action2Error {
+  let parsed: URL | undefined;
+  try {
+    parsed = typeof url === "string" ? new URL(url) : undefined;
+  } catch {
+    parsed = undefined;
+  }
+  if (!parsed || (parsed.protocol !== "http:" && parsed.protocol !== "https:")) {
+    return gitActionError(
+      "unsupportedRemoteProtocol",
+      `Only http and https remotes are supported, not ${String(url)}: use the repository's HTTPS URL`,
+      { url },
+    );
+  }
+  return parsed;
+}
 
 export function gitActionError(
   reason: GitActionErrorReason,
@@ -258,7 +331,30 @@ async function status(opened: OpenedRepository, includeOtherChanges: boolean): P
       ...(await describePath(repository, file.path, description.sectionPaths, index < NAMED_FILES_LIMIT)),
     })),
   );
-  return { ...description, branches: await repository.branches(), files: described };
+  const branches = await repository.branches();
+  return {
+    ...description,
+    branches,
+    tracking: await tracking(repository, branches),
+    remoteUrl: displayedRemoteUrl(await repository.remoteUrl(DEFAULT_REMOTE)),
+    files: described,
+  };
+}
+
+/** The current branch against its upstream, as the last fetch left the remote-tracking branch. */
+async function tracking(repository: GitRepositoryInterface, branches: GitBranches): Promise<GitTracking | undefined> {
+  if (!branches.current) {
+    return undefined;
+  }
+  const upstream = await repository.upstream(branches.current);
+  if (!upstream) {
+    return undefined;
+  }
+  try {
+    return { upstream, ...(await repository.aheadBehind(branches.current, upstream)) };
+  } catch {
+    return undefined; // never fetched: no remote-tracking branch yet
+  }
 }
 
 /**
@@ -295,6 +391,11 @@ const REPOSITORY_ERROR_REASONS: Record<GitRepositoryErrorCode, GitActionErrorRea
   unknownRevision: "unknownRevision",
   invalidRefName: "invalidPayload",
   outsideWorkTree: "pathOutsideApplication",
+  authenticationRequired: "authenticationRequired",
+  notFastForward: "notFastForward",
+  pushRejected: "pushRejected",
+  pushRefused: "pushRefused",
+  remoteUnreachable: "remoteUnreachable",
 };
 
 function repositoryErrorReason(error: unknown): GitActionErrorReason | undefined {
@@ -419,6 +520,101 @@ function touchedDeployments(
     .map(([application, deploymentUuid]) => ({ application, deploymentUuid }));
 }
 
+type Remote = {
+  name: string;
+  url: string;
+  host: string;
+  onAuth: () => GitCredential | undefined;
+};
+
+/**
+ * The remote an action talks to, and how it authenticates: the payload's credential (used for this action
+ * only), else the `git.<host>` secret.
+ */
+async function openRemote(
+  repository: GitRepositoryInterface,
+  name: string,
+  credential: GitPayloadCredential | undefined,
+  context: GitActionContext,
+): Promise<Remote | Action2Error> {
+  const url = await repository.remoteUrl(name);
+  if (!url) {
+    return gitActionError("noRemote", `The repository has no remote ${name}: set its URL first`, { remote: name });
+  }
+  const parsed = checkRemoteUrl(url);
+  if (parsed instanceof Action2Error) {
+    return parsed;
+  }
+  const host = parsed.host;
+  const onAuth = (): GitCredential | undefined => {
+    if (nonEmptyString(credential?.username) && nonEmptyString(credential?.token)) {
+      return { username: credential!.username, password: credential!.token };
+    }
+    const saved = context.credentials?.resolve(gitCredentialSecretName(host));
+    try {
+      const value = saved ? JSON.parse(saved) : undefined;
+      return typeof value?.username === "string" && typeof value?.token === "string"
+        ? { username: value.username, password: value.token }
+        : undefined;
+    } catch {
+      return undefined;
+    }
+  };
+  return { name, url, host, onAuth };
+}
+
+/** A refusal of the remote: `ExternalServiceUnauthorized` when it asks for credentials (D17). */
+function remoteActionError(error: unknown, remote: Remote, actionType: string): Action2Error {
+  const message = error instanceof Error ? error.message : String(error);
+  const reason = repositoryErrorReason(error) ?? "gitFailure";
+  if (reason === "authenticationRequired") {
+    return new Action2Error("ExternalServiceUnauthorized", message, undefined, undefined, {
+      reason,
+      host: remote.host,
+      remote: remote.name,
+    });
+  }
+  return gitActionError(reason, message, { actionType, remote: remote.name, host: remote.host });
+}
+
+async function remoteResult(repository: GitRepositoryInterface, remote: Remote): Promise<GitRemoteResult> {
+  const branches = await repository.branches();
+  return {
+    branches,
+    remote: remote.name,
+    url: displayedRemoteUrl(remote.url)!,
+    tracking: await tracking(repository, branches),
+  };
+}
+
+/** The remote and branch of the current branch's upstream (`origin/main`). */
+function splitUpstream(upstream: string): { remote: string; branch: string } {
+  const slash = upstream.indexOf("/");
+  return { remote: upstream.slice(0, slash), branch: upstream.slice(slash + 1) };
+}
+
+/** A host as a URL gives it: a name or address, and an optional port. */
+const HOST_PATTERN = /^[A-Za-z0-9.-]+(:[0-9]{1,5})?$|^\[[0-9A-Fa-f:.]+\](:[0-9]{1,5})?$/;
+
+async function setCredential(action: GitSetCredentialAction, context: GitActionContext): Promise<Action2ReturnType> {
+  const host = nonEmptyString(action.payload.host);
+  const username = nonEmptyString(action.payload.username);
+  const token = nonEmptyString(action.payload.token);
+  if (!host || !HOST_PATTERN.test(host) || !username || !token) {
+    return gitActionError("invalidPayload", "A credential needs a host (name[:port]), a username and a token");
+  }
+  if (!context.credentials?.canSave()) {
+    return gitActionError(
+      "secretsUnavailable",
+      "gitAction_setCredential: a wrapping key is required to save the credential",
+    );
+  }
+  // the name a remote URL's host gives: lower case, no default https port
+  const name = gitCredentialSecretName(new URL(`https://${host}`).host);
+  const scope = await context.credentials.save(name, JSON.stringify({ username, token }));
+  return ok({ name, scope } satisfies GitSetCredentialResult);
+}
+
 /** The tail of the Git actions running on each repository, by root folder. */
 const repositoryLocks = new Map<string, Promise<unknown>>();
 
@@ -456,6 +652,14 @@ async function rebootTouchedStores(touched: GitTouchedDeployment[], context: Git
 
 /** Runs one Git action in the process that owns the deployment's files. */
 export async function runGitAction(action: GitAction, context: GitActionContext): Promise<Action2ReturnType> {
+  if (action.actionType === "gitAction_setCredential") {
+    // a credential belongs to a host, not to a repository: no deployment is opened
+    try {
+      return await setCredential(action, context);
+    } catch (error) {
+      return gitActionError("secretsUnavailable", error instanceof Error ? error.message : String(error));
+    }
+  }
   const resolved = await resolveDeployment(action, context);
   if (resolved instanceof Action2Error) {
     return resolved;
@@ -633,6 +837,109 @@ async function runOnDeployment(
         await rebootTouchedStores(touched, context);
         const result: GitCheckoutResult = { branches: await repository.branches(), touchedDeployments: touched };
         return ok(result);
+      }
+      case "gitAction_setRemote": {
+        const parsed = checkRemoteUrl(action.payload.url);
+        if (parsed instanceof Action2Error) {
+          return parsed;
+        }
+        if (parsed.username || parsed.password) {
+          // .git/config is a plain file: a token in the URL would be stored there in clear
+          return gitActionError(
+            "invalidPayload",
+            "Give the remote URL without a username or token: Miroir asks for them when the remote needs them",
+          );
+        }
+        const name = nonEmptyString(action.payload.remote) ?? DEFAULT_REMOTE;
+        await repository.setRemote(name, action.payload.url);
+        const remote = await openRemote(repository, name, undefined, context);
+        return remote instanceof Action2Error ? remote : ok(await remoteResult(repository, remote));
+      }
+      case "gitAction_fetch": {
+        const remote = await openRemote(
+          repository,
+          nonEmptyString(action.payload.remote) ?? DEFAULT_REMOTE,
+          action.payload.credential,
+          context,
+        );
+        if (remote instanceof Action2Error) {
+          return remote;
+        }
+        try {
+          await repository.fetch({ remote: remote.name, url: remote.url, onAuth: remote.onAuth });
+        } catch (error) {
+          return remoteActionError(error, remote, action.actionType);
+        }
+        return ok(await remoteResult(repository, remote));
+      }
+      case "gitAction_pull": {
+        const branches = await repository.branches();
+        if (!branches.current) {
+          return gitActionError("detachedHead", "HEAD is detached: check out a branch to pull into it");
+        }
+        const upstream = await repository.upstream(branches.current);
+        if (!upstream) {
+          return gitActionError("noUpstream", `${branches.current} follows no remote branch: push it first`, {
+            branch: branches.current,
+          });
+        }
+        const remote = await openRemote(repository, splitUpstream(upstream).remote, action.payload.credential, context);
+        if (remote instanceof Action2Error) {
+          return remote;
+        }
+        // as for a checkout: isomorphic-git would overwrite a staged change
+        const staged = await repository.stagedPaths();
+        if (staged.length > 0) {
+          return gitActionError(
+            "checkoutConflict",
+            "Staged changes would be lost by the pull: commit or unstage them first",
+            { paths: staged },
+          );
+        }
+        let outcome: Awaited<ReturnType<GitRepositoryInterface["fastForward"]>>;
+        try {
+          await repository.fetch({ remote: remote.name, url: remote.url, onAuth: remote.onAuth });
+          outcome = await repository.fastForward(branches.current, upstream);
+        } catch (error) {
+          return remoteActionError(error, remote, action.actionType);
+        }
+        if (outcome.conflicts.length > 0) {
+          return gitActionError(
+            "checkoutConflict",
+            "Uncommitted changes would be overwritten by the pull: commit or discard them first",
+            { paths: outcome.conflicts },
+          );
+        }
+        const touched = outcome.upToDate ? [] : touchedDeployments(description.root, resolved, context);
+        await rebootTouchedStores(touched, context);
+        const result: GitPullResult = {
+          ...(await remoteResult(repository, remote)),
+          upToDate: outcome.upToDate,
+          touchedDeployments: touched,
+        };
+        return ok(result);
+      }
+      case "gitAction_push": {
+        const branches = await repository.branches();
+        if (!branches.current) {
+          return gitActionError("detachedHead", "HEAD is detached: check out a branch to push it");
+        }
+        const upstream = await repository.upstream(branches.current);
+        const remote = await openRemote(
+          repository,
+          upstream ? splitUpstream(upstream).remote : DEFAULT_REMOTE,
+          action.payload.credential,
+          context,
+        );
+        if (remote instanceof Action2Error) {
+          return remote;
+        }
+        try {
+          await repository.push({ remote: remote.name, url: remote.url, branch: branches.current, onAuth: remote.onAuth });
+        } catch (error) {
+          return remoteActionError(error, remote, action.actionType);
+        }
+        return ok(await remoteResult(repository, remote));
       }
       default:
         return new Action2Error(
