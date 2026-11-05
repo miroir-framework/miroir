@@ -65,6 +65,45 @@ export interface GitRepositoryInterface {
   readFile(path: string, ref?: string): Promise<string | undefined>;
   /** True when `.gitignore` rules exclude `path` (a file or folder) from the repository. */
   isIgnored(path: string): Promise<boolean>;
+  /** The paths whose index entry differs from HEAD (every indexed path in a repository with no commit). */
+  stagedPaths(): Promise<string[]>;
+  /**
+   * Puts the work tree state of each file in the index: its content, or its removal when it is absent.
+   * Throws `outsideWorkTree` for a file reached through a symbolic link out of the work tree.
+   */
+  stage(paths: string[]): Promise<void>;
+  /** Puts the HEAD state of each path back in the index, leaving the work tree as it is. */
+  unstage(paths: string[]): Promise<void>;
+  /** Commits the index on the current branch (or the detached HEAD); returns the new commit's oid. */
+  commit(message: string, author: GitPerson): Promise<string>;
+  /** A value of the repository's own configuration (`.git/config`), such as `user.name`. */
+  getConfig(key: string): Promise<string | undefined>;
+  setConfig(key: string, value: string): Promise<void>;
+  /** Creates a local branch at `startPoint` (HEAD by default), without checking it out. */
+  createBranch(name: string, startPoint?: string): Promise<void>;
+  deleteBranch(name: string): Promise<void>;
+  /** True when the branch's commit is HEAD's commit or one of its ancestors: deleting it loses no commit. */
+  branchIsMergedIntoHead(name: string): Promise<boolean>;
+  /**
+   * Checks out a local branch, or a tag or commit as a detached HEAD. When uncommitted changes would be
+   * overwritten, nothing changes and the conflicting paths are returned.
+   */
+  checkout(ref: string): Promise<GitCheckoutOutcome>;
+}
+
+export type GitCheckoutOutcome = { conflicts: string[] };
+
+/** Errors a repository throws with a `code` the actions map to a reason. */
+export type GitRepositoryErrorCode = "branchExists" | "unknownRevision" | "invalidRefName" | "outsideWorkTree";
+
+export class GitRepositoryError extends Error {
+  constructor(
+    public readonly code: GitRepositoryErrorCode,
+    message: string,
+  ) {
+    super(message);
+    this.name = "GitRepositoryError";
+  }
 }
 
 export interface GitRepositoryFactory {
@@ -97,4 +136,14 @@ export type GitActionErrorReason =
   | "sharedFolder"
   | "pathOutsideApplication"
   | "sectionsInSeveralRepositories"
+  | "openMiroirTransaction"
+  | "otherStagedChanges"
+  | "nothingStaged"
+  | "authorUnknown"
+  | "invalidPayload"
+  | "branchExists"
+  | "unknownRevision"
+  | "currentBranch"
+  | "branchNotMerged"
+  | "checkoutConflict"
   | "gitFailure";

@@ -143,7 +143,19 @@ const expectedActionTypesByEndpoint: Record<string, string[]> = {
   ],
   LocalCacheEndpoint: [],
   // #679
-  GitEndpoint: ["gitAction_status", "gitAction_log", "gitAction_commitFiles", "gitAction_diff", "gitAction_init"],
+  GitEndpoint: [
+    "gitAction_status",
+    "gitAction_log",
+    "gitAction_commitFiles",
+    "gitAction_diff",
+    "gitAction_init",
+    "gitAction_stage",
+    "gitAction_unstage",
+    "gitAction_commit",
+    "gitAction_createBranch",
+    "gitAction_deleteBranch",
+    "gitAction_checkout",
+  ],
 };
 
 const miroirEndpoints = defaultMiroirMetaModel.endpoints.filter(

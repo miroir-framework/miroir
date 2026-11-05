@@ -8,18 +8,26 @@ import type { ApplicationDeploymentMap } from "../1_core/Deployment";
 import type { AuthPrincipal } from "../1_core/authentication/AuthenticationPolicy";
 import type { ApplicationSection } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { Action2Error, type Action2ReturnType } from "../0_interfaces/2_domain/DomainElement";
-import type {
-  GitAction,
-  GitCommitFilesResult,
-  GitDiffResult,
-  GitInitResult,
-  GitLogResult,
-  GitPathDescription,
-  GitRepositoryDescription,
-  GitStatusResult,
+import {
+  GIT_ACTIONS_NEEDING_SAVED_MIROIR_CHANGES,
+  type GitAction,
+  type GitBranchResult,
+  type GitCheckoutResult,
+  type GitCommitAction,
+  type GitCommitFilesResult,
+  type GitCommitResult,
+  type GitDiffResult,
+  type GitInitResult,
+  type GitLogResult,
+  type GitPathDescription,
+  type GitRepositoryDescription,
+  type GitStatusResult,
+  type GitTouchedDeployment,
 } from "../0_interfaces/3_controllers/GitAction";
 import type {
   GitActionErrorReason,
+  GitPerson,
+  GitRepositoryErrorCode,
   GitRepositoryFactory,
   GitRepositoryInterface,
 } from "../0_interfaces/4-services/GitRepositoryInterface";
@@ -252,6 +260,164 @@ async function status(opened: OpenedRepository, includeOtherChanges: boolean): P
   return { ...description, branches: await repository.branches(), files: described };
 }
 
+/**
+ * #679 D7: the refusal of a commit or checkout while the local cache holds Miroir changes not yet on disk.
+ * A commit looks at the changes of its application; a checkout at every change, since it can rewrite the
+ * files of any deployment in the repository.
+ */
+export function openMiroirTransactionError(
+  action: GitAction,
+  transaction: readonly { payload?: { application?: string } }[],
+): Action2Error | undefined {
+  if (!GIT_ACTIONS_NEEDING_SAVED_MIROIR_CHANGES.includes(action.actionType)) {
+    return undefined;
+  }
+  const pending =
+    action.actionType === "gitAction_checkout"
+      ? transaction
+      : transaction.filter((change) => change.payload?.application === action.payload?.application);
+  if (pending.length === 0) {
+    return undefined;
+  }
+  return gitActionError(
+    "openMiroirTransaction",
+    "Miroir changes are not saved yet: commit them in Miroir first",
+    {
+      pendingChanges: pending.length,
+      applications: [...new Set(pending.map((change) => change.payload?.application))],
+    },
+  );
+}
+
+const REPOSITORY_ERROR_REASONS: Record<GitRepositoryErrorCode, GitActionErrorReason> = {
+  branchExists: "branchExists",
+  unknownRevision: "unknownRevision",
+  invalidRefName: "invalidPayload",
+  outsideWorkTree: "pathOutsideApplication",
+};
+
+function repositoryErrorReason(error: unknown): GitActionErrorReason | undefined {
+  // matched by name, not instanceof: the implementation may come with its own copy of core
+  const candidate = error as { name?: unknown; code?: unknown } | undefined;
+  return candidate?.name === "GitRepositoryError" && typeof candidate.code === "string"
+    ? REPOSITORY_ERROR_REASONS[candidate.code as GitRepositoryErrorCode]
+    : undefined;
+}
+
+function nonEmptyString(value: unknown): string | undefined {
+  return typeof value === "string" && value.trim() !== "" ? value.trim() : undefined;
+}
+
+/**
+ * The paths a stage or unstage action works on: the payload's, each a changed file (never a folder) of the
+ * application's sections, or with `all` every changed file of the sections; of those, the ones `pick` keeps.
+ */
+async function pathsToStage(
+  opened: OpenedRepository,
+  payload: { paths?: unknown; all?: unknown },
+  pick: (file: { staged: boolean; unstaged: boolean }) => boolean,
+): Promise<string[] | Action2Error> {
+  if (payload.all === true) {
+    const files = await opened.repository.status(sectionFilters(opened.description.sectionPaths));
+    return files.filter(pick).map((file) => file.path);
+  }
+  const paths = payload.paths;
+  if (!Array.isArray(paths) || paths.length === 0) {
+    return gitActionError("invalidPayload", "Name the paths to change, or set all");
+  }
+  const refused = paths.filter(
+    (path) => !isApplicationRepositoryPath(path as string, opened.description.sectionPaths),
+  );
+  if (refused.length > 0) {
+    return gitActionError("pathOutsideApplication", "A path is not a file of the application's sections", {
+      paths: refused,
+    });
+  }
+  // a folder, or an unchanged file, has no status row of its own
+  const files = await opened.repository.status(paths as string[]);
+  const changed = new Set(files.map((file) => file.path));
+  const unknown = (paths as string[]).filter((path) => !changed.has(path));
+  if (unknown.length > 0) {
+    return gitActionError("invalidPayload", "A path is not a changed file of the application", { paths: unknown });
+  }
+  return files.filter(pick).map((file) => file.path);
+}
+
+/** The commit's author: the payload's, else the logged-in user, else the repository's configuration. */
+async function commitAuthor(
+  action: GitCommitAction,
+  repository: GitRepositoryInterface,
+  principal: AuthPrincipal | undefined,
+): Promise<GitPerson | undefined> {
+  const explicitName = nonEmptyString(action.payload.author?.name);
+  if (explicitName) {
+    return { name: explicitName, email: nonEmptyString(action.payload.author?.email) ?? "" };
+  }
+  if (principal?.username) {
+    // MiroirUser has no email attribute
+    return { name: principal.username, email: "" };
+  }
+  const configuredName = nonEmptyString(await repository.getConfig("user.name"));
+  if (!configuredName) {
+    return undefined;
+  }
+  return { name: configuredName, email: nonEmptyString(await repository.getConfig("user.email")) ?? "" };
+}
+
+async function commit(
+  action: GitCommitAction,
+  opened: OpenedRepository,
+  principal: AuthPrincipal | undefined,
+): Promise<Action2ReturnType> {
+  const { repository, description } = opened;
+  const message = nonEmptyString(action.payload.message);
+  if (!message) {
+    return gitActionError("invalidPayload", "A commit needs a message");
+  }
+  const staged = await repository.stagedPaths();
+  if (staged.length === 0) {
+    return gitActionError("nothingStaged", "No change is staged");
+  }
+  const others = staged.filter((path) => !gitPathIsInSections(path, description.sectionPaths));
+  if (others.length > 0 && action.payload.includeOtherStagedChanges !== true) {
+    return gitActionError(
+      "otherStagedChanges",
+      "Files outside the application's sections are staged; include them, or unstage them first",
+      { paths: others },
+    );
+  }
+  const author = await commitAuthor(action, repository, principal);
+  if (!author) {
+    return gitActionError("authorUnknown", "Give the commit's author: no user is logged in and the repository has no user.name");
+  }
+  if (action.payload.rememberAuthor === true && nonEmptyString(action.payload.author?.name)) {
+    await repository.setConfig("user.name", author.name);
+    await repository.setConfig("user.email", author.email);
+  }
+  const oid = await repository.commit(message, author);
+  return ok({ oid, author, files: staged } satisfies GitCommitResult);
+}
+
+/** The deployments of the map with a section folder inside the repository: a checkout may rewrite them. */
+function touchedDeployments(
+  root: string,
+  resolved: ResolvedDeployment,
+  context: GitActionContext,
+): GitTouchedDeployment[] {
+  return Object.entries(context.applicationDeploymentMap)
+    .filter(([, deploymentUuid]) =>
+      Object.values(
+        filesystemSectionDirectories(
+          context.manager?.getPersistenceStoreConfiguration?.(deploymentUuid),
+          resolved.rootDirectory,
+          resolved.factory,
+          [...APPLICATION_SECTIONS, "admin"],
+        ),
+      ).some((directory) => resolved.factory.relativePath(root, directory as string) !== undefined),
+    )
+    .map(([application, deploymentUuid]) => ({ application, deploymentUuid }));
+}
+
 /** Runs one Git action in the process that owns the deployment's files. */
 export async function runGitAction(action: GitAction, context: GitActionContext): Promise<Action2ReturnType> {
   const resolved = await resolveDeployment(action, context);
@@ -345,6 +511,81 @@ export async function runGitAction(action: GitAction, context: GitActionContext)
         };
         return ok(result);
       }
+      case "gitAction_stage":
+      case "gitAction_unstage": {
+        const staging = action.actionType === "gitAction_stage";
+        const paths = await pathsToStage(opened, action.payload, (file) => (staging ? file.unstaged : file.staged));
+        if (paths instanceof Action2Error) {
+          return paths;
+        }
+        if (paths.length > 0) {
+          await (staging ? repository.stage(paths) : repository.unstage(paths));
+        }
+        return ok(await status(opened, false));
+      }
+      case "gitAction_commit":
+        return commit(action, opened, context.principal);
+      case "gitAction_createBranch": {
+        const name = nonEmptyString(action.payload.name);
+        if (!name) {
+          return gitActionError("invalidPayload", "A branch needs a name");
+        }
+        await repository.createBranch(name, nonEmptyString(action.payload.startPoint));
+        return ok({ branches: await repository.branches() } satisfies GitBranchResult);
+      }
+      case "gitAction_deleteBranch": {
+        const name = nonEmptyString(action.payload.name);
+        if (!name) {
+          return gitActionError("invalidPayload", "Name the branch to delete");
+        }
+        const branches = await repository.branches();
+        if (branches.current === name) {
+          return gitActionError("currentBranch", `${name} is the current branch: check out another one first`, {
+            name,
+          });
+        }
+        if (!branches.local.includes(name)) {
+          return gitActionError("unknownRevision", `There is no branch ${name}`, { name });
+        }
+        // isomorphic-git keeps no reflog: the commits of a deleted branch nothing else reaches are lost
+        if (action.payload.force !== true && !(await repository.branchIsMergedIntoHead(name))) {
+          return gitActionError(
+            "branchNotMerged",
+            `${name} has commits the current branch does not have: deleting it loses them`,
+            { name },
+          );
+        }
+        await repository.deleteBranch(name);
+        return ok({ branches: await repository.branches() } satisfies GitBranchResult);
+      }
+      case "gitAction_checkout": {
+        const ref = nonEmptyString(action.payload.ref);
+        if (!ref) {
+          return gitActionError("invalidPayload", "Name the branch, tag or commit to check out");
+        }
+        // isomorphic-git compares the target with the index only: a staged change would be overwritten
+        const staged = await repository.stagedPaths();
+        if (staged.length > 0) {
+          return gitActionError(
+            "checkoutConflict",
+            "Staged changes would be lost by the checkout: commit or unstage them first",
+            { paths: staged },
+          );
+        }
+        const { conflicts } = await repository.checkout(ref);
+        if (conflicts.length > 0) {
+          return gitActionError(
+            "checkoutConflict",
+            "Uncommitted changes would be overwritten by the checkout: commit or discard them first",
+            { paths: conflicts },
+          );
+        }
+        const result: GitCheckoutResult = {
+          branches: await repository.branches(),
+          touchedDeployments: touchedDeployments(description.root, resolved, context),
+        };
+        return ok(result);
+      }
       default:
         return new Action2Error(
           "InvalidAction",
@@ -352,7 +593,8 @@ export async function runGitAction(action: GitAction, context: GitActionContext)
         );
     }
   } catch (error) {
-    return gitActionError("gitFailure", error instanceof Error ? error.message : String(error), {
+    const message = error instanceof Error ? error.message : String(error);
+    return gitActionError(repositoryErrorReason(error) ?? "gitFailure", message, {
       actionType: action.actionType,
     });
   }

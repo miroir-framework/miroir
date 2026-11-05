@@ -288,6 +288,397 @@
           "actionImplementationType": "libraryImplementation",
           "inMemoryImplementationFunctionName": "handleAction_gitAction_init"
         }
+      },
+      {
+        "actionParameters": {
+          "actionType": {
+            "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false,
+                "defaultLabel": "Stage files of the application"
+              }
+            },
+            "definition": "gitAction_stage"
+          },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
+          },
+          "endpoint": {
+            "type": "literal",
+            "definition": "a7f243cb-9345-425a-918d-4e433a94f4bf"
+          },
+          "payload": {
+            "type": "object",
+            "tag": {
+              "value": {
+                "canBeTemplate": true
+              }
+            },
+            "definition": {
+              "application": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                }
+              },
+              "paths": {
+                "type": "array",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                },
+                "definition": {
+                  "type": "string"
+                },
+                "optional": true
+              },
+              "all": {
+                "type": "boolean",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                },
+                "optional": true
+              }
+            }
+          }
+        },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_gitAction_stage"
+        }
+      },
+      {
+        "actionParameters": {
+          "actionType": {
+            "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false,
+                "defaultLabel": "Unstage files of the application"
+              }
+            },
+            "definition": "gitAction_unstage"
+          },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
+          },
+          "endpoint": {
+            "type": "literal",
+            "definition": "a7f243cb-9345-425a-918d-4e433a94f4bf"
+          },
+          "payload": {
+            "type": "object",
+            "tag": {
+              "value": {
+                "canBeTemplate": true
+              }
+            },
+            "definition": {
+              "application": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                }
+              },
+              "paths": {
+                "type": "array",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                },
+                "definition": {
+                  "type": "string"
+                },
+                "optional": true
+              },
+              "all": {
+                "type": "boolean",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                },
+                "optional": true
+              }
+            }
+          }
+        },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_gitAction_unstage"
+        }
+      },
+      {
+        "actionParameters": {
+          "actionType": {
+            "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false,
+                "defaultLabel": "Commit the staged changes"
+              }
+            },
+            "definition": "gitAction_commit"
+          },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
+          },
+          "endpoint": {
+            "type": "literal",
+            "definition": "a7f243cb-9345-425a-918d-4e433a94f4bf"
+          },
+          "payload": {
+            "type": "object",
+            "tag": {
+              "value": {
+                "canBeTemplate": true
+              }
+            },
+            "definition": {
+              "application": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                }
+              },
+              "message": {
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                }
+              },
+              "author": {
+                "type": "object",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                },
+                "definition": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  }
+                },
+                "optional": true
+              },
+              "rememberAuthor": {
+                "type": "boolean",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                },
+                "optional": true
+              },
+              "includeOtherStagedChanges": {
+                "type": "boolean",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                },
+                "optional": true
+              }
+            }
+          }
+        },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_gitAction_commit"
+        }
+      },
+      {
+        "actionParameters": {
+          "actionType": {
+            "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false,
+                "defaultLabel": "Create a branch"
+              }
+            },
+            "definition": "gitAction_createBranch"
+          },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
+          },
+          "endpoint": {
+            "type": "literal",
+            "definition": "a7f243cb-9345-425a-918d-4e433a94f4bf"
+          },
+          "payload": {
+            "type": "object",
+            "tag": {
+              "value": {
+                "canBeTemplate": true
+              }
+            },
+            "definition": {
+              "application": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                }
+              },
+              "name": {
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                }
+              },
+              "startPoint": {
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                },
+                "optional": true
+              }
+            }
+          }
+        },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_gitAction_createBranch"
+        }
+      },
+      {
+        "actionParameters": {
+          "actionType": {
+            "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false,
+                "defaultLabel": "Delete a branch"
+              }
+            },
+            "definition": "gitAction_deleteBranch"
+          },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
+          },
+          "endpoint": {
+            "type": "literal",
+            "definition": "a7f243cb-9345-425a-918d-4e433a94f4bf"
+          },
+          "payload": {
+            "type": "object",
+            "tag": {
+              "value": {
+                "canBeTemplate": true
+              }
+            },
+            "definition": {
+              "application": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                }
+              },
+              "name": {
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                }
+              },
+              "force": {
+                "type": "boolean",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                },
+                "optional": true
+              }
+            }
+          }
+        },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_gitAction_deleteBranch"
+        }
+      },
+      {
+        "actionParameters": {
+          "actionType": {
+            "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false,
+                "defaultLabel": "Check out a branch, tag or commit"
+              }
+            },
+            "definition": "gitAction_checkout"
+          },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
+          },
+          "endpoint": {
+            "type": "literal",
+            "definition": "a7f243cb-9345-425a-918d-4e433a94f4bf"
+          },
+          "payload": {
+            "type": "object",
+            "tag": {
+              "value": {
+                "canBeTemplate": true
+              }
+            },
+            "definition": {
+              "application": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                }
+              },
+              "ref": {
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_gitAction_checkout"
+        }
       }
     ]
   }

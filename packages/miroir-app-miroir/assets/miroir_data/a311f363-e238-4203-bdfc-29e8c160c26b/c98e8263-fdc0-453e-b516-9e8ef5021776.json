@@ -5,7 +5,7 @@
   "name": "ui.gitPage",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "Git page: the changes of an application named by Entity and instance, its history with refs, the files of a commit, the diff of a file, nothing while git is off, and the creation of a repository.",
+  "description": "Git page: the changes of an application named by Entity and instance, staged and committed from the page, its history with refs, its branches created, checked out and left for a detached HEAD, the files of a commit, the diff of a file, the refusals it explains, nothing while git is off, and the creation of a repository.",
   "tags": [
     "ui"
   ],
@@ -409,6 +409,366 @@
                   "byTestId": "git-no-repository"
                 },
                 "present": false
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: stages a change, then commits the staged changes",
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "the changes",
+                "target": {
+                  "byText": "Book · Ubik"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "setChecked",
+                "label": "stage the modified book",
+                "target": {
+                  "byTestId": "git-stage-data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/03ffcae1-b83f-4970-b3d9-04780d3d0780.json"
+                },
+                "checked": true
+              },
+              {
+                "step": "expectElement",
+                "label": "both changes staged",
+                "target": {
+                  "byText": "staged"
+                },
+                "count": 2,
+                "timeout": 2000
+              },
+              {
+                "step": "change",
+                "label": "the message",
+                "target": {
+                  "byTestId": "git-commit-message"
+                },
+                "value": "Ubik: year 1971"
+              },
+              {
+                "step": "click",
+                "label": "commit",
+                "target": {
+                  "byTestId": "git-commit"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the new commit",
+                "target": {
+                  "byText": "Ubik: year 1971"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "no change left",
+                "target": {
+                  "byText": "No change since the last commit."
+                },
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: asks for the author when the repository has none",
+            "componentProps": {
+              "authorUnknown": true
+            },
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "the changes",
+                "target": {
+                  "byText": "Book · Ubik"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "change",
+                "label": "the message",
+                "target": {
+                  "byTestId": "git-commit-message"
+                },
+                "value": "Galactic Pot-Healer"
+              },
+              {
+                "step": "click",
+                "label": "commit",
+                "target": {
+                  "byTestId": "git-commit"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the author fields",
+                "target": {
+                  "byTestId": "git-commit-author"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "change",
+                "label": "the author name",
+                "target": {
+                  "byTestId": "git-author-name"
+                },
+                "value": "Ann Designer"
+              },
+              {
+                "step": "change",
+                "label": "the author email",
+                "target": {
+                  "byTestId": "git-author-email"
+                },
+                "value": "ann@example.com"
+              },
+              {
+                "step": "click",
+                "label": "commit again",
+                "target": {
+                  "byTestId": "git-commit"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the new commit",
+                "target": {
+                  "byText": "Galactic Pot-Healer"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "its author",
+                "target": {
+                  "byText": {
+                    "regex": "^Ann Designer, "
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: explains a commit refused while Miroir changes are not saved",
+            "componentProps": {
+              "openMiroirTransaction": true
+            },
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "the changes",
+                "target": {
+                  "byText": "Book · Ubik"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "change",
+                "label": "the message",
+                "target": {
+                  "byTestId": "git-commit-message"
+                },
+                "value": "too early"
+              },
+              {
+                "step": "click",
+                "label": "commit",
+                "target": {
+                  "byTestId": "git-commit"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the explanation",
+                "target": {
+                  "byText": {
+                    "regex": "^Commit the Miroir changes first"
+                  }
+                },
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: creates a branch and checks it out",
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "the branches",
+                "target": {
+                  "byTestId": "git-branch-main"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "change",
+                "label": "the branch name",
+                "target": {
+                  "byTestId": "git-new-branch-name"
+                },
+                "value": "topic"
+              },
+              {
+                "step": "click",
+                "label": "create",
+                "target": {
+                  "byTestId": "git-create-branch"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the new branch",
+                "target": {
+                  "byTestId": "git-branch-topic"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "check it out",
+                "target": {
+                  "byTestId": "git-checkout-topic"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "main can be checked out",
+                "target": {
+                  "byTestId": "git-checkout-main"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "topic is current",
+                "target": {
+                  "byTestId": "git-checkout-topic"
+                },
+                "present": false
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: checks out a commit as a detached HEAD, then goes back to the branch",
+            "steps": [
+              {
+                "step": "click",
+                "label": "the first commit",
+                "target": {
+                  "byTestId": "git-commit-1111111111111111111111111111111111111111"
+                }
+              },
+              {
+                "step": "click",
+                "label": "check it out",
+                "target": {
+                  "byTestId": "git-checkout-commit"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the detached banner",
+                "target": {
+                  "byTestId": "git-detached"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "back to the branch",
+                "target": {
+                  "byTestId": "git-back-to-branch"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "no banner",
+                "target": {
+                  "byTestId": "git-detached"
+                },
+                "present": false,
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: explains a checkout refused by uncommitted changes",
+            "componentProps": {
+              "checkoutConflicts": [
+                "data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/03ffcae1-b83f-4970-b3d9-04780d3d0780.json"
+              ]
+            },
+            "steps": [
+              {
+                "step": "click",
+                "label": "check out feature",
+                "target": {
+                  "byTestId": "git-checkout-feature"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the explanation",
+                "target": {
+                  "byText": {
+                    "regex": "^Uncommitted changes would be overwritten"
+                  }
+                },
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: asks before deleting a branch with commits of its own",
+            "componentProps": {
+              "unmergedBranches": [
+                "feature"
+              ]
+            },
+            "steps": [
+              {
+                "step": "click",
+                "label": "delete feature",
+                "target": {
+                  "byTestId": "git-delete-branch-feature"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the explanation",
+                "target": {
+                  "byText": {
+                    "regex": "^feature has commits the current branch does not have"
+                  }
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "delete anyway",
+                "target": {
+                  "byTestId": "git-delete-branch-anyway"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the branch is gone",
+                "target": {
+                  "byTestId": "git-branch-feature"
+                },
+                "present": false,
+                "timeout": 2000
               }
             ]
           }
