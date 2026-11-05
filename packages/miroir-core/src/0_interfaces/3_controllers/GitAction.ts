@@ -32,6 +32,8 @@ export const GIT_ACTION_TYPES = [
   "gitAction_pull",
   "gitAction_push",
   "gitAction_setCredential",
+  "gitAction_clone",
+  "gitAction_installClonedDeployment",
 ] as const;
 
 export type GitActionType = (typeof GIT_ACTION_TYPES)[number];
@@ -55,6 +57,10 @@ export const GIT_ACTIONS_KEEPING_FILES: readonly GitActionType[] = [
   "gitAction_fetch",
   "gitAction_push",
   "gitAction_setCredential",
+  // a clone writes a new folder, which no deployment uses yet
+  "gitAction_clone",
+  // writes rows in Admin and opens a store; the deployment's files stay as they are
+  "gitAction_installClonedDeployment",
 ];
 
 /**
@@ -125,6 +131,23 @@ export type GitSetCredentialAction = GitActionOf<
   { host: string; username: string; token: string }
 >;
 
+/**
+ * Clones `url` (`http(s)` only) into `<deployment root folder>/<folderName>`, a folder that must not exist
+ * or be empty, and lists the deployments the repository holds. `application` is the Admin application.
+ */
+export type GitCloneAction = GitActionOf<
+  "gitAction_clone",
+  { url: string; folderName: string; branch?: string; credential?: GitPayloadCredential }
+>;
+/**
+ * Registers a deployment of a cloned folder in Admin, its directories pointing inside the clone, and opens
+ * it. `deploymentUuid` may be left out when the folder holds a single deployment.
+ */
+export type GitInstallClonedDeploymentAction = GitActionOf<
+  "gitAction_installClonedDeployment",
+  { folderName: string; deploymentUuid?: string }
+>;
+
 export type GitAction =
   | GitStatusAction
   | GitLogAction
@@ -141,7 +164,9 @@ export type GitAction =
   | GitFetchAction
   | GitPullAction
   | GitPushAction
-  | GitSetCredentialAction;
+  | GitSetCredentialAction
+  | GitCloneAction
+  | GitInstallClonedDeploymentAction;
 
 /** The instance a changed path stores, when it is an instance file of the deployment (D10). */
 export type GitPathDescription = {
@@ -228,6 +253,43 @@ export type GitPullResult = GitRemoteResult & {
 
 /** The saved secret's name and scope; never its value. */
 export type GitSetCredentialResult = { name: string; scope: "user" | "process" };
+
+/** A deployment a cloned repository holds, as `gitAction_clone` lists it. */
+export type GitClonedDeploymentSummary = {
+  deploymentUuid: Uuid;
+  selfApplication: Uuid;
+  /** The application's name, from its SelfApplication row. */
+  name: string;
+  /** The repository-relative file of the Deployment row. */
+  deploymentFile: string;
+  /** The section folders the installed deployment uses, relative to the deployment root folder. */
+  directories: Record<string, string>;
+  /** The application already has a deployment here: installing this one is refused. */
+  alreadyInstalled: boolean;
+};
+
+export type GitCloneResult = {
+  /** The clone, relative to the deployment root folder. */
+  folderName: string;
+  /** Absolute path of the clone (on the machine that ran the action). */
+  root: string;
+  branches: GitBranches;
+  deployments: GitClonedDeploymentSummary[];
+  /** Deployment rows of the repository that cannot be opened from the clone, and why. */
+  skipped: { deploymentFile: string; reason: string }[];
+};
+
+export type GitInstallClonedDeploymentResult = {
+  application: Uuid;
+  deploymentUuid: Uuid;
+  name: string;
+  directories: Record<string, string>;
+  /**
+   * Set by the DomainController that ran or forwarded the install, when its local cache could not load the
+   * new application: the deployment is registered and open, the cache does not show it yet.
+   */
+  reloadFailures?: { application: Uuid; errorMessage?: string }[];
+};
 
 export function isGitAction(action: unknown): action is GitAction {
   const actionType = (action as { actionType?: unknown } | undefined)?.actionType;

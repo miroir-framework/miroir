@@ -4,14 +4,24 @@
  * against `GitRepositoryInterface` only: the implementation is loaded through
  * `ConfigurationService.getGitRepositoryFactory`, on the first Git action.
  */
-import type { ApplicationDeploymentMap } from "../1_core/Deployment";
+import { adminSelfApplication } from "miroir-app-admin";
+
+import { defaultSelfApplicationDeploymentMap, type ApplicationDeploymentMap } from "../1_core/Deployment";
+import type { Uuid } from "../0_interfaces/1_core/EntityVersion";
 import type { AuthPrincipal } from "../1_core/authentication/AuthenticationPolicy";
-import type { ApplicationSection } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
+import type {
+  ApplicationSection,
+  StoreUnitConfiguration,
+} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { Action2Error, type Action2ReturnType } from "../0_interfaces/2_domain/DomainElement";
 import {
   GIT_ACTIONS_NEEDING_SAVED_MIROIR_CHANGES,
   type GitAction,
   type GitBranchResult,
+  type GitCloneAction,
+  type GitCloneResult,
+  type GitInstallClonedDeploymentAction,
+  type GitInstallClonedDeploymentResult,
   type GitCheckoutResult,
   type GitCommitAction,
   type GitCommitFilesResult,
@@ -42,6 +52,7 @@ import type {
 import type { PersistenceStoreControllerManagerInterface } from "../0_interfaces/4-services/PersistenceStoreControllerManagerInterface";
 import { gitPathIsInSections, gitPathToInstance, type GitSectionPaths } from "../2_domain/GitPathNaming";
 import { metaModelEntities } from "../1_core/Model";
+import { findClonedDeployments, type ClonedDeployment } from "../2_domain/GitClonedDeployments";
 
 /** The sections whose folders belong to an application; Admin is shared by every application. */
 const APPLICATION_SECTIONS: ApplicationSection[] = ["model", "data", "modelVersion", "devData"];
@@ -71,6 +82,29 @@ export type GitActionContext = {
   applicationDeploymentMap: ApplicationDeploymentMap;
   principal?: AuthPrincipal;
   credentials?: GitCredentialStore;
+  /** Registers and opens a deployment of a cloned folder (`gitAction_installClonedDeployment`). */
+  deployments?: GitDeploymentInstaller;
+};
+
+/** A deployment of a clone, as the DomainController registers it in Admin and opens it. */
+export type GitDeploymentInstallRequest = {
+  selfApplication: Uuid;
+  deploymentUuid: Uuid;
+  /** The application's name, from its SelfApplication row. */
+  name: string;
+  /** The Admin section of the process, and the clone's sections. */
+  configuration: StoreUnitConfiguration;
+  /** The labels of the repository's own rows, when it has them. */
+  adminApplication?: Record<string, unknown>;
+  deployment: Record<string, unknown>;
+};
+
+/**
+ * #683: what the DomainController gives the clone actions, which write no Admin row themselves: the same
+ * Deployment creation path as the install runner, without creating the stores (the clone holds them).
+ */
+export type GitDeploymentInstaller = {
+  install(request: GitDeploymentInstallRequest): Promise<Action2ReturnType>;
 };
 
 /** The name of the Admin secret holding the credential for a remote host (`host[:port]`). */
@@ -142,18 +176,24 @@ type ResolvedDeployment = {
   otherDirectories: string[];
 };
 
+async function loadFactory(context: GitActionContext): Promise<GitRepositoryFactory | Action2Error> {
+  if (!context.factory) {
+    return gitActionError("gitUnavailable", "No Git implementation is registered in this process");
+  }
+  try {
+    return await context.factory;
+  } catch (error) {
+    return gitActionError("gitUnavailable", `The Git implementation failed to load: ${String(error)}`);
+  }
+}
+
 async function resolveDeployment(
   action: GitAction,
   context: GitActionContext,
 ): Promise<ResolvedDeployment | Action2Error> {
-  if (!context.factory) {
-    return gitActionError("gitUnavailable", "No Git implementation is registered in this process");
-  }
-  let factory: GitRepositoryFactory;
-  try {
-    factory = await context.factory;
-  } catch (error) {
-    return gitActionError("gitUnavailable", `The Git implementation failed to load: ${String(error)}`);
+  const factory = await loadFactory(context);
+  if (factory instanceof Action2Error) {
+    return factory;
   }
   const application = action.payload?.application;
   const deploymentUuid = application ? context.applicationDeploymentMap[application] : undefined;
@@ -551,6 +591,16 @@ async function openRemote(
   if (!url) {
     return gitActionError("noRemote", `The repository has no remote ${name}: set its URL first`, { remote: name });
   }
+  return remoteOf(name, url, credential, context);
+}
+
+/** A remote at `url`, once its protocol is checked, and how it authenticates. */
+function remoteOf(
+  name: string,
+  url: string,
+  credential: GitPayloadCredential | undefined,
+  context: GitActionContext,
+): Remote | Action2Error {
   const parsed = checkRemoteUrl(url);
   if (parsed instanceof Action2Error) {
     return parsed;
@@ -668,6 +718,16 @@ export async function runGitAction(action: GitAction, context: GitActionContext)
       return await setCredential(action, context);
     } catch (error) {
       return gitActionError("secretsUnavailable", error instanceof Error ? error.message : String(error));
+    }
+  }
+  if (action.actionType === "gitAction_clone" || action.actionType === "gitAction_installClonedDeployment") {
+    // a clone makes a folder no deployment uses yet: there is no deployment to resolve
+    try {
+      return action.actionType === "gitAction_clone"
+        ? await clone(action, context)
+        : await installClonedDeployment(action, context);
+    } catch (error) {
+      return gitActionError(repositoryErrorReason(error) ?? "gitFailure", error instanceof Error ? error.message : String(error));
     }
   }
   const resolved = await resolveDeployment(action, context);
@@ -962,4 +1022,251 @@ async function runOnDeployment(
       actionType: action.actionType,
     });
   }
+}
+
+// ################################################################################################
+// #683: clone a repository into a folder of the deployment root, then install a deployment it holds
+// ################################################################################################
+
+/** A folder name of a clone's path: letters, digits, `.`, `-` and `_`. */
+const FOLDER_SEGMENT_PATTERN = /^[A-Za-z0-9._-]+$/;
+
+type CloneTarget = { factory: GitRepositoryFactory; rootDirectory: string; folderName: string; directory: string };
+
+/**
+ * The folder of a clone: `folderName` is a path relative to the deployment root folder, with `/`
+ * separators, that stays inside it (no `..`, no absolute path) and never goes through a `.git` folder.
+ */
+async function cloneTarget(folderName: unknown, context: GitActionContext): Promise<CloneTarget | Action2Error> {
+  const factory = await loadFactory(context);
+  if (factory instanceof Action2Error) {
+    return factory;
+  }
+  const rootDirectory = context.manager?.filesystemDeploymentRootDirectory;
+  if (!rootDirectory) {
+    return gitActionError("notFilesystemDeployment", "This process has no deployment root folder to clone into");
+  }
+  const name = (typeof folderName === "string" ? folderName.trim() : "").replace(/\/+$/, "");
+  const segments = name.split("/");
+  if (
+    name.startsWith("/") ||
+    name.includes("\\") ||
+    /^[A-Za-z]:/.test(name) ||
+    segments.some((segment) => segment === "." || segment === "..")
+  ) {
+    return gitActionError(
+      "outsideDeploymentRoot",
+      `The clone must be a folder under the deployment root folder, not ${name}`,
+      { folderName: name },
+    );
+  }
+  if (
+    name === "" ||
+    segments.some((segment) => !FOLDER_SEGMENT_PATTERN.test(segment) || segment.toLowerCase() === ".git")
+  ) {
+    return gitActionError(
+      "invalidFolderName",
+      "Give the clone a folder name made of letters, digits, '.', '-' and '_' (with '/' between folders)",
+      { folderName: name },
+    );
+  }
+  const directory = factory.resolvePath(rootDirectory, name);
+  if (factory.relativePath(rootDirectory, directory) !== name) {
+    return gitActionError("outsideDeploymentRoot", `${name} is not a folder of the deployment root folder`, {
+      folderName: name,
+    });
+  }
+  // a clone inside the folder of an open deployment would mix its files with that deployment's
+  const enclosing = (context.manager?.getPersistenceStoreControllers?.() ?? []).flatMap((deploymentUuid) =>
+    Object.values(
+      filesystemSectionDirectories(
+        context.manager?.getPersistenceStoreConfiguration?.(deploymentUuid),
+        rootDirectory,
+        factory,
+        [...APPLICATION_SECTIONS, "admin"],
+      ),
+    ).filter((sectionDirectory) => factory.relativePath(sectionDirectory, directory) !== undefined),
+  );
+  if (enclosing.length > 0) {
+    return gitActionError("sharedFolder", `${name} is inside the folder of an open deployment`, {
+      folderName: name,
+      otherFolders: enclosing,
+    });
+  }
+  return { factory, rootDirectory, folderName: name, directory };
+}
+
+async function scanClone(repository: GitRepositoryInterface, folderName: string) {
+  return findClonedDeployments(
+    await repository.listFiles(),
+    (path) => repository.readFile(path, "HEAD"),
+    folderName,
+  );
+}
+
+function alreadyInstalled(deployment: ClonedDeployment, context: GitActionContext): boolean {
+  return (
+    context.applicationDeploymentMap[deployment.selfApplication] !== undefined ||
+    (context.manager?.getPersistenceStoreControllers?.() ?? []).includes(deployment.deploymentUuid)
+  );
+}
+
+function directoriesOf(deployment: ClonedDeployment): Record<string, string> {
+  return Object.fromEntries(
+    Object.entries(deployment.sections).map(([section, configuration]) => [section, String(configuration.directory)]),
+  );
+}
+
+async function clone(action: GitCloneAction, context: GitActionContext): Promise<Action2ReturnType> {
+  const target = await cloneTarget(action.payload.folderName, context);
+  if (target instanceof Action2Error) {
+    return target;
+  }
+  const url = nonEmptyString(action.payload.url);
+  const parsed = checkRemoteUrl(url);
+  if (parsed instanceof Action2Error) {
+    return parsed;
+  }
+  if (parsed.username || parsed.password) {
+    // the URL becomes origin's, in .git/config, a plain file
+    return gitActionError(
+      "invalidPayload",
+      "Give the repository URL without a username or token: Miroir asks for them when the remote needs them",
+    );
+  }
+  const remote = remoteOf(DEFAULT_REMOTE, url!, action.payload.credential, context);
+  if (remote instanceof Action2Error) {
+    return remote;
+  }
+  return withRepositoryLock(target.directory, async () => {
+    const state = await target.factory.directoryState(target.directory);
+    if (state === "notEmpty" || state === "notAFolder") {
+      return gitActionError(
+        "folderNotEmpty",
+        `${target.folderName} already exists in the deployment root folder: give the clone another name`,
+        { folderName: target.folderName },
+      );
+    }
+    let repository: GitRepositoryInterface;
+    try {
+      repository = await target.factory.clone(target.directory, {
+        remote: remote.name,
+        url: remote.url,
+        onAuth: remote.onAuth,
+        branch: nonEmptyString(action.payload.branch),
+      });
+    } catch (error) {
+      // a refused or broken clone leaves no folder behind: the next attempt can use the same name
+      await target.factory.removeDirectory(target.directory);
+      return remoteActionError(error, remote, action.actionType);
+    }
+    const scan = await scanClone(repository, target.folderName);
+    if (scan.deployments.length === 0) {
+      // the clone stays: the designer may look at it, or delete it, outside Miroir
+      return gitActionError(
+        "noDeploymentFound",
+        `The repository holds no Miroir deployment of the filesystem store: it is cloned in ${target.folderName}, and nothing was installed`,
+        { folderName: target.folderName, root: repository.root, skipped: scan.skipped },
+      );
+    }
+    const result: GitCloneResult = {
+      folderName: target.folderName,
+      root: repository.root,
+      branches: await repository.branches(),
+      deployments: scan.deployments.map((deployment) => ({
+        deploymentUuid: deployment.deploymentUuid,
+        selfApplication: deployment.selfApplication,
+        name: deployment.name,
+        deploymentFile: deployment.deploymentFile,
+        directories: directoriesOf(deployment),
+        alreadyInstalled: alreadyInstalled(deployment, context),
+      })),
+      skipped: scan.skipped,
+    };
+    return ok(result);
+  });
+}
+
+async function installClonedDeployment(
+  action: GitInstallClonedDeploymentAction,
+  context: GitActionContext,
+): Promise<Action2ReturnType> {
+  const target = await cloneTarget(action.payload.folderName, context);
+  if (target instanceof Action2Error) {
+    return target;
+  }
+  return withRepositoryLock(target.directory, async () => {
+    const root = await target.factory.findRoot(target.directory);
+    if (!root || target.factory.relativePath(root, target.directory) !== "") {
+      return gitActionError("notARepository", `${target.folderName} is not a cloned repository`, {
+        directory: target.directory,
+      });
+    }
+    // the deployment is read from the clone again: a client gives no directory of its own
+    const scan = await scanClone(await target.factory.open(root), target.folderName);
+    const wanted = nonEmptyString(action.payload.deploymentUuid);
+    const candidates = wanted
+      ? scan.deployments.filter((deployment) => deployment.deploymentUuid === wanted)
+      : scan.deployments;
+    if (scan.deployments.length === 0) {
+      return gitActionError("noDeploymentFound", `${target.folderName} holds no Miroir deployment`, {
+        folderName: target.folderName,
+        skipped: scan.skipped,
+      });
+    }
+    if (candidates.length === 0) {
+      return gitActionError("unknownClonedDeployment", `${target.folderName} holds no deployment ${wanted}`, {
+        folderName: target.folderName,
+        deployments: scan.deployments.map((deployment) => deployment.deploymentUuid),
+      });
+    }
+    if (candidates.length > 1) {
+      return gitActionError(
+        "severalDeploymentsFound",
+        `${target.folderName} holds ${candidates.length} deployments: say which one to install`,
+        {
+          folderName: target.folderName,
+          deployments: candidates.map(({ deploymentUuid, name }) => ({ deploymentUuid, name })),
+        },
+      );
+    }
+    const deployment = candidates[0];
+    if (alreadyInstalled(deployment, context)) {
+      return gitActionError(
+        "applicationAlreadyDeployed",
+        `${deployment.name} already has a deployment here: drop it before installing the one of the clone`,
+        { application: deployment.selfApplication, deploymentUuid: deployment.deploymentUuid },
+      );
+    }
+    const adminDeploymentUuid =
+      context.applicationDeploymentMap[adminSelfApplication.uuid] ??
+      defaultSelfApplicationDeploymentMap[adminSelfApplication.uuid];
+    const adminSection = context.manager?.getPersistenceStoreConfiguration?.(adminDeploymentUuid)?.admin;
+    if (!adminSection) {
+      return gitActionError("unknownDeployment", "The Admin deployment of this process is not open", {
+        deploymentUuid: adminDeploymentUuid,
+      });
+    }
+    if (!context.deployments) {
+      return gitActionError("gitUnavailable", "This process cannot install deployments");
+    }
+    const installed = await context.deployments.install({
+      selfApplication: deployment.selfApplication,
+      deploymentUuid: deployment.deploymentUuid,
+      name: deployment.name,
+      configuration: { ...deployment.sections, admin: adminSection } as StoreUnitConfiguration,
+      adminApplication: deployment.adminApplication,
+      deployment: deployment.deployment,
+    });
+    if (installed instanceof Action2Error || installed?.status !== "ok") {
+      return installed;
+    }
+    const result: GitInstallClonedDeploymentResult = {
+      application: deployment.selfApplication,
+      deploymentUuid: deployment.deploymentUuid,
+      name: deployment.name,
+      directories: directoriesOf(deployment),
+    };
+    return ok(result);
+  });
 }

@@ -6,7 +6,7 @@
  * Not reachable through MiroirTest: the test starts a Git server and commits on the remote first.
  * Skipped when the `git` program, which the test server runs, is not on the PATH.
  * ```bash
- * MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- gitFetch.679.phase7
+ * MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- gitFetch
  * ```
  */
 import fs from "node:fs";
@@ -35,7 +35,7 @@ import {
 
 const gitMissing = gitProgramMissing();
 if (gitMissing) {
-  console.warn(`gitFetch.679.phase7 skipped: ${gitMissing}`);
+  console.warn(`gitFetch skipped: ${gitMissing}`);
 }
 
 let context: GitTestContext;

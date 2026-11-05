@@ -5,7 +5,7 @@
   "name": "ui.gitPage",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "Git page: the changes of an application named by Entity and instance, staged and committed from the page, its history with refs, its branches created, checked out and left for a detached HEAD, the files of a commit, the diff of a file, the refusals it explains, its remote fetched, pulled and pushed with a token asked once and saved, nothing while git is off, and the creation of a repository.",
+  "description": "Git page: the changes of an application named by Entity and instance, staged and committed from the page, its history with refs, its branches created, checked out and left for a detached HEAD, the files of a commit, the diff of a file, the refusals it explains, its remote fetched, pulled and pushed with a token asked once and saved, nothing while git is off, and the creation of a repository, and a repository cloned and installed from the clone panel.",
   "tags": [
     "ui"
   ],
@@ -1199,6 +1199,377 @@
                   }
                 },
                 "timeout": 2000
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "miroirTestType": "reactComponentTestSuite",
+        "miroirTestLabel": "GitClonePanel",
+        "component": "GitClonePanel",
+        "componentProps": {},
+        "miroirTests": [
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitClonePanel: clones a repository and installs its only deployment",
+            "componentProps": {
+              "deployments": [
+                {
+                  "deploymentUuid": "679a0010-0002-4000-8000-0000000000a1",
+                  "selfApplication": "679a0010-0001-4000-8000-0000000000a1",
+                  "name": "shelves",
+                  "deploymentFile": "packages/miroir-example-shelves/assets/deployment/679a0010-0002-4000-8000-0000000000a1.json",
+                  "directories": {
+                    "model": "apps/shelves/assets/shelves_model",
+                    "data": "apps/shelves/assets/shelves_data"
+                  },
+                  "alreadyInstalled": false
+                }
+              ]
+            },
+            "steps": [
+              {
+                "step": "change",
+                "label": "the URL",
+                "target": {
+                  "byTestId": "git-clone-url"
+                },
+                "value": "https://git.example.com/owner/shelves.git"
+              },
+              {
+                "step": "click",
+                "label": "clone",
+                "target": {
+                  "byTestId": "git-clone"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "installed",
+                "target": {
+                  "byTestId": "git-installed"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the folder named after the repository",
+                "target": {
+                  "byText": {
+                    "regex": "^Cloned in shelves "
+                  }
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the link to its page",
+                "target": {
+                  "byText": "open its Git page"
+                }
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitClonePanel: lists several deployments to pick from",
+            "componentProps": {
+              "deployments": [
+                {
+                  "deploymentUuid": "679a0010-0002-4000-8000-0000000000a1",
+                  "selfApplication": "679a0010-0001-4000-8000-0000000000a1",
+                  "name": "shelves",
+                  "deploymentFile": "packages/miroir-example-shelves/assets/deployment/679a0010-0002-4000-8000-0000000000a1.json",
+                  "directories": {
+                    "model": "apps/shelves/assets/shelves_model",
+                    "data": "apps/shelves/assets/shelves_data"
+                  },
+                  "alreadyInstalled": true
+                },
+                {
+                  "deploymentUuid": "679a0010-0002-4000-8000-0000000000b1",
+                  "selfApplication": "679a0010-0001-4000-8000-0000000000b1",
+                  "name": "readers",
+                  "deploymentFile": "packages/miroir-example-readers/assets/deployment/679a0010-0002-4000-8000-0000000000b1.json",
+                  "directories": {
+                    "model": "apps/readers/assets/readers_model",
+                    "data": "apps/readers/assets/readers_data"
+                  },
+                  "alreadyInstalled": false
+                }
+              ]
+            },
+            "steps": [
+              {
+                "step": "change",
+                "label": "the URL",
+                "target": {
+                  "byTestId": "git-clone-url"
+                },
+                "value": "https://git.example.com/owner/shelves.git"
+              },
+              {
+                "step": "change",
+                "label": "the folder",
+                "target": {
+                  "byTestId": "git-clone-folder"
+                },
+                "value": "apps/monorepo"
+              },
+              {
+                "step": "click",
+                "label": "clone",
+                "target": {
+                  "byTestId": "git-clone"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "both listed",
+                "target": {
+                  "byTestId": "git-cloned-deployment"
+                },
+                "count": 2,
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "nothing installed yet",
+                "target": {
+                  "byTestId": "git-installed"
+                },
+                "present": false
+              },
+              {
+                "step": "expectElement",
+                "label": "the installed one",
+                "target": {
+                  "byText": "already installed here"
+                }
+              },
+              {
+                "step": "click",
+                "label": "install the other",
+                "target": {
+                  "byTestId": "git-install"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "installed",
+                "target": {
+                  "byTestId": "git-installed"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "no install left",
+                "target": {
+                  "byTestId": "git-install"
+                },
+                "present": false
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitClonePanel: refuses a folder that exists",
+            "componentProps": {
+              "deployments": [
+                {
+                  "deploymentUuid": "679a0010-0002-4000-8000-0000000000a1",
+                  "selfApplication": "679a0010-0001-4000-8000-0000000000a1",
+                  "name": "shelves",
+                  "deploymentFile": "packages/miroir-example-shelves/assets/deployment/679a0010-0002-4000-8000-0000000000a1.json",
+                  "directories": {
+                    "model": "apps/shelves/assets/shelves_model",
+                    "data": "apps/shelves/assets/shelves_data"
+                  },
+                  "alreadyInstalled": false
+                }
+              ],
+              "existingFolders": [
+                "shelves"
+              ]
+            },
+            "steps": [
+              {
+                "step": "change",
+                "label": "the URL",
+                "target": {
+                  "byTestId": "git-clone-url"
+                },
+                "value": "https://git.example.com/owner/shelves.git"
+              },
+              {
+                "step": "click",
+                "label": "clone",
+                "target": {
+                  "byTestId": "git-clone"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the refusal",
+                "target": {
+                  "byTestId": "git-clone-error"
+                },
+                "attribute": {
+                  "name": "data-reason",
+                  "value": "folderNotEmpty"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "its text",
+                "target": {
+                  "byText": "That folder already exists: give the clone another folder name."
+                }
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitClonePanel: says when the repository holds no deployment",
+            "componentProps": {
+              "deployments": []
+            },
+            "steps": [
+              {
+                "step": "change",
+                "label": "the URL",
+                "target": {
+                  "byTestId": "git-clone-url"
+                },
+                "value": "https://git.example.com/owner/shelves.git"
+              },
+              {
+                "step": "click",
+                "label": "clone",
+                "target": {
+                  "byTestId": "git-clone"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the refusal",
+                "target": {
+                  "byTestId": "git-clone-error"
+                },
+                "attribute": {
+                  "name": "data-reason",
+                  "value": "noDeploymentFound"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "no list",
+                "target": {
+                  "byTestId": "git-cloned-deployments"
+                },
+                "present": false
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitClonePanel: asks for a token, clones with it, then saves it",
+            "componentProps": {
+              "deployments": [
+                {
+                  "deploymentUuid": "679a0010-0002-4000-8000-0000000000a1",
+                  "selfApplication": "679a0010-0001-4000-8000-0000000000a1",
+                  "name": "shelves",
+                  "deploymentFile": "packages/miroir-example-shelves/assets/deployment/679a0010-0002-4000-8000-0000000000a1.json",
+                  "directories": {
+                    "model": "apps/shelves/assets/shelves_model",
+                    "data": "apps/shelves/assets/shelves_data"
+                  },
+                  "alreadyInstalled": false
+                }
+              ],
+              "remoteToken": "t0ken"
+            },
+            "steps": [
+              {
+                "step": "change",
+                "label": "the URL",
+                "target": {
+                  "byTestId": "git-clone-url"
+                },
+                "value": "https://git.example.com/owner/shelves.git"
+              },
+              {
+                "step": "click",
+                "label": "clone",
+                "target": {
+                  "byTestId": "git-clone"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the question",
+                "target": {
+                  "byTestId": "git-credential-form"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "nothing installed",
+                "target": {
+                  "byTestId": "git-installed"
+                },
+                "present": false
+              },
+              {
+                "step": "change",
+                "label": "the username",
+                "target": {
+                  "byTestId": "git-credential-username"
+                },
+                "value": "designer"
+              },
+              {
+                "step": "change",
+                "label": "the token",
+                "target": {
+                  "byTestId": "git-credential-token"
+                },
+                "value": "t0ken"
+              },
+              {
+                "step": "click",
+                "label": "clone with it",
+                "target": {
+                  "byTestId": "git-credential-retry"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "installed",
+                "target": {
+                  "byTestId": "git-installed"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "no form left",
+                "target": {
+                  "byTestId": "git-credential-form"
+                },
+                "present": false
+              },
+              {
+                "step": "expectElement",
+                "label": "the saved secret",
+                "target": {
+                  "byText": "Saved as the secret git.git.example.com: the next actions on git.example.com use it."
+                }
               }
             ]
           }

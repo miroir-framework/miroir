@@ -4,7 +4,7 @@
  *
  * Not reachable through MiroirTest: the test builds a commit history on disk first.
  * ```bash
- * MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- gitHistory.679.phase2
+ * MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- gitHistory
  * ```
  */
 import fs from "node:fs";

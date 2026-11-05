@@ -580,6 +580,13 @@ class IsomorphicGitRepository implements GitRepositoryInterface {
       tags: await git.listTags({ fs, dir: this.root }),
     };
   }
+
+  async listFiles(): Promise<string[]> {
+    if (!(await commitOf(this.root, "HEAD"))) {
+      return [];
+    }
+    return git.listFiles({ fs, dir: this.root, ref: "HEAD" });
+  }
 }
 
 export function createGitRepositoryFactory(): GitRepositoryFactory {
@@ -599,6 +606,39 @@ export function createGitRepositoryFactory(): GitRepositoryFactory {
       fs.mkdirSync(root, { recursive: true });
       await git.init({ fs, dir: root, defaultBranch: DEFAULT_BRANCH });
       return new IsomorphicGitRepository(root);
+    },
+    async clone(
+      directory: string,
+      options: GitRemoteOptions & { branch?: string },
+    ): Promise<GitRepositoryInterface> {
+      const root = path.resolve(directory);
+      fs.mkdirSync(root, { recursive: true });
+      try {
+        await git.clone({
+          fs,
+          dir: root,
+          remote: options.remote,
+          ref: options.branch,
+          singleBranch: false,
+          ...transport(options),
+        });
+      } catch (error) {
+        throw asRemoteError(error, options.remote);
+      }
+      return new IsomorphicGitRepository(root);
+    },
+    async directoryState(directory: string): Promise<"missing" | "empty" | "notEmpty" | "notAFolder"> {
+      const absolute = path.resolve(directory);
+      if (!fs.existsSync(absolute)) {
+        return "missing";
+      }
+      if (!fs.statSync(absolute).isDirectory()) {
+        return "notAFolder";
+      }
+      return fs.readdirSync(absolute).length === 0 ? "empty" : "notEmpty";
+    },
+    async removeDirectory(directory: string): Promise<void> {
+      fs.rmSync(path.resolve(directory), { recursive: true, force: true });
     },
     resolvePath(base: string, relative: string): string {
       return path.resolve(base, relative);

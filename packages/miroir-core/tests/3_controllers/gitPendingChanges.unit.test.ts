@@ -5,10 +5,10 @@
  */
 import { describe, expect, it } from "vitest";
 
-import { Action2Error } from "../../../../src/0_interfaces/2_domain/DomainElement";
-import type { GitAction } from "../../../../src/0_interfaces/3_controllers/GitAction";
-import { GIT_ENDPOINT_UUID } from "../../../../src/0_interfaces/3_controllers/GitAction";
-import { openMiroirTransactionError } from "../../../../src/3_controllers/GitActions";
+import { Action2Error } from "../../src/0_interfaces/2_domain/DomainElement";
+import type { GitAction } from "../../src/0_interfaces/3_controllers/GitAction";
+import { GIT_ENDPOINT_UUID } from "../../src/0_interfaces/3_controllers/GitAction";
+import { openMiroirTransactionError } from "../../src/3_controllers/GitActions";
 
 const LIBRARY = "5af03c98-fe5e-490b-b08f-e1230971c57f";
 const OTHER = "679a0000-0000-4000-8000-0000000000aa";

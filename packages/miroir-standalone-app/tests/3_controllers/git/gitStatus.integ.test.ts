@@ -4,7 +4,7 @@
  *
  * Not reachable through MiroirTest: the test makes the Library copy a Git repository on disk first.
  * ```bash
- * MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- gitStatus.679.phase1
+ * MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- gitStatus
  * ```
  */
 import fs from "node:fs";
@@ -98,7 +98,7 @@ describe("gitAction_status (#679 slice 1)", () => {
 
 describe("Git package imports (#679 D15)", () => {
   it("is imported dynamically only, outside its own package", () => {
-    const packagesRoot = path.resolve(__dirname, "../../../../..");
+    const packagesRoot = path.resolve(__dirname, "../../../..");
     const offenders: string[] = [];
     const walk = (directory: string) => {
       for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {

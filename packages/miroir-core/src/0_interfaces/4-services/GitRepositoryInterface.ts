@@ -110,6 +110,8 @@ export interface GitRepositoryInterface {
    * access.
    */
   push(options: GitRemoteOptions & { branch: string }): Promise<void>;
+  /** The files of the commit HEAD points at, repository-relative; empty in a repository with no commit. */
+  listFiles(): Promise<string[]>;
 }
 
 /** Commits on each side of a branch and its upstream, counted from their merge base. */
@@ -159,6 +161,16 @@ export interface GitRepositoryFactory {
   open(root: string): Promise<GitRepositoryInterface>;
   /** Creates an empty repository (default branch `main`) in `directory`. */
   init(directory: string): Promise<GitRepositoryInterface>;
+  /**
+   * Clones the remote into `directory`, which must be missing or empty, and checks out its default branch
+   * (or `branch`). The remote is named `options.remote`. Throws `authenticationRequired`,
+   * `remoteUnreachable` like `fetch`.
+   */
+  clone(directory: string, options: GitRemoteOptions & { branch?: string }): Promise<GitRepositoryInterface>;
+  /** `missing`, `empty` (a folder with no entry), `notEmpty`, or `notAFolder` (a file is there). */
+  directoryState(directory: string): Promise<"missing" | "empty" | "notEmpty" | "notAFolder">;
+  /** Removes a folder and everything in it: a clone that failed half-way leaves nothing behind. */
+  removeDirectory(directory: string): Promise<void>;
   /** Resolves `relative` against `base`, as the host's filesystem does. */
   resolvePath(base: string, relative: string): string;
   /** `path` relative to `root` with `/` separators, or undefined when `path` is not inside `root`. */
@@ -203,4 +215,10 @@ export type GitActionErrorReason =
   | "pushRefused"
   | "secretsUnavailable"
   | "detachedHead"
+  | "invalidFolderName"
+  | "folderNotEmpty"
+  | "noDeploymentFound"
+  | "unknownClonedDeployment"
+  | "severalDeploymentsFound"
+  | "applicationAlreadyDeployed"
   | "gitFailure";

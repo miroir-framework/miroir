@@ -61,7 +61,7 @@ import {
   selfApplicationVersionInitialMiroirVersion
 } from "miroir-app-miroir";
 
-import { deployment_Miroir } from "miroir-app-admin";
+import { adminSelfApplication, deployment_Miroir } from "miroir-app-admin";
 import {
   ApplicationSection,
   CompositeActionSequence,
@@ -105,7 +105,10 @@ import {
 } from "../1_core/localCache/cacheRefreshPolicy.js";
 import { ACTION_OK } from "../1_core/constants";
 import { defaultMiroirMetaModel as defaultMiroirMetaModelRaw } from "miroir-app-miroir";
-import { expandResolvableResetAndinitializeDeploymentCompositeAction } from "../1_core/Deployment.js";
+import {
+  createDeploymentCompositeAction,
+  expandResolvableResetAndinitializeDeploymentCompositeAction,
+} from "../1_core/Deployment.js";
 import {
   ENTITY_PRESENT_MODEL_DEFINITION_FIELDS
 } from "../1_core/versioning/applicationVersioning.js";
@@ -163,8 +166,17 @@ import {
   summarizeRollbackInstanceCollections,
   type LogPhase,
 } from "../4_services/rollbackLog.js";
-import type { GitAction, GitTouchedDeployment } from "../0_interfaces/3_controllers/GitAction";
-import { openMiroirTransactionError, runGitAction, type GitCredentialStore } from "./GitActions";
+import type {
+  GitAction,
+  GitInstallClonedDeploymentResult,
+  GitTouchedDeployment,
+} from "../0_interfaces/3_controllers/GitAction";
+import {
+  openMiroirTransactionError,
+  runGitAction,
+  type GitCredentialStore,
+  type GitDeploymentInstaller,
+} from "./GitActions";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory.js";
 import { packageName } from "../constants";
 
@@ -3787,9 +3799,95 @@ export class DomainController implements DomainControllerInterface, DomainContro
         applicationDeploymentMap,
         principal,
         credentials: this.gitCredentialStore(applicationDeploymentMap, principal),
+        deployments: this.gitDeploymentInstaller(applicationDeploymentMap, principal),
       });
     }
+    if (domainAction.actionType === "gitAction_installClonedDeployment") {
+      return this.loadInstalledDeployment(result, applicationDeploymentMap);
+    }
     return this.reloadTouchedDeployments(result, applicationDeploymentMap);
+  }
+
+  /**
+   * #683: registers a deployment of a cloned folder in Admin and opens its stores, through the Deployment
+   * creation path of the install runner, without creating the stores: the clone holds their files. With
+   * authentication on, the user who installs it gets the right to use it.
+   */
+  private gitDeploymentInstaller(
+    applicationDeploymentMap: ApplicationDeploymentMap,
+    principal?: AuthPrincipal,
+  ): GitDeploymentInstaller {
+    return {
+      install: async (request) => {
+        const labels = (row: Record<string, unknown> | undefined) =>
+          typeof row?.name === "string"
+            ? {
+                name: row.name,
+                defaultLabel: typeof row.defaultLabel === "string" ? row.defaultLabel : undefined,
+                description: typeof row.description === "string" ? row.description : undefined,
+              }
+            : undefined;
+        const composite = createDeploymentCompositeAction(
+          request.name,
+          request.deploymentUuid,
+          request.selfApplication,
+          undefined, // only read to open the Admin store, which is open
+          request.configuration,
+          {
+            skipOpenAdminStore: true,
+            skipCreateStore: true,
+            ...(principal?.miroirUserUuid ? { grantAccessTo: { miroirUserUuid: principal.miroirUserUuid } } : {}),
+            labels: { adminApplication: labels(request.adminApplication), deployment: labels(request.deployment) },
+          },
+        );
+        return this.handleCompositeAction(
+          composite,
+          {
+            ...defaultSelfApplicationDeploymentMap,
+            ...applicationDeploymentMap,
+            [request.selfApplication]: request.deploymentUuid,
+          },
+          defaultMiroirModelEnvironment,
+          {},
+          principal,
+        );
+      },
+    };
+  }
+
+  /**
+   * #683: after a deployment of a clone is installed, this DomainController's local cache reads Admin again
+   * (the client then lists the new deployment) and loads the new application, on the server as on the
+   * client. A load that fails is added to the result's `reloadFailures`.
+   */
+  private async loadInstalledDeployment(
+    result: Action2ReturnType,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+  ): Promise<Action2ReturnType> {
+    if (result instanceof Action2Error || result?.status !== "ok") {
+      return result;
+    }
+    const installed = result.returnedDomainElement as GitInstallClonedDeploymentResult;
+    const map: ApplicationDeploymentMap = {
+      ...defaultSelfApplicationDeploymentMap,
+      ...applicationDeploymentMap,
+      [installed.application]: installed.deploymentUuid,
+    };
+    const reloadFailures: { application: string; errorMessage?: string }[] = [];
+    for (const application of [adminSelfApplication.uuid, installed.application]) {
+      const reload = await this.handleAction(
+        { actionType: "rollback", endpoint: "7947ae40-eb34-4149-887b-15a9021e714e", payload: { application } },
+        map,
+        defaultMiroirModelEnvironment,
+      );
+      if (reload instanceof Action2Error) {
+        log.error("handleGitAction: loading application", application, "after installing a cloned deployment failed", reload);
+        reloadFailures.push({ application, errorMessage: reload.errorMessage });
+      }
+    }
+    return reloadFailures.length === 0
+      ? result
+      : { ...result, returnedDomainElement: { ...installed, reloadFailures } as any };
   }
 
   /**

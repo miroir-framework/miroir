@@ -1,9 +1,10 @@
 /**
  * #679: the Git page (`?page=git[&application=X]`), reached from the AppBar when the process has the
  * `git` capability. The application is chosen as on the model page; the page body is `GitPageView`,
- * whose Git actions run on the server through the DomainController.
+ * whose Git actions run on the server through the DomainController. Above it, the clone panel (#683)
+ * installs an application from a remote repository.
  */
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { Formik } from "formik";
 import React, { useCallback, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
@@ -20,6 +21,7 @@ import {
 import { adminSelfApplication, deployment_Miroir, entityApplicationForAdmin } from "@miroir-framework/core/admin";
 import { selfApplicationMiroir } from "@miroir-framework/core/meta-model";
 
+import { GitClonePanel } from "../components/Git/GitClonePanel.js";
 import { GitPageView } from "../components/Git/GitPageView.js";
 import type { RunGitAction } from "../components/Git/useGitRequest.js";
 import { PageContainer } from "../components/Page/PageContainer.js";
@@ -81,6 +83,7 @@ export function GitPage(): React.JSX.Element {
         return (
           <PageContainer padding={2}>
             <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+              <GitCloneSection />
               <TypedValueObjectEditor
                 labelElement={<span>select Application</span>}
                 formValueMLSchema={applicationSelectorSchema}
@@ -106,6 +109,34 @@ export function GitPage(): React.JSX.Element {
         );
       }}
     </Formik>
+  );
+}
+
+/** #683: the clone panel, whose actions register deployments in Admin. */
+function GitCloneSection() {
+  const domainController = useDomainControllerService();
+  const context = useMiroirContextService();
+  const applicationDeploymentMap = context.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap;
+  const runGitAction: RunGitAction = useCallback(
+    (actionType: GitActionType, payload: Record<string, unknown> = {}) =>
+      domainController.handleAction(
+        {
+          actionType,
+          endpoint: GIT_ENDPOINT_UUID,
+          payload: { ...payload, application: adminSelfApplication.uuid },
+        } as any,
+        { ...defaultSelfApplicationDeploymentMap, ...applicationDeploymentMap },
+      ),
+    [domainController, applicationDeploymentMap],
+  );
+  return (
+    <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+      <Typography variant="subtitle1">Clone an application from Git</Typography>
+      <GitClonePanel
+        runGitAction={runGitAction}
+        applicationHref={(application) => `?page=git&application=${encodeURIComponent(application)}`}
+      />
+    </Box>
   );
 }
 

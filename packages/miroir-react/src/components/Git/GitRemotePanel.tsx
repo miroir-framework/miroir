@@ -3,11 +3,12 @@
  * upstream, Fetch, Pull and Push. A remote asking for a token opens the credential form, which retries the
  * action with the typed token and, when asked, saves it as the Admin secret `git.<host>`.
  */
-import { Alert, Box, Button, Checkbox, Chip, FormControlLabel, TextField, Typography } from "@mui/material";
+import { Alert, Box, Button, Chip, TextField, Typography } from "@mui/material";
 import React, { useState } from "react";
 
 import type { GitPullResult, GitRemoteResult, GitStatusResult } from "@miroir-framework/core";
 
+import { GitCredentialForm, savedCredentialNotice, type GitTypedCredential } from "./GitCredentialForm.js";
 import { GitCommandError } from "./GitWritePanels.js";
 import type { GitCommand } from "./useGitCommand.js";
 import type { GitRequestError, GitRequestState } from "./useGitRequest.js";
@@ -41,9 +42,6 @@ export function GitRemotePanel(props: {
   const [error, setError] = useState<GitRequestError | undefined>(undefined);
   /** The action waiting for a credential, and the host asking for it. */
   const [asking, setAsking] = useState<{ actionType: RemoteActionType; host: string } | undefined>(undefined);
-  const [username, setUsername] = useState("");
-  const [token, setToken] = useState("");
-  const [save, setSave] = useState(true);
   const { remote, remoteUrl, tracking, branches } = props.status;
   const remoteName = remote ?? "origin";
 
@@ -76,11 +74,11 @@ export function GitRemotePanel(props: {
     settle(actionType, state);
   };
 
-  const retryWithCredential = async () => {
+  const retryWithCredential = async ({ username, token, save }: GitTypedCredential) => {
     if (!asking) {
       return;
     }
-    const credential = { username: username.trim(), token };
+    const credential = { username, token };
     const state = await props.command<GitRemoteResult | GitPullResult>(asking.actionType, {
       ...remotePayload(asking.actionType),
       credential,
@@ -92,7 +90,6 @@ export function GitRemotePanel(props: {
     // any other outcome closes the form; the token is saved only after the action succeeded with it
     const host = asking.host;
     setAsking(undefined);
-    setToken("");
     settle(asking.actionType, state);
     if (state.status !== "ok") {
       return;
@@ -105,11 +102,7 @@ export function GitRemotePanel(props: {
       username: credential.username,
       token: credential.token,
     });
-    props.onNotice(
-      saved.status === "ok"
-        ? `Saved as the secret ${saved.value.name}: the next actions on ${host} use it.`
-        : `The token worked but was not saved: ${saved.status === "error" ? (saved.error.errorMessage ?? saved.error.reason) : ""}`,
-    );
+    props.onNotice(savedCredentialNotice(host, saved));
   };
 
   const setRemote = async () => {
@@ -171,59 +164,16 @@ export function GitRemotePanel(props: {
         </Box>
       )}
       {asking && (
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }} data-testid="git-credential-form">
-          <Typography variant="body2">
-            {asking.host} asks for a username and a token (a personal access token, not your password).
-          </Typography>
-          <TextField
-            size="small"
-            label="Username"
-            value={username}
-            onChange={(event) => setUsername(event.target.value)}
-            slotProps={{ htmlInput: { "data-testid": "git-credential-username", autoComplete: "username" } }}
-          />
-          <TextField
-            size="small"
-            label="Token"
-            type="password"
-            value={token}
-            onChange={(event) => setToken(event.target.value)}
-            slotProps={{ htmlInput: { "data-testid": "git-credential-token", autoComplete: "off" } }}
-          />
-          <FormControlLabel
-            control={
-              <Checkbox
-                size="small"
-                checked={save}
-                onChange={(event) => setSave(event.target.checked)}
-                slotProps={{ input: { "data-testid": "git-credential-save" } as React.InputHTMLAttributes<HTMLInputElement> }}
-              />
-            }
-            label={`Save it as a Miroir secret for ${asking.host}`}
-          />
-          <Box sx={{ display: "flex", gap: 1 }}>
-            <Button
-              size="small"
-              variant="contained"
-              data-testid="git-credential-retry"
-              disabled={props.busy || username.trim() === "" || token === ""}
-              onClick={retryWithCredential}
-            >
-              {actionLabels[asking.actionType]}
-            </Button>
-            <Button
-              size="small"
-              data-testid="git-credential-cancel"
-              onClick={() => {
-                setAsking(undefined);
-                setToken("");
-                setError(undefined);
-              }}
-            >
-              Cancel
-            </Button>
-          </Box>
-        </Box>
+        <GitCredentialForm
+          host={asking.host}
+          actionLabel={actionLabels[asking.actionType]}
+          busy={props.busy}
+          onSubmit={retryWithCredential}
+          onCancel={() => {
+            setAsking(undefined);
+            setError(undefined);
+          }}
+        />
       )}
       <GitCommandError error={error} testId="git-remote-error" />
       {props.notice && (
