@@ -878,12 +878,15 @@ async function runOnDeployment(
         try {
           files = await repository.restoreFromIndex(paths);
         } catch (error) {
-          if (repositoryErrorReason(error)) {
-            throw error; // refused before any file was written
+          const message = error instanceof Error ? error.message : String(error);
+          const refused = repositoryErrorReason(error);
+          if (refused) {
+            // refused before any file was written: nothing to reload
+            return gitActionError(refused, message, { actionType: action.actionType });
           }
           // a write failed halfway: the files written so far are reverted, so the deployment reloads anyway
           await rebootTouchedStores(touched, context);
-          return gitActionError("gitFailure", error instanceof Error ? error.message : String(error), {
+          return gitActionError("gitFailure", message, {
             actionType: action.actionType,
             touchedDeployments: touched,
           });
