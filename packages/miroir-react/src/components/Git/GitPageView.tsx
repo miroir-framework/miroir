@@ -109,6 +109,12 @@ export function GitPageView(props: GitPageViewProps): React.JSX.Element {
   const [initError, setInitError] = useState<string | undefined>(undefined);
   const [ownView, setOwnView] = useState<GitPageViewName>(() => gitPageView(props.view));
   const view = props.onViewChange ? gitPageView(props.view) : ownView;
+  // #691: the Setup extras (the Clone panel) stay mounted once opened, hidden on the other tabs: a clone's
+  // result, with its Install buttons, must survive a tab change. Derived during render, no effect needed.
+  const [setupOpened, setSetupOpened] = useState(view === "setup");
+  if (view === "setup" && !setupOpened) {
+    setSetupOpened(true);
+  }
   const changeView = props.onViewChange ?? setOwnView;
   const run = props.gitEnabled ? props.runGitAction : undefined;
   const status = useGitRequest<GitStatusResult>(props.runGitAction, "gitAction_status", run && {}, generation);
@@ -171,10 +177,29 @@ export function GitPageView(props: GitPageViewProps): React.JSX.Element {
       const result = await command<GitRevertResult>("gitAction_revert", {
         paths: request.files.map((file) => file.path),
       });
-      setRevertError(result.status === "error" ? result.error : undefined);
-      showReloadFailures(result.status === "ok" ? (result.value.reloadFailures ?? []) : []);
+      if (result.status === "ok") {
+        setRevertError(undefined);
+        showReloadFailures(result.value.reloadFailures ?? []);
+        return;
+      }
+      if (result.status !== "error") {
+        return;
+      }
+      setRevertError(result.error);
+      // a revert that failed halfway changed some files: show them as they are now, and any reload failure
+      const context = result.error.errorContext;
+      if (Array.isArray(context?.touchedDeployments)) {
+        showReloadFailures(
+          Array.isArray(context.reloadFailures)
+            ? (context.reloadFailures as { application: string; errorMessage?: string }[])
+            : [],
+        );
+        refresh();
+        return;
+      }
+      showReloadFailures([]);
     },
-    [command, showReloadFailures],
+    [command, refresh, showReloadFailures],
   );
   const checkout = useCallback(
     async (ref: string) => {
@@ -336,7 +361,11 @@ export function GitPageView(props: GitPageViewProps): React.JSX.Element {
           <GitRemotePanel status={status.value} busy={checkoutBusy} command={command} />
         </Panel>
       )}
-      {view === "setup" && props.setupExtras && <Box data-testid="git-setup-extras">{props.setupExtras}</Box>}
+      {setupOpened && props.setupExtras && (
+        <Box data-testid="git-setup-extras" sx={{ display: view === "setup" ? "block" : "none" }}>
+          {props.setupExtras}
+        </Box>
+      )}
       {!notARepository && (
         <GitHistoryStrip
           commits={log.status === "ok" ? log.value.commits : undefined}

@@ -1260,6 +1260,54 @@
           },
           {
             "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: shows the files as they are after a revert that failed halfway",
+            "componentProps": {
+              "revertPartialFailure": true
+            },
+            "steps": [
+              {
+                "step": "click",
+                "label": "revert Ubik",
+                "target": {
+                  "byTestId": "git-revert-data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/03ffcae1-b83f-4970-b3d9-04780d3d0780.json"
+                }
+              },
+              {
+                "step": "click",
+                "label": "apply",
+                "target": {
+                  "byTestId": "git-revert-apply"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the error",
+                "target": {
+                  "byTestId": "git-revert-error"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the reload warning",
+                "target": {
+                  "byTestId": "git-reload-warning"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "Ubik reverted, as the refreshed status says",
+                "target": {
+                  "byTestId": "git-change-data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/03ffcae1-b83f-4970-b3d9-04780d3d0780.json"
+                },
+                "present": false,
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
             "miroirTestLabel": "GitPage: asks for the author when the repository has none",
             "componentProps": {
               "authorUnknown": true
@@ -2661,6 +2709,53 @@
                 "target": {
                   "byTestId": "git-remote-url"
                 },
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: keeps what the Clone panel holds across a tab change",
+            "componentProps": {
+              "withClonePanel": true
+            },
+            "steps": [
+              {
+                "step": "click",
+                "label": "open setup",
+                "target": {
+                  "byTestId": "git-tab-setup"
+                }
+              },
+              {
+                "step": "change",
+                "label": "the repository URL",
+                "target": {
+                  "byTestId": "git-clone-url"
+                },
+                "value": "https://example.org/kept.git"
+              },
+              {
+                "step": "click",
+                "label": "open changes",
+                "target": {
+                  "byTestId": "git-tab-changes"
+                }
+              },
+              {
+                "step": "click",
+                "label": "back to setup",
+                "target": {
+                  "byTestId": "git-tab-setup"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the URL is still there",
+                "target": {
+                  "byTestId": "git-clone-url"
+                },
+                "value": "https://example.org/kept.git",
                 "timeout": 2000
               }
             ]

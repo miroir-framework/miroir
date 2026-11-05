@@ -57,6 +57,11 @@ export interface GitPageForTestProps {
   withClonePanel?: boolean;
   /** #691: `gitAction_revert` succeeds, but reports that the local cache could not reload the application. */
   revertReloadFailure?: boolean;
+  /**
+   * #691: `gitAction_revert` reverts the chosen files, then fails as a write would halfway, with the
+   * deployment it reloaded and a reload failure.
+   */
+  revertPartialFailure?: boolean;
 }
 
 type FixtureFile = GitStatusResult["files"][number];
@@ -241,6 +246,12 @@ export function GitPageForTest(props: GitPageForTestProps) {
               return after ? [after] : [];
             }),
           };
+          if (props.revertPartialFailure) {
+            return refusal("gitFailure", "EACCES: permission denied", {
+              touchedDeployments: [{ application: "library", deploymentUuid: "library-deployment" }],
+              reloadFailures: [{ application: "library", errorMessage: "the Library could not be read" }],
+            });
+          }
           return ok({
             files: chosen.map((file) => ({ path: file.path, outcome: file.revertOutcome })),
             touchedDeployments: [],
@@ -367,6 +378,7 @@ export function GitPageForTest(props: GitPageForTestProps) {
     props.remoteToken,
     props.secretsUnavailable,
     props.revertReloadFailure,
+    props.revertPartialFailure,
   ]);
   return (
     <Suspense fallback={<span>Loading the Git page...</span>}>

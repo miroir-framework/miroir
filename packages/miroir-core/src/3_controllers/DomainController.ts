@@ -3994,11 +3994,18 @@ export class DomainController implements DomainControllerInterface, DomainContro
     if (result instanceof Action2Error || result?.status !== "ok") {
       // #691: a revert that failed halfway changed some files: their deployment reloads all the same
       const partly = (result as Action2Error | undefined)?.errorContext?.touchedDeployments;
-      if (Array.isArray(partly)) {
-        await this.reloadTouchedDeployments(
-          { status: "ok", returnedDomainElement: { touchedDeployments: partly } as any },
-          applicationDeploymentMap,
-        );
+      if (!Array.isArray(partly)) {
+        return result;
+      }
+      const reloaded = await this.reloadTouchedDeployments(
+        { status: "ok", returnedDomainElement: { touchedDeployments: partly } as any },
+        applicationDeploymentMap,
+      );
+      const reloadFailures = (reloaded as { returnedDomainElement?: { reloadFailures?: unknown[] } })
+        ?.returnedDomainElement?.reloadFailures;
+      if (Array.isArray(reloadFailures) && reloadFailures.length > 0) {
+        // the page says the application may show old data
+        (result as Action2Error).errorContext = { ...(result as Action2Error).errorContext, reloadFailures };
       }
       return result;
     }

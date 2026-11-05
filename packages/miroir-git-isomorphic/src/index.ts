@@ -2,6 +2,7 @@
  * #679: `GitRepositoryFactory` on isomorphic-git and the Node filesystem. Hosts load this module with a
  * dynamic `import()` registered on `ConfigurationService.registerGitRepositoryFactory`, never statically.
  */
+import { randomBytes } from "node:crypto";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
@@ -682,9 +683,13 @@ class IsomorphicGitRepository implements GitRepositoryInterface {
         : undefined;
       // written next to the file, then renamed over it: a link or a hard link put there meanwhile is
       // replaced, never written through
-      const temporary = path.join(path.dirname(absolute), `.${path.basename(absolute)}.miroir-revert-${process.pid}`);
+      const temporary = path.join(
+        path.dirname(absolute),
+        `.${path.basename(absolute)}.miroir-revert-${process.pid}-${randomBytes(6).toString("hex")}`,
+      );
+      // "wx" refuses a file already there: only a file this call created is removed
+      fs.writeFileSync(temporary, blob, { flag: "wx", mode: executable ? 0o777 : 0o666 });
       try {
-        fs.writeFileSync(temporary, blob, { flag: "wx", mode: executable ? 0o777 : 0o666 });
         if (mode !== undefined) {
           fs.chmodSync(temporary, mode);
         }
