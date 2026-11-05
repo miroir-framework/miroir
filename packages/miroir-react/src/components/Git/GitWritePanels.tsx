@@ -176,6 +176,15 @@ export function GitBranchList(props: {
     }
   };
   const { current, local, remote, tags } = props.branches;
+  // #691: remote branches and tags are folded; a filter opens both folds on the names it matches
+  const [filter, setFilter] = useState("");
+  const [unfolded, setUnfolded] = useState<{ remote: boolean; tags: boolean }>({ remote: false, tags: false });
+  const needle = filter.trim().toLowerCase();
+  const matching = (refs: string[]) => (needle ? refs.filter((ref) => ref.toLowerCase().includes(needle)) : refs);
+  const folds: { key: "remote" | "tags"; label: string; refs: string[] }[] = [
+    { key: "remote", label: "Remote branches", refs: matching(remote) },
+    { key: "tags", label: "Tags", refs: matching(tags) },
+  ];
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
       {local.map((branch) => (
@@ -208,16 +217,47 @@ export function GitBranchList(props: {
           )}
         </Box>
       ))}
-      {[...remote, ...tags].map((ref) => (
-        <Box key={ref} sx={{ display: "flex", alignItems: "center", gap: 1 }} data-testid={`git-ref-${ref}`}>
-          <Typography variant="body2" sx={{ opacity: 0.7 }}>
-            {tags.includes(ref) ? `${ref} (tag)` : ref}
-          </Typography>
-          <Button size="small" data-testid={`git-checkout-${ref}`} disabled={props.busy} onClick={() => props.onCheckout(ref)}>
-            Check out
-          </Button>
-        </Box>
-      ))}
+      {remote.length + tags.length > 0 && (
+        <TextField
+          size="small"
+          label="Find a remote branch or tag"
+          value={filter}
+          onChange={(event) => setFilter(event.target.value)}
+          slotProps={{ htmlInput: { "data-testid": "git-branch-filter" } }}
+          sx={{ mt: 1 }}
+        />
+      )}
+      {folds.map(
+        (fold) =>
+          (fold.key === "remote" ? remote : tags).length > 0 && (
+            <React.Fragment key={fold.key}>
+              <Button
+                size="small"
+                sx={{ alignSelf: "flex-start" }}
+                data-testid={fold.key === "remote" ? "git-remote-branches-toggle" : "git-tags-toggle"}
+                onClick={() => setUnfolded((current) => ({ ...current, [fold.key]: !current[fold.key] }))}
+              >
+                {`${fold.label} (${fold.refs.length})`}
+              </Button>
+              {(needle !== "" || unfolded[fold.key]) &&
+                fold.refs.map((ref) => (
+                  <Box key={ref} sx={{ display: "flex", alignItems: "center", gap: 1, pl: 1 }} data-testid={`git-ref-${ref}`}>
+                    <Typography variant="body2" sx={{ opacity: 0.7 }}>
+                      {fold.key === "tags" ? `${ref} (tag)` : ref}
+                    </Typography>
+                    <Button
+                      size="small"
+                      data-testid={`git-checkout-${ref}`}
+                      disabled={props.busy}
+                      onClick={() => props.onCheckout(ref)}
+                    >
+                      Check out
+                    </Button>
+                  </Box>
+                ))}
+            </React.Fragment>
+          ),
+      )}
       <Box sx={{ display: "flex", gap: 1, alignItems: "center", mt: 1 }}>
         <TextField
           size="small"

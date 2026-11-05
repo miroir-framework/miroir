@@ -12,7 +12,7 @@ import {
   type GitLogResult,
   type GitStatusResult,
 } from "@miroir-framework/core";
-import { LazyGitPageView, type RunGitAction } from "@miroir-framework/react";
+import { LazyGitClonePanel, LazyGitPageView, type RunGitAction } from "@miroir-framework/react";
 
 // ################################################################################################
 // The Git page body for the declarative component tests (#679): the real view and its request
@@ -53,6 +53,8 @@ export interface GitPageForTestProps {
   secretsUnavailable?: boolean;
   /** #691: the tab the page opens on; the page keeps the tab it is then switched to. */
   view?: string;
+  /** #691: the Setup tab holds the real Clone panel, on the same answers as the page. */
+  withClonePanel?: boolean;
 }
 
 const REMOTE_HOST = "git.example.com";
@@ -304,6 +306,13 @@ export function GitPageForTest(props: GitPageForTestProps) {
         runGitAction={runGitAction}
         entityNames={props.entityNames ?? {}}
         view={props.view}
+        setupExtras={
+          props.withClonePanel ? (
+            <Suspense fallback={<span>Loading the clone panel...</span>}>
+              <LazyGitClonePanel runGitAction={runGitAction} />
+            </Suspense>
+          ) : undefined
+        }
       />
     </Suspense>
   );

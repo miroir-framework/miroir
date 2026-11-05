@@ -4,7 +4,7 @@
  * whose Git actions run on the server through the DomainController. Above it, the clone panel (#683)
  * installs an application from a remote repository.
  */
-import { Box, Typography } from "@mui/material";
+import { Alert, Box, Typography } from "@mui/material";
 import { Formik } from "formik";
 import React, { useCallback, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
@@ -77,6 +77,7 @@ export function GitPage(): React.JSX.Element {
     [setSearchParams],
   );
   const applicationDeploymentMap = context.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap;
+  const gitEnabled = context.processCapabilities.git === true;
   const initialApplication = defaultToolApplication(
     searchParams.get("application") ?? undefined,
     context.toolsPageState?.applicationSelector,
@@ -95,7 +96,6 @@ export function GitPage(): React.JSX.Element {
         return (
           <PageContainer padding={2}>
             <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-              <GitCloneSection />
               <TypedValueObjectEditor
                 labelElement={<span>select Application</span>}
                 formValueMLSchema={applicationSelectorSchema}
@@ -117,12 +117,26 @@ export function GitPage(): React.JSX.Element {
                   view={searchParams.get("view") ?? undefined}
                   onViewChange={(view) => onViewChange(application, view)}
                 />
-              ) : null}
+              ) : // #691: before an application is chosen, cloning one is all the page offers
+              gitEnabled ? (
+                <GitCloneSection />
+              ) : (
+                <GitUnavailable />
+              )}
             </Box>
           </PageContainer>
         );
       }}
     </Formik>
+  );
+}
+
+/** The notice `GitPageView` shows with `git` off, for the page with no application chosen. */
+function GitUnavailable() {
+  return (
+    <Alert severity="info" data-testid="git-unavailable">
+      Git is off in this Miroir process. Start it with the <code>git</code> feature on to use the Git page.
+    </Alert>
   );
 }
 
@@ -191,6 +205,7 @@ function GitPageForApplication(props: {
       entityNames={entityNames}
       view={props.view}
       onViewChange={props.onViewChange}
+      setupExtras={<GitCloneSection />}
     />
   );
 }
