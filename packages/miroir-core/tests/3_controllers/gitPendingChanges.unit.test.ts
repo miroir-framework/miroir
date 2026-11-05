@@ -34,8 +34,9 @@ describe("openMiroirTransactionError (#679 D7)", () => {
     );
   });
 
-  it("refuses a checkout or a pull while any application has unsaved changes", () => {
-    for (const actionType of ["gitAction_checkout", "gitAction_pull"] as const) {
+  it("refuses a checkout, a pull or a revert while any application has unsaved changes", () => {
+    // #691: the rollback after a revert empties the whole transaction, like the reload after a checkout
+    for (const actionType of ["gitAction_checkout", "gitAction_pull", "gitAction_revert"] as const) {
       const error = openMiroirTransactionError(action(actionType, { ref: "main" }), otherApplicationChange);
       expect(reason(error), actionType).toBe("openMiroirTransaction");
       expect(error?.errorContext?.applications, actionType).toEqual([OTHER]);

@@ -11,6 +11,7 @@ import type {
   GitFileDiff,
   GitFileStatus,
   GitPerson,
+  GitRevertOutcome,
 } from "../4-services/GitRepositoryInterface";
 
 export const GIT_ENDPOINT_UUID = "a7f243cb-9345-425a-918d-4e433a94f4bf";
@@ -34,6 +35,7 @@ export const GIT_ACTION_TYPES = [
   "gitAction_setCredential",
   "gitAction_clone",
   "gitAction_installClonedDeployment",
+  "gitAction_revert",
 ] as const;
 
 export type GitActionType = (typeof GIT_ACTION_TYPES)[number];
@@ -73,6 +75,8 @@ export const GIT_ACTIONS_NEEDING_SAVED_MIROIR_CHANGES: readonly GitActionType[] 
   "gitAction_pull",
   // #683: the install reloads Admin from its files, which drops Admin changes not saved yet
   "gitAction_installClonedDeployment",
+  // #691: the reload after a revert is a rollback, which empties the whole transaction
+  "gitAction_revert",
 ];
 
 
@@ -150,6 +154,12 @@ export type GitInstallClonedDeploymentAction = GitActionOf<
   { folderName: string; deploymentUuid?: string }
 >;
 
+/**
+ * #691: drops the unstaged edits of `paths`, files of the application's sections, or with `all` of every file
+ * of the sections: each work-tree file is made equal to the index, staged content is kept.
+ */
+export type GitRevertAction = GitActionOf<"gitAction_revert", { paths?: string[]; all?: boolean }>;
+
 export type GitAction =
   | GitStatusAction
   | GitLogAction
@@ -168,7 +178,8 @@ export type GitAction =
   | GitPushAction
   | GitSetCredentialAction
   | GitCloneAction
-  | GitInstallClonedDeploymentAction;
+  | GitInstallClonedDeploymentAction
+  | GitRevertAction;
 
 /** The instance a changed path stores, when it is an instance file of the deployment (D10). */
 export type GitPathDescription = {
@@ -230,6 +241,14 @@ export type GitBranchResult = { branches: GitBranches };
 
 /** A deployment whose files the action may have changed: the client reloads it (`rollback`). */
 export type GitTouchedDeployment = { application: Uuid; deploymentUuid: Uuid };
+
+/** #691: the files a revert changed, and the deployment reloaded: the action's own only. */
+export type GitRevertResult = {
+  files: { path: string; outcome: GitRevertOutcome }[];
+  touchedDeployments: GitTouchedDeployment[];
+  /** Set by the DomainController, as for a checkout: the applications its local cache could not reload. */
+  reloadFailures?: { application: Uuid; errorMessage?: string }[];
+};
 
 export type GitCheckoutResult = GitBranchResult & {
   touchedDeployments: GitTouchedDeployment[];

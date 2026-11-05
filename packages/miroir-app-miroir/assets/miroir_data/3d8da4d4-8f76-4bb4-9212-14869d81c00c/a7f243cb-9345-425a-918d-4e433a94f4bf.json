@@ -1147,6 +1147,71 @@
           "actionImplementationType": "libraryImplementation",
           "inMemoryImplementationFunctionName": "handleAction_gitAction_installClonedDeployment"
         }
+      },
+      {
+        "actionParameters": {
+          "actionType": {
+            "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false,
+                "defaultLabel": "Drop the unstaged edits of files of the application"
+              }
+            },
+            "definition": "gitAction_revert"
+          },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
+          },
+          "endpoint": {
+            "type": "literal",
+            "definition": "a7f243cb-9345-425a-918d-4e433a94f4bf"
+          },
+          "payload": {
+            "type": "object",
+            "tag": {
+              "value": {
+                "canBeTemplate": true
+              }
+            },
+            "definition": {
+              "application": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                }
+              },
+              "paths": {
+                "type": "array",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                },
+                "definition": {
+                  "type": "string"
+                },
+                "optional": true
+              },
+              "all": {
+                "type": "boolean",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                },
+                "optional": true
+              }
+            }
+          }
+        },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_gitAction_revert"
+        }
       }
     ]
   }

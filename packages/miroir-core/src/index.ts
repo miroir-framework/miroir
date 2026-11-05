@@ -819,6 +819,7 @@ export type {
   GitRepositoryFactoryLoader,
   GitRepositoryErrorCode,
   GitRepositoryInterface,
+  GitRevertOutcome,
 } from "./0_interfaces/4-services/GitRepositoryInterface";
 export { GitRepositoryError } from "./0_interfaces/4-services/GitRepositoryInterface";
 export {
@@ -838,6 +839,8 @@ export type {
   GitCommitResult,
   GitCreateBranchAction,
   GitDeleteBranchAction,
+  GitRevertAction,
+  GitRevertResult,
   GitStageAction,
   GitStageResult,
   GitTouchedDeployment,

@@ -23,6 +23,7 @@ import {
   type GitInstallClonedDeploymentAction,
   type GitInstallClonedDeploymentResult,
   type GitCheckoutResult,
+  type GitRevertResult,
   type GitCommitAction,
   type GitCommitFilesResult,
   type GitCommitResult,
@@ -424,11 +425,15 @@ export function openMiroirTransactionError(
     return undefined;
   }
   // a checkout or a pull rewrites the files of every deployment in the repository, and the reload that
-  // follows drops the unsaved changes of each of them, not only of the application named by the action
+  // follows drops the unsaved changes of each of them, not only of the application named by the action; a
+  // revert (#691) reloads only its own deployment, but that reload is a rollback, which empties the whole
+  // transaction too
   const application =
     action.actionType === "gitAction_installClonedDeployment" ? adminSelfApplication.uuid : action.payload?.application;
   const pending =
-    action.actionType === "gitAction_checkout" || action.actionType === "gitAction_pull"
+    action.actionType === "gitAction_checkout" ||
+    action.actionType === "gitAction_pull" ||
+    action.actionType === "gitAction_revert"
       ? transaction
       : transaction.filter((change) => change.payload?.application === application);
   if (pending.length === 0) {
@@ -856,6 +861,22 @@ async function runOnDeployment(
           await (staging ? repository.stage(paths) : repository.unstage(paths));
         }
         return ok(await status(opened, false));
+      }
+      case "gitAction_revert": {
+        const paths = await pathsToStage(opened, action.payload, (file) => file.unstaged);
+        if (paths instanceof Action2Error) {
+          return paths;
+        }
+        if (paths.length === 0) {
+          return gitActionError("nothingToRevert", "None of these files has unstaged edits to revert");
+        }
+        const files = await repository.restoreFromIndex(paths);
+        // only the files of this deployment changed: another deployment of the repository is not reloaded,
+        // unlike after a checkout
+        const deploymentUuid = context.applicationDeploymentMap[action.payload.application];
+        const touched: GitTouchedDeployment[] = [{ application: action.payload.application, deploymentUuid }];
+        await rebootTouchedStores(touched, context);
+        return ok({ files, touchedDeployments: touched } satisfies GitRevertResult);
       }
       case "gitAction_commit":
         return await commit(action, opened, context.principal);

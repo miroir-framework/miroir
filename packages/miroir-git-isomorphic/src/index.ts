@@ -20,6 +20,7 @@ import {
   type GitRepositoryFactory,
   type GitRemoteOptions,
   type GitRepositoryInterface,
+  type GitRevertOutcome,
 } from "@miroir-framework/core";
 
 const DEFAULT_BRANCH = "main";
@@ -365,6 +366,15 @@ function repositoryFs(root: string): FsClient {
   return layout.commonDirectory || inheritAutocrlf ? gitFs(layout, inheritAutocrlf) : fs;
 }
 
+/** The entry at `absolute` itself (a link is not followed), undefined when there is none. */
+function lstatOrUndefined(absolute: string): fs.Stats | undefined {
+  try {
+    return fs.lstatSync(absolute);
+  } catch {
+    return undefined;
+  }
+}
+
 async function resolveOrUndefined(repository: GitDir, ref: string): Promise<string | undefined> {
   try {
     return await git.resolveRef({ ...repository, ref });
@@ -409,7 +419,12 @@ export function statusFromMatrixRow([filepath, head, workdir, stage]: [string, n
   }
   const change: GitFileStatus["change"] =
     head === 0 ? "added" : workdir === 0 || stage === 0 ? "deleted" : "modified";
-  return { path: filepath, change, staged, unstaged };
+  if (!unstaged) {
+    return { path: filepath, change, staged, unstaged };
+  }
+  // #691: a revert makes the work tree equal to the index, which decides what happens to the file
+  const revertOutcome: GitRevertOutcome = stage === 0 ? "deleted" : workdir === 0 ? "recreated" : "rewritten";
+  return { path: filepath, change, staged, unstaged, revertOutcome };
 }
 
 class IsomorphicGitRepository implements GitRepositoryInterface {
@@ -591,6 +606,62 @@ class IsomorphicGitRepository implements GitRepositoryInterface {
         await git.remove({ ...this.repository, filepath });
       }
     }
+  }
+
+  async restoreFromIndex(paths: string[]): Promise<{ path: string; outcome: GitRevertOutcome }[]> {
+    const wanted = new Set(paths);
+    const entries = new Map<string, { oid: string; mode: number }>();
+    await git.walk({
+      ...this.repository,
+      trees: [git.STAGE()],
+      map: async (filepath, [entry]) => {
+        if (entry && wanted.has(filepath) && (await entry.type()) === "blob") {
+          entries.set(filepath, { oid: await entry.oid(), mode: await entry.mode() });
+        }
+        return undefined;
+      },
+    });
+    const realRoot = fs.realpathSync(this.root);
+    // every file is checked before any is written: a refusal leaves the work tree as it was
+    const plans = paths.map((filepath) => {
+      const absolute = path.resolve(this.root, filepath);
+      const entry = entries.get(filepath);
+      if (entry?.mode === 0o120000) {
+        throw new GitRepositoryError("symbolicLink", `${filepath} is a symbolic link in the index`);
+      }
+      // the nearest folder that exists must be a folder of the work tree, reached through no link out of it
+      let folder = path.dirname(absolute);
+      while (!fs.existsSync(folder)) {
+        folder = path.dirname(folder);
+      }
+      const relative = path.relative(realRoot, fs.realpathSync(folder));
+      const segments = relative.split(path.sep);
+      if (path.isAbsolute(relative) || segments[0] === ".." || segments[0].toLowerCase() === ".git") {
+        throw new GitRepositoryError("symbolicLink", `${filepath} is reached through a link out of the work tree`);
+      }
+      const present = lstatOrUndefined(absolute);
+      if (present?.isSymbolicLink() && entry) {
+        // writing would follow the link: its target is another file
+        throw new GitRepositoryError("symbolicLink", `${filepath} is a symbolic link in the work tree`);
+      }
+      if (present?.isDirectory()) {
+        throw new GitRepositoryError("outsideWorkTree", `${filepath} is a folder of the work tree`);
+      }
+      const outcome: GitRevertOutcome = !entry ? "deleted" : present ? "rewritten" : "recreated";
+      return { filepath, absolute, entry, outcome };
+    });
+    for (const { absolute, entry } of plans) {
+      if (!entry) {
+        // a link is removed itself, never its target
+        fs.rmSync(absolute, { force: true });
+        continue;
+      }
+      const { blob } = await git.readBlob({ ...this.repository, oid: entry.oid });
+      fs.mkdirSync(path.dirname(absolute), { recursive: true });
+      fs.writeFileSync(absolute, blob);
+      fs.chmodSync(absolute, entry.mode === 0o100755 ? 0o755 : 0o644);
+    }
+    return plans.map(({ filepath, outcome }) => ({ path: filepath, outcome }));
   }
 
   async unstage(paths: string[]): Promise<void> {

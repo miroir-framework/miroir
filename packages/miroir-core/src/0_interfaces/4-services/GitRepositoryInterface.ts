@@ -17,7 +17,15 @@ export type GitFileStatus = {
   staged: boolean;
   /** The work tree differs from the index for this file. */
   unstaged: boolean;
+  /** #691: with `unstaged`, what a revert does to the file to make it equal to the index. */
+  revertOutcome?: GitRevertOutcome;
 };
+
+/**
+ * #691: what a revert does to a work-tree file: rewritten with its index content, re-created from it, or
+ * deleted when the index has no entry for it.
+ */
+export type GitRevertOutcome = "rewritten" | "recreated" | "deleted";
 
 export type GitPerson = { name: string; email: string };
 
@@ -74,6 +82,13 @@ export interface GitRepositoryInterface {
   stage(paths: string[]): Promise<void>;
   /** Puts the HEAD state of each path back in the index, leaving the work tree as it is. */
   unstage(paths: string[]): Promise<void>;
+  /**
+   * #691: makes each work-tree file equal to its index entry, leaving the index as it is: rewritten or
+   * re-created with the entry's content and mode, or deleted when the index has no entry. Throws
+   * `symbolicLink` for a link in the work tree or in the index, or for a folder that leads out of the work
+   * tree, before writing anything.
+   */
+  restoreFromIndex(paths: string[]): Promise<{ path: string; outcome: GitRevertOutcome }[]>;
   /** Commits the index on the current branch (or the detached HEAD); returns the new commit's oid. */
   commit(message: string, author: GitPerson): Promise<string>;
   /** A value of the repository's own configuration (`.git/config`), such as `user.name`. */
@@ -232,4 +247,5 @@ export type GitActionErrorReason =
   | "severalDeploymentsFound"
   | "applicationAlreadyDeployed"
   | "symbolicLink"
+  | "nothingToRevert"
   | "gitFailure";

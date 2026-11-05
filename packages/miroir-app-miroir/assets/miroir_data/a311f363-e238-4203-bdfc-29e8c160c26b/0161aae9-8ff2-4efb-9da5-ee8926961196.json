@@ -2682,6 +2682,7 @@
                     "gitAction_log",
                     "gitAction_pull",
                     "gitAction_push",
+                    "gitAction_revert",
                     "gitAction_setCredential",
                     "gitAction_setRemote",
                     "gitAction_stage",
