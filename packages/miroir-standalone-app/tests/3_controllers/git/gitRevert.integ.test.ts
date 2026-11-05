@@ -354,7 +354,8 @@ describe("gitAction_revert (#691 slice 7)", () => {
     }
   });
 
-  it("keeps the mode of an executable file, and refuses a link in the index", async () => {
+  // Windows has no execute bits: a writable file always reads back 0o666, whatever chmod set
+  it.skipIf(process.platform === "win32")("keeps the mode of an executable file", async () => {
     const executable = rowFile([1, 2, 1], "b");
     write(executable.file, executable.uuid, "executable");
     fs.chmodSync(path.join(dir(), executable.file), 0o755);
@@ -377,9 +378,13 @@ describe("gitAction_revert (#691 slice 7)", () => {
     } finally {
       await git.setConfig({ fs, dir: dir(), path: "core.filemode", value: false });
     }
+  });
 
+  it("refuses a link in the index", async () => {
+    const target = rowFile([1, 2, 1], "f");
+    write(target.file, target.uuid, "link target");
     const link = rowFile([1, 2, 1], "c");
-    fs.symlinkSync(path.join(dir(), executable.file), path.join(dir(), link.file));
+    fs.symlinkSync(path.join(dir(), target.file), path.join(dir(), link.file));
     await add(link.file);
     await git.commit({ fs, dir: dir(), message: "a link", author: TEST_AUTHOR });
     fs.rmSync(path.join(dir(), link.file));
@@ -394,11 +399,12 @@ describe("gitAction_revert (#691 slice 7)", () => {
     const edited = rowFile([1, 2, 1], "d");
     try {
       await git.init({ fs, dir: testRoot, defaultBranch: "main" });
+      // git paths use "/", also on Windows: a "\" path would stage another file than the one reverted
+      const relative = path.relative(testRoot, path.join(dir(), edited.file)).split(path.sep).join("/");
       writeWorkTreeFile(context, edited.file, bookText(edited.uuid, "committed"));
-      await git.add({ fs, dir: testRoot, filepath: path.relative(testRoot, path.join(dir(), edited.file)) });
+      await git.add({ fs, dir: testRoot, filepath: relative });
       await git.commit({ fs, dir: testRoot, message: "one file", author: TEST_AUTHOR });
       write(edited.file, edited.uuid, "edited");
-      const relative = path.relative(testRoot, path.join(dir(), edited.file)).split(path.sep).join("/");
       const result = expectOk<GitRevertResult>(await gitAction(context, "gitAction_revert", { paths: [relative] }));
       expect(result.touchedDeployments).toEqual([{ application: LIBRARY_APPLICATION, deploymentUuid: LIBRARY_DEPLOYMENT }]);
       expect(JSON.parse(read(edited.file)!).name).toBe("committed");
