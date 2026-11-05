@@ -171,6 +171,21 @@ async function openRepository(
       { directory },
     );
   }
+  // every section must be in that one repository: a section in another one would drop out of every result
+  const otherRepositories: Record<string, string | undefined> = {};
+  for (const [section, sectionDirectory] of Object.entries(sectionDirectories)) {
+    const sectionRoot = await factory.findRoot(sectionDirectory as string);
+    if (sectionRoot !== root) {
+      otherRepositories[section] = sectionRoot;
+    }
+  }
+  if (Object.keys(otherRepositories).length > 0) {
+    return gitActionError(
+      "sectionsInSeveralRepositories",
+      `The sections of application ${action.payload.application} are not all in the Git repository ${root}`,
+      { directory, root, otherRepositories },
+    );
+  }
   const repository = await factory.open(root);
   const sectionPaths: GitSectionPaths = {};
   for (const [section, sectionDirectory] of Object.entries(sectionDirectories)) {
@@ -264,8 +279,13 @@ export async function runGitAction(action: GitAction, context: GitActionContext)
           { directory, otherFolders: shared },
         );
       }
-      // a deployment ignored by an enclosing repository gets its own nested repository
-      if ((await openRepository(action, resolved)) instanceof Action2Error) {
+      // a deployment ignored by an enclosing repository gets its own nested repository; any other refusal
+      // (sections in several repositories) stands
+      const existing = await openRepository(action, resolved);
+      if (existing instanceof Action2Error && existing.errorContext?.reason !== "notARepository") {
+        return existing;
+      }
+      if (existing instanceof Action2Error) {
         await resolved.factory.init(directory);
       }
       const opened = await openRepository(action, resolved);

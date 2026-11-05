@@ -96,4 +96,5 @@ export type GitActionErrorReason =
   | "outsideDeploymentRoot"
   | "sharedFolder"
   | "pathOutsideApplication"
+  | "sectionsInSeveralRepositories"
   | "gitFailure";

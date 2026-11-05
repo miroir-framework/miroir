@@ -160,6 +160,21 @@ describe("gitAction_diff paths (#679 review)", () => {
   });
 });
 
+describe("sections in several repositories (#679 review)", () => {
+  it("refuses a deployment whose data section is a repository of its own, and does not init over it", async () => {
+    const dataGit = path.join(context.sectionDirectory("data"), ".git");
+    await git.init({ fs, dir: context.sectionDirectory("data"), defaultBranch: "main" });
+    try {
+      const error = expectGitError(await gitAction(context, "gitAction_status"), "sectionsInSeveralRepositories");
+      expect(Object.keys(error.errorContext?.otherRepositories ?? {})).toEqual(["data"]);
+      expectGitError(await gitAction(context, "gitAction_init"), "sectionsInSeveralRepositories");
+    } finally {
+      fs.rmSync(dataGit, { recursive: true, force: true });
+    }
+    expectOk<GitStatusResult>(await gitAction(context, "gitAction_status"));
+  });
+});
+
 describe("gitAction_init and repository errors (#679 slice 4)", () => {
   it("refuses an action outside a repository, naming the folder to initialize", async () => {
     fs.rmSync(path.join(context.libraryRoot, ".git"), { recursive: true, force: true });

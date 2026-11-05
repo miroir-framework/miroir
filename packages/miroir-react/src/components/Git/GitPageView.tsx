@@ -316,18 +316,27 @@ function CommitFilesPanel(props: {
   return (
     <Panel title={`Files of ${props.commit.oid.slice(0, 7)}: ${props.commit.message.split("\n")[0]}`} testId="git-commit-files">
       {files.status === "ok" ? (
-        files.value.files.map((file) => (
-          <Row
-            key={file.path}
-            testId={`git-commit-file-${file.path}`}
-            selected={props.selected === file.path}
-            onClick={() => props.onSelect(file.path)}
-          >
-            <Typography variant="body2" noWrap>
-              {gitFileLabel(file, props.entityNames)}
-            </Typography>
-          </Row>
-        ))
+        files.value.files.map((file) =>
+          file.inApplication ? (
+            <Row
+              key={file.path}
+              testId={`git-commit-file-${file.path}`}
+              selected={props.selected === file.path}
+              onClick={() => props.onSelect(file.path)}
+            >
+              <Typography variant="body2" noWrap>
+                {gitFileLabel(file, props.entityNames)}
+              </Typography>
+            </Row>
+          ) : (
+            // the diff of a file outside the application's sections is not shown
+            <Box key={file.path} data-testid={`git-commit-file-${file.path}`} sx={{ px: 0.5, py: 0.25, opacity: 0.6 }}>
+              <Typography variant="body2" noWrap>
+                {file.path} (outside this application)
+              </Typography>
+            </Box>
+          ),
+        )
       ) : (
         <Loading state={files} />
       )}
