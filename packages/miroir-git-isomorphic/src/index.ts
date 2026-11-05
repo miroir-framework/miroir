@@ -6,16 +6,40 @@ import fs from "node:fs";
 import path from "node:path";
 import git from "isomorphic-git";
 
-import type {
-  GitBranches,
-  GitCommitSummary,
-  GitFileDiff,
-  GitFileStatus,
-  GitRepositoryFactory,
-  GitRepositoryInterface,
+import {
+  GitRepositoryError,
+  type GitBranches,
+  type GitCheckoutOutcome,
+  type GitCommitSummary,
+  type GitFileDiff,
+  type GitFileStatus,
+  type GitPerson,
+  type GitRepositoryFactory,
+  type GitRepositoryInterface,
 } from "@miroir-framework/core";
 
 const DEFAULT_BRANCH = "main";
+
+/** isomorphic-git errors carry their class name in `code`. */
+function errorCode(error: unknown): string | undefined {
+  const code = (error as { code?: unknown } | undefined)?.code;
+  return typeof code === "string" ? code : undefined;
+}
+
+/** Rethrows an isomorphic-git ref error as a `GitRepositoryError` the actions map to a reason. */
+function asRepositoryError(error: unknown, ref: string): unknown {
+  switch (errorCode(error)) {
+    case "AlreadyExistsError":
+      return new GitRepositoryError("branchExists", `A branch named ${ref} already exists`);
+    case "InvalidRefNameError":
+      return new GitRepositoryError("invalidRefName", `${ref} is not a valid branch name`);
+    case "NotFoundError":
+    case "CommitNotFetchedError":
+      return new GitRepositoryError("unknownRevision", `Unknown revision ${ref}`);
+    default:
+      return error;
+  }
+}
 
 function toPosix(relative: string): string {
   return relative.split(path.sep).join("/");
@@ -203,6 +227,121 @@ class IsomorphicGitRepository implements GitRepositoryInterface {
 
   async isIgnored(filepath: string): Promise<boolean> {
     return git.isIgnored({ fs, dir: this.root, filepath });
+  }
+
+  async stagedPaths(): Promise<string[]> {
+    const head = await commitOf(this.root, "HEAD");
+    if (!head) {
+      return git.listFiles({ fs, dir: this.root });
+    }
+    // HEAD against the index only: no file of the work tree is read
+    const paths: unknown[] = await git.walk({
+      fs,
+      dir: this.root,
+      trees: [git.TREE({ ref: head }), git.STAGE()],
+      map: async (filepath, [inHead, inStage]) => {
+        if (filepath === ".") {
+          return;
+        }
+        const [headType, stageType] = [await inHead?.type(), await inStage?.type()];
+        const headBlob = headType === "blob" || headType === "commit" ? await inHead!.oid() : undefined;
+        const stageBlob = stageType === "blob" || stageType === "commit" ? await inStage!.oid() : undefined;
+        if (headBlob === undefined && stageBlob === undefined) {
+          return; // two folders, or a folder on one side only: walked
+        }
+        return headBlob === stageBlob ? undefined : filepath;
+      },
+    });
+    return paths.filter((filepath): filepath is string => typeof filepath === "string");
+  }
+
+  async stage(paths: string[]): Promise<void> {
+    for (const filepath of paths) {
+      if (fs.existsSync(path.join(this.root, filepath))) {
+        // git.add follows symbolic links: a file reached through one out of the work tree is not staged
+        if (!this.workTreeFile(filepath)) {
+          throw new GitRepositoryError("outsideWorkTree", `${filepath} is not a file of the work tree`);
+        }
+        await git.add({ fs, dir: this.root, filepath });
+      } else {
+        await git.remove({ fs, dir: this.root, filepath });
+      }
+    }
+  }
+
+  async unstage(paths: string[]): Promise<void> {
+    for (const filepath of paths) {
+      await git.resetIndex({ fs, dir: this.root, filepath });
+    }
+  }
+
+  async commit(message: string, author: GitPerson): Promise<string> {
+    return git.commit({ fs, dir: this.root, message, author: { name: author.name, email: author.email } });
+  }
+
+  async getConfig(key: string): Promise<string | undefined> {
+    const value = await git.getConfig({ fs, dir: this.root, path: key });
+    return value === undefined || value === null ? undefined : String(value);
+  }
+
+  async setConfig(key: string, value: string): Promise<void> {
+    await git.setConfig({ fs, dir: this.root, path: key, value });
+  }
+
+  async createBranch(name: string, startPoint?: string): Promise<void> {
+    let object: string | undefined;
+    if (startPoint !== undefined) {
+      object = await commitOf(this.root, startPoint);
+      if (!object) {
+        throw new GitRepositoryError("unknownRevision", `Unknown revision ${startPoint}`);
+      }
+    }
+    try {
+      await git.branch({ fs, dir: this.root, ref: name, object, checkout: false });
+    } catch (error) {
+      throw asRepositoryError(error, name);
+    }
+  }
+
+  async deleteBranch(name: string): Promise<void> {
+    try {
+      await git.deleteBranch({ fs, dir: this.root, ref: name });
+    } catch (error) {
+      throw asRepositoryError(error, name);
+    }
+  }
+
+  async branchIsMergedIntoHead(name: string): Promise<boolean> {
+    const [tip, head] = [await commitOf(this.root, `refs/heads/${name}`), await commitOf(this.root, "HEAD")];
+    if (!tip || !head) {
+      return tip === head;
+    }
+    return tip === head || git.isDescendent({ fs, dir: this.root, oid: head, ancestor: tip, depth: -1 });
+  }
+
+  async checkout(ref: string): Promise<GitCheckoutOutcome> {
+    // a local branch is checked out as such; anything else that names a commit, as a detached HEAD; a name
+    // only a remote has becomes a local branch tracking it
+    const isLocalBranch = (await resolveOrUndefined(this.root, `refs/heads/${ref}`)) !== undefined;
+    const commit = isLocalBranch ? undefined : await commitOf(this.root, ref);
+    const target = isLocalBranch ? ref : (commit ?? ref);
+    try {
+      if (!isLocalBranch && !commit) {
+        // git.checkout creates the tracking branch before it looks for conflicts: look first, on its commit
+        const remoteCommit = await commitOf(this.root, `refs/remotes/origin/${ref}`);
+        if (!remoteCommit) {
+          throw new GitRepositoryError("unknownRevision", `Unknown revision ${ref}`);
+        }
+        await git.checkout({ fs, dir: this.root, ref: remoteCommit, dryRun: true });
+      }
+      await git.checkout({ fs, dir: this.root, ref: target });
+      return { conflicts: [] };
+    } catch (error) {
+      if (errorCode(error) === "CheckoutConflictError") {
+        return { conflicts: [...((error as { data?: { filepaths?: string[] } }).data?.filepaths ?? [])] };
+      }
+      throw asRepositoryError(error, ref);
+    }
   }
 
   async branches(): Promise<GitBranches> {

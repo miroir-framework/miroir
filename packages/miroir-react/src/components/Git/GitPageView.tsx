@@ -1,9 +1,10 @@
 /**
- * #679: the Git page of one application: its changes against HEAD, its history, the files of a commit
- * and the diff of one file. Read-only in this slice, apart from creating a repository. Every read goes
- * through `runGitAction`, so the page shows the same thing over a real server and over test fixtures.
+ * #679: the Git page of one application: its changes against HEAD, staged and committed from here, its
+ * history, its branches, the files of a commit and the diff of one file. Every Git action goes through
+ * `runGitAction`, so the page shows the same thing over a real server and over test fixtures; after a
+ * checkout, the DomainController reloads the deployments whose files changed.
  */
-import { Alert, Box, Button, Chip, Typography } from "@mui/material";
+import { Alert, Box, Button, Checkbox, Chip, Typography } from "@mui/material";
 import React, { useCallback, useMemo, useState } from "react";
 
 import {
@@ -15,11 +16,15 @@ import {
   type GitFileStatus,
   type GitLogResult,
   type GitPathDescription,
+  type GitActionType,
+  type GitCheckoutResult,
   type GitStatusResult,
 } from "@miroir-framework/core";
 
 import { useMiroirTheme } from "../../contexts/MiroirThemeContext.js";
+import { useGitCommand } from "./useGitCommand.js";
 import { useGitRequest, type GitRequestError, type GitRequestState, type RunGitAction } from "./useGitRequest.js";
+import { GitBranchList, GitCommandError, GitCommitForm, GitDetachedBanner } from "./GitWritePanels.js";
 
 export interface GitPageViewProps {
   applicationName: string;
@@ -71,10 +76,52 @@ export function GitPageView(props: GitPageViewProps): React.JSX.Element {
   const status = useGitRequest<GitStatusResult>(props.runGitAction, "gitAction_status", run && {}, generation);
   const log = useGitRequest<GitLogResult>(props.runGitAction, "gitAction_log", run && {}, generation);
 
+  const [checkoutError, setCheckoutError] = useState<GitRequestError | undefined>(undefined);
+  const [stageError, setStageError] = useState<GitRequestError | undefined>(undefined);
+  /** The branch left by the last checkout, offered as the way back from a detached HEAD. */
+  const [previousBranch, setPreviousBranch] = useState<string | undefined>(undefined);
+
   const refresh = useCallback(() => {
     setSelection(undefined);
     setGeneration((current) => current + 1);
   }, []);
+  // a staging change keeps the selected file; any other change may remove it
+  const onCommandSuccess = useCallback(
+    (actionType: GitActionType) =>
+      actionType === "gitAction_stage" || actionType === "gitAction_unstage"
+        ? setGeneration((current) => current + 1)
+        : refresh(),
+    [refresh],
+  );
+  const { busy, command } = useGitCommand(props.runGitAction, onCommandSuccess);
+  const stage = useCallback(
+    async (payload: Record<string, unknown>, staging: boolean) => {
+      const result = await command(staging ? "gitAction_stage" : "gitAction_unstage", payload);
+      setStageError(result.status === "error" ? result.error : undefined);
+    },
+    [command],
+  );
+  const currentBranch = status.status === "ok" ? status.value.branches.current : undefined;
+  const [reloadWarning, setReloadWarning] = useState<string | undefined>(undefined);
+  const checkout = useCallback(
+    async (ref: string) => {
+      const result = await command<GitCheckoutResult>("gitAction_checkout", { ref });
+      setCheckoutError(result.status === "error" ? result.error : undefined);
+      const failures = result.status === "ok" ? (result.value.reloadFailures ?? []) : [];
+      setReloadWarning(
+        failures.length > 0
+          ? `The files are checked out, but Miroir could not reload them: ${failures.map((failure) => failure.errorMessage ?? failure.application).join("; ")}`
+          : undefined,
+      );
+      if (result.status === "ok" && currentBranch) {
+        setPreviousBranch(currentBranch);
+      }
+    },
+    [command, currentBranch],
+  );
+  // a checkout waits for the status, which tells which branch it leaves
+  const statusStale = status.status === "ok" && status.stale === true;
+  const checkoutBusy = busy || status.status !== "ok" || statusStale;
   const initRepository = useCallback(async () => {
     const result = await props.runGitAction("gitAction_init");
     const failed = (result as { status?: string })?.status !== "ok";
@@ -128,15 +175,53 @@ export function GitPageView(props: GitPageViewProps): React.JSX.Element {
         </Box>
       ) : (
         <>
+          {status.status === "ok" && (
+            <GitDetachedBanner
+              branches={status.value.branches}
+              backTo={backToBranch(status.value.branches, previousBranch)}
+              busy={checkoutBusy}
+              onCheckout={checkout}
+            />
+          )}
+          <GitCommandError error={checkoutError} testId="git-checkout-error" />
+          {reloadWarning && (
+            <Alert severity="warning" data-testid="git-reload-warning">
+              {reloadWarning}
+            </Alert>
+          )}
           <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap", alignItems: "flex-start" }}>
-            <Panel title="Changes" testId="git-changes">
+            <Panel
+              title="Changes"
+              testId="git-changes"
+              actions={
+                status.status === "ok" &&
+                status.value.files.some((file) => file.inApplication && file.unstaged) && (
+                  <Button size="small" data-testid="git-stage-all" disabled={busy} onClick={() => stage({ all: true }, true)}>
+                    Stage all
+                  </Button>
+                )
+              }
+            >
               {status.status === "ok" ? (
-                <ChangeList
-                  files={status.value.files}
-                  entityNames={props.entityNames}
-                  selected={selection?.kind === "change" ? selection.path : undefined}
-                  onSelect={(path) => setSelection({ kind: "change", path })}
-                />
+                <>
+                  <ChangeList
+                    files={status.value.files}
+                    entityNames={props.entityNames}
+                    selected={selection?.kind === "change" ? selection.path : undefined}
+                    onSelect={(path) => setSelection({ kind: "change", path })}
+                    busy={busy}
+                    onToggleStaged={(file) => stage({ paths: [file.path] }, file.unstaged)}
+                  />
+                  <GitCommandError error={stageError} testId="git-stage-error" />
+                  <GitCommitForm status={status.value} busy={busy || statusStale} command={command} />
+                </>
+              ) : (
+                <Loading state={status} />
+              )}
+            </Panel>
+            <Panel title="Branches" testId="git-branches">
+              {status.status === "ok" ? (
+                <GitBranchList branches={status.value.branches} busy={checkoutBusy} command={command} onCheckout={checkout} />
               ) : (
                 <Loading state={status} />
               )}
@@ -161,6 +246,8 @@ export function GitPageView(props: GitPageViewProps): React.JSX.Element {
               entityNames={props.entityNames}
               selected={selection.path}
               onSelect={(path) => setSelection({ ...selection, path })}
+              busy={checkoutBusy}
+              onCheckout={checkout}
             />
           )}
           {selection && (selection.kind === "change" || selection.path) && (
@@ -177,8 +264,16 @@ export function GitPageView(props: GitPageViewProps): React.JSX.Element {
   );
 }
 
+/** Where "back to" leads from a detached HEAD: the branch left, else `main`, else the first branch. */
+function backToBranch(branches: GitStatusResult["branches"], previousBranch: string | undefined): string | undefined {
+  if (previousBranch && branches.local.includes(previousBranch)) {
+    return previousBranch;
+  }
+  return branches.local.includes("main") ? "main" : branches.local[0];
+}
+
 // ################################################################################################
-function Panel(props: { title: string; testId: string; children: React.ReactNode }) {
+function Panel(props: { title: string; testId: string; actions?: React.ReactNode; children: React.ReactNode }) {
   const miroirTheme = useMiroirTheme();
   return (
     <Box
@@ -191,9 +286,12 @@ function Panel(props: { title: string; testId: string; children: React.ReactNode
         p: 1,
       }}
     >
-      <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-        {props.title}
-      </Typography>
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+        <Typography variant="subtitle1" sx={{ fontWeight: 600, flex: 1, minWidth: 0 }}>
+          {props.title}
+        </Typography>
+        {props.actions}
+      </Box>
       {props.children}
     </Box>
   );
@@ -235,6 +333,9 @@ function ChangeList(props: {
   entityNames: Record<string, string>;
   selected?: string;
   onSelect: (path: string) => void;
+  busy: boolean;
+  /** Stages a file with unstaged changes, unstages the others. */
+  onToggleStaged: (file: GitStatusResult["files"][number]) => void;
 }) {
   if (props.files.length === 0) {
     return <Typography variant="body2">No change since the last commit.</Typography>;
@@ -248,6 +349,21 @@ function ChangeList(props: {
           selected={props.selected === file.path}
           onClick={() => props.onSelect(file.path)}
         >
+          <Checkbox
+            size="small"
+            sx={{ p: 0.25 }}
+            checked={file.staged}
+            indeterminate={file.staged && file.unstaged}
+            disabled={props.busy || !file.inApplication}
+            onClick={(event) => event.stopPropagation()}
+            onChange={() => props.onToggleStaged(file)}
+            slotProps={{
+              input: {
+                "aria-label": file.unstaged ? `stage ${file.path}` : `unstage ${file.path}`,
+                ...({ "data-testid": `git-stage-${file.path}` } as Record<string, string>),
+              },
+            }}
+          />
           <Chip size="small" label={changeLetter[file.change]} title={file.change} />
           <Box sx={{ minWidth: 0 }}>
             <Typography variant="body2" noWrap>
@@ -310,11 +426,26 @@ function CommitFilesPanel(props: {
   entityNames: Record<string, string>;
   selected?: string;
   onSelect: (path: string) => void;
+  busy: boolean;
+  onCheckout: (ref: string) => void;
 }) {
   const payload = useMemo(() => ({ oid: props.commit.oid }), [props.commit.oid]);
   const files = useGitRequest<GitCommitFilesResult>(props.runGitAction, "gitAction_commitFiles", payload, props.generation);
   return (
-    <Panel title={`Files of ${props.commit.oid.slice(0, 7)}: ${props.commit.message.split("\n")[0]}`} testId="git-commit-files">
+    <Panel
+      title={`Files of ${props.commit.oid.slice(0, 7)}: ${props.commit.message.split("\n")[0]}`}
+      testId="git-commit-files"
+      actions={
+        <Button
+          size="small"
+          data-testid="git-checkout-commit"
+          disabled={props.busy}
+          onClick={() => props.onCheckout(props.commit.oid)}
+        >
+          Check out this commit
+        </Button>
+      }
+    >
       {files.status === "ok" ? (
         files.value.files.map((file) =>
           file.inApplication ? (

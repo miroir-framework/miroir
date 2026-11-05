@@ -22,6 +22,7 @@ import {
   MiroirEventService,
   MiroirLoggerFactory,
   type Action2ReturnType,
+  type AuthPrincipal,
   type DomainControllerInterface,
   type GitActionType,
   type MiroirConfigForClientStub,
@@ -160,6 +161,47 @@ export function gitAction(
     } as any,
     applicationDeploymentMap,
   );
+}
+
+/** Runs a Git action on the server's DomainController directly, as the server does for a logged-in user. */
+export function gitActionOnServer(
+  context: GitTestContext,
+  actionType: GitActionType,
+  payload: Record<string, unknown>,
+  principal: AuthPrincipal,
+): Promise<Action2ReturnType> {
+  return context.serverDomainController.handleAction(
+    {
+      actionType,
+      endpoint: GIT_ENDPOINT_UUID,
+      payload: { application: LIBRARY_APPLICATION, ...payload },
+    } as any,
+    applicationDeploymentMap,
+    undefined,
+    undefined,
+    undefined,
+    principal,
+  );
+}
+
+/** The path of a Book instance file, relative to the repository root. */
+export function bookPath(bookUuid: string): string {
+  return `data/${BOOK_ENTITY}/${bookUuid}.json`;
+}
+
+/** Modification times handed out by `editUbik`, two seconds apart and ahead of the clock. */
+let editClock = Math.floor(Date.now() / 1000) + 10;
+
+/**
+ * Rewrites the Ubik Book file with `changes` applied. Its modification time moves two seconds on each
+ * time: isomorphic-git compares whole seconds and sizes with the index, so an edit of the same size in the
+ * second the file was staged would look unchanged (racy Git), which a person at the page never hits.
+ */
+export function editUbik(context: GitTestContext, changes: Record<string, unknown>): void {
+  const file = path.join(context.libraryRoot, bookPath(BOOK_UBIK));
+  fs.writeFileSync(file, JSON.stringify({ ...JSON.parse(fs.readFileSync(file, "utf8")), ...changes }, undefined, 2));
+  fs.utimesSync(file, editClock, editClock);
+  editClock += 2;
 }
 
 export function expectOk<T>(result: Action2ReturnType): T {

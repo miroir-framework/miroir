@@ -10,7 +10,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Sub-issues: #680 (A, slices 0 to 4), #681 (B, slices 5 and 6), #682 (C, slices 7 to 9), #683 (D, slices 10 and 11).
 Working branch: one branch per sub-issue, named `claude/<sub-issue number>-git-<slug>`, from `_integration`.
 
-**Resume note:** sub-issue A (#680, slices 0 to 4) done on `claude/680-git-read-only`. Next: slice 5 (#681) on a branch chained from it.
+**Resume note:** sub-issue A (#680, slices 0 to 4) done on `claude/680-git-read-only`; sub-issue B (#681, slices 5 and 6) done on `claude/681-git-commit-checkout`, chained from it. Next: slice 7 (#682) on a branch chained from #681.
 
 ---
 
@@ -39,8 +39,8 @@ Out (analysis section 2): ApplicationVersion-based versioning; merges with confl
 | 2 | A #680 | Log and diff, paths named by Entity and instance | ✅ | `gitHistory.679.phase2.integ.test.ts`, MiroirTest `fn.gitPathToInstance` |
 | 3 | A #680 | Git page: lazy route, menu entry, history and changes panels, real-server forwarding | ✅ | component test `ui.gitPage`, bundle policy |
 | 4 | A #680 | No repository: `notARepository`, `gitAction_init` | ✅ | `gitInit.679.phase4.integ.test.ts` |
-| 5 | B #681 | Stage, unstage, commit; author; open Miroir transaction | ⬜ | `gitCommit.679.phase5.integ.test.ts` |
-| 6 | B #681 | Branches and checkout, conflict refusal, reload | ⬜ | `gitCheckout.679.phase6.integ.test.ts` |
+| 5 | B #681 | Stage, unstage, commit; author; open Miroir transaction | ✅ | `gitCommit.679.phase5.integ.test.ts` |
+| 6 | B #681 | Branches and checkout, conflict refusal, reload | ✅ | `gitCheckout.679.phase6.integ.test.ts` |
 | 7 | C #682 | Test remote, fetch with ahead / behind, SSH refusal | ⬜ | `gitFetch.679.phase7.integ.test.ts` |
 | 8 | C #682 | Credentials: `git.<host>` secret, 401 path, save from the dialog | ⬜ | `gitCredentials.679.phase8.integ.test.ts` |
 | 9 | C #682 | Pull (fast-forward) with reload, push with upstream | ⬜ | `gitSync.679.phase9.integ.test.ts` |
@@ -365,7 +365,7 @@ Covered by `gitHistory.679.phase2.integ.test.ts` (no separate `gitInit` file): `
 
 ## Slice 5. Stage, unstage, commit; author; open Miroir transaction
 
-**Status:** ⬜ pending (sub-issue B, #681)
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -404,11 +404,23 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,actions,localcache,ui
 
 ### Realization
 
+`gitCommit.679.phase5.integ.test.ts` (in miroir-standalone-app, next to the slice 1 and 2 files, 17 tests):
+
+- The port gains `stagedPaths` (HEAD against the index, no work tree read), `stage`, `unstage`, `commit`, `getConfig`, `setConfig`.
+- Stage and unstage take named paths, each a changed file of the sections (a folder or an unchanged file is `invalidPayload`), or `all`. Both return the new status.
+- Commit refuses an empty message (`invalidPayload`), an empty index (`nothingStaged`), files staged outside the sections (`otherStagedChanges`, unless `includeOtherStagedChanges`), and a missing author (`authorUnknown`).
+- The author is the payload's, else the logged-in user's username (MiroirUser has no email attribute, so the email is empty), else `user.name` / `user.email` of `.git/config`. isomorphic-git does not read `~/.gitconfig`.
+- D7 lives in `openMiroirTransactionError` (`GitActions.ts`), called first in `DomainController.handleGitAction`, before the forward. A commit looks at the pending changes of its application, a checkout at every pending change.
+- The test proves the refusal is the client's: Git is off on the server during that call, so a forwarded action would have come back `FeatureUnavailable`.
+- The realServer-filesystem variant was not added: the check runs in the same client DomainController before the same forward.
+- Racy Git: isomorphic-git compares whole-second modification times and sizes with the index. An edit of the same size in the second its file was staged looks unchanged, so `editUbik` in the test setup moves the file's time on. A person at the page does not hit this.
+- UI: a checkbox per changed file of the application, "Stage all", the commit form with author fields shown on `authorUnknown` ("Remember for this repository" off by default), "Commit them too" on `otherStagedChanges`, and the D7 message. Fixture-driven cases are in `ui.gitPage`.
+
 ---
 
 ## Slice 6. Branches and checkout, conflict refusal, reload
 
-**Status:** ⬜ pending (sub-issue B, #681)
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -447,6 +459,37 @@ npm run nonreg:filesystem -- --runner shared
 Full nonreg: end of sub-issue B.
 
 ### Realization
+
+`gitCheckout.679.phase6.integ.test.ts` (12 tests):
+
+- The port gains `createBranch`, `deleteBranch`, `branchIsMergedIntoHead` and `checkout`.
+- Checkout outcomes:
+  - A local branch is checked out as such.
+  - A tag, a remote branch or a commit is checked out as a detached HEAD.
+  - A name only `origin` has becomes a tracking branch, after a dry run on its commit.
+  - Uncommitted changes the checkout would overwrite are `checkoutConflict`, and so is any staged change, since isomorphic-git compares the target with the index only.
+  - An unknown name or oid is `unknownRevision`.
+- Branch creation and deletion:
+  - Creating an existing branch is `branchExists`, a bad name `invalidPayload`.
+  - The current branch cannot be deleted (`currentBranch`).
+  - A branch whose commits HEAD does not have is deleted only with `force` (`branchNotMerged`), because isomorphic-git keeps no reflog.
+- `touchedDeployments`: the deployments of the action's map with a section folder (Admin's included) in the repository.
+- Refactor checkpoint: the reload is not a UI hook. `DomainController.reloadTouchedDeployments` runs a `rollback` of each touched application after the action, in the server's local cache and again in the client's after the forward. Every client gets it (the page, MCP, tests), and pull (slice 9) reuses it by returning `touchedDeployments`. A reload that fails is listed in `reloadFailures`, and the page shows it.
+- UI: a Branches panel (check out, delete, create; "Delete … anyway" on `branchNotMerged`), "Check out this commit" in the commit files panel, and a detached HEAD banner with "Back to <branch>" (the branch left, else `main`). Checkout controls wait for the status.
+
+**Adversarial review of sub-issue B, and what changed:**
+
+- A checkout overwrote staged changes and deleted staged new files with no conflict (isomorphic-git's `analyze` compares the target with the index). It is now refused while anything is staged.
+- `unstage` of a folder wrote the folder's tree as one blob in the index, and the next commit recorded it. Stage and unstage now accept only changed files.
+- `stage` followed a symbolic link out of the work tree and committed the outside file. The adapter now stages only files whose real path is in the work tree.
+- An unmerged branch could be deleted with one click, losing its commits. It now needs `force`, which the page asks for.
+- A reload that failed after a checkout still reported plain success. It is now in `reloadFailures`.
+- "Remember author" was on by default and wrote `user.name` / `user.email` into the repository. It is now off by default.
+- A checkout of a remote-only name created the local branch even when the checkout was then refused. There is now a dry run first.
+- "Back to" could name the wrong branch when a checkout started while the status reloaded. Checkout controls now wait for the status.
+- Kept as known limits:
+  - D7 sees only the pending changes of the DomainController that runs or forwards the action. A checkout from MCP or from another browser does not see a third client's unsaved edits.
+  - A Miroir edit made in another view while a checkout is running is dropped by the reload's `rollback`.
 
 ---
 

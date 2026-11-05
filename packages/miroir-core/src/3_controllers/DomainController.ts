@@ -163,8 +163,8 @@ import {
   summarizeRollbackInstanceCollections,
   type LogPhase,
 } from "../4_services/rollbackLog.js";
-import type { GitAction } from "../0_interfaces/3_controllers/GitAction";
-import { runGitAction } from "./GitActions";
+import type { GitAction, GitTouchedDeployment } from "../0_interfaces/3_controllers/GitAction";
+import { openMiroirTransactionError, runGitAction } from "./GitActions";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory.js";
 import { packageName } from "../constants";
 
@@ -3764,22 +3764,67 @@ export class DomainController implements DomainControllerInterface, DomainContro
     applicationDeploymentMap: ApplicationDeploymentMap,
     principal?: AuthPrincipal,
   ): Promise<Action2ReturnType> {
+    // D7: checked where the pending Miroir changes are, before any request leaves the client
+    const pendingChangesError = openMiroirTransactionError(domainAction, this.currentTransaction());
+    if (pendingChangesError) {
+      return pendingChangesError;
+    }
+    let result: Action2ReturnType;
     if (this.persistenceStoreAccessMode !== "local") {
-      return this.forwardServerRoutedAction(domainAction, applicationDeploymentMap);
+      result = await this.forwardServerRoutedAction(domainAction, applicationDeploymentMap);
+    } else {
+      const processCapabilities = this.resolveProcessCapabilities();
+      const capabilityError =
+        assertProcessCapability("git", processCapabilities) ??
+        assertProcessCapability("designerTools", processCapabilities);
+      if (capabilityError) {
+        return capabilityError;
+      }
+      result = await runGitAction(domainAction, {
+        factory: ConfigurationService.configurationService.getGitRepositoryFactory(),
+        manager: this.persistenceStoreLocalOrRemote.getLocalPersistenceStoreControllerManager?.(),
+        applicationDeploymentMap,
+        principal,
+      });
     }
-    const processCapabilities = this.resolveProcessCapabilities();
-    const capabilityError =
-      assertProcessCapability("git", processCapabilities) ??
-      assertProcessCapability("designerTools", processCapabilities);
-    if (capabilityError) {
-      return capabilityError;
+    return this.reloadTouchedDeployments(result, applicationDeploymentMap);
+  }
+
+  /**
+   * #679: after a Git action that rewrote deployment files (a checkout), this DomainController's local
+   * cache reloads each deployment it lists, on the server as on the client. The Git action succeeded either
+   * way: a reload that fails is added to the result's `reloadFailures`, for the page to say so.
+   */
+  private async reloadTouchedDeployments(
+    result: Action2ReturnType,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+  ): Promise<Action2ReturnType> {
+    if (result instanceof Action2Error || result?.status !== "ok") {
+      return result;
     }
-    return runGitAction(domainAction, {
-      factory: ConfigurationService.configurationService.getGitRepositoryFactory(),
-      manager: this.persistenceStoreLocalOrRemote.getLocalPersistenceStoreControllerManager?.(),
-      applicationDeploymentMap,
-      principal,
-    });
+    const returned = result.returnedDomainElement as
+      | { touchedDeployments?: GitTouchedDeployment[]; reloadFailures?: { application: string; errorMessage?: string }[] }
+      | undefined;
+    const touched = returned?.touchedDeployments;
+    const reloadFailures = [...(returned?.reloadFailures ?? [])];
+    for (const { application } of Array.isArray(touched) ? touched : []) {
+      if (!applicationDeploymentMap[application]) {
+        continue;
+      }
+      // the rollback reads no model: the meta-model environment is only what handleAction asks for
+      const reload = await this.handleAction(
+        { actionType: "rollback", endpoint: "7947ae40-eb34-4149-887b-15a9021e714e", payload: { application } },
+        applicationDeploymentMap,
+        defaultMiroirModelEnvironment,
+      );
+      if (reload instanceof Action2Error) {
+        log.error("handleGitAction: reloading application", application, "after the Git action failed", reload);
+        reloadFailures.push({ application, errorMessage: reload.errorMessage });
+      }
+    }
+    return reloadFailures.length === 0
+      ? result
+      : { ...result, returnedDomainElement: { ...(returned as object), reloadFailures } as any };
   }
 
   /**

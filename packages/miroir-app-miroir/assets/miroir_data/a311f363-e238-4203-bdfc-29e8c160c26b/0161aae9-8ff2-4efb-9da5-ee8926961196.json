@@ -2669,11 +2669,17 @@
                   "endpointUuid": "a7f243cb-9345-425a-918d-4e433a94f4bf",
                   "endpointName": "GitEndpoint",
                   "actionTypes": [
+                    "gitAction_checkout",
+                    "gitAction_commit",
                     "gitAction_commitFiles",
+                    "gitAction_createBranch",
+                    "gitAction_deleteBranch",
                     "gitAction_diff",
                     "gitAction_init",
                     "gitAction_log",
-                    "gitAction_status"
+                    "gitAction_stage",
+                    "gitAction_status",
+                    "gitAction_unstage"
                   ]
                 }
               },
