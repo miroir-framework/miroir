@@ -413,7 +413,8 @@ async function tracking(repository: GitRepositoryInterface, branches: GitBranche
 /**
  * #679 D7: the refusal of a commit, checkout or pull while the local cache holds Miroir changes not yet on
  * disk. A commit looks at the changes of its application; a checkout or a pull at every change, since it can
- * rewrite the files of any deployment in the repository.
+ * rewrite the files of any deployment in the repository. An install of a cloned deployment (#683) looks at
+ * the changes of Admin, which it reloads.
  */
 export function openMiroirTransactionError(
   action: GitAction,
@@ -424,10 +425,12 @@ export function openMiroirTransactionError(
   }
   // a checkout or a pull rewrites the files of every deployment in the repository, and the reload that
   // follows drops the unsaved changes of each of them, not only of the application named by the action
+  const application =
+    action.actionType === "gitAction_installClonedDeployment" ? adminSelfApplication.uuid : action.payload?.application;
   const pending =
     action.actionType === "gitAction_checkout" || action.actionType === "gitAction_pull"
       ? transaction
-      : transaction.filter((change) => change.payload?.application === action.payload?.application);
+      : transaction.filter((change) => change.payload?.application === application);
   if (pending.length === 0) {
     return undefined;
   }
@@ -683,6 +686,8 @@ async function setCredential(action: GitSetCredentialAction, context: GitActionC
 
 /** The tail of the Git actions running on each repository, by root folder. */
 const repositoryLocks = new Map<string, Promise<unknown>>();
+/** The lock of every install of a cloned deployment; no folder is named so. */
+const INSTALL_LOCK = "#installClonedDeployment";
 
 /**
  * Runs Git actions on one repository one after the other: a checkout's check for staged changes and the
@@ -1256,62 +1261,73 @@ async function installClonedDeployment(
       );
     }
     const deployment = candidates[0];
-    if (alreadyInstalled(deployment, context)) {
-      return gitActionError(
-        "applicationAlreadyDeployed",
-        `${deployment.name} already has a deployment here: drop it before installing the one of the clone`,
-        { application: deployment.selfApplication, deploymentUuid: deployment.deploymentUuid },
-      );
-    }
-    const adminDeploymentUuid =
-      context.applicationDeploymentMap[adminSelfApplication.uuid] ??
-      defaultSelfApplicationDeploymentMap[adminSelfApplication.uuid];
-    const adminSection = context.manager?.getPersistenceStoreConfiguration?.(adminDeploymentUuid)?.admin;
-    if (!adminSection) {
-      return gitActionError("unknownDeployment", "The Admin deployment of this process is not open", {
-        deploymentUuid: adminDeploymentUuid,
+    // one install at a time in this process: two clones of one application, in two folders, must not
+    // both pass the checks below before either writes its Admin rows
+    return withRepositoryLock(INSTALL_LOCK, () => installScannedDeployment(deployment, target, context));
+  });
+}
+
+/** The checks against what is installed already, then the install: run under `INSTALL_LOCK`. */
+async function installScannedDeployment(
+  deployment: ClonedDeployment,
+  target: CloneTarget,
+  context: GitActionContext,
+): Promise<Action2ReturnType> {
+  if (alreadyInstalled(deployment, context)) {
+    return gitActionError(
+      "applicationAlreadyDeployed",
+      `${deployment.name} already has a deployment here: drop it before installing the one of the clone`,
+      { application: deployment.selfApplication, deploymentUuid: deployment.deploymentUuid },
+    );
+  }
+  const adminDeploymentUuid =
+    context.applicationDeploymentMap[adminSelfApplication.uuid] ??
+    defaultSelfApplicationDeploymentMap[adminSelfApplication.uuid];
+  const adminSection = context.manager?.getPersistenceStoreConfiguration?.(adminDeploymentUuid)?.admin;
+  if (!adminSection) {
+    return gitActionError("unknownDeployment", "The Admin deployment of this process is not open", {
+      deploymentUuid: adminDeploymentUuid,
+    });
+  }
+  if (!context.deployments) {
+    return gitActionError("gitUnavailable", "This process cannot install deployments");
+  }
+  // the work tree may differ from HEAD: a store folder must not be a file
+  for (const [section, directory] of Object.entries(directoriesOf(deployment))) {
+    if ((await target.factory.directoryState(target.factory.resolvePath(target.rootDirectory, directory))) === "notAFolder") {
+      return gitActionError("invalidPayload", `The ${section} folder of the deployment, ${directory}, is a file`, {
+        folderName: target.folderName,
+        section,
       });
     }
-    if (!context.deployments) {
-      return gitActionError("gitUnavailable", "This process cannot install deployments");
-    }
-    // the work tree may differ from HEAD: a store folder must not be a file
-    for (const [section, directory] of Object.entries(directoriesOf(deployment))) {
-      if ((await target.factory.directoryState(target.factory.resolvePath(target.rootDirectory, directory))) === "notAFolder") {
-        return gitActionError("invalidPayload", `The ${section} folder of the deployment, ${directory}, is a file`, {
-          folderName: target.folderName,
-          section,
-        });
-      }
-    }
-    // the client's map can miss an application Admin registers: Admin itself is asked
-    const registered = await context.deployments.registered(deployment.selfApplication, deployment.deploymentUuid);
-    if (registered.application || registered.deployment) {
-      return gitActionError(
-        "applicationAlreadyDeployed",
-        registered.deployment
-          ? `Admin already has a deployment ${deployment.deploymentUuid}: drop it before installing the one of the clone`
-          : `${deployment.name} is already registered in Admin: drop it before installing the one of the clone`,
-        { application: deployment.selfApplication, deploymentUuid: deployment.deploymentUuid },
-      );
-    }
-    const installed = await context.deployments.install({
-      selfApplication: deployment.selfApplication,
-      deploymentUuid: deployment.deploymentUuid,
-      name: deployment.name,
-      configuration: { ...deployment.sections, admin: adminSection } as StoreUnitConfiguration,
-      adminApplication: deployment.adminApplication,
-      deployment: deployment.deployment,
-    });
-    if (installed instanceof Action2Error || installed?.status !== "ok") {
-      return installed;
-    }
-    const result: GitInstallClonedDeploymentResult = {
-      application: deployment.selfApplication,
-      deploymentUuid: deployment.deploymentUuid,
-      name: deployment.name,
-      directories: directoriesOf(deployment),
-    };
-    return ok(result);
+  }
+  // the client's map can miss an application Admin registers: Admin itself is asked
+  const registered = await context.deployments.registered(deployment.selfApplication, deployment.deploymentUuid);
+  if (registered.application || registered.deployment) {
+    return gitActionError(
+      "applicationAlreadyDeployed",
+      registered.deployment
+        ? `Admin already has a deployment ${deployment.deploymentUuid}: drop it before installing the one of the clone`
+        : `${deployment.name} is already registered in Admin: drop it before installing the one of the clone`,
+      { application: deployment.selfApplication, deploymentUuid: deployment.deploymentUuid },
+    );
+  }
+  const installed = await context.deployments.install({
+    selfApplication: deployment.selfApplication,
+    deploymentUuid: deployment.deploymentUuid,
+    name: deployment.name,
+    configuration: { ...deployment.sections, admin: adminSection } as StoreUnitConfiguration,
+    adminApplication: deployment.adminApplication,
+    deployment: deployment.deployment,
   });
+  if (installed instanceof Action2Error || installed?.status !== "ok") {
+    return installed;
+  }
+  const result: GitInstallClonedDeploymentResult = {
+    application: deployment.selfApplication,
+    deploymentUuid: deployment.deploymentUuid,
+    name: deployment.name,
+    directories: directoriesOf(deployment),
+  };
+  return ok(result);
 }

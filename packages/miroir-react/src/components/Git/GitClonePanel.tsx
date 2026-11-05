@@ -35,7 +35,8 @@ export function GitClonePanel(props: {
   const [url, setUrl] = useState("");
   const [folderName, setFolderName] = useState("");
   const [error, setError] = useState<GitRequestError | undefined>(undefined);
-  const [asking, setAsking] = useState<string | undefined>(undefined);
+  /** The clone a remote asked a token for: the retry sends the token to that URL only. */
+  const [asking, setAsking] = useState<{ host: string; url: string; folderName: string } | undefined>(undefined);
   const [notice, setNotice] = useState<string | undefined>(undefined);
   const [cloned, setCloned] = useState<GitCloneResult | undefined>(undefined);
   const [installed, setInstalled] = useState<GitInstallClonedDeploymentResult[]>([]);
@@ -71,17 +72,19 @@ export function GitClonePanel(props: {
 
   const runClone = async (credential?: GitTypedCredential) => {
     setNotice(undefined);
-    const host = asking;
+    // a typed token goes to the URL that asked for it, never to one edited since
+    const request = credential && asking ? asking : { host: undefined, url: url.trim(), folderName: folder };
+    const host = request.host;
     const state = await command<GitCloneResult>("gitAction_clone", {
-      url: url.trim(),
-      folderName: folder,
+      url: request.url,
+      folderName: request.folderName,
       ...(credential ? { credential: { username: credential.username, token: credential.token } } : {}),
     });
     if (state.status === "error") {
       if (state.error.reason === "authenticationRequired") {
-        const host = String(state.error.errorContext?.host ?? "");
-        setAsking(host);
-        setError(credential ? { ...state.error, errorMessage: `The remote refused this token for ${host}.` } : undefined);
+        const askingHost = String(state.error.errorContext?.host ?? "");
+        setAsking({ host: askingHost, url: request.url, folderName: request.folderName });
+        setError(credential ? { ...state.error, errorMessage: `The remote refused this token for ${askingHost}.` } : undefined);
         return;
       }
       setAsking(undefined);
@@ -118,7 +121,10 @@ export function GitClonePanel(props: {
           label="Repository URL"
           placeholder="https://github.com/owner/repository.git"
           value={url}
-          onChange={(event) => setUrl(event.target.value)}
+          onChange={(event) => {
+            setUrl(event.target.value);
+            setAsking(undefined); // the form named the host of the URL before the edit
+          }}
           slotProps={{ htmlInput: { "data-testid": "git-clone-url" } }}
         />
         <TextField
@@ -126,7 +132,10 @@ export function GitClonePanel(props: {
           label="Folder"
           placeholder={defaultCloneFolder(url) || "folder name"}
           value={folderName}
-          onChange={(event) => setFolderName(event.target.value)}
+          onChange={(event) => {
+            setFolderName(event.target.value);
+            setAsking(undefined);
+          }}
           slotProps={{ htmlInput: { "data-testid": "git-clone-folder" } }}
         />
         <Button
@@ -141,7 +150,7 @@ export function GitClonePanel(props: {
       </Box>
       {asking !== undefined && (
         <GitCredentialForm
-          host={asking}
+          host={asking.host}
           actionLabel="Clone"
           busy={busy}
           onSubmit={(credential) => runClone(credential)}

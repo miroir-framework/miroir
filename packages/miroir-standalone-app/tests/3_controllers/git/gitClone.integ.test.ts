@@ -22,13 +22,16 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import {
   Action2Error,
   ADMIN_APPLICATION_UUID,
+  ConfigurationService,
   defaultMiroirModelEnvironment,
   defaultSelfApplicationDeploymentMap,
   type CompositeActionTemplate,
+  type GitRepositoryFactory,
   type GitCloneResult,
   type GitInstallClonedDeploymentResult,
 } from "@miroir-framework/core";
 
+import { createGitRepositoryFactory } from "@miroir-framework/git-isomorphic";
 import { runnerCloneApplicationFromGit } from "@miroir-framework/core/meta-model";
 
 import { gitCli, gitProgramMissing, startGitHttpServer, type GitHttpServer } from "./gitHttpServer.js";
@@ -234,6 +237,57 @@ describe.skipIf(gitMissing)("gitAction_clone and gitAction_installClonedDeployme
       "folderNotEmpty",
     );
     expect(again.errorContext?.folderName).toBe(`${CLONES}/alpha`);
+  });
+
+  it("installs one of two clones of an application when both installs run at once", async () => {
+    const THETA: ClonedApp = {
+      application: "679a0010-0001-4000-8000-000000000101",
+      deployment: "679a0010-0002-4000-8000-000000000102",
+      name: "cloneTheta",
+    };
+    const url = publish(server, "theta", (workTree) => writeApp(workTree, THETA));
+    for (const folder of ["theta-1", "theta-2"]) {
+      expectOk(await gitAction(context, "gitAction_clone", { url, folderName: `${CLONES}/${folder}` }));
+    }
+    // both installs check their section folders, just before asking Admin whether the application is
+    // registered, then wait for each other: without a lock, both ask before either writes its rows, and
+    // both installs succeed. With the lock, the second waits for the first, which goes on after a second.
+    const real = createGitRepositoryFactory();
+    let arrived = 0;
+    let release: () => void = () => undefined;
+    const bothArrived = new Promise<void>((resolve) => (release = resolve));
+    const barrier = new Proxy(real, {
+      get: (target, property) =>
+        property === "directoryState"
+          ? async (directory: string) => {
+              const state = await target.directoryState(directory);
+              if (/theta-[12][\\/]assets[\\/]appForTest_model$/.test(directory)) {
+                arrived += 1;
+                if (arrived === 2) {
+                  release();
+                }
+                await Promise.race([bothArrived, new Promise((resolve) => setTimeout(resolve, 1000))]);
+              }
+              return state;
+            }
+          : (Reflect.get(target, property) as unknown),
+    }) as GitRepositoryFactory;
+    ConfigurationService.configurationService.registerGitRepositoryFactory(() => Promise.resolve(barrier));
+    let results;
+    try {
+      results = await Promise.all(
+        ["theta-1", "theta-2"].map((folder) =>
+          gitAction(context, "gitAction_installClonedDeployment", { folderName: `${CLONES}/${folder}` }),
+        ),
+      );
+    } finally {
+      ConfigurationService.configurationService.registerGitRepositoryFactory(() => Promise.resolve(real));
+    }
+    // with the lock, the second install finds the first one's store open before it checks its folders
+    expect(arrived, "the first install waited at the barrier").toBeGreaterThanOrEqual(1);
+    const installed = results.filter((result) => result.status === "ok");
+    expect(installed, "exactly one install wins").toHaveLength(1);
+    expectGitError(results.find((result) => result.status !== "ok")!, "applicationAlreadyDeployed");
   });
 
   it("lists every deployment of a monorepo, and installs the one named", async () => {

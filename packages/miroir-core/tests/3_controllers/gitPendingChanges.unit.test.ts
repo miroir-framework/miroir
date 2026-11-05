@@ -1,7 +1,7 @@
 /**
  * #679 D7: which Miroir changes not yet on disk make a Git action refuse to run. A commit looks at its own
  * application; a checkout or a pull rewrites the files of every deployment in the repository, and the reload
- * that follows would drop the changes of each of them.
+ * that follows would drop the changes of each of them. An install of a cloned deployment reloads Admin.
  */
 import { describe, expect, it } from "vitest";
 
@@ -11,6 +11,7 @@ import { GIT_ENDPOINT_UUID } from "../../src/0_interfaces/3_controllers/GitActio
 import { openMiroirTransactionError } from "../../src/3_controllers/GitActions";
 
 const LIBRARY = "5af03c98-fe5e-490b-b08f-e1230971c57f";
+const ADMIN = "55af124e-8c05-4bae-a3ef-0933d41daa92";
 const OTHER = "679a0000-0000-4000-8000-0000000000aa";
 const otherApplicationChange = [{ payload: { application: OTHER } }];
 
@@ -39,6 +40,16 @@ describe("openMiroirTransactionError (#679 D7)", () => {
       expect(reason(error), actionType).toBe("openMiroirTransaction");
       expect(error?.errorContext?.applications, actionType).toEqual([OTHER]);
     }
+  });
+
+  it("refuses an install of a cloned deployment while Admin has unsaved changes, whatever application it names", () => {
+    const install = (application: string) => action("gitAction_installClonedDeployment", { application, folderName: "clones/a" });
+    for (const application of [ADMIN, LIBRARY]) {
+      const error = openMiroirTransactionError(install(application), [{ payload: { application: ADMIN } }]);
+      expect(reason(error), application).toBe("openMiroirTransaction");
+      expect(error?.errorContext?.applications, application).toEqual([ADMIN]);
+    }
+    expect(openMiroirTransactionError(install(ADMIN), otherApplicationChange)).toBeUndefined();
   });
 
   it("never refuses an action that leaves the files as they are", () => {

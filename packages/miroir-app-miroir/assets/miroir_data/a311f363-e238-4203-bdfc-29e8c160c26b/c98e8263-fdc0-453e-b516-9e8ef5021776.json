@@ -1572,6 +1572,75 @@
                 }
               }
             ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitClonePanel: drops the token question when the URL changes",
+            "componentProps": {
+              "deployments": [
+                {
+                  "deploymentUuid": "679a0010-0002-4000-8000-0000000000a1",
+                  "selfApplication": "679a0010-0001-4000-8000-0000000000a1",
+                  "name": "shelves",
+                  "deploymentFile": "packages/miroir-example-shelves/assets/deployment/679a0010-0002-4000-8000-0000000000a1.json",
+                  "directories": {
+                    "model": "apps/shelves/assets/shelves_model",
+                    "data": "apps/shelves/assets/shelves_data"
+                  },
+                  "alreadyInstalled": false
+                }
+              ],
+              "remoteToken": "t0ken"
+            },
+            "steps": [
+              {
+                "step": "change",
+                "label": "the URL",
+                "target": {
+                  "byTestId": "git-clone-url"
+                },
+                "value": "https://git.example.com/owner/shelves.git"
+              },
+              {
+                "step": "click",
+                "label": "clone",
+                "target": {
+                  "byTestId": "git-clone"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the question",
+                "target": {
+                  "byTestId": "git-credential-form"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "change",
+                "label": "another URL",
+                "target": {
+                  "byTestId": "git-clone-url"
+                },
+                "value": "https://other.example.com/owner/shelves.git"
+              },
+              {
+                "step": "expectElement",
+                "label": "no question for the other host",
+                "target": {
+                  "byTestId": "git-credential-form"
+                },
+                "present": false
+              },
+              {
+                "step": "expectElement",
+                "label": "nothing installed",
+                "target": {
+                  "byTestId": "git-installed"
+                },
+                "present": false
+              }
+            ]
           }
         ]
       }

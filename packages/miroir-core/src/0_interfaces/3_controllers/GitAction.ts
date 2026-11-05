@@ -71,6 +71,8 @@ export const GIT_ACTIONS_NEEDING_SAVED_MIROIR_CHANGES: readonly GitActionType[] 
   "gitAction_commit",
   "gitAction_checkout",
   "gitAction_pull",
+  // #683: the install reloads Admin from its files, which drops Admin changes not saved yet
+  "gitAction_installClonedDeployment",
 ];
 
 

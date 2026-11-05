@@ -39,8 +39,8 @@ the application's section folders (`model`, `data`, ...).
 When a deployment has no repository yet, the page offers to create one in the folder that holds its
 sections.
 
-Miroir refuses a commit, a checkout or a pull while some Miroir changes are not saved to the files yet.
-Commit them in Miroir first.
+Miroir refuses a commit, a checkout or a pull while some Miroir changes are not saved to the files yet,
+and the install of a cloned application while some Admin changes are not saved. Commit them in Miroir first.
 
 ## Remotes and credentials
 
