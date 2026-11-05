@@ -9,7 +9,7 @@ Parent issue: [#679](https://github.com/miroir-framework/miroir/issues/679) · P
 Related analyses: [`../679-FEATURE-git-version-control/analysis.md`](../679-FEATURE-git-version-control/analysis.md) (decisions D1 to D23, cited here as #679-Dn)
 Key sources: [`GitPageView.tsx`](../../../packages/miroir-react/src/components/Git/GitPageView.tsx), [`GitWritePanels.tsx`](../../../packages/miroir-react/src/components/Git/GitWritePanels.tsx), [`GitRemotePanel.tsx`](../../../packages/miroir-react/src/components/Git/GitRemotePanel.tsx), [`GitClonePanel.tsx`](../../../packages/miroir-react/src/components/Git/GitClonePanel.tsx), [`routes/GitPage.tsx`](../../../packages/miroir-react/src/routes/GitPage.tsx), [`GitActions.ts`](../../../packages/miroir-core/src/3_controllers/GitActions.ts)
 
-**Status:** goals and decisions confirmed with the user (2026-11-05); revised after an adversarial review (D3 table, D9 scope, D10, sections 4.3 and 6).
+**Status:** goals and decisions confirmed with the user (2026-11-05); revised after an adversarial review (D3 table, D9 scope, D10, sections 4.3 and 6), then after the review of the TDD plan (D9 unsaved-changes scope, symbolic links, section 4.3).
 
 ---
 
@@ -43,7 +43,7 @@ Key sources: [`GitPageView.tsx`](../../../packages/miroir-react/src/components/G
 | D6 Clone panel | **in Setup; also shown when no application is selected** | G4 |
 | D7 Long branch lists | **local branches first; remote branches and tags folded behind a filter field** | G2 |
 | D8 Diff placement | **beside the file list on wide screens, below it on narrow ones** | G1 |
-| D9 Revert safety | **paths checked on the server as for staging; refused while the application has unsaved Miroir changes (#679-D7); only the application's own deployment reloads; a confirmation lists each file and what happens to it** | G1 |
+| D9 Revert safety | **paths checked on the server as for staging; refused while Miroir has unsaved changes (#679-D7), of any application; only the application's own deployment reloads; a confirmation lists each file and what happens to it** | G1 |
 | D10 Page structure | **`GitPageView` takes the activity and a Setup slot as props; the route owns the URL and the Admin-bound Clone panel** | G4, G6 |
 
 **Rationale:** the user works in one activity at a time (issue #691). The only thing every activity needs is to know which branch and which remote they are on, so that is the header. Everything else moves into the activity that uses it, or folds.
@@ -134,8 +134,8 @@ The detached-HEAD banner (`GitDetachedBanner` with its "back to" button) and `gi
 ### D9 — Revert safety
 
 **Status:** Accepted. **Serves:** G1. Revert rewrites deployment files, as a checkout does, so:
-- **Paths.** The server picks the files with `pathsToStage(opened, payload, (file) => file.unstaged)` (`GitActions.ts`), the function of `gitAction_stage`. It refuses a path that is not a file of the application's sections (`isApplicationRepositoryPath`: no `..`, no absolute path, no `.git`) and a path that has not changed. A write or a delete goes through the work-tree containment check that `stage` uses (`workTreeFile` in `miroir-git-isomorphic`); a re-created file has its parent folder's real path checked, so a symbolic link cannot lead it out of the work tree.
-- **Unsaved changes.** It is refused with `openMiroirTransaction` while the application has unsaved Miroir changes. The check is application-scoped, like a commit's (`openMiroirTransactionError`, `GitActions.ts`).
+- **Paths.** The server picks the files with `pathsToStage(opened, payload, (file) => file.unstaged)` (`GitActions.ts`), the function of `gitAction_stage`. It refuses a path that is not a file of the application's sections (`isApplicationRepositoryPath`: no `..`, no absolute path, no `.git`) and a path that has not changed. A write or a delete goes through the work-tree containment check that `stage` uses (`workTreeFile` in `miroir-git-isomorphic`); a re-created file has its parent folder's real path checked, so a symbolic link cannot lead it out of the work tree. `workTreeFile` follows links, so a work-tree file that is itself a link is refused for a rewrite and unlinked, not followed, for a delete.
+- **Unsaved changes.** It is refused with `openMiroirTransaction` while Miroir has unsaved changes, of any application, as checkout and pull are (`openMiroirTransactionError`, `GitActions.ts`). The reload is a `rollback`, and a rollback empties the whole local-cache transaction, not only the reloaded application's changes (`UndoRedoReducer.ts`, `UndoRedoStore.ts`), so an application-scoped check would let a revert drop another application's edits. (Revised by the TDD plan, D13; the first version said application-scoped.)
 - **Reload.** That scope holds only if the reload is scoped the same way. `touchedDeployments` (`GitActions.ts`) returns every deployment with a section folder in the repository, and `reloadTouchedDeployments` (`DomainController.ts`) rolls back each of them, which would drop other applications' unsaved changes. Revert therefore reports only the action's own deployment as touched, for `rebootTouchedStores` and for the reload; it writes no file of another deployment.
 - **Lock.** It runs under the repository lock, like every deployment action (`withRepositoryLock` in `runGitAction`).
 - **Confirmation.** The page lists the files and what happens to each one (D3), and a reload failure shows the existing `git-reload-warning`.
@@ -179,6 +179,7 @@ Below the row: `CommitFilesPanel` when a commit is selected, then `DiffPanel` wh
 | creates a branch and checks it out; explains a checkout refused by uncommitted changes; asks before deleting a branch with commits of its own | the Branches tab |
 | sets the remote of a repository with none, refusing SSH | the Setup tab |
 | lists the changes, named by Entity and instance | `git-root` stays (D2 header) |
+| asks for the author when the repository has none; stages a change, then commits the staged changes | the history unfolded: they read the new commit's text in it |
 | the other remote cases (remote and ahead / behind, push, diverged pull, token asked, token not saved) | nothing: the header shows them |
 
 If the history strip shows the last commit with the `git-commit-<oid>` testid of the list, that testid appears twice once unfolded: the strip gets its own testid.
@@ -234,4 +235,4 @@ No new dependency: MUI `Tabs` is part of `@mui/material`, already in the bundle.
 
 ## Next step
 
-Implementation proceeds per [`./tdd-implementation-plan.md`](./tdd-implementation-plan.md), to be written once the goals are confirmed (skill `miroir-analysis-to-tdd-plan`).
+Implementation proceeds per [`./tdd-implementation-plan.md`](./tdd-implementation-plan.md) (skill `miroir-analysis-to-tdd-plan`).
