@@ -315,6 +315,20 @@ describe("gitAction_revert (#691 slice 7)", () => {
       fs.rmSync(path.join(dir(), folder));
       createdFiles.push(folder);
 
+      // (d) a deleted file whose folder became a link to another folder of the repository
+      const inTree = "data/691a0008-0000-4000-8000-000000000000";
+      writeWorkTreeFile(context, `${inTree}/a.json`, "{}\n");
+      await add(`${inTree}/a.json`);
+      await git.commit({ fs, dir: dir(), message: "another folder", author: TEST_AUTHOR });
+      const otherFolder = path.join(dir(), path.dirname(bookPath(BOOK_UBIK)));
+      const otherBefore = fs.readdirSync(otherFolder).sort();
+      fs.rmSync(path.join(dir(), inTree), { recursive: true });
+      fs.symlinkSync(otherFolder, path.join(dir(), inTree));
+      expectGitError(await gitAction(context, "gitAction_revert", { paths: [`${inTree}/a.json`] }), "symbolicLink");
+      expect(fs.readdirSync(otherFolder).sort()).toEqual(otherBefore);
+      fs.rmSync(path.join(dir(), inTree));
+      createdFiles.push(inTree);
+
       // (b) an edited file that became a link to another file of the repository
       const target = rowFile([1, 2, 1], "8");
       const linked = rowFile([1, 2, 1], "9");
@@ -346,10 +360,23 @@ describe("gitAction_revert (#691 slice 7)", () => {
     fs.chmodSync(path.join(dir(), executable.file), 0o755);
     await add(executable.file);
     await git.commit({ fs, dir: dir(), message: "an executable file", author: TEST_AUTHOR });
+    const mode = () => fs.statSync(path.join(dir(), executable.file)).mode & 0o777;
+    // isomorphic-git's init sets core.filemode to false: git then ignores the mode, and so does a revert
     write(executable.file, executable.uuid, "edited");
+    fs.chmodSync(path.join(dir(), executable.file), 0o644);
     expectOk(await gitAction(context, "gitAction_revert", { paths: [executable.file] }));
-    expect(fs.statSync(path.join(dir(), executable.file)).mode & 0o111).not.toBe(0);
+    expect(mode()).toBe(0o644);
     expect(JSON.parse(read(executable.file)!).name).toBe("executable");
+    // with core.filemode true, the revert gives back the mode of the index, not the one the edit left
+    await git.setConfig({ fs, dir: dir(), path: "core.filemode", value: true });
+    try {
+      write(executable.file, executable.uuid, "edited");
+      expectOk(await gitAction(context, "gitAction_revert", { paths: [executable.file] }));
+      expect(mode()).toBe(0o755);
+      expect(JSON.parse(read(executable.file)!).name).toBe("executable");
+    } finally {
+      await git.setConfig({ fs, dir: dir(), path: "core.filemode", value: false });
+    }
 
     const link = rowFile([1, 2, 1], "c");
     fs.symlinkSync(path.join(dir(), executable.file), path.join(dir(), link.file));

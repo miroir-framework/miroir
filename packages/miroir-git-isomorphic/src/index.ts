@@ -622,6 +622,7 @@ class IsomorphicGitRepository implements GitRepositoryInterface {
       },
     });
     const realRoot = fs.realpathSync(this.root);
+    const fileModes = (await this.getConfig("core.filemode")) !== "false";
     // every file is checked before any is written: a refusal leaves the work tree as it was
     const plans = paths.map((filepath) => {
       const absolute = path.resolve(this.root, filepath);
@@ -629,15 +630,22 @@ class IsomorphicGitRepository implements GitRepositoryInterface {
       if (entry?.mode === 0o120000) {
         throw new GitRepositoryError("symbolicLink", `${filepath} is a symbolic link in the index`);
       }
-      // the nearest folder that exists must be a folder of the work tree, reached through no link out of it
+      // the nearest folder that exists must be reached through no link at all: a link to another folder of
+      // the work tree would make the write land in another file
       let folder = path.dirname(absolute);
       while (!fs.existsSync(folder)) {
         folder = path.dirname(folder);
       }
-      const relative = path.relative(realRoot, fs.realpathSync(folder));
+      const expected = path.join(realRoot, path.relative(this.root, folder));
+      const relative = path.relative(realRoot, expected);
       const segments = relative.split(path.sep);
-      if (path.isAbsolute(relative) || segments[0] === ".." || segments[0].toLowerCase() === ".git") {
-        throw new GitRepositoryError("symbolicLink", `${filepath} is reached through a link out of the work tree`);
+      if (
+        fs.realpathSync(folder) !== expected ||
+        path.isAbsolute(relative) ||
+        segments[0] === ".." ||
+        segments[0].toLowerCase() === ".git"
+      ) {
+        throw new GitRepositoryError("symbolicLink", `${filepath} is reached through a symbolic link`);
       }
       const present = lstatOrUndefined(absolute);
       if (present?.isSymbolicLink() && entry) {
@@ -648,18 +656,42 @@ class IsomorphicGitRepository implements GitRepositoryInterface {
         throw new GitRepositoryError("outsideWorkTree", `${filepath} is a folder of the work tree`);
       }
       const outcome: GitRevertOutcome = !entry ? "deleted" : present ? "rewritten" : "recreated";
-      return { filepath, absolute, entry, outcome };
+      return { filepath, absolute, entry, present, outcome };
     });
+    // deletions first: on a filesystem that ignores case, a file deleted under one name may be the one
+    // re-created under the other
     for (const { absolute, entry } of plans) {
       if (!entry) {
         // a link is removed itself, never its target
         fs.rmSync(absolute, { force: true });
+      }
+    }
+    for (const { absolute, entry, present } of plans) {
+      if (!entry) {
         continue;
       }
       const { blob } = await git.readBlob({ ...this.repository, oid: entry.oid });
       fs.mkdirSync(path.dirname(absolute), { recursive: true });
-      fs.writeFileSync(absolute, blob);
-      fs.chmodSync(absolute, entry.mode === 0o100755 ? 0o755 : 0o644);
+      const executable = entry.mode === 0o100755;
+      // a rewritten file keeps its permissions, but for the executable bits when the repository tracks them
+      // (a re-created file gets the process umask, as git gives it)
+      const mode = present
+        ? fileModes
+          ? (present.mode & 0o666) | (executable ? (present.mode & 0o444) >> 2 : 0)
+          : present.mode & 0o777
+        : undefined;
+      // written next to the file, then renamed over it: a link or a hard link put there meanwhile is
+      // replaced, never written through
+      const temporary = path.join(path.dirname(absolute), `.${path.basename(absolute)}.miroir-revert-${process.pid}`);
+      try {
+        fs.writeFileSync(temporary, blob, { flag: "wx", mode: executable ? 0o777 : 0o666 });
+        if (mode !== undefined) {
+          fs.chmodSync(temporary, mode);
+        }
+        fs.renameSync(temporary, absolute);
+      } finally {
+        fs.rmSync(temporary, { force: true });
+      }
     }
     return plans.map(({ filepath, outcome }) => ({ path: filepath, outcome }));
   }

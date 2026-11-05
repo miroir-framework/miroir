@@ -71,12 +71,24 @@ export function GitCommandError(props: { error: GitRequestError | undefined; tes
 }
 
 // ################################################################################################
-export function GitCommitForm(props: { status: GitStatusResult; busy: boolean; command: GitCommand }) {
-  const [message, setMessage] = useState("");
-  const [authorName, setAuthorName] = useState("");
-  const [authorEmail, setAuthorEmail] = useState("");
-  // off by default: the repository's user.name / user.email also apply to commits made outside Miroir
-  const [rememberAuthor, setRememberAuthor] = useState(false);
+/** #691: what the commit form holds, kept by the page so that it survives a switch to another tab. */
+export type GitCommitDraft = { message: string; authorName: string; authorEmail: string; rememberAuthor: boolean };
+
+// rememberAuthor off by default: the repository's user.name / user.email also apply to commits made outside Miroir
+export const emptyGitCommitDraft: GitCommitDraft = { message: "", authorName: "", authorEmail: "", rememberAuthor: false };
+
+export function GitCommitForm(props: {
+  status: GitStatusResult;
+  busy: boolean;
+  command: GitCommand;
+  draft: GitCommitDraft;
+  onDraftChange: (change: Partial<GitCommitDraft>) => void;
+}) {
+  const { message, authorName, authorEmail, rememberAuthor } = props.draft;
+  const setMessage = (value: string) => props.onDraftChange({ message: value });
+  const setAuthorName = (value: string) => props.onDraftChange({ authorName: value });
+  const setAuthorEmail = (value: string) => props.onDraftChange({ authorEmail: value });
+  const setRememberAuthor = (value: boolean) => props.onDraftChange({ rememberAuthor: value });
   const [error, setError] = useState<GitRequestError | undefined>(undefined);
   const [askAuthor, setAskAuthor] = useState(false);
   const stagedCount = props.status.files.filter((file) => file.staged).length;

@@ -68,12 +68,16 @@ export function GitPage(): React.JSX.Element {
   // so that a copied link opens the same view
   const onViewChange = useCallback(
     (application: Uuid, view: GitPageViewName) =>
-      setSearchParams((current) => {
-        const next = new URLSearchParams(current);
-        next.set("application", application);
-        next.set("view", view);
-        return next;
-      }),
+      setSearchParams(
+        (current) => {
+          const next = new URLSearchParams(current);
+          next.set("application", application);
+          next.set("view", view);
+          return next;
+        },
+        // a tab change is no page of the browser history
+        { replace: true },
+      ),
     [setSearchParams],
   );
   const applicationDeploymentMap = context.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap;

@@ -870,11 +870,24 @@ async function runOnDeployment(
         if (paths.length === 0) {
           return gitActionError("nothingToRevert", "None of these files has unstaged edits to revert");
         }
-        const files = await repository.restoreFromIndex(paths);
-        // only the files of this deployment changed: another deployment of the repository is not reloaded,
+        // only the files of this deployment change: another deployment of the repository is not reloaded,
         // unlike after a checkout
         const deploymentUuid = context.applicationDeploymentMap[action.payload.application];
         const touched: GitTouchedDeployment[] = [{ application: action.payload.application, deploymentUuid }];
+        let files: GitRevertResult["files"];
+        try {
+          files = await repository.restoreFromIndex(paths);
+        } catch (error) {
+          if (repositoryErrorReason(error)) {
+            throw error; // refused before any file was written
+          }
+          // a write failed halfway: the files written so far are reverted, so the deployment reloads anyway
+          await rebootTouchedStores(touched, context);
+          return gitActionError("gitFailure", error instanceof Error ? error.message : String(error), {
+            actionType: action.actionType,
+            touchedDeployments: touched,
+          });
+        }
         await rebootTouchedStores(touched, context);
         return ok({ files, touchedDeployments: touched } satisfies GitRevertResult);
       }

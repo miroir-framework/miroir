@@ -70,11 +70,12 @@ function withRevertOutcome(file: FixtureFile): FixtureFile {
     const { revertOutcome: _dropped, ...rest } = file;
     return rest;
   }
-  if (file.revertOutcome) {
+  if (file.revertOutcome || file.staged) {
+    // with staged content too, the flags do not tell what a revert does: the props say it, as the server does
     return file;
   }
-  const revertOutcome =
-    file.change === "added" && !file.staged ? "deleted" : file.change === "deleted" && !file.staged ? "recreated" : "rewritten";
+  // nothing staged: the index is HEAD
+  const revertOutcome = file.change === "added" ? "deleted" : file.change === "deleted" ? "recreated" : "rewritten";
   return { ...file, revertOutcome };
 }
 

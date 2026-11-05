@@ -26,7 +26,14 @@ import {
 import { useMiroirTheme } from "../../contexts/MiroirThemeContext.js";
 import { useGitCommand } from "./useGitCommand.js";
 import { useGitRequest, type GitRequestError, type GitRequestState, type RunGitAction } from "./useGitRequest.js";
-import { GitBranchList, GitCommandError, GitCommitForm, GitDetachedBanner } from "./GitWritePanels.js";
+import {
+  emptyGitCommitDraft,
+  GitBranchList,
+  GitCommandError,
+  GitCommitForm,
+  GitDetachedBanner,
+  type GitCommitDraft,
+} from "./GitWritePanels.js";
 import { GitHeader } from "./GitHeader.js";
 import { GitHistoryStrip } from "./GitHistoryStrip.js";
 import { GitRemotePanel } from "./GitRemotePanel.js";
@@ -109,17 +116,24 @@ export function GitPageView(props: GitPageViewProps): React.JSX.Element {
 
   const [checkoutError, setCheckoutError] = useState<GitRequestError | undefined>(undefined);
   const [stageError, setStageError] = useState<GitRequestError | undefined>(undefined);
-  /** #691: the files a revert waits for confirmation on, `all` for "Revert all". */
+  /** #691: the files a revert waits for confirmation on. */
   const [revertRequest, setRevertRequest] = useState<
-    { files: GitStatusResult["files"]; all: boolean } | undefined
+    { files: GitStatusResult["files"] } | undefined
   >(undefined);
   const [revertError, setRevertError] = useState<GitRequestError | undefined>(undefined);
+  const [commitDraft, setCommitDraft] = useState<GitCommitDraft>(emptyGitCommitDraft);
+  const changeCommitDraft = useCallback(
+    (change: Partial<GitCommitDraft>) => setCommitDraft((current) => ({ ...current, ...change })),
+    [],
+  );
   /** The branch left by the last checkout, offered as the way back from a detached HEAD. */
   const [previousBranch, setPreviousBranch] = useState<string | undefined>(undefined);
 
   const refresh = useCallback(() => {
     setSelectedChange(undefined);
     setSelectedCommit(undefined);
+    // the files a confirmation listed may have changed
+    setRevertRequest(undefined);
     setGeneration((current) => current + 1);
   }, []);
   // a staging change keeps the selected file; any other change may remove it
@@ -151,12 +165,12 @@ export function GitPageView(props: GitPageViewProps): React.JSX.Element {
     [],
   );
   const revert = useCallback(
-    async (request: { files: GitStatusResult["files"]; all: boolean }) => {
+    async (request: { files: GitStatusResult["files"] }) => {
       setRevertRequest(undefined);
-      const result = await command<GitRevertResult>(
-        "gitAction_revert",
-        request.all ? { all: true } : { paths: request.files.map((file) => file.path) },
-      );
+      // the files the confirmation listed, even for "Revert all": a file changed since is not reverted unseen
+      const result = await command<GitRevertResult>("gitAction_revert", {
+        paths: request.files.map((file) => file.path),
+      });
       setRevertError(result.status === "error" ? result.error : undefined);
       showReloadFailures(result.status === "ok" ? (result.value.reloadFailures ?? []) : []);
     },
@@ -259,7 +273,6 @@ export function GitPageView(props: GitPageViewProps): React.JSX.Element {
                     onClick={() =>
                       setRevertRequest({
                         files: status.value.files.filter((file) => file.inApplication && file.unstaged),
-                        all: true,
                       })
                     }
                   >
@@ -278,7 +291,7 @@ export function GitPageView(props: GitPageViewProps): React.JSX.Element {
                   onSelect={setSelectedChange}
                   busy={busy}
                   onToggleStaged={(file) => stage({ paths: [file.path] }, file.unstaged)}
-                  onRevert={(file) => setRevertRequest({ files: [file], all: false })}
+                  onRevert={(file) => setRevertRequest({ files: [file] })}
                 />
                 {revertRequest && (
                   <GitRevertConfirm
@@ -291,7 +304,13 @@ export function GitPageView(props: GitPageViewProps): React.JSX.Element {
                 )}
                 <GitCommandError error={revertError} testId="git-revert-error" />
                 <GitCommandError error={stageError} testId="git-stage-error" />
-                <GitCommitForm status={status.value} busy={busy || statusStale} command={command} />
+                <GitCommitForm
+                  status={status.value}
+                  busy={busy || statusStale}
+                  command={command}
+                  draft={commitDraft}
+                  onDraftChange={changeCommitDraft}
+                />
               </>
             )}
           </Panel>
@@ -543,7 +562,7 @@ function GitRevertConfirm(props: {
             {gitFileLabel(file, props.entityNames)}:
           </Typography>
           <Typography variant="body2" sx={{ fontWeight: 600 }} data-testid={`git-revert-outcome-${file.path}`}>
-            {revertOutcomeLabels[file.revertOutcome ?? "rewritten"]}
+            {file.revertOutcome ? revertOutcomeLabels[file.revertOutcome] : "made equal to the index"}
           </Typography>
         </Box>
       ))}

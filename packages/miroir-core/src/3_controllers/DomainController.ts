@@ -3992,6 +3992,14 @@ export class DomainController implements DomainControllerInterface, DomainContro
     applicationDeploymentMap: ApplicationDeploymentMap,
   ): Promise<Action2ReturnType> {
     if (result instanceof Action2Error || result?.status !== "ok") {
+      // #691: a revert that failed halfway changed some files: their deployment reloads all the same
+      const partly = (result as Action2Error | undefined)?.errorContext?.touchedDeployments;
+      if (Array.isArray(partly)) {
+        await this.reloadTouchedDeployments(
+          { status: "ok", returnedDomainElement: { touchedDeployments: partly } as any },
+          applicationDeploymentMap,
+        );
+      }
       return result;
     }
     const returned = result.returnedDomainElement as
