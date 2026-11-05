@@ -6,7 +6,7 @@
  * Not reachable through MiroirTest: the test starts a Git server and commits on the remote first.
  * Skipped when the `git` program, which the test server runs, is not on the PATH.
  * ```bash
- * MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- gitSync.679.phase9
+ * MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- gitSync
  * ```
  */
 import fs from "node:fs";
@@ -46,7 +46,7 @@ import {
 
 const gitMissing = gitProgramMissing();
 if (gitMissing) {
-  console.warn(`gitSync.679.phase9 skipped: ${gitMissing}`);
+  console.warn(`gitSync skipped: ${gitMissing}`);
 }
 
 const REMOTE_BOOK = "679a0009-0000-4000-8000-000000000009";

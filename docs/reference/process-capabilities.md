@@ -16,9 +16,10 @@ Versioning of an application is not a process flag. See [Versioning (per applica
 | `designerTools` | AppBar bulb, model-scope menus, Transformer Builder | Default on. Set `features.designerTools: true` or omit the key. When authentication is on, the signed-in user also needs an explicit Admin-application `MiroirRight` (`capability: "admin"`). | Set `features.designerTools: false` and restart. Or (auth on) give the user no Admin-application grant. Leftover `sessionStorage.showModelTools` cannot force the tools back on. |
 | `availableStoreTypes` | Open existing deployments on those backends | Register the store factories in the **persistence** process (server, Electron main, or emulated in-process server). | Do not register the factory. The browser IndexedDB-only map is not the source when the client is remote. |
 | `creatableStoreTypes` | Create Application backend picker | Same as available types, minus `bundled`. | Same. `bundled` is never offered for create. |
+| `git` | The Git page (`?page=git`): status, history, diffs, stage, commit, branches, checkout, fetch, pull and push for the repository of a filesystem deployment, and cloning a repository to install the application it holds. Implemented by `@miroir-framework/git-isomorphic`, loaded on the first Git action; the host needs no Git program. Also needs `designerTools`, and, when authentication is on, a designer. [Version control with Git](../guides/version-control-with-git.md). | Persistence-side `features.git: true`, then restart. | Omit `git` or set `false`. Restart. The AppBar entry is hidden and every `gitAction_*` returns `FeatureUnavailable`. |
 | `storeAdministration` | Create / delete / reset a store | Persistence process has a non-`bundled` admin-store factory. | Bundled-only admin (sandbox). `openStore` / `closeStore` still run; startup must open stores. |
 
-Missing `features.ai` or `features.mcp` is **false**, and missing `features.agentBackend` is `"none"`. Missing `features.designerTools` is **true**. Restart the process after you edit flags. The UI does not recompute them from the renderer factory map. Sandbox does not force `agentBackend` to `"none"`, but `ai` false hides the backend picker.
+Missing `features.ai`, `features.mcp` or `features.git` is **false**, and missing `features.agentBackend` is `"none"`. Missing `features.designerTools` is **true**. Restart the process after you edit flags. The UI does not recompute them from the renderer factory map. Sandbox does not force `agentBackend` to `"none"`, but `ai` false hides the backend picker.
 
 `features.cursor: true` is still read as `agentBackend: "cursor"` for one release when `agentBackend` is absent; `agentBackend` wins when both are set. `miroir-env check` warns about it (an error under `--strict`).
 
@@ -32,7 +33,8 @@ Sibling of `client` / `server`, not nested inside `emulateServer`:
     "ai": true,
     "mcp": true,
     "agentBackend": "none",
-    "designerTools": true
+    "designerTools": true,
+    "git": false
   }
 }
 ```

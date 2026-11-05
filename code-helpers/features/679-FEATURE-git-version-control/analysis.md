@@ -9,7 +9,7 @@ Reference docs: [`process-capabilities.md`](../../../docs/reference/process-capa
 Key sources: [`processCapabilities.ts`](../../../packages/miroir-core/src/1_core/processCapabilities.ts), [`ActionImplementations.ts`](../../../packages/miroir-core/src/3_controllers/ActionImplementations.ts), [`DomainController.ts`](../../../packages/miroir-core/src/3_controllers/DomainController.ts), [`SecretStore.ts`](../../../packages/miroir-core/src/4_services/SecretStore.ts), [`ConfigurationService.ts`](../../../packages/miroir-core/src/3_controllers/ConfigurationService.ts), [`PageDispatcher.tsx`](../../../packages/miroir-react/src/PageDispatcher.tsx)
 
 **Document role:** analysis and decision record. Decisions D1 to D23 were confirmed by A in the two grilling rounds. Goals G1 to G7 are drafted from the issue text and are to be confirmed.
-**Status:** decisions confirmed, goals to confirm. Implementation follows [`tdd-implementation-plan.md`](./tdd-implementation-plan.md).
+**Status:** implemented (#680 to #683). Implementation followed [`tdd-implementation-plan.md`](./tdd-implementation-plan.md).
 
 Survey of `_integration` at 143cb19 (2026-11-04).
 

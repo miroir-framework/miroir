@@ -2670,6 +2670,7 @@
                   "endpointName": "GitEndpoint",
                   "actionTypes": [
                     "gitAction_checkout",
+                    "gitAction_clone",
                     "gitAction_commit",
                     "gitAction_commitFiles",
                     "gitAction_createBranch",
@@ -2677,6 +2678,7 @@
                     "gitAction_diff",
                     "gitAction_fetch",
                     "gitAction_init",
+                    "gitAction_installClonedDeployment",
                     "gitAction_log",
                     "gitAction_pull",
                     "gitAction_push",

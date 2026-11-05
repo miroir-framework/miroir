@@ -1,6 +1,7 @@
 import type React from "react";
 
 import { getMlElementEditorForTest } from "./componentTestTools.js";
+import { GitClonePanelForTest } from "./gitClonePanelForTest.js";
 import { GitPageForTest } from "./gitPageForTest.js";
 import { SequenceEditorForTest } from "./sequenceEditorForTest.js";
 import { TransformerBlocksForTest } from "./transformerBlocksForTest.js";
@@ -37,4 +38,6 @@ export const componentRegistry: ComponentRegistry = {
   SequenceEditor: { component: SequenceEditorForTest, fieldNamePrefix: "" },
   // #679: the Git page body on Git action results given as fixtures
   GitPage: GitPageForTest,
+  // #683: the clone panel of the Git page, on clone and install results given as fixtures
+  GitClonePanel: GitClonePanelForTest,
 };

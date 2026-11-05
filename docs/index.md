@@ -39,7 +39,8 @@ Welcome to the Miroir Framework documentation. This guide will help you find the
 5. [Creating Your First Application](guides/developer/creating-applications.md) - Build from scratch
 6. [Start a Project from npm](guides/start-a-project.md) - `npm create @miroir-framework/app` (once the packages are published)
 7. [Developer Guides](guides/developer/) - In-depth development topics
-8. [API Reference](reference/api/) - Complete API documentation
+8. [Version control with Git](guides/version-control-with-git.md) - Commit, branch, push, pull and clone from the Git page, with no Git program installed
+9. [API Reference](reference/api/) - Complete API documentation
 
 ### 🎨 Citizen Developers & Low-Code Users
 **Goal**: Build applications without deep programming knowledge
