@@ -44,12 +44,16 @@ export function GitRemotePanel(props: {
   const [username, setUsername] = useState("");
   const [token, setToken] = useState("");
   const [save, setSave] = useState(true);
-  const { remoteUrl, tracking, branches } = props.status;
+  const { remote, remoteUrl, tracking, branches } = props.status;
+  const remoteName = remote ?? "origin";
 
-  const settle = (state: GitRequestState<GitRemoteResult | GitPullResult>) => {
+  const settle = (actionType: RemoteActionType, state: GitRequestState<GitRemoteResult | GitPullResult>) => {
     if (state.status === "ok") {
       setError(undefined);
-      props.onReloadFailures((state.value as GitPullResult).reloadFailures ?? []);
+      // only a pull reloads deployments: a fetch or a push leaves an earlier reload warning as it is
+      if (actionType === "gitAction_pull") {
+        props.onReloadFailures((state.value as GitPullResult).reloadFailures ?? []);
+      }
       return;
     }
     if (state.status === "error") {
@@ -57,15 +61,19 @@ export function GitRemotePanel(props: {
     }
   };
 
+  /** Fetch takes the remote shown; Pull and Push find the current branch's upstream themselves. */
+  const remotePayload = (actionType: RemoteActionType): Record<string, unknown> | undefined =>
+    actionType === "gitAction_fetch" && remote ? { remote } : undefined;
+
   const runRemote = async (actionType: RemoteActionType) => {
     props.onNotice(undefined);
-    const state = await props.command<GitRemoteResult | GitPullResult>(actionType);
+    const state = await props.command<GitRemoteResult | GitPullResult>(actionType, remotePayload(actionType));
     if (state.status === "error" && needsCredential(state.error)) {
       setAsking({ actionType, host: String(state.error.errorContext?.host ?? "") });
       setError(undefined);
       return;
     }
-    settle(state);
+    settle(actionType, state);
   };
 
   const retryWithCredential = async () => {
@@ -73,7 +81,10 @@ export function GitRemotePanel(props: {
       return;
     }
     const credential = { username: username.trim(), token };
-    const state = await props.command<GitRemoteResult | GitPullResult>(asking.actionType, { credential });
+    const state = await props.command<GitRemoteResult | GitPullResult>(asking.actionType, {
+      ...remotePayload(asking.actionType),
+      credential,
+    });
     if (state.status === "error" && needsCredential(state.error)) {
       setError({ ...state.error, errorMessage: `The remote refused this token for ${asking.host}.` });
       return;
@@ -82,7 +93,7 @@ export function GitRemotePanel(props: {
     const host = asking.host;
     setAsking(undefined);
     setToken("");
-    settle(state);
+    settle(asking.actionType, state);
     if (state.status !== "ok") {
       return;
     }
@@ -102,7 +113,11 @@ export function GitRemotePanel(props: {
   };
 
   const setRemote = async () => {
-    const state = await props.command<GitRemoteResult>("gitAction_setRemote", { url: url.trim() });
+    const state = await props.command<GitRemoteResult>("gitAction_setRemote", {
+      url: url.trim(),
+      // the remote shown: changing the URL of an `upstream` remote does not add an `origin`
+      ...(remote ? { remote } : {}),
+    });
     if (state.status === "ok") {
       setUrl("");
     }
@@ -113,7 +128,7 @@ export function GitRemotePanel(props: {
     <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
       {remoteUrl ? (
         <Typography variant="body2" sx={{ wordBreak: "break-all" }} data-testid="git-remote-url-text">
-          origin: {remoteUrl}
+          {remoteName}: {remoteUrl}
         </Typography>
       ) : (
         <Typography variant="body2" data-testid="git-no-remote">

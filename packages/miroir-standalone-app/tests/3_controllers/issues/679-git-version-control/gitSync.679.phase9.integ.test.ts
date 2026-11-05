@@ -20,6 +20,7 @@ import {
   type EntityInstance,
   type GitPullResult,
   type GitRemoteResult,
+  type GitStatusResult,
 } from "@miroir-framework/core";
 import { defaultMiroirMetaModel } from "@miroir-framework/core/meta-model";
 import { endpointDocument, getDefaultLibraryModelEnvironmentDEFUNCT } from "miroir-example-library";
@@ -58,6 +59,7 @@ const libraryModelEnvironment = getDefaultLibraryModelEnvironmentDEFUNCT(
 let context: GitTestContext;
 let server: GitHttpServer;
 let bareDirectory: string;
+let remoteUrl: string;
 
 function ubik(): Record<string, unknown> {
   return JSON.parse(fs.readFileSync(path.join(context.libraryRoot, bookPath(BOOK_UBIK)), "utf8"));
@@ -90,9 +92,9 @@ describe.skipIf(gitMissing)("gitAction_push and gitAction_pull (#679 slice 9)", 
     setGitCapability(context, true);
     await initCommittedRepository(context.libraryRoot);
     server = await startGitHttpServer();
-    const url = server.createBareRepository("library");
+    remoteUrl = server.createBareRepository("library");
     bareDirectory = path.join(server.root, "library.git");
-    expectOk(await gitAction(context, "gitAction_setRemote", { url }));
+    expectOk(await gitAction(context, "gitAction_setRemote", { url: remoteUrl }));
   });
 
   afterAll(async () => {
@@ -261,5 +263,35 @@ describe.skipIf(gitMissing)("gitAction_push and gitAction_pull (#679 slice 9)", 
     expectGitError(await gitAction(context, "gitAction_pull"), "detachedHead");
     expectGitError(await gitAction(context, "gitAction_push"), "detachedHead");
     expectOk(await gitAction(context, "gitAction_checkout", { ref: "feature" }));
+  });
+
+  it("works with the remote the branch follows when the repository has no origin", async () => {
+    // `git remote rename` also moves `branch.*.remote`: feature now follows upstream/feature
+    gitCli(context.libraryRoot, "remote", "rename", "origin", "upstream");
+    try {
+      const status = expectOk<GitStatusResult>(await gitAction(context, "gitAction_status"));
+      expect(status.remote).toBe("upstream");
+      expect(status.remoteUrl).toBe(remoteUrl);
+      expect(status.tracking?.upstream).toBe("upstream/feature");
+
+      const remoteCommit = commitOnRemote(
+        bareDirectory,
+        { [bookPath(REMOTE_BOOK)]: JSON.stringify({ ...ubik(), uuid: REMOTE_BOOK, name: "Valis, 3rd edition" }, undefined, 2) },
+        "Valis, 3rd edition",
+        "feature",
+      );
+      const fetched = expectOk<GitRemoteResult>(await gitAction(context, "gitAction_fetch"));
+      expect(fetched.remote).toBe("upstream");
+      expect(fetched.tracking).toEqual({ upstream: "upstream/feature", ahead: 0, behind: 1 });
+      expectOk(await gitAction(context, "gitAction_pull"));
+      expect(await head()).toBe(remoteCommit);
+
+      await commitUbik(1996);
+      expectOk(await gitAction(context, "gitAction_push"));
+      expect(remoteBranch("feature")).toBe(await head());
+      expect(await git.getConfig({ fs, dir: context.libraryRoot, path: "remote.origin.url" })).toBeUndefined();
+    } finally {
+      gitCli(context.libraryRoot, "remote", "rename", "upstream", "origin");
+    }
   });
 });

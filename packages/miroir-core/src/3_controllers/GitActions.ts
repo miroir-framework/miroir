@@ -332,13 +332,21 @@ async function status(opened: OpenedRepository, includeOtherChanges: boolean): P
     })),
   );
   const branches = await repository.branches();
+  const remote = await branchRemote(repository, branches);
+  const url = await repository.remoteUrl(remote);
   return {
     ...description,
     branches,
     tracking: await tracking(repository, branches),
-    remoteUrl: displayedRemoteUrl(await repository.remoteUrl(DEFAULT_REMOTE)),
+    ...(url ? { remote, remoteUrl: displayedRemoteUrl(url) } : {}),
     files: described,
   };
+}
+
+/** The remote the current branch's upstream is on, else `origin`: what Fetch, Pull and Push talk to. */
+async function branchRemote(repository: GitRepositoryInterface, branches: GitBranches): Promise<string> {
+  const upstream = branches.current ? await repository.upstream(branches.current) : undefined;
+  return upstream ? splitUpstream(upstream).remote : DEFAULT_REMOTE;
 }
 
 /** The current branch against its upstream, as the last fetch left the remote-tracking branch. */
@@ -358,9 +366,9 @@ async function tracking(repository: GitRepositoryInterface, branches: GitBranche
 }
 
 /**
- * #679 D7: the refusal of a commit or checkout while the local cache holds Miroir changes not yet on disk.
- * A commit looks at the changes of its application; a checkout at every change, since it can rewrite the
- * files of any deployment in the repository.
+ * #679 D7: the refusal of a commit, checkout or pull while the local cache holds Miroir changes not yet on
+ * disk. A commit looks at the changes of its application; a checkout or a pull at every change, since it can
+ * rewrite the files of any deployment in the repository.
  */
 export function openMiroirTransactionError(
   action: GitAction,
@@ -369,8 +377,10 @@ export function openMiroirTransactionError(
   if (!GIT_ACTIONS_NEEDING_SAVED_MIROIR_CHANGES.includes(action.actionType)) {
     return undefined;
   }
+  // a checkout or a pull rewrites the files of every deployment in the repository, and the reload that
+  // follows drops the unsaved changes of each of them, not only of the application named by the action
   const pending =
-    action.actionType === "gitAction_checkout"
+    action.actionType === "gitAction_checkout" || action.actionType === "gitAction_pull"
       ? transaction
       : transaction.filter((change) => change.payload?.application === action.payload?.application);
   if (pending.length === 0) {
@@ -858,7 +868,7 @@ async function runOnDeployment(
       case "gitAction_fetch": {
         const remote = await openRemote(
           repository,
-          nonEmptyString(action.payload.remote) ?? DEFAULT_REMOTE,
+          nonEmptyString(action.payload.remote) ?? (await branchRemote(repository, await repository.branches())),
           action.payload.credential,
           context,
         );
@@ -924,10 +934,9 @@ async function runOnDeployment(
         if (!branches.current) {
           return gitActionError("detachedHead", "HEAD is detached: check out a branch to push it");
         }
-        const upstream = await repository.upstream(branches.current);
         const remote = await openRemote(
           repository,
-          upstream ? splitUpstream(upstream).remote : DEFAULT_REMOTE,
+          await branchRemote(repository, branches),
           action.payload.credential,
           context,
         );

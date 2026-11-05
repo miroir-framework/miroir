@@ -113,10 +113,11 @@ export type GitSetRemoteAction = GitActionOf<"gitAction_setRemote", { url: strin
  * the `git.<host>` secret of the logged-in user, or of the process.
  */
 export type GitPayloadCredential = { username: string; token: string };
+/** `remote`: by default the one of the current branch's upstream, else `origin`. */
 export type GitFetchAction = GitActionOf<"gitAction_fetch", { remote?: string; credential?: GitPayloadCredential }>;
 /** Fetches the current branch's upstream, then fast-forwards the branch to it. */
 export type GitPullAction = GitActionOf<"gitAction_pull", { credential?: GitPayloadCredential }>;
-/** Pushes the current branch to `origin`, which becomes its upstream when it has none. */
+/** Pushes the current branch to its upstream, else to `origin`, which then becomes its upstream. */
 export type GitPushAction = GitActionOf<"gitAction_push", { credential?: GitPayloadCredential }>;
 /** Saves a username and token for `host` as the Admin secret `git.<host>` (the user's, or the process'). */
 export type GitSetCredentialAction = GitActionOf<
@@ -167,7 +168,9 @@ export type GitStatusResult = GitRepositoryDescription & {
   branches: GitBranches;
   /** Absent with no current branch or no upstream. */
   tracking?: GitTracking;
-  /** The URL of `origin`, when the repository has it. */
+  /** The remote Fetch, Pull and Push use: the one of the current branch's upstream, else `origin`. */
+  remote?: string;
+  /** The URL of `remote`, when the repository has it. */
   remoteUrl?: string;
   files: (GitFileStatus & GitPathDescription)[];
 };
