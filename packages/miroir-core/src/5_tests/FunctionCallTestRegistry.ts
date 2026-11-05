@@ -39,6 +39,8 @@ import { localizeMlSchemaReferenceContext } from "../1_core/mls/MlsUnfoldSchemaO
 import { resolveQueryTemplateWithExtractorCombinerTransformer } from "../2_domain/Templates";
 import { referencePathAttributeNames, resolveTransformerResultSchema } from "../2_domain/Transformer_ResultSchema";
 import { getApplicationSection } from "../1_core/Model";
+import { gitPathIsInSections, gitPathToInstance } from "../2_domain/GitPathNaming";
+import { gitLineDiff } from "../2_domain/GitLineDiff";
 import { isBlockViewRoot, isTestSequenceField } from "../2_domain/BlockViewFields";
 import {
   addTransformerParameter,
@@ -279,6 +281,11 @@ const FUNCTION_CALL_REGISTRY: Record<
   // Backward-compatible alias for existing MiroirTest assets that still reference the postgres path.
   "miroir-store-postgres/1_core/mlSchema": {
     getAttributeTypesFromMlSchema: getAttributeTypesFromMlSchema as WhitelistedFunction,
+  },
+  "miroir-core/2_domain/GitLineDiff": { gitLineDiff: gitLineDiff as WhitelistedFunction },
+  "miroir-core/2_domain/GitPathNaming": {
+    gitPathToInstance: gitPathToInstance as WhitelistedFunction,
+    gitPathIsInSections: gitPathIsInSections as WhitelistedFunction,
   },
   "miroir-core/2_domain/Templates": {
     resolveQueryTemplateWithExtractorCombinerTransformer:

@@ -1,0 +1,238 @@
+{
+  "uuid": "4395e1a1-898c-4ef3-b564-18781a5998d5",
+  "parentName": "MiroirTest",
+  "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+  "name": "fn.gitLineDiff",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "description": "Git version control: the line diff of the Git page between the before and after text of one file, an absent text having no line.",
+  "tags": [
+    "unit"
+  ],
+  "issue": "679",
+  "definition": {
+    "miroirTestType": "miroirTestSuite",
+    "miroirTestLabel": "fn.gitLineDiff",
+    "miroirTests": [
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "identical texts keep every line",
+        "functionRef": {
+          "module": "miroir-core/2_domain/GitLineDiff",
+          "export": "gitLineDiff"
+        },
+        "arguments": [
+          "{\n  \"a\": 1\n}\n",
+          "{\n  \"a\": 1\n}\n"
+        ],
+        "expectedValue": [
+          {
+            "kind": "same",
+            "text": "{"
+          },
+          {
+            "kind": "same",
+            "text": "  \"a\": 1"
+          },
+          {
+            "kind": "same",
+            "text": "}"
+          }
+        ]
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "a changed attribute: the old line removed, the new one added",
+        "functionRef": {
+          "module": "miroir-core/2_domain/GitLineDiff",
+          "export": "gitLineDiff"
+        },
+        "arguments": [
+          "{\n  \"name\": \"Ubik\",\n  \"year\": 1969\n}",
+          "{\n  \"name\": \"Ubik\",\n  \"year\": 1970\n}"
+        ],
+        "expectedValue": [
+          {
+            "kind": "same",
+            "text": "{"
+          },
+          {
+            "kind": "same",
+            "text": "  \"name\": \"Ubik\","
+          },
+          {
+            "kind": "removed",
+            "text": "  \"year\": 1969"
+          },
+          {
+            "kind": "added",
+            "text": "  \"year\": 1970"
+          },
+          {
+            "kind": "same",
+            "text": "}"
+          }
+        ]
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "an added attribute in the middle",
+        "functionRef": {
+          "module": "miroir-core/2_domain/GitLineDiff",
+          "export": "gitLineDiff"
+        },
+        "arguments": [
+          "{\n  \"a\": 1,\n  \"c\": 3\n}",
+          "{\n  \"a\": 1,\n  \"b\": 2,\n  \"c\": 3\n}"
+        ],
+        "expectedValue": [
+          {
+            "kind": "same",
+            "text": "{"
+          },
+          {
+            "kind": "same",
+            "text": "  \"a\": 1,"
+          },
+          {
+            "kind": "added",
+            "text": "  \"b\": 2,"
+          },
+          {
+            "kind": "same",
+            "text": "  \"c\": 3"
+          },
+          {
+            "kind": "same",
+            "text": "}"
+          }
+        ]
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "a file absent before: every line added",
+        "functionRef": {
+          "module": "miroir-core/2_domain/GitLineDiff",
+          "export": "gitLineDiff"
+        },
+        "arguments": [
+          {
+            "__miroirJsonUndefined": true
+          },
+          "{\n}\n"
+        ],
+        "expectedValue": [
+          {
+            "kind": "added",
+            "text": "{"
+          },
+          {
+            "kind": "added",
+            "text": "}"
+          }
+        ]
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "a file absent after: every line removed",
+        "functionRef": {
+          "module": "miroir-core/2_domain/GitLineDiff",
+          "export": "gitLineDiff"
+        },
+        "arguments": [
+          "{\n}\n",
+          {
+            "__miroirJsonUndefined": true
+          }
+        ],
+        "expectedValue": [
+          {
+            "kind": "removed",
+            "text": "{"
+          },
+          {
+            "kind": "removed",
+            "text": "}"
+          }
+        ]
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "both absent: no line",
+        "functionRef": {
+          "module": "miroir-core/2_domain/GitLineDiff",
+          "export": "gitLineDiff"
+        },
+        "arguments": [
+          {
+            "__miroirJsonUndefined": true
+          },
+          {
+            "__miroirJsonUndefined": true
+          }
+        ],
+        "expectedValue": []
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "windows line ends are lines too",
+        "functionRef": {
+          "module": "miroir-core/2_domain/GitLineDiff",
+          "export": "gitLineDiff"
+        },
+        "arguments": [
+          "a\r\nb\r\n",
+          "a\r\nc\r\n"
+        ],
+        "expectedValue": [
+          {
+            "kind": "same",
+            "text": "a"
+          },
+          {
+            "kind": "removed",
+            "text": "b"
+          },
+          {
+            "kind": "added",
+            "text": "c"
+          }
+        ]
+      },
+      {
+        "miroirTestType": "functionCallTest",
+        "miroirTestLabel": "lines moved apart keep the longest common part",
+        "functionRef": {
+          "module": "miroir-core/2_domain/GitLineDiff",
+          "export": "gitLineDiff"
+        },
+        "arguments": [
+          "x\na\nb\nc",
+          "a\nb\nc\nx"
+        ],
+        "expectedValue": [
+          {
+            "kind": "removed",
+            "text": "x"
+          },
+          {
+            "kind": "same",
+            "text": "a"
+          },
+          {
+            "kind": "same",
+            "text": "b"
+          },
+          {
+            "kind": "same",
+            "text": "c"
+          },
+          {
+            "kind": "added",
+            "text": "x"
+          }
+        ]
+      }
+    ]
+  }
+}

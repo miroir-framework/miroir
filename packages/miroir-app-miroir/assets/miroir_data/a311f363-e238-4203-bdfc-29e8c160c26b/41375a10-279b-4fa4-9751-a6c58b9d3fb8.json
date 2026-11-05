@@ -1,0 +1,332 @@
+{
+  "uuid": "41375a10-279b-4fa4-9751-a6c58b9d3fb8",
+  "parentName": "MiroirTest",
+  "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+  "name": "fn.gitPathToInstance",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "description": "Git version control: a repository path named by the deployment section, Entity and instance key it stores, and whether a path belongs to the application's section folders.",
+  "tags": [
+    "unit"
+  ],
+  "issue": "679",
+  "definition": {
+    "miroirTestType": "miroirTestSuite",
+    "miroirTestLabel": "fn.gitPathToInstance",
+    "miroirTests": [
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "gitPathToInstance",
+        "miroirTests": [
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "an instance file of the data section",
+            "functionRef": {
+              "module": "miroir-core/2_domain/GitPathNaming",
+              "export": "gitPathToInstance"
+            },
+            "arguments": [
+              "library/data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/03ffcae1-b83f-4970-b3d9-04780d3d0780.json",
+              {
+                "model": "library/model",
+                "data": "library/data",
+                "modelVersion": "library/modelVersion"
+              }
+            ],
+            "expectedValue": {
+              "section": "data",
+              "entityUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+              "instanceKey": "03ffcae1-b83f-4970-b3d9-04780d3d0780"
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "an instance file of the model section",
+            "functionRef": {
+              "module": "miroir-core/2_domain/GitPathNaming",
+              "export": "gitPathToInstance"
+            },
+            "arguments": [
+              "library/model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/e8ba151b-d68e-4cc3-9a83-3459d309ccf5.json",
+              {
+                "model": "library/model",
+                "data": "library/data",
+                "modelVersion": "library/modelVersion"
+              }
+            ],
+            "expectedValue": {
+              "section": "model",
+              "entityUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+              "instanceKey": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a non-uuid primary key",
+            "functionRef": {
+              "module": "miroir-core/2_domain/GitPathNaming",
+              "export": "gitPathToInstance"
+            },
+            "arguments": [
+              "library/data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/isbn-0-575-07164-2.json",
+              {
+                "model": "library/model",
+                "data": "library/data",
+                "modelVersion": "library/modelVersion"
+              }
+            ],
+            "expectedValue": {
+              "section": "data",
+              "entityUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+              "instanceKey": "isbn-0-575-07164-2"
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "backslash separators",
+            "functionRef": {
+              "module": "miroir-core/2_domain/GitPathNaming",
+              "export": "gitPathToInstance"
+            },
+            "arguments": [
+              "library\\data\\e8ba151b-d68e-4cc3-9a83-3459d309ccf5\\03ffcae1-b83f-4970-b3d9-04780d3d0780.json",
+              {
+                "model": "library/model",
+                "data": "library/data",
+                "modelVersion": "library/modelVersion"
+              }
+            ],
+            "expectedValue": {
+              "section": "data",
+              "entityUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+              "instanceKey": "03ffcae1-b83f-4970-b3d9-04780d3d0780"
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "sections at the repository root",
+            "functionRef": {
+              "module": "miroir-core/2_domain/GitPathNaming",
+              "export": "gitPathToInstance"
+            },
+            "arguments": [
+              "e8ba151b-d68e-4cc3-9a83-3459d309ccf5/03ffcae1-b83f-4970-b3d9-04780d3d0780.json",
+              {
+                "data": ""
+              }
+            ],
+            "expectedValue": {
+              "section": "data",
+              "entityUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+              "instanceKey": "03ffcae1-b83f-4970-b3d9-04780d3d0780"
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "the deepest of nested sections wins",
+            "functionRef": {
+              "module": "miroir-core/2_domain/GitPathNaming",
+              "export": "gitPathToInstance"
+            },
+            "arguments": [
+              "app/data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/03ffcae1-b83f-4970-b3d9-04780d3d0780.json",
+              {
+                "model": "app",
+                "data": "app/data"
+              }
+            ],
+            "expectedValue": {
+              "section": "data",
+              "entityUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+              "instanceKey": "03ffcae1-b83f-4970-b3d9-04780d3d0780"
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a file outside the sections",
+            "functionRef": {
+              "module": "miroir-core/2_domain/GitPathNaming",
+              "export": "gitPathToInstance"
+            },
+            "arguments": [
+              "library/NOTES.md",
+              {
+                "model": "library/model",
+                "data": "library/data",
+                "modelVersion": "library/modelVersion"
+              }
+            ],
+            "expectedValue": {
+              "__miroirJsonUndefined": true
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a folder named like a section prefix",
+            "functionRef": {
+              "module": "miroir-core/2_domain/GitPathNaming",
+              "export": "gitPathToInstance"
+            },
+            "arguments": [
+              "library/database/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/03ffcae1-b83f-4970-b3d9-04780d3d0780.json",
+              {
+                "model": "library/model",
+                "data": "library/data",
+                "modelVersion": "library/modelVersion"
+              }
+            ],
+            "expectedValue": {
+              "__miroirJsonUndefined": true
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a file directly in a section folder",
+            "functionRef": {
+              "module": "miroir-core/2_domain/GitPathNaming",
+              "export": "gitPathToInstance"
+            },
+            "arguments": [
+              "library/data/index.json",
+              {
+                "model": "library/model",
+                "data": "library/data",
+                "modelVersion": "library/modelVersion"
+              }
+            ],
+            "expectedValue": {
+              "__miroirJsonUndefined": true
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a file nested below an Entity folder",
+            "functionRef": {
+              "module": "miroir-core/2_domain/GitPathNaming",
+              "export": "gitPathToInstance"
+            },
+            "arguments": [
+              "library/data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/sub/03ffcae1-b83f-4970-b3d9-04780d3d0780.json",
+              {
+                "model": "library/model",
+                "data": "library/data",
+                "modelVersion": "library/modelVersion"
+              }
+            ],
+            "expectedValue": {
+              "__miroirJsonUndefined": true
+            }
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a file that is not JSON",
+            "functionRef": {
+              "module": "miroir-core/2_domain/GitPathNaming",
+              "export": "gitPathToInstance"
+            },
+            "arguments": [
+              "library/data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/03ffcae1-b83f-4970-b3d9-04780d3d0780.txt",
+              {
+                "model": "library/model",
+                "data": "library/data",
+                "modelVersion": "library/modelVersion"
+              }
+            ],
+            "expectedValue": {
+              "__miroirJsonUndefined": true
+            }
+          }
+        ]
+      },
+      {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "gitPathIsInSections",
+        "miroirTests": [
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a file inside a section",
+            "functionRef": {
+              "module": "miroir-core/2_domain/GitPathNaming",
+              "export": "gitPathIsInSections"
+            },
+            "arguments": [
+              "library/data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/03ffcae1-b83f-4970-b3d9-04780d3d0780.json",
+              {
+                "model": "library/model",
+                "data": "library/data",
+                "modelVersion": "library/modelVersion"
+              }
+            ],
+            "expectedValue": true
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a section folder itself",
+            "functionRef": {
+              "module": "miroir-core/2_domain/GitPathNaming",
+              "export": "gitPathIsInSections"
+            },
+            "arguments": [
+              "library/model/",
+              {
+                "model": "library/model",
+                "data": "library/data",
+                "modelVersion": "library/modelVersion"
+              }
+            ],
+            "expectedValue": true
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a sibling file of the sections",
+            "functionRef": {
+              "module": "miroir-core/2_domain/GitPathNaming",
+              "export": "gitPathIsInSections"
+            },
+            "arguments": [
+              "library/NOTES.md",
+              {
+                "model": "library/model",
+                "data": "library/data",
+                "modelVersion": "library/modelVersion"
+              }
+            ],
+            "expectedValue": false
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "a folder named like a section prefix",
+            "functionRef": {
+              "module": "miroir-core/2_domain/GitPathNaming",
+              "export": "gitPathIsInSections"
+            },
+            "arguments": [
+              "library/database/x.json",
+              {
+                "model": "library/model",
+                "data": "library/data",
+                "modelVersion": "library/modelVersion"
+              }
+            ],
+            "expectedValue": false
+          },
+          {
+            "miroirTestType": "functionCallTest",
+            "miroirTestLabel": "any path when a section is the repository root",
+            "functionRef": {
+              "module": "miroir-core/2_domain/GitPathNaming",
+              "export": "gitPathIsInSections"
+            },
+            "arguments": [
+              "README.md",
+              {
+                "data": ""
+              }
+            ],
+            "expectedValue": true
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -36,6 +36,7 @@ import {
 import { buildTestbedApplicationAccessGrantInstance } from "./authentication/TestbedAccessGrant.js";
 import {
   domainEndpointVersionV1,
+  gitEndpoint,
   instanceEndpointV1,
   localCacheEndpointVersionV1,
   modelEndpointV1,
@@ -100,6 +101,7 @@ export const defaultEndpointApplicationMap: EndpointApplicationMap = {
   [modelEndpointV1.uuid]: selfApplicationMiroir.uuid,
   [domainEndpointVersionV1.uuid]: selfApplicationMiroir.uuid,
   [storeManagementEndpoint.uuid]: selfApplicationMiroir.uuid,
+  [gitEndpoint.uuid]: selfApplicationMiroir.uuid,
   [undoRedoEndpointVersionV1.uuid]: selfApplicationMiroir.uuid,
   [localCacheEndpointVersionV1.uuid]: selfApplicationMiroir.uuid,
   [queryEndpointVersionV1.uuid]: selfApplicationMiroir.uuid,

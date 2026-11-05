@@ -1,6 +1,7 @@
 import type React from "react";
 
 import { getMlElementEditorForTest } from "./componentTestTools.js";
+import { GitPageForTest } from "./gitPageForTest.js";
 import { SequenceEditorForTest } from "./sequenceEditorForTest.js";
 import { TransformerBlocksForTest } from "./transformerBlocksForTest.js";
 import { TransformerEditorForTest } from "./transformerEditorForTest.js";
@@ -34,4 +35,6 @@ export const componentRegistry: ComponentRegistry = {
   TransformerBlocks: TransformerBlocksForTest,
   // #505: its Formik form has no section root either
   SequenceEditor: { component: SequenceEditorForTest, fieldNamePrefix: "" },
+  // #679: the Git page body on Git action results given as fixtures
+  GitPage: GitPageForTest,
 };

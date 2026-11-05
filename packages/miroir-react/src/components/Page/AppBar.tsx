@@ -251,6 +251,18 @@ export function AppBar(props:AppBarProps) {
       },
     },
   };
+  // #679: the Git page, for designers of a process with the git capability
+  const gitMenuItemVisible = designerToolsVisible && context.processCapabilities.git === true;
+  const gitMenuItem: MiroirMenuPageLink = {
+    miroirMenuItemType: "miroirMenuPageLink",
+    label: "Git",
+    targetRoot: "git",
+    section: "model",
+    icon: {
+      iconType: "svg",
+      name: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><circle cx="160" cy="96" r="48" fill="none" stroke="currentColor" stroke-width="32"/><circle cx="160" cy="416" r="48" fill="none" stroke="currentColor" stroke-width="32"/><line x1="160" y1="144" x2="160" y2="368" stroke="currentColor" stroke-width="32"/><circle cx="352" cy="256" r="48" fill="none" stroke="currentColor" stroke-width="32"/><path d="M160,256h144" fill="none" stroke="currentColor" stroke-width="32"/></svg>',
+    },
+  };
   const appbarItems: (MiroirMenuItem | JSX.Element)[] = [
     /* HOME */
     <AppBarIconButton
@@ -486,6 +498,7 @@ export function AppBar(props:AppBarProps) {
       },
     },
     ...(designerToolsVisible ? [transformerBuilderMenuItem] : []),
+    ...(gitMenuItemVisible ? [gitMenuItem] : []),
     // {
     //   "label": "runners",
     //   "section": "model",

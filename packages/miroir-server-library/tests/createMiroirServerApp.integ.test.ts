@@ -385,3 +385,95 @@ describe("createMiroirServerApp — mounted on a host app", () => {
     expect(declarations).toContain("mount it before any host body parser");
   });
 });
+
+describe("createMiroirServerApp — Git actions over HTTP (#679)", () => {
+  const started = startedFor({});
+  const GIT_ENDPOINT = "a7f243cb-9345-425a-918d-4e433a94f4bf";
+
+  function libraryRoot(): string {
+    const manager = platform.persistenceStoreControllerManager;
+    const model = manager.getPersistenceStoreConfiguration(LIBRARY_DEPLOYMENT)?.model as { directory: string };
+    return path.dirname(path.resolve(manager.filesystemDeploymentRootDirectory!, model.directory));
+  }
+
+  async function gitAction(actionType: string) {
+    const response = await postJson(`${started().http.baseUrl}/action/${actionType}`, {
+      action: { actionType, endpoint: GIT_ENDPOINT, payload: { application: LIBRARY_APPLICATION } },
+      applicationDeploymentMap: platform.applicationDeploymentMap,
+    });
+    return { status: response.status, body: await response.json() };
+  }
+
+  beforeAll(() => {
+    rmSync(path.join(libraryRoot(), ".git"), { recursive: true, force: true });
+    ConfigurationService.configurationService.registerGitRepositoryFactory(() =>
+      import("@miroir-framework/git-isomorphic").then((m) => m.createGitRepositoryFactory()),
+    );
+    platform.domainController.setProcessCapabilities({ ...platform.capabilities, git: true });
+  });
+
+  afterAll(() => {
+    rmSync(path.join(libraryRoot(), ".git"), { recursive: true, force: true });
+    ConfigurationService.configurationService.registerGitRepositoryFactory(undefined);
+    platform.domainController.setProcessCapabilities(platform.capabilities);
+  });
+
+  it("answers a deployment outside a repository with the reason the UI switches on", async () => {
+    const { body } = await gitAction("gitAction_status");
+    expect(body.errorContext?.reason, JSON.stringify(body)).toBe("notARepository");
+    expect(body.errorContext?.directory).toBe(libraryRoot());
+  });
+
+  it("creates a repository around the Library's sections, then lists its files as added", async () => {
+    const init = await gitAction("gitAction_init");
+    expect(init.body.status, JSON.stringify(init.body)).toBe("ok");
+    const { body } = await gitAction("gitAction_status");
+    expect(body.status, JSON.stringify(body)).toBe("ok");
+    expect(body.returnedDomainElement.root).toBe(libraryRoot());
+    const files: { change: string; entityUuid?: string }[] = body.returnedDomainElement.files;
+    expect(files.length).toBeGreaterThan(0);
+    expect(files.every((file) => file.change === "added")).toBe(true);
+    expect(files.some((file) => file.entityUuid === BOOK_ENTITY)).toBe(true);
+  });
+
+  it("is refused while the git capability is off", async () => {
+    platform.domainController.setProcessCapabilities({ ...platform.capabilities, git: false });
+    try {
+      const { body } = await gitAction("gitAction_status");
+      expect(body.errorType, JSON.stringify(body)).toBe("FeatureUnavailable");
+    } finally {
+      platform.domainController.setProcessCapabilities({ ...platform.capabilities, git: true });
+    }
+  });
+});
+
+describe("createMiroirServerApp — Git actions with authentication (#679 D13)", () => {
+  const started = startedFor({ authenticationEnabled: true });
+  const GIT_ENDPOINT = "a7f243cb-9345-425a-918d-4e433a94f4bf";
+
+  async function gitStatusAs(username: string, password: string) {
+    const base = started().http.baseUrl;
+    const loggedIn = await login(base, username, password);
+    expect(loggedIn.status, `${username} logs in`).toBe(200);
+    return postJson(
+      `${base}/action/gitAction_status`,
+      {
+        action: { actionType: "gitAction_status", endpoint: GIT_ENDPOINT, payload: { application: LIBRARY_APPLICATION } },
+        applicationDeploymentMap: platform.applicationDeploymentMap,
+      },
+      (await loggedIn.json()).token,
+    );
+  }
+
+  it("refuses a user whose only grant is the Library deployment", async () => {
+    const response = await gitStatusAs("dave", "dave-dev");
+    expect(response.status).toBe(403);
+  });
+
+  it("lets a designer (an Admin grant) through to the action", async () => {
+    const response = await gitStatusAs("alice", "alice-dev");
+    expect(response.status).toBe(200);
+    // the process has no git capability here: the action itself answers
+    expect((await response.json()).errorType).toBe("FeatureUnavailable");
+  });
+});

@@ -2382,6 +2382,19 @@
       ]
     },
     {
+      "id": "integ-git-version-control",
+      "scopes": ["actions", "external"],
+      "tier": "default",
+      "title": "#679 \u2014 Git version control: the gitAction_* actions on a Git repository around the Library copy of test-filesystem (capability gate, lazy loader, status, history, diff, init)",
+      "requires": "none",
+      "parallel": false,
+      "argv": [
+        "bash",
+        "-c",
+        "npm run build -w @miroir-framework/git-isomorphic && MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- 679-git-version-control"
+      ]
+    },
+    {
       "id": "appstack-284-openapi-connection-wizard",
       "scopes": ["external"],
       "tier": "default",

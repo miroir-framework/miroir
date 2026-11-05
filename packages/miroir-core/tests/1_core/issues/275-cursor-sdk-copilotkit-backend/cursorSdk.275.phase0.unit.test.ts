@@ -75,6 +75,7 @@ if (runThis) {
         "availableStoreTypes",
         "creatableStoreTypes",
         "designerTools",
+        "git",
         "mcp",
         "storeAdministration",
       ]);
@@ -97,6 +98,7 @@ if (runThis) {
         "availableStoreTypes",
         "creatableStoreTypes",
         "designerTools",
+        "git",
         "mcp",
         "storeAdministration",
       ]);
@@ -131,6 +133,7 @@ if (runThis) {
         "ai",
         "cursor",
         "designerTools",
+        "git",
         "mcp",
       ]);
       expect(featureDefinitionKeys(serverBlock).sort()).toEqual([
@@ -139,6 +142,7 @@ if (runThis) {
         "ai",
         "cursor",
         "designerTools",
+        "git",
         "mcp",
       ]);
     });

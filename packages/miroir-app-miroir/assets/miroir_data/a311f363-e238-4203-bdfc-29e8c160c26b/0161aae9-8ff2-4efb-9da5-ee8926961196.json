@@ -2661,9 +2661,26 @@
                 ]
               },
               {
-                "label": "InstanceEndpoint comes next",
+                "label": "GitEndpoint comes next",
                 "resultAccessPath": [
                   "1"
+                ],
+                "expectedValue": {
+                  "endpointUuid": "a7f243cb-9345-425a-918d-4e433a94f4bf",
+                  "endpointName": "GitEndpoint",
+                  "actionTypes": [
+                    "gitAction_commitFiles",
+                    "gitAction_diff",
+                    "gitAction_init",
+                    "gitAction_log",
+                    "gitAction_status"
+                  ]
+                }
+              },
+              {
+                "label": "InstanceEndpoint comes after GitEndpoint",
+                "resultAccessPath": [
+                  "2"
                 ],
                 "expectedValue": {
                   "endpointUuid": "ed520de4-55a9-4550-ac50-b1b713b72a89",

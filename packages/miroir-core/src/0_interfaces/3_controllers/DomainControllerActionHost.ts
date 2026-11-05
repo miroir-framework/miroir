@@ -16,6 +16,7 @@ import type {
 import type { Action2ReturnType, Action2VoidReturnType } from "../2_domain/DomainElement";
 import type { DomainControllerInterface } from "../2_domain/DomainControllerInterface";
 import type { MiroirActivityTrackerInterface } from "./MiroirActivityTrackerInterface";
+import type { GitAction } from "./GitAction";
 
 /** Payload of the connectExternalService action (#284), as DomainController reads it. */
 export type ConnectExternalServiceAction = {
@@ -69,6 +70,12 @@ export type SetExternalServiceCredentialAction = {
  * Grows with each migrated action; handlers depend on this interface, not on the class.
  */
 export interface DomainControllerActionHost {
+  /** #679: runs a `gitAction_*` where the deployment's files are (forwarded to the server by a client). */
+  handleGitAction(
+    domainAction: GitAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+    principal?: AuthPrincipal,
+  ): Promise<Action2ReturnType>;
   handleSetExternalServiceCredential(
     domainAction: SetExternalServiceCredentialAction,
     applicationDeploymentMap: ApplicationDeploymentMap,

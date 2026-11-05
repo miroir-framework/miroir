@@ -1,0 +1,146 @@
+/**
+ * #679: the Git page (`?page=git[&application=X]`), reached from the AppBar when the process has the
+ * `git` capability. The application is chosen as on the model page; the page body is `GitPageView`,
+ * whose Git actions run on the server through the DomainController.
+ */
+import { Box } from "@mui/material";
+import { Formik } from "formik";
+import React, { useCallback, useMemo } from "react";
+import { useSearchParams } from "react-router-dom";
+
+import {
+  defaultSelfApplicationDeploymentMap,
+  GIT_ENDPOINT_UUID,
+  noValue,
+  type ApplicationDeploymentMap,
+  type GitActionType,
+  type MlElement,
+  type Uuid,
+} from "@miroir-framework/core";
+import { adminSelfApplication, deployment_Miroir, entityApplicationForAdmin } from "@miroir-framework/core/admin";
+import { selfApplicationMiroir } from "@miroir-framework/core/meta-model";
+
+import { GitPageView } from "../components/Git/GitPageView.js";
+import type { RunGitAction } from "../components/Git/useGitRequest.js";
+import { PageContainer } from "../components/Page/PageContainer.js";
+import { TypedValueObjectEditor } from "../components/Reports/TypedValueObjectEditor.js";
+import { useDomainControllerService, useMiroirContextService } from "../contexts/MiroirContextReactProvider.js";
+import { useCurrentModel } from "../ReduxHooks.js";
+import { usePageConfiguration } from "../services/usePageConfiguration.js";
+import { defaultToolApplication } from "./applicationDefaults.js";
+
+const formikPath = "gitPage";
+
+const applicationSelectorSchema: MlElement = {
+  type: "object",
+  tag: {
+    value: {
+      defaultLabel: "Application Selector",
+      display: { objectWithoutHeader: true, objectOrArrayWithoutFrame: true, objectAttributesNoIndent: true },
+    },
+  },
+  definition: {
+    application: {
+      type: "uuid",
+      tag: {
+        value: {
+          defaultLabel: "Application",
+          foreignKeyParams: {
+            targetApplicationUuid: adminSelfApplication.uuid,
+            targetEntity: entityApplicationForAdmin.uuid,
+            targetEntityOrderInstancesBy: "name",
+          },
+          initializeTo: { initializeToType: "value", value: noValue.uuid },
+        },
+      },
+    },
+  },
+};
+
+// ################################################################################################
+export function GitPage(): React.JSX.Element {
+  usePageConfiguration({ autoFetchOnMount: true, actionName: "git page configuration fetch" });
+  const context = useMiroirContextService();
+  const [searchParams] = useSearchParams();
+  const applicationDeploymentMap = context.applicationDeploymentMap ?? defaultSelfApplicationDeploymentMap;
+  const initialApplication = defaultToolApplication(
+    searchParams.get("application") ?? undefined,
+    context.toolsPageState?.applicationSelector,
+    context.application,
+  );
+  return (
+    <Formik
+      enableReinitialize={true}
+      initialValues={{ [formikPath]: { application: initialApplication } } as any}
+      onSubmit={async () => undefined}
+      validateOnChange={false}
+      validateOnBlur={false}
+    >
+      {(formik) => {
+        const application: Uuid = formik.values[formikPath]?.application ?? initialApplication;
+        return (
+          <PageContainer padding={2}>
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+              <TypedValueObjectEditor
+                labelElement={<span>select Application</span>}
+                formValueMLSchema={applicationSelectorSchema}
+                formikValuePathAsString={formikPath}
+                application={initialApplication}
+                applicationDeploymentMap={applicationDeploymentMap}
+                deploymentUuid={applicationDeploymentMap[application] ?? deployment_Miroir.uuid}
+                applicationSection={"data"}
+                formLabel={"Application Selector"}
+                valueObjectEditMode="create"
+                displaySubmitButton="noDisplay"
+                maxRenderDepth={3}
+              />
+              {application && application !== noValue.uuid ? (
+                <GitPageForApplication
+                  key={application}
+                  application={application}
+                  applicationDeploymentMap={applicationDeploymentMap}
+                />
+              ) : null}
+            </Box>
+          </PageContainer>
+        );
+      }}
+    </Formik>
+  );
+}
+
+function GitPageForApplication(props: { application: Uuid; applicationDeploymentMap: ApplicationDeploymentMap }) {
+  const context = useMiroirContextService();
+  const domainController = useDomainControllerService();
+  const model = useCurrentModel(props.application, props.applicationDeploymentMap);
+  const miroirModel = useCurrentModel(selfApplicationMiroir.uuid, props.applicationDeploymentMap);
+  const entityNames = useMemo(
+    () =>
+      Object.fromEntries(
+        [...(miroirModel.entities ?? []), ...(model.entities ?? [])].map((entity) => [entity.uuid, entity.name]),
+      ),
+    [model.entities, miroirModel.entities],
+  );
+  const runGitAction: RunGitAction = useCallback(
+    (actionType: GitActionType, payload: Record<string, unknown> = {}) =>
+      domainController.handleAction(
+        {
+          actionType,
+          endpoint: GIT_ENDPOINT_UUID,
+          payload: { ...payload, application: props.application },
+        } as any,
+        props.applicationDeploymentMap,
+      ),
+    [domainController, props.application, props.applicationDeploymentMap],
+  );
+  return (
+    <GitPageView
+      applicationName={model.applicationName || props.application}
+      gitEnabled={context.processCapabilities.git === true}
+      runGitAction={runGitAction}
+      entityNames={entityNames}
+    />
+  );
+}
+
+export default GitPage;

@@ -22,6 +22,7 @@ import { packageName } from "../constants";
 
 import { cleanLevel } from "./constants";
 import { isServerRoutedMiroirAction } from "../1_core/constants";
+import { GIT_ACTIONS_KEEPING_FILES } from "../0_interfaces/3_controllers/GitAction";
 import { MiroirLoggerFactory } from "./MiroirLoggerFactory";
 import { summarizeQueryHopResult, trackQueryHop } from "./trackQueryHop";
 import { generateRestServiceResponse } from "./RestTools";
@@ -89,6 +90,10 @@ function forgetModelEnvironmentChangedBy(
 ): void {
   const actionType = action.actionType ?? "";
   const environments = serverModelEnvironments(persistenceStoreControllerManager);
+  // #679: reading a repository changes no model
+  if ((GIT_ACTIONS_KEEPING_FILES as readonly string[]).includes(actionType)) {
+    return;
+  }
   if (storeOrBundleActionTypes.includes(actionType) || isServerRoutedMiroirAction(action)) {
     environments.forget();
     return;

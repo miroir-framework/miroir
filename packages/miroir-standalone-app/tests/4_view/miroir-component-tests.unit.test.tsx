@@ -86,8 +86,8 @@ const MIROIR_TEST_DATA_FOLDER = join(
  * folder content, not what the run executes); `EXPECTED_ON_DEMAND_LEAF_COUNT` is the part under a
  * `runOnDemand` suite, skipped unless `MIROIR_COMPONENT_PERF=1`.
  */
-const EXPECTED_INSTANCE_COUNT = 13;
-const EXPECTED_LEAF_COUNT = 206;
+const EXPECTED_INSTANCE_COUNT = 14;
+const EXPECTED_LEAF_COUNT = 212;
 const EXPECTED_ON_DEMAND_LEAF_COUNT = 15;
 
 /** On-demand suites (`runOnDemand: true`) run only with this environment variable set to `1`. */

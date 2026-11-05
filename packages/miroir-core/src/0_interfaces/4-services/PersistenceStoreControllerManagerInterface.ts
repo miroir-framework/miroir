@@ -22,6 +22,10 @@ export interface PersistenceStoreControllerManagerInterface {
   // PersistenceStoreController-related functionalities
   getPersistenceStoreControllers(): string[];
   getPersistenceStoreController(deploymentUuid: Uuid): PersistenceStoreControllerInterface | undefined;
+  /** #679: the configuration a deployment's store controller was opened with, while it is open. */
+  getPersistenceStoreConfiguration?(deploymentUuid: Uuid): StoreUnitConfiguration | undefined;
+  /** #679: the root that relative filesystem section directories resolve against. */
+  readonly filesystemDeploymentRootDirectory?: string | undefined;
 
   addPersistenceStoreController(
     deploymentUuid: Uuid,

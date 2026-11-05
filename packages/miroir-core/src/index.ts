@@ -804,6 +804,43 @@ export {
   isAgentBackendAllowed,
 } from "./1_core/processCapabilities";
 export type { AgentBackend, ProcessCapabilities, ProcessCapabilityName } from "./1_core/processCapabilities";
+export type {
+  GitActionErrorReason,
+  GitBranches,
+  GitCommitSummary,
+  GitFileDiff,
+  GitFileStatus,
+  GitPerson,
+  GitRepositoryFactory,
+  GitRepositoryFactoryLoader,
+  GitRepositoryInterface,
+} from "./0_interfaces/4-services/GitRepositoryInterface";
+export {
+  GIT_ACTION_TYPES,
+  GIT_ACTIONS_KEEPING_FILES,
+  GIT_ENDPOINT_UUID,
+  isGitAction,
+} from "./0_interfaces/3_controllers/GitAction";
+export type {
+  GitAction,
+  GitActionType,
+  GitCommitFilesAction,
+  GitCommitFilesResult,
+  GitDiffAction,
+  GitDiffResult,
+  GitInitAction,
+  GitInitResult,
+  GitLogAction,
+  GitLogResult,
+  GitPathDescription,
+  GitRepositoryDescription,
+  GitStatusAction,
+  GitStatusResult,
+} from "./0_interfaces/3_controllers/GitAction";
+export { gitPathIsInSections, gitPathToInstance } from "./2_domain/GitPathNaming";
+export type { GitPathInstance, GitSectionPaths } from "./2_domain/GitPathNaming";
+export { GIT_LINE_DIFF_CELL_LIMIT, gitLineDiff } from "./2_domain/GitLineDiff";
+export type { GitDiffLine } from "./2_domain/GitLineDiff";
 export {
   FAIL_CLOSED_PROCESS_CAPABILITIES,
   fetchProcessCapabilities,
@@ -1820,6 +1857,7 @@ export {
 export {
   authenticateRequest,
   authorizeDeployment,
+  authorizeDesignerOnlyAction,
   type AccessDirectoryLoader,
   type AuthenticatedRequest,
   type AuthenticationGate,

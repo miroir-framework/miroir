@@ -77,6 +77,8 @@ const laterComponentInstances: Record<string, string> = {
  */
 const offPageComponentInstances: Record<string, string> = {
   "ui.blockEditing": "4be51ca7-2d92-46ce-b0ad-6833dd3b9d04",
+  // #679: the Git page, on fixture results
+  "ui.gitPage": "c98e8263-fdc0-453e-b516-9e8ef5021776",
 };
 
 /** The attributes of `miroirTestForReactComponent` since #292 M1. */

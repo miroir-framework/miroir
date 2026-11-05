@@ -10,7 +10,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Sub-issues: #680 (A, slices 0 to 4), #681 (B, slices 5 and 6), #682 (C, slices 7 to 9), #683 (D, slices 10 and 11).
 Working branch: one branch per sub-issue, named `claude/<sub-issue number>-git-<slug>`, from `_integration`.
 
-**Resume note:** plan written, no slice started. Goals G1 to G7 to confirm with A.
+**Resume note:** sub-issue A (#680, slices 0 to 4) done on `claude/680-git-read-only`. Next: slice 5 (#681) on a branch chained from it.
 
 ---
 
@@ -34,11 +34,11 @@ Out (analysis section 2): ApplicationVersion-based versioning; merges with confl
 
 | Slice | Sub-issue | Title | Status | Primary proof |
 |---|---|---|---|---|
-| 0 | A #680 | Characterize capabilities, Miroir Endpoints, bundle policy | ⬜ | `gitVersionControl.679.phase0.unit.test.ts` |
-| 1 | A #680 | Tracer: `gitAction_status` behind `features.git`, lazy package | ⬜ | `gitStatus.679.phase1.integ.test.ts` |
-| 2 | A #680 | Log and diff, paths named by Entity and instance | ⬜ | `gitHistory.679.phase2.integ.test.ts`, MiroirTest `fn.gitPathToInstance` |
-| 3 | A #680 | Git page: lazy route, menu entry, history and changes panels, real-server forwarding | ⬜ | component test `ui.gitPage`, bundle policy |
-| 4 | A #680 | No repository: `notARepository`, `gitAction_init` | ⬜ | `gitInit.679.phase4.integ.test.ts` |
+| 0 | A #680 | Characterize capabilities, Miroir Endpoints, bundle policy | ✅ | `gitVersionControl.679.phase0.unit.test.ts` |
+| 1 | A #680 | Tracer: `gitAction_status` behind `features.git`, lazy package | ✅ | `gitStatus.679.phase1.integ.test.ts` |
+| 2 | A #680 | Log and diff, paths named by Entity and instance | ✅ | `gitHistory.679.phase2.integ.test.ts`, MiroirTest `fn.gitPathToInstance` |
+| 3 | A #680 | Git page: lazy route, menu entry, history and changes panels, real-server forwarding | ✅ | component test `ui.gitPage`, bundle policy |
+| 4 | A #680 | No repository: `notARepository`, `gitAction_init` | ✅ | `gitInit.679.phase4.integ.test.ts` |
 | 5 | B #681 | Stage, unstage, commit; author; open Miroir transaction | ⬜ | `gitCommit.679.phase5.integ.test.ts` |
 | 6 | B #681 | Branches and checkout, conflict refusal, reload | ⬜ | `gitCheckout.679.phase6.integ.test.ts` |
 | 7 | C #682 | Test remote, fetch with ahead / behind, SSH refusal | ⬜ | `gitFetch.679.phase7.integ.test.ts` |
@@ -118,7 +118,7 @@ From the analysis decision record, binding for this plan. Deviations go into the
 
 ## Slice 0. Characterize capabilities, Miroir Endpoints, bundle policy
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -144,11 +144,13 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
 
 ### Realization
 
+Not written as its own file. The contracts it was to lock are already locked by existing tests, which this branch updates where `git` changes them: the capability key lists of `cursorSdk.275.phase0` and the snapshots of `processCapabilities.273.phase1` gain `git`, the Endpoint inventory of `ActionImplementations.unit.test.ts` gains `GitEndpoint` (9 Endpoints, 11 entries), and the action palette case of `fn.blockModel` gains its `GitEndpoint` group.
+
 ---
 
 ## Slice 1. Tracer: `gitAction_status` behind `features.git`, lazy package
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -200,11 +202,19 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core,actions,external
 
 ### Realization
 
+- Port `0_interfaces/4-services/GitRepositoryInterface.ts` (repository and factory, with path helpers `resolvePath`, `relativePath`, `commonDirectory` so core never imports `node:path`), action types `0_interfaces/3_controllers/GitAction.ts` (hand-written TS types like the other library-implemented actions; only `features.git` went into the fundamental schema), implementations `3_controllers/GitActions.ts`, naming `2_domain/GitPathNaming.ts`.
+- `GitFileStatus` is `{ path, change: added | modified | deleted, staged, unstaged }`, mapped from isomorphic-git's status matrix in `statusFromMatrixRow`.
+- `DomainController.handleGitAction`: a remote DomainController forwards (the client config has no `features`), the local one checks `git` and `designerTools`, then runs with the factory from `ConfigurationService.getGitRepositoryFactory()` (a loader memoized on first call, reset after a failed import).
+- The section folders come from the store manager: `PersistenceStoreControllerManager` now keeps each deployment's configuration (`getPersistenceStoreConfiguration`), and the local caches expose the manager in local mode (`getLocalPersistenceStoreControllerManager`).
+- `@miroir-framework/git-isomorphic` is `private: true` for now (hosts install it from the workspace); `miroir-server` and the Electron main process depend on it and import it dynamically, ncc keeps it external.
+- Tests live in `packages/miroir-standalone-app/tests/3_controllers/issues/679-git-version-control/` (the in-process server harness is there), with a shared `gitTestSetup.ts`. The Library copy in `.miroir/test-filesystem/library` is made a nested repository with isomorphic-git.
+- An enclosing repository that ignores every section folder (the monorepo ignores `.miroir/`) counts as no repository: `notARepository` carries `enclosingRoot`, and `gitAction_init` creates a nested repository. Found by the slice 4 test, which first met the monorepo's own `.git`.
+
 ---
 
 ## Slice 2. Log and diff, paths named by Entity and instance
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -243,11 +253,15 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core,actions
 
 ### Realization
 
+- `gitAction_commitFiles` added (the files a commit changed against its first parent), so the history panel can list a commit's files.
+- `log` returns `[]` and `branches.head` is undefined in a repository with no commit; refs include remote branches and annotated tags (peeled).
+- MiroirTest `fn.gitPathToInstance` (16 cases, both exports) and `fn.gitLineDiff` (spare uuid `4395e1a1-…`, 8 cases) for `2_domain/GitLineDiff.ts`, the line diff of the page.
+
 ---
 
 ## Slice 3. Git page: lazy route, menu entry, panels, real-server forwarding
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -290,11 +304,18 @@ Full nonreg here: slices 1 to 3 change core, server and UI.
 
 ### Realization
 
+- `GitPage` (`?page=git[&application=X]`, application selector as on the model page) is lazy in `PageDispatcher` and routed only with `processCapabilities.git`; the AppBar entry shows for designers with `git` on. The body is `GitPageView` (changes, history, commit files, diff), exported lazily as `LazyGitPageView`.
+- Data without `useEffect`: `useGitRequest` builds a store per request that runs the action on first subscription (`useSyncExternalStore`), as `useYamlParserStatus` does; a generation number re-runs the requests after Refresh or init.
+- MiroirTest `ui.gitPage` (6 cases) renders the real view on fixture results through `GitPageForTest` in miroir-react-testing; the component test counts move to 14 instances and 212 leaves.
+- Real-server path: instead of a live-server profile, the server library's in-process HTTP test (`createMiroirServerApp.integ.test.ts`) posts `gitAction_*` to `/action/<type>` and checks the refusal reason, init, status and the capability gate. `RestServer` keeps its model environments after these read-only actions (`GIT_ACTIONS_KEEPING_FILES`).
+- `bundle-policy.json` forbids `isomorphic-git` and `@miroir-framework/git-isomorphic` on the eager bundle. `features.git: true` in `dev.json` and `desktop.json`.
+- Nonreg step `integ-git-version-control` added now (planned for slice 11), since the tests need the package built first.
+
 ---
 
 ## Slice 4. No repository: `notARepository`, `gitAction_init`
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -327,6 +348,19 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,actions,ui
 
 ### Realization
 
+Covered by `gitHistory.679.phase2.integ.test.ts` (no separate `gitInit` file): `notARepository` with the folder to initialize, `unknownDeployment`, init then status listing every section file as added with an empty log, and a second init keeping the existing repository. The page's "Create a Git repository" button is in `ui.gitPage`.
+
+
+**Adversarial review of sub-issue A, and what changed:**
+
+- `gitAction_diff` read any file of the host through `path` (`../../etc/hostname`, `.git/config`). Now `isApplicationRepositoryPath` admits only repository-relative paths inside the section folders, never `..`, absolute, backslash or `.git` paths (`pathOutsideApplication`), and the adapter reads a work-tree file only after `realpath` shows it inside the work tree.
+- D13 was not enforced per user: with authentication on, anyone with a grant on an application (Miroir and Admin are always allowed) could run Git actions. `authorizeDesignerOnlyAction` (`AccessGate.ts`) now requires an Admin grant, at the REST server, in `RestClientStub` (Electron, tests) and for MCP calls in `executeEndpointAction`.
+- `gitAction_init` could create a repository at the deployment root, holding Admin and every other application. It now refuses the deployment root (`outsideDeploymentRoot`) and a folder that holds another open deployment's sections (`sharedFolder`).
+- An unknown `from` / `to` revision showed the file as wholly added; it is now a `gitFailure`. A full-length oid must name a commit of the repository.
+- `commitFiles` listed a file replaced by a folder (or the reverse) on one side only; both sides now.
+- `relativePath` treated a folder named `..x` as outside the root.
+- The package's `dist/` was tracked; it is ignored like the other packages'.
+- Kept as is: results and errors carry absolute server paths and isomorphic-git's messages (only designers see them now); a change limited to the final newline shows as "No difference".
 ---
 
 ## Slice 5. Stage, unstage, commit; author; open Miroir transaction

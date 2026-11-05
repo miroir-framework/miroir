@@ -344,6 +344,14 @@ export class PersistenceAsyncStore implements PersistenceStoreLocalOrRemoteInter
   }
 
   // ###############################################################################
+  /** #679: the local store controllers, for actions that work on a deployment's files (Git). */
+  getLocalPersistenceStoreControllerManager(): PersistenceStoreControllerManagerInterface | undefined {
+    if (this.params.persistenceStoreAccessMode !== "local") {
+      return undefined;
+    }
+    return this.params.localPersistenceStoreControllerManager;
+  }
+
   async readLocalPersistenceSectionInstances(
     application: string,
     applicationDeploymentMap: ApplicationDeploymentMap,

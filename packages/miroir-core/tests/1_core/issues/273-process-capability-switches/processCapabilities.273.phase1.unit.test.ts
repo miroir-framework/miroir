@@ -47,6 +47,7 @@ if (runThis) {
         availableStoreTypes: [],
         creatableStoreTypes: [],
         storeAdministration: false,
+        git: false,
       });
     });
 
@@ -66,6 +67,7 @@ if (runThis) {
         availableStoreTypes: [],
         creatableStoreTypes: [],
         storeAdministration: false,
+        git: false,
       });
     });
 

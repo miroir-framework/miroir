@@ -13,6 +13,7 @@ export const FAIL_CLOSED_PROCESS_CAPABILITIES: ProcessCapabilities = {
   availableStoreTypes: [],
   creatableStoreTypes: [],
   storeAdministration: false,
+  git: false,
 };
 
 export type ProcessCapabilitiesHttpResult = {

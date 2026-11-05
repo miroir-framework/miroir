@@ -1,0 +1,419 @@
+{
+  "uuid": "c98e8263-fdc0-453e-b516-9e8ef5021776",
+  "parentName": "MiroirTest",
+  "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+  "name": "ui.gitPage",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "description": "Git page: the changes of an application named by Entity and instance, its history with refs, the files of a commit, the diff of a file, nothing while git is off, and the creation of a repository.",
+  "tags": [
+    "ui"
+  ],
+  "issue": "679",
+  "definition": {
+    "miroirTestType": "miroirTestSuite",
+    "miroirTestLabel": "ui.gitPage",
+    "miroirTests": [
+      {
+        "miroirTestType": "reactComponentTestSuite",
+        "miroirTestLabel": "GitPage",
+        "component": "GitPage",
+        "componentProps": {
+          "applicationName": "Library",
+          "entityNames": {
+            "e8ba151b-d68e-4cc3-9a83-3459d309ccf5": "Book"
+          },
+          "status": {
+            "root": "/repo/library",
+            "sectionPaths": {
+              "model": "model",
+              "data": "data",
+              "modelVersion": "modelVersion"
+            },
+            "branches": {
+              "current": "main",
+              "head": "2222222222222222222222222222222222222222",
+              "local": [
+                "feature",
+                "main"
+              ],
+              "remote": [],
+              "tags": [
+                "v1"
+              ]
+            },
+            "files": [
+              {
+                "path": "data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/03ffcae1-b83f-4970-b3d9-04780d3d0780.json",
+                "change": "modified",
+                "staged": false,
+                "unstaged": true,
+                "section": "data",
+                "entityUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                "instanceKey": "03ffcae1-b83f-4970-b3d9-04780d3d0780",
+                "instanceName": "Ubik",
+                "inApplication": true
+              },
+              {
+                "path": "data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/679a0001-0000-4000-8000-000000000001.json",
+                "change": "added",
+                "staged": true,
+                "unstaged": false,
+                "section": "data",
+                "entityUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                "instanceKey": "679a0001-0000-4000-8000-000000000001",
+                "instanceName": "Galactic Pot-Healer",
+                "inApplication": true
+              }
+            ]
+          },
+          "log": {
+            "root": "/repo/library",
+            "sectionPaths": {
+              "model": "model",
+              "data": "data",
+              "modelVersion": "modelVersion"
+            },
+            "branches": {
+              "current": "main",
+              "head": "2222222222222222222222222222222222222222",
+              "local": [
+                "feature",
+                "main"
+              ],
+              "remote": [],
+              "tags": [
+                "v1"
+              ]
+            },
+            "commits": [
+              {
+                "oid": "2222222222222222222222222222222222222222",
+                "parents": [
+                  "1111111111111111111111111111111111111111"
+                ],
+                "message": "Ubik: year 1970\n",
+                "author": {
+                  "name": "Miroir Test",
+                  "email": "t@example.com",
+                  "timestamp": 1700000000
+                },
+                "refs": [
+                  "HEAD",
+                  "main"
+                ]
+              },
+              {
+                "oid": "1111111111111111111111111111111111111111",
+                "parents": [],
+                "message": "initial\n",
+                "author": {
+                  "name": "Miroir Test",
+                  "email": "t@example.com",
+                  "timestamp": 1690000000
+                },
+                "refs": [
+                  "feature",
+                  "tag: v1"
+                ]
+              }
+            ]
+          },
+          "commitFiles": {
+            "2222222222222222222222222222222222222222": {
+              "oid": "2222222222222222222222222222222222222222",
+              "files": [
+                {
+                  "path": "data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/03ffcae1-b83f-4970-b3d9-04780d3d0780.json",
+                  "section": "data",
+                  "entityUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                  "instanceKey": "03ffcae1-b83f-4970-b3d9-04780d3d0780",
+                  "instanceName": "Ubik",
+                  "inApplication": true
+                }
+              ]
+            }
+          },
+          "diffs": {
+            "data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/03ffcae1-b83f-4970-b3d9-04780d3d0780.json": {
+              "HEAD..": {
+                "path": "data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/03ffcae1-b83f-4970-b3d9-04780d3d0780.json",
+                "before": "{\n  \"uuid\": \"03ffcae1-b83f-4970-b3d9-04780d3d0780\",\n  \"name\": \"Ubik\",\n  \"year\": 1970\n}\n",
+                "after": "{\n  \"uuid\": \"03ffcae1-b83f-4970-b3d9-04780d3d0780\",\n  \"name\": \"Ubik\",\n  \"year\": 1971\n}\n",
+                "section": "data",
+                "entityUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                "instanceKey": "03ffcae1-b83f-4970-b3d9-04780d3d0780",
+                "instanceName": "Ubik",
+                "inApplication": true
+              },
+              "1111111111111111111111111111111111111111..2222222222222222222222222222222222222222": {
+                "path": "data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/03ffcae1-b83f-4970-b3d9-04780d3d0780.json",
+                "before": "{\n  \"uuid\": \"03ffcae1-b83f-4970-b3d9-04780d3d0780\",\n  \"name\": \"Ubik\",\n  \"year\": 1969\n}\n",
+                "after": "{\n  \"uuid\": \"03ffcae1-b83f-4970-b3d9-04780d3d0780\",\n  \"name\": \"Ubik\",\n  \"year\": 1970\n}\n",
+                "section": "data",
+                "entityUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                "instanceKey": "03ffcae1-b83f-4970-b3d9-04780d3d0780",
+                "instanceName": "Ubik",
+                "inApplication": true
+              }
+            }
+          }
+        },
+        "miroirTests": [
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "lists the changes, named by Entity and instance",
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "the modified book",
+                "target": {
+                  "byText": "Book · Ubik"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the added book",
+                "target": {
+                  "byText": "Book · Galactic Pot-Healer"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the change letters",
+                "target": {
+                  "byText": "M"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the staged change",
+                "target": {
+                  "byText": "staged"
+                },
+                "count": 1
+              },
+              {
+                "step": "expectElement",
+                "label": "the current branch",
+                "target": {
+                  "byTestId": "git-current-branch"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the repository folder",
+                "target": {
+                  "byText": {
+                    "regex": "Repository: /repo/library"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "lists the commits with their refs",
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "the last commit",
+                "target": {
+                  "byText": "Ubik: year 1970"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the first commit",
+                "target": {
+                  "byText": "initial"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "its tag",
+                "target": {
+                  "byText": "tag: v1"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the abbreviated oid",
+                "target": {
+                  "byText": "2222222"
+                }
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "shows the diff of a change against HEAD",
+            "steps": [
+              {
+                "step": "click",
+                "label": "the modified book",
+                "target": {
+                  "byTestId": "git-change-data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/03ffcae1-b83f-4970-b3d9-04780d3d0780.json"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the diff title",
+                "target": {
+                  "byText": "Diff: Book · Ubik"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the removed line",
+                "target": {
+                  "byText": {
+                  "regex": "^- +\"year\": 1970$"
+                }
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the added line",
+                "target": {
+                  "byText": {
+                  "regex": "^\\+ +\"year\": 1971$"
+                }
+                }
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "shows the files of a commit and their diff against its parent",
+            "steps": [
+              {
+                "step": "click",
+                "label": "the last commit",
+                "target": {
+                  "byTestId": "git-commit-2222222222222222222222222222222222222222"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the files of the commit",
+                "target": {
+                  "byTestId": "git-commit-files"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "its file",
+                "target": {
+                  "byTestId": "git-commit-file-data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/03ffcae1-b83f-4970-b3d9-04780d3d0780.json"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the removed line",
+                "target": {
+                  "byText": {
+                  "regex": "^- +\"year\": 1969$"
+                }
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the added line",
+                "target": {
+                  "byText": {
+                  "regex": "^\\+ +\"year\": 1970$"
+                }
+                }
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "shows nothing else while git is off",
+            "componentProps": {
+              "gitEnabled": false
+            },
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "the notice",
+                "target": {
+                  "byTestId": "git-unavailable"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "no change list",
+                "target": {
+                  "byTestId": "git-changes"
+                },
+                "present": false
+              },
+              {
+                "step": "expectElement",
+                "label": "no history",
+                "target": {
+                  "byTestId": "git-history"
+                },
+                "present": false
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "offers to create a repository, then lists the changes",
+            "componentProps": {
+              "noRepository": "/repo/library"
+            },
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "the notice",
+                "target": {
+                  "byTestId": "git-no-repository"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the folder",
+                "target": {
+                  "byText": "Folder: /repo/library"
+                }
+              },
+              {
+                "step": "click",
+                "label": "create",
+                "target": {
+                  "byText": "Create a Git repository"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the changes",
+                "target": {
+                  "byText": "Book · Ubik"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "no notice",
+                "target": {
+                  "byTestId": "git-no-repository"
+                },
+                "present": false
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

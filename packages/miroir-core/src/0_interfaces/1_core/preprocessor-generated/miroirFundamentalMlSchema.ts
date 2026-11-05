@@ -17474,6 +17474,10 @@ export const miroirFundamentalMlSchema = {
               "designerTools": {
                 "type": "boolean",
                 "optional": true
+              },
+              "git": {
+                "type": "boolean",
+                "optional": true
               }
             }
           }
@@ -17557,6 +17561,10 @@ export const miroirFundamentalMlSchema = {
                 "optional": true
               },
               "designerTools": {
+                "type": "boolean",
+                "optional": true
+              },
+              "git": {
                 "type": "boolean",
                 "optional": true
               }
@@ -17813,6 +17821,10 @@ export const miroirFundamentalMlSchema = {
                 "optional": true
               },
               "designerTools": {
+                "type": "boolean",
+                "optional": true
+              },
+              "git": {
                 "type": "boolean",
                 "optional": true
               }

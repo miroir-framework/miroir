@@ -2,6 +2,7 @@ import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer"
 import { Action2Error } from "../0_interfaces/2_domain/DomainElement";
 import type { ActionImplementationHandler } from "../0_interfaces/3_controllers/DomainControllerActionHost";
 import { handleAction_runReportAction } from "./RunReportAction";
+import { GIT_ACTION_TYPES } from "../0_interfaces/3_controllers/GitAction";
 
 /**
  * #341: library implementations of Miroir actions, by `inMemoryImplementationFunctionName`.
@@ -47,7 +48,12 @@ const handleUndoRedoAction: ActionImplementationHandler = async (host, action, c
   );
 };
 
+/** #679: every Git action goes through the same host method, which forwards or runs it. */
+const handleGitAction: ActionImplementationHandler = (host, action, context) =>
+  host.handleGitAction(action, context.applicationDeploymentMap, context.principal);
+
 export const miroirActionImplementations: Record<string, ActionImplementationHandler> = {
+  ...Object.fromEntries(GIT_ACTION_TYPES.map((actionType) => [`handleAction_${actionType}`, handleGitAction])),
   // QueryEndpoint
   handleAction_runBoxedQueryAction: (host, action, context) =>
     host.handleBoxedExtractorOrQueryAction(

@@ -112,6 +112,12 @@ export async function setupIpcServer(selfTest?: ElectronSelfTestOptions): Promis
   });
   restClientStub.setProcessCapabilities(capabilities);
   domainController.setProcessCapabilities(capabilities);
+  // #679: the Git implementation loads on the first Git action, and only with the git feature on
+  if (capabilities.git) {
+    ConfigurationService.configurationService.registerGitRepositoryFactory(() =>
+      import("@miroir-framework/git-isomorphic").then((m) => m.createGitRepositoryFactory()),
+    );
+  }
 
   // #370: miroir-ai and miroir-mcp load only when their feature is on.
   if (app.isPackaged && capabilities.agentBackend !== "none") {

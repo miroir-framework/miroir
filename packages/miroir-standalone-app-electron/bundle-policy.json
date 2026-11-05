@@ -1,5 +1,5 @@
 {
-  "$comment": "Bundle guard (#326), checked by scripts/check_bundle_policy.py against the build's bundle-report.json. See docs/internals/code-splitting.md. The npm minor/patch group (#358) added a2ui and MCP middleware, yauzl and standardwebhooks; they load with miroir-ai on demand since #370. zod 4 (#375) adds about 90 kB gzipped at start; openai 7 dropped agentkeepalive, form-data-encoder, formdata-node and humanize-ms. express 5 lowers the start size to 942 kB gzipped. Root overrides of iconv-lite 0.7.3 and mime-db 1.54.0 (#582) keep one copy of each under express, 908 kB gzipped. #656 (D7): the local cache loads with the startup call, from its own lazy entry (redux or zustand), so no local cache package is on the page.",
+  "$comment": "Bundle guard (#326), checked by scripts/check_bundle_policy.py against the build's bundle-report.json. See docs/internals/code-splitting.md. The npm minor/patch group (#358) added a2ui and MCP middleware, yauzl and standardwebhooks; they load with miroir-ai on demand since #370. zod 4 (#375) adds about 90 kB gzipped at start; openai 7 dropped agentkeepalive, form-data-encoder, formdata-node and humanize-ms. express 5 lowers the start size to 942 kB gzipped. Root overrides of iconv-lite 0.7.3 and mime-db 1.54.0 (#582) keep one copy of each under express, 908 kB gzipped. #656 (D7): the local cache loads with the startup call, from its own lazy entry (redux or zustand), so no local cache package is on the page. #679: @miroir-framework/git-isomorphic, isomorphic-git and its dependencies load on the first Git action.",
   "eagerGzipBaseline": 846128,
   "eagerGzipTolerance": 0.02,
   "forbiddenEager": [
@@ -10,7 +10,9 @@
     "react-redux",
     "redux-saga",
     "@redux-saga/*",
-    "zustand"
+    "zustand",
+    "isomorphic-git",
+    "@miroir-framework/git-isomorphic"
   ],
   "eager": [
     "@miroir-framework/jzod",
@@ -273,7 +275,31 @@
     "typed-redux-saga",
     "@miroir-framework/server/startup/redux",
     "@miroir-framework/server/startup/zustand",
-    "zustand"
+    "zustand",
+    "@miroir-framework/git-isomorphic",
+    "async-lock",
+    "available-typed-arrays",
+    "call-bind",
+    "clean-git-ref",
+    "crc-32",
+    "define-data-property",
+    "diff3",
+    "for-each",
+    "has-property-descriptors",
+    "has-tostringtag",
+    "ignore",
+    "is-callable",
+    "is-typed-array",
+    "isarray",
+    "isomorphic-git",
+    "pako",
+    "pify",
+    "possible-typed-array-names",
+    "set-function-length",
+    "sha.js",
+    "to-buffer",
+    "typed-array-buffer",
+    "which-typed-array"
   ],
   "defeatedDynamicImports": []
 }

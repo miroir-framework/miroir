@@ -194,7 +194,8 @@ import {
   selfApplicationVersionInitialMiroirVersion,
   storeManagementEndpoint,
   undoRedoEndpointVersionV1,
-  entityCommit
+  entityCommit,
+  gitEndpoint,
 } from "../index";
 
 export const defaultMiroirMetaModelEntityNameToAttributeName: Record<string, string> = {
@@ -317,6 +318,7 @@ export const defaultMiroirMetaModel: MetaModel = {
     localCacheEndpointVersionV1 as any as EndpointDefinition,
     queryEndpointVersionV1 as any as EndpointDefinition,
     persistenceEndpointVersionV1 as any as EndpointDefinition,
+    gitEndpoint as EndpointDefinition,
   ],
   mlSchemas: [mlSchemaMlMiroirBootstrapSchema as MlSchema],
   menus: [menuDefaultMiroir as Menu],

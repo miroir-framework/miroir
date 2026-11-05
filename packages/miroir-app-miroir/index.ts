@@ -237,6 +237,7 @@ export { default as instanceEndpointV1 } from "./assets/miroir_data/3d8da4d4-8f7
 export { default as modelEndpointV1 } from "./assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/7947ae40-eb34-4149-887b-15a9021e714e.json" with { type: "json" };
 export { default as domainEndpointVersionV1 } from "./assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5.json" with { type: "json" };
 export { default as storeManagementEndpoint } from "./assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/bbd08cbb-79ff-4539-b91f-7a14f15ac55f.json" with { type: "json" };
+export { default as gitEndpoint } from "./assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/a7f243cb-9345-425a-918d-4e433a94f4bf.json" with { type: "json" };
 export { default as instanceEndpointVersionV1 } from "./assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/ed520de4-55a9-4550-ac50-b1b713b72a89.json" with { type: "json" };
 export { default as undoRedoEndpointVersionV1 } from "./assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/71c04f8e-c687-4ea7-9a19-bc98d796c389.json" with { type: "json" };
 export { default as localCacheEndpointVersionV1 } from "./assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/9e404b3c-368c-40cb-be8b-e3c28550c25e.json" with { type: "json" };
@@ -358,6 +359,7 @@ export { default as miroirTest_ui_transformerEditor } from "./assets/miroir_data
 export { default as miroirTest_ui_blockEditor } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/1b25f3f1-3474-43d0-b250-8684529d55dc.json" with { type: "json" };
 export { default as miroirTest_ui_valueHistory } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/ef540605-8176-45bf-af76-c9d240769c7b.json" with { type: "json" };
 export { default as miroirTest_ui_blockEditing } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/4be51ca7-2d92-46ce-b0ad-6833dd3b9d04.json" with { type: "json" }; // off the page: not in defaultMiroirMetaModel.tests
+export { default as miroirTest_ui_gitPage } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/c98e8263-fdc0-453e-b516-9e8ef5021776.json" with { type: "json" }; // #679, off the page: not in defaultMiroirMetaModel.tests
 
 // ################################################################################################
 // Miroir Data - TestConfiguration (parentUuid = entityTestConfiguration = 675ccd46)

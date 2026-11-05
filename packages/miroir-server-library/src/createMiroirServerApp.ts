@@ -10,6 +10,7 @@ import {
   accessDirectoryLoader,
   authenticateRequest,
   authorizeDeployment,
+  authorizeDesignerOnlyAction,
   bigintJsonReplacer,
   bigintJsonReviver,
   buildAuthStatusBody,
@@ -301,11 +302,15 @@ function mountRestHandlers(app: Express, options: MiroirServerAppOptions, authen
         return;
       }
       const principal = authenticated.principal;
-      const access = authorizeDeployment(
+      const deploymentAccess = authorizeDeployment(
         options.authentication.enabled,
         authenticated,
         deploymentUuidsFromHttpRequest(request),
       );
+      // #679 D13: the Git actions are for designers only
+      const access = deploymentAccess.allowed
+        ? authorizeDesignerOnlyAction(options.authentication.enabled, authenticated, request.body)
+        : deploymentAccess;
       if (!access.allowed) {
         log.warn(
           `access denied: user=${principal?.username ?? "anonymous"} deployments=${deploymentUuidsFromHttpRequest(request).join(",") || "(none)"} url=${request.originalUrl}`,

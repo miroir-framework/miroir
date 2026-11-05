@@ -142,6 +142,8 @@ const expectedActionTypesByEndpoint: Record<string, string[]> = {
     "RestPersistenceAction_delete",
   ],
   LocalCacheEndpoint: [],
+  // #679
+  GitEndpoint: ["gitAction_status", "gitAction_log", "gitAction_commitFiles", "gitAction_diff", "gitAction_init"],
 };
 
 const miroirEndpoints = defaultMiroirMetaModel.endpoints.filter(
@@ -173,7 +175,7 @@ afterEach(() => {
 });
 
 describe("Miroir Endpoint inventory", () => {
-  it("bundles the 8 Miroir Endpoints, with their action types", () => {
+  it("bundles the 9 Miroir Endpoints, with their action types", () => {
     const actual = Object.fromEntries(
       miroirEndpoints.map((endpoint: any) => [endpoint.name, actionTypesOf(endpoint)]),
     );
@@ -183,7 +185,7 @@ describe("Miroir Endpoint inventory", () => {
   it("lists InstanceEndpoint and StoreManagementEndpoint twice in the bundled meta-model", () => {
     const names = miroirEndpoints.map((endpoint: any) => endpoint.name);
     const duplicated = names.filter((name: string, index: number) => names.indexOf(name) !== index);
-    expect(names.length).toBe(10);
+    expect(names.length).toBe(11);
     expect(duplicated.sort()).toEqual(["InstanceEndpoint", "StoreManagementEndpoint"]);
   });
 });

@@ -163,6 +163,8 @@ import {
   summarizeRollbackInstanceCollections,
   type LogPhase,
 } from "../4_services/rollbackLog.js";
+import type { GitAction } from "../0_interfaces/3_controllers/GitAction";
+import { runGitAction } from "./GitActions";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory.js";
 import { packageName } from "../constants";
 
@@ -3750,6 +3752,34 @@ export class DomainController implements DomainControllerInterface, DomainContro
       } as any,
       applicationDeploymentMap,
     );
+  }
+
+  // ##############################################################################################
+  /**
+   * #679: a Git action runs in the process that owns the deployment's files; a client forwards it.
+   * The server checks the `git` and `designerTools` capabilities, then loads the Git implementation.
+   */
+  async handleGitAction(
+    domainAction: GitAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+    principal?: AuthPrincipal,
+  ): Promise<Action2ReturnType> {
+    if (this.persistenceStoreAccessMode !== "local") {
+      return this.forwardServerRoutedAction(domainAction, applicationDeploymentMap);
+    }
+    const processCapabilities = this.resolveProcessCapabilities();
+    const capabilityError =
+      assertProcessCapability("git", processCapabilities) ??
+      assertProcessCapability("designerTools", processCapabilities);
+    if (capabilityError) {
+      return capabilityError;
+    }
+    return runGitAction(domainAction, {
+      factory: ConfigurationService.configurationService.getGitRepositoryFactory(),
+      manager: this.persistenceStoreLocalOrRemote.getLocalPersistenceStoreControllerManager?.(),
+      applicationDeploymentMap,
+      principal,
+    });
   }
 
   /**
