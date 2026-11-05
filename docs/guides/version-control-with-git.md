@@ -1,11 +1,11 @@
 # Version control with Git
 
 The Git page puts the files of a filesystem deployment under Git from Miroir itself. You can see what
-changed, commit it, switch branches, sync with a remote over HTTPS, and clone a repository to install the
-application it holds. The machine that runs Miroir needs no Git program: the
+changed, commit it or revert it, switch branches, sync with a remote over HTTPS, and clone a repository to
+install the application it holds. The machine that runs Miroir needs no Git program: the
 [isomorphic-git](https://isomorphic-git.org/) package does the work, and it loads with the first Git action.
 
-Issue [#679](https://github.com/miroir-framework/miroir/issues/679). Design: [`code-helpers/features/679-FEATURE-git-version-control/analysis.md`](../../code-helpers/features/679-FEATURE-git-version-control/analysis.md).
+Issues [#679](https://github.com/miroir-framework/miroir/issues/679) and [#691](https://github.com/miroir-framework/miroir/issues/691). Design: [`code-helpers/features/679-FEATURE-git-version-control/analysis.md`](../../code-helpers/features/679-FEATURE-git-version-control/analysis.md), and for the layout and revert [`code-helpers/features/691-FEATURE-git-page-ergonomics/analysis.md`](../../code-helpers/features/691-FEATURE-git-page-ergonomics/analysis.md).
 
 ## Turning it on
 
@@ -26,21 +26,45 @@ designer can run them.
 ## What the page does
 
 Open the page from the AppBar (`?page=git`) and pick an application. It works on the repository that holds
-the application's section folders (`model`, `data`, ...).
+the application's section folders (`model`, `data`, ...). Before you pick one, the page shows only the
+Clone panel.
 
-| Panel | What it shows and does |
+The header stays on screen whatever you do: the application, the current branch (or the detached HEAD), the
+repository folder, the remote with its URL, how many commits are to push and to pull, and Fetch, Pull and
+Push. Under it, the page shows one activity at a time:
+
+| Tab | What it shows and does |
 |---|---|
-| Changes | The changed files, named by Entity and instance. Stage or unstage them, see the diff, and commit with a message. Files outside the application's sections are not listed. |
-| History | The commits with their branches and tags. A commit lists the files it changed. |
-| Branches | Create, delete and check out branches. Check out a tag or a commit to look at an old state (a detached HEAD). After a checkout, the page reloads the application from its files. |
-| Remote | The URL of the remote, and how many commits are to push and to pull. Fetch, Pull and Push. |
-| Clone | Clone a repository into a new folder and install the Miroir application it holds. |
+| Changes (the default) | The changed files, named by Entity and instance, with the diff of the one you select beside the list. Stage or unstage them, revert the edits you have not staged, and commit with a message. Files outside the application's sections are not listed. |
+| Branches | Your local branches; remote branches and tags are folded under their count, with a field to find one by name. Create, delete and check out branches. Check out a tag, a remote branch or a commit to look at an old state (a detached HEAD). After a checkout, the page reloads the application from its files. |
+| Setup | The URL of the remote, and the Clone panel. |
+
+Under every tab, the history is folded to its last commit. Unfold it to see the commits with their branches
+and tags; a commit lists the files it changed, with the diff of the one you select.
+
+The tab is in the URL (`&view=changes`, `branches` or `setup`), so a link opens the page on the same
+application and tab.
 
 When a deployment has no repository yet, the page offers to create one in the folder that holds its
 sections.
 
-Miroir refuses a commit, a checkout or a pull while some Miroir changes are not saved to the files yet,
-and the install of a cloned application while some Admin changes are not saved. Commit them in Miroir first.
+### Reverting
+
+Revert, on a file of the Changes tab, drops the edits you have not staged: the file goes back to what the
+index holds, and what you staged is kept. "Revert all" does it for every file of the application. Before
+anything changes, the page lists each file with what happens to it:
+
+- rewritten: the file takes back its staged content, or its committed content when nothing is staged;
+- re-created: a file you deleted comes back;
+- deleted: a new file you have not staged goes away.
+
+A file whose changes are all staged has nothing to revert: unstage it first. Miroir reloads the application
+after a revert. It refuses to write through a symbolic link.
+
+Miroir refuses a commit, a checkout, a pull or a revert while some Miroir changes are not saved to the files
+yet, and the install of a cloned application while some Admin changes are not saved. Commit them in Miroir
+first. A commit only looks at the changes of its own application; a checkout, a pull or a revert looks at
+those of every application, since the reload that follows drops them.
 
 ## Remotes and credentials
 
@@ -58,7 +82,8 @@ token, even one written in a URL outside Miroir.
 
 ## Cloning an application
 
-The Clone panel at the top of the Git page takes a repository URL and a folder. The folder is a path under
+The Clone panel, on the Setup tab (or alone before you pick an application), takes a repository URL and a
+folder. The folder is a path under
 the deployment root folder of the server; it must not exist yet, or be empty. By default it is named after
 the repository.
 
@@ -84,6 +109,10 @@ from a form with the URL and the folder.
 - Pull is fast-forward only. When the branch and its upstream have diverged, merge or rebase them outside
   Miroir, then pull again.
 - No merge with conflicts, rebase, cherry-pick, stash, submodules or worktrees.
+- Revert works on whole files, and keeps staged content: there is no revert of part of a file, of the staged
+  content, or of a commit.
+- A revert writes a file as the index holds it: `core.autocrlf` is not applied. It gives back the index's
+  executable bit only when `core.filemode` is true, as Git does; a repository made by Miroir has it false.
 - Only filesystem deployments: a deployment on another store has no files to version.
 - Repository settings come from the repository's own `.git/config`. Git hooks and the global Git
   configuration of the machine are not used.

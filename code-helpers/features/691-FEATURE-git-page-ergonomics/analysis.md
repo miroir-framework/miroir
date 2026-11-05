@@ -9,7 +9,7 @@ Parent issue: [#679](https://github.com/miroir-framework/miroir/issues/679) · P
 Related analyses: [`../679-FEATURE-git-version-control/analysis.md`](../679-FEATURE-git-version-control/analysis.md) (decisions D1 to D23, cited here as #679-Dn)
 Key sources: [`GitPageView.tsx`](../../../packages/miroir-react/src/components/Git/GitPageView.tsx), [`GitWritePanels.tsx`](../../../packages/miroir-react/src/components/Git/GitWritePanels.tsx), [`GitRemotePanel.tsx`](../../../packages/miroir-react/src/components/Git/GitRemotePanel.tsx), [`GitClonePanel.tsx`](../../../packages/miroir-react/src/components/Git/GitClonePanel.tsx), [`routes/GitPage.tsx`](../../../packages/miroir-react/src/routes/GitPage.tsx), [`GitActions.ts`](../../../packages/miroir-core/src/3_controllers/GitActions.ts)
 
-**Status:** goals and decisions confirmed with the user (2026-11-05); revised after an adversarial review (D3 table, D9 scope, D10, sections 4.3 and 6), then after the review of the TDD plan (D9 unsaved-changes scope, symbolic links, section 4.3).
+**Status:** implemented (2026-11-05, [TDD plan](./tdd-implementation-plan.md), all slices done). Goals and decisions confirmed with the user (2026-11-05); revised after an adversarial review (D3 table, D9 scope, D10, sections 4.3 and 6), then after the review of the TDD plan (D9 unsaved-changes scope, symbolic links, section 4.3).
 
 ---
 

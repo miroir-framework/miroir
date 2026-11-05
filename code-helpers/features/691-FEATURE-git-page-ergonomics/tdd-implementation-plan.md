@@ -10,7 +10,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Parent: [#679](https://github.com/miroir-framework/miroir/issues/679), plan [`../679-FEATURE-git-version-control/tdd-implementation-plan.md`](../679-FEATURE-git-version-control/tdd-implementation-plan.md) ✅
 Working branch: `claude/691-git-page-ergonomics`, from `_integration`.
 
-**Resume note:** plan written and revised after an adversarial review (D9 unsaved-changes scope, symbolic links, RED cases that passed before the change, test commands); no slice started.
+**Resume note:** plan revised after an adversarial review (D9 unsaved-changes scope, symbolic links, RED cases that passed before the change, test commands). All slices done (2026-11-05); a code review after slice 8 is folded into slice 9.
 
 ---
 
@@ -35,16 +35,16 @@ Also out: checkout and pull keep reloading every deployment of the repository (#
 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
-| 0 | Characterize the Git page cases and the status rows revert relies on | ⬜ | `ui.gitPage` (27 cases), `gitRevert.integ.test.ts` "status rows" |
-| 1 | Tracer: tabs Changes / Branches / Setup, `view` from the URL | ⬜ | `ui.gitPage` "opens on the tab named by view" |
-| 2 | Header: branch, remote, ahead / behind, Fetch / Pull / Push; set the remote in Setup | ⬜ | `ui.gitPage` "keeps the branch and the remote in the header on every tab" |
-| 3 | History folded to its last commit, unfolded in place | ⬜ | `ui.gitPage` "shows the last commit, and the history on demand" |
-| 4 | Diff beside the change list; each tab keeps its selection | ⬜ | `ui.gitPage` "shows the diff of a change on Changes only, and keeps it across tabs" |
-| 5 | Clone panel in Setup, and alone before an application is chosen | ⬜ | `ui.gitPage` "shows the Clone panel on the Setup tab" |
-| 6 | Branches: local first, remote branches and tags folded, filter | ⬜ | `ui.gitPage` "finds a remote branch by name and checks it out" |
-| 7 | `gitAction_revert` on the server | ⬜ | `gitRevert.integ.test.ts` |
-| 8 | Revert in the page, with a confirmation | ⬜ | `ui.gitPage` "reverts a file after listing what happens to it" |
-| 9 | Nonreg, docs, AC | ⬜ | full nonreg, tracer narrative |
+| 0 | Characterize the Git page cases and the status rows revert relies on | ✅ | `ui.gitPage` (27 cases), `gitRevert.integ.test.ts` "status rows" |
+| 1 | Tracer: tabs Changes / Branches / Setup, `view` from the URL | ✅ | `ui.gitPage` "opens on the tab named by view" |
+| 2 | Header: branch, remote, ahead / behind, Fetch / Pull / Push; set the remote in Setup | ✅ | `ui.gitPage` "keeps the branch and the remote in the header on every tab" |
+| 3 | History folded to its last commit, unfolded in place | ✅ | `ui.gitPage` "shows the last commit, and the history on demand" |
+| 4 | Diff beside the change list; each tab keeps its selection | ✅ | `ui.gitPage` "shows the diff of a change on Changes only, and keeps it across tabs" |
+| 5 | Clone panel in Setup, and alone before an application is chosen | ✅ | `ui.gitPage` "shows the Clone panel on the Setup tab" |
+| 6 | Branches: local first, remote branches and tags folded, filter | ✅ | `ui.gitPage` "finds a remote branch by name and checks it out" |
+| 7 | `gitAction_revert` on the server | ✅ | `gitRevert.integ.test.ts` |
+| 8 | Revert in the page, with a confirmation | ✅ | `ui.gitPage` "reverts a file after listing what happens to it" |
+| 9 | Nonreg, docs, AC | ✅ | full nonreg, tracer narrative |
 
 ---
 
@@ -122,7 +122,7 @@ D11, D12 and D13 are new in this plan: the analysis did not settle them, and D13
 
 ## Slice 0. Characterize the Git page cases and the status rows revert relies on
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -159,13 +159,15 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,actions,external
 
 ### Realization
 
-_Appended on completion._
+- `ui.gitPage` passed as merged: 27 cases (29 tests with the entry checks).
+- `gitRevert.integ.test.ts`, "the status of each row a revert reads": the 13 rows are built with isomorphic-git and each reads the flags of the D3 table. The test also checks the row it built (`statusMatrix`), so a misbuilt row cannot pass by accident. A helper `writeWorkTreeFile` (in `gitTestSetup.ts`, now used by `editUbik`) moves the modification time on at each write.
+- Deviation: the scoped nonreg of this slice was folded into the full run of slice 9.
 
 ---
 
 ## Slice 1. Tracer: tabs Changes / Branches / Setup, `view` from the URL
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -214,13 +216,15 @@ In the running app: `?page=git&application=<Library>&view=branches` opens Branch
 
 ### Realization
 
-_Appended on completion._
+- `GitPageView` takes `view`, `onViewChange`, `setupExtras`; `gitPageView(view)` maps a missing or unknown value to `changes`. Without `onViewChange` the page keeps its own tab (the fixture).
+- The route writes `view` and `application` on a tab change with a functional `setSearchParams` that keeps every parameter. Deviation: choosing an application in the selector does not write it to the URL by itself; that would need a `useEffect`, which `AGENTS.md` asks to avoid. The link is complete after any tab change.
+- 4 cases RED, then GREEN; 3 Branches cases open their tab first. `EXPECTED_LEAF_COUNT` 237.
 
 ---
 
 ## Slice 2. Header: branch, remote, ahead / behind, Fetch / Pull / Push; set the remote in Setup
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -266,13 +270,16 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,ui,core
 
 ### Realization
 
-_Appended on completion._
+- New `GitHeader.tsx`: title, branch chip, Refresh, `git-root`, the remote line with to push / to pull and Fetch, Pull, Push, the credential form, the remote-action error and `git-credential-notice`. With no remote: "This repository has no remote" and `git-open-setup`.
+- `GitRemotePanel` keeps only the URL field and Set, on the Setup tab, with its own error (`git-set-remote-error`).
+- 5 cases (4 RED; "keeps a pull refusal on every tab" passed on arrival, as a guard). "sets the remote" opens Setup first. `EXPECTED_LEAF_COUNT` 242.
+- Not done: the D2 states "loading or failed" and "no upstream" have no case; the fixture has no status that never answers. They are shown as before (the `Loading` notice under the header, `git-no-upstream`).
 
 ---
 
 ## Slice 3. History folded to its last commit, unfolded in place
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -313,13 +320,14 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,ui,core
 
 ### Realization
 
-_Appended on completion._
+- New `GitHistoryStrip.tsx` under the tab content, with a toggle; unfolded, the strip keeps only its toggle, so a commit's text is shown once. The selection is split here: the history keeps its commit and file, the Changes tab its change.
+- 2 new cases; 4 history cases unfold first. "asks for the author" and "stages a change, then commits" pass unedited: the strip shows the new commit's first line and author. `EXPECTED_LEAF_COUNT` 244.
 
 ---
 
 ## Slice 4. Diff beside the change list; each tab keeps its selection
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -360,13 +368,15 @@ npm run nonreg:filesystem -- --runner shared
 
 ### Realization
 
-_Appended on completion._
+- The Changes tab is a wrapping flex row: the list, then the change's `DiffPanel` (`flex: 2 1 480px`). The status notice shows once, under the header, not in each tab.
+- 2 cases; "keeps the history's selection apart" passed on arrival (slice 3 split the selection). `EXPECTED_LEAF_COUNT` 246.
+- Deviation: the full nonreg of this slice and the bundle policy moved to slice 9.
 
 ---
 
 ## Slice 5. Clone panel in Setup, and alone before an application is chosen
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -407,13 +417,14 @@ In the running app: with no application chosen, the Clone panel shows alone; wit
 
 ### Realization
 
-_Appended on completion._
+- The fixture gets `withClonePanel` (the real lazy `GitClonePanel` on the fixture runner). The route passes `GitCloneSection` as `setupExtras`, renders it alone with no application, and only the `git-unavailable` notice with `git` off and no application.
+- 3 cases (one guard). `EXPECTED_LEAF_COUNT` 249.
 
 ---
 
 ## Slice 6. Branches: local first, remote branches and tags folded, filter
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -449,13 +460,14 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,ui,core
 
 ### Realization
 
-_Appended on completion._
+- `GitBranchList`: the filter field `git-branch-filter`, then "Remote branches (n)" and "Tags (n)" toggles; a non-empty filter opens both folds on the matching names.
+- 2 cases; checking out `origin/topic-07` gives a detached HEAD, as planned. `EXPECTED_LEAF_COUNT` 251.
 
 ---
 
 ## Slice 7. `gitAction_revert` on the server
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -515,13 +527,17 @@ npm run nonreg:filesystem -- --runner shared
 
 ### Realization
 
-_Appended on completion._
+- Port `restoreFromIndex(paths)`: walks `STAGE()`, checks every path before writing any (an index link, a work-tree link with an index entry, a nearest existing folder whose real path leaves the work tree or enters `.git`, a folder), then writes the blob bytes with mode `0o755` or `0o644`, or removes the file (a link is removed, not followed). `statusFromMatrixRow` sets `revertOutcome`.
+- `gitAction_revert` in `GitActions.ts`: `pathsToStage(..., (file) => file.unstaged)`, `nothingToRevert`, `restoreFromIndex`, the action's own deployment as `touchedDeployments`, `rebootTouchedStores`. `openMiroirTransactionError` treats it like checkout and pull (D13). Endpoint entry (19 actions), `fn.blockModel` palette, `ActionImplementations.unit.test.ts`, `gitPendingChanges.unit.test.ts`.
+- `gitRevert.integ.test.ts`: 44 tests. Test 9 builds one repository around the Library and Miroir copies (`.miroir/test-filesystem`); with `touchedDeployments` of the checkout instead of the fix, it fails and names Miroir too (checked by swapping the line).
+- Problems met: building a row commits the whole index, so a staged row must be built after the rows that commit; the refusal test saves its Miroir change afterwards (a `rollback` left the transaction).
+- Every Git integ test: 11 files, 154 tests pass. Core unit tests for the registries, `fn.blockModel` (107) and `modelValidation` of `miroir-app-miroir` (174) pass.
 
 ---
 
 ## Slice 8. Revert in the page, with a confirmation
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -562,13 +578,16 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,ui,core
 
 ### Realization
 
-_Appended on completion._
+- `ChangeList` has a Revert button on each unstaged file of the application; "Revert all" sits next to "Stage all". The confirmation is an inline warning (`git-revert-confirm`), not a dialog, with each file's label and outcome.
+- `gitCommandErrorText` words `nothingToRevert` and `symbolicLink`.
+- Fixture: `gitAction_revert` from the in-memory status; `revertOutcome` derived for props files that lack it and recomputed by stage and unstage; `revertReloadFailure`.
+- 6 cases. `ui.gitPage`: 53 tests pass. `EXPECTED_LEAF_COUNT` 257.
 
 ---
 
 ## Slice 9. Nonreg, docs, AC
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### 9.1 Nonreg
 
@@ -602,13 +621,28 @@ Automated equivalent: `ui.gitPage` (steps 2 to 8 on fixture answers) and `gitRev
 
 | Criterion | Proven by | Status |
 |---|---|---|
-| One activity at a time: Changes, Branches, Setup; Changes by default | `ui.gitPage` slice 1 cases | ⬜ |
-| A header names the application, the branch, the remote with its URL, to push and to pull | `ui.gitPage` "keeps the branch and the remote in the header on every tab" | ⬜ |
-| History always reachable, folded by default, opened on demand | `ui.gitPage` "shows the last commit, and the history on demand" | ⬜ |
-| Revert of chosen files or of every changed file of the application, by a server `gitAction_*` | `gitRevert.integ.test.ts` 1 and 3 | ⬜ |
-| Revert refused while Miroir has unsaved changes | `gitRevert.integ.test.ts` 6, `gitPendingChanges.unit.test.ts` | ⬜ |
-| Revert reloads the touched deployment | `gitRevert.integ.test.ts` 9 | ⬜ |
-| Revert asks for confirmation in the page | `ui.gitPage` slice 8 cases | ⬜ |
-| No action removed; the existing `ui.gitPage` cases pass once they open the right activity | `ui.gitPage` (27 cases, 10 edited) | ⬜ |
+| One activity at a time: Changes, Branches, Setup; Changes by default | `ui.gitPage` slice 1 cases | ✅ |
+| A header names the application, the branch, the remote with its URL, to push and to pull | `ui.gitPage` "keeps the branch and the remote in the header on every tab" | ✅ |
+| History always reachable, folded by default, opened on demand | `ui.gitPage` "shows the last commit, and the history on demand" | ✅ |
+| Revert of chosen files or of every changed file of the application, by a server `gitAction_*` | `gitRevert.integ.test.ts` 1 and 3 | ✅ |
+| Revert refused while Miroir has unsaved changes | `gitRevert.integ.test.ts` 6, `gitPendingChanges.unit.test.ts` | ✅ |
+| Revert reloads the touched deployment | `gitRevert.integ.test.ts` 9 | ✅ |
+| Revert asks for confirmation in the page | `ui.gitPage` slice 8 cases | ✅ |
+| No action removed; the existing `ui.gitPage` cases pass once they open the right activity | `ui.gitPage` (27 cases, 8 edited to open their tab or unfold the history) | ✅ |
 
 The issue says revert goes "back to HEAD". A chose D3-a (2026-11-05): revert drops unstaged edits and keeps staged content; reverting staged content is a later goal.
+
+### Realization
+
+- Nonreg `npm run nonreg:filesystem -- --runner shared`: 128 steps passed, 2 failed, `integ-runner.freezeApplicationVersion` and `appstack-uiIntegrationTestLauncher.integ`. Both failed while creating the Admin instances of a shared workspace (`Entity not found in data section` in `.miroir/test-filesystem@w1` and `@w2`), and both pass when run alone (`--only`, same runner). Not compared with `_integration`.
+- Pre-push gate of `AGENTS.md`: all pass after one fix (`miroir/action-result`: the revert returned a refused restore by a throw). Core unit tests 3426 passed. Bundle policy of the app: 0 violations (843604 bytes gzipped loaded with the page, baseline 827963); the Electron build was not rebuilt.
+- Code review after slice 8, fixed here:
+  - the folder check compares real paths, so a folder that is a link to another folder of the repository is refused (`symbolicLink`), with a test;
+  - files are written to a temporary file and renamed over the target; deletes run before writes;
+  - a write that fails halfway still reloads the deployment (`touchedDeployments` on the error, read by `reloadTouchedDeployments`);
+  - the mode: with `core.filemode` false (what isomorphic-git's init writes) the work-tree mode is kept; with true the index's executable bit comes back. The test covers both;
+  - the page reverts the files the confirmation listed, Refresh clears a pending confirmation, the commit draft survives a tab change, and a tab change replaces the history entry.
+  - Left as is: a payload path naming a folder is refused as `pathOutsideApplication`, the reason the staging paths use.
+- Running app (`cloud-agent` environment, `MIROIR_AUTH_ENABLED=false`, Playwright): a tab change writes `application` and `view`; the copied link opens on Branches; Setup shows the remote URL and the Clone panel; the history unfolds in place. The check found that the app's MUI theme sets `spacing: 0`, so every `gap` of the page was 0 and the header ran together. The route now wraps the page in `GitSpacing` (MUI's default spacing), Fetch, Pull and Push wrap together, and the Branches and Remote panels take the height of their content. Step 1 (no application) was not seen: the selector starts on Miroir.
+- Steps 3 to 5 (edit, revert and remote checkout on a real application) were not run by hand: the app edits the package assets of this repository live, and a revert there would act on the working copy. `gitRevert.integ.test.ts` covers step 4 on a real repository and store.
+
