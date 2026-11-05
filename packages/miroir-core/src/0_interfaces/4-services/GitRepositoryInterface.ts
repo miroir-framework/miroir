@@ -89,12 +89,59 @@ export interface GitRepositoryInterface {
    * overwritten, nothing changes and the conflicting paths are returned.
    */
   checkout(ref: string): Promise<GitCheckoutOutcome>;
+  /** The URL of a remote, undefined when the repository has no such remote. */
+  remoteUrl(remote: string): Promise<string | undefined>;
+  /** Adds the remote, or changes its URL. */
+  setRemote(remote: string, url: string): Promise<void>;
+  /** Fetches every branch of the remote. Throws `authenticationRequired` when the remote refuses access. */
+  fetch(options: GitRemoteOptions): Promise<void>;
+  /** The remote-tracking branch a local branch follows (`origin/main`), from its configuration. */
+  upstream(branch: string): Promise<string | undefined>;
+  /** Commits of `local` not in `upstream` (ahead), and of `upstream` not in `local` (behind). */
+  aheadBehind(local: string, upstream: string): Promise<GitAheadBehind>;
+  /**
+   * Moves the current branch to `upstream` and checks it out, when `upstream` descends from it. Throws
+   * `notFastForward` otherwise; returns conflicts, changing nothing, when uncommitted changes would be lost.
+   */
+  fastForward(branch: string, upstream: string): Promise<GitCheckoutOutcome & { upToDate: boolean }>;
+  /**
+   * Pushes a local branch to the remote, and makes the pushed branch its upstream when it has none. Throws
+   * `pushRejected` when the remote has commits the branch does not, `authenticationRequired` when it refuses
+   * access.
+   */
+  push(options: GitRemoteOptions & { branch: string }): Promise<void>;
 }
+
+/** Commits on each side of a branch and its upstream, counted from their merge base. */
+export type GitAheadBehind = { ahead: number; behind: number };
+
+/** A username and a token (sent as the password) for an HTTP remote. */
+export type GitCredential = { username: string; password: string };
+
+/**
+ * How a remote action authenticates: the adapter calls `onAuth` only when the remote asks for credentials,
+ * and never reads a secret itself (D16).
+ */
+export type GitRemoteOptions = {
+  remote: string;
+  /** The remote's URL, as the action checked it: fetch and push use it, never another URL of the configuration. */
+  url: string;
+  onAuth?: () => GitCredential | undefined;
+};
 
 export type GitCheckoutOutcome = { conflicts: string[] };
 
 /** Errors a repository throws with a `code` the actions map to a reason. */
-export type GitRepositoryErrorCode = "branchExists" | "unknownRevision" | "invalidRefName" | "outsideWorkTree";
+export type GitRepositoryErrorCode =
+  | "branchExists"
+  | "unknownRevision"
+  | "invalidRefName"
+  | "outsideWorkTree"
+  | "authenticationRequired"
+  | "notFastForward"
+  | "pushRejected"
+  | "pushRefused"
+  | "remoteUnreachable";
 
 export class GitRepositoryError extends Error {
   constructor(
@@ -146,4 +193,14 @@ export type GitActionErrorReason =
   | "currentBranch"
   | "branchNotMerged"
   | "checkoutConflict"
+  | "noRemote"
+  | "unsupportedRemoteProtocol"
+  | "authenticationRequired"
+  | "remoteUnreachable"
+  | "noUpstream"
+  | "notFastForward"
+  | "pushRejected"
+  | "pushRefused"
+  | "secretsUnavailable"
+  | "detachedHead"
   | "gitFailure";
