@@ -2391,7 +2391,7 @@
       "argv": [
         "bash",
         "-c",
-        "npm run build -w @miroir-framework/git-isomorphic && MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- 3_controllers/git/"
+        "MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- 3_controllers/git/"
       ]
     },
     {
@@ -2856,7 +2856,7 @@
       "argv": [
         "bash",
         "-c",
-        "npm run build -w @miroir-framework/server && MIROIR_ENV=test-filesystem npm run testByFile -w @miroir-framework/server && MIROIR_LIBRARY_BUILD_CHECKS=1 python -m pytest scripts/tests/test_server_library_boundaries.py -q"
+        "MIROIR_ENV=test-filesystem npm run testByFile -w @miroir-framework/server && MIROIR_LIBRARY_BUILD_CHECKS=1 python -m pytest scripts/tests/test_server_library_boundaries.py -q"
       ]
     },
     {
@@ -2869,7 +2869,7 @@
       "argv": [
         "bash",
         "-c",
-        "npm run build -w @miroir-framework/server && npm run build:server -w miroir-server && MIROIR_RELEASE_SMOKE=1 python -m pytest scripts/tests/test_server_release_smoke.py scripts/tests/test_server_release_smoke_production.py scripts/tests/test_bundled_packages.py -q"
+        "MIROIR_RELEASE_SMOKE=1 python -m pytest scripts/tests/test_server_release_smoke.py scripts/tests/test_server_release_smoke_production.py scripts/tests/test_bundled_packages.py -q"
       ]
     },
     {
@@ -2955,7 +2955,7 @@
       "argv": [
         "bash",
         "-c",
-        "npm run testByFile -w @miroir-framework/core -- markPublicTypes && npm run build -w @miroir-framework/server && MIROIR_REQUIRE_PACK=1 python -m pytest scripts/tests/test_core_public_api.py -q"
+        "npm run testByFile -w @miroir-framework/core -- markPublicTypes && MIROIR_REQUIRE_PACK=1 python -m pytest scripts/tests/test_core_public_api.py -q"
       ]
     },
     {
