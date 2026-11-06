@@ -119,14 +119,14 @@ if (runThis) {
   });
 
   describe("cursorSdk.275.phase7 — features.cursor stays persistence-side and off", () => {
-    it("electronServerConfig has designerTools and no cursor key; the desktop environment (#345) has ai/mcp and no cursor", () => {
+    it("electronServerConfig has designerTools and no cursor key; the desktop environment (#345) has ai/mcp/git and no cursor", () => {
       const src = readRepoFile("packages/miroir-standalone-app-electron/src/environmentBoot.ts");
       const block = electronServerConfigBlock(src);
       expect(block).toMatch(/\bfeatures\s*:/);
       expect(block).toMatch(/\bdesignerTools\s*:\s*true\b/);
       expect(block).not.toMatch(/\bcursor\s*:/);
       const features = readJson("environments/desktop.json").features as Record<string, unknown>;
-      expect(features).toEqual({ ai: true, mcp: true });
+      expect(features).toEqual({ ai: true, mcp: true, git: true });
     });
 
     it("renderer electronMiroirConfig has no features key", () => {

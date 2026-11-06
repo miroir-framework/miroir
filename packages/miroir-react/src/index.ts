@@ -442,3 +442,7 @@ export {
   type MiroirAiBackendPick,
 } from "./routes/ai/miroirAiBackend.js";
 export { agentBackendLabel, agentRequestProperties } from "./routes/ai/agentBackendPick.js";
+// #679: the Git page body, loaded on demand (the Git page and the component tests)
+export { LazyGitClonePanel, LazyGitPageView } from "./components/Git/LazyGitPageView.js";
+export type { GitPageViewName, GitPageViewProps } from "./components/Git/GitPageView.js";
+export type { GitRequestState, RunGitAction } from "./components/Git/useGitRequest.js";

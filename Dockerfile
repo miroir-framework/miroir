@@ -62,6 +62,9 @@ RUN npm run build -w miroir-localcache-redux \
  && npm run build -w @miroir-framework/store-mongodb \
  && npm run build -w @miroir-framework/store-postgres
 
+# The Git implementation (#679): the server leaves it out of its bundle and loads it on the first Git action
+RUN npm run build -w @miroir-framework/git-isomorphic
+
 # 3'. extract model bundles from example applications
 RUN npm run extract-library-model -w miroir-example-library
 # RUN npm run extract-postgresManager-model -w miroir-example-postgres

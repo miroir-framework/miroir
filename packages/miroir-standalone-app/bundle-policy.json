@@ -31,7 +31,9 @@
     "redux-saga",
     "@redux-saga/*",
     "react-redux",
-    "zustand"
+    "zustand",
+    "isomorphic-git",
+    "@miroir-framework/git-isomorphic"
   ],
   "eager": [
     "@babel/runtime",

@@ -10,7 +10,8 @@
   },
   "features": {
     "ai": true,
-    "mcp": true
+    "mcp": true,
+    "git": true
   },
   "applications": {
     "miroir": {

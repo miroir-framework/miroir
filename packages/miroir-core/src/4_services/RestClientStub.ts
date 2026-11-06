@@ -10,6 +10,7 @@ import { type AccessDirectory } from "../1_core/authentication/AccessPolicy.js";
 import {
   authenticateRequest,
   authorizeDeployment,
+  authorizeDesignerOnlyAction,
   type AuthenticationGate,
   type LoadedAccessDirectory,
 } from "../1_core/authentication/AccessGate.js";
@@ -193,11 +194,15 @@ export class RestClientStub implements RestClientInterface {
 
     // Same extraction as the server's REST gate (#263): action bodies are
     // `{ action, applicationDeploymentMap }`, query actions name the application.
-    const access = authorizeDeployment(
+    const deploymentAccess = authorizeDeployment(
       authEnabled,
       authenticated,
       deploymentUuidsFromHttpRequest({ params: args, body }),
     );
+    // #679 D13: the Git actions are for designers only
+    const access = deploymentAccess.allowed
+      ? authorizeDesignerOnlyAction(authEnabled, authenticated, body)
+      : deploymentAccess;
     if (!access.allowed) {
       return {
         status: access.status,

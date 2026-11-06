@@ -43,6 +43,8 @@ const SearchPage           = React.lazy(() => import("./routes/SearchPage.js").t
 const SettingsPage         = React.lazy(() => import("./routes/SettingsPage.js").then(m => ({ default: m.SettingsPage })));
 const LoginPage            = React.lazy(() => import("./routes/LoginPage.js").then(m => ({ default: m.LoginPage })));
 const TransformerBuilderPage = React.lazy(() => import("./routes/TransformerBuilderPage.js").then(m => ({ default: m.TransformerBuilderPage })));
+// #679: loaded on the first visit only, and routed only when the process has the git capability
+const GitPage              = React.lazy(() => import("./routes/GitPage.js").then(m => ({ default: m.GitPage })));
 const MiroirEventsPage     = React.lazy(() => import("./pages/MiroirEventsPage.js").then(m => ({ default: m.MiroirEventsPage })));
 const ErrorLogsPageDEFUNCT = React.lazy(() => import("./ErrorLogsPageDEFUNCT.js").then(m => ({ default: m.ErrorLogsPageDEFUNCT })));
 import { REPORT_URL_KNOWN_PARAM_KEYS, type ReportUrlParamKeys } from "./reportUrlParams.js";
@@ -115,6 +117,7 @@ function PageContent(): React.JSX.Element {
   const { "*": wildcardPath = "" } = useParams();
   const [searchParams] = useSearchParams();
   const access = useApplicationAccess();
+  const gitEnabled = useMiroirContextService().processCapabilities.git === true;
   const page = searchParams.get("page");
   const application = searchParams.get("application") ?? "";
   const deploymentUuid = searchParams.get("deploymentUuid") ?? "";
@@ -191,6 +194,9 @@ function PageContent(): React.JSX.Element {
 
       case "model":
         return <ModelDiagramPage />;
+
+      case "git":
+        return gitEnabled ? <GitPage /> : <Navigate to="/?page=home" replace />;
 
       default:
         return <Navigate to="/?page=home" replace />;

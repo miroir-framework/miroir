@@ -36,6 +36,7 @@ import {
 import { buildTestbedApplicationAccessGrantInstance } from "./authentication/TestbedAccessGrant.js";
 import {
   domainEndpointVersionV1,
+  gitEndpoint,
   instanceEndpointV1,
   localCacheEndpointVersionV1,
   modelEndpointV1,
@@ -100,6 +101,7 @@ export const defaultEndpointApplicationMap: EndpointApplicationMap = {
   [modelEndpointV1.uuid]: selfApplicationMiroir.uuid,
   [domainEndpointVersionV1.uuid]: selfApplicationMiroir.uuid,
   [storeManagementEndpoint.uuid]: selfApplicationMiroir.uuid,
+  [gitEndpoint.uuid]: selfApplicationMiroir.uuid,
   [undoRedoEndpointVersionV1.uuid]: selfApplicationMiroir.uuid,
   [localCacheEndpointVersionV1.uuid]: selfApplicationMiroir.uuid,
   [queryEndpointVersionV1.uuid]: selfApplicationMiroir.uuid,
@@ -129,6 +131,13 @@ export type CreateDeploymentCompositeActionOptions = {
    * seeded grants do not cover ephemeral testbed UUIDs.
    */
   grantAccessTo?: { miroirUserUuid: string };
+  /**
+   * When true, open the new stores without creating them: their files are already there (#683, a
+   * deployment of a cloned repository).
+   */
+  skipCreateStore?: boolean;
+  /** The labels of the Admin rows, instead of the ones made from the application's name. */
+  labels?: { adminApplication?: AdminRowLabels; deployment?: AdminRowLabels };
 };
 
 /** Labels of an Admin row: `defaultLabel` and `description` are optional. */
@@ -170,7 +179,8 @@ export function createDeploymentCompositeAction(
   applicationName: string,
   newDeploymentUuid: Uuid,
   applicationUuid: Uuid,
-  adminDeploymentConfiguration: Deployment,
+  /** Read only to open the Admin store: may be undefined with `skipOpenAdminStore`. */
+  adminDeploymentConfiguration: Deployment | undefined,
   newDeploymentConfiguration: StoreUnitConfiguration,
   options?: CreateDeploymentCompositeActionOptions,
 ): CompositeActionSequence {
@@ -181,6 +191,9 @@ export function createDeploymentCompositeAction(
   const actionSequence: CompositeActionSequence["payload"]["actionSequence"] = [];
 
   if (!options?.skipOpenAdminStore) {
+    if (!adminDeploymentConfiguration) {
+      throw new Error("createDeploymentCompositeAction: the Admin deployment is needed to open the Admin store");
+    }
     actionSequence.push({
       actionType: "storeManagementAction_openStore",
       actionLabel: "storeManagementAction_openStore for " + applicationName + " admin",
@@ -204,11 +217,14 @@ export function createDeploymentCompositeAction(
       application: adminSelfApplication.uuid,
       applicationSection: "data",
       objects: [
-        adminApplicationRow(applicationUuid, {
-          name: applicationName,
-          defaultLabel: `The ${applicationName} Application.`,
-          description: `This Application contains the ${applicationName} model and data.`,
-        }),
+        adminApplicationRow(
+          applicationUuid,
+          options?.labels?.adminApplication ?? {
+            name: applicationName,
+            defaultLabel: `The ${applicationName} Application.`,
+            description: `This Application contains the ${applicationName} model and data.`,
+          },
+        ),
       ],
     },
   });
@@ -221,11 +237,16 @@ export function createDeploymentCompositeAction(
       application: adminSelfApplication.uuid,
       applicationSection: "data",
       objects: [
-        deploymentRow(newDeploymentUuid, applicationUuid, newDeploymentConfiguration, {
-          name: `Deployment of application ${applicationName}`,
-          defaultLabel: `The deployment of application ${applicationName}`,
-          description: `The description of deployment of application ${applicationName}`,
-        }),
+        deploymentRow(
+          newDeploymentUuid,
+          applicationUuid,
+          newDeploymentConfiguration,
+          options?.labels?.deployment ?? {
+            name: `Deployment of application ${applicationName}`,
+            defaultLabel: `The deployment of application ${applicationName}`,
+            description: `The description of deployment of application ${applicationName}`,
+          },
+        ),
       ],
     },
   });
@@ -249,20 +270,20 @@ export function createDeploymentCompositeAction(
     });
   }
 
-  actionSequence.push(
-    {
-      actionType: "storeManagementAction_openStore",
-      actionLabel: "storeManagementAction_openStore for " + applicationName,
-      endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
-      payload: {
-        application: applicationUuid,
-        deploymentUuid: newDeploymentUuid,
-        configuration: {
-          [newDeploymentUuid]: newDeploymentConfiguration,
-        },
+  actionSequence.push({
+    actionType: "storeManagementAction_openStore",
+    actionLabel: "storeManagementAction_openStore for " + applicationName,
+    endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
+    payload: {
+      application: applicationUuid,
+      deploymentUuid: newDeploymentUuid,
+      configuration: {
+        [newDeploymentUuid]: newDeploymentConfiguration,
       },
     },
-    {
+  });
+  if (!options?.skipCreateStore) {
+    actionSequence.push({
       actionType: "storeManagementAction_createStore",
       actionLabel: "storeManagementAction_createStore for " + applicationName,
       endpoint: "bbd08cbb-79ff-4539-b91f-7a14f15ac55f",
@@ -271,8 +292,8 @@ export function createDeploymentCompositeAction(
         deploymentUuid: newDeploymentUuid,
         configuration: newDeploymentConfiguration,
       },
-    },
-  );
+    });
+  }
 
   return {
     actionType: "compositeActionSequence",

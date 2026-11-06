@@ -97,7 +97,7 @@ if (runThis) {
       expect(block).toMatch(/\bdesignerTools\s*:\s*true\b/);
       expect(block).not.toMatch(/\bcursor\s*:/);
       const desktop = JSON.parse(readRepoFile("environments/desktop.json"));
-      expect(desktop.features).toEqual({ ai: true, mcp: true });
+      expect(desktop.features).toEqual({ ai: true, mcp: true, git: true });
     });
   });
 

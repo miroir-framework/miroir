@@ -39,6 +39,8 @@ export class PersistenceStoreControllerManager implements PersistenceStoreContro
   private persistenceStoreControllers: {
     [deploymentUuid: Uuid]: PersistenceStoreControllerInterface;
   } = {};
+  /** #679: the configuration each open store controller was created with (section directories for Git). */
+  private persistenceStoreConfigurations: { [deploymentUuid: Uuid]: StoreUnitConfiguration } = {};
   private persistenceStoreLocalOrRemote: PersistenceStoreLocalOrRemoteInterface | undefined; // receives instance of PersistenceReduxSaga
   private localCache: LocalCacheInterface | undefined;
   // private domainController: DomainController | undefined;
@@ -219,6 +221,7 @@ export class PersistenceStoreControllerManager implements PersistenceStoreContro
         optionalStores.modelVersion,
         optionalStores.devData,
       );
+      this.persistenceStoreConfigurations[deploymentUuid] = config;
       log.info("addPersistenceStoreController DONE for deployment", deploymentUuid);
     }
     return ACTION_OK;
@@ -237,10 +240,16 @@ export class PersistenceStoreControllerManager implements PersistenceStoreContro
   }
 
   // ################################################################################################
+  getPersistenceStoreConfiguration(deploymentUuid: string): StoreUnitConfiguration | undefined {
+    return this.persistenceStoreConfigurations[deploymentUuid];
+  }
+
+  // ################################################################################################
   async deletePersistenceStoreController(deploymentUuid: string): Promise<Action2VoidReturnType> {
     if (this.persistenceStoreControllers[deploymentUuid]) {
       await this.persistenceStoreControllers[deploymentUuid].close();
       delete this.persistenceStoreControllers[deploymentUuid];
+      delete this.persistenceStoreConfigurations[deploymentUuid];
     } else {
       log.info(
         "deletePersistenceStoreController for",

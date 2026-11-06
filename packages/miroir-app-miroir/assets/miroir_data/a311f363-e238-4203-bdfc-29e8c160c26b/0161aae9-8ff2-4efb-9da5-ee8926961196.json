@@ -2661,9 +2661,40 @@
                 ]
               },
               {
-                "label": "InstanceEndpoint comes next",
+                "label": "GitEndpoint comes next",
                 "resultAccessPath": [
                   "1"
+                ],
+                "expectedValue": {
+                  "endpointUuid": "a7f243cb-9345-425a-918d-4e433a94f4bf",
+                  "endpointName": "GitEndpoint",
+                  "actionTypes": [
+                    "gitAction_checkout",
+                    "gitAction_clone",
+                    "gitAction_commit",
+                    "gitAction_commitFiles",
+                    "gitAction_createBranch",
+                    "gitAction_deleteBranch",
+                    "gitAction_diff",
+                    "gitAction_fetch",
+                    "gitAction_init",
+                    "gitAction_installClonedDeployment",
+                    "gitAction_log",
+                    "gitAction_pull",
+                    "gitAction_push",
+                    "gitAction_revert",
+                    "gitAction_setCredential",
+                    "gitAction_setRemote",
+                    "gitAction_stage",
+                    "gitAction_status",
+                    "gitAction_unstage"
+                  ]
+                }
+              },
+              {
+                "label": "InstanceEndpoint comes after GitEndpoint",
+                "resultAccessPath": [
+                  "2"
                 ],
                 "expectedValue": {
                   "endpointUuid": "ed520de4-55a9-4550-ac50-b1b713b72a89",

@@ -18,7 +18,7 @@ import {
   ENTITY_DEPLOYMENT_UUID,
   MIROIR_APPLICATION_UUID,
 } from "../1_core/authentication/AccessPolicy";
-import { authorizeDeployment, type LoadedAccessDirectory } from "../1_core/authentication/AccessGate";
+import { authorizeDeployment, authorizeDesignerOnlyAction, type LoadedAccessDirectory } from "../1_core/authentication/AccessGate";
 import type { AuthPrincipal } from "../1_core/authentication/AuthenticationPolicy";
 import { deploymentUuidsFromHttpRequest } from "../1_core/authentication/deploymentUuidFromHttpRequest";
 import { rejectInstancesNotMatchingTheirEntity } from "../1_core/Entity/instanceSchemaGuard";
@@ -316,7 +316,11 @@ export async function executeEndpointAction(
       applicationDeploymentMap[entry.applicationUuid],
       ...deploymentUuidsFromHttpRequest({ body: { action: { payload }, applicationDeploymentMap } }),
     ];
-    const access = authorizeDeployment(true, context, deployments as string[]);
+    const deploymentAccess = authorizeDeployment(true, context, deployments as string[]);
+    // #679 D13: the Git actions are for designers only
+    const access = deploymentAccess.allowed
+      ? authorizeDesignerOnlyAction(true, context, { action: { actionType: entry.actionType } })
+      : deploymentAccess;
     if (!access.allowed) {
       log.warn(
         `executeEndpointAction ${entry.name}: access denied for ${context.principal?.username ?? "anonymous"} on deployments ${deployments.join(",")}`,

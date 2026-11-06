@@ -7,6 +7,7 @@ import { ApplicationSection } from "../0_interfaces/1_core/preprocessor-generate
 import { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import type { ReactComponentTestRunner, ReportTestRunner } from "../0_interfaces/5-tests/miroirTestTypes";
 import { AdminStoreFactoryRegister, PersistenceStoreAdminSectionFactory, PersistenceStoreSectionFactory, StoreSectionFactoryRegister } from "../0_interfaces/4-services/PersistenceStoreControllerInterface";
+import type { GitRepositoryFactory, GitRepositoryFactoryLoader } from "../0_interfaces/4-services/GitRepositoryInterface";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
@@ -44,8 +45,39 @@ export class ConfigurationServiceInner {
   public reactComponentTestRunner: ReactComponentTestRunner | undefined = undefined;
   /** Runs `reportTest` leaves; registered by the app's integration test entries or its sandbox (#330). */
   public reportTestRunner: ReportTestRunner | undefined = undefined;
+  /** #679: imports the Git implementation on the first Git action; registered when `features.git` is on. */
+  private gitRepositoryFactoryLoader: GitRepositoryFactoryLoader | undefined = undefined;
+  private gitRepositoryFactory: Promise<GitRepositoryFactory> | undefined = undefined;
 
   constructor() {}
+
+  /**
+   * #679: registers the loader of the Git implementation, or removes it with `undefined`. The loader
+   * runs once, on the first `getGitRepositoryFactory` call; a host passes a dynamic `import()` so that
+   * no Git code loads before the first Git action.
+   */
+  public registerGitRepositoryFactory(loader: GitRepositoryFactoryLoader | undefined) {
+    this.gitRepositoryFactoryLoader = loader;
+    this.gitRepositoryFactory = undefined;
+  }
+
+  /** #679: the Git implementation, loaded on first call; undefined when no loader is registered. */
+  public getGitRepositoryFactory(): Promise<GitRepositoryFactory> | undefined {
+    if (!this.gitRepositoryFactoryLoader) {
+      return undefined;
+    }
+    if (!this.gitRepositoryFactory) {
+      const loading = this.gitRepositoryFactoryLoader();
+      // a failed import is retried on the next call
+      loading.catch(() => {
+        if (this.gitRepositoryFactory === loading) {
+          this.gitRepositoryFactory = undefined;
+        }
+      });
+      this.gitRepositoryFactory = loading;
+    }
+    return this.gitRepositoryFactory;
+  }
 
   /**
    * registerPackageConfiguration

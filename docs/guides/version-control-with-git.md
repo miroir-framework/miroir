@@ -1,0 +1,118 @@
+# Version control with Git
+
+The Git page puts the files of a filesystem deployment under Git from Miroir itself. You can see what
+changed, commit it or revert it, switch branches, sync with a remote over HTTPS, and clone a repository to
+install the application it holds. The machine that runs Miroir needs no Git program: the
+[isomorphic-git](https://isomorphic-git.org/) package does the work, and it loads with the first Git action.
+
+Issues [#679](https://github.com/miroir-framework/miroir/issues/679) and [#691](https://github.com/miroir-framework/miroir/issues/691). Design: [`code-helpers/features/679-FEATURE-git-version-control/analysis.md`](../../code-helpers/features/679-FEATURE-git-version-control/analysis.md), and for the layout and revert [`code-helpers/features/691-FEATURE-git-page-ergonomics/analysis.md`](../../code-helpers/features/691-FEATURE-git-page-ergonomics/analysis.md).
+
+## Turning it on
+
+Git is a [process capability](../reference/process-capabilities.md). It is off unless the persistence
+side (the server, or Electron main) sets it:
+
+```json
+{ "features": { "git": true } }
+```
+
+In an environment definition, `features` is the same object ([Environments](../reference/environments.md)).
+`dev` and `desktop` turn it on. Restart the process after the change. With Git off, the AppBar has no Git
+entry, no Git code is loaded, and every `gitAction_*` returns `FeatureUnavailable`.
+
+The Git actions are designer tools: they also need `designerTools`. When authentication is on, only a
+designer can run them.
+
+## What the page does
+
+Open the page from the AppBar (`?page=git`) and pick an application. It works on the repository that holds
+the application's section folders (`model`, `data`, ...). Before you pick one, the page shows only the
+Clone panel.
+
+The header stays on screen whatever you do: the application, the current branch (or the detached HEAD), the
+repository folder, the remote with its URL, how many commits are to push and to pull, and Fetch, Pull and
+Push. Under it, the page shows one activity at a time:
+
+| Tab | What it shows and does |
+|---|---|
+| Changes (the default) | The changed files, named by Entity and instance, with the diff of the one you select beside the list. Stage or unstage them, revert the edits you have not staged, and commit with a message. Files outside the application's sections are not listed. |
+| Branches | Your local branches; remote branches and tags are folded under their count, with a field to find one by name. Create, delete and check out branches. Check out a tag, a remote branch or a commit to look at an old state (a detached HEAD). After a checkout, the page reloads the application from its files. |
+| Setup | The URL of the remote, and the Clone panel. |
+
+Under every tab, the history is folded to its last commit. Unfold it to see the commits with their branches
+and tags; a commit lists the files it changed, with the diff of the one you select.
+
+The tab is in the URL (`&view=changes`, `branches` or `setup`), so a link opens the page on the same
+application and tab.
+
+When a deployment has no repository yet, the page offers to create one in the folder that holds its
+sections.
+
+### Reverting
+
+Revert, on a file of the Changes tab, drops the edits you have not staged: the file goes back to what the
+index holds, and what you staged is kept. "Revert all" does it for every file of the application. Before
+anything changes, the page lists each file with what happens to it:
+
+- rewritten: the file takes back its staged content, or its committed content when nothing is staged;
+- re-created: a file you deleted comes back;
+- deleted: a new file you have not staged goes away.
+
+A file whose changes are all staged has nothing to revert: unstage it first. Miroir reloads the application
+after a revert. It refuses to write through a symbolic link.
+
+Miroir refuses a commit, a checkout, a pull or a revert while some Miroir changes are not saved to the files
+yet, and the install of a cloned application while some Admin changes are not saved. Commit them in Miroir
+first. A commit only looks at the changes of its own application; a checkout, a pull or a revert looks at
+those of every application, since the reload that follows drops them.
+
+## Remotes and credentials
+
+Remotes are `http` or `https` URLs. Give the URL without a username or token: Miroir asks for them when the
+remote does.
+
+When a remote asks for credentials, the page opens a form for a username and a token. Use a personal access
+token, not your password. The action runs again with it. When it works, Miroir saves the token as the Admin
+secret `git.<host>` (for example `git.github.com`), unless you uncheck "Save it". The next actions on that
+host use the secret. A secret belongs to the logged-in user, or to the process when nobody is logged in.
+Saving needs the secrets wrapping key (`MIROIR_SECRETS_MASTER_KEY`), as for other secrets.
+
+The secrets are listed on the Admin Secrets page with the others. Results sent to the client never hold a
+token, even one written in a URL outside Miroir.
+
+## Cloning an application
+
+The Clone panel, on the Setup tab (or alone before you pick an application), takes a repository URL and a
+folder. The folder is a path under
+the deployment root folder of the server; it must not exist yet, or be empty. By default it is named after
+the repository.
+
+Miroir clones the repository, then looks for Miroir deployments in it: rows of the Deployment Entity in
+`<package>/assets/deployment/`, whose model section holds the application's SelfApplication row. The
+repository can be one package, with `assets/` at its root, or a monorepo with packages under `packages/`.
+
+- With one deployment, Miroir installs it at once.
+- With several, the panel lists them and you pick the one to install.
+- With none, the clone is kept and nothing is installed.
+
+Installing writes the AdminApplication and Deployment rows in Admin, with section directories pointing into
+the clone, and opens the stores. The application then appears like any other, and its Git page works on the
+clone, whose `origin` is the URL you gave. An application that already has a deployment is not installed
+twice.
+
+The stored Runner "Clone application from Git" (`cloneApplicationFromGit`) runs the same clone and install
+from a form with the URL and the folder.
+
+## Limits
+
+- HTTPS remotes only: isomorphic-git has no SSH transport.
+- Pull is fast-forward only. When the branch and its upstream have diverged, merge or rebase them outside
+  Miroir, then pull again.
+- No merge with conflicts, rebase, cherry-pick, stash, submodules or worktrees.
+- Revert works on whole files, and keeps staged content: there is no revert of part of a file, of the staged
+  content, or of a commit.
+- A revert writes a file as the index holds it: `core.autocrlf` is not applied. It gives back the index's
+  executable bit only when `core.filemode` is true, as Git does; a repository made by Miroir has it false.
+- Only filesystem deployments: a deployment on another store has no files to version.
+- Repository settings come from the repository's own `.git/config`. Git hooks and the global Git
+  configuration of the machine are not used.

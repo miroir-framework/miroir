@@ -1,0 +1,3262 @@
+{
+  "uuid": "c98e8263-fdc0-453e-b516-9e8ef5021776",
+  "parentName": "MiroirTest",
+  "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+  "name": "ui.gitPage",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "description": "Git page: the changes of an application named by Entity and instance, staged and committed from the page, its history with refs, its branches created, checked out and left for a detached HEAD, the files of a commit, the diff of a file, the refusals it explains, its remote fetched, pulled and pushed with a token asked once and saved, nothing while git is off, and the creation of a repository, and a repository cloned and installed from the clone panel.",
+  "tags": [
+    "ui"
+  ],
+  "issue": "679",
+  "definition": {
+    "miroirTestType": "miroirTestSuite",
+    "miroirTestLabel": "ui.gitPage",
+    "miroirTests": [
+      {
+        "miroirTestType": "reactComponentTestSuite",
+        "miroirTestLabel": "GitPage",
+        "component": "GitPage",
+        "componentProps": {
+          "applicationName": "Library",
+          "entityNames": {
+            "e8ba151b-d68e-4cc3-9a83-3459d309ccf5": "Book"
+          },
+          "status": {
+            "root": "/repo/library",
+            "sectionPaths": {
+              "model": "model",
+              "data": "data",
+              "modelVersion": "modelVersion"
+            },
+            "branches": {
+              "current": "main",
+              "head": "2222222222222222222222222222222222222222",
+              "local": [
+                "feature",
+                "main"
+              ],
+              "remote": [],
+              "tags": [
+                "v1"
+              ]
+            },
+            "tracking": {
+              "upstream": "origin/main",
+              "ahead": 1,
+              "behind": 0
+            },
+            "remoteUrl": "https://git.example.com/library.git",
+            "files": [
+              {
+                "path": "data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/03ffcae1-b83f-4970-b3d9-04780d3d0780.json",
+                "change": "modified",
+                "staged": false,
+                "unstaged": true,
+                "section": "data",
+                "entityUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                "instanceKey": "03ffcae1-b83f-4970-b3d9-04780d3d0780",
+                "instanceName": "Ubik",
+                "inApplication": true
+              },
+              {
+                "path": "data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/679a0001-0000-4000-8000-000000000001.json",
+                "change": "added",
+                "staged": true,
+                "unstaged": false,
+                "section": "data",
+                "entityUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                "instanceKey": "679a0001-0000-4000-8000-000000000001",
+                "instanceName": "Galactic Pot-Healer",
+                "inApplication": true
+              }
+            ]
+          },
+          "log": {
+            "root": "/repo/library",
+            "sectionPaths": {
+              "model": "model",
+              "data": "data",
+              "modelVersion": "modelVersion"
+            },
+            "branches": {
+              "current": "main",
+              "head": "2222222222222222222222222222222222222222",
+              "local": [
+                "feature",
+                "main"
+              ],
+              "remote": [],
+              "tags": [
+                "v1"
+              ]
+            },
+            "commits": [
+              {
+                "oid": "2222222222222222222222222222222222222222",
+                "parents": [
+                  "1111111111111111111111111111111111111111"
+                ],
+                "message": "Ubik: year 1970\n",
+                "author": {
+                  "name": "Miroir Test",
+                  "email": "t@example.com",
+                  "timestamp": 1700000000
+                },
+                "refs": [
+                  "HEAD",
+                  "main"
+                ]
+              },
+              {
+                "oid": "1111111111111111111111111111111111111111",
+                "parents": [],
+                "message": "initial\n",
+                "author": {
+                  "name": "Miroir Test",
+                  "email": "t@example.com",
+                  "timestamp": 1690000000
+                },
+                "refs": [
+                  "feature",
+                  "tag: v1"
+                ]
+              }
+            ]
+          },
+          "commitFiles": {
+            "2222222222222222222222222222222222222222": {
+              "oid": "2222222222222222222222222222222222222222",
+              "files": [
+                {
+                  "path": "data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/03ffcae1-b83f-4970-b3d9-04780d3d0780.json",
+                  "section": "data",
+                  "entityUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                  "instanceKey": "03ffcae1-b83f-4970-b3d9-04780d3d0780",
+                  "instanceName": "Ubik",
+                  "inApplication": true
+                }
+              ]
+            }
+          },
+          "diffs": {
+            "data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/03ffcae1-b83f-4970-b3d9-04780d3d0780.json": {
+              "HEAD..": {
+                "path": "data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/03ffcae1-b83f-4970-b3d9-04780d3d0780.json",
+                "before": "{\n  \"uuid\": \"03ffcae1-b83f-4970-b3d9-04780d3d0780\",\n  \"name\": \"Ubik\",\n  \"year\": 1970\n}\n",
+                "after": "{\n  \"uuid\": \"03ffcae1-b83f-4970-b3d9-04780d3d0780\",\n  \"name\": \"Ubik\",\n  \"year\": 1971\n}\n",
+                "section": "data",
+                "entityUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                "instanceKey": "03ffcae1-b83f-4970-b3d9-04780d3d0780",
+                "instanceName": "Ubik",
+                "inApplication": true
+              },
+              "1111111111111111111111111111111111111111..2222222222222222222222222222222222222222": {
+                "path": "data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/03ffcae1-b83f-4970-b3d9-04780d3d0780.json",
+                "before": "{\n  \"uuid\": \"03ffcae1-b83f-4970-b3d9-04780d3d0780\",\n  \"name\": \"Ubik\",\n  \"year\": 1969\n}\n",
+                "after": "{\n  \"uuid\": \"03ffcae1-b83f-4970-b3d9-04780d3d0780\",\n  \"name\": \"Ubik\",\n  \"year\": 1970\n}\n",
+                "section": "data",
+                "entityUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                "instanceKey": "03ffcae1-b83f-4970-b3d9-04780d3d0780",
+                "instanceName": "Ubik",
+                "inApplication": true
+              }
+            }
+          }
+        },
+        "miroirTests": [
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: lists the changes, named by Entity and instance",
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "the modified book",
+                "target": {
+                  "byText": "Book · Ubik"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the added book",
+                "target": {
+                  "byText": "Book · Galactic Pot-Healer"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the change letters",
+                "target": {
+                  "byText": "M"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the staged change",
+                "target": {
+                  "byText": "staged"
+                },
+                "count": 1
+              },
+              {
+                "step": "expectElement",
+                "label": "the current branch",
+                "target": {
+                  "byTestId": "git-current-branch"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the repository folder",
+                "target": {
+                  "byText": {
+                    "regex": "Repository: /repo/library"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: opens on Changes, and shows the branches on their tab",
+            "componentProps": {},
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "the changes",
+                "target": {
+                  "byTestId": "git-changes"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "no branches",
+                "target": {
+                  "byTestId": "git-branches"
+                },
+                "present": false,
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "open branches",
+                "target": {
+                  "byTestId": "git-tab-branches"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the branches",
+                "target": {
+                  "byTestId": "git-branches"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "no changes",
+                "target": {
+                  "byTestId": "git-changes"
+                },
+                "present": false,
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: opens on the tab named by view",
+            "componentProps": {
+              "view": "branches"
+            },
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "the branches",
+                "target": {
+                  "byTestId": "git-branches"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "no changes",
+                "target": {
+                  "byTestId": "git-changes"
+                },
+                "present": false,
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: opens on Changes for an unknown view",
+            "componentProps": {
+              "view": "history"
+            },
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "the changes",
+                "target": {
+                  "byTestId": "git-changes"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "no branches",
+                "target": {
+                  "byTestId": "git-branches"
+                },
+                "present": false,
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: lists the commits with their refs",
+            "steps": [
+              {
+                "step": "click",
+                "label": "unfold the history",
+                "target": {
+                  "byTestId": "git-history-toggle"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the last commit",
+                "target": {
+                  "byText": "Ubik: year 1970"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the first commit",
+                "target": {
+                  "byText": "initial"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "its tag",
+                "target": {
+                  "byText": "tag: v1"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the abbreviated oid",
+                "target": {
+                  "byText": "2222222"
+                }
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: shows the last commit, and the history on demand",
+            "componentProps": {},
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "the strip",
+                "target": {
+                  "byTestId": "git-history-strip"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the last commit",
+                "target": {
+                  "byText": "Ubik: year 1970"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "no history list",
+                "target": {
+                  "byTestId": "git-history"
+                },
+                "present": false,
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "not the first commit",
+                "target": {
+                  "byText": "initial"
+                },
+                "present": false,
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "unfold the history",
+                "target": {
+                  "byTestId": "git-history-toggle"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the history",
+                "target": {
+                  "byTestId": "git-history"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the first commit",
+                "target": {
+                  "byText": "initial"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the last commit, once",
+                "target": {
+                  "byText": "Ubik: year 1970"
+                },
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: says when the branch has no commit yet",
+            "componentProps": {
+              "log": {
+                "root": "/repo/library",
+                "sectionPaths": {
+                  "model": "model",
+                  "data": "data",
+                  "modelVersion": "modelVersion"
+                },
+                "branches": {
+                  "current": "main",
+                  "local": [
+                    "main"
+                  ],
+                  "remote": [],
+                  "tags": []
+                },
+                "commits": []
+              }
+            },
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "the strip",
+                "target": {
+                  "byTestId": "git-history-strip"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "no commit",
+                "target": {
+                  "byText": "No commit yet."
+                },
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: shows the diff of a change against HEAD",
+            "steps": [
+              {
+                "step": "click",
+                "label": "the modified book",
+                "target": {
+                  "byTestId": "git-change-data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/03ffcae1-b83f-4970-b3d9-04780d3d0780.json"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the diff title",
+                "target": {
+                  "byText": "Diff: Book · Ubik"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the removed line",
+                "target": {
+                  "byText": {
+                    "regex": "^- +\"year\": 1970$"
+                  }
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the added line",
+                "target": {
+                  "byText": {
+                    "regex": "^\\+ +\"year\": 1971$"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: shows the diff of a change on Changes only, and keeps it across tabs",
+            "componentProps": {},
+            "steps": [
+              {
+                "step": "click",
+                "label": "the modified book",
+                "target": {
+                  "byTestId": "git-change-data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/03ffcae1-b83f-4970-b3d9-04780d3d0780.json"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "its diff",
+                "target": {
+                  "byTestId": "git-diff"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "open branches",
+                "target": {
+                  "byTestId": "git-tab-branches"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "no diff on Branches",
+                "target": {
+                  "byTestId": "git-diff"
+                },
+                "present": false,
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "open changes",
+                "target": {
+                  "byTestId": "git-tab-changes"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the same diff",
+                "target": {
+                  "byText": "Diff: Book · Ubik"
+                },
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: keeps the history's selection apart from the change's",
+            "componentProps": {},
+            "steps": [
+              {
+                "step": "click",
+                "label": "the modified book",
+                "target": {
+                  "byTestId": "git-change-data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/03ffcae1-b83f-4970-b3d9-04780d3d0780.json"
+                }
+              },
+              {
+                "step": "click",
+                "label": "unfold the history",
+                "target": {
+                  "byTestId": "git-history-toggle"
+                }
+              },
+              {
+                "step": "click",
+                "label": "the last commit",
+                "target": {
+                  "byTestId": "git-commit-2222222222222222222222222222222222222222"
+                }
+              },
+              {
+                "step": "click",
+                "label": "its file",
+                "target": {
+                  "byTestId": "git-commit-file-data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/03ffcae1-b83f-4970-b3d9-04780d3d0780.json"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the change's added line",
+                "target": {
+                  "byText": {
+                    "regex": "^\\+ +\"year\": 1971$"
+                  }
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the commit's added line",
+                "target": {
+                  "byText": {
+                    "regex": "^\\+ +\"year\": 1970$"
+                  }
+                },
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: shows the files of a commit and their diff against its parent",
+            "steps": [
+              {
+                "step": "click",
+                "label": "unfold the history",
+                "target": {
+                  "byTestId": "git-history-toggle"
+                }
+              },
+              {
+                "step": "click",
+                "label": "the last commit",
+                "target": {
+                  "byTestId": "git-commit-2222222222222222222222222222222222222222"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the files of the commit",
+                "target": {
+                  "byTestId": "git-commit-files"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "its file",
+                "target": {
+                  "byTestId": "git-commit-file-data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/03ffcae1-b83f-4970-b3d9-04780d3d0780.json"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the removed line",
+                "target": {
+                  "byText": {
+                    "regex": "^- +\"year\": 1969$"
+                  }
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the added line",
+                "target": {
+                  "byText": {
+                    "regex": "^\\+ +\"year\": 1970$"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: shows nothing else while git is off",
+            "componentProps": {
+              "gitEnabled": false
+            },
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "the notice",
+                "target": {
+                  "byTestId": "git-unavailable"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "no change list",
+                "target": {
+                  "byTestId": "git-changes"
+                },
+                "present": false
+              },
+              {
+                "step": "expectElement",
+                "label": "no history",
+                "target": {
+                  "byTestId": "git-history"
+                },
+                "present": false
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: offers to create a repository, then lists the changes",
+            "componentProps": {
+              "noRepository": "/repo/library"
+            },
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "the notice",
+                "target": {
+                  "byTestId": "git-no-repository"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the folder",
+                "target": {
+                  "byText": "Folder: /repo/library"
+                }
+              },
+              {
+                "step": "click",
+                "label": "create",
+                "target": {
+                  "byText": "Create a Git repository"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the changes",
+                "target": {
+                  "byText": "Book · Ubik"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "no notice",
+                "target": {
+                  "byTestId": "git-no-repository"
+                },
+                "present": false
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: offers to create a repository on Changes and Branches",
+            "componentProps": {
+              "noRepository": "/repo/library",
+              "view": "branches"
+            },
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "the notice",
+                "target": {
+                  "byTestId": "git-no-repository"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the tabs",
+                "target": {
+                  "byTestId": "git-tab-setup"
+                },
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: stages a change, then commits the staged changes",
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "the changes",
+                "target": {
+                  "byText": "Book · Ubik"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "setChecked",
+                "label": "stage the modified book",
+                "target": {
+                  "byTestId": "git-stage-data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/03ffcae1-b83f-4970-b3d9-04780d3d0780.json"
+                },
+                "checked": true
+              },
+              {
+                "step": "expectElement",
+                "label": "both changes staged",
+                "target": {
+                  "byText": "staged"
+                },
+                "count": 2,
+                "timeout": 2000
+              },
+              {
+                "step": "change",
+                "label": "the message",
+                "target": {
+                  "byTestId": "git-commit-message"
+                },
+                "value": "Ubik: year 1971"
+              },
+              {
+                "step": "click",
+                "label": "commit",
+                "target": {
+                  "byTestId": "git-commit"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the new commit",
+                "target": {
+                  "byText": "Ubik: year 1971"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "no change left",
+                "target": {
+                  "byText": "No change since the last commit."
+                },
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: keeps the commit message typed before staging",
+            "steps": [
+              {
+                "step": "change",
+                "label": "the message first",
+                "target": {
+                  "byTestId": "git-commit-message"
+                },
+                "value": "Ubik: year 1971"
+              },
+              {
+                "step": "setChecked",
+                "label": "then stage the modified book",
+                "target": {
+                  "byTestId": "git-stage-data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/03ffcae1-b83f-4970-b3d9-04780d3d0780.json"
+                },
+                "checked": true
+              },
+              {
+                "step": "expectElement",
+                "label": "both changes staged",
+                "target": {
+                  "byText": "staged"
+                },
+                "count": 2,
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the message is still there",
+                "target": {
+                  "byTestId": "git-commit-message"
+                },
+                "value": "Ubik: year 1971",
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: reverts a file after listing what happens to it",
+            "componentProps": {},
+            "steps": [
+              {
+                "step": "click",
+                "label": "revert the modified book",
+                "target": {
+                  "byTestId": "git-revert-data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/03ffcae1-b83f-4970-b3d9-04780d3d0780.json"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the confirmation",
+                "target": {
+                  "byTestId": "git-revert-confirm"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "what happens to it",
+                "target": {
+                  "byTestId": "git-revert-outcome-data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/03ffcae1-b83f-4970-b3d9-04780d3d0780.json"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "rewritten",
+                "target": {
+                  "byText": {
+                    "regex": "rewritten"
+                  }
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "apply",
+                "target": {
+                  "byTestId": "git-revert-apply"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the book left the list",
+                "target": {
+                  "byTestId": "git-change-data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/03ffcae1-b83f-4970-b3d9-04780d3d0780.json"
+                },
+                "present": false,
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the staged book is still there",
+                "target": {
+                  "byTestId": "git-change-data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/679a0001-0000-4000-8000-000000000001.json"
+                },
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: lists each file of Revert all with what happens to it",
+            "componentProps": {
+              "status": {
+                "root": "/repo/library",
+                "sectionPaths": {
+                  "model": "model",
+                  "data": "data",
+                  "modelVersion": "modelVersion"
+                },
+                "branches": {
+                  "current": "main",
+                  "head": "2222222222222222222222222222222222222222",
+                  "local": [
+                    "feature",
+                    "main"
+                  ],
+                  "remote": [],
+                  "tags": [
+                    "v1"
+                  ]
+                },
+                "tracking": {
+                  "upstream": "origin/main",
+                  "ahead": 1,
+                  "behind": 0
+                },
+                "remoteUrl": "https://git.example.com/library.git",
+                "files": [
+                  {
+                    "path": "data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/03ffcae1-b83f-4970-b3d9-04780d3d0780.json",
+                    "change": "modified",
+                    "staged": false,
+                    "unstaged": true,
+                    "section": "data",
+                    "entityUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                    "instanceKey": "03ffcae1-b83f-4970-b3d9-04780d3d0780",
+                    "instanceName": "Ubik",
+                    "inApplication": true,
+                    "revertOutcome": "rewritten"
+                  },
+                  {
+                    "path": "data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/679a0001-0000-4000-8000-000000000001.json",
+                    "change": "added",
+                    "staged": true,
+                    "unstaged": false,
+                    "section": "data",
+                    "entityUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                    "instanceKey": "679a0001-0000-4000-8000-000000000001",
+                    "instanceName": "Galactic Pot-Healer",
+                    "inApplication": true
+                  },
+                  {
+                    "path": "data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/691a0001-0000-4000-8000-0000000000d1.json",
+                    "change": "deleted",
+                    "staged": false,
+                    "unstaged": true,
+                    "section": "data",
+                    "entityUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                    "instanceKey": "691a0001-0000-4000-8000-0000000000d1",
+                    "instanceName": "The Man in the High Castle",
+                    "inApplication": true,
+                    "revertOutcome": "recreated"
+                  },
+                  {
+                    "path": "data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/691a0001-0000-4000-8000-0000000000e1.json",
+                    "change": "added",
+                    "staged": false,
+                    "unstaged": true,
+                    "section": "data",
+                    "entityUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                    "instanceKey": "691a0001-0000-4000-8000-0000000000e1",
+                    "instanceName": "Valis",
+                    "inApplication": true,
+                    "revertOutcome": "deleted"
+                  }
+                ]
+              }
+            },
+            "steps": [
+              {
+                "step": "click",
+                "label": "revert all",
+                "target": {
+                  "byTestId": "git-revert-all"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the edited book is rewritten",
+                "target": {
+                  "byTestId": "git-revert-outcome-data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/03ffcae1-b83f-4970-b3d9-04780d3d0780.json"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "rewritten",
+                "target": {
+                  "byText": {
+                    "regex": "rewritten"
+                  }
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "re-created",
+                "target": {
+                  "byText": {
+                    "regex": "re-created"
+                  }
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "deleted",
+                "target": {
+                  "byText": {
+                    "regex": "^deleted"
+                  }
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "not the staged book",
+                "target": {
+                  "byTestId": "git-revert-outcome-data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/679a0001-0000-4000-8000-000000000001.json"
+                },
+                "present": false,
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "apply",
+                "target": {
+                  "byTestId": "git-revert-apply"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "no edited book left",
+                "target": {
+                  "byTestId": "git-change-data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/03ffcae1-b83f-4970-b3d9-04780d3d0780.json"
+                },
+                "present": false,
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "no deleted book left",
+                "target": {
+                  "byTestId": "git-change-data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/691a0001-0000-4000-8000-0000000000d1.json"
+                },
+                "present": false,
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "no new book left",
+                "target": {
+                  "byTestId": "git-change-data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/691a0001-0000-4000-8000-0000000000e1.json"
+                },
+                "present": false,
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the staged book is still there",
+                "target": {
+                  "byTestId": "git-change-data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/679a0001-0000-4000-8000-000000000001.json"
+                },
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: keeps the file when the revert is cancelled",
+            "componentProps": {},
+            "steps": [
+              {
+                "step": "click",
+                "label": "revert the modified book",
+                "target": {
+                  "byTestId": "git-revert-data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/03ffcae1-b83f-4970-b3d9-04780d3d0780.json"
+                }
+              },
+              {
+                "step": "click",
+                "label": "cancel",
+                "target": {
+                  "byTestId": "git-revert-cancel"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "no confirmation",
+                "target": {
+                  "byTestId": "git-revert-confirm"
+                },
+                "present": false,
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the book is still listed",
+                "target": {
+                  "byTestId": "git-change-data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/03ffcae1-b83f-4970-b3d9-04780d3d0780.json"
+                },
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: offers no revert for a fully staged file",
+            "componentProps": {},
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "a revert for the edited book",
+                "target": {
+                  "byTestId": "git-revert-data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/03ffcae1-b83f-4970-b3d9-04780d3d0780.json"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "none for the staged book",
+                "target": {
+                  "byTestId": "git-revert-data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/679a0001-0000-4000-8000-000000000001.json"
+                },
+                "present": false,
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: explains a revert refused while Miroir changes are not saved",
+            "componentProps": {
+              "openMiroirTransaction": true
+            },
+            "steps": [
+              {
+                "step": "click",
+                "label": "revert the modified book",
+                "target": {
+                  "byTestId": "git-revert-data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/03ffcae1-b83f-4970-b3d9-04780d3d0780.json"
+                }
+              },
+              {
+                "step": "click",
+                "label": "apply",
+                "target": {
+                  "byTestId": "git-revert-apply"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the explanation",
+                "target": {
+                  "byText": {
+                    "regex": "^Commit the Miroir changes first"
+                  }
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the book is still listed",
+                "target": {
+                  "byTestId": "git-change-data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/03ffcae1-b83f-4970-b3d9-04780d3d0780.json"
+                },
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: warns when Miroir could not reload the reverted files",
+            "componentProps": {
+              "revertReloadFailure": true
+            },
+            "steps": [
+              {
+                "step": "click",
+                "label": "revert the modified book",
+                "target": {
+                  "byTestId": "git-revert-data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/03ffcae1-b83f-4970-b3d9-04780d3d0780.json"
+                }
+              },
+              {
+                "step": "click",
+                "label": "apply",
+                "target": {
+                  "byTestId": "git-revert-apply"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the warning",
+                "target": {
+                  "byTestId": "git-reload-warning"
+                },
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: shows the files as they are after a revert that failed halfway",
+            "componentProps": {
+              "revertPartialFailure": true
+            },
+            "steps": [
+              {
+                "step": "click",
+                "label": "revert Ubik",
+                "target": {
+                  "byTestId": "git-revert-data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/03ffcae1-b83f-4970-b3d9-04780d3d0780.json"
+                }
+              },
+              {
+                "step": "click",
+                "label": "apply",
+                "target": {
+                  "byTestId": "git-revert-apply"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the error",
+                "target": {
+                  "byTestId": "git-revert-error"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the reload warning",
+                "target": {
+                  "byTestId": "git-reload-warning"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "Ubik reverted, as the refreshed status says",
+                "target": {
+                  "byTestId": "git-change-data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/03ffcae1-b83f-4970-b3d9-04780d3d0780.json"
+                },
+                "present": false,
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: asks for the author when the repository has none",
+            "componentProps": {
+              "authorUnknown": true
+            },
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "the changes",
+                "target": {
+                  "byText": "Book · Ubik"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "change",
+                "label": "the message",
+                "target": {
+                  "byTestId": "git-commit-message"
+                },
+                "value": "Galactic Pot-Healer"
+              },
+              {
+                "step": "click",
+                "label": "commit",
+                "target": {
+                  "byTestId": "git-commit"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the author fields",
+                "target": {
+                  "byTestId": "git-commit-author"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "change",
+                "label": "the author name",
+                "target": {
+                  "byTestId": "git-author-name"
+                },
+                "value": "Ann Designer"
+              },
+              {
+                "step": "change",
+                "label": "the author email",
+                "target": {
+                  "byTestId": "git-author-email"
+                },
+                "value": "ann@example.com"
+              },
+              {
+                "step": "click",
+                "label": "commit again",
+                "target": {
+                  "byTestId": "git-commit"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the new commit",
+                "target": {
+                  "byText": "Galactic Pot-Healer"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "its author",
+                "target": {
+                  "byText": {
+                    "regex": "^Ann Designer, "
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: explains a commit refused while Miroir changes are not saved",
+            "componentProps": {
+              "openMiroirTransaction": true
+            },
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "the changes",
+                "target": {
+                  "byText": "Book · Ubik"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "change",
+                "label": "the message",
+                "target": {
+                  "byTestId": "git-commit-message"
+                },
+                "value": "too early"
+              },
+              {
+                "step": "click",
+                "label": "commit",
+                "target": {
+                  "byTestId": "git-commit"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the explanation",
+                "target": {
+                  "byText": {
+                    "regex": "^Commit the Miroir changes first"
+                  }
+                },
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: creates a branch and checks it out",
+            "steps": [
+              {
+                "step": "click",
+                "label": "open branches",
+                "target": {
+                  "byTestId": "git-tab-branches"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the branches",
+                "target": {
+                  "byTestId": "git-branch-main"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "change",
+                "label": "the branch name",
+                "target": {
+                  "byTestId": "git-new-branch-name"
+                },
+                "value": "topic"
+              },
+              {
+                "step": "click",
+                "label": "create",
+                "target": {
+                  "byTestId": "git-create-branch"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the new branch",
+                "target": {
+                  "byTestId": "git-branch-topic"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "check it out",
+                "target": {
+                  "byTestId": "git-checkout-topic"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "main can be checked out",
+                "target": {
+                  "byTestId": "git-checkout-main"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "topic is current",
+                "target": {
+                  "byTestId": "git-checkout-topic"
+                },
+                "present": false
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: checks out a commit as a detached HEAD, then goes back to the branch",
+            "steps": [
+              {
+                "step": "click",
+                "label": "unfold the history",
+                "target": {
+                  "byTestId": "git-history-toggle"
+                }
+              },
+              {
+                "step": "click",
+                "label": "the first commit",
+                "target": {
+                  "byTestId": "git-commit-1111111111111111111111111111111111111111"
+                }
+              },
+              {
+                "step": "click",
+                "label": "check it out",
+                "target": {
+                  "byTestId": "git-checkout-commit"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the detached banner",
+                "target": {
+                  "byTestId": "git-detached"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "back to the branch",
+                "target": {
+                  "byTestId": "git-back-to-branch"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "no banner",
+                "target": {
+                  "byTestId": "git-detached"
+                },
+                "present": false,
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: explains a checkout refused by uncommitted changes",
+            "componentProps": {
+              "checkoutConflicts": [
+                "data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/03ffcae1-b83f-4970-b3d9-04780d3d0780.json"
+              ]
+            },
+            "steps": [
+              {
+                "step": "click",
+                "label": "open branches",
+                "target": {
+                  "byTestId": "git-tab-branches"
+                }
+              },
+              {
+                "step": "click",
+                "label": "check out feature",
+                "target": {
+                  "byTestId": "git-checkout-feature"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the explanation",
+                "target": {
+                  "byText": {
+                    "regex": "^Uncommitted changes would be overwritten"
+                  }
+                },
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: asks before deleting a branch with commits of its own",
+            "componentProps": {
+              "unmergedBranches": [
+                "feature"
+              ]
+            },
+            "steps": [
+              {
+                "step": "click",
+                "label": "open branches",
+                "target": {
+                  "byTestId": "git-tab-branches"
+                }
+              },
+              {
+                "step": "click",
+                "label": "delete feature",
+                "target": {
+                  "byTestId": "git-delete-branch-feature"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the explanation",
+                "target": {
+                  "byText": {
+                    "regex": "^feature has commits the current branch does not have"
+                  }
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "delete anyway",
+                "target": {
+                  "byTestId": "git-delete-branch-anyway"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the branch is gone",
+                "target": {
+                  "byTestId": "git-branch-feature"
+                },
+                "present": false,
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: lists the local branches, and folds the remote branches and tags",
+            "componentProps": {
+              "status": {
+                "root": "/repo/library",
+                "sectionPaths": {
+                  "model": "model",
+                  "data": "data",
+                  "modelVersion": "modelVersion"
+                },
+                "branches": {
+                  "current": "main",
+                  "head": "2222222222222222222222222222222222222222",
+                  "local": [
+                    "feature",
+                    "main"
+                  ],
+                  "remote": [
+                    "origin/topic-01",
+                    "origin/topic-02",
+                    "origin/topic-03",
+                    "origin/topic-04",
+                    "origin/topic-05",
+                    "origin/topic-06",
+                    "origin/topic-07",
+                    "origin/topic-08",
+                    "origin/topic-09",
+                    "origin/topic-10",
+                    "origin/topic-11",
+                    "origin/topic-12",
+                    "origin/topic-13",
+                    "origin/topic-14",
+                    "origin/topic-15",
+                    "origin/topic-16",
+                    "origin/topic-17",
+                    "origin/topic-18",
+                    "origin/topic-19",
+                    "origin/topic-20",
+                    "origin/topic-21",
+                    "origin/topic-22",
+                    "origin/topic-23",
+                    "origin/topic-24",
+                    "origin/topic-25",
+                    "origin/topic-26",
+                    "origin/topic-27",
+                    "origin/topic-28",
+                    "origin/topic-29",
+                    "origin/topic-30"
+                  ],
+                  "tags": [
+                    "v1",
+                    "v2",
+                    "v3"
+                  ]
+                },
+                "tracking": {
+                  "upstream": "origin/main",
+                  "ahead": 1,
+                  "behind": 0
+                },
+                "remoteUrl": "https://git.example.com/library.git",
+                "files": [
+                  {
+                    "path": "data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/03ffcae1-b83f-4970-b3d9-04780d3d0780.json",
+                    "change": "modified",
+                    "staged": false,
+                    "unstaged": true,
+                    "section": "data",
+                    "entityUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                    "instanceKey": "03ffcae1-b83f-4970-b3d9-04780d3d0780",
+                    "instanceName": "Ubik",
+                    "inApplication": true
+                  },
+                  {
+                    "path": "data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/679a0001-0000-4000-8000-000000000001.json",
+                    "change": "added",
+                    "staged": true,
+                    "unstaged": false,
+                    "section": "data",
+                    "entityUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                    "instanceKey": "679a0001-0000-4000-8000-000000000001",
+                    "instanceName": "Galactic Pot-Healer",
+                    "inApplication": true
+                  }
+                ]
+              }
+            },
+            "steps": [
+              {
+                "step": "click",
+                "label": "open branches",
+                "target": {
+                  "byTestId": "git-tab-branches"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "a local branch",
+                "target": {
+                  "byTestId": "git-branch-main"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the folded remote branches",
+                "target": {
+                  "byText": "Remote branches (30)"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the folded tags",
+                "target": {
+                  "byText": "Tags (3)"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "no remote branch row",
+                "target": {
+                  "byTestId": "git-ref-origin/topic-01"
+                },
+                "present": false,
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "no tag row",
+                "target": {
+                  "byTestId": "git-ref-v1"
+                },
+                "present": false,
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: finds a remote branch by name and checks it out",
+            "componentProps": {
+              "status": {
+                "root": "/repo/library",
+                "sectionPaths": {
+                  "model": "model",
+                  "data": "data",
+                  "modelVersion": "modelVersion"
+                },
+                "branches": {
+                  "current": "main",
+                  "head": "2222222222222222222222222222222222222222",
+                  "local": [
+                    "feature",
+                    "main"
+                  ],
+                  "remote": [
+                    "origin/topic-01",
+                    "origin/topic-02",
+                    "origin/topic-03",
+                    "origin/topic-04",
+                    "origin/topic-05",
+                    "origin/topic-06",
+                    "origin/topic-07",
+                    "origin/topic-08",
+                    "origin/topic-09",
+                    "origin/topic-10",
+                    "origin/topic-11",
+                    "origin/topic-12",
+                    "origin/topic-13",
+                    "origin/topic-14",
+                    "origin/topic-15",
+                    "origin/topic-16",
+                    "origin/topic-17",
+                    "origin/topic-18",
+                    "origin/topic-19",
+                    "origin/topic-20",
+                    "origin/topic-21",
+                    "origin/topic-22",
+                    "origin/topic-23",
+                    "origin/topic-24",
+                    "origin/topic-25",
+                    "origin/topic-26",
+                    "origin/topic-27",
+                    "origin/topic-28",
+                    "origin/topic-29",
+                    "origin/topic-30"
+                  ],
+                  "tags": [
+                    "v1",
+                    "v2",
+                    "v3"
+                  ]
+                },
+                "tracking": {
+                  "upstream": "origin/main",
+                  "ahead": 1,
+                  "behind": 0
+                },
+                "remoteUrl": "https://git.example.com/library.git",
+                "files": [
+                  {
+                    "path": "data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/03ffcae1-b83f-4970-b3d9-04780d3d0780.json",
+                    "change": "modified",
+                    "staged": false,
+                    "unstaged": true,
+                    "section": "data",
+                    "entityUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                    "instanceKey": "03ffcae1-b83f-4970-b3d9-04780d3d0780",
+                    "instanceName": "Ubik",
+                    "inApplication": true
+                  },
+                  {
+                    "path": "data/e8ba151b-d68e-4cc3-9a83-3459d309ccf5/679a0001-0000-4000-8000-000000000001.json",
+                    "change": "added",
+                    "staged": true,
+                    "unstaged": false,
+                    "section": "data",
+                    "entityUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                    "instanceKey": "679a0001-0000-4000-8000-000000000001",
+                    "instanceName": "Galactic Pot-Healer",
+                    "inApplication": true
+                  }
+                ]
+              }
+            },
+            "steps": [
+              {
+                "step": "click",
+                "label": "open branches",
+                "target": {
+                  "byTestId": "git-tab-branches"
+                }
+              },
+              {
+                "step": "change",
+                "label": "part of a name",
+                "target": {
+                  "byTestId": "git-branch-filter"
+                },
+                "value": "topic-07"
+              },
+              {
+                "step": "expectElement",
+                "label": "the matching branch",
+                "target": {
+                  "byTestId": "git-ref-origin/topic-07"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "not another one",
+                "target": {
+                  "byTestId": "git-ref-origin/topic-08"
+                },
+                "present": false,
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "check it out",
+                "target": {
+                  "byTestId": "git-checkout-origin/topic-07"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "a detached HEAD at its commit",
+                "target": {
+                  "byTestId": "git-detached"
+                },
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: shows the remote and how far the branch is from its upstream",
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "the remote URL",
+                "target": {
+                  "byText": {
+                    "regex": "^origin: https://git\\.example\\.com/library\\.git$"
+                  }
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "one commit to push",
+                "target": {
+                  "byTestId": "git-tracking"
+                },
+                "attribute": {
+                  "name": "data-ahead",
+                  "value": "1"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "nothing to pull",
+                "target": {
+                  "byTestId": "git-tracking"
+                },
+                "attribute": {
+                  "name": "data-behind",
+                  "value": "0"
+                }
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: keeps the branch and the remote in the header on every tab",
+            "componentProps": {},
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "the header on Changes",
+                "target": {
+                  "byTestId": "git-header"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the application on Changes",
+                "target": {
+                  "byText": "Library: Git"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the branch on Changes",
+                "target": {
+                  "byTestId": "git-current-branch"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the remote on Changes",
+                "target": {
+                  "byText": {
+                    "regex": "^origin: https://git\\.example\\.com/library\\.git$"
+                  }
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "to push on Changes",
+                "target": {
+                  "byText": "1 to push"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "to pull on Changes",
+                "target": {
+                  "byText": "0 to pull"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "open branches",
+                "target": {
+                  "byTestId": "git-tab-branches"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the header on Branches",
+                "target": {
+                  "byTestId": "git-header"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the application on Branches",
+                "target": {
+                  "byText": "Library: Git"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the branch on Branches",
+                "target": {
+                  "byTestId": "git-current-branch"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the remote on Branches",
+                "target": {
+                  "byText": {
+                    "regex": "^origin: https://git\\.example\\.com/library\\.git$"
+                  }
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "to push on Branches",
+                "target": {
+                  "byText": "1 to push"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "to pull on Branches",
+                "target": {
+                  "byText": "0 to pull"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "open setup",
+                "target": {
+                  "byTestId": "git-tab-setup"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the header on Setup",
+                "target": {
+                  "byTestId": "git-header"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the application on Setup",
+                "target": {
+                  "byText": "Library: Git"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the branch on Setup",
+                "target": {
+                  "byTestId": "git-current-branch"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the remote on Setup",
+                "target": {
+                  "byText": {
+                    "regex": "^origin: https://git\\.example\\.com/library\\.git$"
+                  }
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "to push on Setup",
+                "target": {
+                  "byText": "1 to push"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "to pull on Setup",
+                "target": {
+                  "byText": "0 to pull"
+                },
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: links to Setup when there is no remote",
+            "componentProps": {
+              "noRemote": true
+            },
+            "steps": [
+              {
+                "step": "click",
+                "label": "open branches",
+                "target": {
+                  "byTestId": "git-tab-branches"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "no remote",
+                "target": {
+                  "byTestId": "git-no-remote"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "no URL field on Branches",
+                "target": {
+                  "byTestId": "git-remote-url"
+                },
+                "present": false,
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "set one up",
+                "target": {
+                  "byTestId": "git-open-setup"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the URL field",
+                "target": {
+                  "byTestId": "git-remote-url"
+                },
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: shows only the title and Refresh for a folder with no repository",
+            "componentProps": {
+              "noRepository": "/repo/library"
+            },
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "the header",
+                "target": {
+                  "byTestId": "git-header"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the notice",
+                "target": {
+                  "byTestId": "git-no-repository"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "no Fetch",
+                "target": {
+                  "byTestId": "git-fetch"
+                },
+                "present": false,
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "no remote line",
+                "target": {
+                  "byTestId": "git-no-remote"
+                },
+                "present": false,
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: fetches, then pulls the commits of the upstream",
+            "componentProps": {
+              "remoteBehind": 2
+            },
+            "steps": [
+              {
+                "step": "click",
+                "label": "fetch",
+                "target": {
+                  "byTestId": "git-fetch"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "two commits to pull",
+                "target": {
+                  "byTestId": "git-tracking"
+                },
+                "attribute": {
+                  "name": "data-behind",
+                  "value": "2"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "pull",
+                "target": {
+                  "byTestId": "git-pull"
+                }
+              },
+              {
+                "step": "click",
+                "label": "unfold the history",
+                "target": {
+                  "byTestId": "git-history-toggle"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the pulled commit in the history",
+                "target": {
+                  "byTestId": "git-commit-ppppppppppppppppppppppppppppppppppppppp2"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "nothing left to pull",
+                "target": {
+                  "byTestId": "git-tracking"
+                },
+                "attribute": {
+                  "name": "data-behind",
+                  "value": "0"
+                },
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: pushes the commit of the branch",
+            "steps": [
+              {
+                "step": "click",
+                "label": "push",
+                "target": {
+                  "byTestId": "git-push"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "nothing left to push",
+                "target": {
+                  "byTestId": "git-tracking"
+                },
+                "attribute": {
+                  "name": "data-ahead",
+                  "value": "0"
+                },
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: explains a pull refused because the branches have diverged",
+            "componentProps": {
+              "remoteDiverged": true
+            },
+            "steps": [
+              {
+                "step": "click",
+                "label": "pull",
+                "target": {
+                  "byTestId": "git-pull"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the explanation",
+                "target": {
+                  "byText": {
+                    "regex": "^The branch and its upstream have diverged"
+                  }
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "push",
+                "target": {
+                  "byTestId": "git-push"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the push explanation",
+                "target": {
+                  "byText": {
+                    "regex": "^The remote has commits this branch does not have"
+                  }
+                },
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: keeps a pull refusal on every tab",
+            "componentProps": {
+              "remoteDiverged": true
+            },
+            "steps": [
+              {
+                "step": "click",
+                "label": "pull",
+                "target": {
+                  "byTestId": "git-pull"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the explanation",
+                "target": {
+                  "byText": {
+                    "regex": "^The branch and its upstream have diverged"
+                  }
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "open branches",
+                "target": {
+                  "byTestId": "git-tab-branches"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "still shown on Branches",
+                "target": {
+                  "byText": {
+                    "regex": "^The branch and its upstream have diverged"
+                  }
+                },
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: asks for a token, retries with it and saves it",
+            "componentProps": {
+              "remoteToken": "t0ken"
+            },
+            "steps": [
+              {
+                "step": "click",
+                "label": "fetch",
+                "target": {
+                  "byTestId": "git-fetch"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the credential form",
+                "target": {
+                  "byTestId": "git-credential-form"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "change",
+                "label": "the username",
+                "target": {
+                  "byTestId": "git-credential-username"
+                },
+                "value": "designer"
+              },
+              {
+                "step": "change",
+                "label": "a wrong token",
+                "target": {
+                  "byTestId": "git-credential-token"
+                },
+                "value": "wrong"
+              },
+              {
+                "step": "click",
+                "label": "fetch with it",
+                "target": {
+                  "byTestId": "git-credential-retry"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the refusal",
+                "target": {
+                  "byText": {
+                    "regex": "^The remote refused this token for git\\.example\\.com"
+                  }
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "change",
+                "label": "the token",
+                "target": {
+                  "byTestId": "git-credential-token"
+                },
+                "value": "t0ken"
+              },
+              {
+                "step": "click",
+                "label": "fetch with it again",
+                "target": {
+                  "byTestId": "git-credential-retry"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the saved secret",
+                "target": {
+                  "byText": {
+                    "regex": "^Saved as the secret git\\.git\\.example\\.com"
+                  }
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "no form left",
+                "target": {
+                  "byTestId": "git-credential-form"
+                },
+                "present": false
+              },
+              {
+                "step": "click",
+                "label": "fetch again",
+                "target": {
+                  "byTestId": "git-fetch"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "no question asked",
+                "target": {
+                  "byTestId": "git-credential-form"
+                },
+                "present": false
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: says when a token that worked could not be saved",
+            "componentProps": {
+              "remoteToken": "t0ken",
+              "secretsUnavailable": true
+            },
+            "steps": [
+              {
+                "step": "click",
+                "label": "push",
+                "target": {
+                  "byTestId": "git-push"
+                }
+              },
+              {
+                "step": "change",
+                "label": "the username",
+                "target": {
+                  "byTestId": "git-credential-username"
+                },
+                "value": "designer"
+              },
+              {
+                "step": "change",
+                "label": "the token",
+                "target": {
+                  "byTestId": "git-credential-token"
+                },
+                "value": "t0ken"
+              },
+              {
+                "step": "click",
+                "label": "push with it",
+                "target": {
+                  "byTestId": "git-credential-retry"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the warning",
+                "target": {
+                  "byText": {
+                    "regex": "^The token worked but was not saved: gitAction_setCredential: a wrapping key is required"
+                  }
+                },
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: sets the remote of a repository with none, refusing SSH",
+            "componentProps": {
+              "noRemote": true
+            },
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "no remote",
+                "target": {
+                  "byTestId": "git-no-remote"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "open setup",
+                "target": {
+                  "byTestId": "git-tab-setup"
+                }
+              },
+              {
+                "step": "change",
+                "label": "an SSH URL",
+                "target": {
+                  "byTestId": "git-remote-url"
+                },
+                "value": "git@github.com:owner/library.git"
+              },
+              {
+                "step": "click",
+                "label": "set it",
+                "target": {
+                  "byTestId": "git-set-remote"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the refusal",
+                "target": {
+                  "byText": {
+                    "regex": "^Only http and https remotes are supported"
+                  }
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "change",
+                "label": "the HTTPS URL",
+                "target": {
+                  "byTestId": "git-remote-url"
+                },
+                "value": "https://github.com/owner/library.git"
+              },
+              {
+                "step": "click",
+                "label": "set it",
+                "target": {
+                  "byTestId": "git-set-remote"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the remote URL",
+                "target": {
+                  "byText": {
+                    "regex": "^origin: https://github\\.com/owner/library\\.git$"
+                  }
+                },
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: shows the set-URL refusal in Setup only",
+            "componentProps": {
+              "noRemote": true
+            },
+            "steps": [
+              {
+                "step": "click",
+                "label": "open setup",
+                "target": {
+                  "byTestId": "git-tab-setup"
+                }
+              },
+              {
+                "step": "change",
+                "label": "an SSH URL",
+                "target": {
+                  "byTestId": "git-remote-url"
+                },
+                "value": "git@github.com:owner/library.git"
+              },
+              {
+                "step": "click",
+                "label": "set it",
+                "target": {
+                  "byTestId": "git-set-remote"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the refusal",
+                "target": {
+                  "byText": {
+                    "regex": "^Only http and https remotes are supported"
+                  }
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "open changes",
+                "target": {
+                  "byTestId": "git-tab-changes"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "not on Changes",
+                "target": {
+                  "byText": {
+                    "regex": "^Only http and https remotes are supported"
+                  }
+                },
+                "present": false,
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: shows the Clone panel on the Setup tab",
+            "componentProps": {
+              "withClonePanel": true
+            },
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "no Clone panel on Changes",
+                "target": {
+                  "byTestId": "git-clone-url"
+                },
+                "present": false,
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "open setup",
+                "target": {
+                  "byTestId": "git-tab-setup"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the Clone panel",
+                "target": {
+                  "byTestId": "git-clone-url"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the remote URL field",
+                "target": {
+                  "byTestId": "git-remote-url"
+                },
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: keeps what the Clone panel holds across a tab change",
+            "componentProps": {
+              "withClonePanel": true
+            },
+            "steps": [
+              {
+                "step": "click",
+                "label": "open setup",
+                "target": {
+                  "byTestId": "git-tab-setup"
+                }
+              },
+              {
+                "step": "change",
+                "label": "the repository URL",
+                "target": {
+                  "byTestId": "git-clone-url"
+                },
+                "value": "https://example.org/kept.git"
+              },
+              {
+                "step": "click",
+                "label": "open changes",
+                "target": {
+                  "byTestId": "git-tab-changes"
+                }
+              },
+              {
+                "step": "click",
+                "label": "back to setup",
+                "target": {
+                  "byTestId": "git-tab-setup"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the URL is still there",
+                "target": {
+                  "byTestId": "git-clone-url"
+                },
+                "value": "https://example.org/kept.git",
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: shows no Clone panel while git is off",
+            "componentProps": {
+              "gitEnabled": false,
+              "withClonePanel": true
+            },
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "the notice",
+                "target": {
+                  "byTestId": "git-unavailable"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "no Clone panel",
+                "target": {
+                  "byTestId": "git-clone-url"
+                },
+                "present": false,
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: shows the Clone panel on Setup for a folder with no repository",
+            "componentProps": {
+              "noRepository": "/repo/library",
+              "withClonePanel": true,
+              "view": "setup"
+            },
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "the Clone panel",
+                "target": {
+                  "byTestId": "git-clone-url"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "no repository notice on Setup",
+                "target": {
+                  "byTestId": "git-no-repository"
+                },
+                "present": false,
+                "timeout": 2000
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "miroirTestType": "reactComponentTestSuite",
+        "miroirTestLabel": "GitClonePanel",
+        "component": "GitClonePanel",
+        "componentProps": {},
+        "miroirTests": [
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitClonePanel: clones a repository and installs its only deployment",
+            "componentProps": {
+              "deployments": [
+                {
+                  "deploymentUuid": "679a0010-0002-4000-8000-0000000000a1",
+                  "selfApplication": "679a0010-0001-4000-8000-0000000000a1",
+                  "name": "shelves",
+                  "deploymentFile": "packages/miroir-example-shelves/assets/deployment/679a0010-0002-4000-8000-0000000000a1.json",
+                  "directories": {
+                    "model": "apps/shelves/assets/shelves_model",
+                    "data": "apps/shelves/assets/shelves_data"
+                  },
+                  "alreadyInstalled": false
+                }
+              ]
+            },
+            "steps": [
+              {
+                "step": "change",
+                "label": "the URL",
+                "target": {
+                  "byTestId": "git-clone-url"
+                },
+                "value": "https://git.example.com/owner/shelves.git"
+              },
+              {
+                "step": "click",
+                "label": "clone",
+                "target": {
+                  "byTestId": "git-clone"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "installed",
+                "target": {
+                  "byTestId": "git-installed"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the folder named after the repository",
+                "target": {
+                  "byText": {
+                    "regex": "^Cloned in shelves "
+                  }
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the link to its page",
+                "target": {
+                  "byText": "open its Git page"
+                }
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitClonePanel: lists several deployments to pick from",
+            "componentProps": {
+              "deployments": [
+                {
+                  "deploymentUuid": "679a0010-0002-4000-8000-0000000000a1",
+                  "selfApplication": "679a0010-0001-4000-8000-0000000000a1",
+                  "name": "shelves",
+                  "deploymentFile": "packages/miroir-example-shelves/assets/deployment/679a0010-0002-4000-8000-0000000000a1.json",
+                  "directories": {
+                    "model": "apps/shelves/assets/shelves_model",
+                    "data": "apps/shelves/assets/shelves_data"
+                  },
+                  "alreadyInstalled": true
+                },
+                {
+                  "deploymentUuid": "679a0010-0002-4000-8000-0000000000b1",
+                  "selfApplication": "679a0010-0001-4000-8000-0000000000b1",
+                  "name": "readers",
+                  "deploymentFile": "packages/miroir-example-readers/assets/deployment/679a0010-0002-4000-8000-0000000000b1.json",
+                  "directories": {
+                    "model": "apps/readers/assets/readers_model",
+                    "data": "apps/readers/assets/readers_data"
+                  },
+                  "alreadyInstalled": false
+                }
+              ]
+            },
+            "steps": [
+              {
+                "step": "change",
+                "label": "the URL",
+                "target": {
+                  "byTestId": "git-clone-url"
+                },
+                "value": "https://git.example.com/owner/shelves.git"
+              },
+              {
+                "step": "change",
+                "label": "the folder",
+                "target": {
+                  "byTestId": "git-clone-folder"
+                },
+                "value": "apps/monorepo"
+              },
+              {
+                "step": "click",
+                "label": "clone",
+                "target": {
+                  "byTestId": "git-clone"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "both listed",
+                "target": {
+                  "byTestId": "git-cloned-deployment"
+                },
+                "count": 2,
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "nothing installed yet",
+                "target": {
+                  "byTestId": "git-installed"
+                },
+                "present": false
+              },
+              {
+                "step": "expectElement",
+                "label": "the installed one",
+                "target": {
+                  "byText": "already installed here"
+                }
+              },
+              {
+                "step": "click",
+                "label": "install the other",
+                "target": {
+                  "byTestId": "git-install"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "installed",
+                "target": {
+                  "byTestId": "git-installed"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "no install left",
+                "target": {
+                  "byTestId": "git-install"
+                },
+                "present": false
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitClonePanel: refuses a folder that exists",
+            "componentProps": {
+              "deployments": [
+                {
+                  "deploymentUuid": "679a0010-0002-4000-8000-0000000000a1",
+                  "selfApplication": "679a0010-0001-4000-8000-0000000000a1",
+                  "name": "shelves",
+                  "deploymentFile": "packages/miroir-example-shelves/assets/deployment/679a0010-0002-4000-8000-0000000000a1.json",
+                  "directories": {
+                    "model": "apps/shelves/assets/shelves_model",
+                    "data": "apps/shelves/assets/shelves_data"
+                  },
+                  "alreadyInstalled": false
+                }
+              ],
+              "existingFolders": [
+                "shelves"
+              ]
+            },
+            "steps": [
+              {
+                "step": "change",
+                "label": "the URL",
+                "target": {
+                  "byTestId": "git-clone-url"
+                },
+                "value": "https://git.example.com/owner/shelves.git"
+              },
+              {
+                "step": "click",
+                "label": "clone",
+                "target": {
+                  "byTestId": "git-clone"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the refusal",
+                "target": {
+                  "byTestId": "git-clone-error"
+                },
+                "attribute": {
+                  "name": "data-reason",
+                  "value": "folderNotEmpty"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "its text",
+                "target": {
+                  "byText": "That folder already exists: give the clone another folder name."
+                }
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitClonePanel: says when the repository holds no deployment",
+            "componentProps": {
+              "deployments": []
+            },
+            "steps": [
+              {
+                "step": "change",
+                "label": "the URL",
+                "target": {
+                  "byTestId": "git-clone-url"
+                },
+                "value": "https://git.example.com/owner/shelves.git"
+              },
+              {
+                "step": "click",
+                "label": "clone",
+                "target": {
+                  "byTestId": "git-clone"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the refusal",
+                "target": {
+                  "byTestId": "git-clone-error"
+                },
+                "attribute": {
+                  "name": "data-reason",
+                  "value": "noDeploymentFound"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "no list",
+                "target": {
+                  "byTestId": "git-cloned-deployments"
+                },
+                "present": false
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitClonePanel: asks for a token, clones with it, then saves it",
+            "componentProps": {
+              "deployments": [
+                {
+                  "deploymentUuid": "679a0010-0002-4000-8000-0000000000a1",
+                  "selfApplication": "679a0010-0001-4000-8000-0000000000a1",
+                  "name": "shelves",
+                  "deploymentFile": "packages/miroir-example-shelves/assets/deployment/679a0010-0002-4000-8000-0000000000a1.json",
+                  "directories": {
+                    "model": "apps/shelves/assets/shelves_model",
+                    "data": "apps/shelves/assets/shelves_data"
+                  },
+                  "alreadyInstalled": false
+                }
+              ],
+              "remoteToken": "t0ken"
+            },
+            "steps": [
+              {
+                "step": "change",
+                "label": "the URL",
+                "target": {
+                  "byTestId": "git-clone-url"
+                },
+                "value": "https://git.example.com/owner/shelves.git"
+              },
+              {
+                "step": "click",
+                "label": "clone",
+                "target": {
+                  "byTestId": "git-clone"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the question",
+                "target": {
+                  "byTestId": "git-credential-form"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "nothing installed",
+                "target": {
+                  "byTestId": "git-installed"
+                },
+                "present": false
+              },
+              {
+                "step": "change",
+                "label": "the username",
+                "target": {
+                  "byTestId": "git-credential-username"
+                },
+                "value": "designer"
+              },
+              {
+                "step": "change",
+                "label": "the token",
+                "target": {
+                  "byTestId": "git-credential-token"
+                },
+                "value": "t0ken"
+              },
+              {
+                "step": "click",
+                "label": "clone with it",
+                "target": {
+                  "byTestId": "git-credential-retry"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "installed",
+                "target": {
+                  "byTestId": "git-installed"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "no form left",
+                "target": {
+                  "byTestId": "git-credential-form"
+                },
+                "present": false
+              },
+              {
+                "step": "expectElement",
+                "label": "the saved secret",
+                "target": {
+                  "byText": "Saved as the secret git.git.example.com: the next actions on git.example.com use it."
+                }
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitClonePanel: drops the token question when the URL changes",
+            "componentProps": {
+              "deployments": [
+                {
+                  "deploymentUuid": "679a0010-0002-4000-8000-0000000000a1",
+                  "selfApplication": "679a0010-0001-4000-8000-0000000000a1",
+                  "name": "shelves",
+                  "deploymentFile": "packages/miroir-example-shelves/assets/deployment/679a0010-0002-4000-8000-0000000000a1.json",
+                  "directories": {
+                    "model": "apps/shelves/assets/shelves_model",
+                    "data": "apps/shelves/assets/shelves_data"
+                  },
+                  "alreadyInstalled": false
+                }
+              ],
+              "remoteToken": "t0ken"
+            },
+            "steps": [
+              {
+                "step": "change",
+                "label": "the URL",
+                "target": {
+                  "byTestId": "git-clone-url"
+                },
+                "value": "https://git.example.com/owner/shelves.git"
+              },
+              {
+                "step": "click",
+                "label": "clone",
+                "target": {
+                  "byTestId": "git-clone"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the question",
+                "target": {
+                  "byTestId": "git-credential-form"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "change",
+                "label": "another URL",
+                "target": {
+                  "byTestId": "git-clone-url"
+                },
+                "value": "https://other.example.com/owner/shelves.git"
+              },
+              {
+                "step": "expectElement",
+                "label": "no question for the other host",
+                "target": {
+                  "byTestId": "git-credential-form"
+                },
+                "present": false
+              },
+              {
+                "step": "expectElement",
+                "label": "nothing installed",
+                "target": {
+                  "byTestId": "git-installed"
+                },
+                "present": false
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

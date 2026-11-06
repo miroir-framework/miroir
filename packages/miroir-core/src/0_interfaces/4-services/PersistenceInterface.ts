@@ -148,6 +148,11 @@ export declare interface PersistenceStoreLocalOrRemoteInterface {
     action: LocalCacheAction,
     applicationDeploymentMap: ApplicationDeploymentMap
   ): Action2ReturnType;
+  /**
+   * #679: the store controllers of this process when it owns them (`persistenceStoreAccessMode` local),
+   * for actions that work on a deployment's files (Git); undefined otherwise.
+   */
+  getLocalPersistenceStoreControllerManager?(): PersistenceStoreControllerManagerInterface | undefined;
 }
 
 export interface StoreInterface extends LocalCacheInterface, PersistenceStoreLocalOrRemoteInterface {};

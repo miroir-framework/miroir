@@ -1,0 +1,99 @@
+{
+  "uuid": "02fa934a-fd26-4cce-a9da-0ece94671fc2",
+  "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "parentUuid": "e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd",
+  "parentName": "Runner",
+  "name": "cloneApplicationFromGit",
+  "defaultLabel": "Clone application from Git",
+  "description": "Clones a Git repository (https) into a folder under the deployment root folder, then installs the Miroir deployment it holds (#683). Needs the git process capability.",
+  "definition": {
+    "runnerType": "customRunner",
+    "formMLSchema": {
+      "formMLSchemaType": "mlSchema",
+      "mlSchema": {
+        "type": "object",
+        "definition": {
+          "url": {
+            "type": "string",
+            "tag": {
+              "value": {
+                "defaultLabel": "Repository URL (https)"
+              }
+            }
+          },
+          "folderName": {
+            "type": "string",
+            "tag": {
+              "value": {
+                "defaultLabel": "Folder of the clone, under the deployment root folder"
+              }
+            }
+          },
+          "deploymentUuid": {
+            "type": "string",
+            "tag": {
+              "value": {
+                "defaultLabel": "Deployment to install, when the repository holds several"
+              }
+            },
+            "optional": true
+          }
+        }
+      }
+    },
+    "compositeActionSequence": {
+      "actionType": "compositeActionSequence",
+      "actionLabel": "cloneApplicationFromGitSequence",
+      "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+      "payload": {
+        "actionSequence": [
+          {
+            "actionType": "gitAction_clone",
+            "actionLabel": "clone",
+            "endpoint": "a7f243cb-9345-425a-918d-4e433a94f4bf",
+            "payload": {
+              "application": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+              "url": {
+                "transformerType": "getFromParameters",
+                "interpolation": "build",
+                "referencePath": [
+                  "cloneApplicationFromGit",
+                  "url"
+                ]
+              },
+              "folderName": {
+                "transformerType": "getFromParameters",
+                "interpolation": "build",
+                "referencePath": [
+                  "cloneApplicationFromGit",
+                  "folderName"
+                ]
+              }
+            }
+          },
+          {
+            "actionType": "gitAction_installClonedDeployment",
+            "actionLabel": "installClonedDeployment",
+            "endpoint": "a7f243cb-9345-425a-918d-4e433a94f4bf",
+            "payload": {
+              "application": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+              "folderName": {
+                "transformerType": "getFromParameters",
+                "interpolation": "build",
+                "referencePath": [
+                  "cloneApplicationFromGit",
+                  "folderName"
+                ]
+              },
+              "deploymentUuid": {
+                "transformerType": "mustacheStringTemplate",
+                "interpolation": "build",
+                "definition": "{{cloneApplicationFromGit.deploymentUuid}}"
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

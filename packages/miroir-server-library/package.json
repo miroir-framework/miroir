@@ -70,6 +70,7 @@
     "miroir-app-admin": "*",
     "miroir-app-miroir": "*",
     "@miroir-framework/env": "*",
+    "@miroir-framework/git-isomorphic": "*",
     "miroir-example-library": "*",
     "miroir-localcache-redux": "*",
     "@miroir-framework/store-filesystem": "*",

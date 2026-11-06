@@ -22,6 +22,8 @@ export type ProcessCapabilities = {
   creatableStoreTypes: StorageType[];
   storeAdministration: boolean;
   designerTools: boolean;
+  /** #679: Git operations on the repository of a filesystem deployment (`features.git`). */
+  git: boolean;
 };
 
 export type ProcessCapabilityName =
@@ -30,7 +32,8 @@ export type ProcessCapabilityName =
   | "agent"
   | "storeAdministration"
   | "availableStoreTypes"
-  | "designerTools";
+  | "designerTools"
+  | "git";
 
 type ProcessCapabilitiesConfig = {
   features?: {
@@ -40,6 +43,8 @@ type ProcessCapabilitiesConfig = {
     /** #409: read as `agentBackend: "cursor"` when `agentBackend` is absent, for one release. */
     cursor?: boolean;
     designerTools?: boolean;
+    /** #679: Git operations from the UI, off unless true. */
+    git?: boolean;
   };
 };
 
@@ -109,6 +114,7 @@ export function getProcessCapabilities({
     availableStoreTypes,
     creatableStoreTypes: availableStoreTypes.filter((storageType) => storageType !== "bundled"),
     storeAdministration: hasNonBundledAdminStorageType(adminStoreFactoryRegister),
+    git: features?.git === true,
   };
 }
 

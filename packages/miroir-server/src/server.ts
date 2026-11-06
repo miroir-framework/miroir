@@ -527,6 +527,12 @@ const capabilities = getProcessCapabilities({
   adminStoreFactoryRegister: ConfigurationService.configurationService.adminStoreFactoryRegister,
 });
 domainController.setProcessCapabilities(capabilities);
+// #679: the Git implementation loads on the first Git action, and only with the git feature on
+if (capabilities.git) {
+  ConfigurationService.configurationService.registerGitRepositoryFactory(() =>
+    import("@miroir-framework/git-isomorphic").then((m) => m.createGitRepositoryFactory()),
+  );
+}
 
 // TLS certificates: present → HTTPS on the API port (listener at the end of this file).
 // run scripts/setup-https.sh (or .ps1) once to generate the certificates.

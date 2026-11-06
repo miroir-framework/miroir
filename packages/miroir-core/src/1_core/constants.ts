@@ -1,3 +1,4 @@
+import { GIT_ACTION_TYPES } from "../0_interfaces/3_controllers/GitAction";
 import { Action2VoidSuccess } from "../0_interfaces/2_domain/DomainElement";
 
 export const cleanLevel = "1";
@@ -16,6 +17,8 @@ export const BLOB_SIZE_WARNING_THRESHOLD = 5 * 1024 * 1024; // 5MB in bytes
 export const SERVER_ROUTED_MIROIR_ACTION_TYPES: readonly string[] = [
   "probeExternalService",
   "setExternalServiceCredential",
+  // #679: Git actions run where the deployment's files are
+  ...GIT_ACTION_TYPES,
 ];
 
 export function isServerRoutedMiroirAction(action: unknown): boolean {

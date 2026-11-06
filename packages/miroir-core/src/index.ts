@@ -804,6 +804,81 @@ export {
   isAgentBackendAllowed,
 } from "./1_core/processCapabilities";
 export type { AgentBackend, ProcessCapabilities, ProcessCapabilityName } from "./1_core/processCapabilities";
+export type {
+  GitActionErrorReason,
+  GitBranches,
+  GitAheadBehind,
+  GitCheckoutOutcome,
+  GitCommitSummary,
+  GitCredential,
+  GitRemoteOptions,
+  GitFileDiff,
+  GitFileStatus,
+  GitPerson,
+  GitRepositoryFactory,
+  GitRepositoryFactoryLoader,
+  GitRepositoryErrorCode,
+  GitRepositoryInterface,
+  GitRevertOutcome,
+} from "./0_interfaces/4-services/GitRepositoryInterface";
+export { GitRepositoryError } from "./0_interfaces/4-services/GitRepositoryInterface";
+export {
+  GIT_ACTION_TYPES,
+  GIT_ACTIONS_KEEPING_FILES,
+  GIT_ACTIONS_NEEDING_SAVED_MIROIR_CHANGES,
+  GIT_ENDPOINT_UUID,
+  isGitAction,
+} from "./0_interfaces/3_controllers/GitAction";
+export type {
+  GitAction,
+  GitActionType,
+  GitBranchResult,
+  GitCheckoutAction,
+  GitCheckoutResult,
+  GitCommitAction,
+  GitCommitResult,
+  GitCreateBranchAction,
+  GitDeleteBranchAction,
+  GitRevertAction,
+  GitRevertResult,
+  GitStageAction,
+  GitStageResult,
+  GitTouchedDeployment,
+  GitUnstageAction,
+  GitSetRemoteAction,
+  GitPayloadCredential,
+  GitFetchAction,
+  GitPullAction,
+  GitPushAction,
+  GitSetCredentialAction,
+  GitTracking,
+  GitRemoteResult,
+  GitPullResult,
+  GitSetCredentialResult,
+  GitCloneAction,
+  GitCloneResult,
+  GitClonedDeploymentSummary,
+  GitInstallClonedDeploymentAction,
+  GitInstallClonedDeploymentResult,
+  GitCommitFilesAction,
+  GitCommitFilesResult,
+  GitDiffAction,
+  GitDiffResult,
+  GitInitAction,
+  GitInitResult,
+  GitLogAction,
+  GitLogResult,
+  GitPathDescription,
+  GitRepositoryDescription,
+  GitStatusAction,
+  GitStatusResult,
+} from "./0_interfaces/3_controllers/GitAction";
+export { gitPathIsInSections, gitPathToInstance } from "./2_domain/GitPathNaming";
+export type { GitPathInstance, GitSectionPaths } from "./2_domain/GitPathNaming";
+export { GIT_LINE_DIFF_CELL_LIMIT, gitLineDiff } from "./2_domain/GitLineDiff";
+export type { GitDiffLine } from "./2_domain/GitLineDiff";
+export { findClonedDeployments } from "./2_domain/GitClonedDeployments";
+export type { ClonedDeployment, ClonedDeploymentScan } from "./2_domain/GitClonedDeployments";
 export {
   FAIL_CLOSED_PROCESS_CAPABILITIES,
   fetchProcessCapabilities,
@@ -1820,6 +1895,7 @@ export {
 export {
   authenticateRequest,
   authorizeDeployment,
+  authorizeDesignerOnlyAction,
   type AccessDirectoryLoader,
   type AuthenticatedRequest,
   type AuthenticationGate,

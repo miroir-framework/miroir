@@ -4,9 +4,12 @@
  * Admin directory for each request, so a deactivated user or a new grant is seen at once.
  */
 
+import { GIT_ACTION_TYPES } from "../../0_interfaces/3_controllers/GitAction.js";
 import {
+  ACCESS_DENIED,
   ALWAYS_ALLOW_APPLICATION_TARGETS,
   assertAccessForDeployment,
+  isDesignerToolsVisible,
   type AccessDecision,
   type AccessDeployment,
   type AccessGrant,
@@ -105,4 +108,30 @@ export function authorizeDeployment(
     }
   }
   return decision!;
+}
+
+/** Actions only a designer runs (#679 D13): a grant on the application is not enough. */
+const DESIGNER_ONLY_ACTION_TYPES: readonly string[] = GIT_ACTION_TYPES;
+
+/**
+ * #679 D13: with authentication on, a designer-only action (the Git actions) needs what the designer
+ * tools need, a grant on Admin; Admin and Miroir being always allowed does not count here.
+ */
+export function authorizeDesignerOnlyAction(
+  enabled: boolean,
+  authenticated: { principal: AuthPrincipal | undefined; access: LoadedAccessDirectory | undefined },
+  body: unknown,
+): AccessDecision {
+  const container = body as { action?: { actionType?: unknown }; actionType?: unknown } | undefined;
+  const actionType = container?.action?.actionType ?? container?.actionType;
+  if (!enabled || typeof actionType !== "string" || !DESIGNER_ONLY_ACTION_TYPES.includes(actionType)) {
+    return { allowed: true };
+  }
+  const designer = isDesignerToolsVisible({
+    designerTools: true,
+    authEnabled: true,
+    principal: authenticated.principal,
+    grants: authenticated.access?.grants ?? [],
+  });
+  return designer ? { allowed: true } : { allowed: false, status: 403, body: ACCESS_DENIED };
 }

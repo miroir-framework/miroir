@@ -87,7 +87,7 @@ describe("the packaged Electron application", () => {
       [ADMIN_DEPLOYMENT, MIROIR_DEPLOYMENT].map((uuid) => `${uuid}.json`).sort(),
     );
     expect(server.serverConfig.server.rootApiUrl).toBe(ELECTRON_LOOPBACK_ROOT_API_URL);
-    expect(server.serverConfig.features).toEqual({ designerTools: true, ai: true, mcp: true });
+    expect(server.serverConfig.features).toEqual({ designerTools: true, ai: true, mcp: true, git: true });
     expect(server.clientConfig.client.rootApiUrl).toBe(ELECTRON_LOOPBACK_ROOT_API_URL);
     expect(server.clientConfig.client.emulateServer).toBe(true);
   });
