@@ -507,7 +507,9 @@ export function StoredRunnerView(props: {
                       action={{
                         actionType: "onSubmit",
                         onSubmit: async (values, formikHelpers) => {
-                          await handleAsyncAction(async () => {
+                          // #225: the outcome goes back to RunnerView, which shows a refusal inline
+                          let outcome: unknown;
+                          await handleAsyncAction(async () => (outcome = await (async () => {
                             const args =
                               values && typeof values === "object" && runnerName in values
                                 ? (values[runnerName] as Record<string, unknown>)
@@ -543,7 +545,8 @@ export function StoredRunnerView(props: {
                             }
                             formikHelpers.setSubmitting(false);
                             return { status: "ok" };
-                          }, "MCP tool call successful", "StoredRunnerView mcpToolRunner");
+                          })()), "MCP tool call successful", "StoredRunnerView mcpToolRunner");
+                          return outcome;
                         },
                       }}
                     />
@@ -662,7 +665,7 @@ export const RunnerView = <T extends Record<string, any>>(props: RunnerProps<T>)
 
     switch (action.actionType) {
       case "onSubmit": {
-        return action.onSubmit(values, formikHelpers);
+        return recordRunOutcome(await action.onSubmit(values, formikHelpers));
         break;
       }
       case "compositeActionSequence": 
