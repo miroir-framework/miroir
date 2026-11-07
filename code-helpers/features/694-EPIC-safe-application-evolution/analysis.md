@@ -360,11 +360,11 @@ No UI emits `alterEntityAttribute` today: the Entity editor (`packages/miroir-re
 
 | # | Item | Holds | Depends on |
 |---|---|---|---|
-| 6 | **Trace revival and model states** | Q16 to Q20, Q24, Q28, Q29 (the checks at freeze and at Git commit), Q30; D3, D4 (`ModelStateSource`, replay, all-types attribute-level diff), D11; the `versioned-git` and `evolutionTraces` parameters; trace records and a writable `modelVersion` in both settings; the capability gate on model commits | #696 |
+| 6 | **#708** Trace revival and model states | Q16 to Q20, Q24, Q28, Q29 (the checks at freeze and at Git commit), Q30; D3, D4 (`ModelStateSource`, replay, all-types attribute-level diff), D11; the `versioned-git` and `evolutionTraces` parameters; trace records and a writable `modelVersion` in both settings; the capability gate on model commits | #696 |
 | 7 | **#9 rescoped**: Migration, generation, runner, state record | Q10, Q21 to Q23, Q29 (the generation check); D1, D2 (phases, idempotent storage creation on every store, resumable runner), D5 (authoring and following roles), D10, D12 | 6 |
 | 8 | **#215** paired data migrations | fill steps tied to structure steps; the rename case of section 5.3 | 7 |
-| 9 | **Restore points and rollback** | Q11, Q31, Q32; D6; the add-only reconciliation shared with item 7 (D2) | 7 |
-| 10 | **Experiments** | the two test cases of section 9, built up as items 6 to 9 land; D7; a failure case (a run stopped halfway, then resumed) | 6, 7, 9 (8 for the rename variant) |
+| 9 | **#709** Restore points and rollback | Q11, Q31, Q32; D6; the add-only reconciliation shared with item 7 (D2) | 7 |
+| 10 | **#710** Experiments | the two test cases of section 9, built up as items 6 to 9 land; D7; a failure case (a run stopped halfway, then resumed) | 6, 7, 9 (8 for the rename variant) |
 | 11 | **Application feature switches** (new) | D8 | 10 |
 
 ## 9. The two first experiments
@@ -395,4 +395,4 @@ Once the goals and D1 to D12 are confirmed:
 2. Create the issue for item 11 if D8 is accepted.
 3. Write a TDD plan per item, following `miroir-analysis-to-tdd-plan`.
 
-The issues for items 6, 9 and 10 are created with this analysis.
+The issues for items 6, 9 and 10 exist: #708, #709 and #710.
