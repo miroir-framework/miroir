@@ -129,9 +129,10 @@ Library is the example: `Book` (attributes today: `name`, `year`, `citation`, `a
 
 1. **Create a version.** The designer commits from the Git page, then tags the commit `1.0.0` (D3; the tag carries the version name, D10). With traces on, the Git commit checks that the model at `HEAD` plus the trace records being committed equal the working model (Q29). Otherwise it refuses to commit the application's files.
 2. **Change the model.** Same as in N. The trace record is a new file under `modelVersion/`, committed with the model change. New files never conflict in a merge (Q16).
-3. **Commit and tag `1.1.0`.**
-4. **Prepare the migration.** Same as in N, with the two model states read from the two tags (D4). The `Migration` instance is committed.
+3. **Commit.**
+4. **Prepare the migration, then tag `1.1.0`.** Same as in N, with the two model states read from tag `1.0.0` and from `HEAD` (D4). The `Migration` instance is committed, and only then is the commit tagged `1.1.0`, so that a migration into a version is part of that version.
 5. **Move the test deployment.** The test environment has its own clone, and its data section is outside the clone (D7). The runner:
+   - reads the `Migration` at tag `1.1.0` without a checkout (D4) and copies it into the state record, so that a restarted run finds its remaining steps whatever is checked out;
    - runs the expand steps on the current checkout;
    - checks out `1.1.0` on behalf of the operator. The reload rereads the model (#681, `loadConfigurationFromPersistenceStore`) and the storage is reconciled add-only (D2). Tracing is suppressed, so the clone stays clean;
    - runs the fill and contract steps.
@@ -208,7 +209,9 @@ How D2-d works:
 - **Contract** steps explicitly drop storage (a column or a storage space) that the target model no longer declares.
 - Reconciliation also runs after any change to an Entity row through the instance editor, so the authoring deployment's storage follows its own edits. It never runs on a plain boot.
 - Every store gets an idempotent `createStorageSpaceForInstancesOfEntityIfMissing`.
-- The runner checks that the deployment is at the `from` version, and writes each finished step into the state record. A run that stops halfway resumes from the next step. Tracing is suppressed during a run.
+- The runner checks that the deployment is at the `from` version and copies the `Migration` into the state record before its first step, so a restarted run does not depend on what the model section holds. It writes each finished step into the state record, and a run that stops halfway resumes from the first step not recorded.
+- A step can stop after writing data and before its record is saved, so every data step must be safe to repeat. Generated steps are written that way (for example, fill `isbn` only where it is empty). A step edited or written by hand is declared repeatable by the designer, as for `backwardCompatible` (D1). Where the store has transactions (SQL), the step's writes and its record commit together.
+- Tracing is suppressed during a run.
 
 **Decision:** D2-d. Item 7 owns the runner, the phases and the idempotent storage creation. Item 9 owns the restore and shares the reconciliation. The experiments include a SQL run.
 
@@ -376,13 +379,13 @@ Both run on Library, in the filesystem nonreg tier, as MiroirTests tagged `files
 | Setup | Library with a `modelVersion` section (as `libraryVersionedTestbedInitParams` does today) | Library copied into a fresh directory, `gitAction_init`, first commit; data outside the work tree (D7) |
 | Version 1 | freeze `1.0.0` | commit, tag `1.0.0` |
 | Change | add optional `Book.isbn` | same |
-| Version 2 | freeze `1.1.0`; the agreement check passes | commit (agreement check), tag `1.1.0` |
-| Migration | generate `1.0.0` → `1.1.0`: a jump and one empty fill step, all backward-compatible; the test fills it | generate from the tags |
+| Version 2 | freeze `1.1.0`; the agreement check passes | commit (agreement check) |
+| Migration | generate `1.0.0` → `1.1.0`: a jump and one empty fill step, all backward-compatible; the test fills it | generate from tag `1.0.0` to `HEAD`, commit the migration, tag `1.1.0` |
 | Apply | restore `1.0.0`, re-seed the fixture, mark as following, run the migration; check data and state record; run it again and check that nothing changes | checkout `1.0.0`, re-seed, run, check |
 | Rollback | restore `1.0.0`: allowed, and `isbn` stays in storage | checkout `1.0.0`: allowed |
 | Breaking change | as author: remove `Book.isbn`, freeze `1.2.0`, generate: the contract step is flagged. Then as follower: apply `1.1.0` → `1.2.0`, and restore `1.1.0`: refused, naming the migration | same with tags |
 | Edit outside Miroir | change a Report file by hand: freeze refused with the difference; re-baseline; freeze passes | same, at Git commit; re-baseline marker committed (D11) |
-| Failure | stop the runner after its first step, then run again: it resumes and ends in the same state | same |
+| Failure | stop the runner after its first step, and again after a data write but before that step's record; each time, run again: it resumes and ends in the same state | same |
 
 A third run of E1, on PostgreSQL, checks D2: the migration adds the columns, the restore keeps them, and a second run does not empty any table.
 
