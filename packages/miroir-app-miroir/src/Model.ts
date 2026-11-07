@@ -41,6 +41,10 @@ import {
   entityApplicationVersionCrossThemeVersion,
   entityHistoricalTransformerDefinitionVersion,
   entityApplicationVersionCrossTransformerDefinitionVersion,
+  entityHistoricalMlSchemaVersion,
+  entityApplicationVersionCrossMlSchemaVersion,
+  entityHistoricalMiroirTestVersion,
+  entityApplicationVersionCrossMiroirTestVersion,
   entityDefinitionApplicationEvolutionTrace,
   entityDefinitionApplicationEvolutionTraceEvent,
   entityDefinitionApplicationVersionCrossEntityDefinition,
@@ -90,6 +94,10 @@ import {
   entityVersionApplicationVersionCrossThemeVersion,
   entityVersionHistoricalTransformerDefinitionVersion,
   entityVersionApplicationVersionCrossTransformerDefinitionVersion,
+  entityVersionHistoricalMlSchemaVersion,
+  entityVersionApplicationVersionCrossMlSchemaVersion,
+  entityVersionHistoricalMiroirTestVersion,
+  entityVersionApplicationVersionCrossMiroirTestVersion,
   instanceEndpointV1,
   instanceEndpointVersionV1,
   mlSchemaMlMiroirBootstrapSchema,
@@ -226,6 +234,10 @@ export const defaultMiroirMetaModelEntityNameToAttributeName: Record<string, str
   ApplicationVersionCrossTransformerDefinitionVersion:
     "applicationVersionCrossTransformerDefinitionVersion",
   TransformerDefinitionVersion: "transformerDefinitionVersions",
+  ApplicationVersionCrossMlSchemaVersion: "applicationVersionCrossMlSchemaVersion",
+  MlSchemaVersion: "mlSchemaVersions",
+  ApplicationVersionCrossMiroirTestVersion: "applicationVersionCrossMiroirTestVersion",
+  MiroirTestVersion: "miroirTestVersions",
 };
 export const defaultMiroirMetaModel: MetaModel = {
   applicationUuid: selfApplicationMiroir.uuid,
@@ -268,6 +280,10 @@ export const defaultMiroirMetaModel: MetaModel = {
     entityHistoricalThemeVersion as Entity,
     entityApplicationVersionCrossTransformerDefinitionVersion as Entity,
     entityHistoricalTransformerDefinitionVersion as Entity,
+    entityApplicationVersionCrossMlSchemaVersion as Entity,
+    entityHistoricalMlSchemaVersion as Entity,
+    entityApplicationVersionCrossMiroirTestVersion as Entity,
+    entityHistoricalMiroirTestVersion as Entity,
     // #647 — devData Entities (rows routed to the devData section by getApplicationSection)
     entityBundleSizeMeasurement as Entity,
     entityPageLoadMeasurement as Entity,
@@ -306,6 +322,10 @@ export const defaultMiroirMetaModel: MetaModel = {
     entityVersionApplicationVersionCrossThemeVersion as EntityVersion,
     entityVersionHistoricalTransformerDefinitionVersion as EntityVersion,
     entityVersionApplicationVersionCrossTransformerDefinitionVersion as EntityVersion,
+    entityVersionHistoricalMlSchemaVersion as EntityVersion,
+    entityVersionApplicationVersionCrossMlSchemaVersion as EntityVersion,
+    entityVersionHistoricalMiroirTestVersion as EntityVersion,
+    entityVersionApplicationVersionCrossMiroirTestVersion as EntityVersion,
   ],
   endpoints: [
     deploymentEndpointV1 as any as EndpointDefinition,
@@ -377,6 +397,10 @@ export const defaultMiroirMetaModel: MetaModel = {
   themeVersions: [],
   applicationVersionCrossTransformerDefinitionVersion: [],
   transformerDefinitionVersions: [],
+  applicationVersionCrossMlSchemaVersion: [],
+  mlSchemaVersions: [],
+  applicationVersionCrossMiroirTestVersion: [],
+  miroirTestVersions: [],
   tests: [
     miroirTest_tr_admin_duplicateApplicationModel as MiroirTestDefinition,
     miroirTest_fn_tools_alterObjectAtPath as MiroirTestDefinition,
@@ -484,6 +508,10 @@ export const miroirModelInitializeEntityVersionInstances: EntityVersion[] = [
   entityVersionHistoricalThemeVersion as EntityVersion,
   entityVersionApplicationVersionCrossTransformerDefinitionVersion as EntityVersion,
   entityVersionHistoricalTransformerDefinitionVersion as EntityVersion,
+  entityVersionApplicationVersionCrossMlSchemaVersion as EntityVersion,
+  entityVersionHistoricalMlSchemaVersion as EntityVersion,
+  entityVersionApplicationVersionCrossMiroirTestVersion as EntityVersion,
+  entityVersionHistoricalMiroirTestVersion as EntityVersion,
 ];
 
 /** EntityVersion rows upserted immediately after createEntity(entityEntityVersion). */
@@ -536,6 +564,10 @@ export const miroirModelInitializeCreateEntityOrder: Entity[] = entitiesInBootst
   entityHistoricalThemeVersion.uuid!,
   entityApplicationVersionCrossTransformerDefinitionVersion.uuid!,
   entityHistoricalTransformerDefinitionVersion.uuid!,
+  entityApplicationVersionCrossMlSchemaVersion.uuid!,
+  entityHistoricalMlSchemaVersion.uuid!,
+  entityApplicationVersionCrossMiroirTestVersion.uuid!,
+  entityHistoricalMiroirTestVersion.uuid!,
   // #647: devData Entities; their instances live in the devData section, created there on first write
   entityBundleSizeMeasurement.uuid!,
   entityPageLoadMeasurement.uuid!,

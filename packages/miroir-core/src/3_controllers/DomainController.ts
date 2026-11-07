@@ -56,6 +56,10 @@ import {
   entityHistoricalThemeVersion,
   entityApplicationVersionCrossTransformerDefinitionVersion,
   entityHistoricalTransformerDefinitionVersion,
+  entityApplicationVersionCrossMlSchemaVersion,
+  entityHistoricalMlSchemaVersion,
+  entityApplicationVersionCrossMiroirTestVersion,
+  entityHistoricalMiroirTestVersion,
   selfApplicationMiroir,
   selfApplicationModelBranchMiroirMasterBranch,
   selfApplicationVersionInitialMiroirVersion
@@ -115,6 +119,7 @@ import {
 import {
   loadVersionHistoryFreezeSlice,
   mergeVersionHistoryIntoFreezeMetaModel,
+  selectEntitiesToFreeze,
   planFreezeApplicationVersionFromMetaModel,
   type FreezeApplicationVersionPlan,
   type FreezeMetaModelSlice,
@@ -1775,6 +1780,26 @@ export class DomainController implements DomainControllerInterface, DomainContro
       return tdvResult;
     }
 
+    const msvResult = await persistBatch(
+      "freezeMlSchemaVersions",
+      plan.mlSchemaVersions as EntityInstance[],
+      entityHistoricalMlSchemaVersion.uuid,
+      plan.mlSchemaVersionApplicationSection,
+    );
+    if (msvResult instanceof Action2Error) {
+      return msvResult;
+    }
+
+    const mtvResult = await persistBatch(
+      "freezeMiroirTestVersions",
+      plan.miroirTestVersions as EntityInstance[],
+      entityHistoricalMiroirTestVersion.uuid,
+      plan.miroirTestVersionApplicationSection,
+    );
+    if (mtvResult instanceof Action2Error) {
+      return mtvResult;
+    }
+
     const crossEvResult = await persistBatch(
       "freezeCrossEntityVersions",
       plan.crossEntityVersions as EntityInstance[],
@@ -1845,10 +1870,30 @@ export class DomainController implements DomainControllerInterface, DomainContro
       return crossThResult;
     }
 
-    return persistBatch(
+    const crossTdResult = await persistBatch(
       "freezeCrossTransformerDefinitionVersions",
       plan.crossTransformerDefinitionVersions as EntityInstance[],
       entityApplicationVersionCrossTransformerDefinitionVersion.uuid,
+      historySection,
+    );
+    if (crossTdResult instanceof Action2Error) {
+      return crossTdResult;
+    }
+
+    const crossMsResult = await persistBatch(
+      "freezeCrossMlSchemaVersions",
+      plan.crossMlSchemaVersions as EntityInstance[],
+      entityApplicationVersionCrossMlSchemaVersion.uuid,
+      historySection,
+    );
+    if (crossMsResult instanceof Action2Error) {
+      return crossMsResult;
+    }
+
+    return persistBatch(
+      "freezeCrossMiroirTestVersions",
+      plan.crossMiroirTestVersions as EntityInstance[],
+      entityApplicationVersionCrossMiroirTestVersion.uuid,
       historySection,
     );
   }
@@ -2906,6 +2951,41 @@ export class DomainController implements DomainControllerInterface, DomainContro
             }
           }
 
+          // #230 — MlSchemaVersion / MiroirTestVersion history Entities, with their Cross Entities.
+          const fullSnapshotHistoryEntities = [
+            entityApplicationVersionCrossMlSchemaVersion,
+            entityHistoricalMlSchemaVersion,
+            entityApplicationVersionCrossMiroirTestVersion,
+            entityHistoricalMiroirTestVersion,
+          ] as Entity[];
+          for (const historyEntity of fullSnapshotHistoryEntities) {
+            if (metaModel.entities.some((e) => e.uuid === historyEntity.uuid)) {
+              continue;
+            }
+            const ensureHistoryEntity = await this.handleModelAction(
+              {
+                actionType: "createEntity",
+                actionLabel: `freezeEnsure${historyEntity.name}Entity`,
+                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+                payload: {
+                  application: payload.application,
+                  transactional: false,
+                  entities: [historyEntity],
+                },
+              },
+              applicationDeploymentMap,
+              targetModelEnvironment,
+            );
+            if (ensureHistoryEntity instanceof Action2Error) {
+              return new Action2Error(
+                "FailedToHandleAction",
+                `freezeApplicationVersion failed to ensure ${historyEntity.name} Entity exists`,
+                [],
+                ensureHistoryEntity,
+              );
+            }
+          }
+
           // Freeze application Entities only — exclude MetaModel bootstrap Entities
           // (Entity, Report, Cross, …) that may appear in currentModel.entities.
           const metaBootstrapUuids = new Set(
@@ -2926,8 +3006,14 @@ export class DomainController implements DomainControllerInterface, DomainContro
           metaBootstrapUuids.add(themeVersionEntityUuid);
           metaBootstrapUuids.add(crossTransformerDefinitionEntityUuid);
           metaBootstrapUuids.add(transformerDefinitionVersionEntityUuid);
-          const applicationEntities = metaModel.entities.filter(
-            (e) => !metaBootstrapUuids.has(e.uuid),
+          for (const historyEntity of fullSnapshotHistoryEntities) {
+            metaBootstrapUuids.add(historyEntity.uuid);
+          }
+          // #230: for Miroir itself, the meta-model Entities are the application's Entities.
+          const applicationEntities = selectEntitiesToFreeze(
+            payload.application,
+            metaModel.entities,
+            metaBootstrapUuids,
           );
 
           const freezeMetaModelSlice: FreezeMetaModelSlice = {
@@ -2958,6 +3044,13 @@ export class DomainController implements DomainControllerInterface, DomainContro
             applicationVersionCrossTransformerDefinitionVersion:
               metaModel.applicationVersionCrossTransformerDefinitionVersion,
             transformerDefinitionVersions: metaModel.transformerDefinitionVersions,
+            mlSchemas: metaModel.mlSchemas,
+            tests: metaModel.tests,
+            applicationVersionCrossMlSchemaVersion: metaModel.applicationVersionCrossMlSchemaVersion,
+            mlSchemaVersions: metaModel.mlSchemaVersions,
+            applicationVersionCrossMiroirTestVersion:
+              metaModel.applicationVersionCrossMiroirTestVersion,
+            miroirTestVersions: metaModel.miroirTestVersions,
           };
           const persistedHistory = await this.loadModelVersionHistoryForFreeze(
             payload.application,
@@ -2999,6 +3092,14 @@ export class DomainController implements DomainControllerInterface, DomainContro
               enrichedMetaModel.applicationVersionCrossTransformerDefinitionVersion,
             transformerDefinitionVersions: enrichedMetaModel.transformerDefinitionVersions,
             transformerDefinitions: enrichedMetaModel.transformerDefinitions,
+            applicationVersionCrossMlSchemaVersion:
+              enrichedMetaModel.applicationVersionCrossMlSchemaVersion,
+            mlSchemaVersions: enrichedMetaModel.mlSchemaVersions,
+            mlSchemas: enrichedMetaModel.mlSchemas,
+            applicationVersionCrossMiroirTestVersion:
+              enrichedMetaModel.applicationVersionCrossMiroirTestVersion,
+            miroirTestVersions: enrichedMetaModel.miroirTestVersions,
+            tests: enrichedMetaModel.tests,
           });
 
           const persistResult = await this.persistFreezeApplicationVersionPlan(

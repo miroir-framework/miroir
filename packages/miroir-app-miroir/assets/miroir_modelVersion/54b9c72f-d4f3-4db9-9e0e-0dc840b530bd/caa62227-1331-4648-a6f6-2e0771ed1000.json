@@ -1,0 +1,63 @@
+{
+  "uuid": "caa62227-1331-4648-a6f6-2e0771ed1000",
+  "parentName": "EntityVersion",
+  "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+  "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+  "entityUuid": "81af0bd1-388b-4f80-aabc-4004578c7ded",
+  "name": "ApplicationVersionCrossMiroirTestVersion",
+  "conceptLevel": "Model",
+  "description": "Cross mapping ApplicationVersion to MiroirTestVersion.",
+  "cache": {
+    "cacheAllInstancesOnRefresh": true
+  },
+  "viewAttributes": [
+    "applicationVersion",
+    "miroirTestVersion",
+    "uuid"
+  ],
+  "mlSchema": {
+    "type": "object",
+    "extend": {
+      "type": "schemaReference",
+      "definition": {
+        "eager": true,
+        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        "relativePath": "entityDefinitionRoot"
+      }
+    },
+    "definition": {
+      "applicationVersion": {
+        "type": "uuid",
+        "tag": {
+          "value": {
+            "id": 5,
+            "display": {
+              "editable": false
+            },
+            "defaultLabel": "SelfApplication Version",
+            "foreignKeyParams": {
+              "targetEntity": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
+              "targetEntityOrderInstancesBy": "name"
+            }
+          }
+        }
+      },
+      "miroirTestVersion": {
+        "type": "uuid",
+        "tag": {
+          "value": {
+            "id": 6,
+            "display": {
+              "editable": false
+            },
+            "defaultLabel": "MiroirTest Version",
+            "foreignKeyParams": {
+              "targetEntity": "a2b1c33a-b0db-45b4-829c-c8fafc4a6110",
+              "targetEntityOrderInstancesBy": "name"
+            }
+          }
+        }
+      }
+    }
+  }
+}

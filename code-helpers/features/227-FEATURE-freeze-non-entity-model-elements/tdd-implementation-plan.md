@@ -363,14 +363,14 @@ RUN_TEST=applicationVersionFreeze.plan npm run testByFile -w miroir-core -- appl
 | # | Slice | Present collection (`MetaModel`) | Live Entity (export) | FK field | Payload fields to snapshot (beyond `name`) | Status |
 |---|---|---|---|---|---|---|
 | 1 | QueryVersion | `storedQueries` | `entityQueryVersion` (`e4320b9e-…`) | `queryUuid` | `definition`, `description?`, `defaultLabel?` | ✅ DONE |
-| 2 | ReportVersion | `reports` | `entityReport` (`3f2baa83-…`) | `reportUuid` | `definition` (report sections) | ❌ |
-| 3 | MenuVersion | `menus` | `entityMenu` (`dde4c883-…`) | `menuUuid` | `definition` (menu tree), `defaultLabel?` | ❌ |
-| 4 | EndpointVersion | `endpoints` | `entityEndpointVersion` (`3d8da4d4-…`) | `endpointUuid` | `definition` (action definitions) | ❌ |
-| 5 | RunnerVersion | `runners` | `entityRunner` (`e54d7dc1-…`) | `runnerUuid` | `definition` | ❌ |
-| 6 | ThemeVersion | `themes` | `entityTheme` (`bdcf956a-…`) | `themeUuid` | `definition` (theme content) | ❌ |
-| 7 | MlSchemaVersion | `jzodSchemas` | `entityJzodSchema` (`5e81e1b9-…`) | `mlSchemaUuid` | `definition` (Jzod schema) | ❌ |
-| 8 | MiroirTestVersion | `tests` | `entityMiroirTest` (`a311f363-…`) | `miroirTestUuid` | `definition` (test suites), `defaultLabel?` | ❌ |
-| 9 | TransformerDefinitionVersion | TBD (not in generated `MetaModel` yet) | `entityTransformerDefinition` (`a557419d-…`) | `transformerUuid` | `definition` (library impl ref / composite body) | ❌ |
+| 2 | ReportVersion | `reports` | `entityReport` (`3f2baa83-…`) | `reportUuid` | `definition` (report sections) | ✅ DONE |
+| 3 | MenuVersion | `menus` | `entityMenu` (`dde4c883-…`) | `menuUuid` | `definition` (menu tree), `defaultLabel?` | ✅ DONE |
+| 4 | EndpointVersion | `endpoints` | `entityEndpointVersion` (`3d8da4d4-…`) | `endpointUuid` | `definition` (action definitions) | ✅ DONE |
+| 5 | RunnerVersion | `runners` | `entityRunner` (`e54d7dc1-…`) | `runnerUuid` | `definition` | ✅ DONE |
+| 6 | ThemeVersion | `themes` | `entityTheme` (`bdcf956a-…`) | `themeUuid` | `definition` (theme content) | ✅ DONE |
+| 7 | MlSchemaVersion | `mlSchemas` | `entityMlSchema` (`5e81e1b9-…`) | `mlSchemaUuid` | `definition?` (ML schema), `defaultLabel?`, `description?` | ✅ DONE (#230) |
+| 8 | MiroirTestVersion | `tests` | `entityMiroirTest` (`a311f363-…`) | `miroirTestUuid` | `definition` (test suite), `name?`, `description?` | ✅ DONE (#230) |
+| 9 | TransformerDefinitionVersion | `transformerDefinitions` | `entityTransformerDefinition` (`a557419d-…`) | `transformerUuid` | `definition` (library impl ref / composite body) | ✅ DONE |
 
 ### Slice notes
 

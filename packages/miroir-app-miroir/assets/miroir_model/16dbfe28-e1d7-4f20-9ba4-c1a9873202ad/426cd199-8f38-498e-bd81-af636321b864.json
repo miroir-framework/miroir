@@ -1,0 +1,84 @@
+{
+  "uuid": "426cd199-8f38-498e-bd81-af636321b864",
+  "parentName": "Entity",
+  "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+  "name": "MlSchemaVersion",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "conceptLevel": "Model",
+  "scope": "versioning",
+  "description": "Historical snapshot of a MlSchema at Application Version freeze time.",
+  "viewAttributes": [
+    "name",
+    "mlSchemaUuid",
+    "defaultLabel",
+    "uuid"
+  ],
+  "cache": {
+    "cacheAllInstancesOnRefresh": true
+  },
+  "mlSchema": {
+    "type": "object",
+    "extend": {
+      "type": "schemaReference",
+      "definition": {
+        "eager": true,
+        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        "relativePath": "entityDefinitionRoot"
+      }
+    },
+    "definition": {
+      "name": {
+        "type": "string",
+        "tag": {
+          "value": {
+            "id": 5,
+            "defaultLabel": "Name"
+          }
+        }
+      },
+      "mlSchemaUuid": {
+        "type": "uuid",
+        "tag": {
+          "value": {
+            "defaultLabel": "MlSchema Uuid of the live MlSchema this snapshot captures",
+            "display": {
+              "editable": false
+            },
+            "foreignKeyParams": {
+              "targetEntity": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
+              "targetEntityOrderInstancesBy": "name"
+            }
+          }
+        }
+      },
+      "defaultLabel": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "defaultLabel": "Default Label"
+          }
+        }
+      },
+      "description": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "defaultLabel": "Description"
+          }
+        }
+      },
+      "definition": {
+        "type": "any",
+        "optional": true,
+        "tag": {
+          "value": {
+            "defaultLabel": "MlSchema definition at freeze time"
+          }
+        }
+      }
+    }
+  }
+}
