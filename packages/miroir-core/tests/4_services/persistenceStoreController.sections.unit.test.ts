@@ -23,7 +23,7 @@ import type {
 import { Action2Error } from "../../src/0_interfaces/2_domain/DomainElement.js";
 import { ACTION_OK } from "../../src/1_core/constants.js";
 import { PersistenceStoreController } from "../../src/4_services/PersistenceStoreController.js";
-import { entityReport, entitySelfApplicationVersion, entityTransformerDefinition } from "miroir-app-miroir";
+import { entityBlob, entityReport, entitySelfApplicationVersion, entityTest, entityTransformerDefinition } from "miroir-app-miroir";
 
 // ---------------------------------------------------------------------------
 // Minimal test stubs
@@ -236,6 +236,48 @@ describe("PersistenceStoreController section routing", () => {
     expect(result instanceof Action2Error).toBe(false);
     expect(created).toEqual([entityTransformerDefinition.uuid]);
     expect(modelStore.upserted[entityTransformerDefinition.uuid]).toEqual([composite]);
+  });
+
+  // #703: Blob and Test joined the meta-model Entity list after applications existed
+  it("upsertInstance model creates the Blob and Test collections on the first save", async () => {
+    const modelStore = new ModelSectionStub("model-store");
+    const created: string[] = [];
+    modelStore.createStorageSpaceForInstancesOfEntity = async (entity: any) => {
+      created.push(entity.uuid);
+      modelStore.stored[entity.uuid] = [];
+      return ACTION_OK;
+    };
+    const controller = new PersistenceStoreController(makeAdminStub("admin"), modelStore, new DataSectionStub("data-store"));
+
+    for (const entity of [entityBlob, entityTest]) {
+      const result = await controller.upsertInstance("model", { uuid: crypto.randomUUID(), parentUuid: entity.uuid } as any);
+      expect(result instanceof Action2Error, entity.name).toBe(false);
+    }
+    // a second save finds the collection
+    await controller.upsertInstance("model", { uuid: crypto.randomUUID(), parentUuid: entityBlob.uuid } as any);
+
+    expect(created).toEqual([entityBlob.uuid, entityTest.uuid]);
+    expect(modelStore.upserted[entityBlob.uuid]).toHaveLength(2);
+  });
+
+  it("getInstances model reads nothing from a collection not created yet (#703)", async () => {
+    const modelStore = new ModelSectionStub("model-store");
+    let read = false;
+    modelStore.getInstances = async () => {
+      read = true;
+      return new Action2Error("FailedToGetInstances", "no such table");
+    };
+    // a store that lists the Entities it was booted with (SQL) answers with its probe
+    modelStore.hasStorageSpaceForInstancesOfEntity = async () => false;
+    const controller = new PersistenceStoreController(makeAdminStub("admin"), modelStore, new DataSectionStub("data-store"));
+
+    const result = await controller.getInstances("model", entityTransformerDefinition.uuid);
+
+    expect(read).toBe(false);
+    expect(result).toEqual({
+      status: "ok",
+      returnedDomainElement: { parentUuid: entityTransformerDefinition.uuid, applicationSection: "model", instances: [] },
+    });
   });
 
   it("upsertInstance model still refuses another Entity without a collection", async () => {
