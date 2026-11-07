@@ -87,6 +87,10 @@ describe("216 Phase 2 — first freeze plan", () => {
     expect(plan.crossThemeVersions).toEqual([]);
     expect(plan.transformerDefinitionVersions).toEqual([]);
     expect(plan.crossTransformerDefinitionVersions).toEqual([]);
+    expect(plan.mlSchemaVersions).toEqual([]);
+    expect(plan.crossMlSchemaVersions).toEqual([]);
+    expect(plan.miroirTestVersions).toEqual([]);
+    expect(plan.crossMiroirTestVersions).toEqual([]);
     const coveredLive = plan.entityVersions.map((ev) => ev.entityUuid).sort();
     expect(coveredLive).toEqual(entities.map((e) => e.uuid).sort());
   });
@@ -354,6 +358,43 @@ const planElementCases: PlanElementCase[] = [
           transformerImplementationType: "libraryImplementation",
           inMemoryImplementationFunctionName: "handleTransformer_menu_AddItem",
         },
+      },
+    ],
+  },
+  {
+    element: "MlSchema",
+    inputKey: "mlSchemas",
+    versionsKey: "mlSchemaVersions",
+    crossVersionsKey: "crossMlSchemaVersions",
+    crossLinkKey: "mlSchemaVersion",
+    items: [
+      {
+        uuid: "11111111-1111-4111-8111-111111111111",
+        name: "bookSchema",
+        defaultLabel: "Book schema",
+        definition: { type: "object", definition: { title: { type: "string" } } },
+      },
+      {
+        uuid: "22222222-2222-4222-8222-222222222222",
+        name: "bareSchema",
+      },
+    ],
+  },
+  {
+    element: "MiroirTest",
+    inputKey: "tests",
+    versionsKey: "miroirTestVersions",
+    crossVersionsKey: "crossMiroirTestVersions",
+    crossLinkKey: "miroirTestVersion",
+    items: [
+      {
+        uuid: "11111111-1111-4111-8111-111111111111",
+        name: "fn.example",
+        definition: { miroirTestType: "miroirTestSuite", miroirTestLabel: "fn.example", miroirTests: {} },
+      },
+      {
+        uuid: "22222222-2222-4222-8222-222222222222",
+        definition: { miroirTestType: "miroirTestSuite", miroirTestLabel: "unnamed", miroirTests: {} },
       },
     ],
   },

@@ -1,5 +1,5 @@
 import type { MlElement, MlReference } from "../preprocessor-generated/miroirFundamentalType";
-import { entityVersionHistoricalQueryVersion, entityVersionHistoricalReportVersion, entityVersionHistoricalMenuVersion, entityVersionHistoricalEndpointVersion, entityVersionHistoricalRunnerVersion, entityVersionHistoricalThemeVersion, entityVersionHistoricalTransformerDefinitionVersion, miroirThemeSchemaJson, tableThemeSchemaJson } from "miroir-app-miroir";
+import { entityVersionHistoricalQueryVersion, entityVersionHistoricalReportVersion, entityVersionHistoricalMenuVersion, entityVersionHistoricalEndpointVersion, entityVersionHistoricalRunnerVersion, entityVersionHistoricalThemeVersion, entityVersionHistoricalTransformerDefinitionVersion, entityVersionHistoricalMlSchemaVersion, entityVersionHistoricalMiroirTestVersion, miroirThemeSchemaJson, tableThemeSchemaJson } from "miroir-app-miroir";
 
 import { cleanLevel } from "../../../1_core/constants";
 import { mlsTransitiveDependencySet } from "../../../1_core/mls/MlSchemaReferences";
@@ -1566,6 +1566,10 @@ export function getMiroirFundamentalMlSchema(
         /** #227 — historical TransformerDefinition snapshot at freeze. */
         transformerDefinitionVersion:
           entityVersionHistoricalTransformerDefinitionVersion.mlSchema as any,
+        /** #230 — historical MlSchema snapshot at freeze. */
+        mlSchemaVersion: entityVersionHistoricalMlSchemaVersion.mlSchema as any,
+        /** #230 — historical MiroirTest snapshot at freeze. */
+        miroirTestVersion: entityVersionHistoricalMiroirTestVersion.mlSchema as any,
 
         testCompositeAction: (
           entityDefinitionTest.mlSchema as any
@@ -4304,6 +4308,82 @@ export function getMiroirFundamentalMlSchema(
                 },
               },
             },
+            /** #230 — Cross rows linking SAV to historical MlSchemaVersion snapshots. */
+            applicationVersionCrossMlSchemaVersion: {
+              type: "array",
+              definition: {
+                type: "object",
+                definition: {
+                  uuid: {
+                    type: "uuid",
+                    tag: { value: { id: 1, defaultLabel: "Uuid", editable: false } },
+                  },
+                  parentName: {
+                    type: "string",
+                    optional: true,
+                    tag: { value: { id: 2, defaultLabel: "Entity Name", editable: false } },
+                  },
+                  parentUuid: {
+                    type: "uuid",
+                    tag: { value: { id: 3, defaultLabel: "Entity Uuid", editable: false } },
+                  },
+                  conceptLevel: {
+                    type: "enum",
+                    definition: ["MetaModel", "Model", "Data"],
+                    optional: true,
+                    tag: { value: { id: 4, defaultLabel: "Concept Level", editable: false } },
+                  },
+                  applicationVersion: {
+                    type: "uuid",
+                    tag: {
+                      value: { id: 5, defaultLabel: "SelfApplication Version", editable: false },
+                    },
+                  },
+                  mlSchemaVersion: {
+                    type: "uuid",
+                    tag: { value: { id: 6, defaultLabel: "MlSchema Version", editable: false } },
+                  },
+                },
+              },
+            },
+            /** #230 — Cross rows linking SAV to historical MiroirTestVersion snapshots. */
+            applicationVersionCrossMiroirTestVersion: {
+              type: "array",
+              definition: {
+                type: "object",
+                definition: {
+                  uuid: {
+                    type: "uuid",
+                    tag: { value: { id: 1, defaultLabel: "Uuid", editable: false } },
+                  },
+                  parentName: {
+                    type: "string",
+                    optional: true,
+                    tag: { value: { id: 2, defaultLabel: "Entity Name", editable: false } },
+                  },
+                  parentUuid: {
+                    type: "uuid",
+                    tag: { value: { id: 3, defaultLabel: "Entity Uuid", editable: false } },
+                  },
+                  conceptLevel: {
+                    type: "enum",
+                    definition: ["MetaModel", "Model", "Data"],
+                    optional: true,
+                    tag: { value: { id: 4, defaultLabel: "Concept Level", editable: false } },
+                  },
+                  applicationVersion: {
+                    type: "uuid",
+                    tag: {
+                      value: { id: 5, defaultLabel: "SelfApplication Version", editable: false },
+                    },
+                  },
+                  miroirTestVersion: {
+                    type: "uuid",
+                    tag: { value: { id: 6, defaultLabel: "MiroirTest Version", editable: false } },
+                  },
+                },
+              },
+            },
             // configuration: {
             //   type: "array",
             //   definition: {
@@ -4468,6 +4548,27 @@ export function getMiroirFundamentalMlSchema(
                 definition: {
                   absolutePath: miroirFundamentalMlSchemaUuid,
                   relativePath: "transformerDefinitionVersion",
+                },
+              },
+            },
+            /** #230 — historical MlSchema / MiroirTest snapshots minted at freeze. */
+            mlSchemaVersions: {
+              type: "array",
+              definition: {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: miroirFundamentalMlSchemaUuid,
+                  relativePath: "mlSchemaVersion",
+                },
+              },
+            },
+            miroirTestVersions: {
+              type: "array",
+              definition: {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: miroirFundamentalMlSchemaUuid,
+                  relativePath: "miroirTestVersion",
                 },
               },
             },

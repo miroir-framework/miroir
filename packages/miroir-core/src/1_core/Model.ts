@@ -13,6 +13,8 @@ import {
   entityHistoricalRunnerVersion,
   entityHistoricalThemeVersion,
   entityHistoricalTransformerDefinitionVersion,
+  entityHistoricalMlSchemaVersion,
+  entityHistoricalMiroirTestVersion,
   entityReport,
   entityRunner,
   entitySelfApplication,
@@ -26,6 +28,8 @@ import {
   entityApplicationVersionCrossRunnerVersion,
   entityApplicationVersionCrossThemeVersion,
   entityApplicationVersionCrossTransformerDefinitionVersion,
+  entityApplicationVersionCrossMlSchemaVersion,
+  entityApplicationVersionCrossMiroirTestVersion,
   entityTheme,
   entityTransformerDefinition,
   entityBundleSizeMeasurement,
@@ -192,6 +196,10 @@ export const versionHistoryEntityUuids: ReadonlySet<string> = new Set([
   entityApplicationVersionCrossThemeVersion.uuid!,
   entityHistoricalTransformerDefinitionVersion.uuid!,
   entityApplicationVersionCrossTransformerDefinitionVersion.uuid!,
+  entityHistoricalMlSchemaVersion.uuid!,
+  entityApplicationVersionCrossMlSchemaVersion.uuid!,
+  entityHistoricalMiroirTestVersion.uuid!,
+  entityApplicationVersionCrossMiroirTestVersion.uuid!,
 ]);
 
 const versionHistoryEntityDefinitions: ReadonlyMap<string, Entity> = new Map([
@@ -215,6 +223,10 @@ const versionHistoryEntityDefinitions: ReadonlyMap<string, Entity> = new Map([
     entityApplicationVersionCrossTransformerDefinitionVersion.uuid!,
     entityApplicationVersionCrossTransformerDefinitionVersion as Entity,
   ],
+  [entityHistoricalMlSchemaVersion.uuid!, entityHistoricalMlSchemaVersion as Entity],
+  [entityApplicationVersionCrossMlSchemaVersion.uuid!, entityApplicationVersionCrossMlSchemaVersion as Entity],
+  [entityHistoricalMiroirTestVersion.uuid!, entityHistoricalMiroirTestVersion as Entity],
+  [entityApplicationVersionCrossMiroirTestVersion.uuid!, entityApplicationVersionCrossMiroirTestVersion as Entity],
 ]);
 
 /** Bootstrap Entity row for a version-history parent entity (SQL modelVersion lazy table creation). */
@@ -391,7 +403,11 @@ export const emptyApplicationModel: MetaModel = {
   applicationVersionCrossThemeVersion: [],
   themeVersions: [],
   applicationVersionCrossTransformerDefinitionVersion: [],
+  applicationVersionCrossMlSchemaVersion: [],
+  applicationVersionCrossMiroirTestVersion: [],
   transformerDefinitionVersions: [],
+  mlSchemaVersions: [],
+  miroirTestVersions: [],
   endpoints: [],
   entities: [],
   entityVersions: [],
@@ -537,7 +553,11 @@ export async function extractApplicationModel(
       applicationVersionCrossThemeVersion: [],
       themeVersions: [],
       applicationVersionCrossTransformerDefinitionVersion: [],
+      applicationVersionCrossMlSchemaVersion: [],
+      applicationVersionCrossMiroirTestVersion: [],
       transformerDefinitionVersions: [],
+      mlSchemaVersions: [],
+      miroirTestVersions: [],
       runners: runners as Runner[], 
       tests: tests as MiroirTestDefinition[],
       themes: themes as StoredMiroirTheme[],
