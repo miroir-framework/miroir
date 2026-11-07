@@ -127,6 +127,19 @@ npm run nonreg -- --only integ-runner-runner_freeze_application_version,default-
 | runnerTest integ for freeze Runner | ✅ |
 | Nonreg step for freeze runner suite | ✅ |
 
+### Phase 7: remaining ACs  ✅ DONE
+
+| Criterion | Status | Where |
+|---|---|---|
+| The application stays selected inside the Versioning report | ✅ kept as is | report `c2b89408` |
+| Applications that are not versioned-internal are greyed out, with the reason as tooltip, and cannot be picked | ✅ | `display.uuid.optionAvailability: "freezeTarget"` on the Runner's application field; `getFreezeAvailability` (core), `useResolvedVersioningModes` / `getUnavailableOptions` (react) |
+| The application defaults to the sidebar app when it is versioned-internal, empty otherwise | ✅ | Runner `initialFormValues` transformer, `sidebarApplication` transformer param (`StoredRunnerView`) |
+| A refused freeze shows its error inline under the Runner, and in the snackbar | ✅ | `RunnerView` (`runner-error-<runnerName>`, `actionErrorText`) |
+| The freeze Runner is on the Runners page | ✅ | report `ac75382d` |
+| Stale #239 comment removed | ✅ | `versioningModes.filesystem-seed.integ.test.ts` |
+
+Tests: `versioningModes.contract.unit` (`getFreezeAvailability`), `freezeRunner.initialFormValues.unit`, MiroirTests `report.freezeRunner` (appForTest: inline refusal) and `report.freezeRunner.unversioned` (Library: greyed out, not picked), nonreg step `integ-report.freezeRunner`. Report tests now seed the missing Miroir Runners and refresh Admin before each leaf, so the Runners page and application pickers render in a test session.
+
 ---
 
 ## Out of scope (explicit)
