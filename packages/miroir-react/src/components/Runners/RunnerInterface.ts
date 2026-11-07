@@ -13,7 +13,8 @@ import type { MlSchemaTemplate } from "@miroir-framework/core";
 export type RunnerAction<T extends Record<string, any>> =
   | {
       actionType: "onSubmit";
-      onSubmit: (values: T, formikHelpers: FormikHelpers<T>) => void | Promise<void>;
+      /** Its result, when it is an Action2Error, is shown inline under the Runner (#225). */
+      onSubmit: (values: T, formikHelpers: FormikHelpers<T>) => unknown | Promise<unknown>;
     }
   | {
       actionType: "compositeActionSequence";

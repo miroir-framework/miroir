@@ -59,6 +59,14 @@
           "type": "runnerReportSection",
           "definition": {
             "runnerReportSectionType": "storedRunner",
+            "label": "freezeApplicationVersion",
+            "runner": "20d51c4c-52e5-4077-baf3-5e87bd75e496"
+          }
+        },
+        {
+          "type": "runnerReportSection",
+          "definition": {
+            "runnerReportSectionType": "storedRunner",
             "label": "MCP: getInstances",
             "runner": "897e9711-65a0-414e-9773-19de92ade533"
           }

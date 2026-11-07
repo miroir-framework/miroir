@@ -446,7 +446,7 @@ export const ComponentTestSandboxProvider: React.FC<{ children?: React.ReactNode
       ...runControls,
       miroirActivityTracker: session.miroirActivityTracker,
       miroirEventService: session.miroirEventService,
-      ...(session.miroirReports ? { miroirReports: session.miroirReports } : {}),
+      ...(session.miroirDataInstances ? { miroirDataInstances: session.miroirDataInstances } : {}),
     });
     registrationRef.current = registration;
     runningRef.current = true;

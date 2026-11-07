@@ -201,7 +201,7 @@ export async function runIntegrationMiroirTestBatch(params: {
   integrationRunTargetMode?: UiIntegrationTestRunTargetMode;
   runnerUuidIndex?: Record<string, Runner>;
   prepareReportTests?: UiIntegrationTestRunRequest["prepareReportTests"];
-  miroirReports?: UiIntegrationTestRunRequest["miroirReports"];
+  miroirDataInstances?: UiIntegrationTestRunRequest["miroirDataInstances"];
   onSuiteDone?: (suiteKey: string, results: TestResultData[]) => void;
 }): Promise<{ resultsBySuiteKey: MiroirTestSuiteResultsMap; failures: string[]; skipped: SkippedMiroirTestSuite[] }> {
   const sortedLaunchable = selectLaunchableIntegrationInstances(params.miroirTests);
@@ -269,7 +269,7 @@ export async function runIntegrationMiroirTestBatch(params: {
             hostMode: "isolated",
             runnerUuidIndex: params.runnerUuidIndex,
             prepareReportTests: params.prepareReportTests,
-            miroirReports: params.miroirReports,
+            miroirDataInstances: params.miroirDataInstances,
           },
           batchEnv,
         );

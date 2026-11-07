@@ -1739,6 +1739,47 @@
       }
     },
     {
+      "id": "integ-report.freezeRunner",
+      "scopes": ["runners", "ui"],
+      "tier": "default",
+      "title": "MiroirTest integ \u2014 report.freezeRunner, report.freezeRunner.unversioned (freeze Runner on the Runners page: greyed-out apps, inline refusal)",
+      "requires": "storage",
+      "argv": [
+        "npm",
+        "run",
+        "testMiroir",
+        "-w",
+        "miroir-standalone-app",
+        "--",
+        "--profile",
+        "{profile}",
+        "--suites",
+        "report.freezeRunner,report.freezeRunner.unversioned",
+        "--mode",
+        "integ"
+      ],
+      "shared": {
+        "group": "standalone-app-report-suites",
+        "argv": [
+          "npm",
+          "run",
+          "testMiroir",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--profile",
+          "{profile}",
+          "--mode",
+          "integ",
+          "--shared"
+        ],
+        "suites": [
+          "report.freezeRunner",
+          "report.freezeRunner.unversioned"
+        ]
+      }
+    },
+    {
       "id": "appstack-PersistenceStoreController.integ",
       "scopes": ["actions"],
       "tier": "default",
