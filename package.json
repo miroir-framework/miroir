@@ -32,7 +32,10 @@
     "body-parser": "2.4.0",
     "iconv-lite": "0.7.3",
     "mime-db": "1.54.0",
-    "vitest": "5.0.5"
+    "vitest": "5.0.5",
+    "@graphql-tools/utils": "12.0.4",
+    "graphql-scalars": "2.0.1",
+    "zod": "4.6.7"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
