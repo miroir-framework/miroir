@@ -994,6 +994,9 @@ export {
   snapshotTransformerDefinitionsAsHistoricalTransformerDefinitionVersions,
   snapshotMlSchemasAsHistoricalMlSchemaVersions,
   snapshotMiroirTestsAsHistoricalMiroirTestVersions,
+  snapshotBlobsAsHistoricalBlobVersions,
+  snapshotTestConfigurationsAsHistoricalTestConfigurationVersions,
+  snapshotTestsAsHistoricalTestVersions,
   QUERY_VERSION_ENTITY_UUID,
   APPLICATION_VERSION_CROSS_QUERY_VERSION_UUID,
   REPORT_VERSION_ENTITY_UUID,
@@ -1012,6 +1015,12 @@ export {
   APPLICATION_VERSION_CROSS_ML_SCHEMA_VERSION_UUID,
   MIROIR_TEST_VERSION_ENTITY_UUID,
   APPLICATION_VERSION_CROSS_MIROIR_TEST_VERSION_UUID,
+  BLOB_VERSION_ENTITY_UUID,
+  APPLICATION_VERSION_CROSS_BLOB_VERSION_UUID,
+  TEST_CONFIGURATION_VERSION_ENTITY_UUID,
+  APPLICATION_VERSION_CROSS_TEST_CONFIGURATION_VERSION_UUID,
+  TEST_VERSION_ENTITY_UUID,
+  APPLICATION_VERSION_CROSS_TEST_VERSION_UUID,
 } from "./1_core/versioning/applicationVersionFreeze.js";
 export type {
   ApplicationVersionCrossEntityVersionRow,
@@ -1024,6 +1033,9 @@ export type {
   ApplicationVersionCrossTransformerDefinitionVersionRow,
   ApplicationVersionCrossMlSchemaVersionRow,
   ApplicationVersionCrossMiroirTestVersionRow,
+  ApplicationVersionCrossBlobVersionRow,
+  ApplicationVersionCrossTestConfigurationVersionRow,
+  ApplicationVersionCrossTestVersionRow,
   BuildFreezeApplicationVersionPlanInput,
   FreezeApplicationVersionActionPayload,
   FreezeApplicationVersionActionType,
@@ -1044,6 +1056,10 @@ export type {
   TransformerDefinitionVersionBody,
   MlSchemaVersionSnapshot,
   MiroirTestVersionSnapshot,
+  BlobVersionSnapshot,
+  TestConfigurationVersionSnapshot,
+  TestVersionSnapshot,
+  InstanceVersionSnapshot,
   ResolvePreviousApplicationVersionOptions,
   SnapshotOptions,
   StoredQueryForFreeze,
@@ -1055,6 +1071,7 @@ export type {
   StoredTransformerDefinitionForFreeze,
   StoredMlSchemaForFreeze,
   StoredMiroirTestForFreeze,
+  StoredInstanceForFreeze,
 } from "./1_core/versioning/applicationVersionFreeze.js";
 export {
   actionsWithDeploymentInPayload, noValue

@@ -9,6 +9,7 @@
  * #227 — ThemeVersion (sixth non-Entity model element).
  * #227 — TransformerDefinitionVersion (ninth non-Entity model element).
  * #230 — MlSchemaVersion and MiroirTestVersion (full model snapshot).
+ * #706 — BlobVersion, TestConfigurationVersion and TestVersion (rest of Miroir's data section).
  */
 
 import { v4 as uuidv4 } from "uuid";
@@ -131,6 +132,19 @@ export const MIROIR_TEST_VERSION_ENTITY_UUID = "a2b1c33a-b0db-45b4-829c-c8fafc4a
 /** ApplicationVersionCrossMiroirTestVersion Entity UUID (#230). */
 export const APPLICATION_VERSION_CROSS_MIROIR_TEST_VERSION_UUID =
   "81af0bd1-388b-4f80-aabc-4004578c7ded";
+/** Historical BlobVersion Entity UUID (#706). */
+export const BLOB_VERSION_ENTITY_UUID = "4fbc43fa-8970-41b8-845e-20303002147e";
+/** ApplicationVersionCrossBlobVersion Entity UUID (#706). */
+export const APPLICATION_VERSION_CROSS_BLOB_VERSION_UUID = "28ed918a-5514-4dc2-a3f3-a6f353270dd5";
+/** Historical TestConfigurationVersion Entity UUID (#706). */
+export const TEST_CONFIGURATION_VERSION_ENTITY_UUID = "9b0f81d3-8b80-454f-9dfc-57489969a112";
+/** ApplicationVersionCrossTestConfigurationVersion Entity UUID (#706). */
+export const APPLICATION_VERSION_CROSS_TEST_CONFIGURATION_VERSION_UUID =
+  "8bd811bf-82fa-4547-93e1-082c97589069";
+/** Historical TestVersion Entity UUID (#706). */
+export const TEST_VERSION_ENTITY_UUID = "fe94c683-89d3-482e-a653-9ce1eeb4ef34";
+/** ApplicationVersionCrossTestVersion Entity UUID (#706). */
+export const APPLICATION_VERSION_CROSS_TEST_VERSION_UUID = "be1d3cf3-b77c-464e-966c-6d23375a4d6f";
 
 export interface SnapshotOptions {
   /** UUID generator override for testing determinism. */
@@ -676,6 +690,99 @@ export function snapshotMiroirTestsAsHistoricalMiroirTestVersions(
 }
 
 /**
+ * A live Blob, TestConfiguration or Test instance (#706). These are read from the store at freeze
+ * time: the MetaModel has no collection for them.
+ */
+export type StoredInstanceForFreeze = {
+  uuid: string;
+  parentUuid?: string;
+  parentName?: string;
+  parentDefinitionVersionUuid?: string;
+  conceptLevel?: string;
+  [attribute: string]: unknown;
+};
+
+/** Historical snapshot minted at freeze for a Blob, TestConfiguration or Test (#706). */
+export type InstanceVersionSnapshot<P extends string, K extends string> = {
+  uuid: string;
+  parentUuid: string;
+  parentName: P;
+} & { [key in K]: string } & Record<string, unknown>;
+
+export type BlobVersionSnapshot = InstanceVersionSnapshot<"BlobVersion", "blobUuid">;
+export type TestConfigurationVersionSnapshot = InstanceVersionSnapshot<
+  "TestConfigurationVersion",
+  "testConfigurationUuid"
+>;
+export type TestVersionSnapshot = InstanceVersionSnapshot<"TestVersion", "testUuid">;
+
+/**
+ * Deep-copy live instances into new version rows: every attribute except the identity ones
+ * (`uuid`, `parentUuid`, `parentName`, `parentDefinitionVersionUuid`, `conceptLevel`), plus
+ * `liveUuidAttribute` pointing at the live instance. Each output has a **new** UUID.
+ */
+function snapshotInstancesAsVersions<P extends string, K extends string>(
+  instances: StoredInstanceForFreeze[],
+  versionEntityUuid: string,
+  versionEntityName: P,
+  liveUuidAttribute: K,
+  options?: SnapshotOptions,
+): InstanceVersionSnapshot<P, K>[] {
+  const mintUuid = options?.newUuid ?? uuidv4;
+
+  return instances.map((instance) => {
+    const {
+      uuid,
+      parentUuid: _parentUuid,
+      parentName: _parentName,
+      parentDefinitionVersionUuid: _parentDefinitionVersionUuid,
+      conceptLevel: _conceptLevel,
+      ...attributes
+    } = instance;
+    return {
+      ...structuredClone(attributes),
+      uuid: mintUuid(),
+      parentUuid: versionEntityUuid,
+      parentName: versionEntityName,
+      [liveUuidAttribute]: uuid,
+    } as InstanceVersionSnapshot<P, K>;
+  });
+}
+
+/** Deep-copy live Blobs into new BlobVersion instances; `blobUuid` references the live Blob (#706). */
+export function snapshotBlobsAsHistoricalBlobVersions(
+  blobs: StoredInstanceForFreeze[],
+  options?: SnapshotOptions,
+): BlobVersionSnapshot[] {
+  return snapshotInstancesAsVersions(blobs, BLOB_VERSION_ENTITY_UUID, "BlobVersion", "blobUuid", options);
+}
+
+/**
+ * Deep-copy live TestConfigurations into new TestConfigurationVersion instances;
+ * `testConfigurationUuid` references the live TestConfiguration (#706).
+ */
+export function snapshotTestConfigurationsAsHistoricalTestConfigurationVersions(
+  testConfigurations: StoredInstanceForFreeze[],
+  options?: SnapshotOptions,
+): TestConfigurationVersionSnapshot[] {
+  return snapshotInstancesAsVersions(
+    testConfigurations,
+    TEST_CONFIGURATION_VERSION_ENTITY_UUID,
+    "TestConfigurationVersion",
+    "testConfigurationUuid",
+    options,
+  );
+}
+
+/** Deep-copy live Tests into new TestVersion instances; `testUuid` references the live Test (#706). */
+export function snapshotTestsAsHistoricalTestVersions(
+  testInstances: StoredInstanceForFreeze[],
+  options?: SnapshotOptions,
+): TestVersionSnapshot[] {
+  return snapshotInstancesAsVersions(testInstances, TEST_VERSION_ENTITY_UUID, "TestVersion", "testUuid", options);
+}
+
+/**
  * Deep-copy present-model Entity fields into new immutable EntityVersion instances.
  * Each output has a **new** UUID; `entityUuid` references the live Entity.
  *
@@ -820,6 +927,33 @@ export type ApplicationVersionCrossMiroirTestVersionRow = {
   miroirTestVersion: string;
 };
 
+/** Cross row linking an Application Version to a historical BlobVersion (#706). */
+export type ApplicationVersionCrossBlobVersionRow = {
+  uuid: string;
+  parentUuid: string;
+  parentName?: string;
+  applicationVersion: string;
+  blobVersion: string;
+};
+
+/** Cross row linking an Application Version to a historical TestConfigurationVersion (#706). */
+export type ApplicationVersionCrossTestConfigurationVersionRow = {
+  uuid: string;
+  parentUuid: string;
+  parentName?: string;
+  applicationVersion: string;
+  testConfigurationVersion: string;
+};
+
+/** Cross row linking an Application Version to a historical TestVersion (#706). */
+export type ApplicationVersionCrossTestVersionRow = {
+  uuid: string;
+  parentUuid: string;
+  parentName?: string;
+  applicationVersion: string;
+  testVersion: string;
+};
+
 export type FreezeApplicationVersionPlan = {
   selfApplicationVersion: ApplicationVersion;
   entityVersions: EntityVersion[];
@@ -862,6 +996,12 @@ export type FreezeApplicationVersionPlan = {
   crossMiroirTestVersions: ApplicationVersionCrossMiroirTestVersionRow[];
   /** Persist section for MiroirTestVersion rows (#230). */
   miroirTestVersionApplicationSection: ApplicationSection;
+  blobVersions: BlobVersionSnapshot[];
+  crossBlobVersions: ApplicationVersionCrossBlobVersionRow[];
+  testConfigurationVersions: TestConfigurationVersionSnapshot[];
+  crossTestConfigurationVersions: ApplicationVersionCrossTestConfigurationVersionRow[];
+  testVersions: TestVersionSnapshot[];
+  crossTestVersions: ApplicationVersionCrossTestVersionRow[];
 };
 
 export type BuildFreezeApplicationVersionPlanInput = {
@@ -887,6 +1027,12 @@ export type BuildFreezeApplicationVersionPlanInput = {
   mlSchemas?: StoredMlSchemaForFreeze[];
   /** Present-model MiroirTests to snapshot (#230). Defaults to empty. */
   tests?: StoredMiroirTestForFreeze[];
+  /** Live Blobs to snapshot (#706). Defaults to empty. */
+  blobs?: StoredInstanceForFreeze[];
+  /** Live TestConfigurations to snapshot (#706). Defaults to empty. */
+  testConfigurations?: StoredInstanceForFreeze[];
+  /** Live instances of the Test Entity (not MiroirTests, which are `tests`) to snapshot (#706). */
+  testInstances?: StoredInstanceForFreeze[];
   /** Existing SAVs for this app+branch — used for duplicate label detection and tip resolution. */
   existingApplicationVersions?: ApplicationVersion[];
   /**
@@ -1176,6 +1322,14 @@ export function buildFreezeApplicationVersionPlan(
   const miroirTestVersions = snapshotMiroirTestsAsHistoricalMiroirTestVersions(input.tests ?? [], {
     newUuid: mintUuid,
   });
+  const blobVersions = snapshotBlobsAsHistoricalBlobVersions(input.blobs ?? [], { newUuid: mintUuid });
+  const testConfigurationVersions = snapshotTestConfigurationsAsHistoricalTestConfigurationVersions(
+    input.testConfigurations ?? [],
+    { newUuid: mintUuid },
+  );
+  const testVersions = snapshotTestsAsHistoricalTestVersions(input.testInstances ?? [], {
+    newUuid: mintUuid,
+  });
 
   const modelCUDMigration =
     input.previousEntityVersions !== undefined
@@ -1292,6 +1446,31 @@ export function buildFreezeApplicationVersionPlan(
       miroirTestVersion: mtv.uuid,
     }));
 
+  const crossBlobVersions: ApplicationVersionCrossBlobVersionRow[] = blobVersions.map((bv) => ({
+    uuid: mintUuid(),
+    parentUuid: APPLICATION_VERSION_CROSS_BLOB_VERSION_UUID,
+    parentName: "ApplicationVersionCrossBlobVersion",
+    applicationVersion: selfApplicationVersionUuid,
+    blobVersion: bv.uuid,
+  }));
+
+  const crossTestConfigurationVersions: ApplicationVersionCrossTestConfigurationVersionRow[] =
+    testConfigurationVersions.map((tcv) => ({
+      uuid: mintUuid(),
+      parentUuid: APPLICATION_VERSION_CROSS_TEST_CONFIGURATION_VERSION_UUID,
+      parentName: "ApplicationVersionCrossTestConfigurationVersion",
+      applicationVersion: selfApplicationVersionUuid,
+      testConfigurationVersion: tcv.uuid,
+    }));
+
+  const crossTestVersions: ApplicationVersionCrossTestVersionRow[] = testVersions.map((tv) => ({
+    uuid: mintUuid(),
+    parentUuid: APPLICATION_VERSION_CROSS_TEST_VERSION_UUID,
+    parentName: "ApplicationVersionCrossTestVersion",
+    applicationVersion: selfApplicationVersionUuid,
+    testVersion: tv.uuid,
+  }));
+
   return {
     selfApplicationVersion,
     entityVersions,
@@ -1344,6 +1523,12 @@ export function buildFreezeApplicationVersionPlan(
     miroirTestVersionApplicationSection: getApplicationSection(
       input.selfApplicationUuid, MIROIR_TEST_VERSION_ENTITY_UUID,
     ),
+    blobVersions,
+    crossBlobVersions,
+    testConfigurationVersions,
+    crossTestConfigurationVersions,
+    testVersions,
+    crossTestVersions,
   };
 }
 
@@ -1411,6 +1596,10 @@ export type FreezeMetaModelSlice = {
   transformerDefinitions?: StoredTransformerDefinitionForFreeze[];
   mlSchemas?: StoredMlSchemaForFreeze[];
   tests?: StoredMiroirTestForFreeze[];
+  /** Read from the store at freeze time (#706): the MetaModel has no collection for them. */
+  blobs?: StoredInstanceForFreeze[];
+  testConfigurations?: StoredInstanceForFreeze[];
+  testInstances?: StoredInstanceForFreeze[];
   applicationVersions: ApplicationVersion[];
   entityVersions: EntityVersion[];
   applicationVersionCrossEntityVersion: MetaModel["applicationVersionCrossEntityVersion"];
@@ -1659,6 +1848,9 @@ export function planFreezeApplicationVersionFromMetaModel(
     transformerDefinitions: metaModel.transformerDefinitions,
     mlSchemas: metaModel.mlSchemas,
     tests: metaModel.tests,
+    blobs: metaModel.blobs,
+    testConfigurations: metaModel.testConfigurations,
+    testInstances: metaModel.testInstances,
     existingApplicationVersions: metaModel.applicationVersions,
     freezeProducedVersionUuids,
     previousEntityVersions,

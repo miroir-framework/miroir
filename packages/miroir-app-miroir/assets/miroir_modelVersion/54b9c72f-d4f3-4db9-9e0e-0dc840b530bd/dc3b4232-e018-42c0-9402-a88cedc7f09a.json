@@ -1,0 +1,155 @@
+{
+  "uuid": "dc3b4232-e018-42c0-9402-a88cedc7f09a",
+  "parentName": "EntityVersion",
+  "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+  "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+  "entityUuid": "4fbc43fa-8970-41b8-845e-20303002147e",
+  "name": "BlobVersion",
+  "conceptLevel": "Model",
+  "description": "Historical snapshot of a Blob at freeze time.",
+  "cache": {
+    "cacheAllInstancesOnRefresh": true
+  },
+  "viewAttributes": [
+    "name",
+    "blobUuid",
+    "filename",
+    "uuid"
+  ],
+  "mlSchema": {
+    "type": "object",
+    "extend": {
+      "type": "schemaReference",
+      "definition": {
+        "eager": true,
+        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        "relativePath": "entityDefinitionRoot"
+      }
+    },
+    "definition": {
+      "name": {
+        "type": "string",
+        "tag": {
+          "value": {
+            "defaultLabel": "Name",
+            "display": {
+              "editable": true
+            }
+          }
+        }
+      },
+      "blobUuid": {
+        "type": "uuid",
+        "tag": {
+          "value": {
+            "defaultLabel": "Blob Uuid of the live Blob this snapshot captures",
+            "display": {
+              "editable": false
+            },
+            "foreignKeyParams": {
+              "targetEntity": "62209e4a-e429-4d7d-9b28-dcc1da6b51a2",
+              "targetEntityOrderInstancesBy": "name"
+            }
+          }
+        }
+      },
+      "filename": {
+        "type": "string",
+        "tag": {
+          "value": {
+            "defaultLabel": "Filename",
+            "display": {
+              "editable": true
+            }
+          }
+        }
+      },
+      "defaultLabel": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "defaultLabel": "Default Label",
+            "display": {
+              "editable": true
+            }
+          }
+        }
+      },
+      "description": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "defaultLabel": "Description",
+            "display": {
+              "editable": true
+            }
+          }
+        }
+      },
+      "contents": {
+        "type": "object",
+        "optional": true,
+        "tag": {
+          "value": {
+            "defaultLabel": "Contents",
+            "display": {
+              "editable": true
+            },
+            "isBlob": true
+          }
+        },
+        "definition": {
+          "encoding": {
+            "type": "enum",
+            "tag": {
+              "value": {
+                "defaultLabel": "Encoding",
+                "display": {
+                  "editable": true
+                }
+              }
+            },
+            "definition": [
+              "base64",
+              "data-uri"
+            ]
+          },
+          "mimeType": {
+            "type": "enum",
+            "tag": {
+              "value": {
+                "defaultLabel": "MIME Type",
+                "display": {
+                  "editable": true
+                }
+              }
+            },
+            "definition": [
+              "image/png",
+              "image/jpeg",
+              "image/gif",
+              "image/svg+xml",
+              "application/pdf",
+              "application/zip",
+              "text/plain",
+              "application/json"
+            ]
+          },
+          "data": {
+            "type": "string",
+            "tag": {
+              "value": {
+                "defaultLabel": "Contents",
+                "display": {
+                  "editable": true
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

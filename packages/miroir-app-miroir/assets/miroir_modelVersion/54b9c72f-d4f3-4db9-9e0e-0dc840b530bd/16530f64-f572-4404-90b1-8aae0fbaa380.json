@@ -1,0 +1,111 @@
+{
+  "uuid": "16530f64-f572-4404-90b1-8aae0fbaa380",
+  "parentName": "EntityVersion",
+  "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+  "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+  "entityUuid": "9b0f81d3-8b80-454f-9dfc-57489969a112",
+  "name": "TestConfigurationVersion",
+  "conceptLevel": "Model",
+  "description": "Historical snapshot of a TestConfiguration at freeze time.",
+  "cache": {
+    "cacheAllInstancesOnRefresh": true
+  },
+  "viewAttributes": [
+    "name",
+    "testConfigurationUuid",
+    "uuid"
+  ],
+  "mlSchema": {
+    "type": "object",
+    "extend": {
+      "type": "schemaReference",
+      "definition": {
+        "eager": true,
+        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        "relativePath": "entityDefinitionRoot"
+      }
+    },
+    "definition": {
+      "selfApplication": {
+        "type": "uuid",
+        "tag": {
+          "value": {
+            "defaultLabel": "SelfApplication",
+            "foreignKeyParams": {
+              "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
+              "targetEntityOrderInstancesBy": "name"
+            }
+          }
+        }
+      },
+      "name": {
+        "type": "string",
+        "tag": {
+          "value": {
+            "defaultLabel": "Name"
+          }
+        }
+      },
+      "testConfigurationUuid": {
+        "type": "uuid",
+        "tag": {
+          "value": {
+            "defaultLabel": "TestConfiguration Uuid of the live TestConfiguration this snapshot captures",
+            "display": {
+              "editable": false
+            },
+            "foreignKeyParams": {
+              "targetEntity": "675ccd46-7dd3-400b-a2bd-1319c39e11da",
+              "targetEntityOrderInstancesBy": "name"
+            }
+          }
+        }
+      },
+      "description": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "defaultLabel": "Description"
+          }
+        }
+      },
+      "testbedModel": {
+        "type": "any",
+        "optional": true,
+        "tag": {
+          "value": {
+            "defaultLabel": "Testbed Model"
+          }
+        }
+      },
+      "testbedEntitiesAndInstances": {
+        "type": "array",
+        "optional": true,
+        "definition": {
+          "type": "object",
+          "definition": {
+            "entity": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "entity"
+              }
+            },
+            "instances": {
+              "type": "array",
+              "definition": {
+                "type": "any"
+              }
+            }
+          }
+        },
+        "tag": {
+          "value": {
+            "defaultLabel": "Testbed Entities And Instances"
+          }
+        }
+      }
+    }
+  }
+}

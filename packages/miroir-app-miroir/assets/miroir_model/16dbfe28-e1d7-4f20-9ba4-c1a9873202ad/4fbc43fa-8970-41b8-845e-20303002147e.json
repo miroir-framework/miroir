@@ -1,0 +1,156 @@
+{
+  "uuid": "4fbc43fa-8970-41b8-845e-20303002147e",
+  "parentName": "Entity",
+  "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+  "name": "BlobVersion",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "conceptLevel": "Model",
+  "scope": "versioning",
+  "description": "Historical snapshot of a Blob at Application Version freeze time.",
+  "viewAttributes": [
+    "name",
+    "blobUuid",
+    "filename",
+    "uuid"
+  ],
+  "cache": {
+    "cacheAllInstancesOnRefresh": true
+  },
+  "mlSchema": {
+    "type": "object",
+    "extend": {
+      "type": "schemaReference",
+      "definition": {
+        "eager": true,
+        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        "relativePath": "entityDefinitionRoot"
+      }
+    },
+    "definition": {
+      "name": {
+        "type": "string",
+        "tag": {
+          "value": {
+            "defaultLabel": "Name",
+            "display": {
+              "editable": true
+            }
+          }
+        }
+      },
+      "blobUuid": {
+        "type": "uuid",
+        "tag": {
+          "value": {
+            "defaultLabel": "Blob Uuid of the live Blob this snapshot captures",
+            "display": {
+              "editable": false
+            },
+            "foreignKeyParams": {
+              "targetEntity": "62209e4a-e429-4d7d-9b28-dcc1da6b51a2",
+              "targetEntityOrderInstancesBy": "name"
+            }
+          }
+        }
+      },
+      "filename": {
+        "type": "string",
+        "tag": {
+          "value": {
+            "defaultLabel": "Filename",
+            "display": {
+              "editable": true
+            }
+          }
+        }
+      },
+      "defaultLabel": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "defaultLabel": "Default Label",
+            "display": {
+              "editable": true
+            }
+          }
+        }
+      },
+      "description": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "defaultLabel": "Description",
+            "display": {
+              "editable": true
+            }
+          }
+        }
+      },
+      "contents": {
+        "type": "object",
+        "optional": true,
+        "tag": {
+          "value": {
+            "defaultLabel": "Contents",
+            "display": {
+              "editable": true
+            },
+            "isBlob": true
+          }
+        },
+        "definition": {
+          "encoding": {
+            "type": "enum",
+            "tag": {
+              "value": {
+                "defaultLabel": "Encoding",
+                "display": {
+                  "editable": true
+                }
+              }
+            },
+            "definition": [
+              "base64",
+              "data-uri"
+            ]
+          },
+          "mimeType": {
+            "type": "enum",
+            "tag": {
+              "value": {
+                "defaultLabel": "MIME Type",
+                "display": {
+                  "editable": true
+                }
+              }
+            },
+            "definition": [
+              "image/png",
+              "image/jpeg",
+              "image/gif",
+              "image/svg+xml",
+              "application/pdf",
+              "application/zip",
+              "text/plain",
+              "application/json"
+            ]
+          },
+          "data": {
+            "type": "string",
+            "tag": {
+              "value": {
+                "defaultLabel": "Contents",
+                "display": {
+                  "editable": true
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

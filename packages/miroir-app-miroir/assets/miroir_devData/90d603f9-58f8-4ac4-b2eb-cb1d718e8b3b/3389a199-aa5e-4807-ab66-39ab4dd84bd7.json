@@ -1,0 +1,20 @@
+{
+  "uuid": "3389a199-aa5e-4807-ab66-39ab4dd84bd7",
+  "parentName": "BundleSizeMeasurement",
+  "parentUuid": "90d603f9-58f8-4ac4-b2eb-cb1d718e8b3b",
+  "application": "miroir-standalone-app-electron",
+  "measuredAt": "2026-11-07T19:10:17.273Z",
+  "eagerGzipBytes": 865792,
+  "baseline": 865792,
+  "previousBaseline": 846128,
+  "baselineChange": 19664,
+  "reason": "#706: the BlobVersion, TestConfigurationVersion and TestVersion history Entities, their Cross Entities and EntityVersion rows, and the larger freeze MiroirTest add about 12 kB gzipped of Miroir model and data to the page",
+  "gitCommit": "409bd2f56a62d2ebc407dc0b55a9d041fe14ef4c",
+  "gitBranch": "claude/706-freeze-miroir-content",
+  "miroirVersion": "0.5.0-rc.1",
+  "eagerChunks": 8,
+  "eagerRawBytes": 4954176,
+  "totalChunks": 48,
+  "totalRawBytes": 14271015,
+  "totalGzipBytes": 3173398
+}

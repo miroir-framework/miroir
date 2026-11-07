@@ -60,6 +60,9 @@ describe("Entity meta scope and logicalDataModel", () => {
       "e1f2a3b4-c5d6-4012-a3b4-c5d6e7f8a9d0.json", // TransformerDefinitionVersion
       "426cd199-8f38-498e-bd81-af636321b864.json", // MlSchemaVersion (#230)
       "a2b1c33a-b0db-45b4-829c-c8fafc4a6110.json", // MiroirTestVersion (#230)
+      "4fbc43fa-8970-41b8-845e-20303002147e.json", // BlobVersion (#706)
+      "9b0f81d3-8b80-454f-9dfc-57489969a112.json", // TestConfigurationVersion (#706)
+      "fe94c683-89d3-482e-a653-9ce1eeb4ef34.json", // TestVersion (#706)
       "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24.json", // SelfApplicationVersion
     ];
     for (const file of versioningOnly) {
@@ -79,6 +82,9 @@ describe("Entity meta scope and logicalDataModel", () => {
       "f2a3b4c5-d6e7-4123-a4b5-c6d7e8f9a0d1.json",
       "da27d98d-6b52-412a-9317-557325ec4030.json", // ApplicationVersionCrossMlSchemaVersion (#230)
       "81af0bd1-388b-4f80-aabc-4004578c7ded.json", // ApplicationVersionCrossMiroirTestVersion (#230)
+      "28ed918a-5514-4dc2-a3f3-a6f353270dd5.json", // ApplicationVersionCrossBlobVersion (#706)
+      "8bd811bf-82fa-4547-93e1-082c97589069.json", // ApplicationVersionCrossTestConfigurationVersion (#706)
+      "be1d3cf3-b77c-464e-966c-6d23375a4d6f.json", // ApplicationVersionCrossTestVersion (#706)
     ]) {
       const entity = readEntity(file);
       expect(entity.scope, file).toBe("versioning");
@@ -202,7 +208,13 @@ describe("Entity meta scope and logicalDataModel", () => {
   it.each([
     ["MlSchemaVersion", "426cd199-8f38-498e-bd81-af636321b864"],
     ["MiroirTestVersion", "a2b1c33a-b0db-45b4-829c-c8fafc4a6110"],
-  ])("model validation accepts %s entity row against Entity schema (#230)", (name, uuid) => {
+    ["BlobVersion", "4fbc43fa-8970-41b8-845e-20303002147e"],
+    ["ApplicationVersionCrossBlobVersion", "28ed918a-5514-4dc2-a3f3-a6f353270dd5"],
+    ["TestConfigurationVersion", "9b0f81d3-8b80-454f-9dfc-57489969a112"],
+    ["ApplicationVersionCrossTestConfigurationVersion", "8bd811bf-82fa-4547-93e1-082c97589069"],
+    ["TestVersion", "fe94c683-89d3-482e-a653-9ce1eeb4ef34"],
+    ["ApplicationVersionCrossTestVersion", "be1d3cf3-b77c-464e-966c-6d23375a4d6f"],
+  ])("model validation accepts %s entity row against Entity schema (#230, #706)", (name, uuid) => {
     const entitySchema = entityDefinitionsByEntityName(defaultMiroirMetaModel).Entity?.mlSchema;
     const historyEntity = defaultMiroirMetaModel.entities.find((e) => e.uuid === uuid);
     expect(historyEntity).toBeDefined();
