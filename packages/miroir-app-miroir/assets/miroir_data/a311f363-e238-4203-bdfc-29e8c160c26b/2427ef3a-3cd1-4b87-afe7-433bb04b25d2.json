@@ -9,7 +9,8 @@
   "tags": [
     "integ",
     "versioning",
-    "model"
+    "model",
+    "evolution-trace"
   ],
   "issue": "9",
   "definition": {

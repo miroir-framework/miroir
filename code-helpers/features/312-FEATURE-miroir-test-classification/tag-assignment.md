@@ -87,7 +87,7 @@
 | `domain_controller_non_uuid_pk_model_crud` | miroir | `domain-controller`, `model`, `primary-key` |
 | `modelUpdates` | miroir | `model` |
 | `EntityPrimaryKey` | miroir | `primary-key` |
-| `evolutionTraceWP1` | miroir | `versioning`, `model` |
+| `evolutionTraceWP1` | miroir | `versioning`, `model`, `evolution-trace` (#589) |
 | `externalServiceSync` | miroir | `external-service`, `transformer` |
 | `externalServiceSyncExecute` | miroir | `external-service`, `model` |
 | `multistepReports.274` | library | `report` |
