@@ -35,17 +35,17 @@ export type UiIntegrationTestRunRequest = {
    */
   prepareReportTests?: (session: UiIntegrationReportTestSession) => Promise<() => void>;
   /**
-   * The Miroir Reports loaded in the app (#330). The session of a suite of `reportTest` leaves
-   * holds the bootstrap Miroir Reports only: its runner creates the others before each leaf.
+   * The Miroir Reports and Runners loaded in the app (#330, #225). The session of a suite of
+   * `reportTest` leaves holds the bootstrap ones only: its runner creates the others before each leaf.
    */
-  miroirReports?: () => readonly EntityInstance[];
+  miroirDataInstances?: () => readonly EntityInstance[];
 };
 
-/** What the report test runner takes from the run (#330): its session, and the app's Miroir Reports. */
+/** What the report test runner takes from the run (#330): its session, and the app's Miroir Reports and Runners. */
 export type UiIntegrationReportTestSession = {
   miroirActivityTracker: MiroirActivityTrackerInterface;
   miroirEventService: MiroirEventService;
-  miroirReports?: () => readonly EntityInstance[];
+  miroirDataInstances?: () => readonly EntityInstance[];
 };
 
 export type UiIntegrationTestRunInspectorSnapshot = {

@@ -21,7 +21,7 @@ import { packageName } from "../../../constants.js";
 import type { TestResultData } from "@miroir-framework/react";
 import { cleanLevel } from "../../4_view/constants.js";
 import { fetchMiroirAndAppConfigurations } from "@miroir-framework/react";
-import { readAppMiroirReports } from "miroir-react-testing";
+import { readAppMiroirDataInstances } from "miroir-react-testing";
 import {
   runIntegrationMiroirTestBatch,
   runUnitMiroirTestBatch,
@@ -128,7 +128,7 @@ async function loadAndRun(
   const integration = await runIntegrationMiroirTestBatch({
     miroirTests: integTests,
     runnerUuidIndex: buildRunnerUuidIndex((miroirModel.runners ?? []) as Runner[]),
-    miroirReports: () => readAppMiroirReports(params.domainController, defaultSelfApplicationDeploymentMap),
+    miroirDataInstances: () => readAppMiroirDataInstances(params.domainController, defaultSelfApplicationDeploymentMap),
     onSuiteDone: (suiteKey, results) => params.onSuiteDone?.(integrationSuiteKey(suiteKey), results),
   });
   for (const [suiteKey, results] of Object.entries(integration.resultsBySuiteKey)) {
