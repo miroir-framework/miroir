@@ -13020,6 +13020,134 @@ export const miroirFundamentalMlSchema = {
           }
         }
       },
+      "mlSchemaVersion": {
+        "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "entityDefinitionRoot"
+          }
+        },
+        "definition": {
+          "name": {
+            "type": "string",
+            "tag": {
+              "value": {
+                "id": 5,
+                "defaultLabel": "Name"
+              }
+            }
+          },
+          "mlSchemaUuid": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "defaultLabel": "MlSchema Uuid",
+                "display": {
+                  "editable": false
+                },
+                "foreignKeyParams": {
+                  "targetEntity": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
+                  "targetEntityOrderInstancesBy": "name"
+                }
+              }
+            }
+          },
+          "defaultLabel": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Default Label"
+              }
+            }
+          },
+          "description": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Description"
+              }
+            }
+          },
+          "definition": {
+            "type": "any",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "MlSchema definition at freeze time"
+              }
+            }
+          }
+        }
+      },
+      "miroirTestVersion": {
+        "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "entityDefinitionRoot"
+          }
+        },
+        "definition": {
+          "name": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 5,
+                "defaultLabel": "Name"
+              }
+            }
+          },
+          "miroirTestUuid": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "defaultLabel": "MiroirTest Uuid",
+                "display": {
+                  "editable": false
+                },
+                "foreignKeyParams": {
+                  "targetEntity": "a311f363-e238-4203-bdfc-29e8c160c26b",
+                  "targetEntityOrderInstancesBy": "name"
+                }
+              }
+            }
+          },
+          "defaultLabel": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Default Label"
+              }
+            }
+          },
+          "description": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Description"
+              }
+            }
+          },
+          "definition": {
+            "type": "any",
+            "tag": {
+              "value": {
+                "defaultLabel": "MiroirTest definition at freeze time"
+              }
+            }
+          }
+        }
+      },
       "testCompositeAction": {
         "type": "object",
         "definition": {
@@ -49096,6 +49224,156 @@ export const miroirFundamentalMlSchema = {
               }
             }
           },
+          "applicationVersionCrossMlSchemaVersion": {
+            "type": "array",
+            "definition": {
+              "type": "object",
+              "definition": {
+                "uuid": {
+                  "type": "uuid",
+                  "tag": {
+                    "value": {
+                      "id": 1,
+                      "defaultLabel": "Uuid",
+                      "editable": false
+                    }
+                  }
+                },
+                "parentName": {
+                  "type": "string",
+                  "optional": true,
+                  "tag": {
+                    "value": {
+                      "id": 2,
+                      "defaultLabel": "Entity Name",
+                      "editable": false
+                    }
+                  }
+                },
+                "parentUuid": {
+                  "type": "uuid",
+                  "tag": {
+                    "value": {
+                      "id": 3,
+                      "defaultLabel": "Entity Uuid",
+                      "editable": false
+                    }
+                  }
+                },
+                "conceptLevel": {
+                  "type": "enum",
+                  "definition": [
+                    "MetaModel",
+                    "Model",
+                    "Data"
+                  ],
+                  "optional": true,
+                  "tag": {
+                    "value": {
+                      "id": 4,
+                      "defaultLabel": "Concept Level",
+                      "editable": false
+                    }
+                  }
+                },
+                "applicationVersion": {
+                  "type": "uuid",
+                  "tag": {
+                    "value": {
+                      "id": 5,
+                      "defaultLabel": "SelfApplication Version",
+                      "editable": false
+                    }
+                  }
+                },
+                "mlSchemaVersion": {
+                  "type": "uuid",
+                  "tag": {
+                    "value": {
+                      "id": 6,
+                      "defaultLabel": "MlSchema Version",
+                      "editable": false
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "applicationVersionCrossMiroirTestVersion": {
+            "type": "array",
+            "definition": {
+              "type": "object",
+              "definition": {
+                "uuid": {
+                  "type": "uuid",
+                  "tag": {
+                    "value": {
+                      "id": 1,
+                      "defaultLabel": "Uuid",
+                      "editable": false
+                    }
+                  }
+                },
+                "parentName": {
+                  "type": "string",
+                  "optional": true,
+                  "tag": {
+                    "value": {
+                      "id": 2,
+                      "defaultLabel": "Entity Name",
+                      "editable": false
+                    }
+                  }
+                },
+                "parentUuid": {
+                  "type": "uuid",
+                  "tag": {
+                    "value": {
+                      "id": 3,
+                      "defaultLabel": "Entity Uuid",
+                      "editable": false
+                    }
+                  }
+                },
+                "conceptLevel": {
+                  "type": "enum",
+                  "definition": [
+                    "MetaModel",
+                    "Model",
+                    "Data"
+                  ],
+                  "optional": true,
+                  "tag": {
+                    "value": {
+                      "id": 4,
+                      "defaultLabel": "Concept Level",
+                      "editable": false
+                    }
+                  }
+                },
+                "applicationVersion": {
+                  "type": "uuid",
+                  "tag": {
+                    "value": {
+                      "id": 5,
+                      "defaultLabel": "SelfApplication Version",
+                      "editable": false
+                    }
+                  }
+                },
+                "miroirTestVersion": {
+                  "type": "uuid",
+                  "tag": {
+                    "value": {
+                      "id": 6,
+                      "defaultLabel": "MiroirTest Version",
+                      "editable": false
+                    }
+                  }
+                }
+              }
+            }
+          },
           "applications": {
             "type": "array",
             "definition": {
@@ -49243,6 +49521,26 @@ export const miroirFundamentalMlSchema = {
               "definition": {
                 "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                 "relativePath": "transformerDefinitionVersion"
+              }
+            }
+          },
+          "mlSchemaVersions": {
+            "type": "array",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "mlSchemaVersion"
+              }
+            }
+          },
+          "miroirTestVersions": {
+            "type": "array",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "miroirTestVersion"
               }
             }
           },

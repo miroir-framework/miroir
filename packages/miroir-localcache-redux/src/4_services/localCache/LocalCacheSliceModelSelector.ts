@@ -485,7 +485,11 @@ export const selectModelForDeploymentFromReduxState: () => (
         applicationVersionCrossThemeVersion: [],
         themeVersions: [],
         applicationVersionCrossTransformerDefinitionVersion: [],
+        applicationVersionCrossMlSchemaVersion: [],
+        applicationVersionCrossMiroirTestVersion: [],
         transformerDefinitionVersions: [],
+        mlSchemaVersions: [],
+        miroirTestVersions: [],
         transformerDefinitions: (transformerDefinitions
           ? Object.values(transformerDefinitions)
           : []) as TransformerDefinition[],

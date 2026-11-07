@@ -8,6 +8,7 @@
  * #227 — RunnerVersion (fifth non-Entity model element).
  * #227 — ThemeVersion (sixth non-Entity model element).
  * #227 — TransformerDefinitionVersion (ninth non-Entity model element).
+ * #230 — MlSchemaVersion and MiroirTestVersion (full model snapshot).
  */
 
 import { v4 as uuidv4 } from "uuid";
@@ -20,6 +21,8 @@ import type {
   EndpointDefinition,
   MetaModel,
   MenuDefinition,
+  MiroirTestDefinition,
+  MlSchema,
   Query,
   Report,
   RootReport,
@@ -118,6 +121,16 @@ export const TRANSFORMER_DEFINITION_VERSION_ENTITY_UUID =
 /** ApplicationVersionCrossTransformerDefinitionVersion Entity UUID (#227). */
 export const APPLICATION_VERSION_CROSS_TRANSFORMER_DEFINITION_VERSION_UUID =
   "f2a3b4c5-d6e7-4123-a4b5-c6d7e8f9a0d1";
+/** Historical MlSchemaVersion Entity UUID (#230). */
+export const ML_SCHEMA_VERSION_ENTITY_UUID = "426cd199-8f38-498e-bd81-af636321b864";
+/** ApplicationVersionCrossMlSchemaVersion Entity UUID (#230). */
+export const APPLICATION_VERSION_CROSS_ML_SCHEMA_VERSION_UUID =
+  "da27d98d-6b52-412a-9317-557325ec4030";
+/** Historical MiroirTestVersion Entity UUID (#230). */
+export const MIROIR_TEST_VERSION_ENTITY_UUID = "a2b1c33a-b0db-45b4-829c-c8fafc4a6110";
+/** ApplicationVersionCrossMiroirTestVersion Entity UUID (#230). */
+export const APPLICATION_VERSION_CROSS_MIROIR_TEST_VERSION_UUID =
+  "81af0bd1-388b-4f80-aabc-4004578c7ded";
 
 export interface SnapshotOptions {
   /** UUID generator override for testing determinism. */
@@ -555,6 +568,104 @@ export function snapshotTransformerDefinitionsAsHistoricalTransformerDefinitionV
   });
 }
 
+/** Live MlSchema instance shape in MetaModel.mlSchemas. */
+export type StoredMlSchemaForFreeze = {
+  uuid: string;
+  name: string;
+  defaultLabel?: string;
+  description?: string;
+  definition?: MlSchema["definition"];
+  parentUuid?: string;
+  parentName?: string;
+};
+
+/** Historical MlSchema snapshot minted at freeze (#230). */
+export type MlSchemaVersionSnapshot = {
+  uuid: string;
+  parentUuid: string;
+  parentName: "MlSchemaVersion";
+  name: string;
+  mlSchemaUuid: string;
+  defaultLabel?: string;
+  description?: string;
+  definition?: MlSchema["definition"];
+};
+
+/**
+ * Deep-copy present-model MlSchemas into new immutable MlSchemaVersion instances.
+ * Each output has a **new** UUID; `mlSchemaUuid` references the live MlSchema.
+ * An MlSchema without a definition is snapshotted without one: the live row allows it.
+ */
+export function snapshotMlSchemasAsHistoricalMlSchemaVersions(
+  mlSchemas: StoredMlSchemaForFreeze[],
+  options?: SnapshotOptions,
+): MlSchemaVersionSnapshot[] {
+  const mintUuid = options?.newUuid ?? uuidv4;
+
+  return mlSchemas.map((mlSchema) => ({
+    uuid: mintUuid(),
+    parentUuid: ML_SCHEMA_VERSION_ENTITY_UUID,
+    parentName: "MlSchemaVersion",
+    name: mlSchema.name,
+    mlSchemaUuid: mlSchema.uuid,
+    ...(mlSchema.definition !== undefined
+      ? { definition: structuredClone(mlSchema.definition) }
+      : {}),
+    ...(mlSchema.defaultLabel !== undefined ? { defaultLabel: mlSchema.defaultLabel } : {}),
+    ...(mlSchema.description !== undefined ? { description: mlSchema.description } : {}),
+  }));
+}
+
+/** Live MiroirTest instance shape in MetaModel.tests. */
+export type StoredMiroirTestForFreeze = {
+  uuid: string;
+  name?: string;
+  description?: string;
+  definition: MiroirTestDefinition["definition"];
+  parentUuid?: string;
+  parentName?: string;
+};
+
+/** Historical MiroirTest snapshot minted at freeze (#230). */
+export type MiroirTestVersionSnapshot = {
+  uuid: string;
+  parentUuid: string;
+  parentName: "MiroirTestVersion";
+  name?: string;
+  miroirTestUuid: string;
+  description?: string;
+  definition: MiroirTestDefinition["definition"];
+};
+
+/**
+ * Deep-copy present-model MiroirTests into new immutable MiroirTestVersion instances.
+ * Each output has a **new** UUID; `miroirTestUuid` references the live MiroirTest.
+ */
+export function snapshotMiroirTestsAsHistoricalMiroirTestVersions(
+  tests: StoredMiroirTestForFreeze[],
+  options?: SnapshotOptions,
+): MiroirTestVersionSnapshot[] {
+  const mintUuid = options?.newUuid ?? uuidv4;
+
+  return tests.map((test) => {
+    if (test.definition === undefined || test.definition === null) {
+      throw new Error(
+        `Cannot snapshot MiroirTest ${test.uuid} (${test.name ?? "unnamed"}): definition is missing`,
+      );
+    }
+
+    return {
+      uuid: mintUuid(),
+      parentUuid: MIROIR_TEST_VERSION_ENTITY_UUID,
+      parentName: "MiroirTestVersion",
+      miroirTestUuid: test.uuid,
+      definition: structuredClone(test.definition),
+      ...(test.name !== undefined ? { name: test.name } : {}),
+      ...(test.description !== undefined ? { description: test.description } : {}),
+    };
+  });
+}
+
 /**
  * Deep-copy present-model Entity fields into new immutable EntityVersion instances.
  * Each output has a **new** UUID; `entityUuid` references the live Entity.
@@ -682,6 +793,24 @@ export type ApplicationVersionCrossTransformerDefinitionVersionRow = {
   transformerDefinitionVersion: string;
 };
 
+/** Cross row linking an Application Version to a historical MlSchemaVersion (#230). */
+export type ApplicationVersionCrossMlSchemaVersionRow = {
+  uuid: string;
+  parentUuid: string;
+  parentName?: string;
+  applicationVersion: string;
+  mlSchemaVersion: string;
+};
+
+/** Cross row linking an Application Version to a historical MiroirTestVersion (#230). */
+export type ApplicationVersionCrossMiroirTestVersionRow = {
+  uuid: string;
+  parentUuid: string;
+  parentName?: string;
+  applicationVersion: string;
+  miroirTestVersion: string;
+};
+
 export type FreezeApplicationVersionPlan = {
   selfApplicationVersion: ApplicationVersion;
   entityVersions: EntityVersion[];
@@ -716,6 +845,14 @@ export type FreezeApplicationVersionPlan = {
   crossTransformerDefinitionVersions: ApplicationVersionCrossTransformerDefinitionVersionRow[];
   /** Persist section for TransformerDefinitionVersion rows (#227). */
   transformerDefinitionVersionApplicationSection: ApplicationSection;
+  mlSchemaVersions: MlSchemaVersionSnapshot[];
+  crossMlSchemaVersions: ApplicationVersionCrossMlSchemaVersionRow[];
+  /** Persist section for MlSchemaVersion rows (#230). */
+  mlSchemaVersionApplicationSection: ApplicationSection;
+  miroirTestVersions: MiroirTestVersionSnapshot[];
+  crossMiroirTestVersions: ApplicationVersionCrossMiroirTestVersionRow[];
+  /** Persist section for MiroirTestVersion rows (#230). */
+  miroirTestVersionApplicationSection: ApplicationSection;
 };
 
 export type BuildFreezeApplicationVersionPlanInput = {
@@ -737,6 +874,10 @@ export type BuildFreezeApplicationVersionPlanInput = {
   themes?: StoredThemeForFreeze[];
   /** Present-model TransformerDefinitions to snapshot (#227). Defaults to empty. */
   transformerDefinitions?: StoredTransformerDefinitionForFreeze[];
+  /** Present-model MlSchemas to snapshot (#230). Defaults to empty. */
+  mlSchemas?: StoredMlSchemaForFreeze[];
+  /** Present-model MiroirTests to snapshot (#230). Defaults to empty. */
+  tests?: StoredMiroirTestForFreeze[];
   /** Existing SAVs for this app+branch — used for duplicate label detection and tip resolution. */
   existingApplicationVersions?: ApplicationVersion[];
   /**
@@ -1020,6 +1161,12 @@ export function buildFreezeApplicationVersionPlan(
       input.transformerDefinitions ?? [],
       { newUuid: mintUuid },
     );
+  const mlSchemaVersions = snapshotMlSchemasAsHistoricalMlSchemaVersions(input.mlSchemas ?? [], {
+    newUuid: mintUuid,
+  });
+  const miroirTestVersions = snapshotMiroirTestsAsHistoricalMiroirTestVersions(input.tests ?? [], {
+    newUuid: mintUuid,
+  });
 
   const modelCUDMigration =
     input.previousEntityVersions !== undefined
@@ -1117,6 +1264,25 @@ export function buildFreezeApplicationVersionPlan(
       transformerDefinitionVersion: tdv.uuid,
     }));
 
+  const crossMlSchemaVersions: ApplicationVersionCrossMlSchemaVersionRow[] = mlSchemaVersions.map(
+    (msv) => ({
+      uuid: mintUuid(),
+      parentUuid: APPLICATION_VERSION_CROSS_ML_SCHEMA_VERSION_UUID,
+      parentName: "ApplicationVersionCrossMlSchemaVersion",
+      applicationVersion: selfApplicationVersionUuid,
+      mlSchemaVersion: msv.uuid,
+    }),
+  );
+
+  const crossMiroirTestVersions: ApplicationVersionCrossMiroirTestVersionRow[] =
+    miroirTestVersions.map((mtv) => ({
+      uuid: mintUuid(),
+      parentUuid: APPLICATION_VERSION_CROSS_MIROIR_TEST_VERSION_UUID,
+      parentName: "ApplicationVersionCrossMiroirTestVersion",
+      applicationVersion: selfApplicationVersionUuid,
+      miroirTestVersion: mtv.uuid,
+    }));
+
   return {
     selfApplicationVersion,
     entityVersions,
@@ -1159,6 +1325,16 @@ export function buildFreezeApplicationVersionPlan(
     transformerDefinitionVersionApplicationSection: getApplicationSection(
       input.selfApplicationUuid, TRANSFORMER_DEFINITION_VERSION_ENTITY_UUID,
     ),
+    mlSchemaVersions,
+    crossMlSchemaVersions,
+    mlSchemaVersionApplicationSection: getApplicationSection(
+      input.selfApplicationUuid, ML_SCHEMA_VERSION_ENTITY_UUID,
+    ),
+    miroirTestVersions,
+    crossMiroirTestVersions,
+    miroirTestVersionApplicationSection: getApplicationSection(
+      input.selfApplicationUuid, MIROIR_TEST_VERSION_ENTITY_UUID,
+    ),
   };
 }
 
@@ -1199,6 +1375,8 @@ export type FreezeMetaModelSlice = {
   runners?: StoredRunnerForFreeze[];
   themes?: StoredThemeForFreeze[];
   transformerDefinitions?: StoredTransformerDefinitionForFreeze[];
+  mlSchemas?: StoredMlSchemaForFreeze[];
+  tests?: StoredMiroirTestForFreeze[];
   applicationVersions: ApplicationVersion[];
   entityVersions: EntityVersion[];
   applicationVersionCrossEntityVersion: MetaModel["applicationVersionCrossEntityVersion"];
@@ -1216,6 +1394,10 @@ export type FreezeMetaModelSlice = {
   themeVersions?: MetaModel["themeVersions"];
   applicationVersionCrossTransformerDefinitionVersion?: MetaModel["applicationVersionCrossTransformerDefinitionVersion"];
   transformerDefinitionVersions?: MetaModel["transformerDefinitionVersions"];
+  applicationVersionCrossMlSchemaVersion?: MetaModel["applicationVersionCrossMlSchemaVersion"];
+  mlSchemaVersions?: MetaModel["mlSchemaVersions"];
+  applicationVersionCrossMiroirTestVersion?: MetaModel["applicationVersionCrossMiroirTestVersion"];
+  miroirTestVersions?: MetaModel["miroirTestVersions"];
 };
 
 function mergeInstancesByUuid<T extends { uuid: string }>(
@@ -1289,6 +1471,22 @@ export function mergeVersionHistoryIntoFreezeMetaModel(
       metaModel.transformerDefinitionVersions ?? [],
       persisted.transformerDefinitionVersions,
     ),
+    applicationVersionCrossMlSchemaVersion: mergeInstancesByUuid(
+      metaModel.applicationVersionCrossMlSchemaVersion ?? [],
+      persisted.applicationVersionCrossMlSchemaVersion,
+    ),
+    mlSchemaVersions: mergeInstancesByUuid(
+      metaModel.mlSchemaVersions ?? [],
+      persisted.mlSchemaVersions,
+    ),
+    applicationVersionCrossMiroirTestVersion: mergeInstancesByUuid(
+      metaModel.applicationVersionCrossMiroirTestVersion ?? [],
+      persisted.applicationVersionCrossMiroirTestVersion,
+    ),
+    miroirTestVersions: mergeInstancesByUuid(
+      metaModel.miroirTestVersions ?? [],
+      persisted.miroirTestVersions,
+    ),
   };
 }
 
@@ -1322,6 +1520,14 @@ export async function loadVersionHistoryFreezeSlice(
     transformerDefinitionVersions: await load(TRANSFORMER_DEFINITION_VERSION_ENTITY_UUID),
     applicationVersionCrossTransformerDefinitionVersion: await load(
       APPLICATION_VERSION_CROSS_TRANSFORMER_DEFINITION_VERSION_UUID,
+    ),
+    mlSchemaVersions: await load(ML_SCHEMA_VERSION_ENTITY_UUID),
+    applicationVersionCrossMlSchemaVersion: await load(
+      APPLICATION_VERSION_CROSS_ML_SCHEMA_VERSION_UUID,
+    ),
+    miroirTestVersions: await load(MIROIR_TEST_VERSION_ENTITY_UUID),
+    applicationVersionCrossMiroirTestVersion: await load(
+      APPLICATION_VERSION_CROSS_MIROIR_TEST_VERSION_UUID,
     ),
   };
 }
@@ -1417,6 +1623,8 @@ export function planFreezeApplicationVersionFromMetaModel(
     runners: metaModel.runners,
     themes: metaModel.themes,
     transformerDefinitions: metaModel.transformerDefinitions,
+    mlSchemas: metaModel.mlSchemas,
+    tests: metaModel.tests,
     existingApplicationVersions: metaModel.applicationVersions,
     freezeProducedVersionUuids,
     previousEntityVersions,

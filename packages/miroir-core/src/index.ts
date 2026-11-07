@@ -991,6 +991,8 @@ export {
   snapshotRunnersAsHistoricalRunnerVersions,
   snapshotThemesAsHistoricalThemeVersions,
   snapshotTransformerDefinitionsAsHistoricalTransformerDefinitionVersions,
+  snapshotMlSchemasAsHistoricalMlSchemaVersions,
+  snapshotMiroirTestsAsHistoricalMiroirTestVersions,
   QUERY_VERSION_ENTITY_UUID,
   APPLICATION_VERSION_CROSS_QUERY_VERSION_UUID,
   REPORT_VERSION_ENTITY_UUID,
@@ -1005,6 +1007,10 @@ export {
   APPLICATION_VERSION_CROSS_THEME_VERSION_UUID,
   TRANSFORMER_DEFINITION_VERSION_ENTITY_UUID,
   APPLICATION_VERSION_CROSS_TRANSFORMER_DEFINITION_VERSION_UUID,
+  ML_SCHEMA_VERSION_ENTITY_UUID,
+  APPLICATION_VERSION_CROSS_ML_SCHEMA_VERSION_UUID,
+  MIROIR_TEST_VERSION_ENTITY_UUID,
+  APPLICATION_VERSION_CROSS_MIROIR_TEST_VERSION_UUID,
 } from "./1_core/versioning/applicationVersionFreeze.js";
 export type {
   ApplicationVersionCrossEntityVersionRow,
@@ -1015,6 +1021,8 @@ export type {
   ApplicationVersionCrossRunnerVersionRow,
   ApplicationVersionCrossThemeVersionRow,
   ApplicationVersionCrossTransformerDefinitionVersionRow,
+  ApplicationVersionCrossMlSchemaVersionRow,
+  ApplicationVersionCrossMiroirTestVersionRow,
   BuildFreezeApplicationVersionPlanInput,
   FreezeApplicationVersionActionPayload,
   FreezeApplicationVersionActionType,
@@ -1033,6 +1041,8 @@ export type {
   ThemeVersionSnapshot,
   TransformerDefinitionVersionSnapshot,
   TransformerDefinitionVersionBody,
+  MlSchemaVersionSnapshot,
+  MiroirTestVersionSnapshot,
   ResolvePreviousApplicationVersionOptions,
   SnapshotOptions,
   StoredQueryForFreeze,
@@ -1042,6 +1052,8 @@ export type {
   StoredRunnerForFreeze,
   StoredThemeForFreeze,
   StoredTransformerDefinitionForFreeze,
+  StoredMlSchemaForFreeze,
+  StoredMiroirTestForFreeze,
 } from "./1_core/versioning/applicationVersionFreeze.js";
 export {
   actionsWithDeploymentInPayload, noValue

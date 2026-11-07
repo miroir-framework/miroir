@@ -53,7 +53,7 @@ const freeze: ModelActionFreezeApplicationVersion = {
 Freeze is refused unless the application is versioned (`assertApplicationVersioningEnabled`). It then writes, in `modelVersion`:
 
 1. a new **SelfApplicationVersion**, chained to the previous version of the same application and branch (linear history; a duplicate `versionName` on the same branch is rejected);
-2. a new, immutable snapshot of **every** live model element: EntityVersion, QueryVersion, ReportVersion, MenuVersion, EndpointVersion, RunnerVersion, ThemeVersion, TransformerDefinitionVersion. Each snapshot gets a **new** uuid and references its live element (`entityUuid`, `queryUuid`, …);
+2. a new, immutable snapshot of **every** live model element: EntityVersion, QueryVersion, ReportVersion, MenuVersion, EndpointVersion, RunnerVersion, ThemeVersion, TransformerDefinitionVersion, MlSchemaVersion, MiroirTestVersion. Each snapshot gets a **new** uuid and references its live element (`entityUuid`, `queryUuid`, …);
 3. **ApplicationVersionCross\*** link rows tying the SelfApplicationVersion to each snapshot.
 
 Implementation: `packages/miroir-core/src/1_core/versioning/applicationVersionFreeze.ts` (`buildFreezeApplicationVersionPlan`, `snapshotEntitiesAsHistoricalEntityVersions`, …). Consecutive EntityVersion snapshots can be diffed into rough migration candidates (`diffEntityVersionSnapshots`; rename vs drop+create is uuid-based).
@@ -119,6 +119,10 @@ The same pattern (immutable snapshot + cross link row) applies to the other mode
 | RunnerVersion | `e5f6a7b8-…` | ApplicationVersionCrossRunnerVersion `f6a7b8c9-…` |
 | ThemeVersion | `a7b8c9d0-…` | ApplicationVersionCrossThemeVersion `b8c9d0e1-…` |
 | TransformerDefinitionVersion | `e1f2a3b4-…` | ApplicationVersionCrossTransformerDefinitionVersion `f2a3b4c5-…` |
+| MlSchemaVersion | `426cd199-…` | ApplicationVersionCrossMlSchemaVersion `da27d98d-…` |
+| MiroirTestVersion | `a2b1c33a-…` | ApplicationVersionCrossMiroirTestVersion `81af0bd1-…` |
+
+An MlSchema without a `definition` is snapshotted without one, since the live row allows it; a MiroirTest without a `definition` makes the freeze fail, like the other elements.
 
 These uuids are registered in `versionHistoryEntityUuids` (`packages/miroir-core/src/1_core/Model.ts`), which routes their instances to `modelVersion`.
 

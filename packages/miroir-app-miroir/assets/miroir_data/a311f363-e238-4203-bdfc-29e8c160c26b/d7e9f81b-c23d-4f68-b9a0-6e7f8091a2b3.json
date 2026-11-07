@@ -5,7 +5,7 @@
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
   "name": "action.domainController.freezeApplicationVersion",
-  "description": "freezeApplicationVersion through DomainController actions: EntityVersion freeze and migration after Entity changes, and version snapshots of Queries, Reports, Menus, Endpoints, Runners, Themes and transformers.",
+  "description": "freezeApplicationVersion through DomainController actions: EntityVersion freeze and migration after Entity changes, and version snapshots of Queries, Reports, Menus, Endpoints, Runners, Themes, transformers, MlSchemas and MiroirTests.",
   "tags": [
     "integ",
     "domain-controller",
@@ -2976,10 +2976,10 @@
       },
       {
         "miroirTestType": "actionTest",
-        "miroirTestLabel": "Freeze V1 snapshots Query Report Menu Endpoint Runner Theme Transformer versions",
+        "miroirTestLabel": "Freeze V1 snapshots Query Report Menu Endpoint Runner Theme Transformer MlSchema MiroirTest versions",
         "compositeActionSequence": {
           "actionType": "compositeActionSequence",
-          "actionLabel": "Freeze V1 snapshots Query Report Menu Endpoint Runner Theme Transformer versions",
+          "actionLabel": "Freeze V1 snapshots Query Report Menu Endpoint Runner Theme Transformer MlSchema MiroirTest versions",
           "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
           "payload": {
             "actionSequence": [
@@ -3383,6 +3383,35 @@
                         "inMemoryImplementationFunctionName": "handleTransformer_constant",
                         "sqlImplementationFunctionName": "sqlStringForConstantTransformer"
                       }
+                    },
+                    {
+                      "uuid": "f0000003-0003-4003-8003-000000000003",
+                      "parentName": "MlSchema",
+                      "parentUuid": "5e81e1b9-38be-487c-b3e5-53796c57fccf",
+                      "name": "FreezeTestMlSchema",
+                      "defaultLabel": "MlSchema for freeze concept test",
+                      "definition": {
+                        "type": "object",
+                        "definition": {
+                          "title": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "uuid": "f0000004-0004-4004-8004-000000000004",
+                      "parentName": "MiroirTest",
+                      "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+                      "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "branch": "9034141b-0d0d-4beb-82af-dfc02be15c2d",
+                      "name": "FreezeTestMiroirTest",
+                      "description": "MiroirTest for freeze concept test",
+                      "definition": {
+                        "miroirTestType": "miroirTestSuite",
+                        "miroirTestLabel": "FreezeTestMiroirTest",
+                        "miroirTests": []
+                      }
                     }
                   ]
                 }
@@ -3589,6 +3618,46 @@
                           "applicationSection": "modelVersion",
                           "parentName": "ApplicationVersionCrossTransformerDefinitionVersion",
                           "parentUuid": "f2a3b4c5-d6e7-4123-a4b5-c6d7e8f9a0d1",
+                          "orderBy": {
+                            "attributeName": "uuid",
+                            "direction": "ASC"
+                          }
+                        },
+                        "mlSchemaVersions": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "modelVersion",
+                          "parentName": "MlSchemaVersion",
+                          "parentUuid": "426cd199-8f38-498e-bd81-af636321b864",
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        },
+                        "crossMlSchemaVersions": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "modelVersion",
+                          "parentName": "ApplicationVersionCrossMlSchemaVersion",
+                          "parentUuid": "da27d98d-6b52-412a-9317-557325ec4030",
+                          "orderBy": {
+                            "attributeName": "uuid",
+                            "direction": "ASC"
+                          }
+                        },
+                        "miroirTestVersions": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "modelVersion",
+                          "parentName": "MiroirTestVersion",
+                          "parentUuid": "a2b1c33a-b0db-45b4-829c-c8fafc4a6110",
+                          "orderBy": {
+                            "attributeName": "uuid",
+                            "direction": "ASC"
+                          }
+                        },
+                        "crossMiroirTestVersions": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "modelVersion",
+                          "parentName": "ApplicationVersionCrossMiroirTestVersion",
+                          "parentUuid": "81af0bd1-388b-4f80-aabc-4004578c7ded",
                           "orderBy": {
                             "attributeName": "uuid",
                             "direction": "ASC"
@@ -4416,6 +4485,222 @@
           {
             "actionType": "compositeRunTestAssertion",
             "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+            "actionLabel": "count_mlSchemaVersions_mlSchemaUuid_f0000003",
+            "nameGivenToResult": "count_mlSchemaVersions_mlSchemaUuid_f0000003",
+            "payload": {
+              "testType": "testAssertion",
+              "testLabel": "count_mlSchemaVersions_mlSchemaUuid_f0000003",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "mlSchemaVersions"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "==",
+                      "left": {
+                        "transformerType": "accessDynamicPath",
+                        "interpolation": "runtime",
+                        "objectAccessPath": [
+                          {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referenceName": "__element__"
+                          },
+                          "mlSchemaUuid"
+                        ]
+                      },
+                      "right": "f0000003-0003-4003-8003-000000000003"
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 1
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+            "actionLabel": "count_mlSchemaVersions_name_FreezeTestMlSchema",
+            "nameGivenToResult": "count_mlSchemaVersions_name_FreezeTestMlSchema",
+            "payload": {
+              "testType": "testAssertion",
+              "testLabel": "count_mlSchemaVersions_name_FreezeTestMlSchema",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "mlSchemaVersions"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "==",
+                      "left": {
+                        "transformerType": "accessDynamicPath",
+                        "interpolation": "runtime",
+                        "objectAccessPath": [
+                          {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referenceName": "__element__"
+                          },
+                          "name"
+                        ]
+                      },
+                      "right": "FreezeTestMlSchema"
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 1
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+            "actionLabel": "count_miroirTestVersions_miroirTestUuid_f0000004",
+            "nameGivenToResult": "count_miroirTestVersions_miroirTestUuid_f0000004",
+            "payload": {
+              "testType": "testAssertion",
+              "testLabel": "count_miroirTestVersions_miroirTestUuid_f0000004",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "miroirTestVersions"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "==",
+                      "left": {
+                        "transformerType": "accessDynamicPath",
+                        "interpolation": "runtime",
+                        "objectAccessPath": [
+                          {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referenceName": "__element__"
+                          },
+                          "miroirTestUuid"
+                        ]
+                      },
+                      "right": "f0000004-0004-4004-8004-000000000004"
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 1
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+            "actionLabel": "count_miroirTestVersions_name_FreezeTestMiroirTest",
+            "nameGivenToResult": "count_miroirTestVersions_name_FreezeTestMiroirTest",
+            "payload": {
+              "testType": "testAssertion",
+              "testLabel": "count_miroirTestVersions_name_FreezeTestMiroirTest",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "miroirTestVersions"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "==",
+                      "left": {
+                        "transformerType": "accessDynamicPath",
+                        "interpolation": "runtime",
+                        "objectAccessPath": [
+                          {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referenceName": "__element__"
+                          },
+                          "name"
+                        ]
+                      },
+                      "right": "FreezeTestMiroirTest"
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 1
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
             "actionLabel": "count_crossQueryVersions_at_least_one",
             "nameGivenToResult": "count_crossQueryVersions_at_least_one",
             "payload": {
@@ -4621,6 +4906,37 @@
                     "referencePath": [
                       "freezeState",
                       "crossTransformerDefinitionVersions"
+                    ]
+                  }
+                },
+                "expectedValue": {
+                  "count": 1
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+            "actionLabel": "count_crossMlSchemaVersions_at_least_one",
+            "nameGivenToResult": "count_crossMlSchemaVersions_at_least_one",
+            "payload": {
+              "testType": "testAssertion",
+              "testLabel": "count_crossMlSchemaVersions_at_least_one",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "getFromContext",
+                    "interpolation": "runtime",
+                    "referencePath": [
+                      "freezeState",
+                      "crossMlSchemaVersions"
                     ]
                   }
                 },
@@ -5159,6 +5475,160 @@
                           ]
                         },
                         "right": "f0000002-0002-4002-8002-000000000002"
+                      }
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 0
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+            "actionLabel": "count_mlSchemaVersions_uuid_differs_from_live",
+            "nameGivenToResult": "count_mlSchemaVersions_uuid_differs_from_live",
+            "payload": {
+              "testType": "testAssertion",
+              "testLabel": "count_mlSchemaVersions_uuid_differs_from_live",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "mlSchemaVersions"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "&&",
+                      "left": {
+                        "transformerType": "boolExpr",
+                        "interpolation": "runtime",
+                        "operator": "==",
+                        "left": {
+                          "transformerType": "accessDynamicPath",
+                          "interpolation": "runtime",
+                          "objectAccessPath": [
+                            {
+                              "transformerType": "getFromContext",
+                              "interpolation": "runtime",
+                              "referenceName": "__element__"
+                            },
+                            "mlSchemaUuid"
+                          ]
+                        },
+                        "right": "f0000003-0003-4003-8003-000000000003"
+                      },
+                      "right": {
+                        "transformerType": "boolExpr",
+                        "interpolation": "runtime",
+                        "operator": "==",
+                        "left": {
+                          "transformerType": "accessDynamicPath",
+                          "interpolation": "runtime",
+                          "objectAccessPath": [
+                            {
+                              "transformerType": "getFromContext",
+                              "interpolation": "runtime",
+                              "referenceName": "__element__"
+                            },
+                            "uuid"
+                          ]
+                        },
+                        "right": "f0000003-0003-4003-8003-000000000003"
+                      }
+                    }
+                  }
+                },
+                "expectedValue": {
+                  "count": 0
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+            "actionLabel": "count_miroirTestVersions_uuid_differs_from_live",
+            "nameGivenToResult": "count_miroirTestVersions_uuid_differs_from_live",
+            "payload": {
+              "testType": "testAssertion",
+              "testLabel": "count_miroirTestVersions_uuid_differs_from_live",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "miroirTestVersions"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "&&",
+                      "left": {
+                        "transformerType": "boolExpr",
+                        "interpolation": "runtime",
+                        "operator": "==",
+                        "left": {
+                          "transformerType": "accessDynamicPath",
+                          "interpolation": "runtime",
+                          "objectAccessPath": [
+                            {
+                              "transformerType": "getFromContext",
+                              "interpolation": "runtime",
+                              "referenceName": "__element__"
+                            },
+                            "miroirTestUuid"
+                          ]
+                        },
+                        "right": "f0000004-0004-4004-8004-000000000004"
+                      },
+                      "right": {
+                        "transformerType": "boolExpr",
+                        "interpolation": "runtime",
+                        "operator": "==",
+                        "left": {
+                          "transformerType": "accessDynamicPath",
+                          "interpolation": "runtime",
+                          "objectAccessPath": [
+                            {
+                              "transformerType": "getFromContext",
+                              "interpolation": "runtime",
+                              "referenceName": "__element__"
+                            },
+                            "uuid"
+                          ]
+                        },
+                        "right": "f0000004-0004-4004-8004-000000000004"
                       }
                     }
                   }
