@@ -565,17 +565,28 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     // #232/#234 — VH parents belong on modelVersion only. Commit instances live in data (Miroir)
     // and are not created for satellite apps — do not register a phantom model SQL table for them.
     // #647 — devData Entities belong to devData only.
+    // #703 — a store that registers the Entities it boots with, whatever its storage (SQL), boots
+    // without the Entities created on their first save and is asked whether their storage exists;
+    // registering a missing table would make a query on it fail where an older application has none.
+    const probeLateModelEntities = !!this.modelStoreSection.hasStorageSpaceForInstancesOfEntity;
     const modelSectionEntities = metaModelEntities.filter(
       (entity) =>
         !versionHistoryEntityUuids.has(entity.uuid!) &&
         !devDataEntityUuids.has(entity.uuid!) &&
-        entity.uuid !== entityCommit.uuid,
+        entity.uuid !== entityCommit.uuid &&
+        !(probeLateModelEntities && lazyStorageEntity("model", entity.uuid!)),
     );
     const modelBootFromPersistedState: Action2ReturnType =
       await this.modelStoreSection.bootFromPersistedState(
         modelSectionEntities,
         // metaModelEntityDefinitions
       );
+    if (probeLateModelEntities && !(modelBootFromPersistedState instanceof Action2Error)) {
+      for (const entity of metaModelEntities.filter((e) => lazyStorageEntity("model", e.uuid!))) {
+        // a "yes" registers the Entity in the store
+        await this.devDataStorageExists(this.modelStoreSection, entity);
+      }
+    }
     if (modelBootFromPersistedState instanceof Action2Error) {
       return new Action2Error(
         "FailedToGetInstances",
@@ -692,6 +703,11 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     log.info(this.logHeader, "clear", this.getEntityUuids());
     await this.dataStoreSection.clear();
     await this.modelStoreSection.clear();
+    // #703: the model storage of the Entities created on their first save is gone with the rest
+    for (const entity of modelEntitiesCreatedOnFirstSave) {
+      this.devDataStorage.delete(entity.uuid);
+      this.devDataStorageCreation.delete(entity.uuid);
+    }
     // #647 (D24) — devData is not part of the model being reset: a resetModel of Miroir in a live
     // environment must not delete its tracked development history. deleteStore still drops it.
     for (const [section, store] of this.presentOptionalStoreSections()) {

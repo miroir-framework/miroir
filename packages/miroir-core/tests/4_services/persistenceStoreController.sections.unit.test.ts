@@ -280,6 +280,48 @@ describe("PersistenceStoreController section routing", () => {
     });
   });
 
+  it("a model reset forgets the collections created on the first save (#703)", async () => {
+    const modelStore = new ModelSectionStub("model-store");
+    const created: string[] = [];
+    modelStore.createStorageSpaceForInstancesOfEntity = async (entity: any) => {
+      created.push(entity.uuid);
+      modelStore.stored[entity.uuid] = [];
+      return ACTION_OK;
+    };
+    const controller = new PersistenceStoreController(makeAdminStub("admin"), modelStore, new DataSectionStub("data-store"));
+    const save = () =>
+      controller.upsertInstance("model", { uuid: crypto.randomUUID(), parentUuid: entityTransformerDefinition.uuid } as any);
+
+    await save();
+    await controller.clear();
+    const afterReset = await save();
+
+    expect(afterReset instanceof Action2Error).toBe(false);
+    expect(created).toEqual([entityTransformerDefinition.uuid, entityTransformerDefinition.uuid]);
+  });
+
+  it("a store probing its storage (SQL) boots only the late model Entities whose storage exists (#703)", async () => {
+    const modelStore = new ModelSectionStub("model-store");
+    const booted: string[] = [];
+    modelStore.bootFromPersistedState = async (entities: any[]) => {
+      booted.push(...entities.map((entity) => entity.uuid));
+      return ACTION_OK;
+    };
+    const probed: string[] = [];
+    modelStore.hasStorageSpaceForInstancesOfEntity = async (entity: any) => {
+      probed.push(entity.uuid);
+      return entity.uuid === entityTransformerDefinition.uuid;
+    };
+    modelStore.getInstances = async (parentUuid: string) =>
+      ({ status: "ok", returnedDomainElement: { parentUuid, applicationSection: "model", instances: [] } }) as any;
+    const controller = new PersistenceStoreController(makeAdminStub("admin"), modelStore, new DataSectionStub("data-store"));
+
+    await controller.bootFromPersistedState([entityReport, entityBlob, entityTest, entityTransformerDefinition] as any[]);
+
+    expect(booted).toEqual([entityReport.uuid]);
+    expect(probed.sort()).toEqual([entityBlob.uuid, entityTest.uuid, entityTransformerDefinition.uuid].sort());
+  });
+
   it("upsertInstance model still refuses another Entity without a collection", async () => {
     const modelStore = new ModelSectionStub("model-store");
     const controller = new PersistenceStoreController(makeAdminStub("admin"), modelStore, new DataSectionStub("data-store"));
