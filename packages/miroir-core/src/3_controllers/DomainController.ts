@@ -119,6 +119,7 @@ import {
 import {
   loadVersionHistoryFreezeSlice,
   mergeVersionHistoryIntoFreezeMetaModel,
+  selectEntitiesToFreeze,
   planFreezeApplicationVersionFromMetaModel,
   type FreezeApplicationVersionPlan,
   type FreezeMetaModelSlice,
@@ -3008,8 +3009,11 @@ export class DomainController implements DomainControllerInterface, DomainContro
           for (const historyEntity of fullSnapshotHistoryEntities) {
             metaBootstrapUuids.add(historyEntity.uuid);
           }
-          const applicationEntities = metaModel.entities.filter(
-            (e) => !metaBootstrapUuids.has(e.uuid),
+          // #230: for Miroir itself, the meta-model Entities are the application's Entities.
+          const applicationEntities = selectEntitiesToFreeze(
+            payload.application,
+            metaModel.entities,
+            metaBootstrapUuids,
           );
 
           const freezeMetaModelSlice: FreezeMetaModelSlice = {

@@ -982,6 +982,7 @@ export {
   isApplicationVersionPlaceholder,
   planFreezeApplicationVersion,
   planFreezeApplicationVersionFromMetaModel,
+  selectEntitiesToFreeze,
   resolvePreviousApplicationVersion,
   snapshotEntitiesAsHistoricalEntityVersions,
   snapshotQueriesAsHistoricalQueryVersions,
