@@ -1347,6 +1347,31 @@ export function buildFreezeApplicationVersionPlan(
   };
 }
 
+/** Miroir's own SelfApplication uuid: its Entities are the meta-model (#230). */
+const MIROIR_SELF_APPLICATION_UUID = "360fcf1f-f0d4-4f8a-9262-07886e70fa15";
+
+/**
+ * The Entities a freeze snapshots as EntityVersions (#230).
+ *
+ * For an ordinary application, its own Entities: the meta-model Entities (Entity, Report, …),
+ * which can show up in its current model, are left out.
+ * For Miroir itself, those meta-model Entities *are* its Entities, so all of them are kept,
+ * apart from the version-history Entities (stored in `modelVersion`) and the devData Entities.
+ */
+export function selectEntitiesToFreeze(
+  applicationUuid: string,
+  entities: Entity[],
+  metaModelEntityUuids: ReadonlySet<string>,
+): Entity[] {
+  if (applicationUuid === MIROIR_SELF_APPLICATION_UUID) {
+    return entities.filter((entity) => {
+      const section = getApplicationSection(applicationUuid, entity.uuid);
+      return section !== "modelVersion" && section !== "devData";
+    });
+  }
+  return entities.filter((entity) => !metaModelEntityUuids.has(entity.uuid));
+}
+
 export type PlanFreezeApplicationVersionInput = BuildFreezeApplicationVersionPlanInput & {
   selfApplication: { versioningEnabled?: boolean | undefined };
 };

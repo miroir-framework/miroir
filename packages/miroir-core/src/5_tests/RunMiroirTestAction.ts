@@ -60,6 +60,7 @@ import { createInProcessVitestStub } from "./runMiroirTestSuiteInProcess.js";
 import { runTeardownTestApplicationStores } from "./testApplicationStoreTeardown.js";
 import { testbedStorageConfiguration } from "./testbedStorageConfiguration.js";
 import { deepReplaceUuidStrings } from "./deepReplaceUuidStrings.js";
+import { miroirTestUnmetRequirement } from "./miroirTestRequirements.js";
 import { buildRunnerTestSessionParamBank, type TestbedUuids } from "./TestbedUuids.js";
 
 /** Payload of the runMiroirTestAction action (#575), as its implementation reads it. */
@@ -520,7 +521,7 @@ async function runMiroirTest(
 ) {
   const { application, miroirTest: miroirTestUuid, leaves: selectedLeaves } = action.payload;
   const testSection = getApplicationSection(application, entityMiroirTest.uuid);
-  let miroirTest: { name?: string; definition?: MiroirTestSuite | MiroirTestAnyLeaf } | undefined;
+  let miroirTest: { name?: string; tags?: string[]; definition?: MiroirTestSuite | MiroirTestAnyLeaf } | undefined;
   try {
     const read = await readFromStore(
       host,
@@ -554,12 +555,18 @@ async function runMiroirTest(
       `MiroirTest ${miroirTest.name ?? miroirTestUuid} has no leaf ${unknown.map((label) => `"${label}"`).join(", ")}`,
     );
   }
+  // #589: a MiroirTest needing a feature that is off here (evolution traces) is skipped, with why
+  const unmetRequirement = miroirTestUnmetRequirement(miroirTest);
   const outcomes: MiroirTestLeafOutcome[] = allLeaves.map(({ path, leaf }) => ({
     path,
     type: leaf.miroirTestType,
     result: "skipped",
     assertions: [],
+    ...(unmetRequirement !== undefined ? { message: unmetRequirement } : {}),
   }));
+  if (unmetRequirement !== undefined) {
+    return { status: "ok" as const, returnedDomainElement: { miroirTest: miroirTest.name, leaves: outcomes } };
+  }
   const toRun = allLeaves
     .map((entry, index) => ({ ...entry, index, kind: leafKind(entry.leaf) }))
     .filter(({ leaf, skip }) => (selected.size == 0 || selected.has(leaf.miroirTestLabel)) && !skip);

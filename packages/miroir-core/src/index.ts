@@ -982,6 +982,7 @@ export {
   isApplicationVersionPlaceholder,
   planFreezeApplicationVersion,
   planFreezeApplicationVersionFromMetaModel,
+  selectEntitiesToFreeze,
   resolvePreviousApplicationVersion,
   snapshotEntitiesAsHistoricalEntityVersions,
   snapshotQueriesAsHistoricalQueryVersions,
@@ -2034,6 +2035,12 @@ export {
   miroirTestSuiteModeTags,
   type MiroirTestModeTag,
 } from "./5_tests/miroirTestTags.js";
+export {
+  EVOLUTION_TRACE_TAG,
+  EVOLUTION_TRACE_TESTS_NEED_TRACES,
+  miroirTestSuiteForEnvironment,
+  miroirTestUnmetRequirement,
+} from "./5_tests/miroirTestRequirements.js";
 export {
   describeIntegrationTestSession,
   getBootstrapPhasesForDomainControllerProfile,

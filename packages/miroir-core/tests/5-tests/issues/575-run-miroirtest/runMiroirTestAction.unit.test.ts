@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { Action2Error } from "../../../../src/0_interfaces/2_domain/DomainElement";
 import type {
@@ -9,6 +9,10 @@ import { ACTION_OK } from "../../../../src/1_core/constants";
 import { defaultMiroirModelEnvironment } from "../../../../src/1_core/Model";
 import { MiroirActivityTracker } from "../../../../src/3_controllers/MiroirActivityTracker";
 import { MiroirEventService } from "../../../../src/3_controllers/MiroirEventService";
+import {
+  EVOLUTION_TRACE_TAG,
+  EVOLUTION_TRACE_TESTS_NEED_TRACES,
+} from "../../../../src/5_tests/miroirTestRequirements";
 import { handleAction_runMiroirTestAction } from "../../../../src/5_tests/RunMiroirTestAction";
 
 // #575: runMiroirTestAction runs a MiroirTest's leaves on a throwaway copy of the application.
@@ -292,6 +296,23 @@ describe("runMiroirTestAction (#575)", () => {
       [["agent.test", "runs"], "ok"],
     ]);
     expect(result.returnedDomainElement.testbed).toBeUndefined();
+  });
+
+  it("skips an evolution-trace MiroirTest, with the reason, when traces are off (#589)", async () => {
+    vi.stubEnv("MIROIR_EVOLUTION_TRACE", "");
+    vi.stubEnv("VITE_MIROIR_EVOLUTION_TRACE", "");
+    try {
+      const { host, calls } = fakeHost({ ...suite(sum("adds", 3), actionTest("lends")), tags: ["integ", EVOLUTION_TRACE_TAG] });
+      const result = await run(host);
+      expect(result.status).toBe("ok");
+      expect(result.returnedDomainElement.leaves.map((leaf: any) => [leaf.result, leaf.message])).toEqual([
+        ["skipped", EVOLUTION_TRACE_TESTS_NEED_TRACES],
+        ["skipped", EVOLUTION_TRACE_TESTS_NEED_TRACES],
+      ]);
+      expect(calls).toEqual([]);
+    } finally {
+      vi.unstubAllEnvs();
+    }
   });
 
   it("runs an actionTest leaf on a testbed created, reseeded and dropped around it", async () => {

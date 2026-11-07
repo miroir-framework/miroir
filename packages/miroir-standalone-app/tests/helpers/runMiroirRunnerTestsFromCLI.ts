@@ -5,6 +5,7 @@ import {
   defaultMetaModelEnvironment,
   displayMiroirTestResults,
   indexApplicationMiroirTestsByKey,
+  miroirTestSuiteForEnvironment,
   resolveApplicationMiroirTestSuiteKey,
   type MiroirTestCliConfig,
   type MiroirTestExecutionEnvironment,
@@ -27,6 +28,8 @@ import {
 const applicationMiroirTestCatalog = loadApplicationMiroirTestCatalog();
 const runnerSuitesByKey = indexApplicationMiroirTestsByKey(applicationMiroirTestCatalog);
 
+const reportedSkippedSuiteKeys = new Set<string>();
+
 export function loadRunnerOrActionMiroirTestSuite(suiteKey: string): MiroirTestSuite {
   const resolvedKey =
     resolveApplicationMiroirTestSuiteKey(applicationMiroirTestCatalog, suiteKey) ?? suiteKey;
@@ -36,7 +39,13 @@ export function loadRunnerOrActionMiroirTestSuite(suiteKey: string): MiroirTestS
       `Unknown runner/action MiroirTest suite key "${suiteKey}". Available: ${listCliRunnerIntegrationSuiteKeysFromFolders().join(", ")}`,
     );
   }
-  return entry.suiteDefinition;
+  // #589: a suite whose requirement is unmet here (evolution traces off) runs as skipped
+  const { suite, skipReason } = miroirTestSuiteForEnvironment(entry.instance, entry.suiteDefinition);
+  if (skipReason !== undefined && !reportedSkippedSuiteKeys.has(suiteKey)) {
+    reportedSkippedSuiteKeys.add(suiteKey);
+    console.log(`MiroirTest suite "${suiteKey}" skipped: ${skipReason}`);
+  }
+  return suite;
 }
 
 // ################################################################################################

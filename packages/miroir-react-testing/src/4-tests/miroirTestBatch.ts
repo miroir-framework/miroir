@@ -7,6 +7,7 @@ import {
   defaultMetaModelEnvironment,
   MiroirLoggerFactory,
   miroirTestInstanceHasAnyTag,
+  miroirTestUnmetRequirement,
   runMiroirTests,
   TestFramework,
   type LoggerInterface,
@@ -225,6 +226,12 @@ export async function runIntegrationMiroirTestBatch(params: {
     const identityKey = getMiroirTestSuiteKey(instance);
     if (!params.prepareReportTests && runner[registryKey]?.kind === "reportTest") {
       skipped.push({ suiteKey: identityKey, reason: REPORT_TESTS_NEED_THE_SANDBOX });
+      continue;
+    }
+    // #589: e.g. evolution-trace suites, when traces are off (always in the browser build)
+    const unmetRequirement = miroirTestUnmetRequirement(instance);
+    if (unmetRequirement !== undefined) {
+      skipped.push({ suiteKey: identityKey, reason: unmetRequirement });
       continue;
     }
     if (inBrowserProfile && miroirTestInstanceHasAnyTag(instance, [FILESYSTEM_TAG])) {

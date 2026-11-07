@@ -38,6 +38,7 @@ import {
   buildFreezeApplicationVersionPlan,
   mergeVersionHistoryIntoFreezeMetaModel,
   planFreezeApplicationVersionFromMetaModel,
+  selectEntitiesToFreeze,
   type FreezeMetaModelSlice,
 } from "../../src/1_core/versioning/applicationVersionFreeze.js";
 import { getApplicationSection, versionHistoryEntityUuids } from "../../src/1_core/Model.js";
@@ -184,5 +185,41 @@ describe("freeze chaining from modelVersion-persisted history", () => {
       },
     );
     expect(plan.selfApplicationVersion.previousVersion).toBe(v1Uuid);
+  });
+});
+
+describe("selectEntitiesToFreeze (#230)", () => {
+  const ENTITY_UUID = "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad";
+  const REPORT_UUID = "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916";
+  const BLOB_UUID = "62209e4a-e429-4d7d-9b28-dcc1da6b51a2";
+  const BUNDLE_SIZE_MEASUREMENT_UUID = "90d603f9-58f8-4ac4-b2eb-cb1d718e8b3b";
+  const BOOK_UUID = "e8ba151b-d68e-4cc3-9a83-3459d309ccf5";
+  const metaEntities = [
+    makeEntity(ENTITY_UUID, "Entity"),
+    makeEntity(REPORT_UUID, "Report"),
+    makeEntity(entityEntityVersion.uuid!, "EntityVersion"),
+    makeEntity(entitySelfApplicationVersion.uuid!, "SelfApplicationVersion"),
+    makeEntity(entityApplicationVersionCrossEntityVersion.uuid!, "ApplicationVersionCrossEntityVersion"),
+    makeEntity(entityHistoricalMiroirTestVersion.uuid!, "MiroirTestVersion"),
+    makeEntity(BUNDLE_SIZE_MEASUREMENT_UUID, "BundleSizeMeasurement"),
+  ];
+  const metaUuids = new Set(metaEntities.map((e) => e.uuid));
+
+  it("freezes Miroir's own Entities, meta-model ones included, but not its history or devData Entities", () => {
+    const selected = selectEntitiesToFreeze(
+      selfApplicationMiroir.uuid,
+      [...metaEntities, makeEntity(BLOB_UUID, "Blob")],
+      metaUuids,
+    );
+    expect(selected.map((e) => e.name).sort()).toEqual(["Blob", "Entity", "Report"]);
+  });
+
+  it("leaves the meta-model Entities out of an application's freeze", () => {
+    const selected = selectEntitiesToFreeze(
+      selfApplicationLibrary.uuid,
+      [...metaEntities, makeEntity(BOOK_UUID, "Book")],
+      metaUuids,
+    );
+    expect(selected.map((e) => e.name)).toEqual(["Book"]);
   });
 });
