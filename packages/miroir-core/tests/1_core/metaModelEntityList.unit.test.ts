@@ -10,6 +10,7 @@ import { describe, expect, it } from "vitest";
 import {
   appModelInitializeCreateEntityOrder,
   defaultMiroirMetaModel,
+  miroirModelInitializeCreateEntityOrder,
   entityBlob,
   entityTest,
   entityTransformerDefinition,
@@ -47,9 +48,12 @@ describe("meta-model Entity list (#703)", () => {
     }
   });
 
-  it("creates their storage when an application's model is initialized", () => {
-    const created = appModelInitializeCreateEntityOrder.map((entity) => entity.name);
-    expect(created).toEqual(expect.arrayContaining(lateEntities.map((entity) => entity.name)));
+  it("creates them when an application's model, or Miroir's, is initialized", () => {
+    for (const order of [appModelInitializeCreateEntityOrder, miroirModelInitializeCreateEntityOrder]) {
+      expect(order.map((entity) => entity.name)).toEqual(
+        expect.arrayContaining(lateEntities.map((entity) => entity.name)),
+      );
+    }
   });
 
   it("leaves them out of an application's freeze, and keeps them in Miroir's", () => {

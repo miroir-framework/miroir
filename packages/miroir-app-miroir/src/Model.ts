@@ -552,6 +552,10 @@ export const miroirModelInitializeCreateEntityOrder: Entity[] = entitiesInBootst
   entityMiroirTest.uuid!,
   entityTestConfiguration.uuid!,
   entityTheme.uuid!,
+  // #703: Miroir's own Blobs, Tests and TransformerDefinitions (in its data section)
+  entityBlob.uuid!,
+  entityTest.uuid!,
+  entityTransformerDefinition.uuid!,
   entityQueryVersion.uuid!,
   entityHistoricalQueryVersion.uuid!,
   entityApplicationEvolutionTrace.uuid!,
