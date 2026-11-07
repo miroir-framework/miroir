@@ -76,6 +76,8 @@ import {
   entitySelfApplication,
   entitySelfApplicationModelBranch,
   entitySelfApplicationVersion,
+  entityBlob,
+  entityTest,
   entityTestConfiguration,
   entityTheme,
   entityTransformerDefinition,
@@ -263,6 +265,10 @@ export const defaultMiroirMetaModel: MetaModel = {
     entityMiroirTest as Entity,
     entityTestConfiguration as Entity,
     entityTheme as Entity,
+    // #703: in every application's model, like the Entities above (Miroir's own are data)
+    entityBlob as Entity,
+    entityTest as Entity,
+    entityTransformerDefinition as Entity,
     entityApplicationEvolutionTrace as Entity,
     entityApplicationEvolutionTraceEvent as Entity,
     entityApplicationVersionCrossEntityVersion as Entity,
@@ -546,6 +552,10 @@ export const miroirModelInitializeCreateEntityOrder: Entity[] = entitiesInBootst
   entityMiroirTest.uuid!,
   entityTestConfiguration.uuid!,
   entityTheme.uuid!,
+  // #703: Miroir's own Blobs, Tests and TransformerDefinitions (in its data section)
+  entityBlob.uuid!,
+  entityTest.uuid!,
+  entityTransformerDefinition.uuid!,
   entityQueryVersion.uuid!,
   entityHistoricalQueryVersion.uuid!,
   entityApplicationEvolutionTrace.uuid!,
@@ -616,11 +626,11 @@ export const appModelInitializeCreateEntityOrder: Entity[] = entitiesInBootstrap
   entityMiroirTest.uuid!,
   entityTestConfiguration.uuid!,
   entityTheme.uuid!,
+  // #502, #703: an application's Blobs, Tests and composite TransformerDefinitions
+  entityBlob.uuid!,
+  entityTest.uuid!,
+  entityTransformerDefinition.uuid!,
   entityApplicationEvolutionTrace.uuid!,
   entityApplicationEvolutionTraceEvent.uuid!,
   entityApplicationVersionCrossEntityVersion.uuid!,
-]).concat([
-  // #502: an application's composite TransformerDefinitions live in its model section. The
-  // Entity is not in defaultMiroirMetaModel.entities (Miroir's own are data), hence the concat.
-  entityTransformerDefinition as Entity,
 ]);
