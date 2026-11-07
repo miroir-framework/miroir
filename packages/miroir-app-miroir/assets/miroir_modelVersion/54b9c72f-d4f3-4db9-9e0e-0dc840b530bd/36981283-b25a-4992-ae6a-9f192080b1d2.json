@@ -1,0 +1,63 @@
+{
+  "uuid": "36981283-b25a-4992-ae6a-9f192080b1d2",
+  "parentName": "EntityVersion",
+  "parentUuid": "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd",
+  "parentDefinitionVersionUuid": "bdd7ad43-f0fc-4716-90c1-87454c40dd95",
+  "entityUuid": "28ed918a-5514-4dc2-a3f3-a6f353270dd5",
+  "name": "ApplicationVersionCrossBlobVersion",
+  "conceptLevel": "Model",
+  "description": "Cross mapping ApplicationVersion to BlobVersion.",
+  "cache": {
+    "cacheAllInstancesOnRefresh": true
+  },
+  "viewAttributes": [
+    "applicationVersion",
+    "blobVersion",
+    "uuid"
+  ],
+  "mlSchema": {
+    "type": "object",
+    "extend": {
+      "type": "schemaReference",
+      "definition": {
+        "eager": true,
+        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        "relativePath": "entityDefinitionRoot"
+      }
+    },
+    "definition": {
+      "applicationVersion": {
+        "type": "uuid",
+        "tag": {
+          "value": {
+            "id": 5,
+            "display": {
+              "editable": false
+            },
+            "defaultLabel": "SelfApplication Version",
+            "foreignKeyParams": {
+              "targetEntity": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
+              "targetEntityOrderInstancesBy": "name"
+            }
+          }
+        }
+      },
+      "blobVersion": {
+        "type": "uuid",
+        "tag": {
+          "value": {
+            "id": 6,
+            "display": {
+              "editable": false
+            },
+            "defaultLabel": "Blob Version",
+            "foreignKeyParams": {
+              "targetEntity": "4fbc43fa-8970-41b8-845e-20303002147e",
+              "targetEntityOrderInstancesBy": "name"
+            }
+          }
+        }
+      }
+    }
+  }
+}

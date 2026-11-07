@@ -53,7 +53,7 @@ const freeze: ModelActionFreezeApplicationVersion = {
 Freeze is refused unless the application is versioned (`assertApplicationVersioningEnabled`). It then writes, in `modelVersion`:
 
 1. a new **SelfApplicationVersion**, chained to the previous version of the same application and branch (linear history; a duplicate `versionName` on the same branch is rejected);
-2. a new, immutable snapshot of **every** live model element: EntityVersion, QueryVersion, ReportVersion, MenuVersion, EndpointVersion, RunnerVersion, ThemeVersion, TransformerDefinitionVersion, MlSchemaVersion, MiroirTestVersion. Each snapshot gets a **new** uuid and references its live element (`entityUuid`, `queryUuid`, …);
+2. a new, immutable snapshot of **every** live model element: EntityVersion, QueryVersion, ReportVersion, MenuVersion, EndpointVersion, RunnerVersion, ThemeVersion, TransformerDefinitionVersion, MlSchemaVersion, MiroirTestVersion, BlobVersion, TestConfigurationVersion, TestVersion. Each snapshot gets a **new** uuid and references its live element (`entityUuid`, `queryUuid`, …);
 3. **ApplicationVersionCross\*** link rows tying the SelfApplicationVersion to each snapshot.
 
 Implementation: `packages/miroir-core/src/1_core/versioning/applicationVersionFreeze.ts` (`buildFreezeApplicationVersionPlan`, `snapshotEntitiesAsHistoricalEntityVersions`, …). Consecutive EntityVersion snapshots can be diffed into rough migration candidates (`diffEntityVersionSnapshots`; rename vs drop+create is uuid-based).
@@ -121,8 +121,13 @@ The same pattern (immutable snapshot + cross link row) applies to the other mode
 | TransformerDefinitionVersion | `e1f2a3b4-…` | ApplicationVersionCrossTransformerDefinitionVersion `f2a3b4c5-…` |
 | MlSchemaVersion | `426cd199-…` | ApplicationVersionCrossMlSchemaVersion `da27d98d-…` |
 | MiroirTestVersion | `a2b1c33a-…` | ApplicationVersionCrossMiroirTestVersion `81af0bd1-…` |
+| BlobVersion | `4fbc43fa-…` | ApplicationVersionCrossBlobVersion `28ed918a-…` |
+| TestConfigurationVersion | `9b0f81d3-…` | ApplicationVersionCrossTestConfigurationVersion `8bd811bf-…` |
+| TestVersion | `fe94c683-…` | ApplicationVersionCrossTestVersion `be1d3cf3-…` |
 
 An MlSchema without a `definition` is snapshotted without one, since the live row allows it; a MiroirTest without a `definition` makes the freeze fail, like the other elements. A MiroirTestVersion also keeps the test's `skip`, `tags` and `issue`.
+
+The MetaModel has no collection for Blobs, TestConfigurations and Tests, so the freeze reads them from the store: Miroir's `data` section, or the `model` section of another application. Their snapshot copies every attribute of the live row except its identity (`uuid`, `parentUuid`, `parentName`, `parentDefinitionVersionUuid`, `conceptLevel`), and links back with `blobUuid`, `testConfigurationUuid` or `testUuid`. A BlobVersion copies the Blob's `contents`, so each freeze stores the Blob's data again.
 
 These uuids are registered in `versionHistoryEntityUuids` (`packages/miroir-core/src/1_core/Model.ts`), which routes their instances to `modelVersion`.
 

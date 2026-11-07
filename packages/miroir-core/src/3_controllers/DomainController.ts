@@ -60,6 +60,15 @@ import {
   entityHistoricalMlSchemaVersion,
   entityApplicationVersionCrossMiroirTestVersion,
   entityHistoricalMiroirTestVersion,
+  entityApplicationVersionCrossBlobVersion,
+  entityHistoricalBlobVersion,
+  entityApplicationVersionCrossTestConfigurationVersion,
+  entityHistoricalTestConfigurationVersion,
+  entityApplicationVersionCrossTestVersion,
+  entityHistoricalTestVersion,
+  entityBlob,
+  entityTestConfiguration,
+  entityTest,
   selfApplicationMiroir,
   selfApplicationModelBranchMiroirMasterBranch,
   selfApplicationVersionInitialMiroirVersion
@@ -123,6 +132,7 @@ import {
   planFreezeApplicationVersionFromMetaModel,
   type FreezeApplicationVersionPlan,
   type FreezeMetaModelSlice,
+  type StoredInstanceForFreeze,
   type StoredQueryForFreeze,
 } from "../1_core/versioning/applicationVersionFreeze.js";
 import { resolveVersioningMode } from "../1_core/versioning/versioningMode.js";
@@ -1610,40 +1620,76 @@ export class DomainController implements DomainControllerInterface, DomainContro
     application: Uuid,
     applicationDeploymentMap: ApplicationDeploymentMap,
   ): Promise<Partial<FreezeMetaModelSlice>> {
-    const instanceEndpoint = "ed520de4-55a9-4550-ac50-b1b713b72a89";
-    const loadInstances = async (parentEntityUuid: string): Promise<Array<{ uuid: string }>> => {
-      const localInstances =
-        await this.persistenceStoreLocalOrRemote.readLocalPersistenceSectionInstances(
-          application,
-          applicationDeploymentMap,
-          "modelVersion",
-          parentEntityUuid,
-        );
-      if (localInstances.length > 0 || this.persistenceStoreAccessMode === "local") {
-        return localInstances as Array<{ uuid: string }>;
-      }
-      const result = await this.persistenceStoreLocalOrRemote.handlePersistenceAction(
-        {
-          actionType: "getInstances",
-          endpoint: instanceEndpoint,
-          payload: {
-            application,
-            applicationSection: "modelVersion",
-            parentUuid: parentEntityUuid,
-          },
-        },
+    return loadVersionHistoryFreezeSlice((parentEntityUuid) =>
+      this.readSectionInstancesForFreeze(
+        application,
         applicationDeploymentMap,
-      );
-      if (result instanceof Action2Error) {
-        return [];
-      }
-      const collection = result.returnedDomainElement;
-      if (!collection || collection instanceof Domain2ElementFailed) {
-        return [];
-      }
-      return (collection.instances ?? []) as Array<{ uuid: string }>;
+        "modelVersion",
+        parentEntityUuid,
+      ),
+    );
+  }
+
+  /**
+   * #706 — the live Blob, TestConfiguration and Test instances a freeze snapshots. The MetaModel
+   * has no collection for them, so they are read from the store: Miroir's data section, or the
+   * model section of another application.
+   */
+  private async loadInstancesToFreeze(
+    application: Uuid,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+  ): Promise<Pick<FreezeMetaModelSlice, "blobs" | "testConfigurations" | "testInstances">> {
+    const load = (entityUuid: Uuid) =>
+      this.readSectionInstancesForFreeze(
+        application,
+        applicationDeploymentMap,
+        getApplicationSection(application, entityUuid),
+        entityUuid,
+      ) as Promise<StoredInstanceForFreeze[]>;
+    return {
+      blobs: await load(entityBlob.uuid),
+      testConfigurations: await load(entityTestConfiguration.uuid),
+      testInstances: await load(entityTest.uuid),
     };
-    return loadVersionHistoryFreezeSlice(loadInstances);
+  }
+
+  /** Instances of an Entity in a section, from the local store or else the server; none on failure. */
+  private async readSectionInstancesForFreeze(
+    application: Uuid,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+    applicationSection: ApplicationSection,
+    parentEntityUuid: Uuid,
+  ): Promise<Array<{ uuid: string }>> {
+    const localInstances =
+      await this.persistenceStoreLocalOrRemote.readLocalPersistenceSectionInstances(
+        application,
+        applicationDeploymentMap,
+        applicationSection,
+        parentEntityUuid,
+      );
+    if (localInstances.length > 0 || this.persistenceStoreAccessMode === "local") {
+      return localInstances as Array<{ uuid: string }>;
+    }
+    const result = await this.persistenceStoreLocalOrRemote.handlePersistenceAction(
+      {
+        actionType: "getInstances",
+        endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+        payload: {
+          application,
+          applicationSection,
+          parentUuid: parentEntityUuid,
+        },
+      },
+      applicationDeploymentMap,
+    );
+    if (result instanceof Action2Error) {
+      return [];
+    }
+    const collection = result.returnedDomainElement;
+    if (!collection || collection instanceof Domain2ElementFailed) {
+      return [];
+    }
+    return (collection.instances ?? []) as Array<{ uuid: string }>;
   }
 
   /**
@@ -1800,6 +1846,23 @@ export class DomainController implements DomainControllerInterface, DomainContro
       return mtvResult;
     }
 
+    // #706: Blob, TestConfiguration and Test snapshots, then their Cross rows below.
+    const instanceVersionBatches: Array<[string, EntityInstance[], Uuid]> = [
+      ["freezeBlobVersions", plan.blobVersions as EntityInstance[], entityHistoricalBlobVersion.uuid],
+      [
+        "freezeTestConfigurationVersions",
+        plan.testConfigurationVersions as EntityInstance[],
+        entityHistoricalTestConfigurationVersion.uuid,
+      ],
+      ["freezeTestVersions", plan.testVersions as EntityInstance[], entityHistoricalTestVersion.uuid],
+    ];
+    for (const [actionLabel, objects, parentEntityUuid] of instanceVersionBatches) {
+      const result = await persistBatch(actionLabel, objects, parentEntityUuid, historySection);
+      if (result instanceof Action2Error) {
+        return result;
+      }
+    }
+
     const crossEvResult = await persistBatch(
       "freezeCrossEntityVersions",
       plan.crossEntityVersions as EntityInstance[],
@@ -1890,12 +1953,40 @@ export class DomainController implements DomainControllerInterface, DomainContro
       return crossMsResult;
     }
 
-    return persistBatch(
+    const crossMtResult = await persistBatch(
       "freezeCrossMiroirTestVersions",
       plan.crossMiroirTestVersions as EntityInstance[],
       entityApplicationVersionCrossMiroirTestVersion.uuid,
       historySection,
     );
+    if (crossMtResult instanceof Action2Error) {
+      return crossMtResult;
+    }
+
+    const crossInstanceVersionBatches: Array<[string, EntityInstance[], Uuid]> = [
+      [
+        "freezeCrossBlobVersions",
+        plan.crossBlobVersions as EntityInstance[],
+        entityApplicationVersionCrossBlobVersion.uuid,
+      ],
+      [
+        "freezeCrossTestConfigurationVersions",
+        plan.crossTestConfigurationVersions as EntityInstance[],
+        entityApplicationVersionCrossTestConfigurationVersion.uuid,
+      ],
+      [
+        "freezeCrossTestVersions",
+        plan.crossTestVersions as EntityInstance[],
+        entityApplicationVersionCrossTestVersion.uuid,
+      ],
+    ];
+    for (const [actionLabel, objects, parentEntityUuid] of crossInstanceVersionBatches) {
+      const result = await persistBatch(actionLabel, objects, parentEntityUuid, historySection);
+      if (result instanceof Action2Error) {
+        return result;
+      }
+    }
+    return ACTION_OK;
   }
 
   // ##############################################################################################
@@ -2957,6 +3048,13 @@ export class DomainController implements DomainControllerInterface, DomainContro
             entityHistoricalMlSchemaVersion,
             entityApplicationVersionCrossMiroirTestVersion,
             entityHistoricalMiroirTestVersion,
+            // #706
+            entityApplicationVersionCrossBlobVersion,
+            entityHistoricalBlobVersion,
+            entityApplicationVersionCrossTestConfigurationVersion,
+            entityHistoricalTestConfigurationVersion,
+            entityApplicationVersionCrossTestVersion,
+            entityHistoricalTestVersion,
           ] as Entity[];
           for (const historyEntity of fullSnapshotHistoryEntities) {
             if (metaModel.entities.some((e) => e.uuid === historyEntity.uuid)) {
@@ -3100,6 +3198,7 @@ export class DomainController implements DomainControllerInterface, DomainContro
               enrichedMetaModel.applicationVersionCrossMiroirTestVersion,
             miroirTestVersions: enrichedMetaModel.miroirTestVersions,
             tests: enrichedMetaModel.tests,
+            ...(await this.loadInstancesToFreeze(payload.application, applicationDeploymentMap)),
           });
 
           const persistResult = await this.persistFreezeApplicationVersionPlan(

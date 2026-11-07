@@ -3,7 +3,7 @@
  *
  * Parametrized coverage of the snapshot step for Entity and the non-Entity model
  * elements (Endpoint, Menu, Query, Report, Runner, Theme, TransformerDefinition, and
- * since #230 MlSchema and MiroirTest):
+ * since #230 MlSchema and MiroirTest, since #706 Blob, TestConfiguration and Test):
  * each historical row mints a fresh UUID, links back to the live element uuid, is
  * parented to its historical version Entity, copies the present-model fields,
  * is deep-isolated from later source mutation, and rejects incomplete elements
@@ -12,6 +12,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  BLOB_VERSION_ENTITY_UUID,
   ENDPOINT_VERSION_ENTITY_UUID,
   MENU_VERSION_ENTITY_UUID,
   MIROIR_TEST_VERSION_ENTITY_UUID,
@@ -20,7 +21,10 @@ import {
   REPORT_VERSION_ENTITY_UUID,
   RUNNER_VERSION_ENTITY_UUID,
   THEME_VERSION_ENTITY_UUID,
+  TEST_CONFIGURATION_VERSION_ENTITY_UUID,
+  TEST_VERSION_ENTITY_UUID,
   TRANSFORMER_DEFINITION_VERSION_ENTITY_UUID,
+  snapshotBlobsAsHistoricalBlobVersions,
   snapshotEndpointsAsHistoricalEndpointVersions,
   snapshotEntitiesAsHistoricalEntityVersions,
   snapshotMenusAsHistoricalMenuVersions,
@@ -29,9 +33,15 @@ import {
   snapshotQueriesAsHistoricalQueryVersions,
   snapshotReportsAsHistoricalReportVersions,
   snapshotRunnersAsHistoricalRunnerVersions,
+  snapshotTestConfigurationsAsHistoricalTestConfigurationVersions,
+  snapshotTestsAsHistoricalTestVersions,
   snapshotThemesAsHistoricalThemeVersions,
   snapshotTransformerDefinitionsAsHistoricalTransformerDefinitionVersions,
+  type BlobVersionSnapshot,
   type EndpointVersionSnapshot,
+  type StoredInstanceForFreeze,
+  type TestConfigurationVersionSnapshot,
+  type TestVersionSnapshot,
   type MenuVersionSnapshot,
   type MiroirTestVersionSnapshot,
   type MlSchemaVersionSnapshot,
@@ -494,6 +504,88 @@ const miroirTestSnapshotCase = defineCase<StoredMiroirTestForFreeze, MiroirTestV
   },
 });
 
+const blobSnapshotCase = defineCase<StoredInstanceForFreeze, BlobVersionSnapshot>({
+  element: "Blob",
+  snapshot: snapshotBlobsAsHistoricalBlobVersions,
+  versionEntityUuid: BLOB_VERSION_ENTITY_UUID,
+  versionEntityName: "BlobVersion",
+  linkAttribute: "blobUuid",
+  makeLive: (uuid, name) => ({
+    uuid,
+    parentUuid: "62209e4a-e429-4d7d-9b28-dcc1da6b51a2",
+    parentName: "Blob",
+    name,
+    filename: `${name}.png`,
+    description: `${name} description`,
+    contents: { encoding: "base64", mimeType: "image/png", data: "iVBORw0KGgo=" },
+  }),
+  assertCopiedFields: (live, snapshot) => {
+    expect(snapshot.name).toBe(live.name);
+    expect(snapshot.filename).toBe(live.filename);
+    expect(snapshot.description).toBe(live.description);
+    expect(snapshot.contents).toEqual(live.contents);
+  },
+  mutateLive: (live) => {
+    (live.contents as any).data = "mutated";
+  },
+  assertDeepIsolation: (snapshot) => {
+    expect((snapshot.contents as any).data).toBe("iVBORw0KGgo=");
+  },
+});
+
+const testConfigurationSnapshotCase = defineCase<StoredInstanceForFreeze, TestConfigurationVersionSnapshot>({
+  element: "TestConfiguration",
+  snapshot: snapshotTestConfigurationsAsHistoricalTestConfigurationVersions,
+  versionEntityUuid: TEST_CONFIGURATION_VERSION_ENTITY_UUID,
+  versionEntityName: "TestConfigurationVersion",
+  linkAttribute: "testConfigurationUuid",
+  makeLive: (uuid, name) => ({
+    uuid,
+    parentUuid: "675ccd46-7dd3-400b-a2bd-1319c39e11da",
+    selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+    name,
+    testbedModel: { entities: [{ name }] },
+  }),
+  assertCopiedFields: (live, snapshot) => {
+    expect(snapshot.name).toBe(live.name);
+    expect(snapshot.selfApplication).toBe(live.selfApplication);
+    expect(snapshot.testbedModel).toEqual(live.testbedModel);
+  },
+  mutateLive: (live) => {
+    (live.testbedModel as any).entities[0].name = "mutated";
+  },
+  assertDeepIsolation: (snapshot) => {
+    expect((snapshot.testbedModel as any).entities[0].name).toBe("Mutable");
+  },
+});
+
+const testSnapshotCase = defineCase<StoredInstanceForFreeze, TestVersionSnapshot>({
+  element: "Test",
+  snapshot: snapshotTestsAsHistoricalTestVersions,
+  versionEntityUuid: TEST_VERSION_ENTITY_UUID,
+  versionEntityName: "TestVersion",
+  linkAttribute: "testUuid",
+  makeLive: (uuid, name) => ({
+    uuid,
+    parentUuid: "c37625c7-0b35-4d6a-811d-8181eb978301",
+    selfApplication: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+    branch: "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+    name,
+    definition: { testCompositeActions: { first: { label: name } } },
+  }),
+  assertCopiedFields: (live, snapshot) => {
+    expect(snapshot.name).toBe(live.name);
+    expect(snapshot.branch).toBe(live.branch);
+    expect(snapshot.definition).toEqual(live.definition);
+  },
+  mutateLive: (live) => {
+    (live.definition as any).testCompositeActions.first.label = "mutated";
+  },
+  assertDeepIsolation: (snapshot) => {
+    expect((snapshot.definition as any).testCompositeActions.first.label).toBe("Mutable");
+  },
+});
+
 const snapshotCases: SnapshotCase<any, any>[] = [
   entitySnapshotCase,
   endpointSnapshotCase,
@@ -505,6 +597,9 @@ const snapshotCases: SnapshotCase<any, any>[] = [
   transformerDefinitionSnapshotCase,
   mlSchemaSnapshotCase,
   miroirTestSnapshotCase,
+  blobSnapshotCase,
+  testConfigurationSnapshotCase,
+  testSnapshotCase,
 ];
 
 describe("application version freeze — historical version snapshots", () => {
@@ -573,5 +668,28 @@ describe("application version freeze — historical version snapshots", () => {
     );
     expect(snapshot.miroirTestUuid).toBe(INCOMPLETE_UUID);
     expect("name" in snapshot).toBe(false);
+  });
+
+  it("keeps the identity of the live instance out of a Blob, TestConfiguration or Test snapshot (#706)", () => {
+    const [snapshot] = snapshotBlobsAsHistoricalBlobVersions(
+      [
+        {
+          uuid: INCOMPLETE_UUID,
+          parentUuid: "62209e4a-e429-4d7d-9b28-dcc1da6b51a2",
+          parentName: "Blob",
+          parentDefinitionVersionUuid: "c3179f1d-10bd-4b0f-9a6b-f118d8eb2312",
+          conceptLevel: "Data",
+          name: "bare",
+        },
+      ],
+      { newUuid: deterministicUuid() },
+    );
+    expect(snapshot).toEqual({
+      uuid: snapshot.uuid,
+      parentUuid: BLOB_VERSION_ENTITY_UUID,
+      parentName: "BlobVersion",
+      blobUuid: INCOMPLETE_UUID,
+      name: "bare",
+    });
   });
 });
