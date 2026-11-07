@@ -17,9 +17,11 @@ import {
   defaultSelfApplicationDeploymentMap,
   dummyDomainManyQueryWithDeploymentUuid,
   getApplicationSection,
+  getFreezeAvailability,
   getQueryRunnerParamsForReduxDeploymentsState,
   noValue,
   resolvePathOnObject,
+  resolveVersioningMode,
   transformer_extended_apply_wrapper,
   type ApplicationDeploymentMap,
   type MiroirActivityTrackerInterface,
@@ -80,6 +82,8 @@ export interface MlElementEditorHooks {
   definedOptionalAttributes: Set<string>;
   undefinedOptionalAttributes: string[];
   stringSelectList: [string, EntityInstance][];
+  /** Options greyed out by `display.uuid.optionAvailability`, with the reason (#225). */
+  unavailableOptions: Record<string, string>;
   // Array / Object fold / unfold, order
   itemsOrder: any[];
   // hiddenFormItems and setHiddenFormItems moved to props
@@ -206,6 +210,70 @@ function useSelfApplicationLabels(
     }
     return labels;
   }, shallowEqual);
+}
+
+/** Option rules named by `display.uuid.optionAvailability` (#225). */
+export type OptionAvailabilityRule = "freezeTarget";
+
+/**
+ * #225: resolved versioning mode of each application of the map, read from its cached
+ * SelfApplication row. Apps whose row is not in the cache are absent. Returns strings so the
+ * selector result compares with shallowEqual. No map, no work.
+ */
+export function useResolvedVersioningModes(
+  applicationDeploymentMap: ApplicationDeploymentMap | undefined,
+): Record<string, string> {
+  return useSelector((state: ReduxStateWithUndoRedo) => {
+    const modes: Record<string, string> = {};
+    for (const application of Object.keys(applicationDeploymentMap ?? {})) {
+      const selfApplication = selectInstanceArrayForDeploymentSectionEntity(
+        state,
+        applicationDeploymentMap ?? {},
+        {
+          queryType: "localCacheEntityInstancesExtractor",
+          definition: {
+            application,
+            applicationSection: getApplicationSection(application, entitySelfApplication.uuid),
+            entityUuid: entitySelfApplication.uuid,
+          },
+        },
+      ).find((row) => row.uuid === application) as
+        | (EntityInstance & { versioningMode?: string; versioningEnabled?: boolean })
+        | undefined;
+      if (selfApplication) {
+        modes[application] = resolveVersioningMode(selfApplication);
+      }
+    }
+    return modes;
+  }, shallowEqual);
+}
+
+/**
+ * Reasons for which the options of a uuid select are refused by `rule`, keyed by option uuid.
+ * `freezeTarget`: the option is an application (its `selfApplication` attribute, else its
+ * uuid) that a freeze cannot target ({@link getFreezeAvailability}).
+ */
+export function getUnavailableOptions(
+  rule: OptionAvailabilityRule | undefined,
+  options: [string, EntityInstance][],
+  resolvedVersioningModes: Record<string, string>,
+): Record<string, string> {
+  if (rule !== "freezeTarget") {
+    return {};
+  }
+  const result: Record<string, string> = {};
+  for (const [uuid, instance] of options) {
+    if (uuid === noValue.uuid) {
+      continue;
+    }
+    const application = (instance as { selfApplication?: string }).selfApplication ?? uuid;
+    const mode = resolvedVersioningModes[application];
+    const availability = getFreezeAvailability(mode ? { versioningMode: mode } : undefined);
+    if (!availability.available) {
+      result[uuid] = availability.reason;
+    }
+  }
+  return result;
 }
 
 export function useMlElementEditorHooks(
@@ -606,6 +674,19 @@ export function useMlElementEditorHooks(
     candidates,
     visible,
   ]);
+
+  const optionAvailabilityRule: OptionAvailabilityRule | undefined =
+    localResolvedElementMlSchemaBasedOnValue?.type == "uuid"
+      ? localResolvedElementMlSchemaBasedOnValue.tag?.value?.display?.uuid?.optionAvailability
+      : undefined;
+  // Only fields with an availability rule read the versioning modes: others pass no map.
+  const resolvedVersioningModes = useResolvedVersioningModes(
+    optionAvailabilityRule ? applicationDeploymentMap : undefined,
+  );
+  const unavailableOptions: Record<string, string> = useMemo(
+    () => getUnavailableOptions(optionAvailabilityRule, stringSelectList, resolvedVersioningModes),
+    [optionAvailabilityRule, stringSelectList, resolvedVersioningModes],
+  );
   // log.info("getMlElementEditorHooks ", dbgInt++, "aggregate", count, "caller", caller);
 
   return {
@@ -632,6 +713,7 @@ export function useMlElementEditorHooks(
     itemsOrder,
     definedOptionalAttributes,
     stringSelectList,
+    unavailableOptions,
     undefinedOptionalAttributes,
   };
 }

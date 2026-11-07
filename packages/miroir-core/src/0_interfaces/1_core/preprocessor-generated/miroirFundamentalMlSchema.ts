@@ -413,6 +413,11 @@ export const miroirFundamentalMlSchema = {
                           "restrictToApplicationDeploymentMap": {
                             "type": "boolean",
                             "optional": true
+                          },
+                          "optionAvailability": {
+                            "type": "literal",
+                            "optional": true,
+                            "definition": "freezeTarget"
                           }
                         }
                       },
@@ -33882,6 +33887,11 @@ export const miroirFundamentalMlSchema = {
                           "restrictToApplicationDeploymentMap": {
                             "type": "boolean",
                             "optional": true
+                          },
+                          "optionAvailability": {
+                            "type": "literal",
+                            "optional": true,
+                            "definition": "freezeTarget"
                           }
                         }
                       },
@@ -39981,6 +39991,11 @@ export const miroirFundamentalMlSchema = {
                           "restrictToApplicationDeploymentMap": {
                             "type": "boolean",
                             "optional": true
+                          },
+                          "optionAvailability": {
+                            "type": "literal",
+                            "optional": true,
+                            "definition": "freezeTarget"
                           }
                         }
                       },

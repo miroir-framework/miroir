@@ -1,0 +1,121 @@
+{
+  "uuid": "63cec2ce-0852-42ff-bd89-59ffae5a1706",
+  "parentName": "MiroirTest",
+  "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+  "name": "report.freezeRunner.unversioned",
+  "description": "The freezeApplicationVersion Runner on the Runners Report of Miroir, on the Library testbed (Library is unversioned): Library is greyed out with the reason as tooltip and cannot be picked, while Miroir (versioned-internal) can.",
+  "tags": [
+    "integ",
+    "ui",
+    "report",
+    "versioning"
+  ],
+  "issue": "225",
+  "definition": {
+    "miroirTestType": "miroirTestSuite",
+    "miroirTestLabel": "report.freezeRunner.unversioned",
+    "runTarget": {
+      "applicationUuid": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+      "applicationName": "Library",
+      "deploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+    },
+    "testConfiguration": "3123740d-2398-458f-82e6-4f1294866e39",
+    "testbedInitApplicationParameters": "libraryTestbedInitParams",
+    "miroirTests": [
+      {
+        "miroirTestType": "reportTestSuite",
+        "miroirTestLabel": "Runners page freeze Runner",
+        "report": {
+          "application": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+          "applicationSection": "data",
+          "reportUuid": "ac75382d-00fc-4f93-a169-3f76ef85834e"
+        },
+        "miroirTests": [
+          {
+            "miroirTestType": "reportTest",
+            "miroirTestLabel": "greys out an unversioned application",
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "the freeze Runner is on the Runners page",
+                "target": {
+                  "widget": "selectState",
+                  "field": "freezeApplicationVersion.application"
+                },
+                "timeout": 15000
+              },
+              {
+                "step": "openSelect",
+                "label": "open the application picker",
+                "field": "freezeApplicationVersion.application"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "Library (unversioned) is greyed out",
+                "target": {
+                  "byLabelText": "freezeApplicationVersion.application-option-5af03c98-fe5e-490b-b08f-e1230971c57f"
+                },
+                "attribute": "aria-disabled",
+                "value": "true",
+                "timeout": 5000
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the tooltip gives the reason",
+                "target": {
+                  "byLabelText": "freezeApplicationVersion.application-option-5af03c98-fe5e-490b-b08f-e1230971c57f"
+                },
+                "attribute": "title",
+                "value": "Application is not versioned",
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "try to pick Library",
+                "target": {
+                  "byLabelText": "freezeApplicationVersion.application-option-5af03c98-fe5e-490b-b08f-e1230971c57f"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "Library is not picked",
+                "target": {
+                  "widget": "selectState",
+                  "field": "freezeApplicationVersion.application"
+                },
+                "attribute": "data-test-selected-value",
+                "value": "31f3a03a-f150-416d-9315-d3a752cb4eb4",
+                "timeout": 2000
+              },
+              {
+                "step": "openSelect",
+                "label": "open the application picker again",
+                "field": "freezeApplicationVersion.application"
+              },
+              {
+                "step": "click",
+                "label": "pick Miroir (versioned-internal)",
+                "target": {
+                  "byLabelText": "freezeApplicationVersion.application-option-360fcf1f-f0d4-4f8a-9262-07886e70fa15"
+                }
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "Miroir is picked",
+                "target": {
+                  "widget": "selectState",
+                  "field": "freezeApplicationVersion.application"
+                },
+                "attribute": "data-test-selected-value",
+                "value": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+                "timeout": 2000
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
