@@ -125,7 +125,7 @@ describe("MiroirTest tags: vocabulary from the MiroirTest Entity", () => {
   it("reads the allowed tags from the live Entity row, in declaration order", () => {
     expect(miroirTestEntity.uuid).toBe(ENTITY_MIROIR_TEST_UUID);
     const allowed = getMiroirTestAllowedTags(miroirTestEntity);
-    expect(allowed).toHaveLength(24);
+    expect(allowed).toHaveLength(25);
     expect(allowed?.slice(0, 3)).toEqual(["transformer", "ml-schema", "ml-union"]);
     expect(allowed).toContain("tools");
     expect(allowed).toContain("filesystem");

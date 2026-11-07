@@ -9211,6 +9211,7 @@ export const miroirFundamentalMlSchema = {
                 "data",
                 "primary-key",
                 "versioning",
+                "evolution-trace",
                 "mcp",
                 "external-service",
                 "filesystem",
