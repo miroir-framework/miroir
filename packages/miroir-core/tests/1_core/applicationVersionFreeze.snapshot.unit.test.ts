@@ -461,6 +461,9 @@ const miroirTestSnapshotCase = defineCase<StoredMiroirTestForFreeze, MiroirTestV
     uuid,
     name,
     description: `${name} description`,
+    skip: true,
+    tags: ["versioning", "unit"],
+    issue: "#230",
     definition: {
       miroirTestType: "miroirTestSuite",
       miroirTestLabel: name,
@@ -476,13 +479,18 @@ const miroirTestSnapshotCase = defineCase<StoredMiroirTestForFreeze, MiroirTestV
   assertCopiedFields: (live, snapshot) => {
     expect(snapshot.name).toBe(live.name);
     expect(snapshot.description).toBe(live.description);
+    expect(snapshot.skip).toBe(true);
+    expect(snapshot.tags).toEqual(["versioning", "unit"]);
+    expect(snapshot.issue).toBe("#230");
     expect(snapshot.definition).toEqual(live.definition);
   },
   mutateLive: (live) => {
     (live.definition as any).miroirTestLabel = "mutated";
+    live.tags!.push("ui");
   },
   assertDeepIsolation: (snapshot) => {
     expect((snapshot.definition as any).miroirTestLabel).toBe("Mutable");
+    expect(snapshot.tags).toEqual(["versioning", "unit"]);
   },
 });
 

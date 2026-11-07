@@ -3411,7 +3411,11 @@
                         "miroirTestType": "miroirTestSuite",
                         "miroirTestLabel": "FreezeTestMiroirTest",
                         "miroirTests": []
-                      }
+                      },
+                      "tags": [
+                        "versioning"
+                      ],
+                      "issue": "#230"
                     }
                   ]
                 }
@@ -4938,6 +4942,104 @@
                       "freezeState",
                       "crossMlSchemaVersions"
                     ]
+                  }
+                },
+                "expectedValue": {
+                  "count": 1
+                }
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+            "actionLabel": "crossMiroirTestVersions_one_per_miroirTestVersion",
+            "nameGivenToResult": "crossMiroirTestVersions_one_per_miroirTestVersion",
+            "payload": {
+              "testType": "testAssertion",
+              "testLabel": "crossMiroirTestVersions_one_per_miroirTestVersion",
+              "definition": {
+                "resultTransformer": {
+                  "transformerType": "boolExpr",
+                  "interpolation": "runtime",
+                  "operator": "deepEqual",
+                  "left": {
+                    "transformerType": "aggregate",
+                    "interpolation": "runtime",
+                    "function": "count",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "crossMiroirTestVersions"
+                      ]
+                    }
+                  },
+                  "right": {
+                    "transformerType": "aggregate",
+                    "interpolation": "runtime",
+                    "function": "count",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "miroirTestVersions"
+                      ]
+                    }
+                  }
+                },
+                "expectedValue": true
+              }
+            }
+          },
+          {
+            "actionType": "compositeRunTestAssertion",
+            "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+            "actionLabel": "count_miroirTestVersions_issue_230",
+            "nameGivenToResult": "count_miroirTestVersions_issue_230",
+            "payload": {
+              "testType": "testAssertion",
+              "testLabel": "count_miroirTestVersions_issue_230",
+              "definition": {
+                "resultAccessPath": [
+                  "0"
+                ],
+                "resultTransformer": {
+                  "transformerType": "aggregate",
+                  "interpolation": "runtime",
+                  "function": "count",
+                  "applyTo": {
+                    "transformerType": "filterList",
+                    "interpolation": "runtime",
+                    "referenceToOuterObject": "__element__",
+                    "applyTo": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "freezeState",
+                        "miroirTestVersions"
+                      ]
+                    },
+                    "predicate": {
+                      "transformerType": "boolExpr",
+                      "interpolation": "runtime",
+                      "operator": "==",
+                      "left": {
+                        "transformerType": "accessDynamicPath",
+                        "interpolation": "runtime",
+                        "objectAccessPath": [
+                          {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referenceName": "__element__"
+                          },
+                          "issue"
+                        ]
+                      },
+                      "right": "#230"
+                    }
                   }
                 },
                 "expectedValue": {

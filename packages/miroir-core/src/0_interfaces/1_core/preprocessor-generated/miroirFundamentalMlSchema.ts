@@ -13138,6 +13138,36 @@ export const miroirFundamentalMlSchema = {
               }
             }
           },
+          "skip": {
+            "type": "boolean",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Skip"
+              }
+            }
+          },
+          "tags": {
+            "type": "array",
+            "optional": true,
+            "definition": {
+              "type": "string"
+            },
+            "tag": {
+              "value": {
+                "defaultLabel": "Tags"
+              }
+            }
+          },
+          "issue": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Issue"
+              }
+            }
+          },
           "definition": {
             "type": "any",
             "tag": {

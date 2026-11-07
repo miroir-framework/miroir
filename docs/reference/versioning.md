@@ -122,7 +122,7 @@ The same pattern (immutable snapshot + cross link row) applies to the other mode
 | MlSchemaVersion | `426cd199-…` | ApplicationVersionCrossMlSchemaVersion `da27d98d-…` |
 | MiroirTestVersion | `a2b1c33a-…` | ApplicationVersionCrossMiroirTestVersion `81af0bd1-…` |
 
-An MlSchema without a `definition` is snapshotted without one, since the live row allows it; a MiroirTest without a `definition` makes the freeze fail, like the other elements.
+An MlSchema without a `definition` is snapshotted without one, since the live row allows it; a MiroirTest without a `definition` makes the freeze fail, like the other elements. A MiroirTestVersion also keeps the test's `skip`, `tags` and `issue`.
 
 These uuids are registered in `versionHistoryEntityUuids` (`packages/miroir-core/src/1_core/Model.ts`), which routes their instances to `modelVersion`.
 

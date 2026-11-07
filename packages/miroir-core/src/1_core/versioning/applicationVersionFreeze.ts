@@ -621,6 +621,9 @@ export type StoredMiroirTestForFreeze = {
   uuid: string;
   name?: string;
   description?: string;
+  skip?: boolean;
+  tags?: MiroirTestDefinition["tags"];
+  issue?: string;
   definition: MiroirTestDefinition["definition"];
   parentUuid?: string;
   parentName?: string;
@@ -634,6 +637,9 @@ export type MiroirTestVersionSnapshot = {
   name?: string;
   miroirTestUuid: string;
   description?: string;
+  skip?: boolean;
+  tags?: string[];
+  issue?: string;
   definition: MiroirTestDefinition["definition"];
 };
 
@@ -662,6 +668,9 @@ export function snapshotMiroirTestsAsHistoricalMiroirTestVersions(
       definition: structuredClone(test.definition),
       ...(test.name !== undefined ? { name: test.name } : {}),
       ...(test.description !== undefined ? { description: test.description } : {}),
+      ...(test.skip !== undefined ? { skip: test.skip } : {}),
+      ...(test.tags !== undefined ? { tags: [...test.tags] } : {}),
+      ...(test.issue !== undefined ? { issue: test.issue } : {}),
     };
   });
 }
