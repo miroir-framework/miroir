@@ -1633,24 +1633,44 @@ export class DomainController implements DomainControllerInterface, DomainContro
   /**
    * #706 — the live Blob, TestConfiguration and Test instances a freeze snapshots. The MetaModel
    * has no collection for them, so they are read from the store: Miroir's data section, or the
-   * model section of another application.
+   * model section of another application. A failed read fails the freeze before anything is
+   * written, so that a version never silently lacks rows that exist.
    */
   private async loadInstancesToFreeze(
     application: Uuid,
     applicationDeploymentMap: ApplicationDeploymentMap,
-  ): Promise<Pick<FreezeMetaModelSlice, "blobs" | "testConfigurations" | "testInstances">> {
-    const load = (entityUuid: Uuid) =>
-      this.readSectionInstancesForFreeze(
-        application,
-        applicationDeploymentMap,
-        getApplicationSection(application, entityUuid),
-        entityUuid,
-      ) as Promise<StoredInstanceForFreeze[]>;
-    return {
-      blobs: await load(entityBlob.uuid),
-      testConfigurations: await load(entityTestConfiguration.uuid),
-      testInstances: await load(entityTest.uuid),
-    };
+  ): Promise<
+    Pick<FreezeMetaModelSlice, "blobs" | "testConfigurations" | "testInstances"> | Action2Error
+  > {
+    const loaded: StoredInstanceForFreeze[][] = [];
+    for (const entity of [entityBlob, entityTestConfiguration, entityTest]) {
+      const section = getApplicationSection(application, entity.uuid);
+      const manager = this.persistenceStoreLocalOrRemote.getLocalPersistenceStoreControllerManager?.();
+      const result = manager
+        ? await manager
+            .getPersistenceStoreController(applicationDeploymentMap[application])
+            ?.getInstances(section, entity.uuid)
+        : await this.persistenceStoreLocalOrRemote.handlePersistenceAction(
+            {
+              actionType: "getInstances",
+              endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+              payload: { application, applicationSection: section, parentUuid: entity.uuid },
+            },
+            applicationDeploymentMap,
+          );
+      const collection = result instanceof Action2Error ? undefined : result?.returnedDomainElement;
+      if (!collection || collection instanceof Domain2ElementFailed || !("instances" in collection)) {
+        return new Action2Error(
+          "FailedToHandleAction",
+          `freezeApplicationVersion failed to read the ${entity.name} instances of ${application} in section ${section}`,
+          [],
+          result instanceof Action2Error ? result : undefined,
+        );
+      }
+      loaded.push((collection.instances ?? []) as StoredInstanceForFreeze[]);
+    }
+    const [blobs, testConfigurations, testInstances] = loaded;
+    return { blobs, testConfigurations, testInstances };
   }
 
   /** Instances of an Entity in a section, from the local store or else the server; none on failure. */
@@ -3150,6 +3170,13 @@ export class DomainController implements DomainControllerInterface, DomainContro
               metaModel.applicationVersionCrossMiroirTestVersion,
             miroirTestVersions: metaModel.miroirTestVersions,
           };
+          const instancesToFreeze = await this.loadInstancesToFreeze(
+            payload.application,
+            applicationDeploymentMap,
+          );
+          if (instancesToFreeze instanceof Action2Error) {
+            return instancesToFreeze;
+          }
           const persistedHistory = await this.loadModelVersionHistoryForFreeze(
             payload.application,
             applicationDeploymentMap,
@@ -3198,7 +3225,7 @@ export class DomainController implements DomainControllerInterface, DomainContro
               enrichedMetaModel.applicationVersionCrossMiroirTestVersion,
             miroirTestVersions: enrichedMetaModel.miroirTestVersions,
             tests: enrichedMetaModel.tests,
-            ...(await this.loadInstancesToFreeze(payload.application, applicationDeploymentMap)),
+            ...instancesToFreeze,
           });
 
           const persistResult = await this.persistFreezeApplicationVersionPlan(
