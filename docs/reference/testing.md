@@ -767,6 +767,8 @@ npm run testMiroir -w miroir-standalone-app -- \
   --filter '{"report.connectExternalServiceWizard":{"ConnectExternalServiceWizard":["an uploaded file fills the document text"]}}'
 ```
 
+Before each leaf, the runner creates in the session the Miroir Reports and Runners it lacks, and refreshes the Admin application too, so that application pickers list the deployed applications.
+
 In the app, "Run Integration Tests" on the suite's display (Miroir Tests page) mounts each Report in the display's sandbox panel while its leaf runs. A Report suite always runs on its pinned targets, whatever the Run target setting: its Report names its application by uuid, which an ephemeral testbed does not have. So it runs on an emulated profile only: on a `realServer-*` profile its pinned targets are the server's live deployments, which the session would reset and drop, and the launcher refuses the run.
 
 | Suite | Report | Covers |
@@ -774,6 +776,8 @@ In the app, "Run Integration Tests" on the suite's display (Miroir Tests page) m
 | `report.bookDetails` | Library BookDetails (instance details) | display, store check, edit saved, stored value typed (#333), invalid value not saved |
 | `report.queryDetails` | Miroir QueryDetails (instance details) on the Library Query BookCountByPublisher | only transformer fields have the Blocks / Form / JSON switch; a runtime transformer edited as blocks, saved and committed; undo and redo at the editor root; an application transformer is a block of its own (#503) |
 | `report.connectExternalServiceWizard` | Miroir ConnectExternalServiceWizard (multistep), and the home Report's launcher | document by URL, pasted or uploaded, and its errors; refused private URL; custom token kept out of the page; Finish checked in the store |
+| `report.freezeRunner` | Miroir Runners page, freeze Runner, on appForTest | a refused freeze (label already used on the branch) shown inline under the Runner (#225) |
+| `report.freezeRunner.unversioned` | Miroir Runners page, freeze Runner, on Library | an unversioned application greyed out with its reason as tooltip, and not picked; a versioned-internal one picked (#225) |
 
 Tests of the mechanism, in `packages/miroir-standalone-app/tests/4_view/`: `reportTestLauncher.unit` (routing of `testMiroir`), `reportTestActionsIdle.unit` (the wait), `reportTestFailure.integ` (a failed assertion step), `reportTestFakeHttp.integ` (an undeclared request), `reportTestInApp.integ` (the Miroir Tests display drives the wizard).
 

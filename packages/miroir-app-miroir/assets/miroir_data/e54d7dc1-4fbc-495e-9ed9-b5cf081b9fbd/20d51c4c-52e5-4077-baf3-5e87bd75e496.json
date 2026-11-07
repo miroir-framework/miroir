@@ -5,16 +5,56 @@
   "name": "freezeApplicationVersion",
   "defaultLabel": "Freeze Application Version",
   "parentName": "Runner",
-  "description": "Freeze the current present-model Entities into a new SelfApplicationVersion (#225 / #216).",
+  "description": "Freeze the present model of a versioned-internal application into a new SelfApplicationVersion (#225 / #216). From the Runners page, the application defaults to the one selected in the sidebar when it is versioned-internal.",
   "definition": {
     "runnerType": "customRunner",
     "formMLSchema": {
       "formMLSchemaType": "transformer",
       "initialFormValues": {
-        "application": "31f3a03a-f150-416d-9315-d3a752cb4eb4",
-        "versionName": "",
-        "description": "",
-        "branch": "31f3a03a-f150-416d-9315-d3a752cb4eb4"
+        "transformerType": "createObject",
+        "interpolation": "runtime",
+        "definition": {
+          "application": {
+            "transformerType": "ifThenElse",
+            "interpolation": "runtime",
+            "if": {
+              "transformerType": "boolExpr",
+              "interpolation": "runtime",
+              "operator": "==",
+              "left": {
+                "transformerType": "getFromParameters",
+                "interpolation": "runtime",
+                "safe": true,
+                "referencePath": [
+                  "sidebarApplication",
+                  "versioningMode"
+                ]
+              },
+              "right": {
+                "transformerType": "returnValue",
+                "interpolation": "runtime",
+                "value": "versioned-internal"
+              }
+            },
+            "then": {
+              "transformerType": "getFromParameters",
+              "interpolation": "runtime",
+              "safe": true,
+              "referencePath": [
+                "sidebarApplication",
+                "uuid"
+              ]
+            },
+            "else": {
+              "transformerType": "returnValue",
+              "interpolation": "runtime",
+              "value": "31f3a03a-f150-416d-9315-d3a752cb4eb4"
+            }
+          },
+          "versionName": "",
+          "description": "",
+          "branch": "31f3a03a-f150-416d-9315-d3a752cb4eb4"
+        }
       },
       "transformer": {
         "type": "object",
@@ -32,7 +72,13 @@
                   "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
                   "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
                   "targetEntityOrderInstancesBy": "name"
-                }
+                },
+                "display": {
+                  "uuid": {
+                    "optionAvailability": "freezeTarget"
+                  }
+                },
+                "description": "Only versioned-internal applications can be frozen; the others are greyed out."
               }
             }
           },

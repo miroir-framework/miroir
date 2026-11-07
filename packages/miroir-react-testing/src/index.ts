@@ -15,7 +15,7 @@ export {
   type MiroirTestResultData,
 } from "./4_view/components/Buttons/RunMiroirTestSuiteButton.js";
 
-export { readAppMiroirReports } from "./4-tests/appMiroirReports.js";
+export { readAppMiroirDataInstances } from "./4-tests/appMiroirDataInstances.js";
 export {
   FILESYSTEM_TAG,
   FILESYSTEM_TESTS_NEED_A_FILESYSTEM_STORE,

@@ -27,7 +27,7 @@ import type {
   UiIntegrationTestRunRequest,
   UiIntegrationTestRunTargetMode,
 } from "../../../4-tests/uiIntegrationTestLauncherTypes.js";
-import { readAppMiroirReports } from "../../../4-tests/appMiroirReports.js";
+import { readAppMiroirDataInstances } from "../../../4-tests/appMiroirDataInstances.js";
 import { setLastUiIntegrationTestRunResult } from "../../../4-tests/uiIntegrationTestRunState.js";
 import { miroirTestDefinitionHasReactComponentTest } from "../../../4-tests/miroirTestSuiteUiExecution.js";
 import { useIntegTestRunCoordinator } from "../../../4-tests/useIntegTestRunCoordinator.js";
@@ -227,8 +227,8 @@ export const RunMiroirTestSuiteButton: React.FC<RunMiroirTestSuiteButtonProps> =
         filter: testFilter,
         runnerUuidIndex,
         prepareReportTests,
-        miroirReports: () =>
-          readAppMiroirReports(
+        miroirDataInstances: () =>
+          readAppMiroirDataInstances(
             miroirContextService.domainController,
             miroirContextService.applicationDeploymentMap,
           ),

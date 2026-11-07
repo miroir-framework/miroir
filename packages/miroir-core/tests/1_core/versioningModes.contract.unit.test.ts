@@ -9,6 +9,7 @@ import { selfApplication } from "../../src/0_interfaces/1_core/preprocessor-gene
 import type { SelfApplication } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import {
   assertApplicationVersioningEnabled,
+  getFreezeAvailability,
   resolveVersioningMode,
   type VersioningMode,
 } from "../../src/1_core/versioning/versioningMode.js";
@@ -103,5 +104,37 @@ describe("versioningMode contract on SelfApplication", () => {
     expect(resolveVersioningMode(selfApplicationMiroir as SelfApplication)).toBe(
       "versioned-internal",
     );
+  });
+});
+
+describe("getFreezeAvailability (#225)", () => {
+  it("allows only versioned-internal applications", () => {
+    expect(getFreezeAvailability({ versioningMode: "versioned-internal" })).toEqual({ available: true });
+    expect(getFreezeAvailability({ versioningEnabled: true })).toEqual({ available: true });
+  });
+
+  it("refuses unversioned applications with a reason", () => {
+    expect(getFreezeAvailability({ versioningMode: "unversioned" })).toEqual({
+      available: false,
+      reason: "Application is not versioned",
+    });
+    expect(getFreezeAvailability({})).toEqual({
+      available: false,
+      reason: "Application is not versioned",
+    });
+  });
+
+  it("refuses versioned-external applications with a reason", () => {
+    expect(getFreezeAvailability({ versioningMode: "versioned-external" })).toEqual({
+      available: false,
+      reason: "History is kept outside Miroir (versioned-external)",
+    });
+  });
+
+  it("refuses an application whose SelfApplication row is not loaded", () => {
+    expect(getFreezeAvailability(undefined)).toEqual({
+      available: false,
+      reason: "Application not loaded in this session",
+    });
   });
 });
