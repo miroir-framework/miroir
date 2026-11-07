@@ -2,6 +2,7 @@ import type React from "react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 
 import {
+  ADMIN_APPLICATION_UUID,
   MiroirActivityTracker,
   MiroirContext,
   MiroirLoggerFactory,
@@ -25,7 +26,7 @@ import {
   type ReportTestRunnerResult,
   type ReportTestSuiteContext,
 } from "@miroir-framework/core";
-import { entityReport, selfApplicationMiroir } from "@miroir-framework/core/meta-model";
+import { selfApplicationMiroir } from "@miroir-framework/core/meta-model";
 
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "../../4_view/constants.js";
@@ -69,20 +70,21 @@ export interface ReportTestSandboxHost extends ComponentTestRunControls {
   miroirActivityTracker: MiroirActivityTrackerInterface;
   miroirEventService: MiroirEventService;
   /**
-   * The Miroir Reports of the app (all of `miroir_data`). The session bootstraps its Miroir store
-   * with a few Reports only (`miroirModelInitializeDataInstances`): before each leaf, the runner
-   * creates those the session lacks, or a Report test of a Miroir Report such as the
-   * ConnectExternalServiceWizard would display the default Report.
+   * The Miroir Reports and Runners of the app (all of `miroir_data`). The session bootstraps its
+   * Miroir store with a few of them only (`miroirModelInitializeDataInstances`): before each leaf,
+   * the runner creates those the session lacks, or a Report test of a Miroir Report such as the
+   * ConnectExternalServiceWizard would display the default Report, and the Runners page would
+   * miss its Runners (#225).
    */
-  miroirReports?: () => readonly EntityInstance[];
+  miroirDataInstances?: () => readonly EntityInstance[];
 }
 
 // ################################################################################################
-/** Creates in the session's Miroir deployment the Reports of `miroirReports` it lacks. */
-async function seedMissingMiroirReports(
+/** Creates in the session's Miroir deployment the instances of `miroirDataInstances` it lacks. */
+async function seedMissingMiroirDataInstances(
   domainController: DomainControllerInterface,
   applicationDeploymentMap: ApplicationDeploymentMap,
-  miroirReports: readonly EntityInstance[],
+  miroirDataInstances: readonly EntityInstance[],
 ): Promise<void> {
   const rollback = await domainController.handleAction(
     {
@@ -94,16 +96,17 @@ async function seedMissingMiroirReports(
     defaultMiroirModelEnvironment,
   );
   if (rollback?.status !== "ok") {
-    throw new Error(`could not load the Miroir Reports of the session: ${JSON.stringify(rollback)}`);
+    throw new Error(`could not load the Miroir data of the session: ${JSON.stringify(rollback)}`);
   }
-  const sessionReports =
-    domainController.getDomainState()[applicationDeploymentMap[selfApplicationMiroir.uuid]]?.data?.[
-      entityReport.uuid
-    ] ?? {};
-  const missingReports = miroirReports.filter(
-    (report) => report.uuid !== undefined && !sessionReports[report.uuid],
+  const sessionData =
+    domainController.getDomainState()[applicationDeploymentMap[selfApplicationMiroir.uuid]]?.data ?? {};
+  const missingInstances = miroirDataInstances.filter(
+    (instance) =>
+      instance.uuid !== undefined &&
+      instance.parentUuid !== undefined &&
+      !sessionData[instance.parentUuid]?.[instance.uuid],
   );
-  if (missingReports.length === 0) {
+  if (missingInstances.length === 0) {
     return;
   }
   const creation = await domainController.handleAction(
@@ -113,14 +116,14 @@ async function seedMissingMiroirReports(
       payload: {
         application: selfApplicationMiroir.uuid,
         applicationSection: "data",
-        objects: [...missingReports],
+        objects: [...missingInstances],
       },
     },
     applicationDeploymentMap,
     defaultMiroirModelEnvironment,
   );
   if (creation?.status !== "ok") {
-    throw new Error(`could not create the Miroir Reports of the session: ${JSON.stringify(creation)}`);
+    throw new Error(`could not create the Miroir data of the session: ${JSON.stringify(creation)}`);
   }
 }
 
@@ -338,12 +341,14 @@ export function createReportTestRunner(host: ReportTestSandboxHost): ClosableRep
       setSecretsMasterKey(REPORT_TEST_SECRETS_WRAPPING_KEY);
     }
     try {
-      if (host.miroirReports) {
-        // the session resets its Miroir model before each leaf, back to the bootstrap Reports
-        await seedMissingMiroirReports(domainController, applicationDeploymentMap, host.miroirReports());
+      if (host.miroirDataInstances) {
+        // the session resets its Miroir model before each leaf, back to the bootstrap Reports and Runners
+        await seedMissingMiroirDataInstances(domainController, applicationDeploymentMap, host.miroirDataInstances());
       }
+      // Admin too: application pickers (foreign keys to AdminApplication, #225) list its rows
       await refreshLocalCache(domainController, applicationDeploymentMap, [
         selfApplicationMiroir.uuid,
+        ADMIN_APPLICATION_UUID,
         suite.report.application,
       ]);
       const miroirContext = new MiroirContext(

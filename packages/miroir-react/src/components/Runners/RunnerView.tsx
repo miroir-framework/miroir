@@ -43,6 +43,8 @@ import { cleanLevel } from "../../viewConstants.js";
 import { useCurrentModelEnvironment, useReduxDeploymentsStateQuerySelectorForCleanedResult } from "../../ReduxHooks.js";
 import { useRunner } from "../Reports/ReportHooks.js";
 import { InnerRunnerView } from "./InnerRunnerView.js";
+import { useResolvedVersioningModes } from "../ValueObjectEditor/MlElementEditorHooks.js";
+import { useMiroirTheme } from "../../contexts/MiroirThemeContext.js";
 import type { FormMLSchema, RunnerAction, RunnerProps } from "./RunnerInterface.js";
 import { resolveRunnerDefinitionApplication } from "./runnerDefinitionApplication.js";
 import {
@@ -60,6 +62,29 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName,
 ).then((logger: LoggerInterface) => {
   log = logger;
 });
+
+// ################################################################################################
+/**
+ * #225: the text of an action error result (`status: "error"`), following `innerError` down to
+ * the root cause, one message per line without repeats; `undefined` when the result is not an
+ * error.
+ */
+export function actionErrorText(result: unknown): string | undefined {
+  if (!result || typeof result !== "object" || (result as { status?: unknown }).status !== "error") {
+    return undefined;
+  }
+  const messages: string[] = [];
+  let current: unknown = result;
+  while (current && typeof current === "object") {
+    const error = current as { errorMessage?: string; errorType?: string; innerError?: unknown };
+    const message = error.errorMessage || error.errorType;
+    if (message && !messages.includes(message)) {
+      messages.push(message);
+    }
+    current = Array.isArray(error.innerError) ? error.innerError[0] : error.innerError;
+  }
+  return messages.length > 0 ? messages.join("\n") : "Unknown error";
+}
 
 // ################################################################################################
 export function StoredRunnerView(props: {
@@ -164,10 +189,27 @@ export function StoredRunnerView(props: {
     "viewParams"
   ] as any;
 
+  // #225: the application selected in the sidebar, with its resolved versioning mode, so a
+  // Runner's initialFormValues can default to it (e.g. the freeze Runner, when versioned-internal).
+  const sidebarApplicationUuid: Uuid | undefined = context.toolsPageState?.applicationSelector;
+  const sidebarApplicationDeploymentMap: ApplicationDeploymentMap | undefined = useMemo(
+    () =>
+      sidebarApplicationUuid && applicationDeploymentMap[sidebarApplicationUuid]
+        ? { [sidebarApplicationUuid]: applicationDeploymentMap[sidebarApplicationUuid] }
+        : undefined,
+    [sidebarApplicationUuid, applicationDeploymentMap],
+  );
+  const sidebarVersioningMode: string | undefined = useResolvedVersioningModes(
+    sidebarApplicationDeploymentMap,
+  )[sidebarApplicationUuid ?? ""];
+
   const transformerParams = useMemo(() => ({
     ...templateEvaluationParams,
     viewParams: viewParams || {},
-  }), [viewParams]);
+    sidebarApplication: sidebarApplicationUuid
+      ? { uuid: sidebarApplicationUuid, versioningMode: sidebarVersioningMode }
+      : {},
+  }), [viewParams, sidebarApplicationUuid, sidebarVersioningMode]);
 
   const formMLSchema: FormMLSchema = useMemo(
     () =>
@@ -326,6 +368,7 @@ export function StoredRunnerView(props: {
     libraryAppModelEnvironment,
     deploymentEntityState,
     runnerName,
+    transformerParams,
   ]);
 
   const storedRunnerAction: RunnerAction<Record<string, any>> | undefined
@@ -464,7 +507,9 @@ export function StoredRunnerView(props: {
                       action={{
                         actionType: "onSubmit",
                         onSubmit: async (values, formikHelpers) => {
-                          await handleAsyncAction(async () => {
+                          // #225: the outcome goes back to RunnerView, which shows a refusal inline
+                          let outcome: unknown;
+                          await handleAsyncAction(async () => (outcome = await (async () => {
                             const args =
                               values && typeof values === "object" && runnerName in values
                                 ? (values[runnerName] as Record<string, unknown>)
@@ -500,7 +545,8 @@ export function StoredRunnerView(props: {
                             }
                             formikHelpers.setSubmitting(false);
                             return { status: "ok" };
-                          }, "MCP tool call successful", "StoredRunnerView mcpToolRunner");
+                          })()), "MCP tool call successful", "StoredRunnerView mcpToolRunner");
+                          return outcome;
                         },
                       }}
                     />
@@ -554,6 +600,13 @@ export const RunnerView = <T extends Record<string, any>>(props: RunnerProps<T>)
     useCurrentModelEnvironment(application??selfApplicationMiroir.uuid, applicationDeploymentMap); // TODO: WRONG!!
   const context = useMiroirContextService();
   const { handleAsyncAction } = useSnackbar();
+  const { currentTheme } = useMiroirTheme();
+  // #225: the last run's error, shown inline under the form (the snackbar shows it too).
+  const [runError, setRunError] = useState<string | undefined>(undefined);
+  const recordRunOutcome = (result: unknown) => {
+    setRunError(actionErrorText(result));
+    return result;
+  };
 
   const initialValues =
     typeof initialFormValue === "object" && "initFormValueType" in initialFormValue
@@ -612,7 +665,7 @@ export const RunnerView = <T extends Record<string, any>>(props: RunnerProps<T>)
 
     switch (action.actionType) {
       case "onSubmit": {
-        return action.onSubmit(values, formikHelpers);
+        return recordRunOutcome(await action.onSubmit(values, formikHelpers));
         break;
       }
       case "compositeActionSequence": 
@@ -620,12 +673,12 @@ export const RunnerView = <T extends Record<string, any>>(props: RunnerProps<T>)
         log.info("RunnerView handleSubmit compositeActionSequence", action.compositeActionSequence);
         return handleAsyncAction(async () => {
         // return async () => {
-          const result = await domainController.handleCompositeAction(
+          const result = recordRunOutcome(await domainController.handleCompositeAction(
             action.compositeActionSequence,
             localApplicationDeploymentMap,
             currentModelEnvironment,
             values as Record<string, any>
-          );
+          ));
           formikHelpers.setSubmitting(false);
           formikHelpers.setValues(initialValues);
           return Promise.resolve(result);
@@ -635,13 +688,13 @@ export const RunnerView = <T extends Record<string, any>>(props: RunnerProps<T>)
       }
       case "compositeActionTemplate": {
         return handleAsyncAction(async () => {
-          const result = await domainController.handleCompositeActionTemplate(
+          const result = recordRunOutcome(await domainController.handleCompositeActionTemplate(
             action.compositeActionTemplate,
             localApplicationDeploymentMap,
             currentModelEnvironment,
             values as Record<string, any>,
             // templateEvaluationParams
-          );
+          ));
           log.info(
             "RunnerView handleSubmit done for compositeActionTemplate",
             action.compositeActionTemplate,
@@ -703,6 +756,19 @@ export const RunnerView = <T extends Record<string, any>>(props: RunnerProps<T>)
           {...props}
         />
       </Formik>
+      {runError !== undefined && (
+        <div
+          role="alert"
+          data-testid={`runner-error-${runnerName}`}
+          style={{
+            color: currentTheme.colors.error || "#f44336",
+            whiteSpace: "pre-wrap",
+            margin: "0.5em 0",
+          }}
+        >
+          {runError}
+        </div>
+      )}
     </>
   );
 };

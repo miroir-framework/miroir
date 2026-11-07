@@ -85,7 +85,8 @@ export const ThemedSelectWithPortal: React.FC<ThemedComponentProps & {
   maxWidth?: string;
   width?: string;
   filterable?: boolean;
-  options?: Array<{ value: string; label: string }>;
+  /** A `disabled` option is shown greyed out, with `disabledReason` as tooltip, and cannot be picked (#225). */
+  options?: Array<{ value: string; label: string; disabled?: boolean; disabledReason?: string }>;
   placeholder?: string;
   filterPlaceholder?: string;
   allowCustomValue?: boolean;
@@ -396,6 +397,9 @@ export const ThemedSelectWithPortal: React.FC<ThemedComponentProps & {
       if (dropdownJustOpened) {
         return;
       }
+      if (options.find((opt) => opt.value === optionValue)?.disabled) {
+        return;
+      }
       
       if (onChange) {
         const syntheticEvent = {
@@ -443,6 +447,13 @@ export const ThemedSelectWithPortal: React.FC<ThemedComponentProps & {
             selectedValue = actualFilteredOptions[0].value;
           } else if (allowCustomValue && filterText.trim()) {
             selectedValue = filterText.trim();
+          }
+
+          if (
+            selectedValue !== undefined &&
+            options.find((opt) => opt.value === selectedValue)?.disabled
+          ) {
+            selectedValue = undefined;
           }
 
           // If we have a value to select, do the selection bypassing dropdownJustOpened check
@@ -628,9 +639,10 @@ export const ThemedSelectWithPortal: React.FC<ThemedComponentProps & {
     //   }
     // `;
 
-    const getOptionStyles = (isHighlighted: boolean) => css`
+    const getOptionStyles = (isHighlighted: boolean, isDisabled = false) => css`
       padding: ${currentTheme.spacing.sm};
-      cursor: pointer;
+      cursor: ${isDisabled ? 'not-allowed' : 'pointer'};
+      opacity: ${isDisabled ? 0.5 : 1};
       font-family: ${currentTheme.typography.fontFamily};
       font-size: ${currentTheme.typography.fontSize.md};
       color: ${currentTheme.colors.text};
@@ -704,8 +716,10 @@ export const ThemedSelectWithPortal: React.FC<ThemedComponentProps & {
               filteredOptions.map((option, index) => (
                 <div
                   key={option.value}
-                  css={getOptionStyles(index === highlightedIndex)}
+                  css={getOptionStyles(index === highlightedIndex, option.disabled)}
                   aria-label={props.name + '-option-' + option.value}
+                  aria-disabled={option.disabled ? 'true' : undefined}
+                  title={option.disabledReason}
                   data-dropdown-option="true"
                   role="option"
                   onMouseDown={(e) => {

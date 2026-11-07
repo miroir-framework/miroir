@@ -9,7 +9,7 @@ import {
 } from '@miroir-framework/core';
 
 import { useMiroirContextService, useSnackbar } from '@miroir-framework/react';
-import { readAppMiroirReports } from '../../../4-tests/appMiroirReports.js';
+import { readAppMiroirDataInstances } from '../../../4-tests/appMiroirDataInstances.js';
 import { useSelectedApplicationRunnerUuidIndex } from '../../../4-tests/useSelectedApplicationMiroirTestSuiteRegistries.js';
 import { packageName } from '../../../constants.js';
 import { miroirTestDefinitionHasReactComponentTest } from '../../../4-tests/miroirTestSuiteUiExecution.js';
@@ -131,8 +131,8 @@ export const RunAllMiroirTestsButton: React.FC<RunAllMiroirTestsButtonProps> = (
       integrationRunTargetMode,
       runnerUuidIndex,
       prepareReportTests,
-      miroirReports: () =>
-        readAppMiroirReports(
+      miroirDataInstances: () =>
+        readAppMiroirDataInstances(
           miroirContextService.domainController,
           miroirContextService.applicationDeploymentMap,
         ),

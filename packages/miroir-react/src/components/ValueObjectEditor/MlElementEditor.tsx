@@ -486,6 +486,7 @@ function MlElementEditorForm(props: MlElementEditorProps): JSX.Element {
     foreignKeyObjects,
     itemsOrder,
     stringSelectList,
+    unavailableOptions,
     // } = useMlElementEditorHooks(props, count, "MlElementEditor");
   } = useMlElementEditorHooks(
     props.rootLessListKey,
@@ -1392,6 +1393,10 @@ function MlElementEditorForm(props: MlElementEditorProps): JSX.Element {
                 (e[1] as EntityInstanceWithName).name ||
                 (e[1] as any).description ||
                 e[1].uuid,
+              // #225: options refused by display.uuid.optionAvailability are greyed out, reason as tooltip
+              ...(unavailableOptions[e[0]] !== undefined
+                ? { disabled: true, disabledReason: unavailableOptions[e[0]] }
+                : {}),
             }));
             const currentOption = selectOptions.find((option: any) => option.value === currentValueObjectAtKey);
             const editor = localReadOnly ? (
@@ -1483,7 +1488,14 @@ function MlElementEditorForm(props: MlElementEditorProps): JSX.Element {
                     fullWidth
                   >
                     {selectOptions.map((option) => (
-                      <MenuItem key={option.value} value={option.value}>
+                      <MenuItem
+                        key={option.value}
+                        value={option.value}
+                        disabled={option.disabled}
+                        title={option.disabledReason}
+                        aria-label={formikRootLessListKey + "-option-" + option.value}
+                        aria-disabled={option.disabled ? "true" : undefined}
+                      >
                         {option.label}
                       </MenuItem>
                     ))}
@@ -1865,6 +1877,7 @@ function MlElementEditorForm(props: MlElementEditorProps): JSX.Element {
     hideSubMlEditor,
     itemsOrder,
     stringSelectList,
+    unavailableOptions,
     enhancedLabelElement,
   ]); // end mainElement definition
 

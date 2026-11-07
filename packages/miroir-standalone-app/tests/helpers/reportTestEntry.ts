@@ -20,7 +20,7 @@ import { miroirFileSystemStoreSectionStartup } from "@miroir-framework/store-fil
 import { miroirIndexedDbStoreSectionStartup } from "@miroir-framework/store-indexeddb";
 import { miroirMongoDbStoreSectionStartup } from "@miroir-framework/store-mongodb";
 import { miroirPostgresStoreSectionStartup } from "@miroir-framework/store-postgres";
-import { entityReport } from "@miroir-framework/core/meta-model";
+import { reportTestMiroirDataEntityUuids } from "miroir-react-testing/src/4-tests/appMiroirDataInstances.js";
 import { env } from "process";
 
 import { createReportTestRunner } from "miroir-react-testing/src/4-tests/componentTests/runReportTest.js";
@@ -34,17 +34,16 @@ import { createStandaloneAppIntegrationOrchestrator } from "./StandaloneAppInteg
 // Same pageLabel as the runner entries: sessions must behave identically.
 const pageLabel = "miroir-runner-tests.integ";
 
-const miroirReportsFolder = join(
-  dirname(fileURLToPath(import.meta.url)),
-  "../../../miroir-app-miroir/assets/miroir_data",
-  entityReport.uuid,
-);
+const miroirDataFolder = join(dirname(fileURLToPath(import.meta.url)), "../../../miroir-app-miroir/assets/miroir_data");
 
-/** The Miroir Reports of the app's Miroir deployment, read from `miroir_data`. */
-function readMiroirReports(): EntityInstance[] {
-  return readdirSync(miroirReportsFolder)
-    .filter((fileName) => fileName.endsWith(".json"))
-    .map((fileName) => JSON.parse(readFileSync(join(miroirReportsFolder, fileName), "utf-8")));
+/** The Miroir Reports and Runners of the app's Miroir deployment, read from `miroir_data`. */
+function readMiroirDataInstances(): EntityInstance[] {
+  return reportTestMiroirDataEntityUuids.flatMap((entityUuid) => {
+    const entityFolder = join(miroirDataFolder, entityUuid);
+    return readdirSync(entityFolder)
+      .filter((fileName) => fileName.endsWith(".json"))
+      .map((fileName) => JSON.parse(readFileSync(join(entityFolder, fileName), "utf-8")));
+  });
 }
 
 export interface ReportTestEntry {
@@ -93,7 +92,7 @@ export async function startReportTestEntry(): Promise<ReportTestEntry> {
       sandboxElement,
       miroirActivityTracker,
       miroirEventService,
-      miroirReports: readMiroirReports,
+      miroirDataInstances: readMiroirDataInstances,
       // #672 D7: the Reports under test get the app's renderers and shell host, as in the app
       reportSectionRenderers: appReportSectionRenderers,
       shellHost: appShellHost,

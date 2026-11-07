@@ -58,9 +58,11 @@ export type FreezeApplicationVersionActionType =
 
 export {
   assertApplicationVersioningEnabled,
+  getFreezeAvailability,
   isApplicationVersioningEnabled,
   isVersioningAppBarItemVisible,
   resolveVersioningMode,
+  type FreezeAvailability,
   type VersioningMode,
   type VersioningModeInput,
 } from "./versioningMode.js";

@@ -132,9 +132,8 @@ describe("Miroir filesystem modelVersion seed", () => {
 
   it("same EntityVersion UUIDs are not returned from data section", async () => {
     const dataEntityVersions = await getPersistedInstances("data", entityEntityVersion.uuid!);
-    // FAILS BY DESIGN — documents https://github.com/miroir-framework/miroir/issues/239:
-    // boot currently writes 17 EntityVersion + 1 SelfApplicationVersion instances into the data section.
-    // Keep failing-visible; do not patch src/ or weaken this assertion to make it pass.
+    // Regression gate for #239 (fixed): boot used to write 17 EntityVersion + 1
+    // SelfApplicationVersion instances into the data section.
     expect(dataEntityVersions).toEqual([]);
     const uuids = dataEntityVersions.map((row) => row.uuid);
     expect(uuids).not.toContain(SELF_ENTITY_VERSION_UUID);

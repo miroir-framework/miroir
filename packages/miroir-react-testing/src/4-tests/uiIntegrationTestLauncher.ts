@@ -252,7 +252,7 @@ async function runRunnerOrActionIntegrationSuite(
     releaseReportTests = await prepareReportTests?.({
       miroirActivityTracker: trackerBundle.miroirActivityTracker,
       miroirEventService: trackerBundle.miroirEventService,
-      ...(request.miroirReports ? { miroirReports: request.miroirReports } : {}),
+      ...(request.miroirDataInstances ? { miroirDataInstances: request.miroirDataInstances } : {}),
     });
     const executionEnvironment = await testSession.initSession();
     await runMiroirTestSuiteInProcess({

@@ -79,3 +79,27 @@ export function isVersioningAppBarItemVisible(args: {
   }
   return resolveVersioningMode(args.browsedSelfApplication) === "versioned-internal";
 }
+
+/** Whether a freeze can target an application, and why not (#225). */
+export type FreezeAvailability = { available: true } | { available: false; reason: string };
+
+/**
+ * #225: an application can be frozen only when its SelfApplication row is loaded and
+ * resolves to `versioned-internal`. The reason is shown to the user (greyed option tooltip).
+ * Same rule as {@link assertApplicationVersioningEnabled}, without throwing.
+ */
+export function getFreezeAvailability(
+  selfApplication: VersioningModeInput | undefined,
+): FreezeAvailability {
+  if (!selfApplication) {
+    return { available: false, reason: "Application not loaded in this session" };
+  }
+  switch (resolveVersioningMode(selfApplication)) {
+    case "versioned-internal":
+      return { available: true };
+    case "versioned-external":
+      return { available: false, reason: "History is kept outside Miroir (versioned-external)" };
+    case "unversioned":
+      return { available: false, reason: "Application is not versioned" };
+  }
+}
