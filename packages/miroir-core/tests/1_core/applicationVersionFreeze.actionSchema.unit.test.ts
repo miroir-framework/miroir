@@ -49,7 +49,11 @@ function emptyMeta(overrides?: Partial<FreezeMetaModelSlice>): FreezeMetaModelSl
     applicationVersionCrossThemeVersion: [],
     themeVersions: [],
     applicationVersionCrossTransformerDefinitionVersion: [],
+    applicationVersionCrossMlSchemaVersion: [],
+    applicationVersionCrossMiroirTestVersion: [],
     transformerDefinitionVersions: [],
+    mlSchemaVersions: [],
+    miroirTestVersions: [],
     ...overrides,
   };
 }

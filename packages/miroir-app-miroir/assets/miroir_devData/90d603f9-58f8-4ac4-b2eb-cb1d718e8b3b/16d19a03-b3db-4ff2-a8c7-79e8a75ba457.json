@@ -1,0 +1,20 @@
+{
+  "uuid": "16d19a03-b3db-4ff2-a8c7-79e8a75ba457",
+  "parentName": "BundleSizeMeasurement",
+  "parentUuid": "90d603f9-58f8-4ac4-b2eb-cb1d718e8b3b",
+  "application": "miroir-standalone-app",
+  "measuredAt": "2026-11-07T13:29:13.994Z",
+  "eagerGzipBytes": 847175,
+  "baseline": 847175,
+  "previousBaseline": 827963,
+  "baselineChange": 19212,
+  "reason": "#230: freeze snapshots MlSchemas and MiroirTests. The page was already 1.96% over the old baseline on _integration; the MlSchemaVersion and MiroirTestVersion Entities, their Cross Entities and EntityVersion rows, and the extended freeze MiroirTest add about 3 KB gzipped (0.3%), past the 2% band.",
+  "gitCommit": "d0c143c3c4a9635c5f92e951717a53e1edd82933",
+  "gitBranch": "claude/230-full-freeze-snapshot",
+  "miroirVersion": "0.5.0-rc.1",
+  "eagerChunks": 67,
+  "eagerRawBytes": 4700462,
+  "totalChunks": 442,
+  "totalRawBytes": 22577861,
+  "totalGzipBytes": 5707010
+}

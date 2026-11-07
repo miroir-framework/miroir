@@ -57,6 +57,10 @@ import {
   entityHistoricalThemeVersion,
   entityApplicationVersionCrossTransformerDefinitionVersion,
   entityHistoricalTransformerDefinitionVersion,
+  entityApplicationVersionCrossMlSchemaVersion,
+  entityHistoricalMlSchemaVersion,
+  entityApplicationVersionCrossMiroirTestVersion,
+  entityHistoricalMiroirTestVersion,
   entityTransformerDefinition,
 } from "@miroir-framework/core/meta-model";
 import { packageName } from "../../constants.js";
@@ -167,6 +171,14 @@ export function currentModel(
       application,
       entityHistoricalTransformerDefinitionVersion.uuid,
     );
+    const mlSchemaVersionSection = getApplicationSection(
+      application,
+      entityHistoricalMlSchemaVersion.uuid,
+    );
+    const miroirTestVersionSection = getApplicationSection(
+      application,
+      entityHistoricalMiroirTestVersion.uuid,
+    );
     const applicationVersionCrossReport =
       state.current[
         getReduxDeploymentsStateIndex(
@@ -261,6 +273,38 @@ export function currentModel(
           deploymentUuid,
           transformerDefinitionVersionSection,
           entityHistoricalTransformerDefinitionVersion.uuid,
+        )
+      ];
+    const applicationVersionCrossMlSchema =
+      state.current[
+        getReduxDeploymentsStateIndex(
+          deploymentUuid,
+          crossEntityVersionSection,
+          entityApplicationVersionCrossMlSchemaVersion.uuid,
+        )
+      ];
+    const historicalMlSchemaVersions =
+      state.current[
+        getReduxDeploymentsStateIndex(
+          deploymentUuid,
+          mlSchemaVersionSection,
+          entityHistoricalMlSchemaVersion.uuid,
+        )
+      ];
+    const applicationVersionCrossMiroirTest =
+      state.current[
+        getReduxDeploymentsStateIndex(
+          deploymentUuid,
+          crossEntityVersionSection,
+          entityApplicationVersionCrossMiroirTestVersion.uuid,
+        )
+      ];
+    const historicalMiroirTestVersions =
+      state.current[
+        getReduxDeploymentsStateIndex(
+          deploymentUuid,
+          miroirTestVersionSection,
+          entityHistoricalMiroirTestVersion.uuid,
         )
       ];
     const endpoints =
@@ -385,6 +429,18 @@ export function currentModel(
       transformerDefinitionVersions: (historicalTransformerDefinitionVersions?.entities
         ? Object.values(historicalTransformerDefinitionVersions.entities)
         : []) as NonNullable<MetaModel["transformerDefinitionVersions"]>,
+      applicationVersionCrossMlSchemaVersion: (applicationVersionCrossMlSchema?.entities
+        ? Object.values(applicationVersionCrossMlSchema.entities)
+        : []) as NonNullable<MetaModel["applicationVersionCrossMlSchemaVersion"]>,
+      mlSchemaVersions: (historicalMlSchemaVersions?.entities
+        ? Object.values(historicalMlSchemaVersions.entities)
+        : []) as NonNullable<MetaModel["mlSchemaVersions"]>,
+      applicationVersionCrossMiroirTestVersion: (applicationVersionCrossMiroirTest?.entities
+        ? Object.values(applicationVersionCrossMiroirTest.entities)
+        : []) as NonNullable<MetaModel["applicationVersionCrossMiroirTestVersion"]>,
+      miroirTestVersions: (historicalMiroirTestVersions?.entities
+        ? Object.values(historicalMiroirTestVersions.entities)
+        : []) as NonNullable<MetaModel["miroirTestVersions"]>,
       tests: (tests && tests.entities ? Object.values(tests.entities) : []) as MiroirTestDefinition[],
       themes: (themes && themes.entities ? Object.values(themes.entities) : []) as StoredMiroirTheme[],
       transformerDefinitions: (transformerDefinitions && transformerDefinitions.entities

@@ -2,16 +2,20 @@
  * Application version freeze — snapshotting present-model elements as historical versions.
  *
  * Parametrized coverage of the snapshot step for Entity and the non-Entity model
- * elements (Endpoint, Menu, Query, Report, Runner, Theme, TransformerDefinition):
+ * elements (Endpoint, Menu, Query, Report, Runner, Theme, TransformerDefinition, and
+ * since #230 MlSchema and MiroirTest):
  * each historical row mints a fresh UUID, links back to the live element uuid, is
  * parented to its historical version Entity, copies the present-model fields,
- * is deep-isolated from later source mutation, and rejects incomplete elements.
+ * is deep-isolated from later source mutation, and rejects incomplete elements
+ * (MlSchema excepted: its live definition is optional, so is the snapshot's).
  */
 import { describe, expect, it } from "vitest";
 
 import {
   ENDPOINT_VERSION_ENTITY_UUID,
   MENU_VERSION_ENTITY_UUID,
+  MIROIR_TEST_VERSION_ENTITY_UUID,
+  ML_SCHEMA_VERSION_ENTITY_UUID,
   QUERY_VERSION_ENTITY_UUID,
   REPORT_VERSION_ENTITY_UUID,
   RUNNER_VERSION_ENTITY_UUID,
@@ -20,6 +24,8 @@ import {
   snapshotEndpointsAsHistoricalEndpointVersions,
   snapshotEntitiesAsHistoricalEntityVersions,
   snapshotMenusAsHistoricalMenuVersions,
+  snapshotMiroirTestsAsHistoricalMiroirTestVersions,
+  snapshotMlSchemasAsHistoricalMlSchemaVersions,
   snapshotQueriesAsHistoricalQueryVersions,
   snapshotReportsAsHistoricalReportVersions,
   snapshotRunnersAsHistoricalRunnerVersions,
@@ -27,12 +33,16 @@ import {
   snapshotTransformerDefinitionsAsHistoricalTransformerDefinitionVersions,
   type EndpointVersionSnapshot,
   type MenuVersionSnapshot,
+  type MiroirTestVersionSnapshot,
+  type MlSchemaVersionSnapshot,
   type QueryVersionSnapshot,
   type ReportVersionSnapshot,
   type RunnerVersionSnapshot,
   type SnapshotOptions,
   type StoredEndpointForFreeze,
   type StoredMenuForFreeze,
+  type StoredMiroirTestForFreeze,
+  type StoredMlSchemaForFreeze,
   type StoredQueryForFreeze,
   type StoredReportForFreeze,
   type StoredRunnerForFreeze,
@@ -63,8 +73,9 @@ type SnapshotCase<Live, Snap> = {
   versionEntityName: string;
   linkAttribute: string;
   makeLive: (uuid: string, name: string) => Live;
-  makeIncomplete: () => Live;
-  requiredFieldPattern: RegExp;
+  /** Omitted when the live element has no required body (MlSchema). */
+  makeIncomplete?: () => Live;
+  requiredFieldPattern?: RegExp;
   assertCopiedFields: (live: Live, snapshot: Snap) => void;
   mutateLive: (live: Live) => void;
   assertDeepIsolation: (snapshot: Snap) => void;
@@ -410,6 +421,79 @@ const transformerDefinitionSnapshotCase = defineCase<
   },
 });
 
+const mlSchemaSnapshotCase = defineCase<StoredMlSchemaForFreeze, MlSchemaVersionSnapshot>({
+  element: "MlSchema",
+  snapshot: snapshotMlSchemasAsHistoricalMlSchemaVersions,
+  versionEntityUuid: ML_SCHEMA_VERSION_ENTITY_UUID,
+  versionEntityName: "MlSchemaVersion",
+  linkAttribute: "mlSchemaUuid",
+  makeLive: (uuid, name) => ({
+    uuid,
+    name,
+    defaultLabel: `${name} Label`,
+    description: `${name} description`,
+    definition: {
+      type: "object",
+      definition: { title: { type: "string", tag: { value: { defaultLabel: name } } } },
+    },
+  }),
+  assertCopiedFields: (live, snapshot) => {
+    expect(snapshot.name).toBe(live.name);
+    expect(snapshot.defaultLabel).toBe(live.defaultLabel);
+    expect(snapshot.description).toBe(live.description);
+    expect(snapshot.definition).toEqual(live.definition);
+  },
+  mutateLive: (live) => {
+    (live.definition as any).definition.title.tag.value.defaultLabel = "mutated";
+  },
+  assertDeepIsolation: (snapshot) => {
+    expect((snapshot.definition as any).definition.title.tag.value.defaultLabel).toBe("Mutable");
+  },
+});
+
+const miroirTestSnapshotCase = defineCase<StoredMiroirTestForFreeze, MiroirTestVersionSnapshot>({
+  element: "MiroirTest",
+  snapshot: snapshotMiroirTestsAsHistoricalMiroirTestVersions,
+  versionEntityUuid: MIROIR_TEST_VERSION_ENTITY_UUID,
+  versionEntityName: "MiroirTestVersion",
+  linkAttribute: "miroirTestUuid",
+  makeLive: (uuid, name) => ({
+    uuid,
+    name,
+    description: `${name} description`,
+    skip: true,
+    tags: ["versioning", "unit"],
+    issue: "#230",
+    definition: {
+      miroirTestType: "miroirTestSuite",
+      miroirTestLabel: name,
+      miroirTests: {},
+    } as any,
+  }),
+  makeIncomplete: () =>
+    ({
+      uuid: INCOMPLETE_UUID,
+      name: "Incomplete",
+    }) as StoredMiroirTestForFreeze,
+  requiredFieldPattern: /definition/,
+  assertCopiedFields: (live, snapshot) => {
+    expect(snapshot.name).toBe(live.name);
+    expect(snapshot.description).toBe(live.description);
+    expect(snapshot.skip).toBe(true);
+    expect(snapshot.tags).toEqual(["versioning", "unit"]);
+    expect(snapshot.issue).toBe("#230");
+    expect(snapshot.definition).toEqual(live.definition);
+  },
+  mutateLive: (live) => {
+    (live.definition as any).miroirTestLabel = "mutated";
+    live.tags!.push("ui");
+  },
+  assertDeepIsolation: (snapshot) => {
+    expect((snapshot.definition as any).miroirTestLabel).toBe("Mutable");
+    expect(snapshot.tags).toEqual(["versioning", "unit"]);
+  },
+});
+
 const snapshotCases: SnapshotCase<any, any>[] = [
   entitySnapshotCase,
   endpointSnapshotCase,
@@ -419,6 +503,8 @@ const snapshotCases: SnapshotCase<any, any>[] = [
   runnerSnapshotCase,
   themeSnapshotCase,
   transformerDefinitionSnapshotCase,
+  mlSchemaSnapshotCase,
+  miroirTestSnapshotCase,
 ];
 
 describe("application version freeze — historical version snapshots", () => {
@@ -460,11 +546,32 @@ describe("application version freeze — historical version snapshots", () => {
         expect(testCase.snapshot([])).toEqual([]);
       });
 
-      it("throws when the required definition body is missing", () => {
-        expect(() => testCase.snapshot([testCase.makeIncomplete()])).toThrow(
-          testCase.requiredFieldPattern,
-        );
-      });
+      if (testCase.makeIncomplete) {
+        const makeIncomplete = testCase.makeIncomplete;
+        it("throws when the required definition body is missing", () => {
+          expect(() => testCase.snapshot([makeIncomplete()])).toThrow(
+            testCase.requiredFieldPattern,
+          );
+        });
+      }
     });
   }
+
+  it("snapshots an MlSchema that has no definition, without one (#230)", () => {
+    const [snapshot] = snapshotMlSchemasAsHistoricalMlSchemaVersions(
+      [{ uuid: INCOMPLETE_UUID, name: "Bare" }],
+      { newUuid: deterministicUuid() },
+    );
+    expect(snapshot.mlSchemaUuid).toBe(INCOMPLETE_UUID);
+    expect("definition" in snapshot).toBe(false);
+  });
+
+  it("snapshots a MiroirTest that has no name, without one (#230)", () => {
+    const [snapshot] = snapshotMiroirTestsAsHistoricalMiroirTestVersions(
+      [{ uuid: INCOMPLETE_UUID, definition: { miroirTestType: "miroirTestSuite" } as any }],
+      { newUuid: deterministicUuid() },
+    );
+    expect(snapshot.miroirTestUuid).toBe(INCOMPLETE_UUID);
+    expect("name" in snapshot).toBe(false);
+  });
 });

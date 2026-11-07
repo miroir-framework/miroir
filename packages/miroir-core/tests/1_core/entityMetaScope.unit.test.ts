@@ -58,6 +58,8 @@ describe("Entity meta scope and logicalDataModel", () => {
       "e5f6a7b8-c9d0-4012-a3b4-c5d6e7f8a9b0.json", // RunnerVersion
       "a7b8c9d0-e1f2-4012-a3b4-c5d6e7f8a9c0.json", // ThemeVersion
       "e1f2a3b4-c5d6-4012-a3b4-c5d6e7f8a9d0.json", // TransformerDefinitionVersion
+      "426cd199-8f38-498e-bd81-af636321b864.json", // MlSchemaVersion (#230)
+      "a2b1c33a-b0db-45b4-829c-c8fafc4a6110.json", // MiroirTestVersion (#230)
       "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24.json", // SelfApplicationVersion
     ];
     for (const file of versioningOnly) {
@@ -75,6 +77,8 @@ describe("Entity meta scope and logicalDataModel", () => {
       "f6a7b8c9-d0e1-4123-a4b5-c6d7e8f9a0b1.json",
       "b8c9d0e1-f2a3-4123-a4b5-c6d7e8f9a0c1.json",
       "f2a3b4c5-d6e7-4123-a4b5-c6d7e8f9a0d1.json",
+      "da27d98d-6b52-412a-9317-557325ec4030.json", // ApplicationVersionCrossMlSchemaVersion (#230)
+      "81af0bd1-388b-4f80-aabc-4004578c7ded.json", // ApplicationVersionCrossMiroirTestVersion (#230)
     ]) {
       const entity = readEntity(file);
       expect(entity.scope, file).toBe("versioning");
@@ -190,6 +194,22 @@ describe("Entity meta scope and logicalDataModel", () => {
       entitySchema as any,
       transformerDefinitionVersionEntity,
       "TransformerDefinitionVersion",
+      defaultMiroirModelEnvironment,
+    );
+    expect(check.status, JSON.stringify(check.innermostError, null, 2)).toBe("ok");
+  });
+
+  it.each([
+    ["MlSchemaVersion", "426cd199-8f38-498e-bd81-af636321b864"],
+    ["MiroirTestVersion", "a2b1c33a-b0db-45b4-829c-c8fafc4a6110"],
+  ])("model validation accepts %s entity row against Entity schema (#230)", (name, uuid) => {
+    const entitySchema = entityDefinitionsByEntityName(defaultMiroirMetaModel).Entity?.mlSchema;
+    const historyEntity = defaultMiroirMetaModel.entities.find((e) => e.uuid === uuid);
+    expect(historyEntity).toBeDefined();
+    const check = checkModelValidationInstance(
+      entitySchema as any,
+      historyEntity,
+      name,
       defaultMiroirModelEnvironment,
     );
     expect(check.status, JSON.stringify(check.innermostError, null, 2)).toBe("ok");

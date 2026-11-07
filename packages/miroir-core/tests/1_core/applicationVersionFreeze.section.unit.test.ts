@@ -25,6 +25,10 @@ import {
   entityApplicationVersionCrossRunnerVersion,
   entityApplicationVersionCrossThemeVersion,
   entityApplicationVersionCrossTransformerDefinitionVersion,
+  entityHistoricalMlSchemaVersion,
+  entityApplicationVersionCrossMlSchemaVersion,
+  entityHistoricalMiroirTestVersion,
+  entityApplicationVersionCrossMiroirTestVersion,
   entitySelfApplicationVersion,
   selfApplicationMiroir,
 } from "miroir-app-miroir";
@@ -67,6 +71,10 @@ const VERSION_HISTORY_ENTITIES = [
   { name: "ApplicationVersionCrossThemeVersion",        entity: entityApplicationVersionCrossThemeVersion },
   { name: "TransformerDefinitionVersion",               entity: entityHistoricalTransformerDefinitionVersion },
   { name: "ApplicationVersionCrossTransformerDefinitionVersion", entity: entityApplicationVersionCrossTransformerDefinitionVersion },
+  { name: "MlSchemaVersion",                            entity: entityHistoricalMlSchemaVersion },
+  { name: "ApplicationVersionCrossMlSchemaVersion",     entity: entityApplicationVersionCrossMlSchemaVersion },
+  { name: "MiroirTestVersion",                          entity: entityHistoricalMiroirTestVersion },
+  { name: "ApplicationVersionCrossMiroirTestVersion",   entity: entityApplicationVersionCrossMiroirTestVersion },
 ];
 
 describe("getApplicationSection routes version-history entities to modelVersion", () => {
@@ -100,6 +108,8 @@ describe("getApplicationSection routes version-history entities to modelVersion"
     expect(plan.runnerVersionApplicationSection).toBe("modelVersion");
     expect(plan.themeVersionApplicationSection).toBe("modelVersion");
     expect(plan.transformerDefinitionVersionApplicationSection).toBe("modelVersion");
+    expect(plan.mlSchemaVersionApplicationSection).toBe("modelVersion");
+    expect(plan.miroirTestVersionApplicationSection).toBe("modelVersion");
   });
 
   it("live getApplicationSection is unchanged for Entity (model) and non-Entity (data)", () => {
