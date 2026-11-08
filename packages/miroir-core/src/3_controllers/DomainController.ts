@@ -481,6 +481,10 @@ export class DomainController implements DomainControllerInterface, DomainContro
     this.processCapabilities = snapshot;
   }
 
+  getProcessCapabilities(): ProcessCapabilities {
+    return this.resolveProcessCapabilities();
+  }
+
   addInstanceActionListener(listener: InstanceActionListener): () => void {
     this.instanceActionListeners.push(listener);
     return () => {

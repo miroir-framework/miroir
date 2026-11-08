@@ -55,6 +55,7 @@ import { browserMcpServerUrl } from "@miroir-framework/core";
 import { useMiroirShellHost } from "../../contexts/MiroirShellHostContext.js";
 
 import { selfApplicationMiroir } from "@miroir-framework/core/meta-model";
+import { isRunnerAllowedByVersioning } from "../Page/versioningCapabilityFilter.js";
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "RunnerView");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName,
@@ -399,6 +400,10 @@ export function StoredRunnerView(props: {
     storedRunner?.definition.runnerType === "mcpToolRunner" &&
     context.processCapabilities.mcp !== true
   ) {
+    return null;
+  }
+  // #696: the freeze Runner needs the versioning capability
+  if (!isRunnerAllowedByVersioning(props.runnerUuid, context.processCapabilities)) {
     return null;
   }
 

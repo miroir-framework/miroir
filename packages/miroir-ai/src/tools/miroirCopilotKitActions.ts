@@ -42,7 +42,11 @@ export function copilotKitEndpointActionEntries(
   domainController: DomainControllerInterface,
   applicationDeploymentMap: ApplicationDeploymentMap,
 ): EndpointActionEntry[] {
-  return listEndpointActions(domainController.getLocalCache(), applicationDeploymentMap).filter((entry) => {
+  return listEndpointActions(
+    domainController.getLocalCache(),
+    applicationDeploymentMap,
+    domainController.getProcessCapabilities?.(),
+  ).filter((entry) => {
     if (entry.frameworkApplication) {
       return false;
     }

@@ -1510,6 +1510,7 @@ export {
   endpointActionTargetApplication,
   executeEndpointAction,
   FRAMEWORK_APPLICATION_UUIDS,
+  isEndpointActionAvailable,
   listEndpointActions,
   sanitizeEndpointActionNamePart,
   truncateEndpointActionName,

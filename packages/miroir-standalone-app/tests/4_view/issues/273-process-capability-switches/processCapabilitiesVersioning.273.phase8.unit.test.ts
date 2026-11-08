@@ -70,7 +70,11 @@ if (runThis) {
       const src = readRepoFile(
         "packages/miroir-react/src/components/Page/AppBar.tsx",
       );
-      expect(src).toContain("isVersioningAppBarItemVisible");
+      // #696: through isVersioningAppBarItemShown, which checks the versioning capability first
+      expect(src).toContain("isVersioningAppBarItemShown");
+      expect(
+        readRepoFile("packages/miroir-react/src/components/Page/versioningCapabilityFilter.ts"),
+      ).toContain("isVersioningAppBarItemVisible");
       expect(src).toContain("resolveAppBarReportLinkApplication");
     });
 

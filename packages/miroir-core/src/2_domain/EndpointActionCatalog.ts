@@ -22,6 +22,11 @@ import { authorizeDeployment, authorizeDesignerOnlyAction, type LoadedAccessDire
 import type { AuthPrincipal } from "../1_core/authentication/AuthenticationPolicy";
 import { deploymentUuidsFromHttpRequest } from "../1_core/authentication/deploymentUuidFromHttpRequest";
 import { rejectInstancesNotMatchingTheirEntity } from "../1_core/Entity/instanceSchemaGuard";
+import {
+  assertProcessCapability,
+  type ProcessCapabilities,
+  type ProcessCapabilityName,
+} from "../1_core/processCapabilities";
 import { metaModelEntities } from "../1_core/Model";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 import { packageName } from "../constants";
@@ -179,13 +184,29 @@ function descriptionOf(action: Action, actionType: string, endpoint: EndpointDef
 }
 
 /**
+ * #696: whether a process with `capabilities` can run `action`: true when its implementation requires no
+ * capability, or the capability it requires is on. Without a snapshot every action is available.
+ */
+export function isEndpointActionAvailable(action: Action, capabilities?: ProcessCapabilities): boolean {
+  const requiredCapability = (action as any)?.actionImplementation?.requiredCapability as
+    | ProcessCapabilityName
+    | undefined;
+  if (!requiredCapability || !capabilities) {
+    return true;
+  }
+  return !assertProcessCapability(requiredCapability, capabilities);
+}
+
+/**
  * One entry per (application, endpoint, action) of every application of the current map, from the
  * live model. Applications sorted by uuid, endpoints by uuid, actions by action type, so names are
- * stable. Malformed endpoints and actions without an action type or a payload are skipped.
+ * stable. Malformed endpoints and actions without an action type or a payload are skipped, and, given
+ * the process capabilities, the actions they make unavailable (#696).
  */
 export function listEndpointActions(
   localCache: LocalCacheInterface,
   seedMap: ApplicationDeploymentMap,
+  processCapabilities?: ProcessCapabilities,
 ): EndpointActionEntry[] {
   const map = currentApplicationDeploymentMap(localCache, seedMap);
   const names = applicationNames(localCache, map);
@@ -209,7 +230,7 @@ export function listEndpointActions(
       for (const action of actions) {
         const actionType = actionTypeOf(action);
         const payload = (action as any)?.actionParameters?.payload as MlElement | undefined;
-        if (!actionType || !payload) {
+        if (!actionType || !payload || !isEndpointActionAvailable(action, processCapabilities)) {
           continue;
         }
         const name = endpointActionName(applicationName, endpoint.name, actionType, takenNames);

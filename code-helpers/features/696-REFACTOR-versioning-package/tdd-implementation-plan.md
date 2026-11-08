@@ -43,7 +43,7 @@ This plan does **not** add versioning behaviour (#708, #9, #215, #709, #710, #71
 | 2 | A remote client sends the freeze to the persistence process | ✅ | `versioningServerRouted.696.phase2.integ.test.ts` |
 | 3 | The freeze runs from `@miroir-framework/versioning`, loaded on first use | ✅ | `versioningLazyFreeze.696.phase3.integ.test.ts` + the four freeze MiroirTests |
 | 4 | Traces run from the package through a lazy recorder | ✅ | `versioningLazyTraces.696.phase4.integ.test.ts` + `action.scenario.evolutionTrace` |
-| 5 | Versioning entries and action listings hidden when off | ⬜ | `versioningHidden.696.phase5.unit.test.ts` (UI) + `endpointActionListing.696.phase5.unit.test.ts` (core) |
+| 5 | Versioning entries and action listings hidden when off | ✅ | `versioningHidden.696.phase5.unit.test.ts` (UI) + `endpointActionListing.696.phase5.unit.test.ts` (core) |
 | 6 | MiroirTests tagged `versioning` skip when off | ⬜ | `miroirTestRequirements.unit.test.ts` (extended) |
 | 7 | Bundle size record and guard check | ⬜ | `check_bundle_policy.py` on the three policies + `homePageLoad.unit` + recorded bundle size |
 | 8 | Nonreg, docs, cleanup, AC | ⬜ | nonreg step `integ-696-versioning-capability-off` + full nonreg |
@@ -393,7 +393,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,actions,core
 
 ## Slice 5 — Versioning entries and action listings hidden when off
 
-**Status:** ⬜ pending
+**Status:** ✅ done
 
 ### Goal
 
@@ -431,6 +431,10 @@ npm run nonreg:filesystem -- --runner shared
 ```
 
 ### Realization
+
+- `@miroir-framework/react` `components/Page/versioningCapabilityFilter.ts`: `VERSIONING_MENU_REPORT_UUIDS` (Miroir menu items 1, 2, 14, 15), `VERSIONING_RUNNER_UUIDS` (the freeze Runner), `isMenuItemAllowedByVersioning`, `isRunnerAllowedByVersioning`, `isVersioningAppBarItemShown` (capability, then `isVersioningAppBarItemVisible`, D7). AppBar, SidebarSection's `isVisibleMenuItem` and RunnerView (beside the `mcp` check) call them with `context.processCapabilities`. The comment names #712 as the replacement.
+- Core: `isEndpointActionAvailable(action, capabilities?)`; `listEndpointActions` takes an optional snapshot and skips the actions it makes unavailable; `DomainControllerInterface.getProcessCapabilities()`. MCP (`EndpointToolRegistry.listTools`), the CLI (`getAllCommands`) and CopilotKit (`copilotKitEndpointActionEntries`) pass it.
+- Proofs: `versioningHidden.696.phase5` 4/4 (predicates checked against the Miroir menu and Runner assets, and the three call sites), `endpointActionListing.696.phase5` 4/4 (vitest with a two-method local cache over `modelEndpointV1`; the snapshot parameter rules out a JSON `functionCallTest`), `processCapabilitiesVersioning.273.phase8` updated for the new AppBar call. Core unit 3329 passed.
 
 ---
 

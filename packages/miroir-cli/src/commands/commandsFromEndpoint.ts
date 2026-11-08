@@ -228,7 +228,11 @@ export function getAllCommands(
   applicationDeploymentMap: ApplicationDeploymentMap,
 ): CliCommandHandler<any>[] {
   const handlers: CliCommandHandler<any>[] = [];
-  for (const entry of listEndpointActions(domainController.getLocalCache(), applicationDeploymentMap)) {
+  for (const entry of listEndpointActions(
+    domainController.getLocalCache(),
+    applicationDeploymentMap,
+    domainController.getProcessCapabilities?.(),
+  )) {
     try {
       handlers.push(cliCommandEntry(entry));
     } catch (error) {
