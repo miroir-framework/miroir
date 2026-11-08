@@ -160,7 +160,7 @@ Renaming an attribute is on the program, in item 8 (#215). It comes as a composi
 - copy the values;
 - remove the old attribute.
 
-In the strict workflow it runs as one migration. In continuous delivery the same composite splits over two releases: the add and the copy go in release *n*, and the remove in release *n+1*. A trace of the composite keeps the designer's intent, so generation (D12) knows that it is a rename, not a remove and an add. Because it is built only from existing Actions, it is a showcase of how Miroir composes Actions.
+In the strict workflow it runs as one migration. In continuous delivery the same composite splits over two releases: the add and the copy go in release *n*, and the remove in release *n+1*. For generation (D12) to know that it is a rename and not a remove plus an add, the trace has to keep the composite. Today it would not: a composite Action runs its children one by one (`DomainController.handleCompositeActionInternal`), and the trace writer stores each child with no link to its parent. Item 8 therefore extends the trace record (Q16): a composite Action is recorded as one entry that carries its name, its parameters (the Entity and the old and new attribute names) and a rename id, with its resolved children inside. When the rename spans two releases, the remove in release *n+1* carries the same rename id. Until item 8 lands, the designer confirms renames in the draft. Because it is built only from existing Actions, it is a showcase of how Miroir composes Actions.
 
 ---
 
@@ -401,7 +401,7 @@ Traces come in two shapes today:
 |---|---|---|---|
 | 6 | **#708** Trace revival and model states | Q16 to Q20, Q24, Q28, Q29 (the checks at freeze and at Git commit), Q30; D3, D4 (`ModelStateSource`, replay, all-types attribute-level diff), D11; the `versioned-git` and `evolutionTraces` parameters; trace records and a writable `modelVersion` in both settings; the capability gate on model commits | #696 |
 | 7 | **#9 rescoped**: Migration, generation, runner, state record | Q10, Q21 to Q23, Q29 (the generation check); D1, D2 (phases, idempotent storage creation on every store, resumable runner), D5 (authoring and following roles), D10, D12 | 6 |
-| 8 | **#215** paired data migrations | fill steps tied to structure steps; the composite `renameEntityAttribute` Action of section 5.3 | 7 |
+| 8 | **#215** paired data migrations | fill steps tied to structure steps; the composite `renameEntityAttribute` Action of section 5.3, and trace entries that keep a composite and its rename id | 7 |
 | 9 | **#709** Restore points and rollback | Q11, Q31, Q32; D6; the add-only reconciliation shared with item 7 (D2) | 7 |
 | 10 | **#710** Experiments | the two test cases of section 9, built up as items 6 to 9 land; D7; a failure case (a run stopped halfway, then resumed) | 6, 7, 9 (8 for the rename variant) |
 | 11 | **#712** Application feature switches | D8 | 10 |
