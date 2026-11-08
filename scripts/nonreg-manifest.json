@@ -1850,6 +1850,41 @@
       }
     },
     {
+      "id": "integ-715-entity-row-update-sql-table",
+      "scopes": ["actions"],
+      "tier": "default",
+      "title": "#715 \u2014 a committed update of an Entity row leaves its SQL data table unchanged; alterEntityAttribute adds the column (SQL only, skipped on other stores)",
+      "requires": "storage",
+      "argv": [
+        "npm",
+        "run",
+        "testByFile",
+        "-w",
+        "miroir-standalone-app",
+        "--",
+        "--profile",
+        "{profile}",
+        "entityRowUpdateSqlTable.integ"
+      ],
+      "shared": {
+        "group": "standalone-app-profile",
+        "argv": [
+          "npm",
+          "run",
+          "testByFile",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--profile",
+          "{profile}",
+          "--no-bail"
+        ],
+        "files": [
+          "entityRowUpdateSqlTable.integ"
+        ]
+      }
+    },
+    {
       "id": "appstack-ExtractorPersistenceStoreRunner.integ",
       "scopes": ["core"],
       "tier": "default",
