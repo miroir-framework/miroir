@@ -9,10 +9,10 @@ Epic documents in this folder: [decisions.md](decisions.md) (the grilling outcom
 Key sources: [`applicationVersionFreeze.ts`](../../../packages/miroir-core/src/1_core/versioning/applicationVersionFreeze.ts), [`versioningMode.ts`](../../../packages/miroir-core/src/1_core/versioning/versioningMode.ts), [`evolutionTracePolicy.ts`](../../../packages/miroir-core/src/2_domain/evolutionTracePolicy.ts), [`DomainController.ts`](../../../packages/miroir-core/src/3_controllers/DomainController.ts), [`PersistenceStoreController.ts`](../../../packages/miroir-core/src/4_services/PersistenceStoreController.ts), [`SqlDbStoreSection.ts`](../../../packages/miroir-store-postgres/src/4_services/SqlDbStoreSection.ts), [`sqlDbEntityStoreSectionMixin.ts`](../../../packages/miroir-store-postgres/src/4_services/sqlDbEntityStoreSectionMixin.ts), [`miroir-git-isomorphic`](../../../packages/miroir-git-isomorphic/src/index.ts)
 
 **Document role:** epic analysis and decision record. The decisions Q1 to Q32 are settled in [decisions.md](decisions.md) and are not reopened here. This document cites them as `Qn`, and it adds the decisions D1 to D12 that the grilling left open or did not see. Where a D decision narrows a Q decision, it says so.
-**Status:** D8 accepted (item 11, #712). Goals G1 to G8 and the other decisions await confirmation.
+**Status:** accepted (2026-11-08): goals G1 to G8 and decisions D1 to D12. D9 stays deferred.
 **Document history:**
 - 2026-11-07: first draft. An adversarial review (a code fact check and an attack on the design) changed D2, D4 to D6 and D10, and added D11 and D12. Greptile's review of #711 added the Git migration's place at its target tag and repeatable data steps (D2).
-- 2026-11-08: the user's review. Every decision now states its question. D12 now takes the traces as its source and checks them against the diff; the earlier diff-only choice is kept as D12-a. Section 5.3 plans a composite rename Action, D4 is corrected about `MetaModel`, D9 is rewritten with an example, and D8 is accepted.
+- 2026-11-08: the user's review. Every decision now states its question. D12 now takes the traces as its source and checks them against the diff; the earlier diff-only choice is kept as D12-a. Section 5.3 plans a composite rename Action, D4 is corrected about `MetaModel`, D9 is rewritten with an example, and D8 is accepted. Later that day the user accepted all the goals and decisions.
 
 ---
 
@@ -187,7 +187,7 @@ Also needed, though not a choice: when the `versioning` capability is off, model
 
 ### D1. Does an application need a `deliveryStyle` field to choose between the strict and the continuous workflow?
 
-**Status:** Proposed — D1-b. **Serves:** G2, G5, G6.
+**Status:** Accepted (2026-11-08) — D1-b. **Serves:** G2, G5, G6.
 
 | Option | Mechanism | Pros | Cons |
 |---|---|---|---|
@@ -198,7 +198,7 @@ Also needed, though not a choice: when the `versioning` capability is off, model
 
 ### D2. How do a deployment's model and its storage (tables, collections) reach a target version without losing data?
 
-**Status:** Proposed — D2-d. **Serves:** G3, G5.
+**Status:** Accepted (2026-11-08) — D2-d. **Serves:** G3, G5.
 
 Two facts about the code shape this decision.
 
@@ -233,7 +233,7 @@ How D2-d works:
 
 ### D3. How does a designer create a version when the model is in Git?
 
-**Status:** Proposed — D3-a. **Serves:** G1, G8.
+**Status:** Accepted (2026-11-08) — D3-a. **Serves:** G1, G8.
 
 The Git page lists and checks out tags (`miroir-git-isomorphic`, `git.listTags`, `log` decorations), but no `gitAction_*` creates one. The existing actions are `checkout`, `clone`, `commit`, `commitFiles`, `createBranch`, `deleteBranch`, `diff`, `fetch`, `init`, `installClonedDeployment`, `log`, `pull`, `push`, `revert`, `setCredential`, `setRemote`, `stage`, `status` and `unstage`.
 
@@ -246,7 +246,7 @@ The Git page lists and checks out tags (`miroir-git-isomorphic`, `git.listTags`,
 
 ### D4. Where does Miroir read "the model at state X" from: a frozen version, a Git ref, or the live model?
 
-**Status:** Proposed. **Serves:** G2.
+**Status:** Accepted (2026-11-08). **Serves:** G2.
 
 Migration generation, the agreement check (Q29) and restore all need "the model at state X". There are three sources:
 - frozen `*Version` rows (setting N);
@@ -257,7 +257,7 @@ A `ModelStateSource` interface in the versioning package (#696) returns the same
 
 ### D5. Without Git, how does a test environment get the versions and migrations made in the dev environment?
 
-**Status:** Proposed — D5-a for the experiments. **Serves:** G3.
+**Status:** Accepted (2026-11-08) — D5-a for the experiments. **Serves:** G3.
 
 A process holds one deployment per application: `ApplicationDeploymentMap` maps an application uuid to one deployment uuid (`1_core/Deployment.ts`, line 66). A test deployment of Library is therefore another process, with its own environment (`environments/*.json`). Each deployment configures its sections separately, so two environments can point their `modelVersion` sections at the same directory or SQL schema while `model` and `data` differ.
 
@@ -273,7 +273,7 @@ A process holds one deployment per application: `ApplicationDeploymentMap` maps 
 
 ### D6. Without Git, how does an operator bring a deployment's model back to a frozen version?
 
-**Status:** Proposed. **Serves:** G3, G5.
+**Status:** Accepted (2026-11-08). **Serves:** G3, G5.
 
 No action reads a frozen version back today. A new model action, `restoreApplicationVersion` (working name), runs on a deployment in five steps:
 
@@ -287,7 +287,7 @@ It is refused while a Miroir transaction is open, as the Git checkout is (679 D7
 
 ### D7. When a Git-backed deployment's data is migrated, where does that data live?
 
-**Status:** Proposed. **Serves:** G3, G8.
+**Status:** Accepted (2026-11-08). **Serves:** G3, G8.
 
 The clone installer (`gitAction_installClonedDeployment`) points every section of the installed deployment into the clone, `data` included, and skips a deployment whose sections are not folders of the clone (`GitClonedDeployments.ts`). A checkout of a newer tag then also rewrites the data files that the repository holds (Library commits sample data under `library_data/`), which defeats a migration. A deployment whose data is migrated therefore keeps its `data` section outside the work tree, or on another store. This needs new code: the installer takes a data location outside the clone and seeds it from the repository's sample data. The dev deployment, whose data is sample data, may keep it in the repository. Item 10 owns D7, because E2 needs it.
 
@@ -315,7 +315,7 @@ Miroir has no switch that an application designer can put on a Report, a Menu it
 
 ### D10. How does a Migration, a state record or a trace name a model state?
 
-**Status:** Proposed — D10-a. **Serves:** G2, G4, G8.
+**Status:** Accepted (2026-11-08) — D10-a. **Serves:** G2, G4, G8.
 
 679 section 7 warns that storing Git commit ids in model Entities would tie the model to Git.
 
@@ -328,7 +328,7 @@ Miroir has no switch that an application designer can put on a Report, a Menu it
 
 ### D11. With Git, how are trace records ordered, and how is a re-baseline done when freezing is not allowed?
 
-**Status:** Proposed. **Serves:** G1, G8. **Narrows:** Q19 and Q30.
+**Status:** Accepted (2026-11-08). **Serves:** G1, G8. **Narrows:** Q19 and Q30.
 
 One Git commit usually adds several trace records, one per Miroir `commit`, and Git ancestry does not order them. Q30's re-baseline "freezes the live model", which Q7 forbids with Git.
 
@@ -340,7 +340,7 @@ Item 6 owns D11.
 
 ### D12. Where do a migration's structure steps come from?
 
-**Status:** Proposed — D12-b. **Serves:** G2. **Follows:** Q10 (a draft "from traces and snapshot diffs").
+**Status:** Accepted (2026-11-08) — D12-b. **Serves:** G2. **Follows:** Q10 (a draft "from traces and snapshot diffs").
 
 **What is at stake.** A migration has to say which attributes and Entities appear, disappear or are renamed between two versions. That decides which steps are backward-compatible (D1), what the contract phase drops (D2), and whether a removed column's values are carried over (section 5.3). Two sources can give these structure steps:
 - the **trace records**, which say what the designer did, in order;
@@ -429,4 +429,4 @@ A third run of E1, on PostgreSQL, checks D2: the migration adds the columns, the
 
 ## Next step
 
-The issues exist for every item: #708 (6), #9 rescoped (7), #215 (8), #709 (9), #710 (10) and #712 (11). Once the goals and the remaining decisions are confirmed, the next step is a TDD plan per item, following `miroir-analysis-to-tdd-plan`, starting with #708.
+The issues exist for every item: #708 (6), #9 rescoped (7), #215 (8), #709 (9), #710 (10) and #712 (11). The next item in the epic order is #696 (versioning package and process capability), which #708 depends on. Each item then gets its own analysis where it needs one, and a TDD plan following `miroir-analysis-to-tdd-plan`.
