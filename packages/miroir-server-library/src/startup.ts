@@ -5,7 +5,10 @@
 // local cache, and needs no private package.
 
 import {
+  registerLazyActionImplementations,
   startMiroirNodeWith,
+  VERSIONING_ACTION_IMPLEMENTATION_NAMES,
+  VERSIONING_PACKAGE_NAME,
   startMiroirPlatformWith,
   type LocalCacheKind,
   type LocalCacheModule,
@@ -60,5 +63,13 @@ export async function startMiroirNode(
   options: MiroirNodeOptions & MiroirLocalCacheOption,
 ): Promise<MiroirPlatform> {
   const { localCache, ...nodeOptions } = options;
+  // #696: a Node host holds the stores (server, Electron's main process, the CLI), so it runs the
+  // versioning actions; the package loads on the first one, when the versioning capability is on
+  registerLazyActionImplementations({
+    capability: "versioning",
+    packageName: VERSIONING_PACKAGE_NAME,
+    implementationNames: VERSIONING_ACTION_IMPLEMENTATION_NAMES,
+    load: () => import("@miroir-framework/versioning"),
+  });
   return startMiroirNodeWith(await loadLocalCacheModule(localCache), miroirConfig, nodeOptions);
 }

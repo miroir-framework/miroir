@@ -1,6 +1,7 @@
 /**
  * #703: every Entity Miroir defines is in the meta-model Entity list (`defaultMiroirMetaModel.entities`),
- * so section routing, application model initialization and the freeze treat them alike.
+ * so section routing, application model initialization and the freeze treat them alike. #696: the freeze
+ * part is in `@miroir-framework/versioning`'s `metaModelEntityList.freeze.unit.test.ts`.
  */
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
@@ -19,7 +20,6 @@ import {
 import { selfApplicationLibrary } from "miroir-example-library";
 
 import { getApplicationSection, metaModelEntityUuids } from "../../src/1_core/Model.js";
-import { selectEntitiesToFreeze } from "../../src/1_core/versioning/applicationVersionFreeze.js";
 import type { Entity } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
 import { resolveMonorepoRoot } from "../../src/5_tests/loadApplicationMiroirTestsFromFolders.js";
 
@@ -54,13 +54,5 @@ describe("meta-model Entity list (#703)", () => {
         expect.arrayContaining(lateEntities.map((entity) => entity.name)),
       );
     }
-  });
-
-  it("leaves them out of an application's freeze, and keeps them in Miroir's", () => {
-    const metaUuids = new Set(metaModelEntityUuids);
-    expect(selectEntitiesToFreeze(selfApplicationLibrary.uuid, lateEntities, metaUuids)).toEqual([]);
-    expect(
-      selectEntitiesToFreeze(selfApplicationMiroir.uuid, lateEntities, metaUuids).map((entity) => entity.name),
-    ).toEqual(lateEntities.map((entity) => entity.name));
   });
 });

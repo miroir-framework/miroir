@@ -971,32 +971,13 @@ export type {
   EntityPresentModelDefinitionField,
 } from "./1_core/versioning/applicationVersioning.js";
 export {
-  APPLICATION_VERSION_PLACEHOLDER_NAMES,
   FREEZE_APPLICATION_VERSION_ACTION_TYPE,
+  VERSIONING_ACTION_IMPLEMENTATION_NAMES,
+  VERSIONING_PACKAGE_NAME,
   assertApplicationVersioningEnabled,
   getFreezeAvailability,
   isVersioningAppBarItemVisible,
   resolveVersioningMode,
-  buildFreezeApplicationVersionPlan,
-  diffEntityVersionSnapshots,
-  isApplicationVersionPlaceholder,
-  planFreezeApplicationVersion,
-  planFreezeApplicationVersionFromMetaModel,
-  selectEntitiesToFreeze,
-  resolvePreviousApplicationVersion,
-  snapshotEntitiesAsHistoricalEntityVersions,
-  snapshotQueriesAsHistoricalQueryVersions,
-  snapshotReportsAsHistoricalReportVersions,
-  snapshotMenusAsHistoricalMenuVersions,
-  snapshotEndpointsAsHistoricalEndpointVersions,
-  snapshotRunnersAsHistoricalRunnerVersions,
-  snapshotThemesAsHistoricalThemeVersions,
-  snapshotTransformerDefinitionsAsHistoricalTransformerDefinitionVersions,
-  snapshotMlSchemasAsHistoricalMlSchemaVersions,
-  snapshotMiroirTestsAsHistoricalMiroirTestVersions,
-  snapshotBlobsAsHistoricalBlobVersions,
-  snapshotTestConfigurationsAsHistoricalTestConfigurationVersions,
-  snapshotTestsAsHistoricalTestVersions,
   QUERY_VERSION_ENTITY_UUID,
   APPLICATION_VERSION_CROSS_QUERY_VERSION_UUID,
   REPORT_VERSION_ENTITY_UUID,
@@ -1021,58 +1002,14 @@ export {
   APPLICATION_VERSION_CROSS_TEST_CONFIGURATION_VERSION_UUID,
   TEST_VERSION_ENTITY_UUID,
   APPLICATION_VERSION_CROSS_TEST_VERSION_UUID,
-} from "./1_core/versioning/applicationVersionFreeze.js";
+} from "./1_core/versioning/versioningInterfaces.js";
 export type {
-  ApplicationVersionCrossEntityVersionRow,
-  ApplicationVersionCrossQueryVersionRow,
-  ApplicationVersionCrossReportVersionRow,
-  ApplicationVersionCrossMenuVersionRow,
-  ApplicationVersionCrossEndpointVersionRow,
-  ApplicationVersionCrossRunnerVersionRow,
-  ApplicationVersionCrossThemeVersionRow,
-  ApplicationVersionCrossTransformerDefinitionVersionRow,
-  ApplicationVersionCrossMlSchemaVersionRow,
-  ApplicationVersionCrossMiroirTestVersionRow,
-  ApplicationVersionCrossBlobVersionRow,
-  ApplicationVersionCrossTestConfigurationVersionRow,
-  ApplicationVersionCrossTestVersionRow,
-  BuildFreezeApplicationVersionPlanInput,
   FreezeApplicationVersionActionPayload,
   FreezeApplicationVersionActionType,
   FreezeAvailability,
   VersioningMode,
   VersioningModeInput,
-  FreezeApplicationVersionPlan,
-  FreezeMetaModelSlice,
-  ModelCudMigrationCandidate,
-  PlanFreezeApplicationVersionInput,
-  QueryVersionSnapshot,
-  ReportVersionSnapshot,
-  MenuVersionSnapshot,
-  EndpointVersionSnapshot,
-  RunnerVersionSnapshot,
-  ThemeVersionSnapshot,
-  TransformerDefinitionVersionSnapshot,
-  TransformerDefinitionVersionBody,
-  MlSchemaVersionSnapshot,
-  MiroirTestVersionSnapshot,
-  BlobVersionSnapshot,
-  TestConfigurationVersionSnapshot,
-  TestVersionSnapshot,
-  InstanceVersionSnapshot,
-  ResolvePreviousApplicationVersionOptions,
-  SnapshotOptions,
-  StoredQueryForFreeze,
-  StoredReportForFreeze,
-  StoredMenuForFreeze,
-  StoredEndpointForFreeze,
-  StoredRunnerForFreeze,
-  StoredThemeForFreeze,
-  StoredTransformerDefinitionForFreeze,
-  StoredMlSchemaForFreeze,
-  StoredMiroirTestForFreeze,
-  StoredInstanceForFreeze,
-} from "./1_core/versioning/applicationVersionFreeze.js";
+} from "./1_core/versioning/versioningInterfaces.js";
 export {
   actionsWithDeploymentInPayload, noValue
 } from "./1_core/Instance";
@@ -1711,6 +1648,15 @@ export {
   resetAndInitApplicationDeployment,
   templateEvaluationParams
 } from "./3_controllers/DomainController";
+export {
+  registerLazyActionImplementations,
+  type LazyActionImplementationModule,
+} from "./3_controllers/ActionImplementations";
+export type {
+  ActionImplementationContext,
+  ActionImplementationHandler,
+  DomainControllerActionHost,
+} from "./0_interfaces/3_controllers/DomainControllerActionHost";
 export { CallUtils } from "./3_controllers/ErrorHandling/CallUtils.js";
 export { ErrorAdminStore } from "./3_controllers/ErrorHandling/ErrorAdminStore.js";
 export { ErrorDataStore } from "./3_controllers/ErrorHandling/ErrorDataStore.js";

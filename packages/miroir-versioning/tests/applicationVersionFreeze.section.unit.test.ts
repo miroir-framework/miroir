@@ -37,7 +37,7 @@ import {
   entityApplicationVersionCrossTestVersion,
   entitySelfApplicationVersion,
   selfApplicationMiroir,
-} from "miroir-app-miroir";
+} from "@miroir-framework/core/meta-model";
 import { selfApplicationLibrary } from "miroir-example-library";
 
 import {
@@ -46,9 +46,9 @@ import {
   planFreezeApplicationVersionFromMetaModel,
   selectEntitiesToFreeze,
   type FreezeMetaModelSlice,
-} from "../../src/1_core/versioning/applicationVersionFreeze.js";
-import { getApplicationSection, versionHistoryEntityUuids } from "../../src/1_core/Model.js";
-import type { Entity } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+} from "../src/applicationVersionFreeze.js";
+import { getApplicationSection, versionHistoryEntityUuids } from "@miroir-framework/core";
+import type { Entity } from "@miroir-framework/core";
 
 function makeEntity(uuid: string, name: string): Entity {
   return {

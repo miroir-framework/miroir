@@ -41,7 +41,7 @@ This plan does **not** add versioning behaviour (#708, #9, #215, #709, #710, #71
 | 0 | Characterize the versioning surface, trace writers and bundle size | ✅ | `versioningSurface.696.phase0.unit.test.ts`, `traceWriters.696.phase0.integ.test.ts` |
 | 1 | Tracer: the `versioning` capability refuses a freeze | ✅ | `versioningCapability.696.phase1.integ.test.ts` |
 | 2 | A remote client sends the freeze to the persistence process | ✅ | `versioningServerRouted.696.phase2.integ.test.ts` |
-| 3 | The freeze runs from `@miroir-framework/versioning`, loaded on first use | ⬜ | `versioningLazyFreeze.696.phase3.integ.test.ts` + the four freeze MiroirTests |
+| 3 | The freeze runs from `@miroir-framework/versioning`, loaded on first use | ✅ | `versioningLazyFreeze.696.phase3.integ.test.ts` + the four freeze MiroirTests |
 | 4 | Traces run from the package through a lazy recorder | ⬜ | `versioningLazyTraces.696.phase4.integ.test.ts` + `action.scenario.evolutionTrace` |
 | 5 | Versioning entries and action listings hidden when off | ⬜ | `versioningHidden.696.phase5.unit.test.ts` (UI) + `endpointActionListing.696.phase5.unit.test.ts` (core) |
 | 6 | MiroirTests tagged `versioning` skip when off | ⬜ | `miroirTestRequirements.unit.test.ts` (extended) |
@@ -267,7 +267,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,actions,external
 
 ## Slice 3 — The freeze runs from `@miroir-framework/versioning`, loaded on first use
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE (full nonreg below)
 
 ### Goal
 
@@ -322,6 +322,14 @@ npm run nonreg:filesystem -- --runner shared
 ```
 
 ### Realization
+
+- Core keeps `1_core/versioning/versioningInterfaces.ts`: the action type, its payload type, the 24 version and cross uuids, `VERSIONING_PACKAGE_NAME`, `VERSIONING_ACTION_IMPLEMENTATION_NAMES`, and the `versioningMode.ts` re-exports. `applicationVersionFreeze.ts` moved to `packages/miroir-versioning/src/`.
+- `registerLazyActionImplementations({ capability, packageName, implementationNames, load })` in `ActionImplementations.ts`: one load per process, retried after a failure, `FeatureUnavailable` naming the package when the load fails. `runLibraryActionImplementation` refuses with `FeatureUnavailable` and the package name when an implementation that needs a capability is not registered.
+- `DomainControllerActionHost.readSectionInstances` (Action2Error on a failed read). The freeze case (about 640 lines) and its three helpers left `DomainController`; in the package, the 25 "ensure history Entity" blocks are one loop over `HISTORY_ENTITIES`, the 27 persist batches one table, and the meta-model slice one builder (3.3 refactors done with the move).
+- Hosts: `startMiroirNode` (server, Electron main, CLI), `startMiroirClient` with an emulated server, `setupMiroirTest` (option `versioningLoader`, `false` to register nothing). The package is in `build-all.sh`, `pr-checks.yml` (built, typechecked and tested in the core job), `build-linux-runnables.yml`, the `Dockerfile`, the `build:server` externals, the dependencies of react, react-testing, server-library, server, Electron and the standalone app, and `lazy` / `forbiddenEager` in the three bundle policies.
+- Tests: 6 freeze unit tests moved to the package with the planner half of `actionSchema` and the freeze case of `metaModelEntityList` (8 files, 156 tests); `versioningLazyFreeze` (3) and `versioningNotInstalled` (1); `ActionImplementations.unit` gains the lazy registration case. Freeze MiroirTests 12/12, freeze reports 2/2.
+- `runInActionContext` reports a thrown Error's message instead of `{}` (the freeze report shows the refusal text).
+- Known, not caused here: `tests/3_controllers/applicationVersionFreeze.integ.test.ts` (not in nonreg) fails at its first freeze because Library is `unversioned` since #553.
 
 ---
 

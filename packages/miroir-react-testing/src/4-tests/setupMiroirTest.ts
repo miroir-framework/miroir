@@ -1,5 +1,9 @@
 import {
   createFakeOutboundHttp,
+  registerLazyActionImplementations,
+  VERSIONING_ACTION_IMPLEMENTATION_NAMES,
+  VERSIONING_PACKAGE_NAME,
+  type LazyActionImplementationModule,
   defaultExternalServiceClient,
   fetchProcessCapabilities,
   MiroirActivityTracker,
@@ -32,6 +36,15 @@ let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerNa
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {log = logger});
 
 
+/** What a test changes in the setup of its session. */
+export type SetupMiroirTestOptions = {
+  /**
+   * #696: how the emulated server loads `@miroir-framework/versioning`: its own dynamic import when absent,
+   * a loader of the test (to count its calls), or `false` to register nothing.
+   */
+  versioningLoader?: (() => Promise<LazyActionImplementationModule>) | false;
+};
+
 // ################################################################################################
 /**
  * @param miroirConfig
@@ -45,6 +58,7 @@ export async function setupMiroirTest(
   miroirEventService?: MiroirEventService,
   customfetch?: any,
   externalServiceEnvironment: Partial<ExternalServiceEnvironment> = {},
+  options: SetupMiroirTestOptions = {},
 ): Promise<{
   domainControllerForClient: DomainControllerInterface;
   domainControllerForServer?: DomainControllerInterface | undefined;
@@ -137,6 +151,15 @@ export async function setupMiroirTest(
       externalServiceClient,
     ); // even when emulating server, we use remote persistence store, since MSW makes it appear as if we are using a remote server.
 
+    // #696: the emulated server holds the stores, so it runs the versioning actions
+    if (options.versioningLoader !== false) {
+      registerLazyActionImplementations({
+        capability: "versioning",
+        packageName: VERSIONING_PACKAGE_NAME,
+        implementationNames: VERSIONING_ACTION_IMPLEMENTATION_NAMES,
+        load: options.versioningLoader ?? (() => import("@miroir-framework/versioning")),
+      });
+    }
     (client as RestClientStub).setServerDomainController(domainControllerForServer);
     (client as RestClientStub).setPersistenceStoreControllerManager(persistenceStoreControllerManagerForServer!);
     return {

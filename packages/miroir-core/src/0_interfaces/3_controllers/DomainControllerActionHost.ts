@@ -2,7 +2,9 @@ import type { ApplicationDeploymentMap } from "../../1_core/Deployment";
 import type { AuthPrincipal } from "../../1_core/authentication/AuthenticationPolicy";
 import type { MiroirModelEnvironment } from "../1_core/Transformer";
 import type {
+  ApplicationSection,
   CompositeActionSequence,
+  EntityInstance,
   CompositeRunBoxedQueryAction,
   CompositeRunBoxedQueryTemplateAction,
   InstanceAction,
@@ -13,7 +15,7 @@ import type {
   TransactionalInstanceAction,
   UndoRedoAction,
 } from "../1_core/preprocessor-generated/miroirFundamentalType";
-import type { Action2ReturnType, Action2VoidReturnType } from "../2_domain/DomainElement";
+import type { Action2Error, Action2ReturnType, Action2VoidReturnType } from "../2_domain/DomainElement";
 import type { DomainControllerInterface } from "../2_domain/DomainControllerInterface";
 import type { MiroirActivityTrackerInterface } from "./MiroirActivityTrackerInterface";
 import type { GitAction } from "./GitAction";
@@ -157,6 +159,16 @@ export interface DomainControllerActionHost {
     applicationDeploymentMap: ApplicationDeploymentMap,
     principal?: AuthPrincipal,
   ): Promise<Action2VoidReturnType>;
+  /**
+   * #696: the instances of an Entity in a section of an application, from the store of this process, or
+   * from the server for a remote client; an Action2Error when the read fails.
+   */
+  readSectionInstances(
+    application: string,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+    applicationSection: ApplicationSection,
+    parentEntityUuid: string,
+  ): Promise<EntityInstance[] | Action2Error>;
   /** #575: the DomainController itself, on which runMiroirTestAction runs the leaves of a MiroirTest. */
   asDomainControllerInterface(): DomainControllerInterface;
   /** #575: the tracker where the DomainController records the assertions of the tests it runs. */

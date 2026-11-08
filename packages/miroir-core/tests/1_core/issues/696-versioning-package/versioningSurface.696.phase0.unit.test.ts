@@ -57,7 +57,8 @@ const KEPT_FUNCTIONS = [
 ];
 
 /** Freeze and trace implementations core exports today; they leave core with #696. */
-const MOVING_FUNCTIONS = [
+/** #696 Slice 3: the freeze implementation, in `@miroir-framework/versioning`. */
+const MOVED_FREEZE_FUNCTIONS = [
   "buildFreezeApplicationVersionPlan",
   "planFreezeApplicationVersion",
   "planFreezeApplicationVersionFromMetaModel",
@@ -68,6 +69,10 @@ const MOVING_FUNCTIONS = [
   "snapshotEntitiesAsHistoricalEntityVersions",
   "snapshotQueriesAsHistoricalQueryVersions",
   "snapshotTestsAsHistoricalTestVersions",
+];
+
+/** The trace implementation; Slice 4 moves it to `@miroir-framework/versioning`. */
+const MOVING_TRACE_FUNCTIONS = [
   "createTraceEventFromModelAction",
   "createTraceEventFromInstanceAction",
   "produceEvolutionTraceEvent",
@@ -94,11 +99,23 @@ if (runThis) {
       expect((core as Record<string, unknown>).versionHistoryEntityUuids).toBeInstanceOf(Set);
     });
 
-    it("exports the freeze and trace implementations today", () => {
-      const missing = MOVING_FUNCTIONS.filter(
+    it("no longer exports the freeze implementation", () => {
+      const stillExported = MOVED_FREEZE_FUNCTIONS.filter((name) => name in core);
+      expect(stillExported).toEqual([]);
+      expect("APPLICATION_VERSION_PLACEHOLDER_NAMES" in core).toBe(false);
+    });
+
+    it("exports the trace implementation until Slice 4", () => {
+      const missing = MOVING_TRACE_FUNCTIONS.filter(
         (name) => typeof (core as Record<string, unknown>)[name] !== "function",
       );
       expect(missing).toEqual([]);
+    });
+
+    it("exports what a package needs to register lazy action implementations", () => {
+      expect(typeof core.registerLazyActionImplementations).toBe("function");
+      expect(core.VERSIONING_ACTION_IMPLEMENTATION_NAMES).toEqual(["handleAction_freezeApplicationVersion"]);
+      expect(core.VERSIONING_PACKAGE_NAME).toBe("@miroir-framework/versioning");
     });
   });
 }

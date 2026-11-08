@@ -39,6 +39,7 @@
     "@miroir-framework/core": "*",
     "@miroir-framework/env": "*",
     "@miroir-framework/git-isomorphic": "*",
+    "@miroir-framework/versioning": "*",
     "@miroir-framework/server": "*",
     "@miroir-framework/mcp": "*",
     "miroir-standalone-app": "*",

@@ -74,6 +74,7 @@ ALL_PACKAGES=(
   miroir-store-postgres
   miroir-store-mongodb
   miroir-git-isomorphic
+  miroir-versioning
   miroir-react
   miroir-mcp
   miroir-diagram-class
@@ -104,6 +105,7 @@ STAGE_CACHES_STORES=(
   miroir-store-postgres
   miroir-store-mongodb
   miroir-git-isomorphic
+  miroir-versioning
 )
 STAGE_UI_SERVICES=(miroir-react miroir-mcp miroir-diagram-class)
 # #652: the server library carries the Node startup call (`@miroir-framework/server/startup`) that the CLI imports

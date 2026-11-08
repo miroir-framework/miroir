@@ -48,6 +48,11 @@ jobs:
         run: npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
       - name: miroir-core unit tests
         run: npm run test -w @miroir-framework/core -- ''
+      - name: Typecheck and test @miroir-framework/versioning (#696)
+        run: |
+          npm run build -w @miroir-framework/versioning
+          npx tsc --noEmit --skipLibCheck -p packages/miroir-versioning/tsconfig.json
+          npm run test -w @miroir-framework/versioning
 
   # Bundle report and guards (#326, docs/internals/code-splitting.md): only when the PR changes what they build.
   bundle-paths:
@@ -105,7 +110,7 @@ jobs:
         run: |
           npm run build -w miroir-app-miroir -w miroir-app-admin
           npm run build -w @miroir-framework/core
-          npm run build -w @miroir-framework/env -w @miroir-framework/git-isomorphic -w miroir-localcache-redux -w miroir-localcache-zustand -w @miroir-framework/store-bundled -w @miroir-framework/store-filesystem -w @miroir-framework/store-indexeddb -w @miroir-framework/store-postgres -w @miroir-framework/store-mongodb -w miroir-example-library -w miroir-example-spotify -w miroir-example-github -w miroir-fixture-appForTest
+          npm run build -w @miroir-framework/env -w @miroir-framework/git-isomorphic -w @miroir-framework/versioning -w miroir-localcache-redux -w miroir-localcache-zustand -w @miroir-framework/store-bundled -w @miroir-framework/store-filesystem -w @miroir-framework/store-indexeddb -w @miroir-framework/store-postgres -w @miroir-framework/store-mongodb -w miroir-example-library -w miroir-example-spotify -w miroir-example-github -w miroir-fixture-appForTest
           npm run build -w @miroir-framework/react -w @miroir-framework/mcp -w miroir-ai
           npm run build -w miroir-diagram-class -w miroir-react-testing
           npm run build -w @miroir-framework/server

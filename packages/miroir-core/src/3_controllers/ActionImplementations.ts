@@ -91,7 +91,6 @@ export const miroirActionImplementations: Record<string, ActionImplementationHan
   handleAction_renameEntity: handleModelAction,
   handleAction_createEntity: handleModelAction,
   handleAction_dropEntity: handleModelAction,
-  handleAction_freezeApplicationVersion: handleModelAction,
 
   // InstanceEndpoint
   handleAction_createInstance: handleInstanceAction,
@@ -151,4 +150,63 @@ export function registerMiroirActionImplementation(
   implementation: ActionImplementationHandler,
 ): void {
   miroirActionImplementations[implementationName] = implementation;
+}
+
+/** The module a lazy registration loads: its action implementations by implementation name. */
+export type LazyActionImplementationModule = {
+  actionImplementations: Record<string, ActionImplementationHandler>;
+};
+
+/**
+ * #696: registers the implementations of a package that core does not import, loaded on the first action
+ * that needs one of them. `load` is a dynamic `import()` of the package; it runs once (again only after a
+ * failure). The DomainController checks the action's `requiredCapability` before calling the
+ * implementation, so a process without the capability never loads the package.
+ */
+export function registerLazyActionImplementations(params: {
+  capability: string;
+  packageName: string;
+  implementationNames: readonly string[];
+  load: () => Promise<LazyActionImplementationModule>;
+}): void {
+  let loading: Promise<LazyActionImplementationModule> | undefined;
+  const loadOnce = () => {
+    if (!loading) {
+      const started = params.load();
+      loading = started;
+      started.catch(() => {
+        if (loading === started) {
+          loading = undefined;
+        }
+      });
+    }
+    return loading;
+  };
+  for (const implementationName of params.implementationNames) {
+    miroirActionImplementations[implementationName] = async (host, action, context) => {
+      let module: LazyActionImplementationModule;
+      try {
+        module = await loadOnce();
+      } catch (error) {
+        return new Action2Error(
+          "FeatureUnavailable",
+          `${params.packageName} could not be loaded: ${error instanceof Error ? error.message : String(error)}`,
+          undefined,
+          undefined,
+          { capability: params.capability, package: params.packageName },
+        );
+      }
+      const implementation = module.actionImplementations[implementationName];
+      if (!implementation) {
+        return new Action2Error(
+          "FeatureUnavailable",
+          `${params.packageName} has no implementation ${implementationName}`,
+          undefined,
+          undefined,
+          { capability: params.capability, package: params.packageName },
+        );
+      }
+      return implementation(host, action, context);
+    };
+  }
 }

@@ -3,8 +3,11 @@ import {
   fetchProcessCapabilities,
   getClientEnvironment,
   getProcessCapabilities,
+  registerLazyActionImplementations,
   resolveProcessCapabilitiesUrl,
   startMiroirPlatformWith,
+  VERSIONING_ACTION_IMPLEMENTATION_NAMES,
+  VERSIONING_PACKAGE_NAME,
   type LocalCacheKind,
   type LocalCacheModule,
   type LocalCacheSliceState,
@@ -81,6 +84,16 @@ export async function startMiroirClient(
   const { localCacheModule, localCacheBinding } = await loadLocalCache(localCache);
   // fetch: the platform defaults to the bound global fetch, only when it builds a RestClient
   const platform = await startMiroirPlatformWith(localCacheModule, miroirConfig, platformOptions);
+  // #696: an emulated server holds the stores, so it runs the versioning actions; a client talking to a
+  // server forwards them and never loads the package
+  if (platform.emulatedServer) {
+    registerLazyActionImplementations({
+      capability: "versioning",
+      packageName: VERSIONING_PACKAGE_NAME,
+      implementationNames: VERSIONING_ACTION_IMPLEMENTATION_NAMES,
+      load: () => import("@miroir-framework/versioning"),
+    });
+  }
   platform.emulatedServer?.restClientStub.setProcessCapabilities(
     getProcessCapabilities({
       config: miroirConfig,

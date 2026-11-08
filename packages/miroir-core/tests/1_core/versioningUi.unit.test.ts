@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 const REPO_ROOT = join(import.meta.dirname, "../../../..");
 const FREEZE_MODULE_PATH = join(
   REPO_ROOT,
-  "packages/miroir-core/src/1_core/versioning/applicationVersionFreeze.ts",
+  "packages/miroir-core/src/1_core/versioning/versioningInterfaces.ts",
 );
 const RUNNER_DATA_DIR = join(
   REPO_ROOT,

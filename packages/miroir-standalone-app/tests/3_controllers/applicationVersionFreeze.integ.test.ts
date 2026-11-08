@@ -22,6 +22,7 @@ import type {
   MetaModel,
   SelfApplication,
 } from "@miroir-framework/core";
+import { resolvePreviousApplicationVersion } from "@miroir-framework/versioning";
 import {
   Action2Error,
   APPLICATION_VERSION_CROSS_ENDPOINT_VERSION_UUID,
@@ -50,7 +51,6 @@ import {
   QUERY_VERSION_ENTITY_UUID,
   REPORT_VERSION_ENTITY_UUID,
   resetAndinitializeDeploymentCompositeAction,
-  resolvePreviousApplicationVersion,
   RUNNER_VERSION_ENTITY_UUID,
   StoreUnitConfiguration,
   testUtils_deleteApplicationDeployment,
