@@ -261,6 +261,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,actions,external
 - `SERVER_ROUTED_MIROIR_ACTION_TYPES` gains `freezeApplicationVersion`. A remote `DomainController` checks its own capability, then `forwardCapabilityAction`: it refuses with `pendingMiroirChangesError` (extracted from `openMiroirTransactionError` in `GitActions.ts`, same `InvalidAction` / `openMiroirTransaction`) when the open transaction holds changes of the application, forwards, and reloads the application with `reloadTouchedDeployments`.
 - `restActionHandler` passes the server's model environment of the application to a server-routed ModelEndpoint action (`MODEL_ACTIONS_ROUTED_TO_SERVER`). The freeze uses the model environment it is given when it is the target deployment's, else the local cache: the server's local cache has no application model.
 - Tests: `versioningServerRouted.696.phase2.integ` (4); freeze MiroirTests 12/12 and freeze reports 2/2 on `emulatedServer-filesystem`.
+- Scoped nonreg `smoke,core,actions,external` for Slices 1 and 2 (snapshot `20261108T120838Z`): 60/62; the two failures were capability snapshot literals and key lists in the 273 and 275 tests, which now list `versioning` (rerun green).
 
 ---
 

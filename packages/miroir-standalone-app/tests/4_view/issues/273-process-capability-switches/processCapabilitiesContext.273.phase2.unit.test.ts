@@ -36,6 +36,7 @@ const snapshot: ProcessCapabilities = {
   availableStoreTypes: ["indexedDb"],
   creatableStoreTypes: ["indexedDb"],
   storeAdministration: true,
+  versioning: true,
 };
 
 const miroirContext = {

@@ -31,6 +31,7 @@ function capabilities(ai: boolean) {
     availableStoreTypes: [],
     creatableStoreTypes: [],
     storeAdministration: false,
+    versioning: true,
   };
 }
 

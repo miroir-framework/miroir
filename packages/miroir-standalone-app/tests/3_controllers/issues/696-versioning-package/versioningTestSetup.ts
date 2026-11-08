@@ -28,7 +28,7 @@ import {
 import { bootEnvironment } from "@miroir-framework/env";
 import { fetchMiroirAndAppConfigurations } from "@miroir-framework/react";
 import { miroirFileSystemStoreSectionStartup } from "@miroir-framework/store-filesystem";
-import { setupMiroirTest } from "miroir-react-testing/src/4-tests/setupMiroirTest.js";
+import { setupMiroirTest, type SetupMiroirTestOptions } from "miroir-react-testing/src/4-tests/setupMiroirTest.js";
 
 import { loglevelnext } from "../../../../src/loglevelnextImporter.js";
 import { miroirAppStartup } from "../../../../src/startup.js";
@@ -77,12 +77,22 @@ export function startVersioningTestProcess(): void {
   } as any);
 }
 
-export async function openVersioningTestContext(): Promise<VersioningTestContext> {
+/** How the test process gets the versioning package: setupMiroirTest's own import, a counted one, or none. */
+export type VersioningTestOptions = Pick<SetupMiroirTestOptions, "versioningLoader">;
+
+export async function openVersioningTestContext(options: VersioningTestOptions = {}): Promise<VersioningTestContext> {
   startVersioningTestProcess();
   const miroirActivityTracker = new MiroirActivityTracker();
   const miroirEventService = new MiroirEventService(miroirActivityTracker);
   const testEnvironment = openTestEnvironment("test-filesystem");
-  const wired = await setupMiroirTest(testEnvironment.miroirConfig, miroirActivityTracker, miroirEventService);
+  const wired = await setupMiroirTest(
+    testEnvironment.miroirConfig,
+    miroirActivityTracker,
+    miroirEventService,
+    undefined,
+    {},
+    options,
+  );
   await bootEnvironment(wired.domainControllerForServer!, testEnvironment.resolved, process.env);
   const loaded = await fetchMiroirAndAppConfigurations({
     domainController: wired.domainControllerForClient,

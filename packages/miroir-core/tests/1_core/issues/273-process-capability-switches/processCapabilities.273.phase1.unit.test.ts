@@ -27,6 +27,7 @@ const disabledSnapshot = {
   availableStoreTypes: [] as string[],
   creatableStoreTypes: [] as string[],
   storeAdministration: false,
+  versioning: true,
 };
 
 if (runThis) {
