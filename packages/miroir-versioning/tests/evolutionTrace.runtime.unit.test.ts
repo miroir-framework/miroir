@@ -4,17 +4,17 @@ import type {
   ApplicationEvolutionTrace,
   ApplicationEvolutionTraceEvent,
   ModelActionCreateEntity,
-} from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+} from "@miroir-framework/core";
 import {
   buildEvolutionTracePersistenceActions,
   collectEvolutionTraceStateFromDomainState,
-} from "../../src/2_domain/evolutionTraceRuntime.js";
+} from "../src/evolutionTraceRuntime.js";
 import {
   buildEvolutionBaselineCreateInstanceActions,
   EVOLUTION_TRACE_ENTITY_UUID,
   EVOLUTION_TRACE_EVENT_ENTITY_UUID,
-} from "../../src/2_domain/evolutionTraceBaseline.js";
-import { MIROIR_APPLICATION_UUID as MIROIR_UUID } from "../../src/2_domain/evolutionTracePolicy.js";
+} from "@miroir-framework/core";
+import { MIROIR_APPLICATION_UUID as MIROIR_UUID } from "@miroir-framework/core";
 
 const REPORT_ENTITY_UUID = "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916";
 const LIBRARY_UUID = "dd986507-6b28-4aac-a27a-f2dfba2aa0e4";

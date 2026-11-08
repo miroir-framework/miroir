@@ -3,7 +3,7 @@
  *
  * The first half lists what core keeps when the freeze and trace implementations move to
  * `@miroir-framework/versioning`: other packages name these without loading the package. The second
- * half lists the implementations core exports today; Slices 3 and 4 move them out of core.
+ * half lists the implementations Slices 3 and 4 moved out of core.
  */
 import { describe, expect, it } from "vitest";
 
@@ -71,8 +71,8 @@ const MOVED_FREEZE_FUNCTIONS = [
   "snapshotTestsAsHistoricalTestVersions",
 ];
 
-/** The trace implementation; Slice 4 moves it to `@miroir-framework/versioning`. */
-const MOVING_TRACE_FUNCTIONS = [
+/** #696 Slice 4: the trace implementation, in `@miroir-framework/versioning`. */
+const MOVED_TRACE_FUNCTIONS = [
   "createTraceEventFromModelAction",
   "createTraceEventFromInstanceAction",
   "produceEvolutionTraceEvent",
@@ -105,15 +105,14 @@ if (runThis) {
       expect("APPLICATION_VERSION_PLACEHOLDER_NAMES" in core).toBe(false);
     });
 
-    it("exports the trace implementation until Slice 4", () => {
-      const missing = MOVING_TRACE_FUNCTIONS.filter(
-        (name) => typeof (core as Record<string, unknown>)[name] !== "function",
-      );
-      expect(missing).toEqual([]);
+    it("no longer exports the trace implementation", () => {
+      const stillExported = MOVED_TRACE_FUNCTIONS.filter((name) => name in core);
+      expect(stillExported).toEqual([]);
     });
 
     it("exports what a package needs to register lazy action implementations", () => {
       expect(typeof core.registerLazyActionImplementations).toBe("function");
+      expect(typeof core.loadLazyCapabilityModule).toBe("function");
       expect(core.VERSIONING_ACTION_IMPLEMENTATION_NAMES).toEqual(["handleAction_freezeApplicationVersion"]);
       expect(core.VERSIONING_PACKAGE_NAME).toBe("@miroir-framework/versioning");
     });

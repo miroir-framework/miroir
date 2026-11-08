@@ -4,7 +4,7 @@
  * With an emulated server, the client and the server each have a DomainController, and both run
  * `handleInstanceAction`. This test records which of them writes trace rows for an update of a model
  * row and for a committed `createEntity` of Library (the fixture whose model has the trace Entities),
- * so that #696 can register the trace recorder on the persistence side only and keep the same rows.
+ * so that #696 can move the recorder to its package and keep the same rows (Slice 4 keeps both writers).
  * ```bash
  * MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- traceWriters.696.phase0
  * ```
@@ -143,7 +143,7 @@ describe("traceWriters.696.phase0", () => {
     console.log("#696 phase 0, instance write: trace writes", JSON.stringify(traceWrites), "stored events", stored);
     // Characterization (measured: client 3, server 6, 4 stored events): the client DomainController
     // records a trace, and its writes reach the server DomainController through REST, which records
-    // its own trace as well. Slice 4 moves recording to the persistence side only.
+    // its own trace as well. Slice 4 keeps both writers; recording on one side only is a follow-up.
     expect(traceWrites.client).toBeGreaterThan(0);
     expect(traceWrites.server).toBeGreaterThan(traceWrites.client);
     expect(stored).toBeGreaterThan(0);

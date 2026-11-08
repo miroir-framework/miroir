@@ -1,6 +1,9 @@
 import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import { Action2Error } from "../0_interfaces/2_domain/DomainElement";
-import type { ActionImplementationHandler } from "../0_interfaces/3_controllers/DomainControllerActionHost";
+import type {
+  ActionImplementationHandler,
+  EvolutionTraceRecorder,
+} from "../0_interfaces/3_controllers/DomainControllerActionHost";
 import { handleAction_runReportAction } from "./RunReportAction";
 import { GIT_ACTION_TYPES } from "../0_interfaces/3_controllers/GitAction";
 
@@ -152,10 +155,35 @@ export function registerMiroirActionImplementation(
   miroirActionImplementations[implementationName] = implementation;
 }
 
-/** The module a lazy registration loads: its action implementations by implementation name. */
+/**
+ * The module a lazy registration loads: its action implementations by implementation name and, for the
+ * `versioning` capability, the recorder of evolution traces (#696).
+ */
 export type LazyActionImplementationModule = {
   actionImplementations: Record<string, ActionImplementationHandler>;
+  evolutionTraceRecorder?: EvolutionTraceRecorder;
 };
+
+/** The loader of each lazily registered capability module, for the callers that are not actions (#696). */
+const lazyCapabilityModuleLoaders: Record<string, () => Promise<LazyActionImplementationModule>> = {};
+
+/**
+ * #696: the module registered for `capability`, loaded on the first call (the same load as its action
+ * implementations); undefined when no host registered one or when it could not be loaded.
+ */
+export async function loadLazyCapabilityModule(
+  capability: string,
+): Promise<LazyActionImplementationModule | undefined> {
+  const load = lazyCapabilityModuleLoaders[capability];
+  if (!load) {
+    return undefined;
+  }
+  try {
+    return await load();
+  } catch {
+    return undefined;
+  }
+}
 
 /**
  * #696: registers the implementations of a package that core does not import, loaded on the first action
@@ -182,6 +210,7 @@ export function registerLazyActionImplementations(params: {
     }
     return loading;
   };
+  lazyCapabilityModuleLoaders[params.capability] = loadOnce;
   for (const implementationName of params.implementationNames) {
     miroirActionImplementations[implementationName] = async (host, action, context) => {
       let module: LazyActionImplementationModule;

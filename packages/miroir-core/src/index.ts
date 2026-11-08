@@ -273,6 +273,7 @@ export {
   InputOutputType,
   inputOutputType,
   InstanceAction,
+  InstanceCUDAction,
   MlArray,
   mlArray,
   MlAttributeDateValidations,
@@ -1210,25 +1211,6 @@ export {
   MIROIR_APPLICATION_UUID,
 } from "./2_domain/evolutionTracePolicy.js";
 export {
-  createTraceEventFromModelAction,
-  createTraceEventFromInstanceAction,
-  produceEvolutionTraceEvent,
-} from "./2_domain/evolutionTraceWriter.js";
-export type {
-  EvolutionTraceableAction,
-  TraceEventResolutionContext,
-} from "./2_domain/evolutionTraceWriter.js";
-export {
-  fetchEvolutionHistory,
-} from "./2_domain/evolutionTraceCompaction.js";
-export type {
-  EvolutionHistoryCompactionLevel,
-  EvolutionHistoryCommitBlock,
-  EvolutionHistoryItem,
-  EvolutionHistoryVersionBlock,
-  FetchEvolutionHistoryOptions,
-} from "./2_domain/evolutionTraceCompaction.js";
-export {
   generateEvolutionBaseline,
   buildEvolutionBaselineCreateInstanceActions,
   DEFAULT_EVOLUTION_BRANCH,
@@ -1236,16 +1218,6 @@ export {
   EVOLUTION_TRACE_EVENT_ENTITY_UUID,
 } from "./2_domain/evolutionTraceBaseline.js";
 export type { EvolutionTraceDeploymentState } from "./2_domain/evolutionTraceBaseline.js";
-export {
-  buildEvolutionTracePersistenceActions,
-  collectEvolutionTraceStateFromDomainState,
-} from "./2_domain/evolutionTraceRuntime.js";
-export { resolveDefinitionVersionForTraceEvent } from "./2_domain/evolutionTraceDefVersion.js";
-export type {
-  DefinitionVersionResolutionMethod,
-  ResolveDefinitionVersionInput,
-  ResolveDefinitionVersionResult,
-} from "./2_domain/evolutionTraceDefVersion.js";
 export {
   asyncApplyExtractorTransformerInMemory,
   asyncExtractEntityInstanceListWithObjectListExtractor,
@@ -1649,6 +1621,7 @@ export {
   templateEvaluationParams
 } from "./3_controllers/DomainController";
 export {
+  loadLazyCapabilityModule,
   registerLazyActionImplementations,
   type LazyActionImplementationModule,
 } from "./3_controllers/ActionImplementations";
@@ -1656,6 +1629,8 @@ export type {
   ActionImplementationContext,
   ActionImplementationHandler,
   DomainControllerActionHost,
+  EvolutionTraceCommitContext,
+  EvolutionTraceRecorder,
 } from "./0_interfaces/3_controllers/DomainControllerActionHost";
 export { CallUtils } from "./3_controllers/ErrorHandling/CallUtils.js";
 export { ErrorAdminStore } from "./3_controllers/ErrorHandling/ErrorAdminStore.js";

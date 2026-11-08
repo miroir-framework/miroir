@@ -9,9 +9,9 @@ import type {
   InstanceCUDAction,
   MlObject,
   ModelActionCreateEntity,
-} from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { produceEvolutionTraceEvent } from "../../src/2_domain/evolutionTraceWriter.js";
-import { MIROIR_APPLICATION_UUID } from "../../src/2_domain/evolutionTracePolicy.js";
+} from "@miroir-framework/core";
+import { produceEvolutionTraceEvent } from "../src/evolutionTraceWriter.js";
+import { MIROIR_APPLICATION_UUID } from "@miroir-framework/core";
 
 // ── Shared constants ────────────────────────────────────────────────────────
 const LIBRARY_UUID = "dd986507-6b28-4aac-a27a-f2dfba2aa0e4";

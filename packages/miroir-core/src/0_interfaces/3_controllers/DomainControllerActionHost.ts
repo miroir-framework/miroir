@@ -188,3 +188,22 @@ export type ActionImplementationHandler = (
   action: any,
   context: ActionImplementationContext,
 ) => Promise<Action2ReturnType>;
+
+/** The commit an evolution trace is recorded for: replayed model actions carry it (#216 ADR D6). */
+export type EvolutionTraceCommitContext = {
+  commitUuid: string;
+  fromVersionUuid: string;
+  toVersionUuid: string;
+};
+
+/**
+ * #696: records the evolution trace of a model or instance write. Implemented by
+ * `@miroir-framework/versioning`; core calls it after its own checks (traces on, a traceable action, a
+ * known deployment, the `versioning` capability).
+ */
+export type EvolutionTraceRecorder = (
+  host: DomainControllerActionHost,
+  action: InstanceAction | ModelAction,
+  applicationDeploymentMap: ApplicationDeploymentMap,
+  commitContext?: EvolutionTraceCommitContext,
+) => Promise<void>;

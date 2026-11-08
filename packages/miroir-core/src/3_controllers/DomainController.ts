@@ -19,8 +19,9 @@ import type {
   ConnectExternalServiceAction,
   SetExternalServiceCredentialAction,
   DomainControllerActionHost,
+  EvolutionTraceCommitContext,
 } from "../0_interfaces/3_controllers/DomainControllerActionHost";
-import { miroirActionImplementations } from "./ActionImplementations";
+import { loadLazyCapabilityModule, miroirActionImplementations } from "./ActionImplementations";
 
 import { MiroirContextInterface } from "../0_interfaces/3_controllers/MiroirContextInterface";
 import {
@@ -117,6 +118,17 @@ import {
   type ProcessCapabilityName,
 } from "../1_core/processCapabilities.js";
 import { VERSIONING_PACKAGE_NAME } from "../1_core/versioning/versioningInterfaces.js";
+
+/** The writes that leave an evolution trace: the replayable model actions and the instance CUD actions. */
+const EVOLUTION_TRACEABLE_ACTION_TYPES: ReadonlySet<string> = new Set([
+  "createEntity",
+  "renameEntity",
+  "dropEntity",
+  "alterEntityAttribute",
+  "createInstance",
+  "updateInstance",
+  "deleteInstance",
+]);
 import {
   assertCredentialInstanceMutationAllowed,
   assertSecretInstanceMutationAllowed,
@@ -125,11 +137,6 @@ import {
 import { findPresentModelEntityFromDomainState } from "../2_domain/ExtractorVirtualAttributes.js";
 import { stripVirtualAttributesFromInstance } from "../2_domain/VirtualAttributes.js";
 import { isEvolutionTraceEnabled } from "../2_domain/evolutionTracePolicy.js";
-import {
-  buildEvolutionTracePersistenceActions,
-  collectEvolutionTraceStateFromDomainState,
-} from "../2_domain/evolutionTraceRuntime.js";
-import type { EvolutionTraceableAction } from "../2_domain/evolutionTraceWriter.js";
 import { resolveCompositeActionTemplate } from "../2_domain/ResolveCompositeActionTemplate";
 import {
   attachQueryRuntimeTransformers,
@@ -1465,66 +1472,38 @@ export class DomainController implements DomainControllerInterface, DomainContro
   }
 
   /**
-   * Append-only evolution-trace persistence (WP1). Trace instances live in the
-   * evolving application's model section, or in data for Miroir (#222).
-   * No-ops when policy skips or when the action itself mutates evolution-trace entities.
+   * Append-only evolution-trace persistence (WP1), recorded by `@miroir-framework/versioning` (#696). The
+   * checks here are cheap and come first, so a process that records no trace never loads the package:
+   * traces on, a traceable action, a known deployment, then the `versioning` capability.
    */
   private async maybeRecordEvolutionTrace(
     action: InstanceAction | ModelAction,
     applicationDeploymentMap: ApplicationDeploymentMap,
-    commitContext?: {
-      commitUuid: string;
-      fromVersionUuid: string;
-      toVersionUuid: string;
-    },
+    commitContext?: EvolutionTraceCommitContext,
   ): Promise<void> {
-    const actionType = action.actionType;
-    const isModelReplayable =
-      actionType === "createEntity" ||
-      actionType === "renameEntity" ||
-      actionType === "dropEntity" ||
-      actionType === "alterEntityAttribute";
-    const isInstanceCud =
-      actionType === "createInstance" ||
-      actionType === "updateInstance" ||
-      actionType === "deleteInstance";
-
     if (!isEvolutionTraceEnabled()) {
       return;
     }
-    if (!isModelReplayable && !isInstanceCud) {
+    if (!EVOLUTION_TRACEABLE_ACTION_TYPES.has(action.actionType)) {
       return;
     }
-
-    const targetApplicationUuid = action.payload.application;
-    const targetDeploymentUuid = applicationDeploymentMap[targetApplicationUuid];
-    if (!targetDeploymentUuid) {
+    if (!applicationDeploymentMap[action.payload.application]) {
       return;
     }
-
-    const existing = collectEvolutionTraceStateFromDomainState(
-      this.localCache.getDomainState(),
-      targetDeploymentUuid,
-      targetApplicationUuid,
-    );
-
-    const persistenceActions = buildEvolutionTracePersistenceActions(
-      action as EvolutionTraceableAction,
-      existing,
-      undefined,
-      new Date(),
-      commitContext,
-    );
-    for (const persistenceAction of persistenceActions) {
-      const result = await this.handleInstanceAction(persistenceAction, applicationDeploymentMap);
-      if (result instanceof Action2Error) {
-        log.warn(
-          "DomainController maybeRecordEvolutionTrace failed to persist trace action",
-          persistenceAction.actionLabel,
-          result,
-        );
-      }
+    if (assertProcessCapability("versioning", this.resolveProcessCapabilities())) {
+      return;
     }
+    const versioningModule = await loadLazyCapabilityModule("versioning");
+    if (!versioningModule?.evolutionTraceRecorder) {
+      log.warn(
+        "DomainController maybeRecordEvolutionTrace: traces are on but",
+        VERSIONING_PACKAGE_NAME,
+        "is not registered or could not be loaded; no trace recorded for",
+        action.actionType,
+      );
+      return;
+    }
+    await versioningModule.evolutionTraceRecorder(this, action, applicationDeploymentMap, commitContext);
   }
 
   // ##############################################################################################

@@ -9,9 +9,9 @@ import type {
   ModelActionCreateEntity,
   ModelActionDropEntity,
   ModelActionRenameEntity,
-} from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { applicationEvolutionTraceEvent } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { createTraceEventFromModelAction } from "../../src/2_domain/evolutionTraceWriter.js";
+} from "@miroir-framework/core";
+import { applicationEvolutionTraceEvent } from "@miroir-framework/core";
+import { createTraceEventFromModelAction } from "../src/evolutionTraceWriter.js";
 
 // ── Shared constants ────────────────────────────────────────────────────────
 const APP_UUID = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";

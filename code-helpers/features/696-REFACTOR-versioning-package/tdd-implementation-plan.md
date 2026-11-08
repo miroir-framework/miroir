@@ -42,7 +42,7 @@ This plan does **not** add versioning behaviour (#708, #9, #215, #709, #710, #71
 | 1 | Tracer: the `versioning` capability refuses a freeze | ✅ | `versioningCapability.696.phase1.integ.test.ts` |
 | 2 | A remote client sends the freeze to the persistence process | ✅ | `versioningServerRouted.696.phase2.integ.test.ts` |
 | 3 | The freeze runs from `@miroir-framework/versioning`, loaded on first use | ✅ | `versioningLazyFreeze.696.phase3.integ.test.ts` + the four freeze MiroirTests |
-| 4 | Traces run from the package through a lazy recorder | ⬜ | `versioningLazyTraces.696.phase4.integ.test.ts` + `action.scenario.evolutionTrace` |
+| 4 | Traces run from the package through a lazy recorder | ✅ | `versioningLazyTraces.696.phase4.integ.test.ts` + `action.scenario.evolutionTrace` |
 | 5 | Versioning entries and action listings hidden when off | ⬜ | `versioningHidden.696.phase5.unit.test.ts` (UI) + `endpointActionListing.696.phase5.unit.test.ts` (core) |
 | 6 | MiroirTests tagged `versioning` skip when off | ⬜ | `miroirTestRequirements.unit.test.ts` (extended) |
 | 7 | Bundle size record and guard check | ⬜ | `check_bundle_policy.py` on the three policies + `homePageLoad.unit` + recorded bundle size |
@@ -330,12 +330,13 @@ npm run nonreg:filesystem -- --runner shared
 - Tests: 6 freeze unit tests moved to the package with the planner half of `actionSchema` and the freeze case of `metaModelEntityList` (8 files, 156 tests); `versioningLazyFreeze` (3) and `versioningNotInstalled` (1); `ActionImplementations.unit` gains the lazy registration case. Freeze MiroirTests 12/12, freeze reports 2/2.
 - `runInActionContext` reports a thrown Error's message instead of `{}` (the freeze report shows the refusal text).
 - Known, not caused here: `tests/3_controllers/applicationVersionFreeze.integ.test.ts` (not in nonreg) fails at its first freeze because Library is `unversioned` since #553.
+- Found by the full nonreg (`unit-658-create-app`): react and server-library are published, so their new dependency must be too. `@miroir-framework/versioning` joins `scripts/published-packages.json` (public, with its repository field); the consumer project's closure and the manifest test list it. The self-test, sandbox-smoke and `build-artefacts-linux` build lists build it before react.
 
 ---
 
 ## Slice 4 — Traces run from the package through a lazy recorder
 
-**Status:** ⬜ pending
+**Status:** ✅ done
 
 ### Goal
 
@@ -356,14 +357,14 @@ Behavior asserted:
 
 ### 4.2 GREEN
 
-- Move `evolutionTrace{Compaction,DefVersion,Runtime,Writer}.ts` and their 6 unit tests to the package; `evolutionTracePolicy.ts` and `evolutionTraceBaseline.ts` stay.
-- Register the recorder beside the action implementations in each persistence-side host.
-- The persistence side records committed model actions (Slice 0.2: today only the client records a commit), and a remote client no longer records.
-- The `commitUuid` (line 2488) and the hard-coded `fromVersionUuid` (lines 2569–2572) go with the recorder's commit context; core passes the commit uuid only.
+- Move `evolutionTrace{Compaction,DefVersion,Runtime,Writer}.ts` and their 5 unit tests to the package; `evolutionTracePolicy.ts` and `evolutionTraceBaseline.ts` stay.
+- The registration of Slice 3 also records the loader per capability; `LazyActionImplementationModule` gains an optional `evolutionTraceRecorder`, which core loads after its cheap checks.
+- The writers stay where they are (revised during implementation): the side that records today still records, now through the package. Moving the recording to the persistence side changes the event counts of every traced write and is a separate behavior change, reported as a follow-up.
+- The commit context (`commitUuid`, the observational `fromVersionUuid`) is passed to the recorder unchanged.
 
 ### 4.3 Refactor checkpoint
 
-- Slice 0.2 showed both sides recording an instance write (duplicate events) and only the client recording a commit. After this slice only the persistence side records; the PR states the change in event counts.
+- Slice 0.2 showed both sides recording an instance write (duplicate events) and only the client recording a commit. This slice keeps those counts; the PR names the duplicates as a follow-up.
 - Slice 0.1: flip the trace names to "not exported by core".
 
 ### Validation
@@ -381,6 +382,12 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,actions,core
 ```
 
 ### Realization
+
+- Core keeps `evolutionTracePolicy.ts` and `evolutionTraceBaseline.ts`; `evolutionTrace{Writer,Runtime,Compaction,DefVersion}.ts` moved to the package with 5 unit test files (compaction, defversion, persist, policy, runtime; the package now has 13 files, 187 tests). `InstanceCUDAction` joins core's exports, which the moved writer names.
+- `DomainControllerActionHost.ts` gains `EvolutionTraceRecorder` and `EvolutionTraceCommitContext`; `LazyActionImplementationModule` an optional `evolutionTraceRecorder`; `registerLazyActionImplementations` records its loader per capability and `loadLazyCapabilityModule(capability)` reuses the same single load.
+- `maybeRecordEvolutionTrace` is the checks only: traces on, a traceable action type (one set), a known deployment, the `versioning` capability, then the package's `recordEvolutionTrace`. A process with traces on and no registered package warns and records nothing.
+- The writers stay as they were (4.2 revised): `versioningLazyTraces` locks the Slice 0.2 counts (client 3, server 6 for one instance write). Recording on one side only is a follow-up.
+- Proofs: `versioningLazyTraces.696.phase4` 3/3, `traceWriters.696.phase0` 4/4, `action.scenario.evolutionTrace` with `MIROIR_EVOLUTION_TRACE=1` green, core unit 3325 passed, `versioningSurface.696.phase0` flipped to "no longer exports the trace implementation".
 
 ---
 
