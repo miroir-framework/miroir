@@ -53,6 +53,7 @@ runs:
         npm run build -w @miroir-framework/store-bundled & pids+=($!)
         npm run build -w @miroir-framework/store-indexeddb & pids+=($!)
         npm run build -w @miroir-framework/env & pids+=($!)
+        npm run build -w @miroir-framework/versioning & pids+=($!)
         npm run build -w miroir-localcache-redux & pids+=($!)
         npm run build -w miroir-localcache-zustand & pids+=($!)
         for pid in "${pids[@]}"; do wait "$pid"; done

@@ -113,6 +113,7 @@ def test_each_package_of_the_set_has_a_scoped_published_name():
             "@miroir-framework/cli",
             "@miroir-framework/env",
             "@miroir-framework/create-app",  # #658
+            "@miroir-framework/versioning",  # #696
         ]
     )
 
