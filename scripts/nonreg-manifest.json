@@ -2479,14 +2479,14 @@
       "argv": [
         "bash",
         "-c",
-        "npm run test -w @miroir-framework/versioning && npm run testByFile -w @miroir-framework/core -- versioningSurface endpointActionListing.capability miroirTestRequirements && npm run testByFile -w miroir-standalone-app -- versioningEntries.unit processCapabilitiesVersioning.273"
+        "npm run test -w @miroir-framework/versioning && npm run testByFile -w @miroir-framework/core -- versioningSurface endpointActionListing.capability miroirTestRequirements serverRoutedModelEnvironment && npm run testByFile -w miroir-standalone-app -- versioningEntries.unit processCapabilitiesVersioning.273"
       ]
     },
     {
       "id": "integ-696-versioning-capability",
       "scopes": ["actions", "external"],
       "tier": "default",
-      "title": "#696 \u2014 versioning capability: a freeze refused when off on the client or the server, a remote client's freeze run by the server (refused with pending changes), the package loaded once on the first freeze or traced write and never when off, FeatureUnavailable when not installed, the trace rows written by client and server",
+      "title": "#696 \u2014 versioning capability: a freeze refused when off on the client or the server, a remote client's freeze run by the server (refused with pending changes of any application), the package loaded once on the first freeze or traced write and never when off, FeatureUnavailable when not installed, the trace rows written by client and server",
       "requires": "none",
       "parallel": false,
       "argv": [

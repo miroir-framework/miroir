@@ -7,6 +7,7 @@ A process loads this package on the first versioning action, and only when its `
 ```ts
 registerLazyActionImplementations({
   capability: "versioning",
+  packageName: VERSIONING_PACKAGE_NAME,
   implementationNames: VERSIONING_ACTION_IMPLEMENTATION_NAMES,
   load: () => import("@miroir-framework/versioning"),
 });

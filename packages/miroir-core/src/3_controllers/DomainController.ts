@@ -3253,8 +3253,9 @@ export class DomainController implements DomainControllerInterface, DomainContro
 
   /**
    * #696: a remote client sends an action that needs a process capability to the process that holds the
-   * stores, which checks its own capabilities and runs it. The client's unsaved Miroir changes of the
-   * application are refused first: the server would not see them. The client then reloads the application,
+   * stores, which checks its own capabilities and runs it. The client's unsaved Miroir changes are refused
+   * first, of any application: the server would not see those of the application, and the reload that
+   * follows is a rollback, which empties the whole transaction. The client then reloads the application,
    * whose model and versions the server changed.
    */
   private async forwardCapabilityAction(
@@ -3264,9 +3265,7 @@ export class DomainController implements DomainControllerInterface, DomainContro
     const application = (domainAction as { payload?: { application?: unknown } }).payload?.application;
     if (typeof application === "string") {
       const pendingChangesError = pendingMiroirChangesError(
-        this.currentTransaction().filter(
-          (change) => (change as { payload?: { application?: string } }).payload?.application === application,
-        ) as { payload?: { application?: string } }[],
+        this.currentTransaction() as { payload?: { application?: string } }[],
       );
       if (pendingChangesError) {
         return pendingChangesError;

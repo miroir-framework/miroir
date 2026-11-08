@@ -71,7 +71,7 @@ The Cursor backend needs Node ≥ 22.13.0 on the persistence process (`miroir-se
 
 The process capability comes first: with `versioning` off, nothing below applies and every versioning entry is hidden. With it on, the Versioning AppBar item follows the **browsed** SelfApplication (`toolsPageState.applicationSelector`). Home (no selector) hides it. `unversioned` and `versioned-external` hide it. `versioned-internal` (or legacy `versioningEnabled: true`) shows it. Click still opens the report under Miroir. Freeze still uses `assertApplicationVersioningEnabled` on that application, after the capability check.
 
-The freeze always runs in the persistence process: a client talking to a server sends it there, and refuses it while its open transaction holds changes of the application (commit or roll them back first). Details: [Versioning reference](versioning.md#the-versioning-package).
+The freeze always runs in the persistence process: a client talking to a server sends it there, and refuses it while its open transaction holds changes of any application (commit or roll them back first). Details: [Versioning reference](versioning.md#the-versioning-package).
 
 Set the mode on the SelfApplication row (`versioningMode` / `versioningEnabled`), not on `features`. Modes and store layout: [Versioning reference](versioning.md#versioning-modes).
 

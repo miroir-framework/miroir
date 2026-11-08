@@ -1,8 +1,8 @@
 /**
  * #696: a client that talks to a server sends the freeze to the server, which runs it.
  *
- * The client checks its own capability, refuses while it has unsaved Miroir changes of the application,
- * then forwards; the server checks its capability and runs the freeze; the client reloads the application.
+ * The client checks its own capability, refuses while it has unsaved Miroir changes (of any application:
+ * the reload after the freeze is a rollback, which empties the whole transaction), then forwards; the server checks its capability and runs the freeze; the client reloads the application.
  * ```bash
  * MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- versioningServerRouted
  * ```
@@ -24,7 +24,9 @@ import {
   expectFeatureUnavailable,
   expectOk,
   freezeAppForTest,
+  LIBRARY_APPLICATION,
   MODEL_ENDPOINT,
+  modelEnvironment,
   openVersioningTestContext,
   SELF_APPLICATION_VERSION_ENTITY,
   setCapabilities,
@@ -116,6 +118,47 @@ describe("versioningServerRouted", () => {
         { actionType: "rollback", endpoint: MODEL_ENDPOINT, payload: { application: APP_FOR_TEST } } as any,
         applicationDeploymentMap,
         appForTestModelEnvironment(context.domainController),
+      ),
+      "rollback",
+    );
+  }, 60000);
+
+  it("a freeze is refused while the client has unsaved Miroir changes of another application", async () => {
+    setCapabilities(context, {});
+    const pendingEntity = {
+      uuid: "696a0003-0000-4000-8000-000000000003",
+      parentName: "Entity",
+      parentUuid: ENTITY_ENTITY,
+      selfApplication: LIBRARY_APPLICATION,
+      name: "PendingLibrary696",
+      conceptLevel: "Model",
+      mlSchema: { type: "object", definition: { uuid: { type: "uuid" }, parentUuid: { type: "uuid" } } },
+    } as unknown as Entity;
+    expectOk(
+      await context.domainController.handleAction(
+        {
+          actionType: "createEntity",
+          endpoint: MODEL_ENDPOINT,
+          payload: { application: LIBRARY_APPLICATION, entities: [pendingEntity] },
+        } as any,
+        applicationDeploymentMap,
+        modelEnvironment(context.domainController, LIBRARY_APPLICATION),
+      ),
+      "createEntity",
+    );
+    const pendingBefore = context.domainController.currentTransaction().length;
+    const before = await storedVersionNames(context);
+    const result = await freezeAppForTest(context.domainController, "696-phase2-pending-other");
+    expect(result instanceof Action2Error, JSON.stringify(result)).toBe(true);
+    expect((result as Action2Error).errorContext?.reason).toBe("openMiroirTransaction");
+    expect((result as Action2Error).errorContext?.applications).toEqual([LIBRARY_APPLICATION]);
+    expect(await storedVersionNames(context)).toEqual(before);
+    expect(context.domainController.currentTransaction().length, "Library's change is still pending").toBe(pendingBefore);
+    expectOk(
+      await context.domainController.handleAction(
+        { actionType: "rollback", endpoint: MODEL_ENDPOINT, payload: { application: LIBRARY_APPLICATION } } as any,
+        applicationDeploymentMap,
+        modelEnvironment(context.domainController, LIBRARY_APPLICATION),
       ),
       "rollback",
     );

@@ -21,7 +21,7 @@ import {
 } from "@miroir-framework/react";
 
 const RUN_TEST = process.env.RUN_TEST;
-const runThis = !RUN_TEST || RUN_TEST.startsWith("versioningHidden.696");
+const runThis = !RUN_TEST || RUN_TEST.startsWith("versioningEntries");
 
 const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../../..");
 const MIROIR_DATA = join(REPO_ROOT, "packages/miroir-app-miroir/assets/miroir_data");
