@@ -29,6 +29,12 @@ import {
   entityApplicationVersionCrossMlSchemaVersion,
   entityHistoricalMiroirTestVersion,
   entityApplicationVersionCrossMiroirTestVersion,
+  entityHistoricalBlobVersion,
+  entityApplicationVersionCrossBlobVersion,
+  entityHistoricalTestConfigurationVersion,
+  entityApplicationVersionCrossTestConfigurationVersion,
+  entityHistoricalTestVersion,
+  entityApplicationVersionCrossTestVersion,
   entitySelfApplicationVersion,
   selfApplicationMiroir,
 } from "miroir-app-miroir";
@@ -76,6 +82,12 @@ const VERSION_HISTORY_ENTITIES = [
   { name: "ApplicationVersionCrossMlSchemaVersion",     entity: entityApplicationVersionCrossMlSchemaVersion },
   { name: "MiroirTestVersion",                          entity: entityHistoricalMiroirTestVersion },
   { name: "ApplicationVersionCrossMiroirTestVersion",   entity: entityApplicationVersionCrossMiroirTestVersion },
+  { name: "BlobVersion", entity: entityHistoricalBlobVersion },
+  { name: "ApplicationVersionCrossBlobVersion", entity: entityApplicationVersionCrossBlobVersion },
+  { name: "TestConfigurationVersion", entity: entityHistoricalTestConfigurationVersion },
+  { name: "ApplicationVersionCrossTestConfigurationVersion", entity: entityApplicationVersionCrossTestConfigurationVersion },
+  { name: "TestVersion", entity: entityHistoricalTestVersion },
+  { name: "ApplicationVersionCrossTestVersion", entity: entityApplicationVersionCrossTestVersion },
 ];
 
 describe("getApplicationSection routes version-history entities to modelVersion", () => {

@@ -371,6 +371,9 @@ RUN_TEST=applicationVersionFreeze.plan npm run testByFile -w miroir-core -- appl
 | 7 | MlSchemaVersion | `mlSchemas` | `entityMlSchema` (`5e81e1b9-…`) | `mlSchemaUuid` | `definition?` (ML schema), `defaultLabel?`, `description?` | ✅ DONE (#230) |
 | 8 | MiroirTestVersion | `tests` | `entityMiroirTest` (`a311f363-…`) | `miroirTestUuid` | `definition` (test suite), `name?`, `description?` | ✅ DONE (#230) |
 | 9 | TransformerDefinitionVersion | `transformerDefinitions` | `entityTransformerDefinition` (`a557419d-…`) | `transformerUuid` | `definition` (library impl ref / composite body) | ✅ DONE |
+| 10 | BlobVersion | read from the store | `entityBlob` (`62209e4a-…`) | `blobUuid` | every attribute but the identity ones | ✅ DONE (#706) |
+| 11 | TestConfigurationVersion | read from the store | `entityTestConfiguration` (`675ccd46-…`) | `testConfigurationUuid` | every attribute but the identity ones | ✅ DONE (#706) |
+| 12 | TestVersion | read from the store | `entityTest` (`c37625c7-…`) | `testUuid` | every attribute but the identity ones | ✅ DONE (#706) |
 
 ### Slice notes
 

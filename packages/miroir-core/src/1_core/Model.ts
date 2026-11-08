@@ -15,6 +15,9 @@ import {
   entityHistoricalTransformerDefinitionVersion,
   entityHistoricalMlSchemaVersion,
   entityHistoricalMiroirTestVersion,
+  entityHistoricalBlobVersion,
+  entityHistoricalTestConfigurationVersion,
+  entityHistoricalTestVersion,
   entityReport,
   entityRunner,
   entitySelfApplication,
@@ -30,6 +33,9 @@ import {
   entityApplicationVersionCrossTransformerDefinitionVersion,
   entityApplicationVersionCrossMlSchemaVersion,
   entityApplicationVersionCrossMiroirTestVersion,
+  entityApplicationVersionCrossBlobVersion,
+  entityApplicationVersionCrossTestConfigurationVersion,
+  entityApplicationVersionCrossTestVersion,
   entityTheme,
   entityTransformerDefinition,
   entityBundleSizeMeasurement,
@@ -200,6 +206,12 @@ export const versionHistoryEntityUuids: ReadonlySet<string> = new Set([
   entityApplicationVersionCrossMlSchemaVersion.uuid!,
   entityHistoricalMiroirTestVersion.uuid!,
   entityApplicationVersionCrossMiroirTestVersion.uuid!,
+  entityHistoricalBlobVersion.uuid!,
+  entityApplicationVersionCrossBlobVersion.uuid!,
+  entityHistoricalTestConfigurationVersion.uuid!,
+  entityApplicationVersionCrossTestConfigurationVersion.uuid!,
+  entityHistoricalTestVersion.uuid!,
+  entityApplicationVersionCrossTestVersion.uuid!,
 ]);
 
 const versionHistoryEntityDefinitions: ReadonlyMap<string, Entity> = new Map([
@@ -227,6 +239,12 @@ const versionHistoryEntityDefinitions: ReadonlyMap<string, Entity> = new Map([
   [entityApplicationVersionCrossMlSchemaVersion.uuid!, entityApplicationVersionCrossMlSchemaVersion as Entity],
   [entityHistoricalMiroirTestVersion.uuid!, entityHistoricalMiroirTestVersion as Entity],
   [entityApplicationVersionCrossMiroirTestVersion.uuid!, entityApplicationVersionCrossMiroirTestVersion as Entity],
+  [entityHistoricalBlobVersion.uuid!, entityHistoricalBlobVersion as Entity],
+  [entityApplicationVersionCrossBlobVersion.uuid!, entityApplicationVersionCrossBlobVersion as Entity],
+  [entityHistoricalTestConfigurationVersion.uuid!, entityHistoricalTestConfigurationVersion as Entity],
+  [entityApplicationVersionCrossTestConfigurationVersion.uuid!, entityApplicationVersionCrossTestConfigurationVersion as Entity],
+  [entityHistoricalTestVersion.uuid!, entityHistoricalTestVersion as Entity],
+  [entityApplicationVersionCrossTestVersion.uuid!, entityApplicationVersionCrossTestVersion as Entity],
 ]);
 
 /** Bootstrap Entity row for a version-history parent entity (SQL modelVersion lazy table creation). */
@@ -298,9 +316,6 @@ export function getApplicationSection(
   if (applicationUuid == selfApplicationMiroir.uuid) {
     return metaMetaModelEntityUuids.includes(entityUuid) ? "model" : "data";
   }
-  // #502: an application's TransformerDefinitions are in its model (Library's library_model), as
-  // the local cache reads them, though the Entity is not in the meta-model's entity list
-  if (entityUuid === entityTransformerDefinition.uuid) return "model";
   return metaModelEntityUuids.includes(entityUuid) ? "model" : "data";
 }
 

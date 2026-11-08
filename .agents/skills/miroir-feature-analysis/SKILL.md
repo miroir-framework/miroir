@@ -60,6 +60,9 @@ Goals come first: a decision is only judged by the goals it serves, so the user 
 1. Draft the Goals user stories (Designer form — see Step 5) and the Non-goals, and confirm each role and benefit with the user.
 2. Then, when design choices exist, present them as an explicit **decision record** and confirm the choices with the user before the document is finalized (see "Confirmed design decisions (with user)" in #229, "Decision record" in #234). Each decision names the goals it serves (G1, G2…); a decision that serves no goal is either a missing goal (go back to 1) or out of scope.
 3. For each decision: list the options in a table with pros/cons, mark the chosen one, and keep the rejected / deferred alternatives documented with rejection rationale — later issues revisit these frames (e.g. #216 reuses its own deferred Option B).
+4. **State every decision as the question it answers**, as a full question ending in `?`, both in the summary table and in the decision's heading: "D2. How do a deployment's model and its storage reach a target version without losing data?", not "D2 — Data structure after a restore". A reader who knows only the goals must be able to tell what is being decided.
+5. **Say what is at stake before the options**: one short paragraph, with a concrete example from a real application (Library, Miroir), showing who is affected and what goes wrong without a decision. A decision whose stake cannot be shown with an example is not ready to be put to the user.
+6. **Spell out every label on first use in a decision.** Labels defined elsewhere in the document (settings, workflows, item numbers) are either repeated in words ("with the model in Git (setting G)") or defined once in a legend at the top of the decision record.
 
 If no design choice is needed (pure refactor / inventory), say so and skip the decision record. Goals are still drafted and confirmed.
 
@@ -99,6 +102,7 @@ Before presenting the analysis:
 - [ ] Goals are user stories (Designer form: role + capability + benefit), confirmed with the user; Non-goals name their owning follow-up issues
 - [ ] Goals / Non-goals sections come before the decision record in the document
 - [ ] Decision record present if design choices exist, with rejected alternatives kept; every decision cites the goals it serves
+- [ ] Every decision is stated as an explicit question (table and heading), has a "what is at stake" paragraph with an example, and uses no label that is not spelled out or in the legend
 - [ ] Decisions confirmed with the user before finalizing
 - [ ] No implementation phasing / task lists (deferred to `tdd-implementation-plan.md`)
 - [ ] Relative links used for sibling analyses and source files

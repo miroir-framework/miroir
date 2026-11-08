@@ -91,6 +91,12 @@ describe("216 Phase 2 — first freeze plan", () => {
     expect(plan.crossMlSchemaVersions).toEqual([]);
     expect(plan.miroirTestVersions).toEqual([]);
     expect(plan.crossMiroirTestVersions).toEqual([]);
+    expect(plan.blobVersions).toEqual([]);
+    expect(plan.crossBlobVersions).toEqual([]);
+    expect(plan.testConfigurationVersions).toEqual([]);
+    expect(plan.crossTestConfigurationVersions).toEqual([]);
+    expect(plan.testVersions).toEqual([]);
+    expect(plan.crossTestVersions).toEqual([]);
     const coveredLive = plan.entityVersions.map((ev) => ev.entityUuid).sort();
     expect(coveredLive).toEqual(entities.map((e) => e.uuid).sort());
   });
@@ -395,6 +401,60 @@ const planElementCases: PlanElementCase[] = [
       {
         uuid: "22222222-2222-4222-8222-222222222222",
         definition: { miroirTestType: "miroirTestSuite", miroirTestLabel: "unnamed", miroirTests: {} },
+      },
+    ],
+  },
+  {
+    element: "Blob",
+    inputKey: "blobs",
+    versionsKey: "blobVersions",
+    crossVersionsKey: "crossBlobVersions",
+    crossLinkKey: "blobVersion",
+    items: [
+      {
+        uuid: "11111111-1111-4111-8111-111111111111",
+        name: "logo",
+        filename: "logo.png",
+        contents: { encoding: "base64", mimeType: "image/png", data: "iVBORw0KGgo=" },
+      },
+      { uuid: "22222222-2222-4222-8222-222222222222", name: "empty", filename: "empty.txt" },
+    ],
+  },
+  {
+    element: "TestConfiguration",
+    inputKey: "testConfigurations",
+    versionsKey: "testConfigurationVersions",
+    crossVersionsKey: "crossTestConfigurationVersions",
+    crossLinkKey: "testConfigurationVersion",
+    items: [
+      {
+        uuid: "11111111-1111-4111-8111-111111111111",
+        selfApplication: APP_UUID,
+        name: "playfield",
+        testbedEntitiesAndInstances: [],
+      },
+      { uuid: "22222222-2222-4222-8222-222222222222", selfApplication: APP_UUID, name: "bare" },
+    ],
+  },
+  {
+    element: "Test",
+    inputKey: "testInstances",
+    versionsKey: "testVersions",
+    crossVersionsKey: "crossTestVersions",
+    crossLinkKey: "testVersion",
+    items: [
+      {
+        uuid: "11111111-1111-4111-8111-111111111111",
+        selfApplication: APP_UUID,
+        branch: BRANCH_UUID,
+        name: "legacy test",
+        definition: { testCompositeActions: {} },
+      },
+      {
+        uuid: "22222222-2222-4222-8222-222222222222",
+        selfApplication: APP_UUID,
+        branch: BRANCH_UUID,
+        definition: {},
       },
     ],
   },

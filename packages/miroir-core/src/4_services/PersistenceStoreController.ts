@@ -19,6 +19,7 @@ import {
   PersistenceStoreAdminSectionInterface,
   PersistenceStoreControllerAction,
   PersistenceStoreControllerInterface,
+  PersistenceStoreDataOrModelSectionInterface,
   PersistenceStoreDataSectionInterface,
   PersistenceStoreModelSectionInterface,
   StoreSectionFactoryRegister,
@@ -35,7 +36,7 @@ import { cleanLevel } from "./constants";
 import { MiroirLoggerFactory } from "./MiroirLoggerFactory";
 import { summarizeQueryHopResult, trackQueryHop } from "./trackQueryHop";
 
-import { entityCommit, entityEntity, entityTransformerDefinition } from "miroir-app-miroir";
+import { entityBlob, entityCommit, entityEntity, entityTest, entityTransformerDefinition } from "miroir-app-miroir";
 import { EntityInstanceWithName } from "../0_interfaces/1_core/Instance";
 import { invalidEntityPrimaryKeyDeclarationError } from "../1_core/Entity/EntityPrimaryKey.js";
 import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
@@ -65,6 +66,30 @@ import { redactCredentialSecretsFromValue } from "./redactCredentialSecrets.js";
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "PersistenceStoreController");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {log = logger});
+
+/**
+ * #502, #703: meta-model Entities added to application model initialization after applications
+ * existed. An older application has no collection for them, so one is created on the first save.
+ */
+const modelEntitiesCreatedOnFirstSave: Entity[] = [
+  entityTransformerDefinition as Entity,
+  entityBlob as Entity,
+  entityTest as Entity,
+];
+
+/**
+ * The Entity of `section` whose storage may not exist yet: a devData Entity (#647) or a model
+ * Entity created on its first save (#703). Its reads find nothing until a write creates it.
+ */
+function lazyStorageEntity(section: ApplicationSection, entityUuid: string): Entity | undefined {
+  if (section === "devData") {
+    return getDevDataEntityDefinition(entityUuid);
+  }
+  if (section === "model") {
+    return modelEntitiesCreatedOnFirstSave.find((entity) => entity.uuid === entityUuid);
+  }
+  return undefined;
+}
 
 
 // #######################################################################################################################
@@ -136,7 +161,8 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   /**
    * #647: whether the devData storage of an Entity exists, as this controller found or made it (see
    * ensureOptionalSectionStorageForEntity): one probe per Entity, and one creation even when writes
-   * arrive together, since a store may create by dropping (SQL `sync({ force: true })`).
+   * arrive together, since a store may create by dropping (SQL `sync({ force: true })`). #703: also
+   * the model storage of the Entities created on their first save.
    */
   private devDataStorage = new Map<string, Promise<boolean>>();
   private devDataStorageCreation = new Map<string, Promise<Action2VoidReturnType>>();
@@ -179,7 +205,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   }
 
   private emptyOptionalSectionCollection(
-    section: OptionalApplicationSection,
+    section: ApplicationSection,
     entityUuid: string,
   ): Action2EntityInstanceCollectionOrFailure {
     return {
@@ -539,17 +565,28 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     // #232/#234 — VH parents belong on modelVersion only. Commit instances live in data (Miroir)
     // and are not created for satellite apps — do not register a phantom model SQL table for them.
     // #647 — devData Entities belong to devData only.
+    // #703 — a store that registers the Entities it boots with, whatever its storage (SQL), boots
+    // without the Entities created on their first save and is asked whether their storage exists;
+    // registering a missing table would make a query on it fail where an older application has none.
+    const probeLateModelEntities = !!this.modelStoreSection.hasStorageSpaceForInstancesOfEntity;
     const modelSectionEntities = metaModelEntities.filter(
       (entity) =>
         !versionHistoryEntityUuids.has(entity.uuid!) &&
         !devDataEntityUuids.has(entity.uuid!) &&
-        entity.uuid !== entityCommit.uuid,
+        entity.uuid !== entityCommit.uuid &&
+        !(probeLateModelEntities && lazyStorageEntity("model", entity.uuid!)),
     );
     const modelBootFromPersistedState: Action2ReturnType =
       await this.modelStoreSection.bootFromPersistedState(
         modelSectionEntities,
         // metaModelEntityDefinitions
       );
+    if (probeLateModelEntities && !(modelBootFromPersistedState instanceof Action2Error)) {
+      for (const entity of metaModelEntities.filter((e) => lazyStorageEntity("model", e.uuid!))) {
+        // a "yes" registers the Entity in the store
+        await this.devDataStorageExists(this.modelStoreSection, entity);
+      }
+    }
     if (modelBootFromPersistedState instanceof Action2Error) {
       return new Action2Error(
         "FailedToGetInstances",
@@ -666,6 +703,11 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     log.info(this.logHeader, "clear", this.getEntityUuids());
     await this.dataStoreSection.clear();
     await this.modelStoreSection.clear();
+    // #703: the model storage of the Entities created on their first save is gone with the rest
+    for (const entity of modelEntitiesCreatedOnFirstSave) {
+      this.devDataStorage.delete(entity.uuid);
+      this.devDataStorageCreation.delete(entity.uuid);
+    }
     // #647 (D24) — devData is not part of the model being reset: a resetModel of Miroir in a live
     // environment must not delete its tracked development history. deleteStore still drops it.
     for (const [section, store] of this.presentOptionalStoreSections()) {
@@ -754,7 +796,7 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
    * a "no" is asked again next time, since another server may create the storage meanwhile. A store
    * that lists the Entities it was booted with (SQL) answers with its probe.
    */
-  private devDataStorageExists(sectionStore: PersistenceStoreDataSectionInterface, entity: Entity): Promise<boolean> {
+  private devDataStorageExists(sectionStore: PersistenceStoreDataOrModelSectionInterface, entity: Entity): Promise<boolean> {
     const known = this.devDataStorage.get(entity.uuid);
     if (known) {
       return known;
@@ -780,13 +822,13 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
     sectionStore: PersistenceStoreDataSectionInterface | PersistenceStoreModelSectionInterface,
     entityUuid: string,
   ): Promise<boolean> {
-    const entity = section === "devData" ? getDevDataEntityDefinition(entityUuid) : undefined;
-    return !!entity && !(await this.devDataStorageExists(sectionStore as PersistenceStoreDataSectionInterface, entity));
+    const entity = lazyStorageEntity(section, entityUuid);
+    return !!entity && !(await this.devDataStorageExists(sectionStore, entity));
   }
 
   /** #647: creates the devData storage of an Entity unless it exists; concurrent writes share one creation. */
   private ensureDevDataStorage(
-    sectionStore: PersistenceStoreDataSectionInterface,
+    sectionStore: PersistenceStoreDataOrModelSectionInterface,
     entity: Entity,
   ): Promise<Action2VoidReturnType> {
     const pending = this.devDataStorageCreation.get(entity.uuid);
@@ -1014,9 +1056,10 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
       }
       return currentStore;
     }
-    // #647: a devData Entity with no row written yet has no storage: nothing to read.
+    // #647: a devData Entity with no row written yet has no storage: nothing to read. #703: nor
+    // does a model Entity created on its first save.
     if (await this.devDataStorageMissing(section, currentStore, entityUuid)) {
-      return this.emptyOptionalSectionCollection("devData", entityUuid);
+      return this.emptyOptionalSectionCollection(section, entityUuid);
     }
     log.debug(
       this.logHeader,
@@ -1145,13 +1188,11 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
       return currentStore.upsertInstance(resolvedParentUuid, instance);
     }
 
-    if (
-      resolvedParentUuid === entityTransformerDefinition.uuid &&
-      this.getModelEntities().indexOf(resolvedParentUuid) == -1
-    ) {
-      // #502: an application created before TransformerDefinition was in its model initialization
-      // has no collection for its composite TransformerDefinitions; create it on the first save.
-      const created = await this.createModelStorageSpaceForInstancesOfEntity(entityTransformerDefinition as Entity);
+    const lateModelEntity = lazyStorageEntity(section, resolvedParentUuid);
+    if (lateModelEntity) {
+      // #502, #703: an application created before this Entity was in its model initialization has
+      // no collection for its instances; create it on the first save.
+      const created = await this.ensureDevDataStorage(this.modelStoreSection, lateModelEntity);
       if (created instanceof Action2Error) {
         return created;
       }
