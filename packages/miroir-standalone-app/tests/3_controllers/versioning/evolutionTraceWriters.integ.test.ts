@@ -1,12 +1,12 @@
 /**
- * #696 Slice 0: which DomainController writes evolution trace rows, and that a freeze works today.
+ * #696: which DomainController writes evolution trace rows, and that a freeze works today.
  *
  * With an emulated server, the client and the server each have a DomainController, and both run
  * `handleInstanceAction`. This test records which of them writes trace rows for an update of a model
  * row and for a committed `createEntity` of Library (the fixture whose model has the trace Entities),
  * so that #696 can move the recorder to its package and keep the same rows (Slice 4 keeps both writers).
  * ```bash
- * MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- traceWriters.696.phase0
+ * MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- evolutionTraceWriters
  * ```
  */
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
@@ -81,7 +81,7 @@ afterAll(() => {
   }
 });
 
-describe("traceWriters.696.phase0", () => {
+describe("evolutionTraceWriters", () => {
   it("a freeze of appForTest sent by the client writes its version", async () => {
     expectOk(await freezeAppForTest(context.domainController, "696-phase0"), "freeze");
     expect(await storedVersionNames(context)).toContain("696-phase0");

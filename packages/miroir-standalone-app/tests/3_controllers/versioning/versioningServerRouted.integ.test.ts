@@ -1,10 +1,10 @@
 /**
- * #696 Slice 2: a client that talks to a server sends the freeze to the server, which runs it.
+ * #696: a client that talks to a server sends the freeze to the server, which runs it.
  *
  * The client checks its own capability, refuses while it has unsaved Miroir changes of the application,
  * then forwards; the server checks its capability and runs the freeze; the client reloads the application.
  * ```bash
- * MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- versioningServerRouted.696.phase2
+ * MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- versioningServerRouted
  * ```
  */
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
@@ -55,7 +55,7 @@ afterAll(() => {
   stopListening.forEach((stop) => stop());
 });
 
-describe("versioningServerRouted.696.phase2", () => {
+describe("versioningServerRouted", () => {
   it("the freeze is a server-routed action", () => {
     expect(SERVER_ROUTED_MIROIR_ACTION_TYPES).toContain("freezeApplicationVersion");
   });

@@ -1,9 +1,9 @@
 /**
- * #696 Slice 5: the Endpoint action catalog that MCP tools, CLI commands and CopilotKit actions are made
+ * #696: the Endpoint action catalog that MCP tools, CLI commands and CopilotKit actions are made
  * from leaves out an action whose implementation requires a capability the process does not have. The
  * Miroir ModelEndpoint's `freezeApplicationVersion` requires `versioning`.
  * ```bash
- * RUN_TEST=endpointActionListing.696.phase5 npm run testByFile -w @miroir-framework/core -- endpointActionListing.696.phase5
+ * RUN_TEST=endpointActionListing.capability npm run testByFile -w @miroir-framework/core -- endpointActionListing.capability
  * ```
  */
 import { describe, expect, it } from "vitest";
@@ -22,7 +22,7 @@ import {
 } from "@miroir-framework/core";
 
 const RUN_TEST = process.env.RUN_TEST;
-const runThis = !RUN_TEST || RUN_TEST.startsWith("endpointActionListing.696");
+const runThis = !RUN_TEST || RUN_TEST.startsWith("endpointActionListing.capability");
 
 const MIROIR_DEPLOYMENT = "10ff36f2-50a3-48d8-b80f-e48e5d13af8e";
 const seedMap = { [MIROIR_APPLICATION_UUID]: MIROIR_DEPLOYMENT };
@@ -50,7 +50,7 @@ const freezeAction = (modelEndpointV1 as unknown as EndpointDefinition).definiti
 ) as Action;
 
 if (runThis) {
-  describe("endpointActionListing.696.phase5", () => {
+  describe("endpointActionListing.capability", () => {
     it("the ModelEndpoint's freeze action requires the versioning capability", () => {
       expect((freezeAction as any).actionImplementation?.requiredCapability).toBe("versioning");
       expect(isEndpointActionAvailable(freezeAction, capabilities(true))).toBe(true);

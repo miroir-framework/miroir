@@ -1,16 +1,16 @@
 /**
- * #696 Slice 0: what core exports about versioning.
+ * #696: what core exports about versioning.
  *
  * The first half lists what core keeps when the freeze and trace implementations move to
  * `@miroir-framework/versioning`: other packages name these without loading the package. The second
- * half lists the implementations Slices 3 and 4 moved out of core.
+ * half lists the freeze and trace implementations, which live in the package.
  */
 import { describe, expect, it } from "vitest";
 
 import * as core from "@miroir-framework/core";
 
 const RUN_TEST = process.env.RUN_TEST;
-const runThis = !RUN_TEST || RUN_TEST.startsWith("versioningSurface.696");
+const runThis = !RUN_TEST || RUN_TEST.startsWith("versioningSurface");
 
 /** Interfaces and policies that stay in core, with their values where they have one. */
 const KEPT_CONSTANTS: Record<string, string> = {
@@ -57,7 +57,7 @@ const KEPT_FUNCTIONS = [
 ];
 
 /** Freeze and trace implementations core exports today; they leave core with #696. */
-/** #696 Slice 3: the freeze implementation, in `@miroir-framework/versioning`. */
+/** #696: the freeze implementation, in `@miroir-framework/versioning`. */
 const MOVED_FREEZE_FUNCTIONS = [
   "buildFreezeApplicationVersionPlan",
   "planFreezeApplicationVersion",
@@ -71,7 +71,7 @@ const MOVED_FREEZE_FUNCTIONS = [
   "snapshotTestsAsHistoricalTestVersions",
 ];
 
-/** #696 Slice 4: the trace implementation, in `@miroir-framework/versioning`. */
+/** #696: the trace implementation, in `@miroir-framework/versioning`. */
 const MOVED_TRACE_FUNCTIONS = [
   "createTraceEventFromModelAction",
   "createTraceEventFromInstanceAction",
@@ -83,7 +83,7 @@ const MOVED_TRACE_FUNCTIONS = [
 ];
 
 if (runThis) {
-  describe("versioningSurface.696.phase0: core's versioning exports", () => {
+  describe("versioningSurface: core's versioning exports", () => {
     it("keeps the action type, the version Entity uuids and the trace Entity uuids", () => {
       const actual = Object.fromEntries(
         Object.keys(KEPT_CONSTANTS).map((name) => [name, (core as Record<string, unknown>)[name]]),

@@ -1,9 +1,9 @@
 /**
- * #696 Slice 5: with the `versioning` capability off, a designer sees no Versioning AppBar item, no
+ * #696: with the `versioning` capability off, a designer sees no Versioning AppBar item, no
  * version or trace items in the Miroir menu and no freeze Runner. The predicates are those AppBar,
  * SidebarSection and RunnerView call; the uuids are checked against the Miroir model they name.
  * ```bash
- * RUN_TEST=versioningHidden.696.phase5 npm run testByFile -w miroir-standalone-app -- versioningHidden.696.phase5
+ * RUN_TEST=versioningEntries npm run testByFile -w miroir-standalone-app -- versioningEntries
  * ```
  */
 import { readFileSync } from "node:fs";
@@ -23,7 +23,7 @@ import {
 const RUN_TEST = process.env.RUN_TEST;
 const runThis = !RUN_TEST || RUN_TEST.startsWith("versioningHidden.696");
 
-const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../../../../..");
+const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../../..");
 const MIROIR_DATA = join(REPO_ROOT, "packages/miroir-app-miroir/assets/miroir_data");
 const MIROIR_MENU = join(MIROIR_DATA, "dde4c883-ae6d-47c3-b6df-26bc6e3c1842/eaac459c-6c2b-475c-8ae4-c6c3032dae00.json");
 const MIROIR_RUNNERS = join(MIROIR_DATA, "e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd");
@@ -38,7 +38,7 @@ function menuItems(): MiroirMenuItem[] {
 }
 
 if (runThis) {
-  describe("versioningHidden.696.phase5", () => {
+  describe("versioningEntries", () => {
     it("the AppBar item needs the capability and a versioned-internal application", () => {
       const versioned = { versioningMode: "versioned-internal" } as any;
       expect(isVersioningAppBarItemShown({ browsedSelfApplication: versioned, capabilities: on })).toBe(true);

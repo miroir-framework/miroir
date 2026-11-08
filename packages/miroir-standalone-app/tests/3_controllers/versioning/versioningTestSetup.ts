@@ -30,9 +30,9 @@ import { fetchMiroirAndAppConfigurations } from "@miroir-framework/react";
 import { miroirFileSystemStoreSectionStartup } from "@miroir-framework/store-filesystem";
 import { setupMiroirTest, type SetupMiroirTestOptions } from "miroir-react-testing/src/4-tests/setupMiroirTest.js";
 
-import { loglevelnext } from "../../../../src/loglevelnextImporter.js";
-import { miroirAppStartup } from "../../../../src/startup.js";
-import { openTestEnvironment } from "../../../helpers/testEnvironment.js";
+import { loglevelnext } from "../../../src/loglevelnextImporter.js";
+import { miroirAppStartup } from "../../../src/startup.js";
+import { openTestEnvironment } from "../../helpers/testEnvironment.js";
 
 export const APP_FOR_TEST = "eef01001-0001-4000-8000-000000000001";
 export const APP_FOR_TEST_DEPLOYMENT = "eef01001-0002-4000-8000-000000000002";

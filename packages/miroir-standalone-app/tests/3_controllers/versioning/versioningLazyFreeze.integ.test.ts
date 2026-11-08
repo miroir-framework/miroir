@@ -1,8 +1,8 @@
 /**
- * #696 Slice 3: the freeze runs from `@miroir-framework/versioning`, which a process loads on its first
+ * #696: the freeze runs from `@miroir-framework/versioning`, which a process loads on its first
  * freeze and never before. The test registers a counted loader in place of setupMiroirTest's own.
  * ```bash
- * MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- versioningLazyFreeze.696.phase3
+ * MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- versioningLazyFreeze
  * ```
  */
 import { beforeAll, describe, expect, it } from "vitest";
@@ -33,7 +33,7 @@ beforeAll(async () => {
   });
 }, 120000);
 
-describe("versioningLazyFreeze.696.phase3", () => {
+describe("versioningLazyFreeze", () => {
   it("starting a session and committing a model change load nothing of the package", async () => {
     expectOk(
       await context.domainController.handleAction(

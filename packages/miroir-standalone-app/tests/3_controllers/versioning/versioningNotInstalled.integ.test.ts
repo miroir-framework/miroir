@@ -1,8 +1,8 @@
 /**
- * #696 Slice 3: a process with the capability on but without the versioning package registered refuses a
+ * #696: a process with the capability on but without the versioning package registered refuses a
  * freeze, and names the package. In its own file: a registration cannot be undone within a test process.
  * ```bash
- * MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- versioningNotInstalled.696.phase3
+ * MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- versioningNotInstalled
  * ```
  */
 import { beforeAll, describe, expect, it } from "vitest";
@@ -23,7 +23,7 @@ beforeAll(async () => {
   context = await openVersioningTestContext({ versioningLoader: false });
 }, 120000);
 
-describe("versioningNotInstalled.696.phase3", () => {
+describe("versioningNotInstalled", () => {
   it("a freeze names the missing package and writes nothing", async () => {
     setCapabilities(context, {});
     const before = await storedVersionNames(context);

@@ -1,11 +1,11 @@
 /**
- * #696 Slice 1: the `versioning` process capability refuses a freeze.
+ * #696: the `versioning` process capability refuses a freeze.
  *
  * The freeze action carries `requiredCapability: "versioning"` on its Endpoint definition. With the
  * capability off, the freeze returns `FeatureUnavailable` (capability `versioning`) and writes nothing,
  * whatever the application's versioning mode (the capability is checked first, D7).
  * ```bash
- * MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- versioningCapability.696.phase1
+ * MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- versioningCapability
  * ```
  */
 import { beforeAll, describe, expect, it } from "vitest";
@@ -30,7 +30,7 @@ beforeAll(async () => {
   context = await openVersioningTestContext();
 }, 120000);
 
-describe("versioningCapability.696.phase1", () => {
+describe("versioningCapability", () => {
   it("the base snapshot of a process has versioning on", () => {
     expect(context.baseCapabilities.versioning).toBe(true);
   });

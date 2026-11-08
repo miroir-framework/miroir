@@ -1,10 +1,10 @@
 /**
- * #696 Slice 4: evolution traces are recorded by `@miroir-framework/versioning`, which a process loads on
+ * #696: evolution traces are recorded by `@miroir-framework/versioning`, which a process loads on
  * its first traced write. Core checks first that traces are on (`MIROIR_EVOLUTION_TRACE`), that the action
  * is traceable and that the process has the `versioning` capability; a write failing one of these loads
  * nothing. The trace rows written match the counts measured before the move (Slice 0.2).
  * ```bash
- * MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- versioningLazyTraces.696.phase4
+ * MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- versioningLazyTraces
  * ```
  */
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
@@ -38,7 +38,7 @@ const noteEntity = {
   selfApplication: LIBRARY_APPLICATION,
   name: "Note696Phase4",
   conceptLevel: "Model",
-  description: "#696 Slice 4: an Entity created with traces off",
+  description: "#696: an Entity created with traces off",
   mlSchema: {
     type: "object",
     definition: { uuid: { type: "uuid" }, parentUuid: { type: "uuid" }, name: { type: "string" } },
@@ -111,7 +111,7 @@ afterAll(() => {
   }
 });
 
-describe("versioningLazyTraces.696.phase4", () => {
+describe("versioningLazyTraces", () => {
   it("with traces off, an instance write and a committed createEntity load nothing and write no trace row", async () => {
     delete process.env.MIROIR_EVOLUTION_TRACE;
     setCapabilities(context, {});
