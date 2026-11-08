@@ -9,7 +9,10 @@ Epic documents in this folder: [decisions.md](decisions.md) (the grilling outcom
 Key sources: [`applicationVersionFreeze.ts`](../../../packages/miroir-core/src/1_core/versioning/applicationVersionFreeze.ts), [`versioningMode.ts`](../../../packages/miroir-core/src/1_core/versioning/versioningMode.ts), [`evolutionTracePolicy.ts`](../../../packages/miroir-core/src/2_domain/evolutionTracePolicy.ts), [`DomainController.ts`](../../../packages/miroir-core/src/3_controllers/DomainController.ts), [`PersistenceStoreController.ts`](../../../packages/miroir-core/src/4_services/PersistenceStoreController.ts), [`SqlDbStoreSection.ts`](../../../packages/miroir-store-postgres/src/4_services/SqlDbStoreSection.ts), [`sqlDbEntityStoreSectionMixin.ts`](../../../packages/miroir-store-postgres/src/4_services/sqlDbEntityStoreSectionMixin.ts), [`miroir-git-isomorphic`](../../../packages/miroir-git-isomorphic/src/index.ts)
 
 **Document role:** epic analysis and decision record. The decisions Q1 to Q32 are settled in [decisions.md](decisions.md) and are not reopened here. This document cites them as `Qn`, and it adds the decisions D1 to D12 that the grilling left open or did not see. Where a D decision narrows a Q decision, it says so.
-**Status:** draft, revised after an adversarial review (code fact check and design attack, 2026-11-07). Goals G1 to G8 and decisions D1 to D12 await confirmation.
+**Status:** D8 accepted (item 11, #712). Goals G1 to G8 and the other decisions await confirmation.
+**Document history:**
+- 2026-11-07: first draft. An adversarial review (a code fact check and an attack on the design) changed D2, D4 to D6 and D10, and added D11 and D12. Greptile's review of #711 added the Git migration's place at its target tag and repeatable data steps (D2).
+- 2026-11-08: the user's review. Every decision now states its question. D12 now takes the traces as its source and checks them against the diff; the earlier diff-only choice is kept as D12-a. Section 5.3 plans a composite rename Action, D4 is corrected about `MetaModel`, D9 is rewritten with an example, and D8 is accepted.
 
 ---
 
@@ -107,11 +110,15 @@ Library is the example: `Book` (attributes today: `name`, `year`, `citation`, `a
 ### 5.1 Setting N, no Git
 
 1. **Create a version.** The designer freezes the model as `1.0.0` from the freeze Runner (exists, #225). Since #706 the freeze snapshots every model element. With traces on (item 6), the freeze first checks that the previous version plus the trace records equal the live model (Q29). On a mismatch it refuses and lists the differences.
-2. **Change the model.** The designer adds `isbn` to `Book`. Today the Entity editor saves the Entity row as an instance update. On SQL that leaves the table without the column, and the trace would hold a row update, not an attribute step. Two changes cover this (D2, D12): every change to an Entity row brings the storage up to the model, adding only; and migrations derive their structure steps from the snapshot diff, not from the traced Actions. The `commit` writes one trace record (Q16).
+2. **Change the model.** The designer adds `isbn` to `Book` in the Entity editor and commits. The commit writes one trace record (Q16), which holds an update of the `Book` Entity row. As read in the code, that update does not alter a SQL table:
+   - the commit replays the `updateInstance`, which goes to `PersistenceStoreController.upsertInstance`, then to the SQL `upsertInstance` (`sqlDbInstanceStoreSectionMixin.ts`), which runs `sequelizeModel.upsert` on the Entity table only;
+   - only `alterEntityAttribute` runs `sync({ alter: true })` on the data table (`sqlDbEntityStoreSectionMixin.ts`), and no UI emits it.
+
+   D2 therefore reconciles the storage after any change to an Entity row. The PostgreSQL run of E1 (section 9) checks this point first. If the table turns out to follow, the reconciliation simply has nothing to add.
 3. **Freeze `1.1.0`.**
-4. **Prepare the migration** (item 7). "Prepare migration from `1.0.0` to `1.1.0`" replays the trace records on the `1.0.0` snapshot and compares the result with the `1.1.0` snapshot (Q29). It then writes a draft `Migration` (D2, D12):
+4. **Prepare the migration** (item 7). "Prepare migration from `1.0.0` to `1.1.0`" replays the trace records on the `1.0.0` snapshot and compares the result with the `1.1.0` snapshot (Q29). It then writes a draft `Migration` from the trace records (D12). The update of the `Book` row becomes the step "add optional attribute `isbn` to `Book`". Applied to the `1.0.0` structure, the steps give exactly the `1.1.0` structure, and the draft shows this comparison as its evidence. The draft holds:
    - expand: none;
-   - jump to `1.1.0`;
+   - jump to `1.1.0`, which adds `isbn` (D2);
    - fill: an empty data step that the designer completes (a transformer computing `isbn`);
    - contract: none.
 
@@ -146,30 +153,39 @@ Renaming `Book.year` to `Book.publicationYear` in one release breaks rollback. T
 1. Release *n*: expand with `publicationYear`, a fill step copies `year` into it, and the application reads `publicationYear`. This release is backward-compatible.
 2. Release *n+1*: contract by dropping `year`. This step is not backward-compatible: once it has run, rolling back to *n* is refused.
 
-Generation flags step 2 (Q23, D1). No model Action renames an attribute today. `alterEntityAttribute` declares `addColumns`, `removeColumns` and `update`, and the SQL store applies only the first two. A rename is therefore a remove plus an add, and the removed column's data is lost unless a fill step copies it before the contract step drops it. Neither a trace nor a diff can tell a rename from a remove plus an add, so the designer says which it is in the migration draft (item 8, #215).
+Generation flags step 2 (Q23, D1). No model Action renames an attribute today. `alterEntityAttribute` declares `addColumns`, `removeColumns` and `update`, and the SQL store applies only the first two. A rename is therefore a remove plus an add, and the removed column's data is lost unless a fill step copies it before the contract step drops it. Today neither a trace nor a diff can tell a rename from a remove plus an add, so the designer says which it is in the migration draft.
+
+Renaming an attribute is on the program, in item 8 (#215). It comes as a composite Action, `renameEntityAttribute` (working name), built from the steps above:
+- add the new attribute;
+- copy the values;
+- remove the old attribute.
+
+In the strict workflow it runs as one migration. In continuous delivery the same composite splits over two releases: the add and the copy go in release *n*, and the remove in release *n+1*. A trace of the composite keeps the designer's intent, so generation (D12) knows that it is a rename, not a remove and an add. Because it is built only from existing Actions, it is a showcase of how Miroir composes Actions.
 
 ---
 
 ## 6. Decision record
 
+Shorthand used below: setting **N** has no Git and setting **G** keeps the model in Git (section 4.1); workflow **S** is strict and workflow **C** is continuous delivery (section 4.2). Each decision is stated as the question it answers.
+
 | Decision | Choice | Serves |
 |---|---|---|
-| D1. Is a `deliveryStyle` field needed? | **No.** Each migration step is classified backward-compatible or not, whatever the workflow | G2, G5, G6 |
-| D2. How a deployment's model and storage reach a version | **Migrations jump the model to the version, between expand and contract data steps. Storage creation is idempotent on every store, reconciliation is add-only, and drops happen only in a contract step** | G3, G5 |
-| D3. How a version is created in Git mode | **A Git tag, created by a new `gitAction_tag`**; freeze stays refused | G1, G8 |
-| D4. Where a model state comes from | **One `ModelStateSource`: a frozen version, a Git ref, or the live model** | G2 |
-| D5. How a test environment gets the versions without Git | **It points its `modelVersion` section at the same storage, read-only, as a following deployment**; version packages come later (D9) | G3 |
-| D6. Restore without Git | **A new model action rewrites the live model from a version's snapshot**, used for rollback and as the migration jump | G3, G5 |
-| D7. Data of a Git-backed deployment that is migrated | **Outside the Git work tree** | G3, G8 |
-| D8. Application feature switches | **A separate epic item, analysed on its own**, not part of items 6 to 10 | G6 |
-| D9. Release packages in the strict workflow | **Deferred**: setting G uses the repository at a tag; packages for setting N come later | G1, G3 |
-| D10. Referring to a model state | **By version name**, the same name as the Git tag; the live model is never stored as a reference | G2, G4, G8 |
-| D11. Trace order and re-baseline with Git | **`previousTrace` plus a sequence number in both settings; the Git re-baseline is a committed marker, without a freeze** | G1, G8 |
-| D12. Where a migration's structure steps come from | **From the attribute-level diff of the two model states**; traces serve the agreement check and the designer's hints | G2 |
+| D1. Does an application need a `deliveryStyle` field to choose between the strict and the continuous workflow? | **No.** Each migration step is classified backward-compatible or not, whatever the workflow | G2, G5, G6 |
+| D2. How do a deployment's model and its storage (tables, collections) reach a target version without losing data? | **Migrations jump the model to the version, between expand and contract data steps. Storage creation is idempotent on every store, reconciliation is add-only, and drops happen only in a contract step** | G3, G5 |
+| D3. How does a designer create a version when the model is in Git? | **A Git tag, created by a new `gitAction_tag`**; freeze stays refused | G1, G8 |
+| D4. Where does Miroir read "the model at state X" from: a frozen version, a Git ref, or the live model? | **One `ModelStateSource`: a frozen version, a Git ref, or the live model** | G2 |
+| D5. Without Git, how does a test environment get the versions and migrations made in the dev environment? | **It points its `modelVersion` section at the same storage, read-only, as a following deployment**; version packages come later (D9) | G3 |
+| D6. Without Git, how does an operator bring a deployment's model back to a frozen version? | **A new model action rewrites the live model from a version's snapshot**, used for rollback and as the migration jump | G3, G5 |
+| D7. When a Git-backed deployment's data is migrated, where does that data live? | **Outside the Git work tree** | G3, G8 |
+| D8. Do application feature switches belong in this epic? | **Yes, as a separate epic item (11, #712)**, analysed on its own; items 6 to 10 do not depend on it | G6 |
+| D9. In the strict workflow, what does a release deliver to the people who run test or production deployments, and is it needed now? | **Deferred**: with Git the repository at a tag is the release; without Git, packages are analysed after the experiments | G1, G3 |
+| D10. How does a Migration, a state record or a trace name a model state? | **By version name**, the same name as the Git tag; the live model is never stored as a reference | G2, G4, G8 |
+| D11. With Git, how are trace records ordered, and how is a re-baseline done when freezing is not allowed? | **`previousTrace` plus a sequence number in both settings; the Git re-baseline is a committed marker, without a freeze** | G1, G8 |
+| D12. Where do a migration's structure steps (add, remove or rename an attribute or an Entity) come from? | **From the trace records, checked against the attribute-level diff of the two model states**; the diff alone when traces are off | G2 |
 
 Also needed, though not a choice: when the `versioning` capability is off, model commits of an application with `evolutionTraces` on are refused. Otherwise its traces would have gaps that only a re-baseline repairs (Q20, Q30). Miroir's own SelfApplication ships with `evolutionTraces` off, so a process without the capability can still edit Miroir's model (G7). Item 6 implements this.
 
-### D1 — No `deliveryStyle` field
+### D1. Does an application need a `deliveryStyle` field to choose between the strict and the continuous workflow?
 
 **Status:** Proposed — D1-b. **Serves:** G2, G5, G6.
 
@@ -180,7 +196,7 @@ Also needed, though not a choice: when the `versioning` capability is off, model
 
 **Decision:** D1-b. This widens Q23: the warning shows in both workflows. Generation pre-fills the flag for the steps it writes. The designer sets it for steps they edit or write by hand (Q10, Q30), and Q31 trusts it. D1-a comes back if the experiments want the warning to become a refusal for some applications only.
 
-### D2 — How model and storage reach a version
+### D2. How do a deployment's model and its storage (tables, collections) reach a target version without losing data?
 
 **Status:** Proposed — D2-d. **Serves:** G3, G5.
 
@@ -215,7 +231,7 @@ How D2-d works:
 
 **Decision:** D2-d. Item 7 owns the runner, the phases and the idempotent storage creation. Item 9 owns the restore and shares the reconciliation. The experiments include a SQL run.
 
-### D3 — Versions in Git mode
+### D3. How does a designer create a version when the model is in Git?
 
 **Status:** Proposed — D3-a. **Serves:** G1, G8.
 
@@ -228,7 +244,7 @@ The Git page lists and checks out tags (`miroir-git-isomorphic`, `git.listTags`,
 
 **Decision:** D3-a, in item 6.
 
-### D4 — One source of model states
+### D4. Where does Miroir read "the model at state X" from: a frozen version, a Git ref, or the live model?
 
 **Status:** Proposed. **Serves:** G2.
 
@@ -237,9 +253,9 @@ Migration generation, the agreement check (Q29) and restore all need "the model 
 - the `*_model/` files at a Git ref (setting G), read with isomorphic-git `readTree` / `readBlob`, without a checkout;
 - the live model.
 
-A `ModelStateSource` interface in the versioning package (#696) returns the same in-memory shape for each: a map from element type to rows, covering every snapshotted type. `MetaModel` (`miroirFundamentalType.ts`) has no Blob, TestConfiguration or Test collections, so it does not fit as it is. The trace replay, the all-types diff and the agreement check take two sources. The Git implementation lives in `@miroir-framework/git-isomorphic` and loads lazily. Item 6 owns D4, the replay and the diff, because the Q29 checks at freeze and at Git commit need them before migrations exist.
+A `ModelStateSource` interface in the versioning package (#696) returns the same in-memory shape for each: a map from element type to rows, covering every snapshotted type. #703 added Blob and Test to the meta-model's Entity list (`defaultMiroirMetaModel.entities`), so every application's model has these Entities. The `MetaModel` type (`miroirFundamentalType.ts`, line 10703), which holds a model's rows in memory, still has no collection for Blob, TestConfiguration or Test rows; its `tests` collection holds MiroirTest definitions. So either `MetaModel` gains these three collections, or `ModelStateSource` uses its own map. The trace replay, the all-types diff and the agreement check take two sources. The Git implementation lives in `@miroir-framework/git-isomorphic` and loads lazily. Item 6 owns D4, the replay and the diff, because the Q29 checks at freeze and at Git commit need them before migrations exist.
 
-### D5 — Versions in a test environment, without Git
+### D5. Without Git, how does a test environment get the versions and migrations made in the dev environment?
 
 **Status:** Proposed — D5-a for the experiments. **Serves:** G3.
 
@@ -255,7 +271,7 @@ A process holds one deployment per application: `ApplicationDeploymentMap` maps 
 
 **Decision:** D5-a for items 7 and 10, D5-b with D9. Item 7 owns the authoring and following roles.
 
-### D6 — Restore without Git
+### D6. Without Git, how does an operator bring a deployment's model back to a frozen version?
 
 **Status:** Proposed. **Serves:** G3, G5.
 
@@ -269,27 +285,35 @@ No action reads a frozen version back today. A new model action, `restoreApplica
 
 It is refused while a Miroir transaction is open, as the Git checkout is (679 D7). On an empty deployment it installs a version, which is how a new test deployment starts. It lives in the versioning package (#696), which needs a way to register model actions from outside core; #696 provides it. Item 9 owns D6.
 
-### D7 — Data outside the work tree, in Git mode
+### D7. When a Git-backed deployment's data is migrated, where does that data live?
 
 **Status:** Proposed. **Serves:** G3, G8.
 
 The clone installer (`gitAction_installClonedDeployment`) points every section of the installed deployment into the clone, `data` included, and skips a deployment whose sections are not folders of the clone (`GitClonedDeployments.ts`). A checkout of a newer tag then also rewrites the data files that the repository holds (Library commits sample data under `library_data/`), which defeats a migration. A deployment whose data is migrated therefore keeps its `data` section outside the work tree, or on another store. This needs new code: the installer takes a data location outside the clone and seeds it from the repository's sample data. The dev deployment, whose data is sample data, may keep it in the repository. Item 10 owns D7, because E2 needs it.
 
-### D8 — Application feature switches
+### D8. Do application feature switches belong in this epic?
 
-**Status:** Proposed. **Serves:** G6.
+**Status:** Accepted (2026-11-08). **Serves:** G6.
 
 Miroir has no switch that an application designer can put on a Report, a Menu item or a Runner. The switches inventoried in #576 are Miroir's own: process capabilities, build profiles and UI toggles. Continuous delivery needs one, so that a released model can carry a hidden feature. It is a model concept (where a switch is declared, where its value lives, what it hides) and deserves its own analysis.
 
-**Decision:** a new epic item 11, analysed after the item 10 experiments show what they need. Items 6 to 10 do not depend on it.
+**Decision:** a new epic item 11 (#712), analysed after the item 10 experiments show what they need. Items 6 to 10 do not depend on it.
 
-### D9 — Release packages
+### D9. In the strict workflow, what does a release deliver, and is it needed now?
 
 **Status:** Deferred. **Serves:** G1, G3.
 
-In setting G, the release package is the repository at a tag, cloned with the Git page (#683). In setting N, a package would be the version's snapshot rows and the migrations, exported as files. The Admin `bundle` Entity `9f9170da-538d-425c-8cb7-551640623eed` has only `name`, `defaultLabel` and `description`. This is decided after item 10, together with D5-b.
+**What is at stake.** In the strict workflow, a release, say Library `2.0.0`, goes to whoever runs a test or production deployment, possibly on another network. To move their deployment from `1.0.0` to `2.0.0`, they need two things: the model of `2.0.0`, and the migrations from `1.0.0` to `2.0.0`. The question is what carries those two things to them.
 
-### D10 — Naming model states
+- **Model in Git** (setting G): the repository is the package. The operator clones it from the Git page (#683), or fetches and checks out tag `2.0.0`. The migrations are committed under `modelVersion/` at that tag (D2).
+- **No Git** (setting N): the version is a set of rows in the `modelVersion` section of the dev environment.
+  - A test environment that can reach the same storage reads them there (D5-a). This is enough for the experiments.
+  - A production site that cannot reach that storage needs a package: a file such as `library-2.0.0.zip`, holding the `2.0.0` snapshot rows and the migrations, exported in dev and imported in production.
+  - Nothing exports or imports such a file today. The Admin `bundle` Entity `9f9170da-538d-425c-8cb7-551640623eed` has only `name`, `defaultLabel` and `description`.
+
+**Decision:** deferred. The experiments (item 10) run with D5-a. Packages for the no-Git setting are analysed after them, together with D5-b.
+
+### D10. How does a Migration, a state record or a trace name a model state?
 
 **Status:** Proposed — D10-a. **Serves:** G2, G4, G8.
 
@@ -302,7 +326,7 @@ In setting G, the release package is the repository at a tag, cloned with the Gi
 
 **Decision:** D10-a. The Git tag carries the version name exactly, with no `v` prefix. The state record may store the commit id as information, never as the key. The live model is a `ModelStateSource` for previews and checks, but a stored Migration or state record always names a version.
 
-### D11 — Trace order and re-baseline with Git
+### D11. With Git, how are trace records ordered, and how is a re-baseline done when freezing is not allowed?
 
 **Status:** Proposed. **Serves:** G1, G8. **Narrows:** Q19 and Q30.
 
@@ -314,13 +338,25 @@ One Git commit usually adds several trace records, one per Miroir `commit`, and 
 
 Item 6 owns D11.
 
-### D12 — Structure steps from the diff
+### D12. Where do a migration's structure steps come from?
 
-**Status:** Proposed. **Serves:** G2. **Narrows:** Q10.
+**Status:** Proposed — D12-b. **Serves:** G2. **Follows:** Q10 (a draft "from traces and snapshot diffs").
 
-No UI emits `alterEntityAttribute` today: the Entity editor (`packages/miroir-react/src/EntityEditor.tsx`) saves the Entity row as an instance update, and only MiroirTests use the model Action. A trace of an attribute added in the UI is therefore an instance update of the Entity row, from which a migration cannot read a structure step.
+**What is at stake.** A migration has to say which attributes and Entities appear, disappear or are renamed between two versions. That decides which steps are backward-compatible (D1), what the contract phase drops (D2), and whether a removed column's values are carried over (section 5.3). Two sources can give these structure steps:
+- the **trace records**, which say what the designer did, in order;
+- the **diff** of the two model states, which says only what differs at the end.
 
-**Decision:** generation derives the expand and contract steps from an attribute-level diff of the two model states (D4). The trace replay checks that the two states agree (Q29). The traces also give the designer hints, such as the order of changes and a rename candidate when a remove and an add happen in the same record. Making the Entity editor emit model Actions is not required. Item 7 owns generation, and item 6 owns the diff.
+Traces come in two shapes today:
+- A model Action (`createEntity`, `alterEntityAttribute`, `renameEntity`, `dropEntity`) is already a structure step.
+- An attribute added in the Entity editor is traced as an update of the Entity row (section 5.1, step 2), because no UI emits `alterEntityAttribute`.
+
+| Option | Mechanism | Pros | Cons |
+|---|---|---|---|
+| D12-a. From the diff only | generation compares the two model states, attribute by attribute | works with traces off; one path | loses the order and the intent: a rename looks like a remove plus an add; no evidence of how the model got there |
+| **D12-b. From the traces, checked against the diff** ★ | generation reads the trace records in order. A model Action gives its structure step. An Entity row update gives attribute steps, by comparing the row before (from the replay) with the row after. The steps, applied to the `from` structure, must give the `to` structure exactly. The draft shows this comparison as evidence that it represents what was done to the model. | detailed and controllable; keeps the order and the intent (a rename Action, item 8); the draft carries its own proof | two paths, since it falls back to D12-a when traces are off |
+| D12-c. From the diff, with traces as hints only | the previous choice of this document | simple | throws away the most detailed source the epic produces |
+
+**Decision:** D12-b. With `evolutionTraces` off, generation uses D12-a and says so on the draft. Making the Entity editor emit model Actions is not required, since an Entity row update is turned into attribute steps. Item 7 owns generation, and item 6 owns the replay and the diff.
 
 ---
 
@@ -348,16 +384,16 @@ No UI emits `alterEntityAttribute` today: the Entity editor (`packages/miroir-re
 | Traces are written to the `model` section (`data` for Miroir), with one root per application and branch, one event per action, and no resolved Action | `evolutionTracePolicy.ts` `shouldTraceEvolutionEvent`, `evolutionTraceWriter.ts` | item 6 (Q16, Q28, D11) |
 | Versioning code sits in core and loads everywhere; model actions cannot be registered from outside core | `1_core/versioning/`, `2_domain/evolutionTrace*.ts` | #696 |
 | Snapshot diff covers Entities only, by uuid, with no attribute-level steps (`modelStructureMigration` is always `[]`) | `diffEntityVersionSnapshots`; `applicationVersionFreeze.ts`, line 1346 | item 6 (D4, D12) |
-| `MetaModel` has no Blob, TestConfiguration or Test collections | `miroirFundamentalType.ts` | item 6 (D4) |
+| `MetaModel` has no collections for Blob, TestConfiguration or Test rows (#703 added Blob and Test to the Entity list only) | `miroirFundamentalType.ts` | item 6 (D4) |
 | No `Migration` Entity, no runner, no deployment state record, no authoring and following roles | — | item 7 |
 | Creating a storage space empties an existing one on SQL, IndexedDB and MongoDB; only SQL has an `IfMissing` variant | `SqlDbStoreSection.ts`, `IndexedDbStoreSection.ts`, `MongoDbStoreSection.ts` | item 7 (D2) |
 | SQL data tables follow only model Actions; the Entity editor saves the row as an instance update | `sqlDbEntityStoreSectionMixin.ts`, `SqlDbStoreSection.ts`, `EntityEditor.tsx` | items 7 and 9 (D2) |
-| No attribute rename Action: `alterEntityAttribute` declares `addColumns`, `removeColumns` and `update`, and the SQL store applies only the first two | `ModelActionAlterEntityAttribute` | item 8 (#215) |
+| No attribute rename Action: `alterEntityAttribute` declares `addColumns`, `removeColumns` and `update`, and the SQL store applies only the first two | `ModelActionAlterEntityAttribute` | item 8 (#215), as a composite Action |
 | No action creates a Git tag | `gitAction_*` list | item 6 (D3) |
 | No restore of a frozen version | — | item 9 (D6) |
 | The clone installer puts `data` in the work tree and skips a deployment otherwise | `gitAction_installClonedDeployment`, `GitClonedDeployments.ts` | item 10 (D7) |
 | One deployment per application per process | `ApplicationDeploymentMap` | accepted (D5) |
-| No application feature switches | — | item 11 (D8) |
+| No application feature switches | — | item 11, #712 (D8) |
 
 ## 8. Epic items 6 to 11
 
@@ -365,10 +401,10 @@ No UI emits `alterEntityAttribute` today: the Entity editor (`packages/miroir-re
 |---|---|---|---|
 | 6 | **#708** Trace revival and model states | Q16 to Q20, Q24, Q28, Q29 (the checks at freeze and at Git commit), Q30; D3, D4 (`ModelStateSource`, replay, all-types attribute-level diff), D11; the `versioned-git` and `evolutionTraces` parameters; trace records and a writable `modelVersion` in both settings; the capability gate on model commits | #696 |
 | 7 | **#9 rescoped**: Migration, generation, runner, state record | Q10, Q21 to Q23, Q29 (the generation check); D1, D2 (phases, idempotent storage creation on every store, resumable runner), D5 (authoring and following roles), D10, D12 | 6 |
-| 8 | **#215** paired data migrations | fill steps tied to structure steps; the rename case of section 5.3 | 7 |
+| 8 | **#215** paired data migrations | fill steps tied to structure steps; the composite `renameEntityAttribute` Action of section 5.3 | 7 |
 | 9 | **#709** Restore points and rollback | Q11, Q31, Q32; D6; the add-only reconciliation shared with item 7 (D2) | 7 |
 | 10 | **#710** Experiments | the two test cases of section 9, built up as items 6 to 9 land; D7; a failure case (a run stopped halfway, then resumed) | 6, 7, 9 (8 for the rename variant) |
-| 11 | **Application feature switches** (new) | D8 | 10 |
+| 11 | **#712** Application feature switches | D8 | 10 |
 
 ## 9. The two first experiments
 
@@ -393,9 +429,4 @@ A third run of E1, on PostgreSQL, checks D2: the migration adds the columns, the
 
 ## Next step
 
-Once the goals and D1 to D12 are confirmed:
-1. Rescope #9 as item 7.
-2. Create the issue for item 11 if D8 is accepted.
-3. Write a TDD plan per item, following `miroir-analysis-to-tdd-plan`.
-
-The issues for items 6, 9 and 10 exist: #708, #709 and #710.
+The issues exist for every item: #708 (6), #9 rescoped (7), #215 (8), #709 (9), #710 (10) and #712 (11). Once the goals and the remaining decisions are confirmed, the next step is a TDD plan per item, following `miroir-analysis-to-tdd-plan`, starting with #708.
