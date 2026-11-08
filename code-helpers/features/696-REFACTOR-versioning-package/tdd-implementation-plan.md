@@ -40,7 +40,7 @@ This plan does **not** add versioning behaviour (#708, #9, #215, #709, #710, #71
 |---|---|---|---|
 | 0 | Characterize the versioning surface, trace writers and bundle size | ✅ | `versioningSurface.696.phase0.unit.test.ts`, `traceWriters.696.phase0.integ.test.ts` |
 | 1 | Tracer: the `versioning` capability refuses a freeze | ✅ | `versioningCapability.696.phase1.integ.test.ts` |
-| 2 | A remote client sends the freeze to the persistence process | ⬜ | `versioningServerRouted.696.phase2.integ.test.ts` |
+| 2 | A remote client sends the freeze to the persistence process | ✅ | `versioningServerRouted.696.phase2.integ.test.ts` |
 | 3 | The freeze runs from `@miroir-framework/versioning`, loaded on first use | ⬜ | `versioningLazyFreeze.696.phase3.integ.test.ts` + the four freeze MiroirTests |
 | 4 | Traces run from the package through a lazy recorder | ⬜ | `versioningLazyTraces.696.phase4.integ.test.ts` + `action.scenario.evolutionTrace` |
 | 5 | Versioning entries and action listings hidden when off | ⬜ | `versioningHidden.696.phase5.unit.test.ts` (UI) + `endpointActionListing.696.phase5.unit.test.ts` (core) |
@@ -215,7 +215,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core,actions,external
 
 ## Slice 2 — A remote client sends the freeze to the persistence process
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -257,6 +257,10 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,actions,external
 ```
 
 ### Realization
+
+- `SERVER_ROUTED_MIROIR_ACTION_TYPES` gains `freezeApplicationVersion`. A remote `DomainController` checks its own capability, then `forwardCapabilityAction`: it refuses with `pendingMiroirChangesError` (extracted from `openMiroirTransactionError` in `GitActions.ts`, same `InvalidAction` / `openMiroirTransaction`) when the open transaction holds changes of the application, forwards, and reloads the application with `reloadTouchedDeployments`.
+- `restActionHandler` passes the server's model environment of the application to a server-routed ModelEndpoint action (`MODEL_ACTIONS_ROUTED_TO_SERVER`). The freeze uses the model environment it is given when it is the target deployment's, else the local cache: the server's local cache has no application model.
+- Tests: `versioningServerRouted.696.phase2.integ` (4); freeze MiroirTests 12/12 and freeze reports 2/2 on `emulatedServer-filesystem`.
 
 ---
 

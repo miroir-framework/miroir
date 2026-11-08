@@ -62,6 +62,8 @@ const modelActionTypesForwardedToDomainController = [
   "createEntity",
   "dropEntity",
 ];
+/** #696: server-routed actions of ModelEndpoint, which need the model environment of their application. */
+const MODEL_ACTIONS_ROUTED_TO_SERVER: readonly string[] = ["freezeApplicationVersion"];
 const instanceWriteActionTypes = [
   "createInstance",
   "deleteInstance",
@@ -423,10 +425,17 @@ export async function restActionHandler(
 
   if (isServerRoutedMiroirAction(action)) {
     log.info("restActionHandler server-routed action", (action as { actionType?: string }).actionType);
+    // #696: a server-routed model action (the freeze) reads the model of its application from the stores
+    const modelEnvironment = MODEL_ACTIONS_ROUTED_TO_SERVER.includes((action as { actionType?: string }).actionType ?? "")
+      ? await serverModelEnvironments(persistenceStoreControllerManager).forApplication(
+          (action as any).payload?.application,
+          applicationDeploymentMap,
+        )
+      : undefined;
     const result = await domainController.handleAction(
       action as any,
       applicationDeploymentMap,
-      undefined,
+      modelEnvironment,
       undefined,
       undefined,
       urlParams?.authPrincipal,

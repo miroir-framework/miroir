@@ -188,6 +188,7 @@ import type {
 } from "../0_interfaces/3_controllers/GitAction";
 import {
   openMiroirTransactionError,
+  pendingMiroirChangesError,
   runGitAction,
   type GitCredentialStore,
   type GitDeploymentInstaller,
@@ -2620,10 +2621,12 @@ export class DomainController implements DomainControllerInterface, DomainContro
             description?: string;
             branch?: string;
           };
-          const targetModelEnvironment = this.currentModelEnvironment(
-            payload.application,
-            applicationDeploymentMap,
-          );
+          // #696: the server reads the model from its stores, and passes it; a client reads its local cache
+          const targetModelEnvironment =
+            currentModelEnvironment?.deploymentUuid !== undefined &&
+            currentModelEnvironment.deploymentUuid === applicationDeploymentMap[payload.application]
+              ? currentModelEnvironment
+              : this.currentModelEnvironment(payload.application, applicationDeploymentMap);
           const metaModel = targetModelEnvironment.currentModel;
 
           // Cross Entity may be absent from app model when init/filter did not create it.
@@ -3689,6 +3692,9 @@ export class DomainController implements DomainControllerInterface, DomainContro
         if (refused) {
           return refused;
         }
+        if (this.persistenceStoreAccessMode !== "local") {
+          return this.forwardCapabilityAction(domainAction, applicationDeploymentMap);
+        }
       }
       return this.runLibraryActionImplementation(
         domainAction,
@@ -4267,6 +4273,42 @@ export class DomainController implements DomainControllerInterface, DomainContro
     return reloadFailures.length === 0
       ? result
       : { ...result, returnedDomainElement: { ...(returned as object), reloadFailures } as any };
+  }
+
+  /**
+   * #696: a remote client sends an action that needs a process capability to the process that holds the
+   * stores, which checks its own capabilities and runs it. The client's unsaved Miroir changes of the
+   * application are refused first: the server would not see them. The client then reloads the application,
+   * whose model and versions the server changed.
+   */
+  private async forwardCapabilityAction(
+    domainAction: DomainAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+  ): Promise<Action2ReturnType> {
+    const application = (domainAction as { payload?: { application?: unknown } }).payload?.application;
+    if (typeof application === "string") {
+      const pendingChangesError = pendingMiroirChangesError(
+        this.currentTransaction().filter(
+          (change) => (change as { payload?: { application?: string } }).payload?.application === application,
+        ) as { payload?: { application?: string } }[],
+      );
+      if (pendingChangesError) {
+        return pendingChangesError;
+      }
+    }
+    const result = await this.forwardServerRoutedAction(domainAction, applicationDeploymentMap);
+    if (result instanceof Action2Error || typeof application !== "string") {
+      return result;
+    }
+    const reloaded = await this.reloadTouchedDeployments(
+      { status: "ok", returnedDomainElement: { touchedDeployments: [{ application }] } as any },
+      applicationDeploymentMap,
+    );
+    const reloadFailures = (reloaded as { returnedDomainElement?: { reloadFailures?: unknown[] } })
+      ?.returnedDomainElement?.reloadFailures;
+    return Array.isArray(reloadFailures) && reloadFailures.length > 0
+      ? { ...result, returnedDomainElement: { ...((result as any)?.returnedDomainElement ?? {}), reloadFailures } as any }
+      : result;
   }
 
   /**
