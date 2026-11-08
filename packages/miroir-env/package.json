@@ -40,7 +40,7 @@
   },
   "dependencies": {
     "@miroir-framework/core": "*",
-    "mongodb": "7.7.0",
+    "mongodb": "7.8.0",
     "pg": "8.23.1"
   },
   "devDependencies": {

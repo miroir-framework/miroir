@@ -52,8 +52,8 @@
   "dependencies": {
     "@miroir-framework/core": "*",
     "@reduxjs/toolkit": "2.13.0",
-    "immer": "11.1.21",
-    "zustand": "5.0.15"
+    "immer": "11.2.9",
+    "zustand": "5.0.16"
   },
   "devDependencies": {
     "copyfiles": "2.4.1",
