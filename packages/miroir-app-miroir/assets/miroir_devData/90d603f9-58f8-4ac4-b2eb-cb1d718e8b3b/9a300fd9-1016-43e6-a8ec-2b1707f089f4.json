@@ -1,0 +1,20 @@
+{
+  "uuid": "9a300fd9-1016-43e6-a8ec-2b1707f089f4",
+  "parentName": "BundleSizeMeasurement",
+  "parentUuid": "90d603f9-58f8-4ac4-b2eb-cb1d718e8b3b",
+  "application": "miroir-standalone-app-electron",
+  "measuredAt": "2026-11-08T13:13:08.423Z",
+  "eagerGzipBytes": 859564,
+  "baseline": 859564,
+  "previousBaseline": 865792,
+  "baselineChange": -6228,
+  "reason": "#696: freeze and trace code out of core, into @miroir-framework/versioning, loaded on first use",
+  "gitCommit": "02a7925c89c25cca7b9072234a591581482c3973",
+  "gitBranch": "claude/696-versioning-package-analysis",
+  "miroirVersion": "0.5.0-rc.1",
+  "eagerChunks": 8,
+  "eagerRawBytes": 4921417,
+  "totalChunks": 49,
+  "totalRawBytes": 14270008,
+  "totalGzipBytes": 3175259
+}

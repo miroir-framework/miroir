@@ -1,0 +1,20 @@
+{
+  "uuid": "94d2d876-767d-4158-932e-1e973f269a9c",
+  "parentName": "BundleSizeMeasurement",
+  "parentUuid": "90d603f9-58f8-4ac4-b2eb-cb1d718e8b3b",
+  "application": "miroir-standalone-app",
+  "measuredAt": "2026-11-08T13:13:06.809Z",
+  "eagerGzipBytes": 847187,
+  "baseline": 847187,
+  "previousBaseline": 847175,
+  "baselineChange": 12,
+  "reason": "#696: freeze and trace code out of core, into the lazy @miroir-framework/versioning (eager gzip 852431 before, measured at 9ada73c8f)",
+  "gitCommit": "02a7925c89c25cca7b9072234a591581482c3973",
+  "gitBranch": "claude/696-versioning-package-analysis",
+  "miroirVersion": "0.5.0-rc.1",
+  "eagerChunks": 68,
+  "eagerRawBytes": 4730822,
+  "totalChunks": 444,
+  "totalRawBytes": 22639737,
+  "totalGzipBytes": 5714831
+}

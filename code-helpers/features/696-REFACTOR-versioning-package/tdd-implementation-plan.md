@@ -45,7 +45,7 @@ This plan does **not** add versioning behaviour (#708, #9, #215, #709, #710, #71
 | 4 | Traces run from the package through a lazy recorder | ✅ | `versioningLazyTraces.696.phase4.integ.test.ts` + `action.scenario.evolutionTrace` |
 | 5 | Versioning entries and action listings hidden when off | ✅ | `versioningHidden.696.phase5.unit.test.ts` (UI) + `endpointActionListing.696.phase5.unit.test.ts` (core) |
 | 6 | MiroirTests tagged `versioning` skip when off | ✅ | `miroirTestRequirements.unit.test.ts` (extended) |
-| 7 | Bundle size record and guard check | ⬜ | `check_bundle_policy.py` on the three policies + `homePageLoad.unit` + recorded bundle size |
+| 7 | Bundle size record and guard check | ✅ | `check_bundle_policy.py` on the three policies + `homePageLoad.unit` + recorded bundle size |
 | 8 | Nonreg, docs, cleanup, AC | ⬜ | nonreg step `integ-696-versioning-capability-off` + full nonreg |
 
 ---
@@ -477,7 +477,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core,tooling
 
 ## Slice 7 — Bundle size record and guard check
 
-**Status:** ⬜ pending
+**Status:** ✅ done
 
 ### Goal
 
@@ -505,6 +505,11 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,tooling
 ```
 
 ### Realization
+
+- Standalone app, eager with the page: 852,431 bytes gzipped before (built at the branch base `9ada73c8f`), 847,187 after (−5.2 kB gzip, −30.8 kB raw); `@miroir-framework/core` renders 2,313,922 → 2,274,722 bytes. `@miroir-framework/versioning` is one lazy chunk of 47,620 bytes, reached through `import()` in react's `startMiroirClient`.
+- Electron renderer: baseline 865,792 → 859,564. Both recorded with `bundle-size:record` (two `BundleSizeMeasurement` rows in `miroir_devData`, the policies' `eagerGzipBaseline` updated).
+- Guard check: a temporary static import of the package in `src/index.tsx` made `check_bundle_policy.py` report 2 violations (the `lazy` allowlist and `forbiddenEager`); removed.
+- The three guards pass (sandbox with `--no-history`, as its smoke workflow runs it); `homePageLoad` 2/2; `build:server` green with the package external, as the Git package is.
 
 ---
 
