@@ -110,11 +110,11 @@ Library is the example: `Book` (attributes today: `name`, `year`, `citation`, `a
 ### 5.1 Setting N, no Git
 
 1. **Create a version.** The designer freezes the model as `1.0.0` from the freeze Runner (exists, #225). Since #706 the freeze snapshots every model element. With traces on (item 6), the freeze first checks that the previous version plus the trace records equal the live model (Q29). On a mismatch it refuses and lists the differences.
-2. **Change the model.** The designer adds `isbn` to `Book` in the Entity editor and commits. The commit writes one trace record (Q16), which holds an update of the `Book` Entity row. As read in the code, that update does not alter a SQL table:
+2. **Change the model.** The designer adds `isbn` to `Book` in the Entity editor and commits. The commit writes one trace record (Q16), which holds an update of the `Book` Entity row. That update does not alter a SQL table, as a non-regression test checks on PostgreSQL (#715, `entityRowUpdateSqlTable.integ`):
    - the commit replays the `updateInstance`, which goes to `PersistenceStoreController.upsertInstance`, then to the SQL `upsertInstance` (`sqlDbInstanceStoreSectionMixin.ts`), which runs `sequelizeModel.upsert` on the Entity table only;
    - only `alterEntityAttribute` runs `sync({ alter: true })` on the data table (`sqlDbEntityStoreSectionMixin.ts`), and no UI emits it.
 
-   D2 therefore reconciles the storage after any change to an Entity row. The PostgreSQL run of E1 (section 9) checks this point first. If the table turns out to follow, the reconciliation simply has nothing to add.
+   D2 therefore reconciles the storage after any change to an Entity row. When it does, the #715 test changes with it.
 3. **Freeze `1.1.0`.**
 4. **Prepare the migration** (item 7). "Prepare migration from `1.0.0` to `1.1.0`" replays the trace records on the `1.0.0` snapshot and compares the result with the `1.1.0` snapshot (Q29). It then writes a draft `Migration` from the trace records (D12). The update of the `Book` row becomes the step "add optional attribute `isbn` to `Book`". Applied to the `1.0.0` structure, the steps give exactly the `1.1.0` structure, and the draft shows this comparison as its evidence. The draft holds:
    - expand: none;
