@@ -217,6 +217,17 @@ describeSql("a committed Entity row update and the SQL data table (#715)", () =>
       "resetAndInitialize",
     );
     await run({ actionType: "rollback", endpoint: MODEL_ENDPOINT, payload: { application: testApplicationUuid } }, "rollback");
+
+    // every case starts from Note715 created and committed, so that each one also runs alone (-t)
+    await run(
+      {
+        actionType: "createEntity",
+        endpoint: MODEL_ENDPOINT,
+        payload: { application: testApplicationUuid, entities: [noteEntity] },
+      } as DomainAction,
+      "createEntity",
+    );
+    await commitLibrary();
   }, globalTimeOut);
 
   afterAll(async () => {
@@ -237,16 +248,6 @@ describeSql("a committed Entity row update and the SQL data table (#715)", () =>
   it(
     "createEntity, committed, makes a table with one column per attribute",
     async () => {
-      await run(
-        {
-          actionType: "createEntity",
-          endpoint: MODEL_ENDPOINT,
-          payload: { application: testApplicationUuid, entities: [noteEntity] },
-        } as DomainAction,
-        "createEntity",
-      );
-      await commitLibrary();
-
       expect(await noteColumns()).toEqual(["name", "parentName", "parentUuid", "uuid"]);
     },
     globalTimeOut,
