@@ -23,6 +23,7 @@ packages/miroir-core/dist/src/index.d.ts
 packages/miroir-core/node_modules*/
 packages/miroir-mcp/dist*/
 packages/miroir-git-isomorphic/dist*/
+packages/miroir-versioning/dist*/
 packages/miroir-server-library/dist*/
 packages/miroir-diagram-class/node_modules*/
 packages/miroir-diagram-class/dist*/
