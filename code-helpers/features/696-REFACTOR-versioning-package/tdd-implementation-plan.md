@@ -44,7 +44,7 @@ This plan does **not** add versioning behaviour (#708, #9, #215, #709, #710, #71
 | 3 | The freeze runs from `@miroir-framework/versioning`, loaded on first use | ✅ | `versioningLazyFreeze.696.phase3.integ.test.ts` + the four freeze MiroirTests |
 | 4 | Traces run from the package through a lazy recorder | ✅ | `versioningLazyTraces.696.phase4.integ.test.ts` + `action.scenario.evolutionTrace` |
 | 5 | Versioning entries and action listings hidden when off | ✅ | `versioningHidden.696.phase5.unit.test.ts` (UI) + `endpointActionListing.696.phase5.unit.test.ts` (core) |
-| 6 | MiroirTests tagged `versioning` skip when off | ⬜ | `miroirTestRequirements.unit.test.ts` (extended) |
+| 6 | MiroirTests tagged `versioning` skip when off | ✅ | `miroirTestRequirements.unit.test.ts` (extended) |
 | 7 | Bundle size record and guard check | ⬜ | `check_bundle_policy.py` on the three policies + `homePageLoad.unit` + recorded bundle size |
 | 8 | Nonreg, docs, cleanup, AC | ⬜ | nonreg step `integ-696-versioning-capability-off` + full nonreg |
 
@@ -440,7 +440,7 @@ npm run nonreg:filesystem -- --runner shared
 
 ## Slice 6 — MiroirTests tagged `versioning` skip when off
 
-**Status:** ⬜ pending
+**Status:** ✅ done
 
 ### Goal
 
@@ -468,6 +468,10 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core,tooling
 ```
 
 ### Realization
+
+- `miroirTestUnmetRequirement(instance, env?, capabilities?)` and `miroirTestSuiteForEnvironment(…, capabilities?)`: a suite tagged `versioning` (`VERSIONING_TAG`) is skipped with `VERSIONING_TESTS_NEED_VERSIONING` when the snapshot has the capability off. Without a snapshot the requirement counts as met, so callers that have none keep their behavior.
+- Snapshots passed: `RunMiroirTestAction` (the host's `getProcessCapabilities()`), `runIntegrationMiroirTestBatch` (new `processCapabilities` param, from Run all's context and the self-test's DomainController), and the CLI runner paths, legacy and `--shared`, through `setTestProcessCapabilitiesFromConfig(miroirConfig)` called by both vitest entries after the store startups (the shared path decides skips at collection, before any session exists). Core's `test-miroir-core.ts` has no versioning suite and no capability to read: unchanged.
+- Proofs: `miroirTestRequirements.unit` 8/8 (3 new), `runMiroirTestAction.unit` 14/14 (its fake DomainController answers the snapshot), the freeze suite 10/10 through the legacy and shared runners.
 
 ---
 

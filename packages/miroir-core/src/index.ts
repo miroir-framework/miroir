@@ -1979,6 +1979,8 @@ export {
   EVOLUTION_TRACE_TESTS_NEED_TRACES,
   miroirTestSuiteForEnvironment,
   miroirTestUnmetRequirement,
+  VERSIONING_TAG,
+  VERSIONING_TESTS_NEED_VERSIONING,
 } from "./5_tests/miroirTestRequirements.js";
 export {
   describeIntegrationTestSession,

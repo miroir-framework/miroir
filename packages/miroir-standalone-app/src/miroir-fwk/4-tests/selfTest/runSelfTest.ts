@@ -130,6 +130,7 @@ async function loadAndRun(
     runnerUuidIndex: buildRunnerUuidIndex((miroirModel.runners ?? []) as Runner[]),
     miroirDataInstances: () => readAppMiroirDataInstances(params.domainController, defaultSelfApplicationDeploymentMap),
     onSuiteDone: (suiteKey, results) => params.onSuiteDone?.(integrationSuiteKey(suiteKey), results),
+    processCapabilities: params.domainController.getProcessCapabilities?.(),
   });
   for (const [suiteKey, results] of Object.entries(integration.resultsBySuiteKey)) {
     resultsBySuiteKey[integrationSuiteKey(suiteKey)] = results;

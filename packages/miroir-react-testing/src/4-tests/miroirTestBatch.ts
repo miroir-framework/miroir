@@ -13,6 +13,7 @@ import {
   type LoggerInterface,
   type MiroirActivityTrackerInterface,
   type MiroirTestDefinition,
+  type ProcessCapabilities,
   type Runner,
 } from "@miroir-framework/core";
 
@@ -204,6 +205,8 @@ export async function runIntegrationMiroirTestBatch(params: {
   prepareReportTests?: UiIntegrationTestRunRequest["prepareReportTests"];
   miroirDataInstances?: UiIntegrationTestRunRequest["miroirDataInstances"];
   onSuiteDone?: (suiteKey: string, results: TestResultData[]) => void;
+  /** #696: the capabilities of the page's process; a suite tagged `versioning` is skipped when it is off. */
+  processCapabilities?: Pick<ProcessCapabilities, "versioning">;
 }): Promise<{ resultsBySuiteKey: MiroirTestSuiteResultsMap; failures: string[]; skipped: SkippedMiroirTestSuite[] }> {
   const sortedLaunchable = selectLaunchableIntegrationInstances(params.miroirTests);
   if (sortedLaunchable.length === 0) {
@@ -228,8 +231,9 @@ export async function runIntegrationMiroirTestBatch(params: {
       skipped.push({ suiteKey: identityKey, reason: REPORT_TESTS_NEED_THE_SANDBOX });
       continue;
     }
-    // #589: e.g. evolution-trace suites, when traces are off (always in the browser build)
-    const unmetRequirement = miroirTestUnmetRequirement(instance);
+    // #589, #696: e.g. evolution-trace suites when traces are off (always in the browser build), versioning
+    // suites when the capability is off
+    const unmetRequirement = miroirTestUnmetRequirement(instance, undefined, params.processCapabilities);
     if (unmetRequirement !== undefined) {
       skipped.push({ suiteKey: identityKey, reason: unmetRequirement });
       continue;
