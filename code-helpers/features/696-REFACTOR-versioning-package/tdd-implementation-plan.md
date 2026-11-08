@@ -546,6 +546,13 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,tooling
 
 Automated equivalent: `integ-696-versioning-capability-off` (steps 2 and 3 in the emulated server; step 4 is covered by the bundle policies, since the emulated server has no network) and the four freeze nonreg steps (step 5).
 
+### Realization
+
+- Nonreg: `unit-696-versioning-package` (the package's 187 tests, core's surface, catalog filter and test requirement, the hidden entries) and `integ-696-versioning-capability` (`tests/3_controllers/versioning/`, 6 files, 19 tests); one integration step instead of a capability-off one, since its files cover on and off together.
+- 8.3: the issue directories became `tests/3_controllers/versioning/` (files named by feature), `tests/4_view/versioningEntries.unit`, core `tests/1_core/versioningSurface.unit` and `tests/2_domain/endpointActionListing.capability.unit`. The files stay separate: each counts the loads of its own registration.
+- Docs: process-capabilities (table, defaults, config, product shapes, per-application section, refusals), versioning (the package section), testing (the tag), code-splitting (the chunk and the sizes), creating-actions (`requiredCapability`), release-process (13 published packages). AGENTS.md is at its size cap (`test_agent_instructions.py`): it gains `/versioning` in the build order only, with a few words trimmed elsewhere; the package's tests run in the CI core job.
+- Full `nonreg:filesystem --runner shared` (4 jobs): every step passed after the fix of AGENTS.md's size. The shared group `standalone-app-runner-suites` failed at session init after `runner.createApplication` (the admin store's data section had no Entity) in both full runs of this branch, and the runner reran its 17 suites one by one, all green. The group passes alone, with worker `w3` and under CPU load; whether it predates #696 is not established.
+
 ### AC checklist (#696)
 
 | Criterion | Proven by | Status |
