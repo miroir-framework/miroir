@@ -24,6 +24,7 @@ An action is declared in an **Endpoint** (Entity `3d8da4d4-8f76-4bb4-9212-14869d
 `actionImplementation` is one of:
 
 - `{ "actionImplementationType": "libraryImplementation", "inMemoryImplementationFunctionName": "handleAction_<actionType>" }`: a TypeScript function registered in `miroirActionImplementations` (`packages/miroir-core/src/3_controllers/ActionImplementations.ts`), like the in-memory transformer library.
+  It may add `"requiredCapability"`, a process capability name (today `"versioning"`): the DomainController refuses the action with `FeatureUnavailable` when the capability is off, a client talking to a server sends the action to the server, and the Endpoint action catalog (MCP tools, CLI commands, CopilotKit actions) leaves it out. A package outside core provides such implementations through `registerLazyActionImplementations`, loaded on the first action that needs one (#696; example: `@miroir-framework/versioning`).
 - `{ "actionImplementationType": "compositeActionTemplate", "definition": { … } }`: a composite action template, resolved against the action's payload and run by `DomainController`.
 
 `DomainController.handleAction` finds the definition from the action's `endpoint` and `actionType` (Miroir Endpoints come from the bundled meta-model, application Endpoints from the application's model) and runs its implementation. It holds no list of action types.

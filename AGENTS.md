@@ -22,6 +22,7 @@ Sibling repos, linked locally only when regenerating types from schemas: **jzod*
   npm run miroir-env -- check --strict --tracked-clean
   npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json
   npm run test -w @miroir-framework/core -- ''
+  npm run build -w @miroir-framework/versioning && npx tsc --noEmit --skipLibCheck -p packages/miroir-versioning/tsconfig.json && npm run test -w @miroir-framework/versioning
   ```
   Also typecheck other packages you touched (`npx tsc --noEmit --skipLibCheck -p packages/<pkg>/tsconfig.json`). Never run `tsc` from the repo root: the root `tsconfig.json` has no `include` and loads the whole monorepo.
 - **Non-regression** (`scripts/run-nonreg.py`, steps in `scripts/nonreg-manifest.json`, snapshots in `test-results/nonreg/`):
@@ -63,7 +64,7 @@ Build order (`build-all.sh` is canonical; folders are `packages/miroir-*`, publi
 1. Siblings `jzod`, `jzod-ts`, when linked locally
 2. `miroir-app-miroir`, `miroir-app-admin` (ML schemas, bundled into core)
 3. `@miroir-framework/core` (foundation, generated types)
-4. `miroir-localcache*`, `@miroir-framework/store-*` (`filesystem`, `indexeddb`, `postgres`, `mongodb`, `bundled`; see `docs/reference/data-architecture-deployments.md`)
+4. `miroir-localcache*`, `@miroir-framework/store-*` (`filesystem`, `indexeddb`, `postgres`, `mongodb`, `bundled`; see `docs/reference/data-architecture-deployments.md`), `@miroir-framework/versioning` (the freeze and evolution traces, loaded on first use when the `versioning` process capability is on; `docs/reference/versioning.md`)
 5. `@miroir-framework/react`, `@miroir-framework/mcp`, `miroir-diagram-class`, `miroir-react-testing`
 6. `@miroir-framework/server`, `/cli`, `miroir-ai`
 7. `miroir-standalone-app`

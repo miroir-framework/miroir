@@ -8,7 +8,7 @@ Related analyses: [694 epic](../694-EPIC-safe-application-evolution/analysis.md)
 Key sources: [`applicationVersionFreeze.ts`](../../../packages/miroir-core/src/1_core/versioning/applicationVersionFreeze.ts), [`versioningMode.ts`](../../../packages/miroir-core/src/1_core/versioning/versioningMode.ts), [`evolutionTrace*.ts`](../../../packages/miroir-core/src/2_domain/), [`Deployment.ts`](../../../packages/miroir-core/src/1_core/Deployment.ts), [`DomainController.ts`](../../../packages/miroir-core/src/3_controllers/DomainController.ts), [`ActionImplementations.ts`](../../../packages/miroir-core/src/3_controllers/ActionImplementations.ts), [`constants.ts`](../../../packages/miroir-core/src/1_core/constants.ts) (`SERVER_ROUTED_MIROIR_ACTION_TYPES`), [`RestServer.ts`](../../../packages/miroir-core/src/4_services/RestServer.ts), [`DomainControllerActionHost.ts`](../../../packages/miroir-core/src/0_interfaces/3_controllers/DomainControllerActionHost.ts), [`processCapabilities.ts`](../../../packages/miroir-core/src/1_core/processCapabilities.ts), [`ProcessCapabilitiesHttp.ts`](../../../packages/miroir-core/src/4_services/ProcessCapabilitiesHttp.ts), [`EndpointActionCatalog.ts`](../../../packages/miroir-core/src/2_domain/EndpointActionCatalog.ts), [`miroirTestRequirements.ts`](../../../packages/miroir-core/src/5_tests/miroirTestRequirements.ts)
 
 **Document role:** analysis and decision record.
-**Status:** decisions proposed (2026-11-08), to be confirmed by the user.
+**Status:** implemented (2026-11-08) as recommended, with two revisions recorded in the TDD plan: the fail-closed snapshot keeps `versioning: true` (D6), and the trace writers stay where they were (D5). D2's refusal with an open transaction and D9's reworded acceptance criterion are stated in the PR for confirmation.
 **Document history:**
 - 2026-11-08: first draft, then an adversarial review (a code fact check and an attack on the design). The review added D2 (the freeze runs in the persistence process, as Git does), replaced the new registry of D3 by the existing `registerMiroirActionImplementation`, kept the baseline builder in core (D5), switched D8 from new schema fields to code until #712, and corrected several facts: the function that adds the baseline, the constants that are defined in the files that leave, the action listings for MCP, CLI and CopilotKit, the third bundle policy, and the line ranges.
 
@@ -56,7 +56,7 @@ Legend:
 
 **What is at stake.** A designer of the Library application who never freezes still loads, today, 1859 lines of freeze code, 755 lines of trace code and about 1080 lines of freeze and trace orchestration in `DomainController`, in the browser's eager chunk and in the server. If the cut is drawn too wide, core loses what every process needs: `getApplicationSection` routes `EntityVersion` rows to the `modelVersion` section for every application, and both localcaches check `assertVersioningEnabledImmutable` on every SelfApplication update.
 
-**Status:** Proposed — D1-a. **Serves:** G1, G2.
+**Status:** Implemented — D1-a. **Serves:** G1, G2.
 
 | Option | What leaves core | Pros | Cons |
 |---|---|---|---|
@@ -88,7 +88,7 @@ Legend:
 
 **What is at stake.** Today the freeze runs in the browser when the browser talks to `miroir-server`: the ModelEndpoint action goes through `handleMiroirAction`, `runLibraryActionImplementation` and the local `handleModelAction` switch, and its reads and writes go over HTTP (`persistenceStoreLocalOrRemote`). `RestServer.ts` (lines 52–63) does not forward `freezeApplicationVersion` to the server's DomainController. So the browser would have to fetch the versioning package, and the capability, which is computed in the persistence process, would be checked in the client: a stale tab or an older client could still write `modelVersion` rows to a server where versioning is off. Git avoids both: the client forwards `gitAction_*` with `forwardServerRoutedAction` (`DomainController.ts` line 4268), the server lists them in `SERVER_ROUTED_MIROIR_ACTION_TYPES` (`constants.ts`), and checks the capability itself (line 4013).
 
-**Status:** Proposed — D2-a. **Serves:** G1, G3.
+**Status:** Implemented — D2-a. **Serves:** G1, G3.
 
 | Option | Where it runs | Pros | Cons |
 |---|---|---|---|
@@ -101,7 +101,7 @@ Legend:
 
 **What is at stake.** `freezeApplicationVersion` runs today through `miroirActionImplementations.handleAction_freezeApplicationVersion`, which maps to the shared `handleModelAction` handler (`ActionImplementations.ts` line 94) and so to the freeze case of the switch. Once the freeze leaves core, `runLibraryActionImplementation` (`DomainController.ts` line 3736) finds no implementation and returns `InvalidAction` "unknown library implementation", which tells an MCP client nothing. When #709 adds `restoreApplicationVersion`, someone would have to edit core again, which the comment on #696 asks to avoid. Core already has an extension point: `registerMiroirActionImplementation(name, handler)` (`ActionImplementations.ts` line 149, #575), which `miroirCoreStartup` uses for `handleAction_runMiroirTestAction`.
 
-**Status:** Proposed — D3-b. **Serves:** G1, G3, G4.
+**Status:** Implemented — D3-b. **Serves:** G1, G3, G4.
 
 | Option | Mechanism | Pros | Cons |
 |---|---|---|---|
@@ -118,7 +118,7 @@ Legend:
 
 **What is at stake.** The freeze reads the target application's model (`currentModelEnvironment`), creates missing history Entities through `handleModelAction` (16 calls in the freeze case), reads `modelVersion` and data rows (`readLocalPersistenceSectionInstances`, else a `getInstances` persistence action), and writes rows through `handleInstanceAction`. A package that received the `DomainController` class could call anything and would break the layering rule of `AGENTS.md` (implementations flow downwards only).
 
-**Status:** Proposed — D4-a. **Serves:** G2, G4.
+**Status:** Implemented — D4-a. **Serves:** G2, G4.
 
 | Option | Mechanism | Pros | Cons |
 |---|---|---|---|
@@ -131,7 +131,7 @@ Legend:
 
 **What is at stake.** `maybeRecordEvolutionTrace` runs after each write of `handleInstanceAction` (`DomainController.ts` line 1450; transactional instance actions replayed at commit, lines 2500–2541, are not traced) and after each model action replayed by a commit (line 2567). It returns at once when `isEvolutionTraceEnabled()` is false, which reads `MIROIR_EVOLUTION_TRACE` on every call (tests set it per test, `runSelfTestInteg.integ.test.ts` line 90). If the move loaded the package on every call, each Library save would pay for it. If traces lost their hook, `action.scenario.evolutionTrace` would fail with traces on, and #708 would have nothing to revive. Separately, the init baseline is written by a synchronous builder in `1_core` whenever the init creates the trace Entity, even with traces off; a deployment created with traces off and traced later relies on it.
 
-**Status:** Proposed — D5-b. **Serves:** G1, G2.
+**Status:** Implemented — D5-b. **Serves:** G1, G2.
 
 | Option | Mechanism | Pros | Cons |
 |---|---|---|---|
@@ -145,7 +145,7 @@ Legend:
 
 **What is at stake.** Miroir's own SelfApplication is `versioned-internal`, and the test profiles (`environments/test-*.json`) set no `features`. If a missing `versioning` meant off, the Versioning AppBar item would disappear for every current user after an upgrade, and the five MiroirTests tagged `versioning` would skip in every nonreg run unless each profile were edited. The sandbox shows the Versioning item for Miroir today, but its bundled store cannot write `modelVersion`, so the freeze it offers fails.
 
-**Status:** Proposed — D6-a. **Serves:** G2.
+**Status:** Implemented — D6-a. **Serves:** G2.
 
 | Option | Default | Pros | Cons |
 |---|---|---|---|
@@ -154,7 +154,7 @@ Legend:
 
 **What the capability buys when it is on by default.** Laziness, not the capability, keeps a process small: with D2 and D3, a process with versioning on loads nothing until the first versioning action or traced write. Turning the capability off hides the entries, refuses the actions, and lets a packaged server ship without the package.
 
-**Version skew.** `assertProcessCapability` needs `=== true`. A new client reading `/capabilities` from an older server, which has no `versioning` field, reads it as true (the D6 default, applied where the snapshot is parsed); the fail-closed snapshot (`FAIL_CLOSED_PROCESS_CAPABILITIES`, `ProcessCapabilitiesHttp.ts` line 8) gets `versioning: false`. Since the server refuses the actions itself (D2), a wrong client reading can only show or hide an entry.
+**Version skew.** `assertProcessCapability` needs `=== true`. A new client reading `/capabilities` from an older server, which has no `versioning` field, reads it as true (the D6 default, applied where the snapshot is parsed); the fail-closed snapshot (`FAIL_CLOSED_PROCESS_CAPABILITIES`, `ProcessCapabilitiesHttp.ts` line 8) gets `versioning: true` (revised in the plan review: `false` would hide the freeze Runner where no snapshot is passed, and the server refuses anyway). Since the server refuses the actions itself (D2), a wrong client reading can only show or hide an entry.
 
 **Decision:** D6-a. `process-capabilities.md` changes in two places: the sentence on missing `features.*` values, and the section that says versioning is not a process flag (D7).
 
@@ -162,7 +162,7 @@ Legend:
 
 **What is at stake.** #273 D4 kept versioning out of the process snapshot on purpose: whether Library can be frozen depends on Library's mode, not on the process. The capability adds a process-level question beside it. A designer browsing Library (`versioned-internal`) in a process with versioning off must not see a Versioning item that leads to a refused freeze; a designer browsing an `unversioned` application with versioning on must not see it either, as today.
 
-**Status:** Proposed — D7-a. **Serves:** G3.
+**Status:** Implemented — D7-a. **Serves:** G3.
 
 | Option | Rule | Pros | Cons |
 |---|---|---|---|
@@ -181,7 +181,7 @@ Legend:
 
 The MCP tool Runner is hidden in code by its `runnerType` (`RunnerView.tsx` line 399), and `@miroir-framework/react` already imports `runnerFreezeApplicationVersion` (`runnerDefinitionApplication.ts`) and `reportVersioning` (`AppBar.tsx` line 28). The epic gives #712 a switch on Reports, Menu items and Runners (epic D8); a field added now would pre-empt its design.
 
-**Status:** Proposed — D8-c. **Serves:** G3.
+**Status:** Implemented — D8-c. **Serves:** G3.
 
 | Option | Mechanism | Pros | Cons |
 |---|---|---|---|
@@ -195,7 +195,7 @@ The MCP tool Runner is hidden in code by its `runnerType` (`RunnerView.tsx` line
 
 **What is at stake.** The capability is read at runtime: the browser receives it from `GET /capabilities` (computed in `createMiroirServerApp.ts` line 135), after the bundle is built. One client build serves a server with versioning on and another with it off. With D2, a browser talking to a server never runs a versioning action, but the same app build also contains `startMiroirClient`'s emulated-server path, which registers the lazy handlers.
 
-**Status:** Proposed — D9-a. **Serves:** G1.
+**Status:** Implemented — D9-a. **Serves:** G1.
 
 | Option | Meaning | Check |
 |---|---|---|
@@ -208,7 +208,7 @@ The MCP tool Runner is hidden in code by its `runnerType` (`RunnerView.tsx` line
 
 **What is at stake.** Five MiroirTests carry the `versioning` tag: `action.domainController.freezeApplicationVersion`, `runner.freezeApplicationVersion`, `report.freezeRunner`, `report.freezeRunner.unversioned` and `action.scenario.evolutionTrace`. In a process with versioning off they would fail with `FeatureUnavailable` instead of saying why they did not run. #589 made `miroirTestUnmetRequirement(instance, env)` skip `evolution-trace` suites when traces are off.
 
-**Status:** Proposed — D10-a. **Serves:** G2, G3.
+**Status:** Implemented — D10-a. **Serves:** G2, G3.
 
 | Option | Mechanism | Pros | Cons |
 |---|---|---|---|

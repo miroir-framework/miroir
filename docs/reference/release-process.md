@@ -246,7 +246,7 @@ consumer project with `file:` dependencies on every tarball packed so far and ru
 product version — proof that resolution used the packed tarball, not a stray `"*"`
 or registry hit. **Bundle-only layers are exempt**: if a layer contains no
 `distributeable` package it returns immediately. Since #664 `distributeable` is the published set
-(`scripts/published-packages.json`), so all 12 `@miroir-framework/*` packages are checked from P0 on; the
+(`scripts/published-packages.json`), so all 13 `@miroir-framework/*` packages are checked from P0 on; the
 installs also fetch every external dependency of the set from the registry, which proves they exist there.
 
 Between packing and the consumer checks, `check_release_tarballs()` (#664) refuses the release when a
@@ -496,8 +496,9 @@ rewrite the document.
 
 The packages of the published set carry their published names in the repo: `@miroir-framework/core`, `/react`,
 `/server` (folder `packages/miroir-server-library`), `/store-postgres`, `/store-filesystem`, `/store-indexeddb`,
-`/store-mongodb`, `/store-bundled`, `/env`, `/mcp`, `/cli`, and since #658 `/create-app` (folder
-`packages/miroir-create-app`). Folders keep their `miroir-*` names, so a script that
+`/store-mongodb`, `/store-bundled`, `/env`, `/mcp`, `/cli`, since #658 `/create-app` (folder
+`packages/miroir-create-app`), and since #696 `/versioning` (folder `packages/miroir-versioning`, a dependency of
+`/react` and `/server`). Folders keep their `miroir-*` names, so a script that
 lists folders selects a workspace with `-w packages/<folder>`. `miroir-app-miroir`, `miroir-app-admin`,
 `miroir-localcache-redux` and `miroir-localcache-zustand` stay private: #652 and #656 bundle them into published
 packages (§10e). Each published

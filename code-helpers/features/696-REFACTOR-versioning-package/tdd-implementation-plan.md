@@ -46,7 +46,7 @@ This plan does **not** add versioning behaviour (#708, #9, #215, #709, #710, #71
 | 5 | Versioning entries and action listings hidden when off | ✅ | `versioningHidden.696.phase5.unit.test.ts` (UI) + `endpointActionListing.696.phase5.unit.test.ts` (core) |
 | 6 | MiroirTests tagged `versioning` skip when off | ✅ | `miroirTestRequirements.unit.test.ts` (extended) |
 | 7 | Bundle size record and guard check | ✅ | `check_bundle_policy.py` on the three policies + `homePageLoad.unit` + recorded bundle size |
-| 8 | Nonreg, docs, cleanup, AC | ⬜ | nonreg step `integ-696-versioning-capability-off` + full nonreg |
+| 8 | Nonreg, docs, cleanup, AC | ✅ | nonreg step `integ-696-versioning-capability-off` + full nonreg |
 
 ---
 
@@ -515,7 +515,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,tooling
 
 ## Slice 8 — Nonreg, docs, cleanup, AC
 
-**Status:** ⬜ pending
+**Status:** ✅ done
 
 ### 8.1 Nonreg
 
@@ -550,11 +550,11 @@ Automated equivalent: `integ-696-versioning-capability-off` (steps 2 and 3 in th
 
 | Criterion | Proven by | Status |
 |---|---|---|
-| Core no longer imports freeze or trace implementations | `versioningSurface.unit` (Slices 3, 4), `tsc` of core with the files gone | ⬜ |
-| With the capability off, a client build does not include the package (reworded by D9: a process with it off never loads it; a browser talking to a server never fetches it) | `versioningLazyFreeze` and `versioningLazyTraces` loader counts; the three bundle policies | ⬜ |
-| The Versioning AppBar item, the freeze Runner and the trace reports are hidden when off | `versioningEntries.unit` | ⬜ |
-| The remaining actions return `FeatureUnavailable` | `versioningCapability.integ`, `versioningServerRouted` | ⬜ |
-| The core keeps only the interfaces and the section routing | `versioningSurface.unit` | ⬜ |
-| Bundle-size history shows the core shrinking | the `BundleSizeMeasurement` recorded in Slice 7 | ⬜ |
-| The freeze MiroirTests and the nonreg steps pass with the capability on | the four freeze steps and `integ-action.scenario.evolutionTrace` in the full nonreg | ⬜ |
-| Model actions registrable from outside core (issue comment) | `versioningLazyFreeze` (the freeze is such an action) | ⬜ |
+| Core no longer imports freeze or trace implementations | `versioningSurface.unit` (Slices 3, 4), `tsc` of core with the files gone | ✅ |
+| With the capability off, a client build does not include the package (reworded by D9: a process with it off never loads it; a browser talking to a server never fetches it) | `versioningLazyFreeze` and `versioningLazyTraces` loader counts; the three bundle policies | ✅ |
+| The Versioning AppBar item, the freeze Runner and the trace reports are hidden when off | `versioningEntries.unit` | ✅ |
+| The remaining actions return `FeatureUnavailable` | `versioningCapability.integ`, `versioningServerRouted` | ✅ |
+| The core keeps only the interfaces and the section routing | `versioningSurface.unit` | ✅ |
+| Bundle-size history shows the core shrinking | the `BundleSizeMeasurement` recorded in Slice 7 | ✅ |
+| The freeze MiroirTests and the nonreg steps pass with the capability on | the four freeze steps and `integ-action.scenario.evolutionTrace` in the full nonreg | ✅ |
+| Model actions registrable from outside core (issue comment) | `versioningLazyFreeze` (the freeze is such an action) | ✅ |
