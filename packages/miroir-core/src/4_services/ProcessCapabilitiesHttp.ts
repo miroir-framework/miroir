@@ -14,6 +14,8 @@ export const FAIL_CLOSED_PROCESS_CAPABILITIES: ProcessCapabilities = {
   creatableStoreTypes: [],
   storeAdministration: false,
   git: false,
+  // #696: a UI default only (the server refuses a versioning action itself), as designerTools
+  versioning: true,
 };
 
 export type ProcessCapabilitiesHttpResult = {
@@ -69,5 +71,6 @@ export async function fetchProcessCapabilities(
   if (!capabilities || typeof capabilities !== "object") {
     throw new Error("fetchProcessCapabilities: missing capabilities in response");
   }
-  return capabilities as ProcessCapabilities;
+  // #696: a server older than the `versioning` capability offers versioning
+  return { versioning: true, ...(capabilities as Partial<ProcessCapabilities>) } as ProcessCapabilities;
 }

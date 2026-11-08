@@ -39,7 +39,7 @@ This plan does **not** add versioning behaviour (#708, #9, #215, #709, #710, #71
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
 | 0 | Characterize the versioning surface, trace writers and bundle size | ✅ | `versioningSurface.696.phase0.unit.test.ts`, `traceWriters.696.phase0.integ.test.ts` |
-| 1 | Tracer: the `versioning` capability refuses a freeze | ⬜ | `versioningCapability.696.phase1.integ.test.ts` |
+| 1 | Tracer: the `versioning` capability refuses a freeze | ✅ | `versioningCapability.696.phase1.integ.test.ts` |
 | 2 | A remote client sends the freeze to the persistence process | ⬜ | `versioningServerRouted.696.phase2.integ.test.ts` |
 | 3 | The freeze runs from `@miroir-framework/versioning`, loaded on first use | ⬜ | `versioningLazyFreeze.696.phase3.integ.test.ts` + the four freeze MiroirTests |
 | 4 | Traces run from the package through a lazy recorder | ⬜ | `versioningLazyTraces.696.phase4.integ.test.ts` + `action.scenario.evolutionTrace` |
@@ -160,7 +160,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke --only integ-action.d
 
 ## Slice 1 — Tracer: the `versioning` capability refuses a freeze
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 ### Goal
 
@@ -206,6 +206,10 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core,actions,external
 ```
 
 ### Realization
+
+- `ProcessCapabilities.versioning` (`features.versioning !== false`, off in the sandbox), in the three `features` schemas; fail-closed `true`; `fetchProcessCapabilities` reads a missing field as `true`.
+- Endpoint `libraryImplementation.requiredCapability` (enum of the boolean capabilities); ModelEndpoint's `freezeApplicationVersion` requires `versioning`. `DomainController.handleApplicationAction` refuses with `assertProcessCapability` before running a library implementation. In the emulated profile the client checks first; Slice 2 adds the server's check.
+- Tests: `versioningCapability.696.phase1.integ` (4), `processCapabilities.273.phase1` (+1 case, literals gain `versioning: true`), `processCapabilitiesHttp.273.phase2` (+1 case). Model validation 197/197; core, server-library, react, Electron typecheck. The scoped nonreg runs with Slice 2's.
 
 ---
 

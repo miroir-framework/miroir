@@ -87,7 +87,15 @@ if (runThis) {
       stub.setProcessCapabilities(snapshot);
       await expect(
         fetchProcessCapabilities(stub, "https://localhost:3080/capabilities"),
-      ).resolves.toEqual(snapshot);
+      ).resolves.toEqual({ ...snapshot, versioning: true });
+    });
+
+    it("#696: an answer without versioning parses as on, and an answer with it keeps it", async () => {
+      const stub = new RestClientStub("http://test");
+      stub.setProcessCapabilities(snapshot);
+      expect((await fetchProcessCapabilities(stub)).versioning).toBe(true);
+      stub.setProcessCapabilities({ ...snapshot, versioning: false } as ProcessCapabilities);
+      expect((await fetchProcessCapabilities(stub)).versioning).toBe(false);
     });
   });
 }

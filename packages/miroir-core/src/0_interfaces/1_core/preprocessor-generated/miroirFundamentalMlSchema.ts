@@ -17642,6 +17642,10 @@ export const miroirFundamentalMlSchema = {
               "git": {
                 "type": "boolean",
                 "optional": true
+              },
+              "versioning": {
+                "type": "boolean",
+                "optional": true
               }
             }
           }
@@ -17729,6 +17733,10 @@ export const miroirFundamentalMlSchema = {
                 "optional": true
               },
               "git": {
+                "type": "boolean",
+                "optional": true
+              },
+              "versioning": {
                 "type": "boolean",
                 "optional": true
               }
@@ -17989,6 +17997,10 @@ export const miroirFundamentalMlSchema = {
                 "optional": true
               },
               "git": {
+                "type": "boolean",
+                "optional": true
+              },
+              "versioning": {
                 "type": "boolean",
                 "optional": true
               }
@@ -26628,6 +26640,24 @@ export const miroirFundamentalMlSchema = {
                   "sqlImplementationFunctionName": {
                     "type": "string",
                     "optional": true
+                  },
+                  "requiredCapability": {
+                    "type": "enum",
+                    "optional": true,
+                    "definition": [
+                      "ai",
+                      "mcp",
+                      "designerTools",
+                      "git",
+                      "storeAdministration",
+                      "versioning"
+                    ],
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Required process capability",
+                        "description": "#696: the process capability the implementation needs; without it the action returns FeatureUnavailable, and listings leave it out"
+                      }
+                    }
                   }
                 }
               },
@@ -26950,6 +26980,24 @@ export const miroirFundamentalMlSchema = {
                                   "sqlImplementationFunctionName": {
                                     "type": "string",
                                     "optional": true
+                                  },
+                                  "requiredCapability": {
+                                    "type": "enum",
+                                    "optional": true,
+                                    "definition": [
+                                      "ai",
+                                      "mcp",
+                                      "designerTools",
+                                      "git",
+                                      "storeAdministration",
+                                      "versioning"
+                                    ],
+                                    "tag": {
+                                      "value": {
+                                        "defaultLabel": "Required process capability",
+                                        "description": "#696: the process capability the implementation needs; without it the action returns FeatureUnavailable, and listings leave it out"
+                                      }
+                                    }
                                   }
                                 }
                               },

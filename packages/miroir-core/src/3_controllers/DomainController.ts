@@ -3682,6 +3682,14 @@ export class DomainController implements DomainControllerInterface, DomainContro
       currentActionDefinition.actionImplementation.actionImplementationType ==
       "libraryImplementation"
     ) {
+      // #696: an implementation that needs a process capability is refused without it
+      const requiredCapability = currentActionDefinition.actionImplementation.requiredCapability;
+      if (requiredCapability) {
+        const refused = assertProcessCapability(requiredCapability, this.resolveProcessCapabilities());
+        if (refused) {
+          return refused;
+        }
+      }
       return this.runLibraryActionImplementation(
         domainAction,
         currentActionDefinition.actionImplementation.inMemoryImplementationFunctionName,

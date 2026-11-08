@@ -24,6 +24,11 @@ export type ProcessCapabilities = {
   designerTools: boolean;
   /** #679: Git operations on the repository of a filesystem deployment (`features.git`). */
   git: boolean;
+  /**
+   * #696: application versioning, the freeze and the evolution traces (`features.versioning`). On unless
+   * set to false; off in the sandbox. Its code is in `@miroir-framework/versioning`, loaded on first use.
+   */
+  versioning: boolean;
 };
 
 export type ProcessCapabilityName =
@@ -33,7 +38,8 @@ export type ProcessCapabilityName =
   | "storeAdministration"
   | "availableStoreTypes"
   | "designerTools"
-  | "git";
+  | "git"
+  | "versioning";
 
 type ProcessCapabilitiesConfig = {
   features?: {
@@ -45,6 +51,8 @@ type ProcessCapabilitiesConfig = {
     designerTools?: boolean;
     /** #679: Git operations from the UI, off unless true. */
     git?: boolean;
+    /** #696: application versioning, on unless false. */
+    versioning?: boolean;
   };
 };
 
@@ -115,6 +123,7 @@ export function getProcessCapabilities({
     creatableStoreTypes: availableStoreTypes.filter((storageType) => storageType !== "bundled"),
     storeAdministration: hasNonBundledAdminStorageType(adminStoreFactoryRegister),
     git: features?.git === true,
+    versioning: features?.versioning !== false && environment !== "sandbox",
   };
 }
 
