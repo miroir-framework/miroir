@@ -1026,7 +1026,8 @@
         },
         "actionImplementation": {
           "actionImplementationType": "libraryImplementation",
-          "inMemoryImplementationFunctionName": "handleAction_freezeApplicationVersion"
+          "inMemoryImplementationFunctionName": "handleAction_freezeApplicationVersion",
+          "requiredCapability": "versioning"
         }
       }
     ]

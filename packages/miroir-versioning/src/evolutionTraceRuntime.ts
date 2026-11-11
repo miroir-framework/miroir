@@ -1,17 +1,15 @@
-import type {
-  ApplicationEvolutionTrace,
-  ApplicationEvolutionTraceEvent,
-  InstanceCUDAction,
-} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import type { Uuid } from "../0_interfaces/1_core/EntityVersion.js";
-import type { DomainState } from "../0_interfaces/2_domain/DomainControllerInterface.js";
-import { getApplicationSection } from "../1_core/Model.js";
 import {
   EVOLUTION_TRACE_ENTITY_UUID,
   EVOLUTION_TRACE_EVENT_ENTITY_UUID,
   generateEvolutionBaseline,
+  getApplicationSection,
+  type ApplicationEvolutionTrace,
+  type ApplicationEvolutionTraceEvent,
+  type DomainState,
   type EvolutionTraceDeploymentState,
-} from "./evolutionTraceBaseline.js";
+  type InstanceCUDAction,
+  type Uuid,
+} from "@miroir-framework/core";
 import {
   produceEvolutionTraceEvent,
   type EvolutionTraceableAction,

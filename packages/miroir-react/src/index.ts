@@ -245,6 +245,7 @@ export * from "./components/Page/GlobalFeedbackGlow.js";
 export * from "./components/Page/PageContainer.js";
 export * from "./components/Page/appBarReportNavigation.js";
 export * from "./components/Page/applicationModelScopeMenu.js";
+export * from "./components/Page/versioningCapabilityFilter.js";
 export * from "./components/Page/deploymentReportsEntitiesMapping.js";
 export * from "./components/PerformanceDisplayContainer.js";
 export * from "./components/ReportInstanceLink.js";

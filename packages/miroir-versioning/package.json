@@ -1,0 +1,48 @@
+{
+  "name": "@miroir-framework/versioning",
+  "version": "0.5.0-rc.1",
+  "publishConfig": {
+    "access": "public"
+  },
+  "description": "Miroir application versioning (#696): the freeze of an application version and the evolution traces, loaded on first use by a process with the versioning capability.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "module": "dist/index.js",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/miroir-framework/miroir.git",
+    "directory": "packages/miroir-versioning"
+  },
+  "author": "Miroir Framework <miroir-framework@protonmail.com>",
+  "license": "MIT",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "tsup",
+    "devBuild": "npm run build",
+    "test": "vitest run",
+    "testByFile": "vitest run --maxWorkers=1 --reporter=verbose"
+  },
+  "dependencies": {
+    "@miroir-framework/core": "*",
+    "uuid": "14.0.3"
+  },
+  "devDependencies": {
+    "miroir-example-library": "*",
+    "tsup": "9.0.0",
+    "vitest": "5.0.5"
+  }
+}

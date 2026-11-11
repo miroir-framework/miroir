@@ -42,6 +42,7 @@ import {
   selfApplicationMiroir,
 } from "@miroir-framework/core/meta-model";
 import { isApplicationModelScopeInjectionActive, mergeApplicationModelScopeMenuItems, shouldShowAppMenuItem } from "./applicationModelScopeMenu.js";
+import { isMenuItemAllowedByVersioning } from "./versioningCapabilityFilter.js";
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "SidebarSection");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName, "UI",
@@ -245,7 +246,8 @@ export const SidebarSection:FC<SidebarSectionProps> = (props: SidebarSectionProp
 
   const isVisibleMenuItem = (curr: MiroirMenuItem) =>
     curr.miroirMenuItemType !== "miroirMenuPageLink" &&
-    shouldShowAppMenuItem(curr, menuItemFilterCtx);
+    shouldShowAppMenuItem(curr, menuItemFilterCtx) &&
+    isMenuItemAllowedByVersioning(curr, context.processCapabilities);
 
   const renderMenuItem = (item: MiroirMenuItem, keyValue: string, showPadding = false) => (
     <MenuItemDisplay

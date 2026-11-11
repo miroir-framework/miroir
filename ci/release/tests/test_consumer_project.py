@@ -47,6 +47,7 @@ def test_the_project_needs_the_generator_the_template_packages_and_their_runtime
         "@miroir-framework/react",
         "@miroir-framework/server",
         "@miroir-framework/store-filesystem",
+        "@miroir-framework/versioning",  # through @miroir-framework/react and @miroir-framework/server
     ]
 
 

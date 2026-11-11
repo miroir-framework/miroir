@@ -1,8 +1,11 @@
 import { afterAll, beforeEach } from "vitest";
 
 import {
+  ConfigurationService,
   MiroirActivityTracker,
   defaultMetaModelEnvironment,
+  getClientEnvironment,
+  getProcessCapabilities,
   displayMiroirTestResults,
   indexApplicationMiroirTestsByKey,
   miroirTestSuiteForEnvironment,
@@ -11,6 +14,7 @@ import {
   type MiroirTestExecutionEnvironment,
   type MiroirTestExecutionOptions,
   type MiroirTestSuite,
+  type ProcessCapabilities,
   type RunMiroirTests,
   type RunnerTestSessionInterface,
   type VitestNamespace,
@@ -30,6 +34,24 @@ const runnerSuitesByKey = indexApplicationMiroirTestsByKey(applicationMiroirTest
 
 const reportedSkippedSuiteKeys = new Set<string>();
 
+/** #696: the capabilities of the test process, which a suite's requirements are checked against. */
+let testProcessCapabilities: ProcessCapabilities | undefined;
+
+/**
+ * #696: sets the test process capabilities from its configuration, as a server would compute them: a suite
+ * tagged `versioning` is then skipped where `features.versioning` is false. Call it after the store startups.
+ */
+export function setTestProcessCapabilitiesFromConfig(
+  miroirConfig: Parameters<typeof getProcessCapabilities>[0]["config"],
+): void {
+  testProcessCapabilities = getProcessCapabilities({
+    config: miroirConfig,
+    environment: getClientEnvironment(),
+    storeSectionFactoryRegister: ConfigurationService.configurationService.StoreSectionFactoryRegister,
+    adminStoreFactoryRegister: ConfigurationService.configurationService.adminStoreFactoryRegister,
+  });
+}
+
 export function loadRunnerOrActionMiroirTestSuite(suiteKey: string): MiroirTestSuite {
   const resolvedKey =
     resolveApplicationMiroirTestSuiteKey(applicationMiroirTestCatalog, suiteKey) ?? suiteKey;
@@ -39,8 +61,13 @@ export function loadRunnerOrActionMiroirTestSuite(suiteKey: string): MiroirTestS
       `Unknown runner/action MiroirTest suite key "${suiteKey}". Available: ${listCliRunnerIntegrationSuiteKeysFromFolders().join(", ")}`,
     );
   }
-  // #589: a suite whose requirement is unmet here (evolution traces off) runs as skipped
-  const { suite, skipReason } = miroirTestSuiteForEnvironment(entry.instance, entry.suiteDefinition);
+  // #589, #696: a suite whose requirement is unmet here (evolution traces off, versioning off) runs as skipped
+  const { suite, skipReason } = miroirTestSuiteForEnvironment(
+    entry.instance,
+    entry.suiteDefinition,
+    undefined,
+    testProcessCapabilities,
+  );
   if (skipReason !== undefined && !reportedSkippedSuiteKeys.has(suiteKey)) {
     reportedSkippedSuiteKeys.add(suiteKey);
     console.log(`MiroirTest suite "${suiteKey}" skipped: ${skipReason}`);

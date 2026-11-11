@@ -187,6 +187,10 @@ function fakeHost(miroirTest: unknown, throwingTests: string[] = [], refusedActi
         if (method == "then") {
           return undefined;
         }
+        if (method == "getProcessCapabilities") {
+          // #696: read before running, to skip a MiroirTest whose capability is off
+          return () => ({ versioning: true });
+        }
         if (method == "currentModelEnvironment") {
           return (...args: any[]) => {
             calls.push({ method, args });

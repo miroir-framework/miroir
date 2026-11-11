@@ -273,6 +273,7 @@ export {
   InputOutputType,
   inputOutputType,
   InstanceAction,
+  InstanceCUDAction,
   MlArray,
   mlArray,
   MlAttributeDateValidations,
@@ -971,32 +972,13 @@ export type {
   EntityPresentModelDefinitionField,
 } from "./1_core/versioning/applicationVersioning.js";
 export {
-  APPLICATION_VERSION_PLACEHOLDER_NAMES,
   FREEZE_APPLICATION_VERSION_ACTION_TYPE,
+  VERSIONING_ACTION_IMPLEMENTATION_NAMES,
+  VERSIONING_PACKAGE_NAME,
   assertApplicationVersioningEnabled,
   getFreezeAvailability,
   isVersioningAppBarItemVisible,
   resolveVersioningMode,
-  buildFreezeApplicationVersionPlan,
-  diffEntityVersionSnapshots,
-  isApplicationVersionPlaceholder,
-  planFreezeApplicationVersion,
-  planFreezeApplicationVersionFromMetaModel,
-  selectEntitiesToFreeze,
-  resolvePreviousApplicationVersion,
-  snapshotEntitiesAsHistoricalEntityVersions,
-  snapshotQueriesAsHistoricalQueryVersions,
-  snapshotReportsAsHistoricalReportVersions,
-  snapshotMenusAsHistoricalMenuVersions,
-  snapshotEndpointsAsHistoricalEndpointVersions,
-  snapshotRunnersAsHistoricalRunnerVersions,
-  snapshotThemesAsHistoricalThemeVersions,
-  snapshotTransformerDefinitionsAsHistoricalTransformerDefinitionVersions,
-  snapshotMlSchemasAsHistoricalMlSchemaVersions,
-  snapshotMiroirTestsAsHistoricalMiroirTestVersions,
-  snapshotBlobsAsHistoricalBlobVersions,
-  snapshotTestConfigurationsAsHistoricalTestConfigurationVersions,
-  snapshotTestsAsHistoricalTestVersions,
   QUERY_VERSION_ENTITY_UUID,
   APPLICATION_VERSION_CROSS_QUERY_VERSION_UUID,
   REPORT_VERSION_ENTITY_UUID,
@@ -1021,58 +1003,14 @@ export {
   APPLICATION_VERSION_CROSS_TEST_CONFIGURATION_VERSION_UUID,
   TEST_VERSION_ENTITY_UUID,
   APPLICATION_VERSION_CROSS_TEST_VERSION_UUID,
-} from "./1_core/versioning/applicationVersionFreeze.js";
+} from "./1_core/versioning/versioningInterfaces.js";
 export type {
-  ApplicationVersionCrossEntityVersionRow,
-  ApplicationVersionCrossQueryVersionRow,
-  ApplicationVersionCrossReportVersionRow,
-  ApplicationVersionCrossMenuVersionRow,
-  ApplicationVersionCrossEndpointVersionRow,
-  ApplicationVersionCrossRunnerVersionRow,
-  ApplicationVersionCrossThemeVersionRow,
-  ApplicationVersionCrossTransformerDefinitionVersionRow,
-  ApplicationVersionCrossMlSchemaVersionRow,
-  ApplicationVersionCrossMiroirTestVersionRow,
-  ApplicationVersionCrossBlobVersionRow,
-  ApplicationVersionCrossTestConfigurationVersionRow,
-  ApplicationVersionCrossTestVersionRow,
-  BuildFreezeApplicationVersionPlanInput,
   FreezeApplicationVersionActionPayload,
   FreezeApplicationVersionActionType,
   FreezeAvailability,
   VersioningMode,
   VersioningModeInput,
-  FreezeApplicationVersionPlan,
-  FreezeMetaModelSlice,
-  ModelCudMigrationCandidate,
-  PlanFreezeApplicationVersionInput,
-  QueryVersionSnapshot,
-  ReportVersionSnapshot,
-  MenuVersionSnapshot,
-  EndpointVersionSnapshot,
-  RunnerVersionSnapshot,
-  ThemeVersionSnapshot,
-  TransformerDefinitionVersionSnapshot,
-  TransformerDefinitionVersionBody,
-  MlSchemaVersionSnapshot,
-  MiroirTestVersionSnapshot,
-  BlobVersionSnapshot,
-  TestConfigurationVersionSnapshot,
-  TestVersionSnapshot,
-  InstanceVersionSnapshot,
-  ResolvePreviousApplicationVersionOptions,
-  SnapshotOptions,
-  StoredQueryForFreeze,
-  StoredReportForFreeze,
-  StoredMenuForFreeze,
-  StoredEndpointForFreeze,
-  StoredRunnerForFreeze,
-  StoredThemeForFreeze,
-  StoredTransformerDefinitionForFreeze,
-  StoredMlSchemaForFreeze,
-  StoredMiroirTestForFreeze,
-  StoredInstanceForFreeze,
-} from "./1_core/versioning/applicationVersionFreeze.js";
+} from "./1_core/versioning/versioningInterfaces.js";
 export {
   actionsWithDeploymentInPayload, noValue
 } from "./1_core/Instance";
@@ -1273,25 +1211,6 @@ export {
   MIROIR_APPLICATION_UUID,
 } from "./2_domain/evolutionTracePolicy.js";
 export {
-  createTraceEventFromModelAction,
-  createTraceEventFromInstanceAction,
-  produceEvolutionTraceEvent,
-} from "./2_domain/evolutionTraceWriter.js";
-export type {
-  EvolutionTraceableAction,
-  TraceEventResolutionContext,
-} from "./2_domain/evolutionTraceWriter.js";
-export {
-  fetchEvolutionHistory,
-} from "./2_domain/evolutionTraceCompaction.js";
-export type {
-  EvolutionHistoryCompactionLevel,
-  EvolutionHistoryCommitBlock,
-  EvolutionHistoryItem,
-  EvolutionHistoryVersionBlock,
-  FetchEvolutionHistoryOptions,
-} from "./2_domain/evolutionTraceCompaction.js";
-export {
   generateEvolutionBaseline,
   buildEvolutionBaselineCreateInstanceActions,
   DEFAULT_EVOLUTION_BRANCH,
@@ -1299,16 +1218,6 @@ export {
   EVOLUTION_TRACE_EVENT_ENTITY_UUID,
 } from "./2_domain/evolutionTraceBaseline.js";
 export type { EvolutionTraceDeploymentState } from "./2_domain/evolutionTraceBaseline.js";
-export {
-  buildEvolutionTracePersistenceActions,
-  collectEvolutionTraceStateFromDomainState,
-} from "./2_domain/evolutionTraceRuntime.js";
-export { resolveDefinitionVersionForTraceEvent } from "./2_domain/evolutionTraceDefVersion.js";
-export type {
-  DefinitionVersionResolutionMethod,
-  ResolveDefinitionVersionInput,
-  ResolveDefinitionVersionResult,
-} from "./2_domain/evolutionTraceDefVersion.js";
 export {
   asyncApplyExtractorTransformerInMemory,
   asyncExtractEntityInstanceListWithObjectListExtractor,
@@ -1601,6 +1510,7 @@ export {
   endpointActionTargetApplication,
   executeEndpointAction,
   FRAMEWORK_APPLICATION_UUIDS,
+  isEndpointActionAvailable,
   listEndpointActions,
   sanitizeEndpointActionNamePart,
   truncateEndpointActionName,
@@ -1711,6 +1621,18 @@ export {
   resetAndInitApplicationDeployment,
   templateEvaluationParams
 } from "./3_controllers/DomainController";
+export {
+  loadLazyCapabilityModule,
+  registerLazyActionImplementations,
+  type LazyActionImplementationModule,
+} from "./3_controllers/ActionImplementations";
+export type {
+  ActionImplementationContext,
+  ActionImplementationHandler,
+  DomainControllerActionHost,
+  EvolutionTraceCommitContext,
+  EvolutionTraceRecorder,
+} from "./0_interfaces/3_controllers/DomainControllerActionHost";
 export { CallUtils } from "./3_controllers/ErrorHandling/CallUtils.js";
 export { ErrorAdminStore } from "./3_controllers/ErrorHandling/ErrorAdminStore.js";
 export { ErrorDataStore } from "./3_controllers/ErrorHandling/ErrorDataStore.js";
@@ -2057,6 +1979,8 @@ export {
   EVOLUTION_TRACE_TESTS_NEED_TRACES,
   miroirTestSuiteForEnvironment,
   miroirTestUnmetRequirement,
+  VERSIONING_TAG,
+  VERSIONING_TESTS_NEED_VERSIONING,
 } from "./5_tests/miroirTestRequirements.js";
 export {
   describeIntegrationTestSession,

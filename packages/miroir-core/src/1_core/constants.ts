@@ -19,6 +19,9 @@ export const SERVER_ROUTED_MIROIR_ACTION_TYPES: readonly string[] = [
   "setExternalServiceCredential",
   // #679: Git actions run where the deployment's files are
   ...GIT_ACTION_TYPES,
+  // #696: an action whose implementation needs a process capability (`requiredCapability` on its Endpoint
+  // definition) runs where the stores are, checked against that process's capabilities
+  "freezeApplicationVersion",
 ];
 
 export function isServerRoutedMiroirAction(action: unknown): boolean {

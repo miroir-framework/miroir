@@ -4,7 +4,7 @@ A process capability is something this running process can actually do: talk to 
 
 `emulateServer` only chooses the transport (HTTP to `miroir-server` vs an in-process stub). It does not turn features on.
 
-Versioning of an application is not a process flag. See [Versioning (per application)](#versioning-per-application).
+Versioning has both: the `versioning` capability says whether this process can version at all, and each application's versioning mode says whether that application is versioned. See [Versioning (per application)](#versioning-per-application).
 
 ## Synoptic
 
@@ -17,9 +17,10 @@ Versioning of an application is not a process flag. See [Versioning (per applica
 | `availableStoreTypes` | Open existing deployments on those backends | Register the store factories in the **persistence** process (server, Electron main, or emulated in-process server). | Do not register the factory. The browser IndexedDB-only map is not the source when the client is remote. |
 | `creatableStoreTypes` | Create Application backend picker | Same as available types, minus `bundled`. | Same. `bundled` is never offered for create. |
 | `git` | The Git page (`?page=git`): status, history, diffs, stage, commit, branches, checkout, fetch, pull and push for the repository of a filesystem deployment, and cloning a repository to install the application it holds. Implemented by `@miroir-framework/git-isomorphic`, loaded on the first Git action; the host needs no Git program. Also needs `designerTools`, and, when authentication is on, a designer. [Version control with Git](../guides/version-control-with-git.md). | Persistence-side `features.git: true`, then restart. | Omit `git` or set `false`. Restart. The AppBar entry is hidden and every `gitAction_*` returns `FeatureUnavailable`. |
+| `versioning` | Freeze an application version, record evolution traces, the Versioning AppBar item, the freeze Runner, and the version and trace items of the Miroir menu. Implemented by `@miroir-framework/versioning`, loaded on the first freeze or traced write; MiroirTests tagged `versioning` need it. | Default on. Omit `features.versioning` or set it `true`. Not available in the sandbox page even if the file says true. | Set `features.versioning: false` and restart. The entries are hidden, `freezeApplicationVersion` is left out of MCP tools, CLI commands and CopilotKit actions, returns `FeatureUnavailable` if called, and no trace is recorded. |
 | `storeAdministration` | Create / delete / reset a store | Persistence process has a non-`bundled` admin-store factory. | Bundled-only admin (sandbox). `openStore` / `closeStore` still run; startup must open stores. |
 
-Missing `features.ai`, `features.mcp` or `features.git` is **false**, and missing `features.agentBackend` is `"none"`. Missing `features.designerTools` is **true**. Restart the process after you edit flags. The UI does not recompute them from the renderer factory map. Sandbox does not force `agentBackend` to `"none"`, but `ai` false hides the backend picker.
+Missing `features.ai`, `features.mcp` or `features.git` is **false**, and missing `features.agentBackend` is `"none"`. Missing `features.designerTools` or `features.versioning` is **true**. A server that predates `versioning` answers without it, and the client reads that as **true**. Restart the process after you edit flags. The UI does not recompute them from the renderer factory map. Sandbox does not force `agentBackend` to `"none"`, but `ai` false hides the backend picker.
 
 `features.cursor: true` is still read as `agentBackend: "cursor"` for one release when `agentBackend` is absent; `agentBackend` wins when both are set. `miroir-env check` warns about it (an error under `--strict`).
 
@@ -34,7 +35,8 @@ Sibling of `client` / `server`, not nested inside `emulateServer`:
     "mcp": true,
     "agentBackend": "none",
     "designerTools": true,
-    "git": false
+    "git": false,
+    "versioning": true
   }
 }
 ```
@@ -45,7 +47,7 @@ You may omit `agentBackend`; missing means `"none"`. The shipped environments om
 |---|---|---|
 | `miroir-server` | `packages/miroir-server/config/miroirConfig.server.json` (and `.docker.json`) | `ai` and `mcp` true; shipped JSON omits `agentBackend` (missing = `"none"`). Set `agentBackend` locally, with the backend's key imported. Designer omitted (defaults on). With an agent backend set, startup fails when its SDK cannot be resolved (for example a Docker image built for another `AGENT_BACKEND`). |
 | Electron **main** | Hardcoded `electronServerConfig` in `ipcServerSetup.ts` | `ai`, `mcp`, `designerTools` all true; `agentBackend` stays `"none"` in shipped Electron main. Packaged builds ship neither agent SDK and call `assertAgentSdkPackaged`, which fails at start when an agent backend is set. When `ai` or `mcp` is true, main also listens on loopback HTTP (`http://127.0.0.1:3080`) so CopilotKit and MCP are not `app://`. If 3080 is already taken, main logs that and IPC still works. |
-| Sandbox page | Bundled emulateServer client in `miroir-sandbox` | `ai` stays false (environment veto). `mcp` false unless you set it. Designer on. |
+| Sandbox page | Bundled emulateServer client in `miroir-sandbox` | `ai` and `versioning` stay false (environment veto). `mcp` false unless you set it. Designer on. |
 | Emulated-server tests | The test `miroirConfig*.json` you pass in | Omit AI/MCP unless that profile needs them. |
 | Browser talking to a real server | Remote-only client JSON | Not read for `features`. The server JSON is. |
 | Electron **renderer** `electronMiroirConfig` | `index.tsx` | Not read for `features`. Main is. |
@@ -58,16 +60,18 @@ The Cursor backend needs Node ≥ 22.13.0 on the persistence process (`miroir-se
 
 ## Product shapes
 
-| Shape | `ai` | `mcp` | `agentBackend` | `designerTools` | Stores you can create |
-|---|---|---|---|---|---|
-| Web + `miroir-server` (shipped defaults) | on | on | `none` (optional `cursor` or `claude`) | on | filesystem, indexedDb, sql, mongodb |
-| Electron desktop | on | on | `none` (packaged builds ship no agent SDK) | on | same (factories on main) |
-| Sandbox demo | off (forced) | off | `none` unless set (picker hidden) | on | indexedDb only (`bundled` is openable, not creatable) |
-| In-process test profile | off unless the JSON sets the flags | same | `none` unless set | on | whatever that profile registered |
+| Shape | `ai` | `mcp` | `agentBackend` | `designerTools` | `versioning` | Stores you can create |
+|---|---|---|---|---|---|---|
+| Web + `miroir-server` (shipped defaults) | on | on | `none` (optional `cursor` or `claude`) | on | on | filesystem, indexedDb, sql, mongodb |
+| Electron desktop | on | on | `none` (packaged builds ship no agent SDK) | on | on | same (factories on main) |
+| Sandbox demo | off (forced) | off | `none` unless set (picker hidden) | on | off (forced) | indexedDb only (`bundled` is openable, not creatable) |
+| In-process test profile | off unless the JSON sets the flags | same | `none` unless set | on | on unless set `false` | whatever that profile registered |
 
 ## Versioning (per application)
 
-The Versioning AppBar item follows the **browsed** SelfApplication (`toolsPageState.applicationSelector`), not the process snapshot. Home (no selector) hides it. `unversioned` and `versioned-external` hide it. `versioned-internal` (or legacy `versioningEnabled: true`) shows it. Click still opens the report under Miroir. Freeze still uses `assertApplicationVersioningEnabled` on that application.
+The process capability comes first: with `versioning` off, nothing below applies and every versioning entry is hidden. With it on, the Versioning AppBar item follows the **browsed** SelfApplication (`toolsPageState.applicationSelector`). Home (no selector) hides it. `unversioned` and `versioned-external` hide it. `versioned-internal` (or legacy `versioningEnabled: true`) shows it. Click still opens the report under Miroir. Freeze still uses `assertApplicationVersioningEnabled` on that application, after the capability check.
+
+The freeze always runs in the persistence process: a client talking to a server sends it there, and refuses it while its open transaction holds changes of any application (commit or roll them back first). Details: [Versioning reference](versioning.md#the-versioning-package).
 
 Set the mode on the SelfApplication row (`versioningMode` / `versioningEnabled`), not on `features`. Modes and store layout: [Versioning reference](versioning.md#versioning-modes).
 
@@ -82,6 +86,7 @@ If something still calls a gated API:
 | `availableStoreTypes` | `createStore` for a type that is not registered, or `bundled` |
 | `storeAdministration` | `createStore` / `deleteStore` / `resetAndInitApplicationDeployment` |
 | `ai` | CopilotKit is not mounted; leftover HTTP 404 |
+| `versioning` | `freezeApplicationVersion` returns `FeatureUnavailable` (checked on the client, then on the server); a traced write records no trace. A process where the package is not installed answers `FeatureUnavailable` naming `@miroir-framework/versioning`. |
 
 Error shape: `Action2Error` with `errorType: "FeatureUnavailable"` and `errorContext.capability` set to the name above.
 
@@ -92,4 +97,5 @@ Error shape: `Action2Error` with `errorType: "FeatureUnavailable"` and `errorCon
 - [Code splitting](../internals/code-splitting.md): CopilotKit chunk waits for snapshot `ai` and first open
 - Issue [#273](https://github.com/miroir-framework/miroir/issues/273) and [`code-helpers/features/273-FEATURE-process-capability-switches/analysis.md`](../../code-helpers/features/273-FEATURE-process-capability-switches/analysis.md)
 - Issue [#275](https://github.com/miroir-framework/miroir/issues/275) and [`code-helpers/features/275-FEATURE-cursor-sdk-copilotkit-backend/analysis.md`](../../code-helpers/features/275-FEATURE-cursor-sdk-copilotkit-backend/analysis.md)
+- Issue [#696](https://github.com/miroir-framework/miroir/issues/696) and [`code-helpers/features/696-REFACTOR-versioning-package/analysis.md`](../../code-helpers/features/696-REFACTOR-versioning-package/analysis.md)
 - Issue [#409](https://github.com/miroir-framework/miroir/issues/409) and [`code-helpers/features/409-FEATURE-claude-agent-sdk-backend/analysis.md`](../../code-helpers/features/409-FEATURE-claude-agent-sdk-backend/analysis.md)

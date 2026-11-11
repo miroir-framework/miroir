@@ -35,6 +35,7 @@ const disabledSnapshot = {
   availableStoreTypes: [] as string[],
   creatableStoreTypes: [] as string[],
   storeAdministration: false,
+  versioning: true,
 };
 
 function readJson(path: string): Record<string, unknown> {
@@ -78,6 +79,7 @@ if (runThis) {
         "git",
         "mcp",
         "storeAdministration",
+        "versioning",
       ]);
       expect(FAIL_CLOSED_PROCESS_CAPABILITIES.agentBackend).toBe("none");
     });
@@ -101,6 +103,7 @@ if (runThis) {
         "git",
         "mcp",
         "storeAdministration",
+        "versioning",
       ]);
     });
   });
@@ -135,6 +138,7 @@ if (runThis) {
         "designerTools",
         "git",
         "mcp",
+        "versioning",
       ]);
       expect(featureDefinitionKeys(serverBlock).sort()).toEqual([
         "agentBackend",
@@ -144,6 +148,7 @@ if (runThis) {
         "designerTools",
         "git",
         "mcp",
+        "versioning",
       ]);
     });
   });

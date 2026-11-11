@@ -9,7 +9,8 @@ import { styled } from '@mui/material/styles';
 import { ChevronLeftIcon, ChevronRightIcon, Edit, EditOff } from "../Themes/MaterialSymbolWrappers.js";
 import { useSyncExternalStore, type MouseEvent, type ReactNode } from 'react';
 
-import { defaultSelfApplicationDeploymentMap, isVersioningAppBarItemVisible, LoggerInterface, MiroirLoggerFactory, noValue, type MiroirMenuItem, type MiroirMenuPageLink, type ReportLink, type VersioningModeInput } from '@miroir-framework/core';
+import { defaultSelfApplicationDeploymentMap, LoggerInterface, MiroirLoggerFactory, noValue, type MiroirMenuItem, type MiroirMenuPageLink, type ReportLink, type VersioningModeInput } from '@miroir-framework/core';
+import { isVersioningAppBarItemShown } from "./versioningCapabilityFilter.js";
 
 import { selectInstanceArrayForDeploymentSectionEntity, useSelector, type ReduxStateWithUndoRedo } from "../../miroir-localcache-imports.js";
 import { useMiroirContextService } from "../../contexts/MiroirContextReactProvider.js";
@@ -215,8 +216,10 @@ export function AppBar(props:AppBarProps) {
       ? browsedSelfApplicationInstances.find((row) => row.uuid === applicationSelector)
       : undefined
   ) as BrowsedSelfApplication | undefined;
-  const versioningAppBarItemVisible = isVersioningAppBarItemVisible({
+  // #696: the capability first, then the browsed application's versioning mode
+  const versioningAppBarItemVisible = isVersioningAppBarItemShown({
     browsedSelfApplication,
+    capabilities: context.processCapabilities,
   });
 
 

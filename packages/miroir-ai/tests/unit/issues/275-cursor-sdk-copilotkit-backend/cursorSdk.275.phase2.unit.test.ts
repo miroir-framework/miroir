@@ -53,6 +53,7 @@ function snapshot(overrides: Partial<ProcessCapabilities> = {}): ProcessCapabili
     availableStoreTypes: [],
     creatableStoreTypes: [],
     storeAdministration: false,
+    versioning: true,
     ...overrides,
   };
 }

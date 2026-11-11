@@ -6,11 +6,11 @@ import { describe, expect, it } from "vitest";
 import {
   buildFreezeApplicationVersionPlan,
   resolvePreviousApplicationVersion,
-} from "../../src/1_core/versioning/applicationVersionFreeze.js";
+} from "../src/applicationVersionFreeze.js";
 import type {
   ApplicationVersion,
   Entity,
-} from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+} from "@miroir-framework/core";
 
 const APP_UUID = "360fcf1f-f0d4-4f8a-9262-07886e70fa15";
 const BRANCH_UUID = "ad1ddc4e-556e-4598-9cff-706a2bde0be7";

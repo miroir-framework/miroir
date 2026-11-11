@@ -117,7 +117,11 @@ export class EndpointToolRegistry {
 
   // ##############################################################################################
   async listTools(): Promise<McpToolDescription[]> {
-    const entries = listEndpointActions(this.domainController.getLocalCache(), this.seedApplicationDeploymentMap);
+    const entries = listEndpointActions(
+      this.domainController.getLocalCache(),
+      this.seedApplicationDeploymentMap,
+      this.domainController.getProcessCapabilities?.(),
+    );
     const tools: McpToolDescription[] = [];
     const handlers: Record<string, { entry: EndpointActionEntry; handler: McpRequestHandler<any> }> = {};
     for (const entry of entries) {

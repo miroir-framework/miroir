@@ -36,8 +36,8 @@ Sibling repos, linked locally only when regenerating types from schemas: **jzod*
   Typical use: `nonreg:unit` for any change under `packages/`; `nonreg:filesystem` as well when the change touches stores, local cache, DomainController or actions.
 - **Feature work:** non-trivial features and refactors start with `code-helpers/features/<issue>-<TYPE>-<slug>/analysis.md` then `tdd-implementation-plan.md` (skills `miroir-feature-analysis`, `miroir-analysis-to-tdd-plan`). Move and rename files with `git mv`.
 - **Skills:** Miroir skills are `.agents/skills/miroir-*`, next to a small shared core (`skills-lock.json`). `.agents/skills/` is canonical; `.claude/skills/` holds generated copies, so after editing a skill run `python scripts/sync_agent_skills.py`. Other skills are personal installs and are gitignored (`docs/contributing/development-setup.md`).
-- **Ad-hoc scripts** (diagnostics, repo helpers, one-off tooling) are in **Python**. Use JS/TS only when the script must run inside a package's Node/Vite/Vitest workflow or import TypeScript modules from the monorepo.
-- **Code graph (optional):** when `graphify-out/graph.json` exists, `graphify query "<question>"` (also `path`, `explain`) answers broad cross-package questions; after modifying code, refresh it with `graphify update .`. Build it with `python scripts/agent_session_setup.py --graphify`.
+- **Ad-hoc scripts** (diagnostics, repo helpers, one-off tools) are in **Python**. Use JS/TS only when the script must run inside a package's Node/Vite/Vitest workflow or import TypeScript modules from the monorepo.
+- **Code graph (optional):** when `graphify-out/graph.json` exists, `graphify query "<question>"` (also `path`, `explain`) answers cross-package questions; after code changes, refresh it with `graphify update .`. Build it with `python scripts/agent_session_setup.py --graphify`.
 
 ## Architecture: layered (clean / hexagonal)
 
@@ -63,7 +63,7 @@ Build order (`build-all.sh` is canonical; folders are `packages/miroir-*`, publi
 1. Siblings `jzod`, `jzod-ts`, when linked locally
 2. `miroir-app-miroir`, `miroir-app-admin` (ML schemas, bundled into core)
 3. `@miroir-framework/core` (foundation, generated types)
-4. `miroir-localcache*`, `@miroir-framework/store-*` (`filesystem`, `indexeddb`, `postgres`, `mongodb`, `bundled`; see `docs/reference/data-architecture-deployments.md`)
+4. `miroir-localcache*`, `@miroir-framework/store-*` (`filesystem`, `indexeddb`, `postgres`, `mongodb`, `bundled`; `docs/reference/data-architecture-deployments.md`), `/versioning`
 5. `@miroir-framework/react`, `@miroir-framework/mcp`, `miroir-diagram-class`, `miroir-react-testing`
 6. `@miroir-framework/server`, `/cli`, `miroir-ai`
 7. `miroir-standalone-app`

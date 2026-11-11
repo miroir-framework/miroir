@@ -13,7 +13,11 @@ import {
   type MiroirModelEnvironment,
 } from "@miroir-framework/core";
 import { defaultMiroirMetaModel } from "miroir-app-miroir";
-import { miroirActionImplementations } from "../../src/3_controllers/ActionImplementations";
+import {
+  miroirActionImplementations,
+  registerLazyActionImplementations,
+} from "../../src/3_controllers/ActionImplementations";
+import { VERSIONING_ACTION_IMPLEMENTATION_NAMES } from "../../src/1_core/versioning/versioningInterfaces";
 import { miroirCoreStartup } from "../../src/startup";
 import { DomainController } from "../../src/3_controllers/DomainController";
 import { MiroirActivityTracker } from "../../src/3_controllers/MiroirActivityTracker";
@@ -309,7 +313,51 @@ describe("Miroir actions run from their implementation reference", () => {
         .map((action: any) => action.actionImplementation.inMemoryImplementationFunctionName),
     );
     expect(declared).toContain("handleAction_prepareOpenApiDocument");
-    expect(declared.filter((name: string) => !miroirActionImplementations[name])).toEqual([]);
+    // #696: the versioning implementations are registered by the hosts that hold the stores, lazily
+    expect(
+      declared.filter(
+        (name: string) => !miroirActionImplementations[name] && !VERSIONING_ACTION_IMPLEMENTATION_NAMES.includes(name),
+      ),
+    ).toEqual([]);
+  });
+
+  it("#696: a lazy registration loads its package once, on the first action, and refuses when it fails", async () => {
+    let loads = 0;
+    const handler = async () => ({ status: "ok", returnedDomainElement: undefined }) as any;
+    registerLazyActionImplementations({
+      capability: "versioning",
+      packageName: "@test/lazy",
+      implementationNames: ["handleAction_lazyTest696"],
+      load: async () => {
+        loads += 1;
+        return { actionImplementations: { handleAction_lazyTest696: handler } };
+      },
+    });
+    expect(loads).toBe(0);
+    const run = miroirActionImplementations["handleAction_lazyTest696"];
+    await run({} as any, {}, { applicationDeploymentMap: {} });
+    await run({} as any, {}, { applicationDeploymentMap: {} });
+    expect(loads).toBe(1);
+
+    let failingLoads = 0;
+    registerLazyActionImplementations({
+      capability: "versioning",
+      packageName: "@test/missing",
+      implementationNames: ["handleAction_missingTest696"],
+      load: async () => {
+        failingLoads += 1;
+        throw new Error("Cannot find package");
+      },
+    });
+    const refused = await miroirActionImplementations["handleAction_missingTest696"]({} as any, {}, {
+      applicationDeploymentMap: {},
+    });
+    expect(refused instanceof Action2Error).toBe(true);
+    expect((refused as Action2Error).errorType).toBe("FeatureUnavailable");
+    expect((refused as Action2Error).errorContext).toEqual({ capability: "versioning", package: "@test/missing" });
+    // a failed load is tried again on the next action
+    await miroirActionImplementations["handleAction_missingTest696"]({} as any, {}, { applicationDeploymentMap: {} });
+    expect(failingLoads).toBe(2);
   });
 });
 

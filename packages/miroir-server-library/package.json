@@ -50,6 +50,7 @@
   "dependencies": {
     "@miroir-framework/core": "*",
     "@miroir-framework/mcp": "*",
+    "@miroir-framework/versioning": "*",
     "@reduxjs/toolkit": "2.13.0",
     "@teroneko/redux-saga-promise": "4.0.0",
     "body-parser": "2.4.0",

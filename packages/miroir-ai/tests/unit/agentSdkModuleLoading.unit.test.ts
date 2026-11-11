@@ -20,6 +20,7 @@ function capabilities(agentBackend: string) {
     availableStoreTypes: [],
     creatableStoreTypes: [],
     storeAdministration: false,
+    versioning: true,
   };
 }
 

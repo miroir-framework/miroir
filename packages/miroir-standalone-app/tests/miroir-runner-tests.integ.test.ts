@@ -30,6 +30,7 @@ import { miroirAppStartup } from "../src/startup.js";
 import {
   loadRunnerOrActionMiroirTestSuite,
   runMiroirRunnerTestsFromCLI,
+  setTestProcessCapabilitiesFromConfig,
 } from "./helpers/runMiroirRunnerTestsFromCLI.js";
 import { createRunnerSuiteSessionParams } from "./helpers/runnerSuiteSessionParams.js";
 import { createStandaloneAppIntegrationOrchestrator } from "./helpers/StandaloneAppIntegrationOrchestrator.js";
@@ -79,6 +80,8 @@ miroirIndexedDbStoreSectionStartup(ConfigurationService.configurationService);
 miroirMongoDbStoreSectionStartup(ConfigurationService.configurationService);
 miroirPostgresStoreSectionStartup(ConfigurationService.configurationService);
 ConfigurationService.configurationService.registerTestImplementation({ expect: expect as any });
+// #696: suites tagged `versioning` are skipped where the environment turns the capability off
+setTestProcessCapabilitiesFromConfig(miroirConfig);
 log.info("miroir-runner-tests.integ started", JSON.stringify(config, null, 2));
 if (config.filter?.testList) {
   log.info(

@@ -65,6 +65,9 @@ RUN npm run build -w miroir-localcache-redux \
 # The Git implementation (#679): the server leaves it out of its bundle and loads it on the first Git action
 RUN npm run build -w @miroir-framework/git-isomorphic
 
+# Application versioning (#696): loaded on the first versioning action, when the capability is on
+RUN npm run build -w @miroir-framework/versioning
+
 # 3'. extract model bundles from example applications
 RUN npm run extract-library-model -w miroir-example-library
 # RUN npm run extract-postgresManager-model -w miroir-example-postgres

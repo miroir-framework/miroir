@@ -1,5 +1,5 @@
 {
-  "$comment": "Sandbox bundle guard (#672), checked by scripts/check_bundle_policy.py --no-history in the sandbox smoke workflow (the sandbox has no bundle size history). The MiroirTest runtime (miroir-react-testing) loads on demand, when a MiroirTest report is shown; testing-library, the fixture applications and the MCP client load when a run starts, never with the page: forbiddenEager. Only selectTestLocalCache (about 1 kB) of miroir-react-testing loads with the page.",
+  "$comment": "Sandbox bundle guard (#672), checked by scripts/check_bundle_policy.py --no-history in the sandbox smoke workflow (the sandbox has no bundle size history). The MiroirTest runtime (miroir-react-testing) loads on demand, when a MiroirTest report is shown; testing-library, the fixture applications and the MCP client load when a run starts, never with the page: forbiddenEager. Only selectTestLocalCache (about 1 kB) of miroir-react-testing loads with the page. #696: @miroir-framework/versioning loads on the first versioning action of an emulated server, and never in a client that talks to a server.",
   "eagerGzipBaseline": 1139199,
   "eagerGzipTolerance": 0.05,
   "forbiddenEager": [
@@ -8,7 +8,8 @@
     "miroir-fixture-*",
     "@miroir-framework/mcp",
     "@miroir-framework/mcp/client",
-    "diff"
+    "diff",
+    "@miroir-framework/versioning"
   ],
   "eager": [
     "@babel/runtime",
@@ -358,7 +359,8 @@
     "w3c-keyname",
     "which-typed-array",
     "yaml",
-    "zustand"
+    "zustand",
+    "@miroir-framework/versioning"
   ],
   "defeatedDynamicImports": []
 }

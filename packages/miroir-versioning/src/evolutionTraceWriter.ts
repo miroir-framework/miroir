@@ -1,18 +1,18 @@
 import { v4 as uuidv4 } from "uuid";
 
-import type {
-  ApplicationEvolutionTrace,
-  ApplicationEvolutionTraceEvent,
-  ApplicationSection,
-  InstanceCUDAction,
-  ModelActionReplayableAction,
-} from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { shouldTraceEvolutionEvent } from "./evolutionTracePolicy.js";
+import {
+  EVOLUTION_TRACE_EVENT_ENTITY_UUID,
+  shouldTraceEvolutionEvent,
+  type ApplicationEvolutionTrace,
+  type ApplicationEvolutionTraceEvent,
+  type ApplicationSection,
+  type InstanceCUDAction,
+  type ModelActionReplayableAction,
+} from "@miroir-framework/core";
 import {
   resolveDefinitionVersionForTraceEvent,
   type ResolveDefinitionVersionInput,
 } from "./evolutionTraceDefVersion.js";
-import { EVOLUTION_TRACE_EVENT_ENTITY_UUID } from "./evolutionTraceBaseline.js";
 
 export type EvolutionTraceableAction = ModelActionReplayableAction | InstanceCUDAction;
 

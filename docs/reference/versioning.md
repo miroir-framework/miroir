@@ -13,6 +13,7 @@ For the product vision (bundles, use cases, mapping from Git concepts), see [Bun
 - The live **Entity** is the only authoritative definition of a concept (`mlSchema`, `idAttribute`, view / cache fields, …). You never need an EntityVersion to define or use an Entity.
 - History exists only for **versioned-internal** applications. It is written by the **`freezeApplicationVersion`** model action into a separate **`modelVersion`** store section.
 - Ordinary model actions (`createEntity`, `renameEntity`, `alterEntityAttribute`, `dropEntity`, …) change live Entities only. They never create, update or delete history rows.
+- The code that freezes and records evolution traces is the package `@miroir-framework/versioning`, outside core. A process loads it on first use, only when its `versioning` process capability is on (the default). See [The versioning package](#the-versioning-package).
 
 ---
 
@@ -31,7 +32,7 @@ Legacy deployments with `versioningEnabled: true` and no `versioningMode` behave
 
 Current shipped deployments: Miroir (and the `appForTest` test application) are `versioned-internal`. Library, Admin, Postgres, Spotify and GitHub are `unversioned` and ship no history rows.
 
-UI: the Versioning AppBar item is shown only when the browsed application is `versioned-internal` (see [Process capabilities](process-capabilities.md)).
+UI: the Versioning AppBar item is shown only when the process has the `versioning` capability and the browsed application is `versioned-internal` (see [Process capabilities](process-capabilities.md#versioning-per-application)).
 
 ---
 
@@ -50,13 +51,25 @@ const freeze: ModelActionFreezeApplicationVersion = {
 };
 ```
 
-Freeze is refused unless the application is versioned (`assertApplicationVersioningEnabled`). It then writes, in `modelVersion`:
+Freeze is refused with `FeatureUnavailable` when the process has the `versioning` capability off, then unless the application is versioned (`assertApplicationVersioningEnabled`). It then writes, in `modelVersion`:
 
 1. a new **SelfApplicationVersion**, chained to the previous version of the same application and branch (linear history; a duplicate `versionName` on the same branch is rejected);
 2. a new, immutable snapshot of **every** live model element: EntityVersion, QueryVersion, ReportVersion, MenuVersion, EndpointVersion, RunnerVersion, ThemeVersion, TransformerDefinitionVersion, MlSchemaVersion, MiroirTestVersion, BlobVersion, TestConfigurationVersion, TestVersion. Each snapshot gets a **new** uuid and references its live element (`entityUuid`, `queryUuid`, …);
 3. **ApplicationVersionCross\*** link rows tying the SelfApplicationVersion to each snapshot.
 
-Implementation: `packages/miroir-core/src/1_core/versioning/applicationVersionFreeze.ts` (`buildFreezeApplicationVersionPlan`, `snapshotEntitiesAsHistoricalEntityVersions`, …). Consecutive EntityVersion snapshots can be diffed into rough migration candidates (`diffEntityVersionSnapshots`; rename vs drop+create is uuid-based).
+Implementation: `packages/miroir-versioning/src/applicationVersionFreeze.ts` (`buildFreezeApplicationVersionPlan`, `snapshotEntitiesAsHistoricalEntityVersions`, …) and `freezeApplicationVersion.ts` (the action). Consecutive EntityVersion snapshots can be diffed into rough migration candidates (`diffEntityVersionSnapshots`; rename vs drop+create is uuid-based).
+
+---
+
+## The versioning package
+
+`@miroir-framework/versioning` (`packages/miroir-versioning`) holds the freeze and the evolution traces (writer, runtime, compaction, definition version). Core keeps what other packages name without running it: the action type and payload type, the version Entity uuids, the versioning modes, the section routing (`getApplicationSection`), the trace policy (`isEvolutionTraceEnabled`) and the trace baseline. No host imports the package statically:
+
+- A host registers it with core's `registerLazyActionImplementations({ capability: "versioning", packageName, implementationNames, load: () => import("@miroir-framework/versioning") })`: `startMiroirNode` (server, Electron main, CLI), `startMiroirClient` when it runs an emulated server, and `setupMiroirTest` (option `versioningLoader`). A browser talking to a server registers nothing and never fetches the package.
+- The ModelEndpoint's freeze action declares `requiredCapability: "versioning"` on its `libraryImplementation`. The DomainController checks the capability, then loads the package on the first freeze; a process where it is not registered answers `FeatureUnavailable` naming the package.
+- **Where the freeze runs:** always in the persistence process. A client talking to a server checks the capability, refuses the freeze while its open transaction holds changes of any application (commit or roll them back first: the reload that follows empties the whole transaction), sends it to the server, then reloads the application. The server plans the freeze against the application's model read from its stores, and Miroir's against its local cache, loaded from the stores (the bundled Miroir model would miss its saved changes).
+- **Traces:** with `MIROIR_EVOLUTION_TRACE` on, a traceable write (the replayable model actions, the instance create, update and delete) loads the package once and calls its `recordEvolutionTrace`. Traces off, an action that is not traceable, or the capability off load nothing. A client and its emulated server each record what they handle, as before the package existed.
+- With the capability off, the Versioning AppBar item, the freeze Runner and the version and trace items of the Miroir menu are hidden, MCP tools, CLI commands and CopilotKit actions leave out `freezeApplicationVersion`, and MiroirTests tagged `versioning` are reported as skipped.
 
 ---
 

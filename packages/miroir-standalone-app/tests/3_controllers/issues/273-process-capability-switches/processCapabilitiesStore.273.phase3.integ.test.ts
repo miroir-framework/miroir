@@ -76,11 +76,13 @@ const noStoreAdministrationSnapshot: ProcessCapabilities = {
   availableStoreTypes: ["indexedDb"],
   creatableStoreTypes: ["indexedDb"],
   storeAdministration: false,
+  versioning: true,
 };
 
 const indexedDbOnlyCreateSnapshot: ProcessCapabilities = {
   ...noStoreAdministrationSnapshot,
   storeAdministration: true,
+  versioning: true,
 };
 
 const env = process.env;

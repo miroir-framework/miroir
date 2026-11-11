@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
-import type { ApplicationEvolutionTraceEvent } from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
-import { fetchEvolutionHistory } from "../../src/2_domain/evolutionTraceCompaction.js";
+import type { ApplicationEvolutionTraceEvent } from "@miroir-framework/core";
+import { fetchEvolutionHistory } from "../src/evolutionTraceCompaction.js";
 
 // ── Shared fixtures: 3 raw events on one trace root across 2 commits ─────────
 const TRACE_ROOT_UUID = "11111111-1111-4111-8111-111111111111";

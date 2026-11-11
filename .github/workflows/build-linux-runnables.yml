@@ -186,6 +186,7 @@ jobs:
           npm run build -w miroir-ai & pids+=($!)
           npm run build -w @miroir-framework/mcp & pids+=($!)
           npm run build -w @miroir-framework/git-isomorphic & pids+=($!)
+          npm run build -w @miroir-framework/versioning & pids+=($!)
           for pid in "${pids[@]}"; do wait "$pid"; done
       - name: Build miroir-react, miroir-diagram-class and miroir-server-library
         run: |

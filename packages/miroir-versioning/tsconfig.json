@@ -1,0 +1,16 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "dist3/out-tsc",
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "declaration": true,
+    "declarationMap": true,
+    "declarationDir": "dist3/out-tsc/dts",
+    "rootDir": "./"
+  },
+  "exclude": ["./node_modules/**"],
+  "include": ["./src/**/*.ts"]
+}

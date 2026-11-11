@@ -19,8 +19,9 @@ import type {
   ConnectExternalServiceAction,
   SetExternalServiceCredentialAction,
   DomainControllerActionHost,
+  EvolutionTraceCommitContext,
 } from "../0_interfaces/3_controllers/DomainControllerActionHost";
-import { miroirActionImplementations } from "./ActionImplementations";
+import { loadLazyCapabilityModule, miroirActionImplementations } from "./ActionImplementations";
 
 import { MiroirContextInterface } from "../0_interfaces/3_controllers/MiroirContextInterface";
 import {
@@ -39,39 +40,10 @@ import {
   entityQueryVersion,
   entityReport,
   entityRunner,
-  entitySelfApplicationVersion,
   entitySelfApplication,
-  entityApplicationVersionCrossEntityVersion,
-  entityApplicationVersionCrossQueryVersion,
-  entityHistoricalQueryVersion,
-  entityApplicationVersionCrossReportVersion,
-  entityHistoricalReportVersion,
-  entityApplicationVersionCrossMenuVersion,
-  entityHistoricalMenuVersion,
-  entityApplicationVersionCrossEndpointVersion,
-  entityHistoricalEndpointVersion,
-  entityApplicationVersionCrossRunnerVersion,
-  entityHistoricalRunnerVersion,
-  entityApplicationVersionCrossThemeVersion,
-  entityHistoricalThemeVersion,
-  entityApplicationVersionCrossTransformerDefinitionVersion,
-  entityHistoricalTransformerDefinitionVersion,
-  entityApplicationVersionCrossMlSchemaVersion,
-  entityHistoricalMlSchemaVersion,
-  entityApplicationVersionCrossMiroirTestVersion,
-  entityHistoricalMiroirTestVersion,
-  entityApplicationVersionCrossBlobVersion,
-  entityHistoricalBlobVersion,
-  entityApplicationVersionCrossTestConfigurationVersion,
-  entityHistoricalTestConfigurationVersion,
-  entityApplicationVersionCrossTestVersion,
-  entityHistoricalTestVersion,
-  entityBlob,
-  entityTestConfiguration,
-  entityTest,
   selfApplicationMiroir,
   selfApplicationModelBranchMiroirMasterBranch,
-  selfApplicationVersionInitialMiroirVersion
+  selfApplicationVersionInitialMiroirVersion,
 } from "miroir-app-miroir";
 
 import { adminSelfApplication, deployment_Miroir, entityApplicationForAdmin, entityDeployment } from "miroir-app-admin";
@@ -125,16 +97,6 @@ import {
 import {
   ENTITY_PRESENT_MODEL_DEFINITION_FIELDS
 } from "../1_core/versioning/applicationVersioning.js";
-import {
-  loadVersionHistoryFreezeSlice,
-  mergeVersionHistoryIntoFreezeMetaModel,
-  selectEntitiesToFreeze,
-  planFreezeApplicationVersionFromMetaModel,
-  type FreezeApplicationVersionPlan,
-  type FreezeMetaModelSlice,
-  type StoredInstanceForFreeze,
-  type StoredQueryForFreeze,
-} from "../1_core/versioning/applicationVersionFreeze.js";
 import { resolveVersioningMode } from "../1_core/versioning/versioningMode.js";
 import {
   defaultMiroirModelEnvironment,
@@ -153,7 +115,20 @@ import {
   assertProcessCapability,
   getProcessCapabilities,
   type ProcessCapabilities,
+  type ProcessCapabilityName,
 } from "../1_core/processCapabilities.js";
+import { VERSIONING_PACKAGE_NAME } from "../1_core/versioning/versioningInterfaces.js";
+
+/** The writes that leave an evolution trace: the replayable model actions and the instance CUD actions. */
+const EVOLUTION_TRACEABLE_ACTION_TYPES: ReadonlySet<string> = new Set([
+  "createEntity",
+  "renameEntity",
+  "dropEntity",
+  "alterEntityAttribute",
+  "createInstance",
+  "updateInstance",
+  "deleteInstance",
+]);
 import {
   assertCredentialInstanceMutationAllowed,
   assertSecretInstanceMutationAllowed,
@@ -162,11 +137,6 @@ import {
 import { findPresentModelEntityFromDomainState } from "../2_domain/ExtractorVirtualAttributes.js";
 import { stripVirtualAttributesFromInstance } from "../2_domain/VirtualAttributes.js";
 import { isEvolutionTraceEnabled } from "../2_domain/evolutionTracePolicy.js";
-import {
-  buildEvolutionTracePersistenceActions,
-  collectEvolutionTraceStateFromDomainState,
-} from "../2_domain/evolutionTraceRuntime.js";
-import type { EvolutionTraceableAction } from "../2_domain/evolutionTraceWriter.js";
 import { resolveCompositeActionTemplate } from "../2_domain/ResolveCompositeActionTemplate";
 import {
   attachQueryRuntimeTransformers,
@@ -188,6 +158,7 @@ import type {
 } from "../0_interfaces/3_controllers/GitAction";
 import {
   openMiroirTransactionError,
+  pendingMiroirChangesError,
   runGitAction,
   type GitCredentialStore,
   type GitDeploymentInstaller,
@@ -455,6 +426,11 @@ function appendReportLinkToMenu(
   return undefined;
 }
 
+/** #696: the package that implements the actions of a capability, loaded lazily by the hosts that register it. */
+const CAPABILITY_IMPLEMENTATION_PACKAGES: Partial<Record<ProcessCapabilityName, string>> = {
+  versioning: VERSIONING_PACKAGE_NAME,
+};
+
 /**
  * #341: the definition of a Miroir action, looked up in the bundled Miroir Endpoints.
  * Miroir Endpoints are resolved without a store, since some of their actions open stores.
@@ -503,6 +479,10 @@ export class DomainController implements DomainControllerInterface, DomainContro
 
   setProcessCapabilities(snapshot: ProcessCapabilities): void {
     this.processCapabilities = snapshot;
+  }
+
+  getProcessCapabilities(): ProcessCapabilities {
+    return this.resolveProcessCapabilities();
   }
 
   addInstanceActionListener(listener: InstanceActionListener): () => void {
@@ -1496,66 +1476,38 @@ export class DomainController implements DomainControllerInterface, DomainContro
   }
 
   /**
-   * Append-only evolution-trace persistence (WP1). Trace instances live in the
-   * evolving application's model section, or in data for Miroir (#222).
-   * No-ops when policy skips or when the action itself mutates evolution-trace entities.
+   * Append-only evolution-trace persistence (WP1), recorded by `@miroir-framework/versioning` (#696). The
+   * checks here are cheap and come first, so a process that records no trace never loads the package:
+   * traces on, a traceable action, a known deployment, then the `versioning` capability.
    */
   private async maybeRecordEvolutionTrace(
     action: InstanceAction | ModelAction,
     applicationDeploymentMap: ApplicationDeploymentMap,
-    commitContext?: {
-      commitUuid: string;
-      fromVersionUuid: string;
-      toVersionUuid: string;
-    },
+    commitContext?: EvolutionTraceCommitContext,
   ): Promise<void> {
-    const actionType = action.actionType;
-    const isModelReplayable =
-      actionType === "createEntity" ||
-      actionType === "renameEntity" ||
-      actionType === "dropEntity" ||
-      actionType === "alterEntityAttribute";
-    const isInstanceCud =
-      actionType === "createInstance" ||
-      actionType === "updateInstance" ||
-      actionType === "deleteInstance";
-
     if (!isEvolutionTraceEnabled()) {
       return;
     }
-    if (!isModelReplayable && !isInstanceCud) {
+    if (!EVOLUTION_TRACEABLE_ACTION_TYPES.has(action.actionType)) {
       return;
     }
-
-    const targetApplicationUuid = action.payload.application;
-    const targetDeploymentUuid = applicationDeploymentMap[targetApplicationUuid];
-    if (!targetDeploymentUuid) {
+    if (!applicationDeploymentMap[action.payload.application]) {
       return;
     }
-
-    const existing = collectEvolutionTraceStateFromDomainState(
-      this.localCache.getDomainState(),
-      targetDeploymentUuid,
-      targetApplicationUuid,
-    );
-
-    const persistenceActions = buildEvolutionTracePersistenceActions(
-      action as EvolutionTraceableAction,
-      existing,
-      undefined,
-      new Date(),
-      commitContext,
-    );
-    for (const persistenceAction of persistenceActions) {
-      const result = await this.handleInstanceAction(persistenceAction, applicationDeploymentMap);
-      if (result instanceof Action2Error) {
-        log.warn(
-          "DomainController maybeRecordEvolutionTrace failed to persist trace action",
-          persistenceAction.actionLabel,
-          result,
-        );
-      }
+    if (assertProcessCapability("versioning", this.resolveProcessCapabilities())) {
+      return;
     }
+    const versioningModule = await loadLazyCapabilityModule("versioning");
+    if (!versioningModule?.evolutionTraceRecorder) {
+      log.warn(
+        "DomainController maybeRecordEvolutionTrace: traces are on but",
+        VERSIONING_PACKAGE_NAME,
+        "is not registered or could not be loaded; no trace recorded for",
+        action.actionType,
+      );
+      return;
+    }
+    await versioningModule.evolutionTraceRecorder(this, action, applicationDeploymentMap, commitContext);
   }
 
   // ##############################################################################################
@@ -1613,400 +1565,38 @@ export class DomainController implements DomainControllerInterface, DomainContro
   }
 
   /**
-   * #232 — load persisted version-history rows for freeze planning (chain tips, diffs).
-   * Does not mutate the live model cache; only supplements the freeze meta-model slice.
+   * #696: the instances of an Entity in a section, from the local store, else the server's; an Action2Error
+   * when the read fails.
    */
-  private async loadModelVersionHistoryForFreeze(
-    application: Uuid,
-    applicationDeploymentMap: ApplicationDeploymentMap,
-  ): Promise<Partial<FreezeMetaModelSlice>> {
-    return loadVersionHistoryFreezeSlice((parentEntityUuid) =>
-      this.readSectionInstancesForFreeze(
-        application,
-        applicationDeploymentMap,
-        "modelVersion",
-        parentEntityUuid,
-      ),
-    );
-  }
-
-  /**
-   * #706 — the live Blob, TestConfiguration and Test instances a freeze snapshots. The MetaModel
-   * has no collection for them, so they are read from the store: Miroir's data section, or the
-   * model section of another application. A failed read fails the freeze before anything is
-   * written, so that a version never silently lacks rows that exist.
-   */
-  private async loadInstancesToFreeze(
-    application: Uuid,
-    applicationDeploymentMap: ApplicationDeploymentMap,
-  ): Promise<
-    Pick<FreezeMetaModelSlice, "blobs" | "testConfigurations" | "testInstances"> | Action2Error
-  > {
-    const loaded: StoredInstanceForFreeze[][] = [];
-    for (const entity of [entityBlob, entityTestConfiguration, entityTest]) {
-      const section = getApplicationSection(application, entity.uuid);
-      const manager = this.persistenceStoreLocalOrRemote.getLocalPersistenceStoreControllerManager?.();
-      const result = manager
-        ? await manager
-            .getPersistenceStoreController(applicationDeploymentMap[application])
-            ?.getInstances(section, entity.uuid)
-        : await this.persistenceStoreLocalOrRemote.handlePersistenceAction(
-            {
-              actionType: "getInstances",
-              endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-              payload: { application, applicationSection: section, parentUuid: entity.uuid },
-            },
-            applicationDeploymentMap,
-          );
-      const collection = result instanceof Action2Error ? undefined : result?.returnedDomainElement;
-      if (!collection || collection instanceof Domain2ElementFailed || !("instances" in collection)) {
-        return new Action2Error(
-          "FailedToHandleAction",
-          `freezeApplicationVersion failed to read the ${entity.name} instances of ${application} in section ${section}`,
-          [],
-          result instanceof Action2Error ? result : undefined,
-        );
-      }
-      loaded.push((collection.instances ?? []) as StoredInstanceForFreeze[]);
-    }
-    const [blobs, testConfigurations, testInstances] = loaded;
-    return { blobs, testConfigurations, testInstances };
-  }
-
-  /** Instances of an Entity in a section, from the local store or else the server; none on failure. */
-  private async readSectionInstancesForFreeze(
+  async readSectionInstances(
     application: Uuid,
     applicationDeploymentMap: ApplicationDeploymentMap,
     applicationSection: ApplicationSection,
     parentEntityUuid: Uuid,
-  ): Promise<Array<{ uuid: string }>> {
-    const localInstances =
-      await this.persistenceStoreLocalOrRemote.readLocalPersistenceSectionInstances(
-        application,
-        applicationDeploymentMap,
-        applicationSection,
-        parentEntityUuid,
-      );
-    if (localInstances.length > 0 || this.persistenceStoreAccessMode === "local") {
-      return localInstances as Array<{ uuid: string }>;
-    }
-    const result = await this.persistenceStoreLocalOrRemote.handlePersistenceAction(
-      {
-        actionType: "getInstances",
-        endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-        payload: {
-          application,
-          applicationSection,
-          parentUuid: parentEntityUuid,
-        },
-      },
-      applicationDeploymentMap,
-    );
-    if (result instanceof Action2Error) {
-      return [];
-    }
-    const collection = result.returnedDomainElement;
-    if (!collection || collection instanceof Domain2ElementFailed) {
-      return [];
-    }
-    return (collection.instances ?? []) as Array<{ uuid: string }>;
-  }
-
-  /**
-   * #216 Phase 6 — persist freeze plan rows immediately (SAV + historical EVs + Cross).
-   * Uses createInstance (not transactional createEntity / commit replay).
-   */
-  private async persistFreezeApplicationVersionPlan(
-    plan: FreezeApplicationVersionPlan,
-    application: Uuid,
-    applicationDeploymentMap: ApplicationDeploymentMap,
-  ): Promise<Action2VoidReturnType> {
-    const persistBatch = async (
-      actionLabel: string,
-      objects: EntityInstance[],
-      parentEntityUuid: Uuid,
-      applicationSection: ApplicationSection,
-    ): Promise<Action2VoidReturnType> => {
-      if (objects.length === 0) {
-        return ACTION_OK;
-      }
-      const result = await this.handleInstanceAction(
-        {
-          actionType: "createInstance",
-          actionLabel,
-          endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
-          payload: {
-            application,
-            applicationSection,
-            objects,
+  ): Promise<EntityInstance[] | Action2Error> {
+    const manager = this.persistenceStoreLocalOrRemote.getLocalPersistenceStoreControllerManager?.();
+    const result = manager
+      ? await manager
+          .getPersistenceStoreController(applicationDeploymentMap[application])
+          ?.getInstances(applicationSection, parentEntityUuid)
+      : await this.persistenceStoreLocalOrRemote.handlePersistenceAction(
+          {
+            actionType: "getInstances",
+            endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+            payload: { application, applicationSection, parentUuid: parentEntityUuid },
           },
-        },
-        applicationDeploymentMap,
-      );
-      if (result instanceof Action2Error) {
-        return new Action2Error(
-          "FailedToHandleAction",
-          `freezeApplicationVersion failed to persist ${actionLabel}`,
-          [],
-          result,
+          applicationDeploymentMap,
         );
-      }
-      return ACTION_OK;
-    };
-
-    const historySection = plan.entityVersionApplicationSection;
-
-    const savResult = await persistBatch(
-      "freezeSelfApplicationVersion",
-      [plan.selfApplicationVersion as EntityInstance],
-      entitySelfApplicationVersion.uuid,
-      historySection,
-    );
-    if (savResult instanceof Action2Error) {
-      return savResult;
+    const collection = result instanceof Action2Error ? undefined : result?.returnedDomainElement;
+    if (!collection || collection instanceof Domain2ElementFailed || !("instances" in collection)) {
+      return new Action2Error(
+        "FailedToHandleAction",
+        `could not read the instances of Entity ${parentEntityUuid} of ${application} in section ${applicationSection}`,
+        [],
+        result instanceof Action2Error ? result : undefined,
+      );
     }
-
-    const evResult = await persistBatch(
-      "freezeEntityVersions",
-      plan.entityVersions as EntityInstance[],
-      entityEntityVersion.uuid,
-      plan.entityVersionApplicationSection,
-    );
-    if (evResult instanceof Action2Error) {
-      return evResult;
-    }
-
-    const qvResult = await persistBatch(
-      "freezeQueryVersions",
-      plan.queryVersions as EntityInstance[],
-      entityHistoricalQueryVersion.uuid,
-      plan.queryVersionApplicationSection,
-    );
-    if (qvResult instanceof Action2Error) {
-      return qvResult;
-    }
-
-    const rvResult = await persistBatch(
-      "freezeReportVersions",
-      plan.reportVersions as EntityInstance[],
-      entityHistoricalReportVersion.uuid,
-      plan.reportVersionApplicationSection,
-    );
-    if (rvResult instanceof Action2Error) {
-      return rvResult;
-    }
-
-    const mvResult = await persistBatch(
-      "freezeMenuVersions",
-      plan.menuVersions as EntityInstance[],
-      entityHistoricalMenuVersion.uuid,
-      plan.menuVersionApplicationSection,
-    );
-    if (mvResult instanceof Action2Error) {
-      return mvResult;
-    }
-
-    const epvResult = await persistBatch(
-      "freezeEndpointVersions",
-      plan.endpointVersions as EntityInstance[],
-      entityHistoricalEndpointVersion.uuid,
-      plan.endpointVersionApplicationSection,
-    );
-    if (epvResult instanceof Action2Error) {
-      return epvResult;
-    }
-
-    const ruvResult = await persistBatch(
-      "freezeRunnerVersions",
-      plan.runnerVersions as EntityInstance[],
-      entityHistoricalRunnerVersion.uuid,
-      plan.runnerVersionApplicationSection,
-    );
-    if (ruvResult instanceof Action2Error) {
-      return ruvResult;
-    }
-
-    const tuvResult = await persistBatch(
-      "freezeThemeVersions",
-      plan.themeVersions as EntityInstance[],
-      entityHistoricalThemeVersion.uuid,
-      plan.themeVersionApplicationSection,
-    );
-    if (tuvResult instanceof Action2Error) {
-      return tuvResult;
-    }
-
-    const tdvResult = await persistBatch(
-      "freezeTransformerDefinitionVersions",
-      plan.transformerDefinitionVersions as EntityInstance[],
-      entityHistoricalTransformerDefinitionVersion.uuid,
-      plan.transformerDefinitionVersionApplicationSection,
-    );
-    if (tdvResult instanceof Action2Error) {
-      return tdvResult;
-    }
-
-    const msvResult = await persistBatch(
-      "freezeMlSchemaVersions",
-      plan.mlSchemaVersions as EntityInstance[],
-      entityHistoricalMlSchemaVersion.uuid,
-      plan.mlSchemaVersionApplicationSection,
-    );
-    if (msvResult instanceof Action2Error) {
-      return msvResult;
-    }
-
-    const mtvResult = await persistBatch(
-      "freezeMiroirTestVersions",
-      plan.miroirTestVersions as EntityInstance[],
-      entityHistoricalMiroirTestVersion.uuid,
-      plan.miroirTestVersionApplicationSection,
-    );
-    if (mtvResult instanceof Action2Error) {
-      return mtvResult;
-    }
-
-    // #706: Blob, TestConfiguration and Test snapshots, then their Cross rows below.
-    const instanceVersionBatches: Array<[string, EntityInstance[], Uuid]> = [
-      ["freezeBlobVersions", plan.blobVersions as EntityInstance[], entityHistoricalBlobVersion.uuid],
-      [
-        "freezeTestConfigurationVersions",
-        plan.testConfigurationVersions as EntityInstance[],
-        entityHistoricalTestConfigurationVersion.uuid,
-      ],
-      ["freezeTestVersions", plan.testVersions as EntityInstance[], entityHistoricalTestVersion.uuid],
-    ];
-    for (const [actionLabel, objects, parentEntityUuid] of instanceVersionBatches) {
-      const result = await persistBatch(actionLabel, objects, parentEntityUuid, historySection);
-      if (result instanceof Action2Error) {
-        return result;
-      }
-    }
-
-    const crossEvResult = await persistBatch(
-      "freezeCrossEntityVersions",
-      plan.crossEntityVersions as EntityInstance[],
-      entityApplicationVersionCrossEntityVersion.uuid,
-      historySection,
-    );
-    if (crossEvResult instanceof Action2Error) {
-      return crossEvResult;
-    }
-
-    const crossQvResult = await persistBatch(
-      "freezeCrossQueryVersions",
-      plan.crossQueryVersions as EntityInstance[],
-      entityApplicationVersionCrossQueryVersion.uuid,
-      historySection,
-    );
-    if (crossQvResult instanceof Action2Error) {
-      return crossQvResult;
-    }
-
-    const crossRvResult = await persistBatch(
-      "freezeCrossReportVersions",
-      plan.crossReportVersions as EntityInstance[],
-      entityApplicationVersionCrossReportVersion.uuid,
-      historySection,
-    );
-    if (crossRvResult instanceof Action2Error) {
-      return crossRvResult;
-    }
-
-    const crossMvResult = await persistBatch(
-      "freezeCrossMenuVersions",
-      plan.crossMenuVersions as EntityInstance[],
-      entityApplicationVersionCrossMenuVersion.uuid,
-      historySection,
-    );
-    if (crossMvResult instanceof Action2Error) {
-      return crossMvResult;
-    }
-
-    const crossEpResult = await persistBatch(
-      "freezeCrossEndpointVersions",
-      plan.crossEndpointVersions as EntityInstance[],
-      entityApplicationVersionCrossEndpointVersion.uuid,
-      historySection,
-    );
-    if (crossEpResult instanceof Action2Error) {
-      return crossEpResult;
-    }
-
-    const crossRuResult = await persistBatch(
-      "freezeCrossRunnerVersions",
-      plan.crossRunnerVersions as EntityInstance[],
-      entityApplicationVersionCrossRunnerVersion.uuid,
-      historySection,
-    );
-    if (crossRuResult instanceof Action2Error) {
-      return crossRuResult;
-    }
-
-    const crossThResult = await persistBatch(
-      "freezeCrossThemeVersions",
-      plan.crossThemeVersions as EntityInstance[],
-      entityApplicationVersionCrossThemeVersion.uuid,
-      historySection,
-    );
-    if (crossThResult instanceof Action2Error) {
-      return crossThResult;
-    }
-
-    const crossTdResult = await persistBatch(
-      "freezeCrossTransformerDefinitionVersions",
-      plan.crossTransformerDefinitionVersions as EntityInstance[],
-      entityApplicationVersionCrossTransformerDefinitionVersion.uuid,
-      historySection,
-    );
-    if (crossTdResult instanceof Action2Error) {
-      return crossTdResult;
-    }
-
-    const crossMsResult = await persistBatch(
-      "freezeCrossMlSchemaVersions",
-      plan.crossMlSchemaVersions as EntityInstance[],
-      entityApplicationVersionCrossMlSchemaVersion.uuid,
-      historySection,
-    );
-    if (crossMsResult instanceof Action2Error) {
-      return crossMsResult;
-    }
-
-    const crossMtResult = await persistBatch(
-      "freezeCrossMiroirTestVersions",
-      plan.crossMiroirTestVersions as EntityInstance[],
-      entityApplicationVersionCrossMiroirTestVersion.uuid,
-      historySection,
-    );
-    if (crossMtResult instanceof Action2Error) {
-      return crossMtResult;
-    }
-
-    const crossInstanceVersionBatches: Array<[string, EntityInstance[], Uuid]> = [
-      [
-        "freezeCrossBlobVersions",
-        plan.crossBlobVersions as EntityInstance[],
-        entityApplicationVersionCrossBlobVersion.uuid,
-      ],
-      [
-        "freezeCrossTestConfigurationVersions",
-        plan.crossTestConfigurationVersions as EntityInstance[],
-        entityApplicationVersionCrossTestConfigurationVersion.uuid,
-      ],
-      [
-        "freezeCrossTestVersions",
-        plan.crossTestVersions as EntityInstance[],
-        entityApplicationVersionCrossTestVersion.uuid,
-      ],
-    ];
-    for (const [actionLabel, objects, parentEntityUuid] of crossInstanceVersionBatches) {
-      const result = await persistBatch(actionLabel, objects, parentEntityUuid, historySection);
-      if (result instanceof Action2Error) {
-        return result;
-      }
-    }
-    return ACTION_OK;
+    return (collection.instances ?? []) as EntityInstance[];
   }
 
   // ##############################################################################################
@@ -2610,634 +2200,6 @@ export class DomainController implements DomainControllerInterface, DomainContro
           // );
           break;
         }
-        case "freezeApplicationVersion": {
-          // Phase 6: plan then persist SAV + EntityVersions + Cross via createInstance.
-          // Plan against the *payload* application's model — not the caller's
-          // environment (Versioning Runner is Miroir-hosted while freezing Library).
-          const payload = modelAction.payload as {
-            application: string;
-            versionName: string;
-            description?: string;
-            branch?: string;
-          };
-          const targetModelEnvironment = this.currentModelEnvironment(
-            payload.application,
-            applicationDeploymentMap,
-          );
-          const metaModel = targetModelEnvironment.currentModel;
-
-          // Cross Entity may be absent from app model when init/filter did not create it.
-          const crossEntityUuid = entityApplicationVersionCrossEntityVersion.uuid;
-          const crossEntityPresent = metaModel.entities.some((e) => e.uuid === crossEntityUuid);
-          if (!crossEntityPresent) {
-            const ensureCross = await this.handleModelAction(
-              {
-                actionType: "createEntity",
-                actionLabel: "freezeEnsureApplicationVersionCrossEntityVersion",
-                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                payload: {
-                  application: payload.application,
-                  transactional: false,
-                  entities: [entityApplicationVersionCrossEntityVersion as Entity],
-                },
-              },
-              applicationDeploymentMap,
-              targetModelEnvironment,
-            );
-            if (ensureCross instanceof Action2Error) {
-              return new Action2Error(
-                "FailedToHandleAction",
-                "freezeApplicationVersion failed to ensure Cross Entity exists",
-                [],
-                ensureCross,
-              );
-            }
-          }
-
-          const crossQueryEntityUuid = entityApplicationVersionCrossQueryVersion.uuid;
-          const crossQueryEntityPresent = metaModel.entities.some(
-            (e) => e.uuid === crossQueryEntityUuid,
-          );
-          if (!crossQueryEntityPresent) {
-            const ensureCrossQuery = await this.handleModelAction(
-              {
-                actionType: "createEntity",
-                actionLabel: "freezeEnsureApplicationVersionCrossQueryVersion",
-                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                payload: {
-                  application: payload.application,
-                  transactional: false,
-                  entities: [entityApplicationVersionCrossQueryVersion as Entity],
-                },
-              },
-              applicationDeploymentMap,
-              targetModelEnvironment,
-            );
-            if (ensureCrossQuery instanceof Action2Error) {
-              return new Action2Error(
-                "FailedToHandleAction",
-                "freezeApplicationVersion failed to ensure Cross Query Entity exists",
-                [],
-                ensureCrossQuery,
-              );
-            }
-          }
-
-          const queryVersionEntityUuid = entityHistoricalQueryVersion.uuid;
-          const queryVersionEntityPresent = metaModel.entities.some(
-            (e) => e.uuid === queryVersionEntityUuid,
-          );
-          if (!queryVersionEntityPresent) {
-            const ensureQueryVersionEntity = await this.handleModelAction(
-              {
-                actionType: "createEntity",
-                actionLabel: "freezeEnsureHistoricalQueryVersionEntity",
-                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                payload: {
-                  application: payload.application,
-                  transactional: false,
-                  entities: [entityHistoricalQueryVersion as Entity],
-                },
-              },
-              applicationDeploymentMap,
-              targetModelEnvironment,
-            );
-            if (ensureQueryVersionEntity instanceof Action2Error) {
-              return new Action2Error(
-                "FailedToHandleAction",
-                "freezeApplicationVersion failed to ensure QueryVersion Entity exists",
-                [],
-                ensureQueryVersionEntity,
-              );
-            }
-          }
-
-          const crossReportEntityUuid = entityApplicationVersionCrossReportVersion.uuid;
-          const crossReportEntityPresent = metaModel.entities.some(
-            (e) => e.uuid === crossReportEntityUuid,
-          );
-          if (!crossReportEntityPresent) {
-            const ensureCrossReport = await this.handleModelAction(
-              {
-                actionType: "createEntity",
-                actionLabel: "freezeEnsureApplicationVersionCrossReportVersion",
-                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                payload: {
-                  application: payload.application,
-                  transactional: false,
-                  entities: [entityApplicationVersionCrossReportVersion as Entity],
-                },
-              },
-              applicationDeploymentMap,
-              targetModelEnvironment,
-            );
-            if (ensureCrossReport instanceof Action2Error) {
-              return new Action2Error(
-                "FailedToHandleAction",
-                "freezeApplicationVersion failed to ensure Cross Report Entity exists",
-                [],
-                ensureCrossReport,
-              );
-            }
-          }
-
-          const reportVersionEntityUuid = entityHistoricalReportVersion.uuid;
-          const reportVersionEntityPresent = metaModel.entities.some(
-            (e) => e.uuid === reportVersionEntityUuid,
-          );
-          if (!reportVersionEntityPresent) {
-            const ensureReportVersionEntity = await this.handleModelAction(
-              {
-                actionType: "createEntity",
-                actionLabel: "freezeEnsureHistoricalReportVersionEntity",
-                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                payload: {
-                  application: payload.application,
-                  transactional: false,
-                  entities: [entityHistoricalReportVersion as Entity],
-                },
-              },
-              applicationDeploymentMap,
-              targetModelEnvironment,
-            );
-            if (ensureReportVersionEntity instanceof Action2Error) {
-              return new Action2Error(
-                "FailedToHandleAction",
-                "freezeApplicationVersion failed to ensure ReportVersion Entity exists",
-                [],
-                ensureReportVersionEntity,
-              );
-            }
-          }
-
-          const crossMenuEntityUuid = entityApplicationVersionCrossMenuVersion.uuid;
-          const crossMenuEntityPresent = metaModel.entities.some(
-            (e) => e.uuid === crossMenuEntityUuid,
-          );
-          if (!crossMenuEntityPresent) {
-            const ensureCrossMenu = await this.handleModelAction(
-              {
-                actionType: "createEntity",
-                actionLabel: "freezeEnsureApplicationVersionCrossMenuVersion",
-                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                payload: {
-                  application: payload.application,
-                  transactional: false,
-                  entities: [entityApplicationVersionCrossMenuVersion as Entity],
-                },
-              },
-              applicationDeploymentMap,
-              targetModelEnvironment,
-            );
-            if (ensureCrossMenu instanceof Action2Error) {
-              return new Action2Error(
-                "FailedToHandleAction",
-                "freezeApplicationVersion failed to ensure Cross Menu Entity exists",
-                [],
-                ensureCrossMenu,
-              );
-            }
-          }
-
-          const menuVersionEntityUuid = entityHistoricalMenuVersion.uuid;
-          const menuVersionEntityPresent = metaModel.entities.some(
-            (e) => e.uuid === menuVersionEntityUuid,
-          );
-          if (!menuVersionEntityPresent) {
-            const ensureMenuVersionEntity = await this.handleModelAction(
-              {
-                actionType: "createEntity",
-                actionLabel: "freezeEnsureHistoricalMenuVersionEntity",
-                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                payload: {
-                  application: payload.application,
-                  transactional: false,
-                  entities: [entityHistoricalMenuVersion as Entity],
-                },
-              },
-              applicationDeploymentMap,
-              targetModelEnvironment,
-            );
-            if (ensureMenuVersionEntity instanceof Action2Error) {
-              return new Action2Error(
-                "FailedToHandleAction",
-                "freezeApplicationVersion failed to ensure MenuVersion Entity exists",
-                [],
-                ensureMenuVersionEntity,
-              );
-            }
-          }
-
-          const crossEndpointEntityUuid = entityApplicationVersionCrossEndpointVersion.uuid;
-          const crossEndpointEntityPresent = metaModel.entities.some(
-            (e) => e.uuid === crossEndpointEntityUuid,
-          );
-          if (!crossEndpointEntityPresent) {
-            const ensureCrossEndpoint = await this.handleModelAction(
-              {
-                actionType: "createEntity",
-                actionLabel: "freezeEnsureApplicationVersionCrossEndpointVersion",
-                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                payload: {
-                  application: payload.application,
-                  transactional: false,
-                  entities: [entityApplicationVersionCrossEndpointVersion as Entity],
-                },
-              },
-              applicationDeploymentMap,
-              targetModelEnvironment,
-            );
-            if (ensureCrossEndpoint instanceof Action2Error) {
-              return new Action2Error(
-                "FailedToHandleAction",
-                "freezeApplicationVersion failed to ensure Cross Endpoint Entity exists",
-                [],
-                ensureCrossEndpoint,
-              );
-            }
-          }
-
-          const endpointVersionEntityUuid = entityHistoricalEndpointVersion.uuid;
-          const endpointVersionEntityPresent = metaModel.entities.some(
-            (e) => e.uuid === endpointVersionEntityUuid,
-          );
-          if (!endpointVersionEntityPresent) {
-            const ensureEndpointVersionEntity = await this.handleModelAction(
-              {
-                actionType: "createEntity",
-                actionLabel: "freezeEnsureHistoricalEndpointVersionEntity",
-                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                payload: {
-                  application: payload.application,
-                  transactional: false,
-                  entities: [entityHistoricalEndpointVersion as Entity],
-                },
-              },
-              applicationDeploymentMap,
-              targetModelEnvironment,
-            );
-            if (ensureEndpointVersionEntity instanceof Action2Error) {
-              return new Action2Error(
-                "FailedToHandleAction",
-                "freezeApplicationVersion failed to ensure EndpointVersion Entity exists",
-                [],
-                ensureEndpointVersionEntity,
-              );
-            }
-          }
-
-          const crossRunnerEntityUuid = entityApplicationVersionCrossRunnerVersion.uuid;
-          const crossRunnerEntityPresent = metaModel.entities.some(
-            (e) => e.uuid === crossRunnerEntityUuid,
-          );
-          if (!crossRunnerEntityPresent) {
-            const ensureCrossRunner = await this.handleModelAction(
-              {
-                actionType: "createEntity",
-                actionLabel: "freezeEnsureApplicationVersionCrossRunnerVersion",
-                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                payload: {
-                  application: payload.application,
-                  transactional: false,
-                  entities: [entityApplicationVersionCrossRunnerVersion as Entity],
-                },
-              },
-              applicationDeploymentMap,
-              targetModelEnvironment,
-            );
-            if (ensureCrossRunner instanceof Action2Error) {
-              return new Action2Error(
-                "FailedToHandleAction",
-                "freezeApplicationVersion failed to ensure Cross Runner Entity exists",
-                [],
-                ensureCrossRunner,
-              );
-            }
-          }
-
-          const runnerVersionEntityUuid = entityHistoricalRunnerVersion.uuid;
-          const runnerVersionEntityPresent = metaModel.entities.some(
-            (e) => e.uuid === runnerVersionEntityUuid,
-          );
-          if (!runnerVersionEntityPresent) {
-            const ensureRunnerVersionEntity = await this.handleModelAction(
-              {
-                actionType: "createEntity",
-                actionLabel: "freezeEnsureHistoricalRunnerVersionEntity",
-                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                payload: {
-                  application: payload.application,
-                  transactional: false,
-                  entities: [entityHistoricalRunnerVersion as Entity],
-                },
-              },
-              applicationDeploymentMap,
-              targetModelEnvironment,
-            );
-            if (ensureRunnerVersionEntity instanceof Action2Error) {
-              return new Action2Error(
-                "FailedToHandleAction",
-                "freezeApplicationVersion failed to ensure RunnerVersion Entity exists",
-                [],
-                ensureRunnerVersionEntity,
-              );
-            }
-          }
-
-          const crossThemeEntityUuid = entityApplicationVersionCrossThemeVersion.uuid;
-          const crossThemeEntityPresent = metaModel.entities.some(
-            (e) => e.uuid === crossThemeEntityUuid,
-          );
-          if (!crossThemeEntityPresent) {
-            const ensureCrossTheme = await this.handleModelAction(
-              {
-                actionType: "createEntity",
-                actionLabel: "freezeEnsureApplicationVersionCrossThemeVersion",
-                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                payload: {
-                  application: payload.application,
-                  transactional: false,
-                  entities: [entityApplicationVersionCrossThemeVersion as Entity],
-                },
-              },
-              applicationDeploymentMap,
-              targetModelEnvironment,
-            );
-            if (ensureCrossTheme instanceof Action2Error) {
-              return new Action2Error(
-                "FailedToHandleAction",
-                "freezeApplicationVersion failed to ensure Cross Theme Entity exists",
-                [],
-                ensureCrossTheme,
-              );
-            }
-          }
-
-          const themeVersionEntityUuid = entityHistoricalThemeVersion.uuid;
-          const themeVersionEntityPresent = metaModel.entities.some(
-            (e) => e.uuid === themeVersionEntityUuid,
-          );
-          if (!themeVersionEntityPresent) {
-            const ensureThemeVersionEntity = await this.handleModelAction(
-              {
-                actionType: "createEntity",
-                actionLabel: "freezeEnsureHistoricalThemeVersionEntity",
-                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                payload: {
-                  application: payload.application,
-                  transactional: false,
-                  entities: [entityHistoricalThemeVersion as Entity],
-                },
-              },
-              applicationDeploymentMap,
-              targetModelEnvironment,
-            );
-            if (ensureThemeVersionEntity instanceof Action2Error) {
-              return new Action2Error(
-                "FailedToHandleAction",
-                "freezeApplicationVersion failed to ensure ThemeVersion Entity exists",
-                [],
-                ensureThemeVersionEntity,
-              );
-            }
-          }
-
-          const crossTransformerDefinitionEntityUuid =
-            entityApplicationVersionCrossTransformerDefinitionVersion.uuid;
-          const crossTransformerDefinitionEntityPresent = metaModel.entities.some(
-            (e) => e.uuid === crossTransformerDefinitionEntityUuid,
-          );
-          if (!crossTransformerDefinitionEntityPresent) {
-            const ensureCrossTransformerDefinition = await this.handleModelAction(
-              {
-                actionType: "createEntity",
-                actionLabel: "freezeEnsureApplicationVersionCrossTransformerDefinitionVersion",
-                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                payload: {
-                  application: payload.application,
-                  transactional: false,
-                  entities: [entityApplicationVersionCrossTransformerDefinitionVersion as Entity],
-                },
-              },
-              applicationDeploymentMap,
-              targetModelEnvironment,
-            );
-            if (ensureCrossTransformerDefinition instanceof Action2Error) {
-              return new Action2Error(
-                "FailedToHandleAction",
-                "freezeApplicationVersion failed to ensure Cross TransformerDefinition Entity exists",
-                [],
-                ensureCrossTransformerDefinition,
-              );
-            }
-          }
-
-          const transformerDefinitionVersionEntityUuid =
-            entityHistoricalTransformerDefinitionVersion.uuid;
-          const transformerDefinitionVersionEntityPresent = metaModel.entities.some(
-            (e) => e.uuid === transformerDefinitionVersionEntityUuid,
-          );
-          if (!transformerDefinitionVersionEntityPresent) {
-            const ensureTransformerDefinitionVersionEntity = await this.handleModelAction(
-              {
-                actionType: "createEntity",
-                actionLabel: "freezeEnsureHistoricalTransformerDefinitionVersionEntity",
-                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                payload: {
-                  application: payload.application,
-                  transactional: false,
-                  entities: [entityHistoricalTransformerDefinitionVersion as Entity],
-                },
-              },
-              applicationDeploymentMap,
-              targetModelEnvironment,
-            );
-            if (ensureTransformerDefinitionVersionEntity instanceof Action2Error) {
-              return new Action2Error(
-                "FailedToHandleAction",
-                "freezeApplicationVersion failed to ensure TransformerDefinitionVersion Entity exists",
-                [],
-                ensureTransformerDefinitionVersionEntity,
-              );
-            }
-          }
-
-          // #230 — MlSchemaVersion / MiroirTestVersion history Entities, with their Cross Entities.
-          const fullSnapshotHistoryEntities = [
-            entityApplicationVersionCrossMlSchemaVersion,
-            entityHistoricalMlSchemaVersion,
-            entityApplicationVersionCrossMiroirTestVersion,
-            entityHistoricalMiroirTestVersion,
-            // #706
-            entityApplicationVersionCrossBlobVersion,
-            entityHistoricalBlobVersion,
-            entityApplicationVersionCrossTestConfigurationVersion,
-            entityHistoricalTestConfigurationVersion,
-            entityApplicationVersionCrossTestVersion,
-            entityHistoricalTestVersion,
-          ] as Entity[];
-          for (const historyEntity of fullSnapshotHistoryEntities) {
-            if (metaModel.entities.some((e) => e.uuid === historyEntity.uuid)) {
-              continue;
-            }
-            const ensureHistoryEntity = await this.handleModelAction(
-              {
-                actionType: "createEntity",
-                actionLabel: `freezeEnsure${historyEntity.name}Entity`,
-                endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
-                payload: {
-                  application: payload.application,
-                  transactional: false,
-                  entities: [historyEntity],
-                },
-              },
-              applicationDeploymentMap,
-              targetModelEnvironment,
-            );
-            if (ensureHistoryEntity instanceof Action2Error) {
-              return new Action2Error(
-                "FailedToHandleAction",
-                `freezeApplicationVersion failed to ensure ${historyEntity.name} Entity exists`,
-                [],
-                ensureHistoryEntity,
-              );
-            }
-          }
-
-          // Freeze application Entities only — exclude MetaModel bootstrap Entities
-          // (Entity, Report, Cross, …) that may appear in currentModel.entities.
-          const metaBootstrapUuids = new Set(
-            (targetModelEnvironment.miroirMetaModel?.entities ?? []).map((e) => e.uuid),
-          );
-          metaBootstrapUuids.add(crossEntityUuid);
-          metaBootstrapUuids.add(crossQueryEntityUuid);
-          metaBootstrapUuids.add(queryVersionEntityUuid);
-          metaBootstrapUuids.add(crossReportEntityUuid);
-          metaBootstrapUuids.add(reportVersionEntityUuid);
-          metaBootstrapUuids.add(crossMenuEntityUuid);
-          metaBootstrapUuids.add(menuVersionEntityUuid);
-          metaBootstrapUuids.add(crossEndpointEntityUuid);
-          metaBootstrapUuids.add(endpointVersionEntityUuid);
-          metaBootstrapUuids.add(crossRunnerEntityUuid);
-          metaBootstrapUuids.add(runnerVersionEntityUuid);
-          metaBootstrapUuids.add(crossThemeEntityUuid);
-          metaBootstrapUuids.add(themeVersionEntityUuid);
-          metaBootstrapUuids.add(crossTransformerDefinitionEntityUuid);
-          metaBootstrapUuids.add(transformerDefinitionVersionEntityUuid);
-          for (const historyEntity of fullSnapshotHistoryEntities) {
-            metaBootstrapUuids.add(historyEntity.uuid);
-          }
-          // #230: for Miroir itself, the meta-model Entities are the application's Entities.
-          const applicationEntities = selectEntitiesToFreeze(
-            payload.application,
-            metaModel.entities,
-            metaBootstrapUuids,
-          );
-
-          const freezeMetaModelSlice: FreezeMetaModelSlice = {
-            applications: metaModel.applications,
-            entities: metaModel.entities,
-            storedQueries: metaModel.storedQueries as StoredQueryForFreeze[],
-            reports: metaModel.reports,
-            menus: metaModel.menus,
-            endpoints: metaModel.endpoints,
-            runners: metaModel.runners,
-            themes: metaModel.themes,
-            transformerDefinitions: metaModel.transformerDefinitions,
-            applicationVersions: metaModel.applicationVersions,
-            entityVersions: metaModel.entityVersions,
-            applicationVersionCrossEntityVersion: metaModel.applicationVersionCrossEntityVersion,
-            applicationVersionCrossQueryVersion: metaModel.applicationVersionCrossQueryVersion,
-            queryVersions: metaModel.queryVersions,
-            applicationVersionCrossReportVersion: metaModel.applicationVersionCrossReportVersion,
-            reportVersions: metaModel.reportVersions,
-            applicationVersionCrossMenuVersion: metaModel.applicationVersionCrossMenuVersion,
-            menuVersions: metaModel.menuVersions,
-            applicationVersionCrossEndpointVersion: metaModel.applicationVersionCrossEndpointVersion,
-            endpointVersions: metaModel.endpointVersions,
-            applicationVersionCrossRunnerVersion: metaModel.applicationVersionCrossRunnerVersion,
-            runnerVersions: metaModel.runnerVersions,
-            applicationVersionCrossThemeVersion: metaModel.applicationVersionCrossThemeVersion,
-            themeVersions: metaModel.themeVersions,
-            applicationVersionCrossTransformerDefinitionVersion:
-              metaModel.applicationVersionCrossTransformerDefinitionVersion,
-            transformerDefinitionVersions: metaModel.transformerDefinitionVersions,
-            mlSchemas: metaModel.mlSchemas,
-            tests: metaModel.tests,
-            applicationVersionCrossMlSchemaVersion: metaModel.applicationVersionCrossMlSchemaVersion,
-            mlSchemaVersions: metaModel.mlSchemaVersions,
-            applicationVersionCrossMiroirTestVersion:
-              metaModel.applicationVersionCrossMiroirTestVersion,
-            miroirTestVersions: metaModel.miroirTestVersions,
-          };
-          const instancesToFreeze = await this.loadInstancesToFreeze(
-            payload.application,
-            applicationDeploymentMap,
-          );
-          if (instancesToFreeze instanceof Action2Error) {
-            return instancesToFreeze;
-          }
-          const persistedHistory = await this.loadModelVersionHistoryForFreeze(
-            payload.application,
-            applicationDeploymentMap,
-          );
-          const enrichedMetaModel = mergeVersionHistoryIntoFreezeMetaModel(
-            freezeMetaModelSlice,
-            persistedHistory,
-          );
-
-          const plan = planFreezeApplicationVersionFromMetaModel(payload, {
-            applications: enrichedMetaModel.applications,
-            entities: applicationEntities,
-            storedQueries: enrichedMetaModel.storedQueries as StoredQueryForFreeze[],
-            applicationVersions: enrichedMetaModel.applicationVersions,
-            entityVersions: enrichedMetaModel.entityVersions,
-            applicationVersionCrossEntityVersion: enrichedMetaModel.applicationVersionCrossEntityVersion,
-            applicationVersionCrossQueryVersion: enrichedMetaModel.applicationVersionCrossQueryVersion,
-            queryVersions: enrichedMetaModel.queryVersions,
-            applicationVersionCrossReportVersion: enrichedMetaModel.applicationVersionCrossReportVersion,
-            reportVersions: enrichedMetaModel.reportVersions,
-            reports: enrichedMetaModel.reports,
-            applicationVersionCrossMenuVersion: enrichedMetaModel.applicationVersionCrossMenuVersion,
-            menuVersions: enrichedMetaModel.menuVersions,
-            menus: enrichedMetaModel.menus,
-            applicationVersionCrossEndpointVersion:
-              enrichedMetaModel.applicationVersionCrossEndpointVersion,
-            endpointVersions: enrichedMetaModel.endpointVersions,
-            endpoints: enrichedMetaModel.endpoints,
-            applicationVersionCrossRunnerVersion:
-              enrichedMetaModel.applicationVersionCrossRunnerVersion,
-            runnerVersions: enrichedMetaModel.runnerVersions,
-            runners: enrichedMetaModel.runners,
-            applicationVersionCrossThemeVersion:
-              enrichedMetaModel.applicationVersionCrossThemeVersion,
-            themeVersions: enrichedMetaModel.themeVersions,
-            themes: enrichedMetaModel.themes,
-            applicationVersionCrossTransformerDefinitionVersion:
-              enrichedMetaModel.applicationVersionCrossTransformerDefinitionVersion,
-            transformerDefinitionVersions: enrichedMetaModel.transformerDefinitionVersions,
-            transformerDefinitions: enrichedMetaModel.transformerDefinitions,
-            applicationVersionCrossMlSchemaVersion:
-              enrichedMetaModel.applicationVersionCrossMlSchemaVersion,
-            mlSchemaVersions: enrichedMetaModel.mlSchemaVersions,
-            mlSchemas: enrichedMetaModel.mlSchemas,
-            applicationVersionCrossMiroirTestVersion:
-              enrichedMetaModel.applicationVersionCrossMiroirTestVersion,
-            miroirTestVersions: enrichedMetaModel.miroirTestVersions,
-            tests: enrichedMetaModel.tests,
-            ...instancesToFreeze,
-          });
-
-          const persistResult = await this.persistFreezeApplicationVersionPlan(
-            plan,
-            payload.application,
-            applicationDeploymentMap,
-          );
-          if (persistResult instanceof Action2Error) {
-            return persistResult;
-          }
-          break;
-        }
         default: {
           log.warn("DomainController handleModelAction cannot handle action name for", modelAction);
           break;
@@ -3682,10 +2644,22 @@ export class DomainController implements DomainControllerInterface, DomainContro
       currentActionDefinition.actionImplementation.actionImplementationType ==
       "libraryImplementation"
     ) {
+      // #696: an implementation that needs a process capability is refused without it
+      const requiredCapability = currentActionDefinition.actionImplementation.requiredCapability;
+      if (requiredCapability) {
+        const refused = assertProcessCapability(requiredCapability, this.resolveProcessCapabilities());
+        if (refused) {
+          return refused;
+        }
+        if (this.persistenceStoreAccessMode !== "local") {
+          return this.forwardCapabilityAction(domainAction, applicationDeploymentMap);
+        }
+      }
       return this.runLibraryActionImplementation(
         domainAction,
         currentActionDefinition.actionImplementation.inMemoryImplementationFunctionName,
         currentActionDefinition.logPhase,
+        requiredCapability,
         {
           applicationDeploymentMap,
           modelEnvironment: currentModelEnvironment,
@@ -3737,9 +2711,21 @@ export class DomainController implements DomainControllerInterface, DomainContro
     domainAction: DomainAction,
     implementationName: string,
     logPhase: LogPhase | undefined,
+    requiredCapability: ProcessCapabilityName | undefined,
     context: ActionImplementationContext,
   ): Promise<Action2ReturnType> {
     const implementation = miroirActionImplementations[implementationName];
+    // #696: the implementation of a capability lives in a package this process did not register
+    const capabilityPackage = requiredCapability ? CAPABILITY_IMPLEMENTATION_PACKAGES[requiredCapability] : undefined;
+    if (!implementation && capabilityPackage) {
+      return new Action2Error(
+        "FeatureUnavailable",
+        `${domainAction.actionType} needs ${capabilityPackage}, which this process did not register`,
+        undefined,
+        undefined,
+        { capability: requiredCapability, package: capabilityPackage },
+      );
+    }
     if (!implementation) {
       return new Action2Error(
         "InvalidAction",
@@ -3781,7 +2767,11 @@ export class DomainController implements DomainControllerInterface, DomainContro
       }
       return new Action2Error(
         "FailedToHandleAction",
-        "DomainController caught error handling " + actionType + ": " + JSON.stringify(error, null, 2),
+        // #696: an Error's own message (a thrown Error stringifies to "{}")
+        "DomainController caught error handling " +
+          actionType +
+          ": " +
+          (error instanceof Error ? error.message : JSON.stringify(error, null, 2)),
       );
     } finally {
       if (actionPhase) {
@@ -4259,6 +3249,41 @@ export class DomainController implements DomainControllerInterface, DomainContro
     return reloadFailures.length === 0
       ? result
       : { ...result, returnedDomainElement: { ...(returned as object), reloadFailures } as any };
+  }
+
+  /**
+   * #696: a remote client sends an action that needs a process capability to the process that holds the
+   * stores, which checks its own capabilities and runs it. The client's unsaved Miroir changes are refused
+   * first, of any application: the server would not see those of the application, and the reload that
+   * follows is a rollback, which empties the whole transaction. The client then reloads the application,
+   * whose model and versions the server changed.
+   */
+  private async forwardCapabilityAction(
+    domainAction: DomainAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+  ): Promise<Action2ReturnType> {
+    const application = (domainAction as { payload?: { application?: unknown } }).payload?.application;
+    if (typeof application === "string") {
+      const pendingChangesError = pendingMiroirChangesError(
+        this.currentTransaction() as { payload?: { application?: string } }[],
+      );
+      if (pendingChangesError) {
+        return pendingChangesError;
+      }
+    }
+    const result = await this.forwardServerRoutedAction(domainAction, applicationDeploymentMap);
+    if (result instanceof Action2Error || typeof application !== "string") {
+      return result;
+    }
+    const reloaded = await this.reloadTouchedDeployments(
+      { status: "ok", returnedDomainElement: { touchedDeployments: [{ application }] } as any },
+      applicationDeploymentMap,
+    );
+    const reloadFailures = (reloaded as { returnedDomainElement?: { reloadFailures?: unknown[] } })
+      ?.returnedDomainElement?.reloadFailures;
+    return Array.isArray(reloadFailures) && reloadFailures.length > 0
+      ? { ...result, returnedDomainElement: { ...((result as any)?.returnedDomainElement ?? {}), reloadFailures } as any }
+      : result;
   }
 
   /**

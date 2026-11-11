@@ -27,6 +27,7 @@ const disabledSnapshot = {
   availableStoreTypes: [] as string[],
   creatableStoreTypes: [] as string[],
   storeAdministration: false,
+  versioning: true,
 };
 
 if (runThis) {
@@ -48,6 +49,7 @@ if (runThis) {
         creatableStoreTypes: [],
         storeAdministration: false,
         git: false,
+        versioning: true,
       });
     });
 
@@ -68,7 +70,22 @@ if (runThis) {
         creatableStoreTypes: [],
         storeAdministration: false,
         git: false,
+        versioning: true,
       });
+    });
+
+    it("#696: features.versioning is on unless false, and off in the sandbox", () => {
+      const snapshot = (features: Record<string, unknown>, environment: "node" | "sandbox" = "node") =>
+        getProcessCapabilities({
+          config: { features },
+          environment,
+          storeSectionFactoryRegister: emptyMap,
+          adminStoreFactoryRegister: emptyMap,
+        }).versioning;
+      expect(snapshot({})).toBe(true);
+      expect(snapshot({ versioning: true })).toBe(true);
+      expect(snapshot({ versioning: false })).toBe(false);
+      expect(snapshot({ versioning: true }, "sandbox")).toBe(false);
     });
 
     it("sandbox environment forces ai false even when features.ai is true", () => {

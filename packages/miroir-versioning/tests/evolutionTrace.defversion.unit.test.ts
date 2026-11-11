@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { resolveDefinitionVersionForTraceEvent } from "../../src/2_domain/evolutionTraceDefVersion.js";
+import { resolveDefinitionVersionForTraceEvent } from "../src/evolutionTraceDefVersion.js";
 
 const DEF_VERSION_UUID = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
 

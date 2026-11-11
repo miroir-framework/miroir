@@ -163,6 +163,18 @@ npm run build -w miroir-standalone-app
 npm run testByFile -w miroir-standalone-app -- componentTestChunk.286.phase4
 ```
 
+### Versioning (`@miroir-framework/versioning`, #696)
+
+| | |
+|---|---|
+| **Vendor chunk** | None. The package is one lazy chunk (about 48 kB rendered) |
+| **Dynamic import** | `import("@miroir-framework/versioning")` in `startMiroirClient` (`@miroir-framework/react`), registered with core's `registerLazyActionImplementations` only when the client runs an emulated server; a browser talking to a server registers nothing |
+| **Reachability** | The first `freezeApplicationVersion`, or the first traced write with `MIROIR_EVOLUTION_TRACE` on (never in a browser build), in a process whose `versioning` capability is on |
+| **Initial load?** | No (`lazy` and `forbiddenEager` `@miroir-framework/versioning` in the three bundle policies) |
+| **On feature use?** | Yes, once per process |
+
+Moving the freeze and trace code out of core took 5.2 kB gzipped off the standalone app's page (852,431 → 847,187 bytes; core rendered 2,313,922 → 2,274,722 bytes) and 6.2 kB off the Electron renderer, recorded in the bundle size history.
+
 ---
 
 ## Summary table
@@ -179,6 +191,7 @@ npm run testByFile -w miroir-standalone-app -- componentTestChunk.286.phase4
 | Mermaid | — (own lazy chunks) | Yes (model page / diagram section) | No |
 | Testing Library dom and user-event (component tests) | None (async chunk) | Yes | Yes (first component test run, #286) |
 | CopilotKit core | — (lazy chunks) | Yes | Yes (snapshot `ai` + AI AppBar action) |
+| `@miroir-framework/versioning` | — (lazy chunk, #696) | Yes | Yes (first freeze, with an emulated server) |
 | CopilotKit UI | — (lazy chunks) | Yes | Yes (same gate + sidebar or dev console) |
 | Meta-model deployment | — (entry chunk, tree-shaken) | **No** (capped by `eagerPackageMaxBytes`) | N/A |
 | MUI | `vendor-mui` | Partially (large shell dependency) | N/A |

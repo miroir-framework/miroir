@@ -236,6 +236,8 @@ export interface DomainControllerInterface {
   getPersistenceStoreAccessMode(): "local" | "remote";
   getLocalCache(): LocalCacheInterface; // TODO: this is a temporary solution to allow the use of the local cache in the webapp.
   setProcessCapabilities(snapshot: ProcessCapabilities): void;
+  /** #696: the process capabilities this controller checks: the snapshot set, else the configuration's. */
+  getProcessCapabilities(): ProcessCapabilities;
   /** Registers a listener of the instance actions that changed a store; returns its removal. */
   addInstanceActionListener(listener: InstanceActionListener): () => void;
 }

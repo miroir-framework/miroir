@@ -1,6 +1,9 @@
 import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 import { Action2Error } from "../0_interfaces/2_domain/DomainElement";
-import type { ActionImplementationHandler } from "../0_interfaces/3_controllers/DomainControllerActionHost";
+import type {
+  ActionImplementationHandler,
+  EvolutionTraceRecorder,
+} from "../0_interfaces/3_controllers/DomainControllerActionHost";
 import { handleAction_runReportAction } from "./RunReportAction";
 import { GIT_ACTION_TYPES } from "../0_interfaces/3_controllers/GitAction";
 
@@ -91,7 +94,6 @@ export const miroirActionImplementations: Record<string, ActionImplementationHan
   handleAction_renameEntity: handleModelAction,
   handleAction_createEntity: handleModelAction,
   handleAction_dropEntity: handleModelAction,
-  handleAction_freezeApplicationVersion: handleModelAction,
 
   // InstanceEndpoint
   handleAction_createInstance: handleInstanceAction,
@@ -151,4 +153,89 @@ export function registerMiroirActionImplementation(
   implementation: ActionImplementationHandler,
 ): void {
   miroirActionImplementations[implementationName] = implementation;
+}
+
+/**
+ * The module a lazy registration loads: its action implementations by implementation name and, for the
+ * `versioning` capability, the recorder of evolution traces (#696).
+ */
+export type LazyActionImplementationModule = {
+  actionImplementations: Record<string, ActionImplementationHandler>;
+  evolutionTraceRecorder?: EvolutionTraceRecorder;
+};
+
+/** The loader of each lazily registered capability module, for the callers that are not actions (#696). */
+const lazyCapabilityModuleLoaders: Record<string, () => Promise<LazyActionImplementationModule>> = {};
+
+/**
+ * #696: the module registered for `capability`, loaded on the first call (the same load as its action
+ * implementations); undefined when no host registered one or when it could not be loaded.
+ */
+export async function loadLazyCapabilityModule(
+  capability: string,
+): Promise<LazyActionImplementationModule | undefined> {
+  const load = lazyCapabilityModuleLoaders[capability];
+  if (!load) {
+    return undefined;
+  }
+  try {
+    return await load();
+  } catch {
+    return undefined;
+  }
+}
+
+/**
+ * #696: registers the implementations of a package that core does not import, loaded on the first action
+ * that needs one of them. `load` is a dynamic `import()` of the package; it runs once (again only after a
+ * failure). The DomainController checks the action's `requiredCapability` before calling the
+ * implementation, so a process without the capability never loads the package.
+ */
+export function registerLazyActionImplementations(params: {
+  capability: string;
+  packageName: string;
+  implementationNames: readonly string[];
+  load: () => Promise<LazyActionImplementationModule>;
+}): void {
+  let loading: Promise<LazyActionImplementationModule> | undefined;
+  const loadOnce = () => {
+    if (!loading) {
+      const started = params.load();
+      loading = started;
+      started.catch(() => {
+        if (loading === started) {
+          loading = undefined;
+        }
+      });
+    }
+    return loading;
+  };
+  lazyCapabilityModuleLoaders[params.capability] = loadOnce;
+  for (const implementationName of params.implementationNames) {
+    miroirActionImplementations[implementationName] = async (host, action, context) => {
+      let module: LazyActionImplementationModule;
+      try {
+        module = await loadOnce();
+      } catch (error) {
+        return new Action2Error(
+          "FeatureUnavailable",
+          `${params.packageName} could not be loaded: ${error instanceof Error ? error.message : String(error)}`,
+          undefined,
+          undefined,
+          { capability: params.capability, package: params.packageName },
+        );
+      }
+      const implementation = module.actionImplementations[implementationName];
+      if (!implementation) {
+        return new Action2Error(
+          "FeatureUnavailable",
+          `${params.packageName} has no implementation ${implementationName}`,
+          undefined,
+          undefined,
+          { capability: params.capability, package: params.packageName },
+        );
+      }
+      return implementation(host, action, context);
+    };
+  }
 }

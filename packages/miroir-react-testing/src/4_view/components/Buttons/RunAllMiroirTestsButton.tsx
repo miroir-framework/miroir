@@ -136,6 +136,7 @@ export const RunAllMiroirTestsButton: React.FC<RunAllMiroirTestsButtonProps> = (
           miroirContextService.domainController,
           miroirContextService.applicationDeploymentMap,
         ),
+      processCapabilities: miroirContextService.processCapabilities,
     });
 
     if (onTestComplete) {

@@ -30,6 +30,7 @@ const snapshotWithCursorFalse: ProcessCapabilities = {
   availableStoreTypes: [],
   creatableStoreTypes: [],
   storeAdministration: false,
+  versioning: true,
 };
 
 const snapshotWithCursorTrue: ProcessCapabilities = {

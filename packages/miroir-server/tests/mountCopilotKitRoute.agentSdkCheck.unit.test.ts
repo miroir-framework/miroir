@@ -18,6 +18,7 @@ function capabilities(agentBackend: "none" | "cursor" | "claude") {
     availableStoreTypes: [],
     creatableStoreTypes: [],
     storeAdministration: false,
+    versioning: true,
   } as any;
 }
 

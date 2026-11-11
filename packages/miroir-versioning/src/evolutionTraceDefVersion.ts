@@ -1,11 +1,8 @@
-import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
-import { packageName } from "../constants";
-import { cleanLevel } from "../1_core/constants";
-import type { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
+import { MiroirLoggerFactory, type LoggerInterface } from "@miroir-framework/core";
 
 const _evolutionTraceLoggerName = MiroirLoggerFactory.getLoggerName(
-  packageName,
-  cleanLevel,
+  "miroir-versioning",
+  "2",
   "evolutionTraceDefVersion",
 );
 let evolutionTraceLog: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_evolutionTraceLoggerName);

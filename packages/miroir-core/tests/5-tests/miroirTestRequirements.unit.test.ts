@@ -13,6 +13,8 @@ import {
   EVOLUTION_TRACE_TESTS_NEED_TRACES,
   miroirTestSuiteForEnvironment,
   miroirTestUnmetRequirement,
+  VERSIONING_TAG,
+  VERSIONING_TESTS_NEED_VERSIONING,
 } from "../../src/5_tests/miroirTestRequirements";
 import { getMiroirTestAllowedTags } from "../../src/5_tests/miroirTestTags";
 
@@ -64,5 +66,32 @@ describe("MiroirTest requirements (#589)", () => {
 
     expect(entry?.instance.tags).toContain(EVOLUTION_TRACE_TAG);
     expect(miroirTestUnmetRequirement(entry!.instance, {})).toBe(EVOLUTION_TRACE_TESTS_NEED_TRACES);
+  });
+
+  // #696
+  it("a versioning suite is skipped, with the reason, when the versioning capability is off", () => {
+    const instance = instanceWithTags([VERSIONING_TAG, "integ"]);
+    expect(miroirTestUnmetRequirement(instance, {}, { versioning: false })).toBe(VERSIONING_TESTS_NEED_VERSIONING);
+    expect(VERSIONING_TESTS_NEED_VERSIONING).toContain("features.versioning");
+    expect(miroirTestSuiteForEnvironment(instance, suite, {}, { versioning: false })).toEqual({
+      suite: { ...suite, skip: true },
+      skipReason: VERSIONING_TESTS_NEED_VERSIONING,
+    });
+  });
+
+  it("a versioning suite runs when the capability is on, or when no snapshot is given", () => {
+    const instance = instanceWithTags([VERSIONING_TAG]);
+    expect(miroirTestUnmetRequirement(instance, {}, { versioning: true })).toBeUndefined();
+    expect(miroirTestUnmetRequirement(instance, {})).toBeUndefined();
+    expect(miroirTestSuiteForEnvironment(instance, suite, {}, { versioning: true })).toEqual({ suite });
+    expect(miroirTestUnmetRequirement(instanceWithTags(["integ"]), {}, { versioning: false })).toBeUndefined();
+  });
+
+  it("the freeze suites carry the versioning tag", () => {
+    const tagged = loadApplicationMiroirTestCatalog()
+      .filter((candidate) => candidate.instance.tags?.includes(VERSIONING_TAG))
+      .map((candidate) => candidate.suiteKey);
+    expect(tagged).toContain("action.domainController.freezeApplicationVersion");
+    expect(getMiroirTestAllowedTags(loadMiroirTestEntityFromFolders())).toContain(VERSIONING_TAG);
   });
 });

@@ -31,6 +31,7 @@ const aiCapabilities: ProcessCapabilities = {
   availableStoreTypes: [],
   creatableStoreTypes: [],
   storeAdministration: false,
+  versioning: true,
 };
 
 function FakeAssistantPanel(): React.JSX.Element {

@@ -1,4 +1,4 @@
-import type { ApplicationEvolutionTraceEvent } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+import type { ApplicationEvolutionTraceEvent } from "@miroir-framework/core";
 
 export type EvolutionHistoryCompactionLevel = "raw" | "commit" | "version";
 

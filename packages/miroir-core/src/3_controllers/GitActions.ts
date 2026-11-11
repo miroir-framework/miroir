@@ -436,6 +436,16 @@ export function openMiroirTransactionError(
     action.actionType === "gitAction_revert"
       ? transaction
       : transaction.filter((change) => change.payload?.application === application);
+  return pendingMiroirChangesError(pending);
+}
+
+/**
+ * The refusal of an action that needs the Miroir changes saved first (`reason: "openMiroirTransaction"`), or
+ * `undefined` when `pending` is empty. #696: a server-routed versioning action uses it too.
+ */
+export function pendingMiroirChangesError(
+  pending: readonly { payload?: { application?: string } }[],
+): Action2Error | undefined {
   if (pending.length === 0) {
     return undefined;
   }

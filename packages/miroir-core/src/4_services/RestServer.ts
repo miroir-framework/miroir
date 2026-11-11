@@ -47,6 +47,8 @@ import {
 } from "../1_core/authentication/AuthenticationPolicy.js";
 import { redactCredentialSecretsFromValue } from "./redactCredentialSecrets.js";
 import { serverModelEnvironments } from "./ServerModelEnvironments";
+import { defaultMiroirModelEnvironment } from "../1_core/Model";
+import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer";
 
 const INSTANCE_ENDPOINT = "ed520de4-55a9-4550-ac50-b1b713b72a89";
 const MODEL_ENDPOINT = "7947ae40-eb34-4149-887b-15a9021e714e";
@@ -62,6 +64,8 @@ const modelActionTypesForwardedToDomainController = [
   "createEntity",
   "dropEntity",
 ];
+/** #696: server-routed actions of ModelEndpoint, which need the model environment of their application. */
+const MODEL_ACTIONS_ROUTED_TO_SERVER: readonly string[] = ["freezeApplicationVersion"];
 const instanceWriteActionTypes = [
   "createInstance",
   "deleteInstance",
@@ -403,6 +407,28 @@ export async function restMethodsPostPutDeleteHandler(
 }
 
 // ################################################################################################
+/**
+ * #696: the model environment a server-routed model action (the freeze) plans against: its application's
+ * model, read from the stores. `undefined` for any other action, and for Miroir or an application whose model
+ * cannot be read: `forApplication` answers those with the bundled Miroir environment, which misses the saved
+ * changes of Miroir's model; the DomainController then uses its local cache, loaded from the stores.
+ */
+export async function serverRoutedModelEnvironment(
+  action: unknown,
+  persistenceStoreControllerManager: PersistenceStoreControllerManagerInterface,
+  applicationDeploymentMap: ApplicationDeploymentMap,
+): Promise<MiroirModelEnvironment | undefined> {
+  if (!MODEL_ACTIONS_ROUTED_TO_SERVER.includes((action as { actionType?: string })?.actionType ?? "")) {
+    return undefined;
+  }
+  const environment = await serverModelEnvironments(persistenceStoreControllerManager).forApplication(
+    (action as { payload?: { application?: string } }).payload?.application,
+    applicationDeploymentMap,
+  );
+  return environment === defaultMiroirModelEnvironment ? undefined : environment;
+}
+
+// ################################################################################################
 export async function restActionHandler(
   useDomainControllerToHandleModelAndInstanceActions: boolean,
   continuationFunction: (response:any) =>(arg0: any) => any,
@@ -423,10 +449,15 @@ export async function restActionHandler(
 
   if (isServerRoutedMiroirAction(action)) {
     log.info("restActionHandler server-routed action", (action as { actionType?: string }).actionType);
+    const modelEnvironment = await serverRoutedModelEnvironment(
+      action,
+      persistenceStoreControllerManager,
+      applicationDeploymentMap,
+    );
     const result = await domainController.handleAction(
       action as any,
       applicationDeploymentMap,
-      undefined,
+      modelEnvironment,
       undefined,
       undefined,
       urlParams?.authPrincipal,

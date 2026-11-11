@@ -12,18 +12,6 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  BLOB_VERSION_ENTITY_UUID,
-  ENDPOINT_VERSION_ENTITY_UUID,
-  MENU_VERSION_ENTITY_UUID,
-  MIROIR_TEST_VERSION_ENTITY_UUID,
-  ML_SCHEMA_VERSION_ENTITY_UUID,
-  QUERY_VERSION_ENTITY_UUID,
-  REPORT_VERSION_ENTITY_UUID,
-  RUNNER_VERSION_ENTITY_UUID,
-  THEME_VERSION_ENTITY_UUID,
-  TEST_CONFIGURATION_VERSION_ENTITY_UUID,
-  TEST_VERSION_ENTITY_UUID,
-  TRANSFORMER_DEFINITION_VERSION_ENTITY_UUID,
   snapshotBlobsAsHistoricalBlobVersions,
   snapshotEndpointsAsHistoricalEndpointVersions,
   snapshotEntitiesAsHistoricalEntityVersions,
@@ -60,11 +48,25 @@ import {
   type StoredTransformerDefinitionForFreeze,
   type ThemeVersionSnapshot,
   type TransformerDefinitionVersionSnapshot,
-} from "../../src/1_core/versioning/applicationVersionFreeze.js";
+} from "../src/applicationVersionFreeze.js";
+import {
+  BLOB_VERSION_ENTITY_UUID,
+  ENDPOINT_VERSION_ENTITY_UUID,
+  MENU_VERSION_ENTITY_UUID,
+  MIROIR_TEST_VERSION_ENTITY_UUID,
+  ML_SCHEMA_VERSION_ENTITY_UUID,
+  QUERY_VERSION_ENTITY_UUID,
+  REPORT_VERSION_ENTITY_UUID,
+  RUNNER_VERSION_ENTITY_UUID,
+  THEME_VERSION_ENTITY_UUID,
+  TEST_CONFIGURATION_VERSION_ENTITY_UUID,
+  TEST_VERSION_ENTITY_UUID,
+  TRANSFORMER_DEFINITION_VERSION_ENTITY_UUID,
+} from "@miroir-framework/core";
 import type {
   Entity,
   EntityVersion,
-} from "../../src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
+} from "@miroir-framework/core";
 
 const ENTITY_VERSION_ENTITY_UUID = "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd";
 const ENTITY_ENTITY_UUID = "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad";

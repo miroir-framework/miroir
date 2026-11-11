@@ -2471,6 +2471,31 @@
       ]
     },
     {
+      "id": "unit-696-versioning-package",
+      "scopes": ["core", "actions"],
+      "tier": "unit",
+      "title": "#696 \u2014 @miroir-framework/versioning: the package's unit tests (freeze planner, snapshots, trace writer, runtime, compaction), core's versioning surface, the capability filter of the Endpoint action catalog, the versioning test requirement, and the hidden designer entries",
+      "requires": "none",
+      "argv": [
+        "bash",
+        "-c",
+        "npm run test -w @miroir-framework/versioning && npm run testByFile -w @miroir-framework/core -- versioningSurface endpointActionListing.capability miroirTestRequirements serverRoutedModelEnvironment && npm run testByFile -w miroir-standalone-app -- versioningEntries.unit processCapabilitiesVersioning.273"
+      ]
+    },
+    {
+      "id": "integ-696-versioning-capability",
+      "scopes": ["actions", "external"],
+      "tier": "default",
+      "title": "#696 \u2014 versioning capability: a freeze refused when off on the client or the server, a remote client's freeze run by the server (refused with pending changes of any application), the package loaded once on the first freeze or traced write and never when off, FeatureUnavailable when not installed, the trace rows written by client and server",
+      "requires": "none",
+      "parallel": false,
+      "argv": [
+        "bash",
+        "-c",
+        "MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- 3_controllers/versioning/"
+      ]
+    },
+    {
       "id": "appstack-284-openapi-connection-wizard",
       "scopes": ["external"],
       "tier": "default",
