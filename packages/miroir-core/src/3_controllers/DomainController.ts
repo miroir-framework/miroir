@@ -123,6 +123,7 @@ import {
 } from "../1_core/processCapabilities.js";
 import {
   APPEND_EVOLUTION_TRACE_RECORD_ACTION_TYPE,
+  FREEZE_APPLICATION_VERSION_ACTION_TYPE,
   VERSIONING_PACKAGE_NAME,
   type AppendEvolutionTraceRecordPayload,
 } from "../1_core/versioning/versioningInterfaces.js";
@@ -461,6 +462,8 @@ export class DomainController implements DomainControllerInterface, DomainContro
   private instanceActionListeners: InstanceActionListener[] = [];
   /** #708: per application, the evolution trace records not appended yet, in order. */
   private pendingEvolutionTraceRecords = new Map<string, AppendEvolutionTraceRecordPayload[]>();
+  /** #708: per application, the end of the last append sequence: one sequence runs at a time. */
+  private evolutionTraceAppendTails = new Map<string, Promise<unknown>>();
   // ##############################################################################################
   constructor(
     private persistenceStoreAccessMode: "local" | "remote",
@@ -1589,7 +1592,11 @@ export class DomainController implements DomainControllerInterface, DomainContro
     applicationDeploymentMap: ApplicationDeploymentMap,
   ): Promise<void> {
     for (const application of tracedApplications) {
-      const failed = await this.appendEvolutionTraceRecordInOrder({ application, kind: "rebaseline" }, applicationDeploymentMap);
+      const failed = await this.appendEvolutionTraceRecordInOrder(
+        application,
+        { application, kind: "rebaseline" },
+        applicationDeploymentMap,
+      );
       if (failed) {
         log.warn("DomainController appendRebaselineMarker: marker kept for application", application, failed);
       }
@@ -1597,27 +1604,63 @@ export class DomainController implements DomainControllerInterface, DomainContro
   }
 
   /**
-   * #708: appends the kept records of an application, then `payload`, in order. A failed append keeps
-   * that record and the ones after it for the next call.
+   * #708: appends the kept records of an application, then `payload` when given, in order. A failed
+   * append keeps that record and the ones after it for the next call. The sequences of one application
+   * run one after the other, so two writes never send the same kept record.
    */
-  private async appendEvolutionTraceRecordInOrder(
-    payload: AppendEvolutionTraceRecordPayload,
+  private appendEvolutionTraceRecordInOrder(
+    application: string,
+    payload: AppendEvolutionTraceRecordPayload | undefined,
     applicationDeploymentMap: ApplicationDeploymentMap,
   ): Promise<Action2Error | undefined> {
-    const queue = [...(this.pendingEvolutionTraceRecords.get(payload.application) ?? []), payload];
-    for (let index = 0; index < queue.length; index++) {
-      const appended = await this.handleAction(
-        appendEvolutionTraceRecordAction(queue[index]) as any,
-        applicationDeploymentMap,
-        defaultMiroirModelEnvironment,
-      );
-      if (appended instanceof Action2Error) {
-        this.pendingEvolutionTraceRecords.set(payload.application, queue.slice(index));
-        return appended;
+    const run = async (): Promise<Action2Error | undefined> => {
+      const queue = [...(this.pendingEvolutionTraceRecords.get(application) ?? []), ...(payload ? [payload] : [])];
+      for (let index = 0; index < queue.length; index++) {
+        const appended = await this.handleAction(
+          appendEvolutionTraceRecordAction(queue[index]) as any,
+          applicationDeploymentMap,
+          defaultMiroirModelEnvironment,
+        );
+        if (appended instanceof Action2Error) {
+          this.pendingEvolutionTraceRecords.set(application, queue.slice(index));
+          return appended;
+        }
       }
+      this.pendingEvolutionTraceRecords.delete(application);
+      return undefined;
+    };
+    const previous = this.evolutionTraceAppendTails.get(application) ?? Promise.resolve();
+    const current = previous.then(run, run);
+    const settled = current.catch(() => undefined);
+    this.evolutionTraceAppendTails.set(application, settled);
+    void settled.then(() => {
+      if (this.evolutionTraceAppendTails.get(application) === settled) {
+        this.evolutionTraceAppendTails.delete(application);
+      }
+    });
+    return current;
+  }
+
+  /**
+   * #708: a freeze of an application with kept records sends them first, so that its version marker
+   * follows every change the version holds; it is refused when they still cannot be appended.
+   */
+  private async sendKeptRecordsBeforeFreeze(
+    application: string,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+  ): Promise<Action2Error | undefined> {
+    if (!this.pendingEvolutionTraceRecords.has(application)) {
+      return undefined;
     }
-    this.pendingEvolutionTraceRecords.delete(payload.application);
-    return undefined;
+    const failed = await this.appendEvolutionTraceRecordInOrder(application, undefined, applicationDeploymentMap);
+    return failed
+      ? new Action2Error(
+          "FailedToHandleAction",
+          `the freeze of ${application} waits for evolution trace records that could not be appended`,
+          [],
+          failed,
+        )
+      : undefined;
   }
 
   /**
@@ -1642,6 +1685,7 @@ export class DomainController implements DomainControllerInterface, DomainContro
         continue;
       }
       const failed = await this.appendEvolutionTraceRecordInOrder(
+        application,
         { application, kind: "commit", commitUuid, actions, complete },
         applicationDeploymentMap,
       );
@@ -2841,6 +2885,13 @@ export class DomainController implements DomainControllerInterface, DomainContro
         const refused = assertProcessCapability(requiredCapability, this.resolveProcessCapabilities());
         if (refused) {
           return refused;
+        }
+        const freezeTarget = (domainAction as { actionType?: string; payload?: { application?: unknown } });
+        if (freezeTarget.actionType === FREEZE_APPLICATION_VERSION_ACTION_TYPE && typeof freezeTarget.payload?.application === "string") {
+          const unsent = await this.sendKeptRecordsBeforeFreeze(freezeTarget.payload.application, applicationDeploymentMap);
+          if (unsent) {
+            return unsent;
+          }
         }
         if (this.persistenceStoreAccessMode !== "local") {
           // #708: a trace record changes no model: no refusal of pending changes, no reload

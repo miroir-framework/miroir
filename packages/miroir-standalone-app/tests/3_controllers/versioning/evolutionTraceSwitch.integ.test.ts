@@ -29,6 +29,7 @@ import {
   applicationDeploymentMap,
   expectFeatureUnavailable,
   expectOk,
+  freezeAppForTest,
   INSTANCE_ENDPOINT,
   LIBRARY_APPLICATION,
   LIBRARY_DEPLOYMENT,
@@ -248,5 +249,46 @@ describe("evolutionTraceSwitch (#708)", () => {
       "#708 after",
     ]);
     expect(added[1].previousTrace).toBe(added[0].uuid);
+  }, 60000);
+
+  it("a freeze sends the kept records before its version marker, and is refused while they cannot be sent", async () => {
+    const before = await storedRecords();
+    setCapabilities(context, { server: { versioning: false } });
+    await updateInTransaction(APP_FOR_TEST, { ...entityPublisher, description: "#708 kept before freeze" } as EntityInstance);
+    expectOk(await commit(), "commit with a failed append");
+    const refused = await freezeAppForTest(context.domainController, "708-kept");
+    expect(refused instanceof Action2Error, JSON.stringify(refused)).toBe(true);
+    expect((refused as Action2Error).errorMessage).toContain("evolution trace records");
+
+    setCapabilities(context, {});
+    expectOk(await freezeAppForTest(context.domainController, "708-kept"), "freeze 708-kept");
+    const added = (await storedRecords()).slice(before.length);
+    expect(added.map((record) => record.kind)).toEqual(["commit", "version"]);
+    expect(added[0].actions?.[0]?.payload.objects?.[0]?.description).toBe("#708 kept before freeze");
+    expect(added[1].previousTrace).toBe(added[0].uuid);
+  }, 60000);
+
+  it("two writes at the same time send a kept record once", async () => {
+    const before = await storedRecords();
+    setCapabilities(context, { server: { versioning: false } });
+    expectOk(
+      await directModelWrite(APP_FOR_TEST, { ...entityPublisher, description: "#708 kept once" } as EntityInstance),
+      "write with a failed append",
+    );
+    setCapabilities(context, {});
+    const writes = await Promise.all([
+      directModelWrite(APP_FOR_TEST, { ...entityPublisher, description: "#708 concurrent" } as EntityInstance),
+      directModelWrite(APP_FOR_TEST, { ...entityPublisher, description: "#708 concurrent" } as EntityInstance),
+    ]);
+    writes.forEach((write) => expectOk(write, "concurrent write"));
+    const added = (await storedRecords()).slice(before.length);
+    expect(added.map((record) => record.actions?.[0]?.payload.objects?.[0]?.description)).toEqual([
+      "#708 kept once",
+      "#708 concurrent",
+      "#708 concurrent",
+    ]);
+    expect(added.map((record) => record.sequenceNumber)).toEqual(
+      added.map((_, index) => (before.at(-1)?.sequenceNumber ?? 0) + index + 1),
+    );
   }, 60000);
 });
