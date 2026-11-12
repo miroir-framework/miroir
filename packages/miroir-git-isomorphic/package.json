@@ -29,6 +29,6 @@
   },
   "dependencies": {
     "@miroir-framework/core": "*",
-    "isomorphic-git": "1.44.3"
+    "isomorphic-git": "1.44.10"
   }
 }

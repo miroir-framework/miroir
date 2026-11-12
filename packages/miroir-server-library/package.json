@@ -51,21 +51,21 @@
     "@miroir-framework/core": "*",
     "@miroir-framework/mcp": "*",
     "@miroir-framework/versioning": "*",
-    "@reduxjs/toolkit": "2.13.0",
+    "@reduxjs/toolkit": "2.14.0",
     "@teroneko/redux-saga-promise": "4.0.0",
     "body-parser": "2.4.0",
     "cors": "2.8.6",
     "express": "5.3.0",
-    "immer": "11.1.21",
+    "immer": "11.2.9",
     "redux-saga": "1.5.1",
     "typed-redux-saga": "1.5.0",
-    "zustand": "5.0.15"
+    "zustand": "5.0.16"
   },
   "devDependencies": {
     "@types/body-parser": "1.19.6",
     "@types/cors": "2.8.19",
     "@types/express": "5.0.6",
-    "@types/node": "26.6.5",
+    "@types/node": "26.6.6",
     "cross-env": "10.1.0",
     "loglevelnext": "6.0.0",
     "miroir-app-admin": "*",
@@ -76,7 +76,7 @@
     "miroir-localcache-redux": "*",
     "@miroir-framework/store-filesystem": "*",
     "tsup": "9.0.0",
-    "vitest": "5.0.5",
+    "vitest": "5.1.0",
     "miroir-localcache-zustand": "*"
   }
 }

@@ -64,12 +64,12 @@
     }
   },
   "devDependencies": {
-    "@types/node": "26.6.5",
+    "@types/node": "26.6.6",
     "@types/uuid": "11.0.0",
     "cross-env": "10.1.0",
     "miroir-example-library": "*",
     "tsup": "9.0.0",
-    "vitest": "5.0.5",
+    "vitest": "5.1.0",
     "zod": "4.6.7"
   }
 }
