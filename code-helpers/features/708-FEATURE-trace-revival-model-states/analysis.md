@@ -9,6 +9,14 @@ Key sources: [`evolutionTracePolicy.ts`](../../../packages/miroir-core/src/2_dom
 
 **Document role:** analysis and decision record for #708. The epic's decisions (Q16 to Q20, Q24, Q28 to Q30, D3, D4, D10 to D12) are settled and not reopened. This document decides how to build them, and where one of its decisions narrows an epic decision, it says so.
 **Status:** analysis in progress (2026-11-12).
+**Document history:**
+- 2026-11-12: first draft, then an adversarial review (a fact check of sections 3 and 4, and an attack on each decision). It changed:
+  - D3: a record per application, a partial record after a failed commit, an append path of its own, an opt-out mark set by the recording DomainController, and suspended recording for writes that are not authoring;
+  - D5: the gate also checks every application of a commit and the presence of a writable `modelVersion`; recording starts at a marker;
+  - D6: cloned Git deployments, and the fetch only when traces are on;
+  - D9 and D10: the re-baseline's freeze skips the check it repairs; forks and the staged tree;
+  - D11: tags pushed one by one;
+  - several facts in section 4.
 
 ---
 
@@ -40,15 +48,15 @@ Legend: setting **N** keeps versions as frozen rows, without Git (`versioned-int
 |---|---|---|
 | D1. How is #708 delivered: one PR, or several? | **Four parts, each with its own PR: A records, B model states, C agreement and re-baseline, D Git tag** | all |
 | D2. Which Entity holds a record, and what happens to the two trace Entities of today? | **A new `EvolutionTraceRecord` Entity routed to `modelVersion`; the two old Entities, their three Reports, two menu items, seed row and code are removed** | G1, G6 |
-| D3. Which writes make a record, and which process writes it? | **The DomainController where the user's action arrives builds one record per commit (or per direct model write) and sends it, as one server-routed action, to the persistence process, which orders and writes it** | G1, G6 |
+| D3. Which writes make a record, and which process writes it? | **The DomainController where the user's action arrives builds one record per application per commit (or per direct model write) and sends it on an append path of its own to the persistence process, which orders and writes it under a lock; writes that are not authoring are not recorded** | G1, G6 |
 | D4. How does a record tell which version it leads to? | **The freeze appends a `version` marker record, instead of updating the open records** (narrows Q19) | G1, G4 |
-| D5. What turns traces on, and what happens when the setting cannot apply? | **`evolutionTraces` on the SelfApplication row; it reads as off on an unversioned application; with the capability off, a commit of an application with traces on is refused** | G1, G6 |
-| D6. How does a `versioned-git` application get a writable `modelVersion`? | **Its deployment declares a `modelVersion` section inside the Git work tree, and the history fetch covers both versioned modes** | G1, G5 |
+| D5. What turns traces on, and what happens when the setting cannot apply? | **`evolutionTraces` on the SelfApplication row; it reads as off on an unversioned application; a commit touching an application with traces on is refused when the capability is off or the application has no writable `modelVersion`** | G1, G6 |
+| D6. How does a `versioned-git` application get a writable `modelVersion`? | **Its deployment (environment, or Deployment row for a clone) declares a `modelVersion` section inside the Git work tree; a G application fetches it only when its traces are on** | G1, G5 |
 | D7. In what shape does a model state come back from a frozen version, a Git ref or the live model? | **A map from element Entity uuid to rows, owned by the versioning package; `MetaModel` stays as it is** | G2, G6 |
 | D8. How fine is the diff of two model states? | **Entity attributes by name, every other element type row by row and field by field** | G3 |
-| D9. What does the agreement check compare? | **The previous version replayed with the records since it, against the model being frozen or committed** | G4 |
-| D10. What does a re-baseline write? | **In N, a freeze followed by a `rebaseline` marker record; in G, a `rebaseline` marker record only, committed with the model** (epic D11) | G4 |
-| D11. What does `gitAction_tag` create, and how does the tag reach the remote? | **An annotated tag named after the version, sent by `gitAction_push`** (epic D3, D10) | G5 |
+| D9. What does the agreement check compare? | **The model at the last marker replayed with the records since it, against the model being frozen (N) or the staged tree being committed (G); a fork fails the check** | G4 |
+| D10. What does a re-baseline write? | **In N, a freeze that skips the agreement check, then a `rebaseline` marker naming that version; in G, a `rebaseline` marker naming the Git commit, committed with the model** (epic D11) | G4 |
+| D11. What does `gitAction_tag` create, and how does the tag reach the remote? | **An annotated tag named after the version; `gitAction_push` pushes each tag pointing at a pushed commit, one by one** (epic D3, D10) | G5 |
 
 ### D1. How is #708 delivered: one PR, or several?
 
@@ -72,29 +80,49 @@ Order: A, then B and D in either order, then C (it needs A and B). Each part get
 | Option | Mechanism | Pros | Cons |
 |---|---|---|---|
 | D2-a. Reuse `ApplicationEvolutionTrace` with a new schema | same uuid, new fields; drop the event Entity | no new uuid | old rows in existing stores fail the new schema; the name hides the change |
-| **D2-b. New `EvolutionTraceRecord` Entity** ★ | a new Miroir Entity, its uuid added to `versionHistoryEntityUuids` so its rows go to `modelVersion`. Fields: `application`, `sequenceNumber`, `previousTrace` (absent on the first), `kind` (`commit`, `version`, `rebaseline`), `actions` (the resolved Actions of a `commit` record), `version` (the version name of a `version` marker, D4 and epic D10), `gitCommit` (information on a G `rebaseline` marker, epic D11), `commitUuid`, `timestamp`. The two old Entities, their three Reports, their two Miroir menu items, the seeded root row and the baseline seeding are removed; one list Report and one details Report replace them. | clean format; old rows are left untouched on disk, under Entities that no longer exist | old trace rows are not migrated (traces were off by default, D5) |
+| **D2-b. New `EvolutionTraceRecord` Entity** ★ | a new Miroir Entity, its uuid added to `versionHistoryEntityUuids` so its rows go to `modelVersion`. Fields: `application`, `sequenceNumber`, `previousTrace` (absent on the first), `kind` (`commit`, `version`, `rebaseline`), `actions` (the resolved Actions of a `commit` record), `complete` (false when the commit stopped part way, D3), `version` (the version name of a `version` marker, D4 and epic D10, and of an N `rebaseline` marker, D10), `gitCommit` (information on a G `rebaseline` marker, epic D11), `commitUuid`, `timestamp`. The two old Entities, their three Reports, their two Miroir menu items, the seeded root row and the baseline seeding are removed; one list Report and one details Report replace them. | clean format; old rows are left untouched on disk, under Entities that no longer exist | old trace rows are not migrated (traces were off by default, D5) |
 | D2-c. Keep the old Entities and add the new one | both formats | nothing removed | two trace formats to read and test |
 
 **Decision:** D2-b. The frozen `EntityVersion` rows of the two old Entities in Miroir's `modelVersion` stay: they are history.
+
+What the change touches (section 4.1 lists the current references):
+- the new Entity goes into `versionHistoryEntityUuids` and `versionHistoryEntityDefinitions` (`1_core/Model.ts`, lines 187 and 217; the second creates its SQL table lazily and serves boot), and into the meta-model's Entity list (`miroir-app-miroir/src/Model.ts`);
+- removing the old Entities changes the parameters of `getMiroirFundamentalMlSchema` and the core exports, so core needs a `devBuild`;
+- the `evolution-trace` value leaves the MiroirTest Entity's tag enum, another generated-type change.
+
+This, like D3's new action, is a core schema change that every process carries. It is small (one Entity, one action definition), and the code behind it stays in the package (G6).
 
 ### D3. Which writes make a record, and which process writes it?
 
 **Status:** proposed — D3-c. **Serves:** G1, G6.
 
 **What is at stake.** Take a designer in a browser adding an optional `isbn` attribute to Library's `Book`, then committing. The Entity editor sends a `transactionalInstanceAction`; the commit replays it as an `updateInstance` through the REST client; the server receives it as a plain instance write. Today:
-- the browser records nothing, since `isEvolutionTraceEnabled` reads `process.env`, which a browser does not have;
+- the browser records nothing, since `isEvolutionTraceEnabled` reads `process.env`, which the Vite build of the standalone app does not provide;
 - the committing DomainController does not trace a replayed transactional instance write at all (the `transactionalInstanceAction` case of the commit loop, `DomainController.ts` line 2090, has no trace call);
-- the server traces each replayed write on its own, without the commit (`restActionHandler` hands it to its DomainController, whose `handleInstanceAction` calls `maybeRecordEvolutionTrace`).
+- the server traces each replayed write on its own, without the commit (`restActionHandler`, `RestServer.ts` line 432, hands it to its DomainController at line 548, whose `handleInstanceAction` calls `maybeRecordEvolutionTrace`).
 
-So the main way designers change a model is traced only by a server with `MIROIR_EVOLUTION_TRACE` set, one write at a time. Q16 needs the commit as the unit, and only the DomainController that runs the commit knows it. The browser never loads the versioning package (#696 D9).
+So the main way designers change a model is traced only by a server with `MIROIR_EVOLUTION_TRACE` set, one write at a time. Q16 needs the commit as the unit, and only the DomainController that runs the commit knows it. A browser talking to a server never loads the versioning package (#696 D9); a browser running an emulated server (the sandbox, the self-test) loads it lazily.
+
+Three more facts shape the answer:
+- One `commit` replays every pending change of every application: the loop runs over the whole `localCache.currentTransaction()` (`DomainController.ts`, line 2084), and the "Ignoring transactions for other deployments" warning above it (around line 2069) filters nothing. A Library commit with pending Miroir changes writes both.
+- The replay is not atomic: it writes one Action after another and returns at the first error (lines 2127 and 2155). The writes before the error stay in the store, and the local cache is not committed.
+- Not every model write is authoring. Deployment init and reset (`buildResetAndinitializeDeploymentActionSequence`, `1_core/Deployment.ts` line 486) run `createEntity` and `commit` through the DomainController; `resetModel` and `initModel` rewrite a model; the migration runner (#9) and restore (#709) will too. The epic's D2 already asks that a migration run is not traced.
 
 | Option | Mechanism | Pros | Cons |
 |---|---|---|---|
 | D3-a. The persistence process records each write | as today on the server | no new action | no commit boundary (Q16 fails); a commit's writes are ordered only by arrival |
 | D3-b. The committing DomainController writes the record itself | core builds the record and sends a `createInstance` into `modelVersion` | one place | the next sequence number and `previousTrace` come from the client's local cache, which may be stale; core grows |
-| **D3-c. The committing DomainController sends one server-routed action** ★ | After a successful commit, the DomainController where the commit runs collects the Actions it replayed, in order, and sends `appendEvolutionTraceRecord { application, commitUuid, actions }` on the ModelEndpoint, declared with `requiredCapability: versioning` and server-routed like the freeze (#696). The persistence process loads the package, reads the last record from the store, sets `sequenceNumber` and `previousTrace`, and writes the record. A direct model write outside a transaction (a non-transactional model Action, a write to Miroir's `data` section, Q18) makes a one-Action record the same way. A write that a DomainController receives over REST from another DomainController makes no record: `restActionHandler` marks it. | the commit is the unit; ordering is decided where the records are stored; core only collects Actions; the duplicate writes of #696 D5 disappear | a new action, and a mark on writes received over REST |
+| **D3-c. The committing DomainController sends the records on an append path of its own** ★ | The DomainController where the commit runs collects the Actions it replayed, in order, grouped by application. For each application with traces on, it sends `appendEvolutionTraceRecord { application, commitUuid, actions, complete }` on the ModelEndpoint, declared with `requiredCapability: versioning`. When the process holds the stores, the action runs in place; otherwise it goes to the server. The persistence process loads the package and, under a lock per application, reads the last record from the store, sets `sequenceNumber` and `previousTrace`, and writes the record. A direct model write outside a transaction (a non-transactional model Action, a write to Miroir's `data` section, Q18) makes a one-Action record the same way. | the commit is the unit; ordering is decided where the records are stored, one append at a time; core only collects Actions; the duplicate writes of #696 D5 disappear | a new action, a new forward path, an opt-out on REST writes, a suspension scope |
 
-**Decision:** D3-c. What is recorded: the model Actions `createEntity`, `alterEntityAttribute`, `renameEntity` and `dropEntity`, and `createInstance`, `updateInstance` and `deleteInstance` on the `model` section (and on Miroir's `data` section). Writes to `modelVersion`, `data` (other applications), `devData` and `admin` make no record. A failed commit makes no record. If the append fails after the commit succeeded, the commit stands and the failure is reported; the gap is repaired by a re-baseline (D10).
+**Decision:** D3-c, with these rules.
+
+- **What is recorded:** the model Actions `createEntity`, `alterEntityAttribute`, `renameEntity` and `dropEntity`, and `createInstance`, `updateInstance` and `deleteInstance` on the `model` section (and on Miroir's `data` section). Writes to `modelVersion`, `data` (other applications), `devData` and `admin` make no record.
+- **One record per application:** a commit that holds changes of several applications makes one record for each application with traces on, sharing the `commitUuid`.
+- **A failed commit:** the record holds the Actions that reached the store, in order, with `complete: false`. Nothing is recorded when none did. The agreement check (D9) then still matches the store.
+- **Its own forward path:** the append does not reuse `forwardCapabilityAction` (#696), which refuses while any Miroir change is pending and reloads the application afterwards (`DomainController.ts`, lines 3267 to 3281). The append neither refuses nor reloads. On the server it does not make `forgetModelEnvironmentChangedBy` (`RestServer.ts`, line 90) drop the model environments, since a record changes no model.
+- **No double recording:** the recording DomainController sets an opt-out on the REST request that carries a replayed or direct write (in the request body, not in the Action, which is validated and stored). The receiving DomainController records nothing for that request. A REST client that is not a DomainController sets no opt-out, so its model writes are recorded by the server.
+- **Writes that are not authoring:** init, reset, `resetModel`, `initModel`, and later the migration runner and restore run inside a DomainController scope that suspends recording for the application, and end by appending a `rebaseline` marker when its traces are on. Inside the scope, D5's gate does not apply, so a process without the capability can still install a cloned Git deployment whose traces are on.
+- **A failed append:** the commit stands, the result reports the failure, and the DomainController keeps the record and sends it again before the next one. A record lost with the process (a reload) leaves a gap that a re-baseline repairs (D10).
 
 ### D4. How does a record tell which version it leads to?
 
@@ -107,7 +135,9 @@ So the main way designers change a model is traced only by a server with `MIROIR
 | D4-a. The freeze stamps the open records | an `updateInstance` per open record | each record says its version | records are no longer append-only; one write per open record |
 | **D4-b. The freeze appends a `version` marker** ★ | a `version` record naming the frozen version, appended to the chain | append-only; one write; "records between two versions" is "records between two markers" | a reader walks the chain instead of filtering by a field |
 
-**Decision:** D4-b, in part A for setting N. In setting G, a version is a tag, so no marker is written (D11); records between two tags are those added by the commits between them.
+**Decision:** D4-b, in part A for setting N, written only when the application's traces are on. In setting G, a version is a tag, so no marker is written (D11); records between two tags are those added by the commits between them. D4 narrows Q19, a settled epic decision, so it needs the user's sign-off.
+
+The chain starts at a marker. When traces are switched on (today by editing the SelfApplication row, until #718), the first records have no marker before them. The agreement check (D9) ignores records before the first marker, with a warning, and the next freeze writes the first `version` marker.
 
 ### D5. What turns traces on, and what happens when the setting cannot apply?
 
@@ -117,8 +147,9 @@ So the main way designers change a model is traced only by a server with `MIROIR
 
 - `evolutionTraces` is an optional boolean on the SelfApplication row, off when absent. Miroir's own row keeps it off.
 - On an `unversioned` application it reads as off, with a warning logged when the application loads. Refusing to save it there belongs to #718's switch action.
-- The epic's gate: with the `versioning` capability off, a commit (or a direct model write, D3) of an application with traces on is refused with `FeatureUnavailable`, before anything is written. Otherwise the history would have a gap that only a re-baseline repairs.
-- The process switch is removed from the code, the tests, `scripts/nonreg-manifest.json` and the docs. The `evolution-trace` MiroirTest tag and its requirement go with it: a trace test turns traces on in its own fixture.
+- The epic's gate: a commit (or a direct model write, D3) is refused before anything is written when it touches an application whose traces are on and either the process has the `versioning` capability off (`FeatureUnavailable`) or the application's deployment has no writable `modelVersion`. The gate checks every application in the transaction (D3), not only the one named by the commit. Otherwise the history would have a gap that only a re-baseline repairs. Writes inside a suspension scope (D3) are not gated.
+- The process switch is removed from the code, the tests, `scripts/nonreg-manifest.json` and the docs. The `evolution-trace` MiroirTest tag and its requirement go with it (the tag enum of the MiroirTest Entity, `runSelfTestInteg.integ.test.ts`).
+- A trace test switches traces on in its own fixture, on a versioned application whose deployment has a `modelVersion` section. Only `environments/test-filesystem.json` declares `modelVersion` sections (for Miroir, Library, appForTest, Spotify and GitHub); the SQL, IndexedDB and MongoDB environments declare none. The trace MiroirTest, whose nonreg step runs on every storage profile today (`requires: storage`), moves to appForTest (`versioned-internal`) and to the filesystem profile only.
 
 ### D6. How does a `versioned-git` application get a writable `modelVersion`?
 
@@ -127,8 +158,8 @@ So the main way designers change a model is traced only by a server with `MIROIR
 **What is at stake.** In setting G, records live in `modelVersion` and are committed with the model, so they follow branches. Today a `versioned-external` application has no `modelVersion`: the DomainController fetches that section only for `versioned-internal` (the `nonModelFetchTargets` filter, `DomainController.ts` line 913), and `ModelInitializer.ts` (line 186) writes the initial `SelfApplicationVersion` to `model` for every mode but `versioned-internal`.
 
 - `versioningMode` gains `versioned-git`. `versioned-external` stays in the schema and resolves to `versioned-git` for one release (Q24).
-- A G deployment declares its `modelVersion` section in its environment, with its directory inside the Git work tree (`{prefix}_modelVersion/`, next to `{prefix}_model/`), so a Git commit includes the records.
-- The history fetch covers both versioned modes.
+- A G deployment declares its `modelVersion` section with its directory inside the Git work tree (`{prefix}_modelVersion/`, next to `{prefix}_model/`), so a Git commit includes the records. For a deployment set up from an environment file, the environment declares it. For a cloned deployment, the Deployment row inside the repository declares it (`2_domain/GitClonedDeployments.ts`, from line 148). Without it, D5's gate refuses commits while traces are on.
+- A G application fetches its `modelVersion` section only when its traces are on, so an application with traces off costs nothing more (G6). N applications fetch it as today, for their versions.
 - Freeze stays refused in G (`assertApplicationVersioningEnabled`), so a G `modelVersion` holds records, and later Migrations, but no frozen rows. The initial `SelfApplicationVersion` of a G application stays in `model`, as today.
 
 ### D7. In what shape does a model state come back from a frozen version, a Git ref or the live model?
@@ -142,34 +173,35 @@ So the main way designers change a model is traced only by a server with `MIROIR
 | D7-a. Extend `MetaModel` | three new collections in the generated type | one shape everywhere | a core schema change that every process carries (G6); every builder of a `MetaModel` must fill them |
 | **D7-b. A `ModelState` map in the versioning package** ★ | `{ application, source, rows: Record<elementEntityUuid, EntityInstance[]> }`, built from frozen `*Version` rows, from `*_model/<entityUuid>/*.json` files at a Git ref, or from the live sections | uniform over every element type; costs only the package | a converter from and to `MetaModel` where a caller needs one |
 
-**Decision:** D7-b. Reading at a Git ref needs a new `GitRepositoryInterface` method listing the files under a folder at a ref (isomorphic-git `readTree`); `readFile(path, ref)` exists already.
+**Decision:** D7-b. Reading at a Git ref needs `GitRepositoryInterface.listFiles`, which lists the files of the commit `HEAD` points at, to take a `ref`; `readFile(path, ref)` exists already.
 
 ### D8. How fine is the diff of two model states?
 
 **Status:** proposed. **Serves:** G3. Part B.
 
-The diff returns, per element type, the rows added, removed and changed. For an Entity, a change also lists the attributes of `mlSchema.definition` added, removed and changed (by name, with the old and new definition), and the other changed fields (`idAttribute`, `viewAttributes`, …). For the other types, a change lists the changed top-level fields. A rename cannot be told from a remove plus an add by the diff alone; the records carry it (epic D12). It replaces `diffEntityVersionSnapshots` (`applicationVersionFreeze.ts`, line 1063), which compares Entities by uuid only.
+The diff returns, per element type, the rows added, removed and changed. For an Entity, a change also lists the attributes of `mlSchema.definition` added, removed and changed (by name, with the old and new definition), and the other changed fields (`idAttribute`, `viewAttributes`, …). For the other types, a change lists the changed top-level fields. A rename cannot be told from a remove plus an add by the diff alone; the records carry it (epic D12). It replaces `diffEntityVersionSnapshots` (`packages/miroir-versioning/src/applicationVersionFreeze.ts`, line 1063). That one covers Entities only: it pairs them by uuid, reports a changed `name` as a rename, and lists which whole fields differ (`mlSchema` among them), without the attributes inside.
 
 ### D9. What does the agreement check compare?
 
 **Status:** proposed. **Serves:** G4. Part C.
 
-- At freeze (setting N): the last frozen version, replayed with the `commit` records since its `version` marker, must give the live model. Otherwise the freeze is refused and the differences (D8) are listed.
-- At commit from the Git page (setting G): the model at `HEAD`, replayed with the records added since `HEAD`, must give the model being committed.
-- With traces off, there is nothing to check, and the check passes.
+- At freeze (setting N): the version named by the last marker (`version` or `rebaseline`), replayed with the `commit` records since that marker, must give the live model. Otherwise the freeze is refused and the differences (D8) are listed.
+- At commit from the Git page (setting G): the model at `HEAD`, replayed with the staged records added since `HEAD`, must give the staged model files. A Git commit commits the index, which may hold only some files (`GitActions.ts`, lines 491 to 576), so the check reads the staged tree, and staged model files without the records that cover them (or the reverse) fail it. A `gitAction_revert` that restores model files without their records is caught by the same check at the next commit.
+- A fork fails the check: two records with the same `previousTrace`. It appears when two branches each append records and are merged outside Miroir (the Git page only fast-forwards, `GitRepositoryInterface.ts` line 121). The designer re-baselines (D10), as epic D11 says.
+- With traces off, or before the first marker (D4), there is nothing to check, and the check passes.
 - A `rebaseline` marker restarts the chain: replay starts from the state it fixes.
 
 ### D10. What does a re-baseline write?
 
 **Status:** proposed, as epic Q30 and D11. **Serves:** G4. Part C.
 
-A new ModelEndpoint action, `rebaselineEvolutionTraces`. In setting N it freezes the live model under the name given and appends a `rebaseline` marker. In setting G it appends a `rebaseline` marker naming the Git commit at `HEAD` as information, to be committed with the model.
+A new ModelEndpoint action, `rebaselineEvolutionTraces`. In setting N it freezes the live model under the name given, skipping the agreement check of D9, which the re-baseline exists to repair, then appends a `rebaseline` marker naming that version. In setting G it appends a `rebaseline` marker naming the Git commit at `HEAD` as information, to be committed with the model.
 
 ### D11. What does `gitAction_tag` create, and how does the tag reach the remote?
 
 **Status:** proposed, as epic D3 and D10. **Serves:** G5. Part D.
 
-`gitAction_tag { application, name, message?, ref? }` creates an annotated tag at `HEAD` (or `ref`), named exactly after the version, with no `v` prefix. It is refused when the name exists. `gitAction_push` also pushes the tags that point to commits it pushes. The Git page offers it next to the commit.
+`gitAction_tag { application, name, message?, ref? }` creates an annotated tag at `HEAD` (or `ref`), named exactly after the version, with no `v` prefix. It is refused when the name exists. isomorphic-git pushes one ref per call, so `gitAction_push`, after pushing the branch, pushes each tag that points at a pushed commit, one by one. A tag that already exists on the remote is reported, and the branch push stands. The Git page offers the tag next to the commit.
 
 ---
 
@@ -191,7 +223,10 @@ Assets that name them:
 - Miroir menu items "Application Evolution Traces" and "Application Evolution Trace History" (Reports `b2c3d4e5-…` and `230467a6-…`, the last two of the four uuids in `VERSIONING_MENU_REPORT_UUIDS`, #696).
 - A root row for Library, shipped in Miroir's `data` section: `miroir_data/de089f57-…/ea4b571f-f4b6-4ada-abd4-a3dbeb3e5138.json`.
 - MiroirTest `action.scenario.evolutionTrace` (`2427ef3a-3cd1-4b87-afe7-433bb04b25d2`), tags `integ`, `versioning`, `model`, `evolution-trace`, on Library with TestConfiguration `libraryPublisherAndCountry` (`431e0903-…`).
-- `resetAndinitializeDeploymentCompositeAction` (`1_core/Deployment.ts`, line 620) seeds a baseline when the initialized Entities include `ApplicationEvolutionTrace`.
+- `buildResetAndinitializeDeploymentActionSequence` (`1_core/Deployment.ts`, lines 486 and 620) seeds a baseline when the initialized Entities include `ApplicationEvolutionTrace`.
+- Placeholder folders with a `dummy.txt` for both Entities in `library_model/` and `admin_model/`, and in `miroir_data/f4c2b3a1-…/`.
+- The freeze MiroirTest `d7e9f81b-…`, whose fixture menu links two of the Reports.
+- The meta-model lists of `miroir-app-miroir/src/Model.ts` (Entities, EntityVersions, Reports), the parameters of `getMiroirFundamentalMlSchema`, and core's `index.ts` exports (the `ApplicationEvolutionTrace*` types, the policy functions and `MIROIR_APPLICATION_UUID` from `evolutionTracePolicy.ts`).
 
 ### 4.2 Recording (misaligned)
 
@@ -217,22 +252,22 @@ The `transactionalInstanceAction` case of the commit loop (line 2090) replays th
 |---|---|---|
 | Browser (client of a server) | the commit | never (no `process.env`) |
 | Client with an emulated server, or Node client with local stores | the commit | model Actions only, and only with the switch set |
-| Server, or emulated server | each replayed write, through `restActionHandler` (`RestServer.ts`, line 527) to its DomainController | each instance write on its own, with the switch set; replayed model Actions go through `handleModelAction` and are not traced |
+| Server, or emulated server | each replayed write, through `restActionHandler` (`RestServer.ts`, line 432; the DomainController branch at line 527) to its DomainController | each instance write on its own, with the switch set; replayed model Actions go through `handleModelAction` with `transactional: false` and are not traced |
 
-`versioningLazyTraces` (standalone app) locks the current counts for one direct instance write with an emulated server: 3 trace rows on the client and 6 on the server (#696 D5).
+`versioningLazyTraces` (standalone app) locks the current counts for one direct instance write with an emulated server: 3 trace writes seen by the client's listener and 6 by the server's, which include the client's 3 passing through it over REST (#696 D5).
 
 ### 4.3 Versioning modes (misaligned)
 
 - SelfApplication fields (`a659d350-dd97-4da9-91de-524fa01745dc`): `name`, `defaultLabel`, `description?`, `homePageUrl?`, `versioningEnabled?` (legacy boolean), `versioningMode?` (`unversioned`, `versioned-internal`, `versioned-external`). No `evolutionTraces`.
 - `resolveVersioningMode` (`versioningMode.ts`): an explicit `versioningMode` wins; otherwise `versioningEnabled: true` means `versioned-internal`; otherwise `unversioned`.
-- Shipped values: Miroir and appForTest `versioned-internal`; Library, Admin, GitHub, Postgres and Spotify `unversioned`. No application ships `versioned-external`.
-- `versioned-external` appears in five source and asset files: `versioningMode.ts`, the two generated files (`miroirFundamentalMlSchema.ts`, `miroirFundamentalType.ts`), `DomainController.ts` and the SelfApplication Entity.
+- Shipped values: Miroir and appForTest `versioned-internal`; Library, Admin, GitHub, Postgres and Spotify `unversioned`; Designer has no `versioningMode` and resolves to `unversioned`. No application ships `versioned-external`.
+- `versioned-external` appears in five source and asset files: `versioningMode.ts`, the two generated files (`miroirFundamentalMlSchema.ts`, `miroirFundamentalType.ts`), a comment in `DomainController.ts` (line 886) and the SelfApplication Entity; and in three test files.
 
 ### 4.4 Model states, diff and Git (missing)
 
 - `MetaModel` (`miroirFundamentalType.ts`) has no collection for Blob, TestConfiguration or Test rows.
-- `diffEntityVersionSnapshots` (`packages/miroir-versioning/src/applicationVersionFreeze.ts`, line 1063) compares Entities by uuid, with no attribute steps.
-- `GitRepositoryInterface` has `readFile(path, ref?)` and `listFiles()` (the work tree), `log`, `checkout` and `push(options & { branch })`. It has no method to list files at a ref and none to create a tag. `miroir-git-isomorphic` already calls `git.listTags` and `git.readBlob`. The Git actions are `status`, `log`, `commitFiles`, `diff`, `init`, `stage`, `unstage`, `commit`, `createBranch`, `deleteBranch`, `checkout`, `setRemote`, `fetch`, `pull`, `push`, `setCredential`, `clone`, `installClonedDeployment` and `revert` (`GitAction.ts`).
+- `diffEntityVersionSnapshots` (`packages/miroir-versioning/src/applicationVersionFreeze.ts`, line 1063) covers Entities only, with renames and whole differing fields but no attribute steps.
+- `GitRepositoryInterface` has `readFile(path, ref?)`, `listFiles()` (the files of the commit `HEAD` points at, with no `ref`), `log`, `checkout` and `push(options & { branch })`. It has no method to create a tag. `miroir-git-isomorphic` already calls `git.listTags` and `git.readBlob`. The Git actions are `status`, `log`, `commitFiles`, `diff`, `init`, `stage`, `unstage`, `commit`, `createBranch`, `deleteBranch`, `checkout`, `setRemote`, `fetch`, `pull`, `push`, `setCredential`, `clone`, `installClonedDeployment` and `revert` (`GitAction.ts`).
 
 ### 4.5 Code that goes away (part A)
 
@@ -250,7 +285,8 @@ The `transactionalInstanceAction` case of the commit loop (line 2090) replays th
 
 | Piece | Location |
 |---|---|
-| Server-routed, capability-gated ModelEndpoint action, lazily loaded | `registerLazyActionImplementations`, `forwardCapabilityAction`, `SERVER_ROUTED_MIROIR_ACTION_TYPES` (#696) |
+| Capability-gated ModelEndpoint action, lazily loaded; forwarding to the server | `registerLazyActionImplementations`, `forwardServerRoutedAction` (not `forwardCapabilityAction`, D3), `SERVER_ROUTED_MIROIR_ACTION_TYPES` (#696) |
+| Lock per key | `withRepositoryLock` (`GitActions.ts`, line 712) |
 | Section routing by Entity uuid | `versionHistoryEntityUuids`, `getApplicationSection` (`1_core/Model.ts`) |
 | Reading a section from the action host | `DomainControllerActionHost.readSectionInstances` (#696) |
 | Freeze, version names, the history Entities | `freezeApplicationVersion.ts`, `applicationVersionFreeze.ts` (package) |
