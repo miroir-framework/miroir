@@ -15,6 +15,42 @@ import {
 } from "./versioningInterfaces.js";
 
 const MODEL_ENDPOINT_UUID = "7947ae40-eb34-4149-887b-15a9021e714e";
+const INSTANCE_ENDPOINT_UUID = "ed520de4-55a9-4550-ac50-b1b713b72a89";
+
+/**
+ * Set by the REST server on a write it received through its persistence endpoint: that write comes from
+ * another DomainController's persistence layer, which records it. A symbol-keyed property: object spreads
+ * keep it, JSON drops it, so it is never sent or stored.
+ */
+const RECORDED_BY_SENDER = Symbol.for("miroir.evolutionTrace.recordedBySender");
+
+/** `action`, marked as recorded by the DomainController that sent it. */
+export function markRecordedBySender<T extends object>(action: T): T {
+  return { ...action, [RECORDED_BY_SENDER]: true };
+}
+
+/** Whether the DomainController that sent `action` records it already. */
+export function isRecordedBySender(action: unknown): boolean {
+  return !!action && typeof action === "object" && (action as Record<symbol, unknown>)[RECORDED_BY_SENDER] === true;
+}
+
+/** How a record holds an instance write: its type, the instance endpoint, and the payload fields a replay needs. */
+export function recordedInstanceWrite(action: {
+  actionType: string;
+  payload: { application: string; applicationSection?: string; section?: string; parentUuid?: string; objects?: any[] };
+}) {
+  const objects = action.payload.objects ?? [];
+  return {
+    actionType: action.actionType,
+    endpoint: INSTANCE_ENDPOINT_UUID,
+    payload: {
+      application: action.payload.application,
+      applicationSection: action.payload.applicationSection ?? action.payload.section,
+      parentUuid: action.payload.parentUuid ?? objects[0]?.parentUuid,
+      objects,
+    },
+  };
+}
 
 /** The model Actions a record holds. */
 const RECORDED_MODEL_ACTION_TYPES: ReadonlySet<string> = new Set([

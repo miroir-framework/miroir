@@ -555,10 +555,9 @@ async function runMiroirTest(
       `MiroirTest ${miroirTest.name ?? miroirTestUuid} has no leaf ${unknown.map((label) => `"${label}"`).join(", ")}`,
     );
   }
-  // #589, #696: a MiroirTest needing a feature that is off here (evolution traces, versioning) is skipped, with why
+  // #589, #696: a MiroirTest needing a feature that is off here (versioning) is skipped, with why
   const unmetRequirement = miroirTestUnmetRequirement(
     miroirTest,
-    undefined,
     host.asDomainControllerInterface().getProcessCapabilities(),
   );
   const outcomes: MiroirTestLeafOutcome[] = allLeaves.map(({ path, leaf }) => ({

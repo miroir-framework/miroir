@@ -20,7 +20,7 @@ import {
   type EntityInstance,
 } from "@miroir-framework/core";
 import { entityAuthor, selfApplicationLibrary } from "miroir-example-library";
-import { defaultAppForTestModel, entityPublisher, selfApplicationAppForTest } from "miroir-fixture-appForTest";
+import { defaultAppForTestModel, entityPublisher, folio, selfApplicationAppForTest } from "miroir-fixture-appForTest";
 import { appForTestTestbedInitParams } from "miroir-react-testing/src/4-tests/uiIntegrationAppForTestPlayfieldSeed.js";
 
 import {
@@ -56,6 +56,13 @@ const noteEntity = {
     type: "object",
     definition: { uuid: { type: "uuid" }, parentUuid: { type: "uuid" }, name: { type: "string" } },
   },
+} as unknown as Entity;
+
+const directEntity = {
+  ...noteEntity,
+  uuid: "708a0002-0000-4000-8000-000000000002",
+  name: "Direct708",
+  description: "#708: an Entity created outside a transaction",
 } as unknown as Entity;
 
 type StoredRecord = EntityInstance & {
@@ -256,6 +263,76 @@ describe("evolutionTraceRecords (#708)", () => {
     expect(libraryRecord.commitUuid).toBe(appForTestRecord.commitUuid);
     expect(appForTestRecord.actions?.map((action) => action.payload.application)).toEqual([APP_FOR_TEST]);
     expect(libraryRecord.actions?.map((action) => action.payload.application)).toEqual([LIBRARY_APPLICATION]);
+  }, 60000);
+
+  it("a non-transactional createEntity on appForTest makes one record with that Action", async () => {
+    const before = await storedRecords();
+    expectOk(
+      await context.domainController.handleAction(
+        {
+          actionType: "createEntity",
+          endpoint: MODEL_ENDPOINT,
+          payload: { application: APP_FOR_TEST, transactional: false, entities: [directEntity] },
+        } as any,
+        applicationDeploymentMap,
+        appForTestModelEnvironment(context.domainController),
+      ),
+      "createEntity",
+    );
+    const records = await storedRecords();
+    expect(records).toHaveLength(before.length + 1);
+    const last = records[records.length - 1];
+    expect(last.complete).toBe(true);
+    expect(last.actions?.map((action) => action.actionType)).toEqual(["createEntity"]);
+    expect(last.actions?.[0].payload.entities.map((entity: Entity) => entity.uuid)).toEqual([directEntity.uuid]);
+  }, 60000);
+
+  it("a direct update of an appForTest model row makes one record, which the server does not record again", async () => {
+    const before = await storedRecords();
+    const publisher = { ...entityPublisher, description: "#708 direct write" } as EntityInstance;
+    expectOk(
+      await context.domainController.handleAction(
+        {
+          actionType: "updateInstance",
+          endpoint: INSTANCE_ENDPOINT,
+          payload: { application: APP_FOR_TEST, applicationSection: "model", objects: [publisher] },
+        } as any,
+        applicationDeploymentMap,
+        appForTestModelEnvironment(context.domainController),
+      ),
+      "updateInstance",
+    );
+    const records = await storedRecords();
+    expect(records).toHaveLength(before.length + 1);
+    expect(records[records.length - 1].actions).toEqual([
+      {
+        actionType: "updateInstance",
+        endpoint: INSTANCE_ENDPOINT,
+        payload: {
+          application: APP_FOR_TEST,
+          applicationSection: "model",
+          parentUuid: entityPublisher.parentUuid,
+          objects: [publisher],
+        },
+      },
+    ]);
+  }, 60000);
+
+  it("a write to appForTest's data section makes no record", async () => {
+    const before = await storedRecords();
+    expectOk(
+      await context.domainController.handleAction(
+        {
+          actionType: "updateInstance",
+          endpoint: INSTANCE_ENDPOINT,
+          payload: { application: APP_FOR_TEST, applicationSection: "data", objects: [{ ...folio, name: "Folio708" } as EntityInstance] },
+        } as any,
+        applicationDeploymentMap,
+        appForTestModelEnvironment(context.domainController),
+      ),
+      "data updateInstance",
+    );
+    expect(await storedRecords()).toHaveLength(before.length);
   }, 60000);
 
   it("a commit whose second Action fails records the first one, with complete: false", async () => {

@@ -1980,8 +1980,6 @@ export {
   type MiroirTestModeTag,
 } from "./5_tests/miroirTestTags.js";
 export {
-  EVOLUTION_TRACE_TAG,
-  EVOLUTION_TRACE_TESTS_NEED_TRACES,
   miroirTestSuiteForEnvironment,
   miroirTestUnmetRequirement,
   VERSIONING_TAG,

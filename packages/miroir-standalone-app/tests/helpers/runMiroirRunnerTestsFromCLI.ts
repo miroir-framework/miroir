@@ -61,11 +61,10 @@ export function loadRunnerOrActionMiroirTestSuite(suiteKey: string): MiroirTestS
       `Unknown runner/action MiroirTest suite key "${suiteKey}". Available: ${listCliRunnerIntegrationSuiteKeysFromFolders().join(", ")}`,
     );
   }
-  // #589, #696: a suite whose requirement is unmet here (evolution traces off, versioning off) runs as skipped
+  // #589, #696: a suite whose requirement is unmet here (versioning off) runs as skipped
   const { suite, skipReason } = miroirTestSuiteForEnvironment(
     entry.instance,
     entry.suiteDefinition,
-    undefined,
     testProcessCapabilities,
   );
   if (skipReason !== undefined && !reportedSkippedSuiteKeys.has(suiteKey)) {

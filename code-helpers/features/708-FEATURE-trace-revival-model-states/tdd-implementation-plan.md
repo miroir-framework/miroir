@@ -30,7 +30,7 @@ Out:
 | 0 | Characterize init, the old trace inventory and the current tests | ✅ DONE | `evolutionTraceInventory.708` guard, init characterization test |
 | 1 | Tracer: a committed Entity-row update leaves one record in `modelVersion` | ✅ DONE | `evolutionTraceRecords.integ` "one commit, one record" |
 | 2 | The chain: sequence, `previousTrace`, model Actions, several applications, a partial commit | ✅ DONE | `evolutionTraceRecords.integ` chain cases |
-| 3 | Direct model writes, recorded once | ⬜ pending | `evolutionTraceRecords.integ` direct cases |
+| 3 | Direct model writes, recorded once | ✅ DONE | `evolutionTraceRecords.integ` direct cases |
 | 4 | Traces off, unversioned, capability off, no `modelVersion`, a failed append | ⬜ pending | `evolutionTraceSwitch.integ` |
 | 5 | `resetModel` and `initModel` leave a `rebaseline` marker | ⬜ pending | `evolutionTraceRecords.integ` reset case |
 | 6 | A freeze appends a `version` marker | ⬜ pending | `evolutionTraceRecords.integ` freeze case |
@@ -184,7 +184,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,actions
 
 ## Slice 3 — Direct model writes, recorded once
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** a model write outside a transaction makes a one-Action record, and the emulated server does not record it again.
 
@@ -207,6 +207,14 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,actions
 ```
 
 ### Realization
+
+- `evolutionTraceRecording.ts` gains `markRecordedBySender` and `isRecordedBySender` (a `Symbol.for` key: object spreads keep it, JSON drops it) and `recordedInstanceWrite`. `RestServer` marks both Actions it hands its DomainController.
+- The DomainController reads `recordsDirectWrite` before the write and, on success, calls `appendDirectWriteRecord`, which goes through `appendCommitRecords` with a new `commitUuid`. Commits and direct writes share that one entry point (refactor checkpoint). It runs on the direct path of `handleInstanceAction` and on the non-transactional path of `handleModelAction`.
+- Removed: `maybeRecordEvolutionTrace`, `EVOLUTION_TRACEABLE_ACTION_TYPES` and the old recorder's lazy load. `evolutionTraceWriters.integ` is deleted. `versioningLazyTraces.integ` is rewritten: with traces off nothing loads; with them on, the package loads once and each write is recorded once, by the server.
+- Pulled forward from Slices 4 and 8, because the old recorder was gone and the suite tagged with it tested nothing:
+  - the `evolution-trace` MiroirTest requirement. `miroirTestUnmetRequirement(instance, capabilities?)` and `miroirTestSuiteForEnvironment(instance, suite, capabilities?)` lose their `env` parameter. The tag value stays in the MiroirTest Entity enum until Slice 8, and its `docs/reference/testing.md` row says it is deprecated. The nonreg step no longer sets `MIROIR_EVOLUTION_TRACE=1`.
+  - `action.scenario.evolutionTrace`, rewritten on appForTest: traces on, then a transactional `createEntity` and `renameEntity`, a commit and a data write. It then reads the records with `queryExecutionStrategy: "storage"`, because the client's cache does not hold `modelVersion`. It carries the appForTest inline playfield of `runner.freezeApplicationVersion`, since an integ suite needs one, and it leaves the Publisher+Country TestConfiguration expectations.
+- Problems met: the first scoped nonreg had three failures. The old suite failed because its recorder was gone. `unit-696` failed because the requirement test expected the tag. The tracked-assets guard failed because files were edited during the run. The rerun passes, 30 of 30.
 
 ## Slice 4 — Traces off, unversioned, capability off, no `modelVersion`, a failed append
 

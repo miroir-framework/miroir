@@ -1467,7 +1467,7 @@
       "argv": [
         "bash",
         "-c",
-        "MIROIR_EVOLUTION_TRACE=1 npm run testMiroir -w miroir-standalone-app -- --profile {profile} --suites action.scenario.evolutionTrace --mode integ"
+        "npm run testMiroir -w miroir-standalone-app -- --profile {profile} --suites action.scenario.evolutionTrace --mode integ"
       ]
     },
     {

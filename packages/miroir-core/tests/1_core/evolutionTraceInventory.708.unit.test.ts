@@ -54,12 +54,10 @@ function filesNamingOldTraces(): string[] {
 /** Files that name the old traces today. Each slice that removes a use removes its line. */
 const EXPECTED_FILES = [
   "docs/internals/code-splitting.md",
-  "docs/reference/testing.md",
   "docs/reference/versioning.md",
   "packages/miroir-app-miroir/assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/230467a6-ecc3-4945-bd05-5d9e826c44fb.json",
   "packages/miroir-app-miroir/assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/b2c3d4e5-f6a7-4890-b123-4567890abcde.json",
   "packages/miroir-app-miroir/assets/miroir_data/3f2baa83-3ef7-45ce-82ea-6a43f7a8c916/c4d5e6f7-a8b9-4c01-a345-67890abcdef1.json",
-  "packages/miroir-app-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/2427ef3a-3cd1-4b87-afe7-433bb04b25d2.json",
   "packages/miroir-app-miroir/assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/ce3f9603-824e-41da-9c6c-27ace3b01678.json",
   "packages/miroir-app-miroir/assets/miroir_data/de089f57-5fa5-4c0e-a43e-20f1a6df5a37/ea4b571f-f4b6-4ada-abd4-a3dbeb3e5138.json",
   "packages/miroir-app-miroir/assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/de089f57-5fa5-4c0e-a43e-20f1a6df5a37.json",
@@ -74,7 +72,6 @@ const EXPECTED_FILES = [
   "packages/miroir-core/src/1_core/Deployment.ts",
   "packages/miroir-core/src/2_domain/evolutionTraceBaseline.ts",
   "packages/miroir-core/src/2_domain/evolutionTracePolicy.ts",
-  "packages/miroir-core/src/5_tests/miroirTestRequirements.ts",
   "packages/miroir-core/src/index.ts",
   "packages/miroir-core/tests/1_core/reduxSerializable.unit.test.ts",
   "packages/miroir-core/tests/1_core/versioningSurface.unit.test.ts",
@@ -82,12 +79,7 @@ const EXPECTED_FILES = [
   "packages/miroir-core/tests/2_domain/evolutionTrace.reports.unit.test.ts",
   "packages/miroir-core/tests/2_domain/evolutionTrace.schema.unit.test.ts",
   "packages/miroir-core/tests/2_domain/evolutionTracePolicy.unit.test.ts",
-  "packages/miroir-core/tests/5-tests/issues/575-run-miroirtest/runMiroirTestAction.unit.test.ts",
-  "packages/miroir-core/tests/5-tests/miroirTestRequirements.unit.test.ts",
   "packages/miroir-react/src/components/TransformerEditor/EntityInstanceSelectorPanel.tsx",
-  "packages/miroir-standalone-app/tests/3_controllers/versioning/evolutionTraceWriters.integ.test.ts",
-  "packages/miroir-standalone-app/tests/3_controllers/versioning/versioningLazyTraces.integ.test.ts",
-  "packages/miroir-standalone-app/tests/4_view/selfTest/runSelfTestInteg.integ.test.ts",
   "packages/miroir-versioning/src/evolutionTraceCompaction.ts",
   "packages/miroir-versioning/src/evolutionTraceRuntime.ts",
   "packages/miroir-versioning/src/evolutionTraceWriter.ts",
@@ -95,7 +87,6 @@ const EXPECTED_FILES = [
   "packages/miroir-versioning/tests/evolutionTrace.persist.unit.test.ts",
   "packages/miroir-versioning/tests/evolutionTrace.policy.unit.test.ts",
   "packages/miroir-versioning/tests/evolutionTrace.runtime.unit.test.ts",
-  "scripts/nonreg-manifest.json",
 ];
 
 describe.runIf(runThis)("evolutionTraceInventory (#708)", () => {
