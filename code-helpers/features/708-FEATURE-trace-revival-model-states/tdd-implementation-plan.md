@@ -31,7 +31,7 @@ Out:
 | 1 | Tracer: a committed Entity-row update leaves one record in `modelVersion` | ✅ DONE | `evolutionTraceRecords.integ` "one commit, one record" |
 | 2 | The chain: sequence, `previousTrace`, model Actions, several applications, a partial commit | ✅ DONE | `evolutionTraceRecords.integ` chain cases |
 | 3 | Direct model writes, recorded once | ✅ DONE | `evolutionTraceRecords.integ` direct cases |
-| 4 | Traces off, unversioned, capability off, no `modelVersion`, a failed append | ⬜ pending | `evolutionTraceSwitch.integ` |
+| 4 | Traces off, unversioned, capability off, no `modelVersion`, a failed append | ✅ DONE | `evolutionTraceSwitch.integ` |
 | 5 | `resetModel` and `initModel` leave a `rebaseline` marker | ⬜ pending | `evolutionTraceRecords.integ` reset case |
 | 6 | A freeze appends a `version` marker | ⬜ pending | `evolutionTraceRecords.integ` freeze case |
 | 7 | `versioned-git` | ⬜ pending | `versioningMode.unit`, `evolutionTraceRecords.integ` Git-mode case |
@@ -218,7 +218,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,actions
 
 ## Slice 4 — Traces off, unversioned, capability off, no `modelVersion`, a failed append
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** the setting and the gate behave as D5 says, and a failed append is not lost.
 
@@ -240,6 +240,15 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,actions,external
 ```
 
 ### Realization
+
+- `evolutionTraceSwitch.integ` holds the six cases. "Traces off loads nothing" was already proved by `versioningLazyTraces.integ` (Slice 3) and is not repeated.
+- `DomainController.evolutionTraceRefusal(tracedApplications, map)` is the gate. It takes the applications that `applicationsWithEvolutionTraces` read from the cached SelfApplication rows, so the gate and the switch share one reading (refactor checkpoint). It runs before the replay of a commit, and before a direct instance write or a non-transactional model write that would be recorded.
+  - With the capability off, it returns `FeatureUnavailable` (`capability: versioning`).
+  - It returns `FailedToHandleAction` when the deployment's Deployment row, cached from the admin application, has no `configuration.modelVersion`. When the row is not cached, the gate lets the write through, and a failed append is kept as below.
+- A failed append is kept per application in `pendingEvolutionTraceRecords`. `appendEvolutionTraceRecordInOrder` sends the kept records first, in order. The commit then returns `{ status: "ok", returnedDomainElement: { evolutionTraceAppendFailures: [{ application, errorType, errorMessage }] } }`, so `handleModelAction` now returns `Action2ReturnType`. A direct write that fails to append keeps its record and only logs it.
+- The unversioned warning is `evolutionTracesIgnoredWarning(row)`, logged by `loadConfigurationFromPersistenceStore` where it resolves the versioning mode. Logs are not observable without mocks, so `evolutionTraceSwitch.unit` (core) checks the text and the integration test checks that no record is written.
+- The no-`modelVersion` case writes appForTest's Deployment row without `modelVersion` through the admin application, then restores it. The cached state is frozen and cannot be edited in place.
+- Scoped nonreg `smoke,actions,external`: 47 of 47 pass.
 
 ## Slice 5 — `resetModel` and `initModel` leave a `rebaseline` marker
 

@@ -45,7 +45,13 @@ import {
   selfApplicationVersionInitialMiroirVersion,
 } from "miroir-app-miroir";
 
-import { adminSelfApplication, deployment_Miroir, entityApplicationForAdmin, entityDeployment } from "miroir-app-admin";
+import {
+  adminSelfApplication,
+  deployment_Admin,
+  deployment_Miroir,
+  entityApplicationForAdmin,
+  entityDeployment,
+} from "miroir-app-admin";
 import {
   ApplicationSection,
   CompositeActionSequence,
@@ -119,9 +125,11 @@ import {
 import {
   APPEND_EVOLUTION_TRACE_RECORD_ACTION_TYPE,
   VERSIONING_PACKAGE_NAME,
+  type AppendEvolutionTraceRecordPayload,
 } from "../1_core/versioning/versioningInterfaces.js";
 import {
   appendEvolutionTraceRecordAction,
+  evolutionTracesIgnoredWarning,
   isEvolutionTraceOn,
   isRecordedBySender,
   isRecordedModelChange,
@@ -444,10 +452,15 @@ function findBundledMiroirActionDefinition(domainAction: { endpoint?: string; ac
   )?.find((ac) => ac.actionParameters.actionType.definition == domainAction.actionType);
 }
 
+/** #708: an evolution trace record a commit could not append; it is kept and sent again. */
+type EvolutionTraceAppendFailure = { application: string; errorType: string; errorMessage?: string };
+
 export class DomainController implements DomainControllerInterface, DomainControllerActionHost {
   private callUtil: CallUtils;
   private processCapabilities: ProcessCapabilities | undefined;
   private instanceActionListeners: InstanceActionListener[] = [];
+  /** #708: per application, the evolution trace records not appended yet, in order. */
+  private pendingEvolutionTraceRecords = new Map<string, AppendEvolutionTraceRecordPayload[]>();
   // ##############################################################################################
   constructor(
     private persistenceStoreAccessMode: "local" | "remote",
@@ -900,6 +913,10 @@ export class DomainController implements DomainControllerInterface, DomainContro
               );
               if (selfAppRow) {
                 versioningMode = resolveVersioningMode(selfAppRow);
+                const ignoredTraces = evolutionTracesIgnoredWarning(selfAppRow);
+                if (ignoredTraces) {
+                  log.warn(ignoredTraces);
+                }
               }
             }
           }
@@ -1367,6 +1384,12 @@ export class DomainController implements DomainControllerInterface, DomainContro
     const deploymentUuid = applicationDeploymentMap[instanceAction.payload.application];
     // #708: read before the write, which may change the switch itself
     const recordsThisWrite = this.recordsDirectWrite(actionToPersist, applicationDeploymentMap);
+    const traceRefusal = recordsThisWrite
+      ? this.evolutionTraceRefusal([actionToPersist.payload.application], applicationDeploymentMap)
+      : undefined;
+    if (traceRefusal) {
+      return traceRefusal;
+    }
 
     // log.info(
     //   "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleInstanceAction application",
@@ -1514,6 +1537,43 @@ export class DomainController implements DomainControllerInterface, DomainContro
     return !!application && this.applicationsWithEvolutionTraces([application], applicationDeploymentMap).length > 0;
   }
 
+  /**
+   * #708: why a write to applications whose traces are on cannot be recorded, checked before anything is
+   * written: the process has the `versioning` capability off, or a deployment has no `modelVersion`
+   * section in its cached Deployment row. `undefined` when it can be.
+   */
+  private evolutionTraceRefusal(
+    tracedApplications: string[],
+    applicationDeploymentMap: ApplicationDeploymentMap,
+  ): Action2Error | undefined {
+    if (tracedApplications.length === 0) {
+      return undefined;
+    }
+    if (this.getProcessCapabilities().versioning !== true) {
+      return new Action2Error(
+        "FeatureUnavailable",
+        `evolution traces of ${tracedApplications.join(", ")} need the versioning capability, which is off`,
+        undefined,
+        undefined,
+        { capability: "versioning", package: VERSIONING_PACKAGE_NAME },
+      );
+    }
+    const domainState = this.localCache.getDomainState() as Record<string, any> | undefined;
+    const adminDeployment = applicationDeploymentMap[adminSelfApplication.uuid] ?? deployment_Admin.uuid;
+    const deploymentRows = domainState?.[adminDeployment]?.data?.[entityDeployment.uuid];
+    for (const application of tracedApplications) {
+      const deploymentUuid = applicationDeploymentMap[application];
+      const configuration = deploymentRows?.[deploymentUuid]?.configuration;
+      if (configuration && !configuration.modelVersion) {
+        return new Action2Error(
+          "FailedToHandleAction",
+          `evolution traces of ${application} need a modelVersion section, which deployment ${deploymentUuid} has not`,
+        );
+      }
+    }
+    return undefined;
+  }
+
   /** #708: the record of a model write made outside a transaction: one Action, its own commit. */
   private async appendDirectWriteRecord(
     action: unknown,
@@ -1521,6 +1581,30 @@ export class DomainController implements DomainControllerInterface, DomainContro
   ): Promise<void> {
     const application = (action as { payload: { application: string } }).payload.application;
     await this.appendCommitRecords([application], [action], uuidv4(), true, applicationDeploymentMap);
+  }
+
+  /**
+   * #708: appends the kept records of an application, then `payload`, in order. A failed append keeps
+   * that record and the ones after it for the next call.
+   */
+  private async appendEvolutionTraceRecordInOrder(
+    payload: AppendEvolutionTraceRecordPayload,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+  ): Promise<Action2Error | undefined> {
+    const queue = [...(this.pendingEvolutionTraceRecords.get(payload.application) ?? []), payload];
+    for (let index = 0; index < queue.length; index++) {
+      const appended = await this.handleAction(
+        appendEvolutionTraceRecordAction(queue[index]) as any,
+        applicationDeploymentMap,
+        defaultMiroirModelEnvironment,
+      );
+      if (appended instanceof Action2Error) {
+        this.pendingEvolutionTraceRecords.set(payload.application, queue.slice(index));
+        return appended;
+      }
+    }
+    this.pendingEvolutionTraceRecords.delete(payload.application);
+    return undefined;
   }
 
   /**
@@ -1533,7 +1617,8 @@ export class DomainController implements DomainControllerInterface, DomainContro
     commitUuid: string,
     complete: boolean,
     applicationDeploymentMap: ApplicationDeploymentMap,
-  ): Promise<void> {
+  ): Promise<EvolutionTraceAppendFailure[]> {
+    const failures: EvolutionTraceAppendFailure[] = [];
     for (const application of tracedApplications) {
       const actions = replayedActions.filter(
         (action) =>
@@ -1543,15 +1628,16 @@ export class DomainController implements DomainControllerInterface, DomainContro
       if (actions.length === 0) {
         continue;
       }
-      const appended = await this.handleAction(
-        appendEvolutionTraceRecordAction({ application, kind: "commit", commitUuid, actions, complete }) as any,
+      const failed = await this.appendEvolutionTraceRecordInOrder(
+        { application, kind: "commit", commitUuid, actions, complete },
         applicationDeploymentMap,
-        defaultMiroirModelEnvironment,
       );
-      if (appended instanceof Action2Error) {
-        log.warn("DomainController appendCommitRecords: no record appended for application", application, appended);
+      if (failed) {
+        log.warn("DomainController appendCommitRecords: record kept for application", application, failed);
+        failures.push({ application, errorType: failed.errorType, errorMessage: failed.errorMessage });
       }
     }
+    return failures;
   }
 
   // ##############################################################################################
@@ -1648,7 +1734,7 @@ export class DomainController implements DomainControllerInterface, DomainContro
     modelAction: ModelAction,
     applicationDeploymentMap: ApplicationDeploymentMap,
     currentModelEnvironment: MiroirModelEnvironment,
-  ): Promise<Action2VoidReturnType> {
+  ): Promise<Action2ReturnType> {
     const deploymentUuid =
       applicationDeploymentMap[modelAction.payload.application] ?? "DEPLOYMENT_UUID_NOT_FOUND";
     // log.info(
@@ -1720,6 +1806,12 @@ export class DomainController implements DomainControllerInterface, DomainContro
           // #708: read before the write
           const recordsThisWrite =
             modelAction.payload.transactional == false && this.recordsDirectWrite(modelAction, applicationDeploymentMap);
+          const traceRefusal = recordsThisWrite
+            ? this.evolutionTraceRefusal([modelAction.payload.application], applicationDeploymentMap)
+            : undefined;
+          if (traceRefusal) {
+            return traceRefusal;
+          }
           if (modelAction.payload.transactional == false) {
             // the modelAction is not transactional, we update the persistentStore directly
             log.warn("handleModelAction running for non-transactional action!");
@@ -2131,6 +2223,10 @@ export class DomainController implements DomainControllerInterface, DomainContro
             currentTransactions.map((transaction) => transaction.payload.application),
             applicationDeploymentMap,
           );
+          const traceRefusal = this.evolutionTraceRefusal(tracedApplications, applicationDeploymentMap);
+          if (traceRefusal) {
+            return traceRefusal;
+          }
           const replayedModelChanges: unknown[] = [];
 
           log.info(
@@ -2232,7 +2328,13 @@ export class DomainController implements DomainControllerInterface, DomainContro
           //   this.localCache.currentTransaction(),
           // );
 
-          await this.appendCommitRecords(tracedApplications, replayedModelChanges, commitUuid, true, applicationDeploymentMap);
+          const appendFailures = await this.appendCommitRecords(
+            tracedApplications,
+            replayedModelChanges,
+            commitUuid,
+            true,
+            applicationDeploymentMap,
+          );
 
           await this.callUtil
             .callLocalCacheAction(
@@ -2248,6 +2350,10 @@ export class DomainController implements DomainControllerInterface, DomainContro
                 },
               },
             );
+          // #708: the commit stands; its result names the records kept for the next commit
+          if (appendFailures.length > 0) {
+            return { status: "ok", returnedDomainElement: { evolutionTraceAppendFailures: appendFailures } };
+          }
           // #216 ADR D6: do not createInstance SelfApplicationVersion on commit.
           // log.info(
           //   "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction commit done!",

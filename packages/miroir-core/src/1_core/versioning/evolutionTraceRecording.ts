@@ -82,6 +82,23 @@ export function isEvolutionTraceOn(selfApplication: EvolutionTraceSwitchInput | 
   return flag && resolveVersioningMode(selfApplication) !== "unversioned";
 }
 
+/**
+ * The warning logged when an application loads with `evolutionTraces` set but unversioned, which turns
+ * the traces off; `undefined` otherwise.
+ */
+export function evolutionTracesIgnoredWarning(
+  selfApplication: (EvolutionTraceSwitchInput & { name?: string }) | undefined,
+): string | undefined {
+  if (!selfApplication) {
+    return undefined;
+  }
+  const flag = selfApplication.evolutionTraces === true || selfApplication.evolutionTraces === "true";
+  if (!flag || resolveVersioningMode(selfApplication) !== "unversioned") {
+    return undefined;
+  }
+  return `application ${selfApplication.name ?? ""} has evolutionTraces on but is unversioned: its traces are off`;
+}
+
 /** The uuid of the SelfApplication Entity, and the section of an application that holds its row. */
 export function selfApplicationRowLocation(application: string): { section: ApplicationSection; entityUuid: string } {
   return {
