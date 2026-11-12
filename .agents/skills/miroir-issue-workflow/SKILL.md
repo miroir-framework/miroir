@@ -32,7 +32,7 @@ _Done: each acceptance criterion is proved by a named test or check in some slic
 
 ## 4. Implement
 
-Work slice by slice: red, green, refactor, commit. After the last slice:
+Work slice by slice: red, green, refactor. Commit when the user asks, at the granularity they choose (a session given a branch to push to is asked to commit and push its work). After the last slice:
 
 - run the non-regression suite with the shared runner, at the tier `AGENTS.md` gives for what you touched (e.g. `npm run nonreg:filesystem -- --runner shared`);
 - run the pre-push gate from `AGENTS.md`, plus `tsc` on every package you touched.
@@ -65,7 +65,7 @@ After the merge, check out the merge commit (or `_integration` at it) and evalua
 Run `unslop` on the comment before posting. Then:
 
 - open an issue for each follow-up and each `not met` (title `<TYPE> #<N>: ...`, body with problem, scope and `Done when`), add it to the GitHub Project with `gh project item-add 2 --owner miroir-framework --url <issue-url>`, and put its link in the comment;
-- close the issue by hand (`state_reason: completed`). `Closes #N` closes it only on a merge into `main`, so an issue merged into `_integration` stays open until you close it. Leave it open only when a criterion is `not met` and the user has not agreed to the follow-up.
+- close the issue by hand (`state_reason: completed`). `Closes #N` closes it only on a merge into `main`, so an issue merged into `_integration` stays open until you close it. Leave it open while a criterion is `not met` or an `open question`, until the user agrees to the follow-up or to defer the question.
 
 Worked example: https://github.com/miroir-framework/miroir/issues/696#issuecomment-6810168298
 
