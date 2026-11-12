@@ -1462,12 +1462,21 @@
       "id": "integ-action.scenario.evolutionTrace",
       "scopes": ["actions"],
       "tier": "default",
-      "title": "MiroirTest integ — action.scenario.evolutionTrace (actionTest)",
-      "requires": "storage",
+      "title": "MiroirTest integ — action.scenario.evolutionTrace (actionTest, filesystem): a commit on appForTest leaves one EvolutionTraceRecord (#708)",
+      "requires": "none",
       "argv": [
-        "bash",
-        "-c",
-        "npm run testMiroir -w miroir-standalone-app -- --profile {profile} --suites action.scenario.evolutionTrace --mode integ"
+        "npm",
+        "run",
+        "testMiroir",
+        "-w",
+        "miroir-standalone-app",
+        "--",
+        "--profile",
+        "emulatedServer-filesystem",
+        "--suites",
+        "action.scenario.evolutionTrace",
+        "--mode",
+        "integ"
       ]
     },
     {
@@ -2474,7 +2483,7 @@
       "id": "unit-696-versioning-package",
       "scopes": ["core", "actions"],
       "tier": "unit",
-      "title": "#696 \u2014 @miroir-framework/versioning: the package's unit tests (freeze planner, snapshots, trace writer, runtime, compaction), core's versioning surface, the capability filter of the Endpoint action catalog, the versioning test requirement, and the hidden designer entries",
+      "title": "#696 \u2014 @miroir-framework/versioning: the package's unit tests (freeze planner, snapshots, evolution trace records), core's versioning surface, the capability filter of the Endpoint action catalog, the versioning test requirement, and the hidden designer entries",
       "requires": "none",
       "argv": [
         "bash",
@@ -2486,13 +2495,26 @@
       "id": "integ-696-versioning-capability",
       "scopes": ["actions", "external"],
       "tier": "default",
-      "title": "#696 \u2014 versioning capability: a freeze refused when off on the client or the server, a remote client's freeze run by the server (refused with pending changes of any application), the package loaded once on the first freeze or traced write and never when off, FeatureUnavailable when not installed, the trace rows written by client and server",
+      "title": "#696 \u2014 versioning capability: a freeze refused when off on the client or the server, a remote client's freeze run by the server (refused with pending changes of any application), the package loaded once on the first freeze or trace record and never when traces are off, FeatureUnavailable when not installed, a client write recorded once",
       "requires": "none",
       "parallel": false,
       "argv": [
         "bash",
         "-c",
-        "MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- 3_controllers/versioning/"
+        "MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- 3_controllers/versioning/versioning"
+      ]
+    },
+    {
+      "id": "integ-708-evolution-trace-records",
+      "scopes": ["actions", "external"],
+      "tier": "default",
+      "title": "#708 — evolution trace records: one record per commit and per direct model write, chained by sequence number and previousTrace; rebaseline and version markers; versioned-git; the switch read as off when unversioned; the capability and modelVersion gate; a failed append kept and sent again",
+      "requires": "none",
+      "parallel": false,
+      "argv": [
+        "bash",
+        "-c",
+        "MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- 3_controllers/versioning/evolutionTrace"
       ]
     },
     {

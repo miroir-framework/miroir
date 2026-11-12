@@ -18,7 +18,7 @@ import {
   type Action2ReturnType,
   type EntityInstance,
 } from "@miroir-framework/core";
-import { adminSelfApplication, deployment_Admin } from "miroir-app-admin";
+import { adminSelfApplication, deployment_Admin } from "@miroir-framework/core/admin";
 import { entityAuthor, selfApplicationLibrary } from "miroir-example-library";
 import { entityPublisher, selfApplicationAppForTest } from "miroir-fixture-appForTest";
 

@@ -36,7 +36,7 @@ Out:
 | 6 | A freeze appends a `version` marker | ✅ DONE | `evolutionTraceRecords.integ` freeze case |
 | 7 | `versioned-git` | ✅ DONE | `versioningMode.unit`, `evolutionTraceRecords.integ` Git-mode case |
 | 8 | The old traces go; new Reports and MiroirTest | ✅ DONE | `action.scenario.evolutionTrace`, `modelValidation`, inventory guard |
-| 9 | Docs, nonreg steps, full nonreg, AC checklist | ⬜ pending | `nonreg:filesystem` |
+| 9 | Docs, nonreg steps, full nonreg, AC checklist | ✅ DONE | `nonreg:filesystem` |
 
 ## Locked implementation defaults
 
@@ -376,7 +376,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core,actions,ui,tooli
 
 ## Slice 9 — Docs, nonreg steps, full nonreg, AC checklist
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** part A is documented, guarded and ready for review.
 
@@ -396,13 +396,23 @@ npm run nonreg:filesystem -- --runner shared
 
 | #708 scope item | Proof |
 |---|---|
-| `versioned-git`, `versioned-external` readable for one release, `evolutionTraces` in both versioned modes, refused (read as off) on `unversioned` | Slices 4 and 7 |
-| One record per Miroir commit, ordered resolved Actions, in `modelVersion`, `previousTrace` plus sequence number, no per-branch root | Slices 1 and 2 |
-| A writable `modelVersion` for `versioned-git`, committed with the model; `versioning.md` updated | Slices 7 and 9 |
-| Capability gate on model commits when traces are on | Slice 4 |
-| `MIROIR_EVOLUTION_TRACE` removed | Slice 8 |
+| `versioned-git`, `versioned-external` readable for one release | `versioningModes.contract.unit.test.ts` (core); `evolutionTraceRecords.integ.test.ts` › versioned-git: "a freeze stays refused" |
+| `evolutionTraces` in both versioned modes, refused (read as off, with a warning at load) on `unversioned` | `evolutionTraceSwitch.unit.test.ts` (core); `evolutionTraceSwitch.integ.test.ts` › "an unversioned application with evolutionTraces on gets no record" |
+| One record per Miroir commit, ordered resolved Actions, in `modelVersion`, its own instance file | `evolutionTraceRecords.integ.test.ts` › "one commit, one record", "records both Actions, in replay order", "one record in each, with one commitUuid"; MiroirTest `action.scenario.evolutionTrace` |
+| Ordered by `previousTrace` plus a sequence number; no per-branch root | `evolutionTraceRecords.integ.test.ts` › "a second commit continues the chain"; root row and old Entities removed (Slice 8) |
+| A writable `modelVersion` for `versioned-git`, committed with the model; `versioning.md` updated | `evolutionTraceRecords.integ.test.ts` › versioned-git: "loads its modelVersion section and a commit writes its record there", "does not fetch its modelVersion section"; `docs/reference/versioning.md` § Evolution traces |
+| Capability gate on model commits when traces are on | `evolutionTraceSwitch.integ.test.ts` › the refused commit, mixed commit, direct write and resetModel cases; the missing-`modelVersion` case |
+| Miroir's own SelfApplication ships with traces off | Miroir's SelfApplication row has no `evolutionTraces` (read as off) |
+| `MIROIR_EVOLUTION_TRACE` removed | No file names it but the frozen `EntityVersion` rows (checked by the inventory guard until Slice 9, then removed); `versioningSurface.unit.test.ts` › the removed old trace exports |
+| Re-baseline marker (part of Q30) | `evolutionTraceRecords.integ.test.ts` › "resetModel then initModel each leave a rebaseline marker"; the freeze's `version` marker › "a freeze appends a version marker" |
 | `ModelStateSource`, replay, diff | part B |
-| Agreement check, re-baseline | part C |
+| Agreement check, re-baseline action | part C |
 | `gitAction_tag` | part D |
 
 ### Realization
+
+- Docs: `versioning.md` gets an "Evolution traces" section (switch, record fields, kinds, writer, gate, kept records, Reports), `versioned-git` in the modes table, and `modelVersion` for Git mode with traces on; `process-capabilities.md`, `code-splitting.md` and `getting-started/bundles-and-versioning.md` follow. `testing.md` lost its `evolution-trace` tag row in Slice 8.
+- `nonreg-manifest.json`: `integ-action.scenario.evolutionTrace` runs on `emulatedServer-filesystem` only (`requires: none`, no shell); new step `integ-708-evolution-trace-records` runs `3_controllers/versioning/evolutionTrace*` (scopes `actions`, `external`); `integ-696-versioning-capability` now runs `3_controllers/versioning/versioning*`; the titles of the two #696 steps no longer name the removed modules.
+- Bundle guards: app 848,242 bytes gzipped (baseline 847,187), Electron 860,715 (859,564), both within the 2% tolerance; no new measurement recorded.
+- The inventory guard `evolutionTraceInventory.708` is removed: no file names the old traces but the two frozen `EntityVersion` rows, and `versioningSurface.unit.test.ts` keeps the removed exports from coming back.
+- Full `nonreg:filesystem --runner shared`: 135 passed, 0 failed (snapshot `20261112T032249Z`). The two load-dependent failures seen in Slice 8 did not recur.

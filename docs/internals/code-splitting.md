@@ -169,7 +169,7 @@ npm run testByFile -w miroir-standalone-app -- componentTestChunk.286.phase4
 |---|---|
 | **Vendor chunk** | None. The package is one lazy chunk (about 48 kB rendered) |
 | **Dynamic import** | `import("@miroir-framework/versioning")` in `startMiroirClient` (`@miroir-framework/react`), registered with core's `registerLazyActionImplementations` only when the client runs an emulated server; a browser talking to a server registers nothing |
-| **Reachability** | The first `freezeApplicationVersion`, or the first traced write with `MIROIR_EVOLUTION_TRACE` on (never in a browser build), in a process whose `versioning` capability is on |
+| **Reachability** | The first `freezeApplicationVersion` or `appendEvolutionTraceRecord` (a commit of an application whose evolution traces are on) handled by this process, with its `versioning` capability on; a browser talking to a server sends both to the server |
 | **Initial load?** | No (`lazy` and `forbiddenEager` `@miroir-framework/versioning` in the three bundle policies) |
 | **On feature use?** | Yes, once per process |
 
