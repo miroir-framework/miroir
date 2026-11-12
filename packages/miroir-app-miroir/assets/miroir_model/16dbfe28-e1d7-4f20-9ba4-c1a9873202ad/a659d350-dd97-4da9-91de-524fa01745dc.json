@@ -95,12 +95,30 @@
       "versioningMode": {
         "type": "enum",
         "optional": true,
-        "definition": ["unversioned", "versioned-internal", "versioned-external"],
+        "definition": [
+          "unversioned",
+          "versioned-internal",
+          "versioned-external"
+        ],
         "tag": {
           "value": {
             "id": 10,
             "defaultLabel": "Versioning Mode",
             "description": "How application model version history is managed: unversioned (none), versioned-internal (Miroir modelVersion section), or versioned-external (external VCS). When absent, legacy versioningEnabled: true defaults to versioned-internal.",
+            "display": {
+              "editable": false
+            }
+          }
+        }
+      },
+      "evolutionTraces": {
+        "type": "boolean",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 11,
+            "defaultLabel": "Evolution Traces",
+            "description": "Record the model changes of this application, one record per commit, in its modelVersion section (#708). Read as off on an unversioned application.",
             "display": {
               "editable": false
             }

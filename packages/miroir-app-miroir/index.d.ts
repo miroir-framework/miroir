@@ -39,6 +39,7 @@ export declare const entityApplicationVersionCrossBlobVersion: any;
 export declare const entityHistoricalTestConfigurationVersion: any;
 export declare const entityApplicationVersionCrossTestConfigurationVersion: any;
 export declare const entityHistoricalTestVersion: any;
+export declare const entityEvolutionTraceRecord: any;
 export declare const entityApplicationVersionCrossTestVersion: any;
 export declare const entityTest: any;
 export declare const entityTransformerDefinition: any;

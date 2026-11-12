@@ -28,7 +28,7 @@ Out:
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
 | 0 | Characterize init, the old trace inventory and the current tests | ✅ DONE | `evolutionTraceInventory.708` guard, init characterization test |
-| 1 | Tracer: a committed Entity-row update leaves one record in `modelVersion` | ⬜ pending | `evolutionTraceRecords.integ` "one commit, one record" |
+| 1 | Tracer: a committed Entity-row update leaves one record in `modelVersion` | ✅ DONE | `evolutionTraceRecords.integ` "one commit, one record" |
 | 2 | The chain: sequence, `previousTrace`, model Actions, several applications, a partial commit | ⬜ pending | `evolutionTraceRecords.integ` chain cases |
 | 3 | Direct model writes, recorded once | ⬜ pending | `evolutionTraceRecords.integ` direct cases |
 | 4 | Traces off, unversioned, capability off, no `modelVersion`, a failed append | ⬜ pending | `evolutionTraceSwitch.integ` |
@@ -116,7 +116,7 @@ MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- 3_cont
 
 ## Slice 1 — Tracer: a committed Entity-row update leaves one record in `modelVersion`
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** with appForTest's traces on, a designer's Entity-row update committed from the client produces one `EvolutionTraceRecord` in appForTest's `modelVersion`, written by the emulated server.
 
@@ -142,6 +142,15 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core,actions
 ```
 
 ### Realization
+
+- Applicative surface: the `EvolutionTraceRecord` Entity (`854c47bd-…`, scope `versioning`, routed to `modelVersion` in `versionHistoryEntityUuids` and `versionHistoryEntityDefinitions`, listed in Miroir's meta-model), `evolutionTraces` on the SelfApplication schema (not editable, like `versioningMode`), and the ModelEndpoint action `appendEvolutionTraceRecord` (`requiredCapability: versioning`). Its payload carries `kind`, so the same action appends commit records and the markers of Slices 5 and 6.
+- **Deviation:** an Endpoint action gains an optional `internal` flag, and the action catalog leaves internal actions out, so MCP tools, CLI commands and CopilotKit actions never offer `appendEvolutionTraceRecord`. A client-sent append could otherwise forge history.
+- Core: `1_core/versioning/evolutionTraceRecording.ts` holds the rules (`isEvolutionTraceOn`, `isRecordedModelChange`, the action builder). The DomainController reads the traced applications from the cached SelfApplication rows before the replay, collects the replayed changes, and appends one record per traced application after the loop, or a `complete: false` one where the loop returns an error. A remote DomainController sends the append with `forwardServerRoutedAction`; the server neither forgets its model environments nor reloads.
+- Package: `evolutionTraceRecords.ts` serializes appends per application, creates the record Entity in the application's model on the first append (as the freeze does for its own Entities), and reads the last record from the store. The freeze now leaves every version-history Entity out of the Entities it snapshots, so the record Entity is never frozen.
+- Writes of version-history Entities are never recorded, so the Entity creation of the first append records nothing.
+- The old trace Entities stay in the fundamental schema until Slice 8; removing them now breaks the old writer's types.
+- Inventory tests updated: ModelEndpoint actions, `VERSIONING_ACTION_IMPLEMENTATION_NAMES`, the version-history families, the catalog (internal action never listed).
+- Validation: `evolutionTraceRecords.integ` 2/2; the versioning folder 22/22; core unit tests green; scoped nonreg `smoke,core,actions` green except `unit-696-versioning-package`, whose one failure was the history-family count, fixed (187/187).
 
 ## Slice 2 — The chain: sequence, `previousTrace`, model Actions, several applications, a partial commit
 

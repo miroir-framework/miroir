@@ -1003,8 +1003,13 @@ export {
   APPLICATION_VERSION_CROSS_TEST_CONFIGURATION_VERSION_UUID,
   TEST_VERSION_ENTITY_UUID,
   APPLICATION_VERSION_CROSS_TEST_VERSION_UUID,
+  EVOLUTION_TRACE_RECORD_ENTITY_UUID,
+  APPEND_EVOLUTION_TRACE_RECORD_ACTION_TYPE,
 } from "./1_core/versioning/versioningInterfaces.js";
 export type {
+  AppendEvolutionTraceRecordPayload,
+  EvolutionTraceRecordKind,
+  EvolutionTraceRecordRow,
   FreezeApplicationVersionActionPayload,
   FreezeApplicationVersionActionType,
   FreezeAvailability,

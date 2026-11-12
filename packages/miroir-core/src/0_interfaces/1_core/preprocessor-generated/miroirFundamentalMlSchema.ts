@@ -11511,6 +11511,20 @@ export const miroirFundamentalMlSchema = {
                 }
               }
             }
+          },
+          "evolutionTraces": {
+            "type": "boolean",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 11,
+                "defaultLabel": "Evolution Traces",
+                "description": "Record the model changes of this application, one record per commit, in its modelVersion section (#708). Read as off on an unversioned application.",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
           }
         }
       },
@@ -18457,6 +18471,171 @@ export const miroirFundamentalMlSchema = {
           }
         }
       },
+      "evolutionTraceRecord": {
+        "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "entityDefinitionRoot"
+          }
+        },
+        "definition": {
+          "application": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "id": 10,
+                "defaultLabel": "Application",
+                "description": "The application whose model the record describes",
+                "display": {
+                  "editable": false
+                },
+                "foreignKeyParams": {
+                  "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
+                  "targetEntityOrderInstancesBy": "name"
+                }
+              }
+            }
+          },
+          "sequenceNumber": {
+            "type": "number",
+            "tag": {
+              "value": {
+                "id": 11,
+                "defaultLabel": "Sequence",
+                "description": "Position of the record in the application's chain, from 1",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
+          },
+          "previousTrace": {
+            "type": "uuid",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 12,
+                "defaultLabel": "Previous record",
+                "description": "The record before this one in the chain; absent on the first",
+                "display": {
+                  "editable": false
+                },
+                "foreignKeyParams": {
+                  "targetEntity": "854c47bd-af74-4305-bdea-aa6bddfa8899",
+                  "targetEntityOrderInstancesBy": "sequenceNumber"
+                }
+              }
+            }
+          },
+          "kind": {
+            "type": "enum",
+            "definition": [
+              "commit",
+              "version",
+              "rebaseline"
+            ],
+            "tag": {
+              "value": {
+                "id": 13,
+                "defaultLabel": "Kind",
+                "description": "commit: the model Actions of one commit; version: a version was frozen here; rebaseline: the history restarts here",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
+          },
+          "actions": {
+            "type": "array",
+            "optional": true,
+            "definition": {
+              "type": "any"
+            },
+            "tag": {
+              "value": {
+                "id": 14,
+                "defaultLabel": "Actions",
+                "description": "The model Actions of a commit record, resolved and in the order they were written",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
+          },
+          "complete": {
+            "type": "boolean",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 15,
+                "defaultLabel": "Complete",
+                "description": "False when the commit stopped part way: the record holds the Actions that reached the store",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
+          },
+          "version": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 16,
+                "defaultLabel": "Version",
+                "description": "The version a version marker names",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
+          },
+          "gitCommit": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 17,
+                "defaultLabel": "Git commit",
+                "description": "The Git commit a re-baseline marker starts from, with the model in Git",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
+          },
+          "commitUuid": {
+            "type": "uuid",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 18,
+                "defaultLabel": "Commit",
+                "description": "The commit that made the record; shared by the records of the applications one commit changed",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
+          },
+          "timestamp": {
+            "type": "string",
+            "tag": {
+              "value": {
+                "id": 19,
+                "defaultLabel": "Timestamp",
+                "description": "When the record was written, ISO 8601",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
+          }
+        }
+      },
       "miroirAllFundamentalTypesUnion": {
         "type": "union",
         "definition": [
@@ -21524,6 +21703,118 @@ export const miroirFundamentalMlSchema = {
           }
         }
       },
+      "modelActionAppendEvolutionTraceRecord": {
+        "type": "object",
+        "tag": {
+          "value": {
+            "display": {
+              "displayedAttributeValueWhenFolded": "actionLabel"
+            }
+          }
+        },
+        "definition": {
+          "actionType": {
+            "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false,
+                "defaultLabel": "Append an evolution trace record",
+                "description": "#708: appends one record to the application's evolution trace, in its modelVersion section. Sent by the DomainController that ran a commit, a freeze or a re-baseline."
+              }
+            },
+            "definition": "appendEvolutionTraceRecord"
+          },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
+          },
+          "endpoint": {
+            "type": "literal",
+            "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+          },
+          "payload": {
+            "type": "object",
+            "definition": {
+              "application": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false,
+                    "defaultLabel": "Application"
+                  }
+                }
+              },
+              "kind": {
+                "type": "enum",
+                "definition": [
+                  "commit",
+                  "version",
+                  "rebaseline"
+                ],
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false,
+                    "defaultLabel": "Kind"
+                  }
+                }
+              },
+              "commitUuid": {
+                "type": "uuid",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false,
+                    "defaultLabel": "Commit"
+                  }
+                }
+              },
+              "actions": {
+                "type": "array",
+                "optional": true,
+                "definition": {
+                  "type": "any"
+                },
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false,
+                    "defaultLabel": "Actions"
+                  }
+                }
+              },
+              "complete": {
+                "type": "boolean",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false,
+                    "defaultLabel": "Complete"
+                  }
+                }
+              },
+              "version": {
+                "type": "string",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false,
+                    "defaultLabel": "Version"
+                  }
+                }
+              },
+              "gitCommit": {
+                "type": "string",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false,
+                    "defaultLabel": "Git commit"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
       "modelAction": {
         "type": "union",
         "discriminator": "actionType",
@@ -22397,6 +22688,118 @@ export const miroirFundamentalMlSchema = {
                           "targetEntity": "cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
                           "targetEntityOrderInstancesBy": "name"
                         }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "tag": {
+              "value": {
+                "display": {
+                  "displayedAttributeValueWhenFolded": "actionLabel"
+                }
+              }
+            },
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false,
+                    "defaultLabel": "Append an evolution trace record",
+                    "description": "#708: appends one record to the application's evolution trace, in its modelVersion section. Sent by the DomainController that ran a commit, a freeze or a re-baseline."
+                  }
+                },
+                "definition": "appendEvolutionTraceRecord"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+              },
+              "payload": {
+                "type": "object",
+                "definition": {
+                  "application": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": false,
+                        "defaultLabel": "Application"
+                      }
+                    }
+                  },
+                  "kind": {
+                    "type": "enum",
+                    "definition": [
+                      "commit",
+                      "version",
+                      "rebaseline"
+                    ],
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": false,
+                        "defaultLabel": "Kind"
+                      }
+                    }
+                  },
+                  "commitUuid": {
+                    "type": "uuid",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": false,
+                        "defaultLabel": "Commit"
+                      }
+                    }
+                  },
+                  "actions": {
+                    "type": "array",
+                    "optional": true,
+                    "definition": {
+                      "type": "any"
+                    },
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": false,
+                        "defaultLabel": "Actions"
+                      }
+                    }
+                  },
+                  "complete": {
+                    "type": "boolean",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": false,
+                        "defaultLabel": "Complete"
+                      }
+                    }
+                  },
+                  "version": {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": false,
+                        "defaultLabel": "Version"
+                      }
+                    }
+                  },
+                  "gitCommit": {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": false,
+                        "defaultLabel": "Git commit"
                       }
                     }
                   }
@@ -26699,6 +27102,16 @@ export const miroirFundamentalMlSchema = {
               }
             }
           },
+          "internal": {
+            "type": "boolean",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Internal",
+                "description": "#708: the framework sends this action itself; tool listings (MCP, CLI, Copilot) leave it out"
+              }
+            }
+          },
           "presentation": {
             "type": "schemaReference",
             "optional": true,
@@ -27036,6 +27449,16 @@ export const miroirFundamentalMlSchema = {
                               "value": {
                                 "defaultLabel": "Autocommit from UI",
                                 "description": "When true, the action is followed by a commit when it is sent from the UI"
+                              }
+                            }
+                          },
+                          "internal": {
+                            "type": "boolean",
+                            "optional": true,
+                            "tag": {
+                              "value": {
+                                "defaultLabel": "Internal",
+                                "description": "#708: the framework sends this action itself; tool listings (MCP, CLI, Copilot) leave it out"
                               }
                             }
                           },
@@ -44066,6 +44489,120 @@ export const miroirFundamentalMlSchema = {
                 }
               }
             }
+          },
+          {
+            "type": "object",
+            "tag": {
+              "value": {
+                "display": {
+                  "displayedAttributeValueWhenFolded": "actionLabel"
+                },
+                "isTemplate": true
+              }
+            },
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false,
+                    "defaultLabel": "Append an evolution trace record",
+                    "description": "#708: appends one record to the application's evolution trace, in its modelVersion section. Sent by the DomainController that ran a commit, a freeze or a re-baseline."
+                  }
+                },
+                "definition": "appendEvolutionTraceRecord"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+              },
+              "payload": {
+                "type": "object",
+                "definition": {
+                  "application": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": false,
+                        "defaultLabel": "Application"
+                      }
+                    }
+                  },
+                  "kind": {
+                    "type": "enum",
+                    "definition": [
+                      "commit",
+                      "version",
+                      "rebaseline"
+                    ],
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": false,
+                        "defaultLabel": "Kind"
+                      }
+                    }
+                  },
+                  "commitUuid": {
+                    "type": "uuid",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": false,
+                        "defaultLabel": "Commit"
+                      }
+                    }
+                  },
+                  "actions": {
+                    "type": "array",
+                    "optional": true,
+                    "definition": {
+                      "type": "any"
+                    },
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": false,
+                        "defaultLabel": "Actions",
+                        "isTemplate": true
+                      }
+                    }
+                  },
+                  "complete": {
+                    "type": "boolean",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": false,
+                        "defaultLabel": "Complete"
+                      }
+                    }
+                  },
+                  "version": {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": false,
+                        "defaultLabel": "Version"
+                      }
+                    }
+                  },
+                  "gitCommit": {
+                    "type": "string",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": false,
+                        "defaultLabel": "Git commit"
+                      }
+                    }
+                  }
+                }
+              }
+            }
           }
         ]
       },
@@ -45594,6 +46131,20 @@ export const miroirFundamentalMlSchema = {
                 "id": 10,
                 "defaultLabel": "Versioning Mode",
                 "description": "How application model version history is managed: unversioned (none), versioned-internal (Miroir modelVersion section), or versioned-external (external VCS). When absent, legacy versioningEnabled: true defaults to versioned-internal.",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
+          },
+          "evolutionTraces": {
+            "type": "boolean",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 11,
+                "defaultLabel": "Evolution Traces",
+                "description": "Record the model changes of this application, one record per commit, in its modelVersion section (#708). Read as off on an unversioned application.",
                 "display": {
                   "editable": false
                 }

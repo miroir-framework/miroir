@@ -117,7 +117,17 @@ import {
   type ProcessCapabilities,
   type ProcessCapabilityName,
 } from "../1_core/processCapabilities.js";
-import { VERSIONING_PACKAGE_NAME } from "../1_core/versioning/versioningInterfaces.js";
+import {
+  APPEND_EVOLUTION_TRACE_RECORD_ACTION_TYPE,
+  VERSIONING_PACKAGE_NAME,
+} from "../1_core/versioning/versioningInterfaces.js";
+import {
+  appendEvolutionTraceRecordAction,
+  isEvolutionTraceOn,
+  isRecordedModelChange,
+  selfApplicationRowLocation,
+  type EvolutionTraceSwitchInput,
+} from "../1_core/versioning/evolutionTraceRecording.js";
 
 /** The writes that leave an evolution trace: the replayable model actions and the instance CUD actions. */
 const EVOLUTION_TRACEABLE_ACTION_TYPES: ReadonlySet<string> = new Set([
@@ -1476,6 +1486,63 @@ export class DomainController implements DomainControllerInterface, DomainContro
   }
 
   /**
+   * #708: the applications among `applications` whose evolution traces are on, read from their
+   * SelfApplication rows in the local cache.
+   */
+  private applicationsWithEvolutionTraces(
+    applications: Iterable<string>,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+  ): string[] {
+    const domainState = this.localCache.getDomainState() as Record<string, any> | undefined;
+    const traced: string[] = [];
+    for (const application of new Set(applications)) {
+      const deploymentUuid = applicationDeploymentMap[application];
+      if (!deploymentUuid) {
+        continue;
+      }
+      const { section, entityUuid } = selfApplicationRowLocation(application);
+      const row = domainState?.[deploymentUuid]?.[section]?.[entityUuid]?.[application] as
+        | EvolutionTraceSwitchInput
+        | undefined;
+      if (isEvolutionTraceOn(row)) {
+        traced.push(application);
+      }
+    }
+    return traced;
+  }
+
+  /**
+   * #708: one evolution trace record per traced application of a commit, holding the model Actions the
+   * commit replayed for it, in order. `complete` is false when the commit stopped part way.
+   */
+  private async appendCommitRecords(
+    tracedApplications: string[],
+    replayedActions: unknown[],
+    commitUuid: string,
+    complete: boolean,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+  ): Promise<void> {
+    for (const application of tracedApplications) {
+      const actions = replayedActions.filter(
+        (action) =>
+          (action as { payload?: { application?: string } }).payload?.application === application &&
+          isRecordedModelChange(action as any),
+      );
+      if (actions.length === 0) {
+        continue;
+      }
+      const appended = await this.handleAction(
+        appendEvolutionTraceRecordAction({ application, kind: "commit", commitUuid, actions, complete }) as any,
+        applicationDeploymentMap,
+        defaultMiroirModelEnvironment,
+      );
+      if (appended instanceof Action2Error) {
+        log.warn("DomainController appendCommitRecords: no record appended for application", application, appended);
+      }
+    }
+  }
+
+  /**
    * Append-only evolution-trace persistence (WP1), recorded by `@miroir-framework/versioning` (#696). The
    * checks here are cheap and come first, so a process that records no trace never loads the package:
    * traces on, a traceable action, a known deployment, then the `versioning` capability.
@@ -2076,6 +2143,12 @@ export class DomainController implements DomainControllerInterface, DomainContro
           // commitUuid is for WP1 evolution-trace correlation only — do not
           // construct or persist placeholder SelfApplicationVersion rows here.
           const commitUuid = uuidv4();
+          // #708: the applications whose traces are on, read before the replay changes their rows
+          const tracedApplications = this.applicationsWithEvolutionTraces(
+            currentTransactions.map((transaction) => transaction.payload.application),
+            applicationDeploymentMap,
+          );
+          const replayedModelChanges: unknown[] = [];
 
           log.info(
             "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction commit replaying currentTransaction",
@@ -2098,34 +2171,46 @@ export class DomainController implements DomainControllerInterface, DomainContro
                 //   "derived newActionType",
                 //   newActionType,
                 // );
+                const replayedInstanceAction = {
+                  actionType: newActionType,
+                  endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
+                  payload: {
+                    // deploymentUuid: replayAction.payload.instanceAction.payload.deploymentUuid,
+                    application: replayAction.payload.instanceAction.payload.application,
+                    applicationSection:
+                      replayAction.payload.instanceAction.payload.applicationSection ?? defaultApplicationSection,
+                    section:
+                      replayAction.payload.instanceAction.payload.applicationSection ?? defaultApplicationSection,
+                    parentName: replayAction.payload.instanceAction.payload.objects[0].parentName,
+                    parentUuid: replayAction.payload.instanceAction.payload.objects[0].parentUuid,
+                    // objects: replayAction.payload.instanceAction.payload.objects[0].instances,
+                    objects: replayAction.payload.instanceAction.payload.objects,
+                  },
+                };
                 const replayActionResult = await this.callUtil.callPersistenceAction(
                   {}, // context
                   {}, // continuation
                   applicationDeploymentMap,
-                  {
-                    actionType: newActionType,
-                    endpoint: "a93598b3-19b6-42e8-828c-f02042d212d4",
-                    payload: {
-                      // deploymentUuid: replayAction.payload.instanceAction.payload.deploymentUuid,
-                      application: replayAction.payload.instanceAction.payload.application,
-                      applicationSection:
-                        replayAction.payload.instanceAction.payload.applicationSection ?? defaultApplicationSection,
-                      section:
-                        replayAction.payload.instanceAction.payload.applicationSection ?? defaultApplicationSection,
-                      parentName: replayAction.payload.instanceAction.payload.objects[0].parentName,
-                      parentUuid: replayAction.payload.instanceAction.payload.objects[0].parentUuid,
-                      // objects: replayAction.payload.instanceAction.payload.objects[0].instances,
-                      objects: replayAction.payload.instanceAction.payload.objects,
-                    },
-                  } as any,
+                  replayedInstanceAction as any,
                 );
                 if (replayActionResult instanceof Action2Error) {
                   log.warn(
                     "DomainController handleModelAction commit replayAction transactionalInstanceAction failed",
                     replayActionResult,
                   );
+                  await this.appendCommitRecords(tracedApplications, replayedModelChanges, commitUuid, false, applicationDeploymentMap);
                   return replayActionResult;
                 }
+                replayedModelChanges.push({
+                  actionType: newActionType,
+                  endpoint: "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                  payload: {
+                    application: replayedInstanceAction.payload.application,
+                    applicationSection: replayedInstanceAction.payload.applicationSection,
+                    parentUuid: replayedInstanceAction.payload.parentUuid,
+                    objects: replayedInstanceAction.payload.objects,
+                  },
+                });
                 // #321: listeners see a committed instance action like a direct one
                 this.notifyInstanceActionListeners(replayAction.payload.instanceAction, applicationDeploymentMap);
                 break;
@@ -2135,25 +2220,28 @@ export class DomainController implements DomainControllerInterface, DomainContro
               case "createEntity":
               case "dropEntity":
               case "renameEntity": {
+                const replayedModelAction = {
+                  ...replayAction,
+                  payload: {
+                    ...replayAction.payload,
+                    transactional: false,
+                  } as any, // TODO: remove as any
+                };
                 const replayActionResult = await this.callUtil.callPersistenceAction(
                   {}, // context
                   {}, // continuation
                   applicationDeploymentMap,
-                  {
-                    ...replayAction,
-                    payload: {
-                      ...replayAction.payload,
-                      transactional: false,
-                    } as any, // TODO: remove as any
-                  },
+                  replayedModelAction,
                 );
                 if (replayActionResult instanceof Action2Error) {
                   log.warn(
                     "DomainController handleModelAction commit replayAction transactionalInstanceAction failed",
                     replayActionResult,
                   );
+                  await this.appendCommitRecords(tracedApplications, replayedModelChanges, commitUuid, false, applicationDeploymentMap);
                   return replayActionResult;
                 }
+                replayedModelChanges.push(replayedModelAction);
                 await this.maybeRecordEvolutionTrace(replayAction, applicationDeploymentMap, {
                   commitUuid,
                   // Observational only — not an Application Version tip (#216 ADR D6).
@@ -2175,6 +2263,8 @@ export class DomainController implements DomainControllerInterface, DomainContro
           //   "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ DomainController handleModelAction commit actions replayed, currentTransaction:",
           //   this.localCache.currentTransaction(),
           // );
+
+          await this.appendCommitRecords(tracedApplications, replayedModelChanges, commitUuid, true, applicationDeploymentMap);
 
           await this.callUtil
             .callLocalCacheAction(
@@ -2652,7 +2742,10 @@ export class DomainController implements DomainControllerInterface, DomainContro
           return refused;
         }
         if (this.persistenceStoreAccessMode !== "local") {
-          return this.forwardCapabilityAction(domainAction, applicationDeploymentMap);
+          // #708: a trace record changes no model: no refusal of pending changes, no reload
+          return (domainAction as { actionType?: string }).actionType === APPEND_EVOLUTION_TRACE_RECORD_ACTION_TYPE
+            ? this.forwardServerRoutedAction(domainAction, applicationDeploymentMap)
+            : this.forwardCapabilityAction(domainAction, applicationDeploymentMap);
         }
       }
       return this.runLibraryActionImplementation(

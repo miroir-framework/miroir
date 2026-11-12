@@ -50,6 +50,7 @@ import {
   entityHistoricalTestConfigurationVersion,
   entityApplicationVersionCrossTestConfigurationVersion,
   entityHistoricalTestVersion,
+  entityEvolutionTraceRecord,
   entityApplicationVersionCrossTestVersion,
   entityDefinitionApplicationEvolutionTrace,
   entityDefinitionApplicationEvolutionTraceEvent,
@@ -309,6 +310,8 @@ export const defaultMiroirMetaModel: MetaModel = {
     entityHistoricalTestConfigurationVersion as Entity,
     entityApplicationVersionCrossTestVersion as Entity,
     entityHistoricalTestVersion as Entity,
+    // #708
+    entityEvolutionTraceRecord as Entity,
     // #647 — devData Entities (rows routed to the devData section by getApplicationSection)
     entityBundleSizeMeasurement as Entity,
     entityPageLoadMeasurement as Entity,
@@ -615,6 +618,7 @@ export const miroirModelInitializeCreateEntityOrder: Entity[] = entitiesInBootst
   entityHistoricalTestConfigurationVersion.uuid!,
   entityApplicationVersionCrossTestVersion.uuid!,
   entityHistoricalTestVersion.uuid!,
+  entityEvolutionTraceRecord.uuid!,
   // #647: devData Entities; their instances live in the devData section, created there on first write
   entityBundleSizeMeasurement.uuid!,
   entityPageLoadMeasurement.uuid!,

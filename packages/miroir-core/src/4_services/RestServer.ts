@@ -98,6 +98,10 @@ function forgetModelEnvironmentChangedBy(
   if ((GIT_ACTIONS_KEEPING_FILES as readonly string[]).includes(actionType)) {
     return;
   }
+  // #708: an evolution trace record goes to modelVersion and changes no model
+  if (actionType === "appendEvolutionTraceRecord") {
+    return;
+  }
   if (storeOrBundleActionTypes.includes(actionType) || isServerRoutedMiroirAction(action)) {
     environments.forget();
     return;

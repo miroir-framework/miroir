@@ -18,6 +18,7 @@ import {
   entityHistoricalBlobVersion,
   entityHistoricalTestConfigurationVersion,
   entityHistoricalTestVersion,
+  entityEvolutionTraceRecord,
   entityReport,
   entityRunner,
   entitySelfApplication,
@@ -212,6 +213,8 @@ export const versionHistoryEntityUuids: ReadonlySet<string> = new Set([
   entityApplicationVersionCrossTestConfigurationVersion.uuid!,
   entityHistoricalTestVersion.uuid!,
   entityApplicationVersionCrossTestVersion.uuid!,
+  // #708: the evolution trace records of an application
+  entityEvolutionTraceRecord.uuid!,
 ]);
 
 const versionHistoryEntityDefinitions: ReadonlyMap<string, Entity> = new Map([
@@ -245,6 +248,7 @@ const versionHistoryEntityDefinitions: ReadonlyMap<string, Entity> = new Map([
   [entityApplicationVersionCrossTestConfigurationVersion.uuid!, entityApplicationVersionCrossTestConfigurationVersion as Entity],
   [entityHistoricalTestVersion.uuid!, entityHistoricalTestVersion as Entity],
   [entityApplicationVersionCrossTestVersion.uuid!, entityApplicationVersionCrossTestVersion as Entity],
+  [entityEvolutionTraceRecord.uuid!, entityEvolutionTraceRecord as Entity],
 ]);
 
 /** Bootstrap Entity row for a version-history parent entity (SQL modelVersion lazy table creation). */

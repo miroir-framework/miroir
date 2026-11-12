@@ -11,23 +11,40 @@
 import { beforeAll, describe, expect, it } from "vitest";
 
 import {
-  resetAndinitializeDeploymentCompositeAction,
   defaultMiroirModelEnvironment,
+  EVOLUTION_TRACE_RECORD_ENTITY_UUID,
+  resetAndinitializeDeploymentCompositeAction,
   type DomainAction,
+  type EntityInstance,
 } from "@miroir-framework/core";
-import { defaultAppForTestModel } from "miroir-fixture-appForTest";
+import { defaultAppForTestModel, entityPublisher, selfApplicationAppForTest } from "miroir-fixture-appForTest";
 import { appForTestTestbedInitParams } from "miroir-react-testing/src/4-tests/uiIntegrationAppForTestPlayfieldSeed.js";
 
 import {
   APP_FOR_TEST,
   APP_FOR_TEST_DEPLOYMENT,
+  appForTestModelEnvironment,
   applicationDeploymentMap,
   expectOk,
+  INSTANCE_ENDPOINT,
+  MODEL_ENDPOINT,
   openVersioningTestContext,
+  storedAppForTestRows,
   type VersioningTestContext,
 } from "./versioningTestSetup.js";
 
 const SELF_APPLICATION_ENTITY = "a659d350-dd97-4da9-91de-524fa01745dc";
+const DOMAIN_ENDPOINT = "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5";
+
+type StoredRecord = EntityInstance & {
+  application: string;
+  sequenceNumber: number;
+  previousTrace?: string;
+  kind: string;
+  actions?: any[];
+  complete?: boolean;
+  commitUuid?: string;
+};
 
 let context: VersioningTestContext;
 
@@ -41,7 +58,96 @@ function clientCacheHoldsAppForTestRow(): boolean {
   return !!domainState?.[APP_FOR_TEST_DEPLOYMENT]?.model?.[SELF_APPLICATION_ENTITY]?.[APP_FOR_TEST];
 }
 
+/** Sets appForTest's `evolutionTraces` with a direct write from the client, which updates its local cache too. */
+async function setAppForTestTraces(on: boolean): Promise<void> {
+  expectOk(
+    await context.domainController.handleAction(
+      {
+        actionType: "updateInstance",
+        endpoint: INSTANCE_ENDPOINT,
+        payload: {
+          application: APP_FOR_TEST,
+          applicationSection: "model",
+          objects: [{ ...selfApplicationAppForTest, evolutionTraces: on } as EntityInstance],
+        },
+      } as any,
+      applicationDeploymentMap,
+      appForTestModelEnvironment(context.domainController),
+    ),
+    `evolutionTraces ${on}`,
+  );
+}
+
+/** Sends an update of an appForTest model row inside the client's transaction. */
+async function updateInTransaction(object: EntityInstance): Promise<void> {
+  expectOk(
+    await context.domainController.handleAction(
+      {
+        actionType: "transactionalInstanceAction",
+        endpoint: DOMAIN_ENDPOINT,
+        payload: {
+          application: APP_FOR_TEST,
+          instanceAction: {
+            actionType: "updateInstance",
+            endpoint: INSTANCE_ENDPOINT,
+            payload: { application: APP_FOR_TEST, applicationSection: "model", objects: [object] },
+          },
+        },
+      } as any,
+      applicationDeploymentMap,
+      appForTestModelEnvironment(context.domainController),
+    ),
+    "transactional update",
+  );
+}
+
+async function commitAppForTest() {
+  return context.domainController.handleAction(
+    { actionType: "commit", endpoint: MODEL_ENDPOINT, payload: { application: APP_FOR_TEST } } as any,
+    applicationDeploymentMap,
+    appForTestModelEnvironment(context.domainController),
+  );
+}
+
+async function storedRecords(): Promise<StoredRecord[]> {
+  const rows = (await storedAppForTestRows(context, "modelVersion", EVOLUTION_TRACE_RECORD_ENTITY_UUID)) as StoredRecord[];
+  return rows.sort((a, b) => a.sequenceNumber - b.sequenceNumber);
+}
+
 describe("evolutionTraceRecords (#708)", () => {
+  it("one commit, one record: a committed Entity-row update of appForTest, traces on", async () => {
+    await setAppForTestTraces(true);
+    const updatedPublisher = { ...entityPublisher, description: "#708 one commit, one record" } as EntityInstance;
+    await updateInTransaction(updatedPublisher);
+    expectOk(await commitAppForTest(), "commit");
+
+    const records = await storedRecords();
+    expect(records).toHaveLength(1);
+    const [record] = records;
+    expect(record).toMatchObject({
+      application: APP_FOR_TEST,
+      kind: "commit",
+      sequenceNumber: 1,
+      complete: true,
+    });
+    expect(record.previousTrace).toBeUndefined();
+    expect(typeof record.commitUuid).toBe("string");
+    expect(record.actions).toEqual([
+      {
+        actionType: "updateInstance",
+        endpoint: INSTANCE_ENDPOINT,
+        payload: {
+          application: APP_FOR_TEST,
+          applicationSection: "model",
+          parentUuid: entityPublisher.parentUuid,
+          objects: [updatedPublisher],
+        },
+      },
+    ]);
+  }, 60000);
+});
+
+describe("evolutionTraceRecords (#708), init", () => {
   /**
    * Slice 0, characterization. Deployment init runs `resetModel`, `initModel`, then commits
    * `createEntity`. The trace switch is read from the SelfApplication row in the local cache, so

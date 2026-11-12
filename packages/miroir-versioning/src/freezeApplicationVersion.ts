@@ -11,6 +11,7 @@ import {
   Action2Error,
   ACTION_OK,
   getApplicationSection,
+  versionHistoryEntityUuids,
   type Action2ReturnType,
   type Action2VoidReturnType,
   type ActionImplementationHandler,
@@ -362,6 +363,10 @@ export const handleAction_freezeApplicationVersion: ActionImplementationHandler 
   const metaBootstrapUuids = new Set((modelEnvironment.miroirMetaModel?.entities ?? []).map((e) => e.uuid));
   for (const historyEntity of HISTORY_ENTITIES) {
     metaBootstrapUuids.add(historyEntity.uuid);
+  }
+  // #708: the record Entity too, created in the model by the first trace record
+  for (const versionHistoryEntityUuid of versionHistoryEntityUuids) {
+    metaBootstrapUuids.add(versionHistoryEntityUuid);
   }
   const applicationEntities = selectEntitiesToFreeze(payload.application, metaModel.entities, metaBootstrapUuids);
 

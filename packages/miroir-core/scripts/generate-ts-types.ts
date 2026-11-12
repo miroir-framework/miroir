@@ -21,6 +21,7 @@ import {
   domainEndpointVersionV1,
   entityApplicationEvolutionTrace,
   entityApplicationEvolutionTraceEvent,
+  entityEvolutionTraceRecord,
   entityCommit,
   entityEndpointVersion,
   entityEntity,
@@ -401,6 +402,7 @@ async function generateSchemas(generateFundamentalMlSchema = true) {
         entityEndpointVersion,
         entityApplicationEvolutionTrace,
         entityApplicationEvolutionTraceEvent,
+        entityEvolutionTraceRecord,
       );
       // console.log("miroir-core generateSchemas miroirFundamentalMlSchema:", miroirFundamentalMlSchema);
       _t_getMiroirFundamental = Date.now() - generateSchemasStartTime;

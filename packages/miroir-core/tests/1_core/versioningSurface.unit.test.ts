@@ -113,7 +113,10 @@ if (runThis) {
     it("exports what a package needs to register lazy action implementations", () => {
       expect(typeof core.registerLazyActionImplementations).toBe("function");
       expect(typeof core.loadLazyCapabilityModule).toBe("function");
-      expect(core.VERSIONING_ACTION_IMPLEMENTATION_NAMES).toEqual(["handleAction_freezeApplicationVersion"]);
+      expect(core.VERSIONING_ACTION_IMPLEMENTATION_NAMES).toEqual([
+        "handleAction_freezeApplicationVersion",
+        "handleAction_appendEvolutionTraceRecord", // #708
+      ]);
       expect(core.VERSIONING_PACKAGE_NAME).toBe("@miroir-framework/versioning");
     });
   });
