@@ -29,7 +29,7 @@ Out:
 |---|---|---|---|
 | 0 | Characterize init, the old trace inventory and the current tests | ✅ DONE | `evolutionTraceInventory.708` guard, init characterization test |
 | 1 | Tracer: a committed Entity-row update leaves one record in `modelVersion` | ✅ DONE | `evolutionTraceRecords.integ` "one commit, one record" |
-| 2 | The chain: sequence, `previousTrace`, model Actions, several applications, a partial commit | ⬜ pending | `evolutionTraceRecords.integ` chain cases |
+| 2 | The chain: sequence, `previousTrace`, model Actions, several applications, a partial commit | ✅ DONE | `evolutionTraceRecords.integ` chain cases |
 | 3 | Direct model writes, recorded once | ⬜ pending | `evolutionTraceRecords.integ` direct cases |
 | 4 | Traces off, unversioned, capability off, no `modelVersion`, a failed append | ⬜ pending | `evolutionTraceSwitch.integ` |
 | 5 | `resetModel` and `initModel` leave a `rebaseline` marker | ⬜ pending | `evolutionTraceRecords.integ` reset case |
@@ -154,7 +154,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core,actions
 
 ## Slice 2 — The chain: sequence, `previousTrace`, model Actions, several applications, a partial commit
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** records form one ordered chain per application, and a commit's record says exactly what reached the store.
 
@@ -175,6 +175,12 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,actions
 ```
 
 ### Realization
+
+- The grouping and the partial record were already in Slice 1's code; the four tests went green against it.
+- The partial commit uses a failure the real store produces, no mock: the emulated server drops `Note708` directly, so the client still caches it; the client's transaction then holds an update and a rename of `Note708`, and the rename fails in the filesystem store. The record holds the update, with `complete: false`.
+- Library is made `versioned-internal` with traces on by a direct write of its SelfApplication row, then loaded into the client by a rollback: the test context had not loaded Library, so the write alone left nothing in the client's local cache to read the switch from.
+- Refactor checkpoint: the collection is two `push` calls next to the replays; no extraction needed.
+- Validation: `evolutionTraceRecords.integ` 6/6; the versioning folder 26/26. Scoped nonreg deferred to Slice 3, which changes the same code.
 
 ## Slice 3 — Direct model writes, recorded once
 

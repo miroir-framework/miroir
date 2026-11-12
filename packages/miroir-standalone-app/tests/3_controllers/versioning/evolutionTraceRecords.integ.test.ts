@@ -11,12 +11,15 @@
 import { beforeAll, describe, expect, it } from "vitest";
 
 import {
+  Action2Error,
   defaultMiroirModelEnvironment,
   EVOLUTION_TRACE_RECORD_ENTITY_UUID,
   resetAndinitializeDeploymentCompositeAction,
   type DomainAction,
+  type Entity,
   type EntityInstance,
 } from "@miroir-framework/core";
+import { entityAuthor, selfApplicationLibrary } from "miroir-example-library";
 import { defaultAppForTestModel, entityPublisher, selfApplicationAppForTest } from "miroir-fixture-appForTest";
 import { appForTestTestbedInitParams } from "miroir-react-testing/src/4-tests/uiIntegrationAppForTestPlayfieldSeed.js";
 
@@ -27,14 +30,33 @@ import {
   applicationDeploymentMap,
   expectOk,
   INSTANCE_ENDPOINT,
+  LIBRARY_APPLICATION,
+  LIBRARY_DEPLOYMENT,
   MODEL_ENDPOINT,
+  modelEnvironment,
   openVersioningTestContext,
   storedAppForTestRows,
+  storedRows,
   type VersioningTestContext,
 } from "./versioningTestSetup.js";
 
 const SELF_APPLICATION_ENTITY = "a659d350-dd97-4da9-91de-524fa01745dc";
 const DOMAIN_ENDPOINT = "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5";
+const ENTITY_ENTITY = "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad";
+
+const noteEntity = {
+  uuid: "708a0001-0000-4000-8000-000000000001",
+  parentName: "Entity",
+  parentUuid: ENTITY_ENTITY,
+  selfApplication: APP_FOR_TEST,
+  name: "Note708",
+  conceptLevel: "Model",
+  description: "#708: an Entity created in a traced commit",
+  mlSchema: {
+    type: "object",
+    definition: { uuid: { type: "uuid" }, parentUuid: { type: "uuid" }, name: { type: "string" } },
+  },
+} as unknown as Entity;
 
 type StoredRecord = EntityInstance & {
   application: string;
@@ -79,23 +101,23 @@ async function setAppForTestTraces(on: boolean): Promise<void> {
 }
 
 /** Sends an update of an appForTest model row inside the client's transaction. */
-async function updateInTransaction(object: EntityInstance): Promise<void> {
+async function updateInTransaction(object: EntityInstance, application: string = APP_FOR_TEST): Promise<void> {
   expectOk(
     await context.domainController.handleAction(
       {
         actionType: "transactionalInstanceAction",
         endpoint: DOMAIN_ENDPOINT,
         payload: {
-          application: APP_FOR_TEST,
+          application,
           instanceAction: {
             actionType: "updateInstance",
             endpoint: INSTANCE_ENDPOINT,
-            payload: { application: APP_FOR_TEST, applicationSection: "model", objects: [object] },
+            payload: { application, applicationSection: "model", objects: [object] },
           },
         },
       } as any,
       applicationDeploymentMap,
-      appForTestModelEnvironment(context.domainController),
+      modelEnvironment(context.domainController, application),
     ),
     "transactional update",
   );
@@ -107,6 +129,42 @@ async function commitAppForTest() {
     applicationDeploymentMap,
     appForTestModelEnvironment(context.domainController),
   );
+}
+
+/** Makes Library versioned-internal with its traces on, with a direct write from the client. */
+async function setLibraryVersionedWithTraces(): Promise<void> {
+  expectOk(
+    await context.domainController.handleAction(
+      {
+        actionType: "updateInstance",
+        endpoint: INSTANCE_ENDPOINT,
+        payload: {
+          application: LIBRARY_APPLICATION,
+          applicationSection: "model",
+          objects: [
+            { ...selfApplicationLibrary, versioningMode: "versioned-internal", evolutionTraces: true } as EntityInstance,
+          ],
+        },
+      } as any,
+      applicationDeploymentMap,
+      modelEnvironment(context.domainController, LIBRARY_APPLICATION),
+    ),
+    "Library versioned with traces",
+  );
+  // the client had not loaded Library: a rollback loads it from the store, with its new row
+  expectOk(
+    await context.domainController.handleAction(
+      { actionType: "rollback", endpoint: MODEL_ENDPOINT, payload: { application: LIBRARY_APPLICATION } } as any,
+      applicationDeploymentMap,
+      modelEnvironment(context.domainController, LIBRARY_APPLICATION),
+    ),
+    "load Library",
+  );
+}
+
+async function storedLibraryRecords(): Promise<StoredRecord[]> {
+  const rows = (await storedRows(context, LIBRARY_DEPLOYMENT, "modelVersion", EVOLUTION_TRACE_RECORD_ENTITY_UUID)) as StoredRecord[];
+  return rows.sort((a, b) => a.sequenceNumber - b.sequenceNumber);
 }
 
 async function storedRecords(): Promise<StoredRecord[]> {
@@ -144,6 +202,108 @@ describe("evolutionTraceRecords (#708)", () => {
         },
       },
     ]);
+  }, 60000);
+
+  it("a second commit continues the chain: sequenceNumber 2, previousTrace the first record", async () => {
+    const before = await storedRecords();
+    await updateInTransaction({ ...entityPublisher, description: "#708 second commit" } as EntityInstance);
+    expectOk(await commitAppForTest(), "commit");
+    const records = await storedRecords();
+    expect(records).toHaveLength(before.length + 1);
+    const [previous, last] = records.slice(-2);
+    expect(last.sequenceNumber).toBe(previous.sequenceNumber + 1);
+    expect(last.previousTrace).toBe(previous.uuid);
+  }, 60000);
+
+  it("a commit with a createEntity and an instance update records both Actions, in replay order", async () => {
+    const before = await storedRecords();
+    expectOk(
+      await context.domainController.handleAction(
+        {
+          actionType: "createEntity",
+          endpoint: MODEL_ENDPOINT,
+          payload: { application: APP_FOR_TEST, entities: [noteEntity] },
+        } as any,
+        applicationDeploymentMap,
+        appForTestModelEnvironment(context.domainController),
+      ),
+      "createEntity",
+    );
+    const publisher = { ...entityPublisher, description: "#708 with a createEntity" } as EntityInstance;
+    await updateInTransaction(publisher);
+    expectOk(await commitAppForTest(), "commit");
+    const records = await storedRecords();
+    expect(records).toHaveLength(before.length + 1);
+    const actions = records[records.length - 1].actions ?? [];
+    expect(actions.map((action) => action.actionType)).toEqual(["createEntity", "updateInstance"]);
+    expect(actions[0].payload.entities.map((entity: Entity) => entity.uuid)).toEqual([noteEntity.uuid]);
+    expect(actions[1].payload.objects).toEqual([publisher]);
+  }, 60000);
+
+  it("a commit holding changes of appForTest and of Library makes one record in each, with one commitUuid", async () => {
+    await setLibraryVersionedWithTraces();
+    const appForTestBefore = await storedRecords();
+    const libraryBefore = await storedLibraryRecords();
+    await updateInTransaction({ ...entityPublisher, description: "#708 two applications" } as EntityInstance);
+    await updateInTransaction({ ...entityAuthor, description: "#708 two applications" } as EntityInstance, LIBRARY_APPLICATION);
+    expectOk(await commitAppForTest(), "commit");
+    const appForTestRecords = await storedRecords();
+    const libraryRecords = await storedLibraryRecords();
+    expect(appForTestRecords).toHaveLength(appForTestBefore.length + 1);
+    expect(libraryRecords).toHaveLength(libraryBefore.length + 1);
+    const appForTestRecord = appForTestRecords[appForTestRecords.length - 1];
+    const libraryRecord = libraryRecords[libraryRecords.length - 1];
+    expect(libraryRecord.commitUuid).toBe(appForTestRecord.commitUuid);
+    expect(appForTestRecord.actions?.map((action) => action.payload.application)).toEqual([APP_FOR_TEST]);
+    expect(libraryRecord.actions?.map((action) => action.payload.application)).toEqual([LIBRARY_APPLICATION]);
+  }, 60000);
+
+  it("a commit whose second Action fails records the first one, with complete: false", async () => {
+    // noteEntity is in the client's local cache; dropping it on the server only makes the client's
+    // rename of it fail in the store, after the update before it reached the store
+    expectOk(
+      await context.serverDomainController.handleAction(
+        {
+          actionType: "dropEntity",
+          endpoint: MODEL_ENDPOINT,
+          payload: { application: APP_FOR_TEST, transactional: false, entityUuid: noteEntity.uuid },
+        } as any,
+        applicationDeploymentMap,
+        appForTestModelEnvironment(context.serverDomainController),
+      ),
+      "server dropEntity",
+    );
+    const publisher = { ...entityPublisher, description: "#708 partial commit" } as EntityInstance;
+    await updateInTransaction(publisher);
+    expectOk(
+      await context.domainController.handleAction(
+        {
+          actionType: "renameEntity",
+          endpoint: MODEL_ENDPOINT,
+          payload: { application: APP_FOR_TEST, entityUuid: noteEntity.uuid, entityName: "Note708", targetValue: "Note708Renamed" },
+        } as any,
+        applicationDeploymentMap,
+        appForTestModelEnvironment(context.domainController),
+      ),
+      "renameEntity in the transaction",
+    );
+    const before = await storedRecords();
+    const result = await commitAppForTest();
+    expect(result instanceof Action2Error, "the commit fails at the rename").toBe(true);
+    const records = await storedRecords();
+    expect(records.length).toBeGreaterThan(before.length);
+    const last = records[records.length - 1];
+    expect(last.complete).toBe(false);
+    expect(last.actions?.map((action) => action.actionType)).toEqual(["updateInstance"]);
+    expect(last.actions?.[0].payload.objects).toEqual([publisher]);
+    expectOk(
+      await context.domainController.handleAction(
+        { actionType: "rollback", endpoint: MODEL_ENDPOINT, payload: { application: APP_FOR_TEST } } as any,
+        applicationDeploymentMap,
+        appForTestModelEnvironment(context.domainController),
+      ),
+      "rollback",
+    );
   }, 60000);
 });
 
