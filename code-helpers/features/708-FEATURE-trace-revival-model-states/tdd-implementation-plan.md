@@ -33,7 +33,7 @@ Out:
 | 3 | Direct model writes, recorded once | ✅ DONE | `evolutionTraceRecords.integ` direct cases |
 | 4 | Traces off, unversioned, capability off, no `modelVersion`, a failed append | ✅ DONE | `evolutionTraceSwitch.integ` |
 | 5 | `resetModel` and `initModel` leave a `rebaseline` marker | ✅ DONE | `evolutionTraceRecords.integ` reset case |
-| 6 | A freeze appends a `version` marker | ⬜ pending | `evolutionTraceRecords.integ` freeze case |
+| 6 | A freeze appends a `version` marker | ✅ DONE | `evolutionTraceRecords.integ` freeze case |
 | 7 | `versioned-git` | ⬜ pending | `versioningMode.unit`, `evolutionTraceRecords.integ` Git-mode case |
 | 8 | The old traces go; new Reports and MiroirTest | ⬜ pending | `action.scenario.evolutionTrace`, `modelValidation`, inventory guard |
 | 9 | Docs, nonreg steps, full nonreg, AC checklist | ⬜ pending | `nonreg:filesystem` |
@@ -278,7 +278,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,actions
 
 ## Slice 6 — A freeze appends a `version` marker
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** the records between two versions can be found (D4).
 
@@ -297,6 +297,12 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,actions
 ```
 
 ### Realization
+
+- The freeze implementation (package) appends the marker after it persists the version. It reads the switch from the SelfApplication row in the store where the freeze runs, then calls `handleAction_appendEvolutionTraceRecord` directly: the freeze already runs where the stores are, so there is no second round trip. The freeze stands when the marker cannot be appended, which is logged.
+- Deviation: the marker's `version` holds the uuid of the `SelfApplicationVersion` row, not its name, because a name can repeat across branches. The test finds that row by the name `708-v1`.
+- Core now exports `isEvolutionTraceOn`, `selfApplicationRowLocation` and the `EvolutionTraceSwitchInput` type for the package.
+- D4 is still waiting for the user's sign-off. This slice implements its recommended option (a marker, no update of earlier records).
+- Validation: the records test (12 of 12), the versioning package (187), the `action.domainController.freezeApplicationVersion` MiroirTest, and the scoped nonreg `smoke,actions` (30 of 30) all pass.
 
 ## Slice 7 — `versioned-git`
 

@@ -10,17 +10,24 @@
 import {
   Action2Error,
   ACTION_OK,
+  APPEND_EVOLUTION_TRACE_RECORD_ACTION_TYPE,
   getApplicationSection,
+  isEvolutionTraceOn,
+  MiroirLoggerFactory,
+  selfApplicationRowLocation,
   versionHistoryEntityUuids,
   type Action2ReturnType,
   type Action2VoidReturnType,
   type ActionImplementationHandler,
   type ApplicationDeploymentMap,
   type ApplicationSection,
+  type ActionImplementationContext,
   type DomainControllerActionHost,
   type Entity,
   type EntityInstance,
+  type EvolutionTraceSwitchInput,
   type FreezeApplicationVersionActionPayload,
+  type LoggerInterface,
   type MiroirModelEnvironment,
 } from "@miroir-framework/core";
 import {
@@ -66,6 +73,13 @@ import {
   type StoredInstanceForFreeze,
   type StoredQueryForFreeze,
 } from "./applicationVersionFreeze.js";
+import { handleAction_appendEvolutionTraceRecord } from "./evolutionTraceRecords.js";
+
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName("miroir-versioning", "3", "freezeApplicationVersion");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {
+  log = logger;
+});
 
 const MODEL_ENDPOINT_UUID = "7947ae40-eb34-4149-887b-15a9021e714e";
 const INSTANCE_ENDPOINT_UUID = "ed520de4-55a9-4550-ac50-b1b713b72a89";
@@ -393,5 +407,37 @@ export const handleAction_freezeApplicationVersion: ActionImplementationHandler 
     ...instancesToFreeze,
   });
 
-  return persistFreezeApplicationVersionPlan(host, plan, payload.application, applicationDeploymentMap);
+  const persisted = await persistFreezeApplicationVersionPlan(host, plan, payload.application, applicationDeploymentMap);
+  if (persisted instanceof Action2Error) {
+    return persisted;
+  }
+  await appendVersionMarker(host, payload.application, plan.selfApplicationVersion.uuid, context);
+  return persisted;
 };
+
+/**
+ * #708 (D4): with the application's traces on, a freeze appends a `version` marker naming the version
+ * it wrote, so the records between two versions are those between their markers. The switch is read
+ * from the store, where the freeze runs. The freeze stands when the marker cannot be appended.
+ */
+async function appendVersionMarker(
+  host: DomainControllerActionHost,
+  application: string,
+  version: string,
+  context: ActionImplementationContext,
+): Promise<void> {
+  const { section, entityUuid } = selfApplicationRowLocation(application);
+  const rows = await host.readSectionInstances(application, context.applicationDeploymentMap, section, entityUuid);
+  const selfApplication = rows instanceof Action2Error ? undefined : rows.find((row) => row.uuid === application);
+  if (!isEvolutionTraceOn(selfApplication as EvolutionTraceSwitchInput | undefined)) {
+    return;
+  }
+  const appended = await handleAction_appendEvolutionTraceRecord(
+    host,
+    { actionType: APPEND_EVOLUTION_TRACE_RECORD_ACTION_TYPE, payload: { application, kind: "version", version } },
+    context,
+  );
+  if (appended instanceof Action2Error) {
+    log.warn("freezeApplicationVersion: no version marker appended for", application, appended);
+  }
+}

@@ -29,12 +29,14 @@ import {
   appForTestModelEnvironment,
   applicationDeploymentMap,
   expectOk,
+  freezeAppForTest,
   INSTANCE_ENDPOINT,
   LIBRARY_APPLICATION,
   LIBRARY_DEPLOYMENT,
   MODEL_ENDPOINT,
   modelEnvironment,
   openVersioningTestContext,
+  SELF_APPLICATION_VERSION_ENTITY,
   storedAppForTestRows,
   storedRows,
   type VersioningTestContext,
@@ -333,6 +335,31 @@ describe("evolutionTraceRecords (#708)", () => {
       "data updateInstance",
     );
     expect(await storedRecords()).toHaveLength(before.length);
+  }, 60000);
+
+  // Slice 6 (D4): the records between two versions are those between their markers
+  it("with traces on, a freeze appends a version marker naming the version, after the last record", async () => {
+    await setAppForTestTraces(true);
+    await updateInTransaction({ ...entityPublisher, description: "#708 before 708-v1" } as EntityInstance);
+    expectOk(await commitAppForTest(), "commit");
+    const before = await storedRecords();
+    expectOk(await freezeAppForTest(context.domainController, "708-v1"), "freeze 708-v1");
+    const after = await storedRecords();
+    expect(after.slice(0, before.length)).toEqual(before);
+    const added = after.slice(before.length);
+    const versions = await storedAppForTestRows(context, "modelVersion", SELF_APPLICATION_VERSION_ENTITY);
+    const v1 = versions.find((row) => (row as { name?: string }).name === "708-v1");
+    expect(added.map(({ kind, version, previousTrace, actions }: any) => ({ kind, version, previousTrace, actions }))).toEqual([
+      { kind: "version", version: v1?.uuid, previousTrace: before[before.length - 1].uuid, actions: undefined },
+    ]);
+  }, 60000);
+
+  it("with traces off, a freeze appends nothing", async () => {
+    await setAppForTestTraces(false);
+    const before = await storedRecords();
+    expectOk(await freezeAppForTest(context.domainController, "708-v2"), "freeze 708-v2");
+    expect(await storedRecords()).toEqual(before);
+    await setAppForTestTraces(true);
   }, 60000);
 
   it("a commit whose second Action fails records the first one, with complete: false", async () => {
