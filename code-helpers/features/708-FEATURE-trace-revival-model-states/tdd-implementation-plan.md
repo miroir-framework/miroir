@@ -27,7 +27,7 @@ Out:
 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
-| 0 | Characterize init, the old trace inventory and the current tests | ⬜ pending | `evolutionTraceInventory.708` guard, init characterization test |
+| 0 | Characterize init, the old trace inventory and the current tests | ✅ DONE | `evolutionTraceInventory.708` guard, init characterization test |
 | 1 | Tracer: a committed Entity-row update leaves one record in `modelVersion` | ⬜ pending | `evolutionTraceRecords.integ` "one commit, one record" |
 | 2 | The chain: sequence, `previousTrace`, model Actions, several applications, a partial commit | ⬜ pending | `evolutionTraceRecords.integ` chain cases |
 | 3 | Direct model writes, recorded once | ⬜ pending | `evolutionTraceRecords.integ` direct cases |
@@ -51,7 +51,7 @@ From the analysis decision record (part A). Deviations go in each slice's Realiz
 | Recorded: `createEntity`, `alterEntityAttribute`, `renameEntity`, `dropEntity`; `createInstance`, `updateInstance`, `deleteInstance` on `model` (and on Miroir's `data`). A failed commit records the Actions that reached the store, `complete: false`. | D3 | G1 |
 | A direct model write makes a one-Action record. A write received through the REST server's persistence endpoint carries a symbol-keyed mark set by `restActionHandler`, and the receiving DomainController records nothing for it. | D3 | G1 |
 | A failed append: the commit stands, its result reports the failure, and the DomainController sends the kept record again before the next one. | D3 | G1 |
-| `resetModel` and `initModel` are not recorded; with traces on they append a `rebaseline` marker without a version. Init and reset record nothing (Slice 0 confirms why). | D3 | G1 |
+| `resetModel` and `initModel` are not recorded; with traces on they append a `rebaseline` marker without a version, and the gate refuses them like a commit. Init reads the switch like any write, from the cached SelfApplication row, which stays cached through init (Slice 0); with traces off, init records nothing. | D3, revised in Slice 0 | G1, G6 |
 | A freeze of an application with traces on appends a `version` marker naming the version; it does not update earlier records. | D4 (pending the user's sign-off, it narrows Q19) | G1 |
 | `evolutionTraces?: boolean` on SelfApplication; it reads as off on an unversioned application, with a warning when the application loads. The traces of an application are read from its SelfApplication row in the local cache, as it is before the commit's replay. | D5 | G1, G6 |
 | Gate: before anything is written, a commit (or direct model write) touching an application with traces on is refused when the process has the `versioning` capability off (`FeatureUnavailable`) or the deployment has no `modelVersion` section. Every application of the transaction is checked. | D5 | G6 |
@@ -89,7 +89,7 @@ Why vitest for the record tests: they observe two DomainControllers (client and 
 
 ## Slice 0 — Characterize init, the old trace inventory and the current tests
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** a safety net before anything changes.
 
@@ -109,6 +109,10 @@ MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- 3_cont
 ```
 
 ### Realization
+
+- `evolutionTraceInventory.708.unit.test.ts` locks 43 files that name the old trace Entities' uuids, `ApplicationEvolutionTrace` or `MIROIR_EVOLUTION_TRACE` (generated types excluded).
+- The init characterization (`evolutionTraceRecords.integ` "init: …") runs appForTest's init sequence step by step on the client. **The analysis's assumption was false:** appForTest's SelfApplication row is in the client's local cache before every step, including right after `resetModel`. D3 is revised (analysis, document history): init reads the switch like any write and records only for an application whose cached row has traces on; with traces on, `resetModel` and `initModel` append `rebaseline` markers and are gated. No fixture and no Runner starts with traces on, and a cloned Git deployment is installed without init (`gitAction_installClonedDeployment` opens the store from its files).
+- Baseline: the 7 files of `tests/3_controllers/versioning/` pass (21 tests) on `test-filesystem`.
 
 ## Slice 1 — Tracer: a committed Entity-row update leaves one record in `modelVersion`
 
