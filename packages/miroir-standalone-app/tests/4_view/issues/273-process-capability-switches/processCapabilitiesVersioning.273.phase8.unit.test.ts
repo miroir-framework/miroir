@@ -36,10 +36,10 @@ if (runThis) {
       ).toBe(false);
     });
 
-    it("is false when the browsed application is versioned-external", () => {
+    it("is false when the browsed application is versioned-git", () => {
       expect(
         isVersioningAppBarItemVisible({
-          browsedSelfApplication: { versioningMode: "versioned-external" },
+          browsedSelfApplication: { versioningMode: "versioned-git" },
         }),
       ).toBe(false);
     });

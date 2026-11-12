@@ -102,7 +102,6 @@ import {
 import {
   ENTITY_PRESENT_MODEL_DEFINITION_FIELDS
 } from "../1_core/versioning/applicationVersioning.js";
-import { resolveVersioningMode } from "../1_core/versioning/versioningMode.js";
 import {
   defaultMiroirModelEnvironment,
   getApplicationSection,
@@ -130,6 +129,7 @@ import {
 import {
   appendEvolutionTraceRecordAction,
   evolutionTracesIgnoredWarning,
+  fetchesModelVersion,
   isEvolutionTraceOn,
   isRecordedBySender,
   isRecordedModelChange,
@@ -864,7 +864,7 @@ export class DomainController implements DomainControllerInterface, DomainContro
           // Model is always loaded entirely (application concepts). Fetch model first so
           // Entity cache policies are available for non-model refresh (#232 modelVersion).
           // Only true "model" section here — VH parents in metaModelEntities are not fetched
-          // unless versioningMode is versioned-internal (see nonModelFetchTargets below).
+          // unless fetchesModelVersion says it is in use (see nonModelFetchTargets below).
           const modelFetchTargets = modelEntitiesToFetch
             .map((e) => ({
               section: getApplicationSection(applicationUuid, e.uuid!),
@@ -895,12 +895,12 @@ export class DomainController implements DomainControllerInterface, DomainContro
             }
           }
 
-          // #234 — only versioned-internal apps have a modelVersion store; skip VH fetches
-          // for unversioned / versioned-external (no REST/SQL noise, no soft-skip needed).
+          // #234, #708 (D6): only applications whose modelVersion is in use have it fetched
+          // (fetchesModelVersion); others skip it (no REST/SQL noise, no soft-skip needed).
           const selfApplicationFetchIndex = modelFetchTargets.findIndex(
             (e) => e.entity.uuid === entitySelfApplication.uuid,
           );
-          let versioningMode = resolveVersioningMode({});
+          let selfApplicationRow: SelfApplication | undefined;
           if (selfApplicationFetchIndex >= 0) {
             const selfAppCollection = modelInstances[selfApplicationFetchIndex];
             if (
@@ -912,7 +912,7 @@ export class DomainController implements DomainControllerInterface, DomainContro
                 (row) => row.uuid === applicationUuid,
               );
               if (selfAppRow) {
-                versioningMode = resolveVersioningMode(selfAppRow);
+                selfApplicationRow = selfAppRow;
                 const ignoredTraces = evolutionTracesIgnoredWarning(selfAppRow);
                 if (ignoredTraces) {
                   log.warn(ignoredTraces);
@@ -933,7 +933,7 @@ export class DomainController implements DomainControllerInterface, DomainContro
             }
             if (
               e.section === "modelVersion" &&
-              versioningMode !== "versioned-internal"
+              !fetchesModelVersion(selfApplicationRow as EvolutionTraceSwitchInput | undefined)
             ) {
               return false;
             }

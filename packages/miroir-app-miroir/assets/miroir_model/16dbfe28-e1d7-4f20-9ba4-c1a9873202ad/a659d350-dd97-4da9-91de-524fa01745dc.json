@@ -98,13 +98,14 @@
         "definition": [
           "unversioned",
           "versioned-internal",
+          "versioned-git",
           "versioned-external"
         ],
         "tag": {
           "value": {
             "id": 10,
             "defaultLabel": "Versioning Mode",
-            "description": "How application model version history is managed: unversioned (none), versioned-internal (Miroir modelVersion section), or versioned-external (external VCS). When absent, legacy versioningEnabled: true defaults to versioned-internal.",
+            "description": "How application model version history is managed: unversioned (none), versioned-internal (Miroir modelVersion section), or versioned-git (the model is kept in Git; versioned-external is its older name). When absent, legacy versioningEnabled: true defaults to versioned-internal.",
             "display": {
               "editable": false
             }

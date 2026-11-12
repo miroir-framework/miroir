@@ -99,6 +99,15 @@ export function evolutionTracesIgnoredWarning(
   return `application ${selfApplication.name ?? ""} has evolutionTraces on but is unversioned: its traces are off`;
 }
 
+/**
+ * #708 (D6): whether an application has its `modelVersion` section fetched when it loads: always when
+ * versioned-internal, and for a versioned-git application only when its traces are on.
+ */
+export function fetchesModelVersion(selfApplication: EvolutionTraceSwitchInput | undefined): boolean {
+  const mode = resolveVersioningMode(selfApplication ?? {});
+  return mode === "versioned-internal" || (mode === "versioned-git" && isEvolutionTraceOn(selfApplication));
+}
+
 /** The uuid of the SelfApplication Entity, and the section of an application that holds its row. */
 export function selfApplicationRowLocation(application: string): { section: ApplicationSection; entityUuid: string } {
   return {

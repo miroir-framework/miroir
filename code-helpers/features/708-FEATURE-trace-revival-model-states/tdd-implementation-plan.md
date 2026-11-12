@@ -34,7 +34,7 @@ Out:
 | 4 | Traces off, unversioned, capability off, no `modelVersion`, a failed append | ✅ DONE | `evolutionTraceSwitch.integ` |
 | 5 | `resetModel` and `initModel` leave a `rebaseline` marker | ✅ DONE | `evolutionTraceRecords.integ` reset case |
 | 6 | A freeze appends a `version` marker | ✅ DONE | `evolutionTraceRecords.integ` freeze case |
-| 7 | `versioned-git` | ⬜ pending | `versioningMode.unit`, `evolutionTraceRecords.integ` Git-mode case |
+| 7 | `versioned-git` | ✅ DONE | `versioningMode.unit`, `evolutionTraceRecords.integ` Git-mode case |
 | 8 | The old traces go; new Reports and MiroirTest | ⬜ pending | `action.scenario.evolutionTrace`, `modelValidation`, inventory guard |
 | 9 | Docs, nonreg steps, full nonreg, AC checklist | ⬜ pending | `nonreg:filesystem` |
 
@@ -306,7 +306,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,actions
 
 ## Slice 7 — `versioned-git`
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** an application in Git mode keeps its records in its `modelVersion` section.
 
@@ -327,6 +327,13 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core,actions,ui
 ```
 
 ### Realization
+
+- `VersioningMode` is now `unversioned | versioned-internal | versioned-git`. The SelfApplication schema accepts `versioned-git` and still accepts `versioned-external`, which `resolveVersioningMode` reads as `versioned-git`. The freeze refusal and its availability reason name Git ("The model history is kept in Git (versioned-git)"). The types are regenerated (`devBuild`).
+- `fetchesModelVersion(row)` (in `evolutionTraceRecording.ts`) decides whether loading fetches the history section: always for versioned-internal, and for versioned-git only when the traces are on. `loadConfigurationFromPersistenceStore` uses it in place of its own `versioned-internal` check (refactor checkpoint).
+- `ModelInitializer` keeps its `versioned-internal` check on purpose. It decides where the init-only SelfApplicationVersion goes, and a Git application cannot freeze, so that row stays in `model`.
+- The test name is `versioningModes.contract.unit` (core), not `versioningMode.unit`. `evolutionTraceRecords.integ` covers three cases: with traces on, Git mode loads `modelVersion` and records a commit there; with traces off, the cache holds no record; the freeze stays refused.
+- The docs still say `versioned-external`; Slice 9 updates them.
+- Scoped nonreg `smoke,core,actions,ui`: 83 of 83 pass.
 
 ## Slice 8 — The old traces go; new Reports and MiroirTest
 

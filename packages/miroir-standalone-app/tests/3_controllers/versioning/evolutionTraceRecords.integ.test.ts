@@ -411,6 +411,65 @@ describe("evolutionTraceRecords (#708)", () => {
   }, 60000);
 });
 
+// Slice 7 (D6): a versioned-git application has its modelVersion section only when its traces are on
+describe("evolutionTraceRecords (#708), versioned-git", () => {
+  async function setAppForTestGitMode(evolutionTraces: boolean): Promise<void> {
+    expectOk(
+      await context.domainController.handleAction(
+        {
+          actionType: "updateInstance",
+          endpoint: INSTANCE_ENDPOINT,
+          payload: {
+            application: APP_FOR_TEST,
+            applicationSection: "model",
+            objects: [{ ...selfApplicationAppForTest, versioningMode: "versioned-git", evolutionTraces } as EntityInstance],
+          },
+        } as any,
+        applicationDeploymentMap,
+        appForTestModelEnvironment(context.domainController),
+      ),
+      "appForTest in versioned-git",
+    );
+    // a rollback loads appForTest again, with its new row
+    expectOk(
+      await context.domainController.handleAction(
+        { actionType: "rollback", endpoint: MODEL_ENDPOINT, payload: { application: APP_FOR_TEST } } as any,
+        applicationDeploymentMap,
+        appForTestModelEnvironment(context.domainController),
+      ),
+      "reload appForTest",
+    );
+  }
+
+  /** The record rows in the client's cached modelVersion section of appForTest. */
+  function cachedRecordCount(): number {
+    const domainState = context.domainController.getDomainState() as Record<string, any>;
+    return Object.keys(domainState?.[APP_FOR_TEST_DEPLOYMENT]?.modelVersion?.[EVOLUTION_TRACE_RECORD_ENTITY_UUID] ?? {}).length;
+  }
+
+  it("with traces on, it loads its modelVersion section and a commit writes its record there", async () => {
+    await setAppForTestGitMode(true);
+    const before = await storedRecords();
+    expect(before.length).toBeGreaterThan(0);
+    expect(cachedRecordCount()).toBe(before.length);
+    await updateInTransaction({ ...entityPublisher, description: "#708 versioned-git" } as EntityInstance);
+    expectOk(await commitAppForTest(), "commit in versioned-git");
+    const after = await storedRecords();
+    expect(after.length).toBe(before.length + 1);
+    expect(after[after.length - 1].kind).toBe("commit");
+  }, 60000);
+
+  it("with traces off, it does not fetch its modelVersion section", async () => {
+    await setAppForTestGitMode(false);
+    expect(cachedRecordCount()).toBe(0);
+  }, 60000);
+
+  it("a freeze stays refused", async () => {
+    const refused = await freezeAppForTest(context.domainController, "708-git");
+    expect(refused instanceof Action2Error, JSON.stringify(refused)).toBe(true);
+  }, 60000);
+});
+
 describe("evolutionTraceRecords (#708), init", () => {
   /**
    * Slice 0, characterization. Deployment init runs `resetModel`, `initModel`, then commits
