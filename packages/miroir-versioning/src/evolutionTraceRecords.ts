@@ -65,6 +65,11 @@ async function ensureRecordEntity(
     : undefined;
 }
 
+/** Whether a stored row is a record: it has the sequence number the chain is ordered by. */
+function isEvolutionTraceRecordRow(row: EntityInstance): row is EntityInstance & EvolutionTraceRecordRow {
+  return typeof row.uuid === "string" && typeof (row as { sequenceNumber?: unknown }).sequenceNumber === "number";
+}
+
 /** The last record of an application's chain, by sequence number. */
 function lastRecord(records: EvolutionTraceRecordRow[]): EvolutionTraceRecordRow | undefined {
   return records.reduce<EvolutionTraceRecordRow | undefined>(
@@ -120,7 +125,7 @@ export const handleAction_appendEvolutionTraceRecord: ActionImplementationHandle
     if (stored instanceof Action2Error) {
       return new Action2Error("FailedToHandleAction", "appendEvolutionTraceRecord could not read the chain", [], stored);
     }
-    const record = nextEvolutionTraceRecord(payload, lastRecord(stored as unknown as EvolutionTraceRecordRow[]));
+    const record = nextEvolutionTraceRecord(payload, lastRecord(stored.filter(isEvolutionTraceRecordRow)));
     const written = await host.handleInstanceAction(
       {
         actionType: "createInstance",
@@ -129,7 +134,7 @@ export const handleAction_appendEvolutionTraceRecord: ActionImplementationHandle
         payload: {
           application: payload.application,
           applicationSection: "modelVersion",
-          objects: [record as unknown as EntityInstance],
+          objects: [record],
         },
       },
       applicationDeploymentMap,
