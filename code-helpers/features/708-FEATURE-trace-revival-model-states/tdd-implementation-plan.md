@@ -32,7 +32,7 @@ Out:
 | 2 | The chain: sequence, `previousTrace`, model Actions, several applications, a partial commit | ✅ DONE | `evolutionTraceRecords.integ` chain cases |
 | 3 | Direct model writes, recorded once | ✅ DONE | `evolutionTraceRecords.integ` direct cases |
 | 4 | Traces off, unversioned, capability off, no `modelVersion`, a failed append | ✅ DONE | `evolutionTraceSwitch.integ` |
-| 5 | `resetModel` and `initModel` leave a `rebaseline` marker | ⬜ pending | `evolutionTraceRecords.integ` reset case |
+| 5 | `resetModel` and `initModel` leave a `rebaseline` marker | ✅ DONE | `evolutionTraceRecords.integ` reset case |
 | 6 | A freeze appends a `version` marker | ⬜ pending | `evolutionTraceRecords.integ` freeze case |
 | 7 | `versioned-git` | ⬜ pending | `versioningMode.unit`, `evolutionTraceRecords.integ` Git-mode case |
 | 8 | The old traces go; new Reports and MiroirTest | ⬜ pending | `action.scenario.evolutionTrace`, `modelValidation`, inventory guard |
@@ -252,7 +252,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,actions,external
 
 ## Slice 5 — `resetModel` and `initModel` leave a `rebaseline` marker
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** a model rewritten outside the designer's Actions restarts the chain.
 
@@ -269,6 +269,12 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,actions
 ```
 
 ### Realization
+
+- Deviation from the RED: `resetModel` clears `modelVersion` along with the rest of the model (`PersistenceStoreController.clear` keeps only `devData`). The chain is gone after a reset, so the reset's marker is record 1 of a new chain, with no `previousTrace`. `initModel` leaves a second marker chained after it. The test asserts both.
+- `resetModel` and `initModel` read the switch before they run, pass the same gate as a commit (`evolutionTraceRefusal`), and then append their marker through `appendRebaselineMarker`. That uses `appendEvolutionTraceRecordInOrder`, the same path as commit records (refactor checkpoint). A reset also drops the records still kept for the application, because their chain is gone.
+- The commits of a full deployment init are recorded like any commit when the cached row has traces on, after the two markers: init reads the switch like any write (D3, revised in Slice 0).
+- `evolutionTraceSwitch.integ` adds a case: with the client's capability off, a traced `resetModel` is refused and clears nothing.
+- Scoped nonreg `smoke,actions`: 30 of 30 pass.
 
 ## Slice 6 — A freeze appends a `version` marker
 

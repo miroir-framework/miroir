@@ -390,6 +390,44 @@ describe("evolutionTraceRecords (#708), init", () => {
    * `createEntity`. The trace switch is read from the SelfApplication row in the local cache, so
    * what init records depends on whether that row is there when each step runs.
    */
+  // Slice 5: resetModel clears modelVersion with the rest of the model, so its marker starts a new chain
+  it("with traces on, resetModel then initModel each leave a rebaseline marker, with no version and no Actions", async () => {
+    await setAppForTestTraces(true);
+    expectOk(
+      await context.domainController.handleAction(
+        { actionType: "resetModel", endpoint: MODEL_ENDPOINT, payload: { application: APP_FOR_TEST } } as any,
+        applicationDeploymentMap,
+        defaultMiroirModelEnvironment,
+      ),
+      "resetModel",
+    );
+    const afterReset = await storedRecords();
+    expect(afterReset.map(({ kind, sequenceNumber, previousTrace, actions, version }: any) => ({
+      kind,
+      sequenceNumber,
+      previousTrace,
+      actions,
+      version,
+    }))).toEqual([{ kind: "rebaseline", sequenceNumber: 1, previousTrace: undefined, actions: undefined, version: undefined }]);
+
+    expectOk(
+      await context.domainController.handleAction(
+        {
+          actionType: "initModel",
+          endpoint: MODEL_ENDPOINT,
+          payload: { application: APP_FOR_TEST, params: appForTestTestbedInitParams },
+        } as any,
+        applicationDeploymentMap,
+        defaultMiroirModelEnvironment,
+      ),
+      "initModel",
+    );
+    const afterInit = await storedRecords();
+    expect(afterInit.map((record) => record.kind)).toEqual(["rebaseline", "rebaseline"]);
+    expect(afterInit[1].previousTrace).toBe(afterInit[0].uuid);
+    expect(afterInit[1].actions).toBeUndefined();
+  }, 120000);
+
   it("init: where appForTest's SelfApplication row is in the client's local cache", async () => {
     const sequence = resetAndinitializeDeploymentCompositeAction(
       APP_FOR_TEST,

@@ -1583,6 +1583,19 @@ export class DomainController implements DomainControllerInterface, DomainContro
     await this.appendCommitRecords([application], [action], uuidv4(), true, applicationDeploymentMap);
   }
 
+  /** #708: the marker of a model rewritten by `resetModel` or `initModel`: the chain restarts from it. */
+  private async appendRebaselineMarker(
+    tracedApplications: string[],
+    applicationDeploymentMap: ApplicationDeploymentMap,
+  ): Promise<void> {
+    for (const application of tracedApplications) {
+      const failed = await this.appendEvolutionTraceRecordInOrder({ application, kind: "rebaseline" }, applicationDeploymentMap);
+      if (failed) {
+        log.warn("DomainController appendRebaselineMarker: marker kept for application", application, failed);
+      }
+    }
+  }
+
   /**
    * #708: appends the kept records of an application, then `payload`, in order. A failed append keeps
    * that record and the ones after it for the next call.
@@ -1853,7 +1866,14 @@ export class DomainController implements DomainControllerInterface, DomainContro
         }
         case "resetModel": {
           const modelActionResetModel = modelAction as ModelActionResetModel;
-          
+          // #708: read before the reset, which clears the chain with the rest of modelVersion
+          const tracedReset = this.applicationsWithEvolutionTraces([modelAction.payload.application], applicationDeploymentMap);
+          const resetRefusal = this.evolutionTraceRefusal(tracedReset, applicationDeploymentMap);
+          if (resetRefusal) {
+            return resetRefusal;
+          }
+          this.pendingEvolutionTraceRecords.delete(modelAction.payload.application);
+
           // First, call persistence action to clear the model
           await this.callUtil.callPersistenceAction(
             {}, // context
@@ -1997,6 +2017,7 @@ export class DomainController implements DomainControllerInterface, DomainContro
             applicationDeploymentMap,
             modelAction,
           );
+          await this.appendRebaselineMarker(tracedReset, applicationDeploymentMap);
           break;
         }
         case "resetData": {
@@ -2017,6 +2038,11 @@ export class DomainController implements DomainControllerInterface, DomainContro
         }
         case "initModel": {
           const modelActionInitModel = modelAction as ModelActionInitModel;
+          const tracedInit = this.applicationsWithEvolutionTraces([modelAction.payload.application], applicationDeploymentMap);
+          const initRefusal = this.evolutionTraceRefusal(tracedInit, applicationDeploymentMap);
+          if (initRefusal) {
+            return initRefusal;
+          }
           await this.callUtil.callPersistenceAction(
             {}, // context
             {}, // continuation
@@ -2150,6 +2176,7 @@ export class DomainController implements DomainControllerInterface, DomainContro
             }
           }
 
+          await this.appendRebaselineMarker(tracedInit, applicationDeploymentMap);
           break;
         }
         case "commit": {

@@ -195,6 +195,20 @@ describe("evolutionTraceSwitch (#708)", () => {
     expect(await storedPublisherDescription()).toBe(description);
   }, 60000);
 
+  it("with the client's versioning capability off, a traced resetModel is refused and clears nothing", async () => {
+    const description = await storedPublisherDescription();
+    setCapabilities(context, { client: { versioning: false } });
+    expectFeatureUnavailable(
+      await context.domainController.handleAction(
+        { actionType: "resetModel", endpoint: MODEL_ENDPOINT, payload: { application: APP_FOR_TEST } } as any,
+        applicationDeploymentMap,
+        appForTestModelEnvironment(context.domainController),
+      ),
+      "versioning",
+    );
+    expect(await storedPublisherDescription()).toBe(description);
+  }, 60000);
+
   it("a traced commit on a deployment without a modelVersion section is refused and writes nothing", async () => {
     const row = cachedAppForTestDeploymentRow();
     const { modelVersion: _modelVersion, ...withoutModelVersion } = row.configuration;
