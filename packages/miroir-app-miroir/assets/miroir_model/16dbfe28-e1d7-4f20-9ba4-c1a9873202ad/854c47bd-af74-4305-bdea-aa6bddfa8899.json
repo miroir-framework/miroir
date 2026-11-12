@@ -8,6 +8,7 @@
   "conceptLevel": "Model",
   "scope": "versioning",
   "description": "One step of an application's model history (#708): the model Actions of one commit, or a marker of a version or of a re-baseline. Records of an application form a chain by sequenceNumber and previousTrace, in its modelVersion section.",
+  "defaultInstanceDetailsReportUuid": "68594192-0ff5-4b29-98ec-4752b5fc491f",
   "viewAttributes": [
     "sequenceNumber",
     "kind",

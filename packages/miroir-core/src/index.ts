@@ -29,10 +29,6 @@ export {
   actionVoidSuccess,
   ApplicationSection,
   applicationSection,
-  ApplicationEvolutionTrace,
-  applicationEvolutionTrace,
-  ApplicationEvolutionTraceEvent,
-  applicationEvolutionTraceEvent,
   ApplicationVersion,
   applicationVersion,
   BoxedExtractorOrCombinerReturningObject,
@@ -1212,19 +1208,7 @@ export {
   validateMimeType
 } from "./1_core/tools.js";
 export { zodErrorDeepestIssueLeaves, zodErrorFirstIssueLeaf } from "./1_core/mls/zodParseErrorHandler";
-export {
-  isEvolutionTraceEnabled,
-  shouldTraceEvolutionEvent,
-  MIROIR_APPLICATION_UUID,
-} from "./2_domain/evolutionTracePolicy.js";
-export {
-  generateEvolutionBaseline,
-  buildEvolutionBaselineCreateInstanceActions,
-  DEFAULT_EVOLUTION_BRANCH,
-  EVOLUTION_TRACE_ENTITY_UUID,
-  EVOLUTION_TRACE_EVENT_ENTITY_UUID,
-} from "./2_domain/evolutionTraceBaseline.js";
-export type { EvolutionTraceDeploymentState } from "./2_domain/evolutionTraceBaseline.js";
+export { MIROIR_APPLICATION_UUID } from "./1_core/authentication/AccessPolicy.js";
 export {
   asyncApplyExtractorTransformerInMemory,
   asyncExtractEntityInstanceListWithObjectListExtractor,
@@ -1629,7 +1613,6 @@ export {
   templateEvaluationParams
 } from "./3_controllers/DomainController";
 export {
-  loadLazyCapabilityModule,
   registerLazyActionImplementations,
   type LazyActionImplementationModule,
 } from "./3_controllers/ActionImplementations";
@@ -1637,8 +1620,6 @@ export type {
   ActionImplementationContext,
   ActionImplementationHandler,
   DomainControllerActionHost,
-  EvolutionTraceCommitContext,
-  EvolutionTraceRecorder,
 } from "./0_interfaces/3_controllers/DomainControllerActionHost";
 export { CallUtils } from "./3_controllers/ErrorHandling/CallUtils.js";
 export { ErrorAdminStore } from "./3_controllers/ErrorHandling/ErrorAdminStore.js";

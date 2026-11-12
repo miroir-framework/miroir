@@ -2976,7 +2976,7 @@ export type MiroirTestDefinition = {
     name?: string | undefined;
     skip?: boolean | undefined;
     description?: string | undefined;
-    tags?: ("transformer" | "ml-schema" | "ml-union" | "ml-reference" | "ml-conversion" | "query" | "editor" | "performance" | "runner" | "domain-controller" | "model" | "data" | "primary-key" | "versioning" | "evolution-trace" | "mcp" | "external-service" | "filesystem" | "report" | "menu" | "ai" | "tools" | "unit" | "integ" | "ui")[] | undefined;
+    tags?: ("transformer" | "ml-schema" | "ml-union" | "ml-reference" | "ml-conversion" | "query" | "editor" | "performance" | "runner" | "domain-controller" | "model" | "data" | "primary-key" | "versioning" | "mcp" | "external-service" | "filesystem" | "report" | "menu" | "ai" | "tools" | "unit" | "integ" | "ui")[] | undefined;
     issue?: string | undefined;
     definition: MiroirTestSuite;
 };
@@ -4007,37 +4007,6 @@ export type Commit = {
         actionArguments: ModelAction;
     }[];
     patches: any[];
-};
-export type ApplicationEvolutionTrace = {
-    uuid: string;
-    parentName?: string | undefined;
-    parentUuid: string;
-    parentDefinitionVersionUuid?: string | undefined;
-    conceptLevel?: ("MetaModel" | "Model" | "Data" | "External") | undefined;
-    name?: string | undefined;
-    applicationUuid: string;
-    branchName: string;
-    timestamp?: Date | undefined;
-};
-export type ApplicationEvolutionTraceEvent = {
-    uuid: string;
-    parentName?: string | undefined;
-    parentUuid: string;
-    parentDefinitionVersionUuid?: string | undefined;
-    conceptLevel?: ("MetaModel" | "Model" | "Data" | "External") | undefined;
-    traceRootUuid: string;
-    sequenceNumber: number;
-    operationType: "createEntity" | "renameEntity" | "alterEntityAttribute" | "dropEntity" | "createEntityDefinition" | "updateEntityDefinition" | "createInstance" | "updateInstance" | "deleteInstance" | "squashedBaseline";
-    applicationSection: "model" | "data";
-    compactionLevel: "raw" | "commit" | "version";
-    targetEntityUuid?: string | undefined;
-    targetInstanceUuid?: string | undefined;
-    commitUuid?: string | undefined;
-    fromVersionUuid?: string | undefined;
-    toVersionUuid?: string | undefined;
-    timestamp: string;
-    definitionVersionResolution?: ("instanceParentDefinitionVersion" | "actionPayload" | "applicationVersionCrossEntityVersion" | "unresolved") | undefined;
-    targetDefinitionVersionUuid?: string | undefined;
 };
 export type EvolutionTraceRecord = {
     uuid: string;
@@ -11120,7 +11089,7 @@ export const miroirTestForQuery: z.ZodType<MiroirTestForQuery> = z.object({skip:
 export const miroirTestForRunner: z.ZodType<MiroirTestForRunner> = z.object({skip:z.boolean().optional(), environmentRef:z.string().optional(), runnerRef:z.string(), fixtureRef:z.string().optional(), deploymentRef:z.string().optional(), testCompositeActionLabel:z.string().optional(), testParams:z.record(z.string(),z.any()).optional(), initialModel:z.lazy(() =>coreTransformerForBuildPlusRuntime).optional(), preTestCompositeActions:z.array(z.lazy(() =>compositeActionTemplate)).optional(), preRunnerCompositeActions:z.array(z.lazy(() =>compositeActionTemplate)).optional(), testCompositeActionAssertions:z.array(z.lazy(() =>compositeRunTestAssertion)).optional(), skipCreateDeployment:z.boolean().optional(), skipDropDeployment:z.boolean().optional(), defaultApplicationName:z.string().optional(), skipRunTargetPlayfieldReset:z.boolean().optional(), miroirTestType:z.literal("runnerTest"), miroirTestLabel:z.string()}).strict();
 export const miroirTestForAction: z.ZodType<MiroirTestForAction> = z.object({skip:z.boolean().optional(), testParams:z.record(z.string(),z.any()).optional(), compositeActionSequence:z.lazy(() =>compositeActionSequence).optional(), testCompositeActionAssertions:z.array(z.lazy(() =>compositeRunTestAssertion)).optional(), beforeTestSetupAction:z.lazy(() =>compositeActionSequence).optional(), afterTestCleanupAction:z.lazy(() =>compositeActionSequence).optional(), miroirTestType:z.literal("actionTest"), miroirTestLabel:z.string()}).strict();
 export const reportTestFakeHttpResponse: z.ZodType<ReportTestFakeHttpResponse> = z.object({method:z.string(), url:z.string(), status:z.number().optional(), headers:z.record(z.string(),z.string()).optional(), body:z.any().optional()}).strict();
-export const miroirTestDefinition: z.ZodType<MiroirTestDefinition> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), conceptLevel:z.enum(["MetaModel","Model","Data","External"]).optional(), selfApplication:z.string().uuid(), branch:z.string().uuid(), name:z.string().optional(), skip:z.boolean().optional(), description:z.string().optional(), tags:z.array(z.enum(["transformer","ml-schema","ml-union","ml-reference","ml-conversion","query","editor","performance","runner","domain-controller","model","data","primary-key","versioning","evolution-trace","mcp","external-service","filesystem","report","menu","ai","tools","unit","integ","ui"])).optional(), issue:z.string().optional(), definition:z.lazy(() =>miroirTestSuite)}).strict();
+export const miroirTestDefinition: z.ZodType<MiroirTestDefinition> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), conceptLevel:z.enum(["MetaModel","Model","Data","External"]).optional(), selfApplication:z.string().uuid(), branch:z.string().uuid(), name:z.string().optional(), skip:z.boolean().optional(), description:z.string().optional(), tags:z.array(z.enum(["transformer","ml-schema","ml-union","ml-reference","ml-conversion","query","editor","performance","runner","domain-controller","model","data","primary-key","versioning","mcp","external-service","filesystem","report","menu","ai","tools","unit","integ","ui"])).optional(), issue:z.string().optional(), definition:z.lazy(() =>miroirTestSuite)}).strict();
 export const ______________________________________________entities_____________________________________________: z.ZodType<______________________________________________entities_____________________________________________> = z.never();
 export const adminApplication: z.ZodType<AdminApplication> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), conceptLevel:z.enum(["MetaModel","Model","Data","External"]).optional(), name:z.string(), defaultLabel:z.string(), description:z.string().optional(), selfApplication:z.string().uuid()}).strict();
 export const selfApplication: z.ZodType<SelfApplication> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), conceptLevel:z.enum(["MetaModel","Model","Data","External"]).optional(), name:z.string(), defaultLabel:z.string(), description:z.string().optional(), homePageUrl:z.union([z.string(), z.lazy(() =>reportLink)]).optional(), versioningEnabled:z.boolean().optional(), versioningMode:z.enum(["unversioned","versioned-internal","versioned-git","versioned-external"]).optional(), evolutionTraces:z.boolean().optional()}).strict();
@@ -11211,8 +11180,6 @@ export const miroirEnvironmentSectionOverride: z.ZodType<MiroirEnvironmentSectio
 export const miroirEnvironmentApplication: z.ZodType<MiroirEnvironmentApplication> = z.object({package:z.string().optional(), packagesDirectory:z.string().optional(), assetPrefix:z.string().optional(), selfApplication:z.string().uuid(), deployment:z.string().uuid(), store:z.lazy(() =>miroirEnvironmentStoreType).optional(), mode:z.lazy(() =>miroirEnvironmentSectionMode).optional(), sections:z.object({model:z.lazy(() =>miroirEnvironmentSectionOverride).optional(), data:z.lazy(() =>miroirEnvironmentSectionOverride).optional(), "modelVersion":z.lazy(() =>miroirEnvironmentSectionOverride).optional(), devData:z.lazy(() =>miroirEnvironmentSectionOverride).optional()}).strict().optional(), configuration:z.lazy(() =>storeUnitConfiguration).optional()}).strict();
 export const miroirEnvironment: z.ZodType<MiroirEnvironment> = z.object({name:z.string().optional(), extends:z.string().optional(), description:z.string().optional(), packagesDirectory:z.string().optional(), server:z.object({rootApiUrl:z.string().optional(), mcpUrl:z.string().optional(), corsAllowedOrigins:z.array(z.string()).optional(), authentication:z.object({enabled:z.boolean().optional(), mcp:z.boolean().optional()}).strict().optional()}).strict().optional(), client:z.object({mode:z.enum(["realServer","emulatedServer"]).optional(), selfTest:z.lazy(() =>miroirSelfTestConfig).optional(), loadTimings:z.lazy(() =>miroirLoadTimingsConfig).optional()}).strict().optional(), features:z.object({ai:z.boolean().optional(), mcp:z.boolean().optional(), cursor:z.boolean().optional(), agentBackend:z.enum(["cursor","claude","none"]).optional(), agentModel:z.string().optional(), designerTools:z.boolean().optional(), git:z.boolean().optional(), versioning:z.boolean().optional()}).strict().optional(), logPreset:z.string().optional(), connections:z.object({postgres:z.object({host:z.string(), port:z.number().optional(), user:z.string().optional(), database:z.string().optional(), passwordEnv:z.string().optional()}).strict().optional(), mongodb:z.object({url:z.string()}).strict().optional()}).strict().optional(), secrets:z.array(z.string()).optional(), applications:z.record(z.string(),z.lazy(() =>miroirEnvironmentApplication).nullable()).optional()}).strict();
 export const commit: z.ZodType<Commit> = z.object({date:z.date(), selfApplication:z.string().uuid().optional(), name:z.string(), preceding:z.string().uuid().optional(), branch:z.string().uuid().optional(), author:z.string().uuid().optional(), description:z.string().optional(), actions:z.array(z.object({endpoint:z.string().uuid(), actionArguments:z.lazy(() =>modelAction)}).strict()), patches:z.array(z.any())}).strict();
-export const applicationEvolutionTrace: z.ZodType<ApplicationEvolutionTrace> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), conceptLevel:z.enum(["MetaModel","Model","Data","External"]).optional(), name:z.string().optional(), applicationUuid:z.string().uuid(), branchName:z.string(), timestamp:z.date().optional()}).strict();
-export const applicationEvolutionTraceEvent: z.ZodType<ApplicationEvolutionTraceEvent> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), conceptLevel:z.enum(["MetaModel","Model","Data","External"]).optional(), traceRootUuid:z.string().uuid(), sequenceNumber:z.number(), operationType:z.enum(["createEntity","renameEntity","alterEntityAttribute","dropEntity","createEntityDefinition","updateEntityDefinition","createInstance","updateInstance","deleteInstance","squashedBaseline"]), applicationSection:z.enum(["model","data"]), compactionLevel:z.enum(["raw","commit","version"]), targetEntityUuid:z.string().uuid().optional(), targetInstanceUuid:z.string().uuid().optional(), commitUuid:z.string().uuid().optional(), fromVersionUuid:z.string().uuid().optional(), toVersionUuid:z.string().uuid().optional(), timestamp:z.string(), definitionVersionResolution:z.enum(["instanceParentDefinitionVersion","actionPayload","applicationVersionCrossEntityVersion","unresolved"]).optional(), targetDefinitionVersionUuid:z.string().uuid().optional()}).strict();
 export const evolutionTraceRecord: z.ZodType<EvolutionTraceRecord> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), conceptLevel:z.enum(["MetaModel","Model","Data","External"]).optional(), application:z.string().uuid(), sequenceNumber:z.number(), previousTrace:z.string().uuid().optional(), kind:z.enum(["commit","version","rebaseline"]), actions:z.array(z.any()).optional(), complete:z.boolean().optional(), version:z.string().optional(), gitCommit:z.string().optional(), commitUuid:z.string().uuid().optional(), timestamp:z.string()}).strict();
 export const miroirAllFundamentalTypesUnion: z.ZodType<MiroirAllFundamentalTypesUnion> = z.union([z.lazy(() =>applicationSection), z.lazy(() =>entityInstance), z.lazy(() =>entityInstanceCollection), z.lazy(() =>instanceAction)]);
 export const ______________________________________________queries_____________________________________________: z.ZodType<______________________________________________queries_____________________________________________> = z.never();

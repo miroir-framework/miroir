@@ -35,7 +35,7 @@ Out:
 | 5 | `resetModel` and `initModel` leave a `rebaseline` marker | ✅ DONE | `evolutionTraceRecords.integ` reset case |
 | 6 | A freeze appends a `version` marker | ✅ DONE | `evolutionTraceRecords.integ` freeze case |
 | 7 | `versioned-git` | ✅ DONE | `versioningMode.unit`, `evolutionTraceRecords.integ` Git-mode case |
-| 8 | The old traces go; new Reports and MiroirTest | ⬜ pending | `action.scenario.evolutionTrace`, `modelValidation`, inventory guard |
+| 8 | The old traces go; new Reports and MiroirTest | ✅ DONE | `action.scenario.evolutionTrace`, `modelValidation`, inventory guard |
 | 9 | Docs, nonreg steps, full nonreg, AC checklist | ⬜ pending | `nonreg:filesystem` |
 
 ## Locked implementation defaults
@@ -337,7 +337,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core,actions,ui
 
 ## Slice 8 — The old traces go; new Reports and MiroirTest
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** one trace format, visible in the designer's menu, proven end to end by a MiroirTest.
 
@@ -361,6 +361,18 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core,actions,ui,tooli
 ```
 
 ### Realization
+
+- Removed: the old Entities `de089f57-…` (ApplicationEvolutionTrace) and `f4c2b3a1-…`, their `miroir_data` folders with the root row `ea4b571f-…`, the `admin_model` and `library_model` placeholder folders, the Reports `230467a6-…`, `b2c3d4e5-…`, `c4d5e6f7-…`, the Miroir menu items 14 and 15, `evolutionTraceBaseline.ts` and the baseline seeding in `Deployment.ts`, `evolutionTracePolicy.ts`, the package's writer, recorder, runtime, compaction and definition-version modules with their unit tests, and the old core exports (`EvolutionTraceCommitContext`, `EvolutionTraceRecorder`, the generated `ApplicationEvolutionTrace*` types).
+- Kept: the frozen `EntityVersion` rows `20e86585-…` and `45491bf9-…` in `miroir_modelVersion` (history); their exports are gone.
+- Added: Reports `EvolutionTraceRecordList` (`45735607-…`, sorted by `sequenceNumber`) and `EvolutionTraceRecordDetails` (`68594192-…`, the Entity's `defaultInstanceDetailsReportUuid`), and one Miroir menu item "Miroir Evolution Trace Records" in section `modelVersion`, filtered by `VERSIONING_MENU_REPORT_UUIDS`. The freeze MiroirTest's fixture menus (`d7e9f81b-…`) follow.
+- `action.scenario.evolutionTrace` rewritten on appForTest: traces on, create and rename an Entity, commit, query `EvolutionTraceRecord` in `modelVersion` with `queryExecutionStrategy: "storage"`.
+- Deviations:
+  - `loadLazyCapabilityModule` and the lazy loaders in `ActionImplementations.ts` had no caller left once the runtime module went; removed. `MIROIR_APPLICATION_UUID` is now exported from `AccessPolicy.ts` (it came through the policy module).
+  - The `evolution-trace` tag left the MiroirTest Entity and its EntityVersion `51c647fe-…`: the tag vocabulary is now 24 (`miroirTestTags.unit.test.ts`).
+  - `ui.transformerEditor` (`ce3f9603-…`) asserted on the first Report by name, which was `ApplicationEvolutionTraceDetails`; it is now `ApplicationList`.
+  - #274 inventory: 93 Reports, 10 of type `list`, 78 without a type.
+  - `eslint-suppressions.json` pruned of the suppressions of the deleted files.
+- Problems: one parallel nonreg run saw `action.scenario.evolutionTrace` read no record after a successful append (logs identical to a passing run except the query result); it did not reproduce alone, after the steps that ran before it on the same worker, nor in a parallel `actions` run. A second scoped run passed it but failed `action.domainController.freezeApplicationVersion` the same way (the Blob, TestConfiguration and Test instances seeded and committed just before were read back empty); that did not reproduce either, in three parallel runs of the involved steps. Both are load-dependent reads, not tied to a change of this slice; Slice 9's full run watches for them.
 
 ## Slice 9 — Docs, nonreg steps, full nonreg, AC checklist
 

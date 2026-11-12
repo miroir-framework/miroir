@@ -19,8 +19,6 @@ import entityDefinitionBundleV1 from "../src/assets/miroirAdmin/model/54b9c72f-d
 
 import {
   domainEndpointVersionV1,
-  entityApplicationEvolutionTrace,
-  entityApplicationEvolutionTraceEvent,
   entityEvolutionTraceRecord,
   entityCommit,
   entityEndpointVersion,
@@ -400,8 +398,6 @@ async function generateSchemas(generateFundamentalMlSchema = true) {
         entityMiroirTest,
         entityTransformerDefinition,
         entityEndpointVersion,
-        entityApplicationEvolutionTrace,
-        entityApplicationEvolutionTraceEvent,
         entityEvolutionTraceRecord,
       );
       // console.log("miroir-core generateSchemas miroirFundamentalMlSchema:", miroirFundamentalMlSchema);

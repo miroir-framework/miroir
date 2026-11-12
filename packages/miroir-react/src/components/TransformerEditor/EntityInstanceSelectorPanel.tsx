@@ -257,7 +257,7 @@ export function EntityInstanceSelectorPanel(props:{
 
   // Fetch all instances of the target entity with stable reference.
   // Pass the UI section explicitly: getApplicationSection()'s hardcoded metaModelEntityUuids
-  // is stale (e.g. misses ApplicationEvolutionTrace), so relying on it here would fetch
+  // can be stale for a newly added meta-model Entity, so relying on it here would fetch
   // from the wrong store section for newer meta-model entities.
   const entityInstances: EntityInstance[] = useMemo(() => {
     try {

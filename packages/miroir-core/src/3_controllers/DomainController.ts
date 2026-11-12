@@ -2242,7 +2242,7 @@ export class DomainController implements DomainControllerInterface, DomainContro
 
           // #216 ADR D6 / Phase 7: commit does NOT publish Application Versions.
           // Freeze (`freezeApplicationVersion`) is the sole version publisher.
-          // commitUuid is for WP1 evolution-trace correlation only — do not
+          // commitUuid ties together the evolution trace records of one commit (#708) — do not
           // construct or persist placeholder SelfApplicationVersion rows here.
           const commitUuid = uuidv4();
           // #708: the applications whose traces are on, read before the replay changes their rows

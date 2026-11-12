@@ -236,7 +236,6 @@ The allowed values are the `enum` inside the `tags` array schema of the MiroirTe
 | `data` | Instance (data) CRUD |
 | `primary-key` | Non-UUID and composite primary keys |
 | `versioning` | Application versions, freeze, evolution trace. Needs the `versioning` process capability: where it is off (`features.versioning: false`, the sandbox), the CLI, Run all, the self-test and `runMiroirTestAction` report these suites as skipped, with the reason (#696) |
-| `evolution-trace` | Deprecated, removed with the old trace Entities (#708). Traces are now switched on per application (`SelfApplication.evolutionTraces`), so the tag no longer skips a suite |
 | `mcp` | MCP tools |
 | `external-service` | External services (OpenAPI sync) |
 | `filesystem` | Filesystem stores. The in-browser emulated profile has none, so its batches (Run all, self-test) skip these suites |

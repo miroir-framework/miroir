@@ -53,8 +53,6 @@ export declare const entityCommit: any;
 export declare const entityApplicationVersionCrossEntityVersion: any;
 /** @deprecated Use entityApplicationVersionCrossEntityVersion */
 export declare const entityApplicationVersionCrossEntityDefinition: any;
-export declare const entityApplicationEvolutionTrace: any;
-export declare const entityApplicationEvolutionTraceEvent: any;
 export declare const entityVersionEndpoint: any;
 /** @deprecated Use entityVersionEndpoint */
 export declare const entityDefinitionEndpoint: any;
@@ -144,12 +142,6 @@ export declare const entityDefinitionBlob: any;
 export declare const entityVersionApplicationVersionCrossEntityVersion: any;
 /** @deprecated Use entityVersionApplicationVersionCrossEntityVersion */
 export declare const entityDefinitionApplicationVersionCrossEntityDefinition: any;
-export declare const entityVersionApplicationEvolutionTrace: any;
-/** @deprecated Use entityVersionApplicationEvolutionTrace */
-export declare const entityDefinitionApplicationEvolutionTrace: any;
-export declare const entityVersionApplicationEvolutionTraceEvent: any;
-/** @deprecated Use entityVersionApplicationEvolutionTraceEvent */
-export declare const entityDefinitionApplicationEvolutionTraceEvent: any;
 export declare const entityApplicationVersionCrossEntityDeployment: any;
 export declare const entityVersionApplicationVersionCrossEntityDeployment: any;
 /** @deprecated Use entityVersionApplicationVersionCrossEntityDeployment */
@@ -179,6 +171,8 @@ export declare const reportApplicationList: any;
 export declare const reportApplicationDeploymentConfigurationList: any;
 export declare const reportApplicationModelBranchList: any;
 export declare const reportApplicationVersionList: any;
+export declare const reportEvolutionTraceRecordList: any;
+export declare const reportEvolutionTraceRecordDetails: any;
 export declare const reportApplicationVersionDetails: any;
 export declare const reportVersioning: any;
 export declare const reportConfigurationList: any;
@@ -211,9 +205,6 @@ export declare const reportMiroirQueryList: any;
 export declare const reportBlobDetails: any;
 export declare const reportTransformerDetails: any;
 export declare const reportCommitList: any;
-export declare const reportApplicationEvolutionTraceList: any;
-export declare const reportApplicationEvolutionTraceHistory: any;
-export declare const reportApplicationEvolutionTraceDetails: any;
 export declare const reportMiroirDocumentation: any;
 export declare const reportBlobList: any;
 export declare const reportSelfApplicationDetails: any;

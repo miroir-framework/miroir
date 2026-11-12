@@ -311,8 +311,6 @@ export function getMiroirFundamentalMlSchema(
   entityDefinitionMiroirTest: any,
   entityDefinitionTransformerDefinition: any,
   entityDefinitionEndpointDefinition: any,
-  entityDefinitionApplicationEvolutionTrace: any,
-  entityDefinitionApplicationEvolutionTraceEvent: any,
   entityDefinitionEvolutionTraceRecord: any,
 // ): MlReference {
   // ): any /** MlReference, avoiding reference to ensure proper compilation */ {
@@ -2339,8 +2337,6 @@ export function getMiroirFundamentalMlSchema(
             },
           },
         },
-        applicationEvolutionTrace: entityDefinitionApplicationEvolutionTrace.mlSchema as any,
-        applicationEvolutionTraceEvent: entityDefinitionApplicationEvolutionTraceEvent.mlSchema as any,
         evolutionTraceRecord: entityDefinitionEvolutionTraceRecord.mlSchema as any,
         miroirAllFundamentalTypesUnion: {
           type: "union",
