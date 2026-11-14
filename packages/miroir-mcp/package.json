@@ -46,7 +46,7 @@
     "framework"
   ],
   "dependencies": {
-    "@modelcontextprotocol/sdk": "1.32.1",
+    "@modelcontextprotocol/sdk": "1.32.2",
     "express": "5.3.0",
     "loglevelnext": "6.0.0",
     "@miroir-framework/core": "*"
@@ -56,7 +56,7 @@
   },
   "devDependencies": {
     "@types/express": "5.0.6",
-    "@types/node": "26.6.5",
+    "@types/node": "26.6.6",
     "@types/uuid": "11.0.0",
     "cross-env": "10.1.0",
     "@miroir-framework/env": "*",
@@ -67,7 +67,7 @@
     "@miroir-framework/store-indexeddb": "*",
     "@miroir-framework/store-postgres": "*",
     "tsup": "9.0.0",
-    "vitest": "5.0.5",
+    "vitest": "5.1.0",
     "zod": "4.6.7"
   }
 }
