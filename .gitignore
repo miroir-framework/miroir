@@ -62,6 +62,8 @@ packages/miroir-standalone-app/miroir*/
 packages/miroir-standalone-app/node_modules*/
 packages/miroir-standalone-app/package-lock.json
 packages/miroir-standalone-app/tests/tmp/*
+packages/miroir-versioning/dist*/
+packages/miroir-versioning/build*/
 .vitest
 # Non-reg snapshots (logs + summary.json); keep local for compare
 test-results/
