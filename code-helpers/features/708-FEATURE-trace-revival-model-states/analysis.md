@@ -18,6 +18,7 @@ Key sources: [`evolutionTracePolicy.ts`](../../../packages/miroir-core/src/2_dom
   - D9 and D10: the re-baseline's freeze skips the check it repairs; forks and the staged tree;
   - D11: tags pushed one by one;
   - several facts in section 4.
+- 2026-11-14: wording only, no decision changed. The epic's shorthands N and G are replaced by the `versioningMode` values `versioned-internal` and `versioned-git`, each defined in the legend of section 3; G4 and D4 are reworded around a defined *agree* (the agreement check of epic Q29) instead of "traces lead to the model".
 
 ---
 
@@ -28,7 +29,7 @@ From the epic's goals G1 (name a model state), G2 (prepare a migration) and G8 (
 - **G1 — Record what I did to the model.** In order to prepare a migration later from what I actually did, as an application designer, I can switch traces on for my application, and every model change I commit is kept in order with the Actions it ran.
 - **G2 — Read any model state.** In order to compare two states of my model, as an application designer (and as the migration generator, #9), I can get the model at a frozen version, at a Git ref, or live, in one shape.
 - **G3 — See what changed.** In order to know what a migration must do, as an application designer, I get the differences between two model states, down to Entity attributes, for every model element type.
-- **G4 — Trust a version.** In order to rely on a version and its traces together, as an application designer, I am stopped at freeze (without Git) or at Git commit (with Git) when the traces do not lead to the model, and I can re-baseline to repair it.
+- **G4 — Trust a version.** In order to rely on a version and its traces together, as an application designer, I see Miroir refuse a freeze (`versioned-internal`) or a commit from the Git page (`versioned-git`), and list the differences, when the traces do not agree with the model being saved (see *agree* in the legend of section 3); I can then re-baseline, which restarts the traces from the current model.
 - **G5 — Tag a version in Git.** In order to name a model state when my model is in Git, as an application designer, I can create a tag from the Git page.
 - **G6 — Pay only for what I use.** In order to keep small deployments small, as an operator, a process without the `versioning` capability never loads the trace code, and an application with traces off costs nothing more.
 
@@ -43,20 +44,26 @@ From the epic's goals G1 (name a model state), G2 (prepare a migration) and G8 (
 
 ## 3. Decision record
 
-Legend: setting **N** keeps versions as frozen rows, without Git (`versioned-internal`); setting **G** keeps the model in Git (`versioned-git`, today `versioned-external`). A **record** is one trace record (Q16). The **persistence process** is the process that holds the stores: the server, Electron's main process, the CLI, or an emulated server in tests.
+Legend:
+- The two versioned settings are named by their `versioningMode` value. The epic analysis calls them setting N and setting G ([694 analysis](../694-EPIC-safe-application-evolution/analysis.md), section 4.1).
+  - **`versioned-internal`** (the epic's setting N, "no Git"): the model lives in the `model` section of any store but `bundled`; versions are frozen rows that Miroir writes into the `modelVersion` section at each freeze. No Git repository is involved.
+  - **`versioned-git`** (the epic's setting G, "Git"; today `versioned-external`): the model lives in the `model` section on the filesystem, inside a Git work tree, and is committed from the Git page; a version is a Git tag; there is no in-app freeze. A `modelVersion` folder, committed with the model, holds trace records only (and later Migrations).
+- A **record** is one trace record (Q16).
+- The traces **agree** with a model when a starting model, replayed with the `commit` records appended since it, gives exactly that model. The starting model is the version named by the last `version` or `rebaseline` marker for `versioned-internal`, and the model at the Git commit `HEAD` for `versioned-git` (D9). The **agreement check** (epic Q20, Q29; D9 here) tests this at freeze and at commit from the Git page, and refuses the operation, listing the differences, when they do not agree.
+- The **persistence process** is the process that holds the stores: the server, Electron's main process, the CLI, or an emulated server in tests.
 
 | Decision | Choice | Serves |
 |---|---|---|
 | D1. How is #708 delivered: one PR, or several? | **Four parts, each with its own PR: A records, B model states, C agreement and re-baseline, D Git tag** | all |
 | D2. Which Entity holds a record, and what happens to the two trace Entities of today? | **A new `EvolutionTraceRecord` Entity routed to `modelVersion`; the two old Entities, their three Reports, two menu items, seed row and code are removed** | G1, G6 |
 | D3. Which writes make a record, and which process writes it? | **The DomainController where the user's action arrives builds one record per application per commit (or per direct model write) and sends it on an append path of its own to the persistence process, which orders and writes it under a lock; writes that are not authoring are not recorded** | G1, G6 |
-| D4. How does a record tell which version it leads to? | **The freeze appends a `version` marker record, instead of updating the open records** (narrows Q19) | G1, G4 |
+| D4. How does a reader find which version contains the change of a record? | **The freeze appends a `version` marker record, instead of updating the open records** (narrows Q19) | G1, G4 |
 | D5. What turns traces on, and what happens when the setting cannot apply? | **`evolutionTraces` on the SelfApplication row; it reads as off on an unversioned application; a commit touching an application with traces on is refused when the capability is off or the application has no writable `modelVersion`** | G1, G6 |
-| D6. How does a `versioned-git` application get a writable `modelVersion`? | **Its deployment (environment, or Deployment row for a clone) declares a `modelVersion` section inside the Git work tree; a G application fetches it only when its traces are on** | G1, G5 |
+| D6. How does a `versioned-git` application get a writable `modelVersion`? | **Its deployment (environment, or Deployment row for a clone) declares a `modelVersion` section inside the Git work tree; a `versioned-git` application fetches it only when its traces are on** | G1, G5 |
 | D7. In what shape does a model state come back from a frozen version, a Git ref or the live model? | **A map from element Entity uuid to rows, owned by the versioning package; `MetaModel` stays as it is** | G2, G6 |
 | D8. How fine is the diff of two model states? | **Entity attributes by name, every other element type row by row and field by field** | G3 |
-| D9. What does the agreement check compare? | **The model at the last marker replayed with the records since it, against the model being frozen (N) or the staged tree being committed (G); a fork fails the check** | G4 |
-| D10. What does a re-baseline write? | **In N, a freeze that skips the agreement check, then a `rebaseline` marker naming that version; in G, a `rebaseline` marker naming the Git commit, committed with the model** (epic D11) | G4 |
+| D9. What does the agreement check compare? | **The model at the last marker replayed with the records since it, against the model being frozen (`versioned-internal`) or the staged tree being committed (`versioned-git`); a fork fails the check** | G4 |
+| D10. What does a re-baseline write? | **For `versioned-internal`, a freeze that skips the agreement check, then a `rebaseline` marker naming that version; for `versioned-git`, a `rebaseline` marker naming the Git commit, committed with the model** (epic D11) | G4 |
 | D11. What does `gitAction_tag` create, and how does the tag reach the remote? | **An annotated tag named after the version; `gitAction_push` pushes each tag pointing at a pushed commit, one by one** (epic D3, D10) | G5 |
 
 ### D1. How is #708 delivered: one PR, or several?
@@ -68,7 +75,7 @@ Legend: setting **N** keeps versions as frozen rows, without Git (`versioned-int
 | Option | Mechanism | Pros | Cons |
 |---|---|---|---|
 | D1-a. One PR | everything on one branch | one review | very large; nothing lands until all of it works |
-| **D1-b. Four parts** ★ | **A** records: the parameters, the record Entity, recording at commit, the writable `modelVersion` in G, the capability gate, the removal of the process switch and the old traces. **B** model states: `ModelStateSource` (frozen, Git ref, live), the replay, the all-types diff. **C** agreement: the check at freeze and at Git commit, the re-baseline. **D** `gitAction_tag`. | each part is reviewable, and A unblocks the record format for #9 | four PRs; B and C wait for A |
+| **D1-b. Four parts** ★ | **A** records: the parameters, the record Entity, recording at commit, the writable `modelVersion` for `versioned-git`, the capability gate, the removal of the process switch and the old traces. **B** model states: `ModelStateSource` (frozen, Git ref, live), the replay, the all-types diff. **C** agreement: the check at freeze and at Git commit, the re-baseline. **D** `gitAction_tag`. | each part is reviewable, and A unblocks the record format for #9 | four PRs; B and C wait for A |
 
 Order: A, then B and D in either order, then C (it needs A and B). Each part gets its own section in `tdd-implementation-plan.md`. #708 closes with C.
 
@@ -81,7 +88,7 @@ Order: A, then B and D in either order, then C (it needs A and B). Each part get
 | Option | Mechanism | Pros | Cons |
 |---|---|---|---|
 | D2-a. Reuse `ApplicationEvolutionTrace` with a new schema | same uuid, new fields; drop the event Entity | no new uuid | old rows in existing stores fail the new schema; the name hides the change |
-| **D2-b. New `EvolutionTraceRecord` Entity** ★ | a new Miroir Entity, its uuid added to `versionHistoryEntityUuids` so its rows go to `modelVersion`. Fields: `application`, `sequenceNumber`, `previousTrace` (absent on the first), `kind` (`commit`, `version`, `rebaseline`), `actions` (the resolved Actions of a `commit` record), `complete` (false when the commit stopped part way, D3), `version` (the version name of a `version` marker, D4 and epic D10, and of an N `rebaseline` marker, D10), `gitCommit` (information on a G `rebaseline` marker, epic D11), `commitUuid`, `timestamp`. The two old Entities, their three Reports, their two Miroir menu items, the seeded root row and the baseline seeding are removed; one list Report and one details Report replace them. | clean format; old rows are left untouched on disk, under Entities that no longer exist | old trace rows are not migrated (traces were off by default, D5) |
+| **D2-b. New `EvolutionTraceRecord` Entity** ★ | a new Miroir Entity, its uuid added to `versionHistoryEntityUuids` so its rows go to `modelVersion`. Fields: `application`, `sequenceNumber`, `previousTrace` (absent on the first), `kind` (`commit`, `version`, `rebaseline`), `actions` (the resolved Actions of a `commit` record), `complete` (false when the commit stopped part way, D3), `version` (the version name of a `version` marker, D4 and epic D10, and of a `versioned-internal` `rebaseline` marker, D10), `gitCommit` (information on a `versioned-git` `rebaseline` marker, epic D11), `commitUuid`, `timestamp`. The two old Entities, their three Reports, their two Miroir menu items, the seeded root row and the baseline seeding are removed; one list Report and one details Report replace them. | clean format; old rows are left untouched on disk, under Entities that no longer exist | old trace rows are not migrated (traces were off by default, D5) |
 | D2-c. Keep the old Entities and add the new one | both formats | nothing removed | two trace formats to read and test |
 
 **Decision:** D2-b. The frozen `EntityVersion` rows of the two old Entities in Miroir's `modelVersion` stay: they are history.
@@ -128,18 +135,18 @@ Three more facts shape the answer:
   - The migration runner (#9) and restore (#709) will need a scope that suspends recording; they add it, since nothing in #708 needs it.
 - **A failed append:** the commit stands, the result reports the failure, and the DomainController keeps the record and sends it again before the next one. A record lost with the process (a reload) leaves a gap that a re-baseline repairs (D10).
 
-### D4. How does a record tell which version it leads to?
+### D4. How does a reader find which version contains the change of a record?
 
-**Status:** proposed — D4-b. **Serves:** G1, G4. **Narrows:** Q19 ("freeze stamps the open records with the version they lead to").
+**Status:** proposed — D4-b. **Serves:** G1, G4. **Narrows:** Q19 ("freeze stamps the open records with the version they lead to", that is, the first version frozen after them, which contains their changes).
 
-**What is at stake.** Migration generation (#9) and the agreement check (D9) need "the records between version 1.0.0 and version 1.1.0". With Q19 as written, freezing `1.1.0` updates every record since `1.0.0`. That rewrites records, and in setting G it would modify files already committed.
+**What is at stake.** Migration generation (#9) and the agreement check (D9) need "the records between version 1.0.0 and version 1.1.0". With Q19 as written, freezing `1.1.0` updates every record since `1.0.0`. That rewrites records, and for a `versioned-git` application it would modify files already committed.
 
 | Option | Mechanism | Pros | Cons |
 |---|---|---|---|
 | D4-a. The freeze stamps the open records | an `updateInstance` per open record | each record says its version | records are no longer append-only; one write per open record |
 | **D4-b. The freeze appends a `version` marker** ★ | a `version` record naming the frozen version, appended to the chain | append-only; one write; "records between two versions" is "records between two markers" | a reader walks the chain instead of filtering by a field |
 
-**Decision:** D4-b, in part A for setting N, written only when the application's traces are on. In setting G, a version is a tag, so no marker is written (D11); records between two tags are those added by the commits between them. D4 narrows Q19, a settled epic decision, so it needs the user's sign-off.
+**Decision:** D4-b, in part A for `versioned-internal`, written only when the application's traces are on. For `versioned-git`, a version is a tag, so no marker is written (D11); records between two tags are those added by the commits between them. D4 narrows Q19, a settled epic decision, so it needs the user's sign-off.
 
 The chain starts at a marker. When traces are switched on (today by editing the SelfApplication row, until #718), the first records have no marker before them. The agreement check (D9) ignores records before the first marker, with a warning, and the next freeze writes the first `version` marker.
 
@@ -159,12 +166,12 @@ The chain starts at a marker. When traces are switched on (today by editing the 
 
 **Status:** proposed. **Serves:** G1, G5.
 
-**What is at stake.** In setting G, records live in `modelVersion` and are committed with the model, so they follow branches. Today a `versioned-external` application has no `modelVersion`: the DomainController fetches that section only for `versioned-internal` (the `nonModelFetchTargets` filter, `DomainController.ts` line 913), and `ModelInitializer.ts` (line 186) writes the initial `SelfApplicationVersion` to `model` for every mode but `versioned-internal`.
+**What is at stake.** For a `versioned-git` application, records live in `modelVersion` and are committed with the model, so they follow branches. Today a `versioned-external` application has no `modelVersion`: the DomainController fetches that section only for `versioned-internal` (the `nonModelFetchTargets` filter, `DomainController.ts` line 913), and `ModelInitializer.ts` (line 186) writes the initial `SelfApplicationVersion` to `model` for every mode but `versioned-internal`.
 
 - `versioningMode` gains `versioned-git`. `versioned-external` stays in the schema and resolves to `versioned-git` for one release (Q24).
-- A G deployment declares its `modelVersion` section with its directory inside the Git work tree (`{prefix}_modelVersion/`, next to `{prefix}_model/`), so a Git commit includes the records. For a deployment set up from an environment file, the environment declares it. For a cloned deployment, the Deployment row inside the repository declares it (`2_domain/GitClonedDeployments.ts`, from line 148). Without it, D5's gate refuses commits while traces are on.
-- A G application fetches its `modelVersion` section only when its traces are on, so an application with traces off costs nothing more (G6). N applications fetch it as today, for their versions.
-- Freeze stays refused in G (`assertApplicationVersioningEnabled`), so a G `modelVersion` holds records, and later Migrations, but no frozen rows. The initial `SelfApplicationVersion` of a G application stays in `model`, as today.
+- A `versioned-git` deployment declares its `modelVersion` section with its directory inside the Git work tree (`{prefix}_modelVersion/`, next to `{prefix}_model/`), so a Git commit includes the records. For a deployment set up from an environment file, the environment declares it. For a cloned deployment, the Deployment row inside the repository declares it (`2_domain/GitClonedDeployments.ts`, from line 148). Without it, D5's gate refuses commits while traces are on.
+- A `versioned-git` application fetches its `modelVersion` section only when its traces are on, so an application with traces off costs nothing more (G6). `versioned-internal` applications fetch it as today, for their versions.
+- Freeze stays refused for `versioned-git` (`assertApplicationVersioningEnabled`), so its `modelVersion` holds records, and later Migrations, but no frozen rows. The initial `SelfApplicationVersion` of a `versioned-git` application stays in `model`, as today.
 
 ### D7. In what shape does a model state come back from a frozen version, a Git ref or the live model?
 
@@ -189,8 +196,8 @@ The diff returns, per element type, the rows added, removed and changed. For an 
 
 **Status:** proposed. **Serves:** G4. Part C.
 
-- At freeze (setting N): the version named by the last marker (`version` or `rebaseline`), replayed with the `commit` records since that marker, must give the live model. Otherwise the freeze is refused and the differences (D8) are listed.
-- At commit from the Git page (setting G): the model at `HEAD`, replayed with the staged records added since `HEAD`, must give the staged model files. A Git commit commits the index, which may hold only some files (`GitActions.ts`, lines 491 to 576), so the check reads the staged tree, and staged model files without the records that cover them (or the reverse) fail it. A `gitAction_revert` that restores model files without their records is caught by the same check at the next commit.
+- At freeze (`versioned-internal`): the version named by the last marker (`version` or `rebaseline`), replayed with the `commit` records since that marker, must give the live model. Otherwise the freeze is refused and the differences (D8) are listed.
+- At commit from the Git page (`versioned-git`): the model at `HEAD`, replayed with the staged records added since `HEAD`, must give the staged model files. A Git commit commits the index, which may hold only some files (`GitActions.ts`, lines 491 to 576), so the check reads the staged tree, and staged model files without the records that cover them (or the reverse) fail it. A `gitAction_revert` that restores model files without their records is caught by the same check at the next commit.
 - A fork fails the check: two records with the same `previousTrace`. It appears when two branches each append records and are merged outside Miroir (the Git page only fast-forwards, `GitRepositoryInterface.ts` line 121). The designer re-baselines (D10), as epic D11 says.
 - With traces off, or before the first marker (D4), there is nothing to check, and the check passes.
 - A `rebaseline` marker restarts the chain: replay starts from the state it fixes.
@@ -199,7 +206,7 @@ The diff returns, per element type, the rows added, removed and changed. For an 
 
 **Status:** proposed, as epic Q30 and D11. **Serves:** G4. Part C.
 
-A new ModelEndpoint action, `rebaselineEvolutionTraces`. In setting N it freezes the live model under the name given, skipping the agreement check of D9, which the re-baseline exists to repair, then appends a `rebaseline` marker naming that version. In setting G it appends a `rebaseline` marker naming the Git commit at `HEAD` as information, to be committed with the model.
+A new ModelEndpoint action, `rebaselineEvolutionTraces`. For `versioned-internal` it freezes the live model under the name given, skipping the agreement check of D9, which the re-baseline exists to repair, then appends a `rebaseline` marker naming that version. For `versioned-git` it appends a `rebaseline` marker naming the Git commit at `HEAD` as information, to be committed with the model.
 
 ### D11. What does `gitAction_tag` create, and how does the tag reach the remote?
 
