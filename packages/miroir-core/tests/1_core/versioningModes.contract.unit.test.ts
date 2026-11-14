@@ -14,11 +14,11 @@ import {
   type VersioningMode,
 } from "../../src/1_core/versioning/versioningMode.js";
 
-const MODES: VersioningMode[] = ["unversioned", "versioned-internal", "versioned-external"];
+const MODES: VersioningMode[] = ["unversioned", "versioned-internal", "versioned-git"];
 
 describe("versioningMode contract on SelfApplication", () => {
-  it("SelfApplication schema accepts all three versioningMode values", () => {
-    for (const versioningMode of MODES) {
+  it("SelfApplication schema accepts the three versioningMode values, and the older versioned-external", () => {
+    for (const versioningMode of [...MODES, "versioned-external" as const]) {
       const row: SelfApplication = {
         uuid: "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
         parentUuid: "a659d350-dd97-4da9-91de-524fa01745dc",
@@ -36,7 +36,7 @@ describe("versioningMode contract on SelfApplication", () => {
       parentUuid: "a659d350-dd97-4da9-91de-524fa01745dc",
       name: "TestApp",
       defaultLabel: "Test",
-      versioningMode: "versioned-git",
+      versioningMode: "versioned-svn",
     };
     expect(() => selfApplication.parse(row)).toThrow();
   });
@@ -58,9 +58,12 @@ describe("versioningMode contract on SelfApplication", () => {
     expect(resolveVersioningMode({ versioningMode: "versioned-internal" })).toBe(
       "versioned-internal",
     );
-    expect(resolveVersioningMode({ versioningMode: "versioned-external" })).toBe(
-      "versioned-external",
-    );
+    expect(resolveVersioningMode({ versioningMode: "versioned-git" })).toBe("versioned-git");
+  });
+
+  // #708 (D6): versioned-external is the older name of versioned-git
+  it("resolveVersioningMode reads versioned-external as versioned-git", () => {
+    expect(resolveVersioningMode({ versioningMode: "versioned-external" })).toBe("versioned-git");
   });
 
   it("resolveVersioningMode defaults legacy versioningEnabled: true to versioned-internal", () => {
@@ -77,8 +80,8 @@ describe("versioningMode contract on SelfApplication", () => {
 
   it("explicit versioningMode wins over versioningEnabled", () => {
     expect(
-      resolveVersioningMode({ versioningEnabled: true, versioningMode: "versioned-external" }),
-    ).toBe("versioned-external");
+      resolveVersioningMode({ versioningEnabled: true, versioningMode: "versioned-git" }),
+    ).toBe("versioned-git");
     expect(
       resolveVersioningMode({ versioningEnabled: false, versioningMode: "versioned-internal" }),
     ).toBe("versioned-internal");
@@ -91,10 +94,11 @@ describe("versioningMode contract on SelfApplication", () => {
     expect(() => assertApplicationVersioningEnabled({ versioningEnabled: true })).not.toThrow();
   });
 
-  it("assertApplicationVersioningEnabled rejects versioned-external and unversioned", () => {
-    expect(() =>
-      assertApplicationVersioningEnabled({ versioningMode: "versioned-external" }),
-    ).toThrow(/versioned-external/);
+  it("assertApplicationVersioningEnabled rejects versioned-git, versioned-external and unversioned", () => {
+    expect(() => assertApplicationVersioningEnabled({ versioningMode: "versioned-git" })).toThrow(/versioned-git/);
+    expect(() => assertApplicationVersioningEnabled({ versioningMode: "versioned-external" })).toThrow(
+      /versioned-git/,
+    );
     expect(() => assertApplicationVersioningEnabled({ versioningMode: "unversioned" })).toThrow();
     expect(() => assertApplicationVersioningEnabled({ versioningEnabled: false })).toThrow();
   });
@@ -124,11 +128,13 @@ describe("getFreezeAvailability (#225)", () => {
     });
   });
 
-  it("refuses versioned-external applications with a reason", () => {
-    expect(getFreezeAvailability({ versioningMode: "versioned-external" })).toEqual({
-      available: false,
-      reason: "History is kept outside Miroir (versioned-external)",
-    });
+  it("refuses versioned-git applications, and versioned-external ones, with a reason", () => {
+    for (const versioningMode of ["versioned-git", "versioned-external"]) {
+      expect(getFreezeAvailability({ versioningMode })).toEqual({
+        available: false,
+        reason: "The model history is kept in Git (versioned-git)",
+      });
+    }
   });
 
   it("refuses an application whose SelfApplication row is not loaded", () => {

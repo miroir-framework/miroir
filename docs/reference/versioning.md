@@ -1,7 +1,7 @@
 # Versioning Reference
 
 **Audience:** framework contributors and application authors who need to understand how Miroir keeps the history of an application's **model**.
-**Scope:** this page is the single reference for versioning: versioning modes, the freeze action, **EntityVersion** and the other `*Version` history concepts, the `modelVersion` store section, and the `scope` / `logicalDataModel` meta-model classification. Other pages only link here.
+**Scope:** this page is the single reference for versioning: versioning modes, the freeze action, evolution traces, **EntityVersion** and the other `*Version` history concepts, the `modelVersion` store section, and the `scope` / `logicalDataModel` meta-model classification. Other pages only link here.
 
 For the product vision (bundles, use cases, mapping from Git concepts), see [Bundles and Versioning](../getting-started/bundles-and-versioning.md).
 
@@ -11,7 +11,8 @@ For the product vision (bundles, use cases, mapping from Git concepts), see [Bun
 
 - Versioning applies to the **model** of an application (Entities, Queries, Reports, Menus, Endpoints, Runners, Themes, TransformerDefinitions), not to its data. Data changes are applied directly ("auto-commit").
 - The live **Entity** is the only authoritative definition of a concept (`mlSchema`, `idAttribute`, view / cache fields, …). You never need an EntityVersion to define or use an Entity.
-- History exists only for **versioned-internal** applications. It is written by the **`freezeApplicationVersion`** model action into a separate **`modelVersion`** store section.
+- Frozen versions exist only for **versioned-internal** applications. They are written by the **`freezeApplicationVersion`** model action into a separate **`modelVersion`** store section.
+- A versioned application (internal or Git) can also keep **evolution traces**: one record per commit of its model, in `modelVersion`. See [Evolution traces](#evolution-traces).
 - Ordinary model actions (`createEntity`, `renameEntity`, `alterEntityAttribute`, `dropEntity`, …) change live Entities only. They never create, update or delete history rows.
 - The code that freezes and records evolution traces is the package `@miroir-framework/versioning`, outside core. A process loads it on first use, only when its `versioning` process capability is on (the default). See [The versioning package](#the-versioning-package).
 
@@ -25,10 +26,10 @@ The mode is set on the application's **SelfApplication** row (`versioningMode`, 
 |---|---|---|---|
 | `unversioned` *(or absent)* | `false` | `admin`, `model`, `data` | None: live model only. Changes apply immediately, like in a spreadsheet (limited undo / redo only) |
 | `versioned-internal` | `true` | `admin`, `model`, `data`, **`modelVersion`** (writable) | Miroir's `modelVersion` section; git assets under `*_modelVersion/` when shipped |
-| `versioned-external` | `true` | `admin`, `model`, `data` (no writable `modelVersion`) | External Git / VCS. Only the current model is stored in Miroir (`*_model/` assets are committed like code) |
+| `versioned-git` | `true` | `admin`, `model`, `data`; **`modelVersion`** when evolution traces are on | Git. The model (`*_model/` assets) is committed like code; no in-app freeze. With traces on, the `*_modelVersion/` folder holds the trace records and is committed with the model |
 | bundled Miroir profile | `true` on SelfApplication row | `admin`, `model`, `data` only | **None in bundled store**: the sandbox demo is versioning-free |
 
-Legacy deployments with `versioningEnabled: true` and no `versioningMode` behave as **`versioned-internal`**.
+Legacy deployments with `versioningEnabled: true` and no `versioningMode` behave as **`versioned-internal`**. `versioned-external`, the name of `versioned-git` before #708, is still read as `versioned-git` for one release.
 
 Current shipped deployments: Miroir (and the `appForTest` test application) are `versioned-internal`. Library, Admin, Postgres, Spotify and GitHub are `unversioned` and ship no history rows.
 
@@ -57,18 +58,36 @@ Freeze is refused with `FeatureUnavailable` when the process has the `versioning
 2. a new, immutable snapshot of **every** live model element: EntityVersion, QueryVersion, ReportVersion, MenuVersion, EndpointVersion, RunnerVersion, ThemeVersion, TransformerDefinitionVersion, MlSchemaVersion, MiroirTestVersion, BlobVersion, TestConfigurationVersion, TestVersion. Each snapshot gets a **new** uuid and references its live element (`entityUuid`, `queryUuid`, …);
 3. **ApplicationVersionCross\*** link rows tying the SelfApplicationVersion to each snapshot.
 
+When the application's evolution traces are on, the freeze then appends a `version` record to the trace chain (see below).
+
 Implementation: `packages/miroir-versioning/src/applicationVersionFreeze.ts` (`buildFreezeApplicationVersionPlan`, `snapshotEntitiesAsHistoricalEntityVersions`, …) and `freezeApplicationVersion.ts` (the action). Consecutive EntityVersion snapshots can be diffed into rough migration candidates (`diffEntityVersionSnapshots`; rename vs drop+create is uuid-based).
+
+---
+
+## Evolution traces
+
+An evolution trace is the ordered list of model changes of an application, one **EvolutionTraceRecord** (Entity `854c47bd-af74-4305-bdea-aa6bddfa8899`) per commit, in the application's `modelVersion` section.
+
+- **Switch:** `evolutionTraces: true` on the application's SelfApplication row. It is read as off on an `unversioned` application, which logs a warning at load. It has no process-wide switch.
+- **What a record holds:** `sequenceNumber` (1, 2, … per application), `previousTrace` (the uuid of the record before; none on the first), `kind`, `timestamp`, and for a commit the ordered model Actions it replayed for that application (`createEntity`, `alterEntityAttribute`, `renameEntity`, `dropEntity`, and the instance writes of model elements), `commitUuid` (shared by the records of one commit), and `complete` (false when the commit stopped part way). There is no per-branch root row.
+- **Kinds:** `commit` (a commit, or a model write made outside a transaction, which is its own commit), `version` (a freeze; `version` holds the SelfApplicationVersion uuid), `rebaseline` (after `resetModel` or `initModel`; `resetModel` empties `modelVersion`, so the chain restarts at 1).
+- **Who writes them:** the DomainController that runs the commit sends the internal ModelEndpoint action `appendEvolutionTraceRecord`, which the package stores in the persistence process. A write the REST server receives from another DomainController's persistence layer is recorded by its sender, not twice.
+- **Gate:** with traces on, a commit, a direct model write, `resetModel` or `initModel` is refused before anything is written when the process has the `versioning` capability off (`FeatureUnavailable`), or when the application's Deployment row has no `modelVersion` section.
+- **A failed append:** the commit is kept, its result lists the application under `evolutionTraceAppendFailures`, and the record is kept in memory and sent before the next record of that application. A freeze sends the kept records first, and is refused while they cannot be appended, so its `version` record follows every change the version holds. The appends of one application run one after the other.
+- **Reading them:** the Miroir menu item **Miroir Evolution Trace Records** (Reports `EvolutionTraceRecordList` `45735607-…` and `EvolutionTraceRecordDetails` `68594192-…`, section `modelVersion`), or any Query with `extractorInstancesByEntity` on the Entity in `modelVersion` (the client cache does not hold `modelVersion`: use `queryExecutionStrategy: "storage"`).
+
+Code: `packages/miroir-core/src/1_core/versioning/evolutionTraceRecording.ts` (what is recorded, `isEvolutionTraceOn`), the DomainController (commit, gate, kept records), `packages/miroir-versioning/src/evolutionTraceRecords.ts` (the chain).
 
 ---
 
 ## The versioning package
 
-`@miroir-framework/versioning` (`packages/miroir-versioning`) holds the freeze and the evolution traces (writer, runtime, compaction, definition version). Core keeps what other packages name without running it: the action type and payload type, the version Entity uuids, the versioning modes, the section routing (`getApplicationSection`), the trace policy (`isEvolutionTraceEnabled`) and the trace baseline. No host imports the package statically:
+`@miroir-framework/versioning` (`packages/miroir-versioning`) holds the freeze and the writer of evolution trace records. Core keeps what other packages name without running it: the action types and payload types, the version Entity uuids, the versioning modes, the section routing (`getApplicationSection`) and the trace switch (`isEvolutionTraceOn`). No host imports the package statically:
 
 - A host registers it with core's `registerLazyActionImplementations({ capability: "versioning", packageName, implementationNames, load: () => import("@miroir-framework/versioning") })`: `startMiroirNode` (server, Electron main, CLI), `startMiroirClient` when it runs an emulated server, and `setupMiroirTest` (option `versioningLoader`). A browser talking to a server registers nothing and never fetches the package.
-- The ModelEndpoint's freeze action declares `requiredCapability: "versioning"` on its `libraryImplementation`. The DomainController checks the capability, then loads the package on the first freeze; a process where it is not registered answers `FeatureUnavailable` naming the package.
+- The ModelEndpoint's freeze and `appendEvolutionTraceRecord` actions declare `requiredCapability: "versioning"` on their `libraryImplementation`. The DomainController checks the capability, then loads the package on first use; a process where it is not registered answers `FeatureUnavailable` naming the package.
 - **Where the freeze runs:** always in the persistence process. A client talking to a server checks the capability, refuses the freeze while its open transaction holds changes of any application (commit or roll them back first: the reload that follows empties the whole transaction), sends it to the server, then reloads the application. The server plans the freeze against the application's model read from its stores, and Miroir's against its local cache, loaded from the stores (the bundled Miroir model would miss its saved changes).
-- **Traces:** with `MIROIR_EVOLUTION_TRACE` on, a traceable write (the replayable model actions, the instance create, update and delete) loads the package once and calls its `recordEvolutionTrace`. Traces off, an action that is not traceable, or the capability off load nothing. A client and its emulated server each record what they handle, as before the package existed.
+- **Traces:** a commit of an application whose traces are on sends `appendEvolutionTraceRecord`, which runs in the persistence process like the freeze. Applications with traces off load nothing.
 - With the capability off, the Versioning AppBar item, the freeze Runner and the version and trace items of the Miroir menu are hidden, MCP tools, CLI commands and CopilotKit actions leave out `freezeApplicationVersion`, and MiroirTests tagged `versioning` are reported as skipped.
 
 ---
@@ -150,10 +169,10 @@ These uuids are registered in `versionHistoryEntityUuids` (`packages/miroir-core
 
 `modelVersion` is an optional fourth section of a deployment, next to `admin`, `model` and `data`.
 
-- It is present only for versioned-internal deployments, and must point at storage **separate** from `model`. It uses the same backend types.
+- It is present for versioned-internal deployments, and for versioned-git deployments whose evolution traces are on (it then holds only the trace records). It must point at storage **separate** from `model`, and uses the same backend types.
 - `getApplicationSection()` sends every `versionHistoryEntityUuids` instance to `modelVersion`, whatever the application. Live concepts (Entity, Query, Report, `Book`, …) stay in `model` / `data`.
 - A request targeting `modelVersion` on a deployment that does not configure it fails explicitly. There is no fallback to `model` or `data`.
-- History is not loaded during ordinary bootstrap / rollback of the live model.
+- History is not loaded in the client cache during ordinary bootstrap / rollback of the live model.
 
 **Asset folders:** `{prefix}_modelVersion/` maps to the section. Only `miroir-app-miroir` ships one (`miroir_modelVersion/`). See [Data Architecture — asset folders](data-architecture-deployments.md#deployment-package-asset-folders).
 

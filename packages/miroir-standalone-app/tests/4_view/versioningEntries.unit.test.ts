@@ -55,8 +55,7 @@ if (runThis) {
       expect(dropped.map((item) => item.label)).toEqual([
         "Miroir Entity Versions",
         "Miroir Application Versions",
-        "Application Evolution Traces",
-        "Application Evolution Trace History",
+        "Miroir Evolution Trace Records",
       ]);
       expect(kept.length).toBe(items.length - VERSIONING_MENU_REPORT_UUIDS.length);
       expect(items.filter((item) => isMenuItemAllowedByVersioning(item, on))).toEqual(items);
