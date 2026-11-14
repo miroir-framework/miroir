@@ -105,7 +105,7 @@ This, like D3's new action, is a core schema change that every process carries. 
 **Status:** proposed — D3-c. **Serves:** G1, G6.
 
 **What is at stake.** Take a designer in a browser adding an optional `isbn` attribute to Library's `Book`, then committing. The Entity editor sends a `transactionalInstanceAction`; the commit replays it as an `updateInstance` through the REST client; the server receives it as a plain instance write. Today:
-- the browser records nothing, since `isEvolutionTraceEnabled` reads `process.env`, which the Vite build of the standalone app does not provide;
+- the browser records nothing: `isEvolutionTraceEnabled` reads the `MIROIR_EVOLUTION_TRACE` variable (or `VITE_MIROIR_EVOLUTION_TRACE`) from `process.env`, which the Vite build of the standalone app does not provide;
 - the committing DomainController does not trace a replayed transactional instance write at all (the `transactionalInstanceAction` case of the commit loop, `DomainController.ts` line 2090, has no trace call);
 - the server traces each replayed write on its own, without the commit (`restActionHandler`, `RestServer.ts` line 432, hands it to its DomainController at line 548, whose `handleInstanceAction` calls `maybeRecordEvolutionTrace`).
 
