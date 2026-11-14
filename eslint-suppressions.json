@@ -367,11 +367,6 @@
       "count": 1
     }
   },
-  "packages/miroir-react-testing/src/4_view/components/Buttons/RunAllMiroirTestsButton.tsx": {
-    "miroir/action-result": {
-      "count": 1
-    }
-  },
   "packages/miroir-react-testing/src/4_view/components/Buttons/RunMiroirTestSuiteButton.tsx": {
     "miroir/action-result": {
       "count": 4
