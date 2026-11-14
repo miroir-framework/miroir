@@ -45,9 +45,9 @@ From the epic's goals G1 (name a model state), G2 (prepare a migration) and G8 (
 ## 3. Decision record
 
 Legend:
-- The two versioned settings are named by their `versioningMode` value. The epic analysis calls them setting N and setting G ([694 analysis](../694-EPIC-safe-application-evolution/analysis.md), section 4.1).
-  - **`versioned-internal`** (the epic's setting N, "no Git"): the model lives in the `model` section of any store but `bundled`; versions are frozen rows that Miroir writes into the `modelVersion` section at each freeze. No Git repository is involved.
-  - **`versioned-git`** (the epic's setting G, "Git"; today `versioned-external`): the model lives in the `model` section on the filesystem, inside a Git work tree, and is committed from the Git page; a version is a Git tag; there is no in-app freeze. A `modelVersion` folder, committed with the model, holds trace records only (and later Migrations).
+- The two versioned settings are named by their `versioningMode` value. The [694 analysis](../694-EPIC-safe-application-evolution/analysis.md) (section 4.1) uses the same names; its earlier drafts called them setting N and setting G.
+  - **`versioned-internal`** (formerly setting N, "no Git"): the model lives in the `model` section of any store but `bundled`; versions are frozen rows that Miroir writes into the `modelVersion` section at each freeze. No Git repository is involved.
+  - **`versioned-git`** (formerly setting G, "Git"; `versioned-external` before this issue): the model lives in the `model` section on the filesystem, inside a Git work tree, and is committed from the Git page; a version is a Git tag; there is no in-app freeze. A `modelVersion` folder, committed with the model, holds trace records only (and later Migrations).
 - A **record** is one trace record (Q16).
 - The traces **agree** with a model when a starting model, replayed with the `commit` records appended since it, gives exactly that model. The starting model is the version named by the last `version` or `rebaseline` marker for `versioned-internal`, and the model at the Git commit `HEAD` for `versioned-git` (D9). The **agreement check** (epic Q20, Q29; D9 here) tests this at freeze and at commit from the Git page, and refuses the operation, listing the differences, when they do not agree.
 - The **persistence process** is the process that holds the stores: the server, Electron's main process, the CLI, or an emulated server in tests.
