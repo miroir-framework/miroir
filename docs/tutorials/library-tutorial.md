@@ -21,8 +21,8 @@ Use the **Deploy an Existing Application** runner:
 
 You can download the Library application Model and sample data files using the following links:
 
-- [the model (use "save as....")](https://github.com/miroir-framework/miroir/releases/download/untagged-8eb448b720da212062bb/library-model.json) and
-- [the sample data (use "save as...")](https://github.com/miroir-framework/miroir/releases/download/untagged-8eb448b720da212062bb/library-data.json)
+- [the model (use "save as....")](https://github.com/miroir-framework/miroir/tree/master/docs/tutorials/libraryTutorial/bundles-2026-11/library-model.json) and
+- [the sample data (use "save as...")](https://github.com/miroir-framework/miroir/tree/master/docs/tutorials/libraryTutorial/bundles-2026-11/library-data.json)
 
 Select the **library-model.json** and **library-data.json** files, and deploy the application on your storage of choice (the choice of the storage is irrerlevant for the remainder of this tutorial, the straightforward solution being the filesystem on which you installed the Miroir platform):
 

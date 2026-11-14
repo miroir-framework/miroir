@@ -1,0 +1,4385 @@
+{
+  "applicationUuid": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+  "applicationName": "Library",
+  "applications": [
+    {
+      "uuid": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+      "parentName": "SelfApplication",
+      "parentUuid": "a659d350-dd97-4da9-91de-524fa01745dc",
+      "name": "Library",
+      "defaultLabel": "The Library selfApplication.",
+      "description": "The model and data of the Library selfApplication.",
+      "homePageUrl": {
+        "label": "Library Home Page",
+        "section": "data",
+        "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+        "reportUuid": "9c0cdb97-9537-4ee2-8053-a6ece3e0afe8"
+      },
+      "versioningMode": "unversioned"
+    }
+  ],
+  "entities": [
+    {
+      "uuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
+      "parentName": "Entity",
+      "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+      "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+      "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+      "name": "Publisher",
+      "conceptLevel": "Model",
+      "description": "The publisher of a book.",
+      "defaultInstanceDetailsReportUuid": "21133a6b-c9b2-44bf-812a-e13d99e7235e",
+      "viewAttributes": [
+        "name",
+        "country",
+        "icon",
+        "uuid"
+      ],
+      "icon": "building",
+      "cache": {
+        "cacheAllInstancesOnRefresh": true
+      },
+      "mlSchema": {
+        "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "entityDefinitionRoot"
+          }
+        },
+        "definition": {
+          "name": {
+            "type": "string",
+            "tag": {
+              "value": {
+                "id": 4,
+                "defaultLabel": "Name"
+              }
+            }
+          },
+          "country": {
+            "type": "uuid",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 5,
+                "display": {
+                  "editable": true
+                },
+                "defaultLabel": "Country",
+                "foreignKeyParams": {
+                  "targetEntity": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                  "targetEntityOrderInstancesBy": "name"
+                }
+              }
+            }
+          },
+          "icon": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 6,
+                "defaultLabel": "Icon"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "uuid": "ca794e28-b2dc-45b3-8137-00151557eea8",
+      "parentName": "Entity",
+      "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+      "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+      "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+      "name": "User",
+      "conceptLevel": "Model",
+      "description": "User.",
+      "defaultInstanceDetailsReportUuid": "8adee3d5-f8cc-4118-aa02-5a2cd07908aa",
+      "viewAttributes": [
+        "name",
+        "firstName",
+        "lastName",
+        "street",
+        "postalCode",
+        "city",
+        "state",
+        "country",
+        "uuid"
+      ],
+      "icon": "person",
+      "cache": {
+        "cacheAllInstancesOnRefresh": true
+      },
+      "mlSchema": {
+        "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "entityDefinitionRoot"
+          }
+        },
+        "definition": {
+          "name": {
+            "tag": {
+              "value": {
+                "defaultLabel": "Name",
+                "id": 5
+              }
+            },
+            "type": "string"
+          },
+          "firstName": {
+            "tag": {
+              "value": {
+                "defaultLabel": "First Name",
+                "id": 6
+              }
+            },
+            "type": "string"
+          },
+          "lastName": {
+            "tag": {
+              "value": {
+                "defaultLabel": "Last Name",
+                "id": 7
+              }
+            },
+            "type": "string"
+          },
+          "street": {
+            "tag": {
+              "value": {
+                "defaultLabel": "Street Adress",
+                "id": 8
+              }
+            },
+            "type": "string"
+          },
+          "postalCode": {
+            "tag": {
+              "value": {
+                "defaultLabel": "Postal Code",
+                "id": 9
+              }
+            },
+            "type": "string"
+          },
+          "city": {
+            "tag": {
+              "value": {
+                "defaultLabel": "City",
+                "id": 10
+              }
+            },
+            "type": "string"
+          },
+          "state": {
+            "tag": {
+              "value": {
+                "defaultLabel": "State",
+                "id": 11
+              }
+            },
+            "type": "string"
+          },
+          "country": {
+            "tag": {
+              "value": {
+                "defaultLabel": "Country",
+                "foreignKeyParams": {
+                  "targetEntity": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                  "targetEntityOrderInstancesBy": "name"
+                },
+                "id": 12
+              }
+            },
+            "type": "uuid",
+            "optional": true
+          }
+        }
+      }
+    },
+    {
+      "uuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+      "parentName": "Entity",
+      "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+      "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+      "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+      "name": "Country",
+      "conceptLevel": "Model",
+      "description": "Country.",
+      "defaultInstanceDetailsReportUuid": "fc4ba6bc-751f-4d1a-acce-865c10354a31",
+      "viewAttributes": [
+        "name",
+        "iso3166-1Alpha-2",
+        "icon",
+        "uuid"
+      ],
+      "cache": {
+        "cacheAllInstancesOnRefresh": true
+      },
+      "mlSchema": {
+        "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "entityDefinitionRoot"
+          }
+        },
+        "definition": {
+          "name": {
+            "type": "string",
+            "tag": {
+              "value": {
+                "id": 4,
+                "defaultLabel": "Name"
+              }
+            }
+          },
+          "iso3166-1Alpha-2": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 5,
+                "defaultLabel": "Country Code"
+              }
+            }
+          },
+          "icon": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 6,
+                "defaultLabel": "Icon"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "uuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+      "parentName": "Entity",
+      "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+      "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+      "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+      "name": "Author",
+      "conceptLevel": "Model",
+      "description": "The Author of a book.",
+      "defaultInstanceDetailsReportUuid": "6d9faa54-643c-4aec-87c3-32635ad95902",
+      "viewAttributes": [
+        "name",
+        "country",
+        "icon",
+        "uuid"
+      ],
+      "cache": {
+        "cacheAllInstancesOnRefresh": true
+      },
+      "mlSchema": {
+        "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "entityDefinitionRoot"
+          }
+        },
+        "definition": {
+          "name": {
+            "type": "string",
+            "tag": {
+              "value": {
+                "id": 4,
+                "defaultLabel": "Name"
+              }
+            }
+          },
+          "language": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 5,
+                "defaultLabel": "Language"
+              }
+            }
+          },
+          "birthDate": {
+            "type": "date",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 6,
+                "defaultLabel": "Birth"
+              }
+            }
+          },
+          "deathDate": {
+            "type": "date",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 7,
+                "defaultLabel": "Death"
+              }
+            }
+          },
+          "country": {
+            "type": "uuid",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 8,
+                "defaultLabel": "Country",
+                "foreignKeyParams": {
+                  "targetEntity": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                  "targetEntityOrderInstancesBy": "name"
+                }
+              }
+            }
+          },
+          "icon": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 9,
+                "defaultLabel": "Icon"
+              }
+            }
+          },
+          "icons": {
+            "type": "number",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 10,
+                "defaultLabel": "Icons"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "uuid": "e81078f3-2de7-4301-bd79-d3a156aec149",
+      "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+      "parentName": "Entity",
+      "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+      "conceptLevel": "Model",
+      "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+      "name": "LendingHistoryItem",
+      "description": "An item representing a lending history record in the Library application.",
+      "defaultInstanceDetailsReportUuid": "7ccc9ac5-d29d-4b5b-a9ec-841bea152e2c",
+      "viewAttributes": [
+        "uuid",
+        "user",
+        "book",
+        "startDate",
+        "endDate"
+      ],
+      "mlSchema": {
+        "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "entityDefinitionRoot"
+          }
+        },
+        "definition": {
+          "user": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "defaultLabel": "User",
+                "foreignKeyParams": {
+                  "targetEntity": "ca794e28-b2dc-45b3-8137-00151557eea8",
+                  "targetEntityOrderInstancesBy": "name"
+                },
+                "display": {
+                  "modifiable": false
+                }
+              }
+            },
+            "optional": false
+          },
+          "book": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "defaultLabel": "Book",
+                "foreignKeyParams": {
+                  "targetEntity": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                  "targetEntityOrderInstancesBy": "name"
+                },
+                "display": {
+                  "modifiable": false
+                }
+              }
+            },
+            "optional": false
+          },
+          "startDate": {
+            "type": "date"
+          },
+          "endDate": {
+            "type": "date",
+            "optional": true
+          },
+          "note": {
+            "type": "string",
+            "optional": true
+          }
+        }
+      }
+    },
+    {
+      "uuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+      "parentName": "Entity",
+      "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+      "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+      "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+      "name": "Book",
+      "conceptLevel": "Model",
+      "description": "A book.",
+      "defaultInstanceDetailsReportUuid": "c3503412-3d8a-43ef-a168-aa36e975e606",
+      "viewAttributes": [
+        "name",
+        "author",
+        "year",
+        "citation",
+        "publisher",
+        "uuid"
+      ],
+      "icon": "Book",
+      "cache": {
+        "cacheAllInstancesOnRefresh": true
+      },
+      "mlSchema": {
+        "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "entityDefinitionRoot"
+          }
+        },
+        "definition": {
+          "name": {
+            "type": "string",
+            "tag": {
+              "value": {
+                "defaultLabel": "Book Title"
+              }
+            }
+          },
+          "year": {
+            "type": "number",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 6,
+                "defaultLabel": "Year of Publication",
+                "display": {
+                  "editable": true
+                }
+              }
+            }
+          },
+          "citation": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Citation",
+                "display": {
+                  "editable": false,
+                  "modifiable": false
+                },
+                "virtualAttribute": {
+                  "interpolation": "runtime",
+                  "transformerType": "mustacheStringTemplate",
+                  "definition": "{{name}} ({{year}})"
+                }
+              }
+            }
+          },
+          "author": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "id": 7,
+                "defaultLabel": "Author",
+                "foreignKeyParams": {
+                  "targetEntity": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+                  "targetEntityOrderInstancesBy": "name"
+                }
+              }
+            }
+          },
+          "publisher": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "defaultLabel": "Publisher",
+                "id": 8,
+                "foreignKeyParams": {
+                  "targetEntity": "a027c379-8468-43a5-ba4d-bf618be25cab",
+                  "targetEntityOrderInstancesBy": "name"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "entityVersions": [],
+  "endpoints": [
+    {
+      "uuid": "212f2784-5b68-43b2-8ee0-89b1c6fdd0de",
+      "parentName": "Endpoint",
+      "parentUuid": "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
+      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+      "name": "Lending",
+      "version": "1",
+      "definition": {
+        "actions": [
+          {
+            "actionParameters": {
+              "actionType": {
+                "type": "literal",
+                "definition": "lendDocument"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "212f2784-5b68-43b2-8ee0-89b1c6fdd0de"
+              },
+              "payload": {
+                "type": "object",
+                "definition": {
+                  "user": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "User",
+                        "canBeTemplate": true,
+                        "initializeTo": {
+                          "initializeToType": "value",
+                          "value": "31f3a03a-f150-416d-9315-d3a752cb4eb4"
+                        },
+                        "foreignKeyParams": {
+                          "targetEntity": "ca794e28-b2dc-45b3-8137-00151557eea8",
+                          "targetEntityOrderInstancesBy": "name"
+                        }
+                      }
+                    }
+                  },
+                  "book": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Book",
+                        "canBeTemplate": true,
+                        "initializeTo": {
+                          "initializeToType": "value",
+                          "value": "31f3a03a-f150-416d-9315-d3a752cb4eb4"
+                        },
+                        "foreignKeyParams": {
+                          "targetEntity": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                          "targetEntityOrderInstancesBy": "name"
+                        }
+                      }
+                    }
+                  },
+                  "startDate": {
+                    "type": "date",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Start Date",
+                        "canBeTemplate": true
+                      }
+                    }
+                  },
+                  "note": {
+                    "type": "string",
+                    "optional": true
+                  }
+                }
+              }
+            },
+            "actionImplementation": {
+              "actionImplementationType": "compositeActionTemplate",
+              "definition": {
+                "actionType": "compositeActionSequence",
+                "actionLabel": "lendDocumentImplementation",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "payload": {
+                  "actionSequence": [
+                    {
+                      "actionType": "createInstance",
+                      "actionLabel": "lendDocument_createInstance_LendingHistoryItem",
+                      "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                      "payload": {
+                        "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                        "applicationSection": "data",
+                        "parentUuid": "e81078f3-2de7-4301-bd79-d3a156aec149",
+                        "objects": [
+                          {
+                            "transformerType": "createObject",
+                            "definition": {
+                              "uuid": {
+                                "transformerType": "generateUuid"
+                              },
+                              "parentName": "LendingHistoryItem",
+                              "parentUuid": "e81078f3-2de7-4301-bd79-d3a156aec149",
+                              "book": {
+                                "transformerType": "getFromParameters",
+                                "referencePath": [
+                                  "payload",
+                                  "book"
+                                ]
+                              },
+                              "user": {
+                                "transformerType": "getFromParameters",
+                                "referencePath": [
+                                  "payload",
+                                  "user"
+                                ]
+                              },
+                              "startDate": {
+                                "transformerType": "getFromParameters",
+                                "referencePath": [
+                                  "payload",
+                                  "startDate"
+                                ]
+                              },
+                              "note": {
+                                "transformerType": "getFromParameters",
+                                "safe": true,
+                                "referencePath": [
+                                  "payload",
+                                  "note"
+                                ]
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "actionErrors": {
+              "type": "literal",
+              "definition": "FailedToLendDocument"
+            }
+          },
+          {
+            "actionParameters": {
+              "actionType": {
+                "type": "literal",
+                "definition": "returnDocument"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "212f2784-5b68-43b2-8ee0-89b1c6fdd0de"
+              },
+              "payload": {
+                "type": "object",
+                "definition": {
+                  "user": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "User",
+                        "canBeTemplate": true,
+                        "initializeTo": {
+                          "initializeToType": "value",
+                          "value": "31f3a03a-f150-416d-9315-d3a752cb4eb4"
+                        },
+                        "foreignKeyParams": {
+                          "targetEntity": "ca794e28-b2dc-45b3-8137-00151557eea8",
+                          "targetEntityOrderInstancesBy": "name"
+                        }
+                      }
+                    }
+                  },
+                  "book": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "Book",
+                        "canBeTemplate": true,
+                        "initializeTo": {
+                          "initializeToType": "value",
+                          "value": "31f3a03a-f150-416d-9315-d3a752cb4eb4"
+                        },
+                        "foreignKeyParams": {
+                          "targetEntity": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                          "targetEntityOrderInstancesBy": "name"
+                        }
+                      }
+                    }
+                  },
+                  "note": {
+                    "type": "string",
+                    "optional": true
+                  },
+                  "endDate": {
+                    "type": "date",
+                    "tag": {
+                      "value": {
+                        "defaultLabel": "End Date",
+                        "canBeTemplate": true
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "actionImplementation": {
+              "actionImplementationType": "compositeActionTemplate",
+              "definition": {
+                "actionType": "compositeActionSequence",
+                "actionLabel": "returnDocumentImplementation",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "payload": {
+                  "actionSequence": [
+                    {
+                      "actionType": "compositeRunBoxedQueryAction",
+                      "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                      "actionLabel": "returnDocument_loansOfUser",
+                      "nameGivenToResult": "userLoans",
+                      "payload": {
+                        "actionType": "runBoxedQueryAction",
+                        "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                        "payload": {
+                          "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                          "applicationSection": "data",
+                          "query": {
+                            "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                            "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                            "pageParams": {},
+                            "extractors": {
+                              "loans": {
+                                "extractorOrCombinerType": "extractorInstancesByEntity",
+                                "applicationSection": "data",
+                                "parentName": "LendingHistoryItem",
+                                "parentUuid": "e81078f3-2de7-4301-bd79-d3a156aec149",
+                                "filter": {
+                                  "attributeName": "user",
+                                  "value": {
+                                    "transformerType": "getFromParameters",
+                                    "referencePath": [
+                                      "payload",
+                                      "user"
+                                    ]
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "actionType": "compositeFail",
+                      "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                      "actionLabel": "returnDocument_noOpenLoan",
+                      "payload": {
+                        "condition": {
+                          "transformerType": "boolExpr",
+                          "interpolation": "runtime",
+                          "operator": "isNull",
+                          "left": {
+                            "transformerType": "find",
+                            "interpolation": "runtime",
+                            "referenceToOuterObject": "loan",
+                            "applyTo": {
+                              "transformerType": "getFromContext",
+                              "interpolation": "runtime",
+                              "referencePath": [
+                                "userLoans",
+                                "loans"
+                              ]
+                            },
+                            "predicate": {
+                              "transformerType": "boolExpr",
+                              "interpolation": "runtime",
+                              "operator": "&&",
+                              "left": {
+                                "transformerType": "boolExpr",
+                                "interpolation": "runtime",
+                                "operator": "==",
+                                "left": {
+                                  "transformerType": "getFromContext",
+                                  "interpolation": "runtime",
+                                  "referencePath": [
+                                    "loan",
+                                    "book"
+                                  ]
+                                },
+                                "right": {
+                                  "transformerType": "getFromParameters",
+                                  "referencePath": [
+                                    "payload",
+                                    "book"
+                                  ]
+                                }
+                              },
+                              "right": {
+                                "transformerType": "boolExpr",
+                                "interpolation": "runtime",
+                                "operator": "isNull",
+                                "left": {
+                                  "transformerType": "getFromContext",
+                                  "interpolation": "runtime",
+                                  "referencePath": [
+                                    "loan",
+                                    "endDate"
+                                  ],
+                                  "safe": true
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "errorType": "FailedToReturnDocument",
+                        "message": "the User holds no open loan of this Book"
+                      }
+                    },
+                    {
+                      "actionType": "updateInstance",
+                      "actionLabel": "returnDocument_closeOpenLoan",
+                      "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                      "payload": {
+                        "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                        "applicationSection": "data",
+                        "parentUuid": "e81078f3-2de7-4301-bd79-d3a156aec149",
+                        "objects": [
+                          {
+                            "transformerType": "mergeIntoObject",
+                            "interpolation": "runtime",
+                            "applyTo": {
+                              "transformerType": "find",
+                              "interpolation": "runtime",
+                              "referenceToOuterObject": "loan",
+                              "applyTo": {
+                                "transformerType": "getFromContext",
+                                "interpolation": "runtime",
+                                "referencePath": [
+                                  "userLoans",
+                                  "loans"
+                                ]
+                              },
+                              "predicate": {
+                                "transformerType": "boolExpr",
+                                "interpolation": "runtime",
+                                "operator": "&&",
+                                "left": {
+                                  "transformerType": "boolExpr",
+                                  "interpolation": "runtime",
+                                  "operator": "==",
+                                  "left": {
+                                    "transformerType": "getFromContext",
+                                    "interpolation": "runtime",
+                                    "referencePath": [
+                                      "loan",
+                                      "book"
+                                    ]
+                                  },
+                                  "right": {
+                                    "transformerType": "getFromParameters",
+                                    "referencePath": [
+                                      "payload",
+                                      "book"
+                                    ]
+                                  }
+                                },
+                                "right": {
+                                  "transformerType": "boolExpr",
+                                  "interpolation": "runtime",
+                                  "operator": "isNull",
+                                  "left": {
+                                    "transformerType": "getFromContext",
+                                    "interpolation": "runtime",
+                                    "referencePath": [
+                                      "loan",
+                                      "endDate"
+                                    ],
+                                    "safe": true
+                                  }
+                                }
+                              }
+                            },
+                            "definition": {
+                              "transformerType": "createObject",
+                              "interpolation": "runtime",
+                              "definition": {
+                                "endDate": {
+                                  "transformerType": "getFromParameters",
+                                  "referencePath": [
+                                    "payload",
+                                    "endDate"
+                                  ]
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            },
+            "actionErrors": {
+              "type": "literal",
+              "definition": "FailedToReturnDocument"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "uuid": "9884c1a4-5122-488a-85db-a99fbc02e678",
+      "parentName": "Endpoint",
+      "parentUuid": "3d8da4d4-8f76-4bb4-9212-14869d81c00c",
+      "name": "Books",
+      "version": "1",
+      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+      "definition": {
+        "actions": []
+      }
+    }
+  ],
+  "menus": [
+    {
+      "uuid": "dd168e5a-2a21-4d2d-a443-032c6d15eb22",
+      "parentName": "Menu",
+      "parentUuid": "dde4c883-ae6d-47c3-b6df-26bc6e3c1842",
+      "name": "LibraryMenu",
+      "defaultLabel": "Library Menu",
+      "description": "This is the default menu allowing to explore the Library SelfApplication.",
+      "definition": {
+        "menuType": "complexMenu",
+        "definition": [
+          {
+            "title": "Library",
+            "label": "library",
+            "items": [
+              {
+                "miroirMenuItemType": "miroirMenuReportLink",
+                "label": "Library Books",
+                "section": "data",
+                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                "reportUuid": "74b010b6-afee-44e7-8590-5f0849e4a5c9",
+                "icon": "auto_stories"
+              },
+              {
+                "miroirMenuItemType": "miroirMenuReportLink",
+                "label": "Library Authors",
+                "section": "data",
+                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                "reportUuid": "66a09068-52c3-48bc-b8dd-76575bbc8e72",
+                "icon": "star"
+              },
+              {
+                "miroirMenuItemType": "miroirMenuReportLink",
+                "label": "Library Publishers",
+                "section": "data",
+                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                "reportUuid": "a77aa662-006d-46cd-9176-01f02a1a12dc",
+                "icon": "account_balance"
+              },
+              {
+                "miroirMenuItemType": "miroirMenuReportLink",
+                "label": "Library countries",
+                "section": "data",
+                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                "reportUuid": "08176cc7-43ae-4fca-91b7-bf869d19e4b9",
+                "icon": "flag"
+              },
+              {
+                "miroirMenuItemType": "miroirMenuReportLink",
+                "label": "Library Users",
+                "section": "data",
+                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                "reportUuid": "3df9413d-5050-4357-910c-f764aacae7e6",
+                "icon": "person"
+              },
+              {
+                "miroirMenuItemType": "miroirMenuReportLink",
+                "label": "Library Lending History",
+                "section": "data",
+                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                "reportUuid": "cee26a1e-be58-497c-9d15-fa6832787907",
+                "icon": "history"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "reports": [
+    {
+      "uuid": "08176cc7-43ae-4fca-91b7-bf869d19e4b9",
+      "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+      "parentName": "Report",
+      "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+      "conceptLevel": "Model",
+      "name": "CountryList",
+      "defaultLabel": "List of Countries",
+      "definition": {
+        "reportParameters": {},
+        "extractorTemplates": {
+          "countries": {
+            "extractorOrCombinerType": "extractorInstancesByEntity",
+            "parentName": "Country",
+            "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4"
+          }
+        },
+        "runStoredQueries": [
+          {
+            "label": "AuthorsByCountryCount",
+            "storedQuery": "6eaaec37-e3bc-40e4-af1b-4088412c0e34"
+          }
+        ],
+        "section": {
+          "type": "list",
+          "definition": [
+            {
+              "type": "objectListReportSection",
+              "definition": {
+                "label": "Countries",
+                "parentName": "Country",
+                "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                "fetchedDataReference": "countries",
+                "sortByAttribute": "name"
+              }
+            },
+            {
+              "type": "graphReportSection",
+              "definition": {
+                "label": "Author Count by Country",
+                "fetchedDataReference": "00_AuthorCountByCountry",
+                "graphType": "bar",
+                "dataMapping": {
+                  "labelField": "countryName",
+                  "valueField": "aggregate"
+                },
+                "config": {
+                  "width": 600,
+                  "height": 400,
+                  "showTooltips": true,
+                  "showLegend": true
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "uuid": "21133a6b-c9b2-44bf-812a-e13d99e7235e",
+      "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+      "parentName": "Report",
+      "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+      "conceptLevel": "Model",
+      "name": "PublisherDetails",
+      "defaultLabel": "Detailed information about a Publisher",
+      "definition": {
+        "extractorTemplates": {
+          "00_publisher": {
+            "extractorOrCombinerType": "extractorByPrimaryKey",
+            "parentName": "Author",
+            "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
+            "instanceUuid": {
+              "transformerType": "getFromParameters",
+              "referenceName": "instanceUuid"
+            }
+          },
+          "01_authors": {
+            "extractorOrCombinerType": "extractorInstancesByEntity",
+            "applicationSection": "data",
+            "parentName": "Author",
+            "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733"
+          }
+        },
+        "combinerTemplates": {
+          "02_booksOfPublisher": {
+            "extractorOrCombinerType": "combinerOneToMany",
+            "parentName": "Book",
+            "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+            "objectReference": "00_publisher",
+            "AttributeOfListObjectToCompareToReferenceUuid": "publisher"
+          },
+          "03_BooksWithAuthor": {
+            "extractorOrCombinerType": "combinerManyToMany",
+            "applicationSection": "data",
+            "parentName": "Book",
+            "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+            "objectListReference": "01_authors",
+            "AttributeOfRootListObjectToCompareToListReferenceUuid": "author",
+            "applyTransformer": {
+              "transformerType": "createObject",
+              "interpolation": "runtime",
+              "definition": {
+                "authorName": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "referenceObject",
+                    "name"
+                  ]
+                },
+                "authorUuid": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "referenceObject",
+                    "uuid"
+                  ]
+                },
+                "bookTitle": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "foreignKeyObject",
+                    "name"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "section": {
+          "type": "list",
+          "definition": [
+            {
+              "type": "objectInstanceReportSection",
+              "definition": {
+                "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
+                "fetchedDataReference": "00_publisher"
+              }
+            },
+            {
+              "type": "objectListReportSection",
+              "definition": {
+                "label": "Publisher's (${00_publisher.name})  Books",
+                "parentName": "Book",
+                "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                "fetchedDataReference": "02_booksOfPublisher",
+                "sortByAttribute": "name"
+              }
+            },
+            {
+              "type": "graphReportSection",
+              "definition": {
+                "label": "Book Count by Author",
+                "fetchedDataReference": "04_booksByAuthorCount",
+                "graphType": "bar",
+                "dataMapping": {
+                  "labelField": "authorName",
+                  "valueField": "aggregate"
+                },
+                "config": {
+                  "width": 600,
+                  "height": 400,
+                  "showTooltips": true,
+                  "showLegend": true
+                }
+              }
+            }
+          ]
+        },
+        "runtimeTransformers": {
+          "04_booksByAuthorCount": {
+            "interpolation": "runtime",
+            "transformerType": "aggregate",
+            "applyTo": {
+              "transformerType": "getFromContext",
+              "interpolation": "runtime",
+              "referenceName": "03_BooksWithAuthor"
+            },
+            "groupBy": [
+              "authorName",
+              "authorUuid"
+            ]
+          },
+          "05_booksOfPublisherCount": {
+            "interpolation": "runtime",
+            "transformerType": "aggregate",
+            "applyTo": {
+              "transformerType": "getFromContext",
+              "referenceName": "02_booksOfPublisher"
+            }
+          }
+        }
+      }
+    },
+    {
+      "uuid": "3df9413d-5050-4357-910c-f764aacae7e6",
+      "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+      "parentName": "Report",
+      "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+      "conceptLevel": "Model",
+      "name": "UserList",
+      "defaultLabel": "List of Users",
+      "definition": {
+        "reportParameters": {},
+        "extractorTemplates": {
+          "users": {
+            "extractorOrCombinerType": "extractorInstancesByEntity",
+            "parentName": "User",
+            "parentUuid": "ca794e28-b2dc-45b3-8137-00151557eea8"
+          }
+        },
+        "section": {
+          "type": "objectListReportSection",
+          "definition": {
+            "parentName": "User",
+            "parentUuid": "ca794e28-b2dc-45b3-8137-00151557eea8",
+            "label": "Users",
+            "fetchedDataReference": "users",
+            "sortByAttribute": "lastName"
+          }
+        }
+      }
+    },
+    {
+      "uuid": "66a09068-52c3-48bc-b8dd-76575bbc8e72",
+      "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+      "parentName": "Report",
+      "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+      "conceptLevel": "Model",
+      "name": "AuthorList",
+      "defaultLabel": "List of Authors",
+      "definition": {
+        "reportParameters": {},
+        "extractors": {
+          "authors": {
+            "extractorOrCombinerType": "extractorInstancesByEntity",
+            "parentName": "Author",
+            "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733"
+          }
+        },
+        "section": {
+          "type": "list",
+          "definition": [
+            {
+              "type": "markdownReportSection",
+              "definition": {
+                "label": "Toto",
+                "content": "# List of Authors\n\nThis report displays a list of all authors in the system.s"
+              }
+            },
+            {
+              "type": "objectListReportSection",
+              "definition": {
+                "parentName": "Author",
+                "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+                "label": "Authors",
+                "fetchedDataReference": "authors",
+                "sortByAttribute": "name"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "uuid": "6d9faa54-643c-4aec-87c3-32635ad95902",
+      "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+      "parentName": "Report",
+      "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+      "conceptLevel": "Model",
+      "name": "AuthorDetails",
+      "defaultLabel": "Detailed information about an Author",
+      "definition": {
+        "extractorTemplates": {
+          "author": {
+            "extractorOrCombinerType": "extractorByPrimaryKey",
+            "parentName": "Author",
+            "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+            "instanceUuid": {
+              "transformerType": "getFromParameters",
+              "referenceName": "instanceUuid"
+            }
+          }
+        },
+        "combinerTemplates": {
+          "1_booksOfAuthor": {
+            "extractorOrCombinerType": "combinerOneToMany",
+            "parentName": "Book",
+            "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+            "objectReference": "author",
+            "AttributeOfListObjectToCompareToReferenceUuid": "author"
+          },
+          "2_publishersOfBooks": {
+            "extractorOrCombinerType": "combinerManyToMany",
+            "parentName": "Publisher",
+            "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
+            "objectListReference": "1_booksOfAuthor",
+            "objectListReferenceAttribute": "publisher"
+          },
+          "3_BooksOfPublishers": {
+            "extractorOrCombinerType": "combinerManyToMany",
+            "parentName": "Book",
+            "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+            "objectListReference": "2_publishersOfBooks",
+            "AttributeOfRootListObjectToCompareToListReferenceUuid": "publisher"
+          }
+        },
+        "runtimeTransformers": {},
+        "section": {
+          "type": "list",
+          "definition": [
+            {
+              "type": "objectInstanceReportSection",
+              "definition": {
+                "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+                "fetchedDataReference": "author"
+              }
+            },
+            {
+              "type": "objectListReportSection",
+              "definition": {
+                "label": "Author's (${author.name}) Books",
+                "parentName": "Book",
+                "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                "fetchedDataReference": "1_booksOfAuthor",
+                "sortByAttribute": "name"
+              }
+            },
+            {
+              "type": "objectListReportSection",
+              "definition": {
+                "label": "Author's (${author.name}) Publishers",
+                "parentName": "Publisher",
+                "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
+                "fetchedDataReference": "2_publishersOfBooks",
+                "sortByAttribute": "name"
+              }
+            },
+            {
+              "type": "objectListReportSection",
+              "definition": {
+                "label": "Author's (${author.name}) Publisher's Books",
+                "parentName": "Book",
+                "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                "fetchedDataReference": "3_BooksOfPublishers",
+                "sortByAttribute": "name"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "uuid": "74b010b6-afee-44e7-8590-5f0849e4a5c9",
+      "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+      "parentName": "Report",
+      "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+      "conceptLevel": "Model",
+      "name": "BookList",
+      "defaultLabel": "List of Books",
+      "definition": {
+        "reportParameters": {},
+        "extractors": {
+          "books": {
+            "extractorOrCombinerType": "extractorInstancesByEntity",
+            "label": "BookList_books",
+            "parentName": "Book",
+            "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+          }
+        },
+        "section": {
+          "type": "list",
+          "definition": [
+            {
+              "type": "objectListReportSection",
+              "definition": {
+                "label": "Books",
+                "parentName": "Book",
+                "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                "fetchedDataReference": "books",
+                "sortByAttribute": "name"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "uuid": "7ccc9ac5-d29d-4b5b-a9ec-841bea152e2c",
+      "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+      "parentName": "Report",
+      "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+      "conceptLevel": "Model",
+      "name": "LendingHistoryItemDetails",
+      "defaultLabel": "Detailed information about a Lending History Item",
+      "definition": {
+        "extractorTemplates": {
+          "lendingHistoryItem": {
+            "extractorOrCombinerType": "extractorByPrimaryKey",
+            "parentName": "LendingHistoryItem",
+            "parentUuid": "e81078f3-2de7-4301-bd79-d3a156aec149",
+            "instanceUuid": {
+              "transformerType": "getFromParameters",
+              "referenceName": "instanceUuid"
+            }
+          }
+        },
+        "section": {
+          "type": "list",
+          "definition": [
+            {
+              "type": "objectInstanceReportSection",
+              "definition": {
+                "parentUuid": "e81078f3-2de7-4301-bd79-d3a156aec149",
+                "fetchedDataReference": "lendingHistoryItem"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "uuid": "8adee3d5-f8cc-4118-aa02-5a2cd07908aa",
+      "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+      "parentName": "Report",
+      "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+      "conceptLevel": "Model",
+      "name": "UserDetails",
+      "defaultLabel": "Detailed information about a User",
+      "definition": {
+        "extractorTemplates": {
+          "user": {
+            "extractorOrCombinerType": "extractorByPrimaryKey",
+            "parentName": "User",
+            "parentUuid": "ca794e28-b2dc-45b3-8137-00151557eea8",
+            "instanceUuid": {
+              "transformerType": "getFromParameters",
+              "referenceName": "instanceUuid"
+            }
+          }
+        },
+        "section": {
+          "type": "list",
+          "definition": [
+            {
+              "type": "objectInstanceReportSection",
+              "definition": {
+                "parentUuid": "ca794e28-b2dc-45b3-8137-00151557eea8",
+                "fetchedDataReference": "user"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "uuid": "931dd036-dfce-4e47-868e-36dba3654816",
+      "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+      "parentName": "Report",
+      "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+      "conceptLevel": "Model",
+      "name": "TestList",
+      "defaultLabel": "List of Library Tests Instances",
+      "type": "list",
+      "definition": {
+        "reportParameters": {},
+        "extractorTemplates": {
+          "tests": {
+            "extractorOrCombinerType": "extractorInstancesByEntity",
+            "parentName": "Test",
+            "parentUuid": "9ad64893-5f8f-4eaf-91aa-ffae110f88c8"
+          }
+        },
+        "section": {
+          "type": "objectListReportSection",
+          "definition": {
+            "parentName": "Test",
+            "parentUuid": "9ad64893-5f8f-4eaf-91aa-ffae110f88c8",
+            "label": "Tests",
+            "fetchedDataReference": "tests",
+            "sortByAttribute": "name"
+          }
+        }
+      }
+    },
+    {
+      "uuid": "9c0cdb97-9537-4ee2-8053-a6ece3e0afe8",
+      "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+      "name": "LibraryHome",
+      "defaultLabel": "Home",
+      "definition": {
+        "section": {
+          "type": "list",
+          "definition": [
+            {
+              "type": "markdownReportSection",
+              "definition": {
+                "content": "# Welcome to the Library Application\n\nYou can browse the library, run lending actions, or walk the multistep country create process:"
+              }
+            },
+            {
+              "type": "runnerReportSection",
+              "definition": {
+                "runnerReportSectionType": "storedRunner",
+                "label": "lendBook",
+                "runner": "cc853632-f158-43fa-b9ed-437c9c25f539"
+              }
+            },
+            {
+              "type": "runnerReportSection",
+              "definition": {
+                "runnerReportSectionType": "storedRunner",
+                "label": "returnBook",
+                "runner": "98a38a84-e702-4540-a056-c7676a193a2b"
+              }
+            },
+            {
+              "type": "runnerReportSection",
+              "definition": {
+                "runnerReportSectionType": "storedRunner",
+                "label": "MCP: lendDocument",
+                "runner": "dbb39e31-5c7d-4473-9adb-5286e2972e46"
+              }
+            },
+            {
+              "type": "openReportSection",
+              "definition": {
+                "label": "Create Country (multistep)",
+                "reportUuid": "d2b2fbbd-6844-4422-8412-4e3c303296bc",
+                "openAs": "route"
+              }
+            },
+            {
+              "type": "storedReportDisplay",
+              "definition": {
+                "transformerType": "returnValue",
+                "value": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                  "deploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4",
+                  "applicationSection": "data",
+                  "reportUuid": "3d96f097-a0e4-47d8-aa6b-43fc13c3da68",
+                  "instanceUuid": "3d96f097-a0e4-47d8-aa6b-43fc13c3da68"
+                }
+              }
+            }
+          ]
+        }
+      },
+      "parentName": "Report",
+      "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f"
+    },
+    {
+      "uuid": "a77aa662-006d-46cd-9176-01f02a1a12dc",
+      "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+      "parentName": "Report",
+      "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+      "conceptLevel": "Model",
+      "name": "PublisherList",
+      "defaultLabel": "List of Publishers",
+      "type": "list",
+      "definition": {
+        "reportParameters": {},
+        "extractorTemplates": {
+          "publishers": {
+            "extractorOrCombinerType": "extractorInstancesByEntity",
+            "label": "PublisherList publishers",
+            "parentName": "Publisher",
+            "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab"
+          }
+        },
+        "section": {
+          "type": "grid",
+          "definition": [
+            [
+              {
+                "type": "objectListReportSection",
+                "definition": {
+                  "parentName": "Publisher",
+                  "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
+                  "label": "Publishers",
+                  "fetchedDataReference": "publishers",
+                  "sortByAttribute": "name"
+                }
+              }
+            ],
+            [
+              {
+                "type": "graphReportSection",
+                "definition": {
+                  "label": "Book Count by Publisher",
+                  "fetchedDataReference": "00_BookCountByPublisher",
+                  "graphType": "bar",
+                  "dataMapping": {
+                    "labelField": "publisherName",
+                    "valueField": "aggregate"
+                  },
+                  "config": {
+                    "width": 600,
+                    "height": 400,
+                    "showTooltips": true,
+                    "showLegend": true,
+                    "labelPresentation": "slanted"
+                  }
+                }
+              },
+              {
+                "type": "graphReportSection",
+                "definition": {
+                  "label": "Publisher Collection Share",
+                  "fetchedDataReference": "00_BookCountByPublisher",
+                  "graphType": "pie",
+                  "dataMapping": {
+                    "labelField": "publisherName",
+                    "valueField": "aggregate"
+                  },
+                  "config": {
+                    "width": 600,
+                    "height": 400,
+                    "showTooltips": true,
+                    "showLegend": true
+                  }
+                }
+              }
+            ]
+          ]
+        },
+        "runStoredQueries": [
+          {
+            "label": "BookCountByPublisher",
+            "storedQuery": "6176dcdf-39a6-4805-8dc5-3c2366a31a11"
+          }
+        ]
+      }
+    },
+    {
+      "uuid": "b6d9e2a1-4c58-4f70-8a13-9e2f0c5d7b44",
+      "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+      "parentName": "Report",
+      "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+      "conceptLevel": "Model",
+      "name": "MultistepLaunchPad",
+      "defaultLabel": "Multistep launch pad",
+      "type": "list",
+      "definition": {
+        "extractorTemplates": {
+          "countries": {
+            "extractorOrCombinerType": "extractorInstancesByEntity",
+            "parentName": "Country",
+            "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4"
+          }
+        },
+        "section": {
+          "type": "list",
+          "definition": [
+            {
+              "type": "openReportSection",
+              "definition": {
+                "label": "Open tracer as modal",
+                "reportUuid": "d2b2fbbd-6844-4422-8412-4e3c303296bc",
+                "openAs": "modal"
+              }
+            },
+            {
+              "type": "openReportSection",
+              "definition": {
+                "label": "Open tracer as route",
+                "reportUuid": "d2b2fbbd-6844-4422-8412-4e3c303296bc",
+                "openAs": "route"
+              }
+            },
+            {
+              "type": "objectListReportSection",
+              "definition": {
+                "label": "Countries",
+                "parentName": "Country",
+                "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                "fetchedDataReference": "countries",
+                "sortByAttribute": "name",
+                "openReport": {
+                  "label": "Open",
+                  "reportUuid": "d2b2fbbd-6844-4422-8412-4e3c303296bc",
+                  "openAs": "modal"
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "uuid": "c3503412-3d8a-43ef-a168-aa36e975e606",
+      "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+      "parentName": "Report",
+      "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+      "conceptLevel": "Model",
+      "name": "BookDetails",
+      "defaultLabel": "Detailed information about a Book",
+      "definition": {
+        "extractorTemplates": {
+          "book": {
+            "extractorOrCombinerType": "extractorByPrimaryKey",
+            "parentName": "Book",
+            "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+            "instanceUuid": {
+              "transformerType": "getFromParameters",
+              "referenceName": "instanceUuid"
+            }
+          }
+        },
+        "combinerTemplates": {
+          "publisher": {
+            "extractorOrCombinerType": "combinerOneToOne",
+            "parentName": "Publisher",
+            "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
+            "objectReference": "book",
+            "AttributeOfObjectToCompareToReferenceUuid": "publisher"
+          },
+          "author": {
+            "extractorOrCombinerType": "combinerOneToOne",
+            "parentName": "Author",
+            "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+            "objectReference": "book",
+            "AttributeOfObjectToCompareToReferenceUuid": "author"
+          },
+          "booksOfPublisher": {
+            "extractorOrCombinerType": "combinerOneToMany",
+            "parentName": "Book",
+            "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+            "objectReference": "publisher",
+            "AttributeOfListObjectToCompareToReferenceUuid": "publisher"
+          },
+          "booksOfAuthor": {
+            "extractorOrCombinerType": "combinerOneToMany",
+            "parentName": "Book",
+            "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+            "objectReference": "author",
+            "AttributeOfListObjectToCompareToReferenceUuid": "author"
+          }
+        },
+        "section": {
+          "type": "list",
+          "definition": [
+            {
+              "type": "objectInstanceReportSection",
+              "definition": {
+                "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                "fetchedDataReference": "book"
+              }
+            },
+            {
+              "type": "objectListReportSection",
+              "definition": {
+                "label": "Author's (${author.name}) Books",
+                "parentName": "Book",
+                "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                "fetchedDataReference": "booksOfAuthor",
+                "sortByAttribute": "name"
+              }
+            },
+            {
+              "type": "objectListReportSection",
+              "definition": {
+                "label": "Publisher's (${publisher.name}) Books",
+                "parentName": "Book",
+                "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                "fetchedDataReference": "booksOfPublisher",
+                "sortByAttribute": "name"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "uuid": "cee26a1e-be58-497c-9d15-fa6832787907",
+      "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+      "parentName": "Report",
+      "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+      "conceptLevel": "Model",
+      "name": "LendingHistory",
+      "defaultLabel": "Lending History Report",
+      "definition": {
+        "reportParameters": {},
+        "extractorTemplates": {
+          "lendingHistoryItems": {
+            "extractorOrCombinerType": "extractorInstancesByEntity",
+            "parentName": "LendingHistoryItem",
+            "parentUuid": "e81078f3-2de7-4301-bd79-d3a156aec149"
+          }
+        },
+        "section": {
+          "type": "objectListReportSection",
+          "definition": {
+            "parentName": "LendingHistoryItem",
+            "parentUuid": "e81078f3-2de7-4301-bd79-d3a156aec149",
+            "label": "Lending History Items",
+            "fetchedDataReference": "lendingHistoryItems",
+            "sortByAttribute": "startDate",
+            "sortOrder": "desc"
+          }
+        }
+      }
+    },
+    {
+      "uuid": "d2b2fbbd-6844-4422-8412-4e3c303296bc",
+      "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+      "parentName": "Report",
+      "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+      "conceptLevel": "Model",
+      "name": "MultistepCountryCreate",
+      "defaultLabel": "Create Country (multistep)",
+      "type": "multistep",
+      "description": "Enter a country name and code across two steps, then Finish to create a new Country in the Library.",
+      "definition": {
+        "runtimeTransformers": {
+          "stepOneEcho": {
+            "transformerType": "getFromParameters",
+            "interpolation": "runtime",
+            "referencePath": [
+              "stepOne",
+              "name"
+            ]
+          }
+        },
+        "compositeActionSequence": {
+          "actionType": "compositeActionSequence",
+          "actionLabel": "MultistepCountryCreateFinish",
+          "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+          "payload": {
+            "actionSequence": [
+              {
+                "actionType": "createInstance",
+                "actionLabel": "createCountryFromStepOne",
+                "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                "payload": {
+                  "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                  "applicationSection": "data",
+                  "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                  "objects": [
+                    {
+                      "transformerType": "createObject",
+                      "definition": {
+                        "uuid": "63c96487-713f-4d5b-a424-bf7e8f70e147",
+                        "parentName": "Country",
+                        "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                        "name": {
+                          "transformerType": "getFromParameters",
+                          "referencePath": [
+                            "stepOne",
+                            "name"
+                          ]
+                        },
+                        "iso3166-1Alpha-2": {
+                          "transformerType": "getFromParameters",
+                          "safe": true,
+                          "referencePath": [
+                            "stepOne",
+                            "iso3166-1Alpha-2"
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        "section": {
+          "type": "list",
+          "definition": [
+            {
+              "type": "inputReportSection",
+              "definition": {
+                "label": "Country",
+                "inputPrefix": "stepOne",
+                "inputMLSchema": {
+                  "type": "object",
+                  "definition": {
+                    "name": {
+                      "type": "string",
+                      "tag": {
+                        "value": {
+                          "defaultLabel": "Name"
+                        }
+                      }
+                    },
+                    "iso3166-1Alpha-2": {
+                      "type": "string",
+                      "optional": true,
+                      "tag": {
+                        "value": {
+                          "defaultLabel": "Country Code"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "type": "markdownReportSection",
+              "definition": {
+                "label": "Confirm",
+                "content": "Confirm the country details, then continue to review the echoed name before Finish."
+              }
+            },
+            {
+              "type": "jsonReportSection",
+              "definition": {
+                "label": "Echoed name",
+                "fetchedDataReference": "stepOneEcho"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "uuid": "fc4ba6bc-751f-4d1a-acce-865c10354a31",
+      "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+      "parentName": "Report",
+      "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+      "conceptLevel": "Model",
+      "name": "CountryDetails",
+      "defaultLabel": "Detailed information about a Country",
+      "definition": {
+        "extractorTemplates": {
+          "country": {
+            "extractorOrCombinerType": "extractorByPrimaryKey",
+            "parentName": "Country",
+            "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+            "instanceUuid": {
+              "transformerType": "getFromParameters",
+              "referenceName": "instanceUuid"
+            }
+          }
+        },
+        "combinerTemplates": {
+          "00_publishersOfCountry": {
+            "extractorOrCombinerType": "combinerOneToMany",
+            "parentName": "Publisher",
+            "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
+            "objectReference": "country",
+            "AttributeOfListObjectToCompareToReferenceUuid": "country"
+          },
+          "01_authorsOfCountry": {
+            "extractorOrCombinerType": "combinerOneToMany",
+            "parentName": "Author",
+            "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+            "objectReference": "country",
+            "AttributeOfListObjectToCompareToReferenceUuid": "country"
+          },
+          "02_booksOfAuthors": {
+            "extractorOrCombinerType": "combinerManyToMany",
+            "parentName": "Book",
+            "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+            "objectListReference": "01_authorsOfCountry",
+            "AttributeOfRootListObjectToCompareToListReferenceUuid": "author"
+          }
+        },
+        "section": {
+          "type": "list",
+          "definition": [
+            {
+              "type": "objectInstanceReportSection",
+              "definition": {
+                "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                "fetchedDataReference": "country"
+              }
+            },
+            {
+              "type": "objectListReportSection",
+              "definition": {
+                "label": "Country's (${country.name}) Publishers",
+                "parentName": "Publisher",
+                "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab",
+                "fetchedDataReference": "00_publishersOfCountry",
+                "sortByAttribute": "name"
+              }
+            },
+            {
+              "type": "objectListReportSection",
+              "definition": {
+                "label": "Country's (${country.name}) Authors",
+                "parentName": "Author",
+                "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+                "fetchedDataReference": "01_authorsOfCountry",
+                "sortByAttribute": "name"
+              }
+            },
+            {
+              "type": "objectListReportSection",
+              "definition": {
+                "label": "Books from Country's (${country.name}) Authors",
+                "parentName": "Book",
+                "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                "fetchedDataReference": "02_booksOfAuthors",
+                "sortByAttribute": "name"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "storedQueries": [
+    {
+      "uuid": "14d6a920-9d86-4038-8d15-3f96e3337e59",
+      "parentName": "Query",
+      "parentUuid": "e4320b9e-ab45-4abe-85d8-359604b3c62f",
+      "name": "BooksByAuthorCount",
+      "defaultLabel": "The count of Books By Author.",
+      "description": "This query produces a list of authors, with the count of Books for each author.",
+      "definition": {
+        "extractorTemplates": {
+          "books": {
+            "extractorOrCombinerType": "extractorInstancesByEntity",
+            "applicationSection": "data",
+            "parentName": "Book",
+            "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+          },
+          "authors": {
+            "extractorOrCombinerType": "extractorInstancesByEntity",
+            "applicationSection": "data",
+            "parentName": "Author",
+            "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733"
+          }
+        },
+        "combinerTemplates": {
+          "BooksWithAuthor": {
+            "extractorOrCombinerType": "combinerManyToMany",
+            "applicationSection": "data",
+            "parentName": "Book",
+            "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+            "objectListReference": "authors",
+            "AttributeOfRootListObjectToCompareToListReferenceUuid": "author",
+            "applyTransformer": {
+              "transformerType": "createObject",
+              "interpolation": "runtime",
+              "definition": {
+                "authorName": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "referenceObject",
+                    "name"
+                  ]
+                },
+                "authorUuid": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "referenceObject",
+                    "uuid"
+                  ]
+                },
+                "bookTitle": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "foreignKeyObject",
+                    "name"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "runtimeTransformers": {
+          "00_booksByAuthorCount": {
+            "transformerType": "aggregate",
+            "applyTo": {
+              "transformerType": "getFromContext",
+              "interpolation": "runtime",
+              "referenceName": "BooksWithAuthor"
+            },
+            "groupBy": [
+              "authorName",
+              "authorUuid"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "uuid": "6176dcdf-39a6-4805-8dc5-3c2366a31a11",
+      "parentName": "Query",
+      "parentUuid": "e4320b9e-ab45-4abe-85d8-359604b3c62f",
+      "name": "BookCountByPublisher",
+      "defaultLabel": "The count of Books By Publisher.",
+      "description": "This query produces a list of publishers, with the count of Books for each publisher.",
+      "definition": {
+        "extractorTemplates": {
+          "publishers": {
+            "extractorOrCombinerType": "extractorInstancesByEntity",
+            "applicationSection": "data",
+            "parentName": "Publisher",
+            "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab"
+          }
+        },
+        "combinerTemplates": {
+          "BookWithPublisher": {
+            "extractorOrCombinerType": "combinerManyToMany",
+            "label": "BookCountByPublisher_BookWithPublisher",
+            "applicationSection": "data",
+            "parentName": "Book",
+            "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+            "objectListReference": "publishers",
+            "AttributeOfRootListObjectToCompareToListReferenceUuid": "publisher",
+            "applyTransformer": {
+              "transformerType": "createObject",
+              "interpolation": "runtime",
+              "definition": {
+                "publisherName": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "referenceObject",
+                    "name"
+                  ]
+                },
+                "publisherUuid": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "referenceObject",
+                    "uuid"
+                  ]
+                },
+                "bookName": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "foreignKeyObject",
+                    "name"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "runtimeTransformers": {
+          "00_BookCountByPublisher": {
+            "transformerType": "aggregate",
+            "applyTo": {
+              "transformerType": "getFromContext",
+              "interpolation": "runtime",
+              "referenceName": "BookWithPublisher"
+            },
+            "groupBy": [
+              "publisherName",
+              "publisherUuid"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "uuid": "6eaaec37-e3bc-40e4-af1b-4088412c0e34",
+      "parentName": "Query",
+      "parentUuid": "e4320b9e-ab45-4abe-85d8-359604b3c62f",
+      "name": "AuthorsCountByCountry",
+      "defaultLabel": "The count of Authors By Country.",
+      "description": "This query produces a list of countries, with the count of Authors for each country.",
+      "definition": {
+        "extractorTemplates": {
+          "countries": {
+            "extractorOrCombinerType": "extractorInstancesByEntity",
+            "applicationSection": "data",
+            "parentName": "Country",
+            "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4"
+          }
+        },
+        "combinerTemplates": {
+          "AuthorWithCountry": {
+            "extractorOrCombinerType": "combinerManyToMany",
+            "applicationSection": "data",
+            "parentName": "Author",
+            "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733",
+            "objectListReference": "countries",
+            "AttributeOfRootListObjectToCompareToListReferenceUuid": "country",
+            "applyTransformer": {
+              "transformerType": "createObject",
+              "interpolation": "runtime",
+              "definition": {
+                "countryName": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "referenceObject",
+                    "name"
+                  ]
+                },
+                "countryUuid": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "referenceObject",
+                    "uuid"
+                  ]
+                },
+                "authorName": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "foreignKeyObject",
+                    "name"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "runtimeTransformers": {
+          "00_AuthorCountByCountry": {
+            "transformerType": "aggregate",
+            "applyTo": {
+              "transformerType": "getFromContext",
+              "interpolation": "runtime",
+              "referenceName": "AuthorWithCountry"
+            },
+            "groupBy": [
+              "countryName",
+              "countryUuid"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "uuid": "6ff19a7b-fdfc-4bf8-8026-a34447a5a073",
+      "parentName": "Query",
+      "parentUuid": "e4320b9e-ab45-4abe-85d8-359604b3c62f",
+      "name": "BooksByCountryCount",
+      "defaultLabel": "The count of Books By Country.",
+      "description": "This query produces a list of countries, with the count of Books for each author.",
+      "definition": {
+        "extractorTemplates": {
+          "books": {
+            "extractorOrCombinerType": "extractorInstancesByEntity",
+            "applicationSection": "data",
+            "parentName": "Book",
+            "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5"
+          },
+          "authors": {
+            "extractorOrCombinerType": "extractorInstancesByEntity",
+            "applicationSection": "data",
+            "parentName": "Author",
+            "parentUuid": "d7a144ff-d1b9-4135-800c-a7cfc1f38733"
+          }
+        },
+        "combinerTemplates": {
+          "BooksWithAuthor": {
+            "extractorOrCombinerType": "combinerManyToMany",
+            "applicationSection": "data",
+            "parentName": "Book",
+            "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+            "objectListReference": "authors",
+            "AttributeOfRootListObjectToCompareToListReferenceUuid": "author",
+            "applyTransformer": {
+              "transformerType": "createObject",
+              "interpolation": "runtime",
+              "definition": {
+                "authorName": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "referenceObject",
+                    "name"
+                  ]
+                },
+                "authorUuid": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "referenceObject",
+                    "uuid"
+                  ]
+                },
+                "bookTitle": {
+                  "transformerType": "getFromContext",
+                  "interpolation": "runtime",
+                  "referencePath": [
+                    "foreignKeyObject",
+                    "name"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "runtimeTransformers": {
+          "00_booksByAuthorCount": {
+            "transformerType": "aggregate",
+            "applyTo": {
+              "transformerType": "getFromContext",
+              "interpolation": "runtime",
+              "referenceName": "BooksWithAuthor"
+            },
+            "groupBy": [
+              "authorName",
+              "authorUuid"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "mlSchemas": [],
+  "applicationVersions": [],
+  "applicationVersionCrossEntityVersion": [],
+  "applicationVersionCrossQueryVersion": [],
+  "queryVersions": [],
+  "applicationVersionCrossReportVersion": [],
+  "reportVersions": [],
+  "applicationVersionCrossMenuVersion": [],
+  "menuVersions": [],
+  "applicationVersionCrossEndpointVersion": [],
+  "endpointVersions": [],
+  "applicationVersionCrossRunnerVersion": [],
+  "runnerVersions": [],
+  "applicationVersionCrossThemeVersion": [],
+  "themeVersions": [],
+  "applicationVersionCrossTransformerDefinitionVersion": [],
+  "transformerDefinitionVersions": [],
+  "runners": [
+    {
+      "uuid": "98a38a84-e702-4540-a056-c7676a193a2b",
+      "parentUuid": "e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd",
+      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+      "name": "returnDocument",
+      "defaultLabel": "Return Document",
+      "parentName": "Runner",
+      "definition": {
+        "runnerType": "actionRunner",
+        "endpoint": "212f2784-5b68-43b2-8ee0-89b1c6fdd0de",
+        "action": "returnDocument"
+      }
+    },
+    {
+      "uuid": "cc853632-f158-43fa-b9ed-437c9c25f539",
+      "parentUuid": "e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd",
+      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+      "name": "lendDocument",
+      "defaultLabel": "Lend Document",
+      "parentName": "Runner",
+      "definition": {
+        "runnerType": "actionRunner",
+        "endpoint": "212f2784-5b68-43b2-8ee0-89b1c6fdd0de",
+        "action": "lendDocument"
+      }
+    },
+    {
+      "uuid": "dbb39e31-5c7d-4473-9adb-5286e2972e46",
+      "parentUuid": "e54d7dc1-4fbc-495e-9ed9-b5cf081b9fbd",
+      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+      "name": "mcpLendDocument",
+      "defaultLabel": "MCP: lendDocument",
+      "parentName": "Runner",
+      "description": "Issue #253 — lend a document through backend MCP tools/call (Library_lendDocument).",
+      "definition": {
+        "runnerType": "mcpToolRunner",
+        "toolName": "Library_lendDocument",
+        "resultPresentation": "status"
+      }
+    }
+  ],
+  "tests": [
+    {
+      "uuid": "3480cd1e-f110-4c91-8456-b7c39c37a337",
+      "parentName": "MiroirTest",
+      "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+      "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+      "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+      "name": "report.queryDetails",
+      "description": "Miroir's QueryDetails Report, mounted at its route on a Library Query: only transformer fields offer the Blocks, Form and JSON switch, a runtime transformer edited as blocks is saved and committed, and the editor root undoes and redoes the edit, and a transformer the Library defines is a block of its own.",
+      "tags": [
+        "integ",
+        "ui",
+        "report"
+      ],
+      "issue": "503",
+      "definition": {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "report.queryDetails",
+        "runTarget": {
+          "applicationUuid": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+          "applicationName": "Library",
+          "deploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+        },
+        "testConfiguration": "3123740d-2398-458f-82e6-4f1294866e39",
+        "testbedInitApplicationParameters": "libraryTestbedInitParams",
+        "miroirTests": [
+          {
+            "miroirTestType": "reportTestSuite",
+            "miroirTestLabel": "QueryDetails",
+            "report": {
+              "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+              "applicationSection": "model",
+              "reportUuid": "4bbf3894-93ea-4c7f-9d8a-827152a0118e",
+              "instanceUuid": "6176dcdf-39a6-4805-8dc5-3c2366a31a11"
+            },
+            "miroirTests": [
+              {
+                "miroirTestType": "reportTest",
+                "miroirTestLabel": "only transformer fields have the view switch",
+                "steps": [
+                  {
+                    "step": "expectElement",
+                    "label": "the Query's name, read from the testbed store",
+                    "target": {
+                      "byDisplayValue": "BookCountByPublisher"
+                    },
+                    "timeout": 15000
+                  },
+                  {
+                    "step": "expectElement",
+                    "label": "the runtime transformer has the view switch",
+                    "target": {
+                      "byTestId": "block-view-switch:definition.runtimeTransformers.00_BookCountByPublisher"
+                    },
+                    "timeout": 5000
+                  },
+                  {
+                    "step": "expectElement",
+                    "label": "the name has none",
+                    "target": {
+                      "byTestId": "block-view-switch:name"
+                    },
+                    "present": false
+                  },
+                  {
+                    "step": "expectElement",
+                    "label": "the Query definition has none",
+                    "target": {
+                      "byTestId": "block-view-switch:definition"
+                    },
+                    "present": false
+                  }
+                ]
+              },
+              {
+                "miroirTestType": "reportTest",
+                "miroirTestLabel": "a runtime transformer edited as blocks is saved",
+                "steps": [
+                  {
+                    "step": "expectElement",
+                    "label": "the Query's name, read from the testbed store",
+                    "target": {
+                      "byDisplayValue": "BookCountByPublisher"
+                    },
+                    "timeout": 15000
+                  },
+                  {
+                    "step": "expectElement",
+                    "label": "the runtime transformer has the view switch",
+                    "target": {
+                      "byTestId": "block-view-switch:definition.runtimeTransformers.00_BookCountByPublisher"
+                    },
+                    "timeout": 5000
+                  },
+                  {
+                    "step": "click",
+                    "label": "show the runtime transformer as blocks",
+                    "target": {
+                      "byTestId": "block-view-mode:definition.runtimeTransformers.00_BookCountByPublisher:blocks"
+                    }
+                  },
+                  {
+                    "step": "expectElement",
+                    "label": "its root block",
+                    "target": {
+                      "byTestId": "block:definition.runtimeTransformers.00_BookCountByPublisher"
+                    },
+                    "timeout": 10000,
+                    "attribute": {
+                      "name": "data-transformer-type",
+                      "value": "aggregate"
+                    }
+                  },
+                  {
+                    "step": "click",
+                    "label": "open the groupBy field",
+                    "target": {
+                      "byTestId": "block-field:definition.runtimeTransformers.00_BookCountByPublisher.groupBy"
+                    }
+                  },
+                  {
+                    "step": "clear",
+                    "label": "clear it",
+                    "target": {
+                      "byTestId": "block-field-input:definition.runtimeTransformers.00_BookCountByPublisher.groupBy"
+                    }
+                  },
+                  {
+                    "step": "type",
+                    "label": "type the new groupBy (user-event types [[ as [)",
+                    "target": {
+                      "byTestId": "block-field-input:definition.runtimeTransformers.00_BookCountByPublisher.groupBy"
+                    },
+                    "text": "[[\"publisherName\",\"bookName\"]{Enter}"
+                  },
+                  {
+                    "step": "expectElement",
+                    "label": "the block shows bookName",
+                    "target": {
+                      "byTestId": "block-field:definition.runtimeTransformers.00_BookCountByPublisher.groupBy"
+                    },
+                    "timeout": 5000,
+                    "containsHtml": "bookName"
+                  },
+                  {
+                    "step": "click",
+                    "label": "submit the Query",
+                    "target": {
+                      "byTestId": "typed-value-object-editor-submit"
+                    }
+                  },
+                  {
+                    "step": "compositeAction",
+                    "label": "commit the Library model",
+                    "action": {
+                      "actionType": "commit",
+                      "actionLabel": "commitLibraryModel",
+                      "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                      "payload": {
+                        "application": {
+                          "transformerType": "getFromParameters",
+                          "interpolation": "build",
+                          "referenceName": "testApplicationUuid"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "step": "compositeAction",
+                    "label": "read the Query from the store",
+                    "action": {
+                      "actionType": "compositeRunBoxedQueryAction",
+                      "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                      "actionLabel": "readStoredQuery",
+                      "nameGivenToResult": "storedQuery",
+                      "payload": {
+                        "actionType": "runBoxedQueryAction",
+                        "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                        "payload": {
+                          "application": {
+                            "transformerType": "getFromParameters",
+                            "interpolation": "build",
+                            "referenceName": "testApplicationUuid"
+                          },
+                          "applicationSection": "model",
+                          "queryExecutionStrategy": "storage",
+                          "query": {
+                            "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                            "application": {
+                              "transformerType": "getFromParameters",
+                              "interpolation": "build",
+                              "referenceName": "testApplicationUuid"
+                            },
+                            "pageParams": {
+                              "currentDeploymentUuid": {
+                                "transformerType": "getFromParameters",
+                                "interpolation": "build",
+                                "referenceName": "testApplicationDeploymentUuid"
+                              }
+                            },
+                            "extractors": {
+                              "query": {
+                                "extractorOrCombinerType": "extractorByPrimaryKey",
+                                "applicationSection": "model",
+                                "parentName": "Query",
+                                "parentUuid": "e4320b9e-ab45-4abe-85d8-359604b3c62f",
+                                "instanceUuid": "6176dcdf-39a6-4805-8dc5-3c2366a31a11"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "step": "expectActionResult",
+                    "label": "the store holds the edit",
+                    "assertion": {
+                      "actionType": "compositeRunTestAssertion",
+                      "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                      "actionLabel": "storedGroupBy",
+                      "nameGivenToResult": "storedGroupBy",
+                      "payload": {
+                        "testType": "testAssertion",
+                        "testLabel": "storedGroupBy",
+                        "definition": {
+                          "resultTransformer": {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "referencePath": [
+                              "storedQuery",
+                              "query",
+                              "definition",
+                              "runtimeTransformers",
+                              "00_BookCountByPublisher",
+                              "groupBy"
+                            ]
+                          },
+                          "expectedValue": [
+                            "publisherName",
+                            "bookName"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "miroirTestType": "reportTest",
+                "miroirTestLabel": "undo and redo at the editor root",
+                "steps": [
+                  {
+                    "step": "expectElement",
+                    "label": "the Query's name, read from the testbed store",
+                    "target": {
+                      "byDisplayValue": "BookCountByPublisher"
+                    },
+                    "timeout": 15000
+                  },
+                  {
+                    "step": "expectElement",
+                    "label": "the runtime transformer has the view switch",
+                    "target": {
+                      "byTestId": "block-view-switch:definition.runtimeTransformers.00_BookCountByPublisher"
+                    },
+                    "timeout": 5000
+                  },
+                  {
+                    "step": "click",
+                    "label": "show the runtime transformer as blocks",
+                    "target": {
+                      "byTestId": "block-view-mode:definition.runtimeTransformers.00_BookCountByPublisher:blocks"
+                    }
+                  },
+                  {
+                    "step": "expectElement",
+                    "label": "its root block",
+                    "target": {
+                      "byTestId": "block:definition.runtimeTransformers.00_BookCountByPublisher"
+                    },
+                    "timeout": 10000,
+                    "attribute": {
+                      "name": "data-transformer-type",
+                      "value": "aggregate"
+                    }
+                  },
+                  {
+                    "step": "click",
+                    "label": "open the groupBy field",
+                    "target": {
+                      "byTestId": "block-field:definition.runtimeTransformers.00_BookCountByPublisher.groupBy"
+                    }
+                  },
+                  {
+                    "step": "clear",
+                    "label": "clear it",
+                    "target": {
+                      "byTestId": "block-field-input:definition.runtimeTransformers.00_BookCountByPublisher.groupBy"
+                    }
+                  },
+                  {
+                    "step": "type",
+                    "label": "type the new groupBy (user-event types [[ as [)",
+                    "target": {
+                      "byTestId": "block-field-input:definition.runtimeTransformers.00_BookCountByPublisher.groupBy"
+                    },
+                    "text": "[[\"publisherName\",\"bookName\"]{Enter}"
+                  },
+                  {
+                    "step": "expectElement",
+                    "label": "the block shows bookName",
+                    "target": {
+                      "byTestId": "block-field:definition.runtimeTransformers.00_BookCountByPublisher.groupBy"
+                    },
+                    "timeout": 5000,
+                    "containsHtml": "bookName"
+                  },
+                  {
+                    "step": "click",
+                    "label": "Undo",
+                    "target": {
+                      "byTestId": "value-history-undo:"
+                    }
+                  },
+                  {
+                    "step": "expectElement",
+                    "label": "the block shows publisherUuid again",
+                    "target": {
+                      "byTestId": "block-field:definition.runtimeTransformers.00_BookCountByPublisher.groupBy"
+                    },
+                    "timeout": 5000,
+                    "containsHtml": "publisherUuid"
+                  },
+                  {
+                    "step": "click",
+                    "label": "Redo",
+                    "target": {
+                      "byTestId": "value-history-redo:"
+                    }
+                  },
+                  {
+                    "step": "expectElement",
+                    "label": "the block shows bookName again",
+                    "target": {
+                      "byTestId": "block-field:definition.runtimeTransformers.00_BookCountByPublisher.groupBy"
+                    },
+                    "timeout": 5000,
+                    "containsHtml": "bookName"
+                  }
+                ]
+              },
+              {
+                "miroirTestType": "reportTest",
+                "miroirTestLabel": "an application transformer is a block of its own",
+                "steps": [
+                  {
+                    "step": "compositeAction",
+                    "label": "create the application transformer countByPublisher",
+                    "action": {
+                      "actionType": "transactionalInstanceAction",
+                      "actionLabel": "create the application transformer countByPublisher",
+                      "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                      "payload": {
+                        "application": {
+                          "transformerType": "getFromParameters",
+                          "interpolation": "build",
+                          "referenceName": "testApplicationUuid"
+                        },
+                        "instanceAction": {
+                          "actionType": "createInstance",
+                          "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                          "payload": {
+                            "application": {
+                              "transformerType": "getFromParameters",
+                              "interpolation": "build",
+                              "referenceName": "testApplicationUuid"
+                            },
+                            "applicationSection": "model",
+                            "objects": [
+                              {
+                                "transformerType": "returnValue",
+                                "interpolation": "build",
+                                "value": {
+                                  "uuid": "8b0c5c55-3c1e-4a8e-9a43-2f6f7b1e5d21",
+                                  "parentName": "TransformerDefinition",
+                                  "parentUuid": "a557419d-a288-4fb8-8a1e-971c86c113b8",
+                                  "name": "countByPublisher",
+                                  "defaultLabel": "countByPublisher",
+                                  "transformerInterface": {
+                                    "transformerParameterSchema": {
+                                      "transformerType": {
+                                        "type": "literal",
+                                        "definition": "countByPublisher"
+                                      },
+                                      "transformerDefinition": {
+                                        "type": "object",
+                                        "definition": {
+                                          "books": {
+                                            "type": "any"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "transformerResultSchema": {
+                                      "returns": "mlSchema",
+                                      "definition": {
+                                        "type": "any"
+                                      }
+                                    }
+                                  },
+                                  "transformerImplementation": {
+                                    "transformerImplementationType": "transformer",
+                                    "definition": {
+                                      "transformerType": "aggregate",
+                                      "interpolation": "runtime",
+                                      "applyTo": {
+                                        "transformerType": "getFromContext",
+                                        "interpolation": "runtime",
+                                        "referenceName": "books"
+                                      },
+                                      "groupBy": [
+                                        "publisherName"
+                                      ]
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "step": "compositeAction",
+                    "label": "make the Query read it",
+                    "action": {
+                      "actionType": "transactionalInstanceAction",
+                      "actionLabel": "make the Query read it",
+                      "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                      "payload": {
+                        "application": {
+                          "transformerType": "getFromParameters",
+                          "interpolation": "build",
+                          "referenceName": "testApplicationUuid"
+                        },
+                        "instanceAction": {
+                          "actionType": "updateInstance",
+                          "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                          "payload": {
+                            "application": {
+                              "transformerType": "getFromParameters",
+                              "interpolation": "build",
+                              "referenceName": "testApplicationUuid"
+                            },
+                            "applicationSection": "model",
+                            "objects": [
+                              {
+                                "transformerType": "returnValue",
+                                "interpolation": "build",
+                                "value": {
+                                  "uuid": "6176dcdf-39a6-4805-8dc5-3c2366a31a11",
+                                  "parentName": "Query",
+                                  "parentUuid": "e4320b9e-ab45-4abe-85d8-359604b3c62f",
+                                  "name": "BookCountByPublisher",
+                                  "defaultLabel": "The count of Books By Publisher.",
+                                  "description": "This query produces a list of publishers, with the count of Books for each publisher.",
+                                  "definition": {
+                                    "extractorTemplates": {
+                                      "publishers": {
+                                        "extractorOrCombinerType": "extractorInstancesByEntity",
+                                        "applicationSection": "data",
+                                        "parentName": "Publisher",
+                                        "parentUuid": "a027c379-8468-43a5-ba4d-bf618be25cab"
+                                      }
+                                    },
+                                    "combinerTemplates": {
+                                      "BookWithPublisher": {
+                                        "extractorOrCombinerType": "combinerManyToMany",
+                                        "label": "BookCountByPublisher_BookWithPublisher",
+                                        "applicationSection": "data",
+                                        "parentName": "Book",
+                                        "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                                        "objectListReference": "publishers",
+                                        "AttributeOfRootListObjectToCompareToListReferenceUuid": "publisher",
+                                        "applyTransformer": {
+                                          "transformerType": "createObject",
+                                          "interpolation": "runtime",
+                                          "definition": {
+                                            "publisherName": {
+                                              "transformerType": "getFromContext",
+                                              "interpolation": "runtime",
+                                              "referencePath": [
+                                                "referenceObject",
+                                                "name"
+                                              ]
+                                            },
+                                            "publisherUuid": {
+                                              "transformerType": "getFromContext",
+                                              "interpolation": "runtime",
+                                              "referencePath": [
+                                                "referenceObject",
+                                                "uuid"
+                                              ]
+                                            },
+                                            "bookName": {
+                                              "transformerType": "getFromContext",
+                                              "interpolation": "runtime",
+                                              "referencePath": [
+                                                "foreignKeyObject",
+                                                "name"
+                                              ]
+                                            }
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "runtimeTransformers": {
+                                      "00_BookCountByPublisher": {
+                                        "transformerType": "countByPublisher",
+                                        "interpolation": "runtime",
+                                        "books": {
+                                          "transformerType": "getFromContext",
+                                          "interpolation": "runtime",
+                                          "referenceName": "BookWithPublisher"
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "step": "compositeAction",
+                    "label": "commit the Library model",
+                    "action": {
+                      "actionType": "commit",
+                      "actionLabel": "commitLibraryModel",
+                      "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                      "payload": {
+                        "application": {
+                          "transformerType": "getFromParameters",
+                          "interpolation": "build",
+                          "referenceName": "testApplicationUuid"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "step": "expectElement",
+                    "label": "the Query's name, read from the testbed store",
+                    "target": {
+                      "byDisplayValue": "BookCountByPublisher"
+                    },
+                    "timeout": 15000
+                  },
+                  {
+                    "step": "expectElement",
+                    "label": "the runtime transformer has the view switch",
+                    "target": {
+                      "byTestId": "block-view-switch:definition.runtimeTransformers.00_BookCountByPublisher"
+                    },
+                    "timeout": 5000
+                  },
+                  {
+                    "step": "click",
+                    "label": "show the runtime transformer as blocks",
+                    "target": {
+                      "byTestId": "block-view-mode:definition.runtimeTransformers.00_BookCountByPublisher:blocks"
+                    }
+                  },
+                  {
+                    "step": "expectElement",
+                    "label": "its root block is countByPublisher, known from the Library model",
+                    "target": {
+                      "byTestId": "block:definition.runtimeTransformers.00_BookCountByPublisher"
+                    },
+                    "timeout": 10000,
+                    "attribute": {
+                      "name": "data-transformer-type",
+                      "value": "countByPublisher"
+                    }
+                  },
+                  {
+                    "step": "expectElement",
+                    "label": "its books parameter is a block",
+                    "target": {
+                      "byTestId": "block:definition.runtimeTransformers.00_BookCountByPublisher.books"
+                    },
+                    "timeout": 5000,
+                    "attribute": {
+                      "name": "data-transformer-type",
+                      "value": "getFromContext"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "uuid": "4edb680b-4686-4d9a-bb96-40fa9f945b24",
+      "parentName": "MiroirTest",
+      "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+      "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+      "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+      "name": "report.bookDetails",
+      "description": "The BookDetails Report, mounted at its route on the Library testbed, displays the Book read from the store, the store holds the displayed values, an edit submitted through the Report is saved, and an invalid edit is not.",
+      "tags": [
+        "integ",
+        "ui",
+        "report"
+      ],
+      "issue": "330",
+      "definition": {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "report.bookDetails",
+        "runTarget": {
+          "applicationUuid": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+          "applicationName": "Library",
+          "deploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+        },
+        "testConfiguration": "3123740d-2398-458f-82e6-4f1294866e39",
+        "testbedInitApplicationParameters": "libraryTestbedInitParams",
+        "miroirTests": [
+          {
+            "miroirTestType": "reportTestSuite",
+            "miroirTestLabel": "BookDetails",
+            "report": {
+              "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+              "applicationSection": "data",
+              "reportUuid": "c3503412-3d8a-43ef-a168-aa36e975e606",
+              "instanceUuid": "e20e276b-619d-4e16-8816-b7ec37b53439"
+            },
+            "miroirTests": [
+              {
+                "miroirTestType": "reportTest",
+                "miroirTestLabel": "displays the Book",
+                "steps": [
+                  {
+                    "step": "expectElement",
+                    "label": "the Book's name, read from the testbed store",
+                    "target": {
+                      "byDisplayValue": "The Design of Everyday Things"
+                    },
+                    "timeout": 10000
+                  }
+                ]
+              },
+              {
+                "miroirTestType": "reportTest",
+                "miroirTestLabel": "the store holds the displayed Book",
+                "steps": [
+                  {
+                    "step": "expectElement",
+                    "label": "the displayed name",
+                    "target": {
+                      "byDisplayValue": "The Design of Everyday Things"
+                    },
+                    "timeout": 10000
+                  },
+                  {
+                    "step": "compositeAction",
+                    "label": "read the Book from the store",
+                    "action": {
+                      "actionType": "compositeRunBoxedQueryAction",
+                      "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                      "actionLabel": "readStoredBook",
+                      "nameGivenToResult": "storedBook",
+                      "payload": {
+                        "actionType": "runBoxedQueryAction",
+                        "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                        "payload": {
+                          "application": {
+                            "transformerType": "getFromParameters",
+                            "interpolation": "build",
+                            "referenceName": "testApplicationUuid"
+                          },
+                          "applicationSection": "data",
+                          "queryExecutionStrategy": "storage",
+                          "query": {
+                            "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                            "application": {
+                              "transformerType": "getFromParameters",
+                              "interpolation": "build",
+                              "referenceName": "testApplicationUuid"
+                            },
+                            "pageParams": {
+                              "currentDeploymentUuid": {
+                                "transformerType": "getFromParameters",
+                                "interpolation": "build",
+                                "referenceName": "testApplicationDeploymentUuid"
+                              }
+                            },
+                            "extractors": {
+                              "book": {
+                                "extractorOrCombinerType": "extractorByPrimaryKey",
+                                "applicationSection": "data",
+                                "parentName": "Book",
+                                "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                                "instanceUuid": "e20e276b-619d-4e16-8816-b7ec37b53439"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "step": "expectActionResult",
+                    "label": "the stored name is the displayed one",
+                    "assertion": {
+                      "actionType": "compositeRunTestAssertion",
+                      "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                      "actionLabel": "storedBookName",
+                      "nameGivenToResult": "storedBookName",
+                      "payload": {
+                        "testType": "testAssertion",
+                        "testLabel": "storedBookName",
+                        "definition": {
+                          "resultTransformer": {
+                            "transformerType": "createObject",
+                            "interpolation": "runtime",
+                            "definition": {
+                              "name": {
+                                "transformerType": "getFromContext",
+                                "interpolation": "runtime",
+                                "referencePath": [
+                                  "storedBook",
+                                  "book",
+                                  "name"
+                                ]
+                              }
+                            }
+                          },
+                          "expectedValue": {
+                            "name": "The Design of Everyday Things"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "miroirTestType": "reportTest",
+                "miroirTestLabel": "saves an edited title",
+                "steps": [
+                  {
+                    "step": "expectElement",
+                    "label": "the name field",
+                    "target": {
+                      "byDisplayValue": "The Design of Everyday Things"
+                    },
+                    "timeout": 10000,
+                    "saveAs": "nameField"
+                  },
+                  {
+                    "step": "clear",
+                    "target": {
+                      "ref": "nameField"
+                    }
+                  },
+                  {
+                    "step": "type",
+                    "target": {
+                      "ref": "nameField"
+                    },
+                    "text": "The Design of Everyday Things, revised edition"
+                  },
+                  {
+                    "step": "click",
+                    "label": "submit the Book",
+                    "target": {
+                      "byTestId": "typed-value-object-editor-submit"
+                    }
+                  },
+                  {
+                    "step": "compositeAction",
+                    "label": "read the Book from the store",
+                    "action": {
+                      "actionType": "compositeRunBoxedQueryAction",
+                      "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                      "actionLabel": "readStoredBook",
+                      "nameGivenToResult": "storedBook",
+                      "payload": {
+                        "actionType": "runBoxedQueryAction",
+                        "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                        "payload": {
+                          "application": {
+                            "transformerType": "getFromParameters",
+                            "interpolation": "build",
+                            "referenceName": "testApplicationUuid"
+                          },
+                          "applicationSection": "data",
+                          "queryExecutionStrategy": "storage",
+                          "query": {
+                            "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                            "application": {
+                              "transformerType": "getFromParameters",
+                              "interpolation": "build",
+                              "referenceName": "testApplicationUuid"
+                            },
+                            "pageParams": {
+                              "currentDeploymentUuid": {
+                                "transformerType": "getFromParameters",
+                                "interpolation": "build",
+                                "referenceName": "testApplicationDeploymentUuid"
+                              }
+                            },
+                            "extractors": {
+                              "book": {
+                                "extractorOrCombinerType": "extractorByPrimaryKey",
+                                "applicationSection": "data",
+                                "parentName": "Book",
+                                "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                                "instanceUuid": "e20e276b-619d-4e16-8816-b7ec37b53439"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "step": "expectActionResult",
+                    "label": "the store holds the edited name",
+                    "assertion": {
+                      "actionType": "compositeRunTestAssertion",
+                      "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                      "actionLabel": "storedBookName",
+                      "nameGivenToResult": "storedBookName",
+                      "payload": {
+                        "testType": "testAssertion",
+                        "testLabel": "storedBookName",
+                        "definition": {
+                          "resultTransformer": {
+                            "transformerType": "createObject",
+                            "interpolation": "runtime",
+                            "definition": {
+                              "name": {
+                                "transformerType": "getFromContext",
+                                "interpolation": "runtime",
+                                "referencePath": [
+                                  "storedBook",
+                                  "book",
+                                  "name"
+                                ]
+                              }
+                            }
+                          },
+                          "expectedValue": {
+                            "name": "The Design of Everyday Things, revised edition"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "miroirTestType": "reportTest",
+                "miroirTestLabel": "types a name read from the store",
+                "steps": [
+                  {
+                    "step": "compositeAction",
+                    "label": "read another Book from the store",
+                    "action": {
+                      "actionType": "compositeRunBoxedQueryAction",
+                      "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                      "actionLabel": "readOtherBook",
+                      "nameGivenToResult": "otherBook",
+                      "payload": {
+                        "actionType": "runBoxedQueryAction",
+                        "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                        "payload": {
+                          "application": {
+                            "transformerType": "getFromParameters",
+                            "interpolation": "build",
+                            "referenceName": "testApplicationUuid"
+                          },
+                          "applicationSection": "data",
+                          "queryExecutionStrategy": "storage",
+                          "query": {
+                            "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                            "application": {
+                              "transformerType": "getFromParameters",
+                              "interpolation": "build",
+                              "referenceName": "testApplicationUuid"
+                            },
+                            "pageParams": {
+                              "currentDeploymentUuid": {
+                                "transformerType": "getFromParameters",
+                                "interpolation": "build",
+                                "referenceName": "testApplicationDeploymentUuid"
+                              }
+                            },
+                            "extractors": {
+                              "book": {
+                                "extractorOrCombinerType": "extractorByPrimaryKey",
+                                "applicationSection": "data",
+                                "parentName": "Book",
+                                "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                                "instanceUuid": "c97be567-bd70-449f-843e-cd1d64ac1ddd"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "step": "expectElement",
+                    "label": "the name field",
+                    "target": {
+                      "byDisplayValue": "The Design of Everyday Things"
+                    },
+                    "timeout": 10000,
+                    "saveAs": "nameField"
+                  },
+                  {
+                    "step": "clear",
+                    "target": {
+                      "ref": "nameField"
+                    }
+                  },
+                  {
+                    "step": "type",
+                    "label": "type the other Book's name, kept by the first step",
+                    "target": {
+                      "ref": "nameField"
+                    },
+                    "text": {
+                      "transformerType": "getFromContext",
+                      "interpolation": "runtime",
+                      "referencePath": [
+                        "otherBook",
+                        "book",
+                        "name"
+                      ]
+                    }
+                  },
+                  {
+                    "step": "expectElement",
+                    "label": "the name field shows the other Book's name",
+                    "target": {
+                      "byDisplayValue": {
+                        "transformerType": "getFromContext",
+                        "interpolation": "runtime",
+                        "referencePath": [
+                          "otherBook",
+                          "book",
+                          "name"
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "step": "click",
+                    "label": "submit the Book",
+                    "target": {
+                      "byTestId": "typed-value-object-editor-submit"
+                    }
+                  },
+                  {
+                    "step": "compositeAction",
+                    "label": "read the Book from the store",
+                    "action": {
+                      "actionType": "compositeRunBoxedQueryAction",
+                      "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                      "actionLabel": "readStoredBook",
+                      "nameGivenToResult": "storedBook",
+                      "payload": {
+                        "actionType": "runBoxedQueryAction",
+                        "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                        "payload": {
+                          "application": {
+                            "transformerType": "getFromParameters",
+                            "interpolation": "build",
+                            "referenceName": "testApplicationUuid"
+                          },
+                          "applicationSection": "data",
+                          "queryExecutionStrategy": "storage",
+                          "query": {
+                            "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                            "application": {
+                              "transformerType": "getFromParameters",
+                              "interpolation": "build",
+                              "referenceName": "testApplicationUuid"
+                            },
+                            "pageParams": {
+                              "currentDeploymentUuid": {
+                                "transformerType": "getFromParameters",
+                                "interpolation": "build",
+                                "referenceName": "testApplicationDeploymentUuid"
+                              }
+                            },
+                            "extractors": {
+                              "book": {
+                                "extractorOrCombinerType": "extractorByPrimaryKey",
+                                "applicationSection": "data",
+                                "parentName": "Book",
+                                "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                                "instanceUuid": "e20e276b-619d-4e16-8816-b7ec37b53439"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "step": "expectActionResult",
+                    "label": "the store holds the other Book's name",
+                    "assertion": {
+                      "actionType": "compositeRunTestAssertion",
+                      "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                      "actionLabel": "storedBookName",
+                      "nameGivenToResult": "storedBookName",
+                      "payload": {
+                        "testType": "testAssertion",
+                        "testLabel": "storedBookName",
+                        "definition": {
+                          "resultTransformer": {
+                            "transformerType": "createObject",
+                            "interpolation": "runtime",
+                            "definition": {
+                              "name": {
+                                "transformerType": "getFromContext",
+                                "interpolation": "runtime",
+                                "referencePath": [
+                                  "storedBook",
+                                  "book",
+                                  "name"
+                                ]
+                              }
+                            }
+                          },
+                          "expectedValue": {
+                            "name": "Rear Window"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "miroirTestType": "reportTest",
+                "miroirTestLabel": "does not save an invalid value",
+                "steps": [
+                  {
+                    "step": "expectElement",
+                    "label": "the year field",
+                    "target": {
+                      "byDisplayValue": "1988"
+                    },
+                    "timeout": 10000,
+                    "saveAs": "yearField"
+                  },
+                  {
+                    "step": "clear",
+                    "label": "leave the year empty, which is not a number",
+                    "target": {
+                      "ref": "yearField"
+                    }
+                  },
+                  {
+                    "step": "expectElement",
+                    "label": "the submit button is disabled",
+                    "target": {
+                      "byTestId": "typed-value-object-editor-submit"
+                    },
+                    "attribute": {
+                      "name": "disabled",
+                      "value": ""
+                    }
+                  },
+                  {
+                    "step": "click",
+                    "label": "submit the Book anyway",
+                    "target": {
+                      "byTestId": "typed-value-object-editor-submit"
+                    }
+                  },
+                  {
+                    "step": "compositeAction",
+                    "label": "read the Book from the store",
+                    "action": {
+                      "actionType": "compositeRunBoxedQueryAction",
+                      "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                      "actionLabel": "readStoredBook",
+                      "nameGivenToResult": "storedBook",
+                      "payload": {
+                        "actionType": "runBoxedQueryAction",
+                        "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                        "payload": {
+                          "application": {
+                            "transformerType": "getFromParameters",
+                            "interpolation": "build",
+                            "referenceName": "testApplicationUuid"
+                          },
+                          "applicationSection": "data",
+                          "queryExecutionStrategy": "storage",
+                          "query": {
+                            "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                            "application": {
+                              "transformerType": "getFromParameters",
+                              "interpolation": "build",
+                              "referenceName": "testApplicationUuid"
+                            },
+                            "pageParams": {
+                              "currentDeploymentUuid": {
+                                "transformerType": "getFromParameters",
+                                "interpolation": "build",
+                                "referenceName": "testApplicationDeploymentUuid"
+                              }
+                            },
+                            "extractors": {
+                              "book": {
+                                "extractorOrCombinerType": "extractorByPrimaryKey",
+                                "applicationSection": "data",
+                                "parentName": "Book",
+                                "parentUuid": "e8ba151b-d68e-4cc3-9a83-3459d309ccf5",
+                                "instanceUuid": "e20e276b-619d-4e16-8816-b7ec37b53439"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "step": "expectActionResult",
+                    "label": "the store still holds the original year",
+                    "assertion": {
+                      "actionType": "compositeRunTestAssertion",
+                      "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                      "actionLabel": "storedBookYear",
+                      "nameGivenToResult": "storedBookYear",
+                      "payload": {
+                        "testType": "testAssertion",
+                        "testLabel": "storedBookYear",
+                        "definition": {
+                          "resultTransformer": {
+                            "transformerType": "createObject",
+                            "interpolation": "runtime",
+                            "definition": {
+                              "year": {
+                                "transformerType": "getFromContext",
+                                "interpolation": "runtime",
+                                "referencePath": [
+                                  "storedBook",
+                                  "book",
+                                  "year"
+                                ]
+                              }
+                            }
+                          },
+                          "expectedValue": {
+                            "year": 1988
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "uuid": "9931f827-a3ce-435f-bf07-4dac430d81d1",
+      "parentName": "MiroirTest",
+      "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+      "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+      "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+      "name": "action.scenario.multistepReportTemplate",
+      "description": "Finish step of a multistep Report template: the suite step bag creates the Country Testland.",
+      "tags": [
+        "integ",
+        "report"
+      ],
+      "issue": "274",
+      "definition": {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "action.scenario.multistepReportTemplate",
+        "runTarget": {
+          "applicationUuid": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+          "applicationName": "Library",
+          "deploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+        },
+        "testConfiguration": "d669558c-7cda-4037-81bf-0b9a71fbcb94",
+        "testParams": {
+          "stepOne": {
+            "name": "Testland",
+            "iso3166-1Alpha-2": "TL"
+          }
+        },
+        "miroirTests": [
+          {
+            "miroirTestType": "actionTest",
+            "miroirTestLabel": "multistepFinish.274",
+            "compositeActionSequence": {
+              "actionType": "compositeActionSequence",
+              "actionLabel": "multistepFinish.274",
+              "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+              "payload": {
+                "actionSequence": [
+                  {
+                    "actionType": "compositeActionSequence",
+                    "actionLabel": "MultistepCountryCreateFinish",
+                    "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                    "payload": {
+                      "actionSequence": [
+                        {
+                          "actionType": "createInstance",
+                          "actionLabel": "createCountryFromStepOne",
+                          "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                          "payload": {
+                            "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                            "applicationSection": "data",
+                            "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                            "objects": [
+                              {
+                                "transformerType": "createObject",
+                                "definition": {
+                                  "uuid": "63c96487-713f-4d5b-a424-bf7e8f70e147",
+                                  "parentName": "Country",
+                                  "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                                  "name": {
+                                    "transformerType": "getFromParameters",
+                                    "referencePath": [
+                                      "stepOne",
+                                      "name"
+                                    ]
+                                  },
+                                  "iso3166-1Alpha-2": {
+                                    "transformerType": "getFromParameters",
+                                    "safe": true,
+                                    "referencePath": [
+                                      "stepOne",
+                                      "iso3166-1Alpha-2"
+                                    ]
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            },
+            "testCompositeActionAssertions": [
+              {
+                "actionType": "compositeRunBoxedQueryAction",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "actionLabel": "queryCreatedCountry",
+                "nameGivenToResult": "countryAfterFinish",
+                "payload": {
+                  "actionType": "runBoxedQueryAction",
+                  "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  "payload": {
+                    "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                    "applicationSection": "data",
+                    "query": {
+                      "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "pageParams": {
+                        "currentDeploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+                      },
+                      "extractors": {
+                        "createdCountry": {
+                          "extractorOrCombinerType": "extractorByPrimaryKey",
+                          "applicationSection": "data",
+                          "parentName": "Country",
+                          "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                          "instanceUuid": "63c96487-713f-4d5b-a424-bf7e8f70e147"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "actionType": "compositeRunTestAssertion",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "actionLabel": "assertCreatedCountry",
+                "nameGivenToResult": "assertCreatedCountry",
+                "payload": {
+                  "testType": "testAssertion",
+                  "testLabel": "assertCreatedCountry",
+                  "definition": {
+                    "resultAccessPath": [
+                      "countryAfterFinish",
+                      "createdCountry"
+                    ],
+                    "ignoreAttributes": [
+                      "conceptLevel"
+                    ],
+                    "expectedValue": {
+                      "uuid": "63c96487-713f-4d5b-a424-bf7e8f70e147",
+                      "parentName": "Country",
+                      "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                      "name": "Testland",
+                      "iso3166-1Alpha-2": "TL"
+                    }
+                  }
+                }
+              }
+            ],
+            "afterTestCleanupAction": {
+              "actionType": "compositeActionSequence",
+              "actionLabel": "deleteCreatedCountry",
+              "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+              "payload": {
+                "actionSequence": [
+                  {
+                    "actionType": "deleteInstance",
+                    "actionLabel": "deleteCountryTestland",
+                    "endpoint": "ed520de4-55a9-4550-ac50-b1b713b72a89",
+                    "payload": {
+                      "application": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+                      "applicationSection": "data",
+                      "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
+                      "objects": [
+                        {
+                          "uuid": "63c96487-713f-4d5b-a424-bf7e8f70e147",
+                          "parentName": "Country",
+                          "parentUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4"
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "testbedInitApplicationParameters": "libraryTestbedInitParams"
+      }
+    },
+    {
+      "uuid": "a1b2c3d4-e5f6-4789-a012-3456789abcde",
+      "parentName": "MiroirTest",
+      "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+      "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+      "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+      "name": "runner.returnDocument",
+      "description": "returnDocument runner of the Library application.",
+      "tags": [
+        "integ",
+        "runner",
+        "data"
+      ],
+      "definition": {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "runner.returnDocument",
+        "runTarget": {
+          "applicationUuid": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+          "applicationName": "Library",
+          "deploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+        },
+        "testConfiguration": "d669558c-7cda-4037-81bf-0b9a71fbcb94",
+        "testParams": {
+          "user1Uuid": "04c371ed-702d-4dd9-a06d-8a04eda5d24f",
+          "book1Uuid": "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+          "lendStartDate": "2024-01-01T00:00:00.000Z",
+          "lendEndDate": "2024-01-01T00:00:00.000Z",
+          "lendingHistoryItemEntityUuid": "e81078f3-2de7-4301-bd79-d3a156aec149",
+          "lendingHistoryItemEntityName": "LendingHistoryItem"
+        },
+        "miroirTests": [
+          {
+            "miroirTestType": "runnerTest",
+            "miroirTestLabel": "Return Book Test Composite Action",
+            "environmentRef": "libraryRunnerTestEnvironment",
+            "runnerRef": "98a38a84-e702-4540-a056-c7676a193a2b",
+            "deploymentRef": "libraryTestIdentifiers",
+            "testCompositeActionLabel": "Return Book Test Composite Action",
+            "initialModel": {
+              "transformerType": "getFromParameters",
+              "interpolation": "build",
+              "referenceName": "defaultLibraryAppModel"
+            },
+            "testParams": {
+              "returnDocument": {
+                "actionType": "returnDocument",
+                "endpoint": "212f2784-5b68-43b2-8ee0-89b1c6fdd0de",
+                "payload": {
+                  "user": {
+                    "transformerType": "getFromParameters",
+                    "interpolation": "build",
+                    "referenceName": "user1Uuid"
+                  },
+                  "book": {
+                    "transformerType": "getFromParameters",
+                    "interpolation": "build",
+                    "referenceName": "book1Uuid"
+                  },
+                  "startDate": {
+                    "transformerType": "getFromParameters",
+                    "interpolation": "build",
+                    "referenceName": "lendStartDate"
+                  },
+                  "endDate": {
+                    "transformerType": "getFromParameters",
+                    "interpolation": "build",
+                    "referenceName": "lendEndDate"
+                  }
+                }
+              }
+            },
+            "preTestCompositeActions": [
+              {
+                "actionType": "compositeRunBoxedQueryAction",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "actionLabel": "fetchLendingHistory",
+                "nameGivenToResult": "LendingHistoryList",
+                "payload": {
+                  "actionType": "runBoxedQueryAction",
+                  "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  "payload": {
+                    "application": {
+                      "transformerType": "getFromParameters",
+                      "interpolation": "build",
+                      "referenceName": "testApplicationUuid"
+                    },
+                    "applicationSection": "data",
+                    "query": {
+                      "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                      "application": {
+                        "transformerType": "getFromParameters",
+                        "interpolation": "build",
+                        "referenceName": "testApplicationUuid"
+                      },
+                      "pageParams": {
+                        "currentDeploymentUuid": {
+                          "transformerType": "getFromParameters",
+                          "interpolation": "build",
+                          "referenceName": "testApplicationDeploymentUuid"
+                        }
+                      },
+                      "extractors": {
+                        "items": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "data",
+                          "parentName": {
+                            "transformerType": "getFromParameters",
+                            "interpolation": "build",
+                            "referenceName": "lendingHistoryItemEntityName"
+                          },
+                          "parentUuid": {
+                            "transformerType": "getFromParameters",
+                            "interpolation": "build",
+                            "referenceName": "lendingHistoryItemEntityUuid"
+                          },
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "testCompositeActionAssertions": [
+              {
+                "actionType": "compositeRunTestAssertion",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "actionLabel": "checkNumberOfLendingHistoryItems",
+                "nameGivenToResult": "checkNumberOfLendingHistoryItems",
+                "payload": {
+                  "testType": "testAssertion",
+                  "testLabel": "checkNumberOfLendingHistoryItems",
+                  "definition": {
+                    "resultAccessPath": [
+                      "0"
+                    ],
+                    "resultTransformer": {
+                      "transformerType": "aggregate",
+                      "interpolation": "runtime",
+                      "applyTo": {
+                        "transformerType": "getFromContext",
+                        "interpolation": "runtime",
+                        "referencePath": [
+                          "LendingHistoryList",
+                          "items"
+                        ]
+                      }
+                    },
+                    "expectedValue": {
+                      "aggregate": 1
+                    }
+                  }
+                }
+              },
+              {
+                "actionType": "compositeRunTestAssertion",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "actionLabel": "checkTheLoanIsClosed",
+                "nameGivenToResult": "checkTheLoanIsClosed",
+                "payload": {
+                  "testType": "testAssertion",
+                  "testLabel": "checkTheLoanIsClosed",
+                  "definition": {
+                    "resultAccessPath": [
+                      "0"
+                    ],
+                    "resultTransformer": {
+                      "transformerType": "aggregate",
+                      "interpolation": "runtime",
+                      "applyTo": {
+                        "transformerType": "filterList",
+                        "interpolation": "runtime",
+                        "referenceToOuterObject": "loan",
+                        "applyTo": {
+                          "transformerType": "getFromContext",
+                          "interpolation": "runtime",
+                          "referencePath": [
+                            "LendingHistoryList",
+                            "items"
+                          ]
+                        },
+                        "predicate": {
+                          "transformerType": "boolExpr",
+                          "interpolation": "runtime",
+                          "operator": "isNotNull",
+                          "left": {
+                            "transformerType": "getFromContext",
+                            "interpolation": "runtime",
+                            "safe": true,
+                            "referencePath": [
+                              "loan",
+                              "endDate"
+                            ]
+                          }
+                        }
+                      }
+                    },
+                    "expectedValue": {
+                      "aggregate": 1
+                    }
+                  }
+                }
+              }
+            ],
+            "preRunnerCompositeActions": [
+              {
+                "actionType": "lendDocument",
+                "endpoint": "212f2784-5b68-43b2-8ee0-89b1c6fdd0de",
+                "actionLabel": "preLendBookForReturn",
+                "payload": {
+                  "user": {
+                    "transformerType": "getFromParameters",
+                    "interpolation": "build",
+                    "referenceName": "user1Uuid"
+                  },
+                  "book": {
+                    "transformerType": "getFromParameters",
+                    "interpolation": "build",
+                    "referenceName": "book1Uuid"
+                  },
+                  "startDate": {
+                    "transformerType": "getFromParameters",
+                    "interpolation": "build",
+                    "referenceName": "lendStartDate"
+                  }
+                }
+              }
+            ],
+            "defaultApplicationName": "Library"
+          }
+        ],
+        "testbedInitApplicationParameters": "libraryTestbedInitParams"
+      }
+    },
+    {
+      "uuid": "a6fc85c8-83ad-4c8f-a6e0-6f9d17713159",
+      "parentName": "MiroirTest",
+      "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+      "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+      "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+      "name": "runner.mcp.lendDocument",
+      "description": "lendDocument through the MCP tool runner (tools/call): success records a LendingHistoryItem, a missing book returns an error.",
+      "tags": [
+        "integ",
+        "runner",
+        "mcp",
+        "data"
+      ],
+      "issue": "253",
+      "definition": {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "runner.mcp.lendDocument",
+        "runTarget": {
+          "applicationUuid": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+          "applicationName": "Library",
+          "deploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+        },
+        "testConfiguration": "d669558c-7cda-4037-81bf-0b9a71fbcb94",
+        "testParams": {
+          "user1Uuid": "04c371ed-702d-4dd9-a06d-8a04eda5d24f",
+          "book1Uuid": "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+          "lendStartDate": "2024-01-01T00:00:00.000Z",
+          "lendingHistoryItemEntityUuid": "e81078f3-2de7-4301-bd79-d3a156aec149",
+          "lendingHistoryItemEntityName": "LendingHistoryItem"
+        },
+        "miroirTests": [
+          {
+            "miroirTestType": "runnerTest",
+            "miroirTestLabel": "MCP lendDocument returns success",
+            "environmentRef": "libraryRunnerTestEnvironment",
+            "runnerRef": "dbb39e31-5c7d-4473-9adb-5286e2972e46",
+            "deploymentRef": "libraryTestIdentifiers",
+            "testCompositeActionLabel": "MCP lendDocument returns success",
+            "initialModel": {
+              "transformerType": "getFromParameters",
+              "interpolation": "build",
+              "referenceName": "defaultLibraryAppModel"
+            },
+            "testParams": {
+              "mcpLendDocument": {
+                "user": {
+                  "transformerType": "getFromParameters",
+                  "interpolation": "build",
+                  "referenceName": "user1Uuid"
+                },
+                "book": {
+                  "transformerType": "getFromParameters",
+                  "interpolation": "build",
+                  "referenceName": "book1Uuid"
+                },
+                "startDate": {
+                  "transformerType": "getFromParameters",
+                  "interpolation": "build",
+                  "referenceName": "lendStartDate"
+                }
+              }
+            },
+            "preTestCompositeActions": [
+              {
+                "actionType": "commit",
+                "actionLabel": "commitLibraryLocalCache",
+                "endpoint": "7947ae40-eb34-4149-887b-15a9021e714e",
+                "payload": {
+                  "application": {
+                    "transformerType": "getFromParameters",
+                    "interpolation": "build",
+                    "referenceName": "testApplicationUuid"
+                  }
+                }
+              },
+              {
+                "actionType": "compositeRunBoxedQueryAction",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "actionLabel": "fetchLendingHistory",
+                "nameGivenToResult": "LendingHistoryList",
+                "payload": {
+                  "actionType": "runBoxedQueryAction",
+                  "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  "payload": {
+                    "application": {
+                      "transformerType": "getFromParameters",
+                      "interpolation": "build",
+                      "referenceName": "testApplicationUuid"
+                    },
+                    "applicationSection": "data",
+                    "query": {
+                      "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                      "application": {
+                        "transformerType": "getFromParameters",
+                        "interpolation": "build",
+                        "referenceName": "testApplicationUuid"
+                      },
+                      "pageParams": {
+                        "currentDeploymentUuid": {
+                          "transformerType": "getFromParameters",
+                          "interpolation": "build",
+                          "referenceName": "testApplicationDeploymentUuid"
+                        }
+                      },
+                      "extractors": {
+                        "items": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "data",
+                          "parentName": {
+                            "transformerType": "getFromParameters",
+                            "interpolation": "build",
+                            "referenceName": "lendingHistoryItemEntityName"
+                          },
+                          "parentUuid": {
+                            "transformerType": "getFromParameters",
+                            "interpolation": "build",
+                            "referenceName": "lendingHistoryItemEntityUuid"
+                          },
+                          "filter": {
+                            "attributeName": "book",
+                            "value": {
+                              "transformerType": "getFromParameters",
+                              "interpolation": "build",
+                              "referenceName": "book1Uuid"
+                            }
+                          },
+                          "orderBy": {
+                            "attributeName": "startDate",
+                            "direction": "ASC"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "testCompositeActionAssertions": [
+              {
+                "actionType": "compositeRunTestAssertion",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "actionLabel": "checkNumberOfLendingHistoryItems",
+                "nameGivenToResult": "checkNumberOfLendingHistoryItems",
+                "payload": {
+                  "testType": "testAssertion",
+                  "testLabel": "checkNumberOfLendingHistoryItems",
+                  "definition": {
+                    "resultAccessPath": [
+                      "0"
+                    ],
+                    "resultTransformer": {
+                      "transformerType": "aggregate",
+                      "interpolation": "runtime",
+                      "applyTo": {
+                        "transformerType": "getFromContext",
+                        "interpolation": "runtime",
+                        "referencePath": [
+                          "LendingHistoryList",
+                          "items"
+                        ]
+                      }
+                    },
+                    "expectedValue": {
+                      "aggregate": 1
+                    }
+                  }
+                }
+              }
+            ],
+            "preRunnerCompositeActions": [],
+            "defaultApplicationName": "Library"
+          },
+          {
+            "miroirTestType": "runnerTest",
+            "miroirTestLabel": "MCP lendDocument missing book returns error",
+            "environmentRef": "libraryRunnerTestEnvironment",
+            "runnerRef": "dbb39e31-5c7d-4473-9adb-5286e2972e46",
+            "deploymentRef": "libraryTestIdentifiers",
+            "testCompositeActionLabel": "MCP lendDocument missing book returns error",
+            "initialModel": {
+              "transformerType": "getFromParameters",
+              "interpolation": "build",
+              "referenceName": "defaultLibraryAppModel"
+            },
+            "testParams": {
+              "expectedMcpStatus": "error",
+              "mcpLendDocument": {
+                "user": {
+                  "transformerType": "getFromParameters",
+                  "interpolation": "build",
+                  "referenceName": "user1Uuid"
+                },
+                "startDate": {
+                  "transformerType": "getFromParameters",
+                  "interpolation": "build",
+                  "referenceName": "lendStartDate"
+                }
+              }
+            },
+            "preTestCompositeActions": [],
+            "testCompositeActionAssertions": [],
+            "preRunnerCompositeActions": [],
+            "defaultApplicationName": "Library"
+          }
+        ],
+        "testbedInitApplicationParameters": "libraryTestbedInitParams"
+      }
+    },
+    {
+      "uuid": "f8e7d6c5-b4a3-4291-8765-43210fedcba0",
+      "parentName": "MiroirTest",
+      "parentUuid": "a311f363-e238-4203-bdfc-29e8c160c26b",
+      "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+      "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
+      "name": "runner.lendDocument",
+      "description": "lendDocument runner of the Library application.",
+      "tags": [
+        "integ",
+        "runner",
+        "data"
+      ],
+      "definition": {
+        "miroirTestType": "miroirTestSuite",
+        "miroirTestLabel": "runner.lendDocument",
+        "runTarget": {
+          "applicationUuid": "5af03c98-fe5e-490b-b08f-e1230971c57f",
+          "applicationName": "Library",
+          "deploymentUuid": "f714bb2f-a12d-4e71-a03b-74dcedea6eb4"
+        },
+        "testConfiguration": "d669558c-7cda-4037-81bf-0b9a71fbcb94",
+        "testParams": {
+          "user1Uuid": "04c371ed-702d-4dd9-a06d-8a04eda5d24f",
+          "book1Uuid": "caef8a59-39eb-48b5-ad59-a7642d3a1e8f",
+          "lendStartDate": "2024-01-01T00:00:00.000Z",
+          "lendEndDate": "2024-01-01T00:00:00.000Z",
+          "lendingHistoryItemEntityUuid": "e81078f3-2de7-4301-bd79-d3a156aec149",
+          "lendingHistoryItemEntityName": "LendingHistoryItem"
+        },
+        "miroirTests": [
+          {
+            "miroirTestType": "runnerTest",
+            "miroirTestLabel": "Lend Book Test Composite Action",
+            "environmentRef": "libraryRunnerTestEnvironment",
+            "runnerRef": "cc853632-f158-43fa-b9ed-437c9c25f539",
+            "deploymentRef": "libraryTestIdentifiers",
+            "testCompositeActionLabel": "Lend Book Test Composite Action",
+            "initialModel": {
+              "transformerType": "getFromParameters",
+              "interpolation": "build",
+              "referenceName": "defaultLibraryAppModel"
+            },
+            "testParams": {
+              "lendDocument": {
+                "actionType": "lendDocument",
+                "endpoint": "212f2784-5b68-43b2-8ee0-89b1c6fdd0de",
+                "payload": {
+                  "user": {
+                    "transformerType": "getFromParameters",
+                    "interpolation": "build",
+                    "referenceName": "user1Uuid"
+                  },
+                  "book": {
+                    "transformerType": "getFromParameters",
+                    "interpolation": "build",
+                    "referenceName": "book1Uuid"
+                  },
+                  "startDate": {
+                    "transformerType": "getFromParameters",
+                    "interpolation": "build",
+                    "referenceName": "lendStartDate"
+                  }
+                }
+              }
+            },
+            "preTestCompositeActions": [
+              {
+                "actionType": "compositeRunBoxedQueryAction",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "actionLabel": "fetchLendingHistory",
+                "nameGivenToResult": "LendingHistoryList",
+                "payload": {
+                  "actionType": "runBoxedQueryAction",
+                  "endpoint": "9e404b3c-368c-40cb-be8b-e3c28550c25e",
+                  "payload": {
+                    "application": {
+                      "transformerType": "getFromParameters",
+                      "interpolation": "build",
+                      "referenceName": "testApplicationUuid"
+                    },
+                    "applicationSection": "data",
+                    "query": {
+                      "queryType": "boxedQueryWithExtractorCombinerTransformer",
+                      "application": {
+                        "transformerType": "getFromParameters",
+                        "interpolation": "build",
+                        "referenceName": "testApplicationUuid"
+                      },
+                      "pageParams": {
+                        "currentDeploymentUuid": {
+                          "transformerType": "getFromParameters",
+                          "interpolation": "build",
+                          "referenceName": "testApplicationDeploymentUuid"
+                        }
+                      },
+                      "extractors": {
+                        "items": {
+                          "extractorOrCombinerType": "extractorInstancesByEntity",
+                          "applicationSection": "data",
+                          "parentName": {
+                            "transformerType": "getFromParameters",
+                            "interpolation": "build",
+                            "referenceName": "lendingHistoryItemEntityName"
+                          },
+                          "parentUuid": {
+                            "transformerType": "getFromParameters",
+                            "interpolation": "build",
+                            "referenceName": "lendingHistoryItemEntityUuid"
+                          },
+                          "orderBy": {
+                            "attributeName": "name",
+                            "direction": "ASC"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ],
+            "testCompositeActionAssertions": [
+              {
+                "actionType": "compositeRunTestAssertion",
+                "endpoint": "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+                "actionLabel": "checkNumberOfLendingHistoryItems",
+                "nameGivenToResult": "checkNumberOfLendingHistoryItems",
+                "payload": {
+                  "testType": "testAssertion",
+                  "testLabel": "checkNumberOfLendingHistoryItems",
+                  "definition": {
+                    "resultAccessPath": [
+                      "0"
+                    ],
+                    "resultTransformer": {
+                      "transformerType": "aggregate",
+                      "interpolation": "runtime",
+                      "applyTo": {
+                        "transformerType": "getFromContext",
+                        "interpolation": "runtime",
+                        "referencePath": [
+                          "LendingHistoryList",
+                          "items"
+                        ]
+                      }
+                    },
+                    "expectedValue": {
+                      "aggregate": 1
+                    }
+                  }
+                }
+              }
+            ],
+            "preRunnerCompositeActions": [],
+            "defaultApplicationName": "Library"
+          }
+        ],
+        "testbedInitApplicationParameters": "libraryTestbedInitParams"
+      }
+    }
+  ],
+  "themes": [],
+  "transformerDefinitions": []
+}
