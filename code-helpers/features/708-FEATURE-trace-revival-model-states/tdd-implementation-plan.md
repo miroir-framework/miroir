@@ -56,7 +56,7 @@ From the analysis decision record (part A). Deviations go in each slice's Realiz
 | `evolutionTraces?: boolean` on SelfApplication; it reads as off on an unversioned application, with a warning when the application loads. The traces of an application are read from its SelfApplication row in the local cache, as it is before the commit's replay. | D5 | G1, G6 |
 | Gate: before anything is written, a commit (or direct model write) touching an application with traces on is refused when the process has the `versioning` capability off (`FeatureUnavailable`) or the deployment has no `modelVersion` section. Every application of the transaction is checked. | D5 | G6 |
 | `MIROIR_EVOLUTION_TRACE` / `VITE_MIROIR_EVOLUTION_TRACE`, the `evolution-trace` MiroirTest tag and its requirement are removed. | D5 | G6 |
-| `versioningMode` gains `versioned-git`; `versioned-external` stays in the enum and resolves to `versioned-git`. A G application fetches `modelVersion` only when its traces are on; freeze stays refused for it. | D6 | G1, G5 |
+| `versioningMode` gains `versioned-git`; `versioned-external` stays in the enum and resolves to `versioned-git`. A `versioned-git` application fetches `modelVersion` only when its traces are on; freeze stays refused for it. | D6 | G1, G5 |
 
 ## Allocated UUIDs and keys
 
