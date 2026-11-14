@@ -45,9 +45,9 @@ From the epic's goals G1 (name a model state), G2 (prepare a migration) and G8 (
 ## 3. Decision record
 
 Legend:
-- The two versioned settings are named by their `versioningMode` value. The epic analysis calls them setting N and setting G ([694 analysis](../694-EPIC-safe-application-evolution/analysis.md), section 4.1).
-  - **`versioned-internal`** (the epic's setting N, "no Git"): the model lives in the `model` section of any store but `bundled`; versions are frozen rows that Miroir writes into the `modelVersion` section at each freeze. No Git repository is involved.
-  - **`versioned-git`** (the epic's setting G, "Git"; today `versioned-external`): the model lives in the `model` section on the filesystem, inside a Git work tree, and is committed from the Git page; a version is a Git tag; there is no in-app freeze. A `modelVersion` folder, committed with the model, holds trace records only (and later Migrations).
+- The two versioned settings are named by their `versioningMode` value. The [694 analysis](../694-EPIC-safe-application-evolution/analysis.md) (section 4.1) uses the same names; its earlier drafts called them setting N and setting G.
+  - **`versioned-internal`** (formerly setting N, "no Git"): the model lives in the `model` section of any store but `bundled`; versions are frozen rows that Miroir writes into the `modelVersion` section at each freeze. No Git repository is involved.
+  - **`versioned-git`** (formerly setting G, "Git"; `versioned-external` before this issue): the model lives in the `model` section on the filesystem, inside a Git work tree, and is committed from the Git page; a version is a Git tag; there is no in-app freeze. A `modelVersion` folder, committed with the model, holds trace records only (and later Migrations).
 - A **record** is one trace record (Q16).
 - The traces **agree** with a model when a starting model, replayed with the `commit` records appended since it, gives exactly that model. The starting model is the version named by the last `version` or `rebaseline` marker for `versioned-internal`, and the model at the Git commit `HEAD` for `versioned-git` (D9). The **agreement check** (epic Q20, Q29; D9 here) tests this at freeze and at commit from the Git page, and refuses the operation, listing the differences, when they do not agree.
 - The **persistence process** is the process that holds the stores: the server, Electron's main process, the CLI, or an emulated server in tests.
@@ -105,7 +105,7 @@ This, like D3's new action, is a core schema change that every process carries. 
 **Status:** proposed — D3-c. **Serves:** G1, G6.
 
 **What is at stake.** Take a designer in a browser adding an optional `isbn` attribute to Library's `Book`, then committing. The Entity editor sends a `transactionalInstanceAction`; the commit replays it as an `updateInstance` through the REST client; the server receives it as a plain instance write. Today:
-- the browser records nothing, since `isEvolutionTraceEnabled` reads `process.env`, which the Vite build of the standalone app does not provide;
+- the browser records nothing: `isEvolutionTraceEnabled` reads the `MIROIR_EVOLUTION_TRACE` variable (or `VITE_MIROIR_EVOLUTION_TRACE`) from `process.env`, which the Vite build of the standalone app does not provide;
 - the committing DomainController does not trace a replayed transactional instance write at all (the `transactionalInstanceAction` case of the commit loop, `DomainController.ts` line 2090, has no trace call);
 - the server traces each replayed write on its own, without the commit (`restActionHandler`, `RestServer.ts` line 432, hands it to its DomainController at line 548, whose `handleInstanceAction` calls `maybeRecordEvolutionTrace`).
 
@@ -133,6 +133,7 @@ Three more facts shape the answer:
   - Deployment init and reset read the switch like any other write: from the SelfApplication row in the local cache when the step starts. That row stays in the client's local cache through the whole init sequence, even right after `resetModel` (checked by the plan's Slice 0). So init records something only when the cached row has traces on: `resetModel` and `initModel` then append a `rebaseline` marker each, and the `createEntity` commit after them makes a commit record, which no check reads (D9 starts at a `version` marker). The fixtures and the create-application Runner start with traces off and record nothing. Installing a cloned Git deployment runs no init (`gitAction_installClonedDeployment` opens the store from its files), so a process without the capability can still install one whose traces are on; D5's gate refuses its later model writes.
   - `resetModel` and `initModel` are not recorded. When the application's traces are on, they append a `rebaseline` marker without a version, so the agreement check (D9) restarts from the next freeze.
   - The migration runner (#9) and restore (#709) will need a scope that suspends recording; they add it, since nothing in #708 needs it.
+  - `resetModel` and `initModel` belong to a deployment's creation (the Create Application and Deploy Existing Application Runners, `resetAndInitApplicationDeployment`) and should run once per deployment, never during its normal life; tests use them at will (`testUtils_resetApplicationDeployment` resets before each suite). Nothing enforces this today: both are public ModelEndpoint actions. #725 owns the rule, independently of the epic. D3 does not depend on it: the `rebaseline` marker above stays correct whether a reset is allowed or not, and once #725 holds, it is written only at creation and in tests.
 - **A failed append:** the commit stands, the result reports the failure, and the DomainController keeps the record and sends it again before the next one. A record lost with the process (a reload) leaves a gap that a re-baseline repairs (D10).
 
 ### D4. How does a reader find which version contains the change of a record?
