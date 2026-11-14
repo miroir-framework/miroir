@@ -22,6 +22,7 @@ import { packageName } from "../constants";
 
 import { cleanLevel } from "./constants";
 import { isServerRoutedMiroirAction } from "../1_core/constants";
+import { markRecordedBySender } from "../1_core/versioning/evolutionTraceRecording.js";
 import { GIT_ACTIONS_KEEPING_FILES } from "../0_interfaces/3_controllers/GitAction";
 import { MiroirLoggerFactory } from "./MiroirLoggerFactory";
 import { summarizeQueryHopResult, trackQueryHop } from "./trackQueryHop";
@@ -96,6 +97,10 @@ function forgetModelEnvironmentChangedBy(
   const environments = serverModelEnvironments(persistenceStoreControllerManager);
   // #679: reading a repository changes no model
   if ((GIT_ACTIONS_KEEPING_FILES as readonly string[]).includes(actionType)) {
+    return;
+  }
+  // #708: an evolution trace record goes to modelVersion and changes no model
+  if (actionType === "appendEvolutionTraceRecord") {
     return;
   }
   if (storeOrBundleActionTypes.includes(actionType) || isServerRoutedMiroirAction(action)) {
@@ -534,8 +539,9 @@ export async function restActionHandler(
           persistenceStoreControllerManager,
         ).forApplication((action as any).payload?.application, applicationDeploymentMap);
         if (modelActionTypesForwardedToDomainController.includes(action.actionType)) {
+          // #708: the sending DomainController records this write; marked, it is not recorded again here
           const result = await domainController.handleAction(
-            { ...action, endpoint: MODEL_ENDPOINT } as any,
+            markRecordedBySender({ ...action, endpoint: MODEL_ENDPOINT }) as any,
             applicationDeploymentMap,
             modelEnvironment,
             undefined,
@@ -546,7 +552,7 @@ export async function restActionHandler(
           return continuationFunction(response)(redactCredentialSecretsFromValue(result));
         } else {
           const result = await domainController.handleAction(
-            { ...action, endpoint: INSTANCE_ENDPOINT } as any,
+            markRecordedBySender({ ...action, endpoint: INSTANCE_ENDPOINT }) as any,
             applicationDeploymentMap,
             modelEnvironment,
             undefined,

@@ -1,0 +1,36 @@
+{
+  "uuid": "68594192-0ff5-4b29-98ec-4752b5fc491f",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "parentName": "Report",
+  "parentUuid": "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916",
+  "conceptLevel": "Model",
+  "name": "EvolutionTraceRecordDetails",
+  "defaultLabel": "Details of an Evolution Trace Record",
+  "definition": {
+    "extractorTemplates": {
+      "record": {
+        "extractorOrCombinerType": "extractorByPrimaryKey",
+        "applicationSection": "modelVersion",
+        "parentName": "EvolutionTraceRecord",
+        "parentUuid": "854c47bd-af74-4305-bdea-aa6bddfa8899",
+        "instanceUuid": {
+          "transformerType": "getFromParameters",
+          "referenceName": "instanceUuid"
+        }
+      }
+    },
+    "section": {
+      "type": "list",
+      "definition": [
+        {
+          "type": "objectInstanceReportSection",
+          "definition": {
+            "label": "Evolution Trace Record",
+            "parentUuid": "854c47bd-af74-4305-bdea-aa6bddfa8899",
+            "fetchedDataReference": "record"
+          }
+        }
+      ]
+    }
+  }
+}

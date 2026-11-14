@@ -200,8 +200,8 @@ export function isEndpointActionAvailable(action: Action, capabilities?: Process
 /**
  * One entry per (application, endpoint, action) of every application of the current map, from the
  * live model. Applications sorted by uuid, endpoints by uuid, actions by action type, so names are
- * stable. Malformed endpoints and actions without an action type or a payload are skipped, and, given
- * the process capabilities, the actions they make unavailable (#696).
+ * stable. Malformed endpoints and actions without an action type or a payload are skipped, the internal
+ * actions (#708), and, given the process capabilities, the actions they make unavailable (#696).
  */
 export function listEndpointActions(
   localCache: LocalCacheInterface,
@@ -230,7 +230,8 @@ export function listEndpointActions(
       for (const action of actions) {
         const actionType = actionTypeOf(action);
         const payload = (action as any)?.actionParameters?.payload as MlElement | undefined;
-        if (!actionType || !payload || !isEndpointActionAvailable(action, processCapabilities)) {
+        // #708: an internal action is sent by the framework itself, never by a tool
+        if (!actionType || !payload || (action as any)?.internal === true || !isEndpointActionAvailable(action, processCapabilities)) {
           continue;
         }
         const name = endpointActionName(applicationName, endpoint.name, actionType, takenNames);

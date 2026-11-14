@@ -29,10 +29,6 @@ export {
   actionVoidSuccess,
   ApplicationSection,
   applicationSection,
-  ApplicationEvolutionTrace,
-  applicationEvolutionTrace,
-  ApplicationEvolutionTraceEvent,
-  applicationEvolutionTraceEvent,
   ApplicationVersion,
   applicationVersion,
   BoxedExtractorOrCombinerReturningObject,
@@ -1003,8 +999,15 @@ export {
   APPLICATION_VERSION_CROSS_TEST_CONFIGURATION_VERSION_UUID,
   TEST_VERSION_ENTITY_UUID,
   APPLICATION_VERSION_CROSS_TEST_VERSION_UUID,
+  EVOLUTION_TRACE_RECORD_ENTITY_UUID,
+  APPEND_EVOLUTION_TRACE_RECORD_ACTION_TYPE,
 } from "./1_core/versioning/versioningInterfaces.js";
+export { isEvolutionTraceOn, selfApplicationRowLocation } from "./1_core/versioning/evolutionTraceRecording.js";
+export type { EvolutionTraceSwitchInput } from "./1_core/versioning/evolutionTraceRecording.js";
 export type {
+  AppendEvolutionTraceRecordPayload,
+  EvolutionTraceRecordKind,
+  EvolutionTraceRecordRow,
   FreezeApplicationVersionActionPayload,
   FreezeApplicationVersionActionType,
   FreezeAvailability,
@@ -1205,19 +1208,7 @@ export {
   validateMimeType
 } from "./1_core/tools.js";
 export { zodErrorDeepestIssueLeaves, zodErrorFirstIssueLeaf } from "./1_core/mls/zodParseErrorHandler";
-export {
-  isEvolutionTraceEnabled,
-  shouldTraceEvolutionEvent,
-  MIROIR_APPLICATION_UUID,
-} from "./2_domain/evolutionTracePolicy.js";
-export {
-  generateEvolutionBaseline,
-  buildEvolutionBaselineCreateInstanceActions,
-  DEFAULT_EVOLUTION_BRANCH,
-  EVOLUTION_TRACE_ENTITY_UUID,
-  EVOLUTION_TRACE_EVENT_ENTITY_UUID,
-} from "./2_domain/evolutionTraceBaseline.js";
-export type { EvolutionTraceDeploymentState } from "./2_domain/evolutionTraceBaseline.js";
+export { MIROIR_APPLICATION_UUID } from "./1_core/authentication/AccessPolicy.js";
 export {
   asyncApplyExtractorTransformerInMemory,
   asyncExtractEntityInstanceListWithObjectListExtractor,
@@ -1622,7 +1613,6 @@ export {
   templateEvaluationParams
 } from "./3_controllers/DomainController";
 export {
-  loadLazyCapabilityModule,
   registerLazyActionImplementations,
   type LazyActionImplementationModule,
 } from "./3_controllers/ActionImplementations";
@@ -1630,8 +1620,6 @@ export type {
   ActionImplementationContext,
   ActionImplementationHandler,
   DomainControllerActionHost,
-  EvolutionTraceCommitContext,
-  EvolutionTraceRecorder,
 } from "./0_interfaces/3_controllers/DomainControllerActionHost";
 export { CallUtils } from "./3_controllers/ErrorHandling/CallUtils.js";
 export { ErrorAdminStore } from "./3_controllers/ErrorHandling/ErrorAdminStore.js";
@@ -1975,8 +1963,6 @@ export {
   type MiroirTestModeTag,
 } from "./5_tests/miroirTestTags.js";
 export {
-  EVOLUTION_TRACE_TAG,
-  EVOLUTION_TRACE_TESTS_NEED_TRACES,
   miroirTestSuiteForEnvironment,
   miroirTestUnmetRequirement,
   VERSIONING_TAG,

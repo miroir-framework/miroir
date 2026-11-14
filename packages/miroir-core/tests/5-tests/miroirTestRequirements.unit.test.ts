@@ -9,8 +9,6 @@ import {
   loadMiroirTestEntityFromFolders,
 } from "../../src/5_tests/loadApplicationMiroirTestsFromFolders";
 import {
-  EVOLUTION_TRACE_TAG,
-  EVOLUTION_TRACE_TESTS_NEED_TRACES,
   miroirTestSuiteForEnvironment,
   miroirTestUnmetRequirement,
   VERSIONING_TAG,
@@ -29,51 +27,27 @@ function instanceWithTags(tags: string[]): MiroirTestDefinition {
 }
 
 describe("MiroirTest requirements (#589)", () => {
-  it("an evolution-trace suite is skipped, with the reason, when traces are off", () => {
-    const instance = instanceWithTags(["integ", EVOLUTION_TRACE_TAG]);
-
-    expect(miroirTestUnmetRequirement(instance, {})).toBe(EVOLUTION_TRACE_TESTS_NEED_TRACES);
-    expect(miroirTestUnmetRequirement(instance, { MIROIR_EVOLUTION_TRACE: "0" })).toBe(
-      EVOLUTION_TRACE_TESTS_NEED_TRACES,
-    );
-    expect(miroirTestSuiteForEnvironment(instance, suite, {})).toEqual({
-      suite: { ...suite, skip: true },
-      skipReason: EVOLUTION_TRACE_TESTS_NEED_TRACES,
-    });
+  it("a suite without a requirement tag always runs", () => {
+    expect(miroirTestUnmetRequirement(instanceWithTags(["integ"]), { versioning: false })).toBeUndefined();
+    expect(miroirTestUnmetRequirement({ uuid: "u" } as MiroirTestDefinition)).toBeUndefined();
   });
 
-  it("an evolution-trace suite runs when traces are on", () => {
-    const instance = instanceWithTags([EVOLUTION_TRACE_TAG]);
-
-    expect(miroirTestUnmetRequirement(instance, { MIROIR_EVOLUTION_TRACE: "1" })).toBeUndefined();
-    expect(miroirTestUnmetRequirement(instance, { VITE_MIROIR_EVOLUTION_TRACE: "true" })).toBeUndefined();
-    expect(miroirTestSuiteForEnvironment(instance, suite, { MIROIR_EVOLUTION_TRACE: "1" })).toEqual({ suite });
-  });
-
-  it("a suite without the tag always runs", () => {
-    expect(miroirTestUnmetRequirement(instanceWithTags(["integ"]), {})).toBeUndefined();
-    expect(miroirTestUnmetRequirement({ uuid: "u" } as MiroirTestDefinition, {})).toBeUndefined();
-  });
-
-  it("the MiroirTest Entity allows the evolution-trace tag", () => {
-    expect(getMiroirTestAllowedTags(loadMiroirTestEntityFromFolders())).toContain(EVOLUTION_TRACE_TAG);
-  });
-
-  it("action.scenario.evolutionTrace carries the evolution-trace tag", () => {
+  // #708: the evolution-trace tag no longer gates a suite: traces are a per-application switch
+  it("action.scenario.evolutionTrace runs wherever versioning is on", () => {
     const entry = loadApplicationMiroirTestCatalog().find(
       (candidate) => candidate.suiteKey === "action.scenario.evolutionTrace",
     );
 
-    expect(entry?.instance.tags).toContain(EVOLUTION_TRACE_TAG);
-    expect(miroirTestUnmetRequirement(entry!.instance, {})).toBe(EVOLUTION_TRACE_TESTS_NEED_TRACES);
+    expect(entry?.instance.tags).not.toContain("evolution-trace");
+    expect(miroirTestUnmetRequirement(entry!.instance, { versioning: true })).toBeUndefined();
   });
 
   // #696
   it("a versioning suite is skipped, with the reason, when the versioning capability is off", () => {
     const instance = instanceWithTags([VERSIONING_TAG, "integ"]);
-    expect(miroirTestUnmetRequirement(instance, {}, { versioning: false })).toBe(VERSIONING_TESTS_NEED_VERSIONING);
+    expect(miroirTestUnmetRequirement(instance, { versioning: false })).toBe(VERSIONING_TESTS_NEED_VERSIONING);
     expect(VERSIONING_TESTS_NEED_VERSIONING).toContain("features.versioning");
-    expect(miroirTestSuiteForEnvironment(instance, suite, {}, { versioning: false })).toEqual({
+    expect(miroirTestSuiteForEnvironment(instance, suite, { versioning: false })).toEqual({
       suite: { ...suite, skip: true },
       skipReason: VERSIONING_TESTS_NEED_VERSIONING,
     });
@@ -81,10 +55,10 @@ describe("MiroirTest requirements (#589)", () => {
 
   it("a versioning suite runs when the capability is on, or when no snapshot is given", () => {
     const instance = instanceWithTags([VERSIONING_TAG]);
-    expect(miroirTestUnmetRequirement(instance, {}, { versioning: true })).toBeUndefined();
-    expect(miroirTestUnmetRequirement(instance, {})).toBeUndefined();
-    expect(miroirTestSuiteForEnvironment(instance, suite, {}, { versioning: true })).toEqual({ suite });
-    expect(miroirTestUnmetRequirement(instanceWithTags(["integ"]), {}, { versioning: false })).toBeUndefined();
+    expect(miroirTestUnmetRequirement(instance, { versioning: true })).toBeUndefined();
+    expect(miroirTestUnmetRequirement(instance)).toBeUndefined();
+    expect(miroirTestSuiteForEnvironment(instance, suite, { versioning: true })).toEqual({ suite });
+    expect(miroirTestUnmetRequirement(instanceWithTags(["integ"]), { versioning: false })).toBeUndefined();
   });
 
   it("the freeze suites carry the versioning tag", () => {

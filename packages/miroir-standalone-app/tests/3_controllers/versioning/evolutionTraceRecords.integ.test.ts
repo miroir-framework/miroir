@@ -1,0 +1,549 @@
+/**
+ * #708: evolution trace records. An application whose `evolutionTraces` are on gets one
+ * `EvolutionTraceRecord` per commit in its `modelVersion` section.
+ *
+ * Not reachable through MiroirTest: the tests observe the client and the emulated server
+ * DomainControllers, the client's local cache during a sequence, and the `modelVersion` files.
+ * ```bash
+ * MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- evolutionTraceRecords
+ * ```
+ */
+import { beforeAll, describe, expect, it } from "vitest";
+
+import {
+  Action2Error,
+  defaultMiroirModelEnvironment,
+  EVOLUTION_TRACE_RECORD_ENTITY_UUID,
+  resetAndinitializeDeploymentCompositeAction,
+  type DomainAction,
+  type Entity,
+  type EntityInstance,
+} from "@miroir-framework/core";
+import { entityAuthor, selfApplicationLibrary } from "miroir-example-library";
+import { defaultAppForTestModel, entityPublisher, folio, selfApplicationAppForTest } from "miroir-fixture-appForTest";
+import { appForTestTestbedInitParams } from "miroir-react-testing/src/4-tests/uiIntegrationAppForTestPlayfieldSeed.js";
+
+import {
+  APP_FOR_TEST,
+  APP_FOR_TEST_DEPLOYMENT,
+  appForTestModelEnvironment,
+  applicationDeploymentMap,
+  expectOk,
+  freezeAppForTest,
+  INSTANCE_ENDPOINT,
+  LIBRARY_APPLICATION,
+  LIBRARY_DEPLOYMENT,
+  MODEL_ENDPOINT,
+  modelEnvironment,
+  openVersioningTestContext,
+  SELF_APPLICATION_VERSION_ENTITY,
+  storedAppForTestRows,
+  storedRows,
+  type VersioningTestContext,
+} from "./versioningTestSetup.js";
+
+const SELF_APPLICATION_ENTITY = "a659d350-dd97-4da9-91de-524fa01745dc";
+const DOMAIN_ENDPOINT = "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5";
+const ENTITY_ENTITY = "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad";
+
+const noteEntity = {
+  uuid: "708a0001-0000-4000-8000-000000000001",
+  parentName: "Entity",
+  parentUuid: ENTITY_ENTITY,
+  selfApplication: APP_FOR_TEST,
+  name: "Note708",
+  conceptLevel: "Model",
+  description: "#708: an Entity created in a traced commit",
+  mlSchema: {
+    type: "object",
+    definition: { uuid: { type: "uuid" }, parentUuid: { type: "uuid" }, name: { type: "string" } },
+  },
+} as unknown as Entity;
+
+const directEntity = {
+  ...noteEntity,
+  uuid: "708a0002-0000-4000-8000-000000000002",
+  name: "Direct708",
+  description: "#708: an Entity created outside a transaction",
+} as unknown as Entity;
+
+type StoredRecord = EntityInstance & {
+  application: string;
+  sequenceNumber: number;
+  previousTrace?: string;
+  kind: string;
+  actions?: any[];
+  complete?: boolean;
+  commitUuid?: string;
+};
+
+let context: VersioningTestContext;
+
+beforeAll(async () => {
+  context = await openVersioningTestContext();
+}, 120000);
+
+/** Whether the client's local cache holds appForTest's SelfApplication row. */
+function clientCacheHoldsAppForTestRow(): boolean {
+  const domainState = context.domainController.getDomainState() as Record<string, any>;
+  return !!domainState?.[APP_FOR_TEST_DEPLOYMENT]?.model?.[SELF_APPLICATION_ENTITY]?.[APP_FOR_TEST];
+}
+
+/** Sets appForTest's `evolutionTraces` with a direct write from the client, which updates its local cache too. */
+async function setAppForTestTraces(on: boolean): Promise<void> {
+  expectOk(
+    await context.domainController.handleAction(
+      {
+        actionType: "updateInstance",
+        endpoint: INSTANCE_ENDPOINT,
+        payload: {
+          application: APP_FOR_TEST,
+          applicationSection: "model",
+          objects: [{ ...selfApplicationAppForTest, evolutionTraces: on } as EntityInstance],
+        },
+      } as any,
+      applicationDeploymentMap,
+      appForTestModelEnvironment(context.domainController),
+    ),
+    `evolutionTraces ${on}`,
+  );
+}
+
+/** Sends an update of an appForTest model row inside the client's transaction. */
+async function updateInTransaction(object: EntityInstance, application: string = APP_FOR_TEST): Promise<void> {
+  expectOk(
+    await context.domainController.handleAction(
+      {
+        actionType: "transactionalInstanceAction",
+        endpoint: DOMAIN_ENDPOINT,
+        payload: {
+          application,
+          instanceAction: {
+            actionType: "updateInstance",
+            endpoint: INSTANCE_ENDPOINT,
+            payload: { application, applicationSection: "model", objects: [object] },
+          },
+        },
+      } as any,
+      applicationDeploymentMap,
+      modelEnvironment(context.domainController, application),
+    ),
+    "transactional update",
+  );
+}
+
+async function commitAppForTest() {
+  return context.domainController.handleAction(
+    { actionType: "commit", endpoint: MODEL_ENDPOINT, payload: { application: APP_FOR_TEST } } as any,
+    applicationDeploymentMap,
+    appForTestModelEnvironment(context.domainController),
+  );
+}
+
+/** Makes Library versioned-internal with its traces on, with a direct write from the client. */
+async function setLibraryVersionedWithTraces(): Promise<void> {
+  expectOk(
+    await context.domainController.handleAction(
+      {
+        actionType: "updateInstance",
+        endpoint: INSTANCE_ENDPOINT,
+        payload: {
+          application: LIBRARY_APPLICATION,
+          applicationSection: "model",
+          objects: [
+            { ...selfApplicationLibrary, versioningMode: "versioned-internal", evolutionTraces: true } as EntityInstance,
+          ],
+        },
+      } as any,
+      applicationDeploymentMap,
+      modelEnvironment(context.domainController, LIBRARY_APPLICATION),
+    ),
+    "Library versioned with traces",
+  );
+  // the client had not loaded Library: a rollback loads it from the store, with its new row
+  expectOk(
+    await context.domainController.handleAction(
+      { actionType: "rollback", endpoint: MODEL_ENDPOINT, payload: { application: LIBRARY_APPLICATION } } as any,
+      applicationDeploymentMap,
+      modelEnvironment(context.domainController, LIBRARY_APPLICATION),
+    ),
+    "load Library",
+  );
+}
+
+async function storedLibraryRecords(): Promise<StoredRecord[]> {
+  const rows = (await storedRows(context, LIBRARY_DEPLOYMENT, "modelVersion", EVOLUTION_TRACE_RECORD_ENTITY_UUID)) as StoredRecord[];
+  return rows.sort((a, b) => a.sequenceNumber - b.sequenceNumber);
+}
+
+async function storedRecords(): Promise<StoredRecord[]> {
+  const rows = (await storedAppForTestRows(context, "modelVersion", EVOLUTION_TRACE_RECORD_ENTITY_UUID)) as StoredRecord[];
+  return rows.sort((a, b) => a.sequenceNumber - b.sequenceNumber);
+}
+
+describe("evolutionTraceRecords (#708)", () => {
+  it("one commit, one record: a committed Entity-row update of appForTest, traces on", async () => {
+    await setAppForTestTraces(true);
+    const updatedPublisher = { ...entityPublisher, description: "#708 one commit, one record" } as EntityInstance;
+    await updateInTransaction(updatedPublisher);
+    expectOk(await commitAppForTest(), "commit");
+
+    const records = await storedRecords();
+    expect(records).toHaveLength(1);
+    const [record] = records;
+    expect(record).toMatchObject({
+      application: APP_FOR_TEST,
+      kind: "commit",
+      sequenceNumber: 1,
+      complete: true,
+    });
+    expect(record.previousTrace).toBeUndefined();
+    expect(typeof record.commitUuid).toBe("string");
+    expect(record.actions).toEqual([
+      {
+        actionType: "updateInstance",
+        endpoint: INSTANCE_ENDPOINT,
+        payload: {
+          application: APP_FOR_TEST,
+          applicationSection: "model",
+          parentUuid: entityPublisher.parentUuid,
+          objects: [updatedPublisher],
+        },
+      },
+    ]);
+  }, 60000);
+
+  it("a second commit continues the chain: sequenceNumber 2, previousTrace the first record", async () => {
+    const before = await storedRecords();
+    await updateInTransaction({ ...entityPublisher, description: "#708 second commit" } as EntityInstance);
+    expectOk(await commitAppForTest(), "commit");
+    const records = await storedRecords();
+    expect(records).toHaveLength(before.length + 1);
+    const [previous, last] = records.slice(-2);
+    expect(last.sequenceNumber).toBe(previous.sequenceNumber + 1);
+    expect(last.previousTrace).toBe(previous.uuid);
+  }, 60000);
+
+  it("a commit with a createEntity and an instance update records both Actions, in replay order", async () => {
+    const before = await storedRecords();
+    expectOk(
+      await context.domainController.handleAction(
+        {
+          actionType: "createEntity",
+          endpoint: MODEL_ENDPOINT,
+          payload: { application: APP_FOR_TEST, entities: [noteEntity] },
+        } as any,
+        applicationDeploymentMap,
+        appForTestModelEnvironment(context.domainController),
+      ),
+      "createEntity",
+    );
+    const publisher = { ...entityPublisher, description: "#708 with a createEntity" } as EntityInstance;
+    await updateInTransaction(publisher);
+    expectOk(await commitAppForTest(), "commit");
+    const records = await storedRecords();
+    expect(records).toHaveLength(before.length + 1);
+    const actions = records[records.length - 1].actions ?? [];
+    expect(actions.map((action) => action.actionType)).toEqual(["createEntity", "updateInstance"]);
+    expect(actions[0].payload.entities.map((entity: Entity) => entity.uuid)).toEqual([noteEntity.uuid]);
+    expect(actions[1].payload.objects).toEqual([publisher]);
+  }, 60000);
+
+  it("a commit holding changes of appForTest and of Library makes one record in each, with one commitUuid", async () => {
+    await setLibraryVersionedWithTraces();
+    const appForTestBefore = await storedRecords();
+    const libraryBefore = await storedLibraryRecords();
+    await updateInTransaction({ ...entityPublisher, description: "#708 two applications" } as EntityInstance);
+    await updateInTransaction({ ...entityAuthor, description: "#708 two applications" } as EntityInstance, LIBRARY_APPLICATION);
+    expectOk(await commitAppForTest(), "commit");
+    const appForTestRecords = await storedRecords();
+    const libraryRecords = await storedLibraryRecords();
+    expect(appForTestRecords).toHaveLength(appForTestBefore.length + 1);
+    expect(libraryRecords).toHaveLength(libraryBefore.length + 1);
+    const appForTestRecord = appForTestRecords[appForTestRecords.length - 1];
+    const libraryRecord = libraryRecords[libraryRecords.length - 1];
+    expect(libraryRecord.commitUuid).toBe(appForTestRecord.commitUuid);
+    expect(appForTestRecord.actions?.map((action) => action.payload.application)).toEqual([APP_FOR_TEST]);
+    expect(libraryRecord.actions?.map((action) => action.payload.application)).toEqual([LIBRARY_APPLICATION]);
+  }, 60000);
+
+  it("a non-transactional createEntity on appForTest makes one record with that Action", async () => {
+    const before = await storedRecords();
+    expectOk(
+      await context.domainController.handleAction(
+        {
+          actionType: "createEntity",
+          endpoint: MODEL_ENDPOINT,
+          payload: { application: APP_FOR_TEST, transactional: false, entities: [directEntity] },
+        } as any,
+        applicationDeploymentMap,
+        appForTestModelEnvironment(context.domainController),
+      ),
+      "createEntity",
+    );
+    const records = await storedRecords();
+    expect(records).toHaveLength(before.length + 1);
+    const last = records[records.length - 1];
+    expect(last.complete).toBe(true);
+    expect(last.actions?.map((action) => action.actionType)).toEqual(["createEntity"]);
+    expect(last.actions?.[0].payload.entities.map((entity: Entity) => entity.uuid)).toEqual([directEntity.uuid]);
+  }, 60000);
+
+  it("a direct update of an appForTest model row makes one record, which the server does not record again", async () => {
+    const before = await storedRecords();
+    const publisher = { ...entityPublisher, description: "#708 direct write" } as EntityInstance;
+    expectOk(
+      await context.domainController.handleAction(
+        {
+          actionType: "updateInstance",
+          endpoint: INSTANCE_ENDPOINT,
+          payload: { application: APP_FOR_TEST, applicationSection: "model", objects: [publisher] },
+        } as any,
+        applicationDeploymentMap,
+        appForTestModelEnvironment(context.domainController),
+      ),
+      "updateInstance",
+    );
+    const records = await storedRecords();
+    expect(records).toHaveLength(before.length + 1);
+    expect(records[records.length - 1].actions).toEqual([
+      {
+        actionType: "updateInstance",
+        endpoint: INSTANCE_ENDPOINT,
+        payload: {
+          application: APP_FOR_TEST,
+          applicationSection: "model",
+          parentUuid: entityPublisher.parentUuid,
+          objects: [publisher],
+        },
+      },
+    ]);
+  }, 60000);
+
+  it("a write to appForTest's data section makes no record", async () => {
+    const before = await storedRecords();
+    expectOk(
+      await context.domainController.handleAction(
+        {
+          actionType: "updateInstance",
+          endpoint: INSTANCE_ENDPOINT,
+          payload: { application: APP_FOR_TEST, applicationSection: "data", objects: [{ ...folio, name: "Folio708" } as EntityInstance] },
+        } as any,
+        applicationDeploymentMap,
+        appForTestModelEnvironment(context.domainController),
+      ),
+      "data updateInstance",
+    );
+    expect(await storedRecords()).toHaveLength(before.length);
+  }, 60000);
+
+  // Slice 6 (D4): the records between two versions are those between their markers
+  it("with traces on, a freeze appends a version marker naming the version, after the last record", async () => {
+    await setAppForTestTraces(true);
+    await updateInTransaction({ ...entityPublisher, description: "#708 before 708-v1" } as EntityInstance);
+    expectOk(await commitAppForTest(), "commit");
+    const before = await storedRecords();
+    expectOk(await freezeAppForTest(context.domainController, "708-v1"), "freeze 708-v1");
+    const after = await storedRecords();
+    expect(after.slice(0, before.length)).toEqual(before);
+    const added = after.slice(before.length);
+    const versions = await storedAppForTestRows(context, "modelVersion", SELF_APPLICATION_VERSION_ENTITY);
+    const v1 = versions.find((row) => (row as { name?: string }).name === "708-v1");
+    expect(added.map(({ kind, version, previousTrace, actions }: any) => ({ kind, version, previousTrace, actions }))).toEqual([
+      { kind: "version", version: v1?.uuid, previousTrace: before[before.length - 1].uuid, actions: undefined },
+    ]);
+  }, 60000);
+
+  it("with traces off, a freeze appends nothing", async () => {
+    await setAppForTestTraces(false);
+    const before = await storedRecords();
+    expectOk(await freezeAppForTest(context.domainController, "708-v2"), "freeze 708-v2");
+    expect(await storedRecords()).toEqual(before);
+    await setAppForTestTraces(true);
+  }, 60000);
+
+  it("a commit whose second Action fails records the first one, with complete: false", async () => {
+    // noteEntity is in the client's local cache; dropping it on the server only makes the client's
+    // rename of it fail in the store, after the update before it reached the store
+    expectOk(
+      await context.serverDomainController.handleAction(
+        {
+          actionType: "dropEntity",
+          endpoint: MODEL_ENDPOINT,
+          payload: { application: APP_FOR_TEST, transactional: false, entityUuid: noteEntity.uuid },
+        } as any,
+        applicationDeploymentMap,
+        appForTestModelEnvironment(context.serverDomainController),
+      ),
+      "server dropEntity",
+    );
+    const publisher = { ...entityPublisher, description: "#708 partial commit" } as EntityInstance;
+    await updateInTransaction(publisher);
+    expectOk(
+      await context.domainController.handleAction(
+        {
+          actionType: "renameEntity",
+          endpoint: MODEL_ENDPOINT,
+          payload: { application: APP_FOR_TEST, entityUuid: noteEntity.uuid, entityName: "Note708", targetValue: "Note708Renamed" },
+        } as any,
+        applicationDeploymentMap,
+        appForTestModelEnvironment(context.domainController),
+      ),
+      "renameEntity in the transaction",
+    );
+    const before = await storedRecords();
+    const result = await commitAppForTest();
+    expect(result instanceof Action2Error, "the commit fails at the rename").toBe(true);
+    const records = await storedRecords();
+    expect(records.length).toBeGreaterThan(before.length);
+    const last = records[records.length - 1];
+    expect(last.complete).toBe(false);
+    expect(last.actions?.map((action) => action.actionType)).toEqual(["updateInstance"]);
+    expect(last.actions?.[0].payload.objects).toEqual([publisher]);
+    expectOk(
+      await context.domainController.handleAction(
+        { actionType: "rollback", endpoint: MODEL_ENDPOINT, payload: { application: APP_FOR_TEST } } as any,
+        applicationDeploymentMap,
+        appForTestModelEnvironment(context.domainController),
+      ),
+      "rollback",
+    );
+  }, 60000);
+});
+
+// Slice 7 (D6): a versioned-git application has its modelVersion section only when its traces are on
+describe("evolutionTraceRecords (#708), versioned-git", () => {
+  async function setAppForTestGitMode(evolutionTraces: boolean): Promise<void> {
+    expectOk(
+      await context.domainController.handleAction(
+        {
+          actionType: "updateInstance",
+          endpoint: INSTANCE_ENDPOINT,
+          payload: {
+            application: APP_FOR_TEST,
+            applicationSection: "model",
+            objects: [{ ...selfApplicationAppForTest, versioningMode: "versioned-git", evolutionTraces } as EntityInstance],
+          },
+        } as any,
+        applicationDeploymentMap,
+        appForTestModelEnvironment(context.domainController),
+      ),
+      "appForTest in versioned-git",
+    );
+    // a rollback loads appForTest again, with its new row
+    expectOk(
+      await context.domainController.handleAction(
+        { actionType: "rollback", endpoint: MODEL_ENDPOINT, payload: { application: APP_FOR_TEST } } as any,
+        applicationDeploymentMap,
+        appForTestModelEnvironment(context.domainController),
+      ),
+      "reload appForTest",
+    );
+  }
+
+  /** The record rows in the client's cached modelVersion section of appForTest. */
+  function cachedRecordCount(): number {
+    const domainState = context.domainController.getDomainState() as Record<string, any>;
+    return Object.keys(domainState?.[APP_FOR_TEST_DEPLOYMENT]?.modelVersion?.[EVOLUTION_TRACE_RECORD_ENTITY_UUID] ?? {}).length;
+  }
+
+  it("with traces on, it loads its modelVersion section and a commit writes its record there", async () => {
+    await setAppForTestGitMode(true);
+    const before = await storedRecords();
+    expect(before.length).toBeGreaterThan(0);
+    expect(cachedRecordCount()).toBe(before.length);
+    await updateInTransaction({ ...entityPublisher, description: "#708 versioned-git" } as EntityInstance);
+    expectOk(await commitAppForTest(), "commit in versioned-git");
+    const after = await storedRecords();
+    expect(after.length).toBe(before.length + 1);
+    expect(after[after.length - 1].kind).toBe("commit");
+  }, 60000);
+
+  it("with traces off, it does not fetch its modelVersion section", async () => {
+    await setAppForTestGitMode(false);
+    expect(cachedRecordCount()).toBe(0);
+  }, 60000);
+
+  it("a freeze stays refused", async () => {
+    const refused = await freezeAppForTest(context.domainController, "708-git");
+    expect(refused instanceof Action2Error, JSON.stringify(refused)).toBe(true);
+  }, 60000);
+});
+
+describe("evolutionTraceRecords (#708), init", () => {
+  /**
+   * Slice 0, characterization. Deployment init runs `resetModel`, `initModel`, then commits
+   * `createEntity`. The trace switch is read from the SelfApplication row in the local cache, so
+   * what init records depends on whether that row is there when each step runs.
+   */
+  // Slice 5: resetModel clears modelVersion with the rest of the model, so its marker starts a new chain
+  it("with traces on, resetModel then initModel each leave a rebaseline marker, with no version and no Actions", async () => {
+    await setAppForTestTraces(true);
+    expectOk(
+      await context.domainController.handleAction(
+        { actionType: "resetModel", endpoint: MODEL_ENDPOINT, payload: { application: APP_FOR_TEST } } as any,
+        applicationDeploymentMap,
+        defaultMiroirModelEnvironment,
+      ),
+      "resetModel",
+    );
+    const afterReset = await storedRecords();
+    expect(afterReset.map(({ kind, sequenceNumber, previousTrace, actions, version }: any) => ({
+      kind,
+      sequenceNumber,
+      previousTrace,
+      actions,
+      version,
+    }))).toEqual([{ kind: "rebaseline", sequenceNumber: 1, previousTrace: undefined, actions: undefined, version: undefined }]);
+
+    expectOk(
+      await context.domainController.handleAction(
+        {
+          actionType: "initModel",
+          endpoint: MODEL_ENDPOINT,
+          payload: { application: APP_FOR_TEST, params: appForTestTestbedInitParams },
+        } as any,
+        applicationDeploymentMap,
+        defaultMiroirModelEnvironment,
+      ),
+      "initModel",
+    );
+    const afterInit = await storedRecords();
+    expect(afterInit.map((record) => record.kind)).toEqual(["rebaseline", "rebaseline"]);
+    expect(afterInit[1].previousTrace).toBe(afterInit[0].uuid);
+    expect(afterInit[1].actions).toBeUndefined();
+  }, 120000);
+
+  it("init: where appForTest's SelfApplication row is in the client's local cache", async () => {
+    const sequence = resetAndinitializeDeploymentCompositeAction(
+      APP_FOR_TEST,
+      APP_FOR_TEST_DEPLOYMENT,
+      appForTestTestbedInitParams,
+      [],
+      defaultAppForTestModel,
+    );
+    const rowBeforeStep: Record<string, boolean> = {};
+    for (const step of sequence.payload.actionSequence as DomainAction[]) {
+      const label = (step as { actionLabel?: string }).actionLabel ?? step.actionType;
+      rowBeforeStep[label] = clientCacheHoldsAppForTestRow();
+      const result = await context.domainController.handleAction(
+        step as any,
+        applicationDeploymentMap,
+        defaultMiroirModelEnvironment,
+      );
+      expectOk(result, label);
+    }
+    expect(rowBeforeStep).toMatchInlineSnapshot(`
+      {
+        "resetAndinitializeDeploymentCompositeAction_InitModel": true,
+        "resetAndinitializeDeploymentCompositeAction_Rollback": true,
+        "resetAndinitializeDeploymentCompositeAction_commitEntities": true,
+        "resetAndinitializeDeploymentCompositeAction_commitInitModel": true,
+        "resetAndinitializeDeploymentCompositeAction_createEntities": true,
+        "resetAndinitializeDeploymentCompositeAction_createMetaModelInstances_model": true,
+        "resetAndinitializeDeploymentCompositeAction_createMetaModelInstances_modelVersion": true,
+        "resetAndinitializeDeploymentCompositeAction_resetModel": true,
+      }
+    `);
+  }, 120000);
+});

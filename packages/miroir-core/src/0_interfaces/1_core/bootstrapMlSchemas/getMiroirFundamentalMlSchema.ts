@@ -311,8 +311,7 @@ export function getMiroirFundamentalMlSchema(
   entityDefinitionMiroirTest: any,
   entityDefinitionTransformerDefinition: any,
   entityDefinitionEndpointDefinition: any,
-  entityDefinitionApplicationEvolutionTrace: any,
-  entityDefinitionApplicationEvolutionTraceEvent: any,
+  entityDefinitionEvolutionTraceRecord: any,
 // ): MlReference {
   // ): any /** MlReference, avoiding reference to ensure proper compilation */ {
   ): any /** MlSchema, avoiding reference to ensure proper compilation */ {
@@ -2338,8 +2337,7 @@ export function getMiroirFundamentalMlSchema(
             },
           },
         },
-        applicationEvolutionTrace: entityDefinitionApplicationEvolutionTrace.mlSchema as any,
-        applicationEvolutionTraceEvent: entityDefinitionApplicationEvolutionTraceEvent.mlSchema as any,
+        evolutionTraceRecord: entityDefinitionEvolutionTraceRecord.mlSchema as any,
         miroirAllFundamentalTypesUnion: {
           type: "union",
           definition: [
@@ -3109,6 +3107,13 @@ export function getMiroirFundamentalMlSchema(
           tag: { value: { display: { displayedAttributeValueWhenFolded: "actionLabel" } } },
           definition: (getEndpointActions(modelEndpointVersionV1) ?? []).find(
             (a: any) => a.actionParameters.actionType.definition == "freezeApplicationVersion",
+          )?.actionParameters,
+        },
+        modelActionAppendEvolutionTraceRecord: {
+          type: "object",
+          tag: { value: { display: { displayedAttributeValueWhenFolded: "actionLabel" } } },
+          definition: (getEndpointActions(modelEndpointVersionV1) ?? []).find(
+            (a: any) => a.actionParameters.actionType.definition == "appendEvolutionTraceRecord",
           )?.actionParameters,
         },
         modelAction: {

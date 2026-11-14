@@ -1029,6 +1029,116 @@
           "inMemoryImplementationFunctionName": "handleAction_freezeApplicationVersion",
           "requiredCapability": "versioning"
         }
+      },
+      {
+        "actionParameters": {
+          "actionType": {
+            "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false,
+                "defaultLabel": "Append an evolution trace record",
+                "description": "#708: appends one record to the application's evolution trace, in its modelVersion section. Sent by the DomainController that ran a commit, a freeze or a re-baseline."
+              }
+            },
+            "definition": "appendEvolutionTraceRecord"
+          },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
+          },
+          "endpoint": {
+            "type": "literal",
+            "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+          },
+          "payload": {
+            "type": "object",
+            "definition": {
+              "application": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false,
+                    "defaultLabel": "Application"
+                  }
+                }
+              },
+              "kind": {
+                "type": "enum",
+                "definition": [
+                  "commit",
+                  "version",
+                  "rebaseline"
+                ],
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false,
+                    "defaultLabel": "Kind"
+                  }
+                }
+              },
+              "commitUuid": {
+                "type": "uuid",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false,
+                    "defaultLabel": "Commit"
+                  }
+                }
+              },
+              "actions": {
+                "type": "array",
+                "optional": true,
+                "definition": {
+                  "type": "any"
+                },
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false,
+                    "defaultLabel": "Actions"
+                  }
+                }
+              },
+              "complete": {
+                "type": "boolean",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false,
+                    "defaultLabel": "Complete"
+                  }
+                }
+              },
+              "version": {
+                "type": "string",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false,
+                    "defaultLabel": "Version"
+                  }
+                }
+              },
+              "gitCommit": {
+                "type": "string",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false,
+                    "defaultLabel": "Git commit"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_appendEvolutionTraceRecord",
+          "requiredCapability": "versioning"
+        },
+        "internal": true
       }
     ]
   }
