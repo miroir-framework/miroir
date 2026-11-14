@@ -13,6 +13,7 @@ Key sources: [`applicationVersionFreeze.ts`](../../../packages/miroir-core/src/1
 **Document history:**
 - 2026-11-07: first draft. An adversarial review (a code fact check and an attack on the design) changed D2, D4 to D6 and D10, and added D11 and D12. Greptile's review of #711 added the Git migration's place at its target tag and repeatable data steps (D2).
 - 2026-11-08: the user's review. Every decision now states its question. D12 now takes the traces as its source and checks them against the diff; the earlier diff-only choice is kept as D12-a. Section 5.3 plans a composite rename Action, D4 is corrected about `MetaModel`, D9 is rewritten with an example, and D8 is accepted. Later that day the user accepted all the goals and decisions.
+- 2026-11-14: wording only, no decision changed. The one-letter shorthands of the settings (N, G) and of the workflows (S, C) are replaced by the `versioningMode` values `versioned-internal` and `versioned-git` and by the workflow names strict and continuous delivery; G also clashed with the goal labels G1 to G8. Issues #708, #709 and #718 were reworded the same way; older documents may still say setting N (no Git) and setting G (Git).
 
 ---
 
@@ -58,13 +59,13 @@ Key sources: [`applicationVersionFreeze.ts`](../../../packages/miroir-core/src/1
 
 | Setting | `versioningMode` | Where the model lives | Where versions live | Process capabilities needed |
 |---|---|---|---|---|
-| **N. No Git** | `versioned-internal` | `model` section, any store but `bundled` | `modelVersion` section, frozen rows | `versioning` (#696) |
-| **G. Git** | `versioned-git` (today `versioned-external`, Q24) | `model` section on the filesystem, inside a Git work tree | Git tags. A writable `modelVersion` folder, committed with the model, holds traces and migrations only. This is new: today `versioned-external` has no `modelVersion` (`docs/reference/versioning.md`, `DomainController.ts` skips history fetches for it). | `versioning` and `git` |
-| U. Unversioned | `unversioned` | any | none | none |
+| **`versioned-internal`** (no Git) | `versioned-internal` | `model` section, any store but `bundled` | `modelVersion` section, frozen rows | `versioning` (#696) |
+| **`versioned-git`** (Git) | `versioned-git` (today `versioned-external`, Q24) | `model` section on the filesystem, inside a Git work tree | Git tags. A writable `modelVersion` folder, committed with the model, holds traces and migrations only. This is new: today `versioned-external` has no `modelVersion` (`docs/reference/versioning.md`, `DomainController.ts` skips history fetches for it). | `versioning` and `git` |
+| `unversioned` | `unversioned` | any | none | none |
 
 ### 4.2 Workflows
 
-| | **Strict** (S) | **Continuous delivery** (C) |
+| | **Strict** | **Continuous delivery** |
 |---|---|---|
 | Version names | `major.minor.patch`. The bump follows the migration: a breaking step means a major bump. | any increasing label, for example a build number or a date |
 | Versions created | at release | at each deploy |
@@ -75,7 +76,7 @@ Key sources: [`applicationVersionFreeze.ts`](../../../packages/miroir-core/src/1
 
 ### 4.3 Mechanisms per combination
 
-| Mechanism | N-S | N-C | G-S | G-C |
+| Mechanism | `versioned-internal`, strict | `versioned-internal`, continuous delivery | `versioned-git`, strict | `versioned-git`, continuous delivery |
 |---|---|---|---|---|
 | Version | frozen `SelfApplicationVersion` (exists) | same | Git tag (create: missing, D3) | same |
 | Snapshot of a version | `*Version` rows (exist, all element types since #706) | same | `*_model/` folder at the tag (reading it: missing, D4) | same |
@@ -86,7 +87,7 @@ Key sources: [`applicationVersionFreeze.ts`](../../../packages/miroir-core/src/1
 | Agreement check (Q29) | at freeze | at freeze | at Git commit | at Git commit |
 | Re-baseline (Q30) | freeze of the live model plus marker | same | marker committed with the model, no freeze (D11) | same |
 | Model jump to a version | restore action (missing, D6) | same | checkout of the tag (exists), plus the Q31 check and the storage reconciliation (D2) | same |
-| Feature switches | — | application switches (missing, D8) | — | same as N-C |
+| Feature switches | — | application switches (missing, D8) | — | same as `versioned-internal`, continuous delivery |
 | Release package | version package (D9) | — | the repository at the tag | — |
 
 ### 4.4 Combinations that do not make sense
@@ -107,7 +108,7 @@ Key sources: [`applicationVersionFreeze.ts`](../../../packages/miroir-core/src/1
 
 Library is the example: `Book` (attributes today: `name`, `year`, `citation`, `author`, `publisher`) gains an optional attribute `isbn`, which is filled from existing data.
 
-### 5.1 Setting N, no Git
+### 5.1 `versioned-internal`, no Git
 
 1. **Create a version.** The designer freezes the model as `1.0.0` from the freeze Runner (exists, #225). Since #706 the freeze snapshots every model element. With traces on (item 6), the freeze first checks that the previous version plus the trace records equal the live model (Q29). On a mismatch it refuses and lists the differences.
 2. **Change the model.** The designer adds `isbn` to `Book` in the Entity editor and commits. The commit writes one trace record (Q16), which holds an update of the `Book` Entity row. That update does not alter a SQL table, as a non-regression test checks on PostgreSQL (#715, `entityRowUpdateSqlTable.integ`):
@@ -132,12 +133,12 @@ Library is the example: `Book` (attributes today: `name`, `year`, `citation`, `a
    The record ends at `1.1.0` with the migration listed. A brand-new test deployment starts with a jump to `1.0.0` on an empty deployment, followed by its fixture data (D6).
 6. **Roll back** (item 9). The operator restores `1.0.0` on the test deployment (D6). The state record shows that only backward-compatible steps ran since `1.0.0`, so the restore runs. The extra `isbn` column stays in the data (D2).
 
-### 5.2 Setting G, Git
+### 5.2 `versioned-git`, Git
 
 1. **Create a version.** The designer commits from the Git page, then tags the commit `1.0.0` (D3; the tag carries the version name, D10). With traces on, the Git commit checks that the model at `HEAD` plus the trace records being committed equal the working model (Q29). Otherwise it refuses to commit the application's files.
-2. **Change the model.** Same as in N. The trace record is a new file under `modelVersion/`, committed with the model change. New files never conflict in a merge (Q16).
+2. **Change the model.** Same as for `versioned-internal`. The trace record is a new file under `modelVersion/`, committed with the model change. New files never conflict in a merge (Q16).
 3. **Commit.**
-4. **Prepare the migration, then tag `1.1.0`.** Same as in N, with the two model states read from tag `1.0.0` and from `HEAD` (D4). The `Migration` instance is committed, and only then is the commit tagged `1.1.0`, so that a migration into a version is part of that version.
+4. **Prepare the migration, then tag `1.1.0`.** Same as for `versioned-internal`, with the two model states read from tag `1.0.0` and from `HEAD` (D4). The `Migration` instance is committed, and only then is the commit tagged `1.1.0`, so that a migration into a version is part of that version.
 5. **Move the test deployment.** The test environment has its own clone, and its data section is outside the clone (D7). The runner:
    - reads the `Migration` at tag `1.1.0` without a checkout (D4) and copies it into the state record, so that a restarted run finds its remaining steps whatever is checked out;
    - runs the expand steps on the current checkout;
@@ -166,7 +167,7 @@ In the strict workflow it runs as one migration. In continuous delivery the same
 
 ## 6. Decision record
 
-Shorthand used below: setting **N** has no Git and setting **G** keeps the model in Git (section 4.1); workflow **S** is strict and workflow **C** is continuous delivery (section 4.2). Each decision is stated as the question it answers.
+Settings are named by their `versioningMode` value: `versioned-internal` keeps versions as frozen rows in `modelVersion`, without Git, and `versioned-git` keeps the model in Git, with versions as tags (section 4.1). Workflows are named strict and continuous delivery (section 4.2). Each decision is stated as the question it answers.
 
 | Decision | Choice | Serves |
 |---|---|---|
@@ -220,7 +221,7 @@ Only SQL has `createStorageSpaceForInstancesOfEntityIfMissing` (`SqlDbStoreSecti
 
 How D2-d works:
 - **Expand** steps are data steps that run on the starting model.
-- **Jump** brings the model to the target version: restore (D6) in setting N, checkout in setting G. It is followed by an add-only storage reconciliation: missing storage spaces and columns are created, existing ones are kept.
+- **Jump** brings the model to the target version: restore (D6) for `versioned-internal`, checkout for `versioned-git`. It is followed by an add-only storage reconciliation: missing storage spaces and columns are created, existing ones are kept.
 - **Fill** steps are data steps that run on the target model. Columns that the target removed are still in storage, so a fill step can read them through a raw store read.
 - **Contract** steps explicitly drop storage (a column or a storage space) that the target model no longer declares.
 - Reconciliation also runs after any change to an Entity row through the instance editor, so the authoring deployment's storage follows its own edits. It never runs on a plain boot.
@@ -249,8 +250,8 @@ The Git page lists and checks out tags (`miroir-git-isomorphic`, `git.listTags`,
 **Status:** Accepted (2026-11-08). **Serves:** G2.
 
 Migration generation, the agreement check (Q29) and restore all need "the model at state X". There are three sources:
-- frozen `*Version` rows (setting N);
-- the `*_model/` files at a Git ref (setting G), read with isomorphic-git `readTree` / `readBlob`, without a checkout;
+- frozen `*Version` rows (`versioned-internal`);
+- the `*_model/` files at a Git ref (`versioned-git`), read with isomorphic-git `readTree` / `readBlob`, without a checkout;
 - the live model.
 
 A `ModelStateSource` interface in the versioning package (#696) returns the same in-memory shape for each: a map from element type to rows, covering every snapshotted type. #703 added Blob and Test to the meta-model's Entity list (`defaultMiroirMetaModel.entities`), so every application's model has these Entities. The `MetaModel` type (`miroirFundamentalType.ts`, line 10703), which holds a model's rows in memory, still has no collection for Blob, TestConfiguration or Test rows; its `tests` collection holds MiroirTest definitions. So either `MetaModel` gains these three collections, or `ModelStateSource` uses its own map. The trace replay, the all-types diff and the agreement check take two sources. The Git implementation lives in `@miroir-framework/git-isomorphic` and loads lazily. Item 6 owns D4, the replay and the diff, because the Q29 checks at freeze and at Git commit need them before migrations exist.
@@ -261,7 +262,7 @@ A `ModelStateSource` interface in the versioning package (#696) returns the same
 
 A process holds one deployment per application: `ApplicationDeploymentMap` maps an application uuid to one deployment uuid (`1_core/Deployment.ts`, line 66). A test deployment of Library is therefore another process, with its own environment (`environments/*.json`). Each deployment configures its sections separately, so two environments can point their `modelVersion` sections at the same directory or SQL schema while `model` and `data` differ.
 
-`evolutionTraces` lives on the SelfApplication row, which is model, so a test deployment has traces on as well. If it wrote traces, re-baseline markers or versions to the shared `modelVersion`, it would break the authoring deployment's `previousTrace` chain (Q19). In setting G it would also dirty the clone, and `gitAction_checkout` would then refuse. The deployment state record therefore says whether a deployment authors or follows. A following deployment writes nothing to `modelVersion`, and its model commits are refused (section 4.4). Only migrations and restores change its model.
+`evolutionTraces` lives on the SelfApplication row, which is model, so a test deployment has traces on as well. If it wrote traces, re-baseline markers or versions to the shared `modelVersion`, it would break the authoring deployment's `previousTrace` chain (Q19). For `versioned-git` it would also dirty the clone, and `gitAction_checkout` would then refuse. The deployment state record therefore says whether a deployment authors or follows. A following deployment writes nothing to `modelVersion`, and its model commits are refused (section 4.4). Only migrations and restores change its model.
 
 | Option | Mechanism | Pros | Cons |
 |---|---|---|---|
@@ -305,8 +306,8 @@ Miroir has no switch that an application designer can put on a Report, a Menu it
 
 **What is at stake.** In the strict workflow, a release, say Library `2.0.0`, goes to whoever runs a test or production deployment, possibly on another network. To move their deployment from `1.0.0` to `2.0.0`, they need two things: the model of `2.0.0`, and the migrations from `1.0.0` to `2.0.0`. The question is what carries those two things to them.
 
-- **Model in Git** (setting G): the repository is the package. The operator clones it from the Git page (#683), or fetches and checks out tag `2.0.0`. The migrations are committed under `modelVersion/` at that tag (D2).
-- **No Git** (setting N): the version is a set of rows in the `modelVersion` section of the dev environment.
+- **Model in Git** (`versioned-git`): the repository is the package. The operator clones it from the Git page (#683), or fetches and checks out tag `2.0.0`. The migrations are committed under `modelVersion/` at that tag (D2).
+- **No Git** (`versioned-internal`): the version is a set of rows in the `modelVersion` section of the dev environment.
   - A test environment that can reach the same storage reads them there (D5-a). This is enough for the experiments.
   - A production site that cannot reach that storage needs a package: a file such as `library-2.0.0.zip`, holding the `2.0.0` snapshot rows and the migrations, exported in dev and imported in production.
   - Nothing exports or imports such a file today. The Admin `bundle` Entity `9f9170da-538d-425c-8cb7-551640623eed` has only `name`, `defaultLabel` and `description`.
@@ -321,7 +322,7 @@ Miroir has no switch that an application designer can put on a Report, a Menu it
 
 | Option | Mechanism | Pros | Cons |
 |---|---|---|---|
-| **D10-a. Version name** ★ | a Migration says `from: "1.0.0"`, `to: "1.1.0"`, and the state record says `1.1.0`. In setting N, the name resolves to the `SelfApplicationVersion` of that name on the application's main branch; branches are not managed in N today (`ApplicationModelBranch.headVersion` is set only at creation). In setting G, it resolves to the tag of the same name, unique in the repository. | same records in both settings | a moved or deleted tag breaks the link |
+| **D10-a. Version name** ★ | a Migration says `from: "1.0.0"`, `to: "1.1.0"`, and the state record says `1.1.0`. For `versioned-internal`, the name resolves to the `SelfApplicationVersion` of that name on the application's main branch; branches are not managed in `versioned-internal` today (`ApplicationModelBranch.headVersion` is set only at creation). For `versioned-git`, it resolves to the tag of the same name, unique in the repository. | same records in both settings | a moved or deleted tag breaks the link |
 | D10-b. Uuid of the version, or commit id | exact | — | Git ids in model rows; two vocabularies |
 
 **Decision:** D10-a. The Git tag carries the version name exactly, with no `v` prefix. The state record may store the commit id as information, never as the key. The live model is a `ModelStateSource` for previews and checks, but a stored Migration or state record always names a version.
@@ -333,8 +334,8 @@ Miroir has no switch that an application designer can put on a Report, a Menu it
 One Git commit usually adds several trace records, one per Miroir `commit`, and Git ancestry does not order them. Q30's re-baseline "freezes the live model", which Q7 forbids with Git.
 
 **Decision:**
-- Every trace record keeps `previousTrace` plus a sequence number in both settings. In setting G, Git ancestry orders only the records of different Git commits, and a merge is resolved by a re-baseline.
-- In setting G, a re-baseline writes a marker record that is committed with the model, and no freeze. The marker names the Git commit it closes as information (D10).
+- Every trace record keeps `previousTrace` plus a sequence number in both settings. For `versioned-git`, Git ancestry orders only the records of different Git commits, and a merge is resolved by a re-baseline.
+- For `versioned-git`, a re-baseline writes a marker record that is committed with the model, and no freeze. The marker names the Git commit it closes as information (D10).
 
 Item 6 owns D11.
 
@@ -379,7 +380,7 @@ Traces come in two shapes today:
 | Gap | Where | Owner |
 |---|---|---|
 | `versioningMode` is `unversioned \| versioned-internal \| versioned-external`: there is no `versioned-git` and no `evolutionTraces` parameter | `versioningMode.ts`, SelfApplication schema | item 6 |
-| `versioned-external` has no writable `modelVersion`; setting G needs one for traces and migrations | `DomainController.ts` (history fetches skipped), `docs/reference/versioning.md` | item 6 |
+| `versioned-external` has no writable `modelVersion`; `versioned-git` needs one for traces and migrations | `DomainController.ts` (history fetches skipped), `docs/reference/versioning.md` | item 6 |
 | Traces are switched by `MIROIR_EVOLUTION_TRACE` / `VITE_MIROIR_EVOLUTION_TRACE` for the whole process, read from `process.env`, so they are always off in a browser | `evolutionTracePolicy.ts`, `isEvolutionTraceEnabled` | item 6 |
 | Traces are written to the `model` section (`data` for Miroir), with one root per application and branch, one event per action, and no resolved Action | `evolutionTracePolicy.ts` `shouldTraceEvolutionEvent`, `evolutionTraceWriter.ts` | item 6 (Q16, Q28, D11) |
 | Versioning code sits in core and loads everywhere; model actions cannot be registered from outside core | `1_core/versioning/`, `2_domain/evolutionTrace*.ts` | #696 |
