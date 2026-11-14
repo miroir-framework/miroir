@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 
 import {
   ACTION_OK,
+  Action2Error,
   MiroirLoggerFactory,
   type Action2VoidReturnType,
   type LoggerInterface,
@@ -145,8 +146,12 @@ export const RunAllMiroirTestsButton: React.FC<RunAllMiroirTestsButtonProps> = (
     }
 
     if (failures.length > 0) {
-      throw new Error(
+      return new Action2Error(
+        "FailedToHandleAction",
         `Integration batch failed for: ${failures.join(', ')} — see Integration Test Inspector`,
+        undefined,
+        undefined,
+        { failures },
       );
     }
 
