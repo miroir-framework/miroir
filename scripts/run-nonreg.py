@@ -16,6 +16,8 @@ Examples:
 from __future__ import annotations
 
 import argparse
+import errno
+import hashlib
 import json
 import os
 import re
@@ -23,6 +25,7 @@ import shutil
 import socket
 import subprocess
 import sys
+import tempfile
 import threading
 import time
 from concurrent.futures import FIRST_COMPLETED, Future, ThreadPoolExecutor, wait
@@ -58,6 +61,11 @@ WORKER_ENV = "MIROIR_TEST_WORKER"
 RUN_EXPORT_DIR_ENV = "MIROIR_RUN_EXPORT_DIR"
 DEFAULT_JOBS = 4
 STATE_ROOT_DIRNAME = ".miroir"
+# #584: a run claims each worker number with a lock file, held until the run ends, so it never clears
+# the state of a worker another run is using (a nonreg run started by a step of another, as the pytest
+# step does, or two runs on one checkout). The folder is outside the repository, one per checkout;
+# MIROIR_NONREG_WORKER_LOCKS moves it (tests).
+WORKER_LOCKS_ENV = "MIROIR_NONREG_WORKER_LOCKS"
 
 TierName = Literal["unit", "default", "full"]
 TIER_ORDER: dict[str, int] = {"unit": 0, "default": 1, "full": 2}
@@ -1162,6 +1170,44 @@ def plan_units(steps: list[dict[str, Any]], shared_groups: dict[str, list[dict[s
     return units
 
 
+def worker_locks_dir() -> Path:
+    """Where the runs of this checkout claim their worker numbers (#584)."""
+    configured = os.environ.get(WORKER_LOCKS_ENV)
+    if configured:
+        return Path(configured)
+    checkout = hashlib.sha1(str(ROOT).encode("utf-8")).hexdigest()[:12]
+    return Path(tempfile.gettempdir()) / f"miroir-nonreg-workers-{checkout}"
+
+
+# What a non-blocking lock raises when another process holds it: flock gives EWOULDBLOCK (EAGAIN),
+# msvcrt.locking EACCES or EDEADLOCK.
+LOCK_BUSY_ERRNOS = {errno.EACCES, errno.EAGAIN, errno.EWOULDBLOCK, errno.EDEADLK}
+
+
+def try_lock(path: Path) -> Any:
+    """The open file holding an exclusive lock on `path`, or None when another process holds it. The
+    operating system releases the lock when the file is closed or the process ends, even when killed.
+    Any other error (a folder whose filesystem does not lock files) is raised: taken for a busy lock, it
+    would make `Workers.acquire` try new numbers forever."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    file = open(path, "a+")
+    try:
+        if os.name == "nt":
+            import msvcrt
+
+            msvcrt.locking(file.fileno(), msvcrt.LK_NBLCK, 1)
+        else:
+            import fcntl
+
+            fcntl.flock(file.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except OSError as exc:
+        file.close()
+        if exc.errno in LOCK_BUSY_ERRNOS:
+            return None
+        raise
+    return file
+
+
 class Workers:
     """The workers of a run (#477) and their test environment state (#728). A worker is cleared the first
     time the run uses it (leftovers of a killed run) and after every unit, so every unit starts from an
@@ -1174,21 +1220,38 @@ class Workers:
         self.lock = threading.Lock()
         self.free: list[str] = []
         self.used: list[str] = []
+        # #584: the lock files of the worker numbers this run claimed, held until close()
+        self.claims: list[Any] = []
+        self.next_number = 1
         self.kept: list[str] = []
         self.complete = True
         self.warnings: list[str] = []
 
     def acquire(self) -> str:
         """A free worker, else a new one whose leftovers are cleared; a new worker that cannot be cleared
-        is not used (the next number is tried)."""
+        is not used (the next number is tried). A number another run holds is skipped (#584): clearing it
+        would empty the stores that run's step is using."""
         while True:
             with self.lock:
                 if self.free:
                     return self.free.pop(0)
-                worker = f"w{len(self.used) + 1}"
+                worker = f"w{self.next_number}"
+                self.next_number += 1
+                if not self.dry_run:
+                    claim = try_lock(worker_locks_dir() / f"{worker}.lock")
+                    if claim is None:
+                        continue
+                    self.claims.append(claim)
                 self.used.append(worker)
             if self.clear(worker):
                 return worker
+
+    def close(self) -> None:
+        """Gives the worker numbers back to other runs, once their state is cleared or kept."""
+        with self.lock:
+            for claim in self.claims:
+                claim.close()
+            self.claims = []
 
     def clear(self, worker: str) -> bool:
         """Clears the worker's state; False when a clear failed, so the worker may hold stores still."""
@@ -1346,6 +1409,11 @@ def remove_worker_state(workers: list[str]) -> tuple[list[str], bool]:
             connections = load_environment_connections(environment, ENVIRONMENTS_DIR)
             if not ("postgres" in connections or "mongodb" in connections):
                 shutil.rmtree(directory, ignore_errors=True)
+                if directory.exists():
+                    # Windows keeps a folder another process still has a file open in (#584).
+                    complete = False
+                    lines.append(f"could not remove {repo_relative(directory)}")
+                    continue
                 lines.append(f"removed {repo_relative(directory)}")
                 continue
             argv = resolve_argv(["npm", "run", "--silent", "miroir-env", "--", "clear", "--name", environment])
@@ -1363,29 +1431,17 @@ class RunLockBusy(Exception):
 
 
 class RunLock:
-    """One run at a time per results root (#477): two runs would use the same workers w1..wN, and the
-    end of one would remove the stores the other is using. The operating system releases the lock when
-    the process ends, even when it is killed."""
+    """One run at a time per results root (#477): both would write the same snapshots and `latest`
+    pointer. Workers are claimed apart, per checkout (#584, `Workers.acquire`)."""
 
     def __init__(self, path: Path) -> None:
         self.path = path
         self.file: Any = None
 
     def __enter__(self) -> "RunLock":
-        self.path.parent.mkdir(parents=True, exist_ok=True)
-        self.file = open(self.path, "a+")
-        try:
-            if os.name == "nt":
-                import msvcrt
-
-                msvcrt.locking(self.file.fileno(), msvcrt.LK_NBLCK, 1)
-            else:
-                import fcntl
-
-                fcntl.flock(self.file.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
-        except OSError as exc:
-            self.file.close()
-            raise RunLockBusy(f"another nonreg run holds {repo_relative(self.path)}") from exc
+        self.file = try_lock(self.path)
+        if self.file is None:
+            raise RunLockBusy(f"another nonreg run holds {repo_relative(self.path)}")
         return self
 
     def __exit__(self, *exc: object) -> None:
@@ -1497,10 +1553,13 @@ def main(argv: list[str] | None = None) -> int:
     run = RunContext(profile=profile, snap_dir=snap_dir, dry_run=args.dry_run, timings=args.timings)
     # #728: every unit runs on a worker cleared before and after it, in serial runs as well.
     workers = Workers(keep_failed=args.keep_worker_state, dry_run=args.dry_run)
-    if args.jobs == 1:
-        results = run_serial(steps, shared_groups, run, fail_fast=fail_fast, workers=workers)
-    else:
-        results, _ = run_parallel(steps, shared_groups, run, fail_fast=fail_fast, jobs=args.jobs, workers=workers)
+    try:
+        if args.jobs == 1:
+            results = run_serial(steps, shared_groups, run, fail_fast=fail_fast, workers=workers)
+        else:
+            results, _ = run_parallel(steps, shared_groups, run, fail_fast=fail_fast, jobs=args.jobs, workers=workers)
+    finally:
+        workers.close()
 
     worker_state: str | None = None
     kept_workers = sorted(workers.kept, key=lambda w: int(w[1:]))
