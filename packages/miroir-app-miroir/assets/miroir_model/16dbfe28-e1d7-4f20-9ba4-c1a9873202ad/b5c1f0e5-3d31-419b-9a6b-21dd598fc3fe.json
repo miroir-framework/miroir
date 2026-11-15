@@ -1,0 +1,300 @@
+{
+  "uuid": "b5c1f0e5-3d31-419b-9a6b-21dd598fc3fe",
+  "parentName": "Entity",
+  "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+  "name": "Migration",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "conceptLevel": "Model",
+  "scope": "versioning",
+  "description": "#9: the migration of an application's data from one version of its model to the next: the structure changes found between the two versions, and the steps run on a following deployment (expand, then the jump to the new model, then fill and contract). Stored in the application's modelVersion section.",
+  "viewAttributes": [
+    "name",
+    "from",
+    "to",
+    "source",
+    "backwardCompatible",
+    "uuid"
+  ],
+  "cache": {
+    "cacheAllInstancesOnRefresh": true
+  },
+  "mlSchema": {
+    "type": "object",
+    "extend": {
+      "type": "schemaReference",
+      "definition": {
+        "eager": true,
+        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        "relativePath": "entityDefinitionRoot"
+      }
+    },
+    "definition": {
+      "name": {
+        "type": "string",
+        "tag": {
+          "value": {
+            "id": 5,
+            "defaultLabel": "Name",
+            "description": "The versions migrated between, as from → to",
+            "display": {
+              "editable": true
+            }
+          }
+        }
+      },
+      "application": {
+        "type": "uuid",
+        "tag": {
+          "value": {
+            "id": 10,
+            "defaultLabel": "Application",
+            "description": "The application whose data the Migration moves",
+            "display": {
+              "editable": false
+            },
+            "foreignKeyParams": {
+              "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
+              "targetEntityOrderInstancesBy": "name"
+            }
+          }
+        }
+      },
+      "from": {
+        "type": "string",
+        "tag": {
+          "value": {
+            "id": 11,
+            "defaultLabel": "From",
+            "description": "The name of the version (or Git tag) the data starts at",
+            "display": {
+              "editable": false
+            }
+          }
+        }
+      },
+      "to": {
+        "type": "string",
+        "tag": {
+          "value": {
+            "id": 12,
+            "defaultLabel": "To",
+            "description": "The name of the version (or Git tag) the data ends at",
+            "display": {
+              "editable": false
+            }
+          }
+        }
+      },
+      "source": {
+        "type": "enum",
+        "definition": [
+          "traces",
+          "diff",
+          "manual"
+        ],
+        "tag": {
+          "value": {
+            "id": 13,
+            "defaultLabel": "Source",
+            "description": "Where the changes come from: the evolution trace records, the diff of the two versions (traces were off), or a Migration written by hand",
+            "display": {
+              "editable": false
+            }
+          }
+        }
+      },
+      "changes": {
+        "type": "array",
+        "definition": {
+          "type": "object",
+          "definition": {
+            "kind": {
+              "type": "enum",
+              "definition": [
+                "addEntity",
+                "removeEntity",
+                "renameEntity",
+                "changeIdAttribute",
+                "addAttribute",
+                "removeAttribute",
+                "changeAttribute"
+              ]
+            },
+            "entity": {
+              "type": "uuid"
+            },
+            "entityName": {
+              "type": "string",
+              "optional": true
+            },
+            "attribute": {
+              "type": "string",
+              "optional": true
+            },
+            "backwardCompatible": {
+              "type": "boolean"
+            },
+            "supported": {
+              "type": "boolean"
+            },
+            "note": {
+              "type": "string",
+              "optional": true
+            }
+          }
+        },
+        "tag": {
+          "value": {
+            "id": 14,
+            "defaultLabel": "Changes",
+            "description": "The structure changes between the two versions, classified (information: the jump applies them)",
+            "display": {
+              "editable": false
+            }
+          }
+        }
+      },
+      "expand": {
+        "type": "array",
+        "definition": {
+          "type": "object",
+          "definition": {
+            "uuid": {
+              "type": "uuid"
+            },
+            "name": {
+              "type": "string"
+            },
+            "backwardCompatible": {
+              "type": "boolean"
+            },
+            "repeatable": {
+              "type": "boolean"
+            },
+            "action": {
+              "type": "any"
+            }
+          }
+        },
+        "tag": {
+          "value": {
+            "id": 15,
+            "defaultLabel": "Expand steps",
+            "description": "Steps run on the from model, before the jump",
+            "display": {
+              "editable": true
+            }
+          }
+        }
+      },
+      "fill": {
+        "type": "array",
+        "definition": {
+          "type": "object",
+          "definition": {
+            "uuid": {
+              "type": "uuid"
+            },
+            "name": {
+              "type": "string"
+            },
+            "backwardCompatible": {
+              "type": "boolean"
+            },
+            "repeatable": {
+              "type": "boolean"
+            },
+            "action": {
+              "type": "any"
+            }
+          }
+        },
+        "tag": {
+          "value": {
+            "id": 16,
+            "defaultLabel": "Fill steps",
+            "description": "Steps run on the to model, after the jump",
+            "display": {
+              "editable": true
+            }
+          }
+        }
+      },
+      "contract": {
+        "type": "array",
+        "definition": {
+          "type": "object",
+          "definition": {
+            "uuid": {
+              "type": "uuid"
+            },
+            "name": {
+              "type": "string"
+            },
+            "backwardCompatible": {
+              "type": "boolean"
+            },
+            "repeatable": {
+              "type": "boolean"
+            },
+            "action": {
+              "type": "any"
+            }
+          }
+        },
+        "tag": {
+          "value": {
+            "id": 17,
+            "defaultLabel": "Contract steps",
+            "description": "Steps that remove what the to model no longer declares; after them, rolling back needs a restore",
+            "display": {
+              "editable": true
+            }
+          }
+        }
+      },
+      "backwardCompatible": {
+        "type": "boolean",
+        "tag": {
+          "value": {
+            "id": 18,
+            "defaultLabel": "Backward-compatible",
+            "description": "Whether every change and every step keeps the from version able to run on the migrated data",
+            "display": {
+              "editable": false
+            }
+          }
+        }
+      },
+      "generatedAt": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 19,
+            "defaultLabel": "Generated at",
+            "description": "When generation wrote the draft",
+            "display": {
+              "editable": false
+            }
+          }
+        }
+      },
+      "description": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 20,
+            "defaultLabel": "Description",
+            "description": "What the Migration does, for the designer",
+            "display": {
+              "editable": true
+            }
+          }
+        }
+      }
+    }
+  }
+}

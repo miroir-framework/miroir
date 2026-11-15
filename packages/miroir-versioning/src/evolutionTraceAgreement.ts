@@ -124,7 +124,7 @@ export function evolutionTraceFork(
  * holds, which the freeze and the record writer create without a record), `conceptLevel` defaulting to
  * `Model` as a frozen Entity has it.
  */
-function comparedCollections(application: string, state: ModelState, metaModelEntityUuids: ReadonlySet<string>): ModelStateCollections {
+export function comparedCollections(application: string, state: ModelState, metaModelEntityUuids: ReadonlySet<string>): ModelStateCollections {
   return Object.fromEntries(
     AGREEMENT_COLLECTIONS.map((collection) => [
       collection,
@@ -158,7 +158,7 @@ export type EvolutionTraceDifferences = {
   entityAttributes: ModelStateDiff["entityAttributes"];
 };
 
-function summarize(diff: ModelStateDiff): EvolutionTraceDifferences {
+export function summarize(diff: ModelStateDiff): EvolutionTraceDifferences {
   const named = (row: Row) => ({ uuid: String(row.uuid), name: rowLabel(row) });
   return {
     collections: Object.fromEntries(
@@ -176,7 +176,7 @@ function summarize(diff: ModelStateDiff): EvolutionTraceDifferences {
 }
 
 /** One line per collection: what the model has that the traces do not give. */
-function differencesText(differences: EvolutionTraceDifferences): string {
+export function differencesText(differences: EvolutionTraceDifferences): string {
   return Object.entries(differences.collections)
     .map(([collection, rows]) => {
       const parts = [

@@ -42,28 +42,33 @@ export async function withApplicationLock<T>(application: string, run: () => Pro
   }
 }
 
-/** The record Entity, created in the application's model when absent, as the freeze does for its own. */
-async function ensureRecordEntity(
+/**
+ * A meta-model Entity the package writes rows of (the record Entity, the Migration Entity), created in the
+ * application's model when absent, as the freeze does for the history Entities.
+ */
+export async function ensureApplicationEntity(
   host: DomainControllerActionHost,
   application: string,
   applicationDeploymentMap: ApplicationDeploymentMap,
+  entity: Entity,
+  actionLabel: string,
 ): Promise<Action2Error | undefined> {
   const modelEnvironment = host.asDomainControllerInterface().currentModelEnvironment(application, applicationDeploymentMap);
-  if (modelEnvironment.currentModel.entities.some((entity) => entity.uuid === EVOLUTION_TRACE_RECORD_ENTITY_UUID)) {
+  if (modelEnvironment.currentModel.entities.some((present) => present.uuid === entity.uuid)) {
     return undefined;
   }
   const created = await host.handleModelAction(
     {
       actionType: "createEntity",
-      actionLabel: "appendEvolutionTraceRecordEnsureEntity",
+      actionLabel,
       endpoint: MODEL_ENDPOINT_UUID,
-      payload: { application, transactional: false, entities: [entityEvolutionTraceRecord as Entity] },
+      payload: { application, transactional: false, entities: [entity] },
     },
     applicationDeploymentMap,
     modelEnvironment,
   );
   return created instanceof Action2Error
-    ? new Action2Error("FailedToHandleAction", "appendEvolutionTraceRecord could not create its Entity", [], created)
+    ? new Action2Error("FailedToHandleAction", `${actionLabel}: could not create the ${entity.name} Entity`, [], created)
     : undefined;
 }
 
@@ -119,7 +124,13 @@ export const handleAction_appendEvolutionTraceRecord: ActionImplementationHandle
     return following;
   }
   return withApplicationLock(payload.application, async () => {
-    const ensureFailure = await ensureRecordEntity(host, payload.application, applicationDeploymentMap);
+    const ensureFailure = await ensureApplicationEntity(
+      host,
+      payload.application,
+      applicationDeploymentMap,
+      entityEvolutionTraceRecord as Entity,
+      "appendEvolutionTraceRecordEnsureEntity",
+    );
     if (ensureFailure) {
       return ensureFailure;
     }

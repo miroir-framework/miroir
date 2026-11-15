@@ -28,6 +28,8 @@ export const SERVER_ROUTED_MIROIR_ACTION_TYPES: readonly string[] = [
   "appendEvolutionTraceRecord",
   // #9: the install of a version on a following deployment rewrites its model where the stores are
   "installApplicationVersion",
+  // #9: the draft Migration is written where the stores are
+  "generateMigration",
 ];
 
 export function isServerRoutedMiroirAction(action: unknown): boolean {

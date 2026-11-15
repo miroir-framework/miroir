@@ -81,6 +81,7 @@ export const defaultGitHubAppModel: MetaModel = {
   testConfigurationVersions: [],
   applicationVersionCrossTestConfigurationVersion: [],
   evolutionTraceRecords: [],
+  migrations: [],
   storedQueries: [queryGitHubListMyRepositories as Query],
   mlSchemas: [],
   applicationVersions: [],

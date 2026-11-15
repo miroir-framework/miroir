@@ -47,6 +47,7 @@ export { default as entityHistoricalTestConfigurationVersion } from "./assets/mi
 export { default as entityApplicationVersionCrossTestConfigurationVersion } from "./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/8bd811bf-82fa-4547-93e1-082c97589069.json" with { type: "json" };
 export { default as entityHistoricalTestVersion } from "./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/fe94c683-89d3-482e-a653-9ce1eeb4ef34.json" with { type: "json" };
 export { default as entityEvolutionTraceRecord } from "./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/854c47bd-af74-4305-bdea-aa6bddfa8899.json" with { type: "json" };
+export { default as entityMigration } from "./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/b5c1f0e5-3d31-419b-9a6b-21dd598fc3fe.json" with { type: "json" };
 export { default as entityApplicationVersionCrossTestVersion } from "./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/be1d3cf3-b77c-464e-966c-6d23375a4d6f.json" with { type: "json" };
 export { default as entityTest } from "./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/c37625c7-0b35-4d6a-811d-8181eb978301.json" with { type: "json" };
 export { default as entityTransformerDefinition } from "./assets/miroir_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/a557419d-a288-4fb8-8a1e-971c86c113b8.json" with { type: "json" };

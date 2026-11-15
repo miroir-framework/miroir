@@ -49,6 +49,7 @@ export const defaultAppForTestModel: MetaModel = {
   testConfigurationVersions: [],
   applicationVersionCrossTestConfigurationVersion: [],
   evolutionTraceRecords: [],
+  migrations: [],
   storedQueries: [],
   mlSchemas: [],
   applicationVersions: [appForTestInitialApplicationVersion as MetaModel["applicationVersions"][number]],

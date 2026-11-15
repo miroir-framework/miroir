@@ -66,6 +66,7 @@ export const VERSIONING_ACTION_IMPLEMENTATION_NAMES: readonly string[] = [
   "handleAction_rebaselineEvolutionTraces",
   "handleAction_checkStagedEvolutionTraces",
   "handleAction_installApplicationVersion", // #9
+  "handleAction_generateMigration", // #9
 ];
 
 /** #708: the Entity of evolution trace records, stored in an application's `modelVersion` section. */

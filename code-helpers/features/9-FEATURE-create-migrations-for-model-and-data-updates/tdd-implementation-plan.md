@@ -39,7 +39,7 @@ Out (analysis section 2): detecting and correcting a model and storage divergenc
 | A1 | A | A following deployment created at an earlier version (tracer) | ✅ | `followingDeployment.9.phaseA.integ.test.ts` |
 | A2 | A | A deployment's role cannot change | ✅ | same file |
 | A3 | A | A following deployment refuses model and `modelVersion` writes | ✅ | same file |
-| B1 | B | A draft Migration for one optional attribute (tracer) | ⬜ | `migrationGeneration.9.phaseB.integ.test.ts` |
+| B1 | B | A draft Migration for one optional attribute (tracer) | ✅ | `migrationGeneration.9.phaseB.integ.test.ts` |
 | B2 | B | Removals, required attributes, renames: classified and stepped | ⬜ | same file |
 | B3 | B | Refusals and the diff fallback | ⬜ | same file |
 | B4 | B | `versioned-git`: from the tag to `HEAD` | ⬜ | `migrationGenerationGit.9.phaseB.integ.test.ts` |
@@ -216,7 +216,7 @@ Known gaps, left for later parts or issues:
 
 ### Slice B1 — A draft Migration for one optional attribute (tracer)
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal.** The designer of appForTest gets the draft of epic section 5.1 (G1).
 
@@ -228,7 +228,9 @@ Known gaps, left for later parts or issues:
 
 **Validation.** The file; versioning unit tests; type check versioning and core; scoped nonreg `smoke,actions,external`.
 
-**Realization.** _(on completion)_
+**Realization.** `packages/miroir-versioning/src/migrationGeneration.ts`. The `Migration` Entity (`b5c1f0e5-…`, moved here from A1) is a meta-model Entity in `modelVersion` (`migrations` collection, regenerated types); `generateMigration { application, from, to, replace? }` is on the Model Endpoint and server-routed. The handler reads the live model, takes the two frozen versions by name, and the commit records between their markers; when there are records, it replays them on `from` and compares the result with `to` (`evolutionTracesDisagree` on a difference), then writes the draft with `source: traces`; without records, with `source: diff` and a note. `ensureRecordEntity` became `ensureApplicationEntity` (`evolutionTraceRecords.ts`), its second user being the Migration Entity.
+- **Deviation.** The changes are always computed from the difference of the two versions' Entities, not folded from the records (D7 step 4): once the replay of the records gives `to`, their net effect is that difference, so a second derivation would only repeat it. The refactor checkpoint (sharing `applyRecordActions`) is met by calling `replayCommitRecords`.
+- **Validation.** The file (B1); versioning unit tests (178, `Migration` added to the history-family list); core unit tests (3324); type check core and versioning; lint; scoped nonreg `smoke,actions,external` (filesystem, shared runner).
 
 ### Slice B2 — Removals, required attributes, renames: classified and stepped
 

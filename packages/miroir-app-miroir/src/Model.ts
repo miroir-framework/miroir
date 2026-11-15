@@ -49,6 +49,7 @@ import {
   entityApplicationVersionCrossTestConfigurationVersion,
   entityHistoricalTestVersion,
   entityEvolutionTraceRecord,
+  entityMigration,
   entityApplicationVersionCrossTestVersion,
   entityDefinitionApplicationVersionCrossEntityDefinition,
   entityDefinitionEndpoint,
@@ -273,6 +274,8 @@ export const defaultMiroirMetaModel: MetaModel = {
     entityHistoricalTestVersion as Entity,
     // #708
     entityEvolutionTraceRecord as Entity,
+    // #9
+    entityMigration as Entity,
     // #647 — devData Entities (rows routed to the devData section by getApplicationSection)
     entityBundleSizeMeasurement as Entity,
     entityPageLoadMeasurement as Entity,
@@ -403,6 +406,7 @@ export const defaultMiroirMetaModel: MetaModel = {
   testConfigurationVersions: [],
   applicationVersionCrossTestConfigurationVersion: [],
   evolutionTraceRecords: [],
+  migrations: [],
   tests: [
     miroirTest_tr_admin_duplicateApplicationModel as MiroirTestDefinition,
     miroirTest_fn_tools_alterObjectAtPath as MiroirTestDefinition,
@@ -585,6 +589,7 @@ export const miroirModelInitializeCreateEntityOrder: Entity[] = entitiesInBootst
   entityApplicationVersionCrossTestVersion.uuid!,
   entityHistoricalTestVersion.uuid!,
   entityEvolutionTraceRecord.uuid!,
+  entityMigration.uuid!,
   // #647: devData Entities; their instances live in the devData section, created there on first write
   entityBundleSizeMeasurement.uuid!,
   entityPageLoadMeasurement.uuid!,

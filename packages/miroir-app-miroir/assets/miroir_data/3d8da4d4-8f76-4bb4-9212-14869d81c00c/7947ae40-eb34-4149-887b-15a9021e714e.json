@@ -1182,6 +1182,87 @@
             "tag": {
               "value": {
                 "canBeTemplate": false,
+                "defaultLabel": "Generate a Migration",
+                "description": "#9: writes the draft Migration of the application between the versions named from and to, in its modelVersion section: the structure changes between the two versions, classified, with an empty fill step per added attribute and an empty contract step per removed Entity or attribute. Refused on a following deployment, across a re-baseline of the evolution traces, when the traces disagree with the versions, and when a Migration for the two versions exists (unless replace)."
+              }
+            },
+            "definition": "generateMigration"
+          },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
+          },
+          "endpoint": {
+            "type": "literal",
+            "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+          },
+          "payload": {
+            "type": "object",
+            "definition": {
+              "application": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true,
+                    "defaultLabel": "Application",
+                    "foreignKeyParams": {
+                      "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+                      "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                      "targetEntityOrderInstancesBy": "name"
+                    },
+                    "display": {
+                      "editable": false
+                    }
+                  }
+                }
+              },
+              "from": {
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true,
+                    "defaultLabel": "From version",
+                    "description": "The name of the version the data starts at"
+                  }
+                }
+              },
+              "to": {
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true,
+                    "defaultLabel": "To version",
+                    "description": "The name of the version the data ends at"
+                  }
+                }
+              },
+              "replace": {
+                "type": "boolean",
+                "optional": true,
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true,
+                    "defaultLabel": "Replace",
+                    "description": "Replace the Migration for the two versions when there is one"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_generateMigration",
+          "requiredCapability": "versioning"
+        }
+      },
+      {
+        "actionParameters": {
+          "actionType": {
+            "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false,
                 "defaultLabel": "Append an evolution trace record",
                 "description": "#708: appends one record to the application's evolution trace, in its modelVersion section. Sent by the DomainController that ran a commit, a freeze or a re-baseline."
               }

@@ -19392,6 +19392,284 @@ export const miroirFundamentalMlSchema = {
           }
         }
       },
+      "migration": {
+        "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "entityDefinitionRoot"
+          }
+        },
+        "definition": {
+          "name": {
+            "type": "string",
+            "tag": {
+              "value": {
+                "id": 5,
+                "defaultLabel": "Name",
+                "description": "The versions migrated between, as from → to",
+                "display": {
+                  "editable": true
+                }
+              }
+            }
+          },
+          "application": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "id": 10,
+                "defaultLabel": "Application",
+                "description": "The application whose data the Migration moves",
+                "display": {
+                  "editable": false
+                },
+                "foreignKeyParams": {
+                  "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
+                  "targetEntityOrderInstancesBy": "name"
+                }
+              }
+            }
+          },
+          "from": {
+            "type": "string",
+            "tag": {
+              "value": {
+                "id": 11,
+                "defaultLabel": "From",
+                "description": "The name of the version (or Git tag) the data starts at",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
+          },
+          "to": {
+            "type": "string",
+            "tag": {
+              "value": {
+                "id": 12,
+                "defaultLabel": "To",
+                "description": "The name of the version (or Git tag) the data ends at",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
+          },
+          "source": {
+            "type": "enum",
+            "definition": [
+              "traces",
+              "diff",
+              "manual"
+            ],
+            "tag": {
+              "value": {
+                "id": 13,
+                "defaultLabel": "Source",
+                "description": "Where the changes come from: the evolution trace records, the diff of the two versions (traces were off), or a Migration written by hand",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
+          },
+          "changes": {
+            "type": "array",
+            "definition": {
+              "type": "object",
+              "definition": {
+                "kind": {
+                  "type": "enum",
+                  "definition": [
+                    "addEntity",
+                    "removeEntity",
+                    "renameEntity",
+                    "changeIdAttribute",
+                    "addAttribute",
+                    "removeAttribute",
+                    "changeAttribute"
+                  ]
+                },
+                "entity": {
+                  "type": "uuid"
+                },
+                "entityName": {
+                  "type": "string",
+                  "optional": true
+                },
+                "attribute": {
+                  "type": "string",
+                  "optional": true
+                },
+                "backwardCompatible": {
+                  "type": "boolean"
+                },
+                "supported": {
+                  "type": "boolean"
+                },
+                "note": {
+                  "type": "string",
+                  "optional": true
+                }
+              }
+            },
+            "tag": {
+              "value": {
+                "id": 14,
+                "defaultLabel": "Changes",
+                "description": "The structure changes between the two versions, classified (information: the jump applies them)",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
+          },
+          "expand": {
+            "type": "array",
+            "definition": {
+              "type": "object",
+              "definition": {
+                "uuid": {
+                  "type": "uuid"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "backwardCompatible": {
+                  "type": "boolean"
+                },
+                "repeatable": {
+                  "type": "boolean"
+                },
+                "action": {
+                  "type": "any"
+                }
+              }
+            },
+            "tag": {
+              "value": {
+                "id": 15,
+                "defaultLabel": "Expand steps",
+                "description": "Steps run on the from model, before the jump",
+                "display": {
+                  "editable": true
+                }
+              }
+            }
+          },
+          "fill": {
+            "type": "array",
+            "definition": {
+              "type": "object",
+              "definition": {
+                "uuid": {
+                  "type": "uuid"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "backwardCompatible": {
+                  "type": "boolean"
+                },
+                "repeatable": {
+                  "type": "boolean"
+                },
+                "action": {
+                  "type": "any"
+                }
+              }
+            },
+            "tag": {
+              "value": {
+                "id": 16,
+                "defaultLabel": "Fill steps",
+                "description": "Steps run on the to model, after the jump",
+                "display": {
+                  "editable": true
+                }
+              }
+            }
+          },
+          "contract": {
+            "type": "array",
+            "definition": {
+              "type": "object",
+              "definition": {
+                "uuid": {
+                  "type": "uuid"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "backwardCompatible": {
+                  "type": "boolean"
+                },
+                "repeatable": {
+                  "type": "boolean"
+                },
+                "action": {
+                  "type": "any"
+                }
+              }
+            },
+            "tag": {
+              "value": {
+                "id": 17,
+                "defaultLabel": "Contract steps",
+                "description": "Steps that remove what the to model no longer declares; after them, rolling back needs a restore",
+                "display": {
+                  "editable": true
+                }
+              }
+            }
+          },
+          "backwardCompatible": {
+            "type": "boolean",
+            "tag": {
+              "value": {
+                "id": 18,
+                "defaultLabel": "Backward-compatible",
+                "description": "Whether every change and every step keeps the from version able to run on the migrated data",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
+          },
+          "generatedAt": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 19,
+                "defaultLabel": "Generated at",
+                "description": "When generation wrote the draft",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
+          },
+          "description": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 20,
+                "defaultLabel": "Description",
+                "description": "What the Migration does, for the designer",
+                "display": {
+                  "editable": true
+                }
+              }
+            }
+          }
+        }
+      },
       "miroirAllFundamentalTypesUnion": {
         "type": "union",
         "definition": [
@@ -23595,6 +23873,90 @@ export const miroirFundamentalMlSchema = {
                         "canBeTemplate": true,
                         "defaultLabel": "Version",
                         "description": "The name of the Application Version to install"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "tag": {
+              "value": {
+                "display": {
+                  "displayedAttributeValueWhenFolded": "actionLabel"
+                }
+              }
+            },
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false,
+                    "defaultLabel": "Generate a Migration",
+                    "description": "#9: writes the draft Migration of the application between the versions named from and to, in its modelVersion section: the structure changes between the two versions, classified, with an empty fill step per added attribute and an empty contract step per removed Entity or attribute. Refused on a following deployment, across a re-baseline of the evolution traces, when the traces disagree with the versions, and when a Migration for the two versions exists (unless replace)."
+                  }
+                },
+                "definition": "generateMigration"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+              },
+              "payload": {
+                "type": "object",
+                "definition": {
+                  "application": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": true,
+                        "defaultLabel": "Application",
+                        "foreignKeyParams": {
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                          "targetEntityOrderInstancesBy": "name"
+                        },
+                        "display": {
+                          "editable": false
+                        }
+                      }
+                    }
+                  },
+                  "from": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": true,
+                        "defaultLabel": "From version",
+                        "description": "The name of the version the data starts at"
+                      }
+                    }
+                  },
+                  "to": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": true,
+                        "defaultLabel": "To version",
+                        "description": "The name of the version the data ends at"
+                      }
+                    }
+                  },
+                  "replace": {
+                    "type": "boolean",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": true,
+                        "defaultLabel": "Replace",
+                        "description": "Replace the Migration for the two versions when there is one"
                       }
                     }
                   }
@@ -45729,6 +46091,195 @@ export const miroirFundamentalMlSchema = {
                 "tag": {
                   "value": {
                     "canBeTemplate": false,
+                    "defaultLabel": "Generate a Migration",
+                    "description": "#9: writes the draft Migration of the application between the versions named from and to, in its modelVersion section: the structure changes between the two versions, classified, with an empty fill step per added attribute and an empty contract step per removed Entity or attribute. Refused on a following deployment, across a re-baseline of the evolution traces, when the traces disagree with the versions, and when a Migration for the two versions exists (unless replace)."
+                  }
+                },
+                "definition": "generateMigration"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+              },
+              "payload": {
+                "type": "object",
+                "definition": {
+                  "application": {
+                    "type": "union",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": true,
+                        "defaultLabel": "Application",
+                        "foreignKeyParams": {
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                          "targetEntityOrderInstancesBy": "name"
+                        },
+                        "display": {
+                          "editable": false
+                        },
+                        "isTemplate": true
+                      }
+                    },
+                    "discriminator": [
+                      "transformerType",
+                      "interpolation"
+                    ],
+                    "definition": [
+                      {
+                        "type": "uuid",
+                        "tag": {
+                          "value": {
+                            "canBeTemplate": true,
+                            "defaultLabel": "Application",
+                            "foreignKeyParams": {
+                              "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+                              "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                              "targetEntityOrderInstancesBy": "name"
+                            },
+                            "display": {
+                              "editable": false
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          "relativePath": "coreTransformerForBuildPlusRuntime"
+                        }
+                      }
+                    ]
+                  },
+                  "from": {
+                    "type": "union",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": true,
+                        "defaultLabel": "From version",
+                        "description": "The name of the version the data starts at",
+                        "isTemplate": true
+                      }
+                    },
+                    "discriminator": [
+                      "transformerType",
+                      "interpolation"
+                    ],
+                    "definition": [
+                      {
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "canBeTemplate": true,
+                            "defaultLabel": "From version",
+                            "description": "The name of the version the data starts at"
+                          }
+                        }
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          "relativePath": "coreTransformerForBuildPlusRuntime"
+                        }
+                      }
+                    ]
+                  },
+                  "to": {
+                    "type": "union",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": true,
+                        "defaultLabel": "To version",
+                        "description": "The name of the version the data ends at",
+                        "isTemplate": true
+                      }
+                    },
+                    "discriminator": [
+                      "transformerType",
+                      "interpolation"
+                    ],
+                    "definition": [
+                      {
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "canBeTemplate": true,
+                            "defaultLabel": "To version",
+                            "description": "The name of the version the data ends at"
+                          }
+                        }
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          "relativePath": "coreTransformerForBuildPlusRuntime"
+                        }
+                      }
+                    ]
+                  },
+                  "replace": {
+                    "type": "union",
+                    "optional": true,
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": true,
+                        "defaultLabel": "Replace",
+                        "description": "Replace the Migration for the two versions when there is one",
+                        "isTemplate": true
+                      }
+                    },
+                    "discriminator": [
+                      "transformerType",
+                      "interpolation"
+                    ],
+                    "definition": [
+                      {
+                        "type": "boolean",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "canBeTemplate": true,
+                            "defaultLabel": "Replace",
+                            "description": "Replace the Migration for the two versions when there is one"
+                          }
+                        }
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          "relativePath": "coreTransformerForBuildPlusRuntime"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "tag": {
+              "value": {
+                "display": {
+                  "displayedAttributeValueWhenFolded": "actionLabel"
+                },
+                "isTemplate": true
+              }
+            },
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false,
                     "defaultLabel": "Append an evolution trace record",
                     "description": "#708: appends one record to the application's evolution trace, in its modelVersion section. Sent by the DomainController that ran a commit, a freeze or a re-baseline."
                   }
@@ -51529,6 +52080,16 @@ export const miroirFundamentalMlSchema = {
               "definition": {
                 "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                 "relativePath": "evolutionTraceRecord"
+              }
+            }
+          },
+          "migrations": {
+            "type": "array",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "migration"
               }
             }
           }

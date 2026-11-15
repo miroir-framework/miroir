@@ -35,6 +35,7 @@ import {
   entityApplicationVersionCrossTestConfigurationVersion,
   entityHistoricalTestVersion,
   entityEvolutionTraceRecord,
+  entityMigration,
   entityApplicationVersionCrossTestVersion,
   entitySelfApplicationVersion,
   selfApplicationMiroir,
@@ -91,6 +92,8 @@ const VERSION_HISTORY_ENTITIES = [
   { name: "ApplicationVersionCrossTestVersion", entity: entityApplicationVersionCrossTestVersion },
   // #708
   { name: "EvolutionTraceRecord", entity: entityEvolutionTraceRecord },
+  // #9
+  { name: "Migration", entity: entityMigration },
 ];
 
 describe("getApplicationSection routes version-history entities to modelVersion", () => {
