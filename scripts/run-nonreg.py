@@ -29,7 +29,7 @@ from concurrent.futures import FIRST_COMPLETED, Future, ThreadPoolExecutor, wait
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Iterable, Literal
+from typing import Any, Callable, Iterable, Literal
 from urllib.parse import urlsplit
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -594,7 +594,11 @@ def run_shared_group(
     dry_run: bool,
     timings: bool,
     worker: str | None = None,
+    fresh_worker: Callable[[bool], str] | None = None,
 ) -> dict[str, StepResult]:
+    """Runs a shared group in one launch; a failed member is re-run alone (legacy). #728: each re-run
+    starts from an empty worker state, on the worker `fresh_worker(failed)` gives once it has released the
+    current one (`failed`: what ran on it last failed)."""
     shared_dir = snap_dir / SHARED_DIRNAME
     shared_dir.mkdir(parents=True, exist_ok=True)
     report_path = shared_dir / f"{group}.json"
@@ -618,7 +622,8 @@ def run_shared_group(
             status="not_run",
             argv=argv,
             log_file=repo_relative(log_path),
-            extra={"mode": "shared", "shared_group": group},
+            # The worker of the group launch; a legacy re-run records its own (#728).
+            extra={"mode": "shared", "shared_group": group, **({"worker": worker} if worker is not None else {})},
         )
 
     if dry_run:
@@ -663,6 +668,8 @@ def run_shared_group(
     )
 
     results: dict[str, StepResult] = {}
+    # The group launch failed when a member did: its state is the one the first re-run releases.
+    last_failed = True
     for member in members:
         result = base_result(member)
         result.extra["shared_group_duration_s"] = group_duration
@@ -686,10 +693,14 @@ def run_shared_group(
             results[member["id"]] = result
             continue
         emit(f"{RED}FAILED{RESET} [shared] {member['id']}; re-running legacy")
+        if fresh_worker is not None:
+            worker = fresh_worker(last_failed)
         fallback = run_step(
             member, profile=profile, snap_dir=snap_dir, dry_run=False, timings=timings, worker=worker
         )
+        last_failed = fallback.status == "failed"
         fallback.extra = {
+            **({"worker": worker} if worker is not None else {}),
             "mode": "shared→legacy",
             "shared_group": group,
             "shared_status": (
@@ -1024,14 +1035,17 @@ def build_parser() -> argparse.ArgumentParser:
         default=DEFAULT_JOBS,
         help=(
             f"Steps (or shared groups) run at the same time (#477, default {DEFAULT_JOBS}); each job has "
-            f"its own test environment state, passed to its steps in {WORKER_ENV}. 1 runs them one "
-            "after the other, without a worker"
+            f"its own test environment state, passed to its steps in {WORKER_ENV} and cleared after every "
+            "step or shared group (#728). 1 runs them one after the other, on worker w1"
         ),
     )
     p.add_argument(
         "--keep-worker-state",
         action="store_true",
-        help="Keep each job's test environment state (.miroir/<environment>@<worker>, databases) after the run",
+        help=(
+            "Keep the test environment state of each failed step or shared group (.miroir/<environment>@<worker>, "
+            "databases); its worker is not used again (#728)"
+        ),
     )
     p.add_argument(
         "--manifest",
@@ -1077,8 +1091,10 @@ def run_serial(
     run: RunContext,
     *,
     fail_fast: bool,
+    workers: "Workers",
 ) -> list[StepResult]:
-    """One step (or shared group) after the other, without a worker: the behaviour before #477."""
+    """One step (or shared group) after the other, each on a worker cleared after it: w1, or the next
+    number once --keep-worker-state kept a failed one (#728)."""
     results: list[StepResult] = []
     aborted = False
     shared_results: dict[str, StepResult] = {}
@@ -1093,21 +1109,14 @@ def run_serial(
         group = step.get("shared", {}).get("group") if shared_groups else None
         if group is not None:
             if step["id"] not in shared_results:
-                shared_results.update(
-                    run_shared_group(
-                        group,
-                        shared_groups[group],
-                        profile=run.profile,
-                        snap_dir=run.snap_dir,
-                        dry_run=run.dry_run,
-                        timings=run.timings,
-                    )
-                )
+                unit = Unit(shared_groups[group], group)
+                unit_results, _ = run_unit(unit, shared_groups, run, workers if unit.needs_worker else None)
+                shared_results.update(unit_results)
             result = shared_results[step["id"]]
         else:
-            result = run_step(
-                step, profile=run.profile, snap_dir=run.snap_dir, dry_run=run.dry_run, timings=run.timings
-            )
+            unit = Unit([step])
+            unit_results, _ = run_unit(unit, shared_groups, run, workers if unit.needs_worker else None)
+            result = unit_results[step["id"]]
         results.append(result)
         if result.status == "failed" and fail_fast:
             aborted = True
@@ -1127,6 +1136,12 @@ class Unit:
         """A step with `"parallel": false` runs with no other step running (#477)."""
         return any(step.get("parallel") is False for step in self.steps)
 
+    @property
+    def needs_worker(self) -> bool:
+        """Every unit runs on a worker (#728), except a step with `"worker": false`: the run bracket, which
+        reads the whole tree and the unworkered environments before and after the run."""
+        return not any(step.get("worker") is False for step in self.steps)
+
 
 def plan_units(steps: list[dict[str, Any]], shared_groups: dict[str, list[dict[str, Any]]]) -> list[Unit]:
     """Units in manifest order; a shared group takes the place of its first member."""
@@ -1142,10 +1157,85 @@ def plan_units(steps: list[dict[str, Any]], shared_groups: dict[str, list[dict[s
     return units
 
 
-def run_unit(unit: Unit, shared_groups: dict[str, list[dict[str, Any]]], run: RunContext, worker: str | None) -> tuple[dict[str, StepResult], list[str]]:
-    """Runs a unit in a pool thread; returns its results and the console lines it buffered."""
-    _console.buffer = []
+class Workers:
+    """The workers of a run (#477) and their test environment state (#728). A worker is cleared the first
+    time the run uses it (leftovers of a killed run) and after every unit, so every unit starts from an
+    empty state. With `keep_failed`, a failed unit's worker is retired instead: its state stays, and the
+    next unit gets a new worker number. Safe to call from the pool threads."""
+
+    def __init__(self, *, keep_failed: bool, dry_run: bool) -> None:
+        self.keep_failed = keep_failed
+        self.dry_run = dry_run
+        self.lock = threading.Lock()
+        self.free: list[str] = []
+        self.used: list[str] = []
+        self.kept: list[str] = []
+        self.complete = True
+        self.warnings: list[str] = []
+
+    def acquire(self) -> str:
+        """A free worker, else a new one whose leftovers are cleared; a new worker that cannot be cleared
+        is not used (the next number is tried)."""
+        while True:
+            with self.lock:
+                if self.free:
+                    return self.free.pop(0)
+                worker = f"w{len(self.used) + 1}"
+                self.used.append(worker)
+            if self.clear(worker):
+                return worker
+
+    def clear(self, worker: str) -> bool:
+        """Clears the worker's state; False when a clear failed, so the worker may hold stores still."""
+        if self.dry_run:
+            return True
+        lines, complete = remove_worker_state([worker])
+        with self.lock:
+            self.complete = self.complete and complete
+            # A database server that did not answer: its schemas or databases may be left (miroir-env clear).
+            self.warnings.extend(line for line in lines if line.startswith("warning:"))
+        for line in lines:
+            if not (line.startswith("removed") or line.endswith("nothing to clear")):
+                emit(line)
+        return complete
+
+    def release(self, worker: str, failed: bool) -> None:
+        if failed and self.keep_failed and not self.dry_run:
+            with self.lock:
+                self.kept.append(worker)
+            emit(
+                f"worker state kept: {STATE_ROOT_DIRNAME}/<environment>@{worker}, "
+                f"SQL schemas and MongoDB databases test_<storage>_{worker}_*"
+            )
+            return
+        if not self.clear(worker):
+            # Its stores may still be there: the next unit takes another worker (#728 review).
+            emit(f"worker {worker} not used again: its state could not be cleared")
+            return
+        with self.lock:
+            self.free.append(worker)
+            self.free.sort(key=lambda w: int(w[1:]))
+
+
+def run_unit(
+    unit: Unit, shared_groups: dict[str, list[dict[str, Any]]], run: RunContext, workers: Workers | None
+) -> tuple[dict[str, StepResult], list[str]]:
+    """Runs a unit, on a worker taken from `workers` and released after it (None: no worker, the run
+    bracket). In a pool thread, returns the console lines it buffered."""
+    if threading.current_thread() is not threading.main_thread():
+        _console.buffer = []
     try:
+        worker = workers.acquire() if workers is not None else None
+        last_failed: bool | None = None
+
+        def fresh_worker(failed: bool) -> str:
+            nonlocal worker, last_failed
+            assert workers is not None and worker is not None
+            workers.release(worker, failed)
+            worker = workers.acquire()
+            last_failed = None
+            return worker
+
         if unit.group is not None:
             results = run_shared_group(
                 unit.group,
@@ -1155,7 +1245,11 @@ def run_unit(unit: Unit, shared_groups: dict[str, list[dict[str, Any]]], run: Ru
                 dry_run=run.dry_run,
                 timings=run.timings,
                 worker=worker,
+                fresh_worker=fresh_worker if worker is not None else None,
             )
+            reruns = [r for r in results.values() if r.extra.get("mode") == "shared→legacy"]
+            if reruns:
+                last_failed = reruns[-1].status == "failed"
         else:
             step = unit.steps[0]
             results = {
@@ -1164,10 +1258,13 @@ def run_unit(unit: Unit, shared_groups: dict[str, list[dict[str, Any]]], run: Ru
                     timings=run.timings, worker=worker,
                 )
             }
-        for result in results.values():
-            if worker is not None:
-                result.extra["worker"] = worker
-        return results, _console.buffer
+        if worker is not None:
+            for result in results.values():
+                result.extra.setdefault("worker", worker)
+        if workers is not None and worker is not None:
+            failed = last_failed if last_failed is not None else any(r.status == "failed" for r in results.values())
+            workers.release(worker, failed)
+        return results, getattr(_console, "buffer", None) or []
     finally:
         _console.buffer = None
 
@@ -1179,21 +1276,18 @@ def run_parallel(
     *,
     fail_fast: bool,
     jobs: int,
+    workers: Workers | None = None,
 ) -> tuple[list[StepResult], list[str]]:
-    """Up to `jobs` units at a time, each on a free worker; results in manifest order (#477)."""
-    free_workers = [f"w{n}" for n in range(1, jobs + 1)]
-    used: list[str] = []
+    """Up to `jobs` units at a time, each on a worker of `workers`; results in manifest order (#477)."""
+    workers = workers if workers is not None else Workers(keep_failed=False, dry_run=run.dry_run)
     by_id: dict[str, StepResult] = {}
-    running: dict[Future, str | None] = {}
+    running: set[Future] = set()
     aborted = False
 
     def collect(done: set[Future]) -> None:
         nonlocal aborted
         for future in done:
-            worker = running.pop(future)
-            if worker is not None:
-                free_workers.append(worker)
-                free_workers.sort(key=lambda w: int(w[1:]))
+            running.discard(future)
             results, lines = future.result()
             for line in lines:
                 print(line, flush=True)
@@ -1213,22 +1307,19 @@ def run_parallel(
             if aborted:
                 break
             if unit.alone:
-                # Not a test environment step (the run bracket): no worker, nothing else running.
-                results, lines = run_unit(unit, shared_groups, run, None)
-                for line in lines:
-                    print(line, flush=True)
+                # Nothing else running; on a worker unless it is the run bracket (#728).
+                results, _ = run_unit(unit, shared_groups, run, workers if unit.needs_worker else None)
                 by_id.update(results)
                 if fail_fast and any(r.status == "failed" for r in results.values()):
                     aborted = True
                 continue
-            worker = free_workers.pop(0)
-            if worker not in used:
-                used.append(worker)
-            running[pool.submit(run_unit, unit, shared_groups, run, worker)] = worker
+            # A unit takes its worker in its pool thread; at most `jobs` units run, and a unit releases its
+            # worker before it ends, so a free worker is there unless a failed one was kept.
+            running.add(pool.submit(run_unit, unit, shared_groups, run, workers if unit.needs_worker else None))
         while running:
             collect(wait(running, return_when=FIRST_COMPLETED).done)
 
-    return [by_id.get(step["id"]) or not_run_result(step, run) for step in steps], sorted(used, key=lambda w: int(w[1:]))
+    return [by_id.get(step["id"]) or not_run_result(step, run) for step in steps], list(workers.used)
 
 
 def remove_worker_state(workers: list[str]) -> tuple[list[str], bool]:
@@ -1308,8 +1399,8 @@ def main(argv: list[str] | None = None) -> int:
     if args.jobs < 1:
         print(f"error: --jobs must be 1 or more, got {args.jobs}", file=sys.stderr)
         return 2
-    # #477: a worker left in the calling shell would move a serial run's stores; the runner gives
-    # each parallel job its own.
+    # #477: a worker left in the calling shell must not reach the steps; the runner gives each job,
+    # serial runs included (#728), a worker of its own.
     os.environ.pop(WORKER_ENV, None)
     manifest = load_manifest()
     if args.storage:
@@ -1399,25 +1490,24 @@ def main(argv: list[str] | None = None) -> int:
     wall_start = time.perf_counter()
     shared_groups = plan_shared_groups(steps) if args.runner == "shared" else {}
     run = RunContext(profile=profile, snap_dir=snap_dir, dry_run=args.dry_run, timings=args.timings)
+    # #728: every unit runs on a worker cleared before and after it, in serial runs as well.
+    workers = Workers(keep_failed=args.keep_worker_state, dry_run=args.dry_run)
     if args.jobs == 1:
-        results = run_serial(steps, shared_groups, run, fail_fast=fail_fast)
-        workers_used: list[str] = []
+        results = run_serial(steps, shared_groups, run, fail_fast=fail_fast, workers=workers)
     else:
-        results, workers_used = run_parallel(steps, shared_groups, run, fail_fast=fail_fast, jobs=args.jobs)
+        results, _ = run_parallel(steps, shared_groups, run, fail_fast=fail_fast, jobs=args.jobs, workers=workers)
 
     worker_state: str | None = None
-    worker_state_warnings: list[str] = []
-    if workers_used and not args.dry_run:
-        if args.keep_worker_state:
-            worker_state = "kept"
-            print(f"\nworker state kept: {STATE_ROOT_DIRNAME}/*@{{{','.join(workers_used)}}}", flush=True)
-        else:
-            cleanup_lines, complete = remove_worker_state(workers_used)
-            worker_state = "removed" if complete else "incomplete"
-            # A database server that did not answer: its schemas or databases may be left (miroir-env clear).
-            worker_state_warnings = [line for line in cleanup_lines if line.startswith("warning:")]
-            for line in cleanup_lines:
-                print(line, flush=True)
+    kept_workers = sorted(workers.kept, key=lambda w: int(w[1:]))
+    if workers.used and not args.dry_run:
+        worker_state = "kept" if kept_workers else "removed" if workers.complete else "incomplete"
+        if kept_workers:
+            print(
+                f"\nworker state kept (failed units): {STATE_ROOT_DIRNAME}/<environment>@{{{','.join(kept_workers)}}}, "
+                f"and SQL schemas and MongoDB databases test_<storage>_<worker>_*",
+                flush=True,
+            )
+    worker_state_warnings = workers.warnings
 
     finished_at = datetime.now(timezone.utc).isoformat()
     duration_s = round(time.perf_counter() - wall_start, 3)
@@ -1460,6 +1550,8 @@ def main(argv: list[str] | None = None) -> int:
         summary["worker_state"] = worker_state
     if worker_state_warnings:
         summary["worker_state_warnings"] = worker_state_warnings
+    if kept_workers:
+        summary["kept_workers"] = kept_workers
     if scope_names is not None:
         summary["scopes"] = scope_names
 
