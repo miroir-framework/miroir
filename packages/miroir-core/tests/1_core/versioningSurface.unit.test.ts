@@ -130,6 +130,8 @@ if (runThis) {
       expect(core.VERSIONING_ACTION_IMPLEMENTATION_NAMES).toEqual([
         "handleAction_freezeApplicationVersion",
         "handleAction_appendEvolutionTraceRecord", // #708
+        "handleAction_rebaselineEvolutionTraces", // #708 part C
+        "handleAction_checkStagedEvolutionTraces", // #708 part C, run by gitAction_commit
       ]);
       expect(core.VERSIONING_PACKAGE_NAME).toBe("@miroir-framework/versioning");
     });

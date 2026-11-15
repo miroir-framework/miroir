@@ -123,6 +123,15 @@ describe("model state replay (#708 B6)", () => {
     expect(Object.keys(rowsByUuid(replayed, "reports"))).not.toContain(BOOK_DETAILS_REPORT);
   });
 
+  it("starts at a rebaseline naming the version (#708 C3)", () => {
+    const replayed = replayEvolutionTraceRecords(frozenLibrary(), [
+      record("rebaseline", { version: VERSION }),
+      record("commit", { actions: [instanceWrite("updateInstance", { ...bookDetails, name: "AfterTheRebaseline" })] }),
+    ]);
+
+    expect(rowsByUuid(replayed, "reports")[BOOK_DETAILS_REPORT].name).toBe("AfterTheRebaseline");
+  });
+
   it("refuses a chain with no marker for the version, or restarted after it", () => {
     const noMarker = replayEvolutionTraceRecords(frozenLibrary(), [record("version", { version: "another version" })]);
     const restarted = replayEvolutionTraceRecords(frozenLibrary(), [record("version", { version: VERSION }), record("rebaseline")]);

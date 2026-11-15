@@ -2471,7 +2471,7 @@
       "id": "integ-git-version-control",
       "scopes": ["actions", "external"],
       "tier": "default",
-      "title": "#679 \u2014 Git version control: the gitAction_* actions on a Git repository around the Library copy of test-filesystem (capability gate, lazy loader, status, history, diff, init, stage, commit, branches, checkout, fetch, pull and push against a test HTTP Git server, credentials as Admin secrets, clone and install of a deployment; #691: revert of unstaged edits)",
+      "title": "#679 \u2014 Git version control: the gitAction_* actions on a Git repository around the Library copy of test-filesystem (capability gate, lazy loader, status, history, diff, init, stage, commit, branches, checkout, fetch, pull and push against a test HTTP Git server, credentials as Admin secrets, clone and install of a deployment; #691: revert of unstaged edits; #708: tags, and the evolution trace check of a commit)",
       "requires": "none",
       "parallel": false,
       "argv": [
@@ -2509,7 +2509,7 @@
       "id": "integ-708-evolution-trace-records",
       "scopes": ["actions", "external"],
       "tier": "default",
-      "title": "#708 — evolution trace records: one record per commit and per direct model write, chained by sequence number and previousTrace; rebaseline and version markers; versioned-git; the switch read as off when unversioned; the capability and modelVersion gate; a failed append kept and sent again",
+      "title": "#708 — evolution trace records: one record per commit and per direct model write, chained by sequence number and previousTrace; rebaseline and version markers; versioned-git; the switch read as off when unversioned; the capability and modelVersion gate; a failed append kept and sent again; part C: the agreement check at freeze and rebaselineEvolutionTraces",
       "requires": "none",
       "parallel": false,
       "argv": [

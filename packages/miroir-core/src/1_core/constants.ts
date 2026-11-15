@@ -22,6 +22,8 @@ export const SERVER_ROUTED_MIROIR_ACTION_TYPES: readonly string[] = [
   // #696: an action whose implementation needs a process capability (`requiredCapability` on its Endpoint
   // definition) runs where the stores are, checked against that process's capabilities
   "freezeApplicationVersion",
+  // #708 part C: a re-baseline freezes, or appends a marker, where the stores are
+  "rebaselineEvolutionTraces",
   // #708: the record of a commit is stored where the stores are
   "appendEvolutionTraceRecord",
 ];

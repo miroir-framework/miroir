@@ -164,14 +164,16 @@ export async function frozenModelState(
   applicationVersion: string,
 ): Promise<ModelState | Action2Error> {
   const live = await liveModelState(host, application, applicationDeploymentMap);
-  if (live instanceof Action2Error) {
-    return live;
-  }
+  return live instanceof Action2Error ? live : frozenStateOf(live, applicationVersion);
+}
+
+/** `frozenModelState` on a live model state already read: the version rows are among its collections. */
+export function frozenStateOf(live: ModelState, applicationVersion: string): ModelState | Action2Error {
   const version = live.applicationVersions.find((row) => row.uuid === applicationVersion);
   if (!version) {
     return new Action2Error(
       "FailedToHandleAction",
-      `frozenModelState found no Application Version ${applicationVersion} for ${application}`,
+      `frozenModelState found no Application Version ${applicationVersion} for ${live.applicationUuid}`,
     );
   }
   const frozenRows = new Map(
@@ -212,20 +214,67 @@ export async function gitModelState(
   ref: string,
 ): Promise<ModelState> {
   const commit = (await repository.log({ ref, depth: 1 }))[0]?.oid;
-  const files = commit ? await repository.listFiles(commit) : [];
-  const read = await Promise.all(
-    metaModelCollections.map(async ({ entity }) => {
-      const folder = sectionFolders[getApplicationSection(application, entity.uuid)];
-      if (folder === undefined || !commit) {
-        return [];
-      }
-      const prefix = `${folder.replace(/\/+$/, "")}/${entity.uuid}/`;
-      const paths = files.filter((path) => path.startsWith(prefix) && path.endsWith(".json") && !path.slice(prefix.length).includes("/"));
-      const texts = await Promise.all(paths.map((path) => repository.readFile(path, commit)));
-      return texts.filter((text): text is string => text !== undefined).map((text) => JSON.parse(text) as EntityInstance);
-    }),
+  if (!commit) {
+    return modelStateFromFiles(application, sectionFolders, {});
+  }
+  const folders = modelStateFolders(application, sectionFolders);
+  const paths = (await repository.listFiles(commit)).filter((path) => isModelStateFile(path, folders));
+  const texts = await Promise.all(paths.map((path) => repository.readFile(path, commit)));
+  return modelStateFromFiles(
+    application,
+    sectionFolders,
+    Object.fromEntries(paths.flatMap((path, index) => (texts[index] === undefined ? [] : [[path, texts[index]!]]))),
   );
-  const collections = buildMetaModelCollections((_entry, index) => read[index]);
+}
+
+/**
+ * #708 part C: the folder of each collection of the model of `application` (`<section folder>/<Entity
+ * uuid>`, repository-relative), for the collections whose section has a folder.
+ */
+export function modelStateFolders(
+  application: string,
+  sectionFolders: Partial<Record<ApplicationSection, string>>,
+): string[] {
+  return metaModelCollections.flatMap(({ entity }) => {
+    const folder = sectionFolders[getApplicationSection(application, entity.uuid)];
+    return folder === undefined ? [] : [entityFolder(folder, entity.uuid)];
+  });
+}
+
+function entityFolder(sectionFolder: string, entityUuid: string): string {
+  const folder = sectionFolder.replace(/\/+$/, "");
+  return folder === "" ? entityUuid : `${folder}/${entityUuid}`;
+}
+
+/** A JSON file right in one of `folders`. */
+function isModelStateFile(path: string, folders: readonly string[]): boolean {
+  return (
+    path.endsWith(".json") &&
+    folders.some((folder) => path.startsWith(`${folder}/`) && !path.slice(folder.length + 1).includes("/"))
+  );
+}
+
+/**
+ * #708 part C: the model of `application` held by `files`, a map of repository-relative paths to their
+ * text (the files of a commit, or of the index): each collection holds the JSON files right in its folder
+ * (`modelStateFolders`).
+ */
+export function modelStateFromFiles(
+  application: string,
+  sectionFolders: Partial<Record<ApplicationSection, string>>,
+  files: Readonly<Record<string, string>>,
+): ModelState {
+  const collections = buildMetaModelCollections(({ entity }) => {
+    const folder = sectionFolders[getApplicationSection(application, entity.uuid)];
+    if (folder === undefined) {
+      return [];
+    }
+    const own = [entityFolder(folder, entity.uuid)];
+    return Object.entries(files)
+      .filter(([path]) => isModelStateFile(path, own))
+      .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))
+      .map(([, text]) => JSON.parse(text) as EntityInstance);
+  });
   return {
     applicationUuid: application,
     applicationName: collections.applications.find((row) => row.uuid === application)?.name ?? "",
@@ -289,7 +338,8 @@ function applyRecordActions(state: ModelState, record: EvolutionTraceRecordRow):
 
 /**
  * The model of an application after `state`, a frozen model state, with the `commit` records of its chain
- * that follow the `version` marker of its Application Version, replayed in sequence order. A record that
+ * that follow the marker of its Application Version (a `version` marker, or a `rebaseline` naming it, #708
+ * part C), replayed in sequence order. A record that
  * is not complete (its commit stopped part way) replays the Actions it holds, which are those the commit
  * wrote. An `Action2Error` when the chain has no marker for the version, or restarts (`rebaseline`) after it.
  */
@@ -302,7 +352,8 @@ export function replayEvolutionTraceRecords(
     .filter((record) => record.application === state.applicationUuid)
     .sort((a, b) => a.sequenceNumber - b.sequenceNumber);
   const marker = chain.reduce(
-    (last, record, index) => (record.kind === "version" && record.version === version ? index : last),
+    (last, record, index) =>
+      (record.kind === "version" || record.kind === "rebaseline") && record.version === version ? index : last,
     -1,
   );
   if (version === undefined || marker < 0) {
@@ -318,8 +369,20 @@ export function replayEvolutionTraceRecords(
       `replayEvolutionTraceRecords: the chain of ${state.applicationUuid} restarts after the marker of version ${version}`,
     );
   }
+  return replayCommitRecords(state, since);
+}
+
+/**
+ * #708 part C: `state` with the `commit` records among `records` replayed in sequence order, whatever
+ * marker they follow.
+ */
+export function replayCommitRecords(
+  state: ModelState,
+  records: readonly EvolutionTraceRecordRow[],
+): ModelState | Action2Error {
   let current: ModelState = state;
-  for (const record of since.filter((record) => record.kind === "commit")) {
+  const commits = records.filter((record) => record.kind === "commit").sort((a, b) => a.sequenceNumber - b.sequenceNumber);
+  for (const record of commits) {
     const replayed = applyRecordActions(current, record);
     if (replayed instanceof Action2Error) {
       return replayed;

@@ -13,7 +13,9 @@ import {
   APPEND_EVOLUTION_TRACE_RECORD_ACTION_TYPE,
   getApplicationSection,
   isEvolutionTraceOn,
+  metaModelEntities,
   MiroirLoggerFactory,
+  resolveVersioningMode,
   selfApplicationRowLocation,
   versionHistoryEntityUuids,
   type Action2ReturnType,
@@ -22,6 +24,7 @@ import {
   type ApplicationDeploymentMap,
   type ApplicationSection,
   type ActionImplementationContext,
+  type CheckStagedEvolutionTracesPayload,
   type DomainControllerActionHost,
   type Entity,
   type EntityInstance,
@@ -29,6 +32,7 @@ import {
   type FreezeApplicationVersionActionPayload,
   type LoggerInterface,
   type MiroirModelEnvironment,
+  type RebaselineEvolutionTracesActionPayload,
 } from "@miroir-framework/core";
 import {
   entityApplicationVersionCrossBlobVersion,
@@ -72,6 +76,7 @@ import {
   type FreezeMetaModelSlice,
   type StoredInstanceForFreeze,
 } from "./applicationVersionFreeze.js";
+import { checkEvolutionTraceAgreement, checkStagedEvolutionTraceAgreement } from "./evolutionTraceAgreement.js";
 import { handleAction_appendEvolutionTraceRecord } from "./evolutionTraceRecords.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName("miroir-versioning", "3", "freezeApplicationVersion");
@@ -353,34 +358,82 @@ async function persistFreezeApplicationVersionPlan(
 }
 
 /** Freezes the application the payload names, from the model of its own deployment. */
-export const handleAction_freezeApplicationVersion: ActionImplementationHandler = async (
-  host,
-  action,
-  context,
-): Promise<Action2ReturnType> => {
-  const payload = action.payload as FreezeApplicationVersionActionPayload;
+export const handleAction_freezeApplicationVersion: ActionImplementationHandler = (host, action, context) =>
+  freezeVersion(host, action.payload as FreezeApplicationVersionActionPayload, context, "version");
+
+/**
+ * #708 part C: restarts the application's traces from its current model. A `versioned-internal`
+ * application freezes `versionName` without the agreement check, its marker a `rebaseline` naming the
+ * version; a `versioned-git` application appends a `rebaseline` marker, which the next Git commit holds with
+ * the model. Refused while the traces are off.
+ */
+/**
+ * #708 part C: the check `gitAction_commit` runs on an application with traces on (`versioned-git`): the
+ * model the commit holds must be the model of HEAD replayed with the commit records it adds.
+ */
+export const handleAction_checkStagedEvolutionTraces: ActionImplementationHandler = async (_host, action) => {
+  const payload = (action as { payload: CheckStagedEvolutionTracesPayload }).payload;
+  return checkStagedEvolutionTraceAgreement(payload, metaModelEntityUuids(metaModelEntities)) ?? ACTION_OK;
+};
+
+export const handleAction_rebaselineEvolutionTraces: ActionImplementationHandler = async (host, action, context) => {
+  const payload = action.payload as RebaselineEvolutionTracesActionPayload;
+  const selfApplication = await storedSelfApplication(host, payload.application, context);
+  if (!isEvolutionTraceOn(selfApplication)) {
+    return new Action2Error(
+      "FailedToHandleAction",
+      `the evolution traces of ${payload.application} are off: there is nothing to re-baseline`,
+      undefined,
+      undefined,
+      { reason: "evolutionTracesOff" },
+    );
+  }
+  if (resolveVersioningMode(selfApplication!) === "versioned-git") {
+    return handleAction_appendEvolutionTraceRecord(
+      host,
+      { actionType: APPEND_EVOLUTION_TRACE_RECORD_ACTION_TYPE, payload: { application: payload.application, kind: "rebaseline" } },
+      context,
+    );
+  }
+  if (!payload.versionName?.trim()) {
+    return new Action2Error("InvalidAction", "rebaselineEvolutionTraces of a versioned-internal application needs a versionName");
+  }
+  const { application, versionName, description, branch } = payload;
+  return freezeVersion(host, { application, versionName, description, branch }, context, "rebaseline");
+};
+
+/**
+ * The freeze of `payload`. With the traces on, a `version` freeze is refused when the agreement check
+ * fails, and appends a `version` marker; a `rebaseline` freeze skips the check, and its marker restarts the
+ * chain from the version.
+ */
+async function freezeVersion(
+  host: DomainControllerActionHost,
+  payload: FreezeApplicationVersionActionPayload,
+  context: ActionImplementationContext,
+  marker: "version" | "rebaseline",
+): Promise<Action2ReturnType> {
   const { applicationDeploymentMap } = context;
   // Plan against the payload application's model, not the caller's (the Versioning Runner is
   // Miroir-hosted while it freezes Library).
   const modelEnvironment = targetModelEnvironment(host, payload.application, applicationDeploymentMap, context.modelEnvironment);
   const metaModel = modelEnvironment.currentModel;
+  const metaBootstrapUuids = metaModelEntityUuids(modelEnvironment.miroirMetaModel?.entities ?? []);
+  const tracesOn = isEvolutionTraceOn(await storedSelfApplication(host, payload.application, context));
+
+  // #708 part C: refused, before anything is written, when the traces do not give the model to freeze
+  if (tracesOn && marker === "version") {
+    const disagreement = await checkEvolutionTraceAgreement(host, payload.application, applicationDeploymentMap, metaBootstrapUuids);
+    if (disagreement) {
+      return disagreement;
+    }
+  }
 
   const ensured = await ensureHistoryEntities(host, payload.application, applicationDeploymentMap, modelEnvironment);
   if (ensured instanceof Action2Error) {
     return ensured;
   }
 
-  // Freeze the application's Entities only, not the MetaModel bootstrap Entities (Entity, Report, the
-  // history Entities…) that may appear in currentModel.entities. #230: for Miroir itself, the
-  // meta-model Entities are the application's Entities.
-  const metaBootstrapUuids = new Set((modelEnvironment.miroirMetaModel?.entities ?? []).map((e) => e.uuid));
-  for (const historyEntity of HISTORY_ENTITIES) {
-    metaBootstrapUuids.add(historyEntity.uuid);
-  }
-  // #708: the record Entity too, created in the model by the first trace record
-  for (const versionHistoryEntityUuid of versionHistoryEntityUuids) {
-    metaBootstrapUuids.add(versionHistoryEntityUuid);
-  }
   const applicationEntities = selectEntitiesToFreeze(payload.application, metaModel.entities, metaBootstrapUuids);
 
   const instancesToFreeze = await loadInstancesToFreeze(host, payload.application, applicationDeploymentMap);
@@ -410,30 +463,57 @@ export const handleAction_freezeApplicationVersion: ActionImplementationHandler 
   if (persisted instanceof Action2Error) {
     return persisted;
   }
-  await appendVersionMarker(host, payload.application, plan.selfApplicationVersion.uuid, context);
+  if (tracesOn) {
+    await appendVersionMarker(host, payload.application, plan.selfApplicationVersion.uuid, marker, context);
+  }
   return persisted;
-};
+}
 
 /**
- * #708 (D4): with the application's traces on, a freeze appends a `version` marker naming the version
- * it wrote, so the records between two versions are those between their markers. The switch is read
- * from the store, where the freeze runs. The freeze stands when the marker cannot be appended.
+ * The MetaModel bootstrap Entities (Entity, Report, the history Entities…) that may appear in an
+ * application's `currentModel.entities`: a freeze freezes the application's own Entities only. #230: for
+ * Miroir itself, the meta-model Entities are the application's Entities (`selectEntitiesToFreeze`).
+ */
+function metaModelEntityUuids(metaModelEntityRows: readonly { uuid: string }[]): Set<string> {
+  const uuids = new Set(metaModelEntityRows.map((e) => e.uuid));
+  for (const historyEntity of HISTORY_ENTITIES) {
+    uuids.add(historyEntity.uuid);
+  }
+  // #708: the record Entity too, created in the model by the first trace record
+  for (const versionHistoryEntityUuid of versionHistoryEntityUuids) {
+    uuids.add(versionHistoryEntityUuid);
+  }
+  return uuids;
+}
+
+/** #708: the application's SelfApplication row in the store, where its traces switch is read. */
+async function storedSelfApplication(
+  host: DomainControllerActionHost,
+  application: string,
+  context: ActionImplementationContext,
+): Promise<EvolutionTraceSwitchInput | undefined> {
+  const { section, entityUuid } = selfApplicationRowLocation(application);
+  const rows = await host.readSectionInstances(application, context.applicationDeploymentMap, section, entityUuid);
+  return (rows instanceof Action2Error ? undefined : rows.find((row) => row.uuid === application)) as
+    | EvolutionTraceSwitchInput
+    | undefined;
+}
+
+/**
+ * #708 (D4): with the application's traces on, a freeze appends a marker naming the version it wrote, so
+ * the records between two versions are those between their markers: a `version` marker, or a `rebaseline`
+ * one for a re-baseline (part C). The freeze stands when the marker cannot be appended.
  */
 async function appendVersionMarker(
   host: DomainControllerActionHost,
   application: string,
   version: string,
+  kind: "version" | "rebaseline",
   context: ActionImplementationContext,
 ): Promise<void> {
-  const { section, entityUuid } = selfApplicationRowLocation(application);
-  const rows = await host.readSectionInstances(application, context.applicationDeploymentMap, section, entityUuid);
-  const selfApplication = rows instanceof Action2Error ? undefined : rows.find((row) => row.uuid === application);
-  if (!isEvolutionTraceOn(selfApplication as EvolutionTraceSwitchInput | undefined)) {
-    return;
-  }
   const appended = await handleAction_appendEvolutionTraceRecord(
     host,
-    { actionType: APPEND_EVOLUTION_TRACE_RECORD_ACTION_TYPE, payload: { application, kind: "version", version } },
+    { actionType: APPEND_EVOLUTION_TRACE_RECORD_ACTION_TYPE, payload: { application, kind, version } },
     context,
   );
   if (appended instanceof Action2Error) {

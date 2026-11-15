@@ -607,6 +607,36 @@ class IsomorphicGitRepository implements GitRepositoryInterface {
     return paths.filter((filepath): filepath is string => typeof filepath === "string");
   }
 
+  async readStagedFiles(folders: string[]): Promise<Record<string, string>> {
+    const prefixes = folders.map((folder) => `${folder.replace(/\/+$/, "")}/`);
+    const inside = (filepath: string) => prefixes.some((prefix) => filepath.startsWith(prefix));
+    const above = (filepath: string) => prefixes.some((prefix) => prefix.startsWith(`${filepath}/`));
+    const files: unknown[] = await git.walk({
+      ...this.repository,
+      trees: [git.STAGE()],
+      map: async (filepath, [entry]) => {
+        if (filepath === ".") {
+          return;
+        }
+        if (!inside(filepath)) {
+          // null: the folder is not walked
+          return above(filepath) ? undefined : null;
+        }
+        if ((await entry?.type()) !== "blob") {
+          return;
+        }
+        // the index walker gives no content: the blob is read by its oid
+        const { blob } = await git.readBlob({ ...this.repository, oid: await entry!.oid() });
+        return { filepath, text: Buffer.from(blob).toString("utf8") };
+      },
+    });
+    return Object.fromEntries(
+      files
+        .filter((file): file is { filepath: string; text: string } => typeof file === "object" && file !== null && "filepath" in file)
+        .map(({ filepath, text }) => [filepath, text]),
+    );
+  }
+
   async stage(paths: string[]): Promise<void> {
     for (const filepath of paths) {
       if (fs.existsSync(path.join(this.root, filepath))) {

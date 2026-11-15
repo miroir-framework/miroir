@@ -4,6 +4,7 @@
  * local caches and the reports), and the names of the implementations the package provides. The
  * versioning modes stay in `versioningMode.ts`.
  */
+import type { ApplicationSection } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 
 /** Model Endpoint actionType for user-triggered freeze (ADR D1-a). */
 export const FREEZE_APPLICATION_VERSION_ACTION_TYPE = "freezeApplicationVersion" as const;
@@ -18,6 +19,40 @@ export type FreezeApplicationVersionActionPayload = {
   branch?: string;
 };
 
+/**
+ * #708 part C: Model Endpoint action that restarts an application's evolution traces from its current
+ * model, when the check refuses a freeze or a commit and the designer accepts the model as it is.
+ */
+export const REBASELINE_EVOLUTION_TRACES_ACTION_TYPE = "rebaselineEvolutionTraces" as const;
+
+/**
+ * Payload of `rebaselineEvolutionTraces`: `versionName` (with `description`, `branch`) names the version a
+ * `versioned-internal` application freezes; a `versioned-git` application takes none.
+ */
+export type RebaselineEvolutionTracesActionPayload = {
+  application: string;
+  versionName?: string;
+  description?: string;
+  branch?: string;
+};
+
+/**
+ * #708 part C: the check a Git commit of an application with traces on runs (`versioned-git`), on the model
+ * files it holds. Not an Endpoint action: `gitAction_commit` runs it, in the process that owns the files.
+ */
+export const CHECK_STAGED_EVOLUTION_TRACES_ACTION_TYPE = "checkStagedEvolutionTraces" as const;
+
+/**
+ * Payload of `checkStagedEvolutionTraces`: the text of the model files of HEAD (absent without a commit)
+ * and of the index, by repository-relative path, with the folder of each section of the application.
+ */
+export type CheckStagedEvolutionTracesPayload = {
+  application: string;
+  sectionFolders: Partial<Record<ApplicationSection, string>>;
+  head?: Record<string, string>;
+  staged: Record<string, string>;
+};
+
 /** The package that implements the versioning actions, named in a refusal when it is not registered. */
 export const VERSIONING_PACKAGE_NAME = "@miroir-framework/versioning";
 
@@ -28,6 +63,8 @@ export const VERSIONING_PACKAGE_NAME = "@miroir-framework/versioning";
 export const VERSIONING_ACTION_IMPLEMENTATION_NAMES: readonly string[] = [
   "handleAction_freezeApplicationVersion",
   "handleAction_appendEvolutionTraceRecord",
+  "handleAction_rebaselineEvolutionTraces",
+  "handleAction_checkStagedEvolutionTraces",
 ];
 
 /** #708: the Entity of evolution trace records, stored in an application's `modelVersion` section. */
