@@ -10,7 +10,9 @@ import {
   metaModelCollections,
   type ApplicationDeploymentMap,
   type DomainControllerActionHost,
+  type ApplicationSection,
   type EntityInstance,
+  type GitRepositoryInterface,
   type MetaModel,
   type MetaModelCollection,
 } from "@miroir-framework/core";
@@ -191,3 +193,34 @@ export async function frozenModelState(
   return { applicationUuid: live.applicationUuid, applicationName: live.applicationName, ...collections };
 }
 
+/**
+ * The model of `application` in the files of a Git commit (`ref`), read from the commit without a checkout:
+ * each collection holds the JSON files of its Entity's folder (`<section folder>/<Entity uuid>/*.json`) in
+ * the folder of the section its rows belong to. `sectionFolders` gives each section's folder,
+ * repository-relative (`library_model`); a section without a folder reads as empty.
+ */
+export async function gitModelState(
+  repository: Pick<GitRepositoryInterface, "listFiles" | "readFile">,
+  application: string,
+  sectionFolders: Partial<Record<ApplicationSection, string>>,
+  ref: string,
+): Promise<ModelState> {
+  const files = await repository.listFiles(ref);
+  const read = await Promise.all(
+    metaModelCollections.map(({ entity }) => {
+      const folder = sectionFolders[getApplicationSection(application, entity.uuid)];
+      if (folder === undefined) {
+        return [];
+      }
+      const prefix = `${folder.replace(/\/+$/, "")}/${entity.uuid}/`;
+      const paths = files.filter((path) => path.startsWith(prefix) && path.endsWith(".json") && !path.slice(prefix.length).includes("/"));
+      return Promise.all(paths.map(async (path) => JSON.parse((await repository.readFile(path, ref)) ?? "null") as EntityInstance));
+    }),
+  );
+  const collections = buildMetaModelCollections((_entry, index) => read[index]);
+  return {
+    applicationUuid: application,
+    applicationName: collections.applications.find((row) => row.uuid === application)?.name ?? "",
+    ...collections,
+  };
+}
