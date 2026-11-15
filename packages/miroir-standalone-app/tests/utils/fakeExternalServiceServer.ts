@@ -101,6 +101,7 @@ export async function startFakeExternalServiceServer(
     },
     close() {
       return new Promise<void>((resolve, reject) => {
+        server.closeAllConnections();
         server.close((error) => {
           if (error) {
             reject(error);
@@ -161,6 +162,10 @@ export async function startFakeExternalServiceServer(
       writeFixtureResponse(res, fixture);
     });
   });
+  // Never close an idle keep-alive socket from this side: the client's agent reuses it, and a
+  // close racing a reuse fails that request at network level when a test idles about 5s between
+  // calls (the default keepAliveTimeout). `close()` drops all connections instead.
+  server.keepAliveTimeout = 0;
 
   await new Promise<void>((resolve, reject) => {
     server.once("error", reject);
