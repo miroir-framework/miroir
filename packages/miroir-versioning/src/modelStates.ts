@@ -201,24 +201,28 @@ export async function frozenModelState(
  * The model of `application` in the files of a Git commit (`ref`), read from the commit without a checkout:
  * each collection holds the JSON files of its Entity's folder (`<section folder>/<Entity uuid>/*.json`) in
  * the folder of the section its rows belong to. `sectionFolders` gives each section's folder,
- * repository-relative (`library_model`); a section without a folder reads as empty.
+ * repository-relative (`library_model`); a section without a folder reads as empty. `ref` is resolved to
+ * one commit first, so that a ref moved during the read does not mix two commits; a ref that names no
+ * commit reads as an empty model.
  */
 export async function gitModelState(
-  repository: Pick<GitRepositoryInterface, "listFiles" | "readFile">,
+  repository: Pick<GitRepositoryInterface, "listFiles" | "log" | "readFile">,
   application: string,
   sectionFolders: Partial<Record<ApplicationSection, string>>,
   ref: string,
 ): Promise<ModelState> {
-  const files = await repository.listFiles(ref);
+  const commit = (await repository.log({ ref, depth: 1 }))[0]?.oid;
+  const files = commit ? await repository.listFiles(commit) : [];
   const read = await Promise.all(
-    metaModelCollections.map(({ entity }) => {
+    metaModelCollections.map(async ({ entity }) => {
       const folder = sectionFolders[getApplicationSection(application, entity.uuid)];
-      if (folder === undefined) {
+      if (folder === undefined || !commit) {
         return [];
       }
       const prefix = `${folder.replace(/\/+$/, "")}/${entity.uuid}/`;
       const paths = files.filter((path) => path.startsWith(prefix) && path.endsWith(".json") && !path.slice(prefix.length).includes("/"));
-      return Promise.all(paths.map(async (path) => JSON.parse((await repository.readFile(path, ref)) ?? "null") as EntityInstance));
+      const texts = await Promise.all(paths.map((path) => repository.readFile(path, commit)));
+      return texts.filter((text): text is string => text !== undefined).map((text) => JSON.parse(text) as EntityInstance);
     }),
   );
   const collections = buildMetaModelCollections((_entry, index) => read[index]);

@@ -11,6 +11,13 @@ import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
 import {
+  checkModelValidationInstance,
+  defaultMiroirModelEnvironment,
+  miroirFundamentalMlSchemaUuid,
+  type MlElement,
+} from "@miroir-framework/core";
+
+import {
   snapshotEndpointsAsHistoricalEndpointVersions,
   snapshotMenusAsHistoricalMenuVersions,
   snapshotMiroirTestsAsHistoricalMiroirTestVersions,
@@ -45,7 +52,11 @@ function realRows(entityUuid: string): Record<string, unknown>[] {
   });
 }
 
-const elementTypes: { name: string; entityUuid: string; snapshot: (rows: any[]) => Record<string, unknown>[] }[] = [
+const elementTypes: {
+  name: string;
+  entityUuid: string;
+  snapshot: (rows: any[]) => Record<string, unknown>[];
+}[] = [
   { name: "Query", entityUuid: "e4320b9e-ab45-4abe-85d8-359604b3c62f", snapshot: snapshotQueriesAsHistoricalQueryVersions },
   { name: "Report", entityUuid: "3f2baa83-3ef7-45ce-82ea-6a43f7a8c916", snapshot: snapshotReportsAsHistoricalReportVersions },
   { name: "Menu", entityUuid: "dde4c883-ae6d-47c3-b6df-26bc6e3c1842", snapshot: snapshotMenusAsHistoricalMenuVersions },
@@ -87,5 +98,19 @@ describe("freeze snapshot fields (#708 B0, B3)", () => {
   it("B3: a snapshot keeps every field of the live row but the identity ones", () => {
     const dropped = Object.fromEntries(Object.entries(droppedFields()).filter(([, fields]) => fields.length > 0));
     expect(dropped).toEqual({});
+  });
+
+  it("B3: every snapshot is an instance of its version type in the fundamental schema", () => {
+    const failing = elementTypes.flatMap(({ name, entityUuid, snapshot }) => {
+      const versionType: MlElement = {
+        type: "schemaReference",
+        definition: { absolutePath: miroirFundamentalMlSchemaUuid, relativePath: `${name.charAt(0).toLowerCase()}${name.slice(1)}Version` },
+      } as MlElement;
+      return snapshot(realRows(entityUuid))
+        .map((version) => checkModelValidationInstance(versionType, version, name, defaultMiroirModelEnvironment))
+        .filter((check) => check.status === "error")
+        .map((check) => `${name} ${check.label}`);
+    });
+    expect(failing).toEqual([]);
   });
 });

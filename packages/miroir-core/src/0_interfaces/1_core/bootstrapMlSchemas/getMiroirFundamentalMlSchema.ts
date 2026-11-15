@@ -1,5 +1,5 @@
 import type { MlElement, MlReference } from "../preprocessor-generated/miroirFundamentalType";
-import { entityVersionHistoricalQueryVersion, entityVersionHistoricalReportVersion, entityVersionHistoricalMenuVersion, entityVersionHistoricalEndpointVersion, entityVersionHistoricalRunnerVersion, entityVersionHistoricalThemeVersion, entityVersionHistoricalTransformerDefinitionVersion, entityVersionHistoricalMlSchemaVersion, entityVersionHistoricalMiroirTestVersion, entityDefinitionBlob, entityDefinitionTestConfiguration, entityVersionHistoricalBlobVersion, entityVersionHistoricalTestConfigurationVersion, entityVersionApplicationVersionCrossBlobVersion, entityVersionApplicationVersionCrossTestConfigurationVersion, miroirThemeSchemaJson, tableThemeSchemaJson } from "miroir-app-miroir";
+import { entityHistoricalQueryVersion, entityHistoricalReportVersion, entityHistoricalMenuVersion, entityHistoricalEndpointVersion, entityHistoricalRunnerVersion, entityHistoricalThemeVersion, entityHistoricalTransformerDefinitionVersion, entityHistoricalMlSchemaVersion, entityHistoricalMiroirTestVersion, entityDefinitionBlob, entityDefinitionTestConfiguration, entityVersionHistoricalBlobVersion, entityVersionHistoricalTestConfigurationVersion, entityVersionApplicationVersionCrossBlobVersion, entityVersionApplicationVersionCrossTestConfigurationVersion, miroirThemeSchemaJson, tableThemeSchemaJson } from "miroir-app-miroir";
 
 import { cleanLevel } from "../../../1_core/constants";
 import { mlsTransitiveDependencySet } from "../../../1_core/mls/MlSchemaReferences";
@@ -1550,25 +1550,26 @@ export function getMiroirFundamentalMlSchema(
         entity: entityDefinitionEntity.mlSchema as any,
         // #217 Phase 12: vocabulary EntityVersion → EntityVersion (UUID preserved)
         entityVersion: entityDefinitionEntityDefinitionV1.mlSchema as any, // param also exported as entityVersionEntityVersionV1
+        // #708 part B: the version types are read from the live Version Entities, which a freeze writes rows of
         /** #227 — historical Query snapshot at freeze (EntityVersion row for QueryVersion Entity). */
-        queryVersion: entityVersionHistoricalQueryVersion.mlSchema as any,
+        queryVersion: entityHistoricalQueryVersion.mlSchema as any,
         /** #227 — historical Report snapshot at freeze (EntityVersion row for ReportVersion Entity). */
-        reportVersion: entityVersionHistoricalReportVersion.mlSchema as any,
+        reportVersion: entityHistoricalReportVersion.mlSchema as any,
         /** #227 — historical Menu snapshot at freeze (EntityVersion row for MenuVersion Entity). */
-        menuVersion: entityVersionHistoricalMenuVersion.mlSchema as any,
+        menuVersion: entityHistoricalMenuVersion.mlSchema as any,
         /** #227 — historical Endpoint snapshot at freeze (EntityVersion row for EndpointVersion Entity). */
-        endpointVersion: entityVersionHistoricalEndpointVersion.mlSchema as any,
+        endpointVersion: entityHistoricalEndpointVersion.mlSchema as any,
         /** #227 — historical Runner snapshot at freeze (EntityVersion row for RunnerVersion Entity). */
-        runnerVersion: entityVersionHistoricalRunnerVersion.mlSchema as any,
+        runnerVersion: entityHistoricalRunnerVersion.mlSchema as any,
         /** #227 — historical Theme snapshot at freeze (EntityVersion row for ThemeVersion Entity). */
-        themeVersion: entityVersionHistoricalThemeVersion.mlSchema as any,
+        themeVersion: entityHistoricalThemeVersion.mlSchema as any,
         /** #227 — historical TransformerDefinition snapshot at freeze. */
         transformerDefinitionVersion:
-          entityVersionHistoricalTransformerDefinitionVersion.mlSchema as any,
+          entityHistoricalTransformerDefinitionVersion.mlSchema as any,
         /** #230 — historical MlSchema snapshot at freeze. */
-        mlSchemaVersion: entityVersionHistoricalMlSchemaVersion.mlSchema as any,
+        mlSchemaVersion: entityHistoricalMlSchemaVersion.mlSchema as any,
         /** #230 — historical MiroirTest snapshot at freeze. */
-        miroirTestVersion: entityVersionHistoricalMiroirTestVersion.mlSchema as any,
+        miroirTestVersion: entityHistoricalMiroirTestVersion.mlSchema as any,
         /** #708 D7-a — Blob and TestConfiguration rows, their historical snapshots and Cross rows (#706). */
         blob: entityDefinitionBlob.mlSchema as any,
         testConfiguration: entityDefinitionTestConfiguration.mlSchema as any,

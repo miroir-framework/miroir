@@ -598,6 +598,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,actions,runners
 - `frozenModelState(host, application, map, applicationVersion)`: reads the live model, follows the version's Cross rows to its version rows and maps each back to its live row (`<type>Uuid` → `uuid`, the live Entity's uuid and name as parent). A TransformerDefinitionVersion frozen before this slice is read back from its `definition` body. The application, its branches and the Application Version come from the live model; the other history collections are empty.
 - What a freeze still does not keep: `parentDefinitionVersionUuid`, and `conceptLevel` on rows other than Entities. The round-trip test leaves them out, with the meta-model Entities an application's model holds (a freeze snapshots only the application's own Entities, `selectEntitiesToFreeze`).
 - Deviation: the round trip runs on appForTest only. Library is unversioned (designer's choice, 2026-11-15), so it cannot be frozen.
+- After review (PR #727): the version types of the fundamental schema (`queryVersion` … `miroirTestVersion`) are now generated from the live Version Entities rather than from their EntityVersion rows, which lacked the attributes B3 added; `freezeSnapshotFields.unit` checks that every snapshot of the real rows is an instance of its version type. The static Miroir model keeps its `blobs` collection empty: listing the logo Blob put its 400 kB of base64 in every client bundle.
 - Note for PostgreSQL deployments: the new Version attributes are new columns; an existing database needs them added before a freeze writes them.
 
 ## Slice B4 — The model at a Git ref
@@ -624,6 +625,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,actions,external
 - `GitRepositoryInterface.listFiles(ref?)`: the files of the commit `ref` points at (HEAD by default); `miroir-git-isomorphic` resolves the ref to its commit first, as `readFile` does, so a tag works too.
 - `gitModelState(repository, application, sectionFolders, ref)`: per collection of the one list, the JSON files of `<section folder>/<Entity uuid>/` at `ref`, read with `readFile(path, ref)`; a section without a folder reads as empty. The caller names the section folders (`appForTest_model`), as a deployment's store configuration does.
 - Deviation: appForTest has no Report, so the test changes its Publisher Entity: at the first commit the model holds the first description, at HEAD the second, and the work tree keeps a third. The test builds its repository in a temporary folder from the fixture's asset files, without a DomainController.
+- After review (PR #727): `gitModelState` resolves `ref` to one commit first (`log({ ref, depth: 1 })`) and lists and reads at that commit, so a ref moved during the read does not mix two commits.
 
 ## Slice B5 — The diff of two model states
 
@@ -678,6 +680,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,actions
 - `modelStates.integ` B6: appForTest with traces on, freeze, then a direct update of the Publisher Entity row, a commit of a `createEntity` and a model instance write, and a direct update; the frozen state replayed with the stored records equals the live state on the snapshotted collections.
 - Deviations: appForTest's model has no Report store, so the commit writes and then updates an Endpoint row instead of a Report. The `complete: false` case is a unit case: a commit that stops part way cannot be made on purpose in the integration test.
 - Refactor checkpoint: the local caches apply instance Actions to Redux / Zustand zones (`applyEntityInstancesToZone`), not to arrays; nothing to reuse.
+- An update replaces the whole row, as every store does on `updateInstance` (the persistence controller upserts the object it is given); the live model state reads the stores, so the replay follows them rather than the local cache's field merge.
 
 ## Slice B7 — Docs, nonreg step, full nonreg, AC checklist
 

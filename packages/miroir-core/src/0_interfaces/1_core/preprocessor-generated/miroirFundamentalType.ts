@@ -3147,6 +3147,7 @@ export type QueryVersion = {
     description?: string | undefined;
     defaultLabel?: string | undefined;
     definition?: any;
+    parameters?: MlObject | undefined;
 };
 export type ReportVersion = {
     uuid: string;
@@ -3160,6 +3161,7 @@ export type ReportVersion = {
     type?: ("list" | "grid" | "multistep") | undefined;
     description?: string | undefined;
     definition?: any;
+    selfApplication?: string | undefined;
 };
 export type MenuVersion = {
     uuid: string;
@@ -3211,6 +3213,9 @@ export type ThemeVersion = {
     defaultLabel?: string | undefined;
     description?: string | undefined;
     definition?: any;
+    storageAccess?: ("none" | "localStorage" | "persistentStorage") | undefined;
+    selfApplication?: string | undefined;
+    author?: string | undefined;
 };
 export type TransformerDefinitionVersion = {
     uuid: string;
@@ -3222,7 +3227,35 @@ export type TransformerDefinitionVersion = {
     transformerUuid: string;
     defaultLabel?: string | undefined;
     description?: string | undefined;
-    definition?: any;
+    definition?: any | undefined;
+    classification?: string | undefined;
+    presentation?: BlockPresentationHints | undefined;
+    runnableAsSql?: boolean | undefined;
+    transformerInterface?: {
+        inputOutput?: InputOutputObject | undefined;
+        transformerParameterSchema: {
+            transformerType: MlLiteral | MlEnum;
+            transformerDefinition: MlObject;
+        };
+        transformerResultSchema: {
+            returns: "mlSchema";
+            definition: MlElement;
+        } | {
+            returns: "mlSchemaTransformer";
+            addAttributesToContextBeingSubtypeOf?: {
+                [x: string]: MlElement;
+            } | undefined;
+            definition: CoreTransformerForBuildPlusRuntime;
+        };
+    } | undefined;
+    transformerImplementation?: ({
+        transformerImplementationType: "libraryImplementation";
+        inMemoryImplementationFunctionName: string;
+        sqlImplementationFunctionName?: string | undefined;
+    } | {
+        transformerImplementationType: "transformer";
+        definition: CoreTransformerForBuildPlusRuntime;
+    }) | undefined;
 };
 export type MlSchemaVersion = {
     uuid: string;
@@ -3250,6 +3283,8 @@ export type MiroirTestVersion = {
     tags?: string[] | undefined;
     issue?: string | undefined;
     definition?: any;
+    selfApplication?: string | undefined;
+    branch?: string | undefined;
 };
 export type Blob = {
     uuid: string;
@@ -11202,15 +11237,15 @@ export const bundle: z.ZodType<Bundle> = z.object({uuid:z.string().uuid(), paren
 export const deployment: z.ZodType<Deployment> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), conceptLevel:z.enum(["MetaModel","Model","Data","External"]).optional(), name:z.string(), defaultLabel:z.string(), description:z.string().optional(), selfApplication:z.string().uuid(), bundle:z.string().uuid().optional(), configuration:z.lazy(() =>storeUnitConfiguration).optional(), model:z.lazy(() =>mlObject).optional(), data:z.lazy(() =>mlObject).optional()}).strict();
 export const entity: z.ZodType<Entity> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), conceptLevel:z.enum(["MetaModel","Model","Data","External"]).optional(), storageAccess:z.enum(["none","localStorage","persistentStorage"]).optional(), selfApplication:z.string().uuid().optional(), name:z.string(), author:z.string().uuid().optional(), description:z.string().optional(), defaultInstanceDetailsReportUuid:z.string().uuid().optional(), viewAttributes:z.array(z.string()).optional(), icon:z.lazy(() =>miroirIcon).optional(), display:z.object({foldSubLevels:z.record(z.string(),z.boolean()).optional()}).strict().optional(), cache:z.object({cacheAllInstancesOnRefresh:z.boolean().optional()}).strict().optional(), idAttribute:z.union([z.string(), z.array(z.string()), z.boolean()]).optional(), externalDataSource:z.object({kind:z.enum(["sql","http"]).optional(), endpoint:z.string().uuid().optional(), schema:z.string().optional(), tableName:z.string().optional()}).strict().optional(), scope:z.enum(["versioning","modeling"]).optional(), logicalDataModel:z.enum(["manyToMany","entity"]).optional(), mlSchema:z.lazy(() =>mlObject)}).strict();
 export const entityVersion: z.ZodType<EntityVersion> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), conceptLevel:z.enum(["MetaModel","Model","Data","External"]).optional(), name:z.string(), entityUuid:z.string().uuid(), description:z.string().optional(), defaultInstanceDetailsReportUuid:z.string().uuid().optional(), viewAttributes:z.array(z.string()).optional(), icon:z.lazy(() =>miroirIcon).optional(), display:z.object({foldSubLevels:z.record(z.string(),z.boolean()).optional()}).strict().optional(), cache:z.object({cacheAllInstancesOnRefresh:z.boolean().optional()}).strict().optional(), idAttribute:z.union([z.string(), z.array(z.string()), z.boolean()]).optional(), externalDataSource:z.object({kind:z.enum(["sql","http"]).optional(), endpoint:z.string().uuid().optional(), schema:z.string().optional(), tableName:z.string().optional()}).strict().optional(), mlSchema:z.lazy(() =>mlObject), storageAccess:z.enum(["none","localStorage","persistentStorage"]).optional(), selfApplication:z.string().uuid().optional(), author:z.string().uuid().optional(), scope:z.enum(["versioning","modeling"]).optional(), logicalDataModel:z.enum(["manyToMany","entity"]).optional()}).strict();
-export const queryVersion: z.ZodType<QueryVersion> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), conceptLevel:z.enum(["MetaModel","Model","Data","External"]).optional(), name:z.string(), queryUuid:z.string().uuid(), description:z.string().optional(), defaultLabel:z.string().optional(), definition:z.any()}).strict();
-export const reportVersion: z.ZodType<ReportVersion> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), conceptLevel:z.enum(["MetaModel","Model","Data","External"]).optional(), name:z.string(), reportUuid:z.string().uuid(), defaultLabel:z.string().optional(), type:z.enum(["list","grid","multistep"]).optional(), description:z.string().optional(), definition:z.any()}).strict();
+export const queryVersion: z.ZodType<QueryVersion> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), conceptLevel:z.enum(["MetaModel","Model","Data","External"]).optional(), name:z.string(), queryUuid:z.string().uuid(), description:z.string().optional(), defaultLabel:z.string().optional(), definition:z.any(), parameters:z.lazy(() =>mlObject).optional()}).strict();
+export const reportVersion: z.ZodType<ReportVersion> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), conceptLevel:z.enum(["MetaModel","Model","Data","External"]).optional(), name:z.string(), reportUuid:z.string().uuid(), defaultLabel:z.string().optional(), type:z.enum(["list","grid","multistep"]).optional(), description:z.string().optional(), definition:z.any(), selfApplication:z.string().uuid().optional()}).strict();
 export const menuVersion: z.ZodType<MenuVersion> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), conceptLevel:z.enum(["MetaModel","Model","Data","External"]).optional(), name:z.string(), menuUuid:z.string().uuid(), defaultLabel:z.string().optional(), description:z.string().optional(), definition:z.any()}).strict();
 export const endpointVersion: z.ZodType<EndpointVersion> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), conceptLevel:z.enum(["MetaModel","Model","Data","External"]).optional(), name:z.string(), endpointUuid:z.string().uuid(), version:z.string(), application:z.string().uuid().optional(), description:z.string().optional(), transactionalEndpoint:z.boolean().optional(), definition:z.any()}).strict();
 export const runnerVersion: z.ZodType<RunnerVersion> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), conceptLevel:z.enum(["MetaModel","Model","Data","External"]).optional(), name:z.string(), runnerUuid:z.string().uuid(), application:z.string().uuid().optional(), defaultLabel:z.string().optional(), description:z.string().optional(), definition:z.any()}).strict();
-export const themeVersion: z.ZodType<ThemeVersion> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), conceptLevel:z.enum(["MetaModel","Model","Data","External"]).optional(), name:z.string(), themeUuid:z.string().uuid(), defaultLabel:z.string().optional(), description:z.string().optional(), definition:z.any()}).strict();
-export const transformerDefinitionVersion: z.ZodType<TransformerDefinitionVersion> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), conceptLevel:z.enum(["MetaModel","Model","Data","External"]).optional(), name:z.string(), transformerUuid:z.string().uuid(), defaultLabel:z.string().optional(), description:z.string().optional(), definition:z.any()}).strict();
+export const themeVersion: z.ZodType<ThemeVersion> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), conceptLevel:z.enum(["MetaModel","Model","Data","External"]).optional(), name:z.string(), themeUuid:z.string().uuid(), defaultLabel:z.string().optional(), description:z.string().optional(), definition:z.any(), storageAccess:z.enum(["none","localStorage","persistentStorage"]).optional(), selfApplication:z.string().uuid().optional(), author:z.string().uuid().optional()}).strict();
+export const transformerDefinitionVersion: z.ZodType<TransformerDefinitionVersion> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), conceptLevel:z.enum(["MetaModel","Model","Data","External"]).optional(), name:z.string(), transformerUuid:z.string().uuid(), defaultLabel:z.string().optional(), description:z.string().optional(), definition:z.any().optional(), classification:z.string().optional(), presentation:z.lazy(() =>blockPresentationHints).optional(), runnableAsSql:z.boolean().optional(), transformerInterface:z.object({inputOutput:z.lazy(() =>inputOutputObject).optional(), transformerParameterSchema:z.object({transformerType:z.union([z.lazy(() =>mlLiteral), z.lazy(() =>mlEnum)]), transformerDefinition:z.lazy(() =>mlObject)}).strict(), transformerResultSchema:z.union([z.object({returns:z.literal("mlSchema"), definition:z.lazy(() =>mlElement)}).strict(), z.object({returns:z.literal("mlSchemaTransformer"), addAttributesToContextBeingSubtypeOf:z.record(z.string(),z.lazy(() =>mlElement)).optional(), definition:z.lazy(() =>coreTransformerForBuildPlusRuntime)}).strict()])}).strict().optional(), transformerImplementation:z.union([z.object({transformerImplementationType:z.literal("libraryImplementation"), inMemoryImplementationFunctionName:z.string(), sqlImplementationFunctionName:z.string().optional()}).strict(), z.object({transformerImplementationType:z.literal("transformer"), definition:z.lazy(() =>coreTransformerForBuildPlusRuntime)}).strict()]).optional()}).strict();
 export const mlSchemaVersion: z.ZodType<MlSchemaVersion> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), conceptLevel:z.enum(["MetaModel","Model","Data","External"]).optional(), name:z.string(), mlSchemaUuid:z.string().uuid(), defaultLabel:z.string().optional(), description:z.string().optional(), definition:z.any().optional()}).strict();
-export const miroirTestVersion: z.ZodType<MiroirTestVersion> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), conceptLevel:z.enum(["MetaModel","Model","Data","External"]).optional(), name:z.string().optional(), miroirTestUuid:z.string().uuid(), defaultLabel:z.string().optional(), description:z.string().optional(), skip:z.boolean().optional(), tags:z.array(z.string()).optional(), issue:z.string().optional(), definition:z.any()}).strict();
+export const miroirTestVersion: z.ZodType<MiroirTestVersion> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), conceptLevel:z.enum(["MetaModel","Model","Data","External"]).optional(), name:z.string().optional(), miroirTestUuid:z.string().uuid(), defaultLabel:z.string().optional(), description:z.string().optional(), skip:z.boolean().optional(), tags:z.array(z.string()).optional(), issue:z.string().optional(), definition:z.any(), selfApplication:z.string().uuid().optional(), branch:z.string().uuid().optional()}).strict();
 export const blob: z.ZodType<Blob> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), conceptLevel:z.enum(["MetaModel","Model","Data","External"]).optional(), name:z.string(), filename:z.string(), defaultLabel:z.string().optional(), description:z.string().optional(), contents:z.object({encoding:z.enum(["base64","data-uri"]), mimeType:z.enum(["image/png","image/jpeg","image/gif","image/svg+xml","application/pdf","application/zip","text/plain","application/json"]), data:z.string()}).strict().optional()}).strict();
 export const testConfiguration: z.ZodType<TestConfiguration> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), conceptLevel:z.enum(["MetaModel","Model","Data","External"]).optional(), selfApplication:z.string().uuid(), name:z.string(), description:z.string().optional(), testbedModel:z.any().optional(), testbedEntitiesAndInstances:z.array(z.object({entity:z.lazy(() =>entity), instances:z.array(z.any())}).strict()).optional()}).strict();
 export const blobVersion: z.ZodType<BlobVersion> = z.object({uuid:z.string().uuid(), parentName:z.string().optional(), parentUuid:z.string().uuid(), parentDefinitionVersionUuid:z.string().uuid().optional(), conceptLevel:z.enum(["MetaModel","Model","Data","External"]).optional(), name:z.string(), blobUuid:z.string().uuid(), filename:z.string(), defaultLabel:z.string().optional(), description:z.string().optional(), contents:z.object({encoding:z.enum(["base64","data-uri"]), mimeType:z.enum(["image/png","image/jpeg","image/gif","image/svg+xml","application/pdf","application/zip","text/plain","application/json"]), data:z.string()}).strict().optional()}).strict();
