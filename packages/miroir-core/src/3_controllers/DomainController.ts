@@ -1382,6 +1382,12 @@ export class DomainController implements DomainControllerInterface, DomainContro
       return Promise.resolve(rejectedKeyless);
     }
 
+    // #9: checked where the stores are
+    const deploymentRefusal = await this.deploymentWriteRefusal(instanceAction, applicationDeploymentMap);
+    if (deploymentRefusal) {
+      return deploymentRefusal;
+    }
+
     const actionToPersist =
       instanceAction.actionType === "createInstance" ||
       instanceAction.actionType === "updateInstance"
@@ -1534,6 +1540,57 @@ export class DomainController implements DomainControllerInterface, DomainContro
       }
     }
     return traced;
+  }
+
+  /**
+   * #9: the Admin Deployment rows, read from the stores of this process; `undefined` in a process that
+   * does not hold the stores (a remote client: the server checks).
+   */
+  private async storedDeploymentRows(
+    applicationDeploymentMap: ApplicationDeploymentMap,
+  ): Promise<Map<string, { role?: unknown }> | undefined> {
+    if (!this.persistenceStoreLocalOrRemote.getLocalPersistenceStoreControllerManager?.()) {
+      return undefined;
+    }
+    const map = {
+      ...applicationDeploymentMap,
+      [adminSelfApplication.uuid]: applicationDeploymentMap[adminSelfApplication.uuid] ?? deployment_Admin.uuid,
+    };
+    const rows = await this.readSectionInstances(adminSelfApplication.uuid, map, "data", entityDeployment.uuid);
+    return rows instanceof Action2Error ? undefined : new Map(rows.map((row) => [row.uuid as string, row as { role?: unknown }]));
+  }
+
+  /**
+   * #9: why an instance write is refused by the role of a deployment, checked in the process that holds the
+   * stores: a write of a Deployment row that changes its role (chosen at creation, D6).
+   */
+  private async deploymentWriteRefusal(
+    instanceAction: InstanceAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+  ): Promise<Action2Error | undefined> {
+    if (instanceAction.actionType !== "createInstance" && instanceAction.actionType !== "updateInstance") {
+      return undefined;
+    }
+    const deploymentRowsWritten = (instanceAction.payload.objects ?? []).filter(
+      (object: { parentUuid?: string }) => object.parentUuid === entityDeployment.uuid,
+    );
+    if (instanceAction.payload.application !== adminSelfApplication.uuid || deploymentRowsWritten.length === 0) {
+      return undefined;
+    }
+    const stored = await this.storedDeploymentRows(applicationDeploymentMap);
+    for (const row of deploymentRowsWritten) {
+      const previous = stored?.get(row.uuid as string);
+      if (previous && deploymentRoleOf(previous) !== deploymentRoleOf(row as { role?: unknown })) {
+        return new Action2Error(
+          "FailedToHandleAction",
+          `the role of deployment ${row.uuid} is ${deploymentRoleOf(previous)}: it is chosen when the deployment is created and never changes`,
+          undefined,
+          undefined,
+          { reason: "deploymentRoleFixed", deployment: row.uuid },
+        );
+      }
+    }
+    return undefined;
   }
 
   /** #9: the Admin Deployment row of `deploymentUuid` in the local cache, when it is loaded. */

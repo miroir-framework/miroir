@@ -16,7 +16,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Prerequisites: [`../708-FEATURE-trace-revival-model-states/`](../708-FEATURE-trace-revival-model-states/) ✅, [`../696-REFACTOR-versioning-package/`](../696-REFACTOR-versioning-package/) ✅
 Working branch: `claude/project-thread-8d36cr` (assigned by the session), one PR per part (analysis D1)
 
-**Resume note:** plan rewritten 2026-11-15 after the user's first review; the user approved it and asked for one commit per slice and one PR per part, on branches named after the issue (`claude/9-migration-formats-roles` for part A). A1 done.
+**Resume note:** plan rewritten 2026-11-15 after the user's first review; the user approved it and asked for one commit per slice and one PR per part, on branches named after the issue (`claude/9-migration-formats-roles` for part A). A1 and A2 done.
 
 ---
 
@@ -37,7 +37,7 @@ Out (analysis section 2): detecting and correcting a model and storage divergenc
 | Slice | Part | Title | Status | Primary proof |
 |---|---|---|---|---|
 | A1 | A | A following deployment created at an earlier version (tracer) | ✅ | `followingDeployment.9.phaseA.integ.test.ts` |
-| A2 | A | A deployment's role cannot change | ⬜ | same file |
+| A2 | A | A deployment's role cannot change | ✅ | same file |
 | A3 | A | A following deployment refuses model and `modelVersion` writes | ⬜ | same file |
 | B1 | B | A draft Migration for one optional attribute (tracer) | ⬜ | `migrationGeneration.9.phaseB.integ.test.ts` |
 | B2 | B | Removals, required attributes, renames: classified and stepped | ⬜ | same file |
@@ -145,7 +145,7 @@ Test files live in `packages/miroir-standalone-app/tests/3_controllers/issues/9-
 
 ### Slice A2 — A deployment's role cannot change
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal.** The role is chosen once (D6).
 
@@ -157,7 +157,8 @@ Test files live in `packages/miroir-standalone-app/tests/3_controllers/issues/9-
 
 **Validation.** The file; scoped nonreg `smoke,actions`.
 
-**Realization.** _(on completion)_
+**Realization.** `DomainController.deploymentWriteRefusal`, run by `handleInstanceAction` in the process that holds the stores (a remote client's write reaches the server's DomainController, `RestServer.ts`): a `createInstance` or `updateInstance` of Admin Deployment rows is refused with `deploymentRoleFixed` when `deploymentRoleOf` the stored row differs from the written one. Writing `role: authoring` on a row without a role, or leaving it out again, keeps the role and passes; removing `role` from a following row is a change and is refused. The stored rows are read through `storedDeploymentRows`, which a remote client skips. Validation: the file (A1, A2); scoped nonreg `smoke,actions` passed (32 steps).
+
 
 ### Slice A3 — A following deployment refuses model and `modelVersion` writes
 

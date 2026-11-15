@@ -51,6 +51,7 @@ import {
 const FOLLOWING_DEPLOYMENT = "9a000001-0000-4000-8000-000000000001";
 const ADMIN_DEPLOYMENT = deployment_Admin.uuid;
 const ENTITY_VERSION_ENTITY = "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd";
+const ENTITY_ENTITY = "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad";
 
 const followingMap = {
   [MIROIR_APPLICATION]: MIROIR_DEPLOYMENT,
@@ -287,5 +288,30 @@ describe("#9 part A: a following deployment", () => {
     expect((await deploymentRowOf(APP_FOR_TEST_DEPLOYMENT))?.role).toBeUndefined();
     expect(deploymentStates.find((row) => row.uuid === APP_FOR_TEST_DEPLOYMENT)).toBeUndefined();
     expect(authoringLive.entities.map((entity) => entity.uuid)).toContain(imprint.uuid);
+  }, 60000);
+
+  it("A2: the role of a deployment cannot change; its other attributes can", async () => {
+    const following = await deploymentRowOf(FOLLOWING_DEPLOYMENT);
+
+    const toAuthoring = await updateDeploymentRow({ ...following, role: "authoring" } as EntityInstance);
+    expect(toAuthoring instanceof Action2Error, JSON.stringify(toAuthoring)).toBe(true);
+    expect(refusalReason(toAuthoring), JSON.stringify(toAuthoring)).toBe("deploymentRoleFixed");
+    expect(await deploymentRowOf(FOLLOWING_DEPLOYMENT)).toEqual(following);
+
+    const { role: _role, ...withoutRole } = following;
+    const roleRemoved = await updateDeploymentRow(withoutRole as EntityInstance);
+    expect(refusalReason(roleRemoved), JSON.stringify(roleRemoved)).toBe("deploymentRoleFixed");
+
+    const described = { ...following, description: "#9 A2: a following deployment, described again" } as EntityInstance;
+    expectOk(await updateDeploymentRow(described), "update of the description");
+    expect(await deploymentRowOf(FOLLOWING_DEPLOYMENT)).toEqual(described);
+
+    // a Deployment row without a role (every deployment before #9) is authoring, and cannot be made following
+    const authoring = await deploymentRowOf(APP_FOR_TEST_DEPLOYMENT);
+    expect(deploymentRoleOf(authoring)).toBe("authoring");
+    const toFollowing = await updateDeploymentRow({ ...authoring, role: "following" } as EntityInstance);
+    expect(refusalReason(toFollowing), JSON.stringify(toFollowing)).toBe("deploymentRoleFixed");
+    expectOk(await updateDeploymentRow({ ...authoring, role: "authoring" } as EntityInstance), "the default role, written");
+    expectOk(await updateDeploymentRow(authoring), "the default role, left out again");
   }, 60000);
 });
