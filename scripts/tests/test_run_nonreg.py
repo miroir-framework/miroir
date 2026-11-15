@@ -1949,3 +1949,81 @@ def test_every_manifest_step_that_builds_a_package_declares_its_outputs():
         s["id"] for s in REAL_MANIFEST["steps"] if BUILD_COMMAND.search(" ".join(s["argv"])) and not s.get("builds")
     ]
     assert undeclared == [], "declare the folders these steps build in `builds` (#736)"
+
+
+# --- #738: parallel runs start the longest units first ----------------------------------------------
+
+
+def test_schedule_puts_new_units_first_then_the_longest_and_keeps_the_bracket_and_alone_steps_in_place():
+    runner = load_runner()
+
+    def step(step_id: str, **fields) -> dict:
+        return {"id": step_id, "title": step_id, "tier": "unit", "requires": "none", "argv": [], **fields}
+
+    bracket = {"parallel": False, "worker": False}
+    units = [
+        runner.Unit([step("open", **bracket)]),
+        runner.Unit([step("short")]),
+        runner.Unit([step("g1"), step("g2")], "g"),
+        runner.Unit([step("alone", parallel=False)]),
+        runner.Unit([step("new")]),
+        runner.Unit([step("long")]),
+        runner.Unit([step("close", **bracket)]),
+    ]
+    previous = {
+        "open": {"duration_s": 1}, "close": {"duration_s": 1}, "alone": {"duration_s": 900},
+        "short": {"duration_s": 10},
+        "g1": {"duration_s": 20, "shared_group": "g", "shared_group_duration_s": 50},
+        "g2": {"duration_s": 25, "shared_group": "g", "shared_group_duration_s": 50},
+        "long": {"duration_s": 100},
+    }
+
+    order = [u.group or u.steps[0]["id"] for u in runner.schedule_units(units, previous)]
+
+    assert order == ["open", "new", "long", "g", "short", "alone", "close"]
+
+
+def test_a_shared_group_that_ran_step_by_step_counts_the_sum_of_its_members():
+    runner = load_runner()
+    unit = runner.Unit([{"id": "g1"}, {"id": "g2"}, {"id": "g3"}], "g")
+    assert runner.unit_duration(unit, {"g1": {"duration_s": 20}, "g2": {"duration_s": 25}}) == 45
+    assert runner.unit_duration(unit, {}) is None
+
+
+def test_without_a_previous_snapshot_the_schedule_is_the_manifest_order():
+    runner = load_runner()
+    units = [runner.Unit([{"id": i}]) for i in ("a", "b", "c")]
+    assert [u.steps[0]["id"] for u in runner.schedule_units(units, {})] == ["a", "b", "c"]
+
+
+def test_a_parallel_run_starts_the_units_that_took_longest_in_the_latest_snapshot(tmp_path: Path):
+    log = tmp_path / "events.log"
+    manifest = write_manifest(
+        tmp_path, [timed_step("quick", log, sleep=0.4), timed_step("slow", log, sleep=0.4), timed_step("mid", log, sleep=0.4)]
+    )
+    results = tmp_path / "results"
+    write_summary(results / "20260101T000000Z", {"quick": "passed", "slow": "passed", "mid": "passed"})
+    previous = json.loads((results / "20260101T000000Z" / "summary.json").read_text(encoding="utf-8"))
+    for st, duration in zip(previous["steps"], (1.0, 300.0, 50.0)):
+        st["duration_s"] = duration
+    (results / "20260101T000000Z" / "summary.json").write_text(json.dumps(previous), encoding="utf-8")
+    (results / "latest.txt").write_text("20260101T000000Z\n", encoding="utf-8")
+
+    proc = run_raw(tmp_path, manifest, "--tier", "unit", *FS_PROFILE, "--jobs", "2")
+
+    assert proc.returncode == 0, proc.stdout + proc.stderr
+    s = spans(log)
+    assert s["quick"][0] >= min(s["slow"][1], s["mid"][1])  # started once one of the long ones ended
+    new = [d for d in results.iterdir() if d.is_dir() and d.name != "20260101T000000Z"]
+    summary = json.loads((new[0] / "summary.json").read_text(encoding="utf-8"))
+    assert summary["schedule"] == "20260101T000000Z"
+    assert [st["id"] for st in summary["steps"]] == ["quick", "slow", "mid"]
+
+
+def test_a_parallel_run_with_no_snapshot_records_the_manifest_schedule(tmp_path: Path):
+    log = tmp_path / "events.log"
+    manifest = write_manifest(tmp_path, [timed_step("a", log, sleep=0.1), timed_step("b", log, sleep=0.1)])
+
+    _, summary, _ = run_nonreg(tmp_path, manifest, "--tier", "unit", *FS_PROFILE, "--jobs", "2")
+
+    assert summary["schedule"] == "manifest"

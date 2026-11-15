@@ -1444,6 +1444,49 @@ def plan_units(steps: list[dict[str, Any]], shared_groups: dict[str, list[dict[s
     return units
 
 
+def load_previous_durations() -> tuple[dict[str, dict[str, Any]], str | None]:
+    """The steps of the latest snapshot of this results root, by id, and its stamp (#738); none when there is
+    no readable snapshot."""
+    stamp = read_latest_stamp()
+    if not stamp:
+        return {}, None
+    try:
+        with (RESULTS_ROOT / stamp / "summary.json").open(encoding="utf-8") as fh:
+            steps = json.load(fh).get("steps") or []
+    except (OSError, ValueError):
+        return {}, None
+    return {s["id"]: s for s in steps if isinstance(s, dict) and "id" in s}, stamp
+
+
+def unit_duration(unit: Unit, previous: dict[str, dict[str, Any]]) -> float | None:
+    """How long the unit took in the previous run: a shared group by its group duration when it ran as one,
+    else by the sum of its members; None when no member has a duration."""
+    known = [previous[s["id"]] for s in unit.steps if s["id"] in previous]
+    if unit.group is not None:
+        group = [p["shared_group_duration_s"] for p in known if p.get("shared_group_duration_s") is not None]
+        if group:
+            return float(max(group))
+    durations = [float(p["duration_s"]) for p in known if p.get("duration_s") is not None]
+    return sum(durations) if durations else None
+
+
+def schedule_units(units: list[Unit], previous: dict[str, dict[str, Any]]) -> list[Unit]:
+    """#738: the order a parallel run starts its units. Units with no previous duration (new steps) first, in
+    manifest order, then the others longest first, so a long unit does not start last. The run bracket keeps
+    its place, and the alone units run at the end (#737)."""
+    if previous:
+        lead = 0
+        while lead < len(units) and not units[lead].needs_worker:
+            lead += 1
+        rest = units[lead:]
+        timed = [(unit_duration(u, previous), i, u) for i, u in enumerate(rest) if u.needs_worker]
+        unknown = [u for d, _, u in timed if d is None]
+        known = [u for _, _, u in sorted((t for t in timed if t[0] is not None), key=lambda t: (-t[0], t[1]))]
+        closing = [u for u in rest if not u.needs_worker]
+        units = [*units[:lead], *unknown, *known, *closing]
+    return schedule_alone_last(units)
+
+
 def schedule_alone_last(units: list[Unit]) -> list[Unit]:
     """#737: in a parallel run, the alone units that are not the run bracket wait for the parallel units to
     end and run then, before the closing bracket, instead of draining the pool at their place in the
@@ -1644,6 +1687,7 @@ def run_parallel(
     fail_fast: bool,
     jobs: int,
     workers: Workers | None = None,
+    previous: dict[str, dict[str, Any]] | None = None,
 ) -> tuple[list[StepResult], list[str]]:
     """Up to `jobs` units at a time, each on a worker of `workers`; results in manifest order (#477)."""
     workers = workers if workers is not None else Workers(keep_failed=False, dry_run=run.dry_run)
@@ -1663,7 +1707,7 @@ def run_parallel(
                 aborted = True
 
     with ThreadPoolExecutor(max_workers=jobs) as pool:
-        for unit in schedule_alone_last(plan_units(steps, shared_groups)):
+        for unit in schedule_units(plan_units(steps, shared_groups), previous or {}):
             if unit.alone:
                 while running:
                     collect(wait(running, return_when=FIRST_COMPLETED).done)
@@ -1875,6 +1919,8 @@ def run_once(args: argparse.Namespace) -> tuple[int, Path | None]:
             print(f"error: {exc}", file=sys.stderr)
             return 2, None
 
+    # #738: a parallel run starts the longest units first, by the durations of the previous snapshot
+    previous, schedule_stamp = load_previous_durations() if args.jobs > 1 else ({}, None)
     stamp = unique_stamp(RESULTS_ROOT)
     snap_dir = RESULTS_ROOT / stamp
     snap_dir.mkdir(parents=True, exist_ok=True)
@@ -1894,7 +1940,9 @@ def run_once(args: argparse.Namespace) -> tuple[int, Path | None]:
         if args.jobs == 1:
             results = run_serial(steps, shared_groups, run, fail_fast=fail_fast, workers=workers)
         else:
-            results, _ = run_parallel(steps, shared_groups, run, fail_fast=fail_fast, jobs=args.jobs, workers=workers)
+            results, _ = run_parallel(
+                steps, shared_groups, run, fail_fast=fail_fast, jobs=args.jobs, workers=workers, previous=previous
+            )
     finally:
         workers.close()
 
@@ -1950,6 +1998,7 @@ def run_once(args: argparse.Namespace) -> tuple[int, Path | None]:
         summary["runner"] = args.runner
     if args.jobs != 1:
         summary["jobs"] = args.jobs
+        summary["schedule"] = schedule_stamp or "manifest"
     if worker_state is not None:
         summary["worker_state"] = worker_state
     if worker_state_warnings:
