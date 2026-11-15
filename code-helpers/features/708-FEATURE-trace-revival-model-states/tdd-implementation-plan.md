@@ -843,7 +843,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,ui,actions
 
 > Integration first, no mocks. The tests freeze appForTest through a real client DomainController and its emulated server on `test-filesystem`, with traces on, and commit from the Git page on the Library copy in a real Git repository. The applicative interfaces locked first are the ModelEndpoint action `rebaselineEvolutionTraces` and the refusal: `reason: "evolutionTracesDisagree"` with the differences (a model state diff, part B).
 
-**Resume note:** planned 2026-11-15; starts when part D is merged. #708 closes with part C.
+**Resume note:** C1 to C5 are done (realizations below); C6 is the PR and the acceptance check on #708, which closes with part C.
 
 ## Scope (part C)
 
@@ -878,7 +878,33 @@ Out:
 | C5 | `rebaselineEvolutionTraces` for `versioned-git` | `gitTraceAgreement.integ` |
 | C6 | Docs, nonreg step, full nonreg, AC checklist, acceptance check on #708 | `nonreg:filesystem` |
 
-Each slice gets its RED / GREEN / Validation block when part D is merged and part C starts, from what part D leaves in the Git actions.
+| Slice | Status |
+|---|---|
+| C1 | ✅ DONE |
+| C2 | ✅ DONE |
+| C3 | ✅ DONE |
+| C4 | ✅ DONE |
+| C5 | ✅ DONE |
+| C6 | ✅ DONE up to the PR; the acceptance check follows the merge |
+
+### Validation (part C)
+
+```bash
+npm run test -w @miroir-framework/versioning
+npm run test -w @miroir-framework/core -- ''
+MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- evolutionTraceAgreement gitTraceAgreement
+MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- 3_controllers/git 3_controllers/versioning
+npm run nonreg:filesystem -- --runner shared
+```
+
+### Realization (part C)
+
+- **C1, the check at freeze.** `checkEvolutionTraceAgreement` (`packages/miroir-versioning/src/evolutionTraceAgreement.ts`) reads the live model from the store (`liveModelState`), finds the start version (`agreementStart`: the last `version` or `rebaseline` marker naming a version), replays the `commit` records since it on `frozenStateOf(live, version)`, and compares the 12 snapshotted collections (`AGREEMENT_COLLECTIONS`) with `diffModelStates`. Entities go through `selectEntitiesToFreeze` with the meta-model uuids of the freeze, `conceptLevel ?? "Model"` (R7, R8). The freeze runs it before `ensureHistoryEntities`, so a refusal writes nothing. The refusal is `Action2Error("FailedToHandleAction", …, { reason: "evolutionTracesDisagree", version, differences })`, `differences` per collection with rows named (`entities: changed Publisher (description)` in the message). R5: the check compares the store, not the local cache. A designer's pending changes are not in the store yet, and a freeze snapshots the store too, so a difference means a file or a row changed outside Miroir. Tests: `evolutionTraceAgreement.integ` C1 (a recorded change goes on; an edit straight to the store is refused, named, and no version is stored).
+- **C2, forks and restarts.** `evolutionTraceFork`: two records since the marker with the same `previousTrace` refuse the freeze. R1 is solved in the check rather than by a new marker: there is nothing to check when a recorded write since the marker turned the traces off (`turnsTracesOff`), so the freeze after an off-then-on goes on and checks from its own version. Replay accepts a `rebaseline` marker naming the version. Tests: `evolutionTraceAgreement.unit` (6 cases), `modelStateReplay.unit` (starts at a rebaseline), `evolutionTraceAgreement.integ` C2.
+- **C3, `rebaselineEvolutionTraces` for `versioned-internal`.** ModelEndpoint action (`requiredCapability: "versioning"`, server-routed like the freeze). `versionName` is required (`InvalidAction` without it); the freeze runs through the internal `freezeVersion(host, payload, context, marker)` with the check skipped and a `rebaseline` marker naming the version uuid instead of the `version` one (R4: no payload flag). Refused with reason `evolutionTracesOff` when traces are off. The client sends kept records before a re-baseline as before a freeze (R2). Test: `evolutionTraceAgreement.integ` C3.
+- **C4, the check at a Git commit.** Deviation from the locked default: one new `GitRepositoryInterface` method, `readStagedFiles(folders)` (a `git.walk` of the index that skips the folders outside, reading each blob by its oid), not two. `gitModelState` now shares `modelStateFromFiles(application, sectionFolders, files)` with the check. `gitAction_commit` calls `GitActionContext.checkStagedEvolutionTraces(application, read)`; the DomainController sets it in the process that owns the files: it reads the SelfApplication row from the store, and only when traces are on checks the `versioning` capability and runs `handleAction_checkStagedEvolutionTraces` (lazy, in `VERSIONING_ACTION_IMPLEMENTATION_NAMES`, not an Endpoint action). `read` gives the model files of `HEAD` and of the index (`stagedModelFiles` in `GitActions.ts`). `checkStagedEvolutionTraceAgreement` passes without `HEAD`, with traces off at `HEAD`, or when the commit adds a `rebaseline` record or one that turns the traces off; refuses a fork among the added records; else replays the added `commit` records on the `HEAD` state (`replayCommitRecords`) and compares with the staged state. Refusals become `gitActionError("evolutionTracesDisagree", …, { differences })`. R9: a `modelVersion` folder Git ignores is left out of the files read, and the commit is refused with its own reason `evolutionTraceRecordsIgnored`. R2: the client sends kept records before `gitAction_commit`. R11: no `ui.gitPage` leaf; the commit form shows the refusal's message (`gitCommandErrorText` default), which names the rows. Tests: `gitTraceAgreement.integ` (staged records go on; an outside edit is refused and named, `HEAD` unchanged; a model file staged without its record is refused, then goes on with it; an ignored `modelVersion` is refused), `evolutionTraceAgreement.unit` (nothing to check, fork, ignored folder).
+- **C5, `rebaselineEvolutionTraces` for `versioned-git`.** Deviation from analysis D10: the marker holds no `gitCommit` (R3 alternative); a `rebaseline` record among the records a commit adds is enough for the check to pass. Test: `gitTraceAgreement.integ` C5 (an outside edit, a re-baseline, the record staged: the commit goes on).
+- **C6.** Docs: `docs/reference/versioning.md` (Evolution traces: agreement check, re-baseline; Model states: `modelStateFromFiles`), `docs/guides/version-control-with-git.md` ("Evolution traces and commits"). Nonreg: the existing steps run the new files (`integ-git-version-control` runs `3_controllers/git/`, `integ-708-evolution-trace-records` runs `3_controllers/versioning/evolutionTrace*`); their titles name part C.
 
 ### Review findings to settle when part C starts (cold review, 2026-11-15)
 

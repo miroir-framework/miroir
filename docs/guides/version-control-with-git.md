@@ -74,6 +74,15 @@ another commit, and a `message`, the name by default
 Push sends the branch, then each tag on one of its commits that the remote does not have yet. A tag the
 remote has on another commit is not sent: the page names it, and the branch is pushed anyway.
 
+### Evolution traces and commits
+
+When an application's evolution traces are on, a commit is checked: the model files it holds must be the
+model of the last commit with the changes its trace records give. Stage the records (the `modelVersion`
+folder) with the model files. A model file edited outside Miroir, or staged without its record, gets the
+commit refused, and the message names the changed rows. To accept the model as it is, re-baseline the
+traces (`rebaselineEvolutionTraces`), stage the record it writes, and commit again
+([Versioning](../reference/versioning.md#evolution-traces)).
+
 Miroir refuses a commit, a checkout, a pull or a revert while some Miroir changes are not saved to the files
 yet, and the install of a cloned application while some Admin changes are not saved. Commit them in Miroir
 first. A commit only looks at the changes of its own application; a checkout, a pull or a revert looks at

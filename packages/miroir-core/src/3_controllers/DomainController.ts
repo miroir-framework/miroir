@@ -123,10 +123,12 @@ import {
 } from "../1_core/processCapabilities.js";
 import {
   APPEND_EVOLUTION_TRACE_RECORD_ACTION_TYPE,
+  CHECK_STAGED_EVOLUTION_TRACES_ACTION_TYPE,
   FREEZE_APPLICATION_VERSION_ACTION_TYPE,
   REBASELINE_EVOLUTION_TRACES_ACTION_TYPE,
   VERSIONING_PACKAGE_NAME,
   type AppendEvolutionTraceRecordPayload,
+  type CheckStagedEvolutionTracesPayload,
 } from "../1_core/versioning/versioningInterfaces.js";
 import {
   appendEvolutionTraceRecordAction,
@@ -3249,6 +3251,13 @@ export class DomainController implements DomainControllerInterface, DomainContro
     if (pendingChangesError) {
       return pendingChangesError;
     }
+    // #708 part C: a commit holds the records kept by this process, as a freeze does
+    if (domainAction.actionType === "gitAction_commit" && typeof domainAction.payload?.application === "string") {
+      const unsent = await this.sendKeptRecordsBeforeFreeze(domainAction.payload.application, applicationDeploymentMap);
+      if (unsent) {
+        return unsent;
+      }
+    }
     let result: Action2ReturnType;
     if (this.persistenceStoreAccessMode !== "local") {
       result = await this.forwardServerRoutedAction(domainAction, applicationDeploymentMap);
@@ -3267,12 +3276,48 @@ export class DomainController implements DomainControllerInterface, DomainContro
         principal,
         credentials: this.gitCredentialStore(applicationDeploymentMap, principal),
         deployments: this.gitDeploymentInstaller(applicationDeploymentMap, principal),
+        checkStagedEvolutionTraces: (application, read) =>
+          this.checkStagedEvolutionTraces(application, read, applicationDeploymentMap),
       });
     }
     if (domainAction.actionType === "gitAction_installClonedDeployment") {
       return this.loadInstalledDeployment(result, applicationDeploymentMap);
     }
     return this.reloadTouchedDeployments(result, applicationDeploymentMap);
+  }
+
+  /**
+   * #708 part C: the check of a commit of `application` when its traces are on, as its SelfApplication row
+   * in the store says: run by `@miroir-framework/versioning`, refused without the versioning capability.
+   */
+  private async checkStagedEvolutionTraces(
+    application: string,
+    read: () => Promise<Omit<CheckStagedEvolutionTracesPayload, "application">>,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+  ): Promise<Action2Error | undefined> {
+    const { section, entityUuid } = selfApplicationRowLocation(application);
+    const rows = await this.readSectionInstances(application, applicationDeploymentMap, section, entityUuid);
+    const selfApplication = rows instanceof Action2Error ? undefined : rows.find((row) => row.uuid === application);
+    if (!isEvolutionTraceOn(selfApplication as EvolutionTraceSwitchInput | undefined)) {
+      return undefined;
+    }
+    const refused = assertProcessCapability("versioning", this.resolveProcessCapabilities());
+    if (refused) {
+      return refused;
+    }
+    const implementation = miroirActionImplementations["handleAction_checkStagedEvolutionTraces"];
+    if (!implementation) {
+      return new Action2Error(
+        "FeatureUnavailable",
+        `the evolution trace check of a commit needs ${VERSIONING_PACKAGE_NAME}, which this process did not register`,
+        undefined,
+        undefined,
+        { capability: "versioning", package: VERSIONING_PACKAGE_NAME },
+      );
+    }
+    const payload: CheckStagedEvolutionTracesPayload = { application, ...(await read()) };
+    const result = await implementation(this, { actionType: CHECK_STAGED_EVOLUTION_TRACES_ACTION_TYPE, payload }, { applicationDeploymentMap });
+    return result instanceof Action2Error ? result : undefined;
   }
 
   /**

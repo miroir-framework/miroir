@@ -6,9 +6,12 @@
  */
 import {
   Action2Error,
+  EVOLUTION_TRACE_RECORD_ENTITY_UUID,
+  getApplicationSection,
   isEvolutionTraceOn,
   selfApplicationRowLocation,
   type ApplicationDeploymentMap,
+  type CheckStagedEvolutionTracesPayload,
   type DomainControllerActionHost,
   type EvolutionTraceRecordRow,
   type EvolutionTraceSwitchInput,
@@ -17,10 +20,20 @@ import {
 
 import { selectEntitiesToFreeze } from "./applicationVersionFreeze.js";
 import { diffModelStates, type ModelStateCollections, type ModelStateDiff } from "./modelStateDiff.js";
-import { frozenStateOf, liveModelState, replayEvolutionTraceRecords, type ModelState } from "./modelStates.js";
+import {
+  frozenStateOf,
+  liveModelState,
+  modelStateFromFiles,
+  replayCommitRecords,
+  replayEvolutionTraceRecords,
+  type ModelState,
+} from "./modelStates.js";
 
 /** The `errorContext.reason` of a refusal by the check. */
 export const EVOLUTION_TRACES_DISAGREE = "evolutionTracesDisagree";
+
+/** The `errorContext.reason` of a Git commit refused because its repository cannot hold the records. */
+export const EVOLUTION_TRACE_RECORDS_IGNORED = "evolutionTraceRecordsIgnored";
 
 /** The collections a freeze snapshots: those the check compares. */
 export const AGREEMENT_COLLECTIONS: readonly MetaModelCollection[] = [
@@ -233,5 +246,100 @@ export async function checkEvolutionTraceAgreement(
     undefined,
     undefined,
     { reason: EVOLUTION_TRACES_DISAGREE, version, differences },
+  );
+}
+
+/**
+ * The record two records of `records` both follow (`previousTrace`), when one of them is among `added`: the
+ * chain forks there, as when two Git branches each appended records and were merged.
+ */
+function addedRecordFork(records: readonly EvolutionTraceRecordRow[], added: ReadonlySet<string>): string | undefined {
+  const followers = new Map<string, string>();
+  for (const record of [...records].sort((a, b) => a.sequenceNumber - b.sequenceNumber)) {
+    if (!record.previousTrace) {
+      continue;
+    }
+    const other = followers.get(record.previousTrace);
+    if (other !== undefined && (added.has(record.uuid) || added.has(other))) {
+      return record.previousTrace;
+    }
+    followers.set(record.previousTrace, record.uuid);
+  }
+  return undefined;
+}
+
+/**
+ * #708 part C, `versioned-git`: checks that the model a commit holds (the index) is the model of HEAD
+ * replayed with the commit records the commit adds. `undefined` when it is, or when there is nothing to
+ * check: no HEAD, traces off at HEAD, or a commit that re-baselines the traces or turns them off. An
+ * `Action2Error` with reason `evolutionTracesDisagree` and the differences otherwise, or with reason
+ * `evolutionTraceRecordsIgnored` when the folder of the records is not in `sectionFolders` (Git ignores it).
+ */
+export function checkStagedEvolutionTraceAgreement(
+  payload: CheckStagedEvolutionTracesPayload,
+  metaModelEntityUuids: ReadonlySet<string>,
+): Action2Error | undefined {
+  const { application, sectionFolders, head, staged } = payload;
+  if (!head) {
+    return undefined;
+  }
+  const headState = modelStateFromFiles(application, sectionFolders, head);
+  if (!isEvolutionTraceOn(headState.applications.find((row) => row.uuid === application) as EvolutionTraceSwitchInput)) {
+    return undefined;
+  }
+  const recordsSection = getApplicationSection(application, EVOLUTION_TRACE_RECORD_ENTITY_UUID);
+  if (sectionFolders[recordsSection] === undefined) {
+    return new Action2Error(
+      "FailedToHandleAction",
+      `the evolution trace records of ${headState.applicationName || application} cannot be committed: its ${recordsSection} folder is not in the repository (Git ignores it, or the deployment has none). Stop ignoring it, or turn the traces off`,
+      undefined,
+      undefined,
+      { reason: EVOLUTION_TRACE_RECORDS_IGNORED, section: recordsSection },
+    );
+  }
+  const stagedState = modelStateFromFiles(application, sectionFolders, staged);
+  const headRecords = new Set((headState.evolutionTraceRecords as EvolutionTraceRecordRow[]).map((record) => record.uuid));
+  const chain = (stagedState.evolutionTraceRecords as EvolutionTraceRecordRow[]).filter(
+    (record) => record.application === application,
+  );
+  const added = chain.filter((record) => !headRecords.has(record.uuid));
+  if (added.some((record) => record.kind === "rebaseline" || (record.kind === "commit" && turnsTracesOff(application, record)))) {
+    return undefined;
+  }
+  const name = stagedState.applicationName || headState.applicationName || application;
+  const fork = addedRecordFork(chain, new Set(added.map((record) => record.uuid)));
+  if (fork) {
+    return new Action2Error(
+      "FailedToHandleAction",
+      `the evolution traces of ${name} fork after record ${fork}: two chains were merged, so the records do not tell the order of the changes since HEAD`,
+      undefined,
+      undefined,
+      { reason: EVOLUTION_TRACES_DISAGREE, fork },
+    );
+  }
+  const replayed = replayCommitRecords(headState, added);
+  if (replayed instanceof Action2Error) {
+    return new Action2Error(
+      "FailedToHandleAction",
+      `the evolution traces of ${name} cannot be checked: ${replayed.errorMessage ?? ""}`,
+      undefined,
+      replayed,
+      { reason: EVOLUTION_TRACES_DISAGREE },
+    );
+  }
+  const diff = diffModelStates(
+    comparedCollections(application, replayed, metaModelEntityUuids),
+    comparedCollections(application, stagedState, metaModelEntityUuids),
+  );
+  if (Object.keys(diff.collections).length === 0) {
+    return undefined;
+  }
+  const differences = summarize(diff);
+  return new Action2Error(
+    "FailedToHandleAction",
+    `the staged model of ${name} is not the model of HEAD with the evolution trace records staged with it: ${differencesText(differences)}. Stage the records of the changes (the modelVersion section) with the model files, or re-baseline the traces`,
+    undefined,
+    undefined,
+    { reason: EVOLUTION_TRACES_DISAGREE, differences },
   );
 }

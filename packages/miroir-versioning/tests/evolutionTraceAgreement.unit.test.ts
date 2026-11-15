@@ -3,9 +3,19 @@
  */
 import { describe, expect, it } from "vitest";
 
-import { selfApplicationRowLocation, type EvolutionTraceRecordRow } from "@miroir-framework/core";
+import {
+  EVOLUTION_TRACE_RECORD_ENTITY_UUID,
+  selfApplicationRowLocation,
+  type EvolutionTraceRecordRow,
+} from "@miroir-framework/core";
 
-import { agreementStart, evolutionTraceFork } from "../src/evolutionTraceAgreement.js";
+import {
+  agreementStart,
+  checkStagedEvolutionTraceAgreement,
+  EVOLUTION_TRACE_RECORDS_IGNORED,
+  EVOLUTION_TRACES_DISAGREE,
+  evolutionTraceFork,
+} from "../src/evolutionTraceAgreement.js";
 
 const APPLICATION = "708c0000-0000-4000-8000-000000000001";
 const VERSION = "708c0000-0000-4000-8000-000000000002";
@@ -87,5 +97,69 @@ describe("evolutionTraceFork (#708 C2)", () => {
     const marker = record("version", { version: VERSION, previousTrace: before[2].uuid });
 
     expect(evolutionTraceFork(APPLICATION, [...before, marker, record("commit", { previousTrace: marker.uuid })], VERSION)).toBeUndefined();
+  });
+});
+
+describe("checkStagedEvolutionTraceAgreement (#708 C4)", () => {
+  const SECTION_FOLDERS = { model: "app_model", modelVersion: "app_modelVersion" };
+  const ENTITY_ENTITY = "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad";
+  const ENTITY = "708c0000-0000-4000-8000-0000000000e1";
+  const { entityUuid: selfApplicationEntity } = selfApplicationRowLocation(APPLICATION);
+
+  function selfApplicationFile(evolutionTraces: boolean): Record<string, string> {
+    return {
+      [`app_model/${selfApplicationEntity}/${APPLICATION}.json`]: JSON.stringify({
+        uuid: APPLICATION,
+        parentUuid: selfApplicationEntity,
+        name: "App",
+        versioningMode: "versioned-git",
+        evolutionTraces,
+      }),
+    };
+  }
+
+  function entityFile(description: string): Record<string, string> {
+    return {
+      [`app_model/${ENTITY_ENTITY}/${ENTITY}.json`]: JSON.stringify({ uuid: ENTITY, parentUuid: ENTITY_ENTITY, name: "Thing", description }),
+    };
+  }
+
+  function recordFiles(...records: EvolutionTraceRecordRow[]): Record<string, string> {
+    return Object.fromEntries(
+      records.map((row) => [`app_modelVersion/${EVOLUTION_TRACE_RECORD_ENTITY_UUID}/${row.uuid}.json`, JSON.stringify(row)]),
+    );
+  }
+
+  function check(head: Record<string, string> | undefined, staged: Record<string, string>) {
+    return checkStagedEvolutionTraceAgreement({ application: APPLICATION, sectionFolders: SECTION_FOLDERS, head, staged }, new Set());
+  }
+
+  const head = { ...selfApplicationFile(true), ...entityFile("first") };
+
+  it("has nothing to check without HEAD, with traces off at HEAD, or when the commit turns them off", () => {
+    expect([
+      check(undefined, { ...head, ...entityFile("edited outside Miroir") }),
+      check({ ...head, ...selfApplicationFile(false) }, { ...head, ...entityFile("edited outside Miroir") }),
+      check(head, { ...head, ...entityFile("edited outside Miroir"), ...recordFiles(tracesWrite(false)) }),
+    ]).toEqual([undefined, undefined, undefined]);
+  });
+
+  it("refuses an added record that forks the chain of HEAD", () => {
+    const first = record("commit");
+    const added = record("commit", { previousTrace: first.uuid });
+    const other = record("commit", { previousTrace: first.uuid });
+
+    const refused = check({ ...head, ...recordFiles(first, other) }, { ...head, ...recordFiles(first, other, added) });
+
+    expect(refused?.errorContext).toEqual({ reason: EVOLUTION_TRACES_DISAGREE, fork: first.uuid });
+  });
+
+  it("refuses a commit whose repository cannot hold the records: their folder is not among the section folders", () => {
+    const refused = checkStagedEvolutionTraceAgreement(
+      { application: APPLICATION, sectionFolders: { model: "app_model" }, head, staged: head },
+      new Set(),
+    );
+
+    expect(refused?.errorContext).toEqual({ reason: EVOLUTION_TRACE_RECORDS_IGNORED, section: "modelVersion" });
   });
 });

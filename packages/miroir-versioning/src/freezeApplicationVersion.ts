@@ -13,6 +13,7 @@ import {
   APPEND_EVOLUTION_TRACE_RECORD_ACTION_TYPE,
   getApplicationSection,
   isEvolutionTraceOn,
+  metaModelEntities,
   MiroirLoggerFactory,
   resolveVersioningMode,
   selfApplicationRowLocation,
@@ -23,6 +24,7 @@ import {
   type ApplicationDeploymentMap,
   type ApplicationSection,
   type ActionImplementationContext,
+  type CheckStagedEvolutionTracesPayload,
   type DomainControllerActionHost,
   type Entity,
   type EntityInstance,
@@ -74,7 +76,7 @@ import {
   type FreezeMetaModelSlice,
   type StoredInstanceForFreeze,
 } from "./applicationVersionFreeze.js";
-import { checkEvolutionTraceAgreement } from "./evolutionTraceAgreement.js";
+import { checkEvolutionTraceAgreement, checkStagedEvolutionTraceAgreement } from "./evolutionTraceAgreement.js";
 import { handleAction_appendEvolutionTraceRecord } from "./evolutionTraceRecords.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName("miroir-versioning", "3", "freezeApplicationVersion");
@@ -365,6 +367,15 @@ export const handleAction_freezeApplicationVersion: ActionImplementationHandler 
  * version; a `versioned-git` application appends a `rebaseline` marker, which the next Git commit holds with
  * the model. Refused while the traces are off.
  */
+/**
+ * #708 part C: the check `gitAction_commit` runs on an application with traces on (`versioned-git`): the
+ * model the commit holds must be the model of HEAD replayed with the commit records it adds.
+ */
+export const handleAction_checkStagedEvolutionTraces: ActionImplementationHandler = async (_host, action) => {
+  const payload = (action as { payload: CheckStagedEvolutionTracesPayload }).payload;
+  return checkStagedEvolutionTraceAgreement(payload, metaModelEntityUuids(metaModelEntities)) ?? ACTION_OK;
+};
+
 export const handleAction_rebaselineEvolutionTraces: ActionImplementationHandler = async (host, action, context) => {
   const payload = action.payload as RebaselineEvolutionTracesActionPayload;
   const selfApplication = await storedSelfApplication(host, payload.application, context);
@@ -407,7 +418,7 @@ async function freezeVersion(
   // Miroir-hosted while it freezes Library).
   const modelEnvironment = targetModelEnvironment(host, payload.application, applicationDeploymentMap, context.modelEnvironment);
   const metaModel = modelEnvironment.currentModel;
-  const metaBootstrapUuids = metaModelEntityUuids(modelEnvironment);
+  const metaBootstrapUuids = metaModelEntityUuids(modelEnvironment.miroirMetaModel?.entities ?? []);
   const tracesOn = isEvolutionTraceOn(await storedSelfApplication(host, payload.application, context));
 
   // #708 part C: refused, before anything is written, when the traces do not give the model to freeze
@@ -463,8 +474,8 @@ async function freezeVersion(
  * application's `currentModel.entities`: a freeze freezes the application's own Entities only. #230: for
  * Miroir itself, the meta-model Entities are the application's Entities (`selectEntitiesToFreeze`).
  */
-function metaModelEntityUuids(modelEnvironment: MiroirModelEnvironment): Set<string> {
-  const uuids = new Set((modelEnvironment.miroirMetaModel?.entities ?? []).map((e) => e.uuid));
+function metaModelEntityUuids(metaModelEntityRows: readonly { uuid: string }[]): Set<string> {
+  const uuids = new Set(metaModelEntityRows.map((e) => e.uuid));
   for (const historyEntity of HISTORY_ENTITIES) {
     uuids.add(historyEntity.uuid);
   }

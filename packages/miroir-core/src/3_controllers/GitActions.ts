@@ -14,6 +14,7 @@ import type {
   StoreUnitConfiguration,
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import { Action2Error, type Action2ReturnType } from "../0_interfaces/2_domain/DomainElement";
+import type { CheckStagedEvolutionTracesPayload } from "../1_core/versioning/versioningInterfaces";
 import {
   GIT_ACTIONS_NEEDING_SAVED_MIROIR_CHANGES,
   type GitAction,
@@ -56,7 +57,7 @@ import type {
 } from "../0_interfaces/4-services/GitRepositoryInterface";
 import type { PersistenceStoreControllerManagerInterface } from "../0_interfaces/4-services/PersistenceStoreControllerManagerInterface";
 import { gitPathIsInSections, gitPathToInstance, type GitSectionPaths } from "../2_domain/GitPathNaming";
-import { metaModelEntities } from "../1_core/Model";
+import { getApplicationSection, metaModelCollections, metaModelEntities } from "../1_core/Model";
 import { findClonedDeployments, type ClonedDeployment } from "../2_domain/GitClonedDeployments";
 
 /** The sections whose folders belong to an application; Admin is shared by every application. */
@@ -89,6 +90,14 @@ export type GitActionContext = {
   credentials?: GitCredentialStore;
   /** Registers and opens a deployment of a cloned folder (`gitAction_installClonedDeployment`). */
   deployments?: GitDeploymentInstaller;
+  /**
+   * #708 part C: the check a commit of an application with traces on runs on the model files it holds,
+   * read by `read` only when the check runs. `undefined` when the commit goes on.
+   */
+  checkStagedEvolutionTraces?: (
+    application: Uuid,
+    read: () => Promise<Omit<CheckStagedEvolutionTracesPayload, "application">>,
+  ) => Promise<Action2Error | undefined>;
 };
 
 /** A deployment of a clone, as the DomainController registers it in Admin and opens it. */
@@ -546,11 +555,53 @@ async function commitAuthor(
   return { name: configuredName, email: nonEmptyString(await repository.getConfig("user.email")) ?? "" };
 }
 
+/** #708 part C: the refusals of the evolution trace check that a commit answers as Git refusals. */
+const EVOLUTION_TRACE_COMMIT_REFUSALS: ReadonlySet<string> = new Set<GitActionErrorReason>([
+  "evolutionTracesDisagree",
+  "evolutionTraceRecordsIgnored",
+]);
+
+/**
+ * #708 part C: what the check of a commit reads, the model files of the application at HEAD and in the
+ * index (`modelStateFolders` of `@miroir-framework/versioning`: `<section folder>/<Entity uuid>/*.json`).
+ * A section folder Git ignores is left out: no commit holds its files.
+ */
+async function stagedModelFiles(
+  application: Uuid,
+  repository: GitRepositoryInterface,
+  allSectionPaths: GitSectionPaths,
+): Promise<Omit<CheckStagedEvolutionTracesPayload, "application">> {
+  const sectionPaths: GitSectionPaths = {};
+  for (const [section, folder] of Object.entries(allSectionPaths)) {
+    if (folder === "" || !(await repository.isIgnored(folder!))) {
+      sectionPaths[section as ApplicationSection] = folder;
+    }
+  }
+  const folders = metaModelCollections.flatMap(({ entity }) => {
+    const sectionPath = sectionPaths[getApplicationSection(application, entity.uuid)];
+    return sectionPath === undefined ? [] : [sectionPath === "" ? entity.uuid : `${sectionPath}/${entity.uuid}`];
+  });
+  const isModelFile = (path: string) =>
+    path.endsWith(".json") && folders.some((folder) => path.startsWith(`${folder}/`) && !path.slice(folder.length + 1).includes("/"));
+  const headCommit = (await repository.log({ ref: "HEAD", depth: 1 }))[0]?.oid;
+  const headPaths = headCommit ? (await repository.listFiles(headCommit)).filter(isModelFile) : [];
+  const headTexts = headCommit ? await Promise.all(headPaths.map((path) => repository.readFile(path, headCommit))) : [];
+  const staged = await repository.readStagedFiles(folders);
+  return {
+    sectionFolders: sectionPaths,
+    head: headCommit
+      ? Object.fromEntries(headPaths.flatMap((path, index) => (headTexts[index] === undefined ? [] : [[path, headTexts[index]!]])))
+      : undefined,
+    staged: Object.fromEntries(Object.entries(staged).filter(([path]) => isModelFile(path))),
+  };
+}
+
 async function commit(
   action: GitCommitAction,
   opened: OpenedRepository,
-  principal: AuthPrincipal | undefined,
+  context: GitActionContext,
 ): Promise<Action2ReturnType> {
+  const principal = context.principal;
   const { repository, description } = opened;
   const message = nonEmptyString(action.payload.message);
   if (!message) {
@@ -571,6 +622,17 @@ async function commit(
   const author = await commitAuthor(action.payload.author, repository, principal);
   if (!author) {
     return gitActionError("authorUnknown", "Give the commit's author: no user is logged in and the repository has no user.name");
+  }
+  const disagreement = await context.checkStagedEvolutionTraces?.(action.payload.application, () =>
+    stagedModelFiles(action.payload.application, repository, description.sectionPaths),
+  );
+  if (disagreement) {
+    const reason = disagreement.errorContext?.reason;
+    return typeof reason === "string" && EVOLUTION_TRACE_COMMIT_REFUSALS.has(reason)
+      ? gitActionError(reason as GitActionErrorReason, disagreement.errorMessage ?? "The evolution traces do not give the staged model", {
+          ...disagreement.errorContext,
+        })
+      : disagreement;
   }
   if (action.payload.rememberAuthor === true && nonEmptyString(action.payload.author?.name)) {
     await repository.setConfig("user.name", author.name);
@@ -933,7 +995,7 @@ async function runOnDeployment(
         return ok({ files, touchedDeployments: touched } satisfies GitRevertResult);
       }
       case "gitAction_commit":
-        return await commit(action, opened, context.principal);
+        return await commit(action, opened, context);
       case "gitAction_tag":
         return await tag(action, repository, context.principal);
       case "gitAction_createBranch": {

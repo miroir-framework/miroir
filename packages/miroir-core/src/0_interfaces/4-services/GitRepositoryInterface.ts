@@ -76,6 +76,11 @@ export interface GitRepositoryInterface {
   /** The paths whose index entry differs from HEAD (every indexed path in a repository with no commit). */
   stagedPaths(): Promise<string[]>;
   /**
+   * #708 part C: the text of every file of the index under `folders` (repository-relative), by path: what
+   * the next commit holds there, whatever the work tree holds.
+   */
+  readStagedFiles(folders: string[]): Promise<Record<string, string>>;
+  /**
    * Puts the work tree state of each file in the index: its content, or its removal when it is absent.
    * Throws `outsideWorkTree` for a file reached through a symbolic link out of the work tree.
    */
@@ -262,4 +267,6 @@ export type GitActionErrorReason =
   | "applicationAlreadyDeployed"
   | "symbolicLink"
   | "nothingToRevert"
+  | "evolutionTracesDisagree"
+  | "evolutionTraceRecordsIgnored"
   | "gitFailure";
