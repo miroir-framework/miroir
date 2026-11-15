@@ -169,11 +169,13 @@ import {
 import type {
   GitAction,
   GitInstallClonedDeploymentResult,
+  GitModelFiles,
   GitTouchedDeployment,
 } from "../0_interfaces/3_controllers/GitAction";
 import {
   openMiroirTransactionError,
   pendingMiroirChangesError,
+  readModelFilesAtRefs,
   runGitAction,
   type GitCredentialStore,
   type GitDeploymentInstaller,
@@ -1985,6 +1987,26 @@ export class DomainController implements DomainControllerInterface, DomainContro
       );
     }
     return (collection.instances ?? []) as EntityInstance[];
+  }
+
+  /**
+   * #9 B4: the model files of an application in Git commits, read where the files are; refused on a remote
+   * client, whose server runs the versioning actions that read them.
+   */
+  async readGitModelFiles(
+    application: Uuid,
+    refs: readonly string[],
+    applicationDeploymentMap: ApplicationDeploymentMap,
+  ): Promise<GitModelFiles | Action2Error> {
+    const manager = this.persistenceStoreLocalOrRemote.getLocalPersistenceStoreControllerManager?.();
+    if (!manager) {
+      return new Action2Error("FailedToHandleAction", `the Git files of ${application} are read where its deployment's files are, not on a client`);
+    }
+    return readModelFilesAtRefs(application, refs, {
+      factory: ConfigurationService.configurationService.getGitRepositoryFactory(),
+      manager,
+      applicationDeploymentMap,
+    });
   }
 
   // ##############################################################################################

@@ -42,7 +42,7 @@ Out (analysis section 2): detecting and correcting a model and storage divergenc
 | B1 | B | A draft Migration for one optional attribute (tracer) | ✅ | `migrationGeneration.9.phaseB.integ.test.ts` |
 | B2 | B | Removals, required attributes, renames: classified and stepped | ✅ | same file |
 | B3 | B | Refusals and the diff fallback | ✅ | same file |
-| B4 | B | `versioned-git`: from the tag to `HEAD` | ⬜ | `migrationGenerationGit.9.phaseB.integ.test.ts` |
+| B4 | B | `versioned-git`: from the tag to `HEAD` | ✅ | `migrationGenerationGit.9.phaseB.integ.test.ts` |
 | C1 | C | A Migration run on a following deployment (tracer) | ⬜ | `migrationRun.9.phaseC.integ.test.ts` |
 | C2 | C | A stopped run resumes | ⬜ | same file |
 | C3 | C | Runner refusals | ⬜ | same file |
@@ -279,7 +279,7 @@ Known gaps, left for later parts or issues:
 
 ### Slice B4 — `versioned-git`: from the tag to `HEAD`
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal.** With the model in Git, the draft is made between tag `1.0.0` and `HEAD`, and lands as a file to commit before tagging `1.1.0` (G1, epic section 5.2).
 
@@ -291,7 +291,10 @@ Known gaps, left for later parts or issues:
 
 **Validation.** The file; the #679 Git nonreg step still passes; nonreg step `integ-9-migration-generation` added; full `npm run nonreg:filesystem -- --runner shared` (end of part B); PR B.
 
-**Realization.** _(on completion)_
+**Realization.** A `versioned-git` application takes `gitVersionStates` instead of the frozen versions: the model of the tag `from`, and of the tag `to` or, before it exists, of `HEAD`, both read from the commits without a checkout; the records are those the `to` commit holds and the tag does not (none when the traces are off there). The Migration is written through `createInstance` in `modelVersion`, which is the work tree folder, ready to commit before tagging `to`.
+- **New seam.** The versioning package had no way to read the files of a commit: `gitModelState` took a repository it cannot open. `DomainControllerActionHost.readGitModelFiles(application, refs, map)` reads them where the files are (`readModelFilesAtRefs` in core `GitActions.ts`, on the deployment's repository as the Git actions open it); the folder filter and the read of a commit's model files are shared with the commit check (`modelFileFilter`, `modelFilesOfCommit`). A remote client gets an error: `generateMigration` is server-routed.
+- **Refusals.** `migrationSectionMissing` when the deployment has no `modelVersion` folder in the repository (tested by removing the section from the open deployment's configuration); an error naming the missing tag.
+- **Validation.** The file (3 tests); the `9-migrations/` files; nonreg step `integ-9-migration-generation` added; full `nonreg:filesystem` with the shared runner.
 
 ---
 

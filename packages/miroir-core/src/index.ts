@@ -869,6 +869,7 @@ export type {
   GitInitResult,
   GitLogAction,
   GitLogResult,
+  GitModelFiles,
   GitPathDescription,
   GitRepositoryDescription,
   GitStatusAction,
