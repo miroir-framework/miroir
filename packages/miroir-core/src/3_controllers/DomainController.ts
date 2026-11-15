@@ -3276,8 +3276,7 @@ export class DomainController implements DomainControllerInterface, DomainContro
         principal,
         credentials: this.gitCredentialStore(applicationDeploymentMap, principal),
         deployments: this.gitDeploymentInstaller(applicationDeploymentMap, principal),
-        checkStagedEvolutionTraces: (application, read) =>
-          this.checkStagedEvolutionTraces(application, read, applicationDeploymentMap),
+        checkStagedEvolutionTraces: (payload) => this.checkStagedEvolutionTraces(payload, applicationDeploymentMap),
       });
     }
     if (domainAction.actionType === "gitAction_installClonedDeployment") {
@@ -3287,20 +3286,13 @@ export class DomainController implements DomainControllerInterface, DomainContro
   }
 
   /**
-   * #708 part C: the check of a commit of `application` when its traces are on, as its SelfApplication row
-   * in the store says: run by `@miroir-framework/versioning`, refused without the versioning capability.
+   * #708 part C: the check of a commit of an application whose traces are on at HEAD, run by
+   * `@miroir-framework/versioning`; refused without the versioning capability.
    */
   private async checkStagedEvolutionTraces(
-    application: string,
-    read: () => Promise<Omit<CheckStagedEvolutionTracesPayload, "application">>,
+    payload: CheckStagedEvolutionTracesPayload,
     applicationDeploymentMap: ApplicationDeploymentMap,
   ): Promise<Action2Error | undefined> {
-    const { section, entityUuid } = selfApplicationRowLocation(application);
-    const rows = await this.readSectionInstances(application, applicationDeploymentMap, section, entityUuid);
-    const selfApplication = rows instanceof Action2Error ? undefined : rows.find((row) => row.uuid === application);
-    if (!isEvolutionTraceOn(selfApplication as EvolutionTraceSwitchInput | undefined)) {
-      return undefined;
-    }
     const refused = assertProcessCapability("versioning", this.resolveProcessCapabilities());
     if (refused) {
       return refused;
@@ -3315,7 +3307,6 @@ export class DomainController implements DomainControllerInterface, DomainContro
         { capability: "versioning", package: VERSIONING_PACKAGE_NAME },
       );
     }
-    const payload: CheckStagedEvolutionTracesPayload = { application, ...(await read()) };
     const result = await implementation(this, { actionType: CHECK_STAGED_EVOLUTION_TRACES_ACTION_TYPE, payload }, { applicationDeploymentMap });
     return result instanceof Action2Error ? result : undefined;
   }
