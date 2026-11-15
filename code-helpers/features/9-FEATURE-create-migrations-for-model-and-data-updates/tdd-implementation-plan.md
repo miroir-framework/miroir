@@ -40,7 +40,7 @@ Out (analysis section 2): detecting and correcting a model and storage divergenc
 | A2 | A | A deployment's role cannot change | ✅ | same file |
 | A3 | A | A following deployment refuses model and `modelVersion` writes | ✅ | same file |
 | B1 | B | A draft Migration for one optional attribute (tracer) | ✅ | `migrationGeneration.9.phaseB.integ.test.ts` |
-| B2 | B | Removals, required attributes, renames: classified and stepped | ⬜ | same file |
+| B2 | B | Removals, required attributes, renames: classified and stepped | ✅ | same file |
 | B3 | B | Refusals and the diff fallback | ⬜ | same file |
 | B4 | B | `versioned-git`: from the tag to `HEAD` | ⬜ | `migrationGenerationGit.9.phaseB.integ.test.ts` |
 | C1 | C | A Migration run on a following deployment (tracer) | ⬜ | `migrationRun.9.phaseC.integ.test.ts` |
@@ -234,7 +234,7 @@ Known gaps, left for later parts or issues:
 
 ### Slice B2 — Removals, required attributes, renames: classified and stepped
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal.** Generation flags what breaks rollback (G1, epic D1, Q23).
 
@@ -251,7 +251,9 @@ Known gaps, left for later parts or issues:
 
 **Validation.** The file; versioning unit tests; scoped nonreg `smoke,actions,external`.
 
-**Realization.** _(on completion)_
+**Realization.** The classification table is `entityStructureChanges(previous, next)` (`migrationGeneration.ts`): an absent row is an Entity added or removed; a renamed Entity and a changed `idAttribute` are `supported: false` with a note; an attribute change keeps compatibility when its type is the same and it does not become required. Each removal gets an empty contract step named `drop <Entity>[.<attribute>]`, left for #733. Unit-tested on the Publisher row of the appForTest assets (`migrationClassification.unit.test.ts`); the integration tests (B2.1 to B2.5) create their Entities with run-specific uuids and restore Publisher after the file, so the file can run again on the same store.
+- **Deviation.** No folding of records is needed: the changes come from the two versions (B1), so an attribute added then removed between them gives no change by construction (B2.5 checks it).
+- **Validation.** The file (B1, B2.1 to B2.5, run twice on the same store); versioning unit tests.
 
 ### Slice B3 — Refusals and the diff fallback
 
