@@ -2,7 +2,7 @@
 
 > Integration first, no mocks. The tests drive a real client DomainController and its emulated server (`RestClientStub`), with real filesystem stores (`test-filesystem`), and read what the stores hold. The applicative interfaces are locked first: the SelfApplication `evolutionTraces` field, the `EvolutionTraceRecord` Entity, the ModelEndpoint action `appendEvolutionTraceRecord`, and the new Reports.
 
-**Resume note:** part A only (analysis D1). Parts B (model states), D (Git tag) and C (agreement and re-baseline) get their own sections in this file when A is merged. Slices are done in order; each one ends with its Realization.
+**Resume note:** part A is done and merged (PR #721). Part B (model states) is planned at the end of this file, under "Part B". Parts D (Git tag) and C (agreement and re-baseline) get their own sections when B is merged. Slices are done in order; each one ends with its Realization.
 
 ## Scope
 
@@ -417,3 +417,228 @@ npm run nonreg:filesystem -- --runner shared
 - The inventory guard `evolutionTraceInventory.708` is removed: no file names the old traces but the two frozen `EntityVersion` rows, and `versioningSurface.unit.test.ts` keeps the removed exports from coming back.
 - PR review (#721): a freeze now sends the kept records before its version marker and is refused while they cannot be sent, and the appends of one application are chained so two writes never send a kept record twice; two tests in `evolutionTraceSwitch.integ.test.ts`, each red without its fix. Reading only the last record at append is left for part C (the stores have no such read, and a cached pointer goes stale on `resetModel` or a Git checkout).
 - Full `nonreg:filesystem --runner shared`: 135 passed, 0 failed (snapshot `20261112T032249Z`). The two load-dependent failures seen in Slice 8 did not recur.
+
+---
+
+# Part B — Model states
+
+> Integration first, no mocks. The tests read real filesystem stores (`test-filesystem`) through a real client DomainController and its emulated server, freeze real applications (appForTest, Library), and read a real Git repository through `@miroir-framework/git-isomorphic` in a temporary folder. The applicative interface locked first is the `MetaModel` shape: one collection for every Entity of the meta-application (analysis D7-a).
+
+**Resume note:** planned 2026-11-15, after part A merged. Waits for the designer's answers to "Questions before Slice 1". Branch `claude/708-part-b-model-states`.
+
+## Scope (part B)
+
+In:
+- G2, read any model state: `ModelStateSource` gives the model of an application live, at a frozen version, or at a Git ref, as one `MetaModel` (D7-a).
+- G3, see what changed: a diff of two `MetaModel`s over every collection, Entity attributes by name (D8). It replaces `diffEntityVersionSnapshots`.
+- The replay: a `MetaModel` plus the Actions of `commit` records gives a `MetaModel` (used by part C's agreement check and by #9's generation, epic D12).
+- `MetaModel` gains a collection for every Entity of the meta-application that it lacks, and every builder of a `MetaModel` fills them (D7 impact inventory).
+
+Out:
+- The agreement check, the re-baseline action (part C), `gitAction_tag` (part D).
+- Turning an Entity row update into attribute steps for a migration draft (#9, epic D12): the replay applies the update as is.
+- A UI or a Report showing a model state or a diff. Part B gives functions in the versioning package; part C is their first user.
+
+## Questions before Slice 1
+
+| # | Question | Recommendation | Why it matters |
+|---|---|---|---|
+| Q-B1 | The `Test` Entity (`c37625c7`, composite-action tests): give it a `MetaModel` collection, or retire it? | **Answered (2026-11-15): retire it, in #726.** Part B gives it no collection. Its one row is read only by a core parse test; its `mlSchema` still defines the `testCompositeAction…` types (48 uses in `src`), which move before the Entity goes. | D7-a's rule covers every Entity |
+| Q-B2 | `MetaModel.tests` holds MiroirTest rows. Rename it `miroirTests`? | **Answered (2026-11-15): no.** MiroirTests belong in `devData` eventually (not delivered with an application's runtime), and devData Entities stay out of `MetaModel`, so `tests` leaves `MetaModel` then (#726). Until then it stays as it is: the self-test (`runSelfTest.ts`), the test registries (`useSelectedApplicationMiroirTestSuiteRegistries.ts`) and the freeze read it. | |
+| Q-B3 | Derive the collections, `versionHistoryEntityUuids`, its parallel map, the local cache selectors, `extractApplicationModel` and the freeze snapshots from one list of the meta-application's Entities? | Yes: one list in core, `metaModelCollections` (Entity uuid → collection key), checked against the Entity folder by a guard test | the hand lists are how Blob, TestConfiguration and Test were missed (#706) |
+| Q-B4 | The freeze snapshots of the nine older types copy a subset of fields (a Report version keeps `name`, `definition`, `defaultLabel`, `type`, `description`, and drops `selfApplication` and `conceptLevel`). Snapshot every type the way #706 snapshots Blob, TestConfiguration and Test (all fields but the identity ones)? | Yes, in Slice 3 | a model read back from a version must equal the model that was frozen, or the agreement check (part C) fails on fields nobody changed |
+
+## Progress summary (part B)
+
+| Slice | Title | Status | Primary proof |
+|---|---|---|---|
+| B0 | Characterize: the collections `MetaModel` lacks, and what a freeze loses | ⬜ pending | `metaModelCollections.unit`, `modelStates.integ` characterization |
+| B1 | `MetaModel` has a collection for every Entity of the meta-application | ⬜ pending | `metaModelCollections.unit`, local cache model of Miroir holds its Blobs |
+| B2 | Tracer: the live model state | ⬜ pending | `modelStates.integ` "live" |
+| B3 | The model at a frozen version equals the model that was frozen | ⬜ pending | `modelStates.integ` "frozen round trip" |
+| B4 | The model at a Git ref | ⬜ pending | `modelStatesGit.integ` |
+| B5 | The diff of two model states | ⬜ pending | `modelStateDiff.unit` with real assets, `modelStates.integ` "diff" |
+| B6 | The replay of trace records | ⬜ pending | `modelStates.integ` "replay gives the live model" |
+| B7 | Docs, nonreg step, full nonreg, AC checklist | ⬜ pending | `nonreg:filesystem` |
+
+## Locked implementation defaults (part B)
+
+| Default | From | Serves |
+|---|---|---|
+| `ModelStateSource` returns a `MetaModel`. `MetaModel` has one collection for every Entity of the meta-application whose rows belong to an application's `model` or `modelVersion` section; `devData` Entities stay out. | D7-a | G2 |
+| Three sources, in the versioning package: `liveModelState(application)`, `frozenModelState(application, version)` (from the `*Version` rows its Cross rows name), `gitModelState(application, ref)` (the `*_model/<entityUuid>/*.json` files at `ref`). The Git source loads `@miroir-framework/git-isomorphic` lazily. | epic D4, D7 | G2, G6 |
+| `GitRepositoryInterface.listFiles(ref?)`: the files of the tree at `ref`, `HEAD` when absent. | D7 | G2 |
+| The diff returns, per collection, rows added, removed and changed (paired by uuid); an Entity change lists its `mlSchema.definition` attributes added, removed and changed by name, and its other changed fields; any other change lists its changed top-level fields. A rename is not inferred. | D8 | G3 |
+| The replay applies, in order, the Actions of the `commit` records after a marker: a model Action through `ModelEntityActionTransformer` into instance Actions, an instance Action onto the collection of its `parentUuid`. A `complete: false` record replays the Actions it holds. | D9, epic D12 | G2 |
+
+## Allocated keys (part B)
+
+| Element | Key |
+|---|---|
+| One list (if Q-B3 is yes) | `metaModelCollections` in `packages/miroir-core/src/1_core/Model.ts` |
+| Package functions | `liveModelState`, `frozenModelState`, `gitModelState`, `diffModelStates`, `replayEvolutionTraceRecords` in `packages/miroir-versioning/src/modelStates.ts` |
+| vitest files | `packages/miroir-core/tests/1_core/metaModelCollections.unit.test.ts`; `packages/miroir-versioning/tests/modelStateDiff.unit.test.ts`; `packages/miroir-standalone-app/tests/3_controllers/versioning/modelStates.integ.test.ts`, `modelStatesGit.integ.test.ts` |
+| Nonreg step | `integ-708-model-states` (scopes `actions`, `external`) |
+
+Why vitest: no ML action exposes a model state or a diff yet (part C adds the first user), and the tests compare whole in-memory models and read a Git repository at a ref.
+
+## Slice B0 — Characterize: the collections `MetaModel` lacks, and what a freeze loses
+
+**Status:** ⬜ pending
+
+**Goal:** lock today's gaps so Slices B1 and B3 close them visibly.
+
+**RED / characterization:**
+- `metaModelCollections.unit.test.ts`: lists the Entities of `miroir-app-miroir/assets/miroir_model/16dbfe28-…/` whose rows go to `model` or `modelVersion`, and the keys of the generated `metaModel` schema. Today it records the missing ones (Blob, TestConfiguration, their `*Version` and Cross Entities, ApplicationModelBranch, EvolutionTraceRecord) as the expected gap list. Test and its two history Entities are listed as excluded, pending their retirement (#726).
+- `modelStates.integ.test.ts`, "a freeze loses fields": freeze appForTest, read its `ReportVersion` rows, and record the fields of the live Report that the version lacks.
+
+**GREEN:** none (characterization).
+
+**Refactor checkpoint:** none.
+
+**Validation:**
+```bash
+RUN_TEST=metaModelCollections npm run testByFile -w @miroir-framework/core -- metaModelCollections
+MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- 3_controllers/versioning/modelStates
+```
+
+## Slice B1 — `MetaModel` has a collection for every Entity of the meta-application
+
+**Status:** ⬜ pending
+
+**Goal:** the local cache's model of Miroir holds its Blob and TestConfiguration rows; every builder of a `MetaModel` fills every collection.
+
+**RED:** the B0 guard now expects no gap. `modelStates.integ`, "the cached model of Miroir has its Blobs": `domainController.currentModel(MIROIR)` holds the Blob rows of Miroir's data section.
+
+**GREEN:**
+- Generated types for Blob and TestConfiguration; the `metaModel` schema (`getMiroirFundamentalMlSchema.ts`) gains the collections, named after their Entities; `tests` stays as it is (Q-B2).
+- If Q-B3 is yes: `metaModelCollections` is the one list; `versionHistoryEntityUuids`, `versionHistoryEntityDefinitions`, `emptyMetaModel`, `emptyApplicationModel` and `extractApplicationModel` derive from it.
+- The local cache selectors (redux, zustand) fill every collection; the default models (Miroir, Library, GitHub, Spotify, appForTest), the bundle copy (`TransformersForRuntime.ts`), the two MiroirTest assets with an inline `metaModel`, and the tests follow.
+- `npm run build -w miroir-app-miroir && npm run devBuild -w @miroir-framework/core`.
+
+**Refactor checkpoint:** retire the legacy import names `entityEndpointVersion` and `entityQueryVersion` where the one list replaces them.
+
+**Validation:**
+```bash
+npm run build -w miroir-app-miroir && npm run devBuild -w @miroir-framework/core
+npm run build -w miroir-localcache-redux -w miroir-localcache-zustand -w @miroir-framework/versioning
+npm run test -w @miroir-framework/core -- ''
+MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- 3_controllers/versioning/
+npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json   # and every touched package
+npm run nonreg:filesystem -- --runner shared --scope smoke,core,actions,localcache,ui
+```
+
+## Slice B2 — Tracer: the live model state
+
+**Status:** ⬜ pending
+
+**Goal:** `liveModelState(appForTest)` returns its model, every collection filled from its `model` section (and `modelVersion` for the history collections).
+
+**RED:** `modelStates.integ`, "live": after a commit that adds an Entity to appForTest, `liveModelState` holds it, and its collections equal the rows stored in appForTest's sections.
+
+**GREEN:** `modelStates.ts` in the package, reading sections through `DomainControllerActionHost.readSectionInstances` (#696), one read per collection of the one list.
+
+**Refactor checkpoint:** `extractApplicationModel` (core) and `liveModelState` share the reading by collection, or one calls the other.
+
+**Validation:**
+```bash
+npm run build -w @miroir-framework/versioning
+MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- 3_controllers/versioning/modelStates
+npm run nonreg:filesystem -- --runner shared --scope smoke,actions
+```
+
+## Slice B3 — The model at a frozen version equals the model that was frozen
+
+**Status:** ⬜ pending
+
+**Goal:** freeze appForTest, change it, then `frozenModelState(appForTest, version)` equals the live state taken just before the change.
+
+**RED:** `modelStates.integ`, "frozen round trip", on appForTest and on Library (traces off). Fails on the fields B0 recorded as lost.
+
+**GREEN:** if Q-B4 is yes, every snapshot copies all fields but the identity ones, as `snapshotInstancesAsVersions` does (#706), and the twelve per-type snapshot functions collapse into it. `frozenModelState` reads the Cross rows of the version and maps each `*Version` row back to its live row (`<type>Uuid` → `uuid`). Versions frozen before this slice read back with the fields they kept.
+
+**Refactor checkpoint:** remove the per-type `Stored…ForFreeze` and `…VersionSnapshot` types the generic snapshot replaces.
+
+**Validation:**
+```bash
+npm run test -w @miroir-framework/versioning
+MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- 3_controllers/versioning/
+npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-filesystem --mode integ --suites action.domainController.freezeApplicationVersion
+npm run nonreg:filesystem -- --runner shared --scope smoke,actions,runners
+```
+
+## Slice B4 — The model at a Git ref
+
+**Status:** ⬜ pending
+
+**Goal:** `gitModelState(application, ref)` reads the model files at a commit, without a checkout.
+
+**RED:** `modelStatesGit.integ`: in a temporary repository holding appForTest's `*_model/` files, commit, change a Report file and commit again; `gitModelState(appForTest, firstCommit)` gives the first Report, and the working tree is unchanged.
+
+**GREEN:** `listFiles(ref?)` on `GitRepositoryInterface` and in `miroir-git-isomorphic`; `gitModelState` groups the files by Entity folder, through the one list.
+
+**Refactor checkpoint:** none expected.
+
+**Validation:**
+```bash
+npm run build -w @miroir-framework/git-isomorphic -w @miroir-framework/versioning
+MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- 3_controllers/versioning/modelStatesGit
+npm run nonreg:filesystem -- --runner shared --scope smoke,actions,external
+```
+
+## Slice B5 — The diff of two model states
+
+**Status:** ⬜ pending
+
+**Goal:** `diffModelStates(a, b)` lists, per collection, rows added, removed and changed, with Entity attributes by name.
+
+**RED:**
+- `modelStateDiff.unit.test.ts`, on real assets (Library's model): an attribute added to `Book`, a Report renamed, a Blob removed, a MiroirTest changed; one assertion per case.
+- `modelStates.integ`, "diff": the frozen state of appForTest against its live state after an `alterEntityAttribute`.
+
+**GREEN:** `diffModelStates` over the one list; the freeze plan uses it in place of `diffEntityVersionSnapshots`, which is removed with its test file's cases moved over.
+
+**Refactor checkpoint:** the freeze's "model CUD migration candidates" read from the new diff.
+
+**Validation:**
+```bash
+npm run test -w @miroir-framework/versioning
+MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- 3_controllers/versioning/modelStates
+npm run nonreg:filesystem -- --runner shared --scope smoke,actions,runners
+```
+
+## Slice B6 — The replay of trace records
+
+**Status:** ⬜ pending
+
+**Goal:** the frozen state at the last marker, replayed with the `commit` records since it, gives the live state.
+
+**RED:** `modelStates.integ`, "replay gives the live model": appForTest with traces on, freeze (marker), then three commits (an Entity-row update, a `createEntity` with an instance write, a Report update); `replayEvolutionTraceRecords(frozenModelState(v1), records)` deep-equals `liveModelState`. A second case: a `complete: false` record replays its Actions only.
+
+**GREEN:** `replayEvolutionTraceRecords` in `modelStates.ts`, with `ModelEntityActionTransformer` for model Actions.
+
+**Refactor checkpoint:** if the local cache already applies instance Actions to an in-memory collection, reuse that function.
+
+**Validation:**
+```bash
+npm run build -w @miroir-framework/versioning
+MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- 3_controllers/versioning/modelStates
+npm run nonreg:filesystem -- --runner shared --scope smoke,actions
+```
+
+## Slice B7 — Docs, nonreg step, full nonreg, AC checklist
+
+**Status:** ⬜ pending
+
+- `docs/reference/versioning.md`: a "Model states" section (the three sources, the diff, the replay); `MetaModel` collections where the docs list them.
+- `scripts/nonreg-manifest.json`: step `integ-708-model-states` running `3_controllers/versioning/modelStates*`.
+- Full `npm run nonreg:filesystem -- --runner shared`; bundle guards.
+- Tracer narrative: freeze Library, add an attribute to `Book` and commit, then read the frozen and live states and diff them; automated as `modelStates.integ` "diff".
+
+AC checklist (part B items of #708):
+
+| #708 scope item | Proving test |
+|---|---|
+| `ModelStateSource`: frozen rows, `*_model/` files at a Git ref without a checkout, or the live model, in one shape covering every snapshotted type | `modelStates.integ` live, frozen round trip; `modelStatesGit.integ` |
+| Trace replay | `modelStates.integ` "replay gives the live model" |
+| An attribute-level diff over all element types, replacing `diffEntityVersionSnapshots` | `modelStateDiff.unit`, `modelStates.integ` "diff" |
