@@ -190,7 +190,7 @@ The chain starts at a marker. When traces are switched on (today by editing the 
 
 #### D7 impact (inventory of 2026-11-15)
 
-Collections missing today, against the Entities of `miroir-app-miroir/assets/miroir_model/16dbfe28-…/`:
+Collections missing today, against the Entities of `miroir-app-miroir/assets/miroir_model/16dbfe28-…/`. #706 historized Blob, TestConfiguration and Test: it added their `*Version` and Cross Entities, the freeze snapshots them, and their Entities are in `defaultMiroirMetaModel.entities`. It gave `MetaModel` no collection for their rows, although its issue text asked for them "in the MetaModel".
 
 | Section | Entity | Collection today |
 |---|---|---|
