@@ -124,6 +124,7 @@ import {
 import {
   APPEND_EVOLUTION_TRACE_RECORD_ACTION_TYPE,
   FREEZE_APPLICATION_VERSION_ACTION_TYPE,
+  REBASELINE_EVOLUTION_TRACES_ACTION_TYPE,
   VERSIONING_PACKAGE_NAME,
   type AppendEvolutionTraceRecordPayload,
 } from "../1_core/versioning/versioningInterfaces.js";
@@ -1642,8 +1643,8 @@ export class DomainController implements DomainControllerInterface, DomainContro
   }
 
   /**
-   * #708: a freeze of an application with kept records sends them first, so that its version marker
-   * follows every change the version holds; it is refused when they still cannot be appended.
+   * #708: a freeze (or a re-baseline) of an application with kept records sends them first, so that its
+   * marker follows every change the version holds; it is refused when they still cannot be appended.
    */
   private async sendKeptRecordsBeforeFreeze(
     application: string,
@@ -2887,7 +2888,11 @@ export class DomainController implements DomainControllerInterface, DomainContro
           return refused;
         }
         const freezeTarget = (domainAction as { actionType?: string; payload?: { application?: unknown } });
-        if (freezeTarget.actionType === FREEZE_APPLICATION_VERSION_ACTION_TYPE && typeof freezeTarget.payload?.application === "string") {
+        if (
+          (freezeTarget.actionType === FREEZE_APPLICATION_VERSION_ACTION_TYPE ||
+            freezeTarget.actionType === REBASELINE_EVOLUTION_TRACES_ACTION_TYPE) &&
+          typeof freezeTarget.payload?.application === "string"
+        ) {
           const unsent = await this.sendKeptRecordsBeforeFreeze(freezeTarget.payload.application, applicationDeploymentMap);
           if (unsent) {
             return unsent;

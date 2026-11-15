@@ -62,11 +62,12 @@ if (runThis) {
       expect(listedActionTypes(capabilities(true))).toContain("freezeApplicationVersion");
     });
 
-    it("with versioning off, the catalog leaves out freezeApplicationVersion and keeps the other actions", () => {
+    it("with versioning off, the catalog leaves out the versioning actions and keeps the other actions", () => {
+      const versioningActions = ["freezeApplicationVersion", "rebaselineEvolutionTraces"]; // #708 part C
       const on = listedActionTypes(capabilities(true));
       const off = listedActionTypes(capabilities(false));
       expect(off).not.toContain("freezeApplicationVersion");
-      expect(off).toEqual(on.filter((actionType) => actionType !== "freezeApplicationVersion"));
+      expect(off).toEqual(on.filter((actionType) => !versioningActions.includes(actionType)));
       expect(off).toContain("commit");
     });
 

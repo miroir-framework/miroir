@@ -66,7 +66,7 @@ const modelActionTypesForwardedToDomainController = [
   "dropEntity",
 ];
 /** #696: server-routed actions of ModelEndpoint, which need the model environment of their application. */
-const MODEL_ACTIONS_ROUTED_TO_SERVER: readonly string[] = ["freezeApplicationVersion"];
+const MODEL_ACTIONS_ROUTED_TO_SERVER: readonly string[] = ["freezeApplicationVersion", "rebaselineEvolutionTraces"];
 const instanceWriteActionTypes = [
   "createInstance",
   "deleteInstance",

@@ -1005,6 +1005,7 @@ export {
   APPLICATION_VERSION_CROSS_TEST_VERSION_UUID,
   EVOLUTION_TRACE_RECORD_ENTITY_UUID,
   APPEND_EVOLUTION_TRACE_RECORD_ACTION_TYPE,
+  REBASELINE_EVOLUTION_TRACES_ACTION_TYPE,
 } from "./1_core/versioning/versioningInterfaces.js";
 export { isEvolutionTraceOn, selfApplicationRowLocation } from "./1_core/versioning/evolutionTraceRecording.js";
 export type { EvolutionTraceSwitchInput } from "./1_core/versioning/evolutionTraceRecording.js";
@@ -1015,6 +1016,7 @@ export type {
   FreezeApplicationVersionActionPayload,
   FreezeApplicationVersionActionType,
   FreezeAvailability,
+  RebaselineEvolutionTracesActionPayload,
   VersioningMode,
   VersioningModeInput,
 } from "./1_core/versioning/versioningInterfaces.js";

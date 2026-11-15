@@ -164,14 +164,16 @@ export async function frozenModelState(
   applicationVersion: string,
 ): Promise<ModelState | Action2Error> {
   const live = await liveModelState(host, application, applicationDeploymentMap);
-  if (live instanceof Action2Error) {
-    return live;
-  }
+  return live instanceof Action2Error ? live : frozenStateOf(live, applicationVersion);
+}
+
+/** `frozenModelState` on a live model state already read: the version rows are among its collections. */
+export function frozenStateOf(live: ModelState, applicationVersion: string): ModelState | Action2Error {
   const version = live.applicationVersions.find((row) => row.uuid === applicationVersion);
   if (!version) {
     return new Action2Error(
       "FailedToHandleAction",
-      `frozenModelState found no Application Version ${applicationVersion} for ${application}`,
+      `frozenModelState found no Application Version ${applicationVersion} for ${live.applicationUuid}`,
     );
   }
   const frozenRows = new Map(
@@ -289,7 +291,8 @@ function applyRecordActions(state: ModelState, record: EvolutionTraceRecordRow):
 
 /**
  * The model of an application after `state`, a frozen model state, with the `commit` records of its chain
- * that follow the `version` marker of its Application Version, replayed in sequence order. A record that
+ * that follow the marker of its Application Version (a `version` marker, or a `rebaseline` naming it, #708
+ * part C), replayed in sequence order. A record that
  * is not complete (its commit stopped part way) replays the Actions it holds, which are those the commit
  * wrote. An `Action2Error` when the chain has no marker for the version, or restarts (`rebaseline`) after it.
  */
@@ -302,7 +305,8 @@ export function replayEvolutionTraceRecords(
     .filter((record) => record.application === state.applicationUuid)
     .sort((a, b) => a.sequenceNumber - b.sequenceNumber);
   const marker = chain.reduce(
-    (last, record, index) => (record.kind === "version" && record.version === version ? index : last),
+    (last, record, index) =>
+      (record.kind === "version" || record.kind === "rebaseline") && record.version === version ? index : last,
     -1,
   );
   if (version === undefined || marker < 0) {

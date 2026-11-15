@@ -18,6 +18,23 @@ export type FreezeApplicationVersionActionPayload = {
   branch?: string;
 };
 
+/**
+ * #708 part C: Model Endpoint action that restarts an application's evolution traces from its current
+ * model, when the check refuses a freeze or a commit and the designer accepts the model as it is.
+ */
+export const REBASELINE_EVOLUTION_TRACES_ACTION_TYPE = "rebaselineEvolutionTraces" as const;
+
+/**
+ * Payload of `rebaselineEvolutionTraces`: `versionName` (with `description`, `branch`) names the version a
+ * `versioned-internal` application freezes; a `versioned-git` application takes none.
+ */
+export type RebaselineEvolutionTracesActionPayload = {
+  application: string;
+  versionName?: string;
+  description?: string;
+  branch?: string;
+};
+
 /** The package that implements the versioning actions, named in a refusal when it is not registered. */
 export const VERSIONING_PACKAGE_NAME = "@miroir-framework/versioning";
 
@@ -28,6 +45,7 @@ export const VERSIONING_PACKAGE_NAME = "@miroir-framework/versioning";
 export const VERSIONING_ACTION_IMPLEMENTATION_NAMES: readonly string[] = [
   "handleAction_freezeApplicationVersion",
   "handleAction_appendEvolutionTraceRecord",
+  "handleAction_rebaselineEvolutionTraces",
 ];
 
 /** #708: the Entity of evolution trace records, stored in an application's `modelVersion` section. */
