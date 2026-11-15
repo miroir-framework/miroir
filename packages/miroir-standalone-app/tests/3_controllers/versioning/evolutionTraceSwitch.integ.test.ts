@@ -149,8 +149,12 @@ async function writeAppForTestDeploymentRow(row: EntityInstance): Promise<void> 
 
 describe("evolutionTraceSwitch (#708)", () => {
   it("an unversioned application with evolutionTraces on gets no record", async () => {
+    // unversioned set explicitly: a developer may switch Library to another mode in its assets
     expectOk(
-      await directModelWrite(LIBRARY_APPLICATION, { ...selfApplicationLibrary, evolutionTraces: true } as EntityInstance),
+      await directModelWrite(
+        LIBRARY_APPLICATION,
+        { ...selfApplicationLibrary, versioningMode: "unversioned", evolutionTraces: true } as EntityInstance,
+      ),
       "Library traces on, unversioned",
     );
     // a rollback loads Library into the client, with its new row
