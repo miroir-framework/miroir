@@ -32,16 +32,12 @@ import {
   type MetaModelCollection,
   type MiroirModelEnvironment,
 } from "@miroir-framework/core";
-import {
-  adminSelfApplication,
-  deployment_Admin,
-  entityDeployment,
-  entityDeploymentState,
-} from "@miroir-framework/core/admin";
+import { adminSelfApplication, entityDeploymentState } from "@miroir-framework/core/admin";
 import { entityEvolutionTraceRecord } from "@miroir-framework/core/meta-model";
 
 import { selectEntitiesToFreeze } from "./applicationVersionFreeze.js";
 import { AGREEMENT_COLLECTIONS } from "./evolutionTraceAgreement.js";
+import { refusal, storedDeploymentRow, withAdmin } from "./deploymentRole.js";
 import { HISTORY_ENTITIES, metaModelEntityUuids } from "./freezeApplicationVersion.js";
 import { frozenStateOf, liveModelState, type ModelState } from "./modelStates.js";
 import { sameJson } from "./modelStateDiff.js";
@@ -63,14 +59,6 @@ const KEPT_LIVE_ATTRIBUTES = ["parentDefinitionVersionUuid", "conceptLevel"] as 
 
 /** What a rewrite changed, by collection: the uuids of the rows created, updated and deleted. */
 export type ModelStateRewrite = Partial<Record<MetaModelCollection, { created: string[]; updated: string[]; deleted: string[] }>>;
-
-/** The map of a call that also reads and writes Admin data. */
-function withAdmin(applicationDeploymentMap: ApplicationDeploymentMap): ApplicationDeploymentMap {
-  return {
-    ...applicationDeploymentMap,
-    [adminSelfApplication.uuid]: applicationDeploymentMap[adminSelfApplication.uuid] ?? deployment_Admin.uuid,
-  };
-}
 
 /** The model environment of `application` on the deployment the map names. */
 function modelEnvironmentOf(
@@ -272,21 +260,6 @@ async function ensureVersionHistoryEntities(
     : undefined;
 }
 
-/** The Admin Deployment row of `deploymentUuid`, read from the store. */
-export async function storedDeploymentRow(
-  host: DomainControllerActionHost,
-  deploymentUuid: string,
-  applicationDeploymentMap: ApplicationDeploymentMap,
-): Promise<(EntityInstance & { role?: unknown }) | undefined | Action2Error> {
-  const rows = await host.readSectionInstances(
-    adminSelfApplication.uuid,
-    withAdmin(applicationDeploymentMap),
-    "data",
-    entityDeployment.uuid,
-  );
-  return rows instanceof Action2Error ? rows : rows.find((row) => row.uuid === deploymentUuid);
-}
-
 /** The DeploymentState row of `deploymentUuid`, read from the store; `undefined` when it has none. */
 export async function storedDeploymentState(
   host: DomainControllerActionHost,
@@ -364,11 +337,6 @@ export async function writeDeploymentState(
   return written instanceof Action2Error
     ? new Action2Error("FailedToHandleAction", `could not write the DeploymentState of ${state.deployment}`, [], written)
     : undefined;
-}
-
-/** A refusal of the versioning package, with its reason in `errorContext`. */
-export function refusal(message: string, reason: string, extra: Record<string, unknown> = {}): Action2Error {
-  return new Action2Error("FailedToHandleAction", message, undefined, undefined, { reason, ...extra });
 }
 
 /**

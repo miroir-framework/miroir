@@ -17,6 +17,8 @@ import {
   createDeploymentCompositeAction,
   DEPLOYMENT_STATE_ENTITY_UUID,
   deploymentRoleOf,
+  markMigrationRun,
+  markRecordedBySender,
   EVOLUTION_TRACE_RECORD_ENTITY_UUID,
   metaModelEntityList,
   type DomainController,
@@ -313,5 +315,85 @@ describe("#9 part A: a following deployment", () => {
     expect(refusalReason(toFollowing), JSON.stringify(toFollowing)).toBe("deploymentRoleFixed");
     expectOk(await updateDeploymentRow({ ...authoring, role: "authoring" } as EntityInstance), "the default role, written");
     expectOk(await updateDeploymentRow(authoring), "the default role, left out again");
+  }, 60000);
+
+  it("A3.1: the server refuses a model write a remote client sends to a following deployment; a migration run's write passes", async () => {
+    const before = (await storedRows(context, FOLLOWING_DEPLOYMENT, "model", ENTITY_ENTITY)).find((row) => row.uuid === entityPublisher.uuid)!;
+    const write = (description: string) => ({
+      actionType: "updateInstance",
+      endpoint: INSTANCE_ENDPOINT,
+      payload: {
+        application: APP_FOR_TEST,
+        applicationSection: "model",
+        parentUuid: ENTITY_ENTITY,
+        objects: [{ ...before, description }],
+      },
+    });
+    const serverWrite = (action: object) =>
+      context.serverDomainController.handleAction(action as any, followingMap, appForTestModelEnvironment(context.serverDomainController));
+
+    const sent = await serverWrite(markRecordedBySender(write("#9 A3: a tester's edit")));
+    expect(refusalReason(sent), JSON.stringify(sent)).toBe("deploymentFollows");
+    expect((await storedRows(context, FOLLOWING_DEPLOYMENT, "model", ENTITY_ENTITY)).find((row) => row.uuid === entityPublisher.uuid)).toEqual(before);
+
+    expectOk(await serverWrite(markMigrationRun(write("#9 A3: a migration run's write"))), "the run's write");
+    expect(
+      (await storedRows(context, FOLLOWING_DEPLOYMENT, "model", ENTITY_ENTITY)).find((row) => row.uuid === entityPublisher.uuid)?.description,
+    ).toBe("#9 A3: a migration run's write");
+    expectOk(await serverWrite(markMigrationRun(write(before.description as string))), "the run's write, undone");
+  }, 60000);
+
+  it("A3.2: a commit on a following deployment is refused, and nothing is recorded", async () => {
+    const recordsBefore = await storedRows(context, APP_FOR_TEST_DEPLOYMENT, "modelVersion", EVOLUTION_TRACE_RECORD_ENTITY_UUID);
+    const modelAction = (action: Record<string, unknown>) =>
+      context.domainController.handleAction(
+        { endpoint: MODEL_ENDPOINT, ...action } as any,
+        followingMap,
+        appForTestModelEnvironment(context.domainController),
+      );
+
+    const created = await modelAction({ actionType: "createEntity", payload: { application: APP_FOR_TEST, entities: [{ ...imprint, uuid: "9a000003-0000-4000-8000-000000000001", name: "Edited9" }] } });
+    const committed = await modelAction({ actionType: "commit", payload: { application: APP_FOR_TEST } });
+    expect(refusalReason(created) ?? refusalReason(committed), `${JSON.stringify(created)} ${JSON.stringify(committed)}`).toBe("deploymentFollows");
+    await modelAction({ actionType: "rollback", payload: { application: APP_FOR_TEST } });
+
+    const stored = await storedRows(context, FOLLOWING_DEPLOYMENT, "model", ENTITY_ENTITY);
+    expect(stored.map((row) => row.uuid)).not.toContain("9a000003-0000-4000-8000-000000000001");
+    expect(await storedRows(context, APP_FOR_TEST_DEPLOYMENT, "modelVersion", EVOLUTION_TRACE_RECORD_ENTITY_UUID)).toEqual(recordsBefore);
+  }, 60000);
+
+  it("A3.3: a freeze, a re-baseline and a record append are refused on a following deployment", async () => {
+    const versionsBefore = await storedRows(context, APP_FOR_TEST_DEPLOYMENT, "modelVersion", SELF_APPLICATION_VERSION_ENTITY);
+    for (const [actionType, payload] of [
+      ["freezeApplicationVersion", { application: APP_FOR_TEST, versionName: "9A3-refused" }],
+      ["rebaselineEvolutionTraces", { application: APP_FOR_TEST, versionName: "9A3-refused" }],
+      ["appendEvolutionTraceRecord", { application: APP_FOR_TEST, kind: "rebaseline" }],
+    ] as const) {
+      const result = await context.domainController.handleAction(
+        { actionType, endpoint: MODEL_ENDPOINT, payload } as any,
+        followingMap,
+        appForTestModelEnvironment(context.domainController),
+      );
+      expect(refusalReason(result), `${actionType}: ${JSON.stringify(result)}`).toBe("deploymentFollows");
+    }
+    expect(await storedRows(context, APP_FOR_TEST_DEPLOYMENT, "modelVersion", SELF_APPLICATION_VERSION_ENTITY)).toEqual(versionsBefore);
+  }, 60000);
+
+  it("A3.4: a data write on a following deployment passes", async () => {
+    const publishers = await storedRows(context, FOLLOWING_DEPLOYMENT, "data", entityPublisher.uuid);
+    const publisher = { ...publishers[0], name: "#9 A3: renamed on the following deployment" };
+    expectOk(
+      await context.domainController.handleAction(
+        {
+          actionType: "updateInstance",
+          endpoint: INSTANCE_ENDPOINT,
+          payload: { application: APP_FOR_TEST, applicationSection: "data", parentUuid: entityPublisher.uuid, objects: [publisher] },
+        } as any,
+        followingMap,
+        appForTestModelEnvironment(context.domainController),
+      ),
+      "data write",
+    );
+    expect((await storedRows(context, FOLLOWING_DEPLOYMENT, "data", entityPublisher.uuid)).find((row) => row.uuid === publisher.uuid)).toEqual(publisher);
   }, 60000);
 });

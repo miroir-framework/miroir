@@ -1015,6 +1015,7 @@ export {
   isEvolutionTraceOn,
   isMigrationRun,
   markMigrationRun,
+  markRecordedBySender,
   selfApplicationRowLocation,
 } from "./1_core/versioning/evolutionTraceRecording.js";
 export type { EvolutionTraceSwitchInput } from "./1_core/versioning/evolutionTraceRecording.js";

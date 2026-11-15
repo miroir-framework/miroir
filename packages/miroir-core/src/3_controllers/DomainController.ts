@@ -136,6 +136,7 @@ import {
   evolutionTracesIgnoredWarning,
   fetchesModelVersion,
   isEvolutionTraceOn,
+  isMigrationRun,
   isRecordedBySender,
   isRecordedModelChange,
   recordedInstanceWrite,
@@ -271,6 +272,20 @@ export const templateEvaluationParams = {
 
 const autocommit = true;
 // const autocommit = false;
+
+/** #9: the model actions a following deployment refuses, unless a migration run sends them. */
+const FOLLOWING_DEPLOYMENT_REFUSED_MODEL_ACTIONS: readonly string[] = [
+  "commit",
+  "createEntity",
+  "alterEntityAttribute",
+  "entity_DuplicateAttribute",
+  "renameEntity",
+  "dropEntity",
+  "resetModel",
+  "initModel",
+];
+/** #9: the sections of a following deployment no instance write reaches, unless a migration run sends it. */
+const FOLLOWING_DEPLOYMENT_REFUSED_SECTIONS: readonly string[] = ["model", "modelVersion"];
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "DomainController");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
@@ -1383,7 +1398,12 @@ export class DomainController implements DomainControllerInterface, DomainContro
     }
 
     // #9: checked where the stores are
-    const deploymentRefusal = await this.deploymentWriteRefusal(instanceAction, applicationDeploymentMap);
+    const deploymentRefusal =
+      (await this.deploymentWriteRefusal(instanceAction, applicationDeploymentMap)) ??
+      (["createInstance", "updateInstance", "deleteInstance", "deleteInstanceWithCascade"].includes(instanceAction.actionType) &&
+      FOLLOWING_DEPLOYMENT_REFUSED_SECTIONS.includes((instanceAction.payload as { applicationSection?: string }).applicationSection ?? "")
+        ? await this.followingDeploymentRefusal(instanceAction, applicationDeploymentMap)
+        : undefined);
     if (deploymentRefusal) {
       return deploymentRefusal;
     }
@@ -1558,6 +1578,37 @@ export class DomainController implements DomainControllerInterface, DomainContro
     };
     const rows = await this.readSectionInstances(adminSelfApplication.uuid, map, "data", entityDeployment.uuid);
     return rows instanceof Action2Error ? undefined : new Map(rows.map((row) => [row.uuid as string, row as { role?: unknown }]));
+  }
+
+  /**
+   * #9: the refusal of a write to the model of a following deployment (D6), unless it is a migration run's.
+   * The process that holds the stores reads the role from the stored Deployment row: it sees every write,
+   * those a remote client sends included. A remote client refuses early from its cached Deployment row.
+   */
+  private async followingDeploymentRefusal(
+    action: { payload: { application: string } },
+    applicationDeploymentMap: ApplicationDeploymentMap,
+  ): Promise<Action2Error | undefined> {
+    if (isMigrationRun(action)) {
+      return undefined;
+    }
+    const application = action.payload.application;
+    const deploymentUuid = applicationDeploymentMap[application];
+    if (!deploymentUuid) {
+      return undefined;
+    }
+    const stored = await this.storedDeploymentRows(applicationDeploymentMap);
+    const deploymentRow = stored ? stored.get(deploymentUuid) : this.cachedDeploymentRow(deploymentUuid, applicationDeploymentMap);
+    if (deploymentRoleOf(deploymentRow) !== "following") {
+      return undefined;
+    }
+    return new Action2Error(
+      "FailedToHandleAction",
+      `deployment ${deploymentUuid} of ${application} is a following deployment: its model changes by a migration run only`,
+      undefined,
+      undefined,
+      { reason: "deploymentFollows", deployment: deploymentUuid },
+    );
   }
 
   /**
@@ -1880,6 +1931,13 @@ export class DomainController implements DomainControllerInterface, DomainContro
     //   ].includes(modelAction.actionType) ? JSON.stringify(modelAction, null, 2) : modelAction,
     //   // modelAction,
     // );
+    // #9: a following deployment's model changes by a migration run only
+    if (FOLLOWING_DEPLOYMENT_REFUSED_MODEL_ACTIONS.includes(modelAction.actionType)) {
+      const followingRefusal = await this.followingDeploymentRefusal(modelAction, applicationDeploymentMap);
+      if (followingRefusal) {
+        return followingRefusal;
+      }
+    }
     try {
       switch (modelAction.actionType) {
         case "remoteLocalCacheRollback": {

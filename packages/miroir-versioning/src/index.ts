@@ -30,6 +30,7 @@ export {
 } from "./freezeApplicationVersion.js";
 export * from "./applicationVersionFreeze.js";
 export * from "./applicationVersionInstall.js";
+export * from "./deploymentRole.js";
 export * from "./evolutionTraceAgreement.js";
 export * from "./evolutionTraceRecords.js";
 export * from "./modelStates.js";

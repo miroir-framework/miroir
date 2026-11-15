@@ -76,6 +76,7 @@ import {
   type FreezeMetaModelSlice,
   type StoredInstanceForFreeze,
 } from "./applicationVersionFreeze.js";
+import { followingDeploymentRefusal } from "./deploymentRole.js";
 import { checkEvolutionTraceAgreement, checkStagedEvolutionTraceAgreement } from "./evolutionTraceAgreement.js";
 import { handleAction_appendEvolutionTraceRecord } from "./evolutionTraceRecords.js";
 
@@ -358,8 +359,12 @@ async function persistFreezeApplicationVersionPlan(
 }
 
 /** Freezes the application the payload names, from the model of its own deployment. */
-export const handleAction_freezeApplicationVersion: ActionImplementationHandler = (host, action, context) =>
-  freezeVersion(host, action.payload as FreezeApplicationVersionActionPayload, context, "version");
+export const handleAction_freezeApplicationVersion: ActionImplementationHandler = async (host, action, context) => {
+  const payload = action.payload as FreezeApplicationVersionActionPayload;
+  // #9: a version is frozen on the authoring deployment
+  const following = await followingDeploymentRefusal(host, "freezeApplicationVersion", payload.application, context.applicationDeploymentMap);
+  return following ?? freezeVersion(host, payload, context, "version");
+};
 
 /**
  * #708 part C: restarts the application's traces from its current model. A `versioned-internal`
@@ -378,6 +383,11 @@ export const handleAction_checkStagedEvolutionTraces: ActionImplementationHandle
 
 export const handleAction_rebaselineEvolutionTraces: ActionImplementationHandler = async (host, action, context) => {
   const payload = action.payload as RebaselineEvolutionTracesActionPayload;
+  // #9: the traces are those of the authoring deployment
+  const following = await followingDeploymentRefusal(host, "rebaselineEvolutionTraces", payload.application, context.applicationDeploymentMap);
+  if (following) {
+    return following;
+  }
   const selfApplication = await storedSelfApplication(host, payload.application, context);
   if (!isEvolutionTraceOn(selfApplication)) {
     return new Action2Error(

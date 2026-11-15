@@ -20,6 +20,8 @@ import {
 } from "@miroir-framework/core";
 import { entityEvolutionTraceRecord } from "@miroir-framework/core/meta-model";
 
+import { followingDeploymentRefusal } from "./deploymentRole.js";
+
 const MODEL_ENDPOINT_UUID = "7947ae40-eb34-4149-887b-15a9021e714e";
 const INSTANCE_ENDPOINT_UUID = "ed520de4-55a9-4550-ac50-b1b713b72a89";
 
@@ -111,6 +113,11 @@ export const handleAction_appendEvolutionTraceRecord: ActionImplementationHandle
 ): Promise<Action2ReturnType> => {
   const payload = action.payload as AppendEvolutionTraceRecordPayload;
   const { applicationDeploymentMap } = context;
+  // #9: a following deployment records nothing in the chain it shares
+  const following = await followingDeploymentRefusal(host, "appendEvolutionTraceRecord", payload.application, applicationDeploymentMap);
+  if (following) {
+    return following;
+  }
   return withApplicationLock(payload.application, async () => {
     const ensureFailure = await ensureRecordEntity(host, payload.application, applicationDeploymentMap);
     if (ensureFailure) {

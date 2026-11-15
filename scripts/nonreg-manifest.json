@@ -2519,6 +2519,19 @@
       ]
     },
     {
+      "id": "integ-9-following-deployment",
+      "scopes": ["actions", "external"],
+      "tier": "default",
+      "title": "#9 part A — a following deployment: created at an earlier version (installApplicationVersion, DeploymentState row), its role fixed at creation, its model and modelVersion writes refused unless a migration run sends them, its data writable",
+      "requires": "none",
+      "parallel": false,
+      "argv": [
+        "bash",
+        "-c",
+        "MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- 9-migrations/followingDeployment"
+      ]
+    },
+    {
       "id": "integ-708-model-states",
       "scopes": ["actions"],
       "tier": "default",
