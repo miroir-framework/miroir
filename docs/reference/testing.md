@@ -96,7 +96,7 @@ npm run nonreg -- --compare \
   test-results/nonreg/20260717T234407Z
 ```
 
-A step listed in [`scripts/nonreg-flaky.json`](../../scripts/nonreg-flaky.json) (known flaky steps, next to the manifest; for `--manifest`, the `nonreg-flaky.json` next to it) is reported under `known flaky, not counted` when it fails in the current run, and does not make `--compare` exit 1.
+A step listed in [`scripts/nonreg-flaky.json`](../../scripts/nonreg-flaky.json) (known flaky steps, next to the manifest; for `--manifest`, the `nonreg-flaky.json` next to it) is reported under `known flaky, not counted` when it fails in the current run, and does not make `--compare` exit 1, whether it compares two snapshots or a new run with a baseline. A run without `--compare` still fails on it.
 
 #### Verdict equivalence check (#734)
 

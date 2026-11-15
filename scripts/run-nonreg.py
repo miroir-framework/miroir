@@ -968,12 +968,12 @@ def record_flaky_steps(step_ids: list[str], reason: str) -> None:
     path.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
 
 
-def unique_stamp(root: Path) -> str:
-    """A UTC stamp naming no existing snapshot: runs started in the same second (an equivalence check of
-    quick steps) get -2, -3... (#734)."""
+def unique_stamp(root: Path, suffix: str = "") -> str:
+    """A UTC stamp naming no existing `<stamp><suffix>` in root: runs or reports made in the same second (an
+    equivalence check of quick steps) get -2, -3... (#734)."""
     base = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     stamp, n = base, 1
-    while (root / stamp).exists():
+    while (root / f"{stamp}{suffix}").exists():
         n += 1
         stamp = f"{base}-{n}"
     return stamp
@@ -1029,7 +1029,7 @@ def check_equivalence(serial_paths: list[Path], parallel_paths: list[Path], *, r
     gaps = of_class("parallel_gap")
     flaky = of_class("flaky")
     new_flaky = [sid for sid in flaky if sid not in known]
-    stamp = unique_stamp(RESULTS_ROOT / "equivalence")
+    stamp = unique_stamp(RESULTS_ROOT / "equivalence", ".json")
     if record_flaky and new_flaky:
         record_flaky_steps(new_flaky, f"serial verdicts differ in equivalence check {stamp}")
 
@@ -1868,7 +1868,10 @@ def run_once(args: argparse.Namespace) -> tuple[int, Path | None]:
     exit_code = 0 if counts["failed"] == 0 else 1
     # Compare against the pre-resolved baseline (before rewriting `latest`).
     if baseline_path is not None:
-        exit_code = max(exit_code, compare_summaries(summary, baseline_path))
+        # #734: with a baseline, a failure of a known flaky step does not fail the run either.
+        known = load_flaky_steps()
+        counted = [r for r in results if r.status == "failed" and r.id not in known]
+        exit_code = max(1 if counted else 0, compare_summaries(summary, baseline_path))
 
     # Update latest only after compare, so `--compare latest` means previous run.
     if not args.dry_run:

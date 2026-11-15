@@ -1751,3 +1751,35 @@ def test_equivalence_rejects_inconsistent_options(tmp_path: Path, extra: list[st
     proc = run_raw(tmp_path, manifest, *extra)
     assert proc.returncode == 2, proc.stdout + proc.stderr
     assert "error:" in proc.stderr
+
+
+def test_a_run_compared_with_a_baseline_does_not_fail_on_a_known_flaky_step(tmp_path: Path):
+    manifest = write_manifest(
+        tmp_path,
+        [
+            {"id": "ok", "tier": "unit", "title": "ok", "requires": "none", "argv": ["python", "-c", "pass"]},
+            {"id": "f", "tier": "unit", "title": "f", "requires": "none", "argv": ["python", "-c", "raise SystemExit(1)"]},
+        ],
+    )
+    baseline = write_summary(tmp_path / "base", {"ok": "passed", "f": "passed"})
+
+    code, _, _ = run_nonreg(tmp_path / "unknown", manifest, "--tier", "unit", *FS_PROFILE, "--compare", str(baseline))
+    assert code == 1
+
+    (tmp_path / "nonreg-flaky.json").write_text(json.dumps({"steps": {"f": {"reason": "timing"}}}), encoding="utf-8")
+    code, summary, _ = run_nonreg(tmp_path / "known", manifest, "--tier", "unit", *FS_PROFILE, "--compare", str(baseline))
+    assert summary["counts"]["failed"] == 1
+    assert code == 0
+
+
+def test_two_equivalence_checks_in_the_same_second_keep_both_reports(tmp_path: Path):
+    runner = load_runner()
+    root = tmp_path / "results"
+    (root / "equivalence").mkdir(parents=True)
+    first = runner.unique_stamp(root / "equivalence", ".json")
+    (root / "equivalence" / f"{first}.json").write_text("{}", encoding="utf-8")
+
+    second = runner.unique_stamp(root / "equivalence", ".json")
+
+    assert second != first
+    assert not (root / "equivalence" / f"{second}.json").exists()
