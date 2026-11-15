@@ -14,6 +14,8 @@
 
 import { v4 as uuidv4 } from "uuid";
 
+import { diffModelStates, modelCudMigrationCandidates } from "./modelStateDiff.js";
+
 import {
   APPLICATION_VERSION_CROSS_BLOB_VERSION_UUID,
   APPLICATION_VERSION_CROSS_ENDPOINT_VERSION_UUID,
@@ -39,7 +41,6 @@ import {
   TEST_VERSION_ENTITY_UUID,
   THEME_VERSION_ENTITY_UUID,
   TRANSFORMER_DEFINITION_VERSION_ENTITY_UUID,
-  ENTITY_PRESENT_MODEL_DEFINITION_FIELDS,
   assertApplicationVersioningEnabled,
   getApplicationSection,
   noValue,
@@ -58,7 +59,6 @@ import {
   type Runner,
   type StoredMiroirTheme,
   type TransformerDefinition,
-  type EntityPresentModelDefinitionField,
   type FreezeApplicationVersionActionPayload,
 } from "@miroir-framework/core";
 
@@ -495,126 +495,11 @@ export type BuildFreezeApplicationVersionPlanInput = {
   newUuid?: () => string;
 };
 
-// ---------------------------------------------------------------------------
-// Phase 4: Entity-set diff → rough migration evaluation (Option A)
-// ---------------------------------------------------------------------------
+// Phase 4 (Entity-set diff, #216 Option A) is `modelCudMigrationCandidates` in modelStateDiff.ts (#708).
 
-export type ModelCudMigrationCandidate =
-  | { kind: "createEntity"; entityUuid: string; name: string }
-  | { kind: "dropEntity"; entityUuid: string; name: string }
-  | {
-      kind: "renameEntity";
-      entityUuid: string;
-      /** Name in previous snapshot. */
-      name: string;
-      /** Name in next snapshot. */
-      targetName: string;
-    }
-  | {
-      kind: "alterEntityAttribute";
-      entityUuid: string;
-      name: string;
-      differingFields: EntityPresentModelDefinitionField[];
-    };
-
-function canonicalizeJsonValue(value: unknown): unknown {
-  if (value === null || value === undefined) {
-    return undefined;
-  }
-  if (Array.isArray(value)) {
-    return value.map((item) => canonicalizeJsonValue(item));
-  }
-  if (typeof value === "object") {
-    const record = value as Record<string, unknown>;
-    const normalized: Record<string, unknown> = {};
-    for (const key of Object.keys(record).sort()) {
-      const child = canonicalizeJsonValue(record[key]);
-      if (child !== undefined) {
-        normalized[key] = child;
-      }
-    }
-    return normalized;
-  }
-  return value;
-}
-
-/** Deep equality for JSON-like present-model fields (Postgres JSONB key order / null omission). */
-function stableJsonEqual(a: unknown, b: unknown): boolean {
-  return (
-    JSON.stringify(canonicalizeJsonValue(a)) === JSON.stringify(canonicalizeJsonValue(b))
-  );
-}
-
-function indexEntityVersionsByLiveUuid(
-  versions: EntityVersion[],
-): Map<string, EntityVersion> {
-  const map = new Map<string, EntityVersion>();
-  for (const ev of versions) {
-    map.set(ev.entityUuid, ev);
-  }
-  return map;
-}
-
-/**
- * Option A: rough migration candidates from consecutive EntityVersion snapshots,
- * keyed by live `entityUuid`. Rename vs drop+create is uuid-based only (no fuzzy match).
- *
- * Order: creates → drops → per shared entity (rename then alter), each group sorted by entityUuid.
- */
-export function diffEntityVersionSnapshots(
-  previous: EntityVersion[],
-  next: EntityVersion[],
-): ModelCudMigrationCandidate[] {
-  const prevByUuid = indexEntityVersionsByLiveUuid(previous);
-  const nextByUuid = indexEntityVersionsByLiveUuid(next);
-  const candidates: ModelCudMigrationCandidate[] = [];
-
-  const created = [...nextByUuid.keys()]
-    .filter((uuid) => !prevByUuid.has(uuid))
-    .sort();
-  for (const entityUuid of created) {
-    const ev = nextByUuid.get(entityUuid)!;
-    candidates.push({ kind: "createEntity", entityUuid, name: ev.name });
-  }
-
-  const dropped = [...prevByUuid.keys()]
-    .filter((uuid) => !nextByUuid.has(uuid))
-    .sort();
-  for (const entityUuid of dropped) {
-    const ev = prevByUuid.get(entityUuid)!;
-    candidates.push({ kind: "dropEntity", entityUuid, name: ev.name });
-  }
-
-  const shared = [...prevByUuid.keys()]
-    .filter((uuid) => nextByUuid.has(uuid))
-    .sort();
-  for (const entityUuid of shared) {
-    const prevEv = prevByUuid.get(entityUuid)!;
-    const nextEv = nextByUuid.get(entityUuid)!;
-
-    if (prevEv.name !== nextEv.name) {
-      candidates.push({
-        kind: "renameEntity",
-        entityUuid,
-        name: prevEv.name,
-        targetName: nextEv.name,
-      });
-    }
-
-    const differingFields = ENTITY_PRESENT_MODEL_DEFINITION_FIELDS.filter(
-      (field) => !stableJsonEqual(prevEv[field], nextEv[field]),
-    );
-    if (differingFields.length > 0) {
-      candidates.push({
-        kind: "alterEntityAttribute",
-        entityUuid,
-        name: nextEv.name,
-        differingFields: [...differingFields],
-      });
-    }
-  }
-
-  return candidates;
+/** EntityVersions as the live Entities they were minted from, for {@link diffModelStates}. */
+function liveEntitiesOfVersions(versions: EntityVersion[]): Entity[] {
+  return versions.map((version) => ({ ...version, uuid: version.entityUuid }) as Entity);
 }
 
 // ---------------------------------------------------------------------------
@@ -774,7 +659,12 @@ export function buildFreezeApplicationVersionPlan(
 
   const modelCUDMigration =
     input.previousEntityVersions !== undefined
-      ? diffEntityVersionSnapshots(input.previousEntityVersions, entityVersions)
+      ? modelCudMigrationCandidates(
+          diffModelStates(
+            { entities: liveEntitiesOfVersions(input.previousEntityVersions) },
+            { entities: liveEntitiesOfVersions(entityVersions) },
+          ),
+        )
       : [];
 
   const selfApplicationVersion: ApplicationVersion = {

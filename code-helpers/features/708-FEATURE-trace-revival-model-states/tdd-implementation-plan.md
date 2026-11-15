@@ -456,9 +456,9 @@ Out:
 | B1 | `MetaModel` has a collection for every Entity of the meta-application | ✅ DONE | `metaModelCollections.unit`, `modelStates.integ` (cached model of Miroir holds its branch and test configuration) |
 | B2 | Tracer: the live model state | ✅ DONE | `modelStates.integ` B2 (live state equals the stored rows of every collection) |
 | B3 | The model at a frozen version equals the model that was frozen | ✅ DONE | `modelStates.integ` B3 (frozen round trip), `freezeSnapshotFields.unit` at its B3 target |
-| B4 | The model at a Git ref | ⬜ pending | `modelStatesGit.integ` |
-| B5 | The diff of two model states | ⬜ pending | `modelStateDiff.unit` with real assets, `modelStates.integ` "diff" |
-| B6 | The replay of trace records | ⬜ pending | `modelStates.integ` "replay gives the live model" |
+| B4 | The model at a Git ref | ✅ DONE | `modelStatesGit.integ` |
+| B5 | The diff of two model states | ✅ DONE | `modelStateDiff.unit`, `modelStates.integ` B5 |
+| B6 | The replay of trace records | ✅ DONE | `modelStateReplay.unit`, `modelStates.integ` B6 (replay gives the live model) |
 | B7 | Docs, nonreg step, full nonreg, AC checklist | ⬜ pending | `nonreg:filesystem` |
 
 ## Locked implementation defaults (part B)
@@ -602,7 +602,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,actions,runners
 
 ## Slice B4 — The model at a Git ref
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** `gitModelState(application, ref)` reads the model files at a commit, without a checkout.
 
@@ -619,9 +619,15 @@ MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- 3_cont
 npm run nonreg:filesystem -- --runner shared --scope smoke,actions,external
 ```
 
+### Realization
+
+- `GitRepositoryInterface.listFiles(ref?)`: the files of the commit `ref` points at (HEAD by default); `miroir-git-isomorphic` resolves the ref to its commit first, as `readFile` does, so a tag works too.
+- `gitModelState(repository, application, sectionFolders, ref)`: per collection of the one list, the JSON files of `<section folder>/<Entity uuid>/` at `ref`, read with `readFile(path, ref)`; a section without a folder reads as empty. The caller names the section folders (`appForTest_model`), as a deployment's store configuration does.
+- Deviation: appForTest has no Report, so the test changes its Publisher Entity: at the first commit the model holds the first description, at HEAD the second, and the work tree keeps a third. The test builds its repository in a temporary folder from the fixture's asset files, without a DomainController.
+
 ## Slice B5 — The diff of two model states
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** `diffModelStates(a, b)` lists, per collection, rows added, removed and changed, with Entity attributes by name.
 
@@ -640,9 +646,15 @@ MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- 3_cont
 npm run nonreg:filesystem -- --runner shared --scope smoke,actions,runners
 ```
 
+### Realization
+
+- `modelStateDiff.ts`: `diffModelStates(previous, next)` matches rows by uuid in each collection of the `model` section and gives, per collection that differs, the rows added, removed and changed (with the attributes that differ); `entityAttributes` names the `mlSchema` attributes added, removed and changed per Entity. Not compared: `uuid`, `parentUuid`, `parentName`, `parentDefinitionVersionUuid`, and `conceptLevel` but on Entities (what a frozen row does not keep). Values compare as canonical JSON (key order, absent and null alike), as before.
+- `modelCudMigrationCandidates(diff)` gives the freeze's `modelCUDMigration` from the diff's Entities, in the order `diffEntityVersionSnapshots` used; the freeze diffs the Entities its two sets of EntityVersions were minted from. `diffEntityVersionSnapshots` is removed; its test cases run on the new pair, and the core surface guard names `diffModelStates`.
+- Deviation: the integration case adds the attribute with an `updateInstance` of the Entity row, as the freeze tracer of #216 does, rather than an `alterEntityAttribute` Action.
+
 ## Slice B6 — The replay of trace records
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** the frozen state at the last marker, replayed with the `commit` records since it, gives the live state.
 
@@ -658,6 +670,14 @@ npm run build -w @miroir-framework/versioning
 MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- 3_controllers/versioning/modelStates
 npm run nonreg:filesystem -- --runner shared --scope smoke,actions
 ```
+
+### Realization
+
+- `replayEvolutionTraceRecords(state, records)` in `modelStates.ts`: the `commit` records of the state's application after the last `version` marker naming the state's one Application Version, in sequence order. A model Action goes through `ModelEntityActionTransformer.modelActionToInstanceAction` against the state being replayed; an instance write upserts or deletes each object in the collection of its Entity, when the write is to the section that Entity's rows belong to (rows of other Entities are not in a model state). An `Action2Error` when the chain has no marker for the version, restarts (`rebaseline`) after it, or a model Action cannot be replayed.
+- `modelStateReplay.unit` (Library assets): the records before the marker are left out, the order is the sequence number's, the four model Actions and an update replay; a `complete: false` record replays its delete; a missing marker and a later `rebaseline` are refused. The asset reader moved to `tests/modelStateAssets.ts`, shared with `modelStateDiff.unit`.
+- `modelStates.integ` B6: appForTest with traces on, freeze, then a direct update of the Publisher Entity row, a commit of a `createEntity` and a model instance write, and a direct update; the frozen state replayed with the stored records equals the live state on the snapshotted collections.
+- Deviations: appForTest's model has no Report store, so the commit writes and then updates an Endpoint row instead of a Report. The `complete: false` case is a unit case: a commit that stops part way cannot be made on purpose in the integration test.
+- Refactor checkpoint: the local caches apply instance Actions to Redux / Zustand zones (`applyEntityInstancesToZone`), not to arrays; nothing to reuse.
 
 ## Slice B7 — Docs, nonreg step, full nonreg, AC checklist
 

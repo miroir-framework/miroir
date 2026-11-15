@@ -17,9 +17,17 @@ import {
   metaModelEntityList,
   type DomainController,
   type Entity,
+  type EntityInstance,
+  type EvolutionTraceRecordRow,
   type MetaModel,
 } from "@miroir-framework/core";
-import { frozenModelState, liveModelState, type ModelState } from "@miroir-framework/versioning";
+import {
+  diffModelStates,
+  frozenModelState,
+  liveModelState,
+  replayEvolutionTraceRecords,
+  type ModelState,
+} from "@miroir-framework/versioning";
 import { entityPublisher } from "miroir-fixture-appForTest";
 
 import {
@@ -40,6 +48,8 @@ import {
 
 const MIROIR_MASTER_BRANCH = "ad1ddc4e-556e-4598-9cff-706a2bde0be7";
 const MIROIR_TEST_CONFIGURATION = "431e0903-80ff-45be-aec7-12fe272dcef0";
+const DOMAIN_ENDPOINT = "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5";
+const ENDPOINT_ENTITY = "3d8da4d4-8f76-4bb4-9212-14869d81c00c";
 
 const liveEntity = {
   uuid: "708b0001-0000-4000-8000-000000000001",
@@ -54,6 +64,25 @@ const liveEntity = {
     definition: { uuid: { type: "uuid" }, parentUuid: { type: "uuid" }, name: { type: "string" } },
   },
 } as unknown as Entity;
+
+const replayEntity = {
+  ...liveEntity,
+  uuid: "708b0006-0000-4000-8000-000000000001",
+  name: "Replay708",
+  description: "#708 B6: an Entity created in a commit replayed on a frozen state",
+} as unknown as Entity;
+
+/** appForTest's model has no Report store: the Endpoint row stands for a model element other than an Entity. */
+const replayEndpoint = {
+  uuid: "708b0006-0000-4000-8000-000000000002",
+  parentName: "Endpoint",
+  parentUuid: ENDPOINT_ENTITY,
+  application: APP_FOR_TEST,
+  name: "replay708Endpoint",
+  version: "1",
+  description: "#708 B6: an Endpoint created in a commit replayed on a frozen state",
+  definition: { actions: [] },
+} as unknown as EntityInstance;
 
 let context: VersioningTestContext;
 
@@ -120,8 +149,30 @@ beforeAll(async () => {
 }, 120000);
 
 afterAll(async () => {
-  await modelAction({ actionType: "dropEntity", payload: { application: APP_FOR_TEST, transactional: false, entityUuid: liveEntity.uuid } });
+  for (const entity of [liveEntity, replayEntity]) {
+    await modelAction({ actionType: "dropEntity", payload: { application: APP_FOR_TEST, transactional: false, entityUuid: entity.uuid } });
+  }
+  await instanceAction("deleteInstance", replayEndpoint);
 }, 60000);
+
+/** A direct write of an appForTest model row, outside a transaction. */
+function instanceAction(actionType: string, object: EntityInstance) {
+  return context.domainController.handleAction(
+    {
+      actionType,
+      endpoint: INSTANCE_ENDPOINT,
+      payload: { application: APP_FOR_TEST, applicationSection: "model", objects: [object] },
+    } as any,
+    applicationDeploymentMap,
+    appForTestModelEnvironment(context.domainController),
+  );
+}
+
+/** Sets appForTest's `evolutionTraces` on its stored SelfApplication row. */
+async function setAppForTestTraces(on: boolean): Promise<void> {
+  const selfApplication = (await liveAppForTest()).applications.find((row) => row.uuid === APP_FOR_TEST)!;
+  expectOk(await instanceAction("updateInstance", { ...selfApplication, evolutionTraces: on } as EntityInstance), `evolutionTraces ${on}`);
+}
 
 describe("model states (#708 B)", () => {
   // Blob rows are not loaded with the others (`cacheAllInstancesOnRefresh: false`): the cached model holds
@@ -180,5 +231,78 @@ describe("model states (#708 B)", () => {
 
     expect(frozen instanceof Action2Error, JSON.stringify(frozen)).toBe(false);
     expect(snapshotted(frozen as ModelState)).toEqual(snapshotted(before));
+  }, 60000);
+
+  it("B5: the diff of a frozen state against the live state names the Entity attribute added since", async () => {
+    const versionName = `B5-${Date.now()}`;
+    expectOk(await freezeAppForTest(context.domainController, versionName), "freeze");
+    const stored = (await liveAppForTest()).entities.find((entity) => entity.uuid === liveEntity.uuid)!;
+    const withEdition = {
+      ...stored,
+      mlSchema: { ...stored.mlSchema, definition: { ...stored.mlSchema.definition, edition708: { type: "string", optional: true } } },
+    };
+    expectOk(
+      await context.domainController.handleAction(
+        {
+          actionType: "updateInstance",
+          endpoint: INSTANCE_ENDPOINT,
+          payload: { application: APP_FOR_TEST, applicationSection: "model", objects: [withEdition] },
+        } as any,
+        applicationDeploymentMap,
+        appForTestModelEnvironment(context.domainController),
+      ),
+      "add an attribute",
+    );
+    const live = await liveAppForTest();
+    const version = live.applicationVersions.find((row) => row.name === versionName)!;
+
+    const frozen = await frozenModelState(host(), APP_FOR_TEST, applicationDeploymentMap, version.uuid);
+
+    expect(diffModelStates(frozen as ModelState, live).entityAttributes).toEqual([
+      { entityUuid: liveEntity.uuid, name: "Live708", added: ["edition708"], removed: [], changed: [] },
+    ]);
+  }, 60000);
+
+  it("B6: the frozen state replayed with the commit records since its marker gives the live state", async () => {
+    await setAppForTestTraces(true);
+    try {
+      const versionName = `B6-${Date.now()}`;
+      expectOk(await freezeAppForTest(context.domainController, versionName), "freeze");
+      expectOk(await instanceAction("updateInstance", { ...entityPublisher, description: "#708 B6: a direct write" }), "Entity-row update");
+      expectOk(await modelAction({ actionType: "createEntity", payload: { application: APP_FOR_TEST, entities: [replayEntity] } }), "createEntity");
+      expectOk(
+        await context.domainController.handleAction(
+          {
+            actionType: "transactionalInstanceAction",
+            endpoint: DOMAIN_ENDPOINT,
+            payload: {
+              application: APP_FOR_TEST,
+              instanceAction: {
+                actionType: "createInstance",
+                endpoint: INSTANCE_ENDPOINT,
+                payload: { application: APP_FOR_TEST, applicationSection: "model", objects: [replayEndpoint] },
+              },
+            },
+          } as any,
+          applicationDeploymentMap,
+          appForTestModelEnvironment(context.domainController),
+        ),
+        "Endpoint creation in the transaction",
+      );
+      expectOk(await modelAction({ actionType: "commit", payload: { application: APP_FOR_TEST } }), "commit");
+      expectOk(await instanceAction("updateInstance", { ...replayEndpoint, description: "#708 B6: an Endpoint update" } as EntityInstance), "Endpoint update");
+
+      const live = await liveAppForTest();
+      const version = live.applicationVersions.find((row) => row.name === versionName)!;
+      const frozen = await frozenModelState(host(), APP_FOR_TEST, applicationDeploymentMap, version.uuid);
+      expect(frozen instanceof Action2Error, JSON.stringify(frozen)).toBe(false);
+
+      const replayed = replayEvolutionTraceRecords(frozen as ModelState, live.evolutionTraceRecords as EvolutionTraceRecordRow[]);
+
+      expect(replayed instanceof Action2Error, JSON.stringify(replayed)).toBe(false);
+      expect(snapshotted(replayed as ModelState)).toEqual(snapshotted(live));
+    } finally {
+      await setAppForTestTraces(false);
+    }
   }, 60000);
 });

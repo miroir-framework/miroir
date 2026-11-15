@@ -8,13 +8,17 @@ import {
   buildMetaModelCollections,
   getApplicationSection,
   metaModelCollections,
+  ModelEntityActionTransformer,
+  TransformerFailure,
   type ApplicationDeploymentMap,
   type DomainControllerActionHost,
   type ApplicationSection,
   type EntityInstance,
+  type EvolutionTraceRecordRow,
   type GitRepositoryInterface,
   type MetaModel,
   type MetaModelCollection,
+  type ModelAction,
 } from "@miroir-framework/core";
 
 import {
@@ -223,4 +227,100 @@ export async function gitModelState(
     applicationName: collections.applications.find((row) => row.uuid === application)?.name ?? "",
     ...collections,
   };
+}
+
+/** The model Actions a record holds; its other Actions are instance writes. */
+const REPLAYED_MODEL_ACTION_TYPES: ReadonlySet<string> = new Set(["createEntity", "alterEntityAttribute", "renameEntity", "dropEntity"]);
+
+/** An instance write as a record holds it (`recordedInstanceWrite` of core). */
+type RecordedInstanceWrite = {
+  actionType: string;
+  payload: { application: string; applicationSection?: string; parentUuid?: string; objects?: Row[] };
+};
+
+/**
+ * `state` with an instance write applied: each object goes to the collection of its Entity, when that
+ * Entity is a collection of the model and the write is to the section where its rows are. A create or an
+ * update replaces the row of the same uuid or adds it; a delete removes it.
+ */
+function applyInstanceWrite(state: ModelState, write: RecordedInstanceWrite): ModelState {
+  const next: ModelState = { ...state };
+  for (const object of write.payload.objects ?? []) {
+    const entityUuid = String(object.parentUuid ?? write.payload.parentUuid);
+    const entry = metaModelCollections.find(({ entity }) => entity.uuid === entityUuid);
+    if (!entry || getApplicationSection(state.applicationUuid, entityUuid) !== write.payload.applicationSection) {
+      continue;
+    }
+    const others = rowsOf(next, entry.collection).filter((row) => row.uuid !== object.uuid);
+    Object.assign(next, { [entry.collection]: write.actionType === "deleteInstance" ? others : [...others, object] });
+  }
+  return next;
+}
+
+/** `state` with the Actions of one record applied, in order; model Actions become instance writes first. */
+function applyRecordActions(state: ModelState, record: EvolutionTraceRecordRow): ModelState | Action2Error {
+  let current = state;
+  for (const action of record.actions ?? []) {
+    const actionType = String((action as { actionType?: unknown }).actionType);
+    if (!REPLAYED_MODEL_ACTION_TYPES.has(actionType)) {
+      current = applyInstanceWrite(current, action as RecordedInstanceWrite);
+      continue;
+    }
+    let writes: ReturnType<typeof ModelEntityActionTransformer.modelActionToInstanceAction>;
+    try {
+      writes = ModelEntityActionTransformer.modelActionToInstanceAction(record.application, action as ModelAction, current);
+    } catch (error) {
+      writes = new TransformerFailure({ queryFailure: "FailedTransformer", failureMessage: String(error) });
+    }
+    if (writes instanceof TransformerFailure) {
+      return new Action2Error(
+        "FailedToHandleAction",
+        `replayEvolutionTraceRecords could not replay ${actionType} of record ${record.sequenceNumber}: ${writes.failureMessage ?? ""}`,
+      );
+    }
+    current = writes.reduce((replayed, write) => applyInstanceWrite(replayed, write as RecordedInstanceWrite), current);
+  }
+  return current;
+}
+
+/**
+ * The model of an application after `state`, a frozen model state, with the `commit` records of its chain
+ * that follow the `version` marker of its Application Version, replayed in sequence order. A record that
+ * is not complete (its commit stopped part way) replays the Actions it holds, which are those the commit
+ * wrote. An `Action2Error` when the chain has no marker for the version, or restarts (`rebaseline`) after it.
+ */
+export function replayEvolutionTraceRecords(
+  state: ModelState,
+  records: readonly EvolutionTraceRecordRow[],
+): ModelState | Action2Error {
+  const version = state.applicationVersions.length === 1 ? state.applicationVersions[0].uuid : undefined;
+  const chain = records
+    .filter((record) => record.application === state.applicationUuid)
+    .sort((a, b) => a.sequenceNumber - b.sequenceNumber);
+  const marker = chain.reduce(
+    (last, record, index) => (record.kind === "version" && record.version === version ? index : last),
+    -1,
+  );
+  if (version === undefined || marker < 0) {
+    return new Action2Error(
+      "FailedToHandleAction",
+      `replayEvolutionTraceRecords found no version marker for the Application Version of the state (${version ?? "not one version"})`,
+    );
+  }
+  const since = chain.slice(marker + 1);
+  if (since.some((record) => record.kind === "rebaseline")) {
+    return new Action2Error(
+      "FailedToHandleAction",
+      `replayEvolutionTraceRecords: the chain of ${state.applicationUuid} restarts after the marker of version ${version}`,
+    );
+  }
+  let current: ModelState = state;
+  for (const record of since.filter((record) => record.kind === "commit")) {
+    const replayed = applyRecordActions(current, record);
+    if (replayed instanceof Action2Error) {
+      return replayed;
+    }
+    current = replayed;
+  }
+  return current;
 }
