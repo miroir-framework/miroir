@@ -11,6 +11,7 @@ import type {
   GitFileDiff,
   GitFileStatus,
   GitPerson,
+  GitPushOutcome,
   GitRevertOutcome,
 } from "../4-services/GitRepositoryInterface";
 
@@ -36,6 +37,7 @@ export const GIT_ACTION_TYPES = [
   "gitAction_clone",
   "gitAction_installClonedDeployment",
   "gitAction_revert",
+  "gitAction_tag",
 ] as const;
 
 export type GitActionType = (typeof GIT_ACTION_TYPES)[number];
@@ -63,6 +65,8 @@ export const GIT_ACTIONS_KEEPING_FILES: readonly GitActionType[] = [
   "gitAction_clone",
   // writes rows in Admin and opens a store; the deployment's files stay as they are
   "gitAction_installClonedDeployment",
+  // #708: only writes a tag in `.git`
+  "gitAction_tag",
 ];
 
 /**
@@ -160,6 +164,15 @@ export type GitInstallClonedDeploymentAction = GitActionOf<
  */
 export type GitRevertAction = GitActionOf<"gitAction_revert", { paths?: string[]; all?: boolean }>;
 
+/**
+ * #708 part D: an annotated tag `name` (a version name) at `ref`, by default `HEAD`. The tagger is `author`,
+ * else the logged-in user, else the repository's `user.name` / `user.email`.
+ */
+export type GitTagAction = GitActionOf<
+  "gitAction_tag",
+  { name: string; message?: string; ref?: string; author?: GitPerson }
+>;
+
 export type GitAction =
   | GitStatusAction
   | GitLogAction
@@ -179,7 +192,8 @@ export type GitAction =
   | GitSetCredentialAction
   | GitCloneAction
   | GitInstallClonedDeploymentAction
-  | GitRevertAction;
+  | GitRevertAction
+  | GitTagAction;
 
 /** The instance a changed path stores, when it is an instance file of the deployment (D10). */
 export type GitPathDescription = {
@@ -265,12 +279,18 @@ export type GitRemoteResult = GitBranchResult & {
   tracking?: GitTracking;
 };
 
+/** #708 part D: the remote after the push, and the tags pushed with the branch. */
+export type GitPushResult = GitRemoteResult & GitPushOutcome;
+
 export type GitPullResult = GitRemoteResult & {
   /** The branch already had every commit of its upstream: no file changed. */
   upToDate: boolean;
   touchedDeployments: GitTouchedDeployment[];
   reloadFailures?: { application: Uuid; errorMessage?: string }[];
 };
+
+/** #708 part D: the tag written, and the commit it names. */
+export type GitTagResult = { name: string; commit: string; tagger: GitPerson };
 
 /** The saved secret's name and scope; never its value. */
 export type GitSetCredentialResult = { name: string; scope: "user" | "process" };

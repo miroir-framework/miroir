@@ -33,7 +33,7 @@ export interface GitPageForTestProps {
   diffs?: Record<string, Record<string, GitDiffResult>>;
   /** The folder named by the `notARepository` error. */
   noRepository?: string;
-  /** `gitAction_commit` without an author is refused with `authorUnknown`. */
+  /** `gitAction_commit` and `gitAction_tag` without an author are refused with `authorUnknown`. */
   authorUnknown?: boolean;
   /** `gitAction_commit` and `gitAction_checkout` are refused with `openMiroirTransaction`. */
   openMiroirTransaction?: boolean;
@@ -55,6 +55,8 @@ export interface GitPageForTestProps {
   view?: string;
   /** #691: the Setup tab holds the real Clone panel, on the same answers as the page. */
   withClonePanel?: boolean;
+  /** #708: the remote has other tags of these names: a push reports them in `rejectedTags`. */
+  remoteTagConflicts?: string[];
   /** #691: `gitAction_revert` succeeds, but reports that the local cache could not reload the application. */
   revertReloadFailure?: boolean;
   /**
@@ -135,6 +137,8 @@ export function GitPageForTest(props: GitPageForTestProps) {
       log = { ...log, branches: next };
     };
     let commitCount = 0;
+    /** #708: the tags made on the page that no push has sent yet. */
+    let unpushedTags: string[] = [];
     /** The refusal of a remote action, if any: no remote, or no accepted token. */
     const remoteRefusal = (payload: Record<string, unknown>): Action2ReturnType | undefined => {
       if (!status?.remoteUrl) {
@@ -220,6 +224,30 @@ export function GitPageForTest(props: GitPageForTestProps) {
           }
           setBranches({ ...branches(), head: oid });
           return ok({ oid, author: author ?? { name: "Miroir Test", email: "t@example.com" }, files: committed.map((file) => file.path) });
+        }
+        case "gitAction_tag": {
+          const name = String(payload.name ?? "").trim();
+          if (name === "") {
+            return refusal("invalidPayload", "A tag needs a name");
+          }
+          if (branches().tags.includes(name)) {
+            return refusal("tagExists", `A tag named ${name} already exists`);
+          }
+          if (props.authorUnknown && !payload.author) {
+            return refusal("authorUnknown", "no tagger");
+          }
+          const head = branches().head;
+          if (!head) {
+            return refusal("unknownRevision", "Unknown revision HEAD");
+          }
+          setBranches({ ...branches(), tags: [...branches().tags, name].sort() });
+          log = {
+            ...log,
+            commits: log.commits.map((entry) => (entry.oid === head ? { ...entry, refs: [...entry.refs, `tag: ${name}`] } : entry)),
+          };
+          unpushedTags = [...unpushedTags, name];
+          const tagger = (payload.author as GitPerson | undefined) ?? { name: "Miroir Test", email: "t@example.com" };
+          return ok({ name, commit: head, tagger });
         }
         case "gitAction_revert": {
           if (!status) {
@@ -340,7 +368,13 @@ export function GitPageForTest(props: GitPageForTestProps) {
             return refusal("pushRejected", "the remote has commits the branch does not have");
           }
           setTracking(0, remoteCommits);
-          return remoteResult();
+          const rejected = unpushedTags.filter((name) => props.remoteTagConflicts?.includes(name));
+          const pushedTags = unpushedTags.filter((name) => !rejected.includes(name));
+          unpushedTags = [];
+          return remoteResult({
+            pushedTags,
+            rejectedTags: rejected.map((name) => ({ name, message: `The remote origin has another tag named ${name}` })),
+          });
         }
         case "gitAction_setCredential": {
           if (props.secretsUnavailable) {
@@ -379,6 +413,7 @@ export function GitPageForTest(props: GitPageForTestProps) {
     props.secretsUnavailable,
     props.revertReloadFailure,
     props.revertPartialFailure,
+    props.remoteTagConflicts,
   ]);
   return (
     <Suspense fallback={<span>Loading the Git page...</span>}>

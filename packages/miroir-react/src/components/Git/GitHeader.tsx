@@ -7,7 +7,7 @@
 import { Alert, Box, Button, Chip, Typography } from "@mui/material";
 import React, { useState } from "react";
 
-import type { GitPullResult, GitRemoteResult, GitStatusResult } from "@miroir-framework/core";
+import type { GitPullResult, GitPushOutcome, GitPushResult, GitRemoteResult, GitStatusResult } from "@miroir-framework/core";
 
 import { GitCredentialForm, savedCredentialNotice, type GitTypedCredential } from "./GitCredentialForm.js";
 import { GitCommandError } from "./GitWritePanels.js";
@@ -85,12 +85,20 @@ function GitRemoteLine(props: {
   onOpenSetup: () => void;
 }) {
   const [error, setError] = useState<GitRequestError | undefined>(undefined);
+  /** #708 part D: the tags the last push sent, or the remote refused. */
+  const [pushedTags, setPushedTags] = useState<GitPushOutcome | undefined>(undefined);
   /** The action waiting for a credential, and the host asking for it. */
   const [asking, setAsking] = useState<{ actionType: RemoteActionType; host: string } | undefined>(undefined);
   const { remote, remoteUrl, tracking, branches } = props.status;
   const remoteName = remote ?? "origin";
 
   const settle = (actionType: RemoteActionType, state: GitRequestState<GitRemoteResult | GitPullResult>) => {
+    const pushed = actionType === "gitAction_push" && state.status === "ok" ? (state.value as GitPushResult) : undefined;
+    setPushedTags(
+      pushed && (pushed.pushedTags?.length || pushed.rejectedTags?.length)
+        ? { pushedTags: pushed.pushedTags ?? [], rejectedTags: pushed.rejectedTags ?? [] }
+        : undefined,
+    );
     if (state.status === "ok") {
       setError(undefined);
       // only a pull reloads deployments: a fetch or a push leaves an earlier reload warning as it is
@@ -215,6 +223,17 @@ function GitRemoteLine(props: {
         />
       )}
       <GitCommandError error={error} testId="git-remote-error" />
+      {pushedTags && (
+        <Alert
+          severity={pushedTags.rejectedTags.length > 0 ? "warning" : "success"}
+          data-testid="git-push-tags"
+          data-rejected={pushedTags.rejectedTags.map((tag) => tag.name).join(",")}
+        >
+          {pushedTags.pushedTags.length > 0 && `Pushed the tags ${pushedTags.pushedTags.join(", ")}. `}
+          {pushedTags.rejectedTags.length > 0 &&
+            `The remote refused the tags ${pushedTags.rejectedTags.map((tag) => `${tag.name} (${tag.message})`).join(", ")}.`}
+        </Alert>
+      )}
     </Box>
   );
 }

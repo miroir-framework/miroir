@@ -2687,6 +2687,7 @@
                     "gitAction_setRemote",
                     "gitAction_stage",
                     "gitAction_status",
+                    "gitAction_tag",
                     "gitAction_unstage"
                   ]
                 }

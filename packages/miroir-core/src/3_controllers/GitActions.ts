@@ -33,11 +33,14 @@ import {
   type GitPathDescription,
   type GitPayloadCredential,
   type GitPullResult,
+  type GitPushResult,
   type GitRemoteResult,
   type GitRepositoryDescription,
   type GitSetCredentialAction,
   type GitSetCredentialResult,
   type GitStatusResult,
+  type GitTagAction,
+  type GitTagResult,
   type GitTouchedDeployment,
   type GitTracking,
 } from "../0_interfaces/3_controllers/GitAction";
@@ -46,6 +49,7 @@ import type {
   GitBranches,
   GitCredential,
   GitPerson,
+  GitPushOutcome,
   GitRepositoryErrorCode,
   GitRepositoryFactory,
   GitRepositoryInterface,
@@ -461,6 +465,7 @@ export function pendingMiroirChangesError(
 
 const REPOSITORY_ERROR_REASONS: Record<GitRepositoryErrorCode, GitActionErrorReason> = {
   branchExists: "branchExists",
+  tagExists: "tagExists",
   unknownRevision: "unknownRevision",
   invalidRefName: "invalidPayload",
   outsideWorkTree: "pathOutsideApplication",
@@ -520,14 +525,15 @@ async function pathsToStage(
 }
 
 /** The commit's author: the payload's, else the logged-in user, else the repository's configuration. */
+/** The payload's `author`, else the logged-in user, else the repository's `user.name` / `user.email`. */
 async function commitAuthor(
-  action: GitCommitAction,
+  payloadAuthor: Partial<GitPerson> | undefined,
   repository: GitRepositoryInterface,
   principal: AuthPrincipal | undefined,
 ): Promise<GitPerson | undefined> {
-  const explicitName = nonEmptyString(action.payload.author?.name);
+  const explicitName = nonEmptyString(payloadAuthor?.name);
   if (explicitName) {
-    return { name: explicitName, email: nonEmptyString(action.payload.author?.email) ?? "" };
+    return { name: explicitName, email: nonEmptyString(payloadAuthor?.email) ?? "" };
   }
   if (principal?.username) {
     // MiroirUser has no email attribute
@@ -562,7 +568,7 @@ async function commit(
       { paths: others },
     );
   }
-  const author = await commitAuthor(action, repository, principal);
+  const author = await commitAuthor(action.payload.author, repository, principal);
   if (!author) {
     return gitActionError("authorUnknown", "Give the commit's author: no user is logged in and the repository has no user.name");
   }
@@ -572,6 +578,28 @@ async function commit(
   }
   const oid = await repository.commit(message, author);
   return ok({ oid, author, files: staged } satisfies GitCommitResult);
+}
+
+/** #708 part D: an annotated tag named after a version, at `ref` (HEAD by default). */
+async function tag(
+  action: GitTagAction,
+  repository: GitRepositoryInterface,
+  principal: AuthPrincipal | undefined,
+): Promise<Action2ReturnType> {
+  const name = nonEmptyString(action.payload.name);
+  if (!name) {
+    return gitActionError("invalidPayload", "A tag needs a name");
+  }
+  const tagger = await commitAuthor(action.payload.author, repository, principal);
+  if (!tagger) {
+    return gitActionError("authorUnknown", "Give the tagger: no user is logged in and the repository has no user.name");
+  }
+  const commit = await repository.createTag(name, {
+    message: nonEmptyString(action.payload.message) ?? name,
+    tagger,
+    ref: nonEmptyString(action.payload.ref),
+  });
+  return ok({ name, commit, tagger } satisfies GitTagResult);
 }
 
 /** The deployments of the map with a section folder inside the repository: a checkout may rewrite them. */
@@ -906,6 +934,8 @@ async function runOnDeployment(
       }
       case "gitAction_commit":
         return await commit(action, opened, context.principal);
+      case "gitAction_tag":
+        return await tag(action, repository, context.principal);
       case "gitAction_createBranch": {
         const name = nonEmptyString(action.payload.name);
         if (!name) {
@@ -1061,12 +1091,18 @@ async function runOnDeployment(
         if (remote instanceof Action2Error) {
           return remote;
         }
+        let outcome: GitPushOutcome;
         try {
-          await repository.push({ remote: remote.name, url: remote.url, branch: branches.current, onAuth: remote.onAuth });
+          outcome = await repository.push({
+            remote: remote.name,
+            url: remote.url,
+            branch: branches.current,
+            onAuth: remote.onAuth,
+          });
         } catch (error) {
           return remoteActionError(error, remote, action.actionType);
         }
-        return ok(await remoteResult(repository, remote));
+        return ok({ ...(await remoteResult(repository, remote)), ...outcome } satisfies GitPushResult);
       }
       default:
         return new Action2Error(

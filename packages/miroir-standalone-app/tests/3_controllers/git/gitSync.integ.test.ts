@@ -19,6 +19,7 @@ import {
   type EndpointDefinition,
   type EntityInstance,
   type GitPullResult,
+  type GitPushResult,
   type GitRemoteResult,
   type GitStatusResult,
 } from "@miroir-framework/core";
@@ -76,6 +77,11 @@ function head(): Promise<string> {
 
 function remoteBranch(branch: string): string {
   return gitCli(bareDirectory, "rev-parse", `refs/heads/${branch}`);
+}
+
+/** The commit a tag of the remote names. */
+function remoteTag(name: string): string {
+  return gitCli(bareDirectory, "rev-parse", `refs/tags/${name}^{commit}`);
 }
 
 async function commitUbik(year: number): Promise<string> {
@@ -146,6 +152,44 @@ describe.skipIf(gitMissing)("gitAction_push and gitAction_pull (#679 slice 9)", 
       expect(remoteBranch("main")).toBe(oid);
     } finally {
       await git.setConfig({ fs, dir: context.libraryRoot, path: "remote.origin.pushurl", value: undefined });
+    }
+  });
+
+  it("#708 D2: pushes the tags on commits of the branch, not those of another branch", async () => {
+    expectOk(await gitAction(context, "gitAction_createBranch", { name: "side" }));
+    expectOk(await gitAction(context, "gitAction_checkout", { ref: "side" }));
+    await commitUbik(1990);
+    expectOk(await gitAction(context, "gitAction_tag", { name: "side-1", author: TEST_AUTHOR }));
+    expectOk(await gitAction(context, "gitAction_checkout", { ref: "main" }));
+    const oid = await commitUbik(1984);
+    expectOk(await gitAction(context, "gitAction_tag", { name: "1.0.0", author: TEST_AUTHOR }));
+
+    const result = expectOk<GitPushResult>(await gitAction(context, "gitAction_push"));
+
+    expect({
+      pushed: result.pushedTags,
+      rejected: result.rejectedTags,
+      branch: remoteBranch("main"),
+      tag: remoteTag("1.0.0"),
+      remoteTags: gitCli(bareDirectory, "tag", "--list"),
+    }).toEqual({ pushed: ["1.0.0"], rejected: [], branch: oid, tag: oid, remoteTags: "1.0.0" });
+    // a tag the remote has is not sent again
+    expect(expectOk<GitPushResult>(await gitAction(context, "gitAction_push")).pushedTags).toEqual([]);
+  });
+
+  it("#708 D2: reports a tag the remote has on another commit, and pushes the branch", async () => {
+    gitCli(bareDirectory, "tag", "2.0.0", remoteBranch("main"));
+    const oid = await commitUbik(1985);
+    expectOk(await gitAction(context, "gitAction_tag", { name: "2.0.0", author: TEST_AUTHOR }));
+    try {
+      const result = expectOk<GitPushResult>(await gitAction(context, "gitAction_push"));
+      expect({
+        rejected: result.rejectedTags.map((tag) => tag.name),
+        branch: remoteBranch("main"),
+        remoteTag: remoteTag("2.0.0") === oid,
+      }).toEqual({ rejected: ["2.0.0"], branch: oid, remoteTag: false });
+    } finally {
+      await git.deleteRef({ fs, dir: context.libraryRoot, ref: "refs/tags/2.0.0" });
     }
   });
 

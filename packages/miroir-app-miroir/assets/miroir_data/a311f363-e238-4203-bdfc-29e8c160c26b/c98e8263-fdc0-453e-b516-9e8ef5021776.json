@@ -5,7 +5,7 @@
   "name": "ui.gitPage",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "Git page: the changes of an application named by Entity and instance, staged and committed from the page, its history with refs, its branches created, checked out and left for a detached HEAD, the files of a commit, the diff of a file, the refusals it explains, its remote fetched, pulled and pushed with a token asked once and saved, nothing while git is off, and the creation of a repository, and a repository cloned and installed from the clone panel.",
+  "description": "Git page: the changes of an application named by Entity and instance, staged and committed from the page, its history with refs, its branches created, checked out and left for a detached HEAD, the files of a commit, the diff of a file, the refusals it explains, its last commit tagged with a version name, its remote fetched, pulled and pushed with the tags with a token asked once and saved, nothing while git is off, and the creation of a repository, and a repository cloned and installed from the clone panel.",
   "tags": [
     "ui"
   ],
@@ -2293,6 +2293,170 @@
                 "attribute": {
                   "name": "data-ahead",
                   "value": "0"
+                },
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: tags the last commit with a version name, then pushes the tag",
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "the changes",
+                "target": {
+                  "byText": "Book · Ubik"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "change",
+                "label": "the version name",
+                "target": {
+                  "byTestId": "git-tag-name"
+                },
+                "value": "1.0.0"
+              },
+              {
+                "step": "click",
+                "label": "tag",
+                "target": {
+                  "byTestId": "git-tag"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the tag made",
+                "target": {
+                  "byText": "Tagged 2222222 as 1.0.0."
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "the tag on the last commit",
+                "target": {
+                  "byText": "tag: 1.0.0"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "push",
+                "target": {
+                  "byTestId": "git-push"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the tag pushed",
+                "target": {
+                  "byText": {
+                    "regex": "^Pushed the tags 1\\.0\\.0\\."
+                  }
+                },
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: explains a version name that is already a tag",
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "the changes",
+                "target": {
+                  "byText": "Book · Ubik"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "change",
+                "label": "an existing tag",
+                "target": {
+                  "byTestId": "git-tag-name"
+                },
+                "value": "v1"
+              },
+              {
+                "step": "click",
+                "label": "tag",
+                "target": {
+                  "byTestId": "git-tag"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the refusal",
+                "target": {
+                  "byTestId": "git-tag-error"
+                },
+                "attribute": {
+                  "name": "data-reason",
+                  "value": "tagExists"
+                },
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: says which tags the remote refused on a push",
+            "componentProps": {
+              "remoteTagConflicts": [
+                "1.0.0"
+              ]
+            },
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "the changes",
+                "target": {
+                  "byText": "Book · Ubik"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "change",
+                "label": "the version name",
+                "target": {
+                  "byTestId": "git-tag-name"
+                },
+                "value": "1.0.0"
+              },
+              {
+                "step": "click",
+                "label": "tag",
+                "target": {
+                  "byTestId": "git-tag"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the tag made",
+                "target": {
+                  "byTestId": "git-tag-done"
+                },
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "push",
+                "target": {
+                  "byTestId": "git-push"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "the refused tag",
+                "target": {
+                  "byTestId": "git-push-tags"
+                },
+                "attribute": {
+                  "name": "data-rejected",
+                  "value": "1.0.0"
                 },
                 "timeout": 2000
               }
