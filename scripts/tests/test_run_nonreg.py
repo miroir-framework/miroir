@@ -58,6 +58,25 @@ LEGACY_SUMMARY_KEYS = {
 }
 
 
+WORKER_LOCKS_ENV = "MIROIR_NONREG_WORKER_LOCKS"
+
+
+@pytest.fixture(autouse=True)
+def private_worker_locks(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """The runs started here claim their workers in a folder of their own (#584), so they get w1, w2...
+    even while a nonreg run that started these tests holds those numbers. Safe because their test
+    environments are private (`runner_cmd`); a test on the repository's environment names takes the
+    checkout's claims instead (`checkout_worker_locks`)."""
+    monkeypatch.setenv(WORKER_LOCKS_ENV, str(tmp_path / "worker-locks"))
+
+
+def checkout_worker_locks(env: dict[str, str] | None = None) -> dict[str, str]:
+    """The environment of a run whose test environments are named like the repository's
+    (test-filesystem, test-sql): it claims workers with the checkout's lock files (#584), so it never
+    clears the stores of a nonreg run that started these tests."""
+    return {k: v for k, v in (env if env is not None else os.environ).items() if k != WORKER_LOCKS_ENV}
+
+
 def runner_cmd(tmp_path: Path) -> list[str]:
     """The runner, with no test environments to clear (#728): every run clears its workers' state for the
     environments it knows, so a run started here never touches the stores of a nonreg run that started these
@@ -772,7 +791,10 @@ def test_unreachable_store_service_stops_the_run_before_any_step(tmp_path: Path,
     port = free_port()
     envs = write_environments(tmp_path, postgres_port=port, mongodb_port=port)
 
-    proc = run_raw(tmp_path, storage_manifest(tmp_path), "--storage", storage, "--environments-dir", str(envs))
+    proc = run_raw(
+        tmp_path, storage_manifest(tmp_path), "--storage", storage, "--environments-dir", str(envs),
+        env=checkout_worker_locks(),
+    )
 
     assert proc.returncode == 2
     assert f"{service} is not reachable at 127.0.0.1:{port}" in proc.stderr
@@ -787,7 +809,8 @@ def test_reachable_store_service_lets_the_run_proceed(tmp_path: Path):
         envs = write_environments(tmp_path, postgres_port=port, mongodb_port=port)
 
         code, summary, _ = run_nonreg(
-            tmp_path, storage_manifest(tmp_path), "--storage", "sql", "--environments-dir", str(envs)
+            tmp_path, storage_manifest(tmp_path), "--storage", "sql", "--environments-dir", str(envs),
+            env=checkout_worker_locks(),
         )
 
     assert code == 0
@@ -805,7 +828,7 @@ def test_reachable_store_service_lets_the_run_proceed(tmp_path: Path):
 def test_store_check_is_skipped_when_no_step_needs_a_service(tmp_path: Path, extra: tuple[str, ...]):
     envs = write_environments(tmp_path, postgres_port=free_port(), mongodb_port=free_port())
 
-    proc = run_raw(tmp_path, storage_manifest(tmp_path), "--environments-dir", str(envs), *extra)
+    proc = run_raw(tmp_path, storage_manifest(tmp_path), "--environments-dir", str(envs), *extra, env=checkout_worker_locks())
 
     assert proc.returncode == 0, proc.stderr
 
@@ -827,7 +850,7 @@ def test_store_check_follows_the_address_overrides_of_the_integration_tests(
         server.listen()
         port = server.getsockname()[1]
         envs = write_environments(tmp_path, postgres_port=port, mongodb_port=port)
-        env = {**os.environ, variable: value.format(port=port)}
+        env = checkout_worker_locks({**os.environ, variable: value.format(port=port)})
 
         proc = run_raw(
             tmp_path, storage_manifest(tmp_path), "--storage", storage, "--environments-dir", str(envs), env=env
@@ -1475,3 +1498,40 @@ def test_a_step_does_not_get_the_terminal_of_the_run(tmp_path: Path):
             cwd=ROOT, input="typed by the user\n", capture_output=True, text=True, check=False,
         )
         assert proc.returncode == 0, proc.stdout + proc.stderr
+
+
+# #584: a run never clears the state of a worker that another run holds. The pytest nonreg step starts
+# runs on the repository's environment names while the nonreg run that started it uses w1..wN.
+
+
+def test_a_worker_held_by_another_run_is_skipped_and_its_state_kept(tmp_path: Path, probe_environments):
+    held = ROOT / ".miroir" / f"{PROBE_STATE}@w1"
+    held.mkdir(parents=True, exist_ok=True)
+    (held / "in-use.json").write_text("{}", encoding="utf-8")
+    claim = load_runner().try_lock(Path(os.environ[WORKER_LOCKS_ENV]) / "w1.lock")
+    assert claim is not None
+    log = tmp_path / "probe.log"
+    manifest = write_manifest(tmp_path, [state_probe_step("a", log)])
+    try:
+        code, summary, _ = run_nonreg(tmp_path, manifest, "--tier", "unit", "--jobs", "2", *FS_PROFILE, *probe_environments)
+    finally:
+        claim.close()
+
+    assert code == 0
+    assert probes(log) == {"a": ("w2", False)}
+    assert (held / "in-use.json").is_file()
+    assert summary["steps"][0]["worker"] == "w2"
+
+
+def test_a_run_gives_its_worker_numbers_back_when_it_ends(tmp_path: Path, probe_environments):
+    log = tmp_path / "probe.log"
+    manifest = write_manifest(tmp_path, [state_probe_step("a", log)])
+    first = tmp_path / "first"
+    first.mkdir()
+
+    code, _, _ = run_nonreg(first, manifest, "--tier", "unit", "--jobs", "1", *FS_PROFILE, *probe_environments)
+    assert code == 0
+    claim = load_runner().try_lock(Path(os.environ[WORKER_LOCKS_ENV]) / "w1.lock")
+
+    assert claim is not None
+    claim.close()
