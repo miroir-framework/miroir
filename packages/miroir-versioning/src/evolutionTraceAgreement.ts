@@ -249,6 +249,15 @@ export async function checkEvolutionTraceAgreement(
   );
 }
 
+/** `value` as JSON with the keys of every object sorted: two records equal by value give the same text. */
+function canonicalJson(value: unknown): string {
+  return JSON.stringify(value, (_key, item) =>
+    item && typeof item === "object" && !Array.isArray(item)
+      ? Object.fromEntries(Object.entries(item as Row).sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0)))
+      : item,
+  );
+}
+
 /**
  * The record two records of `records` both follow (`previousTrace`), when one of them is among `added`: the
  * chain forks there, as when two Git branches each appended records and were merged.
@@ -272,7 +281,8 @@ function addedRecordFork(records: readonly EvolutionTraceRecordRow[], added: Rea
  * #708 part C, `versioned-git`: checks that the model a commit holds (the index) is the model of HEAD
  * replayed with the commit records the commit adds. `undefined` when it is, or when there is nothing to
  * check: no HEAD, traces off at HEAD, or a commit that re-baselines the traces or turns them off. An
- * `Action2Error` with reason `evolutionTracesDisagree` and the differences otherwise, or with reason
+ * `Action2Error` with reason `evolutionTracesDisagree` when a record of HEAD is removed or changed, when the
+ * added records fork the chain, or with the differences when the replay does not give the staged model; with reason
  * `evolutionTraceRecordsIgnored` when the folder of the records is not in `sectionFolders` (Git ignores it).
  */
 export function checkStagedEvolutionTraceAgreement(
@@ -307,6 +317,23 @@ export function checkStagedEvolutionTraceAgreement(
     return undefined;
   }
   const name = stagedState.applicationName || headState.applicationName || application;
+  const stagedByUuid = new Map(chain.map((record) => [record.uuid, record]));
+  const rewritten = (headState.evolutionTraceRecords as EvolutionTraceRecordRow[])
+    .filter((record) => record.application === application)
+    .filter((record) => {
+      const stagedRecord = stagedByUuid.get(record.uuid);
+      return !stagedRecord || canonicalJson(stagedRecord) !== canonicalJson(record);
+    })
+    .map((record) => record.uuid);
+  if (rewritten.length > 0) {
+    return new Action2Error(
+      "FailedToHandleAction",
+      `the evolution trace records ${rewritten.join(", ")} of ${name} are removed or changed since HEAD: a chain is only appended to. Restore them, or re-baseline the traces`,
+      undefined,
+      undefined,
+      { reason: EVOLUTION_TRACES_DISAGREE, records: rewritten },
+    );
+  }
   const fork = addedRecordFork(chain, new Set(added.map((record) => record.uuid)));
   if (fork) {
     return new Action2Error(

@@ -162,4 +162,33 @@ describe("checkStagedEvolutionTraceAgreement (#708 C4)", () => {
 
     expect(refused?.errorContext).toEqual({ reason: EVOLUTION_TRACE_RECORDS_IGNORED, section: "modelVersion" });
   });
+
+  it("refuses a commit that removes or changes a record of HEAD, but not one that re-baselines", () => {
+    const first = record("commit", { actions: [] });
+    const second = record("commit", { previousTrace: first.uuid, actions: [] });
+    const headWithRecords = { ...head, ...recordFiles(first, second) };
+
+    const removed = check(headWithRecords, { ...head, ...recordFiles(first) });
+    const changed = check(headWithRecords, { ...head, ...recordFiles(first, { ...second, complete: false }) });
+    const reordered = check(headWithRecords, {
+      ...head,
+      ...recordFiles(first),
+      [`app_modelVersion/${EVOLUTION_TRACE_RECORD_ENTITY_UUID}/${second.uuid}.json`]: JSON.stringify(
+        Object.fromEntries(Object.entries(second).reverse()),
+      ),
+    });
+    const rebaselined = check(headWithRecords, { ...head, ...recordFiles(record("rebaseline")) });
+
+    expect({
+      removed: removed?.errorContext,
+      changed: changed?.errorContext,
+      reordered,
+      rebaselined,
+    }).toEqual({
+      removed: { reason: EVOLUTION_TRACES_DISAGREE, records: [second.uuid] },
+      changed: { reason: EVOLUTION_TRACES_DISAGREE, records: [second.uuid] },
+      reordered: undefined,
+      rebaselined: undefined,
+    });
+  });
 });

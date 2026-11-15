@@ -165,6 +165,46 @@ describe("evolution trace agreement at a Git commit (#708 C4)", () => {
     }).toEqual({ kind: "rebaseline", committed: "ok" });
   }, 60000);
 
+  it("C4: the check follows HEAD: traces turned off in the work tree only, or a model folder ignored there, do not skip it", async () => {
+    const book = readModelFile(BOOK_ENTITY_FILE);
+    const selfApplicationFile = `model/${SELF_APPLICATION_ENTITY}/${LIBRARY_APPLICATION}.json`;
+    const selfApplication = readModelFile(selfApplicationFile);
+    writeWorkTreeFile(context, BOOK_ENTITY_FILE, JSON.stringify({ ...book, description: "#708 C4: edited outside Miroir" }, undefined, 2));
+    expectOk(await gitAction(context, "gitAction_stage", { paths: [BOOK_ENTITY_FILE] }));
+
+    const before = new Set(recordFiles());
+    await updateModelRow({ ...selfApplication, evolutionTraces: false } as EntityInstance);
+    const tracesOffInWorkTree = await commit("#708 C4: traces off, not staged");
+    await updateModelRow(selfApplication);
+    for (const file of recordFiles().filter((file) => !before.has(file))) {
+      fs.rmSync(path.join(context.sectionDirectory("modelVersion"), EVOLUTION_TRACE_RECORD_ENTITY, file));
+    }
+    writeWorkTreeFile(context, ".gitignore", "model\n");
+    const modelIgnored = await commit("#708 C4: model folder ignored");
+    fs.rmSync(path.join(context.libraryRoot, ".gitignore"));
+
+    expect({
+      tracesOffInWorkTree: (tracesOffInWorkTree as Action2Error).errorContext?.reason,
+      modelIgnored: (modelIgnored as Action2Error).errorContext?.reason,
+    }).toEqual({ tracesOffInWorkTree: "evolutionTracesDisagree", modelIgnored: "evolutionTracesDisagree" });
+    writeWorkTreeFile(context, BOOK_ENTITY_FILE, JSON.stringify(book, undefined, 2));
+    expectOk(await gitAction(context, "gitAction_stage", { paths: [BOOK_ENTITY_FILE] }));
+  }, 60000);
+
+  it("C4: a commit that removes a record of HEAD is refused", async () => {
+    const record = recordFiles()[0];
+    const recordPath = `modelVersion/${EVOLUTION_TRACE_RECORD_ENTITY}/${record}`;
+    const text = fs.readFileSync(path.join(context.libraryRoot, recordPath), "utf8");
+    fs.rmSync(path.join(context.libraryRoot, recordPath));
+    expectOk(await gitAction(context, "gitAction_stage", { all: true }));
+
+    const refused = expectGitError(await commit("#708 C4: a record removed"), "evolutionTracesDisagree");
+
+    expect(refused.errorContext?.records).toEqual([record.replace(/\.json$/, "")]);
+    writeWorkTreeFile(context, recordPath, text);
+    expectOk(await gitAction(context, "gitAction_stage", { paths: [recordPath] }));
+  }, 60000);
+
   it("C4: a commit is refused when Git ignores the folder of the records", async () => {
     writeWorkTreeFile(context, ".gitignore", "modelVersion\n");
     await updateModelRow({ ...readModelFile(BOOK_ENTITY_FILE), description: "#708 C4: records ignored" } as EntityInstance);
