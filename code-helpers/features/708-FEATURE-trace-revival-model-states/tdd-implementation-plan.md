@@ -424,7 +424,7 @@ npm run nonreg:filesystem -- --runner shared
 
 > Integration first, no mocks. The tests read real filesystem stores (`test-filesystem`) through a real client DomainController and its emulated server, freeze real applications (appForTest, Library), and read a real Git repository through `@miroir-framework/git-isomorphic` in a temporary folder. The applicative interface locked first is the `MetaModel` shape: one collection for every Entity of the meta-application (analysis D7-a).
 
-**Resume note:** planned 2026-11-15, after part A merged. Waits for the designer's answers to "Questions before Slice 1". Branch `claude/708-part-b-model-states`.
+**Resume note:** planned 2026-11-15, after part A merged. The designer answered the four questions on 2026-11-15. Branch `claude/708-part-b-model-states`.
 
 ## Scope (part B)
 
@@ -445,14 +445,14 @@ Out:
 |---|---|---|---|
 | Q-B1 | The `Test` Entity (`c37625c7`, composite-action tests): give it a `MetaModel` collection, or retire it? | **Answered (2026-11-15): retire it, in #726.** Part B gives it no collection. Its one row is read only by a core parse test; its `mlSchema` still defines the `testCompositeAction…` types (48 uses in `src`), which move before the Entity goes. | D7-a's rule covers every Entity |
 | Q-B2 | `MetaModel.tests` holds MiroirTest rows. Rename it `miroirTests`? | **Answered (2026-11-15): no.** MiroirTests belong in `devData` eventually (not delivered with an application's runtime), and devData Entities stay out of `MetaModel`, so `tests` leaves `MetaModel` then (#726). Until then it stays as it is: the self-test (`runSelfTest.ts`), the test registries (`useSelectedApplicationMiroirTestSuiteRegistries.ts`) and the freeze read it. | |
-| Q-B3 | Derive the collections, `versionHistoryEntityUuids`, its parallel map, the local cache selectors, `extractApplicationModel` and the freeze snapshots from one list of the meta-application's Entities? | Yes: one list in core, `metaModelCollections` (Entity uuid → collection key), checked against the Entity folder by a guard test | the hand lists are how Blob, TestConfiguration and Test were missed (#706) |
-| Q-B4 | The freeze snapshots of the nine older types copy a subset of fields (a Report version keeps `name`, `definition`, `defaultLabel`, `type`, `description`, and drops `selfApplication` and `conceptLevel`). Snapshot every type the way #706 snapshots Blob, TestConfiguration and Test (all fields but the identity ones)? | Yes, in Slice 3 | a model read back from a version must equal the model that was frozen, or the agreement check (part C) fails on fields nobody changed |
+| Q-B3 | Derive the collections, `versionHistoryEntityUuids`, its parallel map, the local cache selectors, `extractApplicationModel` and the freeze snapshots from one list of the meta-application's Entities? | **Answered (2026-11-15): yes.** One list in core, `metaModelCollections` (Entity uuid → collection key), checked against the Entity folder by a guard test | the hand lists are how Blob, TestConfiguration and Test were missed (#706) |
+| Q-B4 | The freeze snapshots of the nine older types copy a subset of fields (a Report version keeps `name`, `definition`, `defaultLabel`, `type`, `description`, and drops `selfApplication` and `conceptLevel`). Snapshot every type the way #706 snapshots Blob, TestConfiguration and Test (all fields but the identity ones)? | **Answered (2026-11-15): yes**, in Slice B3 | a model read back from a version must equal the model that was frozen, or the agreement check (part C) fails on fields nobody changed |
 
 ## Progress summary (part B)
 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
-| B0 | Characterize: the collections `MetaModel` lacks, and what a freeze loses | ⬜ pending | `metaModelCollections.unit`, `modelStates.integ` characterization |
+| B0 | Characterize: the collections `MetaModel` lacks, and what a freeze loses | ✅ DONE | `metaModelCollections.unit`, `freezeSnapshotFields.unit` |
 | B1 | `MetaModel` has a collection for every Entity of the meta-application | ⬜ pending | `metaModelCollections.unit`, local cache model of Miroir holds its Blobs |
 | B2 | Tracer: the live model state | ⬜ pending | `modelStates.integ` "live" |
 | B3 | The model at a frozen version equals the model that was frozen | ⬜ pending | `modelStates.integ` "frozen round trip" |
@@ -475,7 +475,7 @@ Out:
 
 | Element | Key |
 |---|---|
-| One list (if Q-B3 is yes) | `metaModelCollections` in `packages/miroir-core/src/1_core/Model.ts` |
+| One list | `metaModelCollections` in `packages/miroir-core/src/1_core/Model.ts` |
 | Package functions | `liveModelState`, `frozenModelState`, `gitModelState`, `diffModelStates`, `replayEvolutionTraceRecords` in `packages/miroir-versioning/src/modelStates.ts` |
 | vitest files | `packages/miroir-core/tests/1_core/metaModelCollections.unit.test.ts`; `packages/miroir-versioning/tests/modelStateDiff.unit.test.ts`; `packages/miroir-standalone-app/tests/3_controllers/versioning/modelStates.integ.test.ts`, `modelStatesGit.integ.test.ts` |
 | Nonreg step | `integ-708-model-states` (scopes `actions`, `external`) |
@@ -484,7 +484,7 @@ Why vitest: no ML action exposes a model state or a diff yet (part C adds the fi
 
 ## Slice B0 — Characterize: the collections `MetaModel` lacks, and what a freeze loses
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** lock today's gaps so Slices B1 and B3 close them visibly.
 
@@ -502,6 +502,11 @@ RUN_TEST=metaModelCollections npm run testByFile -w @miroir-framework/core -- me
 MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- 3_controllers/versioning/modelStates
 ```
 
+### Realization
+
+- `metaModelCollections.unit.test.ts` (core): the expected collection of every Entity of Library's `model` and `modelVersion` sections, by Entity name; 8 have none today (ApplicationModelBranch, Blob, BlobVersion, ApplicationVersionCrossBlobVersion, TestConfiguration, TestConfigurationVersion, ApplicationVersionCrossTestConfigurationVersion, EvolutionTraceRecord). Excluded: the `devData` Entities, `Commit` (Miroir's transaction log: its rows are in Miroir's data only, and `PersistenceStoreController` already skips it for other applications) and Test with its two history Entities (#726). `Commit` is an exclusion the plan did not name.
+- Deviation: what a freeze loses is characterized by `freezeSnapshotFields.unit.test.ts` (versioning package), on the real rows of Library's model and Miroir's data, instead of an integration test on appForTest, whose model holds no Report, Query or MiroirTest. Dropped today: Query `parameters`; Report and Theme `selfApplication`; MiroirTest `branch`, `selfApplication`; TransformerDefinition `presentation`, with `classification`, `runnableAsSql` and the interface and implementation moved under `definition`.
+
 ## Slice B1 — `MetaModel` has a collection for every Entity of the meta-application
 
 **Status:** ⬜ pending
@@ -512,7 +517,7 @@ MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- 3_cont
 
 **GREEN:**
 - Generated types for Blob and TestConfiguration; the `metaModel` schema (`getMiroirFundamentalMlSchema.ts`) gains the collections, named after their Entities; `tests` stays as it is (Q-B2).
-- If Q-B3 is yes: `metaModelCollections` is the one list; `versionHistoryEntityUuids`, `versionHistoryEntityDefinitions`, `emptyMetaModel`, `emptyApplicationModel` and `extractApplicationModel` derive from it.
+- `metaModelCollections` is the one list; `versionHistoryEntityUuids`, `versionHistoryEntityDefinitions`, `emptyMetaModel`, `emptyApplicationModel` and `extractApplicationModel` derive from it.
 - The local cache selectors (redux, zustand) fill every collection; the default models (Miroir, Library, GitHub, Spotify, appForTest), the bundle copy (`TransformersForRuntime.ts`), the two MiroirTest assets with an inline `metaModel`, and the tests follow.
 - `npm run build -w miroir-app-miroir && npm run devBuild -w @miroir-framework/core`.
 
@@ -555,7 +560,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,actions
 
 **RED:** `modelStates.integ`, "frozen round trip", on appForTest and on Library (traces off). Fails on the fields B0 recorded as lost.
 
-**GREEN:** if Q-B4 is yes, every snapshot copies all fields but the identity ones, as `snapshotInstancesAsVersions` does (#706), and the twelve per-type snapshot functions collapse into it. `frozenModelState` reads the Cross rows of the version and maps each `*Version` row back to its live row (`<type>Uuid` → `uuid`). Versions frozen before this slice read back with the fields they kept.
+**GREEN:** every snapshot copies all fields but the identity ones, as `snapshotInstancesAsVersions` does (#706), and the twelve per-type snapshot functions collapse into it. `frozenModelState` reads the Cross rows of the version and maps each `*Version` row back to its live row (`<type>Uuid` → `uuid`). Versions frozen before this slice read back with the fields they kept.
 
 **Refactor checkpoint:** remove the per-type `Stored…ForFreeze` and `…VersionSnapshot` types the generic snapshot replaces.
 
