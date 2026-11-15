@@ -36,7 +36,9 @@ function repositoryWithPolicyHistory(): { repo: string; commits: string[] } {
   return { repo, commits };
 }
 
-describe("bundle-size:backfill", () => {
+// Each test runs about ten git processes: on a loaded machine (a parallel nonreg run) that takes
+// longer than the default 5s.
+describe("bundle-size:backfill", { timeout: 30_000 }, () => {
   it("writes one instance per baseline change", async () => {
     const { repo, commits } = repositoryWithPolicyHistory();
     const dataDir = mkdtempSync(join(tmpdir(), "devData-backfill-data-"));
