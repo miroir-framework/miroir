@@ -459,7 +459,7 @@ Out:
 | B4 | The model at a Git ref | ✅ DONE | `modelStatesGit.integ` |
 | B5 | The diff of two model states | ✅ DONE | `modelStateDiff.unit`, `modelStates.integ` B5 |
 | B6 | The replay of trace records | ✅ DONE | `modelStateReplay.unit`, `modelStates.integ` B6 (replay gives the live model) |
-| B7 | Docs, nonreg step, full nonreg, AC checklist | ⬜ pending | `nonreg:filesystem` |
+| B7 | Docs, nonreg step, full nonreg, AC checklist | ✅ DONE | `nonreg:filesystem` |
 
 ## Locked implementation defaults (part B)
 
@@ -681,7 +681,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,actions
 
 ## Slice B7 — Docs, nonreg step, full nonreg, AC checklist
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 - `docs/reference/versioning.md`: a "Model states" section (the three sources, the diff, the replay); `MetaModel` collections where the docs list them.
 - `scripts/nonreg-manifest.json`: step `integ-708-model-states` running `3_controllers/versioning/modelStates*`.
@@ -693,5 +693,13 @@ AC checklist (part B items of #708):
 | #708 scope item | Proving test |
 |---|---|
 | `ModelStateSource`: frozen rows, `*_model/` files at a Git ref without a checkout, or the live model, in one shape covering every snapshotted type | `modelStates.integ` live, frozen round trip; `modelStatesGit.integ` |
-| Trace replay | `modelStates.integ` "replay gives the live model" |
-| An attribute-level diff over all element types, replacing `diffEntityVersionSnapshots` | `modelStateDiff.unit`, `modelStates.integ` "diff" |
+| Trace replay | `modelStates.integ` B6 (replay gives the live model), `modelStateReplay.unit` |
+| An attribute-level diff over all element types, replacing `diffEntityVersionSnapshots` | `modelStateDiff.unit`, `modelStates.integ` B5 (diff) |
+
+### Realization
+
+- `docs/reference/versioning.md`: a "Model states" section (the three sources, what a frozen state does not hold, the diff, the replay), a key point linking to it; the freeze section names `modelCudMigrationCandidates` instead of `diffEntityVersionSnapshots`, and the snapshot paragraph no longer says that the MetaModel lacks Blobs and TestConfigurations. No other doc lists the MetaModel collections.
+- `scripts/nonreg-manifest.json`: step `integ-708-model-states` (scope `actions`) runs `3_controllers/versioning/modelStates` (B1 to B6 and the Git case).
+- Full `nonreg:filesystem --runner shared`: every step passed but two. `unit-301-agent-tooling` failed on the #652 redux guard, which the designer agreed to widen to any core subpath (it passes since). `integ-runner.freezeApplicationVersion` failed once (the admin store had no Entity in `data` when the runner created appForTest's admin row); it passed in every scoped run of this branch and twice on its own after, also behind `integ-tr.core` as in the full run.
+- Tracer narrative: freeze appForTest, add an attribute to an Entity, read the frozen and live states and diff them (`modelStates.integ` B5); then freeze with traces on, commit, and replay the records on the frozen state (`modelStates.integ` B6). Library stays unversioned (designer's decision), so the tracer runs on appForTest.
+- No issue-scoped test directory was created: the suites are feature-named (`modelStates*`, `modelStateDiff`, `modelStateReplay`).

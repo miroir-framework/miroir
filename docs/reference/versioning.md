@@ -1,7 +1,7 @@
 # Versioning Reference
 
 **Audience:** framework contributors and application authors who need to understand how Miroir keeps the history of an application's **model**.
-**Scope:** this page is the single reference for versioning: versioning modes, the freeze action, evolution traces, **EntityVersion** and the other `*Version` history concepts, the `modelVersion` store section, and the `scope` / `logicalDataModel` meta-model classification. Other pages only link here.
+**Scope:** this page is the single reference for versioning: versioning modes, the freeze action, evolution traces, model states, **EntityVersion** and the other `*Version` history concepts, the `modelVersion` store section, and the `scope` / `logicalDataModel` meta-model classification. Other pages only link here.
 
 For the product vision (bundles, use cases, mapping from Git concepts), see [Bundles and Versioning](../getting-started/bundles-and-versioning.md).
 
@@ -13,6 +13,7 @@ For the product vision (bundles, use cases, mapping from Git concepts), see [Bun
 - The live **Entity** is the only authoritative definition of a concept (`mlSchema`, `idAttribute`, view / cache fields, …). You never need an EntityVersion to define or use an Entity.
 - Frozen versions exist only for **versioned-internal** applications. They are written by the **`freezeApplicationVersion`** model action into a separate **`modelVersion`** store section.
 - A versioned application (internal or Git) can also keep **evolution traces**: one record per commit of its model, in `modelVersion`. See [Evolution traces](#evolution-traces).
+- The model of an application can be read at any point of its history (live, at a frozen version, at a Git commit), diffed, and rebuilt from a version and the trace records since. See [Model states](#model-states).
 - Ordinary model actions (`createEntity`, `renameEntity`, `alterEntityAttribute`, `dropEntity`, …) change live Entities only. They never create, update or delete history rows.
 - The code that freezes and records evolution traces is the package `@miroir-framework/versioning`, outside core. A process loads it on first use, only when its `versioning` process capability is on (the default). See [The versioning package](#the-versioning-package).
 
@@ -60,7 +61,7 @@ Freeze is refused with `FeatureUnavailable` when the process has the `versioning
 
 When the application's evolution traces are on, the freeze then appends a `version` record to the trace chain (see below).
 
-Implementation: `packages/miroir-versioning/src/applicationVersionFreeze.ts` (`buildFreezeApplicationVersionPlan`, `snapshotEntitiesAsHistoricalEntityVersions`, …) and `freezeApplicationVersion.ts` (the action). Consecutive EntityVersion snapshots can be diffed into rough migration candidates (`diffEntityVersionSnapshots`; rename vs drop+create is uuid-based).
+Implementation: `packages/miroir-versioning/src/applicationVersionFreeze.ts` (`buildFreezeApplicationVersionPlan`, `snapshotEntitiesAsHistoricalEntityVersions`, …) and `freezeApplicationVersion.ts` (the action). The freeze records the changes of the Entities since the previous version as rough migration candidates in `modelCUDMigration` (`modelCudMigrationCandidates` of a [model state diff](#model-states); rename vs drop+create is uuid-based).
 
 ---
 
@@ -77,6 +78,21 @@ An evolution trace is the ordered list of model changes of an application, one *
 - **Reading them:** the Miroir menu item **Miroir Evolution Trace Records** (Reports `EvolutionTraceRecordList` `45735607-…` and `EvolutionTraceRecordDetails` `68594192-…`, section `modelVersion`), or any Query with `extractorInstancesByEntity` on the Entity in `modelVersion` (the client cache does not hold `modelVersion`: use `queryExecutionStrategy: "storage"`).
 
 Code: `packages/miroir-core/src/1_core/versioning/evolutionTraceRecording.ts` (what is recorded, `isEvolutionTraceOn`), the DomainController (commit, gate, kept records), `packages/miroir-versioning/src/evolutionTraceRecords.ts` (the chain).
+
+## Model states
+
+A model state is the model of an application at one point of its history, in the shape of its live model (`MetaModel`): one collection per Entity of the list `metaModelEntityList` (`packages/miroir-core/src/1_core/Model.ts`), each read from the section where that Entity's rows are (`getApplicationSection`: `model`, Miroir's `data`, or `modelVersion` for the history). The functions are in `@miroir-framework/versioning` (`src/modelStates.ts`, `src/modelStateDiff.ts`).
+
+| Source | Function | What it reads |
+|---|---|---|
+| Live | `liveModelState(host, application, applicationDeploymentMap)` | every collection, from the store of the process or from the server |
+| Frozen version | `frozenModelState(host, application, applicationDeploymentMap, applicationVersion)` | the version rows that the Cross rows link to the Application Version, as the live rows they were minted from. The application and its branches come from the live model, `applicationVersions` holds that version only, and the other history collections are empty |
+| Git commit | `gitModelState(repository, application, sectionFolders, ref)` | the JSON files `<section folder>/<Entity uuid>/*.json` of the commit, without a checkout; `sectionFolders` names each section's folder (`{ model: "library_model" }`) |
+
+A frozen state does not hold what a freeze does not keep: `parentDefinitionVersionUuid`, and `conceptLevel` on rows other than Entities. A version frozen before #708 kept fewer attributes; a TransformerDefinitionVersion of that time holds its body under `definition`, which the frozen state reads back.
+
+- **Diff:** `diffModelStates(previous, next)` matches the rows of each `model` collection by uuid and lists, per collection that differs, the rows added and removed and the rows changed with the attributes that differ (`uuid`, `parentUuid`, `parentName`, `parentDefinitionVersionUuid` and, but on Entities, `conceptLevel` are not compared). `entityAttributes` names, per Entity, the `mlSchema` attributes added, removed and changed. `modelCudMigrationCandidates(diff)` turns its Entities into `createEntity`, `dropEntity`, `renameEntity` and `alterEntityAttribute` candidates.
+- **Replay:** `replayEvolutionTraceRecords(frozenState, records)` applies to a frozen state the `commit` records that follow the `version` marker of its Application Version, in sequence order: a model Action becomes the instance writes of `ModelEntityActionTransformer`, and an instance write replaces, adds or removes the row of its collection. A record whose commit stopped part way (`complete: false`) replays the Actions it holds. With traces on since the freeze, the result equals the live model on the snapshotted collections. It answers an `Action2Error` when the chain has no marker for the version, or restarts (`rebaseline`) after it.
 
 ---
 
@@ -159,7 +175,7 @@ The same pattern (immutable snapshot + cross link row) applies to the other mode
 
 An MlSchema without a `definition` is snapshotted without one, since the live row allows it; a MiroirTest without a `definition` makes the freeze fail, like the other elements. A MiroirTestVersion also keeps the test's `skip`, `tags` and `issue`.
 
-The MetaModel has no collection for Blobs, TestConfigurations and Tests, so the freeze reads them from the store: Miroir's `data` section, or the `model` section of another application. Their snapshot copies every attribute of the live row except its identity (`uuid`, `parentUuid`, `parentName`, `parentDefinitionVersionUuid`, `conceptLevel`), and links back with `blobUuid`, `testConfigurationUuid` or `testUuid`. A BlobVersion copies the Blob's `contents`, so each freeze stores the Blob's data again.
+Every snapshot copies every attribute of the live row except its identity (`uuid`, `parentUuid`, `parentName`, `parentDefinitionVersionUuid`, `conceptLevel`; an EntityVersion keeps `conceptLevel`), and links back with its live uuid attribute (`entityUuid`, `blobUuid`, `testConfigurationUuid`, `testUuid`, …). The freeze reads Blobs, TestConfigurations and Tests from the store (Miroir's `data` section, or the `model` section of another application), since the client cache may not hold them. A BlobVersion copies the Blob's `contents`, so each freeze stores the Blob's data again.
 
 These uuids are registered in `versionHistoryEntityUuids` (`packages/miroir-core/src/1_core/Model.ts`), which routes their instances to `modelVersion`.
 
