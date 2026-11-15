@@ -40,7 +40,9 @@ async function record(dataDir: string, report: string, ...options: string[]): Pr
   return main([report, "--data-dir", dataDir, "--no-policy", ...options]);
 }
 
-describe("bundle-size:record", () => {
+// These tests run the recorder and the bundle guard as processes: on a loaded machine (a parallel
+// nonreg run) that takes longer than the default 5s.
+describe("bundle-size:record", { timeout: 30_000 }, () => {
   it("writes one instance from the report", async () => {
     const dataDir = tempDir("data");
     const report = readFixture();
@@ -137,7 +139,7 @@ async function recordWithPolicy(dataDir: string, policy: string, report: string,
   return main([report, "--data-dir", dataDir, "--policy", policy, ...options]);
 }
 
-describe("bundle-size:record with the bundle policy", () => {
+describe("bundle-size:record with the bundle policy", { timeout: 30_000 }, () => {
   it("writes the policy baseline and the instance, and the guard then passes", async () => {
     const dir = tempDir("policy");
     const dataDir = tempDir("data");
