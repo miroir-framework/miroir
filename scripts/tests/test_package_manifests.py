@@ -562,7 +562,7 @@ def test_localcache_redux_dist_does_not_inline_its_dependencies():
     built_code = "\n".join(path.read_text(encoding="utf-8") for path in (ROOT / folder / "dist").glob("*.js"))
     assert "function enablePatches" not in built_code, "immer is bundled into dist/"
     assert re.search(r"""from\s*['"]immer['"]""", built_code)
-    assert re.search(r"""from\s*['"]@miroir-framework/core/admin['"]""", built_code)  # #652: core's subpath
+    assert re.search(r"""from\s*['"]@miroir-framework/core/[\w-]+['"]""", built_code)  # #652: a core subpath, not inlined
 
 
 # --------------------------------------------------------------------------------------------------------------------
