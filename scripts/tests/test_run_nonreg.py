@@ -1588,3 +1588,166 @@ def test_a_worker_directory_left_by_rmtree_fails_the_clear(tmp_path: Path, monke
     assert complete is False
     assert any(line.startswith("could not remove") for line in lines)
     assert workers.free == []
+
+
+# --- #734: verdict equivalence check, K serial vs K parallel runs ---------------------------------
+
+
+def write_summary(path: Path, statuses: dict[str, str], jobs: int = 1) -> Path:
+    path.mkdir(parents=True, exist_ok=True)
+    summary = {"stamp": path.name, "steps": [{"id": sid, "status": st} for sid, st in statuses.items()]}
+    if jobs != 1:
+        summary["jobs"] = jobs
+    (path / "summary.json").write_text(json.dumps(summary), encoding="utf-8")
+    return path
+
+
+def equivalence_report(tmp_path: Path) -> dict:
+    reports = sorted((tmp_path / "results" / "equivalence").glob("*.json"))
+    assert len(reports) == 1, reports
+    return json.loads(reports[0].read_text(encoding="utf-8"))
+
+
+def summaries_check(tmp_path: Path, serial: list[dict], parallel: list[dict], extra: tuple[str, ...] = ()):
+    manifest = write_manifest(tmp_path, [])
+    serial_dirs = [str(write_summary(tmp_path / f"s{i}", v)) for i, v in enumerate(serial)]
+    parallel_dirs = [str(write_summary(tmp_path / f"p{i}", v, jobs=4)) for i, v in enumerate(parallel)]
+    proc = run_raw(tmp_path, manifest, "--serial-runs", *serial_dirs, "--parallel-runs", *parallel_dirs, *extra)
+    return proc, manifest
+
+
+def test_equivalence_classifies_each_step_from_existing_summaries(tmp_path: Path):
+    proc, _ = summaries_check(
+        tmp_path,
+        serial=[
+            {"stable": "passed", "gap": "passed", "flaky": "passed", "broken": "failed", "skip": "skipped"},
+            {"stable": "passed", "gap": "passed", "flaky": "failed", "broken": "failed", "skip": "skipped"},
+        ],
+        parallel=[
+            {"stable": "passed", "gap": "passed", "flaky": "passed", "broken": "failed", "skip": "passed"},
+            {"stable": "passed", "gap": "failed", "flaky": "passed", "broken": "failed", "skip": "passed"},
+        ],
+    )
+
+    assert proc.returncode == 1, proc.stdout + proc.stderr
+    report = equivalence_report(tmp_path)
+    assert {sid: st["class"] for sid, st in report["steps"].items()} == {
+        "stable": "same",
+        "gap": "parallel_gap",
+        "flaky": "flaky",
+        "broken": "same",
+        "skip": "not_compared",
+    }
+    assert report["parallel_gaps"] == ["gap"]
+    assert report["new_flaky"] == ["flaky"]
+    assert report["jobs"] == [4]
+    assert report["steps"]["gap"]["parallel"] == ["passed", "failed"]
+    assert "gap: serial 0/2 failed, parallel 1/2 failed" in proc.stdout
+
+
+def test_a_step_that_fails_in_every_serial_run_and_passes_in_a_parallel_one_is_a_gap(tmp_path: Path):
+    proc, _ = summaries_check(
+        tmp_path, serial=[{"a": "failed"}, {"a": "failed"}], parallel=[{"a": "failed"}, {"a": "passed"}]
+    )
+
+    assert proc.returncode == 1
+    assert equivalence_report(tmp_path)["parallel_gaps"] == ["a"]
+
+
+def test_equivalence_passes_when_the_only_differences_are_known_flaky_steps(tmp_path: Path):
+    (tmp_path / "nonreg-flaky.json").write_text(json.dumps({"steps": {"f": {"reason": "timing"}}}), encoding="utf-8")
+    proc, _ = summaries_check(
+        tmp_path,
+        serial=[{"ok": "passed", "f": "passed"}, {"ok": "passed", "f": "failed"}],
+        parallel=[{"ok": "passed", "f": "failed"}, {"ok": "passed", "f": "failed"}],
+    )
+
+    assert proc.returncode == 0, proc.stdout + proc.stderr
+    report = equivalence_report(tmp_path)
+    assert report["flaky"] == ["f"] and report["new_flaky"] == []
+    assert report["steps"]["f"]["known_flaky"] is True
+    assert "f [known]" in proc.stdout
+
+
+def test_record_flaky_adds_the_new_flaky_steps_to_the_list_next_to_the_manifest(tmp_path: Path):
+    (tmp_path / "nonreg-flaky.json").write_text(json.dumps({"steps": {"old": {"reason": "kept"}}}), encoding="utf-8")
+    proc, _ = summaries_check(
+        tmp_path,
+        serial=[{"f": "passed"}, {"f": "failed"}],
+        parallel=[{"f": "passed"}, {"f": "passed"}],
+        extra=("--record-flaky",),
+    )
+
+    assert proc.returncode == 0, proc.stdout + proc.stderr
+    flaky = json.loads((tmp_path / "nonreg-flaky.json").read_text(encoding="utf-8"))["steps"]
+    assert list(flaky) == ["f", "old"]
+    assert flaky["old"] == {"reason": "kept"}
+    assert "equivalence check" in flaky["f"]["reason"]
+    assert equivalence_report(tmp_path)["recorded_flaky"] == ["f"]
+
+
+def test_compare_does_not_fail_on_a_known_flaky_step(tmp_path: Path):
+    manifest = write_manifest(tmp_path, [])
+    (tmp_path / "nonreg-flaky.json").write_text(json.dumps({"steps": {"f": {"reason": "timing"}}}), encoding="utf-8")
+    current = write_summary(tmp_path / "cur", {"ok": "passed", "f": "failed"})
+    baseline = write_summary(tmp_path / "base", {"ok": "passed", "f": "passed"})
+
+    proc = run_raw(tmp_path, manifest, "--compare", str(current), str(baseline))
+    assert proc.returncode == 0, proc.stdout + proc.stderr
+    assert "new failures (0)" in proc.stdout
+    assert "known flaky, not counted (1): f" in proc.stdout
+
+    other = write_summary(tmp_path / "other", {"ok": "failed", "f": "failed"})
+    proc = run_raw(tmp_path, manifest, "--compare", str(other), str(baseline))
+    assert proc.returncode == 1
+    assert "new failures (1): ok" in proc.stdout
+
+
+def test_equivalence_runs_k_serial_and_k_parallel_runs_and_finds_a_parallel_only_failure(tmp_path: Path):
+    busy = tmp_path / "busy"
+    # "holder" marks a shared resource busy while it runs; "user" fails when it finds it busy, which only
+    # happens when the two run at the same time.
+    holder = (
+        "import pathlib, time; "
+        f"p = pathlib.Path({str(busy)!r}); p.write_text('x'); time.sleep(1.0); p.unlink()"
+    )
+    user = f"import pathlib, sys, time; time.sleep(0.4); sys.exit(1 if pathlib.Path({str(busy)!r}).exists() else 0)"
+    manifest = write_manifest(
+        tmp_path,
+        [
+            {"id": "holder", "tier": "unit", "title": "holder", "requires": "none", "argv": ["python", "-c", holder]},
+            {"id": "user", "tier": "unit", "title": "user", "requires": "none", "argv": ["python", "-c", user]},
+        ],
+    )
+
+    proc = run_raw(tmp_path, manifest, "--tier", "unit", *FS_PROFILE, "--equivalence", "2", "--jobs", "2")
+
+    assert proc.returncode == 1, proc.stdout + proc.stderr
+    report = equivalence_report(tmp_path)
+    assert len(report["serial_runs"]) == 2 and len(report["parallel_runs"]) == 2
+    assert len(set(report["serial_runs"] + report["parallel_runs"])) == 4
+    assert report["jobs"] == [2]
+    assert report["steps"]["holder"]["class"] == "same"
+    assert report["steps"]["user"] == {
+        "class": "parallel_gap",
+        "serial": ["passed", "passed"],
+        "parallel": ["failed", "failed"],
+        "known_flaky": False,
+    }
+
+
+@pytest.mark.parametrize(
+    "extra",
+    [
+        ["--equivalence", "2", "--jobs", "1"],
+        ["--equivalence", "0", "--jobs", "2"],
+        ["--equivalence", "2", "--compare", "latest"],
+        ["--serial-runs", "x"],
+        ["--record-flaky"],
+    ],
+)
+def test_equivalence_rejects_inconsistent_options(tmp_path: Path, extra: list[str]):
+    manifest = write_manifest(tmp_path, [])
+    proc = run_raw(tmp_path, manifest, *extra)
+    assert proc.returncode == 2, proc.stdout + proc.stderr
+    assert "error:" in proc.stderr

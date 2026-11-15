@@ -11,6 +11,7 @@ Examples:
   npm run nonreg -- --storage filesystem
   npm run nonreg -- --storage filesystem --local-cache zustand
   python scripts/run-nonreg.py --compare test-results/nonreg/<stamp>/summary.json
+  npm run nonreg -- --tier unit --runner shared --equivalence 3 --jobs 4
 """
 
 from __future__ import annotations
@@ -911,6 +912,12 @@ def compare_summaries(current: dict[str, Any], baseline_path: Path) -> int:
         elif c["status"] == "skipped" and b["status"] != "skipped":
             newly_skipped.append(sid)
 
+    # #734: a failure of a known flaky step is reported apart and does not fail the compare.
+    known = load_flaky_steps()
+    known_flaky = [sid for sid in [*new_fails, *still_failing] if sid in known]
+    new_fails = [sid for sid in new_fails if sid not in known]
+    still_failing = [sid for sid in still_failing if sid not in known]
+
     print("\n" + "=" * 72)
     print("NON-REG COMPARE")
     print("=" * 72)
@@ -926,8 +933,166 @@ def compare_summaries(current: dict[str, Any], baseline_path: Path) -> int:
     print(f"missing steps ({len(missing_now)}): {', '.join(missing_now) or '—'}")
     if ignored:
         print(f"scoped compare: {len(ignored)} step(s) selected by only one run ignored: {', '.join(ignored)}")
+    if known_flaky:
+        print(f"known flaky, not counted ({len(known_flaky)}): {', '.join(known_flaky)} (see {repo_relative(flaky_list_path())})")
     print("=" * 72)
     return 1 if new_fails or still_failing else 0
+
+
+FLAKY_LIST_NAME = "nonreg-flaky.json"
+VERDICTS = ("passed", "failed")
+
+
+def flaky_list_path() -> Path:
+    """The known flaky steps of a manifest, in a file next to it (#734)."""
+    return MANIFEST_PATH.parent / FLAKY_LIST_NAME
+
+
+def load_flaky_steps() -> dict[str, Any]:
+    path = flaky_list_path()
+    if not path.is_file():
+        return {}
+    with path.open(encoding="utf-8") as fh:
+        return dict(json.load(fh).get("steps") or {})
+
+
+def record_flaky_steps(step_ids: list[str], reason: str) -> None:
+    path = flaky_list_path()
+    data: dict[str, Any] = {"steps": {}}
+    if path.is_file():
+        data = json.loads(path.read_text(encoding="utf-8"))
+        data.setdefault("steps", {})
+    for sid in step_ids:
+        data["steps"].setdefault(sid, {"reason": reason})
+    data["steps"] = dict(sorted(data["steps"].items()))
+    path.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
+
+
+def unique_stamp(root: Path) -> str:
+    """A UTC stamp naming no existing snapshot: runs started in the same second (an equivalence check of
+    quick steps) get -2, -3... (#734)."""
+    base = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    stamp, n = base, 1
+    while (root / stamp).exists():
+        n += 1
+        stamp = f"{base}-{n}"
+    return stamp
+
+
+def step_verdicts(summary: dict[str, Any]) -> dict[str, str]:
+    """passed or failed per step; a skipped or not run step gives no verdict."""
+    return {s["id"]: s["status"] for s in summary["steps"] if s["status"] in VERDICTS}
+
+
+def classify_equivalence(
+    serial: list[dict[str, Any]], parallel: list[dict[str, Any]]
+) -> dict[str, dict[str, Any]]:
+    """Per step (#734): `same` when every run gives the same verdict, `flaky` when the serial runs disagree,
+    `parallel_gap` when the serial verdict is stable and a parallel run differs from it, `not_compared` when
+    one side has no verdict."""
+    serial_v = [step_verdicts(s) for s in serial]
+    parallel_v = [step_verdicts(s) for s in parallel]
+    ids: list[str] = []
+    for summary in [*serial, *parallel]:
+        for step in summary["steps"]:
+            if step["id"] not in ids:
+                ids.append(step["id"])
+    result: dict[str, dict[str, Any]] = {}
+    for sid in ids:
+        sv = [v[sid] for v in serial_v if sid in v]
+        pv = [v[sid] for v in parallel_v if sid in v]
+        if not sv or not pv:
+            cls = "not_compared"
+        elif len(set(sv)) > 1:
+            cls = "flaky"
+        elif any(v != sv[0] for v in pv):
+            cls = "parallel_gap"
+        else:
+            cls = "same"
+        result[sid] = {"class": cls, "serial": sv, "parallel": pv}
+    return result
+
+
+def check_equivalence(serial_paths: list[Path], parallel_paths: list[Path], *, record_flaky: bool) -> int:
+    """Compare K serial and K parallel summaries step by step (#734). Exit 1 on a parallel gap, or on a flaky
+    step missing from the known flaky list (unless --record-flaky adds it)."""
+    serial = [load_summary(p) for p in serial_paths]
+    parallel = [load_summary(p) for p in parallel_paths]
+    steps = classify_equivalence(serial, parallel)
+    known = load_flaky_steps()
+    for sid, step in steps.items():
+        step["known_flaky"] = sid in known
+
+    def of_class(cls: str) -> list[str]:
+        return [sid for sid, step in steps.items() if step["class"] == cls]
+
+    gaps = of_class("parallel_gap")
+    flaky = of_class("flaky")
+    new_flaky = [sid for sid in flaky if sid not in known]
+    stamp = unique_stamp(RESULTS_ROOT / "equivalence")
+    if record_flaky and new_flaky:
+        record_flaky_steps(new_flaky, f"serial verdicts differ in equivalence check {stamp}")
+
+    jobs = sorted({int(s.get("jobs", 1)) for s in parallel})
+    report = {
+        "stamp": stamp,
+        "serial_runs": [s["summary_json"] for s in serial],
+        "parallel_runs": [s["summary_json"] for s in parallel],
+        "jobs": jobs,
+        "flaky_list": repo_relative(flaky_list_path()),
+        "parallel_gaps": gaps,
+        "flaky": flaky,
+        "new_flaky": new_flaky,
+        "recorded_flaky": new_flaky if record_flaky else [],
+        "not_compared": of_class("not_compared"),
+        "steps": steps,
+    }
+    out_dir = RESULTS_ROOT / "equivalence"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    out_path = out_dir / f"{stamp}.json"
+    out_path.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+
+    def counts(verdicts: list[str]) -> str:
+        return f"{verdicts.count('failed')}/{len(verdicts)} failed"
+
+    print("\n" + "=" * 72)
+    print("NON-REG EQUIVALENCE")
+    print("=" * 72)
+    print(f"serial runs ({len(serial)}): {', '.join(report['serial_runs'])}")
+    print(f"parallel runs ({len(parallel)}, jobs {', '.join(map(str, jobs))}): {', '.join(report['parallel_runs'])}")
+    print(f"same verdict: {len(of_class('same'))} step(s)")
+    print(f"parallel gaps ({len(gaps)}):")
+    for sid in gaps:
+        print(f"  {sid}: serial {counts(steps[sid]['serial'])}, parallel {counts(steps[sid]['parallel'])}")
+    print(f"flaky ({len(flaky)}):")
+    for sid in flaky:
+        tag = "known" if sid in known else "recorded" if record_flaky else "NEW"
+        print(f"  {sid} [{tag}]: serial {counts(steps[sid]['serial'])}, parallel {counts(steps[sid]['parallel'])}")
+    if report["not_compared"]:
+        print(f"not compared, no verdict on one side: {', '.join(report['not_compared'])}")
+    print(f"report: {repo_relative(out_path)}")
+    print("=" * 72)
+    return 1 if gaps or (new_flaky and not record_flaky) else 0
+
+
+def run_equivalence(args: argparse.Namespace) -> int:
+    """--equivalence K: K serial and K parallel runs of the selection, alternated, then check_equivalence."""
+    if args.equivalence < 1:
+        print(f"error: --equivalence must be 1 or more, got {args.equivalence}", file=sys.stderr)
+        return 2
+    if args.jobs < 2:
+        print("error: --equivalence compares --jobs 1 with --jobs N: give --jobs 2 or more", file=sys.stderr)
+        return 2
+    paths: dict[int, list[Path]] = {1: [], args.jobs: []}
+    for k in range(args.equivalence):
+        for jobs in (1, args.jobs):
+            print(f"\nequivalence run {k + 1}/{args.equivalence}, --jobs {jobs}", flush=True)
+            _, summary_path = run_once(argparse.Namespace(**{**vars(args), "jobs": jobs}))
+            if summary_path is None:
+                print("error: equivalence run stopped before writing a summary", file=sys.stderr)
+                return 2
+            paths[jobs].append(summary_path)
+    return check_equivalence(paths[1], paths[args.jobs], record_flaky=args.record_flaky)
 
 
 def update_latest_pointer(stamp: str) -> None:
@@ -953,6 +1118,10 @@ def build_parser() -> argparse.ArgumentParser:
             "  npm run nonreg -- --compare test-results/nonreg/20260717T234407Z\n"
             "  npm run nonreg -- --compare path/to/A/summary.json path/to/B/summary.json\n"
             "  python scripts/run-nonreg.py --compare A B   # compare only, no re-run\n"
+            "\n"
+            "Equivalence check (#734):\n"
+            "  npm run nonreg -- --tier unit --runner shared --equivalence 3 --jobs 4\n"
+            "  python scripts/run-nonreg.py --serial-runs S1 S2 S3 --parallel-runs P1 P2 P3\n"
         ),
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
@@ -1024,6 +1193,35 @@ def build_parser() -> argparse.ArgumentParser:
         nargs=2,
         metavar=("CURRENT", "BASELINE"),
         help="Deprecated alias for --compare CURRENT BASELINE",
+    )
+    p.add_argument(
+        "--equivalence",
+        type=int,
+        default=None,
+        metavar="K",
+        help=(
+            "Verdict equivalence check (#734): run the selection K times with --jobs 1 and K times with --jobs N, "
+            "alternated, then classify each step: same, parallel gap (stable serial verdict, a parallel run "
+            "differs) or flaky (serial runs disagree). Exit 1 on a parallel gap or a flaky step not in the "
+            f"known flaky list ({FLAKY_LIST_NAME} next to the manifest)"
+        ),
+    )
+    p.add_argument(
+        "--serial-runs",
+        nargs="+",
+        metavar="PATH",
+        help="With --parallel-runs: the equivalence check on existing summaries, without running anything",
+    )
+    p.add_argument(
+        "--parallel-runs",
+        nargs="+",
+        metavar="PATH",
+        help="With --serial-runs: the parallel summaries of the equivalence check",
+    )
+    p.add_argument(
+        "--record-flaky",
+        action="store_true",
+        help=f"Add the flaky steps an equivalence check finds to {FLAKY_LIST_NAME}",
     )
     p.add_argument(
         "--timings",
@@ -1463,19 +1661,14 @@ def main(argv: list[str] | None = None) -> int:
     # #477: a worker left in the calling shell must not reach the steps; the runner gives each job,
     # serial runs included (#728), a worker of its own.
     os.environ.pop(WORKER_ENV, None)
-    manifest = load_manifest()
-    if args.storage:
-        profile = profile_for_storage(args.storage)
-    else:
-        profile = args.profile or manifest.get("defaultProfile") or "emulatedServer-sql"
-    storage = storage_of_profile(profile)
-    # Set even for the default, so a value left in the calling shell does not leak into the run.
-    local_cache = args.local_cache or DEFAULT_LOCAL_CACHE
-    os.environ[LOCAL_CACHE_ENV] = local_cache
 
     compare_paths: list[str] = list(args.compare or [])
     if args.compare_only:
         compare_paths = list(args.compare_only)
+    equivalence = args.equivalence is not None or args.serial_runs or args.parallel_runs
+    if equivalence and compare_paths:
+        print("error: --equivalence, --serial-runs and --parallel-runs do not take --compare", file=sys.stderr)
+        return 2
 
     # Two paths → compare only (no test run).
     if len(compare_paths) == 2:
@@ -1491,6 +1684,45 @@ def main(argv: list[str] | None = None) -> int:
         print("error: --compare accepts 1 path (run+diff) or 2 paths (diff only)", file=sys.stderr)
         return 2
 
+    if args.serial_runs or args.parallel_runs:
+        if args.equivalence is not None or not (args.serial_runs and args.parallel_runs):
+            print("error: --serial-runs and --parallel-runs go together, without --equivalence", file=sys.stderr)
+            return 2
+        try:
+            serial = [resolve_summary_json(p) for p in args.serial_runs]
+            parallel = [resolve_summary_json(p) for p in args.parallel_runs]
+        except FileNotFoundError as exc:
+            print(f"error: {exc}", file=sys.stderr)
+            return 2
+        return check_equivalence(serial, parallel, record_flaky=args.record_flaky)
+
+    if args.equivalence is not None:
+        return run_equivalence(args)
+
+    if args.record_flaky:
+        print("error: --record-flaky goes with --equivalence or --serial-runs/--parallel-runs", file=sys.stderr)
+        return 2
+
+    return run_once(args)[0]
+
+
+def run_once(args: argparse.Namespace) -> tuple[int, Path | None]:
+    """One run of the selected steps; returns its exit code and its summary.json (None when it stopped before
+    writing one)."""
+    manifest = load_manifest()
+    if args.storage:
+        profile = profile_for_storage(args.storage)
+    else:
+        profile = args.profile or manifest.get("defaultProfile") or "emulatedServer-sql"
+    storage = storage_of_profile(profile)
+    # Set even for the default, so a value left in the calling shell does not leak into the run.
+    local_cache = args.local_cache or DEFAULT_LOCAL_CACHE
+    os.environ[LOCAL_CACHE_ENV] = local_cache
+
+    compare_paths: list[str] = list(args.compare or [])
+    if args.compare_only:
+        compare_paths = list(args.compare_only)
+
     # Resolve baseline BEFORE this run creates a new stamp / rewrites `latest`.
     baseline_path: Path | None = None
     if len(compare_paths) == 1:
@@ -1498,7 +1730,7 @@ def main(argv: list[str] | None = None) -> int:
             baseline_path = resolve_summary_json(compare_paths[0])
         except FileNotFoundError as exc:
             print(f"error: {exc}", file=sys.stderr)
-            return 2
+            return 2, None
         print(f"compare baseline (resolved before run): {baseline_path}", flush=True)
 
     selected_tier: TierName = args.tier  # type: ignore[assignment]
@@ -1516,14 +1748,14 @@ def main(argv: list[str] | None = None) -> int:
             scope_names = parse_scopes(args.scope, manifest)
         except ValueError as exc:
             print(f"error: {exc}", file=sys.stderr)
-            return 2
+            return 2, None
 
     steps = select_steps(
         manifest, selected_tier, only_ids, set(scope_names) if scope_names is not None else None
     )
     if not steps:
         print("No steps selected.", file=sys.stderr)
-        return 2
+        return 2, None
 
     # #390: stop before the first step when the store's service is down, instead of failing
     # every step that needs it on ECONNREFUSED.
@@ -1531,7 +1763,7 @@ def main(argv: list[str] | None = None) -> int:
         error = check_storage_service(storage, ENVIRONMENTS_DIR)
         if error:
             print(f"error: {error}", file=sys.stderr)
-            return 2
+            return 2, None
 
     # Held until the process ends; a dry run touches no store.
     run_lock = None
@@ -1540,9 +1772,9 @@ def main(argv: list[str] | None = None) -> int:
             run_lock = RunLock(RESULTS_ROOT / ".run.lock").__enter__()
         except RunLockBusy as exc:
             print(f"error: {exc}", file=sys.stderr)
-            return 2
+            return 2, None
 
-    stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    stamp = unique_stamp(RESULTS_ROOT)
     snap_dir = RESULTS_ROOT / stamp
     snap_dir.mkdir(parents=True, exist_ok=True)
     (snap_dir / "logs").mkdir(exist_ok=True)
@@ -1641,7 +1873,7 @@ def main(argv: list[str] | None = None) -> int:
     # Update latest only after compare, so `--compare latest` means previous run.
     if not args.dry_run:
         update_latest_pointer(stamp)
-    return exit_code
+    return exit_code, summary_json_path
 
 
 def _git(*git_argv: str) -> str | None:

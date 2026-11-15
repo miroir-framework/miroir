@@ -96,6 +96,27 @@ npm run nonreg -- --compare \
   test-results/nonreg/20260717T234407Z
 ```
 
+A step listed in [`scripts/nonreg-flaky.json`](../../scripts/nonreg-flaky.json) (known flaky steps, next to the manifest; for `--manifest`, the `nonreg-flaky.json` next to it) is reported under `known flaky, not counted` when it fails in the current run, and does not make `--compare` exit 1.
+
+#### Verdict equivalence check (#734)
+
+A parallel run should give each step the verdict a serial run gives. `--equivalence K` checks it: it runs the selection K times with `--jobs 1` and K times with `--jobs N`, alternating, then classifies each step from its `passed` / `failed` verdicts:
+
+| Class | Meaning |
+|---|---|
+| `same` | every run gives the same verdict |
+| `parallel_gap` | the serial runs agree, and a parallel run gives another verdict |
+| `flaky` | the serial runs disagree with each other |
+| `not_compared` | no verdict on one side (skipped or not run) |
+
+```bash
+npm run nonreg -- --tier unit --runner shared --equivalence 3 --jobs 4
+# Same check on existing snapshots, no run
+python scripts/run-nonreg.py --serial-runs S1 S2 S3 --parallel-runs P1 P2 P3
+```
+
+The check prints each gap and flaky step with its failure counts and writes `test-results/nonreg/equivalence/<stamp>.json` (each step's verdicts, the lists of gaps and flaky steps). It exits 1 on a parallel gap, or on a flaky step that is not in `nonreg-flaky.json`. `--record-flaky` adds those steps to the list instead, with the check's stamp as reason; edit the reason to say what makes the step flaky. Each run of the check is an ordinary snapshot, so `--compare` works on any of them. Two runs started in the same second get stamps `<stamp>-2`, `<stamp>-3`...
+
 Step list: [`scripts/nonreg-manifest.json`](../../scripts/nonreg-manifest.json). Runner: [`scripts/run-nonreg.py`](../../scripts/run-nonreg.py). Default integ profile: `emulatedServer-sql` (override with `--storage` or `--profile`).
 
 #### Scopes (#351)
