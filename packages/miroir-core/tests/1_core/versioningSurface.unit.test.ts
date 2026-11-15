@@ -76,7 +76,7 @@ const MOVED_FREEZE_FUNCTIONS = [
   "selectEntitiesToFreeze",
   "resolvePreviousApplicationVersion",
   "isApplicationVersionPlaceholder",
-  "diffEntityVersionSnapshots",
+  "diffModelStates",
   "snapshotEntitiesAsHistoricalEntityVersions",
   "snapshotQueriesAsHistoricalQueryVersions",
   "snapshotTestsAsHistoricalTestVersions",

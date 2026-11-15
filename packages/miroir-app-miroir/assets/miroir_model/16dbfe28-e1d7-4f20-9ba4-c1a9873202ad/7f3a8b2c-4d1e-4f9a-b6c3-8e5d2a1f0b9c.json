@@ -77,6 +77,19 @@
             "defaultLabel": "Query definition at freeze time"
           }
         }
+      },
+      "parameters": {
+        "type": "schemaReference",
+        "optional": true,
+        "tag": {
+          "value": {
+            "defaultLabel": "The definition of formal Parameters that need to be provided to the Query when executing it"
+          }
+        },
+        "definition": {
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "mlObject"
+        }
       }
     }
   }

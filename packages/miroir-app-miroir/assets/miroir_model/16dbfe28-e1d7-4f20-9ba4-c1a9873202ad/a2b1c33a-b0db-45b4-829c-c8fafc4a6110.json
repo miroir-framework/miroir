@@ -108,6 +108,38 @@
             "defaultLabel": "MiroirTest definition at freeze time"
           }
         }
+      },
+      "selfApplication": {
+        "type": "uuid",
+        "tag": {
+          "value": {
+            "id": 9,
+            "defaultLabel": "SelfApplication",
+            "description": "The SelfApplication this MiroirTest belongs to",
+            "display": {
+              "editable": false
+            },
+            "foreignKeyParams": {
+              "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
+              "targetEntityOrderInstancesBy": "name"
+            }
+          }
+        },
+        "optional": true
+      },
+      "branch": {
+        "type": "uuid",
+        "tag": {
+          "value": {
+            "id": 10,
+            "defaultLabel": "Branch",
+            "description": "The Branch of the SelfApplication",
+            "display": {
+              "editable": false
+            }
+          }
+        },
+        "optional": true
       }
     }
   }

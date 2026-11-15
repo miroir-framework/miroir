@@ -1,13 +1,15 @@
 /**
- * #216 Phase 4 — Option A Entity-set diff → modelCUDMigration candidates.
+ * #216 Phase 4 — Option A Entity-set diff → modelCUDMigration candidates. Since #708 part B, the candidates
+ * come from the model state diff (`diffModelStates`, `modelCudMigrationCandidates`) of the Entities that two
+ * sets of EntityVersions were minted from.
  */
 import { describe, expect, it } from "vitest";
 
 import {
   buildFreezeApplicationVersionPlan,
-  diffEntityVersionSnapshots,
   snapshotEntitiesAsHistoricalEntityVersions,
 } from "../src/applicationVersionFreeze.js";
+import { diffModelStates, modelCudMigrationCandidates } from "../src/modelStateDiff.js";
 import type {
   Entity,
   EntityVersion,
@@ -51,7 +53,14 @@ function snap(entities: Entity[], start = 0): EntityVersion[] {
   });
 }
 
-describe("216 Phase 4 — diffEntityVersionSnapshots", () => {
+/** The migration candidates from the Entities `previous` was minted from to those of `next`. */
+function diffEntityVersionSnapshots(previous: EntityVersion[], next: EntityVersion[]) {
+  const entities = (versions: EntityVersion[]) =>
+    versions.map((version) => ({ ...version, uuid: version.entityUuid }) as unknown as Entity);
+  return modelCudMigrationCandidates(diffModelStates({ entities: entities(previous) }, { entities: entities(next) }));
+}
+
+describe("216 Phase 4 — Entity migration candidates from the model state diff", () => {
   it("returns [] for identical projections", () => {
     const entities = [makeEntity(BOOK, "Book"), makeEntity(AUTHOR, "Author")];
     const previous = snap(entities, 0);

@@ -9,17 +9,11 @@ import {
   type Entity,
 } from "@miroir-framework/core";
 
-import {
-  defaultMiroirMetaModel,
-  defaultMiroirMetaModelEntityNameToAttributeName,
-} from "../src/Model";
+import { defaultMiroirMetaModel } from "../src/Model";
 
 runModelValidationSuite({
   vitest,
-  plan: modelValidationSuite(
-    defaultMiroirMetaModel,
-    defaultMiroirMetaModelEntityNameToAttributeName,
-  ),
+  plan: modelValidationSuite(defaultMiroirMetaModel),
   modelEnv: defaultMiroirModelEnvironment,
   npmWorkspacePackage: "miroir-app-miroir",
   logFoundEntities: defaultMiroirMetaModel.entities.map((entity: Entity) => entity.name),

@@ -414,4 +414,3 @@ export declare const appModelInitializeCreateEntityOrder: Entity[];
 export declare const RUNNER_MIROIR_ENTITY_RUNNER_REGISTRY: any;
 export declare const miroirThemeSchemaJson: any;
 export declare const tableThemeSchemaJson: any;
-export declare const defaultMiroirMetaModelEntityNameToAttributeName: any;

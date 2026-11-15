@@ -1,4 +1,4 @@
-import type { EndpointDefinition, Entity, EntityInstance, MetaModel, SelfApplication } from "@miroir-framework/core";
+import type { EndpointDefinition, Entity, MetaModel, SelfApplication } from "@miroir-framework/core";
 
 import entityPublisher from "../assets/appForTest_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/a027c379-8468-43a5-ba4d-bf618be25cab.json" with { type: "json" };
 import entityCountry from "../assets/appForTest_model/16dbfe28-e1d7-4f20-9ba4-c1a9873202ad/d3139a6d-0486-4ec8-bded-2a83a3c3cee4.json" with { type: "json" };
@@ -41,7 +41,15 @@ export const defaultAppForTestModel: MetaModel = {
   transformerDefinitionVersions: [],
   mlSchemaVersions: [],
   miroirTestVersions: [],
+  applicationModelBranches: [selfApplicationModelBranchAppForTestMasterBranch as MetaModel["applicationModelBranches"][number]],
+  testConfigurations: [],
+  blobs: [],
+  blobVersions: [],
+  applicationVersionCrossBlobVersion: [],
+  testConfigurationVersions: [],
+  applicationVersionCrossTestConfigurationVersion: [],
+  evolutionTraceRecords: [],
   storedQueries: [],
   mlSchemas: [],
-  applicationVersions: [appForTestInitialApplicationVersion as EntityInstance],
+  applicationVersions: [appForTestInitialApplicationVersion as MetaModel["applicationVersions"][number]],
 };

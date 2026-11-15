@@ -948,11 +948,12 @@ class IsomorphicGitRepository implements GitRepositoryInterface {
     };
   }
 
-  async listFiles(): Promise<string[]> {
-    if (!(await commitOf(this.repository, "HEAD"))) {
+  async listFiles(ref = "HEAD"): Promise<string[]> {
+    const commit = await commitOf(this.repository, ref);
+    if (!commit) {
       return [];
     }
-    return git.listFiles({ ...this.repository, ref: "HEAD" });
+    return git.listFiles({ ...this.repository, ref: commit });
   }
 
   async symbolicLinks(): Promise<string[]> {

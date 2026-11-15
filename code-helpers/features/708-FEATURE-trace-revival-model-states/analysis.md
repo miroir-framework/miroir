@@ -216,8 +216,9 @@ Code that builds or reads a `MetaModel` and must follow:
 | `schemaChangeKind.ts`, `ServerModelEnvironments.ts`, the freeze (`applicationVersionFreeze.ts`, `freezeApplicationVersion.ts`) | read the new collections where they walk the model |
 | MiroirTest assets with an inline `metaModel` (`8f07f7a2-…`, `d7e9f81b-…` under `a311f363-…`), and about six test files | the new collections |
 
-Open points for part B:
-- **The name of the Test collection.** `tests` already holds MiroirTest rows. Renaming it `miroirTests` names every collection after its Entity, at the cost of touching every reader of `tests`; any other name for Test rows keeps the exception.
+Settled on 2026-11-15 by the designer: the Test Entity is retired and gets no collection, and MiroirTests move to `devData`, which takes `tests` out of `MetaModel` (#726). `tests` stays until then.
+
+Open point for part B:
 - **One list instead of many.** The collections, `versionHistoryEntityUuids` and its parallel map `versionHistoryEntityDefinitions` (`1_core/Model.ts`), the local cache selectors and `extractApplicationModel` each list the Entities by hand, which is how Blob, TestConfiguration and Test were missed. Deriving them from one list of the meta-application's Entities keeps the rule true when an Entity is added.
 
 ### D8. How fine is the diff of two model states?

@@ -125,8 +125,11 @@ export interface GitRepositoryInterface {
    * access.
    */
   push(options: GitRemoteOptions & { branch: string }): Promise<void>;
-  /** The files of the commit HEAD points at, repository-relative; empty in a repository with no commit. */
-  listFiles(): Promise<string[]>;
+  /**
+   * The files of the commit `ref` points at (HEAD by default), repository-relative, read from the commit, not
+   * the work tree; empty in a repository with no commit.
+   */
+  listFiles(ref?: string): Promise<string[]>;
   /** The symbolic links of the commit HEAD points at: a clone holding one is refused, its stores would follow it. */
   symbolicLinks(): Promise<string[]>;
 }

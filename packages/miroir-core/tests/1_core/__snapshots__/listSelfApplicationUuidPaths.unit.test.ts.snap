@@ -2,6 +2,7 @@
 
 exports[`listSelfApplicationUuidPaths (T1) > Library application (canonical corpus) > discovers compact joker paths on defaultLibraryAppModel 1`] = `
 [
+  "applicationModelBranches.*.selfApplication",
   "applications.*.homePageUrl.selfApplication",
   "applications.*.uuid",
   "applicationUuid",

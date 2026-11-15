@@ -12551,6 +12551,87 @@ export const miroirFundamentalMlSchema = {
                 "defaultLabel": "ML Schema"
               }
             }
+          },
+          "storageAccess": {
+            "type": "enum",
+            "definition": [
+              "none",
+              "localStorage",
+              "persistentStorage"
+            ],
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 6,
+                "defaultLabel": "Storage Access",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
+          },
+          "selfApplication": {
+            "type": "uuid",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 7,
+                "display": {
+                  "editable": false
+                },
+                "defaultLabel": "SelfApplication",
+                "foreignKeyParams": {
+                  "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
+                  "targetEntityOrderInstancesBy": "name"
+                }
+              }
+            }
+          },
+          "author": {
+            "type": "uuid",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 9,
+                "defaultLabel": "SelfApplication"
+              }
+            }
+          },
+          "scope": {
+            "type": "enum",
+            "optional": true,
+            "definition": [
+              "versioning",
+              "modeling"
+            ],
+            "tag": {
+              "value": {
+                "defaultLabel": "Scope",
+                "description": "Classifies meta-model entities. Absent is equivalent to modeling.",
+                "display": {
+                  "editable": false
+                },
+                "id": 19
+              }
+            }
+          },
+          "logicalDataModel": {
+            "type": "enum",
+            "optional": true,
+            "definition": [
+              "manyToMany",
+              "entity"
+            ],
+            "tag": {
+              "value": {
+                "defaultLabel": "Logical Data Model",
+                "description": "Logical persistence shape for this entity. Absent is equivalent to entity.",
+                "display": {
+                  "editable": false
+                },
+                "id": 20
+              }
+            }
           }
         }
       },
@@ -12578,7 +12659,7 @@ export const miroirFundamentalMlSchema = {
             "type": "uuid",
             "tag": {
               "value": {
-                "defaultLabel": "Query Uuid",
+                "defaultLabel": "Query Uuid of the live Query this snapshot captures",
                 "display": {
                   "editable": false
                 },
@@ -12614,6 +12695,19 @@ export const miroirFundamentalMlSchema = {
                 "defaultLabel": "Query definition at freeze time"
               }
             }
+          },
+          "parameters": {
+            "type": "schemaReference",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "The definition of formal Parameters that need to be provided to the Query when executing it"
+              }
+            },
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "mlObject"
+            }
           }
         }
       },
@@ -12641,7 +12735,7 @@ export const miroirFundamentalMlSchema = {
             "type": "uuid",
             "tag": {
               "value": {
-                "defaultLabel": "Report Uuid",
+                "defaultLabel": "Report Uuid of the live Report this snapshot captures",
                 "display": {
                   "editable": false
                 },
@@ -12691,6 +12785,23 @@ export const miroirFundamentalMlSchema = {
                 "defaultLabel": "Report definition at freeze time"
               }
             }
+          },
+          "selfApplication": {
+            "type": "uuid",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 9,
+                "display": {
+                  "editable": true
+                },
+                "defaultLabel": "SelfApplication",
+                "foreignKeyParams": {
+                  "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
+                  "targetEntityOrderInstancesBy": "name"
+                }
+              }
+            }
           }
         }
       },
@@ -12718,7 +12829,7 @@ export const miroirFundamentalMlSchema = {
             "type": "uuid",
             "tag": {
               "value": {
-                "defaultLabel": "Menu Uuid",
+                "defaultLabel": "Menu Uuid of the live Menu this snapshot captures",
                 "display": {
                   "editable": false
                 },
@@ -12781,7 +12892,7 @@ export const miroirFundamentalMlSchema = {
             "type": "uuid",
             "tag": {
               "value": {
-                "defaultLabel": "Endpoint Uuid",
+                "defaultLabel": "Endpoint Uuid of the live Endpoint this snapshot captures",
                 "display": {
                   "editable": false
                 },
@@ -12861,7 +12972,7 @@ export const miroirFundamentalMlSchema = {
             "type": "uuid",
             "tag": {
               "value": {
-                "defaultLabel": "Runner Uuid",
+                "defaultLabel": "Runner Uuid of the live Runner this snapshot captures",
                 "display": {
                   "editable": false
                 },
@@ -12933,7 +13044,7 @@ export const miroirFundamentalMlSchema = {
             "type": "uuid",
             "tag": {
               "value": {
-                "defaultLabel": "Theme Uuid",
+                "defaultLabel": "Theme Uuid of the live Theme this snapshot captures",
                 "display": {
                   "editable": false
                 },
@@ -12969,6 +13080,49 @@ export const miroirFundamentalMlSchema = {
                 "defaultLabel": "Theme definition at freeze time"
               }
             }
+          },
+          "storageAccess": {
+            "type": "enum",
+            "definition": [
+              "none",
+              "localStorage",
+              "persistentStorage"
+            ],
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Storage Access",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
+          },
+          "selfApplication": {
+            "type": "uuid",
+            "optional": true,
+            "tag": {
+              "value": {
+                "display": {
+                  "editable": false
+                },
+                "defaultLabel": "SelfApplication",
+                "foreignKeyParams": {
+                  "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
+                  "targetEntityOrderInstancesBy": "name"
+                }
+              }
+            }
+          },
+          "author": {
+            "type": "uuid",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 9,
+                "defaultLabel": "SelfApplication"
+              }
+            }
           }
         }
       },
@@ -12996,7 +13150,7 @@ export const miroirFundamentalMlSchema = {
             "type": "uuid",
             "tag": {
               "value": {
-                "defaultLabel": "Transformer Uuid",
+                "defaultLabel": "Transformer Uuid of the live TransformerDefinition this snapshot captures",
                 "display": {
                   "editable": false
                 },
@@ -13029,9 +13183,283 @@ export const miroirFundamentalMlSchema = {
             "type": "any",
             "tag": {
               "value": {
-                "defaultLabel": "Transformer definition at freeze time"
+                "defaultLabel": "Transformer definition at freeze time (interface + implementation)",
+                "description": "Versions frozen before #708 part B: the interface, implementation, classification and runnableAsSql of the TransformerDefinition. Later versions hold them at the top level, as the live row does."
+              }
+            },
+            "optional": true
+          },
+          "classification": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 3,
+                "defaultLabel": "Classification",
+                "display": {
+                  "editable": true
+                }
               }
             }
+          },
+          "presentation": {
+            "type": "schemaReference",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Presentation",
+                "description": "Block editor hints: a label template, an icon, a color."
+              }
+            },
+            "definition": {
+              "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+              "relativePath": "blockPresentationHints"
+            }
+          },
+          "runnableAsSql": {
+            "type": "boolean",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 3,
+                "defaultLabel": "Runnable As Sql",
+                "display": {
+                  "editable": true
+                }
+              }
+            }
+          },
+          "transformerInterface": {
+            "type": "object",
+            "definition": {
+              "inputOutput": {
+                "type": "schemaReference",
+                "optional": true,
+                "context": {
+                  "inputOutputPayloadType": {
+                    "type": "union",
+                    "definition": [
+                      {
+                        "type": "enum",
+                        "definition": [
+                          "any",
+                          "undefined",
+                          "bigint",
+                          "number",
+                          "string",
+                          "boolean",
+                          "object"
+                        ]
+                      },
+                      {
+                        "type": "uuid"
+                      }
+                    ]
+                  },
+                  "inputOutputType": {
+                    "type": "union",
+                    "discriminator": "type",
+                    "definition": [
+                      {
+                        "type": "enum",
+                        "definition": [
+                          "any",
+                          "undefined",
+                          "bigint",
+                          "number",
+                          "string",
+                          "boolean",
+                          "object",
+                          "array",
+                          "record"
+                        ]
+                      },
+                      {
+                        "type": "uuid"
+                      },
+                      {
+                        "type": "object",
+                        "definition": {
+                          "type": {
+                            "type": "enum",
+                            "definition": [
+                              "array",
+                              "record"
+                            ]
+                          },
+                          "payload": {
+                            "type": "schemaReference",
+                            "optional": true,
+                            "definition": {
+                              "relativePath": "inputOutputPayloadType"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "type": "object",
+                        "definition": {
+                          "type": {
+                            "type": "literal",
+                            "definition": "tuple"
+                          },
+                          "payload": {
+                            "type": "array",
+                            "definition": {
+                              "type": "schemaReference",
+                              "definition": {
+                                "relativePath": "inputOutputPayloadType"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "inputOutputObject": {
+                    "type": "object",
+                    "definition": {
+                      "input": {
+                        "type": "schemaReference",
+                        "definition": {
+                          "relativePath": "inputOutputType"
+                        }
+                      },
+                      "output": {
+                        "type": "schemaReference",
+                        "definition": {
+                          "relativePath": "inputOutputType"
+                        }
+                      }
+                    }
+                  }
+                },
+                "definition": {
+                  "relativePath": "inputOutputObject"
+                }
+              },
+              "transformerParameterSchema": {
+                "type": "object",
+                "definition": {
+                  "transformerType": {
+                    "type": "union",
+                    "discriminator": "type",
+                    "definition": [
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          "relativePath": "mlLiteral"
+                        }
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          "relativePath": "mlEnum"
+                        }
+                      }
+                    ]
+                  },
+                  "transformerDefinition": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "mlObject"
+                    }
+                  }
+                }
+              },
+              "transformerResultSchema": {
+                "type": "union",
+                "discriminator": "returns",
+                "definition": [
+                  {
+                    "type": "object",
+                    "definition": {
+                      "returns": {
+                        "type": "literal",
+                        "definition": "mlSchema"
+                      },
+                      "definition": {
+                        "type": "schemaReference",
+                        "definition": {
+                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          "relativePath": "mlElement"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "definition": {
+                      "returns": {
+                        "type": "literal",
+                        "definition": "mlSchemaTransformer"
+                      },
+                      "addAttributesToContextBeingSubtypeOf": {
+                        "type": "record",
+                        "optional": true,
+                        "definition": {
+                          "type": "schemaReference",
+                          "definition": {
+                            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                            "relativePath": "mlElement"
+                          }
+                        }
+                      },
+                      "definition": {
+                        "type": "schemaReference",
+                        "definition": {
+                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          "relativePath": "coreTransformerForBuildPlusRuntime"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            },
+            "optional": true
+          },
+          "transformerImplementation": {
+            "type": "union",
+            "discriminator": "transformerImplementationType",
+            "definition": [
+              {
+                "type": "object",
+                "definition": {
+                  "transformerImplementationType": {
+                    "type": "literal",
+                    "definition": "libraryImplementation"
+                  },
+                  "inMemoryImplementationFunctionName": {
+                    "type": "string"
+                  },
+                  "sqlImplementationFunctionName": {
+                    "type": "string",
+                    "optional": true
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "definition": {
+                  "transformerImplementationType": {
+                    "type": "literal",
+                    "definition": "transformer"
+                  },
+                  "definition": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "coreTransformerForBuildPlusRuntime"
+                    }
+                  }
+                }
+              }
+            ],
+            "optional": true
           }
         }
       },
@@ -13059,7 +13487,7 @@ export const miroirFundamentalMlSchema = {
             "type": "uuid",
             "tag": {
               "value": {
-                "defaultLabel": "MlSchema Uuid",
+                "defaultLabel": "MlSchema Uuid of the live MlSchema this snapshot captures",
                 "display": {
                   "editable": false
                 },
@@ -13124,7 +13552,7 @@ export const miroirFundamentalMlSchema = {
             "type": "uuid",
             "tag": {
               "value": {
-                "defaultLabel": "MiroirTest Uuid",
+                "defaultLabel": "MiroirTest Uuid of the live MiroirTest this snapshot captures",
                 "display": {
                   "editable": false
                 },
@@ -13188,6 +13616,556 @@ export const miroirFundamentalMlSchema = {
             "tag": {
               "value": {
                 "defaultLabel": "MiroirTest definition at freeze time"
+              }
+            }
+          },
+          "selfApplication": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "id": 9,
+                "defaultLabel": "SelfApplication",
+                "description": "The SelfApplication this MiroirTest belongs to",
+                "display": {
+                  "editable": false
+                },
+                "foreignKeyParams": {
+                  "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
+                  "targetEntityOrderInstancesBy": "name"
+                }
+              }
+            },
+            "optional": true
+          },
+          "branch": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "id": 10,
+                "defaultLabel": "Branch",
+                "description": "The Branch of the SelfApplication",
+                "display": {
+                  "editable": false
+                }
+              }
+            },
+            "optional": true
+          }
+        }
+      },
+      "blob": {
+        "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "entityDefinitionRoot"
+          }
+        },
+        "definition": {
+          "name": {
+            "type": "string",
+            "tag": {
+              "value": {
+                "defaultLabel": "Name",
+                "display": {
+                  "editable": true
+                }
+              }
+            }
+          },
+          "filename": {
+            "type": "string",
+            "tag": {
+              "value": {
+                "defaultLabel": "Filename",
+                "display": {
+                  "editable": true
+                }
+              }
+            }
+          },
+          "defaultLabel": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Default Label",
+                "display": {
+                  "editable": true
+                }
+              }
+            }
+          },
+          "description": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Description",
+                "display": {
+                  "editable": true
+                }
+              }
+            }
+          },
+          "contents": {
+            "type": "object",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Contents",
+                "display": {
+                  "editable": true
+                },
+                "isBlob": true
+              }
+            },
+            "definition": {
+              "encoding": {
+                "type": "enum",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Encoding",
+                    "display": {
+                      "editable": true
+                    }
+                  }
+                },
+                "definition": [
+                  "base64",
+                  "data-uri"
+                ]
+              },
+              "mimeType": {
+                "type": "enum",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "MIME Type",
+                    "display": {
+                      "editable": true
+                    }
+                  }
+                },
+                "definition": [
+                  "image/png",
+                  "image/jpeg",
+                  "image/gif",
+                  "image/svg+xml",
+                  "application/pdf",
+                  "application/zip",
+                  "text/plain",
+                  "application/json"
+                ]
+              },
+              "data": {
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Contents",
+                    "display": {
+                      "editable": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "testConfiguration": {
+        "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "entityDefinitionRoot"
+          }
+        },
+        "definition": {
+          "selfApplication": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "defaultLabel": "SelfApplication",
+                "foreignKeyParams": {
+                  "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
+                  "targetEntityOrderInstancesBy": "name"
+                }
+              }
+            }
+          },
+          "name": {
+            "type": "string",
+            "tag": {
+              "value": {
+                "defaultLabel": "Name"
+              }
+            }
+          },
+          "description": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Description"
+              }
+            }
+          },
+          "testbedModel": {
+            "type": "any",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Testbed Model"
+              }
+            }
+          },
+          "testbedEntitiesAndInstances": {
+            "type": "array",
+            "optional": true,
+            "definition": {
+              "type": "object",
+              "definition": {
+                "entity": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "entity"
+                  }
+                },
+                "instances": {
+                  "type": "array",
+                  "definition": {
+                    "type": "any"
+                  }
+                }
+              }
+            },
+            "tag": {
+              "value": {
+                "defaultLabel": "Testbed Entities And Instances"
+              }
+            }
+          }
+        }
+      },
+      "blobVersion": {
+        "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "entityDefinitionRoot"
+          }
+        },
+        "definition": {
+          "name": {
+            "type": "string",
+            "tag": {
+              "value": {
+                "defaultLabel": "Name",
+                "display": {
+                  "editable": true
+                }
+              }
+            }
+          },
+          "blobUuid": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "defaultLabel": "Blob Uuid of the live Blob this snapshot captures",
+                "display": {
+                  "editable": false
+                },
+                "foreignKeyParams": {
+                  "targetEntity": "62209e4a-e429-4d7d-9b28-dcc1da6b51a2",
+                  "targetEntityOrderInstancesBy": "name"
+                }
+              }
+            }
+          },
+          "filename": {
+            "type": "string",
+            "tag": {
+              "value": {
+                "defaultLabel": "Filename",
+                "display": {
+                  "editable": true
+                }
+              }
+            }
+          },
+          "defaultLabel": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Default Label",
+                "display": {
+                  "editable": true
+                }
+              }
+            }
+          },
+          "description": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Description",
+                "display": {
+                  "editable": true
+                }
+              }
+            }
+          },
+          "contents": {
+            "type": "object",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Contents",
+                "display": {
+                  "editable": true
+                },
+                "isBlob": true
+              }
+            },
+            "definition": {
+              "encoding": {
+                "type": "enum",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Encoding",
+                    "display": {
+                      "editable": true
+                    }
+                  }
+                },
+                "definition": [
+                  "base64",
+                  "data-uri"
+                ]
+              },
+              "mimeType": {
+                "type": "enum",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "MIME Type",
+                    "display": {
+                      "editable": true
+                    }
+                  }
+                },
+                "definition": [
+                  "image/png",
+                  "image/jpeg",
+                  "image/gif",
+                  "image/svg+xml",
+                  "application/pdf",
+                  "application/zip",
+                  "text/plain",
+                  "application/json"
+                ]
+              },
+              "data": {
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Contents",
+                    "display": {
+                      "editable": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "testConfigurationVersion": {
+        "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "entityDefinitionRoot"
+          }
+        },
+        "definition": {
+          "selfApplication": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "defaultLabel": "SelfApplication",
+                "foreignKeyParams": {
+                  "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
+                  "targetEntityOrderInstancesBy": "name"
+                }
+              }
+            }
+          },
+          "name": {
+            "type": "string",
+            "tag": {
+              "value": {
+                "defaultLabel": "Name"
+              }
+            }
+          },
+          "testConfigurationUuid": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "defaultLabel": "TestConfiguration Uuid of the live TestConfiguration this snapshot captures",
+                "display": {
+                  "editable": false
+                },
+                "foreignKeyParams": {
+                  "targetEntity": "675ccd46-7dd3-400b-a2bd-1319c39e11da",
+                  "targetEntityOrderInstancesBy": "name"
+                }
+              }
+            }
+          },
+          "description": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Description"
+              }
+            }
+          },
+          "testbedModel": {
+            "type": "any",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Testbed Model"
+              }
+            }
+          },
+          "testbedEntitiesAndInstances": {
+            "type": "array",
+            "optional": true,
+            "definition": {
+              "type": "object",
+              "definition": {
+                "entity": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "entity"
+                  }
+                },
+                "instances": {
+                  "type": "array",
+                  "definition": {
+                    "type": "any"
+                  }
+                }
+              }
+            },
+            "tag": {
+              "value": {
+                "defaultLabel": "Testbed Entities And Instances"
+              }
+            }
+          }
+        }
+      },
+      "applicationVersionCrossBlobVersion": {
+        "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "entityDefinitionRoot"
+          }
+        },
+        "definition": {
+          "applicationVersion": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "id": 5,
+                "display": {
+                  "editable": false
+                },
+                "defaultLabel": "SelfApplication Version",
+                "foreignKeyParams": {
+                  "targetEntity": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
+                  "targetEntityOrderInstancesBy": "name"
+                }
+              }
+            }
+          },
+          "blobVersion": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "id": 6,
+                "display": {
+                  "editable": false
+                },
+                "defaultLabel": "Blob Version",
+                "foreignKeyParams": {
+                  "targetEntity": "4fbc43fa-8970-41b8-845e-20303002147e",
+                  "targetEntityOrderInstancesBy": "name"
+                }
+              }
+            }
+          }
+        }
+      },
+      "applicationVersionCrossTestConfigurationVersion": {
+        "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "entityDefinitionRoot"
+          }
+        },
+        "definition": {
+          "applicationVersion": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "id": 5,
+                "display": {
+                  "editable": false
+                },
+                "defaultLabel": "SelfApplication Version",
+                "foreignKeyParams": {
+                  "targetEntity": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
+                  "targetEntityOrderInstancesBy": "name"
+                }
+              }
+            }
+          },
+          "testConfigurationVersion": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "id": 6,
+                "display": {
+                  "editable": false
+                },
+                "defaultLabel": "TestConfiguration Version",
+                "foreignKeyParams": {
+                  "targetEntity": "9b0f81d3-8b80-454f-9dfc-57489969a112",
+                  "targetEntityOrderInstancesBy": "name"
+                }
               }
             }
           }
@@ -49951,6 +50929,86 @@ export const miroirFundamentalMlSchema = {
               "definition": {
                 "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                 "relativePath": "transformerDefinition"
+              }
+            }
+          },
+          "applicationModelBranches": {
+            "type": "array",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "applicationModelBranch"
+              }
+            }
+          },
+          "blobs": {
+            "type": "array",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "blob"
+              }
+            }
+          },
+          "blobVersions": {
+            "type": "array",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "blobVersion"
+              }
+            }
+          },
+          "applicationVersionCrossBlobVersion": {
+            "type": "array",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "applicationVersionCrossBlobVersion"
+              }
+            }
+          },
+          "testConfigurations": {
+            "type": "array",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "testConfiguration"
+              }
+            }
+          },
+          "testConfigurationVersions": {
+            "type": "array",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "testConfigurationVersion"
+              }
+            }
+          },
+          "applicationVersionCrossTestConfigurationVersion": {
+            "type": "array",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "applicationVersionCrossTestConfigurationVersion"
+              }
+            }
+          },
+          "evolutionTraceRecords": {
+            "type": "array",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "evolutionTraceRecord"
               }
             }
           }

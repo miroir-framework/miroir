@@ -1,41 +1,18 @@
 import { createSelector } from "@reduxjs/toolkit";
 import {
   ApplicationSection,
-  ApplicationVersion,
-  EntityVersion,
   EntityInstancesUuidIndex,
   LoggerInterface,
-  Menu,
-  Entity,
   MetaModel,
   MiroirLoggerFactory,
   MiroirQueryTemplate,
-  MlSchema,
   ReduxDeploymentsState,
-  Report,
   Uuid,
   getApplicationSection,
+  buildMetaModelCollections,
+  metaModelCollections,
   type ApplicationDeploymentMap,
-  type EndpointDefinition,
-  type Query,
-  type Runner,
-  type StoredMiroirTheme,
-  type TransformerDefinition,
-  type SelfApplication,
-  type MiroirTestDefinition
 } from "@miroir-framework/core";
-import {
-  entityEndpointVersion,
-  entityEntity,
-  entityEntityVersion,
-  entityMlSchema,
-  entityMenu,
-  entityQueryVersion,
-  entityReport,
-  entityRunner,
-  entitySelfApplicationVersion,
-  selfApplicationMiroir,
-} from "@miroir-framework/core/meta-model";
 import { packageName } from "../../constants.js";
 import { cleanLevel } from "../constants.js";
 import {
@@ -45,7 +22,6 @@ import {
   selectMiroirSelectorQueryParams,
 } from "./LocalCacheSliceSelectors.js";
 import { ReduxStateWithUndoRedo } from "./localCacheReduxSliceInterface.js";
-import { entityMiroirTest, entitySelfApplication, entityTheme, entityTransformerDefinition } from "@miroir-framework/core/meta-model";
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "LocalCacheSliceModelSelector");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
 MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {log = logger});
@@ -75,352 +51,28 @@ function selectEntityInstancesFromReduxDeploymentsState(
 }
 
 // ################################################################################################
-// const selectEntities = (reduxState: ReduxStateWithUndoRedo, params:  ) => {
-const selectEntitiesFromReduxState = createSelector(
-  [
-    selectCurrentReduxDeploymentsStateFromReduxState,
-    selectApplicationDeploymentMap,
-    selectMiroirSelectorQueryParams,
-  ],
-  (
-    reduxState: ReduxDeploymentsState,
-    applicationDeploymentMap: ApplicationDeploymentMap,
-    params: MiroirQueryTemplate
-  ) => {
-    return selectEntityInstancesFromReduxDeploymentsState(
-      reduxState,
-      applicationDeploymentMap,
-      params.queryType == "localCacheEntityInstancesExtractor"
-        ? params.definition.application
-        : params.application,
-      "model",
-      entityEntity.uuid
-    );
-  }
-);
+function applicationOfParams(params: MiroirQueryTemplate): Uuid {
+  return params.queryType == "localCacheEntityInstancesExtractor" ? params.definition.application : params.application;
+}
 
-// ################################################################################################
-const selectEntityDefinitionsFromReduxState = createSelector(
-  [
-    selectCurrentReduxDeploymentsStateFromReduxState,
-    selectApplicationDeploymentMap,
-    selectMiroirSelectorQueryParams,
-  ],
-  (
-    reduxState: ReduxDeploymentsState,
-    applicationDeploymentMap: ApplicationDeploymentMap,
-    params: MiroirQueryTemplate
-  ) => {
-    const application =
-      params.queryType == "localCacheEntityInstancesExtractor"
-        ? params.definition.application
-        : params.application;
-    return selectEntityInstancesFromReduxDeploymentsState(
-      reduxState,
-      applicationDeploymentMap,
-      application,
-      // #222 — Miroir EV instances live in data; Library keeps model
-      getApplicationSection(application, entityEntityVersion.uuid),
-      entityEntityVersion.uuid
-    );
-  }
-);
-
-// ################################################################################################
-const selectMlSchemasFromReduxState = createSelector(
-  [
-    selectCurrentReduxDeploymentsStateFromReduxState,
-    selectApplicationDeploymentMap,
-    selectMiroirSelectorQueryParams,
-  ],
-  (
-    reduxState: ReduxDeploymentsState,
-    applicationDeploymentMap: ApplicationDeploymentMap,
-    params: MiroirQueryTemplate
-  ) => {
-    return selectEntityInstancesFromReduxDeploymentsState(
-      reduxState,
-      applicationDeploymentMap,
-      params.queryType == "localCacheEntityInstancesExtractor"
-        ? params.definition.application
-        : params.application,
-      // params.queryType == "localCacheEntityInstancesExtractor"
-      //   ? params.definition.deploymentUuid ?? "undefined"
-      //   : "undefined",
-      params.queryType == "localCacheEntityInstancesExtractor"
-        ? params.definition.application == selfApplicationMiroir.uuid
-          ? "data"
-          : "model"
-        : undefined,
-      entityMlSchema.uuid
-    );
-    // return selectEntityInstancesFromReduxDeploymentsState(reduxState,params, entityMlSchema.uuid)
-  }
-);
-
-// ################################################################################################
-const selectEndpointsFromReduxState = createSelector(
-  [
-    selectCurrentReduxDeploymentsStateFromReduxState,
-    selectApplicationDeploymentMap,
-    selectMiroirSelectorQueryParams,
-  ],
-  (
-    reduxState: ReduxDeploymentsState,
-    applicationDeploymentMap: ApplicationDeploymentMap,
-    params: MiroirQueryTemplate
-  ) => {
-    return selectEntityInstancesFromReduxDeploymentsState(
-      reduxState,
-      applicationDeploymentMap,
-      params.queryType == "localCacheEntityInstancesExtractor"
-        ? params.definition.application
-        : params.application,
-      // params.queryType == "localCacheEntityInstancesExtractor"
-      //   ? params.definition.deploymentUuid ?? "undefined"
-      //   : "undefined",
-      params.queryType == "localCacheEntityInstancesExtractor"
-        ? params.definition.application == selfApplicationMiroir.uuid
-          ? "data"
-          : "model"
-        : undefined,
-      entityEndpointVersion.uuid
-    );
-  }
-);
-
-// ################################################################################################
-const selectMenusFromReduxState = createSelector(
-  [selectCurrentReduxDeploymentsStateFromReduxState, selectApplicationDeploymentMap, selectMiroirSelectorQueryParams],
-  (
-    reduxState: ReduxDeploymentsState,
-    applicationDeploymentMap: ApplicationDeploymentMap,
-    params: MiroirQueryTemplate
-  ) => {
-    return selectEntityInstancesFromReduxDeploymentsState(
-      reduxState,
-      applicationDeploymentMap,
-      params.queryType == "localCacheEntityInstancesExtractor"
-        ? params.definition.application
-        : params.application,
-      // params.queryType == "localCacheEntityInstancesExtractor"
-      //   ? params.definition.deploymentUuid ?? "undefined"
-      //   : "undefined",
-      params.queryType == "localCacheEntityInstancesExtractor"
-        ? params.definition.application == selfApplicationMiroir.uuid
-          ? "data"
-          : "model"
-        : undefined,
-      entityMenu.uuid
-    );
-  }
-);
-
-// ################################################################################################
-const selectReportsFromReduxState = createSelector(
-  [
-    selectCurrentReduxDeploymentsStateFromReduxState,
-    selectApplicationDeploymentMap,
-    selectMiroirSelectorQueryParams,
-  ],
-  (
-    reduxState: ReduxDeploymentsState,
-    applicationDeploymentMap: ApplicationDeploymentMap,
-    params: MiroirQueryTemplate
-  ) => {
-    return selectEntityInstancesFromReduxDeploymentsState(
-      reduxState,
-      applicationDeploymentMap,
-      params.queryType == "localCacheEntityInstancesExtractor"
-        ? params.definition.application
-        : params.application,
-      params.queryType == "localCacheEntityInstancesExtractor"
-        ? params.definition.application == selfApplicationMiroir.uuid
-          ? "data"
-          : "model"
-        : undefined,
-      entityReport.uuid
-    );
-  }
-);
-
-// ################################################################################################
-const selectQueriesFromReduxState = createSelector(
-  [selectCurrentReduxDeploymentsStateFromReduxState, selectApplicationDeploymentMap, selectMiroirSelectorQueryParams],
-  (
-    reduxState: ReduxDeploymentsState,
-    applicationDeploymentMap: ApplicationDeploymentMap,
-    params: MiroirQueryTemplate
-  ) => {
-    return selectEntityInstancesFromReduxDeploymentsState(
-      reduxState,
-      applicationDeploymentMap,
-      params.queryType == "localCacheEntityInstancesExtractor"
-        ? params.definition.application
-        : params.application,
-      // params.queryType == "localCacheEntityInstancesExtractor"
-      //   ? params.definition.deploymentUuid ?? "undefined"
-      //   : "undefined",
-      params.queryType == "localCacheEntityInstancesExtractor"
-        ? params.definition.application == selfApplicationMiroir.uuid
-          ? "data"
-          : "model"
-        : undefined,
-      entityQueryVersion.uuid
-    );
-  }
-);
-
-// ################################################################################################
-const selectThemesFromReduxState = createSelector(
-  [selectCurrentReduxDeploymentsStateFromReduxState, selectApplicationDeploymentMap, selectMiroirSelectorQueryParams],
-  (
-    reduxState: ReduxDeploymentsState,
-    applicationDeploymentMap: ApplicationDeploymentMap,
-    params: MiroirQueryTemplate
-  ) => {
-    return selectEntityInstancesFromReduxDeploymentsState(
-      reduxState,
-      applicationDeploymentMap,
-      params.queryType == "localCacheEntityInstancesExtractor"
-        ? params.definition.application
-        : params.application,
-      params.queryType == "localCacheEntityInstancesExtractor"
-        ? params.definition.application == selfApplicationMiroir.uuid
-          ? "data"
-          : "model"
-        : undefined,
-      entityTheme.uuid
-    );
-  }
-);
-
-// ################################################################################################
-// #502: the application's TransformerDefinitions, read like themes (the transformer registry adds
-// the composites to the stock ones).
-const selectTransformerDefinitionsFromReduxState = createSelector(
-  [selectCurrentReduxDeploymentsStateFromReduxState, selectApplicationDeploymentMap, selectMiroirSelectorQueryParams],
-  (
-    reduxState: ReduxDeploymentsState,
-    applicationDeploymentMap: ApplicationDeploymentMap,
-    params: MiroirQueryTemplate
-  ) => {
-    return selectEntityInstancesFromReduxDeploymentsState(
-      reduxState,
-      applicationDeploymentMap,
-      params.queryType == "localCacheEntityInstancesExtractor"
-        ? params.definition.application
-        : params.application,
-      params.queryType == "localCacheEntityInstancesExtractor"
-        ? params.definition.application == selfApplicationMiroir.uuid
-          ? "data"
-          : "model"
-        : undefined,
-      entityTransformerDefinition.uuid
-    );
-  }
-);
-
-// ################################################################################################
-const selectTestsFromReduxState = createSelector(
-  [selectCurrentReduxDeploymentsStateFromReduxState, selectApplicationDeploymentMap, selectMiroirSelectorQueryParams],
-  (
-    reduxState: ReduxDeploymentsState,
-    applicationDeploymentMap: ApplicationDeploymentMap,
-    params: MiroirQueryTemplate
-  ) => {
-    return selectEntityInstancesFromReduxDeploymentsState(
-      reduxState,
-      applicationDeploymentMap,
-      params.queryType == "localCacheEntityInstancesExtractor"
-        ? params.definition.application
-        : params.application,
-      params.queryType == "localCacheEntityInstancesExtractor"
-        ? params.definition.application == selfApplicationMiroir.uuid
-          ? "data"
-          : "model"
-        : undefined,
-      entityMiroirTest.uuid
-    );
-  }
-);
-
-// ################################################################################################
-const selectRunnersFromReduxState = createSelector(
-  [selectCurrentReduxDeploymentsStateFromReduxState, selectApplicationDeploymentMap, selectMiroirSelectorQueryParams],
-  (
-    reduxState: ReduxDeploymentsState,
-    applicationDeploymentMap: ApplicationDeploymentMap,
-    params: MiroirQueryTemplate
-  ) => {
-    return selectEntityInstancesFromReduxDeploymentsState(
-      reduxState,
-      applicationDeploymentMap,
-      params.queryType == "localCacheEntityInstancesExtractor"
-        ? params.definition.application
-        : params.application,
-      params.queryType == "localCacheEntityInstancesExtractor"
-        ? params.definition.application == selfApplicationMiroir.uuid
-          ? "data"
-          : "model"
-        : undefined,
-      entityRunner.uuid
-    );
-  }
-);
-
-// ################################################################################################
-const selectApplicationVersionsFromReduxState = createSelector(
-  [
-    selectCurrentReduxDeploymentsStateFromReduxState,
-    selectApplicationDeploymentMap,
-    selectMiroirSelectorQueryParams,
-  ],
-  (
-    reduxState: ReduxDeploymentsState,
-    applicationDeploymentMap: ApplicationDeploymentMap,
-    params: MiroirQueryTemplate
-  ) => {
-    const application =
-      params.queryType == "localCacheEntityInstancesExtractor"
-        ? params.definition.application ?? "undefined"
-        : params.application;
-    return selectEntityInstancesFromReduxDeploymentsState(
-      reduxState,
-      applicationDeploymentMap,
-      application,
-      getApplicationSection(application, entitySelfApplicationVersion.uuid),
-      entitySelfApplicationVersion.uuid
-    );
-  }
-);
-
-// ################################################################################################
-const selectApplicationFromReduxState = createSelector(
-  [
-    selectCurrentReduxDeploymentsStateFromReduxState,
-    selectApplicationDeploymentMap,
-    selectMiroirSelectorQueryParams,
-  ],
-  (
-    reduxState: ReduxDeploymentsState,
-    applicationDeploymentMap: ApplicationDeploymentMap,
-    params: MiroirQueryTemplate
-  ) => {
-    return selectEntityInstancesFromReduxDeploymentsState(
-      reduxState,
-      applicationDeploymentMap,
-      params.queryType == "localCacheEntityInstancesExtractor"
-        ? params.definition.application ?? "undefined"
-        : params.application,
-      params.queryType == "localCacheEntityInstancesExtractor"
-        ? params.definition.application == selfApplicationMiroir.uuid
-          ? "data"
-          : "model"
-        : undefined,
-      entitySelfApplication.uuid
-    );
-  }
+/**
+ * #708 D7-a: one memoized selector per {@link MetaModel} collection (`metaModelCollections`), reading the rows of
+ * the collection's Entity from the section where they live.
+ */
+const metaModelCollectionSelectors = metaModelCollections.map(({ entity }) =>
+  createSelector(
+    [selectCurrentReduxDeploymentsStateFromReduxState, selectApplicationDeploymentMap, selectMiroirSelectorQueryParams],
+    (reduxState: ReduxDeploymentsState, applicationDeploymentMap: ApplicationDeploymentMap, params: MiroirQueryTemplate) => {
+      const application = applicationOfParams(params);
+      return selectEntityInstancesFromReduxDeploymentsState(
+        reduxState,
+        applicationDeploymentMap,
+        application,
+        getApplicationSection(application, entity.uuid),
+        entity.uuid,
+      );
+    },
+  ),
 );
 
 //#########################################################################################
@@ -429,86 +81,12 @@ export const selectModelForDeploymentFromReduxState: () => (
   applicationDeploymentMap: ApplicationDeploymentMap,
   params: MiroirQueryTemplate
 ) => MetaModel = () =>
-  createSelector(
-    [
-      selectApplicationFromReduxState,
-      selectApplicationVersionsFromReduxState,
-      selectEntitiesFromReduxState,
-      selectEntityDefinitionsFromReduxState,
-      selectMlSchemasFromReduxState,
-      selectMenusFromReduxState,
-      selectReportsFromReduxState,
-      selectRunnersFromReduxState,
-      selectQueriesFromReduxState,
-      selectEndpointsFromReduxState,
-      selectTestsFromReduxState,
-      selectThemesFromReduxState,
-      selectTransformerDefinitionsFromReduxState,
-      // selectMiroirQueryTemplateSelectorParams,
-    ],
-    (
-      applications: EntityInstancesUuidIndex,
-      applicationVersions: EntityInstancesUuidIndex,
-      entities: EntityInstancesUuidIndex,
-      entityVersions: EntityInstancesUuidIndex,
-      mlSchemas: EntityInstancesUuidIndex,
-      menus: EntityInstancesUuidIndex,
-      reports: EntityInstancesUuidIndex,
-      runners: EntityInstancesUuidIndex,
-      queries: EntityInstancesUuidIndex,
-      endpoints: EntityInstancesUuidIndex,
-      tests: EntityInstancesUuidIndex,
-      themes: EntityInstancesUuidIndex,
-      transformerDefinitions: EntityInstancesUuidIndex,
-      // params: MiroirQueryTemplate
-    ) => {
-      const application = applications && Object.values(applications).length > 0
-        ? (Object.values(applications)[0] as any)
-        : null;
-      const result: MetaModel = {
-        applicationUuid: application ? application.uuid : "",
-        applicationName: application ? application.name : "",
-        applicationVersions: (applicationVersions
-          ? Object.values(applicationVersions)
-          : []) as ApplicationVersion[],
-        applicationVersionCrossEntityVersion: [],
-        applicationVersionCrossQueryVersion: [],
-        queryVersions: [],
-        applicationVersionCrossReportVersion: [],
-        reportVersions: [],
-        applicationVersionCrossMenuVersion: [],
-        menuVersions: [],
-        applicationVersionCrossEndpointVersion: [],
-        endpointVersions: [],
-        applicationVersionCrossRunnerVersion: [],
-        runnerVersions: [],
-        applicationVersionCrossThemeVersion: [],
-        themeVersions: [],
-        applicationVersionCrossTransformerDefinitionVersion: [],
-        applicationVersionCrossMlSchemaVersion: [],
-        applicationVersionCrossMiroirTestVersion: [],
-        transformerDefinitionVersions: [],
-        mlSchemaVersions: [],
-        miroirTestVersions: [],
-        transformerDefinitions: (transformerDefinitions
-          ? Object.values(transformerDefinitions)
-          : []) as TransformerDefinition[],
-        // configuration: (configurations ? Object.values(configurations) : []) as StoreBasedConfiguration[],
-        entities: (entities ? Object.values(entities) : []) as Entity[],
-        entityVersions: (entityVersions ? Object.values(entityVersions) : []) as EntityVersion[],
-        endpoints: (endpoints ? Object.values(endpoints) : []) as EndpointDefinition[],
-        mlSchemas: (mlSchemas ? Object.values(mlSchemas) : []) as MlSchema[],
-        menus: (menus ? Object.values(menus) : []) as Menu[],
-        reports: (reports ? Object.values(reports) : []) as Report[],
-        runners: (runners ? Object.values(runners) : []) as Runner[],
-        applications: (applications ? Object.values(applications) : []) as SelfApplication[],
-        storedQueries: (queries ? Object.values(queries) : []) as Query[],
-        tests: (tests ? Object.values(tests) : []) as MiroirTestDefinition[],
-        themes: (themes ? Object.values(themes) : []) as StoredMiroirTheme[],
-      };
-      // } as MetaModel;
-      // log.info("selectModelForDeploymentFromReduxState",result);
-
-      return result;
-    }
-  );
+  createSelector(metaModelCollectionSelectors, (...indexes: (EntityInstancesUuidIndex | undefined)[]): MetaModel => {
+    const collections = buildMetaModelCollections((_entry, index) => Object.values(indexes[index] ?? {}));
+    const application = collections.applications[0];
+    return {
+      applicationUuid: application?.uuid ?? "",
+      applicationName: application?.name ?? "",
+      ...collections,
+    };
+  });
