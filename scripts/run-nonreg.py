@@ -70,7 +70,7 @@ WORKER_LOCKS_ENV = "MIROIR_NONREG_WORKER_LOCKS"
 
 TierName = Literal["unit", "default", "full"]
 TIER_ORDER: dict[str, int] = {"unit": 0, "default": 1, "full": 2}
-StepStatus = Literal["passed", "failed", "skipped", "not_run"]
+StepStatus = Literal["passed", "failed", "skipped", "not_run", "tainted"]
 
 VITEST_SUMMARY_RE = re.compile(
     r"Tests\s+(?:(\d+)\s+failed\s*)?(?:(\d+)\s+passed\s*)?(?:(\d+)\s+skipped\s*)?",
@@ -750,6 +750,8 @@ def write_summary_md(summary: dict[str, Any], path: Path, timings: dict[str, Any
         f"- failed: **{summary['counts']['failed']}**",
         f"- skipped: **{summary['counts']['skipped']}**",
         f"- not_run: **{summary['counts']['not_run']}**",
+        *([f"- tainted: **{summary['counts']['tainted']}** (built packages changed during the run)"]
+          if summary["counts"].get("tainted") else []),
         "",
         "## Steps",
         "",
@@ -767,6 +769,8 @@ def write_summary_md(summary: dict[str, Any], path: Path, timings: dict[str, Any
             )
         elif step.get("exit_code") not in (None, 0) and step["status"] == "failed":
             notes = f"exit {step['exit_code']}"
+        if step["status"] == "tainted":
+            notes = f"was {step.get('verdict_before_taint')}; changed: {', '.join(step.get('tainted_by', [])[:3])}"
         dur = f"{step['duration_s']}s" if step.get("duration_s") is not None else "—"
         lines.append(
             f"| {step['status']} | `{step['id']}` | {dur} | {notes} |"
@@ -791,6 +795,7 @@ def print_synthetic_report(summary: dict[str, Any]) -> None:
         f"failed={summary['counts']['failed']}  "
         f"skipped={summary['counts']['skipped']}  "
         f"not_run={summary['counts']['not_run']}"
+        + (f"  tainted={summary['counts']['tainted']}" if summary["counts"].get("tainted") else "")
     )
     print("-" * 72)
     for step in summary["steps"]:
@@ -800,12 +805,14 @@ def print_synthetic_report(summary: dict[str, Any]) -> None:
             "failed": "FAIL",
             "skipped": "SKIP",
             "not_run": "----",
+            "tainted": "TNT!",
         }[status]
         color = {
             "passed": GREEN,
             "failed": RED,
             "skipped": YELLOW,
             "not_run": GRAY,
+            "tainted": YELLOW,
         }[status]
         mark = f"{color}[{mark_text}]{RESET}"
         extra = ""
@@ -813,6 +820,8 @@ def print_synthetic_report(summary: dict[str, Any]) -> None:
             extra = f" ({step['skip_reason']})"
         elif status == "failed":
             extra = f" exit={step.get('exit_code')}"
+        elif status == "tainted":
+            extra = f" (was {step.get('verdict_before_taint')}, built packages changed)"
         dur = f" {step['duration_s']}s" if step.get("duration_s") is not None else ""
         print(f"  {mark} {step['id']}{dur}{extra}")
     print("-" * 72)
@@ -892,9 +901,14 @@ def compare_summaries(current: dict[str, Any], baseline_path: Path) -> int:
     missing_now: list[str] = []
     added_now: list[str] = []
 
+    tainted: list[str] = []
     for sid in all_ids:
         c = cur.get(sid)
         b = base.get(sid)
+        # #736: a tainted step has no verdict to compare
+        if (c is not None and c["status"] == "tainted") or (b is not None and b["status"] == "tainted"):
+            tainted.append(sid)
+            continue
         if c is None:
             missing_now.append(sid)
             continue
@@ -933,6 +947,8 @@ def compare_summaries(current: dict[str, Any], baseline_path: Path) -> int:
     print(f"missing steps ({len(missing_now)}): {', '.join(missing_now) or '—'}")
     if ignored:
         print(f"scoped compare: {len(ignored)} step(s) selected by only one run ignored: {', '.join(ignored)}")
+    if tainted:
+        print(f"tainted, not compared ({len(tainted)}): {', '.join(tainted)}")
     if known_flaky:
         print(f"known flaky, not counted ({len(known_flaky)}): {', '.join(known_flaky)} (see {repo_relative(flaky_list_path())})")
     print("=" * 72)
@@ -1269,6 +1285,14 @@ def build_parser() -> argparse.ArgumentParser:
         help="Directory for snapshots (default: test-results/nonreg)",
     )
     p.add_argument(
+        "--watch-root",
+        default=None,
+        help=(
+            "Where the built packages (packages/*/dist, packages/miroir-server/release) are watched for "
+            "changes during the run (#736; default: the repository)"
+        ),
+    )
+    p.add_argument(
         "--environments-dir",
         default=None,
         help="Where the test environments are read for the store check (default: environments)",
@@ -1282,6 +1306,58 @@ class RunContext:
     snap_dir: Path
     dry_run: bool
     timings: bool
+    # #736: None on a dry run
+    guard: "BuildGuard | None" = None
+
+
+class BuildGuard:
+    """The built packages the steps load (#736): the files directly under each `packages/*/dist/` and
+    `packages/miroir-server/release/`, by size and mtime. A unit that starts or ends with them changed since
+    the run started is tainted: it may have loaded a half-built package, or code the run did not start with.
+    The outputs a step declares in `builds` are not watched."""
+
+    def __init__(self, root: Path, ignored: Iterable[str]) -> None:
+        self.root = root
+        self.ignored = [i.replace("\\", "/").strip("/") for i in ignored]
+        self.baseline = self.fingerprint()
+
+    def is_ignored(self, rel: str) -> bool:
+        return any(rel == i or rel.startswith(i + "/") for i in self.ignored)
+
+    def fingerprint(self) -> dict[str, tuple[int, int]]:
+        folders = [*sorted(self.root.glob("packages/*/dist")), self.root / "packages" / "miroir-server" / "release"]
+        prints: dict[str, tuple[int, int]] = {}
+        for folder in folders:
+            try:
+                entries = list(folder.iterdir())
+            except OSError:
+                continue
+            for entry in entries:
+                rel = entry.relative_to(self.root).as_posix()
+                if self.is_ignored(rel):
+                    continue
+                try:
+                    st = entry.stat()
+                except OSError:
+                    continue  # removed while listed: a build is under way, the next look sees it
+                if entry.is_file():
+                    prints[rel] = (st.st_size, st.st_mtime_ns)
+        return prints
+
+    def changes(self) -> list[str]:
+        """The watched files added, removed or rewritten since the run started."""
+        now = self.fingerprint()
+        return sorted(rel for rel in set(now) | set(self.baseline) if now.get(rel) != self.baseline.get(rel))
+
+
+def taint(results: dict[str, StepResult], changed: list[str]) -> None:
+    """Replaces the verdict of the steps of a unit by `tainted`, keeping it in `verdict_before_taint`."""
+    for result in results.values():
+        if result.status not in ("passed", "failed"):
+            continue
+        result.extra["verdict_before_taint"] = result.status
+        result.extra["tainted_by"] = changed[:20]
+        result.status = "tainted"
 
 
 def not_run_result(step: dict[str, Any], run: RunContext) -> StepResult:
@@ -1491,6 +1567,7 @@ def run_unit(
     if threading.current_thread() is not threading.main_thread():
         _console.buffer = []
     try:
+        changed_before = run.guard.changes() if run.guard is not None else []
         worker = workers.acquire() if workers is not None else None
         last_failed: bool | None = None
 
@@ -1527,8 +1604,17 @@ def run_unit(
         if worker is not None:
             for result in results.values():
                 result.extra.setdefault("worker", worker)
+        changed = changed_before or (run.guard.changes() if run.guard is not None else [])
+        if changed:
+            taint(results, changed)
+            emit(
+                f"{YELLOW}tainted{RESET} {', '.join(results)}: built packages changed during the run: "
+                + ", ".join(changed[:5]) + (f" (+{len(changed) - 5})" if len(changed) > 5 else "")
+            )
         if workers is not None and worker is not None:
-            failed = last_failed if last_failed is not None else any(r.status == "failed" for r in results.values())
+            failed = last_failed if last_failed is not None else any(
+                r.status == "failed" or r.extra.get("verdict_before_taint") == "failed" for r in results.values()
+            )
             workers.release(worker, failed)
         return results, getattr(_console, "buffer", None) or []
     finally:
@@ -1782,7 +1868,11 @@ def run_once(args: argparse.Namespace) -> tuple[int, Path | None]:
     started_at = datetime.now(timezone.utc).isoformat()
     wall_start = time.perf_counter()
     shared_groups = plan_shared_groups(steps) if args.runner == "shared" else {}
-    run = RunContext(profile=profile, snap_dir=snap_dir, dry_run=args.dry_run, timings=args.timings)
+    guard = None
+    if not args.dry_run:
+        builds = [b for step in steps for b in step.get("builds", [])]
+        guard = BuildGuard(Path(args.watch_root).resolve() if args.watch_root else ROOT, builds)
+    run = RunContext(profile=profile, snap_dir=snap_dir, dry_run=args.dry_run, timings=args.timings, guard=guard)
     # #728: every unit runs on a worker cleared before and after it, in serial runs as well.
     workers = Workers(keep_failed=args.keep_worker_state, dry_run=args.dry_run)
     try:
@@ -1814,6 +1904,9 @@ def run_once(args: argparse.Namespace) -> tuple[int, Path | None]:
         "skipped": sum(1 for r in results if r.status == "skipped"),
         "not_run": sum(1 for r in results if r.status == "not_run"),
     }
+    tainted = [r.id for r in results if r.status == "tainted"]
+    if tainted:
+        counts["tainted"] = len(tainted)
 
     summary: dict[str, Any] = {
         "stamp": stamp,
@@ -1865,13 +1958,19 @@ def run_once(args: argparse.Namespace) -> tuple[int, Path | None]:
 
     print_synthetic_report(summary)
 
-    exit_code = 0 if counts["failed"] == 0 else 1
+    exit_code = 0 if counts["failed"] == 0 and not tainted else 1
+    if tainted:
+        print(
+            f"{YELLOW}{len(tainted)} step(s) tainted{RESET}: the built packages changed during the run "
+            "(a build outside the nonreg?); their verdicts say nothing about the code. Run them again.",
+            flush=True,
+        )
     # Compare against the pre-resolved baseline (before rewriting `latest`).
     if baseline_path is not None:
         # #734: with a baseline, a failure of a known flaky step does not fail the run either.
         known = load_flaky_steps()
         counted = [r for r in results if r.status == "failed" and r.id not in known]
-        exit_code = max(1 if counted else 0, compare_summaries(summary, baseline_path))
+        exit_code = max(1 if counted or tainted else 0, compare_summaries(summary, baseline_path))
 
     # Update latest only after compare, so `--compare latest` means previous run.
     if not args.dry_run:

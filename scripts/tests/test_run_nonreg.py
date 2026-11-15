@@ -7,6 +7,7 @@ so later slices (--timings, --runner shared) can prove the default run is unchan
 from __future__ import annotations
 
 import json
+import re
 import os
 import shutil
 import socket
@@ -86,10 +87,14 @@ def checkout_worker_locks(env: dict[str, str] | None = None) -> dict[str, str]:
 def runner_cmd(tmp_path: Path) -> list[str]:
     """The runner, with no test environments to clear (#728): every run clears its workers' state for the
     environments it knows, so a run started here never touches the stores of a nonreg run that started these
-    tests. A later --environments-dir in the arguments overrides it."""
+    tests, and watches no built packages (#736). A later --environments-dir or --watch-root in the arguments
+    overrides them."""
     empty = tmp_path / "no-environments"
     empty.mkdir(parents=True, exist_ok=True)
-    return [sys.executable, str(SCRIPT), "--environments-dir", str(empty)]
+    # #736: nor are the repository's built packages watched, which a nonreg step may build meanwhile
+    no_packages = tmp_path / "no-packages"
+    no_packages.mkdir(parents=True, exist_ok=True)
+    return [sys.executable, str(SCRIPT), "--environments-dir", str(empty), "--watch-root", str(no_packages)]
 
 
 def write_manifest(tmp_path: Path, steps: list[dict], scopes: dict[str, str] | None = None) -> Path:
@@ -1783,3 +1788,120 @@ def test_two_equivalence_checks_in_the_same_second_keep_both_reports(tmp_path: P
 
     assert second != first
     assert not (root / "equivalence" / f"{second}.json").exists()
+
+
+# --- #736: built packages that change during the run taint the steps -----------------------------
+
+
+def py_step(step_id: str, code: str, **fields) -> dict:
+    return {"id": step_id, "tier": "unit", "title": step_id, "requires": "none", "argv": ["python", "-c", code], **fields}
+
+
+def packages_root(tmp_path: Path) -> Path:
+    root = tmp_path / "checkout"
+    for folder in ("packages/miroir-core/dist", "packages/miroir-sandbox/dist", "packages/miroir-server/release"):
+        (root / folder).mkdir(parents=True)
+        (root / folder / "index.js").write_text("// built\n", encoding="utf-8")
+    return root
+
+
+def rewrite(path: Path, sleep: float = 0.0) -> str:
+    return f"import pathlib, time; time.sleep({sleep}); pathlib.Path({str(path)!r}).write_text('// rebuilt, longer\\n')"
+
+
+def test_a_step_that_rebuilds_a_watched_package_taints_itself_and_the_steps_after_it(tmp_path: Path):
+    root = packages_root(tmp_path)
+    manifest = write_manifest(
+        tmp_path,
+        [
+            py_step("before", "pass"),
+            py_step("builder", rewrite(root / "packages/miroir-core/dist/index.js")),
+            py_step("after", "raise SystemExit(3)"),
+        ],
+    )
+
+    code, summary, snap_dir = run_nonreg(tmp_path, manifest, "--tier", "unit", *FS_PROFILE, "--watch-root", str(root))
+
+    assert code == 1
+    by_id = {st["id"]: st for st in summary["steps"]}
+    assert by_id["before"]["status"] == "passed"
+    assert by_id["builder"]["status"] == "tainted"
+    assert by_id["builder"]["verdict_before_taint"] == "passed"
+    assert by_id["builder"]["tainted_by"] == ["packages/miroir-core/dist/index.js"]
+    assert by_id["after"]["status"] == "tainted"
+    assert by_id["after"]["verdict_before_taint"] == "failed"
+    assert summary["counts"]["tainted"] == 2
+    assert "tainted: **2**" in (snap_dir / "summary.md").read_text(encoding="utf-8")
+
+
+def test_a_removed_release_file_taints_the_run(tmp_path: Path):
+    root = packages_root(tmp_path)
+    release = root / "packages/miroir-server/release/index.js"
+    manifest = write_manifest(tmp_path, [py_step("cleaner", f"import pathlib; pathlib.Path({str(release)!r}).unlink()")])
+
+    code, summary, _ = run_nonreg(tmp_path, manifest, "--tier", "unit", *FS_PROFILE, "--watch-root", str(root))
+
+    assert code == 1
+    assert summary["steps"][0]["tainted_by"] == ["packages/miroir-server/release/index.js"]
+
+
+def test_the_outputs_a_step_declares_in_builds_are_not_watched(tmp_path: Path):
+    root = packages_root(tmp_path)
+    manifest = write_manifest(
+        tmp_path,
+        [
+            py_step("sandbox", rewrite(root / "packages/miroir-sandbox/dist/index.js"), builds=["packages/miroir-sandbox/dist"]),
+            py_step("after", "pass"),
+        ],
+    )
+
+    code, summary, _ = run_nonreg(tmp_path, manifest, "--tier", "unit", *FS_PROFILE, "--watch-root", str(root))
+
+    assert code == 0, summary
+    assert [st["status"] for st in summary["steps"]] == ["passed", "passed"]
+    assert "tainted" not in summary["counts"]
+
+
+def test_a_build_during_a_parallel_step_taints_the_steps_running_with_it(tmp_path: Path):
+    root = packages_root(tmp_path)
+    manifest = write_manifest(
+        tmp_path,
+        [
+            py_step("long", "import time; time.sleep(1.5)"),
+            py_step("builder", rewrite(root / "packages/miroir-core/dist/index.js", sleep=0.3)),
+        ],
+    )
+
+    code, summary, _ = run_nonreg(
+        tmp_path, manifest, "--tier", "unit", *FS_PROFILE, "--jobs", "2", "--watch-root", str(root)
+    )
+
+    assert code == 1
+    assert [st["status"] for st in summary["steps"]] == ["tainted", "tainted"]
+
+
+def test_compare_and_equivalence_take_no_verdict_from_a_tainted_step(tmp_path: Path):
+    manifest = write_manifest(tmp_path, [])
+    current = write_summary(tmp_path / "cur", {"ok": "passed", "t": "tainted"})
+    baseline = write_summary(tmp_path / "base", {"ok": "passed", "t": "failed"})
+
+    proc = run_raw(tmp_path, manifest, "--compare", str(current), str(baseline))
+
+    assert proc.returncode == 0  # the run itself exits 1 on a tainted step; the compare has nothing to say
+    assert "tainted, not compared (1): t" in proc.stdout
+    assert "fixed (0)" in proc.stdout
+
+    (tmp_path / "eq").mkdir()
+    proc, _ = summaries_check(tmp_path / "eq", serial=[{"t": "passed"}], parallel=[{"t": "tainted"}])
+    assert proc.returncode == 0
+    assert equivalence_report(tmp_path / "eq")["not_compared"] == ["t"]
+
+
+BUILD_COMMAND = re.compile(r"npm run (build|devBuild|build:[\w-]+)\b|\btsup\b")
+
+
+def test_every_manifest_step_that_builds_a_package_declares_its_outputs():
+    undeclared = [
+        s["id"] for s in REAL_MANIFEST["steps"] if BUILD_COMMAND.search(" ".join(s["argv"])) and not s.get("builds")
+    ]
+    assert undeclared == [], "declare the folders these steps build in `builds` (#736)"

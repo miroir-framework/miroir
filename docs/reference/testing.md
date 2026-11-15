@@ -67,6 +67,12 @@ Console lines of a step are printed as one block when the step ends, so the cons
 
 Two runs never share a results root: a run holds `test-results/nonreg/.run.lock` (or `<--results-root>/.run.lock`) and a second one stops with exit code 2. The system releases the lock when the run ends, also when it is killed.
 
+#### Built packages that change during a run (#736)
+
+Every step loads the built packages, so a build started while the nonreg runs (`npm run build -w @miroir-framework/core` deletes `dist` first) makes the steps that start meanwhile fail on a missing module, and the steps after it test other code than the run started with. The runner records the files directly under each `packages/*/dist/` and `packages/miroir-server/release/` (size and modification time) when the run starts, and looks at them again when each step or shared group starts and ends. When they changed, the steps of that unit get the status `tainted` instead of their verdict: `summary.json` keeps the verdict in `verdict_before_taint` and the changed files in `tainted_by`, the counts list `tainted`, and the run exits 1. Run those steps again once the build is over. `--compare` and the equivalence check list tainted steps apart and take no verdict from them.
+
+A step that builds a package declares the folders it writes in the manifest, `"builds": ["packages/miroir-sandbox/dist"]`; the runner does not watch them. A step that builds a package other steps load must also be `"parallel": false`. A test fails on a step whose argv runs a build (`npm run build`, `build:*`, `devBuild`, `tsup`) with no `builds`. `--watch-root` moves the watched tree (the runner's own tests use it).
+
 A few steps pin `emulatedServer-filesystem` in their argv and run on filesystem whatever the storage: `integ-runner.freezeApplicationVersion`, `externalServices-spotify`, `externalServices-github`, `appstack-270-persistent-secrets`.
 
 | Tier | Contents |

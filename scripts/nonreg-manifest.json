@@ -2618,7 +2618,8 @@
       "tier": "unit",
       "title": "#633 — miroir-sandbox builds from library packages (vite build; it broke unnoticed after #592)",
       "requires": "none",
-      "argv": ["npm", "run", "build", "-w", "miroir-sandbox"]
+      "argv": ["npm", "run", "build", "-w", "miroir-sandbox"],
+      "builds": ["packages/miroir-sandbox/dist"]
     },
     {
       "id": "unit-633-app-shell",
