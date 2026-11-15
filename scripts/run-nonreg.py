@@ -16,6 +16,7 @@ Examples:
 from __future__ import annotations
 
 import argparse
+import errno
 import hashlib
 import json
 import os
@@ -1178,9 +1179,16 @@ def worker_locks_dir() -> Path:
     return Path(tempfile.gettempdir()) / f"miroir-nonreg-workers-{checkout}"
 
 
+# What a non-blocking lock raises when another process holds it: flock gives EWOULDBLOCK (EAGAIN),
+# msvcrt.locking EACCES or EDEADLOCK.
+LOCK_BUSY_ERRNOS = {errno.EACCES, errno.EAGAIN, errno.EWOULDBLOCK, errno.EDEADLK}
+
+
 def try_lock(path: Path) -> Any:
     """The open file holding an exclusive lock on `path`, or None when another process holds it. The
-    operating system releases the lock when the file is closed or the process ends, even when killed."""
+    operating system releases the lock when the file is closed or the process ends, even when killed.
+    Any other error (a folder whose filesystem does not lock files) is raised: taken for a busy lock, it
+    would make `Workers.acquire` try new numbers forever."""
     path.parent.mkdir(parents=True, exist_ok=True)
     file = open(path, "a+")
     try:
@@ -1192,9 +1200,11 @@ def try_lock(path: Path) -> Any:
             import fcntl
 
             fcntl.flock(file.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
-    except OSError:
+    except OSError as exc:
         file.close()
-        return None
+        if exc.errno in LOCK_BUSY_ERRNOS:
+            return None
+        raise
     return file
 
 

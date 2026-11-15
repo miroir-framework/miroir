@@ -59,6 +59,9 @@ LEGACY_SUMMARY_KEYS = {
 
 
 WORKER_LOCKS_ENV = "MIROIR_NONREG_WORKER_LOCKS"
+# The lock folder of the run that started these tests, if it set one: `private_worker_locks` replaces it
+# for most tests, `checkout_worker_locks` gives it back (#584 review).
+INHERITED_WORKER_LOCKS = os.environ.get(WORKER_LOCKS_ENV)
 
 
 @pytest.fixture(autouse=True)
@@ -74,7 +77,10 @@ def checkout_worker_locks(env: dict[str, str] | None = None) -> dict[str, str]:
     """The environment of a run whose test environments are named like the repository's
     (test-filesystem, test-sql): it claims workers with the checkout's lock files (#584), so it never
     clears the stores of a nonreg run that started these tests."""
-    return {k: v for k, v in (env if env is not None else os.environ).items() if k != WORKER_LOCKS_ENV}
+    restored = {k: v for k, v in (env if env is not None else os.environ).items() if k != WORKER_LOCKS_ENV}
+    if INHERITED_WORKER_LOCKS is not None:
+        restored[WORKER_LOCKS_ENV] = INHERITED_WORKER_LOCKS
+    return restored
 
 
 def runner_cmd(tmp_path: Path) -> list[str]:
@@ -1535,3 +1541,50 @@ def test_a_run_gives_its_worker_numbers_back_when_it_ends(tmp_path: Path, probe_
 
     assert claim is not None
     claim.close()
+
+
+def test_try_lock_raises_an_error_that_is_not_a_busy_lock(tmp_path: Path, monkeypatch):
+    # #584 review: a folder whose filesystem rejects locks must stop the run, not make Workers.acquire try
+    # new worker numbers forever.
+    import errno
+
+    runner = load_runner()
+
+    def unsupported(*_args):
+        raise OSError(errno.ENOLCK, "No locks available")
+
+    if os.name == "nt":
+        import msvcrt
+
+        monkeypatch.setattr(msvcrt, "locking", unsupported)
+    else:
+        import fcntl
+
+        monkeypatch.setattr(fcntl, "flock", unsupported)
+    with pytest.raises(OSError):
+        runner.try_lock(tmp_path / "w1.lock")
+
+
+def test_a_worker_directory_left_by_rmtree_fails_the_clear(tmp_path: Path, monkeypatch):
+    # #584: on Windows, rmtree(ignore_errors=True) leaves a folder another process has a file open in.
+    runner = load_runner()
+    state = f"test-pytest584-{os.getpid()}"
+    environments = tmp_path / "environments"
+    environments.mkdir()
+    (environments / f"{state}.json").write_text("{}", encoding="utf-8")
+    monkeypatch.setattr(runner, "ENVIRONMENTS_DIR", environments)
+    left = ROOT / ".miroir" / f"{state}@w1"
+    left.mkdir(parents=True, exist_ok=True)
+    monkeypatch.setattr(runner.shutil, "rmtree", lambda *_args, **_kwargs: None)
+    try:
+        lines, complete = runner.remove_worker_state(["w1"])
+        workers = runner.Workers(keep_failed=False, dry_run=False)
+        workers.used.append("w1")
+        workers.release("w1", failed=False)
+    finally:
+        monkeypatch.undo()
+        shutil.rmtree(left, ignore_errors=True)
+
+    assert complete is False
+    assert any(line.startswith("could not remove") for line in lines)
+    assert workers.free == []
