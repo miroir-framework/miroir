@@ -127,6 +127,7 @@ import {
   FREEZE_APPLICATION_VERSION_ACTION_TYPE,
   REBASELINE_EVOLUTION_TRACES_ACTION_TYPE,
   VERSIONING_PACKAGE_NAME,
+  deploymentRoleOf,
   type AppendEvolutionTraceRecordPayload,
   type CheckStagedEvolutionTracesPayload,
 } from "../1_core/versioning/versioningInterfaces.js";
@@ -1527,11 +1528,22 @@ export class DomainController implements DomainControllerInterface, DomainContro
       const row = domainState?.[deploymentUuid]?.[section]?.[entityUuid]?.[application] as
         | EvolutionTraceSwitchInput
         | undefined;
-      if (isEvolutionTraceOn(row)) {
+      // #9: a following deployment records nothing, so that its writes never enter the shared chain
+      if (isEvolutionTraceOn(row) && deploymentRoleOf(this.cachedDeploymentRow(deploymentUuid, applicationDeploymentMap)) !== "following") {
         traced.push(application);
       }
     }
     return traced;
+  }
+
+  /** #9: the Admin Deployment row of `deploymentUuid` in the local cache, when it is loaded. */
+  private cachedDeploymentRow(
+    deploymentUuid: string,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+  ): { role?: unknown; configuration?: any } | undefined {
+    const domainState = this.localCache.getDomainState() as Record<string, any> | undefined;
+    const adminDeployment = applicationDeploymentMap[adminSelfApplication.uuid] ?? deployment_Admin.uuid;
+    return domainState?.[adminDeployment]?.data?.[entityDeployment.uuid]?.[deploymentUuid];
   }
 
   /** #708: whether a write made outside a transaction gets its own record. Read before the write. */
@@ -1564,12 +1576,9 @@ export class DomainController implements DomainControllerInterface, DomainContro
         { capability: "versioning", package: VERSIONING_PACKAGE_NAME },
       );
     }
-    const domainState = this.localCache.getDomainState() as Record<string, any> | undefined;
-    const adminDeployment = applicationDeploymentMap[adminSelfApplication.uuid] ?? deployment_Admin.uuid;
-    const deploymentRows = domainState?.[adminDeployment]?.data?.[entityDeployment.uuid];
     for (const application of tracedApplications) {
       const deploymentUuid = applicationDeploymentMap[application];
-      const configuration = deploymentRows?.[deploymentUuid]?.configuration;
+      const configuration = this.cachedDeploymentRow(deploymentUuid, applicationDeploymentMap)?.configuration;
       if (configuration && !configuration.modelVersion) {
         return new Action2Error(
           "FailedToHandleAction",

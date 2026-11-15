@@ -95,6 +95,24 @@
           }
         }
       },
+      "role": {
+        "type": "enum",
+        "optional": true,
+        "definition": [
+          "authoring",
+          "following"
+        ],
+        "tag": {
+          "value": {
+            "id": 8,
+            "defaultLabel": "Role",
+            "description": "#9: authoring (the default: the model is edited here) or following (the model is installed at a version and changed only by Migrations). Chosen when the deployment is created, never changed.",
+            "display": {
+              "editable": false
+            }
+          }
+        }
+      },
       "configuration": {
         "type": "schemaReference",
         "optional": true,

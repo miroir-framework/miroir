@@ -1007,8 +1007,16 @@ export {
   APPEND_EVOLUTION_TRACE_RECORD_ACTION_TYPE,
   REBASELINE_EVOLUTION_TRACES_ACTION_TYPE,
   CHECK_STAGED_EVOLUTION_TRACES_ACTION_TYPE,
+  INSTALL_APPLICATION_VERSION_ACTION_TYPE,
+  DEPLOYMENT_STATE_ENTITY_UUID,
+  deploymentRoleOf,
 } from "./1_core/versioning/versioningInterfaces.js";
-export { isEvolutionTraceOn, selfApplicationRowLocation } from "./1_core/versioning/evolutionTraceRecording.js";
+export {
+  isEvolutionTraceOn,
+  isMigrationRun,
+  markMigrationRun,
+  selfApplicationRowLocation,
+} from "./1_core/versioning/evolutionTraceRecording.js";
 export type { EvolutionTraceSwitchInput } from "./1_core/versioning/evolutionTraceRecording.js";
 export type {
   AppendEvolutionTraceRecordPayload,
@@ -1019,6 +1027,10 @@ export type {
   FreezeAvailability,
   RebaselineEvolutionTracesActionPayload,
   CheckStagedEvolutionTracesPayload,
+  DeploymentRole,
+  DeploymentStateAppliedMigration,
+  DeploymentStateRow,
+  InstallApplicationVersionActionPayload,
   VersioningMode,
   VersioningModeInput,
 } from "./1_core/versioning/versioningInterfaces.js";

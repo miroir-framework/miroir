@@ -34,6 +34,23 @@ export function isRecordedBySender(action: unknown): boolean {
   return !!action && typeof action === "object" && (action as Record<symbol, unknown>)[RECORDED_BY_SENDER] === true;
 }
 
+/**
+ * #9: set by the versioning package on the writes of a migration run or of a version install on a
+ * following deployment: the only model writes such a deployment accepts. Symbol-keyed like
+ * RECORDED_BY_SENDER, so it never leaves the process that runs the migration.
+ */
+const MIGRATION_RUN = Symbol.for("miroir.migration.run");
+
+/** `action`, marked as a write of a migration run (or of a version install). */
+export function markMigrationRun<T extends object>(action: T): T {
+  return { ...action, [MIGRATION_RUN]: true };
+}
+
+/** Whether `action` is a write of a migration run (or of a version install). */
+export function isMigrationRun(action: unknown): boolean {
+  return !!action && typeof action === "object" && (action as Record<symbol, unknown>)[MIGRATION_RUN] === true;
+}
+
 /** How a record holds an instance write: its type, the instance endpoint, and the payload fields a replay needs. */
 export function recordedInstanceWrite(action: {
   actionType: string;

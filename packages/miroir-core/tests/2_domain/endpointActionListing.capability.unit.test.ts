@@ -63,7 +63,7 @@ if (runThis) {
     });
 
     it("with versioning off, the catalog leaves out the versioning actions and keeps the other actions", () => {
-      const versioningActions = ["freezeApplicationVersion", "rebaselineEvolutionTraces"]; // #708 part C
+      const versioningActions = ["freezeApplicationVersion", "rebaselineEvolutionTraces", "installApplicationVersion"]; // #708 part C, #9
       const on = listedActionTypes(capabilities(true));
       const off = listedActionTypes(capabilities(false));
       expect(off).not.toContain("freezeApplicationVersion");

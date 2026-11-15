@@ -16,7 +16,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Prerequisites: [`../708-FEATURE-trace-revival-model-states/`](../708-FEATURE-trace-revival-model-states/) ✅, [`../696-REFACTOR-versioning-package/`](../696-REFACTOR-versioning-package/) ✅
 Working branch: `claude/project-thread-8d36cr` (assigned by the session), one PR per part (analysis D1)
 
-**Resume note:** plan rewritten 2026-11-15 after the user's first review (storage reconciliation set aside, contract steps as `CompositeActionSequence`, role on the Deployment); waiting for the user's review; no slice started.
+**Resume note:** plan rewritten 2026-11-15 after the user's first review; the user approved it and asked for one commit per slice and one PR per part, on branches named after the issue (`claude/9-migration-formats-roles` for part A). A1 done.
 
 ---
 
@@ -36,7 +36,7 @@ Out (analysis section 2): detecting and correcting a model and storage divergenc
 
 | Slice | Part | Title | Status | Primary proof |
 |---|---|---|---|---|
-| A1 | A | A following deployment created at an earlier version (tracer) | ⬜ | `followingDeployment.9.phaseA.integ.test.ts` |
+| A1 | A | A following deployment created at an earlier version (tracer) | ✅ | `followingDeployment.9.phaseA.integ.test.ts` |
 | A2 | A | A deployment's role cannot change | ⬜ | same file |
 | A3 | A | A following deployment refuses model and `modelVersion` writes | ⬜ | same file |
 | B1 | B | A draft Migration for one optional attribute (tracer) | ⬜ | `migrationGeneration.9.phaseB.integ.test.ts` |
@@ -115,7 +115,7 @@ Test files live in `packages/miroir-standalone-app/tests/3_controllers/issues/9-
 
 ### Slice A1 — A following deployment created at an earlier version (tracer)
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal.** An operator creates a following deployment of appForTest at `1.0.0` and gets `1.0.0`'s model, and its state record says where it stands (G2, G4, D2, D5, D6).
 
@@ -135,7 +135,13 @@ Test files live in `packages/miroir-standalone-app/tests/3_controllers/issues/9-
 
 **Validation.** The file; `modelValidation` of `miroir-app-miroir` and `miroir-app-admin`; type check core and versioning; `npm run test -w @miroir-framework/core -- ''`; scoped nonreg `smoke,core,actions,external`.
 
-**Realization.** _(on completion)_
+**Realization.**
+- Schema: `role` (`authoring` | `following`, optional) on the Admin `Deployment` Entity; the Admin `DeploymentState` Entity (`14e696c6-…`) with its `.gitkeep` data folder, exported as `entityDeploymentState`; the Model Endpoint action `installApplicationVersion { application, version }` (`handleAction_installApplicationVersion`, `requiredCapability: versioning`, server-routed in `SERVER_ROUTED_MIROIR_ACTION_TYPES` and `RestServer`).
+- Core: `DeploymentRole`, `deploymentRoleOf` (a row without `role` is `authoring`), `DeploymentStateRow`, `DEPLOYMENT_STATE_ENTITY_UUID` (`versioningInterfaces.ts`); the run mark `markMigrationRun` / `isMigrationRun` next to `markRecordedBySender` (`evolutionTraceRecording.ts`); `deploymentRow(…, role)` and `createDeploymentCompositeAction` options `role`, `installVersion` (`Deployment.ts`); `applicationsWithEvolutionTraces` leaves out a deployment whose cached Deployment row is `following`, through a new `cachedDeploymentRow`, also used by `evolutionTraceRefusal`.
+- Versioning: `applicationVersionInstall.ts` with `applyModelState` (D2: `createEntity`, `alterEntityAttribute` `addColumns` before the Entity row update, upsert and delete of the other rows, Entity rows of removed Entities deleted without their storage, `parentDefinitionVersionUuid` and `conceptLevel` kept, every write marked), `storedDeploymentRow`, `storedDeploymentState`, `writeDeploymentState` (the Entity created in Admin when absent), and the handler: it refuses an authoring deployment (`deploymentAuthors`), loads the deployment's model in the process's cache (the model actions read it there), creates the history and record Entities in its model, rewrites, writes the state row, and reloads.
+- **Deviations.** (1) The `Migration` Entity and the `migrations` MetaModel collection move to B1, where generation first writes a Migration: part A does not read or write one, and the type regeneration they need is one change with B1's. (2) The following deployment is not created empty: see analysis D6, *Realization (A1)*. The test copies the fixture's model and data folders next to the authoring deployment's and creates the deployment with `skipCreateStore`. Both deployments are open in one process, each through its own application deployment map, instead of one after the other. (3) The refactor checkpoint (`ensureRecordEntity` generalized) is left for B1, where the Migration Entity is its second user; the state Entity is ensured in Admin by a function of its own, since it is created in another application's model.
+- Core unit tests: the versioning action lists gained `installApplicationVersion`; the Admin Entity count of `secrets.270.phase0` is 11. `listSelfApplicationUuidPaths` and `remapApplicationModelAtPaths` fail on the branch's base as well (a stale Library snapshot), not touched here.
+
 
 ### Slice A2 — A deployment's role cannot change
 

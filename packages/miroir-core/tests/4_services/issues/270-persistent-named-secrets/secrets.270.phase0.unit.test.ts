@@ -59,9 +59,9 @@ afterEach(() => {
 
 if (runThis) {
   describe("secrets.270.phase0 consumed-by Slice 1", () => {
-    it("real Admin entity folder has exactly 10 entities including MiroirSecret", () => {
+    it("real Admin entity folder has exactly 11 entities including MiroirSecret (#9: and DeploymentState)", () => {
       const files = listEntityJsonFiles(ADMIN_MODEL_ENTITIES);
-      expect(files).toHaveLength(10);
+      expect(files).toHaveLength(11);
       expect(entityNamesInFolder(ADMIN_MODEL_ENTITIES)).toContain("MiroirSecret");
       expect(existsSync(join(ADMIN_MODEL_ENTITIES, `${MIROIR_SECRET_ENTITY_UUID}.json`))).toBe(
         true,

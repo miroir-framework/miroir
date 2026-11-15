@@ -11949,6 +11949,24 @@ export const miroirFundamentalMlSchema = {
               }
             }
           },
+          "role": {
+            "type": "enum",
+            "optional": true,
+            "definition": [
+              "authoring",
+              "following"
+            ],
+            "tag": {
+              "value": {
+                "id": 8,
+                "defaultLabel": "Role",
+                "description": "#9: authoring (the default: the model is edited here) or following (the model is installed at a version and changed only by Migrations). Chosen when the deployment is created, never changed.",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
+          },
           "configuration": {
             "type": "schemaReference",
             "optional": true,
@@ -23497,6 +23515,69 @@ export const miroirFundamentalMlSchema = {
                           "targetEntity": "cdb0aec6-b848-43ac-a058-fe2dbe5811f1",
                           "targetEntityOrderInstancesBy": "name"
                         }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "tag": {
+              "value": {
+                "display": {
+                  "displayedAttributeValueWhenFolded": "actionLabel"
+                }
+              }
+            },
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false,
+                    "defaultLabel": "Install an application version",
+                    "description": "#9: installs the model of the application version named version on a following deployment: rewrites the application's own model rows to that version's (createEntity for an added Entity, alterEntityAttribute for an added attribute, upsert and delete for the other rows), then records the version in the deployment's DeploymentState row. Refused on an authoring deployment."
+                  }
+                },
+                "definition": "installApplicationVersion"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+              },
+              "payload": {
+                "type": "object",
+                "definition": {
+                  "application": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": true,
+                        "defaultLabel": "Application",
+                        "foreignKeyParams": {
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                          "targetEntityOrderInstancesBy": "name"
+                        },
+                        "display": {
+                          "editable": false
+                        }
+                      }
+                    }
+                  },
+                  "version": {
+                    "type": "string",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": true,
+                        "defaultLabel": "Version",
+                        "description": "The name of the Application Version to install"
                       }
                     }
                   }
@@ -45512,6 +45593,125 @@ export const miroirFundamentalMlSchema = {
                 "tag": {
                   "value": {
                     "canBeTemplate": false,
+                    "defaultLabel": "Install an application version",
+                    "description": "#9: installs the model of the application version named version on a following deployment: rewrites the application's own model rows to that version's (createEntity for an added Entity, alterEntityAttribute for an added attribute, upsert and delete for the other rows), then records the version in the deployment's DeploymentState row. Refused on an authoring deployment."
+                  }
+                },
+                "definition": "installApplicationVersion"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+              },
+              "payload": {
+                "type": "object",
+                "definition": {
+                  "application": {
+                    "type": "union",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": true,
+                        "defaultLabel": "Application",
+                        "foreignKeyParams": {
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                          "targetEntityOrderInstancesBy": "name"
+                        },
+                        "display": {
+                          "editable": false
+                        },
+                        "isTemplate": true
+                      }
+                    },
+                    "discriminator": [
+                      "transformerType",
+                      "interpolation"
+                    ],
+                    "definition": [
+                      {
+                        "type": "uuid",
+                        "tag": {
+                          "value": {
+                            "canBeTemplate": true,
+                            "defaultLabel": "Application",
+                            "foreignKeyParams": {
+                              "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+                              "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                              "targetEntityOrderInstancesBy": "name"
+                            },
+                            "display": {
+                              "editable": false
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          "relativePath": "coreTransformerForBuildPlusRuntime"
+                        }
+                      }
+                    ]
+                  },
+                  "version": {
+                    "type": "union",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": true,
+                        "defaultLabel": "Version",
+                        "description": "The name of the Application Version to install",
+                        "isTemplate": true
+                      }
+                    },
+                    "discriminator": [
+                      "transformerType",
+                      "interpolation"
+                    ],
+                    "definition": [
+                      {
+                        "type": "string",
+                        "tag": {
+                          "value": {
+                            "canBeTemplate": true,
+                            "defaultLabel": "Version",
+                            "description": "The name of the Application Version to install"
+                          }
+                        }
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          "relativePath": "coreTransformerForBuildPlusRuntime"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "tag": {
+              "value": {
+                "display": {
+                  "displayedAttributeValueWhenFolded": "actionLabel"
+                },
+                "isTemplate": true
+              }
+            },
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false,
                     "defaultLabel": "Append an evolution trace record",
                     "description": "#708: appends one record to the application's evolution trace, in its modelVersion section. Sent by the DomainController that ran a commit, a freeze or a re-baseline."
                   }
@@ -48433,6 +48633,24 @@ export const miroirFundamentalMlSchema = {
                 "id": 8,
                 "defaultLabel": "Bundle",
                 "description": "The deployed bundle.",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
+          },
+          "role": {
+            "type": "enum",
+            "optional": true,
+            "definition": [
+              "authoring",
+              "following"
+            ],
+            "tag": {
+              "value": {
+                "id": 8,
+                "defaultLabel": "Role",
+                "description": "#9: authoring (the default: the model is edited here) or following (the model is installed at a version and changed only by Migrations). Chosen when the deployment is created, never changed.",
                 "display": {
                   "editable": false
                 }

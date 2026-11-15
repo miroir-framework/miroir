@@ -92,7 +92,7 @@ const INSTANCE_ENDPOINT_UUID = "ed520de4-55a9-4550-ac50-b1b713b72a89";
  * The history Entities a freeze writes into, created in the application's model when absent (init or a
  * filtered model may leave them out). In the order the freeze created them before #696.
  */
-const HISTORY_ENTITIES = [
+export const HISTORY_ENTITIES = [
   entityApplicationVersionCrossEntityVersion,
   entityApplicationVersionCrossQueryVersion,
   entityHistoricalQueryVersion,
@@ -474,7 +474,7 @@ async function freezeVersion(
  * application's `currentModel.entities`: a freeze freezes the application's own Entities only. #230: for
  * Miroir itself, the meta-model Entities are the application's Entities (`selectEntitiesToFreeze`).
  */
-function metaModelEntityUuids(metaModelEntityRows: readonly { uuid: string }[]): Set<string> {
+export function metaModelEntityUuids(metaModelEntityRows: readonly { uuid: string }[]): Set<string> {
   const uuids = new Set(metaModelEntityRows.map((e) => e.uuid));
   for (const historyEntity of HISTORY_ENTITIES) {
     uuids.add(historyEntity.uuid);

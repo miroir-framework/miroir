@@ -1,0 +1,445 @@
+/**
+ * #9: the rewrite of an application's model to a target model state (`applyModelState`, analysis D2), and
+ * the install of a version on a following deployment (`installApplicationVersion`, D6). Both run where the
+ * stores are, and only call the DomainController through `DomainControllerActionHost`.
+ *
+ * The rewrite touches the application's own model rows only: the collections the agreement check compares,
+ * without the meta-model Entities its model holds (history, records), the SelfApplication, its branches and
+ * versions. An added Entity is created with `createEntity`, an added attribute with `alterEntityAttribute`
+ * before the Entity row gets its target value, so that storage follows as when a designer runs them;
+ * removed Entities and attributes are left in storage for the contract phase. Every write carries the run
+ * mark, the only model write a following deployment accepts.
+ */
+import {
+  Action2Error,
+  ACTION_OK,
+  DEPLOYMENT_STATE_ENTITY_UUID,
+  deploymentRoleOf,
+  getApplicationSection,
+  markMigrationRun,
+  metaModelEntities,
+  MiroirLoggerFactory,
+  type Action2ReturnType,
+  type ActionImplementationContext,
+  type ActionImplementationHandler,
+  type ApplicationDeploymentMap,
+  type DeploymentStateRow,
+  type DomainControllerActionHost,
+  type Entity,
+  type EntityInstance,
+  type InstallApplicationVersionActionPayload,
+  type LoggerInterface,
+  type MetaModelCollection,
+  type MiroirModelEnvironment,
+} from "@miroir-framework/core";
+import {
+  adminSelfApplication,
+  deployment_Admin,
+  entityDeployment,
+  entityDeploymentState,
+} from "@miroir-framework/core/admin";
+import { entityEvolutionTraceRecord } from "@miroir-framework/core/meta-model";
+
+import { selectEntitiesToFreeze } from "./applicationVersionFreeze.js";
+import { AGREEMENT_COLLECTIONS } from "./evolutionTraceAgreement.js";
+import { HISTORY_ENTITIES, metaModelEntityUuids } from "./freezeApplicationVersion.js";
+import { frozenStateOf, liveModelState, type ModelState } from "./modelStates.js";
+import { sameJson } from "./modelStateDiff.js";
+
+const _miroirLoggerName = MiroirLoggerFactory.getLoggerName("miroir-versioning", "3", "applicationVersionInstall");
+let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
+MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: LoggerInterface) => {
+  log = logger;
+});
+
+const MODEL_ENDPOINT_UUID = "7947ae40-eb34-4149-887b-15a9021e714e";
+const INSTANCE_ENDPOINT_UUID = "ed520de4-55a9-4550-ac50-b1b713b72a89";
+const ENTITY_ENTITY_UUID = "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad";
+
+type Row = Record<string, unknown>;
+
+/** The live attributes a frozen row does not hold, kept on the rows the rewrite updates. */
+const KEPT_LIVE_ATTRIBUTES = ["parentDefinitionVersionUuid", "conceptLevel"] as const;
+
+/** What a rewrite changed, by collection: the uuids of the rows created, updated and deleted. */
+export type ModelStateRewrite = Partial<Record<MetaModelCollection, { created: string[]; updated: string[]; deleted: string[] }>>;
+
+/** The map of a call that also reads and writes Admin data. */
+function withAdmin(applicationDeploymentMap: ApplicationDeploymentMap): ApplicationDeploymentMap {
+  return {
+    ...applicationDeploymentMap,
+    [adminSelfApplication.uuid]: applicationDeploymentMap[adminSelfApplication.uuid] ?? deployment_Admin.uuid,
+  };
+}
+
+/** The model environment of `application` on the deployment the map names. */
+function modelEnvironmentOf(
+  host: DomainControllerActionHost,
+  application: string,
+  applicationDeploymentMap: ApplicationDeploymentMap,
+  modelEnvironment: MiroirModelEnvironment | undefined,
+): MiroirModelEnvironment {
+  if (
+    modelEnvironment?.deploymentUuid !== undefined &&
+    modelEnvironment.deploymentUuid === applicationDeploymentMap[application]
+  ) {
+    return modelEnvironment;
+  }
+  return host.asDomainControllerInterface().currentModelEnvironment(application, applicationDeploymentMap);
+}
+
+/** Loads the model of `application` from its stores into this process's local cache. */
+function reloadModel(
+  host: DomainControllerActionHost,
+  application: string,
+  applicationDeploymentMap: ApplicationDeploymentMap,
+  modelEnvironment: MiroirModelEnvironment | undefined,
+): Promise<Action2ReturnType> {
+  return host.handleModelAction(
+    { actionType: "rollback", actionLabel: "applicationVersionInstallReload", endpoint: MODEL_ENDPOINT_UUID, payload: { application } },
+    applicationDeploymentMap,
+    modelEnvironmentOf(host, application, applicationDeploymentMap, modelEnvironment),
+  );
+}
+
+/** The rows of a collection the rewrite owns: an application's own Entities, or every row of the others. */
+function ownedRows(application: string, state: ModelState, collection: MetaModelCollection): Row[] {
+  if (collection === "entities") {
+    return selectEntitiesToFreeze(application, state.entities, metaModelEntityUuids(metaModelEntities)) as unknown as Row[];
+  }
+  return state[collection] as unknown as Row[];
+}
+
+/** The target row, with the live values of the attributes a frozen row does not hold. */
+function withKeptLiveAttributes(target: Row, live: Row): Row {
+  const kept = Object.fromEntries(
+    KEPT_LIVE_ATTRIBUTES.filter((attribute) => live[attribute] !== undefined).map((attribute) => [attribute, live[attribute]]),
+  );
+  return { ...target, ...kept };
+}
+
+/** The attributes the target Entity declares and the live one does not. */
+function addedAttributes(live: Row, target: Row): { name: string; definition: unknown }[] {
+  const liveDefinition = ((live.mlSchema as Row | undefined)?.definition ?? {}) as Row;
+  const targetDefinition = ((target.mlSchema as Row | undefined)?.definition ?? {}) as Row;
+  return Object.entries(targetDefinition)
+    .filter(([name]) => !(name in liveDefinition))
+    .map(([name, definition]) => ({ name, definition }));
+}
+
+/**
+ * Rewrites the model of `application` (on the deployment `applicationDeploymentMap` names) from `current`,
+ * its live state, to `target`. Stops at the first failed write.
+ */
+export async function applyModelState(
+  host: DomainControllerActionHost,
+  application: string,
+  applicationDeploymentMap: ApplicationDeploymentMap,
+  current: ModelState,
+  target: ModelState,
+  modelEnvironment?: MiroirModelEnvironment,
+): Promise<ModelStateRewrite | Action2Error> {
+  const environment = modelEnvironmentOf(host, application, applicationDeploymentMap, modelEnvironment);
+  const rewrite: ModelStateRewrite = {};
+
+  const instanceWrite = async (actionType: "createInstance" | "updateInstance" | "deleteInstance", row: Row) => {
+    const parentUuid = row.parentUuid as string;
+    return host.handleInstanceAction(
+      markMigrationRun({
+        actionType,
+        actionLabel: `applyModelState ${actionType}`,
+        endpoint: INSTANCE_ENDPOINT_UUID,
+        payload: {
+          application,
+          applicationSection: getApplicationSection(application, parentUuid),
+          parentUuid,
+          objects: [row as EntityInstance],
+        },
+      }) as any,
+      applicationDeploymentMap,
+    );
+  };
+  const modelAction = (action: Record<string, unknown>) =>
+    host.handleModelAction(
+      markMigrationRun({ endpoint: MODEL_ENDPOINT_UUID, ...action }) as any,
+      applicationDeploymentMap,
+      environment,
+    );
+  const failed = (what: string, error: Action2Error) =>
+    new Action2Error("FailedToHandleAction", `applyModelState of ${application}: ${what}`, [], error);
+
+  for (const collection of AGREEMENT_COLLECTIONS) {
+    const liveRows = new Map(ownedRows(application, current, collection).map((row) => [row.uuid as string, row]));
+    const targetRows = ownedRows(application, target, collection);
+    const done = { created: [] as string[], updated: [] as string[], deleted: [] as string[] };
+    const targetUuids = new Set(targetRows.map((row) => row.uuid as string));
+
+    for (const targetRow of targetRows) {
+      const uuid = targetRow.uuid as string;
+      const liveRow = liveRows.get(uuid);
+      if (!liveRow) {
+        const created =
+          collection === "entities"
+            ? await modelAction({
+                actionType: "createEntity",
+                actionLabel: "applyModelState createEntity",
+                payload: { application, transactional: false, entities: [targetRow as unknown as Entity] },
+              })
+            : await instanceWrite("createInstance", targetRow);
+        if (created instanceof Action2Error) {
+          return failed(`could not create ${collection} row ${uuid}`, created);
+        }
+        done.created.push(uuid);
+        continue;
+      }
+      const next = withKeptLiveAttributes(targetRow, liveRow);
+      if (sameJson(next, liveRow)) {
+        continue;
+      }
+      if (collection === "entities") {
+        const addColumns = addedAttributes(liveRow, targetRow);
+        if (addColumns.length > 0) {
+          const altered = await modelAction({
+            actionType: "alterEntityAttribute",
+            actionLabel: "applyModelState alterEntityAttribute",
+            payload: {
+              application,
+              transactional: false,
+              entityName: liveRow.name as string,
+              entityUuid: uuid,
+              addColumns,
+            },
+          });
+          if (altered instanceof Action2Error) {
+            return failed(`could not add the attributes ${addColumns.map(({ name }) => name).join(", ")} of Entity ${uuid}`, altered);
+          }
+        }
+      }
+      const updated = await instanceWrite("updateInstance", next);
+      if (updated instanceof Action2Error) {
+        return failed(`could not update ${collection} row ${uuid}`, updated);
+      }
+      done.updated.push(uuid);
+    }
+
+    for (const [uuid, liveRow] of liveRows) {
+      if (targetUuids.has(uuid)) {
+        continue;
+      }
+      // an Entity's storage stays, for the contract phase: only its row goes
+      const deleted = await instanceWrite("deleteInstance", liveRow);
+      if (deleted instanceof Action2Error) {
+        return failed(`could not delete ${collection} row ${uuid}`, deleted);
+      }
+      done.deleted.push(uuid);
+    }
+    if (done.created.length + done.updated.length + done.deleted.length > 0) {
+      rewrite[collection] = done;
+    }
+  }
+  return rewrite;
+}
+
+/**
+ * The meta-model Entities a following deployment reads its shared `modelVersion` section with (the history
+ * Entities and the record Entity), created in its model when absent: the freeze and the record writer
+ * create them on the authoring deployment only.
+ */
+async function ensureVersionHistoryEntities(
+  host: DomainControllerActionHost,
+  application: string,
+  applicationDeploymentMap: ApplicationDeploymentMap,
+  current: ModelState,
+  modelEnvironment: MiroirModelEnvironment | undefined,
+): Promise<Action2Error | undefined> {
+  const present = new Set(current.entities.map((entity) => entity.uuid));
+  const missing = [...HISTORY_ENTITIES, entityEvolutionTraceRecord as Entity].filter((entity) => !present.has(entity.uuid));
+  if (missing.length === 0) {
+    return undefined;
+  }
+  const created = await host.handleModelAction(
+    markMigrationRun({
+      actionType: "createEntity",
+      actionLabel: "installApplicationVersionEnsureHistoryEntities",
+      endpoint: MODEL_ENDPOINT_UUID,
+      payload: { application, transactional: false, entities: missing },
+    }) as any,
+    applicationDeploymentMap,
+    modelEnvironmentOf(host, application, applicationDeploymentMap, modelEnvironment),
+  );
+  return created instanceof Action2Error
+    ? new Action2Error("FailedToHandleAction", `could not create the history Entities of ${application}`, [], created)
+    : undefined;
+}
+
+/** The Admin Deployment row of `deploymentUuid`, read from the store. */
+export async function storedDeploymentRow(
+  host: DomainControllerActionHost,
+  deploymentUuid: string,
+  applicationDeploymentMap: ApplicationDeploymentMap,
+): Promise<(EntityInstance & { role?: unknown }) | undefined | Action2Error> {
+  const rows = await host.readSectionInstances(
+    adminSelfApplication.uuid,
+    withAdmin(applicationDeploymentMap),
+    "data",
+    entityDeployment.uuid,
+  );
+  return rows instanceof Action2Error ? rows : rows.find((row) => row.uuid === deploymentUuid);
+}
+
+/** The DeploymentState row of `deploymentUuid`, read from the store; `undefined` when it has none. */
+export async function storedDeploymentState(
+  host: DomainControllerActionHost,
+  deploymentUuid: string,
+  applicationDeploymentMap: ApplicationDeploymentMap,
+): Promise<DeploymentStateRow | undefined> {
+  const rows = await host.readSectionInstances(
+    adminSelfApplication.uuid,
+    withAdmin(applicationDeploymentMap),
+    "data",
+    DEPLOYMENT_STATE_ENTITY_UUID,
+  );
+  return rows instanceof Action2Error
+    ? undefined
+    : (rows.find((row) => row.uuid === deploymentUuid) as DeploymentStateRow | undefined);
+}
+
+/** The DeploymentState Entity, created in the Admin model when absent (Admin stores older than #9). */
+async function ensureDeploymentStateEntity(
+  host: DomainControllerActionHost,
+  applicationDeploymentMap: ApplicationDeploymentMap,
+): Promise<Action2Error | undefined> {
+  const map = withAdmin(applicationDeploymentMap);
+  const entities = await host.readSectionInstances(adminSelfApplication.uuid, map, "model", ENTITY_ENTITY_UUID);
+  if (entities instanceof Action2Error) {
+    return entities;
+  }
+  if (entities.some((entity) => entity.uuid === DEPLOYMENT_STATE_ENTITY_UUID)) {
+    return undefined;
+  }
+  const created = await host.handleModelAction(
+    {
+      actionType: "createEntity",
+      actionLabel: "installApplicationVersionEnsureDeploymentStateEntity",
+      endpoint: MODEL_ENDPOINT_UUID,
+      payload: { application: adminSelfApplication.uuid, transactional: false, entities: [entityDeploymentState as Entity] },
+    },
+    map,
+    host.asDomainControllerInterface().currentModelEnvironment(adminSelfApplication.uuid, map),
+  );
+  return created instanceof Action2Error ? created : undefined;
+}
+
+/** Writes the DeploymentState row of a deployment: created, or replaced when it has one. */
+export async function writeDeploymentState(
+  host: DomainControllerActionHost,
+  state: Omit<DeploymentStateRow, "uuid" | "parentName" | "parentUuid">,
+  applicationDeploymentMap: ApplicationDeploymentMap,
+): Promise<Action2Error | undefined> {
+  const ensured = await ensureDeploymentStateEntity(host, applicationDeploymentMap);
+  if (ensured) {
+    return new Action2Error("FailedToHandleAction", "could not create the DeploymentState Entity", [], ensured);
+  }
+  const existing = await storedDeploymentState(host, state.deployment, applicationDeploymentMap);
+  const row: DeploymentStateRow = {
+    uuid: state.deployment,
+    parentName: entityDeploymentState.name,
+    parentUuid: DEPLOYMENT_STATE_ENTITY_UUID,
+    ...state,
+  };
+  const written = await host.handleInstanceAction(
+    {
+      actionType: existing ? "updateInstance" : "createInstance",
+      actionLabel: "writeDeploymentState",
+      endpoint: INSTANCE_ENDPOINT_UUID,
+      payload: {
+        application: adminSelfApplication.uuid,
+        applicationSection: "data",
+        parentUuid: DEPLOYMENT_STATE_ENTITY_UUID,
+        objects: [row as unknown as EntityInstance],
+      },
+    } as any,
+    withAdmin(applicationDeploymentMap),
+  );
+  return written instanceof Action2Error
+    ? new Action2Error("FailedToHandleAction", `could not write the DeploymentState of ${state.deployment}`, [], written)
+    : undefined;
+}
+
+/** A refusal of the versioning package, with its reason in `errorContext`. */
+export function refusal(message: string, reason: string, extra: Record<string, unknown> = {}): Action2Error {
+  return new Action2Error("FailedToHandleAction", message, undefined, undefined, { reason, ...extra });
+}
+
+/**
+ * `installApplicationVersion`: on a following deployment, rewrites the application's model to the version
+ * named `version` (read from the `modelVersion` section the deployment shares with its authoring one), then
+ * writes the deployment's DeploymentState row with that version.
+ */
+export const handleAction_installApplicationVersion: ActionImplementationHandler = async (
+  host,
+  action,
+  context: ActionImplementationContext,
+): Promise<Action2ReturnType> => {
+  const { application, version } = action.payload as InstallApplicationVersionActionPayload;
+  const { applicationDeploymentMap } = context;
+  const deploymentUuid = applicationDeploymentMap[application];
+  if (!deploymentUuid) {
+    return new Action2Error("FailedToHandleAction", `installApplicationVersion: no deployment of ${application}`);
+  }
+  const deploymentRow = await storedDeploymentRow(host, deploymentUuid, applicationDeploymentMap);
+  if (deploymentRow instanceof Action2Error) {
+    return deploymentRow;
+  }
+  if (deploymentRoleOf(deploymentRow) !== "following") {
+    return refusal(
+      `installApplicationVersion: deployment ${deploymentUuid} of ${application} is an authoring deployment; a version is installed on a following deployment only`,
+      "deploymentAuthors",
+      { deployment: deploymentUuid },
+    );
+  }
+
+  // the model actions of the rewrite read the deployment's model in this process's local cache
+  const loaded = await reloadModel(host, application, applicationDeploymentMap, context.modelEnvironment);
+  if (loaded instanceof Action2Error) {
+    return loaded;
+  }
+  const current = await liveModelState(host, application, applicationDeploymentMap);
+  if (current instanceof Action2Error) {
+    return current;
+  }
+  const versionRow = current.applicationVersions.find((row) => row.name === version);
+  if (!versionRow) {
+    return new Action2Error(
+      "FailedToHandleAction",
+      `installApplicationVersion: ${application} has no Application Version named ${version}`,
+    );
+  }
+  const target = frozenStateOf(current, versionRow.uuid);
+  if (target instanceof Action2Error) {
+    return target;
+  }
+
+  const ensured = await ensureVersionHistoryEntities(host, application, applicationDeploymentMap, current, context.modelEnvironment);
+  if (ensured) {
+    return ensured;
+  }
+  const rewritten = await applyModelState(host, application, applicationDeploymentMap, current, target, context.modelEnvironment);
+  if (rewritten instanceof Action2Error) {
+    return rewritten;
+  }
+  log.info("installApplicationVersion", application, "at", version, "on", deploymentUuid, rewritten);
+
+  const stateWritten = await writeDeploymentState(
+    host,
+    { deployment: deploymentUuid, application, version },
+    applicationDeploymentMap,
+  );
+  if (stateWritten) {
+    return stateWritten;
+  }
+
+  // the model this process serves is the rewritten one
+  const reloaded = await reloadModel(host, application, applicationDeploymentMap, context.modelEnvironment);
+  return reloaded instanceof Action2Error ? reloaded : ACTION_OK;
+};
