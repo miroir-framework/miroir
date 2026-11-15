@@ -68,6 +68,9 @@ counter-examples, and a "Mistakes" catalogue of reversed decisions.
 
 ### Feature Workflow Skills
 
+#### [miroir-issue-workflow](../../.agents/skills/miroir-issue-workflow/)
+The lifecycle of an issue, from branch to closed issue: analysis and plan with adversarial reviews, slices, nonreg, PR, then the post-merge acceptance check comment on the issue.
+
 #### [miroir-feature-analysis](../../.agents/skills/miroir-feature-analysis/)
 Write `code-helpers/features/<NNN>-<TYPE>-<slug>/analysis.md` for an issue: current state, decision record confirmed with the maintainer, goals as user stories.
 
