@@ -976,24 +976,25 @@ class IsomorphicGitRepository implements GitRepositoryInterface {
   private async pushTags(options: GitRemoteOptions & { branch: string }): Promise<GitPushOutcome> {
     const outcome: GitPushOutcome = { pushedTags: [], rejectedTags: [] };
     const tip = await commitOf(this.repository, this.branchRef(options.branch));
-    const tags: { name: string; oid: string }[] = [];
+    const localTags: { name: string; oid: string; commit: string }[] = [];
     for (const name of await git.listTags(this.repository)) {
       const [oid, commit] = [
         await resolveOrUndefined(this.repository, `refs/tags/${name}`),
         await commitOf(this.repository, `refs/tags/${name}`),
       ];
-      if (
-        tip &&
-        oid &&
-        commit &&
-        (commit === tip || (await git.isDescendent({ ...this.repository, oid: tip, ancestor: commit, depth: -1 })))
-      ) {
-        tags.push({ name, oid });
+      if (oid && commit) {
+        localTags.push({ name, oid, commit });
       }
     }
-    if (tags.length === 0) {
+    if (!tip || localTags.length === 0) {
       return outcome;
     }
+    // the history of the branch is walked once, and only for the tags the remote does not already have
+    let reachable: Set<string> | undefined;
+    const onBranch = async (commit: string) => {
+      reachable ??= new Set((await git.log({ ...this.repository, ref: tip })).map((entry) => entry.oid));
+      return reachable.has(commit);
+    };
     let remoteTags: Map<string, string>;
     try {
       const refs = await git.listServerRefs({
@@ -1006,12 +1007,17 @@ class IsomorphicGitRepository implements GitRepositoryInterface {
     } catch (error) {
       const refused = asRemoteError(error, options.remote);
       const message = refused instanceof Error ? refused.message : String(refused);
-      return { pushedTags: [], rejectedTags: tags.map(({ name }) => ({ name, message })) };
+      for (const { name, commit } of localTags) {
+        if (await onBranch(commit)) {
+          outcome.rejectedTags.push({ name, message });
+        }
+      }
+      return outcome;
     }
-    for (const { name, oid } of tags) {
+    for (const { name, oid, commit } of localTags) {
       const ref = `refs/tags/${name}`;
       const remoteOid = remoteTags.get(ref);
-      if (remoteOid === oid) {
+      if (remoteOid === oid || !(await onBranch(commit))) {
         continue;
       }
       if (remoteOid !== undefined) {
