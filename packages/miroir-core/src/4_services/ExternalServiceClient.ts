@@ -109,6 +109,14 @@ function externalServiceError(
   return new Action2Error(errorType, message, undefined, undefined, context);
 }
 
+/** Message and code of a fetch network failure and of its cause (Node wraps the socket error as `cause`); never headers. */
+function networkErrorDetail(error: unknown): Record<string, unknown> {
+  const describe = (value: unknown) =>
+    value instanceof Error ? { message: value.message, code: (value as { code?: unknown }).code } : { message: String(value) };
+  const cause = error instanceof Error ? error.cause : undefined;
+  return { error: describe(error), ...(cause === undefined ? {} : { cause: describe(cause) }) };
+}
+
 function errorTypeForHttpStatus(status: number): ActionErrorType {
   if (status === 401 || status === 403) {
     return "ExternalServiceUnauthorized";
@@ -369,8 +377,8 @@ async function resolveClientCredentialsToken(
       },
       body: body.toString(),
     });
-  } catch {
-    log.warn("external service token request failed (network)", { actionType });
+  } catch (error) {
+    log.warn("external service token request failed (network)", { actionType, ...networkErrorDetail(error) });
     return externalServiceError(
       "ExternalServiceUpstreamFailure",
       "External service token request failed",
@@ -501,8 +509,8 @@ async function resolveAuthorizationCodeToken(
       },
       body: body.toString(),
     });
-  } catch {
-    log.warn("external service token request failed (network)", { actionType });
+  } catch (error) {
+    log.warn("external service token request failed (network)", { actionType, ...networkErrorDetail(error) });
     return externalServiceError(
       "ExternalServiceUpstreamFailure",
       "External service token request failed",
@@ -761,8 +769,8 @@ async function fetchExternalServiceOperation(
         method: operation.method,
         headers,
       });
-    } catch {
-      log.warn("external service request failed (network)", { actionType, url });
+    } catch (error) {
+      log.warn("external service request failed (network)", { actionType, url, ...networkErrorDetail(error) });
       return externalServiceError(
         "ExternalServiceUpstreamFailure",
         `External service request failed (${url})`,
