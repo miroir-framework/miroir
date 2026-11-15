@@ -215,7 +215,6 @@ import {
   entityCommit,
   gitEndpoint,
   selfApplicationModelBranchMiroirMasterBranch,
-  blobMiroirLogo,
 } from "../index";
 
 export const defaultMiroirMetaModel: MetaModel = {
@@ -395,7 +394,8 @@ export const defaultMiroirMetaModel: MetaModel = {
   applicationVersionCrossMiroirTestVersion: [],
   miroirTestVersions: [],
   applicationModelBranches: [selfApplicationModelBranchMiroirMasterBranch as MetaModel["applicationModelBranches"][number]],
-  blobs: [blobMiroirLogo as MetaModel["blobs"][number]],
+  // the logo Blob (400 kB of base64) stays out of the static model, which every client loads: Blob rows are read from the store
+  blobs: [],
   // Miroir's TestConfiguration row seeds Library Entities: test material, left out of the static model
   testConfigurations: [],
   blobVersions: [],
