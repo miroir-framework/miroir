@@ -1458,3 +1458,20 @@ def test_a_worker_whose_clear_failed_is_not_used_again(tmp_path: Path):
     finally:
         for leftover in (ROOT / ".miroir").glob(f"{state}@*"):
             shutil.rmtree(leftover)
+
+
+def test_a_step_does_not_get_the_terminal_of_the_run(tmp_path: Path):
+    # A step that finds a terminal on its stdin can change its mode (a raw-mode password prompt) and leave
+    # the console of the run scrambled, its summary unreadable. A step reads an empty stdin.
+    code = "import sys; data = sys.stdin.read(); sys.exit(1 if data else 0)"
+    manifest = write_manifest(
+        tmp_path, [{"id": "reads-stdin", "tier": "unit", "title": "t", "requires": "none", "argv": ["python", "-c", code]}]
+    )
+    results_root = tmp_path / "results"
+    for jobs in ("1", "2"):
+        proc = subprocess.run(
+            [*runner_cmd(tmp_path), "--manifest", str(manifest), "--results-root", str(results_root),
+             "--tier", "unit", "--jobs", jobs, *FS_PROFILE],
+            cwd=ROOT, input="typed by the user\n", capture_output=True, text=True, check=False,
+        )
+        assert proc.returncode == 0, proc.stdout + proc.stderr

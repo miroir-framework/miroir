@@ -292,12 +292,16 @@ def tail_text(text: str, max_lines: int = 40) -> str:
 
 
 def spawn(argv: list[str], env: dict[str, str] | None) -> subprocess.CompletedProcess[str]:
-    """Run one command from the repo root, capturing combined output."""
+    """Run one command from the repo root, capturing combined output.
+
+    A step never gets the run's terminal on stdin: a step that finds one can switch it to raw mode (a
+    password prompt) and leave the console scrambled, the run's summary unreadable."""
     # Windows: npm/npx resolve to *.cmd; CreateProcess cannot launch .cmd without a shell.
     if os.name == "nt":
         return subprocess.run(
             subprocess.list2cmdline(argv),
             cwd=ROOT,
+            stdin=subprocess.DEVNULL,
             capture_output=True,
             text=True,
             encoding="utf-8",
@@ -308,6 +312,7 @@ def spawn(argv: list[str], env: dict[str, str] | None) -> subprocess.CompletedPr
     return subprocess.run(
         argv,
         cwd=ROOT,
+        stdin=subprocess.DEVNULL,
         capture_output=True,
         text=True,
         encoding="utf-8",
