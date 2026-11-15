@@ -41,6 +41,10 @@ import {
   entityTransformerDefinition,
   entityBundleSizeMeasurement,
   entityPageLoadMeasurement,
+  entityBlob,
+  entityCommit,
+  entityTest,
+  entityTestConfiguration,
   reportEntityDefinitionDetails,
   reportEntityDefinitionList,
   reportEntityDetails,
@@ -181,75 +185,137 @@ export const metaModelDevDataReports: readonly string[] = [
 
 // ################################################################################################
 /**
+ * #708 D7-a — the collections of a {@link MetaModel}, one per Entity of the meta-application.
+ */
+export type MetaModelCollection = Exclude<keyof MetaModel, "applicationUuid" | "applicationName">;
+
+/**
+ * #708 D7-a — one entry per Entity of the meta-application: the section its rows belong to in an
+ * application (`model`, the version history `modelVersion` (#232), or `devData` (#647)), and the
+ * `MetaModel` collection that holds them. An Entity without a collection is not part of an application's
+ * model: `Commit` is Miroir's own transaction log (its rows are in Miroir's data only), the `devData`
+ * Entities are application data, and `Test` with its history is retired (#726).
+ * `metaModelCollections.unit.test.ts` checks this list against Miroir's Entity files and the MetaModel schema.
+ */
+export type MetaModelEntityListEntry = {
+  entity: Entity;
+  section: "model" | "modelVersion" | "devData";
+  collection?: MetaModelCollection;
+};
+
+export const metaModelEntityList: readonly MetaModelEntityListEntry[] = [
+  { entity: entityEntity as Entity, section: "model", collection: "entities" },
+  { entity: entityEndpointVersion as Entity, section: "model", collection: "endpoints" }, // the Endpoint Entity
+  { entity: entityMlSchema as Entity, section: "model", collection: "mlSchemas" },
+  { entity: entityMenu as Entity, section: "model", collection: "menus" },
+  { entity: entityQueryVersion as Entity, section: "model", collection: "storedQueries" }, // the Query Entity
+  { entity: entityReport as Entity, section: "model", collection: "reports" },
+  { entity: entityRunner as Entity, section: "model", collection: "runners" },
+  { entity: entitySelfApplication as Entity, section: "model", collection: "applications" },
+  { entity: entitySelfApplicationModelBranch as Entity, section: "model", collection: "applicationModelBranches" },
+  { entity: entityMiroirTest as Entity, section: "model", collection: "tests" },
+  { entity: entityTestConfiguration as Entity, section: "model", collection: "testConfigurations" },
+  { entity: entityTheme as Entity, section: "model", collection: "themes" },
+  { entity: entityBlob as Entity, section: "model", collection: "blobs" },
+  { entity: entityTransformerDefinition as Entity, section: "model", collection: "transformerDefinitions" },
+  { entity: entityCommit as Entity, section: "model" },
+  { entity: entityTest as Entity, section: "model" },
+  { entity: entityEntityVersion as Entity, section: "modelVersion", collection: "entityVersions" },
+  { entity: entitySelfApplicationVersion as Entity, section: "modelVersion", collection: "applicationVersions" },
+  { entity: entityApplicationVersionCrossEntityVersion as Entity, section: "modelVersion", collection: "applicationVersionCrossEntityVersion" },
+  { entity: entityHistoricalQueryVersion as Entity, section: "modelVersion", collection: "queryVersions" },
+  { entity: entityApplicationVersionCrossQueryVersion as Entity, section: "modelVersion", collection: "applicationVersionCrossQueryVersion" },
+  { entity: entityHistoricalReportVersion as Entity, section: "modelVersion", collection: "reportVersions" },
+  { entity: entityApplicationVersionCrossReportVersion as Entity, section: "modelVersion", collection: "applicationVersionCrossReportVersion" },
+  { entity: entityHistoricalMenuVersion as Entity, section: "modelVersion", collection: "menuVersions" },
+  { entity: entityApplicationVersionCrossMenuVersion as Entity, section: "modelVersion", collection: "applicationVersionCrossMenuVersion" },
+  { entity: entityHistoricalEndpointVersion as Entity, section: "modelVersion", collection: "endpointVersions" },
+  { entity: entityApplicationVersionCrossEndpointVersion as Entity, section: "modelVersion", collection: "applicationVersionCrossEndpointVersion" },
+  { entity: entityHistoricalRunnerVersion as Entity, section: "modelVersion", collection: "runnerVersions" },
+  { entity: entityApplicationVersionCrossRunnerVersion as Entity, section: "modelVersion", collection: "applicationVersionCrossRunnerVersion" },
+  { entity: entityHistoricalThemeVersion as Entity, section: "modelVersion", collection: "themeVersions" },
+  { entity: entityApplicationVersionCrossThemeVersion as Entity, section: "modelVersion", collection: "applicationVersionCrossThemeVersion" },
+  { entity: entityHistoricalTransformerDefinitionVersion as Entity, section: "modelVersion", collection: "transformerDefinitionVersions" },
+  {
+    entity: entityApplicationVersionCrossTransformerDefinitionVersion as Entity,
+    section: "modelVersion",
+    collection: "applicationVersionCrossTransformerDefinitionVersion",
+  },
+  { entity: entityHistoricalMlSchemaVersion as Entity, section: "modelVersion", collection: "mlSchemaVersions" },
+  { entity: entityApplicationVersionCrossMlSchemaVersion as Entity, section: "modelVersion", collection: "applicationVersionCrossMlSchemaVersion" },
+  { entity: entityHistoricalMiroirTestVersion as Entity, section: "modelVersion", collection: "miroirTestVersions" },
+  { entity: entityApplicationVersionCrossMiroirTestVersion as Entity, section: "modelVersion", collection: "applicationVersionCrossMiroirTestVersion" },
+  { entity: entityHistoricalBlobVersion as Entity, section: "modelVersion", collection: "blobVersions" },
+  { entity: entityApplicationVersionCrossBlobVersion as Entity, section: "modelVersion", collection: "applicationVersionCrossBlobVersion" },
+  { entity: entityHistoricalTestConfigurationVersion as Entity, section: "modelVersion", collection: "testConfigurationVersions" },
+  {
+    entity: entityApplicationVersionCrossTestConfigurationVersion as Entity,
+    section: "modelVersion",
+    collection: "applicationVersionCrossTestConfigurationVersion",
+  },
+  { entity: entityHistoricalTestVersion as Entity, section: "modelVersion" },
+  { entity: entityApplicationVersionCrossTestVersion as Entity, section: "modelVersion" },
+  { entity: entityEvolutionTraceRecord as Entity, section: "modelVersion", collection: "evolutionTraceRecords" },
+  { entity: entityBundleSizeMeasurement as Entity, section: "devData" },
+  { entity: entityPageLoadMeasurement as Entity, section: "devData" },
+];
+
+/**
+ * #708 D7-a — the Entities that have a {@link MetaModel} collection, with that collection.
+ */
+export const metaModelCollections: readonly { entity: Entity; section: "model" | "modelVersion"; collection: MetaModelCollection }[] =
+  metaModelEntityList.filter(
+    (entry): entry is MetaModelEntityListEntry & { section: "model" | "modelVersion"; collection: MetaModelCollection } =>
+      entry.collection !== undefined && entry.section !== "devData",
+  );
+
+/**
+ * #708 D7-a — a MetaModel's collections, each holding the rows that `rows` gives for its entry of
+ * {@link metaModelCollections} (and its index there).
+ */
+export function buildMetaModelCollections(
+  rows: (entry: (typeof metaModelCollections)[number], index: number) => readonly unknown[],
+): Pick<MetaModel, MetaModelCollection> {
+  return Object.fromEntries(
+    metaModelCollections.map((entry, index) => [entry.collection, rows(entry, index)]),
+  ) as Pick<MetaModel, MetaModelCollection>;
+}
+
+/**
+ * #708 D7-a — every collection of an application's MetaModel, each read from the section its Entity's
+ * rows belong to in that application (#222). A section the deployment does not have reads as empty (#647).
+ */
+export async function readMetaModelCollections(
+  applicationUuid: Uuid,
+  read: (section: ApplicationSection, entityUuid: Uuid, collection: MetaModelCollection) => Promise<unknown[]>,
+): Promise<Pick<MetaModel, MetaModelCollection>> {
+  const rows = await Promise.all(
+    metaModelCollections.map(({ entity, collection }) =>
+      read(getApplicationSection(applicationUuid, entity.uuid), entity.uuid, collection),
+    ),
+  );
+  return buildMetaModelCollections((_entry, index) => rows[index]);
+}
+
+/** #708 D7-a — a MetaModel's collections, all empty. */
+export function emptyMetaModelCollections(): Pick<MetaModel, MetaModelCollection> {
+  return buildMetaModelCollections(() => []);
+}
+
+function entityDefinitionsOfSection(section: MetaModelEntityListEntry["section"]): ReadonlyMap<string, Entity> {
+  return new Map(
+    metaModelEntityList.filter((entry) => entry.section === section).map(({ entity }) => [entity.uuid!, entity]),
+  );
+}
+
+const versionHistoryEntityDefinitions: ReadonlyMap<string, Entity> = entityDefinitionsOfSection("modelVersion");
+
+/**
  * #232 — entity UUIDs whose instances always belong to `modelVersion`.
  * Checked first in getApplicationSection; independent of application UUID.
  * @public
  */
-export const versionHistoryEntityUuids: ReadonlySet<string> = new Set([
-  entityEntityVersion.uuid!,
-  entitySelfApplicationVersion.uuid!,
-  entityApplicationVersionCrossEntityVersion.uuid!,
-  entityHistoricalQueryVersion.uuid!,
-  entityApplicationVersionCrossQueryVersion.uuid!,
-  entityHistoricalReportVersion.uuid!,
-  entityApplicationVersionCrossReportVersion.uuid!,
-  entityHistoricalMenuVersion.uuid!,
-  entityApplicationVersionCrossMenuVersion.uuid!,
-  entityHistoricalEndpointVersion.uuid!,
-  entityApplicationVersionCrossEndpointVersion.uuid!,
-  entityHistoricalRunnerVersion.uuid!,
-  entityApplicationVersionCrossRunnerVersion.uuid!,
-  entityHistoricalThemeVersion.uuid!,
-  entityApplicationVersionCrossThemeVersion.uuid!,
-  entityHistoricalTransformerDefinitionVersion.uuid!,
-  entityApplicationVersionCrossTransformerDefinitionVersion.uuid!,
-  entityHistoricalMlSchemaVersion.uuid!,
-  entityApplicationVersionCrossMlSchemaVersion.uuid!,
-  entityHistoricalMiroirTestVersion.uuid!,
-  entityApplicationVersionCrossMiroirTestVersion.uuid!,
-  entityHistoricalBlobVersion.uuid!,
-  entityApplicationVersionCrossBlobVersion.uuid!,
-  entityHistoricalTestConfigurationVersion.uuid!,
-  entityApplicationVersionCrossTestConfigurationVersion.uuid!,
-  entityHistoricalTestVersion.uuid!,
-  entityApplicationVersionCrossTestVersion.uuid!,
-  // #708: the evolution trace records of an application
-  entityEvolutionTraceRecord.uuid!,
-]);
-
-const versionHistoryEntityDefinitions: ReadonlyMap<string, Entity> = new Map([
-  [entityEntityVersion.uuid!, entityEntityVersion as Entity],
-  [entitySelfApplicationVersion.uuid!, entitySelfApplicationVersion as Entity],
-  [entityApplicationVersionCrossEntityVersion.uuid!, entityApplicationVersionCrossEntityVersion as Entity],
-  [entityHistoricalQueryVersion.uuid!, entityHistoricalQueryVersion as Entity],
-  [entityApplicationVersionCrossQueryVersion.uuid!, entityApplicationVersionCrossQueryVersion as Entity],
-  [entityHistoricalReportVersion.uuid!, entityHistoricalReportVersion as Entity],
-  [entityApplicationVersionCrossReportVersion.uuid!, entityApplicationVersionCrossReportVersion as Entity],
-  [entityHistoricalMenuVersion.uuid!, entityHistoricalMenuVersion as Entity],
-  [entityApplicationVersionCrossMenuVersion.uuid!, entityApplicationVersionCrossMenuVersion as Entity],
-  [entityHistoricalEndpointVersion.uuid!, entityHistoricalEndpointVersion as Entity],
-  [entityApplicationVersionCrossEndpointVersion.uuid!, entityApplicationVersionCrossEndpointVersion as Entity],
-  [entityHistoricalRunnerVersion.uuid!, entityHistoricalRunnerVersion as Entity],
-  [entityApplicationVersionCrossRunnerVersion.uuid!, entityApplicationVersionCrossRunnerVersion as Entity],
-  [entityHistoricalThemeVersion.uuid!, entityHistoricalThemeVersion as Entity],
-  [entityApplicationVersionCrossThemeVersion.uuid!, entityApplicationVersionCrossThemeVersion as Entity],
-  [entityHistoricalTransformerDefinitionVersion.uuid!, entityHistoricalTransformerDefinitionVersion as Entity],
-  [
-    entityApplicationVersionCrossTransformerDefinitionVersion.uuid!,
-    entityApplicationVersionCrossTransformerDefinitionVersion as Entity,
-  ],
-  [entityHistoricalMlSchemaVersion.uuid!, entityHistoricalMlSchemaVersion as Entity],
-  [entityApplicationVersionCrossMlSchemaVersion.uuid!, entityApplicationVersionCrossMlSchemaVersion as Entity],
-  [entityHistoricalMiroirTestVersion.uuid!, entityHistoricalMiroirTestVersion as Entity],
-  [entityApplicationVersionCrossMiroirTestVersion.uuid!, entityApplicationVersionCrossMiroirTestVersion as Entity],
-  [entityHistoricalBlobVersion.uuid!, entityHistoricalBlobVersion as Entity],
-  [entityApplicationVersionCrossBlobVersion.uuid!, entityApplicationVersionCrossBlobVersion as Entity],
-  [entityHistoricalTestConfigurationVersion.uuid!, entityHistoricalTestConfigurationVersion as Entity],
-  [entityApplicationVersionCrossTestConfigurationVersion.uuid!, entityApplicationVersionCrossTestConfigurationVersion as Entity],
-  [entityHistoricalTestVersion.uuid!, entityHistoricalTestVersion as Entity],
-  [entityApplicationVersionCrossTestVersion.uuid!, entityApplicationVersionCrossTestVersion as Entity],
-  [entityEvolutionTraceRecord.uuid!, entityEvolutionTraceRecord as Entity],
-]);
+export const versionHistoryEntityUuids: ReadonlySet<string> = new Set(versionHistoryEntityDefinitions.keys());
 
 /** Bootstrap Entity row for a version-history parent entity (SQL modelVersion lazy table creation). */
 export function getVersionHistoryEntityDefinition(entityUuid: string): Entity | undefined {
@@ -271,10 +337,7 @@ export function isOptionalApplicationSection(section: string): section is Option
 }
 
 /** #647 — the fixed Entity rows of the devData section, defined in the Miroir model. */
-const devDataEntityDefinitions: ReadonlyMap<string, Entity> = new Map([
-  [entityBundleSizeMeasurement.uuid!, entityBundleSizeMeasurement as Entity],
-  [entityPageLoadMeasurement.uuid!, entityPageLoadMeasurement as Entity],
-]);
+const devDataEntityDefinitions: ReadonlyMap<string, Entity> = entityDefinitionsOfSection("devData");
 
 /**
  * #647 — entity UUIDs whose instances always belong to `devData`, whatever the application.
@@ -406,39 +469,8 @@ export function getReportsAndEntitiesForDeploymentUuid(
 export const emptyApplicationModel: MetaModel = {
   applicationUuid: "",
   applicationName: "",
-  applications: [],
-  applicationVersions: [],
-  applicationVersionCrossEntityVersion: [],
-  applicationVersionCrossQueryVersion: [],
-  queryVersions: [],
-  applicationVersionCrossReportVersion: [],
-  reportVersions: [],
-  applicationVersionCrossMenuVersion: [],
-  menuVersions: [],
-  applicationVersionCrossEndpointVersion: [],
-  endpointVersions: [],
-  applicationVersionCrossRunnerVersion: [],
-  runnerVersions: [],
-  applicationVersionCrossThemeVersion: [],
-  themeVersions: [],
-  applicationVersionCrossTransformerDefinitionVersion: [],
-  applicationVersionCrossMlSchemaVersion: [],
-  applicationVersionCrossMiroirTestVersion: [],
-  transformerDefinitionVersions: [],
-  mlSchemaVersions: [],
-  miroirTestVersions: [],
-  endpoints: [],
-  entities: [],
-  entityVersions: [],
-  mlSchemas: [],
-  menus: [],
-  reports: [],
-  runners: [],
-  storedQueries: [],
-  tests: [],
-  themes: [],
-  transformerDefinitions: [],
-}
+  ...emptyMetaModelCollections(),
+};
 
 // ################################################################################################
 const modelIcons: Record<string, string> = {
@@ -520,67 +552,15 @@ export async function extractApplicationModel(
     // Read all model elements from the store
     log.debug("\n7. Reading model elements from filesystem store...");
 
-    // Extract all entities
-    // #222 — section per concept (Miroir EntityVersion → data; Library MetaModel peers → model)
-    const sectionFor = (entityUuid: Uuid) => getApplicationSection(applicationUuid, entityUuid);
-
-    const entities = await extractEntityInstances(storeController, sectionFor(entityEntity.uuid), entityEntity.uuid, "entities");
-    const entityDefinitions = await extractEntityInstances(storeController, sectionFor(entityEntityVersion.uuid), entityEntityVersion.uuid, "entity definitions");
-    const endpoints = await extractEntityInstances(storeController, sectionFor(entityEndpointVersion.uuid), entityEndpointVersion.uuid, "endpoints");
-    const menus = await extractEntityInstances(storeController, sectionFor(entityMenu.uuid), entityMenu.uuid, "menus");
-    const reports = await extractEntityInstances(storeController, sectionFor(entityReport.uuid), entityReport.uuid, "reports");
-    const mlSchemas = await extractEntityInstances(storeController, sectionFor(entityMlSchema.uuid), entityMlSchema.uuid, "ML schemas");
-    const queries = await extractEntityInstances(storeController, sectionFor(entityQueryVersion.uuid), entityQueryVersion.uuid, "queries");
-    const runners = await extractEntityInstances(storeController, sectionFor(entityRunner.uuid), entityRunner.uuid, "runners");
-    const themes = await extractEntityInstances(storeController, sectionFor(entityTheme.uuid), entityTheme.uuid, "themes");
-    const transformerDefinitions = await extractEntityInstances(
-      storeController,
-      sectionFor(entityTransformerDefinition.uuid),
-      entityTransformerDefinition.uuid,
-      "transformer definitions",
+    const collections = await readMetaModelCollections(applicationUuid, (section, entityUuid, collection) =>
+      extractEntityInstances(storeController, section, entityUuid, collection),
     );
-    const tests = await extractEntityInstances(storeController, sectionFor(entityMiroirTest.uuid), entityMiroirTest.uuid, "tests");
-    // 
-    const applications = await extractEntityInstances(storeController, sectionFor(entitySelfApplication.uuid), entitySelfApplication.uuid, "applications");
-    const applicationVersions = await extractEntityInstances(storeController, sectionFor(entitySelfApplicationVersion.uuid), entitySelfApplicationVersion.uuid, "application versions");
 
-    // Assemble the MetaModel
     log.debug("\n8. Assembling MetaModel structure...");
     const libraryMetaModel: MetaModel = {
       applicationUuid: applicationUuid,
       applicationName: applicationName,
-      applications: applications as SelfApplication[],
-      entities: entities as Entity[],
-      entityVersions: entityDefinitions as EntityVersion[],
-      endpoints: endpoints as EndpointDefinition[],
-      menus: menus as Menu[],
-      reports: reports as Report[],
-      storedQueries: queries as Query[],
-      mlSchemas: mlSchemas as MlSchema[],
-      applicationVersions: applicationVersions as ApplicationVersion[],
-      applicationVersionCrossEntityVersion: [],
-      applicationVersionCrossQueryVersion: [],
-      queryVersions: [], // These would need to be read separately if needed
-      applicationVersionCrossReportVersion: [],
-      reportVersions: [],
-      applicationVersionCrossMenuVersion: [],
-      menuVersions: [],
-      applicationVersionCrossEndpointVersion: [],
-      endpointVersions: [],
-      applicationVersionCrossRunnerVersion: [],
-      runnerVersions: [],
-      applicationVersionCrossThemeVersion: [],
-      themeVersions: [],
-      applicationVersionCrossTransformerDefinitionVersion: [],
-      applicationVersionCrossMlSchemaVersion: [],
-      applicationVersionCrossMiroirTestVersion: [],
-      transformerDefinitionVersions: [],
-      mlSchemaVersions: [],
-      miroirTestVersions: [],
-      runners: runners as Runner[], 
-      tests: tests as MiroirTestDefinition[],
-      themes: themes as StoredMiroirTheme[],
-      transformerDefinitions: transformerDefinitions as TransformerDefinition[],
+      ...collections,
     };
 
     return libraryMetaModel;

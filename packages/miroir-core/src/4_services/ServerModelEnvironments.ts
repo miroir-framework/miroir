@@ -1,19 +1,5 @@
-import {
-  entityDefinitionTheme,
-  entityEndpointVersion,
-  entityEntity,
-  entityEntityVersion,
-  entityMenu,
-  entityMiroirTest,
-  entityMlSchema,
-  entityQueryVersion,
-  entityReport,
-  entityRunner,
-  entitySelfApplication,
-  entitySelfApplicationVersion,
-  entityTransformerDefinition,
-  selfApplicationMiroir,
-} from "miroir-app-miroir";
+import { selfApplicationMiroir } from "miroir-app-miroir";
+
 
 import type { Uuid } from "../0_interfaces/1_core/EntityVersion";
 import type {
@@ -28,7 +14,7 @@ import type { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface
 import type { PersistenceStoreControllerInterface } from "../0_interfaces/4-services/PersistenceStoreControllerInterface";
 import type { PersistenceStoreControllerManagerInterface } from "../0_interfaces/4-services/PersistenceStoreControllerManagerInterface";
 import type { ApplicationDeploymentMap } from "../1_core/Deployment";
-import { defaultMiroirModelEnvironment, getApplicationSection } from "../1_core/Model";
+import { defaultMiroirModelEnvironment, readMetaModelCollections } from "../1_core/Model";
 import { getMiroirFundamentalSchemaForDeployment } from "../2_domain/schemaForDeployment";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
@@ -69,75 +55,16 @@ export async function metaModelFromPersistenceStore(
   application: Uuid,
   persistenceStoreController: PersistenceStoreControllerInterface,
 ): Promise<MetaModel> {
-  const read = (entityUuid: Uuid) =>
-    readInstances(persistenceStoreController, getApplicationSection(application, entityUuid), entityUuid);
-  const [
-    entities,
-    entityVersions,
-    endpoints,
-    mlSchemas,
-    menus,
-    reports,
-    storedQueries,
-    runners,
-    tests,
-    themes,
-    transformerDefinitions,
-    applications,
-    applicationVersions,
-  ] = await Promise.all([
-    readInstances(persistenceStoreController, "model", entityEntity.uuid),
-    read(entityEntityVersion.uuid),
-    read(entityEndpointVersion.uuid),
-    read(entityMlSchema.uuid),
-    read(entityMenu.uuid),
-    read(entityReport.uuid),
-    read(entityQueryVersion.uuid),
-    read(entityRunner.uuid),
-    read(entityMiroirTest.uuid),
-    read(entityDefinitionTheme.entityUuid),
-    read(entityTransformerDefinition.uuid),
-    read(entitySelfApplication.uuid),
-    read(entitySelfApplicationVersion.uuid),
-  ]);
-  const selfApplications = applications as SelfApplication[];
+  const collections = await readMetaModelCollections(application, (section, entityUuid) =>
+    readInstances(persistenceStoreController, section, entityUuid),
+  );
+  const selfApplications = collections.applications;
   const matchedApplication =
     selfApplications.find((a) => a.uuid === application) ?? selfApplications[0];
   return {
     applicationUuid: application,
     applicationName: matchedApplication?.name ?? "",
-    applications: selfApplications,
-    applicationVersions: applicationVersions as MetaModel["applicationVersions"],
-    applicationVersionCrossEntityVersion: [],
-    applicationVersionCrossQueryVersion: [],
-    applicationVersionCrossReportVersion: [],
-    applicationVersionCrossMenuVersion: [],
-    applicationVersionCrossEndpointVersion: [],
-    applicationVersionCrossRunnerVersion: [],
-    applicationVersionCrossThemeVersion: [],
-    applicationVersionCrossTransformerDefinitionVersion: [],
-    applicationVersionCrossMlSchemaVersion: [],
-    applicationVersionCrossMiroirTestVersion: [],
-    queryVersions: [],
-    reportVersions: [],
-    menuVersions: [],
-    endpointVersions: [],
-    runnerVersions: [],
-    themeVersions: [],
-    transformerDefinitionVersions: [],
-    mlSchemaVersions: [],
-    miroirTestVersions: [],
-    endpoints: endpoints as MetaModel["endpoints"],
-    entities: entities as MetaModel["entities"],
-    entityVersions: entityVersions as MetaModel["entityVersions"],
-    mlSchemas: mlSchemas as MetaModel["mlSchemas"],
-    menus: menus as MetaModel["menus"],
-    reports: reports as MetaModel["reports"],
-    runners: runners as MetaModel["runners"],
-    storedQueries: storedQueries as MetaModel["storedQueries"],
-    tests: tests as MetaModel["tests"],
-    themes: themes as MetaModel["themes"],
-    transformerDefinitions: transformerDefinitions as MetaModel["transformerDefinitions"],
+    ...collections,
   };
 }
 

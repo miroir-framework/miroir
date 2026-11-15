@@ -13193,6 +13193,524 @@ export const miroirFundamentalMlSchema = {
           }
         }
       },
+      "blob": {
+        "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "entityDefinitionRoot"
+          }
+        },
+        "definition": {
+          "name": {
+            "type": "string",
+            "tag": {
+              "value": {
+                "defaultLabel": "Name",
+                "display": {
+                  "editable": true
+                }
+              }
+            }
+          },
+          "filename": {
+            "type": "string",
+            "tag": {
+              "value": {
+                "defaultLabel": "Filename",
+                "display": {
+                  "editable": true
+                }
+              }
+            }
+          },
+          "defaultLabel": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Default Label",
+                "display": {
+                  "editable": true
+                }
+              }
+            }
+          },
+          "description": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Description",
+                "display": {
+                  "editable": true
+                }
+              }
+            }
+          },
+          "contents": {
+            "type": "object",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Contents",
+                "display": {
+                  "editable": true
+                },
+                "isBlob": true
+              }
+            },
+            "definition": {
+              "encoding": {
+                "type": "enum",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Encoding",
+                    "display": {
+                      "editable": true
+                    }
+                  }
+                },
+                "definition": [
+                  "base64",
+                  "data-uri"
+                ]
+              },
+              "mimeType": {
+                "type": "enum",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "MIME Type",
+                    "display": {
+                      "editable": true
+                    }
+                  }
+                },
+                "definition": [
+                  "image/png",
+                  "image/jpeg",
+                  "image/gif",
+                  "image/svg+xml",
+                  "application/pdf",
+                  "application/zip",
+                  "text/plain",
+                  "application/json"
+                ]
+              },
+              "data": {
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Contents",
+                    "display": {
+                      "editable": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "testConfiguration": {
+        "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "entityDefinitionRoot"
+          }
+        },
+        "definition": {
+          "selfApplication": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "defaultLabel": "SelfApplication",
+                "foreignKeyParams": {
+                  "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
+                  "targetEntityOrderInstancesBy": "name"
+                }
+              }
+            }
+          },
+          "name": {
+            "type": "string",
+            "tag": {
+              "value": {
+                "defaultLabel": "Name"
+              }
+            }
+          },
+          "description": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Description"
+              }
+            }
+          },
+          "testbedModel": {
+            "type": "any",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Testbed Model"
+              }
+            }
+          },
+          "testbedEntitiesAndInstances": {
+            "type": "array",
+            "optional": true,
+            "definition": {
+              "type": "object",
+              "definition": {
+                "entity": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "entity"
+                  }
+                },
+                "instances": {
+                  "type": "array",
+                  "definition": {
+                    "type": "any"
+                  }
+                }
+              }
+            },
+            "tag": {
+              "value": {
+                "defaultLabel": "Testbed Entities And Instances"
+              }
+            }
+          }
+        }
+      },
+      "blobVersion": {
+        "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "entityDefinitionRoot"
+          }
+        },
+        "definition": {
+          "name": {
+            "type": "string",
+            "tag": {
+              "value": {
+                "defaultLabel": "Name",
+                "display": {
+                  "editable": true
+                }
+              }
+            }
+          },
+          "blobUuid": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "defaultLabel": "Blob Uuid of the live Blob this snapshot captures",
+                "display": {
+                  "editable": false
+                },
+                "foreignKeyParams": {
+                  "targetEntity": "62209e4a-e429-4d7d-9b28-dcc1da6b51a2",
+                  "targetEntityOrderInstancesBy": "name"
+                }
+              }
+            }
+          },
+          "filename": {
+            "type": "string",
+            "tag": {
+              "value": {
+                "defaultLabel": "Filename",
+                "display": {
+                  "editable": true
+                }
+              }
+            }
+          },
+          "defaultLabel": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Default Label",
+                "display": {
+                  "editable": true
+                }
+              }
+            }
+          },
+          "description": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Description",
+                "display": {
+                  "editable": true
+                }
+              }
+            }
+          },
+          "contents": {
+            "type": "object",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Contents",
+                "display": {
+                  "editable": true
+                },
+                "isBlob": true
+              }
+            },
+            "definition": {
+              "encoding": {
+                "type": "enum",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Encoding",
+                    "display": {
+                      "editable": true
+                    }
+                  }
+                },
+                "definition": [
+                  "base64",
+                  "data-uri"
+                ]
+              },
+              "mimeType": {
+                "type": "enum",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "MIME Type",
+                    "display": {
+                      "editable": true
+                    }
+                  }
+                },
+                "definition": [
+                  "image/png",
+                  "image/jpeg",
+                  "image/gif",
+                  "image/svg+xml",
+                  "application/pdf",
+                  "application/zip",
+                  "text/plain",
+                  "application/json"
+                ]
+              },
+              "data": {
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "defaultLabel": "Contents",
+                    "display": {
+                      "editable": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "testConfigurationVersion": {
+        "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "entityDefinitionRoot"
+          }
+        },
+        "definition": {
+          "selfApplication": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "defaultLabel": "SelfApplication",
+                "foreignKeyParams": {
+                  "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
+                  "targetEntityOrderInstancesBy": "name"
+                }
+              }
+            }
+          },
+          "name": {
+            "type": "string",
+            "tag": {
+              "value": {
+                "defaultLabel": "Name"
+              }
+            }
+          },
+          "testConfigurationUuid": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "defaultLabel": "TestConfiguration Uuid of the live TestConfiguration this snapshot captures",
+                "display": {
+                  "editable": false
+                },
+                "foreignKeyParams": {
+                  "targetEntity": "675ccd46-7dd3-400b-a2bd-1319c39e11da",
+                  "targetEntityOrderInstancesBy": "name"
+                }
+              }
+            }
+          },
+          "description": {
+            "type": "string",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Description"
+              }
+            }
+          },
+          "testbedModel": {
+            "type": "any",
+            "optional": true,
+            "tag": {
+              "value": {
+                "defaultLabel": "Testbed Model"
+              }
+            }
+          },
+          "testbedEntitiesAndInstances": {
+            "type": "array",
+            "optional": true,
+            "definition": {
+              "type": "object",
+              "definition": {
+                "entity": {
+                  "type": "schemaReference",
+                  "definition": {
+                    "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                    "relativePath": "entity"
+                  }
+                },
+                "instances": {
+                  "type": "array",
+                  "definition": {
+                    "type": "any"
+                  }
+                }
+              }
+            },
+            "tag": {
+              "value": {
+                "defaultLabel": "Testbed Entities And Instances"
+              }
+            }
+          }
+        }
+      },
+      "applicationVersionCrossBlobVersion": {
+        "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "entityDefinitionRoot"
+          }
+        },
+        "definition": {
+          "applicationVersion": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "id": 5,
+                "display": {
+                  "editable": false
+                },
+                "defaultLabel": "SelfApplication Version",
+                "foreignKeyParams": {
+                  "targetEntity": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
+                  "targetEntityOrderInstancesBy": "name"
+                }
+              }
+            }
+          },
+          "blobVersion": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "id": 6,
+                "display": {
+                  "editable": false
+                },
+                "defaultLabel": "Blob Version",
+                "foreignKeyParams": {
+                  "targetEntity": "4fbc43fa-8970-41b8-845e-20303002147e",
+                  "targetEntityOrderInstancesBy": "name"
+                }
+              }
+            }
+          }
+        }
+      },
+      "applicationVersionCrossTestConfigurationVersion": {
+        "type": "object",
+        "extend": {
+          "type": "schemaReference",
+          "definition": {
+            "eager": true,
+            "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+            "relativePath": "entityDefinitionRoot"
+          }
+        },
+        "definition": {
+          "applicationVersion": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "id": 5,
+                "display": {
+                  "editable": false
+                },
+                "defaultLabel": "SelfApplication Version",
+                "foreignKeyParams": {
+                  "targetEntity": "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24",
+                  "targetEntityOrderInstancesBy": "name"
+                }
+              }
+            }
+          },
+          "testConfigurationVersion": {
+            "type": "uuid",
+            "tag": {
+              "value": {
+                "id": 6,
+                "display": {
+                  "editable": false
+                },
+                "defaultLabel": "TestConfiguration Version",
+                "foreignKeyParams": {
+                  "targetEntity": "9b0f81d3-8b80-454f-9dfc-57489969a112",
+                  "targetEntityOrderInstancesBy": "name"
+                }
+              }
+            }
+          }
+        }
+      },
       "testCompositeAction": {
         "type": "object",
         "definition": {
@@ -49951,6 +50469,86 @@ export const miroirFundamentalMlSchema = {
               "definition": {
                 "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
                 "relativePath": "transformerDefinition"
+              }
+            }
+          },
+          "applicationModelBranches": {
+            "type": "array",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "applicationModelBranch"
+              }
+            }
+          },
+          "blobs": {
+            "type": "array",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "blob"
+              }
+            }
+          },
+          "blobVersions": {
+            "type": "array",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "blobVersion"
+              }
+            }
+          },
+          "applicationVersionCrossBlobVersion": {
+            "type": "array",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "applicationVersionCrossBlobVersion"
+              }
+            }
+          },
+          "testConfigurations": {
+            "type": "array",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "testConfiguration"
+              }
+            }
+          },
+          "testConfigurationVersions": {
+            "type": "array",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "testConfigurationVersion"
+              }
+            }
+          },
+          "applicationVersionCrossTestConfigurationVersion": {
+            "type": "array",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "applicationVersionCrossTestConfigurationVersion"
+              }
+            }
+          },
+          "evolutionTraceRecords": {
+            "type": "array",
+            "definition": {
+              "type": "schemaReference",
+              "definition": {
+                "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                "relativePath": "evolutionTraceRecord"
               }
             }
           }

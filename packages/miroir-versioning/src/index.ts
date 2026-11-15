@@ -17,3 +17,4 @@ export const actionImplementations: Record<string, ActionImplementationHandler> 
 export { handleAction_freezeApplicationVersion };
 export * from "./applicationVersionFreeze.js";
 export * from "./evolutionTraceRecords.js";
+export * from "./modelStates.js";

@@ -453,8 +453,8 @@ Out:
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
 | B0 | Characterize: the collections `MetaModel` lacks, and what a freeze loses | ✅ DONE | `metaModelCollections.unit`, `freezeSnapshotFields.unit` |
-| B1 | `MetaModel` has a collection for every Entity of the meta-application | ⬜ pending | `metaModelCollections.unit`, local cache model of Miroir holds its Blobs |
-| B2 | Tracer: the live model state | ⬜ pending | `modelStates.integ` "live" |
+| B1 | `MetaModel` has a collection for every Entity of the meta-application | ✅ DONE | `metaModelCollections.unit`, `modelStates.integ` (cached model of Miroir holds its branch and test configuration) |
+| B2 | Tracer: the live model state | ✅ DONE | `modelStates.integ` B2 (live state equals the stored rows of every collection) |
 | B3 | The model at a frozen version equals the model that was frozen | ⬜ pending | `modelStates.integ` "frozen round trip" |
 | B4 | The model at a Git ref | ⬜ pending | `modelStatesGit.integ` |
 | B5 | The diff of two model states | ⬜ pending | `modelStateDiff.unit` with real assets, `modelStates.integ` "diff" |
@@ -509,7 +509,7 @@ MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- 3_cont
 
 ## Slice B1 — `MetaModel` has a collection for every Entity of the meta-application
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** the local cache's model of Miroir holds its Blob and TestConfiguration rows; every builder of a `MetaModel` fills every collection.
 
@@ -533,9 +533,21 @@ npx tsc --noEmit --skipLibCheck -p packages/miroir-core/tsconfig.json   # and ev
 npm run nonreg:filesystem -- --runner shared --scope smoke,core,actions,localcache,ui
 ```
 
+### Realization
+
+- `metaModelEntityList` (core `1_core/Model.ts`) is the one list: per Entity of the meta-application, its section and its `MetaModel` collection. `metaModelCollections` filters it; `buildMetaModelCollections`, `readMetaModelCollections` and `emptyMetaModelCollections` build a model's collections from it. `versionHistoryEntityUuids` and the devData definitions, `emptyMetaModel`, `emptyApplicationModel`, `resolveMetaModelPartial`, `extractApplicationModel` and the server's `metaModelFromPersistenceStore` derive from it.
+- The `metaModel` schema gains `applicationModelBranches`, `blobs`, `blobVersions`, `applicationVersionCrossBlobVersion`, `testConfigurations`, `testConfigurationVersions`, `applicationVersionCrossTestConfigurationVersion` and `evolutionTraceRecords`.
+- Local caches (redux, zustand): `currentModel` and `selectModelForDeploymentFromReduxState` read every collection of the list from `getApplicationSection`, one memoized selector per collection; 13 hand-written selectors and two copies of the section logic are gone. Change of behavior: the cached model now holds the history collections and `applicationVersions` from `modelVersion` (they were read from `model`, or left empty by the selector).
+- Default models (Miroir, Library, GitHub, Spotify, appForTest) have the new collections: their branch, Miroir's logo Blob, everything else empty. TestConfiguration rows stay out of the static models: Miroir's only one seeds Library Entities. The `listSelfApplicationUuidPaths` snapshot gains `applicationModelBranches.*.selfApplication`.
+- `modelValidationSuite` finds each Entity's collection in the list (the hand map `defaultMiroirMetaModelEntityNameToAttributeName`, stale for SelfApplication, SelfApplicationVersion, Query and TransformerDefinition, is gone) and validates against the live Entity's `mlSchema` (the frozen SelfApplication EntityVersion has no `versioningMode`; Blob has no EntityVersion).
+- Deviation from RED: Blob rows are not loaded on refresh (`cacheAllInstancesOnRefresh: false`), so `modelStates.integ` checks the cached Miroir branch and TestConfiguration instead; B2's live state reads Blobs from the store. The test loads Miroir with a `rollback` first: the versioning test context loads only admin.
+- No change was needed in `TransformersForRuntime.ts` (it spreads the bundle) or in the MiroirTest assets (`d7e9f81b-…` holds query extractors, not a `metaModel`).
+- Problem met: `@miroir-framework/react` bundles the local caches (`noExternal`), so it must be rebuilt after them before standalone-app tests see the change.
+- Refactor checkpoint: the local caches no longer import `entityEndpointVersion` and `entityQueryVersion`; their 45 other uses stay for now.
+
 ## Slice B2 — Tracer: the live model state
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** `liveModelState(appForTest)` returns its model, every collection filled from its `model` section (and `modelVersion` for the history collections).
 
@@ -551,6 +563,13 @@ npm run build -w @miroir-framework/versioning
 MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- 3_controllers/versioning/modelStates
 npm run nonreg:filesystem -- --runner shared --scope smoke,actions
 ```
+
+### Realization
+
+- `liveModelState(host, application, applicationDeploymentMap)` in `miroir-versioning/src/modelStates.ts`: one `readSectionInstances` per collection of `metaModelCollections`, in the section `getApplicationSection` gives; a failed read returns an `Action2Error`. `ModelState` is `MetaModel`: one shape for every source.
+- Refactor checkpoint: `liveModelState`, `extractApplicationModel` and the server's `metaModelFromPersistenceStore` all go through `buildMetaModelCollections`; they differ only in how a section is read (the action host here, a store controller there).
+- `modelStates.integ` B2 runs on the client DomainController, so the reads go through the emulated server.
+- Scoped nonreg of B1 (`smoke,core,actions,localcache,ui`): 94 passed, 2 failed. `unit-649-core-public-api`: the new exports were marked `@public`; the marks are removed (monorepo API, not the supported set). `unit-643-package-manifests`: the #652 guard expects the redux local cache's dist to import `@miroir-framework/core/admin`, and B1 removed that import (the Miroir deployment check); its only core subpath import is now `@miroir-framework/core/meta-model`. The guard change waits for the designer.
 
 ## Slice B3 — The model at a frozen version equals the model that was frozen
 

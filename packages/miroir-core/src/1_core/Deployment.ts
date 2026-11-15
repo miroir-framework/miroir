@@ -18,7 +18,12 @@ import type { InitApplicationParameters } from "../0_interfaces/4-services/Persi
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
-import { devDataEntityUuids, getApplicationSection } from "./Model.js";
+import {
+  buildMetaModelCollections,
+  devDataEntityUuids,
+  emptyMetaModelCollections,
+  getApplicationSection,
+} from "./Model.js";
 
 import {
   adminApplication_Admin,
@@ -314,80 +319,12 @@ export type ApplicationEntitiesAndInstances = ApplicationEntitiesDefinitionAndIn
 export const emptyMetaModel: MetaModel = {
   applicationUuid: noValue.uuid!,
   applicationName: "",
-  applications: [],
-  entities: [],
-  entityVersions: [],
-  applicationVersionCrossEntityVersion: [],
-  applicationVersionCrossQueryVersion: [],
-  queryVersions: [],
-  applicationVersionCrossReportVersion: [],
-  reportVersions: [],
-  applicationVersionCrossMenuVersion: [],
-  menuVersions: [],
-  applicationVersionCrossEndpointVersion: [],
-  endpointVersions: [],
-  applicationVersionCrossRunnerVersion: [],
-  runnerVersions: [],
-  applicationVersionCrossThemeVersion: [],
-  themeVersions: [],
-  applicationVersionCrossTransformerDefinitionVersion: [],
-  applicationVersionCrossMlSchemaVersion: [],
-  applicationVersionCrossMiroirTestVersion: [],
-  transformerDefinitionVersions: [],
-  mlSchemaVersions: [],
-  miroirTestVersions: [],
-  applicationVersions: [],
-  endpoints: [],
-  mlSchemas: [],
-  menus: [],
-  reports: [],
-  storedQueries: [],
-  runners: [],
-  tests: [],
-  themes: [],
-  transformerDefinitions: [],
+  ...emptyMetaModelCollections(),
 };
-
-const META_MODEL_ARRAY_KEYS = [
-  "applicationVersions",
-  "applicationVersionCrossEntityVersion",
-  "applicationVersionCrossQueryVersion",
-  "applicationVersionCrossReportVersion",
-  "applicationVersionCrossMenuVersion",
-  "applicationVersionCrossEndpointVersion",
-  "applicationVersionCrossRunnerVersion",
-  "applicationVersionCrossThemeVersion",
-  "applicationVersionCrossTransformerDefinitionVersion",
-  "applicationVersionCrossMlSchemaVersion",
-  "applicationVersionCrossMiroirTestVersion",
-  "applications",
-  "entities",
-  "tests",
-  "entityVersions",
-  "endpoints",
-  "mlSchemas",
-  "menus",
-  "storedQueries",
-  "queryVersions",
-  "reportVersions",
-  "menuVersions",
-  "endpointVersions",
-  "runnerVersions",
-  "themeVersions",
-  "transformerDefinitionVersions",
-  "mlSchemaVersions",
-  "miroirTestVersions",
-  "reports",
-  "runners",
-  "themes",
-  "transformerDefinitions",
-] as const satisfies readonly (keyof MetaModel)[];
 
 /** Fill omitted MetaModel array fields with `[]`; scalar fields fall back to {@link emptyMetaModel}. */
 export function resolveMetaModelPartial(partial: MetaModelPartial): MetaModel {
-  const arrayDefaults = Object.fromEntries(
-    META_MODEL_ARRAY_KEYS.map((key) => [key, partial[key] ?? []]),
-  ) as Pick<MetaModel, (typeof META_MODEL_ARRAY_KEYS)[number]>;
+  const arrayDefaults = buildMetaModelCollections(({ collection }) => partial[collection] ?? []);
   return {
     ...emptyMetaModel,
     ...partial,

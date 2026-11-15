@@ -1,5 +1,5 @@
 import type { MlElement, MlReference } from "../preprocessor-generated/miroirFundamentalType";
-import { entityVersionHistoricalQueryVersion, entityVersionHistoricalReportVersion, entityVersionHistoricalMenuVersion, entityVersionHistoricalEndpointVersion, entityVersionHistoricalRunnerVersion, entityVersionHistoricalThemeVersion, entityVersionHistoricalTransformerDefinitionVersion, entityVersionHistoricalMlSchemaVersion, entityVersionHistoricalMiroirTestVersion, miroirThemeSchemaJson, tableThemeSchemaJson } from "miroir-app-miroir";
+import { entityVersionHistoricalQueryVersion, entityVersionHistoricalReportVersion, entityVersionHistoricalMenuVersion, entityVersionHistoricalEndpointVersion, entityVersionHistoricalRunnerVersion, entityVersionHistoricalThemeVersion, entityVersionHistoricalTransformerDefinitionVersion, entityVersionHistoricalMlSchemaVersion, entityVersionHistoricalMiroirTestVersion, entityDefinitionBlob, entityDefinitionTestConfiguration, entityVersionHistoricalBlobVersion, entityVersionHistoricalTestConfigurationVersion, entityVersionApplicationVersionCrossBlobVersion, entityVersionApplicationVersionCrossTestConfigurationVersion, miroirThemeSchemaJson, tableThemeSchemaJson } from "miroir-app-miroir";
 
 import { cleanLevel } from "../../../1_core/constants";
 import { mlsTransitiveDependencySet } from "../../../1_core/mls/MlSchemaReferences";
@@ -1569,6 +1569,14 @@ export function getMiroirFundamentalMlSchema(
         mlSchemaVersion: entityVersionHistoricalMlSchemaVersion.mlSchema as any,
         /** #230 — historical MiroirTest snapshot at freeze. */
         miroirTestVersion: entityVersionHistoricalMiroirTestVersion.mlSchema as any,
+        /** #708 D7-a — Blob and TestConfiguration rows, their historical snapshots and Cross rows (#706). */
+        blob: entityDefinitionBlob.mlSchema as any,
+        testConfiguration: entityDefinitionTestConfiguration.mlSchema as any,
+        blobVersion: entityVersionHistoricalBlobVersion.mlSchema as any,
+        testConfigurationVersion: entityVersionHistoricalTestConfigurationVersion.mlSchema as any,
+        applicationVersionCrossBlobVersion: entityVersionApplicationVersionCrossBlobVersion.mlSchema as any,
+        applicationVersionCrossTestConfigurationVersion:
+          entityVersionApplicationVersionCrossTestConfigurationVersion.mlSchema as any,
 
         testCompositeAction: (
           entityDefinitionTest.mlSchema as any
@@ -4624,6 +4632,87 @@ export function getMiroirFundamentalMlSchema(
                 definition: {
                   absolutePath: miroirFundamentalMlSchemaUuid,
                   relativePath: "transformerDefinition",
+                },
+              },
+            },
+            // #708 D7-a: one collection for every Entity of the meta-application (metaModelEntityList, 1_core/Model.ts)
+            applicationModelBranches: {
+              type: "array",
+              definition: {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: miroirFundamentalMlSchemaUuid,
+                  relativePath: "applicationModelBranch",
+                },
+              },
+            },
+            blobs: {
+              type: "array",
+              definition: {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: miroirFundamentalMlSchemaUuid,
+                  relativePath: "blob",
+                },
+              },
+            },
+            blobVersions: {
+              type: "array",
+              definition: {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: miroirFundamentalMlSchemaUuid,
+                  relativePath: "blobVersion",
+                },
+              },
+            },
+            applicationVersionCrossBlobVersion: {
+              type: "array",
+              definition: {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: miroirFundamentalMlSchemaUuid,
+                  relativePath: "applicationVersionCrossBlobVersion",
+                },
+              },
+            },
+            testConfigurations: {
+              type: "array",
+              definition: {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: miroirFundamentalMlSchemaUuid,
+                  relativePath: "testConfiguration",
+                },
+              },
+            },
+            testConfigurationVersions: {
+              type: "array",
+              definition: {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: miroirFundamentalMlSchemaUuid,
+                  relativePath: "testConfigurationVersion",
+                },
+              },
+            },
+            applicationVersionCrossTestConfigurationVersion: {
+              type: "array",
+              definition: {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: miroirFundamentalMlSchemaUuid,
+                  relativePath: "applicationVersionCrossTestConfigurationVersion",
+                },
+              },
+            },
+            evolutionTraceRecords: {
+              type: "array",
+              definition: {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: miroirFundamentalMlSchemaUuid,
+                  relativePath: "evolutionTraceRecord",
                 },
               },
             },

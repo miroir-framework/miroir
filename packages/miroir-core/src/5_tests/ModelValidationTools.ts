@@ -15,6 +15,7 @@ import type { MiroirModelEnvironment } from "../0_interfaces/1_core/Transformer"
 import { getInnermostTypeCheckError } from "../1_core/mls/mlsTypeCheckError.js";
 import { mlsTypeCheck } from "../1_core/mls/mlsTypeCheck.js";
 import { checkEntityPrimaryKeyDeclaration } from "../1_core/Entity/EntityPrimaryKey.js";
+import { metaModelCollections } from "../1_core/Model.js";
 
 // Entity rows get semantic checks their schema can not express (e.g. idAttribute: false).
 const ENTITY_ENTITY_UUID = "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad";
@@ -119,20 +120,18 @@ export function filterModelValidationGroupInstances(
  * Build a validation plan from a MetaModel + entity-name → MetaModel attribute map.
  * Groups with zero instances are listed separately and omitted from `groups`.
  */
-export function modelValidationSuite(
-  metaModel: MetaModel,
-  entityNameToAttributeName: Record<string, string>,
-): ModelValidationPlan {
+export function modelValidationSuite(metaModel: MetaModel): ModelValidationPlan {
   const entityDefinitions = entityDefinitionsByEntityName(metaModel);
+  // #708 D7-a: an Entity's rows are in the MetaModel collection that `metaModelCollections` gives it.
+  const collectionOfEntity = new Map(metaModelCollections.map(({ entity, collection }) => [entity.uuid, collection]));
   const all: ModelValidationGroup[] = metaModel.entities.map((entity) => {
     const entityName = entity.name;
-    const attributeName = entityNameToAttributeName[entityName] ?? entityName;
+    const collection = collectionOfEntity.get(entity.uuid);
     return {
       groupName: entityName,
-      mlSchema: entityDefinitions[entityName]?.mlSchema as unknown as MlElement,
-      instances: modelValidationInstancesArrayToRecord(
-        ((metaModel as any)[attributeName] as readonly any[] | undefined) ?? [],
-      ),
+      // the live Entity row is the authoritative definition; an EntityVersion may be a frozen, older one
+      mlSchema: (entity.mlSchema ?? entityDefinitions[entityName]?.mlSchema) as unknown as MlElement,
+      instances: modelValidationInstancesArrayToRecord(collection ? (metaModel[collection] as readonly any[]) : []),
     };
   });
 
