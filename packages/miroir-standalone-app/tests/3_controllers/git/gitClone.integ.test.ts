@@ -6,7 +6,9 @@
  *
  * The repositories are copies of `miroir-fixture-appForTest` with new uuids, since `test-filesystem`
  * already deploys appForTest. The clones go to `.miroir/test-filesystem/git-clones/`, under the deployment
- * root folder (the repository root in this environment).
+ * root folder (the repository root in this environment). On a nonreg worker (MIROIR_TEST_WORKER, #728) they
+ * go to `.miroir/git-clones-<worker>/` instead, removed after the file: a clone folder name allows no `@`, so
+ * it cannot be inside the worker's state `.miroir/test-filesystem@<worker>/`.
  *
  * Not reachable through MiroirTest: the test builds repositories on disk and starts a Git server.
  * Skipped when the `git` program, which the test server runs, is not on the PATH.
@@ -51,7 +53,8 @@ if (gitMissing) {
 }
 
 const REPOSITORY_ROOT = path.resolve(__dirname, "../../../../..");
-const CLONES = ".miroir/test-filesystem/git-clones";
+const WORKER = process.env.MIROIR_TEST_WORKER;
+const CLONES = WORKER ? `.miroir/git-clones-${WORKER}` : ".miroir/test-filesystem/git-clones";
 const FIXTURE_ASSETS = path.join(REPOSITORY_ROOT, "packages/miroir-fixture-appForTest/assets");
 const FIXTURE_APPLICATION = "eef01001-0001-4000-8000-000000000001";
 const FIXTURE_DEPLOYMENT = "eef01001-0002-4000-8000-000000000002";
@@ -182,6 +185,9 @@ describe.skipIf(gitMissing)("gitAction_clone and gitAction_installClonedDeployme
     await authServer?.close();
     for (const workTree of workTrees) {
       fs.rmSync(workTree, { recursive: true, force: true });
+    }
+    if (WORKER) {
+      fs.rmSync(path.join(REPOSITORY_ROOT, CLONES), { recursive: true, force: true });
     }
   });
 
@@ -346,7 +352,8 @@ describe.skipIf(gitMissing)("gitAction_clone and gitAction_installClonedDeployme
       expectGitError(await gitAction(context, "gitAction_clone", { url: singleUrl, folderName }), "invalidFolderName");
     }
     expectGitError(
-      await gitAction(context, "gitAction_clone", { url: singleUrl, folderName: ".miroir/test-filesystem/library/model/x" }),
+      // The model folder of alpha, installed by an earlier test of this file.
+      await gitAction(context, "gitAction_clone", { url: singleUrl, folderName: `${CLONES}/alpha/assets/appForTest_model/x` }),
       "sharedFolder",
     );
     expect(fs.existsSync(path.join(REPOSITORY_ROOT, "outside"))).toBe(false);
