@@ -11,13 +11,16 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import {
+  Action2Error,
   getApplicationSection,
   metaModelCollections,
+  metaModelEntityList,
   type DomainController,
   type Entity,
   type MetaModel,
 } from "@miroir-framework/core";
-import { liveModelState } from "@miroir-framework/versioning";
+import { frozenModelState, liveModelState, type ModelState } from "@miroir-framework/versioning";
+import { entityPublisher } from "miroir-fixture-appForTest";
 
 import {
   APP_FOR_TEST,
@@ -25,6 +28,8 @@ import {
   appForTestModelEnvironment,
   applicationDeploymentMap,
   expectOk,
+  freezeAppForTest,
+  INSTANCE_ENDPOINT,
   MIROIR_APPLICATION,
   MODEL_ENDPOINT,
   modelEnvironment,
@@ -57,6 +62,41 @@ function modelAction(action: Record<string, unknown>) {
     { endpoint: MODEL_ENDPOINT, ...action } as any,
     applicationDeploymentMap,
     appForTestModelEnvironment(context.domainController),
+  );
+}
+
+function host(): DomainController {
+  return context.domainController as DomainController;
+}
+
+async function liveAppForTest(): Promise<ModelState> {
+  const state = await liveModelState(host(), APP_FOR_TEST, applicationDeploymentMap);
+  expect(state instanceof Action2Error, JSON.stringify(state)).toBe(false);
+  return state as ModelState;
+}
+
+const SNAPSHOTTED = [
+  "entities", "storedQueries", "reports", "menus", "endpoints", "runners", "themes",
+  "transformerDefinitions", "mlSchemas", "tests", "blobs", "testConfigurations",
+] as const;
+const META_MODEL_ENTITIES = new Set(metaModelEntityList.map(({ entity }) => entity.uuid));
+
+/**
+ * The snapshotted collections of a model state, rows sorted by uuid, without what a freeze does not keep:
+ * `parentDefinitionVersionUuid`, `conceptLevel` but on Entities, and the meta-model Entities an application's
+ * model holds (they are not the application's own).
+ */
+function snapshotted(state: ModelState): Record<string, unknown[]> {
+  return Object.fromEntries(
+    SNAPSHOTTED.map((collection) => [
+      collection,
+      (state[collection] as Record<string, unknown>[])
+        .filter((row) => collection !== "entities" || !META_MODEL_ENTITIES.has(row.uuid as string))
+        .map(({ parentDefinitionVersionUuid: _p, conceptLevel, ...row }) =>
+          collection === "entities" ? { ...row, conceptLevel } : row,
+        )
+        .sort((a, b) => String(a.uuid).localeCompare(String(b.uuid))),
+    ]),
   );
 }
 
@@ -98,7 +138,7 @@ describe("model states (#708 B)", () => {
     expectOk(await modelAction({ actionType: "createEntity", payload: { application: APP_FOR_TEST, entities: [liveEntity] } }), "createEntity");
     expectOk(await modelAction({ actionType: "commit", payload: { application: APP_FOR_TEST } }), "commit");
 
-    const state = await liveModelState(context.domainController as DomainController, APP_FOR_TEST, applicationDeploymentMap);
+    const state = await liveAppForTest();
 
     const stored = Object.fromEntries(
       await Promise.all(
@@ -111,5 +151,34 @@ describe("model states (#708 B)", () => {
     const collections = Object.fromEntries(metaModelCollections.map(({ collection }) => [collection, (state as MetaModel)[collection]]));
     expect((state as MetaModel).entities.map((entity) => entity.uuid)).toContain(liveEntity.uuid);
     expect(rowUuids(collections)).toEqual(rowUuids(stored));
+  }, 60000);
+
+  it("B3: the model at a frozen version equals the model that was frozen", async () => {
+    const before = await liveAppForTest();
+    const versionName = `B3-${Date.now()}`;
+    expectOk(await freezeAppForTest(context.domainController, versionName), "freeze");
+    expectOk(
+      await context.domainController.handleAction(
+        {
+          actionType: "updateInstance",
+          endpoint: INSTANCE_ENDPOINT,
+          payload: {
+            application: APP_FOR_TEST,
+            applicationSection: "model",
+            objects: [{ ...entityPublisher, description: "#708 B3: changed after the freeze" }],
+          },
+        } as any,
+        applicationDeploymentMap,
+        appForTestModelEnvironment(context.domainController),
+      ),
+      "change after the freeze",
+    );
+    const version = (await liveAppForTest()).applicationVersions.find((row) => row.name === versionName);
+    expect(version, "the frozen Application Version").toBeDefined();
+
+    const frozen = await frozenModelState(host(), APP_FOR_TEST, applicationDeploymentMap, version!.uuid);
+
+    expect(frozen instanceof Action2Error, JSON.stringify(frozen)).toBe(false);
+    expect(snapshotted(frozen as ModelState)).toEqual(snapshotted(before));
   }, 60000);
 });

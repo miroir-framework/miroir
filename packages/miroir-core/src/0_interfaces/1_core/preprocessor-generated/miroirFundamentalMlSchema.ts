@@ -12551,6 +12551,87 @@ export const miroirFundamentalMlSchema = {
                 "defaultLabel": "ML Schema"
               }
             }
+          },
+          "storageAccess": {
+            "type": "enum",
+            "definition": [
+              "none",
+              "localStorage",
+              "persistentStorage"
+            ],
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 6,
+                "defaultLabel": "Storage Access",
+                "display": {
+                  "editable": false
+                }
+              }
+            }
+          },
+          "selfApplication": {
+            "type": "uuid",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 7,
+                "display": {
+                  "editable": false
+                },
+                "defaultLabel": "SelfApplication",
+                "foreignKeyParams": {
+                  "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
+                  "targetEntityOrderInstancesBy": "name"
+                }
+              }
+            }
+          },
+          "author": {
+            "type": "uuid",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 9,
+                "defaultLabel": "SelfApplication"
+              }
+            }
+          },
+          "scope": {
+            "type": "enum",
+            "optional": true,
+            "definition": [
+              "versioning",
+              "modeling"
+            ],
+            "tag": {
+              "value": {
+                "defaultLabel": "Scope",
+                "description": "Classifies meta-model entities. Absent is equivalent to modeling.",
+                "display": {
+                  "editable": false
+                },
+                "id": 19
+              }
+            }
+          },
+          "logicalDataModel": {
+            "type": "enum",
+            "optional": true,
+            "definition": [
+              "manyToMany",
+              "entity"
+            ],
+            "tag": {
+              "value": {
+                "defaultLabel": "Logical Data Model",
+                "description": "Logical persistence shape for this entity. Absent is equivalent to entity.",
+                "display": {
+                  "editable": false
+                },
+                "id": 20
+              }
+            }
           }
         }
       },

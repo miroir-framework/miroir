@@ -77,6 +77,49 @@
             "defaultLabel": "Theme definition at freeze time"
           }
         }
+      },
+      "storageAccess": {
+        "type": "enum",
+        "definition": [
+          "none",
+          "localStorage",
+          "persistentStorage"
+        ],
+        "optional": true,
+        "tag": {
+          "value": {
+            "defaultLabel": "Storage Access",
+            "display": {
+              "editable": false
+            }
+          }
+        }
+      },
+      "selfApplication": {
+        "type": "uuid",
+        "optional": true,
+        "tag": {
+          "value": {
+            "display": {
+              "editable": false
+            },
+            "defaultLabel": "SelfApplication",
+            "foreignKeyParams": {
+              "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
+              "targetEntityOrderInstancesBy": "name"
+            }
+          }
+        }
+      },
+      "author": {
+        "type": "uuid",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 9,
+            "defaultLabel": "SelfApplication"
+          }
+        }
       }
     }
   }

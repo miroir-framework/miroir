@@ -71,7 +71,6 @@ import {
   type FreezeApplicationVersionPlan,
   type FreezeMetaModelSlice,
   type StoredInstanceForFreeze,
-  type StoredQueryForFreeze,
 } from "./applicationVersionFreeze.js";
 import { handleAction_appendEvolutionTraceRecord } from "./evolutionTraceRecords.js";
 
@@ -173,7 +172,7 @@ function freezeMetaModelSlice(metaModel: MiroirModelEnvironment["currentModel"])
   return {
     applications: metaModel.applications,
     entities: metaModel.entities,
-    storedQueries: metaModel.storedQueries as StoredQueryForFreeze[],
+    storedQueries: metaModel.storedQueries,
     reports: metaModel.reports,
     menus: metaModel.menus,
     endpoints: metaModel.endpoints,
@@ -403,7 +402,7 @@ export const handleAction_freezeApplicationVersion: ActionImplementationHandler 
   const plan = planFreezeApplicationVersionFromMetaModel(payload, {
     ...enrichedMetaModel,
     entities: applicationEntities,
-    storedQueries: enrichedMetaModel.storedQueries as StoredQueryForFreeze[],
+    storedQueries: enrichedMetaModel.storedQueries,
     ...instancesToFreeze,
   });
 

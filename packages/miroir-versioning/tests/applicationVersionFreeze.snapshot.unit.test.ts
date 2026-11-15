@@ -416,9 +416,10 @@ const transformerDefinitionSnapshotCase = defineCase<
     expect(snapshot.name).toBe(live.name);
     expect(snapshot.defaultLabel).toBe(live.defaultLabel);
     expect(snapshot.description).toBe(live.description);
-    expect(snapshot.definition.transformerInterface).toEqual(live.transformerInterface);
-    expect(snapshot.definition.transformerImplementation).toEqual(live.transformerImplementation);
-    expect(snapshot.definition.classification).toBe("basic");
+    // #708 part B: the interface and implementation stay at the top level, as on the live row
+    expect(snapshot.transformerInterface).toEqual(live.transformerInterface);
+    expect(snapshot.transformerImplementation).toEqual(live.transformerImplementation);
+    expect(snapshot.classification).toBe("basic");
   },
   mutateLive: (live) => {
     if (live.transformerImplementation.transformerImplementationType === "libraryImplementation") {
@@ -427,7 +428,7 @@ const transformerDefinitionSnapshotCase = defineCase<
   },
   assertDeepIsolation: (snapshot) => {
     expect(
-      (snapshot.definition.transformerImplementation as { inMemoryImplementationFunctionName?: string })
+      (snapshot.transformerImplementation as { inMemoryImplementationFunctionName?: string })
         .inMemoryImplementationFunctionName,
     ).toBe("handle_Mutable");
   },

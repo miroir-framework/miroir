@@ -455,7 +455,7 @@ Out:
 | B0 | Characterize: the collections `MetaModel` lacks, and what a freeze loses | ✅ DONE | `metaModelCollections.unit`, `freezeSnapshotFields.unit` |
 | B1 | `MetaModel` has a collection for every Entity of the meta-application | ✅ DONE | `metaModelCollections.unit`, `modelStates.integ` (cached model of Miroir holds its branch and test configuration) |
 | B2 | Tracer: the live model state | ✅ DONE | `modelStates.integ` B2 (live state equals the stored rows of every collection) |
-| B3 | The model at a frozen version equals the model that was frozen | ⬜ pending | `modelStates.integ` "frozen round trip" |
+| B3 | The model at a frozen version equals the model that was frozen | ✅ DONE | `modelStates.integ` B3 (frozen round trip), `freezeSnapshotFields.unit` at its B3 target |
 | B4 | The model at a Git ref | ⬜ pending | `modelStatesGit.integ` |
 | B5 | The diff of two model states | ⬜ pending | `modelStateDiff.unit` with real assets, `modelStates.integ` "diff" |
 | B6 | The replay of trace records | ⬜ pending | `modelStates.integ` "replay gives the live model" |
@@ -573,7 +573,7 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,actions
 
 ## Slice B3 — The model at a frozen version equals the model that was frozen
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** freeze appForTest, change it, then `frozenModelState(appForTest, version)` equals the live state taken just before the change.
 
@@ -590,6 +590,15 @@ MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- 3_cont
 npm run testMiroir -w miroir-standalone-app -- --profile emulatedServer-filesystem --mode integ --suites action.domainController.freezeApplicationVersion
 npm run nonreg:filesystem -- --runner shared --scope smoke,actions,runners
 ```
+
+### Realization
+
+- `snapshotRowsAsVersions(rows, type)` is the one snapshot: every attribute but `FREEZE_IDENTITY_ATTRIBUTES` (uuid, parentUuid, parentName, parentDefinitionVersionUuid, conceptLevel), plus the attribute naming the live row. Each element type is a `VersionedElementType` value (version Entity, live uuid attribute, required attributes, which keep the "Cannot snapshot … is missing" guards). The 13 `snapshot…AsHistorical…Versions` functions are one-line wrappers; the Entity one also keeps `conceptLevel`, which EntityVersion holds. The per-type `Stored…ForFreeze` types are gone (the freeze inputs are typed by `MetaModel` collections); the `…VersionSnapshot` names stay as aliases of `InstanceVersionSnapshot`.
+- The Version Entities' schemas gain the live attributes they lacked, copied from the live Entity and optional: QueryVersion `parameters`; ReportVersion `selfApplication`; ThemeVersion `selfApplication`, `author`, `storageAccess`; MiroirTestVersion `selfApplication`, `branch`; EntityVersion `selfApplication`, `author`, `scope`, `storageAccess`, `logicalDataModel`; TransformerDefinitionVersion the five top-level attributes, with `definition` now optional (held only by versions frozen before). Generated types regenerated (`devBuild`).
+- `frozenModelState(host, application, map, applicationVersion)`: reads the live model, follows the version's Cross rows to its version rows and maps each back to its live row (`<type>Uuid` → `uuid`, the live Entity's uuid and name as parent). A TransformerDefinitionVersion frozen before this slice is read back from its `definition` body. The application, its branches and the Application Version come from the live model; the other history collections are empty.
+- What a freeze still does not keep: `parentDefinitionVersionUuid`, and `conceptLevel` on rows other than Entities. The round-trip test leaves them out, with the meta-model Entities an application's model holds (a freeze snapshots only the application's own Entities, `selectEntitiesToFreeze`).
+- Deviation: the round trip runs on appForTest only. Library is unversioned (designer's choice, 2026-11-15), so it cannot be frozen.
+- Note for PostgreSQL deployments: the new Version attributes are new columns; an existing database needs them added before a freeze writes them.
 
 ## Slice B4 — The model at a Git ref
 

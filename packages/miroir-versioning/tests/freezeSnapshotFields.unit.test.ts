@@ -2,7 +2,7 @@
  * #708 part B, Slice B0: what a freeze keeps of each live row. A model read back from a version must equal
  * the model that was frozen (analysis D7-a, plan Q-B4), so a snapshot keeps every field of the live row but
  * the identity ones. This characterization records, per element type, the fields of the real rows of Library
- * and Miroir that the snapshot drops today; Slice B3 empties it.
+ * and Miroir that the snapshot drops: B0 recorded the gaps, Slice B3 closed them.
  */
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
@@ -78,21 +78,14 @@ function droppedFields(): Record<string, string[]> {
   );
 }
 
-describe("freeze snapshot fields (#708 B0)", () => {
+describe("freeze snapshot fields (#708 B0, B3)", () => {
   it("reads real rows of every older element type", () => {
     const empty = elementTypes.filter(({ entityUuid }) => realRows(entityUuid).length === 0).map(({ name }) => name);
     expect(empty).toEqual([]);
   });
 
-  it("B0: the fields a snapshot drops today", () => {
+  it("B3: a snapshot keeps every field of the live row but the identity ones", () => {
     const dropped = Object.fromEntries(Object.entries(droppedFields()).filter(([, fields]) => fields.length > 0));
-    expect(dropped).toEqual({
-      MiroirTest: ["branch", "selfApplication"],
-      Query: ["parameters"],
-      Report: ["selfApplication"],
-      Theme: ["selfApplication"],
-      // classification, runnableAsSql and the interface and implementation move under `definition`
-      TransformerDefinition: ["classification", "presentation", "runnableAsSql", "transformerImplementation", "transformerInterface"],
-    });
+    expect(dropped).toEqual({});
   });
 });

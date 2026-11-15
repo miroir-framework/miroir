@@ -91,547 +91,9 @@ export interface SnapshotOptions {
   newUuid?: () => string;
 }
 
-/** Live Query instance shape in MetaModel.storedQueries. */
-export type StoredQueryForFreeze = {
-  uuid: string;
-  name: string;
-  definition: Query;
-  description?: string;
-  defaultLabel?: string;
-  parentUuid?: string;
-  parentName?: string;
-};
-
-/** Historical Query snapshot minted at freeze. */
-export type QueryVersionSnapshot = {
-  uuid: string;
-  parentUuid: string;
-  parentName: "QueryVersion";
-  name: string;
-  queryUuid: string;
-  definition: Query;
-  description?: string;
-  defaultLabel?: string;
-};
-
 /**
- * Deep-copy present-model Queries into new immutable QueryVersion instances.
- * Each output has a **new** UUID; `queryUuid` references the live Query.
- */
-export function snapshotQueriesAsHistoricalQueryVersions(
-  queries: StoredQueryForFreeze[],
-  options?: SnapshotOptions,
-): QueryVersionSnapshot[] {
-  const mintUuid = options?.newUuid ?? uuidv4;
-
-  return queries.map((query) => {
-    if (query.definition === undefined || query.definition === null) {
-      throw new Error(
-        `Cannot snapshot Query ${query.uuid} (${query.name}): definition is missing`,
-      );
-    }
-
-    const snapshot: QueryVersionSnapshot = {
-      uuid: mintUuid(),
-      parentUuid: QUERY_VERSION_ENTITY_UUID,
-      parentName: "QueryVersion",
-      name: query.name,
-      queryUuid: query.uuid,
-      definition: structuredClone(query.definition),
-      ...(query.description !== undefined ? { description: query.description } : {}),
-      ...(query.defaultLabel !== undefined ? { defaultLabel: query.defaultLabel } : {}),
-    };
-
-    return snapshot;
-  });
-}
-
-/** Live Report instance shape in MetaModel.reports. */
-export type StoredReportForFreeze = {
-  uuid: string;
-  name: string;
-  definition: RootReport;
-  defaultLabel?: string;
-  type?: Report["type"];
-  description?: string;
-  parentUuid?: string;
-  parentName?: string;
-};
-
-/** Historical Report snapshot minted at freeze. */
-export type ReportVersionSnapshot = {
-  uuid: string;
-  parentUuid: string;
-  parentName: "ReportVersion";
-  name: string;
-  reportUuid: string;
-  definition: RootReport;
-  defaultLabel?: string;
-  type?: Report["type"];
-  description?: string;
-};
-
-/**
- * Deep-copy present-model Reports into new immutable ReportVersion instances.
- * Each output has a **new** UUID; `reportUuid` references the live Report.
- */
-export function snapshotReportsAsHistoricalReportVersions(
-  reports: StoredReportForFreeze[],
-  options?: SnapshotOptions,
-): ReportVersionSnapshot[] {
-  const mintUuid = options?.newUuid ?? uuidv4;
-
-  return reports.map((report) => {
-    if (report.definition === undefined || report.definition === null) {
-      throw new Error(
-        `Cannot snapshot Report ${report.uuid} (${report.name}): definition is missing`,
-      );
-    }
-
-    const snapshot: ReportVersionSnapshot = {
-      uuid: mintUuid(),
-      parentUuid: REPORT_VERSION_ENTITY_UUID,
-      parentName: "ReportVersion",
-      name: report.name,
-      reportUuid: report.uuid,
-      definition: structuredClone(report.definition),
-      ...(report.defaultLabel !== undefined ? { defaultLabel: report.defaultLabel } : {}),
-      ...(report.type !== undefined ? { type: report.type } : {}),
-      ...(report.description !== undefined ? { description: report.description } : {}),
-    };
-
-    return snapshot;
-  });
-}
-
-/** Live Menu instance shape in MetaModel.menus. */
-export type StoredMenuForFreeze = {
-  uuid: string;
-  name: string;
-  definition: Menu["definition"];
-  defaultLabel?: string;
-  description?: string;
-  parentUuid?: string;
-  parentName?: string;
-};
-
-/** Historical Menu snapshot minted at freeze. */
-export type MenuVersionSnapshot = {
-  uuid: string;
-  parentUuid: string;
-  parentName: "MenuVersion";
-  name: string;
-  menuUuid: string;
-  definition: Menu["definition"];
-  defaultLabel?: string;
-  description?: string;
-};
-
-/**
- * Deep-copy present-model Menus into new immutable MenuVersion instances.
- * Each output has a **new** UUID; `menuUuid` references the live Menu.
- */
-export function snapshotMenusAsHistoricalMenuVersions(
-  menus: StoredMenuForFreeze[],
-  options?: SnapshotOptions,
-): MenuVersionSnapshot[] {
-  const mintUuid = options?.newUuid ?? uuidv4;
-
-  return menus.map((menu) => {
-    if (menu.definition === undefined || menu.definition === null) {
-      throw new Error(
-        `Cannot snapshot Menu ${menu.uuid} (${menu.name}): definition is missing`,
-      );
-    }
-
-    const snapshot: MenuVersionSnapshot = {
-      uuid: mintUuid(),
-      parentUuid: MENU_VERSION_ENTITY_UUID,
-      parentName: "MenuVersion",
-      name: menu.name,
-      menuUuid: menu.uuid,
-      definition: structuredClone(menu.definition),
-      ...(menu.defaultLabel !== undefined ? { defaultLabel: menu.defaultLabel } : {}),
-      ...(menu.description !== undefined ? { description: menu.description } : {}),
-    };
-
-    return snapshot;
-  });
-}
-
-/** Live Endpoint instance shape in MetaModel.endpoints. */
-export type StoredEndpointForFreeze = {
-  uuid: string;
-  name: string;
-  version: string;
-  application: string;
-  definition: EndpointDefinition["definition"];
-  description?: string;
-  transactionalEndpoint?: boolean;
-  parentUuid?: string;
-  parentName?: string;
-};
-
-/** Historical Endpoint snapshot minted at freeze. */
-export type EndpointVersionSnapshot = {
-  uuid: string;
-  parentUuid: string;
-  parentName: "EndpointVersion";
-  name: string;
-  endpointUuid: string;
-  version: string;
-  application: string;
-  definition: EndpointDefinition["definition"];
-  description?: string;
-  transactionalEndpoint?: boolean;
-};
-
-/**
- * Deep-copy present-model Endpoints into new immutable EndpointVersion instances.
- * Each output has a **new** UUID; `endpointUuid` references the live Endpoint.
- */
-export function snapshotEndpointsAsHistoricalEndpointVersions(
-  endpoints: StoredEndpointForFreeze[],
-  options?: SnapshotOptions,
-): EndpointVersionSnapshot[] {
-  const mintUuid = options?.newUuid ?? uuidv4;
-
-  return endpoints.map((endpoint) => {
-    if (endpoint.definition === undefined || endpoint.definition === null) {
-      throw new Error(
-        `Cannot snapshot Endpoint ${endpoint.uuid} (${endpoint.name}): definition is missing`,
-      );
-    }
-
-    const snapshot: EndpointVersionSnapshot = {
-      uuid: mintUuid(),
-      parentUuid: ENDPOINT_VERSION_ENTITY_UUID,
-      parentName: "EndpointVersion",
-      name: endpoint.name,
-      endpointUuid: endpoint.uuid,
-      version: endpoint.version,
-      application: endpoint.application,
-      definition: structuredClone(endpoint.definition),
-      ...(endpoint.description !== undefined ? { description: endpoint.description } : {}),
-      ...(endpoint.transactionalEndpoint !== undefined
-        ? { transactionalEndpoint: endpoint.transactionalEndpoint }
-        : {}),
-    };
-
-    return snapshot;
-  });
-}
-
-/** Live Runner instance shape in MetaModel.runners. */
-export type StoredRunnerForFreeze = {
-  uuid: string;
-  name: string;
-  application: string;
-  defaultLabel: string;
-  description?: string;
-  definition: Runner["definition"];
-  parentUuid?: string;
-  parentName?: string;
-};
-
-/** Historical Runner snapshot minted at freeze. */
-export type RunnerVersionSnapshot = {
-  uuid: string;
-  parentUuid: string;
-  parentName: "RunnerVersion";
-  name: string;
-  runnerUuid: string;
-  application: string;
-  defaultLabel: string;
-  description?: string;
-  definition: Runner["definition"];
-};
-
-/**
- * Deep-copy present-model Runners into new immutable RunnerVersion instances.
- * Each output has a **new** UUID; `runnerUuid` references the live Runner.
- */
-export function snapshotRunnersAsHistoricalRunnerVersions(
-  runners: StoredRunnerForFreeze[],
-  options?: SnapshotOptions,
-): RunnerVersionSnapshot[] {
-  const mintUuid = options?.newUuid ?? uuidv4;
-
-  return runners.map((runner) => {
-    if (runner.definition === undefined || runner.definition === null) {
-      throw new Error(
-        `Cannot snapshot Runner ${runner.uuid} (${runner.name}): definition is missing`,
-      );
-    }
-
-    const snapshot: RunnerVersionSnapshot = {
-      uuid: mintUuid(),
-      parentUuid: RUNNER_VERSION_ENTITY_UUID,
-      parentName: "RunnerVersion",
-      name: runner.name,
-      runnerUuid: runner.uuid,
-      application: runner.application,
-      defaultLabel: runner.defaultLabel,
-      definition: structuredClone(runner.definition),
-      ...(runner.description !== undefined ? { description: runner.description } : {}),
-    };
-
-    return snapshot;
-  });
-}
-
-/** Live Theme instance shape in MetaModel.themes. */
-export type StoredThemeForFreeze = {
-  uuid: string;
-  name: string;
-  defaultLabel?: string;
-  description?: string;
-  definition: StoredMiroirTheme["definition"];
-  parentUuid?: string;
-  parentName?: string;
-};
-
-/** Historical Theme snapshot minted at freeze. */
-export type ThemeVersionSnapshot = {
-  uuid: string;
-  parentUuid: string;
-  parentName: "ThemeVersion";
-  name: string;
-  themeUuid: string;
-  defaultLabel?: string;
-  description?: string;
-  definition: StoredMiroirTheme["definition"];
-};
-
-/**
- * Deep-copy present-model Themes into new immutable ThemeVersion instances.
- * Each output has a **new** UUID; `themeUuid` references the live Theme.
- */
-export function snapshotThemesAsHistoricalThemeVersions(
-  themes: StoredThemeForFreeze[],
-  options?: SnapshotOptions,
-): ThemeVersionSnapshot[] {
-  const mintUuid = options?.newUuid ?? uuidv4;
-
-  return themes.map((theme) => {
-    if (theme.definition === undefined || theme.definition === null) {
-      throw new Error(
-        `Cannot snapshot Theme ${theme.uuid} (${theme.name}): definition is missing`,
-      );
-    }
-
-    const snapshot: ThemeVersionSnapshot = {
-      uuid: mintUuid(),
-      parentUuid: THEME_VERSION_ENTITY_UUID,
-      parentName: "ThemeVersion",
-      name: theme.name,
-      themeUuid: theme.uuid,
-      definition: structuredClone(theme.definition),
-      ...(theme.defaultLabel !== undefined ? { defaultLabel: theme.defaultLabel } : {}),
-      ...(theme.description !== undefined ? { description: theme.description } : {}),
-    };
-
-    return snapshot;
-  });
-}
-
-/** Body stored on TransformerDefinitionVersion.definition at freeze. */
-export type TransformerDefinitionVersionBody = {
-  classification?: string;
-  runnableAsSql?: boolean;
-  transformerInterface: TransformerDefinition["transformerInterface"];
-  transformerImplementation: TransformerDefinition["transformerImplementation"];
-};
-
-/** Live TransformerDefinition instance shape in MetaModel.transformerDefinitions. */
-export type StoredTransformerDefinitionForFreeze = {
-  uuid: string;
-  name: string;
-  defaultLabel: string;
-  description?: string;
-  classification?: string;
-  runnableAsSql?: boolean;
-  transformerInterface: TransformerDefinition["transformerInterface"];
-  transformerImplementation: TransformerDefinition["transformerImplementation"];
-  parentUuid?: string;
-  parentName?: string;
-};
-
-/** Historical TransformerDefinition snapshot minted at freeze. */
-export type TransformerDefinitionVersionSnapshot = {
-  uuid: string;
-  parentUuid: string;
-  parentName: "TransformerDefinitionVersion";
-  name: string;
-  transformerUuid: string;
-  defaultLabel: string;
-  description?: string;
-  definition: TransformerDefinitionVersionBody;
-};
-
-function buildTransformerDefinitionVersionBody(
-  transformer: StoredTransformerDefinitionForFreeze,
-): TransformerDefinitionVersionBody {
-  if (
-    transformer.transformerImplementation === undefined ||
-    transformer.transformerImplementation === null
-  ) {
-    throw new Error(
-      `Cannot snapshot TransformerDefinition ${transformer.uuid} (${transformer.name}): transformerImplementation is missing`,
-    );
-  }
-  if (transformer.transformerInterface === undefined || transformer.transformerInterface === null) {
-    throw new Error(
-      `Cannot snapshot TransformerDefinition ${transformer.uuid} (${transformer.name}): transformerInterface is missing`,
-    );
-  }
-
-  return {
-    transformerInterface: structuredClone(transformer.transformerInterface),
-    transformerImplementation: structuredClone(transformer.transformerImplementation),
-    ...(transformer.classification !== undefined
-      ? { classification: transformer.classification }
-      : {}),
-    ...(transformer.runnableAsSql !== undefined ? { runnableAsSql: transformer.runnableAsSql } : {}),
-  };
-}
-
-/**
- * Deep-copy present-model TransformerDefinitions into new immutable TransformerDefinitionVersion instances.
- * Each output has a **new** UUID; `transformerUuid` references the live TransformerDefinition.
- */
-export function snapshotTransformerDefinitionsAsHistoricalTransformerDefinitionVersions(
-  transformerDefinitions: StoredTransformerDefinitionForFreeze[],
-  options?: SnapshotOptions,
-): TransformerDefinitionVersionSnapshot[] {
-  const mintUuid = options?.newUuid ?? uuidv4;
-
-  return transformerDefinitions.map((transformer) => {
-    const snapshot: TransformerDefinitionVersionSnapshot = {
-      uuid: mintUuid(),
-      parentUuid: TRANSFORMER_DEFINITION_VERSION_ENTITY_UUID,
-      parentName: "TransformerDefinitionVersion",
-      name: transformer.name,
-      transformerUuid: transformer.uuid,
-      defaultLabel: transformer.defaultLabel,
-      definition: buildTransformerDefinitionVersionBody(transformer),
-      ...(transformer.description !== undefined ? { description: transformer.description } : {}),
-    };
-
-    return snapshot;
-  });
-}
-
-/** Live MlSchema instance shape in MetaModel.mlSchemas. */
-export type StoredMlSchemaForFreeze = {
-  uuid: string;
-  name: string;
-  defaultLabel?: string;
-  description?: string;
-  definition?: MlSchema["definition"];
-  parentUuid?: string;
-  parentName?: string;
-};
-
-/** Historical MlSchema snapshot minted at freeze (#230). */
-export type MlSchemaVersionSnapshot = {
-  uuid: string;
-  parentUuid: string;
-  parentName: "MlSchemaVersion";
-  name: string;
-  mlSchemaUuid: string;
-  defaultLabel?: string;
-  description?: string;
-  definition?: MlSchema["definition"];
-};
-
-/**
- * Deep-copy present-model MlSchemas into new immutable MlSchemaVersion instances.
- * Each output has a **new** UUID; `mlSchemaUuid` references the live MlSchema.
- * An MlSchema without a definition is snapshotted without one: the live row allows it.
- */
-export function snapshotMlSchemasAsHistoricalMlSchemaVersions(
-  mlSchemas: StoredMlSchemaForFreeze[],
-  options?: SnapshotOptions,
-): MlSchemaVersionSnapshot[] {
-  const mintUuid = options?.newUuid ?? uuidv4;
-
-  return mlSchemas.map((mlSchema) => ({
-    uuid: mintUuid(),
-    parentUuid: ML_SCHEMA_VERSION_ENTITY_UUID,
-    parentName: "MlSchemaVersion",
-    name: mlSchema.name,
-    mlSchemaUuid: mlSchema.uuid,
-    ...(mlSchema.definition !== undefined
-      ? { definition: structuredClone(mlSchema.definition) }
-      : {}),
-    ...(mlSchema.defaultLabel !== undefined ? { defaultLabel: mlSchema.defaultLabel } : {}),
-    ...(mlSchema.description !== undefined ? { description: mlSchema.description } : {}),
-  }));
-}
-
-/** Live MiroirTest instance shape in MetaModel.tests. */
-export type StoredMiroirTestForFreeze = {
-  uuid: string;
-  name?: string;
-  description?: string;
-  skip?: boolean;
-  tags?: MiroirTestDefinition["tags"];
-  issue?: string;
-  definition: MiroirTestDefinition["definition"];
-  parentUuid?: string;
-  parentName?: string;
-};
-
-/** Historical MiroirTest snapshot minted at freeze (#230). */
-export type MiroirTestVersionSnapshot = {
-  uuid: string;
-  parentUuid: string;
-  parentName: "MiroirTestVersion";
-  name?: string;
-  miroirTestUuid: string;
-  description?: string;
-  skip?: boolean;
-  tags?: string[];
-  issue?: string;
-  definition: MiroirTestDefinition["definition"];
-};
-
-/**
- * Deep-copy present-model MiroirTests into new immutable MiroirTestVersion instances.
- * Each output has a **new** UUID; `miroirTestUuid` references the live MiroirTest.
- */
-export function snapshotMiroirTestsAsHistoricalMiroirTestVersions(
-  tests: StoredMiroirTestForFreeze[],
-  options?: SnapshotOptions,
-): MiroirTestVersionSnapshot[] {
-  const mintUuid = options?.newUuid ?? uuidv4;
-
-  return tests.map((test) => {
-    if (test.definition === undefined || test.definition === null) {
-      throw new Error(
-        `Cannot snapshot MiroirTest ${test.uuid} (${test.name ?? "unnamed"}): definition is missing`,
-      );
-    }
-
-    return {
-      uuid: mintUuid(),
-      parentUuid: MIROIR_TEST_VERSION_ENTITY_UUID,
-      parentName: "MiroirTestVersion",
-      miroirTestUuid: test.uuid,
-      definition: structuredClone(test.definition),
-      ...(test.name !== undefined ? { name: test.name } : {}),
-      ...(test.description !== undefined ? { description: test.description } : {}),
-      ...(test.skip !== undefined ? { skip: test.skip } : {}),
-      ...(test.tags !== undefined ? { tags: [...test.tags] } : {}),
-      ...(test.issue !== undefined ? { issue: test.issue } : {}),
-    };
-  });
-}
-
-/**
- * A live Blob, TestConfiguration or Test instance (#706). These are read from the store at freeze
- * time: the MetaModel has no collection for them.
+ * A live row of an element type the freeze snapshots (#708 part B, Q-B4): every attribute is kept in its
+ * version row but the identity ones.
  */
 export type StoredInstanceForFreeze = {
   uuid: string;
@@ -642,13 +104,25 @@ export type StoredInstanceForFreeze = {
   [attribute: string]: unknown;
 };
 
-/** Historical snapshot minted at freeze for a Blob, TestConfiguration or Test (#706). */
+/** The version row a freeze mints for a live row: its attributes, a new uuid, and the live row's uuid. */
 export type InstanceVersionSnapshot<P extends string, K extends string> = {
   uuid: string;
   parentUuid: string;
   parentName: P;
 } & { [key in K]: string } & Record<string, unknown>;
 
+export type QueryVersionSnapshot = InstanceVersionSnapshot<"QueryVersion", "queryUuid">;
+export type ReportVersionSnapshot = InstanceVersionSnapshot<"ReportVersion", "reportUuid">;
+export type MenuVersionSnapshot = InstanceVersionSnapshot<"MenuVersion", "menuUuid">;
+export type EndpointVersionSnapshot = InstanceVersionSnapshot<"EndpointVersion", "endpointUuid">;
+export type RunnerVersionSnapshot = InstanceVersionSnapshot<"RunnerVersion", "runnerUuid">;
+export type ThemeVersionSnapshot = InstanceVersionSnapshot<"ThemeVersion", "themeUuid">;
+export type TransformerDefinitionVersionSnapshot = InstanceVersionSnapshot<
+  "TransformerDefinitionVersion",
+  "transformerUuid"
+>;
+export type MlSchemaVersionSnapshot = InstanceVersionSnapshot<"MlSchemaVersion", "mlSchemaUuid">;
+export type MiroirTestVersionSnapshot = InstanceVersionSnapshot<"MiroirTestVersion", "miroirTestUuid">;
 export type BlobVersionSnapshot = InstanceVersionSnapshot<"BlobVersion", "blobUuid">;
 export type TestConfigurationVersionSnapshot = InstanceVersionSnapshot<
   "TestConfigurationVersion",
@@ -656,77 +130,138 @@ export type TestConfigurationVersionSnapshot = InstanceVersionSnapshot<
 >;
 export type TestVersionSnapshot = InstanceVersionSnapshot<"TestVersion", "testUuid">;
 
+/** The attributes of a live row that are not copied to its version row: the row's identity. */
+export const FREEZE_IDENTITY_ATTRIBUTES: readonly string[] = [
+  "uuid",
+  "parentUuid",
+  "parentName",
+  "parentDefinitionVersionUuid",
+  "conceptLevel",
+];
+
 /**
- * Deep-copy live instances into new version rows: every attribute except the identity ones
- * (`uuid`, `parentUuid`, `parentName`, `parentDefinitionVersionUuid`, `conceptLevel`), plus
- * `liveUuidAttribute` pointing at the live instance. Each output has a **new** UUID.
+ * An element type the freeze snapshots: its version Entity, the attribute of a version row naming the live
+ * row, and the attributes a live row must have to be snapshotted.
  */
-function snapshotInstancesAsVersions<P extends string, K extends string>(
-  instances: StoredInstanceForFreeze[],
-  versionEntityUuid: string,
-  versionEntityName: P,
-  liveUuidAttribute: K,
+export type VersionedElementType<P extends string = string, K extends string = string> = {
+  label: string;
+  versionEntityUuid: string;
+  versionEntityName: P;
+  liveUuidAttribute: K;
+  required: readonly string[];
+};
+
+function versionedElementType<P extends string, K extends string>(
+  type: VersionedElementType<P, K>,
+): VersionedElementType<P, K> {
+  return type;
+}
+
+export const queryVersionType = versionedElementType({ label: "Query", versionEntityUuid: QUERY_VERSION_ENTITY_UUID, versionEntityName: "QueryVersion", liveUuidAttribute: "queryUuid", required: ["definition"] });
+export const reportVersionType = versionedElementType({ label: "Report", versionEntityUuid: REPORT_VERSION_ENTITY_UUID, versionEntityName: "ReportVersion", liveUuidAttribute: "reportUuid", required: ["definition"] });
+export const menuVersionType = versionedElementType({ label: "Menu", versionEntityUuid: MENU_VERSION_ENTITY_UUID, versionEntityName: "MenuVersion", liveUuidAttribute: "menuUuid", required: ["definition"] });
+export const endpointVersionType = versionedElementType({ label: "Endpoint", versionEntityUuid: ENDPOINT_VERSION_ENTITY_UUID, versionEntityName: "EndpointVersion", liveUuidAttribute: "endpointUuid", required: ["definition"] });
+export const runnerVersionType = versionedElementType({ label: "Runner", versionEntityUuid: RUNNER_VERSION_ENTITY_UUID, versionEntityName: "RunnerVersion", liveUuidAttribute: "runnerUuid", required: ["definition"] });
+export const themeVersionType = versionedElementType({ label: "Theme", versionEntityUuid: THEME_VERSION_ENTITY_UUID, versionEntityName: "ThemeVersion", liveUuidAttribute: "themeUuid", required: ["definition"] });
+export const transformerDefinitionVersionType = versionedElementType({
+  label: "TransformerDefinition",
+  versionEntityUuid: TRANSFORMER_DEFINITION_VERSION_ENTITY_UUID,
+  versionEntityName: "TransformerDefinitionVersion",
+  liveUuidAttribute: "transformerUuid",
+  required: ["transformerImplementation", "transformerInterface"],
+});
+export const mlSchemaVersionType = versionedElementType({ label: "MlSchema", versionEntityUuid: ML_SCHEMA_VERSION_ENTITY_UUID, versionEntityName: "MlSchemaVersion", liveUuidAttribute: "mlSchemaUuid", required: [] });
+export const miroirTestVersionType = versionedElementType({ label: "MiroirTest", versionEntityUuid: MIROIR_TEST_VERSION_ENTITY_UUID, versionEntityName: "MiroirTestVersion", liveUuidAttribute: "miroirTestUuid", required: ["definition"] });
+export const blobVersionType = versionedElementType({ label: "Blob", versionEntityUuid: BLOB_VERSION_ENTITY_UUID, versionEntityName: "BlobVersion", liveUuidAttribute: "blobUuid", required: [] });
+export const testConfigurationVersionType = versionedElementType({
+  label: "TestConfiguration",
+  versionEntityUuid: TEST_CONFIGURATION_VERSION_ENTITY_UUID,
+  versionEntityName: "TestConfigurationVersion",
+  liveUuidAttribute: "testConfigurationUuid",
+  required: [],
+});
+export const testVersionType = versionedElementType({ label: "Test", versionEntityUuid: TEST_VERSION_ENTITY_UUID, versionEntityName: "TestVersion", liveUuidAttribute: "testUuid", required: [] });
+export const entityVersionType = versionedElementType({ label: "Entity", versionEntityUuid: ENTITY_VERSION_ENTITY_UUID, versionEntityName: "EntityVersion", liveUuidAttribute: "entityUuid", required: ["mlSchema"] });
+
+/**
+ * Deep-copy live rows into new version rows: every attribute except the identity ones
+ * ({@link FREEZE_IDENTITY_ATTRIBUTES}), plus the type's `liveUuidAttribute` naming the live row (#706,
+ * #708 part B). Each output has a **new** UUID. Throws when a row lacks a `required` attribute.
+ */
+export function snapshotRowsAsVersions<P extends string, K extends string>(
+  rows: readonly object[],
+  type: VersionedElementType<P, K>,
   options?: SnapshotOptions,
 ): InstanceVersionSnapshot<P, K>[] {
   const mintUuid = options?.newUuid ?? uuidv4;
-
-  return instances.map((instance) => {
-    const {
-      uuid,
-      parentUuid: _parentUuid,
-      parentName: _parentName,
-      parentDefinitionVersionUuid: _parentDefinitionVersionUuid,
-      conceptLevel: _conceptLevel,
-      ...attributes
-    } = instance;
+  return rows.map((row) => {
+    const live = row as StoredInstanceForFreeze;
+    const missing = type.required.find((attribute) => live[attribute] === undefined || live[attribute] === null);
+    if (missing) {
+      throw new Error(
+        `Cannot snapshot ${type.label} ${live.uuid} (${String(live.name ?? "unnamed")}): ${missing} is missing`,
+      );
+    }
+    const attributes = Object.fromEntries(
+      Object.entries(live).filter(([attribute]) => !FREEZE_IDENTITY_ATTRIBUTES.includes(attribute)),
+    );
     return {
       ...structuredClone(attributes),
       uuid: mintUuid(),
-      parentUuid: versionEntityUuid,
-      parentName: versionEntityName,
-      [liveUuidAttribute]: uuid,
+      parentUuid: type.versionEntityUuid,
+      parentName: type.versionEntityName,
+      [type.liveUuidAttribute]: live.uuid,
     } as InstanceVersionSnapshot<P, K>;
   });
 }
 
-/** Deep-copy live Blobs into new BlobVersion instances; `blobUuid` references the live Blob (#706). */
-export function snapshotBlobsAsHistoricalBlobVersions(
-  blobs: StoredInstanceForFreeze[],
-  options?: SnapshotOptions,
-): BlobVersionSnapshot[] {
-  return snapshotInstancesAsVersions(blobs, BLOB_VERSION_ENTITY_UUID, "BlobVersion", "blobUuid", options);
+export function snapshotQueriesAsHistoricalQueryVersions(queries: readonly object[], options?: SnapshotOptions): QueryVersionSnapshot[] {
+  return snapshotRowsAsVersions(queries, queryVersionType, options);
 }
-
-/**
- * Deep-copy live TestConfigurations into new TestConfigurationVersion instances;
- * `testConfigurationUuid` references the live TestConfiguration (#706).
- */
+export function snapshotReportsAsHistoricalReportVersions(reports: readonly object[], options?: SnapshotOptions): ReportVersionSnapshot[] {
+  return snapshotRowsAsVersions(reports, reportVersionType, options);
+}
+export function snapshotMenusAsHistoricalMenuVersions(menus: readonly object[], options?: SnapshotOptions): MenuVersionSnapshot[] {
+  return snapshotRowsAsVersions(menus, menuVersionType, options);
+}
+export function snapshotEndpointsAsHistoricalEndpointVersions(endpoints: readonly object[], options?: SnapshotOptions): EndpointVersionSnapshot[] {
+  return snapshotRowsAsVersions(endpoints, endpointVersionType, options);
+}
+export function snapshotRunnersAsHistoricalRunnerVersions(runners: readonly object[], options?: SnapshotOptions): RunnerVersionSnapshot[] {
+  return snapshotRowsAsVersions(runners, runnerVersionType, options);
+}
+export function snapshotThemesAsHistoricalThemeVersions(themes: readonly object[], options?: SnapshotOptions): ThemeVersionSnapshot[] {
+  return snapshotRowsAsVersions(themes, themeVersionType, options);
+}
+export function snapshotTransformerDefinitionsAsHistoricalTransformerDefinitionVersions(
+  transformerDefinitions: readonly object[],
+  options?: SnapshotOptions,
+): TransformerDefinitionVersionSnapshot[] {
+  return snapshotRowsAsVersions(transformerDefinitions, transformerDefinitionVersionType, options);
+}
+export function snapshotMlSchemasAsHistoricalMlSchemaVersions(mlSchemas: readonly object[], options?: SnapshotOptions): MlSchemaVersionSnapshot[] {
+  return snapshotRowsAsVersions(mlSchemas, mlSchemaVersionType, options);
+}
+export function snapshotMiroirTestsAsHistoricalMiroirTestVersions(tests: readonly object[], options?: SnapshotOptions): MiroirTestVersionSnapshot[] {
+  return snapshotRowsAsVersions(tests, miroirTestVersionType, options);
+}
+export function snapshotBlobsAsHistoricalBlobVersions(blobs: readonly object[], options?: SnapshotOptions): BlobVersionSnapshot[] {
+  return snapshotRowsAsVersions(blobs, blobVersionType, options);
+}
 export function snapshotTestConfigurationsAsHistoricalTestConfigurationVersions(
-  testConfigurations: StoredInstanceForFreeze[],
+  testConfigurations: readonly object[],
   options?: SnapshotOptions,
 ): TestConfigurationVersionSnapshot[] {
-  return snapshotInstancesAsVersions(
-    testConfigurations,
-    TEST_CONFIGURATION_VERSION_ENTITY_UUID,
-    "TestConfigurationVersion",
-    "testConfigurationUuid",
-    options,
-  );
+  return snapshotRowsAsVersions(testConfigurations, testConfigurationVersionType, options);
 }
-
-/** Deep-copy live Tests into new TestVersion instances; `testUuid` references the live Test (#706). */
-export function snapshotTestsAsHistoricalTestVersions(
-  testInstances: StoredInstanceForFreeze[],
-  options?: SnapshotOptions,
-): TestVersionSnapshot[] {
-  return snapshotInstancesAsVersions(testInstances, TEST_VERSION_ENTITY_UUID, "TestVersion", "testUuid", options);
+export function snapshotTestsAsHistoricalTestVersions(testInstances: readonly object[], options?: SnapshotOptions): TestVersionSnapshot[] {
+  return snapshotRowsAsVersions(testInstances, testVersionType, options);
 }
 
 /**
- * Deep-copy present-model Entity fields into new immutable EntityVersion instances.
- * Each output has a **new** UUID; `entityUuid` references the live Entity.
- *
- * Throws if any Entity lacks `mlSchema` (incomplete present model).
+ * Deep-copy present-model Entities into new immutable EntityVersion instances, as the other types are,
+ * keeping `conceptLevel`, which EntityVersion holds. Each output has a **new** UUID; `entityUuid` references
+ * the live Entity. Throws if any Entity lacks `mlSchema` (incomplete present model).
  *
  * Do **not** use UUID-reuse compat helpers (e.g. presentEntityAsRedundant…) for freeze —
  * those reuse the live Entity uuid and are unsafe for historical minting (#220 / #216).
@@ -735,42 +270,8 @@ export function snapshotEntitiesAsHistoricalEntityVersions(
   entities: Entity[],
   options?: SnapshotOptions,
 ): EntityVersion[] {
-  const mintUuid = options?.newUuid ?? uuidv4;
-
-  return entities.map((entity) => {
-    if (!entity.mlSchema) {
-      throw new Error(
-        `Cannot snapshot Entity ${entity.uuid} (${entity.name}): mlSchema is missing`,
-      );
-    }
-
-    const snapshot: EntityVersion = {
-      uuid: mintUuid(),
-      parentUuid: ENTITY_VERSION_ENTITY_UUID,
-      parentName: "EntityVersion",
-      name: entity.name,
-      entityUuid: entity.uuid,
-      conceptLevel: entity.conceptLevel ?? "Model",
-      mlSchema: structuredClone(entity.mlSchema),
-      ...(entity.defaultInstanceDetailsReportUuid !== undefined
-        ? { defaultInstanceDetailsReportUuid: entity.defaultInstanceDetailsReportUuid }
-        : {}),
-      ...(entity.viewAttributes !== undefined
-        ? { viewAttributes: structuredClone(entity.viewAttributes) }
-        : {}),
-      ...(entity.icon !== undefined ? { icon: structuredClone(entity.icon) } : {}),
-      ...(entity.display !== undefined ? { display: structuredClone(entity.display) } : {}),
-      ...(entity.cache !== undefined ? { cache: structuredClone(entity.cache) } : {}),
-      ...(entity.idAttribute !== undefined
-        ? { idAttribute: structuredClone(entity.idAttribute) }
-        : {}),
-      ...(entity.externalDataSource !== undefined
-        ? { externalDataSource: structuredClone(entity.externalDataSource) }
-        : {}),
-    };
-
-    return snapshot;
-  });
+  const versions = snapshotRowsAsVersions(entities, entityVersionType, options);
+  return versions.map((version, index) => ({ ...version, conceptLevel: entities[index].conceptLevel ?? "Model" }) as EntityVersion);
 }
 
 // ---------------------------------------------------------------------------
@@ -950,23 +451,23 @@ export type BuildFreezeApplicationVersionPlanInput = {
   versionName: string;
   entities: Entity[];
   /** Present-model Queries to snapshot (#227). Defaults to empty. */
-  storedQueries?: StoredQueryForFreeze[];
+  storedQueries?: MetaModel["storedQueries"];
   /** Present-model Reports to snapshot (#227). Defaults to empty. */
-  reports?: StoredReportForFreeze[];
+  reports?: MetaModel["reports"];
   /** Present-model Menus to snapshot (#227). Defaults to empty. */
-  menus?: StoredMenuForFreeze[];
+  menus?: MetaModel["menus"];
   /** Present-model Endpoints to snapshot (#227). Defaults to empty. */
-  endpoints?: StoredEndpointForFreeze[];
+  endpoints?: MetaModel["endpoints"];
   /** Present-model Runners to snapshot (#227). Defaults to empty. */
-  runners?: StoredRunnerForFreeze[];
+  runners?: MetaModel["runners"];
   /** Present-model Themes to snapshot (#227). Defaults to empty. */
-  themes?: StoredThemeForFreeze[];
+  themes?: MetaModel["themes"];
   /** Present-model TransformerDefinitions to snapshot (#227). Defaults to empty. */
-  transformerDefinitions?: StoredTransformerDefinitionForFreeze[];
+  transformerDefinitions?: MetaModel["transformerDefinitions"];
   /** Present-model MlSchemas to snapshot (#230). Defaults to empty. */
-  mlSchemas?: StoredMlSchemaForFreeze[];
+  mlSchemas?: MetaModel["mlSchemas"];
   /** Present-model MiroirTests to snapshot (#230). Defaults to empty. */
-  tests?: StoredMiroirTestForFreeze[];
+  tests?: MetaModel["tests"];
   /** Live Blobs to snapshot (#706). Defaults to empty. */
   blobs?: StoredInstanceForFreeze[];
   /** Live TestConfigurations to snapshot (#706). Defaults to empty. */
@@ -1520,15 +1021,15 @@ export function planFreezeApplicationVersion(
 export type FreezeMetaModelSlice = {
   applications: Array<{ uuid: string; versioningEnabled?: boolean | undefined }>;
   entities: Entity[];
-  storedQueries?: StoredQueryForFreeze[];
-  reports?: StoredReportForFreeze[];
-  menus?: StoredMenuForFreeze[];
-  endpoints?: StoredEndpointForFreeze[];
-  runners?: StoredRunnerForFreeze[];
-  themes?: StoredThemeForFreeze[];
-  transformerDefinitions?: StoredTransformerDefinitionForFreeze[];
-  mlSchemas?: StoredMlSchemaForFreeze[];
-  tests?: StoredMiroirTestForFreeze[];
+  storedQueries?: MetaModel["storedQueries"];
+  reports?: MetaModel["reports"];
+  menus?: MetaModel["menus"];
+  endpoints?: MetaModel["endpoints"];
+  runners?: MetaModel["runners"];
+  themes?: MetaModel["themes"];
+  transformerDefinitions?: MetaModel["transformerDefinitions"];
+  mlSchemas?: MetaModel["mlSchemas"];
+  tests?: MetaModel["tests"];
   /** Read from the store at freeze time (#706): the MetaModel has no collection for them. */
   blobs?: StoredInstanceForFreeze[];
   testConfigurations?: StoredInstanceForFreeze[];

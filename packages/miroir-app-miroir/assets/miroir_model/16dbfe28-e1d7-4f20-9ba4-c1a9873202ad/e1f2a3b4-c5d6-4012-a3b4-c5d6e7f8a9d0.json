@@ -74,9 +74,283 @@
         "type": "any",
         "tag": {
           "value": {
-            "defaultLabel": "Transformer definition at freeze time (interface + implementation)"
+            "defaultLabel": "Transformer definition at freeze time (interface + implementation)",
+            "description": "Versions frozen before #708 part B: the interface, implementation, classification and runnableAsSql of the TransformerDefinition. Later versions hold them at the top level, as the live row does."
+          }
+        },
+        "optional": true
+      },
+      "classification": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 3,
+            "defaultLabel": "Classification",
+            "display": {
+              "editable": true
+            }
           }
         }
+      },
+      "presentation": {
+        "type": "schemaReference",
+        "optional": true,
+        "tag": {
+          "value": {
+            "defaultLabel": "Presentation",
+            "description": "Block editor hints: a label template, an icon, a color."
+          }
+        },
+        "definition": {
+          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+          "relativePath": "blockPresentationHints"
+        }
+      },
+      "runnableAsSql": {
+        "type": "boolean",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 3,
+            "defaultLabel": "Runnable As Sql",
+            "display": {
+              "editable": true
+            }
+          }
+        }
+      },
+      "transformerInterface": {
+        "type": "object",
+        "definition": {
+          "inputOutput": {
+            "type": "schemaReference",
+            "optional": true,
+            "context": {
+              "inputOutputPayloadType": {
+                "type": "union",
+                "definition": [
+                  {
+                    "type": "enum",
+                    "definition": [
+                      "any",
+                      "undefined",
+                      "bigint",
+                      "number",
+                      "string",
+                      "boolean",
+                      "object"
+                    ]
+                  },
+                  {
+                    "type": "uuid"
+                  }
+                ]
+              },
+              "inputOutputType": {
+                "type": "union",
+                "discriminator": "type",
+                "definition": [
+                  {
+                    "type": "enum",
+                    "definition": [
+                      "any",
+                      "undefined",
+                      "bigint",
+                      "number",
+                      "string",
+                      "boolean",
+                      "object",
+                      "array",
+                      "record"
+                    ]
+                  },
+                  {
+                    "type": "uuid"
+                  },
+                  {
+                    "type": "object",
+                    "definition": {
+                      "type": {
+                        "type": "enum",
+                        "definition": [
+                          "array",
+                          "record"
+                        ]
+                      },
+                      "payload": {
+                        "type": "schemaReference",
+                        "optional": true,
+                        "definition": {
+                          "relativePath": "inputOutputPayloadType"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "definition": {
+                      "type": {
+                        "type": "literal",
+                        "definition": "tuple"
+                      },
+                      "payload": {
+                        "type": "array",
+                        "definition": {
+                          "type": "schemaReference",
+                          "definition": {
+                            "relativePath": "inputOutputPayloadType"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              },
+              "inputOutputObject": {
+                "type": "object",
+                "definition": {
+                  "input": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "inputOutputType"
+                    }
+                  },
+                  "output": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "relativePath": "inputOutputType"
+                    }
+                  }
+                }
+              }
+            },
+            "definition": {
+              "relativePath": "inputOutputObject"
+            }
+          },
+          "transformerParameterSchema": {
+            "type": "object",
+            "definition": {
+              "transformerType": {
+                "type": "union",
+                "discriminator": "type",
+                "definition": [
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "mlLiteral"
+                    }
+                  },
+                  {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "mlEnum"
+                    }
+                  }
+                ]
+              },
+              "transformerDefinition": {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "mlObject"
+                }
+              }
+            }
+          },
+          "transformerResultSchema": {
+            "type": "union",
+            "discriminator": "returns",
+            "definition": [
+              {
+                "type": "object",
+                "definition": {
+                  "returns": {
+                    "type": "literal",
+                    "definition": "mlSchema"
+                  },
+                  "definition": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "mlElement"
+                    }
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "definition": {
+                  "returns": {
+                    "type": "literal",
+                    "definition": "mlSchemaTransformer"
+                  },
+                  "addAttributesToContextBeingSubtypeOf": {
+                    "type": "record",
+                    "optional": true,
+                    "definition": {
+                      "type": "schemaReference",
+                      "definition": {
+                        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                        "relativePath": "mlElement"
+                      }
+                    }
+                  },
+                  "definition": {
+                    "type": "schemaReference",
+                    "definition": {
+                      "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                      "relativePath": "coreTransformerForBuildPlusRuntime"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "optional": true
+      },
+      "transformerImplementation": {
+        "type": "union",
+        "discriminator": "transformerImplementationType",
+        "definition": [
+          {
+            "type": "object",
+            "definition": {
+              "transformerImplementationType": {
+                "type": "literal",
+                "definition": "libraryImplementation"
+              },
+              "inMemoryImplementationFunctionName": {
+                "type": "string"
+              },
+              "sqlImplementationFunctionName": {
+                "type": "string",
+                "optional": true
+              }
+            }
+          },
+          {
+            "type": "object",
+            "definition": {
+              "transformerImplementationType": {
+                "type": "literal",
+                "definition": "transformer"
+              },
+              "definition": {
+                "type": "schemaReference",
+                "definition": {
+                  "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                  "relativePath": "coreTransformerForBuildPlusRuntime"
+                }
+              }
+            }
+          }
+        ],
+        "optional": true
       }
     }
   }
