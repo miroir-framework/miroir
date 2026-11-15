@@ -18,6 +18,7 @@ import {
   type GitFileDiff,
   type GitFileStatus,
   type GitPerson,
+  type GitPushOutcome,
   type GitRepositoryFactory,
   type GitRemoteOptions,
   type GitRepositoryInterface,
@@ -45,6 +46,17 @@ function asRepositoryError(error: unknown, ref: string): unknown {
     default:
       return error;
   }
+}
+
+/** The rules of `git check-ref-format` for one tag name. */
+function isValidTagName(name: string): boolean {
+  const hasControlCharacter = [...name].some((character) => character.charCodeAt(0) < 0x20 || character.charCodeAt(0) === 0x7f);
+  return (
+    name !== "" &&
+    name !== "@" &&
+    !hasControlCharacter &&
+    !/[ ~^:?*[\\]|\.\.|@\{|\/\/|^[./-]|\/\.|[./]$|\.lock$|\.lock\//.test(name)
+  );
 }
 
 /** Network failures of Node's HTTP client: the remote cannot be reached at all. */
@@ -735,6 +747,31 @@ class IsomorphicGitRepository implements GitRepositoryInterface {
     }
   }
 
+  async createTag(name: string, options: { message: string; tagger: GitPerson; ref?: string }): Promise<string> {
+    const ref = options.ref ?? "HEAD";
+    const object = await commitOf(this.repository, ref);
+    if (!object) {
+      throw new GitRepositoryError("unknownRevision", `Unknown revision ${ref}`);
+    }
+    // isomorphic-git checks branch names, not tag names
+    if (!isValidTagName(name)) {
+      throw new GitRepositoryError("invalidRefName", `${name} is not a valid tag name`);
+    }
+    // a short name finds the tag before the branch: `main` would then name the tag everywhere
+    if (await resolveOrUndefined(this.repository, this.branchRef(name))) {
+      throw new GitRepositoryError("invalidRefName", `A branch is named ${name}: give the tag another name`);
+    }
+    try {
+      await git.annotatedTag({ ...this.repository, ref: name, object, message: options.message, tagger: options.tagger });
+    } catch (error) {
+      if (errorCode(error) === "AlreadyExistsError") {
+        throw new GitRepositoryError("tagExists", `A tag named ${name} already exists`);
+      }
+      throw error;
+    }
+    return object;
+  }
+
   async deleteBranch(name: string): Promise<void> {
     try {
       await git.deleteBranch({ ...this.repository, ref: name });
@@ -907,7 +944,7 @@ class IsomorphicGitRepository implements GitRepositoryInterface {
     return { conflicts: [], upToDate: false };
   }
 
-  async push(options: GitRemoteOptions & { branch: string }): Promise<void> {
+  async push(options: GitRemoteOptions & { branch: string }): Promise<GitPushOutcome> {
     const upstream = await this.upstream(options.branch);
     const remoteBranch =
       upstream && upstream.startsWith(`${options.remote}/`) ? upstream.slice(options.remote.length + 1) : options.branch;
@@ -915,7 +952,9 @@ class IsomorphicGitRepository implements GitRepositoryInterface {
       await git.push({
         ...this.repository,
         remote: options.remote,
-        ref: options.branch,
+        // the full name: a tag of the branch's name would win over the branch (isomorphic-git expands
+        // `refs/tags/<name>` first)
+        ref: this.branchRef(options.branch),
         remoteRef: remoteBranch,
         ...transport(options),
       });
@@ -926,6 +965,74 @@ class IsomorphicGitRepository implements GitRepositoryInterface {
       await this.setConfig(`branch.${options.branch}.remote`, options.remote);
       await this.setConfig(`branch.${options.branch}.merge`, this.branchRef(options.branch));
     }
+    return this.pushTags(options);
+  }
+
+  /**
+   * #708 part D: pushes each tag on a commit the branch reaches that the remote does not have, one push per
+   * tag (isomorphic-git pushes one ref per call). A tag the remote has on another object is refused without
+   * a push, as `git push --tags` refuses it.
+   */
+  private async pushTags(options: GitRemoteOptions & { branch: string }): Promise<GitPushOutcome> {
+    const outcome: GitPushOutcome = { pushedTags: [], rejectedTags: [] };
+    const tip = await commitOf(this.repository, this.branchRef(options.branch));
+    const localTags: { name: string; oid: string; commit: string }[] = [];
+    for (const name of await git.listTags(this.repository)) {
+      const [oid, commit] = [
+        await resolveOrUndefined(this.repository, `refs/tags/${name}`),
+        await commitOf(this.repository, `refs/tags/${name}`),
+      ];
+      if (oid && commit) {
+        localTags.push({ name, oid, commit });
+      }
+    }
+    if (!tip || localTags.length === 0) {
+      return outcome;
+    }
+    // the history of the branch is walked once, and only for the tags the remote does not already have
+    let reachable: Set<string> | undefined;
+    const onBranch = async (commit: string) => {
+      reachable ??= new Set((await git.log({ ...this.repository, ref: tip })).map((entry) => entry.oid));
+      return reachable.has(commit);
+    };
+    let remoteTags: Map<string, string>;
+    try {
+      const refs = await git.listServerRefs({
+        ...transport(options),
+        forPush: true,
+        protocolVersion: 1,
+        prefix: "refs/tags/",
+      });
+      remoteTags = new Map(refs.map((ref) => [ref.ref, ref.oid]));
+    } catch (error) {
+      const refused = asRemoteError(error, options.remote);
+      const message = refused instanceof Error ? refused.message : String(refused);
+      for (const { name, commit } of localTags) {
+        if (await onBranch(commit)) {
+          outcome.rejectedTags.push({ name, message });
+        }
+      }
+      return outcome;
+    }
+    for (const { name, oid, commit } of localTags) {
+      const ref = `refs/tags/${name}`;
+      const remoteOid = remoteTags.get(ref);
+      if (remoteOid === oid || !(await onBranch(commit))) {
+        continue;
+      }
+      if (remoteOid !== undefined) {
+        outcome.rejectedTags.push({ name, message: `The remote ${options.remote} has another tag named ${name}` });
+        continue;
+      }
+      try {
+        await git.push({ ...this.repository, remote: options.remote, ref, remoteRef: ref, ...transport(options) });
+        outcome.pushedTags.push(name);
+      } catch (error) {
+        const refused = asRemoteError(error, options.remote);
+        outcome.rejectedTags.push({ name, message: refused instanceof Error ? refused.message : String(refused) });
+      }
+    }
+    return outcome;
   }
 
   async branches(): Promise<GitBranches> {

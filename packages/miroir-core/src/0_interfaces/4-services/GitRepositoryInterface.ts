@@ -97,6 +97,11 @@ export interface GitRepositoryInterface {
   /** Creates a local branch at `startPoint` (HEAD by default), without checking it out. */
   createBranch(name: string, startPoint?: string): Promise<void>;
   deleteBranch(name: string): Promise<void>;
+  /**
+   * #708 part D: writes the annotated tag `name` at the commit `ref` points at (HEAD by default); returns that
+   * commit's oid. Throws `tagExists` when the tag exists, `unknownRevision` when `ref` names no commit.
+   */
+  createTag(name: string, options: { message: string; tagger: GitPerson; ref?: string }): Promise<string>;
   /** True when the branch's commit is HEAD's commit or one of its ancestors: deleting it loses no commit. */
   branchIsMergedIntoHead(name: string): Promise<boolean>;
   /**
@@ -122,9 +127,10 @@ export interface GitRepositoryInterface {
   /**
    * Pushes a local branch to the remote, and makes the pushed branch its upstream when it has none. Throws
    * `pushRejected` when the remote has commits the branch does not, `authenticationRequired` when it refuses
-   * access.
+   * access. #708 part D: then pushes, one by one, each tag on a commit of the branch that the remote does not
+   * have yet; a tag the remote refuses is reported, the branch push stands.
    */
-  push(options: GitRemoteOptions & { branch: string }): Promise<void>;
+  push(options: GitRemoteOptions & { branch: string }): Promise<GitPushOutcome>;
   /**
    * The files of the commit `ref` points at (HEAD by default), repository-relative, read from the commit, not
    * the work tree; empty in a repository with no commit.
@@ -133,6 +139,9 @@ export interface GitRepositoryInterface {
   /** The symbolic links of the commit HEAD points at: a clone holding one is refused, its stores would follow it. */
   symbolicLinks(): Promise<string[]>;
 }
+
+/** #708 part D: the tags a push sent after the branch, and those the remote refused, with why. */
+export type GitPushOutcome = { pushedTags: string[]; rejectedTags: { name: string; message: string }[] };
 
 /** Commits on each side of a branch and its upstream, counted from their merge base. */
 export type GitAheadBehind = { ahead: number; behind: number };
@@ -156,6 +165,7 @@ export type GitCheckoutOutcome = { conflicts: string[] };
 /** Errors a repository throws with a `code` the actions map to a reason. */
 export type GitRepositoryErrorCode =
   | "branchExists"
+  | "tagExists"
   | "unknownRevision"
   | "invalidRefName"
   | "outsideWorkTree"
@@ -229,6 +239,7 @@ export type GitActionErrorReason =
   | "authorUnknown"
   | "invalidPayload"
   | "branchExists"
+  | "tagExists"
   | "unknownRevision"
   | "currentBranch"
   | "branchNotMerged"

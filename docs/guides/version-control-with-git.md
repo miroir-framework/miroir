@@ -35,7 +35,7 @@ Push. Under it, the page shows one activity at a time:
 
 | Tab | What it shows and does |
 |---|---|
-| Changes (the default) | The changed files, named by Entity and instance, with the diff of the one you select beside the list. Stage or unstage them, revert the edits you have not staged, and commit with a message. Files outside the application's sections are not listed. |
+| Changes (the default) | The changed files, named by Entity and instance, with the diff of the one you select beside the list. Stage or unstage them, revert the edits you have not staged, and commit with a message. Tag the last commit with a version name. Files outside the application's sections are not listed. |
 | Branches | Your local branches; remote branches and tags are folded under their count, with a field to find one by name. Create, delete and check out branches. Check out a tag, a remote branch or a commit to look at an old state (a detached HEAD). After a checkout, the page reloads the application from its files. |
 | Setup | The URL of the remote, and the Clone panel. |
 
@@ -60,6 +60,19 @@ anything changes, the page lists each file with what happens to it:
 
 A file whose changes are all staged has nothing to revert: unstage it first. Miroir reloads the application
 after a revert. It refuses to write through a symbolic link.
+
+### Tagging a version
+
+"Tag the last commit", under the commit form, writes an annotated tag at `HEAD`, named exactly as you type
+it (`1.0.0`, with no prefix added). The tagger is the commit author: the logged-in user, else the
+repository's `user.name`. Miroir refuses a name that is already a tag or a branch, or that Git does not
+accept as a tag name. For a `versioned-git` application, such a tag is how a version is named
+([Versioning](../reference/versioning.md)). The action is `gitAction_tag`; it also takes a `ref` to tag
+another commit, and a `message`, the name by default
+([#708](https://github.com/miroir-framework/miroir/issues/708)).
+
+Push sends the branch, then each tag on one of its commits that the remote does not have yet. A tag the
+remote has on another commit is not sent: the page names it, and the branch is pushed anyway.
 
 Miroir refuses a commit, a checkout, a pull or a revert while some Miroir changes are not saved to the files
 yet, and the install of a cloned application while some Admin changes are not saved. Commit them in Miroir

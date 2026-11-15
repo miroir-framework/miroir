@@ -247,7 +247,7 @@ A new ModelEndpoint action, `rebaselineEvolutionTraces`. For `versioned-internal
 
 **Status:** proposed, as epic D3 and D10. **Serves:** G5. Part D.
 
-`gitAction_tag { application, name, message?, ref? }` creates an annotated tag at `HEAD` (or `ref`), named exactly after the version, with no `v` prefix. It is refused when the name exists. isomorphic-git pushes one ref per call, so `gitAction_push`, after pushing the branch, pushes each tag that points at a pushed commit, one by one. A tag that already exists on the remote is reported, and the branch push stands. The Git page offers the tag next to the commit.
+`gitAction_tag { application, name, message?, ref?, author? }` creates an annotated tag at `HEAD` (or `ref`), named exactly after the version, with no `v` prefix; the tagger is found as a commit's author. It is refused when the name exists, or is a branch's name (isomorphic-git would then take the tag for the branch). isomorphic-git pushes one ref per call, so `gitAction_push`, after pushing the branch, pushes each tag on a pushed commit that the remote lacks, one by one. A tag the remote has on another commit is reported, and the branch push stands. The Git page offers the tag next to the commit.
 
 ---
 

@@ -706,3 +706,201 @@ AC checklist (part B items of #708):
 - Full `nonreg:filesystem --runner shared`: every step passed but two. `unit-301-agent-tooling` failed on the #652 redux guard, which the designer agreed to widen to any core subpath (it passes since). `integ-runner.freezeApplicationVersion` failed once (the admin store had no Entity in `data` when the runner created appForTest's admin row); it passed in every scoped run of this branch and twice on its own after, also behind `integ-tr.core` as in the full run.
 - Tracer narrative: freeze appForTest, add an attribute to an Entity, read the frozen and live states and diff them (`modelStates.integ` B5); then freeze with traces on, commit, and replay the records on the frozen state (`modelStates.integ` B6). Library stays unversioned (designer's decision), so the tracer runs on appForTest.
 - No issue-scoped test directory was created: the suites are feature-named (`modelStates*`, `modelStateDiff`, `modelStateReplay`).
+
+---
+
+# Part D — `gitAction_tag`
+
+> Integration first, no mocks. The tests run the `gitAction_*` actions through a real DomainController on the Library copy of `test-filesystem`, in a real Git repository, and push to a Git remote served over HTTP by the test process (`tests/3_controllers/git/gitHttpServer.ts`), as the #679 tests do. The applicative interface locked first is the Git Endpoint's new action `gitAction_tag` and its payload.
+
+**Resume note:** planned 2026-11-15, after part B merged (PR #727). Part D goes first (analysis D1: B and D in either order, then C), in its own PR. Branch `claude/project-thread-tyot7n`.
+
+## Scope (part D)
+
+In:
+- G5, tag a version in Git: `gitAction_tag { application, name, message?, ref?, author? }` creates an annotated tag at `HEAD` (or `ref`), named exactly as given (analysis D11), refused when the name exists.
+- `gitAction_push` also pushes, one by one, each tag that points at a commit of the pushed branch; a tag the remote refuses is reported, and the branch push stands.
+- The Git page offers a tag next to the commit.
+
+Out:
+- Naming rules tying a tag to a version name of `versioned-internal` (a `versioned-git` application has no frozen version; the tag name is the version name).
+- Deleting or moving a tag, and fetching tags (a fetch already brings the tags isomorphic-git fetches by default).
+
+## Progress summary (part D)
+
+| Slice | Title | Status | Primary proof |
+|---|---|---|---|
+| D1 | Tracer: `gitAction_tag` creates an annotated tag | ✅ DONE | `gitTag.integ` |
+| D2 | `gitAction_push` pushes the tags of the pushed branch | ✅ DONE | `gitSync.integ` (tags) |
+| D3 | The Git page tags a commit | ✅ DONE | `ui.gitPage` (3 leaves) |
+| D4 | Docs, nonreg, PR | ✅ DONE | `nonreg:filesystem` |
+
+## Locked implementation defaults (part D)
+
+| Default | From | Serves |
+|---|---|---|
+| An annotated tag, named exactly after the version, no `v` prefix; `message` defaults to the name | analysis D11, epic D3 | G5 |
+| The tagger is the commit author of `gitAction_commit` (the logged-in user, else `user.name` / `user.email`); without one the tag is refused (`authorUnknown`) | `commitAuthor` in `GitActions.ts` | G5 |
+| Refusals are `gitActionError` reasons: `invalidPayload` (empty or invalid name), `tagExists`, `unknownRevision` (a `ref` that names no commit) | `GitAction.ts` | G5 |
+| A push sends the branch first (by its full ref `refs/heads/<branch>`), then each tag whose commit the branch reaches and that the remote lacks (one `listServerRefs`, then one `git.push` per tag: isomorphic-git pushes one ref per call); a tag the remote has on another object, or refuses, is listed in the result as `rejectedTags`, the branch push stands | analysis D11, review | G5 |
+| A tag name that is a local branch's name is refused (`invalidPayload`): isomorphic-git expands a short name to `refs/tags/<name>` before `refs/heads/<name>` | review | G5 |
+
+## Allocated keys (part D)
+
+- Test file `tests/3_controllers/git/gitTag.integ.test.ts` (standalone app), covered by the nonreg step `integ-git-version-control` (`3_controllers/git/`).
+- Git action type `gitAction_tag`, implementation `handleAction_gitAction_tag`.
+
+## Slice D1 — Tracer: `gitAction_tag` creates an annotated tag
+
+**Status:** ✅ DONE
+
+**Goal:** a designer tags `HEAD` (or a commit) with a version name; `gitAction_log` shows the tag on that commit.
+
+**RED:** `gitTag.integ`: on the Library copy, after a commit, `gitAction_tag { name: "1.0.0", message }` returns the tag and its commit; `gitAction_log` shows `tag: 1.0.0` on `HEAD`; `git cat-file -t 1.0.0` (Git CLI, when present) says `tag` (annotated). A second tag with the same name is refused (`tagExists`); an empty name is refused (`invalidPayload`); a `ref` that names no commit is refused (`unknownRevision`); a `ref` naming the first commit tags it.
+
+**GREEN:**
+- Git Endpoint (`a7f243cb…`): the action `gitAction_tag` and its payload schema; `GitAction.ts`: the type and `GIT_ACTION_TYPES`, `GIT_ACTIONS_KEEPING_FILES`.
+- `GitRepositoryInterface.createTag(name, { message, tagger, ref? })`; `miroir-git-isomorphic`: `git.annotatedTag`, refusing an existing name with a repository error the action maps to `tagExists`.
+- `GitActions.ts`: the handler; the tagger from `commitAuthor`.
+- The palette MiroirTest (`fn.blockModel`) lists the new Git action.
+
+**Refactor checkpoint:** `commitAuthor` takes the payload's author, not the commit action, so the commit and the tag share it.
+
+**Validation:**
+```bash
+npm run build -w miroir-app-miroir && npm run devBuild -w @miroir-framework/core
+npm run build -w @miroir-framework/git-isomorphic
+MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- 3_controllers/git/gitTag
+npm run testMiroir -w @miroir-framework/core -- --suites fn.blockModel --mode unit
+npm run nonreg:filesystem -- --runner shared --scope smoke,actions,external
+```
+
+
+### Realization
+
+- As planned. `GitRepositoryInterface.createTag(name, { message, tagger, ref? })` returns the commit it tagged; the adapter checks the name against the rules of `git check-ref-format` (isomorphic-git checks branch names only) and refuses a branch's name (review finding 6). Repository error code `tagExists`, action reason `tagExists`; an invalid name is `invalidRefName`, mapped to `invalidPayload`.
+- The payload also takes `author`, as `gitAction_commit` does; `commitAuthor(payloadAuthor, repository, principal)` serves both. `GitTagResult = { name, commit, tagger }`.
+- The Endpoint JSON, the `fn.blockModel` palette list and `ActionImplementations.unit` list the action. The generated types do not list Git actions: `npm run build` of core was enough, no `devBuild`.
+
+## Slice D2 — `gitAction_push` pushes the tags of the pushed branch
+
+**Status:** ✅ DONE
+
+**RED:** `gitSync.integ`, "push sends the tags of the branch": tag `HEAD` and push; the remote has the tag on the same commit (`git ls-remote --tags`). A tag on a commit of another branch is not pushed. A tag the remote already has on another commit is listed in `rejectedTags`, and the branch is pushed.
+
+**GREEN:** `GitRepositoryInterface.push` returns `{ rejectedTags }`; `miroir-git-isomorphic` pushes each tag whose commit the branch reaches (`git.isDescendent` or equal) with its own `git.push`, collecting refusals; `GitActions.ts` adds `rejectedTags` to the push result.
+
+**Validation:**
+```bash
+MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- 3_controllers/git/gitSync
+npm run nonreg:filesystem -- --runner shared --scope smoke,actions,external
+```
+
+
+### Realization
+
+- `push` returns `GitPushOutcome { pushedTags, rejectedTags }`; `gitAction_push` returns `GitPushResult = GitRemoteResult & GitPushOutcome`.
+- Deviation: the adapter lists the remote's tags once (`git.listServerRefs`, receive-pack, protocol 1) and pushes only the tags the remote lacks; a tag the remote has on another object is reported without a push. A failure to list them reports every candidate tag as refused, and the branch push stands.
+- The branch is pushed by its full ref (review finding 6).
+- `gitSync.integ`: two new cases, the tags of the branch pushed and not those of a side branch nor a tag already there; a tag the remote has on another commit reported while the branch is pushed. The whole `3_controllers/git/` folder passes (160 tests).
+
+## Slice D3 — The Git page tags a commit
+
+**Status:** ✅ DONE
+
+**RED:** the Git page component MiroirTest (the one driving `gitPageForTest.tsx`): typing a tag name and pressing **Tag** sends `gitAction_tag` with that name, and the history shows the tag; a refusal shows its message.
+
+**GREEN:** `GitWritePanels.tsx`: a tag field and button next to the commit; `gitPageForTest.tsx` answers `gitAction_tag`.
+
+**Validation:**
+```bash
+npm run build -w @miroir-framework/react
+npm run testMiroir -w miroir-standalone-app -- --suites <Git page suite> --mode unit
+npm run nonreg:filesystem -- --runner shared --scope smoke,ui,actions
+```
+
+
+### Realization
+
+- The tag field and **Tag the last commit** sit under the commit form (`GitWritePanels.tsx`): a refusal shows its reason (`tagExists` worded), `authorUnknown` opens the commit form's author fields, which the tag then uses. The header (`GitHeader.tsx`) shows the tags a push sent or the remote refused (`git-push-tags`, `data-rejected`). No `useEffect`.
+- `gitPageForTest.tsx` answers `gitAction_tag` and reports pushed and refused tags (`remoteTagConflicts`). `ui.gitPage`: 3 leaves (tag then push, existing name, refused tag); `miroir-component-tests.unit` counts 262 leaves.
+
+## Slice D4 — Docs, nonreg, PR
+
+**Status:** ✅ DONE
+
+- The Git page and Git action docs name `gitAction_tag` and the tags a push sends; `docs/reference/versioning.md` says a `versioned-git` version is a tag made with it.
+- Full `npm run nonreg:filesystem -- --runner shared`, pre-push gate, PR "Part of #708".
+
+
+### Realization
+
+- `docs/guides/version-control-with-git.md` ("Tagging a version"), `docs/reference/versioning.md` (a `versioned-git` version is a tag). Existing nonreg step `integ-git-version-control` covers the new tests.
+
+---
+
+# Part C — Agreement check and re-baseline
+
+> Integration first, no mocks. The tests freeze appForTest through a real client DomainController and its emulated server on `test-filesystem`, with traces on, and commit from the Git page on the Library copy in a real Git repository. The applicative interfaces locked first are the ModelEndpoint action `rebaselineEvolutionTraces` and the refusal: `reason: "evolutionTracesDisagree"` with the differences (a model state diff, part B).
+
+**Resume note:** planned 2026-11-15; starts when part D is merged. #708 closes with part C.
+
+## Scope (part C)
+
+In:
+- G4, trust a version: with traces on, a freeze (`versioned-internal`) is refused when the version of the last marker, replayed with the `commit` records since it, does not give the live model; a commit from the Git page (`versioned-git`) is refused when the model at `HEAD`, replayed with the staged records added since `HEAD`, does not give the staged model files (analysis D9). The refusal lists the differences.
+- A fork (two records with the same `previousTrace`) fails the check.
+- `rebaselineEvolutionTraces { application, versionName? }`: for `versioned-internal`, a freeze that skips the check, then a `rebaseline` marker naming that version; for `versioned-git`, a `rebaseline` marker naming the commit at `HEAD`, left in the work tree to be committed with the model (analysis D10).
+
+Out:
+- Migrations generated from the records (#9).
+- A dedicated UI for the differences: the freeze Runner and the Git page show the refusal's message, which lists them.
+
+## Locked implementation defaults (part C)
+
+| Default | From | Serves |
+|---|---|---|
+| The check starts at the last marker that names a version (`version`, or `rebaseline` with `version`); a `rebaseline` without one (written by `resetModel` or `initModel`) restarts the chain from an unknown state, so there is nothing to check until the next freeze, as before the first marker | analysis D9, part A Slice 5 | G4 |
+| The comparison is `diffModelStates` (part B) over the model collections, leaving out the meta-model Entities an application's model holds (the freeze and the record writer create them without a record) | part B | G4 |
+| The refusal: `Action2Error("FailedToHandleAction", …, { reason: "evolutionTracesDisagree", differences })` for the freeze; `gitActionError("evolutionTracesDisagree", …, { differences })` for the Git commit | `GitAction.ts`, part B | G4 |
+| The Git commit check runs in the persistence process through an internal versioning action (`checkStagedEvolutionTraces`), only for a `versioned-git` application with traces on; with the capability off it is refused (`FeatureUnavailable`), as a model commit is | analysis D5, D9 | G4, G6 |
+| The staged tree is read through two new `GitRepositoryInterface` methods (`listStagedFiles`, `readStagedFile`); `gitModelState` reads any tree through one reader | analysis D9 | G4 |
+| A `rebaseline` marker among the staged records since `HEAD` makes the Git commit check pass: the designer said the staged model is the new start | analysis D10 | G4 |
+
+## Slices (part C)
+
+| Slice | Title | Primary proof |
+|---|---|---|
+| C1 | Tracer: a freeze is refused when the traces disagree, and lists the differences | `evolutionTraceAgreement.integ` |
+| C2 | A fork fails the check; a marker without a version restarts it | `evolutionTraceAgreement.integ`, `modelStateReplay.unit` |
+| C3 | `rebaselineEvolutionTraces` for `versioned-internal` | `evolutionTraceAgreement.integ` |
+| C4 | The Git commit check (`versioned-git`) | `gitTraceAgreement.integ` |
+| C5 | `rebaselineEvolutionTraces` for `versioned-git` | `gitTraceAgreement.integ` |
+| C6 | Docs, nonreg step, full nonreg, AC checklist, acceptance check on #708 | `nonreg:filesystem` |
+
+Each slice gets its RED / GREEN / Validation block when part D is merged and part C starts, from what part D leaves in the Git actions.
+
+### Review findings to settle when part C starts (cold review, 2026-11-15)
+
+| # | Finding | Planned answer |
+|---|---|---|
+| R1 | Turning traces on is not recorded (the switch is read before the write), so the first check after traces go on compares a chain that misses the changes made while they were off: a `versioned-internal` freeze after off-then-on, or the first Git commit after on (`HEAD` with traces off, or no `HEAD`), is refused | Turning traces on appends a `rebaseline` marker without a version (nothing to check until the next freeze); the Git check passes when `HEAD` is missing or its SelfApplication has traces off. Cases in C2 and C4 |
+| R2 | Records the client still holds (`sendKeptRecordsBeforeFreeze`) are sent only before a freeze | Also before `gitAction_commit` (client side, before forwarding) and before `rebaselineEvolutionTraces` |
+| R3 | Places C must change that the plan does not name: `GitActionContext` (no way to call versioning), `handleGitAction`'s capability checks, `SERVER_ROUTED_MIROIR_ACTION_TYPES`, `MODEL_ACTIONS_ROUTED_TO_SERVER`, `VERSIONING_ACTION_IMPLEMENTATION_NAMES`, ModelEndpoint JSON + `devBuild`, `ActionImplementations.unit` | Listed in the GREEN of C3 / C4; the check is a callback of `GitActionContext` set by the DomainController, which runs the versioning implementation (no new public action) |
+| R4 | The freeze appends its own `version` marker: a rebaseline wrapping it would write two; a "skip the check" payload flag would let anyone skip it; markers hold the SelfApplicationVersion uuid, not a name; replay refuses any `rebaseline` after the marker | The rebaseline calls the freeze internally with the check off and replaces its marker by a `rebaseline` one naming the version uuid; no payload flag; wording "version uuid"; `versionName` required for `versioned-internal`; C2 changes the replay rule |
+| R5 | The freeze plans from the local cache in `local` mode, the check reads the store | Compare against the rows the freeze plans, or refuse a freeze while the application has pending changes; decide in C1 |
+| R7 | `conceptLevel`: a frozen Entity gets `"Model"` when the live one has none | Normalize in one place before the diff |
+| R8 | One list of meta-model Entities | Reuse `selectEntitiesToFreeze` / `metaBootstrapUuids` of `freezeApplicationVersion.ts` |
+| R9 | A `modelVersion` folder ignored by `.gitignore`: records never staged, every check refuses | Its own refusal reason |
+| R11 | No UI test of the `evolutionTracesDisagree` message on the commit form | `gitCommandErrorText` falls back to the message; one `ui.gitPage` leaf in C4 |
+
+Part D items of the review (R6 tag named like a branch, R10 plan text, R11 `rejectedTags` on the page) are done in D1 to D3.
+
+AC checklist (parts C and D items of #708):
+
+| #708 scope item | Proving test |
+|---|---|
+| Agreement check at freeze (`versioned-internal`), a mismatch refuses and lists the differences | C1, C2 |
+| Agreement check at commit from the Git page (`versioned-git`) | C4 |
+| Re-baseline: a freeze plus a marker (`versioned-internal`), a marker committed with the model (`versioned-git`) | C3, C5 |
+| `gitAction_tag`: an annotated tag named after the version | D1, D2 |

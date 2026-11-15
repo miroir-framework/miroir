@@ -1212,6 +1212,93 @@
           "actionImplementationType": "libraryImplementation",
           "inMemoryImplementationFunctionName": "handleAction_gitAction_revert"
         }
+      },
+      {
+        "actionParameters": {
+          "actionType": {
+            "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false,
+                "defaultLabel": "Tag a commit with a version name"
+              }
+            },
+            "definition": "gitAction_tag"
+          },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
+          },
+          "endpoint": {
+            "type": "literal",
+            "definition": "a7f243cb-9345-425a-918d-4e433a94f4bf"
+          },
+          "payload": {
+            "type": "object",
+            "tag": {
+              "value": {
+                "canBeTemplate": true
+              }
+            },
+            "definition": {
+              "application": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                }
+              },
+              "name": {
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                }
+              },
+              "message": {
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                },
+                "optional": true
+              },
+              "ref": {
+                "type": "string",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                },
+                "optional": true
+              },
+              "author": {
+                "type": "object",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true
+                  }
+                },
+                "definition": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  }
+                },
+                "optional": true
+              }
+            }
+          }
+        },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_gitAction_tag"
+        }
       }
     ]
   }

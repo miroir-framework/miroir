@@ -5,7 +5,7 @@
 import { Alert, Box, Button, Checkbox, Chip, FormControlLabel, TextField, Typography } from "@mui/material";
 import React, { useState } from "react";
 
-import type { GitBranches, GitCommitResult, GitStatusResult } from "@miroir-framework/core";
+import type { GitBranches, GitCommitResult, GitStatusResult, GitTagResult } from "@miroir-framework/core";
 
 import type { GitCommand } from "./useGitCommand.js";
 import type { GitRequestError } from "./useGitRequest.js";
@@ -52,6 +52,8 @@ export function gitCommandErrorText(error: GitRequestError): string {
       return `The repository holds no Miroir deployment of the filesystem store. It is cloned in ${String(error.errorContext?.folderName ?? "its folder")}; nothing was installed.`;
     case "applicationAlreadyDeployed":
       return "This application is already installed here: drop it first to install the one of the clone.";
+    case "tagExists":
+      return "A tag of that name exists already: give the version another name.";
     case "branchNotMerged":
       return `${String(error.errorContext?.name ?? "This branch")} has commits the current branch does not have: deleting it loses them.`;
     default:
@@ -92,9 +94,32 @@ export function GitCommitForm(props: {
   const [error, setError] = useState<GitRequestError | undefined>(undefined);
   const [askAuthor, setAskAuthor] = useState(false);
   const stagedCount = props.status.files.filter((file) => file.staged).length;
+  // #708 part D: a version name for the last commit
+  const [tagName, setTagName] = useState("");
+  const [tagError, setTagError] = useState<GitRequestError | undefined>(undefined);
+  const [tagged, setTagged] = useState<GitTagResult | undefined>(undefined);
+  const typedAuthor = () => (askAuthor && authorName.trim() !== "" ? { name: authorName, email: authorEmail } : undefined);
+
+  const tag = async () => {
+    const author = typedAuthor();
+    const result = await props.command<GitTagResult>("gitAction_tag", { name: tagName.trim(), ...(author ? { author } : {}) });
+    if (result.status === "ok") {
+      setTagName("");
+      setTagError(undefined);
+      setTagged(result.value);
+      return;
+    }
+    if (result.status === "error") {
+      setTagged(undefined);
+      setTagError(result.error);
+      if (result.error.reason === "authorUnknown") {
+        setAskAuthor(true);
+      }
+    }
+  };
 
   const commit = async (includeOtherStagedChanges: boolean) => {
-    const author = askAuthor && authorName.trim() !== "" ? { name: authorName, email: authorEmail } : undefined;
+    const author = typedAuthor();
     const result = await props.command<GitCommitResult>("gitAction_commit", {
       message,
       ...(author ? { author, rememberAuthor } : {}),
@@ -169,6 +194,35 @@ export function GitCommitForm(props: {
       {error?.reason === "authorUnknown" && (
         <Typography variant="body2" data-testid="git-commit-error" data-reason="authorUnknown">
           Who is the author of this commit? No user is logged in and the repository has no author set.
+        </Typography>
+      )}
+      <Box sx={{ display: "flex", gap: 1, alignItems: "center", flexWrap: "wrap" }} data-testid="git-tag-form">
+        <TextField
+          size="small"
+          label="Version name"
+          placeholder="1.0.0"
+          value={tagName}
+          onChange={(event) => setTagName(event.target.value)}
+          slotProps={{ htmlInput: { "data-testid": "git-tag-name" } }}
+        />
+        <Button
+          size="small"
+          data-testid="git-tag"
+          disabled={props.busy || tagName.trim() === "" || !props.status.branches.head}
+          onClick={tag}
+        >
+          Tag the last commit
+        </Button>
+      </Box>
+      {tagged && (
+        <Typography variant="body2" data-testid="git-tag-done">
+          Tagged {tagged.commit.slice(0, 7)} as {tagged.name}.
+        </Typography>
+      )}
+      {tagError?.reason !== "authorUnknown" && <GitCommandError error={tagError} testId="git-tag-error" />}
+      {tagError?.reason === "authorUnknown" && (
+        <Typography variant="body2" data-testid="git-tag-error" data-reason="authorUnknown">
+          Who tags this commit? No user is logged in and the repository has no author set.
         </Typography>
       )}
     </Box>

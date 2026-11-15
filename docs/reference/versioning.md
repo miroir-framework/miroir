@@ -27,7 +27,7 @@ The mode is set on the application's **SelfApplication** row (`versioningMode`, 
 |---|---|---|---|
 | `unversioned` *(or absent)* | `false` | `admin`, `model`, `data` | None: live model only. Changes apply immediately, like in a spreadsheet (limited undo / redo only) |
 | `versioned-internal` | `true` | `admin`, `model`, `data`, **`modelVersion`** (writable) | Miroir's `modelVersion` section; git assets under `*_modelVersion/` when shipped |
-| `versioned-git` | `true` | `admin`, `model`, `data`; **`modelVersion`** when evolution traces are on | Git. The model (`*_model/` assets) is committed like code; no in-app freeze. With traces on, the `*_modelVersion/` folder holds the trace records and is committed with the model |
+| `versioned-git` | `true` | `admin`, `model`, `data`; **`modelVersion`** when evolution traces are on | Git. The model (`*_model/` assets) is committed like code; no in-app freeze. A version is a Git tag, made from the Git page (`gitAction_tag`). With traces on, the `*_modelVersion/` folder holds the trace records and is committed with the model |
 | bundled Miroir profile | `true` on SelfApplication row | `admin`, `model`, `data` only | **None in bundled store**: the sandbox demo is versioning-free |
 
 Legacy deployments with `versioningEnabled: true` and no `versioningMode` behave as **`versioned-internal`**. `versioned-external`, the name of `versioned-git` before #708, is still read as `versioned-git` for one release.
