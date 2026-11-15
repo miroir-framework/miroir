@@ -952,7 +952,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--tier",
         choices=["unit", "default", "full"],
         default="default",
-        help="unit ⊂ default ⊂ full (default: default = A+B+curated C)",
+        help="unit < default < full, each including the previous (default: default = A+B+curated C)",
     )
     mode = p.add_mutually_exclusive_group()
     mode.add_argument(
