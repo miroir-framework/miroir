@@ -1194,13 +1194,13 @@ def test_fail_fast_starts_nothing_after_a_failure_while_a_worker_is_free(tmp_pat
         status = "failed" if step["id"] == "fails" else "passed"
         return {step["id"]: runner.StepResult(step["id"], step["id"], "unit", "none", status)}, []
 
-    def slow_plan(steps, shared_groups):
-        for unit in [runner.Unit([step]) for step in steps]:
+    def slow_schedule(units):
+        for unit in units:
             yield unit
             time.sleep(0.3)
 
     monkeypatch.setattr(runner, "run_unit", fake_run_unit)
-    monkeypatch.setattr(runner, "plan_units", slow_plan)
+    monkeypatch.setattr(runner, "schedule_alone_last", slow_schedule)
     run = runner.RunContext(profile="emulatedServer-filesystem", snap_dir=tmp_path, dry_run=False, timings=False)
 
     results, _ = runner.run_parallel(steps, {}, run, fail_fast=True, jobs=4)
@@ -1224,7 +1224,8 @@ def test_a_shared_group_runs_as_one_job_on_one_worker(tmp_path: Path, shared_man
 
 
 # #477 Slice 5: a step with "parallel": false runs with no other step running.
-def test_a_step_that_runs_alone_waits_for_the_others_and_holds_the_next(tmp_path: Path):
+def test_a_step_that_runs_alone_runs_after_the_parallel_steps(tmp_path: Path):
+    # #737: an alone step no longer drains the pool at its place in the manifest; it waits for the end.
     log = tmp_path / "events.log"
     alone = {**timed_step("alone", log, sleep=0.3), "parallel": False}
     manifest = write_manifest(
@@ -1232,15 +1233,58 @@ def test_a_step_that_runs_alone_waits_for_the_others_and_holds_the_next(tmp_path
         [timed_step("before", log, sleep=0.6), alone, timed_step("after", log, sleep=0.3), timed_step("after2", log, sleep=0.3)],
     )
 
-    code, _, _ = run_nonreg(tmp_path, manifest, "--tier", "unit", "--jobs", "3", *FS_PROFILE)
+    code, summary, _ = run_nonreg(tmp_path, manifest, "--tier", "unit", "--jobs", "3", *FS_PROFILE)
 
     s = spans(log)
     assert code == 0
-    assert s["alone"][0] >= s["before"][1]
-    assert s["after"][0] >= s["alone"][1]
-    assert s["after2"][0] >= s["alone"][1]
+    assert s["alone"][0] >= max(s["before"][1], s["after"][1], s["after2"][1])
+    assert overlap(s["before"], s["after"]) and overlap(s["after"], s["after2"])
     assert s["alone"][2] != "-"  # #728: a step that runs alone still gets a worker
-    assert overlap(s["after"], s["after2"])
+    assert [st["id"] for st in summary["steps"]] == ["before", "alone", "after", "after2"]
+
+
+def test_the_alone_steps_run_before_the_closing_bracket(tmp_path: Path):
+    log = tmp_path / "events.log"
+
+    def bracket(step_id: str) -> dict:
+        return {**timed_step(step_id, log, sleep=0.1), "parallel": False, "worker": False}
+
+    manifest = write_manifest(
+        tmp_path,
+        [
+            bracket("open"),
+            timed_step("a", log, sleep=0.3),
+            {**timed_step("alone", log, sleep=0.1), "parallel": False},
+            timed_step("b", log, sleep=0.3),
+            bracket("close"),
+        ],
+    )
+
+    code, _, _ = run_nonreg(tmp_path, manifest, "--tier", "unit", "--jobs", "2", *FS_PROFILE)
+
+    s = spans(log)
+    assert code == 0
+    assert s["a"][0] >= s["open"][1] and overlap(s["a"], s["b"])
+    assert s["alone"][0] >= max(s["a"][1], s["b"][1])
+    assert s["close"][0] >= s["alone"][1]
+
+
+def test_a_serial_run_keeps_the_manifest_order_of_the_alone_steps(tmp_path: Path):
+    log = tmp_path / "events.log"
+    manifest = write_manifest(
+        tmp_path,
+        [timed_step("a", log, sleep=0.1), {**timed_step("alone", log, sleep=0.1), "parallel": False}, timed_step("b", log, sleep=0.1)],
+    )
+
+    run_nonreg(tmp_path, manifest, "--tier", "unit", *FS_PROFILE)
+
+    s = spans(log)
+    assert s["a"][1] <= s["alone"][0] and s["alone"][1] <= s["b"][0]
+
+
+def test_every_manifest_step_that_runs_alone_says_why():
+    silent = [s["id"] for s in REAL_MANIFEST["steps"] if s.get("parallel") is False and not s.get("parallelReason")]
+    assert silent == [], 'give these "parallel": false steps a "parallelReason" (#737)'
 
 
 def test_the_run_bracket_runs_alone():

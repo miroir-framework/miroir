@@ -1444,6 +1444,21 @@ def plan_units(steps: list[dict[str, Any]], shared_groups: dict[str, list[dict[s
     return units
 
 
+def schedule_alone_last(units: list[Unit]) -> list[Unit]:
+    """#737: in a parallel run, the alone units that are not the run bracket wait for the parallel units to
+    end and run then, before the closing bracket, instead of draining the pool at their place in the
+    manifest. The bracket units (`"worker": false`) keep their place."""
+    alone = [u for u in units if u.alone and u.needs_worker]
+    if not alone:
+        return units
+    rest = [u for u in units if not (u.alone and u.needs_worker)]
+    closing = 0
+    while closing < len(rest) and not rest[len(rest) - 1 - closing].needs_worker:
+        closing += 1
+    split = len(rest) - closing
+    return [*rest[:split], *alone, *rest[split:]]
+
+
 def worker_locks_dir() -> Path:
     """Where the runs of this checkout claim their worker numbers (#584)."""
     configured = os.environ.get(WORKER_LOCKS_ENV)
@@ -1648,7 +1663,7 @@ def run_parallel(
                 aborted = True
 
     with ThreadPoolExecutor(max_workers=jobs) as pool:
-        for unit in plan_units(steps, shared_groups):
+        for unit in schedule_alone_last(plan_units(steps, shared_groups)):
             if unit.alone:
                 while running:
                     collect(wait(running, return_when=FIRST_COMPLETED).done)
