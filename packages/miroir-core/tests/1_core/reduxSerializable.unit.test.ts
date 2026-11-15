@@ -16,7 +16,7 @@ describe("toReduxSerializable", () => {
       timestamp,
       createdAt: timestamp,
       nested: { lendStartDate: timestamp },
-      name: "ApplicationEvolutionTrace",
+      name: "EvolutionTraceRecord",
     };
 
     const result = toReduxSerializable(input);
@@ -24,7 +24,7 @@ describe("toReduxSerializable", () => {
     expect(result.timestamp).toBe(ISO);
     expect(result.createdAt).toBe(ISO);
     expect(result.nested.lendStartDate).toBe(ISO);
-    expect(result.name).toBe("ApplicationEvolutionTrace");
+    expect(result.name).toBe("EvolutionTraceRecord");
     expect(result).not.toBe(input);
     expect(() => JSON.stringify(result)).not.toThrow();
   });

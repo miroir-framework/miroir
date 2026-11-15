@@ -39,7 +39,7 @@ describe("freeze Runner initialFormValues (#225)", () => {
   });
 
   it("leaves the application empty when the sidebar application is not versioned-internal", () => {
-    for (const versioningMode of ["unversioned", "versioned-external", undefined]) {
+    for (const versioningMode of ["unversioned", "versioned-git", "versioned-external", undefined]) {
       expect(
         initialFormValues({ sidebarApplication: { uuid: LIBRARY, versioningMode } }).application,
       ).toBe(noValue.uuid);

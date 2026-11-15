@@ -1,0 +1,188 @@
+{
+  "uuid": "854c47bd-af74-4305-bdea-aa6bddfa8899",
+  "parentName": "Entity",
+  "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+  "name": "EvolutionTraceRecord",
+  "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
+  "conceptLevel": "Model",
+  "scope": "versioning",
+  "description": "One step of an application's model history (#708): the model Actions of one commit, or a marker of a version or of a re-baseline. Records of an application form a chain by sequenceNumber and previousTrace, in its modelVersion section.",
+  "defaultInstanceDetailsReportUuid": "68594192-0ff5-4b29-98ec-4752b5fc491f",
+  "viewAttributes": [
+    "sequenceNumber",
+    "kind",
+    "version",
+    "complete",
+    "timestamp",
+    "uuid"
+  ],
+  "cache": {
+    "cacheAllInstancesOnRefresh": true
+  },
+  "mlSchema": {
+    "type": "object",
+    "extend": {
+      "type": "schemaReference",
+      "definition": {
+        "eager": true,
+        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        "relativePath": "entityDefinitionRoot"
+      }
+    },
+    "definition": {
+      "application": {
+        "type": "uuid",
+        "tag": {
+          "value": {
+            "id": 10,
+            "defaultLabel": "Application",
+            "description": "The application whose model the record describes",
+            "display": {
+              "editable": false
+            },
+            "foreignKeyParams": {
+              "targetEntity": "a659d350-dd97-4da9-91de-524fa01745dc",
+              "targetEntityOrderInstancesBy": "name"
+            }
+          }
+        }
+      },
+      "sequenceNumber": {
+        "type": "number",
+        "tag": {
+          "value": {
+            "id": 11,
+            "defaultLabel": "Sequence",
+            "description": "Position of the record in the application's chain, from 1",
+            "display": {
+              "editable": false
+            }
+          }
+        }
+      },
+      "previousTrace": {
+        "type": "uuid",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 12,
+            "defaultLabel": "Previous record",
+            "description": "The record before this one in the chain; absent on the first",
+            "display": {
+              "editable": false
+            },
+            "foreignKeyParams": {
+              "targetEntity": "854c47bd-af74-4305-bdea-aa6bddfa8899",
+              "targetEntityOrderInstancesBy": "sequenceNumber"
+            }
+          }
+        }
+      },
+      "kind": {
+        "type": "enum",
+        "definition": [
+          "commit",
+          "version",
+          "rebaseline"
+        ],
+        "tag": {
+          "value": {
+            "id": 13,
+            "defaultLabel": "Kind",
+            "description": "commit: the model Actions of one commit; version: a version was frozen here; rebaseline: the history restarts here",
+            "display": {
+              "editable": false
+            }
+          }
+        }
+      },
+      "actions": {
+        "type": "array",
+        "optional": true,
+        "definition": {
+          "type": "any"
+        },
+        "tag": {
+          "value": {
+            "id": 14,
+            "defaultLabel": "Actions",
+            "description": "The model Actions of a commit record, resolved and in the order they were written",
+            "display": {
+              "editable": false
+            }
+          }
+        }
+      },
+      "complete": {
+        "type": "boolean",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 15,
+            "defaultLabel": "Complete",
+            "description": "False when the commit stopped part way: the record holds the Actions that reached the store",
+            "display": {
+              "editable": false
+            }
+          }
+        }
+      },
+      "version": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 16,
+            "defaultLabel": "Version",
+            "description": "The version a version marker names",
+            "display": {
+              "editable": false
+            }
+          }
+        }
+      },
+      "gitCommit": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 17,
+            "defaultLabel": "Git commit",
+            "description": "The Git commit a re-baseline marker starts from, with the model in Git",
+            "display": {
+              "editable": false
+            }
+          }
+        }
+      },
+      "commitUuid": {
+        "type": "uuid",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 18,
+            "defaultLabel": "Commit",
+            "description": "The commit that made the record; shared by the records of the applications one commit changed",
+            "display": {
+              "editable": false
+            }
+          }
+        }
+      },
+      "timestamp": {
+        "type": "string",
+        "tag": {
+          "value": {
+            "id": 19,
+            "defaultLabel": "Timestamp",
+            "description": "When the record was written, ISO 8601",
+            "display": {
+              "editable": false
+            }
+          }
+        }
+      }
+    }
+  }
+}

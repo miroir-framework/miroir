@@ -8,7 +8,7 @@ This page describes the vision and use cases. For what is implemented today (mod
 
 Create an Bundle Repository application, that stores bundles and sample data of applications that can be deployed.
 
-how to distribute applications with versioned-external versioning? they must have a link to the git / github repo. Full version points to a tag for git repo reference?
+how to distribute applications with versioned-git versioning? they must have a link to the git / github repo. Full version points to a tag for git repo reference?
 
 Bundles can come in various flavors:
 
@@ -41,20 +41,20 @@ This will enable differentiated "development" and "production" environment, wher
 ### Deployment & Environment Promotion
 
 - Promote a model from development → staging → production
-- `versioned-external`: the external VCS (Git) is the source of truth; Miroir deployment assets (`assets/` directories) are committed like code
+- `versioned-git`: Git is the source of truth; Miroir deployment assets (`assets/` directories) are committed like code
 - `versioned-internal`: Miroir itself stores the version history in the `modelVersion` store section — useful for applications whose model is managed entirely inside the running system
 
 ### Reporting on Version History
 
 - Query past model states (which definition of an Entity was active at a given point?)
 - Audit trail: which Reports / Queries / Transformers were associated with which model version
-- In `versioned-external` mode: feed a GitProxy application's read-only tools into Reports to display git log, diffs, or branch topology directly in the Miroir UI
+- In `versioned-git` mode: feed a GitProxy application's read-only tools into Reports to display git log, diffs, or branch topology directly in the Miroir UI
 
 ### Actions — Mapping from Git Concepts
 
 | Git action | Miroir equivalent | Exists / To Be Implemented
 |---|---|---|
-| `git init` | Create a new Application deployment with a versioned store | similar to create application with versioned-external versioning |
+| `git init` | Create a new Application deployment with a versioned store | similar to create application with versioned-git versioning |
 | `git clone` | Copy a deployment's `model` + `data` store sections to a new environment | deploy existing application from repository app |
 | `git commit` | "Freeze" a model as a new commit / snapshot in the `modelVersion` section | YES |
 | `git checkout <branch>` | Load a different model snapshot into the active deployment | NO - for now only linear history is allowed |
@@ -64,9 +64,10 @@ This will enable differentiated "development" and "production" environment, wher
 | `git push/pull` | Sync `modelVersion` section between environments (remote server mode) | NO |
 
 
-### Implementation: versioned-external
+### Implementation: versioned-git
 
 - Only the **current** model is stored in Miroir; history lives in Git
+- With evolution traces on, each commit of the model also leaves a record in `*_modelVersion/`, committed with the model ([Evolution traces](../reference/versioning.md#evolution-traces))
 - Deployment assets (`assets/miroir_model/`, `assets/miroir_data/`) are committed to the repo like source code
 - A **GitProxy** application exposes Git MCP server actions as Miroir Endpoints / Runners, making git history queryable from Reports
 - `ApplicationUuid` is a required payload parameter for all cross-app Queries and Actions

@@ -231,9 +231,8 @@ export async function runIntegrationMiroirTestBatch(params: {
       skipped.push({ suiteKey: identityKey, reason: REPORT_TESTS_NEED_THE_SANDBOX });
       continue;
     }
-    // #589, #696: e.g. evolution-trace suites when traces are off (always in the browser build), versioning
-    // suites when the capability is off
-    const unmetRequirement = miroirTestUnmetRequirement(instance, undefined, params.processCapabilities);
+    // #589, #696: e.g. versioning suites when the capability is off
+    const unmetRequirement = miroirTestUnmetRequirement(instance, params.processCapabilities);
     if (unmetRequirement !== undefined) {
       skipped.push({ suiteKey: identityKey, reason: unmetRequirement });
       continue;

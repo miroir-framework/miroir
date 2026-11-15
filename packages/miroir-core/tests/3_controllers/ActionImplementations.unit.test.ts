@@ -102,6 +102,7 @@ const expectedActionTypesByEndpoint: Record<string, string[]> = {
     "createEntity",
     "dropEntity",
     "freezeApplicationVersion",
+    "appendEvolutionTraceRecord", // #708
   ],
   InstanceEndpoint: [
     "createInstance",

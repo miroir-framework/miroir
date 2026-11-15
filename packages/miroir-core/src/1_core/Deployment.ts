@@ -15,10 +15,6 @@ import type {
 } from "../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType";
 import type { LoggerInterface } from "../0_interfaces/4-services/LoggerInterface";
 import type { InitApplicationParameters } from "../0_interfaces/4-services/PersistenceStoreControllerInterface";
-import {
-  buildEvolutionBaselineCreateInstanceActions,
-  EVOLUTION_TRACE_ENTITY_UUID,
-} from "../2_domain/evolutionTraceBaseline.js";
 import { MiroirLoggerFactory } from "../4_services/MiroirLoggerFactory";
 import { packageName } from "../constants";
 import { cleanLevel } from "./constants";
@@ -617,11 +613,6 @@ export function buildResetAndinitializeDeploymentActionSequence(
             objects: e.instances,
           },
         })),
-        // Squashed evolution baseline when ApplicationEvolutionTrace is part of this init.
-        // Trace instances are stored in that application's model section.
-        ...(entities.some((e) => e.uuid === EVOLUTION_TRACE_ENTITY_UUID)
-          ? buildEvolutionBaselineCreateInstanceActions(applicationUuid)
-          : []),
       ],
     },
   };

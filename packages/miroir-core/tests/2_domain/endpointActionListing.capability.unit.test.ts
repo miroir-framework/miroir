@@ -70,6 +70,11 @@ if (runThis) {
       expect(off).toContain("commit");
     });
 
+    it("#708: the catalog never lists an internal action, such as appendEvolutionTraceRecord", () => {
+      expect(listedActionTypes(capabilities(true))).not.toContain("appendEvolutionTraceRecord");
+      expect(listedActionTypes()).not.toContain("appendEvolutionTraceRecord");
+    });
+
     it("without a snapshot, the catalog lists every action, as before #696", () => {
       expect(listedActionTypes()).toEqual(listedActionTypes(capabilities(true)));
     });

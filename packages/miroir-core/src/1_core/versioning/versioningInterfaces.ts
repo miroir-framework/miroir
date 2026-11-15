@@ -25,7 +25,40 @@ export const VERSIONING_PACKAGE_NAME = "@miroir-framework/versioning";
  * The `inMemoryImplementationFunctionName`s of the Endpoint actions `@miroir-framework/versioning`
  * implements; a host registers them with `registerLazyActionImplementations`.
  */
-export const VERSIONING_ACTION_IMPLEMENTATION_NAMES: readonly string[] = ["handleAction_freezeApplicationVersion"];
+export const VERSIONING_ACTION_IMPLEMENTATION_NAMES: readonly string[] = [
+  "handleAction_freezeApplicationVersion",
+  "handleAction_appendEvolutionTraceRecord",
+];
+
+/** #708: the Entity of evolution trace records, stored in an application's `modelVersion` section. */
+export const EVOLUTION_TRACE_RECORD_ENTITY_UUID = "854c47bd-af74-4305-bdea-aa6bddfa8899";
+
+/** #708: Model Endpoint action that appends one record to an application's evolution trace. */
+export const APPEND_EVOLUTION_TRACE_RECORD_ACTION_TYPE = "appendEvolutionTraceRecord" as const;
+
+/** #708: what a record says: the model Actions of a commit, or a marker of a version or of a re-baseline. */
+export type EvolutionTraceRecordKind = "commit" | "version" | "rebaseline";
+
+/** #708: payload of `appendEvolutionTraceRecord`; the package sets the sequence number and the previous record. */
+export type AppendEvolutionTraceRecordPayload = {
+  application: string;
+  kind: EvolutionTraceRecordKind;
+  commitUuid?: string;
+  actions?: unknown[];
+  complete?: boolean;
+  version?: string;
+  gitCommit?: string;
+};
+
+/** #708: a stored evolution trace record. */
+export type EvolutionTraceRecordRow = AppendEvolutionTraceRecordPayload & {
+  uuid: string;
+  parentName: string;
+  parentUuid: string;
+  sequenceNumber: number;
+  previousTrace?: string;
+  timestamp: string;
+};
 
 export {
   assertApplicationVersioningEnabled,

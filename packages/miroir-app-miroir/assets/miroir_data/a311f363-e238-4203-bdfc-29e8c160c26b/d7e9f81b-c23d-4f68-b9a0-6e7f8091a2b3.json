@@ -3289,20 +3289,11 @@
                               },
                               {
                                 "miroirMenuItemType": "miroirMenuReportLink",
-                                "label": "Application Evolution Traces",
-                                "section": "model",
+                                "label": "Evolution Trace Records",
+                                "section": "modelVersion",
                                 "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
-                                "reportUuid": "b2c3d4e5-f6a7-4890-b123-4567890abcde",
+                                "reportUuid": "45735607-4711-45af-be04-4b4d36fa585c",
                                 "icon": "timeline",
-                                "menuItemScope": "model"
-                              },
-                              {
-                                "miroirMenuItemType": "miroirMenuReportLink",
-                                "label": "Application Evolution Trace Events",
-                                "section": "model",
-                                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
-                                "reportUuid": "230467a6-ecc3-4945-bd05-5d9e826c44fb",
-                                "icon": "history",
                                 "menuItemScope": "model"
                               }
                             ]
@@ -6795,20 +6786,11 @@
                               },
                               {
                                 "miroirMenuItemType": "miroirMenuReportLink",
-                                "label": "Application Evolution Traces",
-                                "section": "model",
+                                "label": "Evolution Trace Records",
+                                "section": "modelVersion",
                                 "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
-                                "reportUuid": "b2c3d4e5-f6a7-4890-b123-4567890abcde",
+                                "reportUuid": "45735607-4711-45af-be04-4b4d36fa585c",
                                 "icon": "timeline",
-                                "menuItemScope": "model"
-                              },
-                              {
-                                "miroirMenuItemType": "miroirMenuReportLink",
-                                "label": "Application Evolution Trace Events",
-                                "section": "model",
-                                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
-                                "reportUuid": "230467a6-ecc3-4945-bd05-5d9e826c44fb",
-                                "icon": "history",
                                 "menuItemScope": "model"
                               }
                             ]
@@ -7223,20 +7205,11 @@
                               },
                               {
                                 "miroirMenuItemType": "miroirMenuReportLink",
-                                "label": "Application Evolution Traces",
-                                "section": "model",
+                                "label": "Evolution Trace Records",
+                                "section": "modelVersion",
                                 "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
-                                "reportUuid": "b2c3d4e5-f6a7-4890-b123-4567890abcde",
+                                "reportUuid": "45735607-4711-45af-be04-4b4d36fa585c",
                                 "icon": "timeline",
-                                "menuItemScope": "model"
-                              },
-                              {
-                                "miroirMenuItemType": "miroirMenuReportLink",
-                                "label": "Application Evolution Trace Events",
-                                "section": "model",
-                                "selfApplication": "5af03c98-fe5e-490b-b08f-e1230971c57f",
-                                "reportUuid": "230467a6-ecc3-4945-bd05-5d9e826c44fb",
-                                "icon": "history",
                                 "menuItemScope": "model"
                               }
                             ]

@@ -39,8 +39,7 @@ const KEPT_CONSTANTS: Record<string, string> = {
   APPLICATION_VERSION_CROSS_TEST_CONFIGURATION_VERSION_UUID: "8bd811bf-82fa-4547-93e1-082c97589069",
   TEST_VERSION_ENTITY_UUID: "fe94c683-89d3-482e-a653-9ce1eeb4ef34",
   APPLICATION_VERSION_CROSS_TEST_VERSION_UUID: "be1d3cf3-b77c-464e-966c-6d23375a4d6f",
-  EVOLUTION_TRACE_ENTITY_UUID: "de089f57-5fa5-4c0e-a43e-20f1a6df5a37",
-  EVOLUTION_TRACE_EVENT_ENTITY_UUID: "f4c2b3a1-8d6e-4f9a-b2c1-3d4e5f6a7b8c",
+  EVOLUTION_TRACE_RECORD_ENTITY_UUID: "854c47bd-af74-4305-bdea-aa6bddfa8899",
 };
 
 const KEPT_FUNCTIONS = [
@@ -50,10 +49,22 @@ const KEPT_FUNCTIONS = [
   "assertApplicationVersioningEnabled",
   "assertVersioningEnabledImmutable",
   "getApplicationSection",
+  "isEvolutionTraceOn",
+  "selfApplicationRowLocation",
+];
+
+/** #708: the old evolution traces (process switch, baseline, Entities), removed with no replacement in core. */
+const REMOVED_OLD_TRACE_EXPORTS = [
   "isEvolutionTraceEnabled",
   "shouldTraceEvolutionEvent",
   "generateEvolutionBaseline",
   "buildEvolutionBaselineCreateInstanceActions",
+  "DEFAULT_EVOLUTION_BRANCH",
+  "EVOLUTION_TRACE_ENTITY_UUID",
+  "EVOLUTION_TRACE_EVENT_ENTITY_UUID",
+  "applicationEvolutionTrace",
+  "applicationEvolutionTraceEvent",
+  "loadLazyCapabilityModule",
 ];
 
 /** Freeze and trace implementations core exports today; they leave core with #696. */
@@ -84,14 +95,14 @@ const MOVED_TRACE_FUNCTIONS = [
 
 if (runThis) {
   describe("versioningSurface: core's versioning exports", () => {
-    it("keeps the action type, the version Entity uuids and the trace Entity uuids", () => {
+    it("keeps the action type, the version Entity uuids and the trace record Entity uuid", () => {
       const actual = Object.fromEntries(
         Object.keys(KEPT_CONSTANTS).map((name) => [name, (core as Record<string, unknown>)[name]]),
       );
       expect(actual).toEqual(KEPT_CONSTANTS);
     });
 
-    it("keeps the mode, section routing, trace policy and baseline functions", () => {
+    it("keeps the mode, section routing and trace switch functions", () => {
       const missing = KEPT_FUNCTIONS.filter(
         (name) => typeof (core as Record<string, unknown>)[name] !== "function",
       );
@@ -110,10 +121,16 @@ if (runThis) {
       expect(stillExported).toEqual([]);
     });
 
+    it("no longer exports the old evolution traces (#708)", () => {
+      expect(REMOVED_OLD_TRACE_EXPORTS.filter((name) => name in core)).toEqual([]);
+    });
+
     it("exports what a package needs to register lazy action implementations", () => {
       expect(typeof core.registerLazyActionImplementations).toBe("function");
-      expect(typeof core.loadLazyCapabilityModule).toBe("function");
-      expect(core.VERSIONING_ACTION_IMPLEMENTATION_NAMES).toEqual(["handleAction_freezeApplicationVersion"]);
+      expect(core.VERSIONING_ACTION_IMPLEMENTATION_NAMES).toEqual([
+        "handleAction_freezeApplicationVersion",
+        "handleAction_appendEvolutionTraceRecord", // #708
+      ]);
       expect(core.VERSIONING_PACKAGE_NAME).toBe("@miroir-framework/versioning");
     });
   });

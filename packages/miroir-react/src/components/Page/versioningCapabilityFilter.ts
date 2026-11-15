@@ -10,12 +10,11 @@ import {
   type VersioningModeInput,
 } from "@miroir-framework/core";
 
-/** Miroir menu items 1, 2, 14 and 15: Entity versions, Application versions, trace list, trace history. */
+/** Miroir menu items 1, 2 and 14: Entity versions, Application versions, evolution trace records (#708). */
 export const VERSIONING_MENU_REPORT_UUIDS: readonly string[] = [
   "f9aff35d-8636-4519-8361-c7648e0ddc68",
   "0810de28-fdab-4baf-8935-7e04a8f779a9",
-  "b2c3d4e5-f6a7-4890-b123-4567890abcde",
-  "230467a6-ecc3-4945-bd05-5d9e826c44fb",
+  "45735607-4711-45af-be04-4b4d36fa585c",
 ];
 
 /** The freeze Runner, listed in the Miroir Runners report and in the Versioning report. */

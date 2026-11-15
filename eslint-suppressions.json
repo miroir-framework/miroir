@@ -42,11 +42,6 @@
       "count": 3
     }
   },
-  "packages/miroir-core/src/1_core/Deployment.ts": {
-    "miroir/layers": {
-      "count": 1
-    }
-  },
   "packages/miroir-core/src/1_core/Menu.ts": {
     "miroir/layers": {
       "count": 1
@@ -147,16 +142,6 @@
       "count": 10
     },
     "miroir/type-escape": {
-      "count": 1
-    }
-  },
-  "packages/miroir-core/src/2_domain/evolutionTraceBaseline.ts": {
-    "miroir/type-escape": {
-      "count": 1
-    }
-  },
-  "packages/miroir-core/src/2_domain/evolutionTracePolicy.ts": {
-    "miroir/global-environment": {
       "count": 1
     }
   },
@@ -379,11 +364,6 @@
   },
   "packages/miroir-react-testing/src/4-tests/useIntegTestRunCoordinator.ts": {
     "miroir/pub-sub": {
-      "count": 1
-    }
-  },
-  "packages/miroir-react-testing/src/4_view/components/Buttons/RunAllMiroirTestsButton.tsx": {
-    "miroir/action-result": {
       "count": 1
     }
   },

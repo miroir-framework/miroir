@@ -222,7 +222,14 @@
                               "requiredCapability": {
                                 "type": "enum",
                                 "optional": true,
-                                "definition": ["ai", "mcp", "designerTools", "git", "storeAdministration", "versioning"],
+                                "definition": [
+                                  "ai",
+                                  "mcp",
+                                  "designerTools",
+                                  "git",
+                                  "storeAdministration",
+                                  "versioning"
+                                ],
                                 "tag": {
                                   "value": {
                                     "defaultLabel": "Required process capability",
@@ -267,6 +274,16 @@
                           "value": {
                             "defaultLabel": "Autocommit from UI",
                             "description": "When true, the action is followed by a commit when it is sent from the UI"
+                          }
+                        }
+                      },
+                      "internal": {
+                        "type": "boolean",
+                        "optional": true,
+                        "tag": {
+                          "value": {
+                            "defaultLabel": "Internal",
+                            "description": "#708: the framework sends this action itself; tool listings (MCP, CLI, Copilot) leave it out"
                           }
                         }
                       },

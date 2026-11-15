@@ -1,14 +1,18 @@
 /**
- * #234 — Application versioning mode (internal vs external vs unversioned).
+ * #234 — Application versioning mode: unversioned, versioned-internal (history in Miroir's
+ * `modelVersion` section), or versioned-git (#708: history in Git, `versioned-external` before).
  */
 
-export type VersioningMode = "unversioned" | "versioned-internal" | "versioned-external";
+export type VersioningMode = "unversioned" | "versioned-internal" | "versioned-git";
 
 export const VERSIONING_MODES: readonly VersioningMode[] = [
   "unversioned",
   "versioned-internal",
-  "versioned-external",
+  "versioned-git",
 ] as const;
+
+/** #708 (D6): the older name of `versioned-git`, still accepted on SelfApplication rows. */
+const VERSIONED_EXTERNAL = "versioned-external";
 
 export type VersioningModeInput = {
   versioningEnabled?: boolean | string | undefined;
@@ -16,11 +20,7 @@ export type VersioningModeInput = {
 };
 
 function isExplicitVersioningMode(value: unknown): value is VersioningMode {
-  return (
-    value === "unversioned" ||
-    value === "versioned-internal" ||
-    value === "versioned-external"
-  );
+  return value === "unversioned" || value === "versioned-internal" || value === "versioned-git";
 }
 
 function legacyVersioningEnabledFlag(
@@ -35,13 +35,16 @@ export function resolveVersioningMode(selfApplication: VersioningModeInput): Ver
   if (isExplicitVersioningMode(selfApplication.versioningMode)) {
     return selfApplication.versioningMode;
   }
+  if (selfApplication.versioningMode === VERSIONED_EXTERNAL) {
+    return "versioned-git";
+  }
   if (legacyVersioningEnabledFlag(selfApplication)) {
     return "versioned-internal";
   }
   return "unversioned";
 }
 
-/** True when the application participates in any versioning model (internal or external). */
+/** True when the application participates in any versioning model (internal or Git). */
 export function isApplicationVersioningCapable(selfApplication: VersioningModeInput): boolean {
   return resolveVersioningMode(selfApplication) !== "unversioned";
 }
@@ -55,10 +58,8 @@ export function assertApplicationVersioningEnabled(selfApplication: VersioningMo
   if (mode === "versioned-internal") {
     return;
   }
-  if (mode === "versioned-external") {
-    throw new Error(
-      "Application uses versioned-external mode; in-app freeze requires versioned-internal",
-    );
+  if (mode === "versioned-git") {
+    throw new Error("Application uses versioned-git mode; in-app freeze requires versioned-internal");
   }
   throw new Error(
     `Application does not have versioning enabled (versioningMode: ${mode}, versioningEnabled: ${String(selfApplication.versioningEnabled)})`,
@@ -97,8 +98,8 @@ export function getFreezeAvailability(
   switch (resolveVersioningMode(selfApplication)) {
     case "versioned-internal":
       return { available: true };
-    case "versioned-external":
-      return { available: false, reason: "History is kept outside Miroir (versioned-external)" };
+    case "versioned-git":
+      return { available: false, reason: "The model history is kept in Git (versioned-git)" };
     case "unversioned":
       return { available: false, reason: "Application is not versioned" };
   }

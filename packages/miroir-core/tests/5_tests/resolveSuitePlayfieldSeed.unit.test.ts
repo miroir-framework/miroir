@@ -214,13 +214,13 @@ function loadTestConfiguration(path: string): TestConfigurationPlayfield {
       "action.domainController.dataCrud.nonUuidPk",
       "action.domainController.dataCrud.noParentUuid",
       "runner.freezeApplicationVersion",
+      "action.scenario.evolutionTrace",
     ]);
     const uuidPlayfieldKeys = new Set([
       "runner.lendDocument",
       "runner.returnDocument",
       "action.domainController.modelCrud",
       "action.domainController.freezeApplicationVersion",
-      "action.scenario.evolutionTrace",
     ]);
     expect(Object.keys(definitions).sort()).toEqual([
       "action.domainController.dataCrud",
@@ -333,7 +333,6 @@ function loadTestConfiguration(path: string): TestConfigurationPlayfield {
   const suiteInstances = [
     miroirTest_action_domainController_modelCrud,
     miroirTest_action_domainController_freezeApplicationVersion,
-    miroirTest_action_scenario_evolutionTrace,
   ];
 
   it("instance lives under miroir_data TestConfiguration with Miroir selfApplication", () => {
@@ -351,7 +350,7 @@ function loadTestConfiguration(path: string): TestConfigurationPlayfield {
     );
   });
 
-  it("model_crud, freeze, and action.scenario.evolutionTrace suite JSON reference the uuid and have no inline playfield", () => {
+  it("model_crud and freeze suite JSON reference the uuid and have no inline playfield", () => {
     for (const instance of suiteInstances) {
       const suite = suiteDefinition(instance);
       expect(playfieldFieldsOn(suite), suite.miroirTestLabel).toEqual(["testConfiguration"]);
@@ -359,7 +358,7 @@ function loadTestConfiguration(path: string): TestConfigurationPlayfield {
     }
   });
 
-  it("resolveSuitePlayfieldSeed for the three suites equals the Miroir instance payload", () => {
+  it("resolveSuitePlayfieldSeed for the two suites equals the Miroir instance payload", () => {
     const loaded = loadTestConfiguration(configPath);
     const getTestConfiguration = (uuid: string) =>
       uuid === MIROIR_PUBLISHER_COUNTRY_CONFIG_UUID ? loaded : undefined;

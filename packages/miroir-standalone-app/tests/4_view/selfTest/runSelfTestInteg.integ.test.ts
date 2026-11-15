@@ -9,9 +9,9 @@
  */
 import { readFileSync } from "node:fs";
 import path from "node:path";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 
-import { EVOLUTION_TRACE_TESTS_NEED_TRACES, type MiroirTestDefinition } from "@miroir-framework/core";
+import { type MiroirTestDefinition } from "@miroir-framework/core";
 import { environmentRealServerClientConfig, resolveEnvironmentFromFiles } from "@miroir-framework/env";
 
 import {
@@ -82,22 +82,6 @@ describe("self-test with integ MiroirTests (#487)", () => {
       expect.objectContaining({ testResult: "skipped", failedAssertions: [FILESYSTEM_TESTS_NEED_A_FILESYSTEM_STORE] }),
       expect.objectContaining({ testResult: "skipped", failedAssertions: [FILESYSTEM_TESTS_NEED_A_FILESYSTEM_STORE] }),
     ]);
-  });
-
-  it("lists the evolution-trace suites as not run when traces are off (#589)", async () => {
-    const evolutionTraceSuite = miroirAppMiroirTest("2427ef3a-3cd1-4b87-afe7-433bb04b25d2"); // action.scenario.evolutionTrace
-    expect(evolutionTraceSuite.tags).toEqual(expect.arrayContaining(["integ", "evolution-trace"]));
-    vi.stubEnv("MIROIR_EVOLUTION_TRACE", "");
-    vi.stubEnv("VITE_MIROIR_EVOLUTION_TRACE", "");
-    try {
-      const batch = await runIntegrationMiroirTestBatch({ miroirTests: [evolutionTraceSuite] });
-
-      expect(batch.resultsBySuiteKey).toEqual({});
-      expect(batch.failures).toEqual([]);
-      expect(batch.skipped.map((suite) => suite.reason)).toEqual([EVOLUTION_TRACE_TESTS_NEED_TRACES]);
-    } finally {
-      vi.unstubAllEnvs();
-    }
   });
 
   it("reports the suites not run and keeps integration results beside unit results", () => {
