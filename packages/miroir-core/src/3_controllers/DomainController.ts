@@ -130,6 +130,7 @@ import {
   deploymentRoleOf,
   type AppendEvolutionTraceRecordPayload,
   type CheckStagedEvolutionTracesPayload,
+  type DeploymentRole,
 } from "../1_core/versioning/versioningInterfaces.js";
 import {
   appendEvolutionTraceRecordAction,
@@ -481,6 +482,8 @@ export class DomainController implements DomainControllerInterface, DomainContro
   private instanceActionListeners: InstanceActionListener[] = [];
   /** #708: per application, the evolution trace records not appended yet, in order. */
   private pendingEvolutionTraceRecords = new Map<string, AppendEvolutionTraceRecordPayload[]>();
+  /** #9: the roles read from the stored Admin Deployment rows, by deployment uuid (`storedDeploymentRole`). */
+  private deploymentRoles = new Map<string, DeploymentRole>();
   /** #708: per application, the end of the last append sequence: one sequence runs at a time. */
   private evolutionTraceAppendTails = new Map<string, Promise<unknown>>();
   // ##############################################################################################
@@ -1555,7 +1558,10 @@ export class DomainController implements DomainControllerInterface, DomainContro
         | EvolutionTraceSwitchInput
         | undefined;
       // #9: a following deployment records nothing, so that its writes never enter the shared chain
-      if (isEvolutionTraceOn(row) && deploymentRoleOf(this.cachedDeploymentRow(deploymentUuid, applicationDeploymentMap)) !== "following") {
+      const role =
+        this.deploymentRoles.get(deploymentUuid) ??
+        deploymentRoleOf(this.cachedDeploymentRow(deploymentUuid, applicationDeploymentMap));
+      if (isEvolutionTraceOn(row) && role !== "following") {
         traced.push(application);
       }
     }
@@ -1563,43 +1569,71 @@ export class DomainController implements DomainControllerInterface, DomainContro
   }
 
   /**
-   * #9: the Admin Deployment rows, read from the stores of this process; `undefined` in a process that
-   * does not hold the stores (a remote client: the server checks).
+   * #9: the role of a deployment in the process that holds the stores, read from its stored Admin
+   * Deployment row and kept: a role never changes, and a write of Deployment rows forgets what was kept.
+   * Read from this process's own Admin deployment, never from one the request's map names. `undefined` in a
+   * process that does not hold the stores (a remote client: the server checks), and in one without an Admin
+   * store; an Action2Error when the Admin store cannot be read, so that the gate refuses rather than lets a
+   * write through.
    */
-  private async storedDeploymentRows(
-    applicationDeploymentMap: ApplicationDeploymentMap,
-  ): Promise<Map<string, { role?: unknown }> | undefined> {
-    if (!this.persistenceStoreLocalOrRemote.getLocalPersistenceStoreControllerManager?.()) {
+  private async storedDeploymentRole(deploymentUuid: string): Promise<DeploymentRole | undefined | Action2Error> {
+    const manager = this.persistenceStoreLocalOrRemote.getLocalPersistenceStoreControllerManager?.();
+    if (!manager) {
       return undefined;
     }
-    const map = {
-      ...applicationDeploymentMap,
-      [adminSelfApplication.uuid]: applicationDeploymentMap[adminSelfApplication.uuid] ?? deployment_Admin.uuid,
-    };
-    const rows = await this.readSectionInstances(adminSelfApplication.uuid, map, "data", entityDeployment.uuid);
-    return rows instanceof Action2Error ? undefined : new Map(rows.map((row) => [row.uuid as string, row as { role?: unknown }]));
+    const kept = this.deploymentRoles.get(deploymentUuid);
+    if (kept) {
+      return kept;
+    }
+    const adminStore = manager.getPersistenceStoreController(deployment_Admin.uuid);
+    if (!adminStore) {
+      return undefined;
+    }
+    const read = await adminStore.getInstances("data", entityDeployment.uuid);
+    const collection = read instanceof Action2Error ? undefined : read?.returnedDomainElement;
+    if (!collection || collection instanceof Domain2ElementFailed || !("instances" in collection)) {
+      return new Action2Error(
+        "FailedToHandleAction",
+        `the role of deployment ${deploymentUuid} cannot be read from the Admin store`,
+        [],
+        read instanceof Action2Error ? read : undefined,
+      );
+    }
+    const rows = (collection.instances ?? []) as { uuid?: string; role?: unknown }[];
+    for (const row of rows) {
+      if (row.uuid) {
+        this.deploymentRoles.set(row.uuid, deploymentRoleOf(row));
+      }
+    }
+    return this.deploymentRoles.get(deploymentUuid);
   }
 
   /**
    * #9: the refusal of a write to the model of a following deployment (D6), unless it is a migration run's.
    * The process that holds the stores reads the role from the stored Deployment row: it sees every write,
    * those a remote client sends included. A remote client refuses early from its cached Deployment row.
+   * Miroir and Admin are never following.
    */
   private async followingDeploymentRefusal(
     action: { payload: { application: string } },
     applicationDeploymentMap: ApplicationDeploymentMap,
   ): Promise<Action2Error | undefined> {
-    if (isMigrationRun(action)) {
+    const application = action.payload.application;
+    if (isMigrationRun(action) || application === adminSelfApplication.uuid || application === selfApplicationMiroir.uuid) {
       return undefined;
     }
-    const application = action.payload.application;
     const deploymentUuid = applicationDeploymentMap[application];
     if (!deploymentUuid) {
       return undefined;
     }
-    const stored = await this.storedDeploymentRows(applicationDeploymentMap);
-    const deploymentRow = stored ? stored.get(deploymentUuid) : this.cachedDeploymentRow(deploymentUuid, applicationDeploymentMap);
-    if (deploymentRoleOf(deploymentRow) !== "following") {
+    const stored = await this.storedDeploymentRole(deploymentUuid);
+    if (stored instanceof Action2Error) {
+      return stored;
+    }
+    const role = this.persistenceStoreLocalOrRemote.getLocalPersistenceStoreControllerManager?.()
+      ? stored
+      : deploymentRoleOf(this.cachedDeploymentRow(deploymentUuid, applicationDeploymentMap));
+    if (role !== "following") {
       return undefined;
     }
     return new Action2Error(
@@ -1619,22 +1653,32 @@ export class DomainController implements DomainControllerInterface, DomainContro
     instanceAction: InstanceAction,
     applicationDeploymentMap: ApplicationDeploymentMap,
   ): Promise<Action2Error | undefined> {
+    if (instanceAction.payload.application === adminSelfApplication.uuid && instanceAction.actionType.startsWith("deleteInstance")) {
+      // a deployment deleted, then created again with the same uuid, may take another role
+      this.deploymentRoles.clear();
+    }
     if (instanceAction.actionType !== "createInstance" && instanceAction.actionType !== "updateInstance") {
       return undefined;
     }
-    const deploymentRowsWritten = (instanceAction.payload.objects ?? []).filter(
-      (object: { parentUuid?: string }) => object.parentUuid === entityDeployment.uuid,
-    );
-    if (instanceAction.payload.application !== adminSelfApplication.uuid || deploymentRowsWritten.length === 0) {
+    if (instanceAction.payload.application !== adminSelfApplication.uuid) {
       return undefined;
     }
-    const stored = await this.storedDeploymentRows(applicationDeploymentMap);
+    const payloadParentUuid = (instanceAction.payload as { parentUuid?: string }).parentUuid;
+    const deploymentRowsWritten = (instanceAction.payload.objects ?? []).filter(
+      (object: { parentUuid?: string }) => (object.parentUuid ?? payloadParentUuid) === entityDeployment.uuid,
+    );
+    if (deploymentRowsWritten.length === 0) {
+      return undefined;
+    }
     for (const row of deploymentRowsWritten) {
-      const previous = stored?.get(row.uuid as string);
-      if (previous && deploymentRoleOf(previous) !== deploymentRoleOf(row as { role?: unknown })) {
+      const previous = await this.storedDeploymentRole(row.uuid as string);
+      if (previous instanceof Action2Error) {
+        return previous;
+      }
+      if (previous && previous !== deploymentRoleOf(row as { role?: unknown })) {
         return new Action2Error(
           "FailedToHandleAction",
-          `the role of deployment ${row.uuid} is ${deploymentRoleOf(previous)}: it is chosen when the deployment is created and never changes`,
+          `the role of deployment ${row.uuid} is ${previous}: it is chosen when the deployment is created and never changes`,
           undefined,
           undefined,
           { reason: "deploymentRoleFixed", deployment: row.uuid },

@@ -186,6 +186,24 @@ Test files live in `packages/miroir-standalone-app/tests/3_controllers/issues/9-
 - **Not done:** the refactor checkpoint (one "may this commit write this application's model" check shared by the gate and `evolutionTraceRefusal`): the two read different things (the role, the trace switch and the `modelVersion` section) and share `cachedDeploymentRow` only.
 
 
+### Part A — adversarial review
+
+Fixed after the review of A1 to A3:
+- a second `installApplicationVersion` is refused (`deploymentInstalled`): the run state of a deployment is never replaced by an install; Miroir and Admin are never installed or gated as following;
+- the server reads the role from its own Admin store (`deployment_Admin`), never from the Admin deployment the request's map names, and refuses when that store cannot be read; the roles read are kept per deployment (a role never changes; a delete of Admin rows forgets them), so a model write costs one Admin read per deployment, not one per write; `applicationsWithEvolutionTraces` reads the kept role before the cached row;
+- the role check covers a Deployment row whose Entity the payload names (`payload.parentUuid`);
+- `applyModelState` renames an Entity with `renameEntity` before its row update (a SQL store names the table after it);
+- the install refuses a version whose Cross rows name missing version rows (`versionIncomplete`), and leaves the Blob, Test and TestConfiguration rows alone when the version has no Cross rows for them (frozen before #706); it reloads the model after a failure too;
+- tests: the following deployment is a copy of the authoring one at 1.1.0, so the install of 1.0.0 deletes an Entity row (its storage stays) and removes an attribute; the second install, the payload-only Entity, a `modelVersion` delete, a `dropEntity` and a direct and a transactional `createEntity` and a `commit` are each asserted alone; the Admin rows are deleted after the file.
+
+Known gaps, left for later parts or issues:
+- a Postgres Admin store created before #9 has no `role` column, and its upsert drops the attribute: the Deployment Entity needs an `alterEntityAttribute` there (the install still refuses such a deployment, with `deploymentAuthors`);
+- in a process with local stores (the server, Electron), a commit replays the writes of every application of the transaction, and the gate checks the commit's application only;
+- the writes `resetModel` and `initModel` make per Entity are not marked, so a migration run cannot send them; store management (`resetAndInitApplicationDeployment`, bundles) and the Git checkout paths are not gated;
+- the kept records of a failed trace append are keyed by application, which a following deployment shares with its authoring one (#708's queue);
+- an install looks the version up by name over every branch; `DeploymentState` rows are ordinary Admin rows, writable by any client, and stay when a deployment is deleted;
+- `createDeploymentCompositeAction` rewrites the AdminApplication row of an application that has one already (as before #9).
+
 ---
 
 ## Part B — Generation

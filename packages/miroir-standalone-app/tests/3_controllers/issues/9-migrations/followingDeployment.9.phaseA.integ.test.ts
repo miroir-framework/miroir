@@ -208,16 +208,16 @@ beforeAll(async () => {
   expectOk(await authoringInstanceWrite("updateInstance", withAttribute(entityCountry as Entity, "motto") as any), "Country.motto");
   expectOk(await freezeAppForTest(context.domainController, VERSION_1_1), "freeze 1.1.0");
 
-  // the following deployment: the stores of the application package (the fixture), its modelVersion the authoring one's
+  // the following deployment: its own model and data stores, its modelVersion the authoring one's
   const authoring = await deploymentRowOf(APP_FOR_TEST_DEPLOYMENT);
   const authoringConfiguration = authoring.configuration as StoreUnitConfiguration & Record<string, any>;
   const repoRoot = resolveRepoRoot();
   const authoringModelFolder: string = authoringConfiguration.model.directory;
   followingFolder = path.join(path.dirname(path.dirname(authoringModelFolder)), "appForTest-following9");
   fs.rmSync(path.join(repoRoot, followingFolder), { recursive: true, force: true });
-  const fixtureAssets = path.join(repoRoot, "packages/miroir-fixture-appForTest/assets");
-  fs.cpSync(path.join(fixtureAssets, "appForTest_model"), path.join(repoRoot, followingFolder, "model"), { recursive: true });
-  fs.cpSync(path.join(fixtureAssets, "appForTest_data"), path.join(repoRoot, followingFolder, "data"), { recursive: true });
+  // a copy of the authoring deployment at 1.1.0: the install of 1.0.0 removes what 1.1.0 added
+  fs.cpSync(path.join(repoRoot, authoringModelFolder), path.join(repoRoot, followingFolder, "model"), { recursive: true });
+  fs.cpSync(path.join(repoRoot, authoringConfiguration.data.directory), path.join(repoRoot, followingFolder, "data"), { recursive: true });
   const followingConfiguration = {
     ...authoringConfiguration,
     model: { emulatedServerType: "filesystem", directory: `${followingFolder}/model` },
@@ -244,6 +244,23 @@ afterAll(async () => {
     applicationDeploymentMap,
     appForTestModelEnvironment(context.domainController),
   );
+  for (const [parentUuid, uuid] of [
+    [entityDeployment.uuid, FOLLOWING_DEPLOYMENT],
+    [DEPLOYMENT_STATE_ENTITY_UUID, FOLLOWING_DEPLOYMENT],
+  ]) {
+    const row = (await storedRows(context, ADMIN_DEPLOYMENT, "data", parentUuid)).find((stored) => stored.uuid === uuid);
+    if (row) {
+      await context.domainController.handleAction(
+        {
+          actionType: "deleteInstance",
+          endpoint: INSTANCE_ENDPOINT,
+          payload: { application: adminSelfApplication.uuid, applicationSection: "data", parentUuid, objects: [row] },
+        } as any,
+        followingMap,
+        appForTestModelEnvironment(context.domainController),
+      );
+    }
+  }
   if (followingFolder) {
     fs.rmSync(path.join(resolveRepoRoot(), followingFolder), { recursive: true, force: true });
   }
@@ -263,6 +280,8 @@ describe("#9 part A: a following deployment", () => {
     const publisher = following.entities.find((entity) => entity.uuid === entityPublisher.uuid)!;
     expect(Object.keys(publisher.mlSchema.definition)).toContain("foundedIn");
     expect(following.entities.map((entity) => entity.uuid)).not.toContain(imprint.uuid);
+    // the storage of a removed Entity stays, for the contract phase
+    expect(fs.existsSync(path.join(resolveRepoRoot(), followingFolder, "data", imprint.uuid))).toBe(true);
     const country = following.entities.find((entity) => entity.uuid === entityCountry.uuid)!;
     expect(Object.keys(country.mlSchema.definition)).not.toContain("motto");
 
@@ -292,6 +311,24 @@ describe("#9 part A: a following deployment", () => {
     expect(authoringLive.entities.map((entity) => entity.uuid)).toContain(imprint.uuid);
   }, 60000);
 
+  it("A1: a second install is refused: a following deployment changes version by a migration run", async () => {
+    const stateBefore = await storedRows(context, ADMIN_DEPLOYMENT, "data", DEPLOYMENT_STATE_ENTITY_UUID);
+    const reinstalled = await context.domainController.handleAction(
+      { actionType: "installApplicationVersion", endpoint: MODEL_ENDPOINT, payload: { application: APP_FOR_TEST, version: VERSION_1_1 } } as any,
+      followingMap,
+      appForTestModelEnvironment(context.domainController),
+    );
+    expect(refusalReason(reinstalled), JSON.stringify(reinstalled)).toBe("deploymentInstalled");
+    expect(await storedRows(context, ADMIN_DEPLOYMENT, "data", DEPLOYMENT_STATE_ENTITY_UUID)).toEqual(stateBefore);
+
+    const onAuthoring = await context.domainController.handleAction(
+      { actionType: "installApplicationVersion", endpoint: MODEL_ENDPOINT, payload: { application: APP_FOR_TEST, version: VERSION_1_0 } } as any,
+      applicationDeploymentMap,
+      appForTestModelEnvironment(context.domainController),
+    );
+    expect(refusalReason(onAuthoring), JSON.stringify(onAuthoring)).toBe("deploymentAuthors");
+  }, 60000);
+
   it("A2: the role of a deployment cannot change; its other attributes can", async () => {
     const following = await deploymentRowOf(FOLLOWING_DEPLOYMENT);
 
@@ -303,6 +340,24 @@ describe("#9 part A: a following deployment", () => {
     const { role: _role, ...withoutRole } = following;
     const roleRemoved = await updateDeploymentRow(withoutRole as EntityInstance);
     expect(refusalReason(roleRemoved), JSON.stringify(roleRemoved)).toBe("deploymentRoleFixed");
+
+    // the Entity named by the payload only
+    const { parentUuid: _parentUuid, ...withoutParent } = following;
+    const throughPayload = await context.domainController.handleAction(
+      {
+        actionType: "updateInstance",
+        endpoint: INSTANCE_ENDPOINT,
+        payload: {
+          application: adminSelfApplication.uuid,
+          applicationSection: "data",
+          parentUuid: entityDeployment.uuid,
+          objects: [{ ...withoutParent, role: "authoring" }],
+        },
+      } as any,
+      followingMap,
+      appForTestModelEnvironment(context.domainController),
+    );
+    expect(refusalReason(throughPayload), JSON.stringify(throughPayload)).toBe("deploymentRoleFixed");
 
     const described = { ...following, description: "#9 A2: a following deployment, described again" } as EntityInstance;
     expectOk(await updateDeploymentRow(described), "update of the description");
@@ -336,6 +391,22 @@ describe("#9 part A: a following deployment", () => {
     expect(refusalReason(sent), JSON.stringify(sent)).toBe("deploymentFollows");
     expect((await storedRows(context, FOLLOWING_DEPLOYMENT, "model", ENTITY_ENTITY)).find((row) => row.uuid === entityPublisher.uuid)).toEqual(before);
 
+    const version = (await storedRows(context, FOLLOWING_DEPLOYMENT, "modelVersion", SELF_APPLICATION_VERSION_ENTITY))[0];
+    const versionDeleted = await serverWrite(
+      markRecordedBySender({
+        actionType: "deleteInstance",
+        endpoint: INSTANCE_ENDPOINT,
+        payload: { application: APP_FOR_TEST, applicationSection: "modelVersion", parentUuid: SELF_APPLICATION_VERSION_ENTITY, objects: [version] },
+      }),
+    );
+    expect(refusalReason(versionDeleted), JSON.stringify(versionDeleted)).toBe("deploymentFollows");
+    expect((await storedRows(context, FOLLOWING_DEPLOYMENT, "modelVersion", SELF_APPLICATION_VERSION_ENTITY)).map((row) => row.uuid)).toContain(version.uuid);
+
+    const entityDropped = await serverWrite(
+      markRecordedBySender({ actionType: "dropEntity", endpoint: MODEL_ENDPOINT, payload: { application: APP_FOR_TEST, transactional: false, entityUuid: entityCountry.uuid } }),
+    );
+    expect(refusalReason(entityDropped), JSON.stringify(entityDropped)).toBe("deploymentFollows");
+
     expectOk(await serverWrite(markMigrationRun(write("#9 A3: a migration run's write"))), "the run's write");
     expect(
       (await storedRows(context, FOLLOWING_DEPLOYMENT, "model", ENTITY_ENTITY)).find((row) => row.uuid === entityPublisher.uuid)?.description,
@@ -352,9 +423,13 @@ describe("#9 part A: a following deployment", () => {
         appForTestModelEnvironment(context.domainController),
       );
 
-    const created = await modelAction({ actionType: "createEntity", payload: { application: APP_FOR_TEST, entities: [{ ...imprint, uuid: "9a000003-0000-4000-8000-000000000001", name: "Edited9" }] } });
+    const edited = { ...imprint, uuid: "9a000003-0000-4000-8000-000000000001", name: "Edited9" };
+    const created = await modelAction({ actionType: "createEntity", payload: { application: APP_FOR_TEST, transactional: false, entities: [edited] } });
+    expect(refusalReason(created), JSON.stringify(created)).toBe("deploymentFollows");
+    const createdInTransaction = await modelAction({ actionType: "createEntity", payload: { application: APP_FOR_TEST, entities: [edited] } });
+    expect(refusalReason(createdInTransaction), JSON.stringify(createdInTransaction)).toBe("deploymentFollows");
     const committed = await modelAction({ actionType: "commit", payload: { application: APP_FOR_TEST } });
-    expect(refusalReason(created) ?? refusalReason(committed), `${JSON.stringify(created)} ${JSON.stringify(committed)}`).toBe("deploymentFollows");
+    expect(refusalReason(committed), JSON.stringify(committed)).toBe("deploymentFollows");
     await modelAction({ actionType: "rollback", payload: { application: APP_FOR_TEST } });
 
     const stored = await storedRows(context, FOLLOWING_DEPLOYMENT, "model", ENTITY_ENTITY);

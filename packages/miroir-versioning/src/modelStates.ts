@@ -200,6 +200,27 @@ export function frozenStateOf(live: ModelState, applicationVersion: string): Mod
 }
 
 /**
+ * #9: what a frozen version holds, by snapshotted collection: whether the version has Cross rows for it, and
+ * the Cross rows naming a version row that is missing (`frozenStateOf` leaves those out).
+ */
+export function frozenCollectionsOf(
+  live: ModelState,
+  applicationVersion: string,
+): { collection: MetaModelCollection; crossRows: number; missingVersionRows: string[] }[] {
+  return frozenCollections.map((frozen) => {
+    const versionUuids = new Set(rowsOf(live, frozen.versions).map((row) => row.uuid));
+    const crossRows = rowsOf(live, frozen.cross).filter((cross) => cross.applicationVersion === applicationVersion);
+    return {
+      collection: frozen.collection,
+      crossRows: crossRows.length,
+      missingVersionRows: crossRows
+        .map((cross) => cross[frozen.crossAttribute] as string)
+        .filter((uuid) => !versionUuids.has(uuid)),
+    };
+  });
+}
+
+/**
  * The model of `application` in the files of a Git commit (`ref`), read from the commit without a checkout:
  * each collection holds the JSON files of its Entity's folder (`<section folder>/<Entity uuid>/*.json`) in
  * the folder of the section its rows belong to. `sectionFolders` gives each section's folder,

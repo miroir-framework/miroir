@@ -39,7 +39,7 @@ import { selectEntitiesToFreeze } from "./applicationVersionFreeze.js";
 import { AGREEMENT_COLLECTIONS } from "./evolutionTraceAgreement.js";
 import { refusal, storedDeploymentRow, withAdmin } from "./deploymentRole.js";
 import { HISTORY_ENTITIES, metaModelEntityUuids } from "./freezeApplicationVersion.js";
-import { frozenStateOf, liveModelState, type ModelState } from "./modelStates.js";
+import { frozenCollectionsOf, frozenStateOf, liveModelState, type ModelState } from "./modelStates.js";
 import { sameJson } from "./modelStateDiff.js";
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName("miroir-versioning", "3", "applicationVersionInstall");
@@ -51,6 +51,7 @@ MiroirLoggerFactory.registerLoggerToStart(_miroirLoggerName).then((logger: Logge
 const MODEL_ENDPOINT_UUID = "7947ae40-eb34-4149-887b-15a9021e714e";
 const INSTANCE_ENDPOINT_UUID = "ed520de4-55a9-4550-ac50-b1b713b72a89";
 const ENTITY_ENTITY_UUID = "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad";
+const MIROIR_SELF_APPLICATION_UUID = "360fcf1f-f0d4-4f8a-9262-07886e70fa15";
 
 type Row = Record<string, unknown>;
 
@@ -93,9 +94,9 @@ function reloadModel(
 /** The rows of a collection the rewrite owns: an application's own Entities, or every row of the others. */
 function ownedRows(application: string, state: ModelState, collection: MetaModelCollection): Row[] {
   if (collection === "entities") {
-    return selectEntitiesToFreeze(application, state.entities, metaModelEntityUuids(metaModelEntities)) as unknown as Row[];
+    return selectEntitiesToFreeze(application, state.entities, metaModelEntityUuids(metaModelEntities)).map((entity): Row => ({ ...entity }));
   }
-  return state[collection] as unknown as Row[];
+  return (state[collection] as readonly object[]).map((row): Row => ({ ...row }));
 }
 
 /** The target row, with the live values of the attributes a frozen row does not hold. */
@@ -116,6 +117,40 @@ function addedAttributes(live: Row, target: Row): { name: string; definition: un
 }
 
 /**
+ * The storage changes of an Entity the target changes, through the model actions a designer runs: a
+ * rename (a SQL store names the table after the Entity), then the attributes the target adds. Attributes
+ * the target removes or changes stay in storage, for the contract phase.
+ */
+async function alterEntityStorage(
+  modelAction: (action: Record<string, unknown>) => Promise<Action2ReturnType>,
+  application: string,
+  liveRow: Row,
+  targetRow: Row,
+): Promise<Action2Error | undefined> {
+  const entityUuid = liveRow.uuid as string;
+  if (liveRow.name !== targetRow.name) {
+    const renamed = await modelAction({
+      actionType: "renameEntity",
+      actionLabel: "applyModelState renameEntity",
+      payload: { application, transactional: false, entityName: liveRow.name, entityUuid, targetValue: targetRow.name },
+    });
+    if (renamed instanceof Action2Error) {
+      return renamed;
+    }
+  }
+  const addColumns = addedAttributes(liveRow, targetRow);
+  if (addColumns.length === 0) {
+    return undefined;
+  }
+  const altered = await modelAction({
+    actionType: "alterEntityAttribute",
+    actionLabel: "applyModelState alterEntityAttribute",
+    payload: { application, transactional: false, entityName: targetRow.name, entityUuid, addColumns },
+  });
+  return altered instanceof Action2Error ? altered : undefined;
+}
+
+/**
  * Rewrites the model of `application` (on the deployment `applicationDeploymentMap` names) from `current`,
  * its live state, to `target`. Stops at the first failed write.
  */
@@ -126,6 +161,7 @@ export async function applyModelState(
   current: ModelState,
   target: ModelState,
   modelEnvironment?: MiroirModelEnvironment,
+  collections: readonly MetaModelCollection[] = AGREEMENT_COLLECTIONS,
 ): Promise<ModelStateRewrite | Action2Error> {
   const environment = modelEnvironmentOf(host, application, applicationDeploymentMap, modelEnvironment);
   const rewrite: ModelStateRewrite = {};
@@ -156,7 +192,7 @@ export async function applyModelState(
   const failed = (what: string, error: Action2Error) =>
     new Action2Error("FailedToHandleAction", `applyModelState of ${application}: ${what}`, [], error);
 
-  for (const collection of AGREEMENT_COLLECTIONS) {
+  for (const collection of collections) {
     const liveRows = new Map(ownedRows(application, current, collection).map((row) => [row.uuid as string, row]));
     const targetRows = ownedRows(application, target, collection);
     const done = { created: [] as string[], updated: [] as string[], deleted: [] as string[] };
@@ -171,7 +207,7 @@ export async function applyModelState(
             ? await modelAction({
                 actionType: "createEntity",
                 actionLabel: "applyModelState createEntity",
-                payload: { application, transactional: false, entities: [targetRow as unknown as Entity] },
+                payload: { application, transactional: false, entities: [targetRow] },
               })
             : await instanceWrite("createInstance", targetRow);
         if (created instanceof Action2Error) {
@@ -185,22 +221,9 @@ export async function applyModelState(
         continue;
       }
       if (collection === "entities") {
-        const addColumns = addedAttributes(liveRow, targetRow);
-        if (addColumns.length > 0) {
-          const altered = await modelAction({
-            actionType: "alterEntityAttribute",
-            actionLabel: "applyModelState alterEntityAttribute",
-            payload: {
-              application,
-              transactional: false,
-              entityName: liveRow.name as string,
-              entityUuid: uuid,
-              addColumns,
-            },
-          });
-          if (altered instanceof Action2Error) {
-            return failed(`could not add the attributes ${addColumns.map(({ name }) => name).join(", ")} of Entity ${uuid}`, altered);
-          }
+        const storageFailure = await alterEntityStorage(modelAction, application, liveRow, targetRow);
+        if (storageFailure) {
+          return failed(`could not change the storage of Entity ${uuid}`, storageFailure);
         }
       }
       const updated = await instanceWrite("updateInstance", next);
@@ -329,7 +352,7 @@ export async function writeDeploymentState(
         application: adminSelfApplication.uuid,
         applicationSection: "data",
         parentUuid: DEPLOYMENT_STATE_ENTITY_UUID,
-        objects: [row as unknown as EntityInstance],
+        objects: [row],
       },
     } as any,
     withAdmin(applicationDeploymentMap),
@@ -359,7 +382,14 @@ export const handleAction_installApplicationVersion: ActionImplementationHandler
   if (deploymentRow instanceof Action2Error) {
     return deploymentRow;
   }
-  if (deploymentRoleOf(deploymentRow) !== "following") {
+  if (deploymentRoleOf(deploymentRow) === "following" && (await storedDeploymentState(host, deploymentUuid, applicationDeploymentMap))) {
+    return refusal(
+      `installApplicationVersion: deployment ${deploymentUuid} of ${application} is installed already; it changes version by a migration run`,
+      "deploymentInstalled",
+      { deployment: deploymentUuid },
+    );
+  }
+  if (application === adminSelfApplication.uuid || application === MIROIR_SELF_APPLICATION_UUID || deploymentRoleOf(deploymentRow) !== "following") {
     return refusal(
       `installApplicationVersion: deployment ${deploymentUuid} of ${application} is an authoring deployment; a version is installed on a following deployment only`,
       "deploymentAuthors",
@@ -387,27 +417,39 @@ export const handleAction_installApplicationVersion: ActionImplementationHandler
   if (target instanceof Action2Error) {
     return target;
   }
+  const frozen = frozenCollectionsOf(current, versionRow.uuid);
+  const incomplete = frozen.filter(({ missingVersionRows }) => missingVersionRows.length > 0);
+  if (incomplete.length > 0) {
+    return refusal(
+      `installApplicationVersion: version ${version} of ${application} names rows it does not hold (${incomplete
+        .map(({ collection, missingVersionRows }) => `${collection}: ${missingVersionRows.join(", ")}`)
+        .join("; ")})`,
+      "versionIncomplete",
+    );
+  }
+  // a version frozen before #706 has no Cross rows for these collections: they are unknown, not empty
+  const collections = AGREEMENT_COLLECTIONS.filter(
+    (collection) =>
+      !COLLECTIONS_FROZEN_SINCE_706.includes(collection) ||
+      (frozen.find((entry) => entry.collection === collection)?.crossRows ?? 0) > 0,
+  );
 
   const ensured = await ensureVersionHistoryEntities(host, application, applicationDeploymentMap, current, context.modelEnvironment);
   if (ensured) {
     return ensured;
   }
-  const rewritten = await applyModelState(host, application, applicationDeploymentMap, current, target, context.modelEnvironment);
-  if (rewritten instanceof Action2Error) {
-    return rewritten;
-  }
-  log.info("installApplicationVersion", application, "at", version, "on", deploymentUuid, rewritten);
-
-  const stateWritten = await writeDeploymentState(
-    host,
-    { deployment: deploymentUuid, application, version },
-    applicationDeploymentMap,
-  );
-  if (stateWritten) {
-    return stateWritten;
-  }
-
-  // the model this process serves is the rewritten one
+  const installed = await (async (): Promise<Action2Error | undefined> => {
+    const rewritten = await applyModelState(host, application, applicationDeploymentMap, current, target, context.modelEnvironment, collections);
+    if (rewritten instanceof Action2Error) {
+      return rewritten;
+    }
+    log.info("installApplicationVersion", application, "at", version, "on", deploymentUuid, rewritten);
+    return writeDeploymentState(host, { deployment: deploymentUuid, application, version }, applicationDeploymentMap);
+  })();
+  // the model this process serves is the stored one, rewritten in whole or in part
   const reloaded = await reloadModel(host, application, applicationDeploymentMap, context.modelEnvironment);
-  return reloaded instanceof Action2Error ? reloaded : ACTION_OK;
+  return installed ?? (reloaded instanceof Action2Error ? reloaded : ACTION_OK);
 };
+
+/** The collections a freeze snapshots since #706 only. */
+const COLLECTIONS_FROZEN_SINCE_706: readonly MetaModelCollection[] = ["blobs", "tests", "testConfigurations"];
