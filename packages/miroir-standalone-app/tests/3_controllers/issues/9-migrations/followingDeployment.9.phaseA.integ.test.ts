@@ -480,12 +480,14 @@ describe("#9 part A: a following deployment", () => {
     expect(await storedRows(context, APP_FOR_TEST_DEPLOYMENT, "modelVersion", EVOLUTION_TRACE_RECORD_ENTITY_UUID)).toEqual(recordsBefore);
   }, 60000);
 
-  it("A3.3: a freeze, a re-baseline and a record append are refused on a following deployment", async () => {
+  it("A3.3: a freeze, a re-baseline, a record append and a Migration generation are refused on a following deployment", async () => {
     const versionsBefore = await storedRows(context, APP_FOR_TEST_DEPLOYMENT, "modelVersion", SELF_APPLICATION_VERSION_ENTITY);
     for (const [actionType, payload] of [
       ["freezeApplicationVersion", { application: APP_FOR_TEST, versionName: "9A3-refused" }],
       ["rebaselineEvolutionTraces", { application: APP_FOR_TEST, versionName: "9A3-refused" }],
       ["appendEvolutionTraceRecord", { application: APP_FOR_TEST, kind: "rebaseline" }],
+      // #9 B3
+      ["generateMigration", { application: APP_FOR_TEST, from: VERSION_1_0, to: VERSION_1_1 }],
     ] as const) {
       const result = await context.domainController.handleAction(
         { actionType, endpoint: MODEL_ENDPOINT, payload } as any,

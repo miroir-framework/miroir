@@ -22,11 +22,13 @@ import {
   INSTANCE_ENDPOINT,
   MODEL_ENDPOINT,
   openVersioningTestContext,
+  APP_FOR_TEST_DEPLOYMENT,
   storedAppForTestRows,
   type VersioningTestContext,
 } from "../../versioning/versioningTestSetup.js";
 
 const MIGRATION_ENTITY = "b5c1f0e5-3d31-419b-9a6b-21dd598fc3fe";
+const EVOLUTION_TRACE_RECORD_ENTITY = "854c47bd-af74-4305-bdea-aa6bddfa8899";
 const SELF_APPLICATION_ENTITY = "a659d350-dd97-4da9-91de-524fa01745dc";
 
 let context: VersioningTestContext;
@@ -155,7 +157,7 @@ afterAll(async () => {
   for (const uuid of createdEntities) {
     await dropEntity(uuid);
   }
-  for (const attribute of ["motto9", "required9", "gone9", "transient9"]) {
+  for (const attribute of ["motto9", "required9", "gone9", "transient9", "offline9", "again9"]) {
     const publisher = await storedEntity(entityPublisher.uuid);
     if (attribute in publisher.mlSchema.definition) {
       await writeEntity(await withAttributes(entityPublisher.uuid, ({ [attribute]: _removed, ...rest }) => rest), `restore Publisher without ${attribute}`);
@@ -245,5 +247,117 @@ describe("#9 part B: generateMigration", () => {
       await writeEntity(await withAttributes(entityPublisher.uuid, ({ transient9: _removed, ...rest }) => rest), "Publisher without transient9");
     });
     expect(migration).toMatchObject({ source: "traces", backwardCompatible: true, changes: [], expand: [], fill: [], contract: [] });
+  }, 60000);
+
+  it("B3.1: traces that do not give the to version refuse the generation, and name the difference", async () => {
+    const from = `9B31-1.0.0-${run}`;
+    const to = `9B31-1.1.0-${run}`;
+    expectOk(await freezeAppForTest(context.domainController, from), "freeze from");
+    const recordsBefore = new Set((await storedAppForTestRows(context, "modelVersion", EVOLUTION_TRACE_RECORD_ENTITY)).map((row) => row.uuid));
+    await writeEntity(await withAttributes(entityPublisher.uuid, (d) => ({ ...d, motto9: { type: "string", optional: true, tag: { value: { defaultLabel: "Motto" } } } })), "Publisher.motto9 label");
+    expectOk(await freezeAppForTest(context.domainController, to), "freeze to");
+    // the record of the edit, changed in the store: its replay no longer gives the to version
+    const record = (await storedAppForTestRows(context, "modelVersion", EVOLUTION_TRACE_RECORD_ENTITY)).find(
+      (row) => !recordsBefore.has(row.uuid) && JSON.stringify(row).includes('"Motto"'),
+    )!;
+    expect(record, "the record of the edit").toBeDefined();
+    const store = context.serverStores.getPersistenceStoreController(APP_FOR_TEST_DEPLOYMENT)!;
+    expect(await store.upsertInstance("modelVersion", JSON.parse(JSON.stringify(record).replaceAll('"Motto"', '"Edited"')))).not.toBeInstanceOf(Action2Error);
+    try {
+      const refused = await generate(from, to);
+      expect(refusalReason(refused), JSON.stringify(refused)).toBe("evolutionTracesDisagree");
+      expect((refused as Action2Error).errorMessage ?? JSON.stringify(refused)).toContain("Publisher");
+      expect(await storedMigration(from, to)).toBeUndefined();
+    } finally {
+      await store.upsertInstance("modelVersion", record);
+    }
+  }, 60000);
+
+  it("B3.2: a re-baseline between the two versions refuses the generation", async () => {
+    const from = `9B32-1.0.0-${run}`;
+    const to = `9B32-1.1.0-${run}`;
+    expectOk(await freezeAppForTest(context.domainController, from), "freeze from");
+    expectOk(await modelAction({ actionType: "rebaselineEvolutionTraces", payload: { application: APP_FOR_TEST, versionName: `9B32-rebaseline-${run}` } }), "re-baseline");
+    expectOk(await freezeAppForTest(context.domainController, to), "freeze to");
+
+    const refused = await generate(from, to);
+
+    expect(refusalReason(refused), JSON.stringify(refused)).toBe("migrationAcrossRebaseline");
+    expect(await storedMigration(from, to)).toBeUndefined();
+  }, 60000);
+
+  it("B3.3: with the traces off, the Migration comes from the two versions", async () => {
+    await setAppForTestTraces(false);
+    try {
+      const migration = await migrationAround("9B33", async () =>
+        writeEntity(await withAttributes(entityPublisher.uuid, (d) => ({ ...d, offline9: { type: "string", optional: true } })), "Publisher.offline9"),
+      );
+      expect(migration).toMatchObject({ source: "diff", backwardCompatible: true, expand: [], contract: [] });
+      expect(migration.changes).toEqual([
+        { kind: "addAttribute", entity: entityPublisher.uuid, entityName: entityPublisher.name, attribute: "offline9", backwardCompatible: true, supported: true },
+      ]);
+      expect(migration.fill.map((step) => step.name)).toEqual([`fill ${entityPublisher.name}.offline9`]);
+    } finally {
+      await setAppForTestTraces(true);
+    }
+  }, 60000);
+
+  it("B3.4: a second generation is refused unless it replaces the Migration, which keeps its uuid", async () => {
+    const migration = await migrationAround("9B34", async () =>
+      writeEntity(await withAttributes(entityPublisher.uuid, (d) => ({ ...d, again9: { type: "string", optional: true } })), "Publisher.again9"),
+    );
+    const from = `9B34-1.0.0-${run}`;
+    const to = `9B34-1.1.0-${run}`;
+
+    const refused = await generate(from, to);
+    expect(refusalReason(refused), JSON.stringify(refused)).toBe("migrationExists");
+    expect(refusalReason(await generate(from, to, false))).toBe("migrationExists");
+
+    expectOk(await generate(from, to, true), "replace");
+    const pair = (await storedAppForTestRows(context, "modelVersion", MIGRATION_ENTITY)).filter(
+      (row) => (row as MigrationRow).from === from && (row as MigrationRow).to === to,
+    ) as MigrationRow[];
+    expect(pair.map((row) => row.uuid)).toEqual([migration.uuid]);
+    expect(pair[0].changes).toEqual(migration.changes);
+    expect(pair[0].fill[0].uuid, "a new draft, new steps").not.toBe(migration.fill[0].uuid);
+  }, 60000);
+
+  it("B3.5: a Migration written by hand is read as any other, and generation does not overwrite it", async () => {
+    const from = `9B35-1.0.0-${run}`;
+    const to = `9B35-1.1.0-${run}`;
+    expectOk(await freezeAppForTest(context.domainController, from), "freeze from");
+    expectOk(await freezeAppForTest(context.domainController, to), "freeze to");
+    const manual = {
+      uuid: randomUUID(),
+      parentName: "Migration",
+      parentUuid: MIGRATION_ENTITY,
+      name: `${from} → ${to}`,
+      application: APP_FOR_TEST,
+      from,
+      to,
+      source: "manual",
+      changes: [],
+      expand: [],
+      fill: [],
+      contract: [],
+      backwardCompatible: true,
+      description: "#9 B3: written by hand",
+    };
+    expectOk(
+      await context.domainController.handleAction(
+        {
+          actionType: "createInstance",
+          endpoint: INSTANCE_ENDPOINT,
+          payload: { application: APP_FOR_TEST, applicationSection: "modelVersion", parentUuid: MIGRATION_ENTITY, objects: [manual] },
+        } as any,
+        applicationDeploymentMap,
+        appForTestModelEnvironment(context.domainController),
+      ),
+      "the manual Migration",
+    );
+
+    expect(await storedMigration(from, to)).toMatchObject({ uuid: manual.uuid, source: "manual", description: "#9 B3: written by hand" });
+    expect(refusalReason(await generate(from, to))).toBe("migrationExists");
+    expect(await storedMigration(from, to)).toMatchObject({ uuid: manual.uuid, source: "manual" });
   }, 60000);
 });

@@ -41,7 +41,7 @@ Out (analysis section 2): detecting and correcting a model and storage divergenc
 | A3 | A | A following deployment refuses model and `modelVersion` writes | ✅ | same file |
 | B1 | B | A draft Migration for one optional attribute (tracer) | ✅ | `migrationGeneration.9.phaseB.integ.test.ts` |
 | B2 | B | Removals, required attributes, renames: classified and stepped | ✅ | same file |
-| B3 | B | Refusals and the diff fallback | ⬜ | same file |
+| B3 | B | Refusals and the diff fallback | ✅ | same file |
 | B4 | B | `versioned-git`: from the tag to `HEAD` | ⬜ | `migrationGenerationGit.9.phaseB.integ.test.ts` |
 | C1 | C | A Migration run on a following deployment (tracer) | ⬜ | `migrationRun.9.phaseC.integ.test.ts` |
 | C2 | C | A stopped run resumes | ⬜ | same file |
@@ -257,7 +257,7 @@ Known gaps, left for later parts or issues:
 
 ### Slice B3 — Refusals and the diff fallback
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal.** Generation refuses what it cannot vouch for and still serves an application without traces (G1, Q29, Q30, D12).
 
@@ -274,7 +274,8 @@ Known gaps, left for later parts or issues:
 
 **Validation.** The file; scoped nonreg `smoke,actions,external`.
 
-**Realization.** _(on completion)_
+**Realization.** No new code: the refusals were written with B1's handler and are tested here. B3.1 changes the stored record of an edit (through the server's store, outside the DomainController) so that its replay no longer gives `to`: `evolutionTracesDisagree`, naming Publisher, and nothing written. B3.2: a re-baseline version between the two gives `migrationAcrossRebaseline`. B3.3: with the traces off around both freezes, `source: diff` with B1's changes. B3.4: `migrationExists` (also with `replace: false`); `replace: true` keeps the Migration's uuid and writes new steps. B3.5: a Migration with `source: manual` created through `createInstance` is read back and is not overwritten by a generation. The `deploymentFollows` refusal is in the A3.3 list of the part A file, which has the following deployment.
+- **Validation.** Both files of `9-migrations/` (18 tests).
 
 ### Slice B4 — `versioned-git`: from the tag to `HEAD`
 
