@@ -405,7 +405,7 @@ npm run nonreg:filesystem -- --runner shared
 | Miroir's own SelfApplication ships with traces off | Miroir's SelfApplication row has no `evolutionTraces` (read as off) |
 | `MIROIR_EVOLUTION_TRACE` removed | No file names it but the frozen `EntityVersion` rows (checked by the inventory guard until Slice 9, then removed); `versioningSurface.unit.test.ts` › the removed old trace exports |
 | Re-baseline marker (part of Q30) | `evolutionTraceRecords.integ.test.ts` › "resetModel then initModel each leave a rebaseline marker"; the freeze's `version` marker › "a freeze appends a version marker" |
-| `ModelStateSource`, replay, diff | part B |
+| `ModelStateSource`, replay, diff | part B; it returns a `MetaModel`, which first gains the missing collections (analysis D7-a and its impact inventory) |
 | Agreement check, re-baseline action | part C |
 | `gitAction_tag` | part D |
 

@@ -8,7 +8,7 @@ Related analyses: [694 epic analysis](../694-EPIC-safe-application-evolution/ana
 Key sources: [`evolutionTracePolicy.ts`](../../../packages/miroir-core/src/2_domain/evolutionTracePolicy.ts), [`evolutionTraceBaseline.ts`](../../../packages/miroir-core/src/2_domain/evolutionTraceBaseline.ts), [`DomainController.ts`](../../../packages/miroir-core/src/3_controllers/DomainController.ts), [`RestServer.ts`](../../../packages/miroir-core/src/4_services/RestServer.ts), [`versioningMode.ts`](../../../packages/miroir-core/src/1_core/versioning/versioningMode.ts), [`evolutionTraceRuntime.ts`](../../../packages/miroir-versioning/src/evolutionTraceRuntime.ts), [`evolutionTraceWriter.ts`](../../../packages/miroir-versioning/src/evolutionTraceWriter.ts), [`applicationVersionFreeze.ts`](../../../packages/miroir-versioning/src/applicationVersionFreeze.ts), [`GitRepositoryInterface.ts`](../../../packages/miroir-core/src/0_interfaces/4-services/GitRepositoryInterface.ts)
 
 **Document role:** analysis and decision record for #708. The epic's decisions (Q16 to Q20, Q24, Q28 to Q30, D3, D4, D10 to D12) are settled and not reopened. This document decides how to build them, and where one of its decisions narrows an epic decision, it says so.
-**Status:** analysis in progress (2026-11-12).
+**Status:** decisions accepted tentatively by the designer (2026-11-15), D7 changed to D7-a; parts B to D may revisit them.
 **Document history:**
 - 2026-11-12: first draft, then an adversarial review (a fact check of sections 3 and 4, and an attack on each decision). It changed:
   - D3: a record per application, a partial record after a failed commit, an append path of its own, an opt-out mark set by the recording DomainController, and suspended recording for writes that are not authoring;
@@ -18,6 +18,7 @@ Key sources: [`evolutionTracePolicy.ts`](../../../packages/miroir-core/src/2_dom
   - D9 and D10: the re-baseline's freeze skips the check it repairs; forks and the staged tree;
   - D11: tags pushed one by one;
   - several facts in section 4.
+- 2026-11-15: the designer accepted the decisions tentatively and chose D7-a over D7-b: every Entity of the meta-application gets its collection in `MetaModel`. D7 now carries the impact inventory; part B builds it.
 - 2026-11-14: wording only, no decision changed. The epic's shorthands N and G are replaced by the `versioningMode` values `versioned-internal` and `versioned-git`, each defined in the legend of section 3; G4 and D4 are reworded around a defined *agree* (the agreement check of epic Q29) instead of "traces lead to the model".
 
 ---
@@ -60,7 +61,7 @@ Legend:
 | D4. How does a reader find which version contains the change of a record? | **The freeze appends a `version` marker record, instead of updating the open records** (narrows Q19) | G1, G4 |
 | D5. What turns traces on, and what happens when the setting cannot apply? | **`evolutionTraces` on the SelfApplication row; it reads as off on an unversioned application; a commit touching an application with traces on is refused when the capability is off or the application has no writable `modelVersion`** | G1, G6 |
 | D6. How does a `versioned-git` application get a writable `modelVersion`? | **Its deployment (environment, or Deployment row for a clone) declares a `modelVersion` section inside the Git work tree; a `versioned-git` application fetches it only when its traces are on** | G1, G5 |
-| D7. In what shape does a model state come back from a frozen version, a Git ref or the live model? | **A map from element Entity uuid to rows, owned by the versioning package; `MetaModel` stays as it is** | G2, G6 |
+| D7. In what shape does a model state come back from a frozen version, a Git ref or the live model? | **A `MetaModel`, which gains a collection for every Entity of the meta-application that it lacks** (D7-a, chosen by the designer on 2026-11-15) | G2 |
 | D8. How fine is the diff of two model states? | **Entity attributes by name, every other element type row by row and field by field** | G3 |
 | D9. What does the agreement check compare? | **The model at the last marker replayed with the records since it, against the model being frozen (`versioned-internal`) or the staged tree being committed (`versioned-git`); a fork fails the check** | G4 |
 | D10. What does a re-baseline write? | **For `versioned-internal`, a freeze that skips the agreement check, then a `rebaseline` marker naming that version; for `versioned-git`, a `rebaseline` marker naming the Git commit, committed with the model** (epic D11) | G4 |
@@ -176,16 +177,48 @@ The chain starts at a marker. When traces are switched on (today by editing the 
 
 ### D7. In what shape does a model state come back from a frozen version, a Git ref or the live model?
 
-**Status:** proposed — D7-b. **Serves:** G2, G6. Part B.
+**Status:** **Accepted — D7-a** (designer, 2026-11-15; this analysis had proposed D7-b). **Serves:** G2. Part B.
 
 **What is at stake.** The replay, the diff and the agreement check take two model states from any source (epic D4). The in-memory `MetaModel` type (`miroirFundamentalType.ts`) has collections for Entities, Queries, Reports, Menus, Endpoints, Runners, Themes, TransformerDefinitions, MlSchemas and MiroirTests (`tests`), but none for Blob, TestConfiguration or Test rows, which the freeze snapshots since #706.
 
 | Option | Mechanism | Pros | Cons |
 |---|---|---|---|
-| D7-a. Extend `MetaModel` | three new collections in the generated type | one shape everywhere | a core schema change that every process carries (G6); every builder of a `MetaModel` must fill them |
-| **D7-b. A `ModelState` map in the versioning package** ★ | `{ application, source, rows: Record<elementEntityUuid, EntityInstance[]> }`, built from frozen `*Version` rows, from `*_model/<entityUuid>/*.json` files at a Git ref, or from the live sections | uniform over every element type; costs only the package | a converter from and to `MetaModel` where a caller needs one |
+| **D7-a. Extend `MetaModel`** ★ | a collection in the generated type for each Entity of the meta-application that has none | one shape everywhere; every Entity of the meta-application is treated the same way | a core schema change that every process carries; every builder of a `MetaModel` must fill the new collections (inventory below) |
+| D7-b. A `ModelState` map in the versioning package | `{ application, source, rows: Record<elementEntityUuid, EntityInstance[]> }`, built from frozen `*Version` rows, from `*_model/<entityUuid>/*.json` files at a Git ref, or from the live sections | costs only the package | **Rejected:** a second shape for the same thing, which treats some Entities of the meta-application differently from the others and makes callers convert between the two |
 
-**Decision:** D7-b. Reading at a Git ref needs `GitRepositoryInterface.listFiles`, which lists the files of the commit `HEAD` points at, to take a `ref`; `readFile(path, ref)` exists already.
+**Decision:** D7-a. The rule: every Entity of the meta-application whose rows belong to an application's model (`model` section) or to its history (`modelVersion` section) has its collection in `MetaModel`, built the same way as the others. `Entity` itself keeps its place as the meta-class. `ModelStateSource` returns a `MetaModel`. Reading at a Git ref needs `GitRepositoryInterface.listFiles`, which lists the files of the commit `HEAD` points at, to take a `ref`; `readFile(path, ref)` exists already.
+
+#### D7 impact (inventory of 2026-11-15)
+
+Collections missing today, against the Entities of `miroir-app-miroir/assets/miroir_model/16dbfe28-…/`:
+
+| Section | Entity | Collection today |
+|---|---|---|
+| `model` | Blob (`62209e4a`) | none; no generated `Blob` type either |
+| `model` | TestConfiguration (`675ccd46`) | none; no generated `TestConfiguration` type either |
+| `model` | Test (`c37625c7`) | none; `tests` holds MiroirTest (`a311f363`) definitions, so the name is taken |
+| `modelVersion` | BlobVersion, TestConfigurationVersion, TestVersion | none |
+| `modelVersion` | ApplicationVersionCrossBlobVersion, …CrossTestConfigurationVersion, …CrossTestVersion | none |
+| `modelVersion` | ApplicationModelBranch (`cdb0aec6`), EvolutionTraceRecord (`854c47bd`) | none |
+
+Entities of the `devData` section (PageLoadMeasurement, BundleSizeMeasurement) are application data, not model, and stay out.
+
+Code that builds or reads a `MetaModel` and must follow:
+
+| Where | What changes |
+|---|---|
+| `getMiroirFundamentalMlSchema.ts`, `metaModel` (hand-written, around line 4400) | the new collections; generated types for Blob and TestConfiguration; `npm run devBuild -w @miroir-framework/core` |
+| `emptyMetaModel` (`1_core/Deployment.ts`, line 314), `emptyApplicationModel` (`1_core/Model.ts`, line 406) | empty collections |
+| `extractApplicationModel` (`1_core/Model.ts`, line 520) | read the new Entities. It reads `endpoints` and `storedQueries` through the imports `entityEndpointVersion` and `entityQueryVersion`, which are the Endpoint (`3d8da4d4`) and Query (`e4320b9e`) Entities under legacy names (`miroir-app-miroir/index.ts`); one list would retire those names |
+| `selectModelForDeployment…` in `miroir-localcache-redux` and `miroir-localcache-zustand` (`LocalCacheSliceModelSelector.ts`) | one selector per new collection; the history collections are filled with `[]` today |
+| `defaultMiroirMetaModel` (`miroir-app-miroir/src/Model.ts`), the default models of Library, GitHub, Spotify and appForTest | the new collections |
+| `TransformersForRuntime.ts`, line 1300 (application bundle copy) | rewrite the application uuid in the new collections too |
+| `schemaChangeKind.ts`, `ServerModelEnvironments.ts`, the freeze (`applicationVersionFreeze.ts`, `freezeApplicationVersion.ts`) | read the new collections where they walk the model |
+| MiroirTest assets with an inline `metaModel` (`8f07f7a2-…`, `d7e9f81b-…` under `a311f363-…`), and about six test files | the new collections |
+
+Open points for part B:
+- **The name of the Test collection.** `tests` already holds MiroirTest rows. Renaming it `miroirTests` names every collection after its Entity, at the cost of touching every reader of `tests`; any other name for Test rows keeps the exception.
+- **One list instead of many.** The collections, `versionHistoryEntityUuids` and its parallel map `versionHistoryEntityDefinitions` (`1_core/Model.ts`), the local cache selectors and `extractApplicationModel` each list the Entities by hand, which is how Blob, TestConfiguration and Test were missed. Deriving them from one list of the meta-application's Entities keeps the rule true when an Entity is added.
 
 ### D8. How fine is the diff of two model states?
 
