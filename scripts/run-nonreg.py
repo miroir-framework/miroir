@@ -622,7 +622,8 @@ def run_shared_group(
             status="not_run",
             argv=argv,
             log_file=repo_relative(log_path),
-            extra={"mode": "shared", "shared_group": group},
+            # The worker of the group launch; a legacy re-run records its own (#728).
+            extra={"mode": "shared", "shared_group": group, **({"worker": worker} if worker is not None else {})},
         )
 
     if dry_run:
@@ -1173,17 +1174,21 @@ class Workers:
         self.warnings: list[str] = []
 
     def acquire(self) -> str:
-        with self.lock:
-            if self.free:
-                return self.free.pop(0)
-            worker = f"w{len(self.used) + 1}"
-            self.used.append(worker)
-        self.clear(worker)
-        return worker
+        """A free worker, else a new one whose leftovers are cleared; a new worker that cannot be cleared
+        is not used (the next number is tried)."""
+        while True:
+            with self.lock:
+                if self.free:
+                    return self.free.pop(0)
+                worker = f"w{len(self.used) + 1}"
+                self.used.append(worker)
+            if self.clear(worker):
+                return worker
 
-    def clear(self, worker: str) -> None:
+    def clear(self, worker: str) -> bool:
+        """Clears the worker's state; False when a clear failed, so the worker may hold stores still."""
         if self.dry_run:
-            return
+            return True
         lines, complete = remove_worker_state([worker])
         with self.lock:
             self.complete = self.complete and complete
@@ -1192,6 +1197,7 @@ class Workers:
         for line in lines:
             if not (line.startswith("removed") or line.endswith("nothing to clear")):
                 emit(line)
+        return complete
 
     def release(self, worker: str, failed: bool) -> None:
         if failed and self.keep_failed and not self.dry_run:
@@ -1202,7 +1208,10 @@ class Workers:
                 f"SQL schemas and MongoDB databases test_<storage>_{worker}_*"
             )
             return
-        self.clear(worker)
+        if not self.clear(worker):
+            # Its stores may still be there: the next unit takes another worker (#728 review).
+            emit(f"worker {worker} not used again: its state could not be cleared")
+            return
         with self.lock:
             self.free.append(worker)
             self.free.sort(key=lambda w: int(w[1:]))

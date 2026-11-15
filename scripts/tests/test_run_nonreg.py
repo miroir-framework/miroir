@@ -58,6 +58,15 @@ LEGACY_SUMMARY_KEYS = {
 }
 
 
+def runner_cmd(tmp_path: Path) -> list[str]:
+    """The runner, with no test environments to clear (#728): every run clears its workers' state for the
+    environments it knows, so a run started here never touches the stores of a nonreg run that started these
+    tests. A later --environments-dir in the arguments overrides it."""
+    empty = tmp_path / "no-environments"
+    empty.mkdir(parents=True, exist_ok=True)
+    return [sys.executable, str(SCRIPT), "--environments-dir", str(empty)]
+
+
 def write_manifest(tmp_path: Path, steps: list[dict], scopes: dict[str, str] | None = None) -> Path:
     manifest = {
         "version": 1,
@@ -78,15 +87,9 @@ def run_nonreg(
     results_root = tmp_path / "results"
     # The contract tests below describe a serial run; #477 tests ask for --jobs themselves.
     jobs = [] if "--jobs" in extra else ["--jobs", "1"]
-    if "--environments-dir" not in extra:
-        # Every run clears its workers' state for the test environments it knows (#728): none here,
-        # so this run never touches the state of a nonreg run that started these tests.
-        (tmp_path / "no-environments").mkdir(parents=True, exist_ok=True)
-        jobs += ["--environments-dir", str(tmp_path / "no-environments")]
     proc = subprocess.run(
         [
-            sys.executable,
-            str(SCRIPT),
+            *runner_cmd(tmp_path),
             "--manifest",
             str(manifest),
             "--results-root",
@@ -533,7 +536,7 @@ def test_tier_still_filters_a_scope(tmp_path: Path, scoped_manifest: Path):
 
 def test_unknown_scope_is_an_error_naming_the_declared_scopes(tmp_path: Path, scoped_manifest: Path):
     proc = subprocess.run(
-        [sys.executable, str(SCRIPT), "--manifest", str(scoped_manifest), "--results-root", str(tmp_path / "r"), "--scope", "a,nope"],
+        [*runner_cmd(tmp_path), "--manifest", str(scoped_manifest), "--results-root", str(tmp_path / "r"), "--scope", "a,nope"],
         cwd=ROOT,
         capture_output=True,
         text=True,
@@ -599,7 +602,7 @@ def test_smoke_is_wide_one_step_in_each_main_layer():
 
 def test_empty_scope_is_an_error_not_a_full_run(tmp_path: Path, scoped_manifest: Path):
     proc = subprocess.run(
-        [sys.executable, str(SCRIPT), "--manifest", str(scoped_manifest), "--results-root", str(tmp_path / "r"), "--scope", ""],
+        [*runner_cmd(tmp_path), "--manifest", str(scoped_manifest), "--results-root", str(tmp_path / "r"), "--scope", ""],
         cwd=ROOT,
         capture_output=True,
         text=True,
@@ -626,7 +629,7 @@ def test_compare_with_a_scoped_run_only_looks_at_the_steps_both_runs_selected(tm
     assert full["counts"]["failed"] == 1
 
     proc = subprocess.run(
-        [sys.executable, str(SCRIPT), "--manifest", str(manifest), "--results-root", str(tmp_path / "scoped"),
+        [*runner_cmd(tmp_path), "--manifest", str(manifest), "--results-root", str(tmp_path / "scoped"),
          "--tier", "unit", "--scope", "a", "--compare", str(full_dir)],
         cwd=ROOT,
         capture_output=True,
@@ -704,8 +707,7 @@ def run_raw(
 ) -> subprocess.CompletedProcess:
     return subprocess.run(
         [
-            sys.executable,
-            str(SCRIPT),
+            *runner_cmd(tmp_path),
             "--manifest",
             str(manifest),
             "--results-root",
@@ -1036,7 +1038,7 @@ def test_parallel_console_prints_each_step_as_one_block(tmp_path: Path):
     results_root = tmp_path / "results"
 
     proc = subprocess.run(
-        [sys.executable, str(SCRIPT), "--manifest", str(manifest), "--results-root", str(results_root),
+        [*runner_cmd(tmp_path), "--manifest", str(manifest), "--results-root", str(results_root),
          "--tier", "unit", "--jobs", "2", *FS_PROFILE],
         cwd=ROOT, capture_output=True, text=True, check=False,
     )
@@ -1052,7 +1054,7 @@ def test_parallel_console_prints_each_step_as_one_block(tmp_path: Path):
 def test_jobs_must_be_positive(tmp_path: Path, value: str):
     manifest = write_manifest(tmp_path, [{"id": "x", "tier": "unit", "title": "x", "argv": ["python", "-c", "pass"]}])
     proc = subprocess.run(
-        [sys.executable, str(SCRIPT), "--manifest", str(manifest), "--results-root", str(tmp_path / "r"), "--jobs", value],
+        [*runner_cmd(tmp_path), "--manifest", str(manifest), "--results-root", str(tmp_path / "r"), "--jobs", value],
         cwd=ROOT, capture_output=True, text=True, check=False,
     )
     assert proc.returncode == 2
@@ -1126,7 +1128,7 @@ def test_a_second_run_on_the_same_results_root_is_refused(tmp_path: Path):
     with open(results_root / ".run.lock", "a+") as held:
         fcntl.flock(held.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
         proc = subprocess.run(
-            [sys.executable, str(SCRIPT), "--manifest", str(manifest), "--results-root", str(results_root), "--jobs", "1"],
+            [*runner_cmd(tmp_path), "--manifest", str(manifest), "--results-root", str(results_root), "--jobs", "1"],
             cwd=ROOT, capture_output=True, text=True, check=False,
         )
     assert proc.returncode == 2
@@ -1397,3 +1399,62 @@ def test_a_step_without_worker_runs_on_none(tmp_path: Path, probe_environments):
         run_nonreg(run_dir, manifest, "--tier", "unit", "--jobs", jobs, *FS_PROFILE, *probe_environments)
         assert probes(log)["bracket"][0] == "-"
     shutil.rmtree(ROOT / ".miroir" / f"{PROBE_STATE}@-", ignore_errors=True)
+
+
+def test_a_passed_shared_member_records_the_worker_of_the_launch(tmp_path: Path, monkeypatch):
+    # #728 review: m2's re-run moves to w2; m1, which passed in the launch on w1, keeps w1.
+    runner = load_runner()
+    members = [
+        {"id": m, "title": m, "tier": "unit", "requires": "none", "argv": [],
+         "shared": {"group": "g", "argv": ["python", "-c", "pass"], "files": [f"{m}.test.ts"]}}
+        for m in ("m1", "m2")
+    ]
+
+    def launch(argv, env):
+        report = next(a for a in argv if a.startswith("--outputFile.json=")).split("=", 1)[1]
+        Path(report).write_text(json.dumps({"testResults": [
+            {"name": "/x/m1.test.ts", "status": "passed", "assertionResults": [{"status": "passed"}]},
+            {"name": "/x/m2.test.ts", "status": "failed", "assertionResults": [{"status": "failed"}]},
+        ]}), encoding="utf-8")
+        return subprocess.CompletedProcess(argv, 1, "", "")
+
+    monkeypatch.setattr(runner, "spawn", launch)
+    monkeypatch.setattr(
+        runner, "run_step",
+        lambda step, **kwargs: runner.StepResult(step["id"], step["id"], "unit", "none", "failed"),
+    )
+    (tmp_path / "logs").mkdir()
+
+    results = runner.run_shared_group(
+        "g", members, profile="emulatedServer-filesystem", snap_dir=tmp_path, dry_run=False, timings=False,
+        worker="w1", fresh_worker=lambda failed: "w2",
+    )
+
+    assert results["m1"].status == "passed"
+    assert results["m1"].extra["worker"] == "w1"
+    assert results["m2"].extra["worker"] == "w2"
+
+
+def test_a_worker_whose_clear_failed_is_not_used_again(tmp_path: Path):
+    # #728 review: miroir-env does not know this environment, so clearing its PostgreSQL stores fails; the
+    # second step must not run on the worker that may still hold the first one's stores.
+    state = f"test-pytest728db-{os.getpid()}"
+    log = tmp_path / "events.log"
+    manifest = write_manifest(
+        tmp_path, [worker_state_step("a", state), timed_step("b", log, sleep=0.1)]
+    )
+    environments = tmp_path / "environments"
+    environments.mkdir()
+    (environments / f"{state}.json").write_text(
+        json.dumps({"connections": {"postgres": {"host": "localhost"}}}), encoding="utf-8"
+    )
+    try:
+        code, summary, _ = run_nonreg(
+            tmp_path, manifest, "--tier", "unit", "--jobs", "1", *FS_PROFILE, "--environments-dir", str(environments)
+        )
+        assert code == 0
+        assert summary["worker_state"] == "incomplete"
+        assert [step["worker"] for step in summary["steps"]] == ["w1", "w2"]
+    finally:
+        for leftover in (ROOT / ".miroir").glob(f"{state}@*"):
+            shutil.rmtree(leftover)
