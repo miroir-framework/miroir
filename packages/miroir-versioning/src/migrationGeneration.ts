@@ -8,6 +8,10 @@
  * version (Q29): the changes are then vouched for by the traces (`source: traces`); without records, they
  * come from the versions alone (`source: diff`). When the traces agree, the net effect of the records is the
  * difference of the two versions, so both sources give their changes from that difference.
+ *
+ * #745: the steps are the model Actions the designer ran, one step each, in trace order (or, traces off, the
+ * same Actions from the diff in a fixed order), with an empty data step per added attribute; generation
+ * replays them in memory on `from` and checks the result against `to` (`migrationSteps.ts`).
  */
 import { v4 as uuidv4 } from "uuid";
 
@@ -17,7 +21,6 @@ import {
   type Action2ReturnType,
   type ActionImplementationHandler,
   type ApplicationDeploymentMap,
-  type CompositeActionSequence,
   type DomainControllerActionHost,
   type Entity,
   type EvolutionTraceRecordRow,
@@ -35,10 +38,30 @@ import { comparedCollections, differencesText, EVOLUTION_TRACES_DISAGREE, summar
 import { ensureApplicationEntity, withApplicationLock } from "./evolutionTraceRecords.js";
 import { metaModelEntityUuids } from "./freezeApplicationVersion.js";
 import { diffModelStates, sameJson } from "./modelStateDiff.js";
+import {
+  gitSteps,
+  INSTANCE_ENDPOINT_UUID,
+  MIGRATION_GENERATION_REFUSALS,
+  recordsRefusal,
+  stepsFromDiff,
+  stepsFromRecords,
+  stepsReplayDifferences,
+  type MigrationStep,
+  type SettingsChange,
+} from "./migrationSteps.js";
 import { frozenCollectionsOf, frozenStateOf, liveModelState, modelStateFromFiles, replayCommitRecords, type ModelState } from "./modelStates.js";
 
-const INSTANCE_ENDPOINT_UUID = "ed520de4-55a9-4550-ac50-b1b713b72a89";
-const DOMAIN_ENDPOINT_UUID = "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5";
+
+/** #749: the follow-up that adds the model Actions for the changes refused here (#745 D3). */
+const COLUMN_CHANGES_FOLLOW_UP = "#749";
+const MIROIR_APPLICATION_UUID = "360fcf1f-f0d4-4f8a-9262-07886e70fa15";
+
+/** The attributes the changes add, for the fill steps of a Git Migration. */
+function addedAttributesOf(changes: readonly MigrationChange[]): { entityName: string; attribute: string }[] {
+  return changes
+    .filter((change) => change.kind === "addAttribute" && change.attribute !== undefined)
+    .map((change) => ({ entityName: change.entityName ?? change.entity, attribute: change.attribute! }));
+}
 
 /** #9: Model Endpoint action that writes a draft Migration between two versions of an application. */
 export const GENERATE_MIGRATION_ACTION_TYPE = "generateMigration" as const;
@@ -58,7 +81,8 @@ export type MigrationChangeKind =
   | "changeIdAttribute"
   | "addAttribute"
   | "removeAttribute"
-  | "changeAttribute";
+  | "changeAttribute"
+  | "settingsChange";
 
 /** A structure change between two versions, classified (epic D1). */
 export type MigrationChange = {
@@ -69,15 +93,6 @@ export type MigrationChange = {
   backwardCompatible: boolean;
   supported: boolean;
   note?: string;
-};
-
-/** A step of a Migration: a composite action sequence with its flags (analysis D3). */
-export type MigrationStep = {
-  uuid: string;
-  name: string;
-  backwardCompatible: boolean;
-  repeatable: boolean;
-  action: CompositeActionSequence;
 };
 
 /** A stored Migration row. */
@@ -91,9 +106,8 @@ export type MigrationRow = {
   to: string;
   source: "traces" | "diff" | "manual";
   changes: MigrationChange[];
-  expand: MigrationStep[];
-  fill: MigrationStep[];
-  contract: MigrationStep[];
+  /** #745 (D1): the steps, in the order a migration run executes them. */
+  steps: MigrationStep[];
   backwardCompatible: boolean;
   generatedAt?: string;
   description?: string;
@@ -151,14 +165,7 @@ export function entityStructureChanges(previous: Row | undefined, next: Row | un
   }
   const changes: MigrationChange[] = [];
   if (previous.name !== next.name) {
-    changes.push({
-      kind: "renameEntity",
-      entity,
-      entityName,
-      backwardCompatible: false,
-      supported: false,
-      note: `renamed from ${String(previous.name)}: a SQL store names the table after the Entity, and the jump does not move the data (#215)`,
-    });
+    changes.push({ kind: "renameEntity", entity, entityName, backwardCompatible: false, supported: true, note: `renamed from ${String(previous.name)}` });
   }
   if (!sameJson(previous.idAttribute ?? "uuid", next.idAttribute ?? "uuid")) {
     changes.push({
@@ -167,14 +174,26 @@ export function entityStructureChanges(previous: Row | undefined, next: Row | un
       entityName,
       backwardCompatible: false,
       supported: false,
-      note: "the primary key of the stored instances changes, which the jump does not do",
+      note: `the primary key of the stored instances changes: no model Action applies it to the stores yet (${COLUMN_CHANGES_FOLLOW_UP})`,
     });
   }
   const before = attributesOf(previous);
   const after = attributesOf(next);
   for (const [attribute, definition] of Object.entries(after)) {
     if (!(attribute in before)) {
-      changes.push({ kind: "addAttribute", entity, entityName, attribute, backwardCompatible: isOptional(definition), supported: true });
+      changes.push(
+        isOptional(definition)
+          ? { kind: "addAttribute", entity, entityName, attribute, backwardCompatible: true, supported: true }
+          : {
+              kind: "addAttribute",
+              entity,
+              entityName,
+              attribute,
+              backwardCompatible: false,
+              supported: false,
+              note: `a required attribute added to an existing Entity: no model Action fills its instances before making it required (${COLUMN_CHANGES_FOLLOW_UP})`,
+            },
+      );
     } else if (!sameJson(withoutTag(before[attribute]), withoutTag(definition))) {
       changes.push({
         kind: "changeAttribute",
@@ -182,7 +201,8 @@ export function entityStructureChanges(previous: Row | undefined, next: Row | un
         entityName,
         attribute,
         backwardCompatible: changeKeepsCompatibility(before[attribute], definition),
-        supported: true,
+        supported: false,
+        note: `the attribute's type, nullability, values or reference change: no model Action applies it to the stores yet (${COLUMN_CHANGES_FOLLOW_UP})`,
       });
     }
   }
@@ -207,38 +227,6 @@ export function migrationChanges(application: string, from: ModelState, to: Mode
     ...[...after].flatMap(([uuid, next]) => entityStructureChanges(before.get(uuid), next)),
     ...[...before].filter(([uuid]) => !after.has(uuid)).flatMap(([, previous]) => entityStructureChanges(previous, undefined)),
   ];
-}
-
-/** An empty step: the designer writes its actions (fill), or #733 brings them (contract). */
-function emptyStep(name: string, backwardCompatible: boolean): MigrationStep {
-  return {
-    uuid: uuidv4(),
-    name,
-    backwardCompatible,
-    repeatable: true,
-    action: {
-      actionType: "compositeActionSequence",
-      actionLabel: name,
-      endpoint: DOMAIN_ENDPOINT_UUID,
-      payload: { actionSequence: [] },
-    } as CompositeActionSequence,
-  };
-}
-
-/**
- * The steps of the changes (analysis D7, step 7): an empty fill step per added attribute; an empty contract
- * step per removed Entity or attribute, named after what it must drop (D4, #733); no expand step.
- */
-export function migrationSteps(changes: readonly MigrationChange[]): Pick<MigrationRow, "expand" | "fill" | "contract"> {
-  const label = (change: MigrationChange) =>
-    change.attribute ? `${change.entityName ?? change.entity}.${change.attribute}` : (change.entityName ?? change.entity);
-  return {
-    expand: [],
-    fill: changes.filter((change) => change.kind === "addAttribute").map((change) => emptyStep(`fill ${label(change)}`, true)),
-    contract: changes
-      .filter((change) => change.kind === "removeEntity" || change.kind === "removeAttribute")
-      .map((change) => emptyStep(`drop ${label(change)}`, false)),
-  };
 }
 
 /** The records between two versions, or why there are none to read, or the re-baseline between them. */
@@ -416,18 +404,20 @@ async function gitVersionStates(
   };
 }
 
-/** The Migration row for `payload`, from the two versions and, when there are, the records between them. */
+/** Whether every change and every step keeps the `from` version able to run on the migrated data. */
+export function migrationBackwardCompatible(changes: readonly MigrationChange[], steps: readonly MigrationStep[]): boolean {
+  return [...changes, ...steps].every((item) => item.backwardCompatible);
+}
+
+/** The Migration row for `payload`, from its changes and its steps. */
 export function draftMigration(
   live: ModelState,
   payload: GenerateMigrationActionPayload,
-  fromState: ModelState,
-  toState: ModelState,
+  changes: MigrationChange[],
+  steps: MigrationStep[],
   source: "traces" | "diff",
   note?: string,
 ): MigrationRow {
-  const changes = migrationChanges(payload.application, fromState, toState);
-  const steps = migrationSteps(changes);
-  const backwardCompatible = [...changes, ...steps.expand, ...steps.fill, ...steps.contract].every((item) => item.backwardCompatible);
   return {
     uuid: uuidv4(),
     parentName: entityMigration.name,
@@ -438,11 +428,11 @@ export function draftMigration(
     to: payload.to,
     source,
     changes,
-    ...steps,
-    backwardCompatible,
+    steps,
+    backwardCompatible: migrationBackwardCompatible(changes, steps),
     generatedAt: new Date().toISOString(),
     description: [
-      `Draft generated from ${source === "traces" ? "the two versions, checked against the evolution trace records" : "the two versions"} of ${live.applicationName || payload.application}.`,
+      `Draft generated from ${source === "traces" ? "the evolution trace records between the two versions, checked against them" : "the two versions"} of ${live.applicationName || payload.application}.`,
       note ?? "",
     ]
       .filter((part) => part !== "")
@@ -503,6 +493,14 @@ async function generateMigration(
   if (following) {
     return following;
   }
+  if (application === MIROIR_APPLICATION_UUID) {
+    // its model is in its data section, where an in-memory replay of model Actions writes nothing (#745 D2)
+    return refusal(
+      "generateMigration: Migrations of Miroir itself are not generated: its model is in its data section",
+      MIGRATION_GENERATION_REFUSALS.migrationUnsupportedApplication,
+      { application },
+    );
+  }
   const live = await liveModelState(host, application, applicationDeploymentMap);
   if (live instanceof Action2Error) {
     return live;
@@ -539,9 +537,18 @@ async function generateMigration(
       { record: between.rebaseline.uuid },
     );
   }
+  const git = selfApplication !== undefined && resolveVersioningMode(selfApplication) === "versioned-git";
+  const changes = migrationChanges(application, fromState, toState);
   let source: "traces" | "diff" = "diff";
   let note: string | undefined;
+  let steps: MigrationStep[];
+  let settingsChanges: SettingsChange[] = [];
   if ("records" in between) {
+    // #745: refused before any step is written, in this order (D2)
+    const incomplete = git ? undefined : recordsRefusal(application, between.records, "incomplete");
+    if (incomplete) {
+      return incomplete;
+    }
     const replayed = replayCommitRecords(fromState, between.records);
     if (replayed instanceof Action2Error) {
       return refusal(`generateMigration: the evolution traces cannot be replayed: ${replayed.errorMessage ?? ""}`, EVOLUTION_TRACES_DISAGREE);
@@ -557,16 +564,53 @@ async function generateMigration(
       );
     }
     source = "traces";
+    if (git) {
+      steps = gitSteps(application, payload.to, addedAttributesOf(changes));
+    } else {
+      const entityRowWrite = recordsRefusal(application, between.records, "entityRowWrite");
+      if (entityRowWrite) {
+        return entityRowWrite;
+      }
+      const built = stepsFromRecords(application, fromState, between.records);
+      if (built instanceof Action2Error) {
+        return refusal(`generateMigration: the evolution traces cannot be turned into steps: ${built.errorMessage ?? ""}`, EVOLUTION_TRACES_DISAGREE);
+      }
+      steps = built.steps;
+      settingsChanges = built.settingsChanges;
+    }
   } else {
     note = `No trace records to check: ${between.none}.`;
+    steps = git ? gitSteps(application, payload.to, addedAttributesOf(changes)) : stepsFromDiff(application, fromState, toState);
   }
   note = [states.note, note].filter((part) => part !== undefined).join(" ") || undefined;
+
+  // #745 (D2): the steps replayed in memory on `from` give `to`; a Migration holding a change no model
+  // Action applies (D3) is written for the designer to see, and a migration run refuses it
+  if (!git && changes.every((change) => change.supported)) {
+    const differences = stepsReplayDifferences(application, fromState, toState, steps);
+    if (differences instanceof Action2Error) {
+      return refusal(`generateMigration: the steps cannot be replayed: ${differences.errorMessage ?? ""}`, EVOLUTION_TRACES_DISAGREE);
+    }
+    if (differences) {
+      return source === "traces"
+        ? refusal(
+            `generateMigration: the steps of the Migration of ${live.applicationName || application} do not give ${payload.to}: ${differencesText(differences)}`,
+            EVOLUTION_TRACES_DISAGREE,
+            { differences },
+          )
+        : refusal(
+            `generateMigration: between ${payload.from} and ${payload.to}, ${live.applicationName || application} changes what no model Action writes yet (#748): ${differencesText(differences)}`,
+            MIGRATION_GENERATION_REFUSALS.migrationNoModelAction,
+            { differences },
+          );
+    }
+  }
 
   const ensured = await ensureApplicationEntity(host, application, applicationDeploymentMap, entityMigration as Entity, "generateMigrationEnsureEntity");
   if (ensured) {
     return ensured;
   }
-  const row = draftMigration(live, payload, fromState, toState, source, note);
+  const row = draftMigration(live, payload, [...changes, ...settingsChanges], steps, source, note);
   const written = await writeMigration(host, row, existing, applicationDeploymentMap);
   return written instanceof Action2Error
     ? new Action2Error("FailedToHandleAction", `generateMigration could not write the Migration of ${application}`, [], written)

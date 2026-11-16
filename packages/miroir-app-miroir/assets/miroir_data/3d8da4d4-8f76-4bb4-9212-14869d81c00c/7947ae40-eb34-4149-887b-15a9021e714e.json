@@ -1264,7 +1264,7 @@
               "value": {
                 "canBeTemplate": false,
                 "defaultLabel": "Run a Migration",
-                "description": "#9: runs a Migration on a following deployment: its expand steps, the jump of the model to the Migration's to version, its fill and contract steps, each recorded in the deployment's DeploymentState row so that a stopped run resumes where it stopped. Refused on an authoring deployment, when the deployment is not at the Migration's from version, when the Migration holds an unsupported change, and while another Migration runs."
+                "description": "#9, #745: runs a Migration on a following deployment: its steps in order, each model step one model Action the designer ran, each data step a sequence of data writes. Each step is recorded in the deployment's DeploymentState row as started, then as done: a stopped migration run continues at the first step not started, and a step started and not recorded as done stops it until settleMigrationStep settles it. Refused on an authoring deployment, for a Migration already applied, when the deployment is not at the Migration's from version, when the Migration holds an unsupported change, while another Migration runs, and while a step is in doubt."
               }
             },
             "definition": "runMigration"
@@ -1313,6 +1313,80 @@
         "actionImplementation": {
           "actionImplementationType": "libraryImplementation",
           "inMemoryImplementationFunctionName": "handleAction_runMigration",
+          "requiredCapability": "versioning"
+        }
+      },
+      {
+        "actionParameters": {
+          "actionType": {
+            "type": "literal",
+            "tag": {
+              "value": {
+                "canBeTemplate": false,
+                "defaultLabel": "Settle a Migration step",
+                "description": "#745: settles the step a stopped migration run left in doubt on a following deployment (started, not recorded as done): outcome done records it as done, and the next runMigration continues after it; outcome notRun clears it, and the next runMigration executes it again. Refused on an authoring deployment, and for a step that is not in doubt."
+              }
+            },
+            "definition": "settleMigrationStep"
+          },
+          "actionLabel": {
+            "type": "string",
+            "optional": true
+          },
+          "endpoint": {
+            "type": "literal",
+            "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+          },
+          "payload": {
+            "type": "object",
+            "definition": {
+              "application": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true,
+                    "defaultLabel": "Application",
+                    "foreignKeyParams": {
+                      "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+                      "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                      "targetEntityOrderInstancesBy": "name"
+                    },
+                    "display": {
+                      "editable": false
+                    }
+                  }
+                }
+              },
+              "step": {
+                "type": "uuid",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true,
+                    "defaultLabel": "Step",
+                    "description": "The uuid of the step in doubt, as runMigration names it"
+                  }
+                }
+              },
+              "outcome": {
+                "type": "enum",
+                "definition": [
+                  "done",
+                  "notRun"
+                ],
+                "tag": {
+                  "value": {
+                    "canBeTemplate": true,
+                    "defaultLabel": "Outcome",
+                    "description": "done: the step's writes all landed (or were completed by hand); notRun: none landed (or they were undone by hand)"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "actionImplementation": {
+          "actionImplementationType": "libraryImplementation",
+          "inMemoryImplementationFunctionName": "handleAction_settleMigrationStep",
           "requiredCapability": "versioning"
         }
       },

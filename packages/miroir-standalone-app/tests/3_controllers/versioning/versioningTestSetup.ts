@@ -113,6 +113,24 @@ export async function openVersioningTestContext(options: VersioningTestOptions =
   };
 }
 
+/**
+ * #745: loads the model of `application` into the local cache of the server's DomainController. The server
+ * applies a model Action that reads the current model (`alterEntityAttribute`, `renameEntity`) to its own
+ * local cache, which the test boot does not fill for appForTest.
+ */
+export async function loadModelOnServer(
+  context: VersioningTestContext,
+  application: string,
+  map: Record<string, string> = applicationDeploymentMap,
+): Promise<void> {
+  const loaded = await context.serverDomainController.handleAction(
+    { actionType: "rollback", endpoint: MODEL_ENDPOINT, payload: { application } } as any,
+    map,
+    context.serverDomainController.currentModelEnvironment(application, map),
+  );
+  expect(loaded instanceof Action2Error, `the model of ${application} on the server: ${JSON.stringify(loaded)}`).toBe(false);
+}
+
 /** Sets the capabilities of the client and of the server; each defaults to the base snapshot. */
 export function setCapabilities(
   context: VersioningTestContext,

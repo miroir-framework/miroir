@@ -72,6 +72,7 @@ const MODEL_ACTIONS_ROUTED_TO_SERVER: readonly string[] = [
   "installApplicationVersion", // #9
   "generateMigration", // #9
   "runMigration", // #9
+  "settleMigrationStep", // #745
 ];
 const instanceWriteActionTypes = [
   "createInstance",

@@ -135,6 +135,7 @@ if (runThis) {
         "handleAction_installApplicationVersion", // #9
         "handleAction_generateMigration", // #9
         "handleAction_runMigration", // #9
+        "handleAction_settleMigrationStep", // #745
       ]);
       expect(core.VERSIONING_PACKAGE_NAME).toBe("@miroir-framework/versioning");
     });

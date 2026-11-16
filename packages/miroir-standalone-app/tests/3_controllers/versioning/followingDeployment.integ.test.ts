@@ -284,7 +284,7 @@ describe("#9 part A: a following deployment", () => {
     const publisher = following.entities.find((entity) => entity.uuid === entityPublisher.uuid)!;
     expect(Object.keys(publisher.mlSchema.definition)).toContain("foundedIn");
     expect(following.entities.map((entity) => entity.uuid)).not.toContain(imprint.uuid);
-    // the storage of a removed Entity stays, for the contract phase
+    // the storage of a removed Entity stays: only a dropEntity step of a Migration removes it (#745)
     expect(fs.existsSync(path.join(resolveRepoRoot(), followingFolder, "data", imprint.uuid))).toBe(true);
     const country = following.entities.find((entity) => entity.uuid === entityCountry.uuid)!;
     expect(Object.keys(country.mlSchema.definition)).not.toContain("motto");

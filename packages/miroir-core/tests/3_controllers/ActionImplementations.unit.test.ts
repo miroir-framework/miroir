@@ -106,6 +106,7 @@ const expectedActionTypesByEndpoint: Record<string, string[]> = {
     "installApplicationVersion", // #9
     "generateMigration", // #9
     "runMigration", // #9
+    "settleMigrationStep", // #745
     "appendEvolutionTraceRecord", // #708
   ],
   InstanceEndpoint: [

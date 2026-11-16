@@ -1,6 +1,7 @@
 /**
- * #9 C4, `versioned-git`: a following deployment of Library is a clone checked out at a tag; a run reads
- * the Migration in the commit of its `to` tag and jumps by checking that tag out (analysis D8).
+ * #9 C4, #745, `versioned-git`: a following deployment of Library is a clone checked out at a tag; a migration
+ * run reads the Migration in the commit of its `to` tag, and its one model step checks that tag out (#9 D8,
+ * #745 D1).
  *
  * Not reachable through MiroirTest: the test builds the repository and its clone on disk.
  * ```bash
@@ -198,15 +199,19 @@ beforeAll(async () => {
       ],
     },
   });
+  // generated: the checkout of 1.1.0, then the fill of the added attribute
+  expect(draft.steps.map((step) => [step.kind, step.name])).toEqual([
+    ["model", "checkout 1.1.0"],
+    ["data", "fill Book.editionC4"],
+  ]);
+  const [checkout, fill] = draft.steps;
   migration = {
     ...draft,
-    // a write of data before the jump: the checkout passes over it, Git ignoring the data folder
-    expand: [{ uuid: "9c400003-0000-4000-8000-000000000001", name: "draft edition", backwardCompatible: true, repeatable: true, action: writeUbik("draft edition", "draft") as any }],
-    fill: [
-      {
-        ...draft.fill[0],
-        action: writeUbik("fill Book.editionC4", "first") as any,
-      },
+    steps: [
+      // a write of data before the checkout: the checkout passes over it, Git ignoring the data folder
+      { uuid: "9c400003-0000-4000-8000-000000000001", name: "draft edition", kind: "data", backwardCompatible: true, action: writeUbik("draft edition", "draft") as any },
+      checkout,
+      { ...fill, action: writeUbik("fill Book.editionC4", "first") as any },
     ],
   };
   expectOk(await updateLibraryRow("modelVersion", migration as unknown as Record<string, unknown>));
@@ -215,7 +220,7 @@ beforeAll(async () => {
   expectOk(await gitAction(context, "gitAction_tag", { name: "1.1.0", author: TEST_AUTHOR }));
 
   // the following clone at 1.0.0, its data section in a folder Git ignores (epic D7): every section of a
-  // deployment is in its one repository, and the checkout of the jump looks at the files Git tracks only
+  // deployment is in its one repository, and the checkout step looks at the files Git tracks only
   cloneRoot = `${libraryRoot}-following9C4`;
   dataRoot = path.join(cloneRoot, FOLLOWING_DATA);
   fs.rmSync(cloneRoot, { recursive: true, force: true });
@@ -246,7 +251,7 @@ afterAll(async () => {
 }, 60000);
 
 describe("#9 C4: runMigration in versioned-git", () => {
-  it("C4: the install names the commit of the tag; a run reads the Migration at its tag, and a dirty work tree stops it at the jump", async () => {
+  it("C4: the install names the commit of the tag; a migration run reads the Migration at its tag; a dirty work tree stops it at the checkout step, in doubt until settled", async () => {
     expect(await deploymentState()).toMatchObject({ version: "1.0.0", gitCommit: await tagCommit("1.0.0") });
     // the clone at 1.0.0 does not hold the Migration
     expect(fs.existsSync(path.join(cloneRoot, "modelVersion", MIGRATION_ENTITY, `${migration.uuid}.json`))).toBe(false);
@@ -257,13 +262,23 @@ describe("#9 C4: runMigration in versioned-git", () => {
     fs.writeFileSync(bookFile, `${bookText}\n`);
     const stopped = await runMigration(migration.uuid);
     expect(refusalReasons(stopped), JSON.stringify(stopped)).toEqual([MIGRATION_RUN_REFUSALS.migrationStepFailed, "checkoutConflict"]);
-    expect((stopped as Action2Error).errorContext?.step).toBe("jump");
-    expect(await deploymentState()).toMatchObject({ version: "1.0.0", run: { stepsDone: [migration.expand[0].uuid] } });
+    const [draftStep, checkoutStep] = migration.steps;
+    expect((stopped as Action2Error).errorContext?.step).toBe(checkoutStep.uuid);
+    expect(await deploymentState()).toMatchObject({ version: "1.0.0", run: { stepsDone: [draftStep.uuid], stepStarted: checkoutStep.uuid } });
     expect(readJson(dataRoot, `${BOOK_ENTITY}/${BOOK_UBIK}.json`)[EDITION]).toBe("draft");
     expect(await cloneHead()).toBe(await tagCommit("1.0.0"));
-
-    // the edit discarded, and a branch named as the version, still at 1.0.0: the run checks the tag out
+    // the checkout step is in doubt: the next migration run is refused until it is settled
     fs.writeFileSync(bookFile, bookText);
+    expect(refusalReasons(await runMigration(migration.uuid))).toEqual([MIGRATION_RUN_REFUSALS.migrationStepInDoubt]);
+    expectOk(
+      await libraryAction({
+        actionType: "settleMigrationStep",
+        endpoint: MODEL_ENDPOINT,
+        payload: { application: LIBRARY_APPLICATION, step: checkoutStep.uuid, outcome: "notRun" },
+      }, followingMap),
+    );
+
+    // the edit discarded, and a branch named as the version, still at 1.0.0: the migration run checks the tag out
     const repository = await createGitRepositoryFactory().open(cloneRoot);
     await repository.createBranch("1.1.0", `refs/tags/1.0.0`);
     try {
@@ -290,16 +305,23 @@ describe("#9 C4: runMigration in versioned-git", () => {
   it("C4: refused before anything is written: a step writing the model, a clone moved from the state's version", async () => {
     // two Migrations from 1.1.0, committed and tagged 1.2.0 in the clone, whose HEAD then moves off 1.1.0
     const repository = await createGitRepositoryFactory().open(cloneRoot);
-    const fromState = { ...migration, from: "1.1.0", to: "1.2.0", changes: [], fill: [], contract: [] };
+    const checkout12 = {
+      ...migration.steps[1],
+      uuid: "9c400004-0000-4000-8000-000000000003",
+      name: "checkout 1.2.0",
+      action: { ...(migration.steps[1].action as any), actionLabel: "checkout 1.2.0", payload: { application: LIBRARY_APPLICATION, version: "1.2.0" } },
+    };
+    const fromState = { ...migration, from: "1.1.0", to: "1.2.0", changes: [], steps: [checkout12] };
     const modelWriter = {
       ...fromState,
       uuid: "9c400004-0000-4000-8000-000000000001",
-      expand: [
+      steps: [
+        checkout12,
         {
           uuid: "9c400004-0000-4000-8000-000000000002",
           name: "rename Book",
+          kind: "data",
           backwardCompatible: true,
-          repeatable: true,
           action: {
             actionType: "compositeActionSequence",
             actionLabel: "rename Book",

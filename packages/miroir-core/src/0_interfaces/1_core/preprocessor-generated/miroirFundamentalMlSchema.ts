@@ -19491,7 +19491,8 @@ export const miroirFundamentalMlSchema = {
                     "changeIdAttribute",
                     "addAttribute",
                     "removeAttribute",
-                    "changeAttribute"
+                    "changeAttribute",
+                    "settingsChange"
                   ]
                 },
                 "entity": {
@@ -19521,14 +19522,14 @@ export const miroirFundamentalMlSchema = {
               "value": {
                 "id": 14,
                 "defaultLabel": "Changes",
-                "description": "The structure changes between the two versions, classified (information: the jump applies them)",
+                "description": "The structure changes between the two versions, classified; a settings change (the SelfApplication row, its branches) is listed and not replayed",
                 "display": {
                   "editable": false
                 }
               }
             }
           },
-          "expand": {
+          "steps": {
             "type": "array",
             "definition": {
               "type": "object",
@@ -19539,88 +19540,30 @@ export const miroirFundamentalMlSchema = {
                 "name": {
                   "type": "string"
                 },
-                "backwardCompatible": {
-                  "type": "boolean"
+                "kind": {
+                  "type": "enum",
+                  "definition": [
+                    "model",
+                    "data"
+                  ]
                 },
-                "repeatable": {
+                "backwardCompatible": {
                   "type": "boolean"
                 },
                 "action": {
                   "type": "any"
+                },
+                "trace": {
+                  "type": "uuid",
+                  "optional": true
                 }
               }
             },
             "tag": {
               "value": {
                 "id": 15,
-                "defaultLabel": "Expand steps",
-                "description": "Steps run on the from model, before the jump",
-                "display": {
-                  "editable": true
-                }
-              }
-            }
-          },
-          "fill": {
-            "type": "array",
-            "definition": {
-              "type": "object",
-              "definition": {
-                "uuid": {
-                  "type": "uuid"
-                },
-                "name": {
-                  "type": "string"
-                },
-                "backwardCompatible": {
-                  "type": "boolean"
-                },
-                "repeatable": {
-                  "type": "boolean"
-                },
-                "action": {
-                  "type": "any"
-                }
-              }
-            },
-            "tag": {
-              "value": {
-                "id": 16,
-                "defaultLabel": "Fill steps",
-                "description": "Steps run on the to model, after the jump",
-                "display": {
-                  "editable": true
-                }
-              }
-            }
-          },
-          "contract": {
-            "type": "array",
-            "definition": {
-              "type": "object",
-              "definition": {
-                "uuid": {
-                  "type": "uuid"
-                },
-                "name": {
-                  "type": "string"
-                },
-                "backwardCompatible": {
-                  "type": "boolean"
-                },
-                "repeatable": {
-                  "type": "boolean"
-                },
-                "action": {
-                  "type": "any"
-                }
-              }
-            },
-            "tag": {
-              "value": {
-                "id": 17,
-                "defaultLabel": "Contract steps",
-                "description": "Steps that remove what the to model no longer declares; after them, rolling back needs a restore",
+                "defaultLabel": "Steps",
+                "description": "The steps a migration run executes, in order: a model step is one model Action (or the Git checkout of the to version), a data step a composite action sequence of data writes",
                 "display": {
                   "editable": true
                 }
@@ -23980,7 +23923,7 @@ export const miroirFundamentalMlSchema = {
                   "value": {
                     "canBeTemplate": false,
                     "defaultLabel": "Run a Migration",
-                    "description": "#9: runs a Migration on a following deployment: its expand steps, the jump of the model to the Migration's to version, its fill and contract steps, each recorded in the deployment's DeploymentState row so that a stopped run resumes where it stopped. Refused on an authoring deployment, when the deployment is not at the Migration's from version, when the Migration holds an unsupported change, and while another Migration runs."
+                    "description": "#9, #745: runs a Migration on a following deployment: its steps in order, each model step one model Action the designer ran, each data step a sequence of data writes. Each step is recorded in the deployment's DeploymentState row as started, then as done: a stopped migration run continues at the first step not started, and a step started and not recorded as done stops it until settleMigrationStep settles it. Refused on an authoring deployment, for a Migration already applied, when the deployment is not at the Migration's from version, when the Migration holds an unsupported change, while another Migration runs, and while a step is in doubt."
                   }
                 },
                 "definition": "runMigration"
@@ -24020,6 +23963,83 @@ export const miroirFundamentalMlSchema = {
                         "canBeTemplate": true,
                         "defaultLabel": "Migration",
                         "description": "The uuid of the Migration to run, in the application's modelVersion section"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "tag": {
+              "value": {
+                "display": {
+                  "displayedAttributeValueWhenFolded": "actionLabel"
+                }
+              }
+            },
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false,
+                    "defaultLabel": "Settle a Migration step",
+                    "description": "#745: settles the step a stopped migration run left in doubt on a following deployment (started, not recorded as done): outcome done records it as done, and the next runMigration continues after it; outcome notRun clears it, and the next runMigration executes it again. Refused on an authoring deployment, and for a step that is not in doubt."
+                  }
+                },
+                "definition": "settleMigrationStep"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+              },
+              "payload": {
+                "type": "object",
+                "definition": {
+                  "application": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": true,
+                        "defaultLabel": "Application",
+                        "foreignKeyParams": {
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                          "targetEntityOrderInstancesBy": "name"
+                        },
+                        "display": {
+                          "editable": false
+                        }
+                      }
+                    }
+                  },
+                  "step": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": true,
+                        "defaultLabel": "Step",
+                        "description": "The uuid of the step in doubt, as runMigration names it"
+                      }
+                    }
+                  },
+                  "outcome": {
+                    "type": "enum",
+                    "definition": [
+                      "done",
+                      "notRun"
+                    ],
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": true,
+                        "defaultLabel": "Outcome",
+                        "description": "done: the step's writes all landed (or were completed by hand); notRun: none landed (or they were undone by hand)"
                       }
                     }
                   }
@@ -46344,7 +46364,7 @@ export const miroirFundamentalMlSchema = {
                   "value": {
                     "canBeTemplate": false,
                     "defaultLabel": "Run a Migration",
-                    "description": "#9: runs a Migration on a following deployment: its expand steps, the jump of the model to the Migration's to version, its fill and contract steps, each recorded in the deployment's DeploymentState row so that a stopped run resumes where it stopped. Refused on an authoring deployment, when the deployment is not at the Migration's from version, when the Migration holds an unsupported change, and while another Migration runs."
+                    "description": "#9, #745: runs a Migration on a following deployment: its steps in order, each model step one model Action the designer ran, each data step a sequence of data writes. Each step is recorded in the deployment's DeploymentState row as started, then as done: a stopped migration run continues at the first step not started, and a step started and not recorded as done stops it until settleMigrationStep settles it. Refused on an authoring deployment, for a Migration already applied, when the deployment is not at the Migration's from version, when the Migration holds an unsupported change, while another Migration runs, and while a step is in doubt."
                   }
                 },
                 "definition": "runMigration"
@@ -46440,6 +46460,163 @@ export const miroirFundamentalMlSchema = {
                           "relativePath": "coreTransformerForBuildPlusRuntime"
                         }
                       }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "tag": {
+              "value": {
+                "display": {
+                  "displayedAttributeValueWhenFolded": "actionLabel"
+                },
+                "isTemplate": true
+              }
+            },
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false,
+                    "defaultLabel": "Settle a Migration step",
+                    "description": "#745: settles the step a stopped migration run left in doubt on a following deployment (started, not recorded as done): outcome done records it as done, and the next runMigration continues after it; outcome notRun clears it, and the next runMigration executes it again. Refused on an authoring deployment, and for a step that is not in doubt."
+                  }
+                },
+                "definition": "settleMigrationStep"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+              },
+              "payload": {
+                "type": "object",
+                "definition": {
+                  "application": {
+                    "type": "union",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": true,
+                        "defaultLabel": "Application",
+                        "foreignKeyParams": {
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                          "targetEntityOrderInstancesBy": "name"
+                        },
+                        "display": {
+                          "editable": false
+                        },
+                        "isTemplate": true
+                      }
+                    },
+                    "discriminator": [
+                      "transformerType",
+                      "interpolation"
+                    ],
+                    "definition": [
+                      {
+                        "type": "uuid",
+                        "tag": {
+                          "value": {
+                            "canBeTemplate": true,
+                            "defaultLabel": "Application",
+                            "foreignKeyParams": {
+                              "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+                              "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                              "targetEntityOrderInstancesBy": "name"
+                            },
+                            "display": {
+                              "editable": false
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          "relativePath": "coreTransformerForBuildPlusRuntime"
+                        }
+                      }
+                    ]
+                  },
+                  "step": {
+                    "type": "union",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": true,
+                        "defaultLabel": "Step",
+                        "description": "The uuid of the step in doubt, as runMigration names it",
+                        "isTemplate": true
+                      }
+                    },
+                    "discriminator": [
+                      "transformerType",
+                      "interpolation"
+                    ],
+                    "definition": [
+                      {
+                        "type": "uuid",
+                        "tag": {
+                          "value": {
+                            "canBeTemplate": true,
+                            "defaultLabel": "Step",
+                            "description": "The uuid of the step in doubt, as runMigration names it"
+                          }
+                        }
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          "relativePath": "coreTransformerForBuildPlusRuntime"
+                        }
+                      }
+                    ]
+                  },
+                  "outcome": {
+                    "type": "union",
+                    "definition": [
+                      {
+                        "type": "enum",
+                        "definition": [
+                          "done",
+                          "notRun"
+                        ],
+                        "tag": {
+                          "value": {
+                            "canBeTemplate": true,
+                            "defaultLabel": "Outcome",
+                            "description": "done: the step's writes all landed (or were completed by hand); notRun: none landed (or they were undone by hand)"
+                          }
+                        }
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          "relativePath": "coreTransformerForBuildPlusRuntime"
+                        }
+                      }
+                    ],
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": true,
+                        "defaultLabel": "Outcome",
+                        "description": "done: the step's writes all landed (or were completed by hand); notRun: none landed (or they were undone by hand)",
+                        "isTemplate": true
+                      }
+                    },
+                    "discriminator": [
+                      "transformerType",
+                      "interpolation"
                     ]
                   }
                 }
