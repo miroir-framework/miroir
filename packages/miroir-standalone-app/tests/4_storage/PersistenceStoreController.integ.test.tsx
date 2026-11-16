@@ -902,18 +902,8 @@ describe("PersistenceStoreController.integ.test", () => {
   // ################################################################################################
   it("delete Author Instance", async () => {
     // setup
+    // #745 D4: created once; a second createEntity of Author fails (entityExists)
     const entityCreated = await localAppPersistenceStoreController.createEntity(entityAuthor as Entity);
-    await chainVitestSteps(
-      // setup
-      "setup_createEntity",
-      {},
-      async () =>
-        localAppPersistenceStoreController.createEntity(entityAuthor as Entity),
-      undefined,
-      undefined, // name to give to result
-      undefined, // expected result.elementType
-      undefined, // expected result
-    );
 
     const instanceAdded = await localAppPersistenceStoreController?.upsertInstance(
       "data",

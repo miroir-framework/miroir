@@ -1,5 +1,7 @@
 # 9 — Migrations between model versions: generation, runner and deployment state record
 
+> **Superseded in part by #745** ([analysis](../745-REFACTOR-replay-traced-model-actions/analysis.md)). Its D2-d (a migration run rewrites the model to the frozen `to` version), the jump, and the phases `expand`, `fill` and `contract` are replaced: a Migration holds one ordered list of model and data steps, the model steps replaying the traced model Actions; a step runs once (in doubt until settled when it stops part way); the model is checked against the frozen `from` and `to` versions; `createEntity` fails on existing storage. The current behaviour is in [`docs/reference/versioning.md`](../../../docs/reference/versioning.md#migrations-and-deployment-roles).
+
 > A designer gets a draft data migration between two versions of an application's model and edits it; an operator moves a following deployment from one version to a later one and sees where its data stands. This analysis decides how #9 builds the `Migration` Entity, its generation from trace records and model diffs, the resumable runner with its expand, jump, fill and contract phases, and the deployment state record, with the role of a deployment (authoring or following) fixed at its creation.
 
 Related issue: https://github.com/miroir-framework/miroir/issues/9

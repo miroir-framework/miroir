@@ -16,7 +16,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Prerequisite: [`../9-FEATURE-create-migrations-for-model-and-data-updates/`](../9-FEATURE-create-migrations-for-model-and-data-updates/) ✅
 Working branch: `claude/745-replay-traced-model-actions`
 
-**Resume note:** decisions accepted by the user (2026-11-16); plan reviewed three times (the last round checked feasibility against the code, and coverage of the analysis); Slice 0 done; Slice 1 next.
+**Resume note:** decisions accepted by the user (2026-11-16); plan reviewed three times (the last round checked feasibility against the code, and coverage of the analysis); all slices done (the user asked for an unattended run, committed per slice); the PR is next.
 
 ---
 
@@ -45,14 +45,14 @@ This plan does **not** cover:
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
 | 0 | Characterize; servers; follow-up issues | ✅ | versioning suites on the branch base; `createEntityStrict.integ` with today's behaviour |
-| 1 | Tracer: a migration run executes a traced `createEntity` from a Migration with one ordered step list | ⬜ | `migrationRun.integ` C1 |
-| 2 | Steps in trace order, adds and removes split, Entity row writes refused, steps checked by replay | ⬜ | `migrationGeneration.integ` B4.x |
-| 3 | Changes no model Action can apply are refused; rename and drop replayed | ⬜ | `migrationClassification.unit`, `migrationRun.integ` C3, C9 |
-| 4 | `createEntity` fails on an existing row or storage, on every store | ⬜ | `createEntityStrict.integ` on four profiles; `migrationRun.integ` C6 |
-| 5 | A step runs once: started, done, in doubt, settled | ⬜ | `migrationRun.integ` C2, C7 |
-| 6 | The migration run checks the model against the reference versions | ⬜ | `migrationRun.integ` C8 |
-| 7 | SQL alter and rename change only the columns and table they name, checking first | ⬜ | `entityRowUpdateSqlTable.integ` on `test-sql` |
-| 8 | Nonreg, documents, acceptance criteria | ⬜ | full `nonreg:filesystem` and `nonreg:default`; AC table |
+| 1 | Tracer: a migration run executes a traced `createEntity` from a Migration with one ordered step list | ✅ | `migrationRun.integ` C1 |
+| 2 | Steps in trace order, adds and removes split, Entity row writes refused, steps checked by replay | ✅ | `migrationGeneration.integ` B4.x |
+| 3 | Changes no model Action can apply are refused; rename and drop replayed | ✅ | `migrationClassification.unit`, `migrationRun.integ` C3, C9 |
+| 4 | `createEntity` fails on an existing row or storage, on every store | ✅ | `createEntityStrict.integ` on four profiles; `migrationRun.integ` C6 |
+| 5 | A step runs once: started, done, in doubt, settled | ✅ | `migrationRun.integ` C2, C7 |
+| 6 | The migration run checks the model against the reference versions | ✅ | `migrationRun.integ` C8 |
+| 7 | SQL alter and rename change only the columns and table they name, checking first | ✅ | `entityRowUpdateSqlTable.integ` on `test-sql` |
+| 8 | Nonreg, documents, acceptance criteria | ✅ | full `nonreg:filesystem` and `nonreg:default`; AC table |
 
 ---
 
@@ -147,7 +147,7 @@ for env in filesystem indexedDb sql mongodb; do MIROIR_ENV=test-$env npm run tes
 
 ## Slice 1 — Tracer: a migration run executes a traced `createEntity` from a Migration with one ordered step list
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** the Migration row holds one ordered `steps` list (D1); generation writes the traced model Actions as model steps; a migration run executes them in order with the data steps, without `bringModelToVersion`. Git generation writes the checkout step, and the Git migration run executes it.
 
@@ -183,13 +183,17 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core,actions
 ```
 
 ### Realization
-_(to fill)_
+- The Migration Entity holds one `steps` list (`kind` model or data, `trace` optional); `expand`, `fill`, `contract` and `repeatable` are gone. DeploymentState `run` gained `stepStarted`.
+- `migrationSteps.ts` (new) turns model Actions into steps; `migrationRun.ts` was rewritten: a model step goes through `handleModelAction` marked as the migration run's, with `transactional: false`, then reloads the model. `applyModelState` and `bringModelToVersion` are no longer used by the migration run.
+- The migration run reloads the model of the application before step 1: the server's local cache must hold it for `alterEntityAttribute` and `renameEntity` (`ModelEntityActionTransformer`). The tests load the authoring model on the server too (`loadModelOnServer`).
+- Deviation: the tests' following deployment copies the authoring stores right after 1.0.0 is frozen and shares the authoring `modelVersion` folder, instead of `writeFollowingMigration` and `refreshFollowingVersions`. Every version and Migration the authoring deployment writes is then readable by the following deployment, which is the read access D6 names; the package (#746) is not tested here.
+- C1 green: storage of `EditionC9` created during the migration run, data filled, a second migration run refused (`migrationAlreadyApplied`).
 
 ---
 
 ## Slice 2 — Steps in trace order, adds and removes split, Entity row writes refused, steps checked by replay
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** the D2 table, its refusals in their order, settings rows listed, and the check of the steps replayed in memory.
 
@@ -218,13 +222,15 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,actions
 ```
 
 ### Realization
-_(to fill)_
+- Generation: one step per traced model Action in trace order; `createEntity` of several Entities split; `alterEntityAttribute` split into add, `fill` data steps, remove; model-row writes as model steps; SelfApplication and branch writes as `settingsChange`. Refusal order: Miroir, incomplete record, raw-record agreement, `migrationEntityRowWrite`, then the steps' own replay against `to`.
+- Traces off: the same Actions from the diff in the fixed order (`stepsFromDiff`); a difference no model Action writes gives `migrationNoModelAction`.
+- `migrationGeneration.integ` rewritten (21 tests): the Entity changes go through model Actions (`alterPublisher`), the other row writes through Endpoint rows (appForTest has no Report Entity). B4.4 picks the record of the add by its `addColumns` content: two records held `incomplete9`, and the store order picked either.
 
 ---
 
 ## Slice 3 — Changes no model Action can apply are refused; rename and drop replayed
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** D3, and `renameEntity` / `dropEntity` executed by a migration run.
 
@@ -247,13 +253,14 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,actions
 ```
 
 ### Realization
-_(to fill)_
+- D3: `changeAttribute`, `changeIdAttribute` and a required attribute added to an existing Entity are `supported: false`, with a note naming #749; `renameEntity` is supported. The replay check is skipped when unsupported changes exist (the migration run refuses them first).
+- `migrationClassification.unit` (188 versioning unit tests), `migrationRun.integ` C3 and C9 green.
 
 ---
 
 ## Slice 4 — `createEntity` fails on an existing row or storage, on every store
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** D4, and a migration run's `createEntity` step failing on storage left behind.
 
@@ -288,13 +295,18 @@ npm run nonreg:filesystem -- --runner shared
 (The full filesystem nonreg runs here: `createEntity` is used everywhere.)
 
 ### Realization
-_(to fill)_
+- `createEntitiesStrictly` (core, `1_core/Entity/strictEntityCreation.ts`) holds the order for every store: read the Entity rows from the Entity table (`readEntityRowUuids`), check every Entity (`entityExists`, an Entity named twice included), probe its storage (`storageExists`), then create the storage and write the row of each; a failed storage creation writes no row; external Entities (HTTP and SQL catalog) are exempt. A store without the probe refuses.
+- Probe `storageSpaceExists` on the four store sections: folder, `tableExists`, a registered sublevel or one holding a key, a registered collection or `listCollections`.
+- SQL: `createEntities` returns its errors; `PersistenceStoreController.clear()` reads the external tables first, then calls `dropUnregisteredStorage` on both sections, which drops every table of the schema no section registers.
+- Tests: `createEntityStrict.integ` flipped and extended (filesystem 4 + 2 skipped, IndexedDB 5 + 1, SQL 5 + 1); `strictEntityCreation.unit` (6, the failed storage creation); `migrationRun.integ` C6; `followingDeployment.integ` "an install that creates the record Entity, whose storage exists without its row, fails". `ensureApplicationEntity` returns the same error through `handleModelAction`; it has no test of its own.
+- Watch list: `PersistenceStoreController.integ` "delete Author Instance" created Author twice in its setup (fixed in the setup); the `createEntity` Runner wrote the Entity row (`updateEntityWithDetailsReportUuid`) before its commit replayed `createEntity`, which now failed: its commit moves right after `Create Entity` (before, the commit's upsert also dropped the details Report uuid the update had written).
+- MongoDB: typechecked only (no server, accepted).
 
 ---
 
 ## Slice 5 — A step runs once: started, done, in doubt, settled
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** D5.
 
@@ -328,13 +340,15 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,core,actions
 ```
 
 ### Realization
-_(to fill)_
+- `run.stepStarted` before a step, `stepsDone` after; a failure leaves the step in doubt; `migrationStepInDoubt` on the next `runMigration`; `settleMigrationStep` (Model Endpoint, versioning capability, under the deployment lock) with `done` or `notRun`; `migrationStepNotInDoubt` otherwise. `migrationAlreadyApplied` is checked first, whatever migration run is in progress.
+- `versioned-git`: a Migration holds exactly one model step, the checkout of its `to` (`migrationStepsInvalid` otherwise); a dirty work tree leaves the checkout step in doubt (`migrationRunGit.integ` C4).
+- `migrationRun.integ` C2, C7 green; `followingDeployment.integ` A3.3 covers the refusals on a following deployment.
 
 ---
 
 ## Slice 6 — The migration run checks the model against the reference versions
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** D6, as the user decided it.
 
@@ -360,13 +374,16 @@ npm run nonreg:filesystem -- --runner shared --scope smoke,actions
 ```
 
 ### Realization
-_(to fill)_
+- `referenceState` reads the frozen version by name from the deployment's `modelVersion` rows (`migrationReferenceMissing` when none, several, or with missing rows); `modelStateDifferences` (shared with the steps' replay check) compares as the agreement check does.
+- Before step 1 of a new migration run: live = `from` (`check: "from"`), steps replayed = `to` (`check: "steps"`). After the last step: live = `to` (`check: "to"`), the migration run stays recorded on a mismatch. Git: `checkedOutVersion` only.
+- Tests: C8 (a model step edited, a model changed on disk, `to` missing, `from` missing). C5 now ends with the mismatch after its data step creates an Entity; C6 and C7 end at `to` by dropping the Entity they create.
+- Not done: the case of a version frozen without Tests snapshots (the comparison reads an absent collection as empty, as D6 says; no test builds such a version).
 
 ---
 
 ## Slice 7 — SQL alter and rename change only the columns and table they name, checking first
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** D7.
 
@@ -389,13 +406,14 @@ npm run nonreg:default -- --runner shared --scope smoke,actions
 ```
 
 ### Realization
-_(to fill)_
+- `alterEntityAttribute`: `describeTable`, then `columnExists` / `columnMissing` (virtual attributes skipped through `fromMiroirPresentModelToSequelizeEntityDefinition`), then `addColumn` / `removeColumn` in one transaction, then the data model and the Entity row. `renameEntityClean`: `tableExists` check, rename with its errors caught, then the row. Typed accessors `sqlDataStore()`, `tableOf()`, `storedEntity()` replace the casts the slice touched.
+- `entityRowUpdateSqlTable.integ` on `test-sql`: 6 green (a column the Entity row does not declare kept with its value; refusals with nothing changed; virtual attribute; rename refused and kept rows).
 
 ---
 
 ## Slice 8 — Nonreg, documents, acceptance criteria
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** the non-regression runs, the documents, the AC mapping.
 
@@ -439,4 +457,8 @@ npm run nonreg:default -- --runner shared
 ```
 
 ### Realization
-_(to fill)_
+- Nonreg step `integ-create-entity-strict` added to the manifest.
+- `grep -n "applyModelState\|bringModelToVersion" packages/miroir-versioning/src/migrationRun.ts`: no match.
+- Documents: `docs/reference/versioning.md` (Migrations section rewritten: one step list, step kinds, migration run with started/done/in doubt and `settleMigrationStep`, `migrationAlreadyApplied`, the reference check, D3's refused changes with examples, D4 and D7, `migrationEntityRowWrite` and #748, the strict strategy in the key points; "every step must be repeatable" and the jump removed); epic analysis 7.1, 7.2 (createEntity row done, #748, #749, #750 rows) and 7.3 ("migration run"); #9 analysis note at its top; explainer note (`README.md` and `candidate.archify.md`).
+- MiroirTest `action.scenario.migration`: green.
+- Nonreg and gate results: in the PR description.

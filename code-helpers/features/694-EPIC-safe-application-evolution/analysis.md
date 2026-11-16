@@ -412,6 +412,9 @@ With Git, the model files of a following clone change through Git: a pull, or a 
 | Reload after checkout | `loadConfigurationFromPersistenceStore` (`DomainController.ts`, line 652) | done (#681) |
 | Trace MiroirTest skipped when traces are off | `miroirTestRequirements.ts` | done (#589) |
 | Storage creation that keeps an existing SQL table, for lazy `devData` storage (#647) | `createStorageSpaceForInstancesOfEntityIfMissing` (`SqlDbStoreSection.ts`) | done; not used by model Actions (strict strategy) |
+| `createEntity` fails where the Entity's row (`entityExists`) or storage (`storageExists`) exists, on every store, before writing; a SQL reset drops orphan tables | `strictEntityCreation.ts` (core), the four store mixins, `storageSpaceExists` | done (#745 D4) |
+| A Migration replays the traced model Actions: one ordered list of model and data steps; a step runs once (started, done, in doubt, `settleMigrationStep`); the model is checked against the frozen `from` and `to` | `migrationSteps.ts`, `migrationGeneration.ts`, `migrationRun.ts` | done (#745 D1, D2, D5, D6) |
+| SQL `alterEntityAttribute` and `renameEntity` check first and change only what they name | `sqlDbEntityStoreSectionMixin.ts` | done (#745 D7) |
 
 ### 7.2 Misaligned or missing
 
@@ -425,8 +428,9 @@ With Git, the model files of a following clone change through Git: a pull, or a 
 | Snapshot diff covers Entities only, by uuid, with no attribute-level steps (`modelStructureMigration` is always `[]`) | `diffEntityVersionSnapshots`; `applicationVersionFreeze.ts`, line 1346 | item 6 (D4, D12) |
 | `MetaModel` has no collections for Blob, TestConfiguration or Test rows (#703 added Blob and Test to the Entity list only) | `miroirFundamentalType.ts` | item 6 (D4) |
 | No `Migration` Entity, no runner, no deployment state record, no authoring and following roles | — | item 7 |
-| `createEntity` on existing storage empties it on SQL, IndexedDB and MongoDB, and reuses it on the filesystem; the strict strategy wants a failure | `SqlDbStoreSection.ts`, `IndexedDbStoreSection.ts`, `MongoDbStoreSection.ts`, `FileSystemStoreSection.ts` | item 7 (#745) |
-| SQL data tables follow only model Actions; the Entity editor saves the row as an instance update | `sqlDbEntityStoreSectionMixin.ts`, `SqlDbStoreSection.ts`, `EntityEditor.tsx` | items 7 and 9 (D2) |
+| SQL data tables follow only model Actions; the Entity editor saves the row as an instance update, which a Migration cannot replay (`migrationEntityRowWrite`) | `EntityEditor.tsx`, instance writes of Entity rows | #748 |
+| Column type, nullability, key and reference changes have no model Action; a Migration holding one is refused | `ModelActionAlterEntityAttribute` | #749 |
+| A commit retried after it failed part way replays a `createEntity`, which now fails | `DomainController.ts` (commit retry) | #750 |
 | No attribute rename Action: `alterEntityAttribute` declares `addColumns`, `removeColumns` and `update`, and the SQL store applies only the first two | `ModelActionAlterEntityAttribute` | item 8 (#215), as a composite Action |
 | No action creates a Git tag | `gitAction_*` list | item 6 (D3) |
 | No restore of a frozen version | — | item 9 (D6) |
@@ -436,17 +440,17 @@ With Git, the model files of a following clone change through Git: a pull, or a 
 
 ### 7.3 What #9 built that the 2026-11-16 revision changes
 
-#9 (#739, #740, #742) was built on D2-d and D5-a. The revision changes these parts:
+#9 (#739, #740, #742) was built on D2-d and D5-a. The revision changes these parts; #745 implemented every row but the package (#746) and Git (D13, #747):
 
 | Built in #9 | Revision | What it means |
 |---|---|---|
-| A run rewrites the model to the frozen `to` version between its expand and fill steps (`applyModelState`, `bringModelToVersion`) | D2: the Migration replays the traced model Actions; D5 (amended, #745 D6): the migration run reads the Migration and, as a reference to compare with, the frozen `from` and `to` versions | the model part of the run comes from the Migration's own steps |
-| Generation writes the changes found by the diff, with empty fill and contract steps; the records only vouch for it | D2, D12: the model steps are the traced Actions, which the run executes | generation writes the Actions in order |
+| A migration run rewrites the model to the frozen `to` version between its expand and fill steps (`applyModelState`, `bringModelToVersion`) | D2: the Migration replays the traced model Actions; D5 (amended, #745 D6): the migration run reads the Migration and, as a reference to compare with, the frozen `from` and `to` versions | the model part of the migration run comes from the Migration's own steps |
+| Generation writes the changes found by the diff, with empty fill and contract steps; the records only vouch for it | D2, D12: the model steps are the traced Actions, which the migration run executes | generation writes the Actions in order |
 | Steps grouped in `expand`, `fill` and `contract` | D2: one ordered list, data steps placed among the model steps | the `Migration` row changes shape |
 | Steps may hold model actions without Git, are refused them with Git | D2: model steps come from the traces; whether a hand-written step may hold a model Action is part of #741 | #741 is restated |
 | The tests share the `modelVersion` section between the authoring and the following deployment | D5: read access or a package | the tests also cover an imported package |
-| A run resumes by running again the step it was in; steps are repeatable; storage creation would reuse existing storage | strict strategy: a step runs once, an in-doubt step stops the run, `createEntity` fails on existing storage | #745 |
-| With Git, the run reads the Migration at the tag and checks the tag out itself | D13: open | kept as provisional until D13 is decided |
+| A migration run resumes by running again the step it was in; steps are repeatable; storage creation would reuse existing storage | strict strategy: a step runs once, an in-doubt step stops the migration run, `createEntity` fails on existing storage | #745 |
+| With Git, the migration run reads the Migration at the tag and checks the tag out itself | D13: open | kept as provisional until D13 is decided; #745 makes the checkout the Migration's one model step |
 | No export or import of a Migration as a JSON file | D5 | new: export and import |
 
 ## 8. Epic items 6 to 11

@@ -611,7 +611,7 @@
   },
   "packages/miroir-store-postgres/src/4_services/sqlDbEntityStoreSectionMixin.ts": {
     "miroir/type-escape": {
-      "count": 4
+      "count": 1
     }
   },
   "packages/miroir-store-postgres/src/4_services/sqlDbInstanceStoreSectionMixin.ts": {

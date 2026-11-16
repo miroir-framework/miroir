@@ -112,7 +112,7 @@ function stepLabel(step: Pick<MigrationStep, "name" | "uuid"> | undefined, uuid:
  * `to` (exactly one), and no data step writes the model.
  */
 function stepsRefusal(migration: MigrationRow, git: boolean): Action2Error | undefined {
-  const row = migration as unknown as Record<string, unknown>;
+  const row: Record<string, unknown> = { ...migration };
   if (!Array.isArray(row.steps) || ["expand", "fill", "contract"].some((phase) => phase in row)) {
     return refusal(
       `runMigration: Migration ${migration.uuid} has no list of steps, or is in the shape of #9 (expand, fill, contract); generate it again, or write its steps by hand`,
