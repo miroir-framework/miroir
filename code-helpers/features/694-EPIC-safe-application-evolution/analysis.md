@@ -212,7 +212,7 @@ Two facts about the code shape this decision.
 - IndexedDB clears the existing sublevel (`IndexedDbStoreSection.ts`, `createStorageSpaceForInstancesOfEntity`);
 - MongoDB runs `deleteMany({})` (`MongoDbStoreSection.ts`).
 
-Only SQL has `createStorageSpaceForInstancesOfEntityIfMissing` (`SqlDbStoreSection.ts`, line 304; `PersistenceStoreController.ts` uses it when it exists). So a replayed `createEntity` wipes the data of that Entity on every store but the filesystem.
+Only SQL has `createStorageSpaceForInstancesOfEntityIfMissing` (`SqlDbStoreSection.ts`, line 304; `PersistenceStoreController.ts` uses it when it exists). Correction (#745 analysis, D4): that is what `createStorageSpaceForInstancesOfEntity` does; `createEntity` itself drops and recreates the table on SQL only, while the IndexedDB, MongoDB and filesystem mixins skip the creation when the Entity is registered and reuse the storage. Either way, a replayed `createEntity` on existing storage loses or adopts data silently; under the strict strategy it fails (#745).
 
 **SQL columns follow the model only through model Actions.** `alterEntityAttribute` updates the Entity row and then runs `sequelizeModel.sync({ alter: true })` on the data table (`sqlDbEntityStoreSectionMixin.ts`, `alterEntityAttribute`, lines 199 to 267). Booting a SQL section only maps the Entities to tables and widens old varchar columns (`SqlDbStoreSection.bootFromPersistedState`, lines 97 to 140, and `widenLegacyStringColumns`). So an Entity row changed any other way leaves the table as it was. The other ways are a restore from a snapshot, a Git checkout, or the generic instance editor, which is what the Entity editor uses today.
 
@@ -440,7 +440,7 @@ With Git, the model files of a following clone change through Git: a pull, or a 
 
 | Built in #9 | Revision | What it means |
 |---|---|---|
-| A run rewrites the model to the frozen `to` version between its expand and fill steps (`applyModelState`, `bringModelToVersion`) | D2: the Migration replays the traced model Actions; D5: the run reads nothing else from the authoring `modelVersion` | the model part of the run comes from the Migration's own steps |
+| A run rewrites the model to the frozen `to` version between its expand and fill steps (`applyModelState`, `bringModelToVersion`) | D2: the Migration replays the traced model Actions; D5 (amended, #745 D6): the migration run reads the Migration and, as a reference to compare with, the frozen `from` and `to` versions | the model part of the run comes from the Migration's own steps |
 | Generation writes the changes found by the diff, with empty fill and contract steps; the records only vouch for it | D2, D12: the model steps are the traced Actions, which the run executes | generation writes the Actions in order |
 | Steps grouped in `expand`, `fill` and `contract` | D2: one ordered list, data steps placed among the model steps | the `Migration` row changes shape |
 | Steps may hold model actions without Git, are refused them with Git | D2: model steps come from the traces; whether a hand-written step may hold a model Action is part of #741 | #741 is restated |
