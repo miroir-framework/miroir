@@ -30,7 +30,7 @@ Key sources: [`migrationGeneration.ts`](../../../packages/miroir-versioning/src/
 - `versioned-git` follower runs: D13, #747. #9's Git run is kept, adapted to the new row shape (D1).
 - Export and import of a Migration as a file: #746. The tests here give the following deployment its own copy of the `modelVersion` rows instead of a shared section.
 - What a hand-written step may hold (model Actions refused): #741. D1 gives each step a `kind` that #741 checks.
-- Column type, nullability and key changes on SQL: flagged unsupported here (D3); the Actions that carry them are a follow-up (to file).
+- Column type, nullability and key changes on SQL: refused here (D3); the Actions that would apply them are a follow-up (to file).
 - Restore and rollback, and what they do with storage left by later versions: #709 (section 7).
 - A failed authoring commit that cannot be retried once D4 applies: a follow-up (to file, section 4.4).
 - Committing a step's writes and its record in one SQL transaction: later; D5 detects the gap instead.
@@ -42,7 +42,7 @@ Key sources: [`migrationGeneration.ts`](../../../packages/miroir-versioning/src/
 |---|---|---|
 | D1. What does a Migration row hold? | **One ordered `steps` list; each step has a `kind` (`model` or `data`); no phases, no `repeatable`; digests of the two models** | G1, G2 |
 | D2. How does generation turn trace records into model steps? | **One step per model Action, in trace order, Entity row writes turned into model Actions, adds and removes split, then a replay of the steps checked against `to`** | G1, G2 |
-| D3. What happens to a change no model Action carries to storage? | **Classified unsupported: generation writes it, the run refuses the Migration** | G3 |
+| D3. Which model changes does a Migration accept, given what the model Actions can do to a SQL table? | **Those a model Action applies to the table; a type, nullability, foreign key, enum or key change, and a required attribute added to an existing Entity, are refused** | G3 |
 | D4. What does `createEntity` do when the Entity's storage or row already exists? | **It fails, on every store, before writing anything** | G3 |
 | D5. How does a run make sure no step runs twice? | **A step is recorded as started, then as done; a step started and not done stops the run until the operator settles it; a Migration already applied fails** | G3, G4 |
 | D6. How does a run check the deployment's model without reading the authoring deployment's `modelVersion` section? | **The Migration holds digests of the `from` and `to` models; the run checks the live model and its own replay against them before step 1, and the live model after the last step** | G3 |
@@ -83,7 +83,7 @@ Generation walks the `commit` records between the two version markers in sequenc
 | `alterEntityAttribute` with one of them | itself (an add is followed by its empty fill steps) |
 | `renameEntity`, `dropEntity` | itself |
 | `createInstance` of an Entity row | `createEntity` of that row |
-| `updateInstance` of an Entity row | compared with the row replayed so far: `renameEntity` if the name changed; `alterEntityAttribute` adding the new attributes, then their fill steps; `alterEntityAttribute` removing the gone ones; then `updateInstance` with the traced row, which carries every other field. A changed attribute or `idAttribute` is classified (D3). |
+| `updateInstance` of an Entity row | compared with the row replayed so far: `renameEntity` if the name changed; `alterEntityAttribute` adding the new attributes, then their fill steps; `alterEntityAttribute` removing the gone ones; then `updateInstance` with the traced row, which sets every other field of the row. A changed attribute or `idAttribute` is classified (D3). |
 | `deleteInstance` of an Entity row | `dropEntity` |
 | instance writes on rows of the compared collections (`AGREEMENT_COLLECTIONS`: Queries, Reports, Menus, Endpoints, Runners, Themes, TransformerDefinitions, MlSchemas, Tests, Blobs, TestConfigurations) | itself |
 | instance writes on other model rows (the SelfApplication row, its branches: the traces switch, `versioningMode`) | no step: listed in `changes` as `kind: "settingsChange"`, information only. A following deployment's settings are its own (its traces are off, its role is following). |
@@ -92,7 +92,7 @@ Refusals, before any step is written:
 - a `commit` record with `complete: false` between the two versions (`migrationIncompleteRecord`): a commit that stopped part way, then retried, holds some Actions twice, and a replay would meet its own work (D4). The designer re-baselines.
 - the application is Miroir (`migrationUnsupportedApplication`): its model lives in `data`, and `ModelEntityActionTransformer` writes model Actions to `model` (lines 41, 63, 90, 121), so an in-memory replay of Miroir changes nothing and proves nothing.
 
-Then generation replays its own model steps on the `from` state in memory and refuses (`evolutionTracesDisagree`) if the result is not `to`, as D12-b of the epic asks ("the draft carries its own proof"). The check on the raw records stays before it.
+Then generation replays its own model steps on the `from` state in memory and refuses (`evolutionTracesDisagree`) if the result is not `to`, as D12-b of the epic asks (the draft includes its own proof). The check on the raw records stays before it.
 
 With traces off (`source: diff`), the same Action kinds come from the diff of the two versions, in a fixed order: Entities created, renamed, attributes added (with their fill steps), attributes removed, Entities dropped, then the other rows created, updated, deleted. The same replay check runs.
 
@@ -102,23 +102,39 @@ With traces off (`source: diff`), the same Action kinds come from the diff of th
 | D2-b. One step per trace record | the record's Actions as one sequence | fewer steps | an add and a remove made in one commit cannot have a step between them |
 | D2-c. Replay records as they are | no conversion | simple | the Entity editor's row updates change no storage (above) |
 
-### D3. What happens to a change no model Action carries to storage?
+### D3. Which model changes does a Migration accept, given what the model Actions can do to a SQL table?
 
 **Status:** Proposed — D3-a. **Serves:** G3.
 
-**What is at stake.** A designer makes `Book.year` a number instead of a string, or makes `Publisher.motto` required, or adds a required `Book.isbn` to a Library holding books. The row update replays, but on SQL:
-- the column keeps its type and nullability: no model Action changes them (`alterEntityAttribute.update` is declared and the SQL store ignores it, epic section 7.2);
-- a required attribute is a `NOT NULL` column (`allowNull: false`, `miroir-store-postgres/src/utils.ts` line 114), which SQL cannot add to a table with rows, and "add it optional, fill it, then make it required" needs the column change above.
+**What is at stake.** A Migration step changes the stores only through the model Actions `createEntity`, `alterEntityAttribute`, `renameEntity` and `dropEntity`. On SQL these run `CREATE TABLE`, `ALTER TABLE … ADD COLUMN` / `DROP COLUMN`, `ALTER TABLE … RENAME` and `DROP TABLE`. No model Action changes the type or the nullability of an existing column, or a table's primary key: `alterEntityAttribute` declares an `update` field, and the SQL store ignores it (`sqlDbEntityStoreSectionMixin.ts`, `alterEntityAttribute`; epic section 7.2). A required attribute is a `NOT NULL` column (`allowNull: false`, `miroir-store-postgres/src/utils.ts` line 114), and PostgreSQL refuses to add a `NOT NULL` column without a default to a table that holds rows.
 
-Today #9 classifies `changeAttribute` and `addAttribute` (required) as supported, and the run leaves the gap or fails in the store.
+So some model changes the designer can make in the Entity editor have no model Action that brings the SQL table to match. #9 classifies them as supported: the run replays the Entity row update, the table stays as it was, and a later write fails or stores a value of the wrong type.
+
+Examples on Library (the attributes as they are today: `Book.year` is an optional number, `Book.author` a required uuid pointing to Author):
+
+| Change made by the designer | Model step(s) the Migration holds | What SQL does | Under D3-a |
+|---|---|---|---|
+| add an optional `Book.isbn` (string) | `alterEntityAttribute` with `addColumns: [isbn]` | `ADD COLUMN isbn` (nullable) | **accepted** |
+| remove `Book.citation` | `alterEntityAttribute` with `removeColumns: [citation]` | `DROP COLUMN citation`, its values gone | **accepted**, not backward-compatible (epic D1) |
+| create the Entity `Edition`, with a required `name` | `createEntity Edition` | `CREATE TABLE`, empty | **accepted** (a required attribute of a new, empty table is fine) |
+| rename the Entity `Publisher` to `Editor` | `renameEntity` | `ALTER TABLE … RENAME`, rows kept | **accepted** (#9 refused it, since the jump did not rename tables) |
+| drop the Entity `Edition` | `dropEntity` | `DROP TABLE` | **accepted**, not backward-compatible |
+| change the display label of `Book.year` (its `tag`) | `updateInstance` of the Book Entity row | nothing | **accepted**; not listed as a change |
+| change a Report or a Query | the instance write | nothing (model rows only) | **accepted** |
+| add a required `Book.isbn` to Book, which holds rows | `alterEntityAttribute` with `addColumns: [isbn]`, required | `ADD COLUMN isbn NOT NULL` fails on a table with rows | **refused** at generation (`supported: false`), so the run refuses the Migration before step 1 |
+| make `Book.year` required | an Entity row update only: no Action changes nullability | the column stays nullable | **refused** |
+| change `Book.year` from number to string | an Entity row update only: no Action changes a column type | the column stays numeric | **refused** |
+| point `Book.author` to Publisher instead of Author | an Entity row update only | nothing; existing values point to Authors | **refused** |
+| change the enum values of an attribute | an Entity row update only | nothing; existing values may fall outside the new list | **refused** |
+| change Author's `idAttribute` from `uuid` to `name` | an Entity row update only: no Action changes a primary key | the key stays `uuid` | **refused** |
 
 | Option | Mechanism | Pros | Cons |
 |---|---|---|---|
-| **D3-a. Unsupported** ★ | `changeAttribute`, `changeIdAttribute` and the addition of a required attribute to an existing Entity are `supported: false`, with a note; generation writes the Migration, the run refuses it (`migrationUnsupportedChange`) before step 1 | strict; the designer sees it at generation | a type change or a required attribute needs the follow-up |
-| D3-b. As #9 | row update only; required add left to the store | no new refusal | the SQL column no longer matches the model, or the run fails half way |
-| D3-c. Implement column changes | SQL `changeColumn` behind `alterEntityAttribute.update`; a required add generated as "add optional, fill, make required" | complete | a new Action contract, out of this issue's scope: the follow-up |
+| **D3-a. Refuse the changes no model Action can apply to the table** ★ | generation classifies `changeAttribute`, `changeIdAttribute`, and a required attribute added to an existing Entity as `supported: false`, with a note naming the follow-up; it still writes the Migration, so the designer sees the list; `runMigration` refuses it before step 1 (`migrationUnsupportedChange`) | the run never ends with a table that does not match the model | a type change or a new required attribute on an existing Entity cannot be migrated until the follow-up |
+| D3-b. As #9 | the Entity row update is replayed, the table left as it is | no new refusal | the table no longer matches the model, found later by a failed write |
+| D3-c. Add column changes now | SQL `changeColumn` behind `alterEntityAttribute.update`, and a required attribute generated as "add it nullable, fill it, make it required" | complete | a new Action contract, out of this issue's scope: the follow-up |
 
-`renameEntity` becomes supported: the replayed `renameEntity` renames the SQL table, which the jump did not do. A tag-only change (display hints) is no change, as today (`withoutTag`). A required attribute on an Entity created in the same Migration is supported (the table is new and empty).
+The filesystem, IndexedDB and MongoDB stores keep each instance as a JSON document, so these changes need no storage change there. D3-a refuses them on every store anyway: a Migration does not know which store its following deployments use, and existing documents would still hold values of the old type or no value for a required attribute.
 
 ### D4. What does `createEntity` do when the Entity's storage or row already exists?
 

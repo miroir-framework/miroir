@@ -37,7 +37,7 @@ This plan does **not** cover: Git follower runs beyond the provisional checkout 
 | 0 | Characterize the #9 run, generation and `createEntity` per store | ⬜ | the versioning suites green on `_integration`; `createEntity` on existing storage, per store, recorded |
 | 1 | Tracer: a run replays a traced `createEntity`, from a one-list Migration | ⬜ | `migrationRun.integ` C1 rewritten |
 | 2 | Entity row writes become model Actions; adds and removes split; the draft proves itself | ⬜ | `migrationGeneration.integ` B1 to B3.6 rewritten, new B4.x |
-| 3 | Changes no Action carries to storage are refused | ⬜ | `migrationClassification.unit`, `migrationRun.integ` C3 |
+| 3 | Model changes no model Action can apply to a SQL table are refused | ⬜ | `migrationClassification.unit`, `migrationRun.integ` C3 |
 | 4 | `createEntity` fails on existing storage or row, on every store | ⬜ | new `createEntityStrict.integ` on four profiles; run C6 |
 | 5 | A step runs once: started, done, in doubt, settled | ⬜ | `migrationRun.integ` C2 rewritten, C7 |
 | 6 | The run checks the model against the Migration's digests | ⬜ | `migrationRun.integ` C8 |
@@ -193,7 +193,7 @@ _(to fill)_
 
 ---
 
-## Slice 3 — Changes no Action carries to storage are refused
+## Slice 3 — Model changes no model Action can apply to a SQL table are refused
 
 **Status:** ⬜ pending
 
