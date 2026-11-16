@@ -15,6 +15,7 @@ Key sources: [`applicationVersionFreeze.ts`](../../../packages/miroir-core/src/1
 - 2026-11-08: the user's review. Every decision now states its question. D12 now takes the traces as its source and checks them against the diff; the earlier diff-only choice is kept as D12-a. Section 5.3 plans a composite rename Action, D4 is corrected about `MetaModel`, D9 is rewritten with an example, and D8 is accepted. Later that day the user accepted all the goals and decisions.
 - 2026-11-14: wording only, no decision changed. The one-letter shorthands of the settings (N, G) and of the workflows (S, C) are replaced by the `versioningMode` values `versioned-internal` and `versioned-git` and by the workflow names strict and continuous delivery; G also clashed with the goal labels G1 to G8. Issues #708, #709 and #718 were reworded the same way; older documents may still say setting N (no Git) and setting G (Git).
 - 2026-11-16: the user's review after #9 found the context unclear. Without Git, a following deployment now gets a Migration by reading the authoring deployment's `modelVersion` section or by importing it as a JSON file, like a package manager updating a local install (D5). A Migration replays the traced model Actions, with the designer's data steps placed among them, instead of a "jump" of the model between expand and contract phases (D2); the term "jump" is dropped. The restore is for rollback and installs only (D6). With Git, what runs on a following deployment after a pull or checkout changes its model is open (D13). Sections 3 to 5, 8 and 9 follow, and section 7.3 lists what #9 built that this revision changes.
+- 2026-11-16, later: the user set a **strict strategy** for the whole epic (section 6, before D1). Without Git, a replayed `createEntity` fails when its storage exists, a run never runs a step twice, and steps are no longer repeatable (D2). Section 7.2 follows. #745 holds the details.
 
 ---
 
@@ -167,6 +168,8 @@ In the strict workflow it runs as one migration. In continuous delivery the same
 
 ## 6. Decision record
 
+**Strict strategy (the user, 2026-11-16).** Every decision of this epic follows it: an operation that meets a state it did not expect fails with an error naming that state. It never repairs, skips, reuses or overwrites silently, and it leaves what it found as it was. A storage space that exists where a model Action would create one, a step whose outcome is unknown, a deployment whose model is not the one its state record names: each one stops the operation.
+
 Settings are named by their `versioningMode` value: `versioned-internal` keeps versions as frozen rows in `modelVersion`, without Git, and `versioned-git` keeps the model in Git, with versions as tags (section 4.1). Workflows are named strict and continuous delivery (section 4.2). Each decision is stated as the question it answers.
 
 | Decision | Choice | Serves |
@@ -234,7 +237,7 @@ How D2-d worked (superseded on 2026-11-16, kept for the record):
 **Decision (2026-11-08):** D2-d. Item 7 owns the runner, the phases and the idempotent storage creation. Item 9 owns the restore and shares the reconciliation. The experiments include a SQL run.
 
 **Revised decision (2026-11-16): D2-a for `versioned-internal`.** The user's review after #9 answered the cons of D2-a:
-- *Destructive on re-run.* A following deployment at `from` has no storage for an Entity that a later trace creates, so a replayed `createEntity` makes empty storage, as expected; the Entity keeps the uuid it has on the authoring deployment. Only a second run of the same action would empty data. The runner resumes at the first step not recorded, and storage creation uses an `IfMissing` variant, so that window is the one between a step's write and its record, which every step already has to survive (repeatable steps).
+- *Destructive on re-run.* A following deployment at `from` has no storage for an Entity that a later trace creates, so a replayed `createEntity` makes empty storage, as expected; the Entity keeps the uuid it has on the authoring deployment. Only a second run of the same action would meet existing storage. Under the strict strategy, a `createEntity` whose storage exists fails on every store, and leaves it as it was; the runner never runs a step twice (below).
 - *A Git checkout has already rewritten the files.* This concerns `versioned-git` only, which moves to D13.
 - *A data step that needs a removed attribute.* The order solves it: such a step goes before the model Action that removes the attribute.
 
@@ -243,7 +246,7 @@ How D2-a works for `versioned-internal`:
 - The designer places data steps in the list: a step that fills an attribute goes after the Action that adds it; a step that reads an attribute goes before the Action that removes it. No phases are named. Generation therefore writes each added and each removed attribute as its own step, even when one Entity row update or one `alterEntityAttribute` did both: a copy from the old attribute to the new one (a rename, section 5.3) then has a place between the add and the remove.
 - The model Actions create, alter and drop storage, so no reconciliation runs. A drop is a traced `dropEntity` or a `removeColumns`, classified not backward-compatible (D1).
 - A replayed `alterEntityAttribute` changes only the columns it names. On SQL it runs `sync({ alter: true })` today, which also drops the columns the model lacks: after a rollback that kept a later version's column (D6), replaying an earlier Migration would drop that column and its values. Item 7 has to restrict the alter to the named columns.
-- The runner checks that the deployment is at `from`, copies the Migration into the state record before its first step, runs and records one step at a time with tracing suppressed, and resumes at the first step not recorded. Every step is repeatable.
+- The runner checks that the deployment is at `from`, copies the Migration into the state record before its first step, and runs one step at a time with tracing suppressed. It records a step as started before running it and as done after. A rerun resumes at the first step not started. A step started and not done stops the run with an error naming it: the operator settles it by hand. A Migration the deployment already applied fails. Steps need not be repeatable (strict strategy, 2026-11-16).
 
 `versioned-git`: Git changes the model files, so a replay of model Actions does not apply as is. D13 holds the question.
 
@@ -408,7 +411,7 @@ With Git, the model files of a following clone change through Git: a pull, or a 
 | Git page: commit, branches, checkout of tags, fetch, pull, push, clone and install | `GitActions.ts`, `miroir-git-isomorphic` | done (#679, #691) |
 | Reload after checkout | `loadConfigurationFromPersistenceStore` (`DomainController.ts`, line 652) | done (#681) |
 | Trace MiroirTest skipped when traces are off | `miroirTestRequirements.ts` | done (#589) |
-| Idempotent storage creation on SQL | `createStorageSpaceForInstancesOfEntityIfMissing` (`SqlDbStoreSection.ts`) | done |
+| Storage creation that keeps an existing SQL table, for lazy `devData` storage (#647) | `createStorageSpaceForInstancesOfEntityIfMissing` (`SqlDbStoreSection.ts`) | done; not used by model Actions (strict strategy) |
 
 ### 7.2 Misaligned or missing
 
@@ -422,7 +425,7 @@ With Git, the model files of a following clone change through Git: a pull, or a 
 | Snapshot diff covers Entities only, by uuid, with no attribute-level steps (`modelStructureMigration` is always `[]`) | `diffEntityVersionSnapshots`; `applicationVersionFreeze.ts`, line 1346 | item 6 (D4, D12) |
 | `MetaModel` has no collections for Blob, TestConfiguration or Test rows (#703 added Blob and Test to the Entity list only) | `miroirFundamentalType.ts` | item 6 (D4) |
 | No `Migration` Entity, no runner, no deployment state record, no authoring and following roles | — | item 7 |
-| Creating a storage space empties an existing one on SQL, IndexedDB and MongoDB; only SQL has an `IfMissing` variant | `SqlDbStoreSection.ts`, `IndexedDbStoreSection.ts`, `MongoDbStoreSection.ts` | item 7 (D2: a replayed `createEntity` on a resumed run) |
+| `createEntity` on existing storage empties it on SQL, IndexedDB and MongoDB, and reuses it on the filesystem; the strict strategy wants a failure | `SqlDbStoreSection.ts`, `IndexedDbStoreSection.ts`, `MongoDbStoreSection.ts`, `FileSystemStoreSection.ts` | item 7 (#745) |
 | SQL data tables follow only model Actions; the Entity editor saves the row as an instance update | `sqlDbEntityStoreSectionMixin.ts`, `SqlDbStoreSection.ts`, `EntityEditor.tsx` | items 7 and 9 (D2) |
 | No attribute rename Action: `alterEntityAttribute` declares `addColumns`, `removeColumns` and `update`, and the SQL store applies only the first two | `ModelActionAlterEntityAttribute` | item 8 (#215), as a composite Action |
 | No action creates a Git tag | `gitAction_*` list | item 6 (D3) |
@@ -442,6 +445,7 @@ With Git, the model files of a following clone change through Git: a pull, or a 
 | Steps grouped in `expand`, `fill` and `contract` | D2: one ordered list, data steps placed among the model steps | the `Migration` row changes shape |
 | Steps may hold model actions without Git, are refused them with Git | D2: model steps come from the traces; whether a hand-written step may hold a model Action is part of #741 | #741 is restated |
 | The tests share the `modelVersion` section between the authoring and the following deployment | D5: read access or a package | the tests also cover an imported package |
+| A run resumes by running again the step it was in; steps are repeatable; storage creation would reuse existing storage | strict strategy: a step runs once, an in-doubt step stops the run, `createEntity` fails on existing storage | #745 |
 | With Git, the run reads the Migration at the tag and checks the tag out itself | D13: open | kept as provisional until D13 is decided |
 | No export or import of a Migration as a JSON file | D5 | new: export and import |
 
