@@ -30,6 +30,12 @@ python ci/release/release_version.py \
   --since 0.5.0-rc.1
 ```
 
+The plan prints the Lerna candidates, the overrides, the closure additions, the layers and the product version. It
+also prints `range_rewrites`, each internal runtime/peer range `--apply` rewrites (`by: producer` pins a `*` or
+`file:` range to the exact version, `by: lerna` bumps a range that holds a version), and `changed_files`, the
+tracked files the release commit records. A bad `--since` ref, a product version that already has a tag, a dirty
+tree, and unknown or conflicting overrides all fail here, before anything is written (#751).
+
 ## Apply in a disposable worktree (recommended)
 
 ```bash

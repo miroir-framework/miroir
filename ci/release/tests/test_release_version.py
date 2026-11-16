@@ -498,3 +498,110 @@ def test_record_pushes_neither_ref_when_the_remote_refuses_one(release_worktree,
     with pytest.raises(Exception):
         push_release(worktree, "1.3.0")
     assert "release/1.3.0" not in git(remote, "branch", "--list")
+
+
+# ---------------------------------------------------------------------------------------------------------------
+# #751: the dry run shows the range rewrites and the files --apply changes; every pre-mutation refusal is tested.
+
+
+def test_the_plan_lists_the_internal_range_rewrites(repo: Path) -> None:
+    plan = build_plan(
+        repo, bump="minor", since="1.2.2", force=[], disable=[], candidate_provider=candidates(["app"])
+    )
+    assert plan.to_dict()["range_rewrites"] == [
+        {"package": "app", "kind": "dependencies", "dependency": "core", "from": "*", "to": "1.3.0", "by": "producer"},
+        {"package": "app", "kind": "dependencies", "dependency": "lib", "from": "*", "to": "1.3.0", "by": "producer"},
+        {"package": "lib", "kind": "dependencies", "dependency": "core", "from": "*", "to": "1.3.0", "by": "producer"},
+    ]
+
+
+def test_the_plan_predicts_lerna_bumping_a_concrete_internal_range(repo: Path) -> None:
+    write_manifest(
+        repo / "packages" / "app" / "package.json", "app", "0.4.0",
+        dependencies={"core": "file:../core", "lib": "^1.2.3"}, peerDependencies={"docs": "*"},
+    )
+    plan = build_plan(
+        repo, bump="patch", since="1.2.2", force=[], disable=[], candidate_provider=candidates(["app"])
+    )
+    rewrites = {(r["package"], r["dependency"]): (r["from"], r["to"], r["by"]) for r in plan.to_dict()["range_rewrites"]}
+    assert rewrites[("app", "core")] == ("file:../core", "1.2.4", "producer")
+    assert rewrites[("app", "lib")] == ("^1.2.3", "^1.2.4", "lerna")
+    assert rewrites[("app", "docs")] == ("*", "1.2.4", "producer")  # a peer edge: the closure selected docs
+
+
+def test_the_plan_lists_the_files_apply_changes(repo: Path) -> None:
+    (repo / "lerna.json").write_text('{"version": "1.2.3"}', encoding="utf-8")
+    (repo / "package-lock.json").write_text("{}", encoding="utf-8")
+    plan = build_plan(
+        repo, bump="minor", since="1.2.2", force=[], disable=[], candidate_provider=candidates(["app"])
+    )
+    assert plan.changed_files == (
+        "package.json",
+        "lerna.json",
+        "package-lock.json",
+        "packages/app/package.json",
+        "packages/core/package.json",
+        "packages/lib/package.json",
+        "release-plan.json",
+    )
+
+
+def init_git_repo(path: Path) -> None:
+    git(path, "init", "-q")
+    git(path, "config", "user.email", "t@t")
+    git(path, "config", "user.name", "t")
+    git(path, "add", "-A")
+    git(path, "commit", "-q", "-m", "init")
+
+
+def test_a_bad_since_ref_fails_before_lerna_runs(tmp_path: Path) -> None:
+    from release_lib.plan import lerna_candidates
+
+    (tmp_path / "f").write_text("x", encoding="utf-8")
+    init_git_repo(tmp_path)
+    with pytest.raises(ReleaseError, match="unknown --since ref 'nosuchref'"):
+        lerna_candidates(tmp_path, "nosuchref")
+
+
+@pytest.fixture
+def git_repo(repo: Path) -> Path:
+    init_git_repo(repo)
+    return repo
+
+
+def run_main_without_mutation(monkeypatch, repo_root: Path, argv: list[str]) -> int:
+    """Run the command on `repo_root` with Lerna stubbed out; fail the test if anything would be versioned."""
+    import release_version
+
+    def no_mutation(*_args, **_kwargs):
+        raise AssertionError("apply_lerna_version ran: the refusal came after mutation")
+
+    real_build_plan = release_version.build_plan
+    monkeypatch.setattr(release_version, "REPO_ROOT", repo_root)
+    monkeypatch.setattr(release_version, "apply_lerna_version", no_mutation)
+    monkeypatch.setattr(
+        release_version,
+        "build_plan",
+        lambda root, **kwargs: real_build_plan(root, candidate_provider=candidates(["app"]), **kwargs),
+    )
+    return release_version.main(argv)
+
+
+def test_a_bump_to_an_existing_tag_fails_before_mutation(git_repo: Path, monkeypatch, capsys) -> None:
+    git(git_repo, "tag", "1.2.4")
+    assert run_main_without_mutation(monkeypatch, git_repo, ["--bump", "patch", "--since", "HEAD", "--apply"]) == 1
+    assert "tag 1.2.4 already exists" in capsys.readouterr().err
+
+
+def test_a_dry_run_also_refuses_an_existing_tag(git_repo: Path, monkeypatch, capsys) -> None:
+    git(git_repo, "tag", "1.3.0")
+    assert run_main_without_mutation(monkeypatch, git_repo, ["--bump", "minor", "--since", "HEAD"]) == 1
+    assert "tag 1.3.0 already exists" in capsys.readouterr().err
+
+
+@pytest.mark.parametrize("extra", [[], ["--worktree"]])
+def test_a_dirty_tree_fails_before_mutation(git_repo: Path, monkeypatch, capsys, extra: list[str]) -> None:
+    (git_repo / "untracked.txt").write_text("dirty", encoding="utf-8")
+    argv = ["--bump", "patch", "--since", "HEAD", "--apply", *extra]
+    assert run_main_without_mutation(monkeypatch, git_repo, argv) == 1
+    assert "working tree is dirty" in capsys.readouterr().err
