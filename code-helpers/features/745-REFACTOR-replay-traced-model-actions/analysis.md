@@ -1,6 +1,6 @@
-# 745 — Replay the traced model Actions in a Migration run
+# 745 — Replay the traced model Actions in a migration run
 
-> #9 built a Migration run that rewrites the model to the frozen `to` version (the "jump", epic decision D2-d). The epic revision of 2026-11-16 (#744) replaces it, for `versioned-internal`, with a run that replays the model Actions the evolution traces recorded (D2-a). This analysis maps what #9 built, then decides the Migration's new shape, how generation writes the model steps, and how the run stays strict: no storage silently reused, no step run twice, no model the run did not expect.
+> #9 built a migration run that rewrites the model to the frozen `to` version (the "jump", epic decision D2-d). The epic revision of 2026-11-16 (#744) replaces it, for `versioned-internal`, with a migration run that replays the model Actions the evolution traces recorded (D2-a). This analysis maps what #9 built, then decides the Migration's new shape, how generation writes the model steps, and how the migration run stays strict: no storage silently reused, no step run twice, no model the migration run did not expect.
 
 Related issue: https://github.com/miroir-framework/miroir/issues/745
 Parent issue: #694 (epic) · Prerequisite: #9 ✅ (#739, #740, #742) · Epic revision: #744 ✅
@@ -13,6 +13,7 @@ Key sources: [`migrationGeneration.ts`](../../../packages/miroir-versioning/src/
 **Document history:**
 - 2026-11-16: first draft.
 - 2026-11-16: adversarial review. Corrected: what `createEntity` does today on IndexedDB, MongoDB and the filesystem (it reuses storage, it does not clear it), the line references, and the test inventory. Added: incomplete trace records refused, Miroir excluded, writes on settings rows not replayed, a required attribute classified unsupported, the order "check, then storage, then row" in the SQL store, the `stepStarted` field and the `settleMigrationStep` action, the in-memory check against `toDigest` before step 1, the effect of D4 on each caller, and the conflict with rollback (section 7).
+- 2026-11-16: the user's review. G3 restated (fail explicitly and stop); D3 restated with examples; D2 relies on #748 (instance writes on Entity rows refused) instead of converting them; "migration run" defined and used instead of "run".
 
 **Strict strategy (the user, 2026-11-16).** Every decision below follows it: an operation of the versioning epic that meets a state it did not expect fails with an error naming that state. It never repairs, skips, reuses or overwrites silently. A failure leaves what it found as it was, so the operator sees it.
 
@@ -22,19 +23,19 @@ Key sources: [`migrationGeneration.ts`](../../../packages/miroir-versioning/src/
 
 - **G1 — Move a deployment along the designer's own changes.** In order to get on a test deployment the model the designer built, with the data kept, as an application maintainer, I can run a Migration that replays, in order, the model changes the designer made between two versions, with the data steps placed among them.
 - **G2 — Place data steps where they belong.** In order to copy, fill or clean data at the exact point where the model allows it (after an attribute is added, before one is removed), as an application designer, I can insert a data step between two model steps of a generated Migration.
-- **G3 — Fail loudly, never silently.** In order to find a problem when it happens, not later in corrupted data, as an application maintainer, I can rely on a run that stops at the first state it did not expect (existing storage, a step that may have run already, a model that is not the one it expects) with an explicit error naming that state, instead of working around it and carrying on.
-- **G4 — Finish a stopped run.** In order to complete a run that a crash or a failure stopped, as an application maintainer, I can run it again: it continues at the first step it did not start, and when it cannot tell whether a step was done, it stops and lets me say so.
+- **G3 — Fail loudly, never silently.** In order to find a problem when it happens, not later in corrupted data, as an application maintainer, I can rely on a migration run that stops at the first state it did not expect (existing storage, a step that may have run already, a model that is not the one it expects) with an explicit error naming that state, instead of working around it and carrying on.
+- **G4 — Finish a stopped migration run.** In order to complete a migration run that a crash or a failure stopped, as an application maintainer, I can run it again: it continues at the first step it did not start, and when it cannot tell whether a step was done, it stops and lets me say so.
 
 ## 2. Non-goals
 
-- `versioned-git` follower runs: D13, #747. #9's Git run is kept, adapted to the new row shape (D1).
+- `versioned-git` follower migration runs: D13, #747. #9's Git migration run is kept, adapted to the new row shape (D1).
 - Export and import of a Migration as a file: #746. The tests here give the following deployment its own copy of the `modelVersion` rows instead of a shared section.
 - What a hand-written step may hold (model Actions refused): #741. D1 gives each step a `kind` that #741 checks.
 - Column type, nullability and key changes on SQL: refused here (D3); the Actions that would apply them are a follow-up (to file).
 - Restore and rollback, and what they do with storage left by later versions: #709 (section 7).
 - A failed authoring commit that cannot be retried once D4 applies: a follow-up (to file, section 4.4).
 - Committing a step's writes and its record in one SQL transaction: later; D5 detects the gap instead.
-- Refusing instance writes on Entity rows, so that only model Actions write them: #748. Until then, generation turns traced Entity row writes into model Actions (D2), and it keeps doing so for records written before #748.
+- Refusing instance writes on Entity rows, so that only model Actions write them, and the model Action for the Entity fields that change no storage: #748. This analysis relies on that rule (D2) and does not implement it.
 - Migrations of Miroir itself: its model lives in its `data` section, and restoring Miroir's own model is an epic non-goal.
 
 ## 3. Decision record
@@ -42,14 +43,14 @@ Key sources: [`migrationGeneration.ts`](../../../packages/miroir-versioning/src/
 | Decision | Choice | Serves |
 |---|---|---|
 | D1. What does a Migration row hold? | **One ordered `steps` list; each step has a `kind` (`model` or `data`); no phases, no `repeatable`; digests of the two models** | G1, G2 |
-| D2. How does generation turn trace records into model steps? | **One step per model Action, in trace order, Entity row writes turned into model Actions, adds and removes split, then a replay of the steps checked against `to`** | G1, G2 |
+| D2. How does generation turn trace records into model steps? | **One step per model Action, in trace order, adds and removes split; a record holding an instance write on an Entity row is refused (#748's rule); then a replay of the steps checked against `to`** | G1, G2 |
 | D3. Which model changes does a Migration accept, given what the model Actions can do to a SQL table? | **Those a model Action applies to the table; a type, nullability, foreign key, enum or key change, and a required attribute added to an existing Entity, are refused** | G3 |
 | D4. What does `createEntity` do when the Entity's storage or row already exists? | **It fails, on every store, before writing anything** | G3 |
-| D5. How does a run make sure no step runs twice? | **A step is recorded as started, then as done; a step started and not done stops the run until the operator settles it; a Migration already applied fails** | G3, G4 |
-| D6. How does a run check the deployment's model without reading the authoring deployment's `modelVersion` section? | **The Migration holds digests of the `from` and `to` models; the run checks the live model and its own replay against them before step 1, and the live model after the last step** | G3 |
+| D5. How does a migration run make sure no step runs twice? | **A step is recorded as started, then as done; a step started and not done stops the migration run until the operator settles it; a Migration already applied fails** | G3, G4 |
+| D6. How does a migration run check the deployment's model without reading the authoring deployment's `modelVersion` section? | **The Migration holds digests of the `from` and `to` models; the migration run checks the live model and its own replay against them before step 1, and the live model after the last step** | G3 |
 | D7. How does a replayed `alterEntityAttribute` or `renameEntity` change only what it names on SQL, all or nothing? | **Check first, then change the named columns or the table, then write the Entity row** | G3 |
 
-**Legend.** *Authoring deployment*: the one the designer edits and freezes. *Following deployment*: a deployment whose model changes only through installs and Migration runs (#9). *Trace record*: a `commit` row of the evolution traces, holding the model Actions and model-row writes one commit made, in order. *Model step*: a step generation writes from a model Action. *Data step*: a step the designer writes. *Digest*: a hash of a model's rows, normalized as the agreement check compares them.
+**Legend.** *Migration run*: the execution of one Migration on one following deployment by `runMigration`, from its checks to the state record naming `to`; when it stops, the next `runMigration` of the same Migration continues the same migration run. *Authoring deployment*: the one the designer edits and freezes. *Following deployment*: a deployment whose model changes only through installs and migration runs (#9). *Trace record*: a `commit` row of the evolution traces, holding the model Actions and model-row writes one commit made, in order. *Model step*: a step generation writes from a model Action. *Data step*: a step the designer writes. *Digest*: a hash of a model's rows, normalized as the agreement check compares them.
 
 ### D1. What does a Migration row hold?
 
@@ -59,7 +60,7 @@ Key sources: [`migrationGeneration.ts`](../../../packages/miroir-versioning/src/
 
 | Option | Mechanism | Pros | Cons |
 |---|---|---|---|
-| **D1-a. One `steps` list with a `kind`** ★ | `steps: MigrationStep[]`, `MigrationStep = { uuid, name, kind: "model" \| "data", backwardCompatible, action, trace? }`; the row also gets `fromDigest`, `toDigest` and `digestCollections` (D6). `changes` stays (classification). `expand`, `fill`, `contract` and `repeatable` go. | the order is the run's order; the runner and #741 tell generated model steps from hand-written ones | the Migration Entity and every reader change (readers: `migrationGeneration.ts`, `migrationRun.ts`, the tests; checked, no UI or asset reads the phases) |
+| **D1-a. One `steps` list with a `kind`** ★ | `steps: MigrationStep[]`, `MigrationStep = { uuid, name, kind: "model" \| "data", backwardCompatible, action, trace? }`; the row also gets `fromDigest`, `toDigest` and `digestCollections` (D6). `changes` stays (classification). `expand`, `fill`, `contract` and `repeatable` go. | the order is the migration run's order; the runner and #741 tell generated model steps from hand-written ones | the Migration Entity and every reader change (readers: `migrationGeneration.ts`, `migrationRun.ts`, the tests; checked, no UI or asset reads the phases) |
 | D1-b. One list without a kind | as D1-a, the kind read from the action | smaller row | #741 must then infer what generation wrote, and a hand-written model Action reads as generated |
 | D1-c. Keep the phases, model steps in the middle | `expand`, `model`, `fill`, `contract` | fewer changes | the order problem above stays |
 
@@ -67,41 +68,44 @@ Key sources: [`migrationGeneration.ts`](../../../packages/miroir-versioning/src/
 
 **`versioned-git`, until D13.** Git generation writes no replayed Actions. It writes one model step, the checkout of the tag `to` (a `gitAction_checkout`), with `changes` as information. The runner runs that step as #9 ran the jump: checkout, reload, then the `checkedOutVersion` check. This is #9's jump under another name, kept on purpose until #747 decides; Git Migrations get no digests (the checkout is the model). Data steps go before or after the checkout step.
 
-**Old rows.** No Migration row is stored in any asset (checked: no file under `packages/*/assets/**/b5c1f0e5-3d31-419b-9a6b-21dd598fc3fe/`). A row with `expand`, `fill` or `contract`, written by #9 in a store or committed at a Git tag, is refused by the run (`migrationStepsInvalid`), not converted (strict). Only test repositories hold such tags today.
+**Old rows.** No Migration row is stored in any asset (checked: no file under `packages/*/assets/**/b5c1f0e5-3d31-419b-9a6b-21dd598fc3fe/`). A row with `expand`, `fill` or `contract`, written by #9 in a store or committed at a Git tag, is refused by the migration run (`migrationStepsInvalid`), not converted (strict). Only test repositories hold such tags today.
 
 ### D2. How does generation turn trace records into model steps?
 
-**Status:** Proposed — D2-a. **Serves:** G1, G2.
+**Status:** Proposed — D2-a (revised after #748 was filed; the first draft chose the conversion, now D2-b). **Serves:** G1, G2.
 
-**What is at stake.** In appForTest (#9 part C test), the designer adds `Publisher.mottoC9` in the Entity editor. The trace holds an `updateInstance` of the Publisher Entity row, not an `alterEntityAttribute`: replayed as is, it changes the row but no SQL column, and the next write of a motto fails. A trace replay is right only if every model change it writes also changes storage.
+**What is at stake.** In appForTest (#9 part C test), the designer adds `Publisher.mottoC9` in the Entity editor. Today the trace holds an `updateInstance` of the Publisher Entity row, not an `alterEntityAttribute`: replayed as is, it changes the row but no SQL column, and the next write of a motto fails. A trace replay is right only if every model change it holds also changes storage. #748 makes that true at the source: once it lands, an instance write on an Entity row fails, the Entity editor saves through `createEntity`, `alterEntityAttribute`, `renameEntity`, `dropEntity` and the Action #748 adds for the Entity fields that change no storage, and the traces record those Actions.
 
-Generation walks the `commit` records between the two version markers in sequence order, one Action at a time, keeping the model state replayed so far (as `applyRecordActions` does, `modelStates.ts` lines 335–358). Each Action gives zero or more model steps:
+Generation walks the `commit` records between the two version markers in sequence order, one Action at a time, keeping the model state replayed so far (as `applyRecordActions` does, `modelStates.ts` lines 335–358). Each Action gives zero or more steps:
 
-| Traced Action | Model steps written |
+| Traced Action | Steps written |
 |---|---|
 | `createEntity` | one `createEntity` per Entity it creates |
 | `alterEntityAttribute` with `addColumns` and `removeColumns` | the add, then an empty data step `fill <Entity>.<attribute>` per added attribute, then the remove |
 | `alterEntityAttribute` with one of them | itself (an add is followed by its empty fill steps) |
 | `renameEntity`, `dropEntity` | itself |
-| `createInstance` of an Entity row | `createEntity` of that row |
-| `updateInstance` of an Entity row | compared with the row replayed so far: `renameEntity` if the name changed; `alterEntityAttribute` adding the new attributes, then their fill steps; `alterEntityAttribute` removing the gone ones; then `updateInstance` with the traced row, which sets every other field of the row. A changed attribute or `idAttribute` is classified (D3). |
-| `deleteInstance` of an Entity row | `dropEntity` |
+| the Action #748 adds for the Entity fields that change no storage | itself |
+| `createInstance`, `updateInstance` or `deleteInstance` of an Entity row | none: generation refuses (`migrationEntityRowWrite`, naming the record), see below |
 | instance writes on rows of the compared collections (`AGREEMENT_COLLECTIONS`: Queries, Reports, Menus, Endpoints, Runners, Themes, TransformerDefinitions, MlSchemas, Tests, Blobs, TestConfigurations) | itself |
 | instance writes on other model rows (the SelfApplication row, its branches: the traces switch, `versioningMode`) | no step: listed in `changes` as `kind: "settingsChange"`, information only. A following deployment's settings are its own (its traces are off, its role is following). |
 
 Refusals, before any step is written:
+- a record holding an instance write on an Entity row (`migrationEntityRowWrite`): it breaks #748's rule. Such records exist today (the Entity editor) and keep existing in histories recorded before #748. The designer re-baselines after the edit, and a Migration across it is written by hand, as for any re-baseline (epic D11).
 - a `commit` record with `complete: false` between the two versions (`migrationIncompleteRecord`): a commit that stopped part way, then retried, holds some Actions twice, and a replay would meet its own work (D4). The designer re-baselines.
 - the application is Miroir (`migrationUnsupportedApplication`): its model lives in `data`, and `ModelEntityActionTransformer` writes model Actions to `model` (lines 41, 63, 90, 121), so an in-memory replay of Miroir changes nothing and proves nothing.
 
 Then generation replays its own model steps on the `from` state in memory and refuses (`evolutionTracesDisagree`) if the result is not `to`, as D12-b of the epic asks (the draft includes its own proof). The check on the raw records stays before it.
 
-With traces off (`source: diff`), the same Action kinds come from the diff of the two versions, in a fixed order: Entities created, renamed, attributes added (with their fill steps), attributes removed, Entities dropped, then the other rows created, updated, deleted. The same replay check runs.
+With traces off (`source: diff`), there are no records: the steps come from the diff of the two versions, written as the same model Actions, in a fixed order: Entities created, renamed, attributes added (with their fill steps), attributes removed, Entities dropped, the other Entity fields (through #748's Action), then the other rows created, updated, deleted. The same replay check runs.
 
 | Option | Mechanism | Pros | Cons |
 |---|---|---|---|
-| **D2-a. One step per Action, rows turned into Actions, self-checked** ★ | above | storage follows every model change; a data step can go between any two Actions; the draft proves itself | generation grows a conversion table |
-| D2-b. One step per trace record | the record's Actions as one sequence | fewer steps | an add and a remove made in one commit cannot have a step between them |
-| D2-c. Replay records as they are | no conversion | simple | the Entity editor's row updates change no storage (above) |
+| **D2-a. One step per model Action; Entity row writes refused** ★ | above | the steps are what the designer ran; no conversion to get wrong; strict | until #748 lands, an Entity edited in the Entity editor blocks generation between the versions around it |
+| D2-b. One step per Action, Entity row writes turned into model Actions | generation compares each Entity row update with the row replayed so far and writes `renameEntity`, `alterEntityAttribute` and the row update | works on today's traces | a conversion that guesses Actions the designer did not run; superseded by #748 |
+| D2-c. One step per trace record | the record's Actions as one sequence | fewer steps | an add and a remove made in one commit cannot have a step between them |
+| D2-d. Replay records as they are | no conversion, no refusal | simple | today's Entity row updates change no storage (above) |
+
+**Order with #748.** #745 does not wait for #748: its tests change Entities through model Actions. Until #748 lands, generating a Migration across an Entity edited in the Entity editor is refused, which is the strict outcome.
 
 ### D3. Which model changes does a Migration accept, given what the model Actions can do to a SQL table?
 
@@ -109,7 +113,7 @@ With traces off (`source: diff`), the same Action kinds come from the diff of th
 
 **What is at stake.** A Migration step changes the stores only through the model Actions `createEntity`, `alterEntityAttribute`, `renameEntity` and `dropEntity`. On SQL these run `CREATE TABLE`, `ALTER TABLE … ADD COLUMN` / `DROP COLUMN`, `ALTER TABLE … RENAME` and `DROP TABLE`. No model Action changes the type or the nullability of an existing column, or a table's primary key: `alterEntityAttribute` declares an `update` field, and the SQL store ignores it (`sqlDbEntityStoreSectionMixin.ts`, `alterEntityAttribute`; epic section 7.2). A required attribute is a `NOT NULL` column (`allowNull: false`, `miroir-store-postgres/src/utils.ts` line 114), and PostgreSQL refuses to add a `NOT NULL` column without a default to a table that holds rows.
 
-So some model changes the designer can make in the Entity editor have no model Action that brings the SQL table to match. #9 classifies them as supported: the run replays the Entity row update, the table stays as it was, and a later write fails or stores a value of the wrong type.
+So some model changes have no model Action that brings the SQL table to match. Today the designer makes them in the Entity editor, as Entity row updates, and #9 classifies them as supported: the migration run rewrites the Entity row, the table stays as it was, and a later write fails or stores a value of the wrong type. After #748 the Entity editor cannot save them (no model Action does them), but generation still meets them in two cases: the diff of two versions when the traces are off, and the diff between versions frozen before #748 (D2 refuses those records, the diff path does not have them).
 
 Examples on Library (the attributes as they are today: `Book.year` is an optional number, `Book.author` a required uuid pointing to Author):
 
@@ -120,19 +124,19 @@ Examples on Library (the attributes as they are today: `Book.year` is an optiona
 | create the Entity `Edition`, with a required `name` | `createEntity Edition` | `CREATE TABLE`, empty | **accepted** (a required attribute of a new, empty table is fine) |
 | rename the Entity `Publisher` to `Editor` | `renameEntity` | `ALTER TABLE … RENAME`, rows kept | **accepted** (#9 refused it, since the jump did not rename tables) |
 | drop the Entity `Edition` | `dropEntity` | `DROP TABLE` | **accepted**, not backward-compatible |
-| change the display label of `Book.year` (its `tag`) | `updateInstance` of the Book Entity row | nothing | **accepted**; not listed as a change |
+| change the display label of `Book.year` (its `tag`) | the Action #748 adds for the Entity fields that change no storage | nothing | **accepted**; not listed as a change |
 | change a Report or a Query | the instance write | nothing (model rows only) | **accepted** |
-| add a required `Book.isbn` to Book, which holds rows | `alterEntityAttribute` with `addColumns: [isbn]`, required | `ADD COLUMN isbn NOT NULL` fails on a table with rows | **refused** at generation (`supported: false`), so the run refuses the Migration before step 1 |
-| make `Book.year` required | an Entity row update only: no Action changes nullability | the column stays nullable | **refused** |
-| change `Book.year` from number to string | an Entity row update only: no Action changes a column type | the column stays numeric | **refused** |
-| point `Book.author` to Publisher instead of Author | an Entity row update only | nothing; existing values point to Authors | **refused** |
-| change the enum values of an attribute | an Entity row update only | nothing; existing values may fall outside the new list | **refused** |
-| change Author's `idAttribute` from `uuid` to `name` | an Entity row update only: no Action changes a primary key | the key stays `uuid` | **refused** |
+| add a required `Book.isbn` to Book, which holds rows | `alterEntityAttribute` with `addColumns: [isbn]`, required | `ADD COLUMN isbn NOT NULL` fails on a table with rows | **refused** at generation (`supported: false`), so the migration run refuses the Migration before step 1 |
+| make `Book.year` required | none: no Action changes nullability | the column stays nullable | **refused** |
+| change `Book.year` from number to string | none: no Action changes a column type | the column stays numeric | **refused** |
+| point `Book.author` to Publisher instead of Author | none | nothing; existing values point to Authors | **refused** |
+| change the enum values of an attribute | none | nothing; existing values may fall outside the new list | **refused** |
+| change Author's `idAttribute` from `uuid` to `name` | none: no Action changes a primary key | the key stays `uuid` | **refused** |
 
 | Option | Mechanism | Pros | Cons |
 |---|---|---|---|
-| **D3-a. Refuse the changes no model Action can apply to the table** ★ | generation classifies `changeAttribute`, `changeIdAttribute`, and a required attribute added to an existing Entity as `supported: false`, with a note naming the follow-up; it still writes the Migration, so the designer sees the list; `runMigration` refuses it before step 1 (`migrationUnsupportedChange`) | the run never ends with a table that does not match the model | a type change or a new required attribute on an existing Entity cannot be migrated until the follow-up |
-| D3-b. As #9 | the Entity row update is replayed, the table left as it is | no new refusal | the table no longer matches the model, found later by a failed write |
+| **D3-a. Refuse the changes no model Action can apply to the table** ★ | generation classifies `changeAttribute`, `changeIdAttribute`, and a required attribute added to an existing Entity as `supported: false`, with a note naming the follow-up; it still writes the Migration, so the designer sees the list; `runMigration` refuses it before step 1 (`migrationUnsupportedChange`) | the migration run never ends with a table that does not match the model | a type change or a new required attribute on an existing Entity cannot be migrated until the follow-up |
+| D3-b. As #9 | the Entity row is rewritten, the table left as it is | no new refusal | the table no longer matches the model, found later by a failed write |
 | D3-c. Add column changes now | SQL `changeColumn` behind `alterEntityAttribute.update`, and a required attribute generated as "add it nullable, fill it, make it required" | complete | a new Action contract, out of this issue's scope: the follow-up |
 
 The filesystem, IndexedDB and MongoDB stores keep each instance as a JSON document, so these changes need no storage change there. D3-a refuses them on every store anyway: a Migration does not know which store its following deployments use, and existing documents would still hold values of the old type or no value for a required attribute.
@@ -141,7 +145,7 @@ The filesystem, IndexedDB and MongoDB stores keep each instance as a JSON docume
 
 **Status:** Proposed — D4-a. **Serves:** G3.
 
-**What is at stake.** A following deployment of Library whose `Edition` table exists, left by an earlier attempt, by a rollback (#709) or made by hand, gets a run that replays `createEntity Edition`. Today:
+**What is at stake.** A following deployment of Library whose `Edition` table exists, left by an earlier attempt, by a rollback (#709) or made by hand, gets a migration run that replays `createEntity Edition`. Today:
 - SQL drops and recreates the table (`createStorageSpaceForInstancesOfEntity`, `sync({ force: true })`, `SqlDbStoreSection.ts` lines 252–280): the rows are lost;
 - the IndexedDB, MongoDB and filesystem mixins see the Entity in `dataStore.getEntityUuids()`, log a warning, skip the creation and upsert the row (`IndexedDbEntityStoreSectionMixin.ts` lines 81–93, `MongoDbEntityStoreSectionMixin.ts` lines 81–93, `FileSystemEntityStoreSectionMixin.ts` lines 83–95): the old rows are adopted.
 
@@ -149,9 +153,9 @@ Either way nothing says so. And SQL `createEntities` drops each `createEntity` r
 
 | Option | Mechanism | Pros | Cons |
 |---|---|---|---|
-| **D4-a. Fail on every store, before writing** ★ | each mixin's `createEntity` first checks that neither the Entity row nor its storage exists, with a physical probe (below), and fails with `storageExists` or `entityExists`, naming the Entity; `createEntities` stops at and returns the first error, on every store; external Entities (no storage) are exempt from both checks and keep today's upsert of their row | strict, everywhere, not only in runs | callers that relied on re-creation fail (section 4.4) |
-| D4-b. Fail in runs only | the run's mark switches the check on | no effect elsewhere | the mark is a symbol that does not cross the REST boundary; two behaviours for one Action |
-| D4-c. `IfMissing` | create when absent, keep when present | resumable | rejected by the user: adopts storage the run did not create |
+| **D4-a. Fail on every store, before writing** ★ | each mixin's `createEntity` first checks that neither the Entity row nor its storage exists, with a physical probe (below), and fails with `storageExists` or `entityExists`, naming the Entity; `createEntities` stops at and returns the first error, on every store; external Entities (no storage) are exempt from both checks and keep today's upsert of their row | strict, everywhere, not only in migration runs | callers that relied on re-creation fail (section 4.4) |
+| D4-b. Fail in migration runs only | the migration run's mark switches the check on | no effect elsewhere | the mark is a symbol that does not cross the REST boundary; two behaviours for one Action |
+| D4-c. `IfMissing` | create when absent, keep when present | resumable | rejected by the user: adopts storage the migration run did not create |
 
 The physical probe, one per store, on the store itself, not on the list of Entities registered at boot (an orphan IndexedDB sublevel is not in `getSubLevels`, `IndexedDbStoreSection.ts` lines 42–46):
 
@@ -164,11 +168,11 @@ The physical probe, one per store, on the store itself, not on the list of Entit
 
 The probe is a new store method used only by `createEntity`. The optional `hasStorageSpaceForInstancesOfEntity` stays as it is, since `PersistenceStoreController` uses its presence to decide boot behaviour (lines 571 and 804). `createStorageSpaceForInstancesOfEntity`, used by `ModelInitializer` and the lazy `devData` creation, keeps its behaviour: D4 is on the model Action.
 
-### D5. How does a run make sure no step runs twice?
+### D5. How does a migration run make sure no step runs twice?
 
 **Status:** Proposed — D5-a. **Serves:** G3, G4.
 
-**What is at stake.** A run stops after the `createEntity Edition` step wrote the table and before the record of the step was saved. #9 then re-runs the step on resume, assuming every step repeatable. Under D4, the re-run fails on the existing table, which is right, but the error reads as a storage problem, not as an interrupted step. A data step that wrote half its rows and failed (#9 test C2: "first write lands, second fails") would be run again from its start.
+**What is at stake.** A migration run stops after the `createEntity Edition` step wrote the table and before the record of the step was saved. #9 then re-runs the step on resume, assuming every step repeatable. Under D4, the second execution of the step fails on the existing table, which is right, but the error reads as a storage problem, not as an interrupted step. A data step that wrote half its rows and failed (#9 test C2: "first write lands, second fails") would be run again from its start.
 
 | Option | Mechanism | Pros | Cons |
 |---|---|---|---|
@@ -177,19 +181,19 @@ The probe is a new store method used only by `createEntity`. The optional `hasSt
 | D5-c. Step and record in one transaction | SQL only | no in-doubt window on SQL | not on the other stores; later |
 
 D5-a:
-- The `DeploymentState` row's `run` gets a `stepStarted` field (Admin Entity schema change). The run writes `stepStarted: <uuid>` before a step and, once the step succeeded, moves it to `stepsDone`.
-- A step that fails leaves `stepStarted` set: the run returns the step's error, says the step is in doubt, and stops. Nothing tells a refusal that wrote nothing from a failure half way through a composite step, so every failure is in doubt.
-- On the next `runMigration`: steps in `stepsDone` are skipped; a set `stepStarted` stops the run (`migrationStepInDoubt`, naming the step and how to settle it); otherwise the run starts at the first step not done.
-- A new Model Endpoint action, `settleMigrationStep { application, step, outcome: "done" | "notRun" }`, is the only way to clear `stepStarted`. It is refused unless `step` is the deployment's in-doubt step. `done` moves it to `stepsDone`; `notRun` clears it, and the next run starts that step again. The operator checks the step's effect before choosing, and undoes a half-done step by hand first.
-- A `runMigration` of the Migration that the last `applied` entry names, on a deployment whose version is that Migration's `to`, fails with `migrationAlreadyApplied`, before the `from` check (whose message would be less clear). After a rollback (#709) puts the deployment back at `from`, a new run of the same Migration is a new run, not a replay of steps the deployment kept: it runs if the storage allows it (section 7).
+- The `DeploymentState` row's `run` gets a `stepStarted` field (Admin Entity schema change). The migration run writes `stepStarted: <uuid>` before a step and, once the step succeeded, moves it to `stepsDone`.
+- A step that fails leaves `stepStarted` set: the migration run returns the step's error, says the step is in doubt, and stops. Nothing tells a refusal that wrote nothing from a failure half way through a composite step, so every failure is in doubt.
+- On the next `runMigration`: steps in `stepsDone` are skipped; a set `stepStarted` stops the migration run (`migrationStepInDoubt`, naming the step and how to settle it); otherwise the migration run starts at the first step not done.
+- A new Model Endpoint action, `settleMigrationStep { application, step, outcome: "done" | "notRun" }`, is the only way to clear `stepStarted`. It is refused unless `step` is the deployment's in-doubt step. `done` moves it to `stepsDone`; `notRun` clears it, and the next migration run starts that step again. The operator checks the step's effect before choosing, and undoes a half-done step by hand first.
+- A `runMigration` of the Migration that the last `applied` entry names, on a deployment whose version is that Migration's `to`, fails with `migrationAlreadyApplied`, before the `from` check (whose message would be less clear). After a rollback (#709) puts the deployment back at `from`, a new migration run of the same Migration is a new migration run, not a replay of steps the deployment kept: it proceeds if the storage allows it (section 7).
 
 The `run` and `applied` attributes of DeploymentState stay `editable: false`: the settlement goes through the action, not through the instance editor.
 
-### D6. How does a run check the deployment's model without reading the authoring deployment's `modelVersion` section?
+### D6. How does a migration run check the deployment's model without reading the authoring deployment's `modelVersion` section?
 
 **Status:** Proposed — D6-a. **Serves:** G3.
 
-**What is at stake.** The `DeploymentState` row says a following deployment is at 1.0.0, but someone changed its model by hand, a step was settled wrongly, or the designer edited a model step of the Migration. The replayed Actions then meet a model they were not written for, and the deployment ends with its state saying 1.1.0 and a model that is not 1.1.0. #9 avoided this by rewriting the whole model to the frozen version, which epic D5 now rules out (the run must read nothing else from the authoring `modelVersion`).
+**What is at stake.** The `DeploymentState` row says a following deployment is at 1.0.0, but someone changed its model by hand, a step was settled wrongly, or the designer edited a model step of the Migration. The replayed Actions then meet a model they were not written for, and the deployment ends with its state saying 1.1.0 and a model that is not 1.1.0. #9 avoided this by rewriting the whole model to the frozen version, which epic D5 now rules out (the migration run must read nothing else from the authoring `modelVersion`).
 
 | Option | Mechanism | Pros | Cons |
 |---|---|---|---|
@@ -199,8 +203,8 @@ The `run` and `applied` attributes of DeploymentState stay `editable: false`: th
 
 D6-a:
 - Generation stores `digestCollections` (the compared collections both versions snapshotted, so a version frozen before #706 adds no collection it lacks), `fromDigest` and `toDigest`: hashes of the two models over those collections, normalized as the agreement check compares rows (`comparedCollections`, meta-model Entities left out, `conceptLevel` defaulted, the attributes `modelStateDiff.ts` does not compare left out). This is a new function next to `comparedCollections`, sharing its normalization.
-- Before step 1 of a new run: the live model's digest must be `fromDigest`, and the run's own model steps, replayed in memory on the live model, must give `toDigest`. Either mismatch fails (`migrationModelMismatch`, saying which), before anything is written. This catches an edited model step and a model changed by hand.
-- After the last step, before the version is written: the live model's digest must be `toDigest`; a mismatch fails, the run stays recorded, the version unchanged.
+- Before step 1 of a new migration run: the live model's digest must be `fromDigest`, and the migration run's own model steps, replayed in memory on the live model, must give `toDigest`. Either mismatch fails (`migrationModelMismatch`, saying which), before anything is written. This catches an edited model step and a model changed by hand.
+- After the last step, before the version is written: the live model's digest must be `toDigest`; a mismatch fails, the migration run stays recorded, the version unchanged.
 - A Migration without digests (written by hand) is refused (`migrationDigestMissing`) in `versioned-internal`. A hand-written Migration starts from a generated one.
 
 ### D7. How does a replayed `alterEntityAttribute` or `renameEntity` change only what it names on SQL, all or nothing?
@@ -229,18 +233,18 @@ The other stores keep attributes in the instance JSON: their `alterEntityAttribu
 - `migrationSteps` (lines 232–242): an empty fill step per added attribute, an empty contract step per removed Entity or attribute, no expand step.
 - `generateMigration` (lines 490–574): refuses on a following deployment, across a re-baseline, when a Migration exists (unless `replace`); replays the records with `replayCommitRecords` and refuses when the result is not `to` (`evolutionTracesDisagree`); writes the draft from the two snapshots (`draftMigration`, lines 420–452). The records are not used for the steps; incomplete records are replayed like the others (`modelStates.ts` lines 360–366).
 
-### 4.2 The run (`migrationRun.ts`)
+### 4.2 The migration run (`migrationRun.ts`)
 
 - `runOrder` (line 82): `[...expand, JUMP_STEP, ...fill, ...contract]`.
 - `runToDo` (lines 129–217): resumes a `run` in progress for the same Migration; refuses another one (`migrationRunInProgress`), a missing Migration, a deployment not at `from` (`migrationNotAtFrom`), an unsupported change, duplicate step uuids, a `transactionalInstanceAction`, and with Git a step writing the model or a clone not at `from`. The Migration is read from the deployment's own `modelVersion` rows (`live.migrations`, lines 147–149).
 - `jump` (lines 218–237): `bringModelToVersion` (internal: the frozen `to` from the `modelVersion` section, written with `applyModelState`) or `checkoutVersion` (Git), then `reloadModel`.
 - The loop (lines 293–314) skips steps in `stepsDone`, runs a step, then records it; nothing is recorded before a step, and a failed step is not recorded.
-- A second run of a finished Migration is refused by the `from` check, with the reason `migrationNotAtFrom`.
+- A second migration run of a finished Migration is refused by the `from` check, with the reason `migrationNotAtFrom`.
 
 ### 4.3 What the trace records hold (`evolutionTraceRecording.ts`, `versioningInterfaces.ts`)
 
 - A `commit` record (`EvolutionTraceRecordRow`) holds `actions`: `createEntity`, `alterEntityAttribute`, `renameEntity`, `dropEntity`, and `createInstance` / `updateInstance` / `deleteInstance` on the `model` section (Miroir: `data`), version-history Entities left out (`isRecordedModelChange`, lines 164–187). The SelfApplication row is in the `model` section, so its writes are recorded.
-- The Entity editor saves an Entity row as an `updateInstance` (epic section 7.2), so an attribute added there is traced as a row update.
+- The Entity editor saves an Entity row as an `updateInstance` (epic section 7.2), so an attribute added there is traced as a row update. #748 refuses such writes.
 - A commit whose replay fails appends a record with `complete: false` and returns, its transaction kept (`DomainController.ts` lines 2596–2619).
 
 ### 4.4 `createEntity` and its callers under D4
@@ -278,26 +282,26 @@ See D7: row first, then `sync({ alter: true })` or the rename, whose result is i
 | Collections a version snapshotted | `frozenCollectionsOf` (`modelStates.ts`) |
 | Model diff | `diffModelStates` (`modelStateDiff.ts`) |
 | Attributes added between two rows | `addedAttributes` (`applicationVersionInstall.ts`) |
-| Run lock, state record writes | `withApplicationLock`, `writeDeploymentState`, `storedDeploymentState` |
-| Run mark | `markMigrationRun` (core) |
+| Migration run lock, state record writes | `withApplicationLock`, `writeDeploymentState`, `storedDeploymentState` |
+| Migration run mark | `markMigrationRun` (core) |
 | SQL table probe | `SqlDbStoreSection.hasStorageSpaceForInstancesOfEntity` |
 | Migration Entity | uuid `b5c1f0e5-3d31-419b-9a6b-21dd598fc3fe` (`miroir-app-miroir`) |
 | DeploymentState Entity | uuid `14e696c6-c9ef-4d50-b2d6-1fd561b315f6` (`miroir-app-admin`) |
 
 ## 6. Documents this issue updates
 
-- The epic analysis: D2 (done in this branch: storage creation fails, steps run once), sections 7.1, 7.2, 7.3, and section 9 (E1's "run it again", the failure row and the PostgreSQL run, which assumed repeatable steps; see section 7 below).
-- `docs/reference/versioning.md`: the Migration's shape, the run, the strict strategy, `settleMigrationStep`.
+- The epic analysis: D2 (done in this branch: storage creation fails, steps run once), sections 7.1, 7.2, 7.3, and section 9 (E1's "run it again", the failure row and the PostgreSQL experiment, which assumed repeatable steps; see section 7 below).
+- `docs/reference/versioning.md`: the Migration's shape, the migration run, the strict strategy, `settleMigrationStep`.
 - The #9 analysis: a note at its top that D2-d, the jump and the phases are replaced by #745.
 - The explainer `explainer-trace-vs-migration-20261116-104543/`: a note that it describes #9 before #745.
 
 ## 7. Open point for the user: rollback and leftover storage
 
-Epic D6 and section 9 expect a rollback that keeps a later version's storage ("restore `1.0.0`: allowed, and `isbn` stays in storage"), followed by a new run of an earlier Migration, the kept column keeping its values. Under the strict strategy, that new run fails: its `alterEntityAttribute` meets the kept `isbn` column (D7), or its `createEntity` meets a kept table (D4). The run is right to stop, since it cannot tell a column kept on purpose from one left by mistake. Two ways out, both in #709:
+Epic D6 and section 9 expect a rollback that keeps a later version's storage ("restore `1.0.0`: allowed, and `isbn` stays in storage"), followed by a new migration run of an earlier Migration, the kept column keeping its values. Under the strict strategy, that new migration run fails: its `alterEntityAttribute` meets the kept `isbn` column (D7), or its `createEntity` meets a kept table (D4). The migration run is right to stop, since it cannot tell a column kept on purpose from one left by mistake. Two ways out, both in #709:
 - the rollback drops the storage the rolled-back versions added, refused when it holds data unless the operator confirms (data loss stated);
-- the rollback records what storage it kept, and a later run accepts exactly that storage, by name and definition (an explicit, recorded exception, not a silent one).
+- the rollback records what storage it kept, and a later migration run accepts exactly that storage, by name and definition (an explicit, recorded exception, not a silent one).
 
-This issue implements the strict run and leaves the choice to #709; section 9 of the epic is marked accordingly.
+This issue implements the strict migration run and leaves the choice to #709; section 9 of the epic is marked accordingly.
 
 ## Next step
 
