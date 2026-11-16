@@ -37,10 +37,13 @@ import {
   INSTANCE_WRITE_ACTION_TYPES,
   MODEL_ENDPOINT_UUID,
   MODEL_STEP_ACTION_TYPES,
+  differencesText,
+  modelStateDifferences,
+  stepsReplayDifferences,
   type MigrationModelStepAction,
   type MigrationStep,
 } from "./migrationSteps.js";
-import { liveModelState, type ModelState } from "./modelStates.js";
+import { frozenCollectionsOf, frozenStateOf, liveModelState, type ModelState } from "./modelStates.js";
 
 /** #9: Model Endpoint action that runs a Migration on a following deployment. */
 export const RUN_MIGRATION_ACTION_TYPE = "runMigration" as const;
@@ -61,8 +64,10 @@ export type SettleMigrationStepActionPayload = { application: string; step: stri
 export const MIGRATION_RUN_REFUSALS = {
   deploymentAuthors: "deploymentAuthors",
   migrationAlreadyApplied: "migrationAlreadyApplied",
+  migrationModelMismatch: "migrationModelMismatch",
   migrationNotFound: "migrationNotFound",
   migrationNotAtFrom: "migrationNotAtFrom",
+  migrationReferenceMissing: "migrationReferenceMissing",
   migrationRunInProgress: "migrationRunInProgress",
   migrationStepFailed: "migrationStepFailed",
   migrationStepInDoubt: "migrationStepInDoubt",
@@ -253,6 +258,78 @@ async function executeStep(
 }
 
 /**
+ * #745 D6: the reference of the version named `name`: its frozen model state, read from the `modelVersion`
+ * rows the deployment reads. Refused (`migrationReferenceMissing`) when no version row has that name, when
+ * several have it, or when its Cross rows name version rows that are missing.
+ */
+function referenceState(live: ModelState, application: string, name: string): ModelState | Action2Error {
+  const named = live.applicationVersions.filter(
+    (row) => row.name === name && ((row as { selfApplication?: string }).selfApplication ?? application) === application,
+  );
+  const missing = (why: string) =>
+    refusal(
+      `runMigration: no reference for version ${name} of ${application}: ${why}; a migration run checks the model against the frozen versions it goes from and to`,
+      MIGRATION_RUN_REFUSALS.migrationReferenceMissing,
+      { version: name },
+    );
+  if (named.length !== 1) {
+    return missing(named.length === 0 ? "the modelVersion section holds no Application Version of that name" : "several Application Versions have that name");
+  }
+  const incomplete = frozenCollectionsOf(live, named[0].uuid).filter(({ missingVersionRows }) => missingVersionRows.length > 0);
+  if (incomplete.length > 0) {
+    return missing(`its Cross rows name rows it does not hold (${incomplete.map(({ collection }) => collection).join(", ")})`);
+  }
+  return frozenStateOf(live, named[0].uuid);
+}
+
+/** #745 D6: the refusal of a model that differs from a reference, the differences listed, or `undefined`. */
+function mismatchRefusal(
+  differences: ReturnType<typeof modelStateDifferences> | Action2Error,
+  what: string,
+  context: Record<string, unknown>,
+): Action2Error | undefined {
+  if (differences instanceof Action2Error) {
+    return new Action2Error("FailedToHandleAction", `runMigration: ${what}: could not replay the steps`, [], differences, {
+      reason: MIGRATION_RUN_REFUSALS.migrationModelMismatch,
+      ...context,
+    });
+  }
+  return differences
+    ? refusal(`runMigration: ${what}: ${differencesText(differences)}`, MIGRATION_RUN_REFUSALS.migrationModelMismatch, {
+        ...context,
+        differences,
+      })
+    : undefined;
+}
+
+/**
+ * #745 D6, before step 1 of a new migration run: the live model must be the `from` version, and the model
+ * steps, replayed in memory on it, must give the `to` version.
+ */
+function referenceRefusal(live: ModelState, migration: MigrationRow): Action2Error | undefined {
+  const fromReference = referenceState(live, migration.application, migration.from);
+  if (fromReference instanceof Action2Error) {
+    return fromReference;
+  }
+  const toReference = referenceState(live, migration.application, migration.to);
+  if (toReference instanceof Action2Error) {
+    return toReference;
+  }
+  return (
+    mismatchRefusal(
+      modelStateDifferences(migration.application, live, fromReference),
+      `the model of the deployment is not version ${migration.from}, the Migration's from`,
+      { version: migration.from, check: "from" },
+    ) ??
+    mismatchRefusal(
+      stepsReplayDifferences(migration.application, live, toReference, migration.steps),
+      `the steps of Migration ${migration.uuid}, replayed on version ${migration.from}, do not give version ${migration.to}`,
+      { version: migration.to, check: "steps" },
+    )
+  );
+}
+
+/**
  * The migration run to do: a new one from the stored Migration, or the one in progress (continued). The
  * Migration of a `versioned-git` application is the one the commit of its `to` tag holds (#9 D8).
  */
@@ -333,6 +410,12 @@ async function runToDo(
     const atFrom = await checkedOutVersion(host, payload.application, stored.from, applicationDeploymentMap, "runMigration");
     if (atFrom instanceof Action2Error) {
       return atFrom;
+    }
+  } else {
+    // #745 D6: the model against the frozen versions, before anything is written
+    const mismatch = referenceRefusal(live, stored);
+    if (mismatch) {
+      return mismatch;
     }
   }
   // the copy the migration run uses until it ends, whatever the modelVersion section holds meanwhile (epic D2)
@@ -451,6 +534,25 @@ async function runMigration(
   const gitCommit = git ? await checkedOutVersion(host, application, run.migration.to, applicationDeploymentMap, "runMigration") : undefined;
   if (gitCommit instanceof Action2Error) {
     return gitCommit;
+  }
+  if (!git) {
+    // #745 D6: the model the steps left must be the `to` version; else the migration run stays recorded
+    const ended = await liveModelState(host, application, applicationDeploymentMap);
+    if (ended instanceof Action2Error) {
+      return ended;
+    }
+    const toReference = referenceState(ended, application, run.migration.to);
+    if (toReference instanceof Action2Error) {
+      return toReference;
+    }
+    const mismatch = mismatchRefusal(
+      modelStateDifferences(application, ended, toReference),
+      `after the last step of Migration ${run.migration.uuid}, the model of the deployment is not version ${run.migration.to}; the migration run stays recorded and the version is unchanged`,
+      { version: run.migration.to, check: "to" },
+    );
+    if (mismatch) {
+      return mismatch;
+    }
   }
   const ended = await writeDeploymentState(
     host,

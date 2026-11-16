@@ -448,8 +448,16 @@ export function stepsReplayDifferences(
   if (replayed instanceof Action2Error) {
     return replayed;
   }
+  return modelStateDifferences(application, replayed, toState);
+}
+
+/**
+ * #745 D6: the differences between two model states of `application`, as the agreement check compares them
+ * (the compared collections, meta-model Entities left out); `undefined` when there are none.
+ */
+export function modelStateDifferences(application: string, state: ModelState, reference: ModelState): EvolutionTraceDifferences | undefined {
   const metaModel = metaModelEntityUuids(metaModelEntities);
-  const diff = diffModelStates(comparedCollections(application, replayed, metaModel), comparedCollections(application, toState, metaModel));
+  const diff = diffModelStates(comparedCollections(application, state, metaModel), comparedCollections(application, reference, metaModel));
   return Object.keys(diff.collections).length > 0 ? summarize(diff) : undefined;
 }
 

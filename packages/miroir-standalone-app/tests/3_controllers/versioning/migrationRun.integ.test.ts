@@ -97,6 +97,12 @@ const [SETTLED_MIGRATION, OLD_SHAPE_MIGRATION, RESUMED_MIGRATION, LEFT_BEHIND_MI
   "9c00000d-0000-4000-8000-000000000003",
   "9c00000d-0000-4000-8000-000000000004",
 ];
+const [EDITED_MIGRATION, HAND_CHANGED_MIGRATION, MISSING_TO_MIGRATION, MISSING_FROM_MIGRATION] = [
+  "9c000013-0000-4000-8000-000000000001",
+  "9c000013-0000-4000-8000-000000000011",
+  "9c000013-0000-4000-8000-000000000012",
+  "9c000013-0000-4000-8000-000000000013",
+];
 
 /** An Entity appForTest gains in 1.1.0. */
 const edition = {
@@ -682,7 +688,7 @@ describe("#9 part C, #745: runMigration", () => {
     }
   }, 120000);
 
-  it("C5: a model action in a nested sequence of a data step is stored, outside the transaction, before the step is recorded; steps with one uuid, or with a transactional instance action, are refused", async () => {
+  it("C5: a model action in a nested sequence of a data step is stored, outside the transaction, before the step is recorded, and fails the check against to; steps with one uuid, or with a transactional instance action, are refused", async () => {
     const stepEntity = { ...edition, uuid: "9c00000b-0000-4000-8000-000000000001", name: "StepEntityC9" } as unknown as Entity;
     const nested = {
       uuid: "9c00000c-0000-4000-8000-000000000001",
@@ -750,11 +756,26 @@ describe("#9 part C, #745: runMigration", () => {
     expect(refusalReason(await runMigration(SIXTH_MIGRATION))).toBe(MIGRATION_RUN_REFUSALS.migrationStepsInvalid);
     expect(await storedRows(context, ADMIN_DEPLOYMENT, "data", DEPLOYMENT_STATE_ENTITY_UUID)).toEqual(statesBefore);
 
-    expectOk(await runMigration(FOURTH_MIGRATION), "the migration run");
+    const stateRow = (await deploymentState())!;
+    const stopped = await runMigration(FOURTH_MIGRATION);
 
+    // #745 D6: the data step changed the model; after the last step the model is not 1.3.0: the migration run
+    // stays recorded, the version unchanged
+    expect(refusalReason(stopped), JSON.stringify(stopped)).toBe(MIGRATION_RUN_REFUSALS.migrationModelMismatch);
+    expect(refusalContext(stopped)).toMatchObject({ check: "to", version: VERSION_1_3 });
+    expect((stopped as Action2Error).errorMessage).toContain("StepEntityC9");
     const entities = await storedRows(context, FOLLOWING_DEPLOYMENT, "model", ENTITY_ENTITY);
     expect(entities.map((row) => row.uuid)).toContain(stepEntity.uuid);
-    expect((await deploymentState())?.applied?.map((applied) => applied.migration)).toContain(FOURTH_MIGRATION);
+    const recorded = await deploymentState();
+    expect(recorded?.version).toBe(VERSION_1_3);
+    expect(recorded?.run).toMatchObject({ stepsDone: [nested.uuid] });
+    expect(recorded?.run?.stepStarted).toBeUndefined();
+    expect(recorded?.applied?.map((applied) => applied.migration)).not.toContain(FOURTH_MIGRATION);
+
+    // the operator puts the deployment back at 1.3.0 by hand
+    const followingStore = context.serverStores.getPersistenceStoreController(FOLLOWING_DEPLOYMENT)!;
+    expectOk((await followingStore.dropEntity(stepEntity.uuid)) as any, "drop StepEntityC9 by hand");
+    await writeDeploymentStateRow(stateRow);
   }, 120000);
 
   it("C7: settleMigrationStep; a Migration in the shape of #9 is refused; a stopped migration run continues at the first step not started", async () => {
@@ -796,7 +817,9 @@ describe("#9 part C, #745: runMigration", () => {
       await writeDeploymentStateRow(stateRow);
     }
 
-    // a migration run stopped between two steps, the first a createEntity: it continues at the second
+    // a migration run stopped between two steps, the first a createEntity: it continues at the second (a
+    // createEntity executed again would fail, its Entity existing); the last step drops the Entity, so that the
+    // model ends at 1.3.0
     const resumedEntity = { ...edition, uuid: "9c000011-0000-4000-8000-000000000001", name: "ResumedC9" } as unknown as Entity;
     const resumed = manualMigration(RESUMED_MIGRATION, VERSION_1_3, VERSION_1_3, [
       {
@@ -806,7 +829,14 @@ describe("#9 part C, #745: runMigration", () => {
         backwardCompatible: true,
         action: { actionType: "createEntity", endpoint: MODEL_ENDPOINT, payload: { application: APP_FOR_TEST, entities: [resumedEntity] } },
       },
-      writeStep("9c000011-0000-4000-8000-000000000003", "write ResumedC9", [[resumedEntity.uuid, "9c000011-0000-4000-8000-000000000004"]]),
+      writeStep("9c000011-0000-4000-8000-000000000003", "write EditionC9", [[edition.uuid, "9c000011-0000-4000-8000-000000000004"]]),
+      {
+        uuid: "9c000011-0000-4000-8000-000000000005",
+        name: "drop Entity ResumedC9",
+        kind: "model",
+        backwardCompatible: false,
+        action: { actionType: "dropEntity", endpoint: MODEL_ENDPOINT, payload: { application: APP_FOR_TEST, entityUuid: resumedEntity.uuid } },
+      },
     ]);
     await storeMigration(resumed);
     // the first step done, as the stopped migration run left it
@@ -819,7 +849,8 @@ describe("#9 part C, #745: runMigration", () => {
 
     expectOk(await runMigration(RESUMED_MIGRATION), "the continued migration run");
 
-    expect((await storedRows(context, FOLLOWING_DEPLOYMENT, "data", resumedEntity.uuid)).map((row) => row.uuid)).toEqual(["9c000011-0000-4000-8000-000000000004"]);
+    expect((await storedRows(context, FOLLOWING_DEPLOYMENT, "data", edition.uuid)).map((row) => row.uuid)).toContain("9c000011-0000-4000-8000-000000000004");
+    expect((await storedRows(context, FOLLOWING_DEPLOYMENT, "model", ENTITY_ENTITY)).map((row) => row.uuid)).not.toContain(resumedEntity.uuid);
     expect((await deploymentState())?.applied?.map((applied) => applied.migration)).toContain(RESUMED_MIGRATION);
   }, 120000);
 
@@ -832,7 +863,15 @@ describe("#9 part C, #745: runMigration", () => {
       backwardCompatible: true,
       action: { actionType: "createEntity", endpoint: MODEL_ENDPOINT, payload: { application: APP_FOR_TEST, entities: [leftBehind] } },
     };
-    const leftBehindMigration = manualMigration(LEFT_BEHIND_MIGRATION, VERSION_1_3, VERSION_1_3, [createStep]);
+    // the last step drops the Entity, so that the model ends at 1.3.0
+    const dropStep = {
+      uuid: "9c000012-0000-4000-8000-000000000004",
+      name: "drop Entity LeftBehindC6",
+      kind: "model",
+      backwardCompatible: false,
+      action: { actionType: "dropEntity", endpoint: MODEL_ENDPOINT, payload: { application: APP_FOR_TEST, entityUuid: leftBehind.uuid } },
+    };
+    const leftBehindMigration = manualMigration(LEFT_BEHIND_MIGRATION, VERSION_1_3, VERSION_1_3, [createStep, dropStep]);
     await storeMigration(leftBehindMigration);
     // storage of an Entity the model does not hold, with an instance in it
     const folder = followingDataFolder(leftBehind.uuid);
@@ -850,11 +889,78 @@ describe("#9 part C, #745: runMigration", () => {
     expect((await storedRows(context, FOLLOWING_DEPLOYMENT, "model", ENTITY_ENTITY)).map((row) => row.uuid)).not.toContain(leftBehind.uuid);
     expect((await deploymentState())?.run).toMatchObject({ stepsDone: [], stepStarted: createStep.uuid });
 
-    // the operator removes the storage and settles the step: the migration run creates the Entity
+    // the operator removes the storage and settles the step: the migration run creates, then drops, the Entity
     fs.rmSync(folder, { recursive: true });
     expectOk(await settle(createStep.uuid, "notRun"), "settle the createEntity step");
     expectOk(await runMigration(LEFT_BEHIND_MIGRATION), "the continued migration run");
-    expect((await storedRows(context, FOLLOWING_DEPLOYMENT, "model", ENTITY_ENTITY)).map((row) => row.uuid)).toContain(leftBehind.uuid);
-    expect(fs.readdirSync(folder)).toEqual([]);
+    expect((await deploymentState())?.applied?.map((applied) => applied.migration)).toContain(LEFT_BEHIND_MIGRATION);
+    expect(fs.existsSync(folder)).toBe(false);
+  }, 120000);
+
+  it("C8: the model is checked against the frozen versions: a model changed by hand, a step that does not give to, a missing reference; nothing is written", async () => {
+    const statesBefore = await storedRows(context, ADMIN_DEPLOYMENT, "data", DEPLOYMENT_STATE_ENTITY_UUID);
+    const unchanged = async () => expect(await storedRows(context, ADMIN_DEPLOYMENT, "data", DEPLOYMENT_STATE_ENTITY_UUID)).toEqual(statesBefore);
+
+    // a model step the designer edited: its replay on 1.3.0 does not give 1.3.0
+    const edited = manualMigration(EDITED_MIGRATION, VERSION_1_3, VERSION_1_3, [
+      {
+        uuid: "9c000013-0000-4000-8000-000000000002",
+        name: "add Publisher.editedC8",
+        kind: "model",
+        backwardCompatible: true,
+        action: {
+          actionType: "alterEntityAttribute",
+          endpoint: MODEL_ENDPOINT,
+          payload: { application: APP_FOR_TEST, entityName: entityPublisher.name, entityUuid: entityPublisher.uuid, addColumns: [{ name: "editedC8", definition: { type: "string", optional: true } }] },
+        },
+      },
+    ]);
+    await storeMigration(edited);
+    const editedResult = await runMigration(EDITED_MIGRATION);
+    expect(refusalReason(editedResult), JSON.stringify(editedResult)).toBe(MIGRATION_RUN_REFUSALS.migrationModelMismatch);
+    expect(refusalContext(editedResult)).toMatchObject({ check: "steps", version: VERSION_1_3 });
+    expect((editedResult as Action2Error).errorMessage).toContain("Publisher");
+    await unchanged();
+
+    // the model of the following deployment changed by hand, on disk: it is not 1.3.0
+    const dataOnly = manualMigration(HAND_CHANGED_MIGRATION, VERSION_1_3, VERSION_1_3, [writeStep("9c000013-0000-4000-8000-000000000003", "a write", [])]);
+    await storeMigration(dataOnly);
+    const entityFolder = path.join(resolveRepoRoot(), followingFolder, "model", ENTITY_ENTITY);
+    const publisherFile = fs
+      .readdirSync(entityFolder)
+      .map((file) => path.join(entityFolder, file))
+      .find((file) => JSON.parse(fs.readFileSync(file, "utf8")).uuid === entityPublisher.uuid)!;
+    const publisherText = fs.readFileSync(publisherFile, "utf8");
+    fs.writeFileSync(publisherFile, JSON.stringify({ ...JSON.parse(publisherText), description: "changed by hand" }, undefined, 2));
+    try {
+      const changed = await runMigration(HAND_CHANGED_MIGRATION);
+      expect(refusalReason(changed), JSON.stringify(changed)).toBe(MIGRATION_RUN_REFUSALS.migrationModelMismatch);
+      expect(refusalContext(changed)).toMatchObject({ check: "from", version: VERSION_1_3 });
+      expect((changed as Action2Error).errorMessage).toContain("Publisher (description)");
+      await unchanged();
+    } finally {
+      fs.writeFileSync(publisherFile, publisherText);
+    }
+
+    // a Migration to a version the modelVersion section does not hold
+    const MISSING = `9C-missing-${run}`;
+    await storeMigration(manualMigration(MISSING_TO_MIGRATION, VERSION_1_3, MISSING, []));
+    const missingTo = await runMigration(MISSING_TO_MIGRATION);
+    expect(refusalReason(missingTo), JSON.stringify(missingTo)).toBe(MIGRATION_RUN_REFUSALS.migrationReferenceMissing);
+    expect(refusalContext(missingTo)).toMatchObject({ version: MISSING });
+    await unchanged();
+
+    // a deployment whose state says a version the modelVersion section does not hold
+    const stateRow = (await deploymentState())!;
+    await storeMigration(manualMigration(MISSING_FROM_MIGRATION, MISSING, VERSION_1_3, []));
+    await writeDeploymentStateRow({ ...stateRow, version: MISSING });
+    try {
+      const missingFrom = await runMigration(MISSING_FROM_MIGRATION);
+      expect(refusalReason(missingFrom), JSON.stringify(missingFrom)).toBe(MIGRATION_RUN_REFUSALS.migrationReferenceMissing);
+      expect(refusalContext(missingFrom)).toMatchObject({ version: MISSING });
+    } finally {
+      await writeDeploymentStateRow(stateRow);
+    }
+    await unchanged();
   }, 120000);
 });
