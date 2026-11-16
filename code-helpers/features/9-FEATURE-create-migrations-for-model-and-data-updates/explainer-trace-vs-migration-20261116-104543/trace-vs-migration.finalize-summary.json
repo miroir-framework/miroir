@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "ok": true,
+  "command": "finalize",
+  "status": "pass",
+  "type": "explainer",
+  "quality": "showcase",
+  "specification": {
+    "path": "/home/user/miroir/code-helpers/features/9-FEATURE-create-migrations-for-model-and-data-updates/explainer-trace-vs-migration-20261116-104543/candidate.archify.md",
+    "sha256": "ff81c185b0b3a9327bf77c8fc56393c8f8a519824c7303a0025f308c7a91e1a7",
+    "bytes": 8240
+  },
+  "artifact": {
+    "path": "/home/user/miroir/code-helpers/features/9-FEATURE-create-migrations-for-model-and-data-updates/explainer-trace-vs-migration-20261116-104543/trace-vs-migration.html",
+    "sha256": "f781e307a0535cd74d4cbe1bd8ee5986b48d7d44f5ed867729c575895f29136b",
+    "bytes": 2153081
+  },
+  "gates": {
+    "validate": "pass",
+    "deliver": "pass",
+    "check": "pass",
+    "browser-check": "not-run"
+  },
+  "diagnostics": [],
+  "diagnosticSummary": {
+    "total": 0,
+    "shown": 0,
+    "truncated": false
+  },
+  "evidence": {
+    "receipt": "/home/user/miroir/code-helpers/features/9-FEATURE-create-migrations-for-model-and-data-updates/explainer-trace-vs-migration-20261116-104543/trace-vs-migration.finalize.json",
+    "summaryReceipt": "/home/user/miroir/code-helpers/features/9-FEATURE-create-migrations-for-model-and-data-updates/explainer-trace-vs-migration-20261116-104543/trace-vs-migration.finalize-summary.json"
+  },
+  "visualReview": "not-requested",
+  "durationMs": 1682,
+  "browserCheck": {
+    "requested": false,
+    "ran": false
+  }
+}

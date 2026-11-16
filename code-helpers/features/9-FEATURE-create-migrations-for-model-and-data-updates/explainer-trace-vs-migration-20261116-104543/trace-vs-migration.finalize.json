@@ -1,0 +1,405 @@
+{
+  "schemaVersion": 1,
+  "ok": true,
+  "command": "finalize",
+  "status": "pass",
+  "type": "explainer",
+  "quality": "showcase",
+  "startedAt": "2026-11-16T10:57:58.541Z",
+  "specification": {
+    "path": "/home/user/miroir/code-helpers/features/9-FEATURE-create-migrations-for-model-and-data-updates/explainer-trace-vs-migration-20261116-104543/candidate.archify.md",
+    "sha256": "ff81c185b0b3a9327bf77c8fc56393c8f8a519824c7303a0025f308c7a91e1a7",
+    "bytes": 8240
+  },
+  "artifact": {
+    "path": "/home/user/miroir/code-helpers/features/9-FEATURE-create-migrations-for-model-and-data-updates/explainer-trace-vs-migration-20261116-104543/trace-vs-migration.html",
+    "sha256": "f781e307a0535cd74d4cbe1bd8ee5986b48d7d44f5ed867729c575895f29136b",
+    "bytes": 2153081
+  },
+  "stages": {
+    "browser-check": {
+      "status": "not-run",
+      "execution": "not-requested"
+    },
+    "validate": {
+      "status": "pass",
+      "exitCode": 0,
+      "durationMs": null,
+      "execution": "embedded-in-deliver",
+      "command": [
+        "/opt/node22/bin/node",
+        "/home/user/miroir/.claude/skills/archify/bin/archify.mjs",
+        "deliver",
+        "explainer",
+        "/home/user/miroir/code-helpers/features/9-FEATURE-create-migrations-for-model-and-data-updates/explainer-trace-vs-migration-20261116-104543/candidate.archify.md",
+        "/home/user/miroir/code-helpers/features/9-FEATURE-create-migrations-for-model-and-data-updates/explainer-trace-vs-migration-20261116-104543/trace-vs-migration.html",
+        "--quality",
+        "showcase",
+        "--repo-root",
+        "/home/user/miroir",
+        "--json"
+      ],
+      "receipt": {
+        "schemaVersion": 1,
+        "ok": true,
+        "command": "validate",
+        "specification": {
+          "sha256": "ff81c185b0b3a9327bf77c8fc56393c8f8a519824c7303a0025f308c7a91e1a7",
+          "bytes": 8240
+        },
+        "validation": {
+          "checksPassed": 4,
+          "checkCount": 4,
+          "compositionProfile": "showcase",
+          "compositionStatus": "pass",
+          "errors": 0,
+          "warnings": 0
+        }
+      }
+    },
+    "deliver": {
+      "status": "pass",
+      "exitCode": 0,
+      "durationMs": 1094,
+      "command": [
+        "/opt/node22/bin/node",
+        "/home/user/miroir/.claude/skills/archify/bin/archify.mjs",
+        "deliver",
+        "explainer",
+        "/home/user/miroir/code-helpers/features/9-FEATURE-create-migrations-for-model-and-data-updates/explainer-trace-vs-migration-20261116-104543/candidate.archify.md",
+        "/home/user/miroir/code-helpers/features/9-FEATURE-create-migrations-for-model-and-data-updates/explainer-trace-vs-migration-20261116-104543/trace-vs-migration.html",
+        "--quality",
+        "showcase",
+        "--repo-root",
+        "/home/user/miroir",
+        "--json"
+      ],
+      "receipt": {
+        "schemaVersion": 1,
+        "receiptId": "424181b3-565d-4339-b2b0-860eba3e1b22",
+        "ok": true,
+        "command": "deliver",
+        "type": "explainer",
+        "input": "/home/user/miroir/code-helpers/features/9-FEATURE-create-migrations-for-model-and-data-updates/explainer-trace-vs-migration-20261116-104543/candidate.archify.md",
+        "output": "/home/user/miroir/code-helpers/features/9-FEATURE-create-migrations-for-model-and-data-updates/explainer-trace-vs-migration-20261116-104543/trace-vs-migration.html",
+        "explainer": {
+          "preparedSha256": "caf33167f7e2f8bc736e7991f8b831f063929ffbd759366a0d7410957af443d8",
+          "dependencies": [
+            {
+              "kind": "repository",
+              "id": "trace-vocab",
+              "path": "packages/miroir-core/src/1_core/versioning/evolutionTraceRecording.ts",
+              "revision": "70730b2ba1e3f03ec617fe8cb29a880cc0e80117",
+              "sha256": "8236b9b7f1965df8c4f5222b93957e27e23d81e5c033b7e5dc54c5933554b446",
+              "bytes": 8390
+            },
+            {
+              "kind": "repository",
+              "id": "gen-check",
+              "path": "packages/miroir-versioning/src/migrationGeneration.ts",
+              "revision": "70730b2ba1e3f03ec617fe8cb29a880cc0e80117",
+              "sha256": "4794ec415aaa2e365bcbb8e7f52020a0d7d42723de68aa38fc6ec58008f67fd9",
+              "bytes": 25989
+            },
+            {
+              "kind": "repository",
+              "id": "gen-steps",
+              "path": "packages/miroir-versioning/src/migrationGeneration.ts",
+              "revision": "70730b2ba1e3f03ec617fe8cb29a880cc0e80117",
+              "sha256": "4794ec415aaa2e365bcbb8e7f52020a0d7d42723de68aa38fc6ec58008f67fd9",
+              "bytes": 25989
+            },
+            {
+              "kind": "repository",
+              "id": "apply-model",
+              "path": "packages/miroir-versioning/src/applicationVersionInstall.ts",
+              "revision": "70730b2ba1e3f03ec617fe8cb29a880cc0e80117",
+              "sha256": "39e184857b36ac8802bb6cf53086084a6819f550890d263f36ec830a09c93a3b",
+              "bytes": 23649
+            },
+            {
+              "kind": "repository",
+              "id": "run-checks",
+              "path": "packages/miroir-versioning/src/migrationRun.ts",
+              "revision": "70730b2ba1e3f03ec617fe8cb29a880cc0e80117",
+              "sha256": "a0f709ae284ef9e94eb97c447af6fc394dee58b0b3cf510327cc4124c8c4252a",
+              "bytes": 15762
+            },
+            {
+              "kind": "repository",
+              "id": "run-jump",
+              "path": "packages/miroir-versioning/src/migrationRun.ts",
+              "revision": "70730b2ba1e3f03ec617fe8cb29a880cc0e80117",
+              "sha256": "a0f709ae284ef9e94eb97c447af6fc394dee58b0b3cf510327cc4124c8c4252a",
+              "bytes": 15762
+            },
+            {
+              "kind": "repository",
+              "id": "c5-test",
+              "path": "packages/miroir-standalone-app/tests/3_controllers/versioning/migrationRun.integ.test.ts",
+              "revision": "70730b2ba1e3f03ec617fe8cb29a880cc0e80117",
+              "sha256": "31b57d06ccf4d812f9cfca970b0e8345aaec859aa377308402f0334172698c45",
+              "bytes": 29561
+            },
+            {
+              "kind": "repository",
+              "id": "composite-type",
+              "path": "packages/miroir-core/src/0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.ts",
+              "revision": "70730b2ba1e3f03ec617fe8cb29a880cc0e80117",
+              "sha256": "8b95758d0980e9fbed5a419893ef8e997ecfc1791387f573cd6e34477545c236",
+              "bytes": 989003
+            },
+            {
+              "kind": "diagram-spec",
+              "id": "trace-to-run",
+              "inline": true,
+              "sha256": "131178b01ce8eba3ed00689f323d27952d7fca7f6c058da12daddb953cd2f15f",
+              "bytes": 1850
+            }
+          ]
+        },
+        "specification": {
+          "sha256": "ff81c185b0b3a9327bf77c8fc56393c8f8a519824c7303a0025f308c7a91e1a7",
+          "bytes": 8240
+        },
+        "artifact": {
+          "sha256": "f781e307a0535cd74d4cbe1bd8ee5986b48d7d44f5ed867729c575895f29136b",
+          "bytes": 2153081
+        },
+        "validation": {
+          "checksPassed": 4,
+          "checkCount": 4,
+          "compositionProfile": "showcase",
+          "compositionStatus": "pass",
+          "errors": 0,
+          "warnings": 0
+        },
+        "update": {
+          "status": "unavailable",
+          "installedVersion": null,
+          "availableVersion": null,
+          "releaseNotes": null,
+          "checkedAt": null,
+          "source": null,
+          "noticeRequired": false,
+          "noticeText": null,
+          "reason": "disabled"
+        }
+      }
+    },
+    "check": {
+      "status": "pass",
+      "exitCode": 0,
+      "durationMs": 472,
+      "command": [
+        "/opt/node22/bin/node",
+        "/home/user/miroir/.claude/skills/archify/bin/archify.mjs",
+        "check",
+        "/home/user/miroir/code-helpers/features/9-FEATURE-create-migrations-for-model-and-data-updates/explainer-trace-vs-migration-20261116-104543/trace-vs-migration.html",
+        "--require-provenance"
+      ],
+      "receipt": {
+        "ok": true,
+        "file": "/home/user/miroir/code-helpers/features/9-FEATURE-create-migrations-for-model-and-data-updates/explainer-trace-vs-migration-20261116-104543/trace-vs-migration.html",
+        "family": "explainer",
+        "artifact": {
+          "sha256": "f781e307a0535cd74d4cbe1bd8ee5986b48d7d44f5ed867729c575895f29136b",
+          "bytes": 2153081
+        },
+        "checks": [
+          {
+            "name": "explainer_structure",
+            "ok": true,
+            "details": [
+              "75 unique DOM IDs"
+            ]
+          },
+          {
+            "name": "explainer_payload_identity",
+            "ok": true,
+            "details": []
+          },
+          {
+            "name": "explainer_dependencies",
+            "ok": true,
+            "details": [
+              "9 frozen dependencies"
+            ]
+          },
+          {
+            "name": "explainer_native_diagrams",
+            "ok": true,
+            "details": [
+              "trace-to-run: pass"
+            ]
+          }
+        ],
+        "composition": {
+          "schemaVersion": 1,
+          "profile": "showcase",
+          "status": "pass",
+          "summary": {
+            "errors": 0,
+            "warnings": 0
+          },
+          "issues": [],
+          "nativeDiagrams": [
+            {
+              "id": "trace-to-run",
+              "receipt": {
+                "ok": true,
+                "file": "/tmp/archify-explainer-check-txR1JR/child.html",
+                "artifact": {
+                  "sha256": "acbdd8a92c4338eccff0bb3951e4e27e6304b5c4e43061f55434d5f4a816ef51",
+                  "bytes": 839359
+                },
+                "checks": [
+                  {
+                    "name": "single_svg",
+                    "ok": true,
+                    "details": [
+                      "found 1 <svg> block(s)"
+                    ]
+                  },
+                  {
+                    "name": "finite_svg",
+                    "ok": true,
+                    "details": []
+                  },
+                  {
+                    "name": "orthogonal_arrows",
+                    "ok": true,
+                    "details": []
+                  },
+                  {
+                    "name": "label_route_clearance",
+                    "ok": true,
+                    "details": []
+                  },
+                  {
+                    "name": "relationship_crossings",
+                    "ok": true,
+                    "details": []
+                  },
+                  {
+                    "name": "relationship_corridors",
+                    "ok": true,
+                    "details": []
+                  },
+                  {
+                    "name": "container_border_runs",
+                    "ok": true,
+                    "details": []
+                  },
+                  {
+                    "name": "route_rhythm",
+                    "ok": true,
+                    "details": []
+                  },
+                  {
+                    "name": "legend_clearance",
+                    "ok": true,
+                    "details": []
+                  }
+                ],
+                "composition": {
+                  "schemaVersion": 1,
+                  "profile": "showcase",
+                  "status": "pass",
+                  "summary": {
+                    "errors": 0,
+                    "warnings": 0
+                  },
+                  "metrics": {
+                    "properCrossings": 0,
+                    "resolvedCrossovers": 0,
+                    "ambiguousCorridors": 0,
+                    "arrowheadCollisions": 0,
+                    "containerBorderRuns": 0,
+                    "labelRouteClearanceIssues": 0,
+                    "labelCanvasOverflowIssues": 0,
+                    "minLabelRouteClearance": 27,
+                    "desktopReadabilityIssues": 0,
+                    "viewportHeightIssues": 0,
+                    "minProjectedNodeTextPx": 7.301275760549558,
+                    "maxBends": 0,
+                    "routesOverSuggestedBends": 0,
+                    "maxStretch": 1,
+                    "routesOverSuggestedStretch": 0,
+                    "minSegmentPx": 8,
+                    "minInteriorSegmentPx": null,
+                    "shortSegmentCount": 4,
+                    "shortEndpointSegmentCount": 4,
+                    "shortInteriorSegmentCount": 0,
+                    "microSegmentCount": 0
+                  },
+                  "suggestedLimits": {
+                    "bendsPerRelationship": 2,
+                    "stretch": 1.35,
+                    "segmentPx": 16,
+                    "microSegmentPx": 8
+                  },
+                  "routeReview": {
+                    "crossings": [],
+                    "detours": []
+                  },
+                  "leadingSpace": {
+                    "measured": false,
+                    "reviewSuggested": false
+                  },
+                  "desktopReadability": {
+                    "budgetBasis": "legacy-930",
+                    "readerContract": "declared-wide-v1",
+                    "availableDiagramWidth": 930,
+                    "actualBudgetPx": 930,
+                    "limit": "legacy",
+                    "requestedTargetPx": null,
+                    "requestedTargetMet": null,
+                    "hardFloorPx": 6,
+                    "hardFloorMet": true,
+                    "minimumOwner": {
+                      "kind": "edge",
+                      "id": "authoring-to-records-1",
+                      "from": "authoring",
+                      "to": "records"
+                    },
+                    "minimumSourceTextPx": 8,
+                    "minimumProjectedTextPx": 7.301275760549558,
+                    "semanticTextCount": 17
+                  },
+                  "issues": []
+                }
+              }
+            }
+          ]
+        },
+        "diagnostics": [],
+        "provenance": "current",
+        "deliveryReceiptId": "424181b3-565d-4339-b2b0-860eba3e1b22"
+      }
+    }
+  },
+  "browserCheck": {
+    "requested": false,
+    "ran": false
+  },
+  "diagnostics": [],
+  "evidence": {
+    "receipt": "/home/user/miroir/code-helpers/features/9-FEATURE-create-migrations-for-model-and-data-updates/explainer-trace-vs-migration-20261116-104543/trace-vs-migration.finalize.json",
+    "summaryReceipt": "/home/user/miroir/code-helpers/features/9-FEATURE-create-migrations-for-model-and-data-updates/explainer-trace-vs-migration-20261116-104543/trace-vs-migration.finalize-summary.json"
+  },
+  "visualReview": "not-requested",
+  "finishedAt": "2026-11-16T10:58:00.223Z",
+  "durationMs": 1682,
+  "update": {
+    "status": "unavailable",
+    "installedVersion": null,
+    "availableVersion": null,
+    "releaseNotes": null,
+    "checkedAt": null,
+    "source": null,
+    "noticeRequired": false,
+    "noticeText": null,
+    "reason": "cache-valid"
+  }
+}
