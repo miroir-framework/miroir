@@ -47,7 +47,7 @@ import {
 
 import {
   errorLogService,
-  logServerError,
+  logActionFailure,
   type ErrorLogServiceClass,
 } from "../components/logs/ErrorLogService.js";
 import { cleanLevel, packageName } from "../constants.js";
@@ -574,34 +574,16 @@ export function MiroirContextReactProvider(props: {
         //   result && typeof result === "object" && result.status === "error"
         // );
 
-        // Check if the result is an Action2Error (server error)
+        // An Action2Error returned by the action: log it and show the message recorded in the log
         if (result && typeof result === "object" && result.status === "error") {
-          // Log server errors to global error service
-          logServerError(result.errorMessage || result.errorType || "Unknown server error", {
-            actionName,
+          const errorEntry = logActionFailure(actionName, result, {
             errorDetails: result,
             timestamp: new Date().toISOString(),
           });
-
           startTransition(() => {
-            if (result.isServerError && result.errorMessage) {
-              // log.info("Showing server error snackbar for", actionName);
-              showSnackbar(`Server error: ${result.errorMessage}`, "error");
-            } else {
-              // log.info("Showing generic error snackbar for", actionName);
-              showSnackbar(
-                `Error in ${actionName}: ${
-                  result.errorMessage || result.errorType || "Unknown error"
-                }`,
-                "error",
-              );
-            }
+            showSnackbar(errorEntry.userMessage ?? errorEntry.errorMessage, "error");
             setIsActionRunning(false);
           });
-          // startTransition(() => {
-          //   showSnackbar(result.errorMessage || result.errorType || "Unknown error", "error");
-          // });
-
           return;
         }
 
@@ -612,62 +594,15 @@ export function MiroirContextReactProvider(props: {
         });
       } catch (error) {
         log.error(`Error in ${actionName}:`, error);
-
-        // Determine error category based on error type and action name
-        let errorCategory: "startup" | "server" | "client" | "network" | "validation" | "unknown" =
-          "client";
-        if (
-          actionName.toLowerCase().includes("config") ||
-          actionName.toLowerCase().includes("startup")
-        ) {
-          errorCategory = "startup";
-        } else if (error && typeof error === "object" && (error as any).isServerError) {
-          errorCategory = "server";
-        } else if (error instanceof TypeError && error.message.includes("fetch")) {
-          errorCategory = "network";
-        }
-
-        // Log error to global error service
-        const errorMessage = error instanceof Error ? error.message : String(error);
-        const errorEntry = errorLogService.logError(
-          error instanceof Error ? error : new Error(String(error)),
-          {
-            category: errorCategory,
-            severity: errorCategory === "startup" ? "critical" : "error",
-            context: {
-              actionName,
-              timestamp: new Date().toISOString(),
-              userAgent: navigator.userAgent,
-              url: window.location.href,
-            },
-            showSnackbar: true,
-            userMessage:
-              errorCategory === "startup"
-                ? "Application startup failed. Please check your configuration and try again."
-                : undefined,
-          },
-        );
-
-        // Check if the error has structured server error data
-        if (error && typeof error === "object" && (error as any).isServerError) {
-          startTransition(() => {
-            showSnackbar(
-              `Server error: ${
-                (error as any).errorMessage || (error as any).message || "Unknown server error"
-              }`,
-              "error",
-            );
-            setIsActionRunning(false);
-          });
-        } else {
-          startTransition(() => {
-            showSnackbar(
-              errorEntry.userMessage || `Error in ${actionName}: ${errorMessage}`,
-              errorCategory === "startup" ? "error" : "error", // Use "error" instead of "warning"
-            );
-            setIsActionRunning(false);
-          });
-        }
+        const errorEntry = logActionFailure(actionName, error, {
+          timestamp: new Date().toISOString(),
+          userAgent: navigator.userAgent,
+          url: window.location.href,
+        });
+        startTransition(() => {
+          showSnackbar(errorEntry.userMessage ?? errorEntry.errorMessage, "error");
+          setIsActionRunning(false);
+        });
       }
     },
     [showSnackbar],

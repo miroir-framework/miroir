@@ -226,6 +226,76 @@ export class ErrorLogServiceClass {
 // Singleton instance
 export const errorLogService = new ErrorLogServiceClass();
 
+// ##############################################################################################
+/**
+ * The failure of a UI action, either an `Action2Error` returned by the action or an exception
+ * it threw. Only the fields used to build the user message are read.
+ */
+export interface ActionFailure {
+  isServerError?: boolean;
+  errorType?: string;
+  errorMessage?: string;
+  message?: string;
+}
+
+const startupUserMessage = "Application startup failed. Please check your configuration and try again.";
+
+function actionCategory(actionName: string, failure: unknown): ErrorLogEntry["category"] {
+  const lowerActionName = actionName.toLowerCase();
+  if (lowerActionName.includes("config") || lowerActionName.includes("startup")) {
+    return "startup";
+  }
+  if (failure && typeof failure === "object" && (failure as ActionFailure).isServerError) {
+    return "server";
+  }
+  if (failure instanceof TypeError && failure.message.includes("fetch")) {
+    return "network";
+  }
+  return "client";
+}
+
+/**
+ * The message shown to the user for a failed action. The snackbar and the error log both use
+ * it, so the log records what the user saw (#122).
+ */
+export function actionFailureUserMessage(actionName: string, failure: unknown): string {
+  if (actionCategory(actionName, failure) === "startup") {
+    return startupUserMessage;
+  }
+  const details: ActionFailure =
+    failure && typeof failure === "object" ? (failure as ActionFailure) : { errorMessage: String(failure) };
+  if (details.isServerError) {
+    return `Server error: ${details.errorMessage || details.message || details.errorType || "Unknown server error"}`;
+  }
+  return `Error in ${actionName}: ${details.errorMessage || details.message || details.errorType || "Unknown error"}`;
+}
+
+/**
+ * Logs the failure of a UI action, whether returned as an `Action2Error` or thrown. The entry's
+ * `userMessage` is the message to show the user.
+ */
+export function logActionFailure(
+  actionName: string,
+  failure: unknown,
+  context: Record<string, any> = {},
+  service: ErrorLogServiceClass = errorLogService,
+): ErrorLogEntry {
+  const category = actionCategory(actionName, failure);
+  const error: Error | string =
+    failure instanceof Error
+      ? failure
+      : failure && typeof failure === "object"
+        ? (failure as ActionFailure).errorMessage || (failure as ActionFailure).errorType || "Unknown error"
+        : String(failure);
+  return service.logError(error, {
+    category,
+    severity: category === "startup" ? "critical" : category === "network" ? "warning" : "error",
+    context: { actionName, ...context },
+    showSnackbar: true,
+    userMessage: actionFailureUserMessage(actionName, failure),
+  });
+}
+
 // Helper functions for common error types
 export const logStartupError = (error: Error | string, context?: Record<string, any>) => {
   return errorLogService.logError(error, {
@@ -233,7 +303,7 @@ export const logStartupError = (error: Error | string, context?: Record<string, 
     severity: 'critical',
     context,
     showSnackbar: true,
-    userMessage: 'Application startup failed. Please check your configuration and try again.'
+    userMessage: startupUserMessage,
   });
 };
 
@@ -243,7 +313,7 @@ export const logServerError = (error: Error | string, context?: Record<string, a
     severity: 'error',
     context,
     showSnackbar: true,
-    userMessage: 'Server error: request could not be processed.'
+    userMessage: actionFailureUserMessage("server request", { isServerError: true, errorMessage: error instanceof Error ? error.message : error }),
   });
 };
 
