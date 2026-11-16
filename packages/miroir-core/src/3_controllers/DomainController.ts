@@ -127,14 +127,18 @@ import {
   FREEZE_APPLICATION_VERSION_ACTION_TYPE,
   REBASELINE_EVOLUTION_TRACES_ACTION_TYPE,
   VERSIONING_PACKAGE_NAME,
+  deploymentRoleOf,
   type AppendEvolutionTraceRecordPayload,
   type CheckStagedEvolutionTracesPayload,
+  type DeploymentRole,
 } from "../1_core/versioning/versioningInterfaces.js";
 import {
   appendEvolutionTraceRecordAction,
   evolutionTracesIgnoredWarning,
   fetchesModelVersion,
   isEvolutionTraceOn,
+  isMigrationRun,
+  markMigrationRun,
   isRecordedBySender,
   isRecordedModelChange,
   recordedInstanceWrite,
@@ -166,11 +170,13 @@ import {
 import type {
   GitAction,
   GitInstallClonedDeploymentResult,
+  GitModelFiles,
   GitTouchedDeployment,
 } from "../0_interfaces/3_controllers/GitAction";
 import {
   openMiroirTransactionError,
   pendingMiroirChangesError,
+  readModelFilesAtRefs,
   runGitAction,
   type GitCredentialStore,
   type GitDeploymentInstaller,
@@ -270,6 +276,20 @@ export const templateEvaluationParams = {
 
 const autocommit = true;
 // const autocommit = false;
+
+/** #9: the model actions a following deployment refuses, unless a migration run sends them. */
+const FOLLOWING_DEPLOYMENT_REFUSED_MODEL_ACTIONS: readonly string[] = [
+  "commit",
+  "createEntity",
+  "alterEntityAttribute",
+  "entity_DuplicateAttribute",
+  "renameEntity",
+  "dropEntity",
+  "resetModel",
+  "initModel",
+];
+/** #9: the sections of a following deployment no instance write reaches, unless a migration run sends it. */
+const FOLLOWING_DEPLOYMENT_REFUSED_SECTIONS: readonly string[] = ["model", "modelVersion"];
 
 const _miroirLoggerName = MiroirLoggerFactory.getLoggerName(packageName, cleanLevel, "DomainController");
 let log: LoggerInterface = MiroirLoggerFactory.getPreStartLogger(_miroirLoggerName);
@@ -465,6 +485,8 @@ export class DomainController implements DomainControllerInterface, DomainContro
   private instanceActionListeners: InstanceActionListener[] = [];
   /** #708: per application, the evolution trace records not appended yet, in order. */
   private pendingEvolutionTraceRecords = new Map<string, AppendEvolutionTraceRecordPayload[]>();
+  /** #9: the roles read from the stored Admin Deployment rows, by deployment uuid (`storedDeploymentRole`). */
+  private deploymentRoles = new Map<string, DeploymentRole>();
   /** #708: per application, the end of the last append sequence: one sequence runs at a time. */
   private evolutionTraceAppendTails = new Map<string, Promise<unknown>>();
   // ##############################################################################################
@@ -1381,6 +1403,17 @@ export class DomainController implements DomainControllerInterface, DomainContro
       return Promise.resolve(rejectedKeyless);
     }
 
+    // #9: checked where the stores are
+    const deploymentRefusal =
+      (await this.deploymentWriteRefusal(instanceAction, applicationDeploymentMap)) ??
+      (["createInstance", "updateInstance", "deleteInstance", "deleteInstanceWithCascade"].includes(instanceAction.actionType) &&
+      FOLLOWING_DEPLOYMENT_REFUSED_SECTIONS.includes((instanceAction.payload as { applicationSection?: string }).applicationSection ?? "")
+        ? await this.followingDeploymentRefusal(instanceAction, applicationDeploymentMap)
+        : undefined);
+    if (deploymentRefusal) {
+      return deploymentRefusal;
+    }
+
     const actionToPersist =
       instanceAction.actionType === "createInstance" ||
       instanceAction.actionType === "updateInstance"
@@ -1527,11 +1560,182 @@ export class DomainController implements DomainControllerInterface, DomainContro
       const row = domainState?.[deploymentUuid]?.[section]?.[entityUuid]?.[application] as
         | EvolutionTraceSwitchInput
         | undefined;
-      if (isEvolutionTraceOn(row)) {
+      // #9: a following deployment records nothing, so that its writes never enter the shared chain
+      const role =
+        this.deploymentRoles.get(deploymentUuid) ??
+        deploymentRoleOf(this.cachedDeploymentRow(deploymentUuid, applicationDeploymentMap));
+      if (isEvolutionTraceOn(row) && role !== "following") {
         traced.push(application);
       }
     }
     return traced;
+  }
+
+  /**
+   * #9: the role of a deployment in the process that holds the stores, read from its stored Admin
+   * Deployment row and kept: a role never changes, and a write of Deployment rows forgets what was kept.
+   * Read from this process's own Admin deployment, never from one the request's map names. `undefined` in a
+   * process that does not hold the stores (a remote client: the server checks), and in one without an Admin
+   * store; an Action2Error when the Admin store cannot be read, so that the gate refuses rather than lets a
+   * write through.
+   */
+  private async storedDeploymentRole(deploymentUuid: string): Promise<DeploymentRole | undefined | Action2Error> {
+    const manager = this.persistenceStoreLocalOrRemote.getLocalPersistenceStoreControllerManager?.();
+    if (!manager) {
+      return undefined;
+    }
+    const kept = this.deploymentRoles.get(deploymentUuid);
+    if (kept) {
+      return kept;
+    }
+    const adminStore = manager.getPersistenceStoreController(deployment_Admin.uuid);
+    if (!adminStore) {
+      return undefined;
+    }
+    const read = await adminStore.getInstances("data", entityDeployment.uuid);
+    const collection = read instanceof Action2Error ? undefined : read?.returnedDomainElement;
+    if (!collection || collection instanceof Domain2ElementFailed || !("instances" in collection)) {
+      return new Action2Error(
+        "FailedToHandleAction",
+        `the role of deployment ${deploymentUuid} cannot be read from the Admin store`,
+        [],
+        read instanceof Action2Error ? read : undefined,
+      );
+    }
+    const rows = (collection.instances ?? []) as { uuid?: string; role?: unknown }[];
+    for (const row of rows) {
+      if (row.uuid) {
+        this.deploymentRoles.set(row.uuid, deploymentRoleOf(row));
+      }
+    }
+    return this.deploymentRoles.get(deploymentUuid);
+  }
+
+  /**
+   * #9: the refusal of a write to the model of a following deployment (D6), unless it is a migration run's.
+   * The process that holds the stores reads the role from the stored Deployment row: it sees every write,
+   * those a remote client sends included. A remote client refuses early from its cached Deployment row.
+   * Miroir and Admin are never following.
+   */
+  private async followingDeploymentRefusal(
+    action: { payload: { application: string } },
+    applicationDeploymentMap: ApplicationDeploymentMap,
+  ): Promise<Action2Error | undefined> {
+    const application = action.payload.application;
+    if (isMigrationRun(action) || application === adminSelfApplication.uuid || application === selfApplicationMiroir.uuid) {
+      return undefined;
+    }
+    const deploymentUuid = applicationDeploymentMap[application];
+    if (!deploymentUuid) {
+      return undefined;
+    }
+    const stored = await this.storedDeploymentRole(deploymentUuid);
+    if (stored instanceof Action2Error) {
+      return stored;
+    }
+    const role = this.persistenceStoreLocalOrRemote.getLocalPersistenceStoreControllerManager?.()
+      ? stored
+      : deploymentRoleOf(this.cachedDeploymentRow(deploymentUuid, applicationDeploymentMap));
+    if (role !== "following") {
+      return undefined;
+    }
+    return new Action2Error(
+      "FailedToHandleAction",
+      `deployment ${deploymentUuid} of ${application} is a following deployment: its model changes by a migration run only`,
+      undefined,
+      undefined,
+      { reason: "deploymentFollows", deployment: deploymentUuid },
+    );
+  }
+
+  /**
+   * #9: why the replay of a transaction is refused by the role of a deployment, before any of its writes:
+   * a write of a Deployment row that changes its role, and a model or `modelVersion` change of an
+   * application whose deployment is following, whatever application the commit names.
+   */
+  private async transactionRoleRefusal(
+    transaction: readonly { actionType: string; payload: any }[],
+    applicationDeploymentMap: ApplicationDeploymentMap,
+  ): Promise<Action2Error | undefined> {
+    for (const entry of transaction) {
+      if (entry.actionType !== "transactionalInstanceAction") {
+        const refused = FOLLOWING_DEPLOYMENT_REFUSED_MODEL_ACTIONS.includes(entry.actionType)
+          ? await this.followingDeploymentRefusal(entry, applicationDeploymentMap)
+          : undefined;
+        if (refused) {
+          return refused;
+        }
+        continue;
+      }
+      const instanceAction = entry.payload.instanceAction;
+      const actionType = String(instanceAction.actionType);
+      const written = {
+        ...instanceAction,
+        actionType: actionType.includes("_") ? actionType.slice(actionType.lastIndexOf("_") + 1) : actionType,
+      } as InstanceAction;
+      const refused =
+        (await this.deploymentWriteRefusal(written, applicationDeploymentMap)) ??
+        (FOLLOWING_DEPLOYMENT_REFUSED_SECTIONS.includes(instanceAction.payload?.applicationSection ?? "")
+          ? await this.followingDeploymentRefusal(written, applicationDeploymentMap)
+          : undefined);
+      if (refused) {
+        return refused;
+      }
+    }
+    return undefined;
+  }
+
+  /**
+   * #9: why an instance write is refused by the role of a deployment, checked in the process that holds the
+   * stores: a write of a Deployment row that changes its role (chosen at creation, D6).
+   */
+  private async deploymentWriteRefusal(
+    instanceAction: InstanceAction,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+  ): Promise<Action2Error | undefined> {
+    if (instanceAction.payload.application === adminSelfApplication.uuid && instanceAction.actionType.startsWith("deleteInstance")) {
+      // a deployment deleted, then created again with the same uuid, may take another role
+      this.deploymentRoles.clear();
+    }
+    if (instanceAction.actionType !== "createInstance" && instanceAction.actionType !== "updateInstance") {
+      return undefined;
+    }
+    if (instanceAction.payload.application !== adminSelfApplication.uuid) {
+      return undefined;
+    }
+    const payloadParentUuid = (instanceAction.payload as { parentUuid?: string }).parentUuid;
+    const deploymentRowsWritten = (instanceAction.payload.objects ?? []).filter(
+      (object: { parentUuid?: string }) => (object.parentUuid ?? payloadParentUuid) === entityDeployment.uuid,
+    );
+    if (deploymentRowsWritten.length === 0) {
+      return undefined;
+    }
+    for (const row of deploymentRowsWritten) {
+      const previous = await this.storedDeploymentRole(row.uuid as string);
+      if (previous instanceof Action2Error) {
+        return previous;
+      }
+      if (previous && previous !== deploymentRoleOf(row as { role?: unknown })) {
+        return new Action2Error(
+          "FailedToHandleAction",
+          `the role of deployment ${row.uuid} is ${previous}: it is chosen when the deployment is created and never changes`,
+          undefined,
+          undefined,
+          { reason: "deploymentRoleFixed", deployment: row.uuid },
+        );
+      }
+    }
+    return undefined;
+  }
+
+  /** #9: the Admin Deployment row of `deploymentUuid` in the local cache, when it is loaded. */
+  private cachedDeploymentRow(
+    deploymentUuid: string,
+    applicationDeploymentMap: ApplicationDeploymentMap,
+  ): { role?: unknown; configuration?: any } | undefined {
+    const domainState = this.localCache.getDomainState() as Record<string, any> | undefined;
+    const adminDeployment = applicationDeploymentMap[adminSelfApplication.uuid] ?? deployment_Admin.uuid;
+    return domainState?.[adminDeployment]?.data?.[entityDeployment.uuid]?.[deploymentUuid];
   }
 
   /** #708: whether a write made outside a transaction gets its own record. Read before the write. */
@@ -1564,12 +1768,9 @@ export class DomainController implements DomainControllerInterface, DomainContro
         { capability: "versioning", package: VERSIONING_PACKAGE_NAME },
       );
     }
-    const domainState = this.localCache.getDomainState() as Record<string, any> | undefined;
-    const adminDeployment = applicationDeploymentMap[adminSelfApplication.uuid] ?? deployment_Admin.uuid;
-    const deploymentRows = domainState?.[adminDeployment]?.data?.[entityDeployment.uuid];
     for (const application of tracedApplications) {
       const deploymentUuid = applicationDeploymentMap[application];
-      const configuration = deploymentRows?.[deploymentUuid]?.configuration;
+      const configuration = this.cachedDeploymentRow(deploymentUuid, applicationDeploymentMap)?.configuration;
       if (configuration && !configuration.modelVersion) {
         return new Action2Error(
           "FailedToHandleAction",
@@ -1789,6 +1990,26 @@ export class DomainController implements DomainControllerInterface, DomainContro
     return (collection.instances ?? []) as EntityInstance[];
   }
 
+  /**
+   * #9 B4: the model files of an application in Git commits, read where the files are; refused on a remote
+   * client, whose server runs the versioning actions that read them.
+   */
+  async readGitModelFiles(
+    application: Uuid,
+    refs: readonly string[],
+    applicationDeploymentMap: ApplicationDeploymentMap,
+  ): Promise<GitModelFiles | Action2Error> {
+    const manager = this.persistenceStoreLocalOrRemote.getLocalPersistenceStoreControllerManager?.();
+    if (!manager) {
+      return new Action2Error("FailedToHandleAction", `the Git files of ${application} are read where its deployment's files are, not on a client`);
+    }
+    return readModelFilesAtRefs(application, refs, {
+      factory: ConfigurationService.configurationService.getGitRepositoryFactory(),
+      manager,
+      applicationDeploymentMap,
+    });
+  }
+
   // ##############################################################################################
   async handleModelAction(
     modelAction: ModelAction,
@@ -1814,6 +2035,13 @@ export class DomainController implements DomainControllerInterface, DomainContro
     //   ].includes(modelAction.actionType) ? JSON.stringify(modelAction, null, 2) : modelAction,
     //   // modelAction,
     // );
+    // #9: a following deployment's model changes by a migration run only
+    if (FOLLOWING_DEPLOYMENT_REFUSED_MODEL_ACTIONS.includes(modelAction.actionType)) {
+      const followingRefusal = await this.followingDeploymentRefusal(modelAction, applicationDeploymentMap);
+      if (followingRefusal) {
+        return followingRefusal;
+      }
+    }
     try {
       switch (modelAction.actionType) {
         case "remoteLocalCacheRollback": {
@@ -2300,6 +2528,11 @@ export class DomainController implements DomainControllerInterface, DomainContro
           const traceRefusal = this.evolutionTraceRefusal(tracedApplications, applicationDeploymentMap);
           if (traceRefusal) {
             return traceRefusal;
+          }
+          // #9: the replay writes to the stores directly, so the role checks of each write run before it
+          const roleRefusal = await this.transactionRoleRefusal(currentTransactions, applicationDeploymentMap);
+          if (roleRefusal) {
+            return roleRefusal;
           }
           const replayedModelChanges: unknown[] = [];
 
@@ -3558,7 +3791,17 @@ export class DomainController implements DomainControllerInterface, DomainContro
       }
     }
     const result = await this.forwardServerRoutedAction(domainAction, applicationDeploymentMap);
-    if (result instanceof Action2Error || typeof application !== "string") {
+    if (typeof application !== "string") {
+      return result;
+    }
+    if (result instanceof Action2Error) {
+      // #9: a stopped migration run may have changed the model (its jump) before the step that failed
+      if ((domainAction as { actionType?: string }).actionType === "runMigration") {
+        await this.reloadTouchedDeployments(
+          { status: "ok", returnedDomainElement: { touchedDeployments: [{ application }] } as any },
+          applicationDeploymentMap,
+        );
+      }
       return result;
     }
     const reloaded = await this.reloadTouchedDeployments(
@@ -4583,7 +4826,8 @@ export class DomainController implements DomainControllerInterface, DomainContro
     //   Object.keys(localActionParams),
     // );
 
-    for (const currentAction of sequenceToExecute.payload.actionSequence) {
+    for (const sequenceChild of sequenceToExecute.payload.actionSequence) {
+      const currentAction = carryMigrationRunMark(compositeActionSequence, sequenceChild);
       let actionResult: Action2ReturnType | undefined = undefined;
       try {
         log.debug(
@@ -5638,7 +5882,9 @@ export class DomainController implements DomainControllerInterface, DomainContro
     let lastPayloadResult: Action2ReturnType = ACTION_OK;
 
     // TODO: replace with handleCompositeAction
-    for (const currentAction of resolved.resolvedCompositeActionDefinition.payload.actionSequence) {
+    for (const resolvedChild of resolved.resolvedCompositeActionDefinition.payload.actionSequence) {
+      // the resolution rebuilt the sequence: a migration run's mark goes from the sequence to each action
+      const currentAction = carryMigrationRunMark(compositeActionSequence, resolvedChild);
       log.info(
         "handleCompositeActionTemplate",
         actionLabel,
@@ -5678,7 +5924,7 @@ export class DomainController implements DomainControllerInterface, DomainContro
       const resolvedActionTemplate: any =
         resolvedStep instanceof TransformerFailure
           ? resolvedStep
-          : attachQueryRuntimeTransformers(resolvedStep, runtimeTransformers, localActionParams);
+          : carryMigrationRunMark(currentAction, attachQueryRuntimeTransformers(resolvedStep, runtimeTransformers, localActionParams));
       log.info(
         "handleCompositeActionTemplate compositeInstanceAction",
         currentAction.actionLabel ?? "without step name",
@@ -6402,3 +6648,11 @@ export class DomainController implements DomainControllerInterface, DomainContro
 // ##############################################################################################
 // ##############################################################################################
 // ##############################################################################################
+
+/**
+ * #9: the resolution of an action template builds a new object, which drops the symbol-keyed mark of a
+ * migration run: the resolved action gets it again when the template had it.
+ */
+function carryMigrationRunMark<T>(template: unknown, resolved: T): T {
+  return isMigrationRun(template) && resolved !== null && typeof resolved === "object" ? (markMigrationRun(resolved as object) as T) : resolved;
+}

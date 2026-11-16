@@ -132,6 +132,9 @@ if (runThis) {
         "handleAction_appendEvolutionTraceRecord", // #708
         "handleAction_rebaselineEvolutionTraces", // #708 part C
         "handleAction_checkStagedEvolutionTraces", // #708 part C, run by gitAction_commit
+        "handleAction_installApplicationVersion", // #9
+        "handleAction_generateMigration", // #9
+        "handleAction_runMigration", // #9
       ]);
       expect(core.VERSIONING_PACKAGE_NAME).toBe("@miroir-framework/versioning");
     });

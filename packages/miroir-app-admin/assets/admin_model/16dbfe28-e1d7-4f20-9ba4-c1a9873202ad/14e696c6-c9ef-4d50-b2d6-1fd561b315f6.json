@@ -1,0 +1,134 @@
+{
+  "uuid": "14e696c6-c9ef-4d50-b2d6-1fd561b315f6",
+  "parentName": "Entity",
+  "parentUuid": "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad",
+  "parentDefinitionVersionUuid": "381ab1be-337f-4198-b1d3-f686867fc1dd",
+  "name": "DeploymentState",
+  "selfApplication": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+  "conceptLevel": "Model",
+  "description": "#9: where the data of a following deployment stands among the versions of its application: the version it is at, the Migrations run on it, and the run in progress. One row per following deployment, its uuid the Deployment's.",
+  "viewAttributes": [
+    "version",
+    "deployment",
+    "application",
+    "uuid"
+  ],
+  "icon": "Timeline",
+  "mlSchema": {
+    "type": "object",
+    "extend": {
+      "type": "schemaReference",
+      "definition": {
+        "eager": true,
+        "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+        "relativePath": "entityDefinitionRoot"
+      }
+    },
+    "definition": {
+      "deployment": {
+        "type": "uuid",
+        "tag": {
+          "value": {
+            "id": 5,
+            "defaultLabel": "Deployment",
+            "description": "The Deployment whose state this is (the row's uuid is the same)",
+            "display": {
+              "editable": false
+            },
+            "foreignKeyParams": {
+              "targetEntity": "7959d814-400c-4e80-988f-a00fe582ab98",
+              "targetEntityOrderInstancesBy": "name"
+            }
+          }
+        }
+      },
+      "application": {
+        "type": "uuid",
+        "tag": {
+          "value": {
+            "id": 6,
+            "defaultLabel": "Application",
+            "description": "The application deployed",
+            "display": {
+              "editable": false
+            },
+            "foreignKeyParams": {
+              "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+              "targetEntityOrderInstancesBy": "name"
+            }
+          }
+        }
+      },
+      "version": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 7,
+            "defaultLabel": "Version",
+            "description": "The name of the Application Version (or the Git tag) the deployment's model and data are at; absent when unknown",
+            "display": {
+              "editable": false
+            }
+          }
+        }
+      },
+      "gitCommit": {
+        "type": "string",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 8,
+            "defaultLabel": "Git commit",
+            "description": "The commit the deployment's model was checked out at, for a versioned-git application (information)",
+            "display": {
+              "editable": false
+            }
+          }
+        }
+      },
+      "applied": {
+        "type": "array",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 9,
+            "defaultLabel": "Applied Migrations",
+            "description": "The Migrations run on the deployment, in order",
+            "display": {
+              "editable": false
+            }
+          }
+        },
+        "definition": {
+          "type": "object",
+          "definition": {
+            "migration": { "type": "uuid" },
+            "from": { "type": "string" },
+            "to": { "type": "string" },
+            "finishedAt": { "type": "string" }
+          }
+        }
+      },
+      "run": {
+        "type": "object",
+        "optional": true,
+        "tag": {
+          "value": {
+            "id": 10,
+            "defaultLabel": "Run in progress",
+            "description": "The Migration run in progress: a copy of the Migration row, the steps done, and when it started",
+            "display": {
+              "editable": false
+            }
+          }
+        },
+        "definition": {
+          "migration": { "type": "any" },
+          "stepsDone": { "type": "array", "definition": { "type": "string" } },
+          "startedAt": { "type": "string" }
+        }
+      }
+    }
+  }
+}

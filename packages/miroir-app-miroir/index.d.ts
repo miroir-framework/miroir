@@ -40,6 +40,7 @@ export declare const entityHistoricalTestConfigurationVersion: any;
 export declare const entityApplicationVersionCrossTestConfigurationVersion: any;
 export declare const entityHistoricalTestVersion: any;
 export declare const entityEvolutionTraceRecord: any;
+export declare const entityMigration: any;
 export declare const entityApplicationVersionCrossTestVersion: any;
 export declare const entityTest: any;
 export declare const entityTransformerDefinition: any;
@@ -298,6 +299,7 @@ export declare const miroirTest_action_domainController_dataCrud_noParentUuid: a
 export declare const miroirTest_action_domainController_modelUndoRedo: any;
 export declare const miroirTest_action_domainController_freezeApplicationVersion: any;
 export declare const miroirTest_action_scenario_evolutionTrace: any;
+export declare const miroirTest_action_scenario_migration: any;
 export declare const miroirTest_tr_syncExternalServiceSchema: any;
 export declare const miroirTest_action_scenario_externalServiceSync: any;
 export declare const miroirTest_runner_createEntity: any;

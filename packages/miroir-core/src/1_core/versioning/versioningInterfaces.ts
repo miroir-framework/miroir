@@ -65,6 +65,9 @@ export const VERSIONING_ACTION_IMPLEMENTATION_NAMES: readonly string[] = [
   "handleAction_appendEvolutionTraceRecord",
   "handleAction_rebaselineEvolutionTraces",
   "handleAction_checkStagedEvolutionTraces",
+  "handleAction_installApplicationVersion", // #9
+  "handleAction_generateMigration", // #9
+  "handleAction_runMigration", // #9
 ];
 
 /** #708: the Entity of evolution trace records, stored in an application's `modelVersion` section. */
@@ -95,6 +98,48 @@ export type EvolutionTraceRecordRow = AppendEvolutionTraceRecordPayload & {
   sequenceNumber: number;
   previousTrace?: string;
   timestamp: string;
+};
+
+/**
+ * #9: Model Endpoint action that installs the model of an application version on a following deployment,
+ * and records the version in the deployment's `DeploymentState` row.
+ */
+export const INSTALL_APPLICATION_VERSION_ACTION_TYPE = "installApplicationVersion" as const;
+
+/** #9: payload of `installApplicationVersion`; `version` is the name of a `SelfApplicationVersion`. */
+export type InstallApplicationVersionActionPayload = {
+  application: string;
+  version: string;
+};
+
+/**
+ * #9: a deployment's role, on its Admin Deployment row. `authoring` (the default) edits the model;
+ * `following` gets its model installed at a version, then changed by Migrations only.
+ */
+export type DeploymentRole = "authoring" | "following";
+
+/** #9: the role of a Deployment row; a row without one (every deployment before #9) is `authoring`. */
+export function deploymentRoleOf(deploymentRow: { role?: unknown } | undefined): DeploymentRole {
+  return deploymentRow?.role === "following" ? "following" : "authoring";
+}
+
+/** #9: the Admin Entity of the deployment state records, one per following deployment. */
+export const DEPLOYMENT_STATE_ENTITY_UUID = "14e696c6-c9ef-4d50-b2d6-1fd561b315f6";
+
+/** #9: a Migration run on a deployment, as its state record keeps it. */
+export type DeploymentStateAppliedMigration = { migration: string; from: string; to: string; finishedAt: string };
+
+/** #9: where a following deployment's model and data stand; its uuid is the Deployment's. */
+export type DeploymentStateRow = {
+  uuid: string;
+  parentName: string;
+  parentUuid: string;
+  deployment: string;
+  application: string;
+  version?: string;
+  gitCommit?: string;
+  applied?: DeploymentStateAppliedMigration[];
+  run?: { migration: unknown; stepsDone: string[]; startedAt: string };
 };
 
 export {

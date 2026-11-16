@@ -1,0 +1,475 @@
+# Issue #9 — TDD Implementation Plan
+
+> Vertical TDD slices (RED → GREEN each), integration-first per `docs/contributing/testing.md`:
+> tests exercise the real DomainController, local cache and emulated server on the filesystem
+> store, through the Model Endpoint actions (`generateMigration`, `runMigration`), the creation
+> of a deployment, and the instance writes a designer makes. No mocks. The tracer bullet of each
+> part proves its thinnest path end to end: a following deployment created at an earlier version
+> gets that version's model (A), a draft Migration for one added attribute (B), and that
+> Migration run on the following deployment (C).
+>
+> **Execution model:** human-in-the-loop. No slice contains a commit step: commits happen
+> only when the user explicitly asks. Each slice ends with its Validation commands; on
+> success its Realization summary is appended and its Status flips to ✅ DONE.
+
+Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-framework/miroir/issues/9 · Follow-up: #733
+Prerequisites: [`../708-FEATURE-trace-revival-model-states/`](../708-FEATURE-trace-revival-model-states/) ✅, [`../696-REFACTOR-versioning-package/`](../696-REFACTOR-versioning-package/) ✅
+Working branch: `claude/project-thread-8d36cr` (assigned by the session), one PR per part (analysis D1)
+
+**Resume note:** plan rewritten 2026-11-15 after the user's first review; the user approved it and asked for one commit per slice and one PR per part, on branches named after the issue (`claude/9-migration-formats-roles` for part A). Part A done (A1 to A3).
+
+---
+
+## Scope
+
+In, from the analysis goals:
+- G1 — a draft migration between two versions, with its changes classified, and hand-written migrations (part B).
+- G2 — a migration run on a following deployment brings its model to the target version, data kept and transformed (parts A, C).
+- G3 — a stopped run resumes and ends in the same state (part C).
+- G4 — the deployment's role on its Deployment row, and its state record: version, applied migrations, a run in progress (parts A, C).
+
+Out (analysis section 2): detecting and correcting a model and storage divergence (set aside by the user); Actions for the contract phase (#733); paired data migrations, the composite rename and steps reading removed attributes (#215); the operator's restore action (#709); changing a deployment's role; two processes sharing `modelVersion` and the clone installer change (#710); release packages (epic D9); a migration on the authoring deployment; one SQL transaction per step; store backups.
+
+---
+
+## Progress summary
+
+| Slice | Part | Title | Status | Primary proof |
+|---|---|---|---|---|
+| A1 | A | A following deployment created at an earlier version (tracer) | ✅ | `followingDeployment.9.phaseA.integ.test.ts` |
+| A2 | A | A deployment's role cannot change | ✅ | same file |
+| A3 | A | A following deployment refuses model and `modelVersion` writes | ✅ | same file |
+| B1 | B | A draft Migration for one optional attribute (tracer) | ✅ | `migrationGeneration.9.phaseB.integ.test.ts` |
+| B2 | B | Removals, required attributes, renames: classified and stepped | ✅ | same file |
+| B3 | B | Refusals and the diff fallback | ✅ | same file |
+| B4 | B | `versioned-git`: from the tag to `HEAD` | ✅ | `migrationGenerationGit.9.phaseB.integ.test.ts` |
+| C1 | C | A Migration run on a following deployment (tracer) | ✅ | `migrationRun.9.phaseC.integ.test.ts` |
+| C2 | C | A stopped run resumes | ✅ | same file |
+| C3 | C | Runner refusals | ✅ | same file |
+| C4 | C | `versioned-git`: the jump is a checkout of the tag | ✅ | `migrationRunGit.9.phaseC.integ.test.ts` |
+| Z | C | MiroirTest scenario, nonreg steps, docs, cleanup, AC | ✅ | nonreg steps + `action.scenario.migration` |
+
+Each part ends with a full `npm run nonreg:filesystem -- --runner shared` and its PR.
+
+---
+
+## Locked implementation defaults
+
+The analysis decision record, binding for this plan. Narrowings N1 to N5 (analysis section 3.1) hold once the user signs them off; a change is recorded in the Realization of the slice it affects.
+
+| Decision | Choice | Serves |
+|---|---|---|
+| D1 | Three parts: A formats and roles, B generation, C runner; a PR each | all |
+| D2 | `applyModelState` rewrites the application's own model rows only (`AGREEMENT_COLLECTIONS`, `model` section, meta-model Entities left out); `createEntity` for an added Entity, `alterEntityAttribute` `addColumns` for an added attribute, before the Entity row gets its target value; other rows upserted, absent rows deleted; keeps `parentDefinitionVersionUuid` and `conceptLevel`; following deployments only, writes marked; reloads | G2 |
+| D3 | `Migration` row: `application`, `from`, `to`, `source`, `changes`, `expand`, `fill`, `contract`, `backwardCompatible`, `generatedAt`, `description`; a step `{ uuid, name, backwardCompatible, repeatable, action: CompositeActionSequence }` | G1, G2, G3 |
+| D4 | Contract steps are `CompositeActionSequence`s; generation leaves them empty and named until #733 | G2 |
+| D5 | Admin `DeploymentState`, uuid = Deployment uuid: `deployment`, `application`, `version`, `gitCommit`, `applied`, `run`; no model content but the run's copy; Entity created when absent | G3, G4 |
+| D6 | `role` (`authoring` default, `following`) on the Admin Deployment, set at creation, refused on update; a following deployment is created at a version (installed by `applyModelState`, or the clone at the tag); gate in the persistence process reading the Deployment row; run mark | G2, G4 |
+| D7 | `generateMigration { application, from, to }`: states, records, agreement, changes from records (renames and `idAttribute` from row diffs), diff fallback, classification, steps, unsupported; refused across a `rebaseline`; one Migration per `from`/`to` unless replaced | G1 |
+| D8 | `runMigration { application, migration }` under a lock per application; checks, find (at tag `to` with Git), copy, steps with `stepsDone`, end | G2, G3 |
+
+---
+
+## Allocated UUIDs / keys
+
+| Artefact | Value |
+|---|---|
+| `Migration` Entity (Miroir model, routed to `modelVersion`) | `b5c1f0e5-3d31-419b-9a6b-21dd598fc3fe` |
+| `DeploymentState` Entity (Admin model) | `14e696c6-c9ef-4d50-b2d6-1fd561b315f6` |
+| MiroirTest `action.scenario.migration` (appForTest, filesystem) | `79e29346-90d3-4bdd-ae87-43ba9e99268f` |
+| `MetaModel` collection of Migrations | `migrations` |
+| Deployment attribute | `role`: `authoring` \| `following` |
+| Model Endpoint actions (`7947ae40-…`) | `generateMigration`, `runMigration` (`handleAction_generateMigration`, `handleAction_runMigration`, `requiredCapability: versioning`, server-routed) |
+| Refusal reasons (`errorContext.reason`) | `deploymentFollows`, `deploymentAuthors`, `deploymentRoleFixed`, `migrationNotAtFrom`, `migrationRunInProgress`, `migrationUnsupportedChange`, `migrationAcrossRebaseline`, `migrationExists` |
+| Nonreg steps | `integ-9-following-deployment` (part A), `integ-9-migration-generation` (B), `integ-9-migration-run` (C) |
+
+---
+
+## Test execution conventions
+
+Vitest is the vehicle for parts A to C, as for #708, with one reason per file:
+- `followingDeployment.9.phaseA`: it creates a second deployment of appForTest next to the first and sends a marked action straight to the emulated server's DomainController to test the server gate alone, which a MiroirTest cannot do;
+- `migrationGeneration.9.phaseB` and `migrationRun.9.phaseC`: they need frozen versions, records edited on disk and two deployments used one after the other, set up by `versioningTestSetup.ts`;
+- the two Git files: they need the Git testbed of `gitTestSetup.ts` (a repository, tags, checkouts).
+
+Slice Z adds one MiroirTest scenario that runs the whole path as an `actionTest`.
+
+**Testbed.** Parts A to C run on `test-filesystem`, where appForTest is `versioned-internal` with a `modelVersion` section. One process holds one deployment per application (epic D5), so a test that plays both roles opens the authoring deployment, then closes it and opens a following deployment of appForTest whose `modelVersion` section is the same folder. Slice A1 builds that helper in `versioningTestSetup.ts`.
+
+| Purpose | Command |
+|---|---|
+| Part tests | `MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- 3_controllers/versioning/<file>` |
+| Versioning unit tests | `npm run test -w @miroir-framework/versioning` |
+| Schema rebuild | `npm run build -w miroir-app-miroir && npm run build -w miroir-app-admin && npm run devBuild -w @miroir-framework/core` |
+| Rebuild what the standalone-app tests import (their `dist`) | `npm run build -w @miroir-framework/versioning -w miroir-localcache-redux -w miroir-localcache-zustand` (those the slice touched) |
+| Deployment validation | `npm run testByFile -w miroir-app-miroir -- tests/modelValidation.unit.test.ts` (and `-w miroir-app-admin`) |
+| Type check | `npx tsc --noEmit --skipLibCheck -p packages/<pkg>/tsconfig.json` for core and versioning |
+| Scoped nonreg | `npm run nonreg:filesystem -- --runner shared --scope smoke,<scopes>` |
+| Full nonreg (end of each part, slice Z) | `npm run nonreg:filesystem -- --runner shared` |
+
+Test files lived in `packages/miroir-standalone-app/tests/3_controllers/issues/9-migrations/` (the names above) until slice Z moved them to `tests/3_controllers/versioning/`: `followingDeployment`, `migrationGeneration`, `migrationGenerationGit`, `migrationRun`, `migrationRunGit` (`.integ.test.ts`).
+
+---
+
+## Part A — Formats and roles
+
+### Slice A1 — A following deployment created at an earlier version (tracer)
+
+**Status:** ✅ DONE
+
+**Goal.** An operator creates a following deployment of appForTest at `1.0.0` and gets `1.0.0`'s model, and its state record says where it stands (G2, G4, D2, D5, D6).
+
+**RED** (`followingDeployment.9.phaseA.integ.test.ts`): on the authoring deployment, freeze `1.0.0`; add an optional attribute to an appForTest Entity and a new Entity, commit, freeze `1.1.0`. Close it; create a second deployment of appForTest with `role: following` at version `1.0.0`, sharing the `modelVersion` folder:
+- the live model of the following deployment equals `frozenModelState(1.0.0)` over the agreement collections;
+- its `EvolutionTraceRecord` and history Entity rows are in `model`; the shared `modelVersion` rows are unchanged; no record was appended;
+- its Deployment row says `role: following`; its `DeploymentState` row says `version: "1.0.0"`, no `applied`, no `run`;
+- the rows rewritten keep their live `parentDefinitionVersionUuid` and `conceptLevel`.
+
+**GREEN.**
+- `role` on the Admin `Deployment` Entity; the `DeploymentState` Entity file in `miroir-app-admin` with `admin_data/14e696c6-…/.gitkeep` (a filesystem data section refuses rows of an Entity without a folder, and Git drops empty folders; `admin_data/a96856df-…` does the same); the `Migration` Entity file in `miroir-app-miroir`, in `metaModelEntityList`, and a `migrations` collection in `MetaModel`; schema rebuild.
+- Deployment creation (`createDeploymentCompositeAction` and its Runners) takes `role` and, for `following`, the version: the versioning package installs it with `applyModelState` (D2) and writes the `DeploymentState` row, with the Entity created when absent.
+- The run mark (`markMigrationRun`, `isMigrationRun`) on the rewrite's writes; `applicationsWithEvolutionTraces` leaves following deployments out.
+- The test helper that opens a second deployment of appForTest on the same `modelVersion` folder.
+
+**Refactor checkpoint.** `ensureRecordEntity` generalized to "ensure a meta-model Entity in a deployment's section", used by the record, the Migration and the state Entities. The rewrite's row selection shares the freeze's (`selectEntitiesToFreeze`).
+
+**Validation.** The file; `modelValidation` of `miroir-app-miroir` and `miroir-app-admin`; type check core and versioning; `npm run test -w @miroir-framework/core -- ''`; scoped nonreg `smoke,core,actions,external`.
+
+**Realization.**
+- Schema: `role` (`authoring` | `following`, optional) on the Admin `Deployment` Entity; the Admin `DeploymentState` Entity (`14e696c6-…`) with its `.gitkeep` data folder, exported as `entityDeploymentState`; the Model Endpoint action `installApplicationVersion { application, version }` (`handleAction_installApplicationVersion`, `requiredCapability: versioning`, server-routed in `SERVER_ROUTED_MIROIR_ACTION_TYPES` and `RestServer`).
+- Core: `DeploymentRole`, `deploymentRoleOf` (a row without `role` is `authoring`), `DeploymentStateRow`, `DEPLOYMENT_STATE_ENTITY_UUID` (`versioningInterfaces.ts`); the run mark `markMigrationRun` / `isMigrationRun` next to `markRecordedBySender` (`evolutionTraceRecording.ts`); `deploymentRow(…, role)` and `createDeploymentCompositeAction` options `role`, `installVersion` (`Deployment.ts`); `applicationsWithEvolutionTraces` leaves out a deployment whose cached Deployment row is `following`, through a new `cachedDeploymentRow`, also used by `evolutionTraceRefusal`.
+- Versioning: `applicationVersionInstall.ts` with `applyModelState` (D2: `createEntity`, `alterEntityAttribute` `addColumns` before the Entity row update, upsert and delete of the other rows, Entity rows of removed Entities deleted without their storage, `parentDefinitionVersionUuid` and `conceptLevel` kept, every write marked), `storedDeploymentRow`, `storedDeploymentState`, `writeDeploymentState` (the Entity created in Admin when absent), and the handler: it refuses an authoring deployment (`deploymentAuthors`), loads the deployment's model in the process's cache (the model actions read it there), creates the history and record Entities in its model, rewrites, writes the state row, and reloads.
+- **Deviations.** (1) The `Migration` Entity and the `migrations` MetaModel collection move to B1, where generation first writes a Migration: part A does not read or write one, and the type regeneration they need is one change with B1's. (2) The following deployment is not created empty: see analysis D6, *Realization (A1)*. The test copies the fixture's model and data folders next to the authoring deployment's and creates the deployment with `skipCreateStore`. Both deployments are open in one process, each through its own application deployment map, instead of one after the other. (3) The refactor checkpoint (`ensureRecordEntity` generalized) is left for B1, where the Migration Entity is its second user; the state Entity is ensured in Admin by a function of its own, since it is created in another application's model.
+- Core unit tests: the versioning action lists gained `installApplicationVersion`; the Admin Entity count of `secrets.270.phase0` is 11. `listSelfApplicationUuidPaths` and `remapApplicationModelAtPaths` failed until `miroir-example-library` was rebuilt (a stale `dist`), on the branch's base as well.
+
+
+### Slice A2 — A deployment's role cannot change
+
+**Status:** ✅ DONE
+
+**Goal.** The role is chosen once (D6).
+
+**RED.** An `updateInstance` of the following deployment's Deployment row that sets `role: authoring` is refused with `deploymentRoleFixed`, the row unchanged; an update of another attribute passes; a Deployment row created without `role` reads as `authoring`.
+
+**GREEN.** The check in the persistence process before a Deployment row update.
+
+**Refactor checkpoint.** None expected.
+
+**Validation.** The file; scoped nonreg `smoke,actions`.
+
+**Realization.** `DomainController.deploymentWriteRefusal`, run by `handleInstanceAction` in the process that holds the stores (a remote client's write reaches the server's DomainController, `RestServer.ts`): a `createInstance` or `updateInstance` of Admin Deployment rows is refused with `deploymentRoleFixed` when `deploymentRoleOf` the stored row differs from the written one. Writing `role: authoring` on a row without a role, or leaving it out again, keeps the role and passes; removing `role` from a following row is a change and is refused. The stored rows are read through `storedDeploymentRows`, which a remote client skips. Validation: the file (A1, A2); scoped nonreg `smoke,actions` passed (32 steps).
+
+
+### Slice A3 — A following deployment refuses model and `modelVersion` writes
+
+**Status:** ✅ DONE
+
+**Goal.** The following deployment's model cannot be edited and nothing is written to its `modelVersion` (G2, epic D5).
+
+**RED**, in this order:
+1. the server gate alone: an Entity row write marked `markRecordedBySender`, sent straight to the emulated server's DomainController (`handleAction`), as a remote client's write reaches it, is refused with `deploymentFollows`, the store unchanged; the same write carrying the run mark passes;
+2. a commit from the client is refused with `deploymentFollows`, no record appended (then the client's early refusal from its cached Deployment row is added);
+3. `freezeApplicationVersion`, `rebaselineEvolutionTraces` and `appendEvolutionTraceRecord` are refused;
+4. a `data` write passes.
+
+**GREEN.** The gate in the persistence process before model and `modelVersion` writes, reading the Deployment row; the client's early refusal.
+
+**Refactor checkpoint.** The gate and `evolutionTraceRefusal` share one "may this commit write this application's model" check.
+
+**Validation.** The file; `integ-708-evolution-trace-records` and `integ-696-versioning-capability` still pass; nonreg step `integ-9-following-deployment` added; full `npm run nonreg:filesystem -- --runner shared` (end of part A); PR A.
+
+**Realization.**
+- Core: `DomainController.followingDeploymentRefusal` refuses with `deploymentFollows`, unless the action carries the run mark (`isMigrationRun`): instance writes to the `model` and `modelVersion` sections, and the model actions `commit`, `createEntity`, `alterEntityAttribute`, `entity_DuplicateAttribute`, `renameEntity`, `dropEntity`, `resetModel`, `initModel`. The role comes from the stored Deployment row in the process that holds the stores, and from the cached row in a remote client (the early refusal). The gate on model actions covers a transactional `createEntity` in the client's cache as well, which the plan left to the commit.
+- Versioning: `deploymentRole.ts` (`withAdmin`, `refusal`, `storedDeploymentRow`, `followingDeploymentRefusal`), moved out of `applicationVersionInstall.ts`; `freezeApplicationVersion`, `rebaselineEvolutionTraces` and `appendEvolutionTraceRecord` refuse a following deployment.
+- `markRecordedBySender` is exported by core, for the test that sends a remote client's write straight to the server's DomainController.
+- Nonreg step `integ-9-following-deployment` (scopes `actions`, `external`).
+- **Not done:** the refactor checkpoint (one "may this commit write this application's model" check shared by the gate and `evolutionTraceRefusal`): the two read different things (the role, the trace switch and the `modelVersion` section) and share `cachedDeploymentRow` only.
+
+
+### Part A — adversarial review
+
+Fixed after the review of A1 to A3:
+- a second `installApplicationVersion` is refused (`deploymentInstalled`): the run state of a deployment is never replaced by an install; Miroir and Admin are never installed or gated as following;
+- the server reads the role from its own Admin store (`deployment_Admin`), never from the Admin deployment the request's map names, and refuses when that store cannot be read; the roles read are kept per deployment (a role never changes; a delete of Admin rows forgets them), so a model write costs one Admin read per deployment, not one per write; `applicationsWithEvolutionTraces` reads the kept role before the cached row;
+- the role check covers a Deployment row whose Entity the payload names (`payload.parentUuid`);
+- `applyModelState` renames an Entity with `renameEntity` before its row update (a SQL store names the table after it);
+- the install refuses a version whose Cross rows name missing version rows (`versionIncomplete`), and leaves the Blob, Test and TestConfiguration rows alone when the version has no Cross rows for them (frozen before #706); it reloads the model after a failure too;
+- tests: the following deployment is a copy of the authoring one at 1.1.0, so the install of 1.0.0 deletes an Entity row (its storage stays) and removes an attribute; the second install, the payload-only Entity, a `modelVersion` delete, a `dropEntity` and a direct and a transactional `createEntity` and a `commit` are each asserted alone; the Admin rows are deleted after the file.
+
+Fixed after the PR review (Greptile on #739):
+- a commit replays its writes straight to the stores, so a role changed in a transaction, or a model write of another application's following deployment in it, went through: the commit now checks every write of the transaction before replaying any (`transactionRoleRefusal`), whatever application it names;
+- two installs at once could both pass the "not installed" check: the check, the rewrite and the state write run under a lock per deployment;
+- a version with no Blob, Test or TestConfiguration row read as one frozen before #706: a freeze now writes the collections it snapshotted on the version row (`frozenCollections`, a new optional attribute of SelfApplicationVersion), and the install trusts it; versions frozen before #9 keep the Cross-row guess;
+- a failed read of the DeploymentState rows read as "not installed": it now stops the install; only a missing DeploymentState Entity (an Admin store older than #9) reads as no state.
+
+Known gaps, left for later parts or issues:
+- a Postgres store created before #9 has no `frozenCollections` column on its SelfApplicationVersion table, as for `role`;
+- a Postgres Admin store created before #9 has no `role` column, and its upsert drops the attribute: the Deployment Entity needs an `alterEntityAttribute` there (the install still refuses such a deployment, with `deploymentAuthors`);
+- the writes `resetModel` and `initModel` make per Entity are not marked, so a migration run cannot send them; store management (`resetAndInitApplicationDeployment`, bundles) and the Git checkout paths are not gated;
+- the kept records of a failed trace append are keyed by application, which a following deployment shares with its authoring one (#708's queue);
+- an install looks the version up by name over every branch; `DeploymentState` rows are ordinary Admin rows, writable by any client, and stay when a deployment is deleted;
+- `createDeploymentCompositeAction` rewrites the AdminApplication row of an application that has one already (as before #9).
+
+---
+
+## Part B — Generation
+
+### Slice B1 — A draft Migration for one optional attribute (tracer)
+
+**Status:** ✅ DONE
+
+**Goal.** The designer of appForTest gets the draft of epic section 5.1 (G1).
+
+**RED** (`migrationGeneration.9.phaseB.integ.test.ts`): freeze `1.0.0`, add an optional attribute through an Entity row update, commit, freeze `1.1.0`; `generateMigration { from: "1.0.0", to: "1.1.0" }` writes a Migration in `modelVersion` with `source: traces`, one `addAttribute` change (backward-compatible, supported), one empty fill step (`repeatable`, `backwardCompatible`), no expand and no contract step, `backwardCompatible: true`.
+
+**GREEN.** `handleAction_generateMigration`: states, records between markers, agreement, changes from records, classification, steps; the Migration Entity ensured; written with `createInstance` in `modelVersion`; the action declared on the Model Endpoint and added to `SERVER_ROUTED_MIROIR_ACTION_TYPES`.
+
+**Refactor checkpoint.** The walk of records shares the replay's `applyRecordActions` (`modelStates.ts`) instead of a second interpreter.
+
+**Validation.** The file; versioning unit tests; type check versioning and core; scoped nonreg `smoke,actions,external`.
+
+**Realization.** `packages/miroir-versioning/src/migrationGeneration.ts`. The `Migration` Entity (`b5c1f0e5-…`, moved here from A1) is a meta-model Entity in `modelVersion` (`migrations` collection, regenerated types); `generateMigration { application, from, to, replace? }` is on the Model Endpoint and server-routed. The handler reads the live model, takes the two frozen versions by name, and the commit records between their markers; when there are records, it replays them on `from` and compares the result with `to` (`evolutionTracesDisagree` on a difference), then writes the draft with `source: traces`; without records, with `source: diff` and a note. `ensureRecordEntity` became `ensureApplicationEntity` (`evolutionTraceRecords.ts`), its second user being the Migration Entity.
+- **Deviation.** The changes are always computed from the difference of the two versions' Entities, not folded from the records (D7 step 4): once the replay of the records gives `to`, their net effect is that difference, so a second derivation would only repeat it. The refactor checkpoint (sharing `applyRecordActions`) is met by calling `replayCommitRecords`.
+- **Validation.** The file (B1); versioning unit tests (178, `Migration` added to the history-family list); core unit tests (3324); type check core and versioning; lint; scoped nonreg `smoke,actions,external` (filesystem, shared runner).
+
+### Slice B2 — Removals, required attributes, renames: classified and stepped
+
+**Status:** ✅ DONE
+
+**Goal.** Generation flags what breaks rollback (G1, epic D1, Q23).
+
+**RED.** Each between two frozen versions:
+- an attribute removed: `removeAttribute`, not backward-compatible, one empty contract step named after it (D4, #733);
+- an Entity removed through `dropEntity`: `removeEntity` and its contract step;
+- a required attribute added: not backward-compatible, with its fill step;
+- an Entity renamed through its row: `renameEntity`, `supported: false`; `idAttribute` changed: `changeIdAttribute`, `supported: false`;
+- an attribute added then removed between the two versions: no change.
+
+**GREEN.** The remaining change kinds, folding, and contract steps; the check of the folded changes against the `to` Entities.
+
+**Refactor checkpoint.** The classification table is one function, unit-tested in the package with real Entity rows from the appForTest assets.
+
+**Validation.** The file; versioning unit tests; scoped nonreg `smoke,actions,external`.
+
+**Realization.** The classification table is `entityStructureChanges(previous, next)` (`migrationGeneration.ts`): an absent row is an Entity added or removed; a renamed Entity and a changed `idAttribute` are `supported: false` with a note; an attribute change keeps compatibility when its type is the same and it does not become required. Each removal gets an empty contract step named `drop <Entity>[.<attribute>]`, left for #733. Unit-tested on the Publisher row of the appForTest assets (`migrationClassification.unit.test.ts`); the integration tests (B2.1 to B2.5) create their Entities with run-specific uuids and restore Publisher after the file, so the file can run again on the same store.
+- **Deviation.** No folding of records is needed: the changes come from the two versions (B1), so an attribute added then removed between them gives no change by construction (B2.5 checks it).
+- **Validation.** The file (B1, B2.1 to B2.5, run twice on the same store); versioning unit tests.
+
+### Slice B3 — Refusals and the diff fallback
+
+**Status:** ✅ DONE
+
+**Goal.** Generation refuses what it cannot vouch for and still serves an application without traces (G1, Q29, Q30, D12).
+
+**RED.**
+- the traces and the versions disagree: after the second freeze, the test edits a trace record's file in `modelVersion` (the freeze's own check prevents freezing a model that disagrees); generation is refused with `evolutionTracesDisagree`, listing the difference;
+- a `rebaseline` marker between the versions: refused with `migrationAcrossRebaseline`; a Migration written by hand (`source: manual`) through `createInstance` is stored and readable;
+- traces off: a Migration with `source: diff` and the same changes as B1;
+- a second generation for the same versions: refused with `migrationExists`, accepted with `replace: true`;
+- on a following deployment: refused with `deploymentFollows`.
+
+**GREEN.** The refusals; the diff path from `diffModelStates`, with names and `idAttribute` from the changed rows.
+
+**Refactor checkpoint.** `modelCudMigrationCandidates` and the diff path share the Entity-row reading.
+
+**Validation.** The file; scoped nonreg `smoke,actions,external`.
+
+**Realization.** No new code: the refusals were written with B1's handler and are tested here. B3.1 changes the stored record of an edit (through the server's store, outside the DomainController) so that its replay no longer gives `to`: `evolutionTracesDisagree`, naming Publisher, and nothing written. B3.2: a re-baseline version between the two gives `migrationAcrossRebaseline`. B3.3: with the traces off around both freezes, `source: diff` with B1's changes. B3.4: `migrationExists` (also with `replace: false`); `replace: true` keeps the Migration's uuid and writes new steps. B3.5: a Migration with `source: manual` created through `createInstance` is read back and is not overwritten by a generation. The `deploymentFollows` refusal is in the A3.3 list of the part A file, which has the following deployment.
+- **Validation.** Both files of `9-migrations/` (18 tests).
+
+### Slice B4 — `versioned-git`: from the tag to `HEAD`
+
+**Status:** ✅ DONE
+
+**Goal.** With the model in Git, the draft is made between tag `1.0.0` and `HEAD`, and lands as a file to commit before tagging `1.1.0` (G1, epic section 5.2).
+
+**RED** (`migrationGenerationGit.9.phaseB.integ.test.ts`, on the Git testbed of `gitTraceAgreement.integ.test.ts`): commit and tag `1.0.0`; add an attribute, commit; `generateMigration { from: "1.0.0", to: "1.1.0" }` writes `modelVersion/<Migration uuid>/<uuid>.json` in the work tree with the B1 content. The refusal without a `modelVersion` section is tested by removing that section from the testbed Deployment's configuration in the test.
+
+**GREEN.** States from `gitModelState`; records at `HEAD` not at the tag.
+
+**Refactor checkpoint.** None expected.
+
+**Validation.** The file; the #679 Git nonreg step still passes; nonreg step `integ-9-migration-generation` added; full `npm run nonreg:filesystem -- --runner shared` (end of part B); PR B.
+
+**Realization.** A `versioned-git` application takes `gitVersionStates` instead of the frozen versions: the model of the tag `from`, and of the tag `to` or, before it exists, of `HEAD`, both read from the commits without a checkout; the records are those the `to` commit holds and the tag does not (none when the traces are off there). The Migration is written through `createInstance` in `modelVersion`, which is the work tree folder, ready to commit before tagging `to`.
+- **New seam.** The versioning package had no way to read the files of a commit: `gitModelState` took a repository it cannot open. `DomainControllerActionHost.readGitModelFiles(application, refs, map)` reads them where the files are (`readModelFilesAtRefs` in core `GitActions.ts`, on the deployment's repository as the Git actions open it); the folder filter and the read of a commit's model files are shared with the commit check (`modelFileFilter`, `modelFilesOfCommit`). A remote client gets an error: `generateMigration` is server-routed.
+- **Refusals.** `migrationSectionMissing` when the deployment has no `modelVersion` folder in the repository (tested by removing the section from the open deployment's configuration); an error naming the missing tag.
+- **Validation.** The file (3 tests); the `9-migrations/` files; nonreg step `integ-9-migration-generation` added; full `nonreg:filesystem` with the shared runner.
+
+---
+
+### Part B — adversarial review
+
+A review of B1 to B4, read without running anything, found these; the fixed ones have tests.
+
+**Fixed.**
+- `versioned-git`: the records were checked from `to` only. Traces off at the `from` tag and turned on later, or a `to` older than `from`, gave `evolutionTracesDisagree`; they now give the diff with a note (`recordsAdded` checks the traces at both commits and that the chain of `to` continues the chain of `from`).
+- A Git read failure other than an unknown ref was read as "no tag"; it now stops the generation. Before `to` is tagged, the draft says it was built from HEAD (with its oid) and leaves out uncommitted edits; once `to` is tagged, the tag is used.
+- Version names were looked up across applications and branches: they are now filtered by application, and a name found on several branches is refused (`versionAmbiguous`).
+- An attribute change kept `backwardCompatible: true` whenever its top-level type was the same: now only making an attribute optional keeps it. A change of `tag` alone is no change, except the foreign key target it names.
+- The check of stored Migrations and the write run under a per-application lock; several Migrations for the same pair are refused.
+- A model file of a commit that is not JSON gives an error instead of an exception.
+- The B2/B3 tests no longer depend on B1 turning the traces on.
+
+**Known gaps.**
+- `idAttribute: ["uuid"]` and `"uuid"` are told apart as an unsupported change.
+- The test files leave frozen versions, Migration rows and a re-baseline record in the `test-filesystem` store of appForTest; names carry a run suffix, so reruns pass.
+- The full `nonreg:filesystem` run before these fixes passed 138 steps; `integ-runner.lendDocument` failed in the shared runner and passed on its legacy re-run (not touched by part B).
+
+---
+
+### Fixed after the PR review (Greptile on #740)
+
+- **A re-baseline was missed when the traces were off at a version.** Git: `recordsAdded` looked for a `rebaseline` record only with the traces on at both commits; it now looks among the records `to` adds first. `versioned-internal`: without the markers of both versions, the `rebaseline` records naming a version between `from` and `to` (the versions `to` chains back through, `previousVersion`) refuse too. Test B3.2 (second case).
+- **A branch named as a version was read as its tag.** The versions are read as `refs/tags/<name>`; test B4 (a branch `9.9.9` is neither the `to` nor the `from` version).
+- **A version with missing history rows read as Entities removed.** Both versions are checked as the install checks one (`versionIncomplete`); test B3.6.
+
+## Part C — Runner
+
+### Slice C1 — A Migration run on a following deployment (tracer)
+
+**Status:** ✅ DONE
+
+**Goal.** Epic section 9, E1's apply step: the following deployment at `1.0.0` is migrated to `1.1.0`, its data filled (G2, G4).
+
+**RED** (`migrationRun.9.phaseC.integ.test.ts`): A1's two versions (an optional attribute and a new Entity added), B1's draft, its fill step completed by the test (an `updateInstance` setting the attribute where it is empty, and a `createInstance` of the new Entity); A1's following deployment at `1.0.0` with fixture data; `runMigration`:
+- the live model equals `frozenModelState(1.1.0)`; the instances have the filled value; the new Entity's instance is stored (its storage made by `createEntity` during the jump);
+- the state record says `version: "1.1.0"`, `applied` holds the migration, no `run`;
+- no trace record was appended;
+- a second `runMigration` is refused with `migrationNotAtFrom`;
+- a Migration row whose `backwardCompatible` the test set wrong is recomputed by the runner (the record copy holds the recomputed value);
+- two `runMigration` sent together: one runs, the other is refused with `migrationRunInProgress` or `migrationNotAtFrom`, never interleaved.
+
+**GREEN.** `handleAction_runMigration`: lock, checks, copy, steps with the run mark, jump with `applyModelState`, end; declared and server-routed; the client reloads Admin and the application after it.
+
+**Refactor checkpoint.** The creation of a following deployment (A1) and the jump share the "bring the model to a version" path.
+
+**Validation.** The file; scoped nonreg `smoke,actions,external,runners`.
+
+**Realization.** `packages/miroir-versioning/src/migrationRun.ts`. `runMigration { application, migration }` is declared on the Model Endpoint and server-routed. The handler runs under a lock per deployment, shared with `installApplicationVersion` (`deployment:<uuid>`), so a run and an install never interleave either. A new run checks the role, the state record's `version` against the Migration's `from`, and the unsupported changes; it writes `run: { migration: <copy, backwardCompatible recomputed>, stepsDone: [], startedAt }`, then runs expand, the jump, fill and contract, recording each in `stepsDone`. A step runs through `host.handleCompositeAction`, the step and the actions of its sequence marked as the run's. The jump is `bringModelToVersion` (refactor checkpoint: extracted from the install, which uses it too), followed by a reload of the model. The end writes `version: to`, appends to `applied` and removes `run`.
+- **Deviations.** (1) The recomputed `backwardCompatible` is held by the run's copy only while it runs; C1 cannot see it after the end, so C2 checks it on a stopped run. (2) The client is not told to reload Admin and the application after a run: the C1 test reads the stores of the server. The client's cache of a following deployment is reloaded by the next `rollback`, as after an install. (3) Some appForTest fixture files are named after another uuid than the row's (Gallimard, Vintage, Owl of Minerva Press); an update writes the row to a second file, so the test checks the filled value by uuid among the rows read.
+- **Validation.** The file (C1); the part A file; core unit tests (3325); versioning unit tests; lint.
+
+### Slice C2 — A stopped run resumes
+
+**Status:** ✅ DONE
+
+**Goal.** A run stopped part way resumes and ends where an uninterrupted run ends (G3, epic section 9's failure row).
+
+**RED.**
+- a Migration with two expand steps, the second failing on a precondition the test then satisfies: the first run stops with `run.stepsDone` holding the first step; the test then edits the Migration's file in `modelVersion` on disk (the following deployment refuses that write through Miroir); the second run uses the copy, runs from the second step, and ends with the same data as C1's uninterrupted run;
+- a stop between a step's writes and its record: a repeatable step whose writes land and whose last action fails on a precondition; the run stops with that step not in `stepsDone`; once the precondition holds, the rerun runs the whole step again and the data equals a single run's;
+- a contract step left empty by generation (D4) runs and is recorded;
+- a run in progress refuses another Migration with `migrationRunInProgress`.
+
+**GREEN.** Resume from `stepsDone`; refusals while `run` is set.
+
+**Refactor checkpoint.** None expected.
+
+**Validation.** The file; scoped nonreg `smoke,actions,external`.
+
+**Realization.** No new code: C1's handler already resumes a run in progress from its copy (`runToDo`) and skips the steps in `stepsDone`; the test covers it. The four RED cases are one test (C2) over a second Migration, 1.1.0 to 1.2.0, created by hand: two expand steps, one repeatable fill step of two writes, and an empty contract step marked not backward-compatible while the row says the opposite.
+- **The failing precondition.** The filesystem store takes each entry of its data folder for an Entity folder. The test puts a file where the folder of an Entity unknown to the model would be: a write there fails (`ENOTDIR`), and replacing the file with an empty folder lets the next write land. A directory in place of an instance file was tried first; it breaks the model reload of the jump.
+- **Checked.** Stop 1 in the second expand step (`stepsDone` = the first, the copy's `backwardCompatible` recomputed to `false`); a run of another Migration refused with `migrationRunInProgress`; the Migration's file edited on disk in the shared `modelVersion` folder; stop 2 in the fill step, after its first write landed, with `stepsDone` = both expand steps and the jump; the end: version 1.2.0, `applied` holding both Migrations, no `run`, and the data written by the copy's steps, not the edited file's.
+- **Validation.** The file (C1, C2). The scoped nonreg is left to the full nonreg before PR C.
+
+
+### Slice C3 — Runner refusals
+
+**Status:** ✅ DONE
+
+**Goal.** The runner refuses what it cannot run safely (G2).
+
+**RED.** Refused, the store unchanged: on an authoring deployment (`deploymentAuthors`); a Migration holding an unsupported change (`migrationUnsupportedChange`). Characterizations, passing through the generic paths of `forwardCapabilityAction` and `requiredCapability`: with a Miroir transaction open; without the `versioning` capability (`FeatureUnavailable`).
+
+**GREEN.** The remaining checks.
+
+**Refactor checkpoint.** All refusal reasons in one exported constant set, used by the tests.
+
+**Validation.** The file; scoped nonreg `smoke,actions,external`.
+
+**Realization.** The checks were written with C1's handler; C3 tests them on a third Migration (1.2.0, holding a `renameEntity` change with `supported: false`), and checks after each refusal that neither the `DeploymentState` rows nor the following deployment's data changed.
+- `deploymentAuthors`: the run sent with the authoring deployment's map; `migrationUnsupportedChange` names the unsupported changes in `errorContext.changes`.
+- Characterizations, no new code: a pending `createEntity` gives `openMiroirTransaction` (the client's `forwardCapabilityAction`); the `versioning` capability off on the client, then on the server, gives `FeatureUnavailable` with `capability: versioning`.
+- **Refactor checkpoint.** `MIGRATION_RUN_REFUSALS` (exported since C1) is what the tests compare with. Also fixed: the jump reloaded the model before looking at the result of `bringModelToVersion`; a failed jump now returns before the reload. `afterAll` deletes the three Migrations it wrote, so the file runs again on the same store (ran twice).
+- **Validation.** The file (C1 to C3), lint. The scoped nonreg is left to the full nonreg before PR C.
+
+
+### Slice C4 — `versioned-git`: the jump is a checkout of the tag
+
+**Status:** ✅ DONE
+
+**Goal.** E2's apply step: a following Git deployment at tag `1.0.0` reads the Migration at tag `1.1.0` and checks it out (G2, epic section 5.2).
+
+**RED** (`migrationRunGit.9.phaseC.integ.test.ts`): the Git testbed commits `data/` inside the repository (`gitTestSetup.ts`, `initCommittedRepository`), so this test adds a `.gitignore` for `data/` to it, after checking that the checkout's dirty check honours ignored files. B4's repository with the Migration committed and tag `1.1.0`; a following deployment created at `1.0.0` (the clone checked out at the tag); `runMigration`: `HEAD` is at `1.1.0`, the model reloaded, the data filled, the record at `1.1.0`. Without the `.gitignore`, an expand step writing data makes the checkout refuse, and the run stays resumable.
+
+**GREEN.** Find at tag; the Git jump; the creation of a following `versioned-git` deployment checks that its clone is at the tag of its version.
+
+**Refactor checkpoint.** None expected.
+
+**Validation.** The file; the #679 Git nonreg step; full `npm run nonreg:filesystem -- --runner shared` (end of part C).
+
+**Realization.** `packages/miroir-versioning/src/migrationGit.ts`, used by the install and the runner when the live SelfApplication says `versioned-git`.
+- **Install.** `installApplicationVersion` rewrites no model: `checkedOutVersion` reads the log at the tag (`gitAction_log`) and refuses with `versionNotCheckedOut` when HEAD is another commit; the state row gets `version` and `gitCommit`.
+- **Find.** `migrationAtItsTag` lists the tags (`gitAction_log` branches), reads their model files (`readGitModelFiles`) and keeps the Migration file whose `to` is the tag holding it; none gives `migrationNotFound`. Every tag's model files are read: a repository with many tags reads more than it needs (known limit, no file-by-path read on the host).
+- **Jump.** `checkoutVersion`: `gitAction_checkout` of the tag, then the same check of HEAD, then a reload. A failed jump, on either mode, is now `migrationStepFailed` with `step: jump`. The end of the run checks HEAD is still at `to` and writes its commit in `gitCommit`.
+- **Deviation.** The Git actions refuse a deployment whose sections are not all in one repository (`sectionsInSeveralRepositories`), so the data section cannot be outside the clone as analysis D8 put it: the test puts it in a folder of the clone that the clone's `.gitignore` names. The expand step writes there before the jump and the checkout passes; a change not committed to a tracked model file stops the run at the jump (`checkoutConflict`), and the run resumes once it is discarded. #710 keeps the installer side.
+- **Validation.** `migrationRunGit.9.phaseC.integ.test.ts` (3 tests, ran twice); the part A, B Git and C files; `gitCheckout` (13); versioning unit tests (186); lint.
+
+
+### Part C — adversarial review
+
+A read-only review of C1 to Z (agent), then fixes, each with a test:
+- **A model action in a step waited in the transaction** (`createEntity` without `transactional`): recorded as done, then dropped by the jump's reload. The run sends the model actions of a step with `transactional: false`. Test C5.
+- **The run's mark was lost in nested sequences**: the resolution of a sequence rebuilt its actions without the symbol-keyed mark, so a model action in a nested sequence met `deploymentFollows`. The DomainController carries the mark from a marked sequence to each of its actions (`carryMigrationRunMark`, both composite paths); the run marks every level. Test C5.
+- **Steps ran with the model environment of the request** (the `from` model after the jump): each step and the jump now read it again.
+- **Git: a clone moved off its version, or a step writing the model,** passed the checks. A new run checks HEAD is at `from` (`versionNotCheckedOut`) and refuses steps that write `model` or `modelVersion` (`migrationStepWritesModel`). Test C4 (third). The Git actions are not gated on a following clone: #741.
+- **Steps sharing a uuid, or one named `jump`**, were skipped silently: refused (`migrationStepsInvalid`). Test C5.
+- **The client kept the old model after a run that stopped past the jump**: it reloads the application after a failed `runMigration` too.
+- **A version name on two branches** took the first row at install and jump: refused (`versionAmbiguous`).
+
+Full nonreg before these fixes: 138 of 140; the two failures (`unit-301-agent-tooling`, `unit-643-package-manifests`) were core's `dist/seed` built before the new MiroirTest, and pass after a rebuild.
+
+### Slice Z — MiroirTest scenario, nonreg steps, docs, cleanup, AC
+
+**Status:** ✅ DONE
+
+- MiroirTest `action.scenario.migration` (appForTest, filesystem, tag `versioning`): freeze, change, freeze, generate, assert the draft; the run on a following deployment stays in the vitest suite (it needs a second deployment).
+- Nonreg step `integ-9-migration-run` with scopes (`actions`, `external`, `runners`), tier `default`, filesystem.
+- Docs: `docs/reference/versioning.md` (Migrations, deployment roles, the runner); `docs/reference/data-architecture-deployments.md` (the Deployment `role`, the Admin `DeploymentState`).
+- Cleanup: the `issues/9-migrations/` tests move to feature-named suites under `tests/3_controllers/versioning/`.
+- Tracer narrative: the epic section 5.1 day, run by the test suite.
+
+**AC checklist** (issue #9 scope, in its order):
+
+| Scope item | Proof |
+|---|---|
+| `Migration` Entity in `modelVersion`, `from`/`to` by version name, four phases, `backwardCompatible` and repeatable steps | A1 (Entity), B1 (row), C1 (jump, fill), C2 (expand, contract, repeatable) |
+| Generation on demand, agreement first | B1, B3 |
+| Structure steps from traces checked against the diff, or the diff alone | B1, B2, B3 |
+| Non-backward-compatible steps flagged | B2 |
+| With Git, from the source tag to `HEAD`, committed before the target tag | B4, C4 |
+| Runner checks the deployment is at `from` | C1, C3 |
+| Copies the migration into the state record before its first step | C2 |
+| Suppresses tracing during the run | C1 (no record), A3 |
+| Records each step, resumes after a stop | C2 |
+| Jump: rewrite without Git (N1), checkout with Git | C1, C4 |
+| Idempotent storage creation on every store; add-only reconciliation (D2 of the epic) | set aside by the user (N5); contract Actions in #733 |
+| Deployment state record in Admin data keyed by Deployment uuid: version, migrations, steps, role | A1 (record, role on the Deployment), C1, C2 |
+| A following deployment writes nothing to `modelVersion`, its model commits refused | A3 |
+
+**Validation.** Full `npm run nonreg:filesystem -- --runner shared`; the pre-push gate of `AGENTS.md`; PR C with `Closes #9`.
+
+**Realization.**
+- **MiroirTest** `action.scenario.migration` (`9c5a0001-9e2b-4c1d-8f3a-5b6c7d8e9f01`, appForTest, tags `integ`, `versioning`, `model`, issue 9): freeze `9-1.0.0`, a transactional `createEntity` and its commit, freeze `9-1.1.0`, `generateMigration`, then a storage query of the Migrations in `modelVersion`. Three assertions: one draft from `diff` for appForTest, its one change an `addEntity` of the new Entity (supported, backward-compatible), the draft backward-compatible. Exported from `miroir-app-miroir` (`miroirTest_action_scenario_migration`); like `action.scenario.externalServiceSync`, it is in no registry list, `testMiroir --suites` finds it in the deployment. Checked to fail with a wrong expected count.
+- **Nonreg steps:** `integ-9-migration-run` (`actions`, `external`, `runners`; runs `migrationRun` and `migrationRunGit`) and `integ-action.scenario.migration` (`actions`); the two #9 steps of parts A and B point to the moved files.
+- **Docs:** `docs/reference/versioning.md`, section *Migrations and deployment roles* (roles, install, the Migration Entity, generation, the run, resuming, Git); `docs/reference/data-architecture-deployments.md`, *Deployment `role` and `DeploymentState`*.
+- **Cleanup:** the five files moved (`git mv`) from `issues/9-migrations/` to `tests/3_controllers/versioning/`.
+- **Tracer narrative** (epic section 5.1): C1 is that day on `versioned-internal` (freeze, change, freeze, generate, complete the fill step, run on the following deployment), C4 on `versioned-git` (tag, change, commit, generate, commit the Migration, tag, run on the clone).
+
+
+### Fixed after the PR review (Greptile on #742)
+
+- **A step with a `transactionalInstanceAction`** would be recorded as done while its write waited in the local cache for a commit no step makes, then was dropped by the reload of the jump. The run now refuses such a Migration (`migrationStepsInvalid`) before writing anything. Test: C5, Migration SIXTH (red before the fix).
+- **Tags in the run:** the checkout of the jump, the HEAD checks and the reading of the Migration at its tag now name `refs/tags/<version>`, as the generation does. With isomorphic-git, a bare name that is both a tag and a branch already resolved to the tag, so the C4 test with a branch `1.1.0` left at 1.0.0 passed before the change too. It now guards the explicit form.
+- **Plain CRUD REST routes** write through `PersistenceStoreController` and skip every `handleInstanceAction` check, the #9 ones included. This predates #9; deferred to #743.

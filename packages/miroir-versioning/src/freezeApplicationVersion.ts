@@ -76,6 +76,7 @@ import {
   type FreezeMetaModelSlice,
   type StoredInstanceForFreeze,
 } from "./applicationVersionFreeze.js";
+import { followingDeploymentRefusal } from "./deploymentRole.js";
 import { checkEvolutionTraceAgreement, checkStagedEvolutionTraceAgreement } from "./evolutionTraceAgreement.js";
 import { handleAction_appendEvolutionTraceRecord } from "./evolutionTraceRecords.js";
 
@@ -92,7 +93,7 @@ const INSTANCE_ENDPOINT_UUID = "ed520de4-55a9-4550-ac50-b1b713b72a89";
  * The history Entities a freeze writes into, created in the application's model when absent (init or a
  * filtered model may leave them out). In the order the freeze created them before #696.
  */
-const HISTORY_ENTITIES = [
+export const HISTORY_ENTITIES = [
   entityApplicationVersionCrossEntityVersion,
   entityApplicationVersionCrossQueryVersion,
   entityHistoricalQueryVersion,
@@ -358,8 +359,12 @@ async function persistFreezeApplicationVersionPlan(
 }
 
 /** Freezes the application the payload names, from the model of its own deployment. */
-export const handleAction_freezeApplicationVersion: ActionImplementationHandler = (host, action, context) =>
-  freezeVersion(host, action.payload as FreezeApplicationVersionActionPayload, context, "version");
+export const handleAction_freezeApplicationVersion: ActionImplementationHandler = async (host, action, context) => {
+  const payload = action.payload as FreezeApplicationVersionActionPayload;
+  // #9: a version is frozen on the authoring deployment
+  const following = await followingDeploymentRefusal(host, "freezeApplicationVersion", payload.application, context.applicationDeploymentMap);
+  return following ?? freezeVersion(host, payload, context, "version");
+};
 
 /**
  * #708 part C: restarts the application's traces from its current model. A `versioned-internal`
@@ -378,6 +383,11 @@ export const handleAction_checkStagedEvolutionTraces: ActionImplementationHandle
 
 export const handleAction_rebaselineEvolutionTraces: ActionImplementationHandler = async (host, action, context) => {
   const payload = action.payload as RebaselineEvolutionTracesActionPayload;
+  // #9: the traces are those of the authoring deployment
+  const following = await followingDeploymentRefusal(host, "rebaselineEvolutionTraces", payload.application, context.applicationDeploymentMap);
+  if (following) {
+    return following;
+  }
   const selfApplication = await storedSelfApplication(host, payload.application, context);
   if (!isEvolutionTraceOn(selfApplication)) {
     return new Action2Error(
@@ -474,7 +484,7 @@ async function freezeVersion(
  * application's `currentModel.entities`: a freeze freezes the application's own Entities only. #230: for
  * Miroir itself, the meta-model Entities are the application's Entities (`selectEntitiesToFreeze`).
  */
-function metaModelEntityUuids(metaModelEntityRows: readonly { uuid: string }[]): Set<string> {
+export function metaModelEntityUuids(metaModelEntityRows: readonly { uuid: string }[]): Set<string> {
   const uuids = new Set(metaModelEntityRows.map((e) => e.uuid));
   for (const historyEntity of HISTORY_ENTITIES) {
     uuids.add(historyEntity.uuid);

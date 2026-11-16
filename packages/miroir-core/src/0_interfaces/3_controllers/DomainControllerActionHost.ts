@@ -18,7 +18,7 @@ import type {
 import type { Action2Error, Action2ReturnType, Action2VoidReturnType } from "../2_domain/DomainElement";
 import type { DomainControllerInterface } from "../2_domain/DomainControllerInterface";
 import type { MiroirActivityTrackerInterface } from "./MiroirActivityTrackerInterface";
-import type { GitAction } from "./GitAction";
+import type { GitAction, GitModelFiles } from "./GitAction";
 
 /** Payload of the connectExternalService action (#284), as DomainController reads it. */
 export type ConnectExternalServiceAction = {
@@ -169,6 +169,16 @@ export interface DomainControllerActionHost {
     applicationSection: ApplicationSection,
     parentEntityUuid: string,
   ): Promise<EntityInstance[] | Action2Error>;
+  /**
+   * #9 B4: the model files of an application in the Git commits `refs` name, read from the repository of
+   * its deployment in the process that owns the files; an Action2Error when there is none (a remote client,
+   * a deployment outside Git).
+   */
+  readGitModelFiles(
+    application: string,
+    refs: readonly string[],
+    applicationDeploymentMap: ApplicationDeploymentMap,
+  ): Promise<GitModelFiles | Action2Error>;
   /** #575: the DomainController itself, on which runMiroirTestAction runs the leaves of a MiroirTest. */
   asDomainControllerInterface(): DomainControllerInterface;
   /** #575: the tracker where the DomainController records the assertions of the tests it runs. */

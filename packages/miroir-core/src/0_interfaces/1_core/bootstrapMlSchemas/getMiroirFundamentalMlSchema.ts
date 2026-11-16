@@ -312,6 +312,7 @@ export function getMiroirFundamentalMlSchema(
   entityDefinitionTransformerDefinition: any,
   entityDefinitionEndpointDefinition: any,
   entityDefinitionEvolutionTraceRecord: any,
+  entityDefinitionMigration: any,
 // ): MlReference {
   // ): any /** MlReference, avoiding reference to ensure proper compilation */ {
   ): any /** MlSchema, avoiding reference to ensure proper compilation */ {
@@ -2347,6 +2348,7 @@ export function getMiroirFundamentalMlSchema(
           },
         },
         evolutionTraceRecord: entityDefinitionEvolutionTraceRecord.mlSchema as any,
+        migration: entityDefinitionMigration.mlSchema as any,
         miroirAllFundamentalTypesUnion: {
           type: "union",
           definition: [
@@ -4714,6 +4716,16 @@ export function getMiroirFundamentalMlSchema(
                 definition: {
                   absolutePath: miroirFundamentalMlSchemaUuid,
                   relativePath: "evolutionTraceRecord",
+                },
+              },
+            },
+            migrations: {
+              type: "array",
+              definition: {
+                type: "schemaReference",
+                definition: {
+                  absolutePath: miroirFundamentalMlSchemaUuid,
+                  relativePath: "migration",
                 },
               },
             },

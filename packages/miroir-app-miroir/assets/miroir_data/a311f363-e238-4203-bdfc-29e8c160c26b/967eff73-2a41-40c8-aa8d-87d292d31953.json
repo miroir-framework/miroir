@@ -548,7 +548,21 @@
                   {
                     "name": "V1-Baseline",
                     "modelStructureMigration": [],
-                    "modelCUDMigration": []
+                    "modelCUDMigration": [],
+                    "frozenCollections": [
+                      "entities",
+                      "storedQueries",
+                      "reports",
+                      "menus",
+                      "endpoints",
+                      "runners",
+                      "themes",
+                      "transformerDefinitions",
+                      "mlSchemas",
+                      "tests",
+                      "blobs",
+                      "testConfigurations"
+                    ]
                   }
                 ],
                 "ignoreAttributes": [
@@ -846,6 +860,20 @@
                           "mlSchema"
                         ]
                       }
+                    ],
+                    "frozenCollections": [
+                      "entities",
+                      "storedQueries",
+                      "reports",
+                      "menus",
+                      "endpoints",
+                      "runners",
+                      "themes",
+                      "transformerDefinitions",
+                      "mlSchemas",
+                      "tests",
+                      "blobs",
+                      "testConfigurations"
                     ]
                   }
                 ],

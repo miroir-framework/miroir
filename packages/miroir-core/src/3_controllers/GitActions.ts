@@ -25,6 +25,7 @@ import {
 } from "../1_core/versioning/evolutionTraceRecording";
 import {
   GIT_ACTIONS_NEEDING_SAVED_MIROIR_CHANGES,
+  GIT_ENDPOINT_UUID,
   type GitAction,
   type GitBranchResult,
   type GitCloneAction,
@@ -38,6 +39,8 @@ import {
   type GitCommitResult,
   type GitDiffResult,
   type GitInitResult,
+  type GitModelFiles,
+  type GitLogAction,
   type GitLogResult,
   type GitPathDescription,
   type GitPayloadCredential,
@@ -567,9 +570,35 @@ const EVOLUTION_TRACE_COMMIT_REFUSALS: ReadonlySet<string> = new Set<GitActionEr
 ]);
 
 /**
+ * #708 part C: whether a repository-relative path is a model file of `application` (`modelStateFolders` of
+ * `@miroir-framework/versioning`: `<section folder>/<Entity uuid>/*.json`); with the folders it looks in.
+ */
+function modelFileFilter(application: Uuid, sectionPaths: GitSectionPaths): { folders: string[]; isModelFile: (path: string) => boolean } {
+  const folders = metaModelCollections.flatMap(({ entity }) => {
+    const sectionPath = sectionPaths[getApplicationSection(application, entity.uuid)];
+    return sectionPath === undefined ? [] : [sectionPath === "" ? entity.uuid : `${sectionPath}/${entity.uuid}`];
+  });
+  return {
+    folders,
+    isModelFile: (path: string) =>
+      path.endsWith(".json") && folders.some((folder) => path.startsWith(`${folder}/`) && !path.slice(folder.length + 1).includes("/")),
+  };
+}
+
+/** The text of the files of `commit` that `isModelFile` keeps, by repository-relative path. */
+async function modelFilesOfCommit(
+  repository: GitRepositoryInterface,
+  commit: string,
+  isModelFile: (path: string) => boolean,
+): Promise<Record<string, string>> {
+  const paths = (await repository.listFiles(commit)).filter(isModelFile);
+  const texts = await Promise.all(paths.map((path) => repository.readFile(path, commit)));
+  return Object.fromEntries(paths.flatMap((path, index) => (texts[index] === undefined ? [] : [[path, texts[index]!]])));
+}
+
+/**
  * #708 part C: what the check of a commit reads, the model files of the application at HEAD and in the
- * index (`modelStateFolders` of `@miroir-framework/versioning`: `<section folder>/<Entity uuid>/*.json`),
- * whatever the ignore rules of the work tree say.
+ * index, whatever the ignore rules of the work tree say.
  */
 async function stagedModelFiles(
   application: Uuid,
@@ -577,21 +606,48 @@ async function stagedModelFiles(
   sectionPaths: GitSectionPaths,
   headCommit: string,
 ): Promise<CheckStagedEvolutionTracesPayload> {
-  const folders = metaModelCollections.flatMap(({ entity }) => {
-    const sectionPath = sectionPaths[getApplicationSection(application, entity.uuid)];
-    return sectionPath === undefined ? [] : [sectionPath === "" ? entity.uuid : `${sectionPath}/${entity.uuid}`];
-  });
-  const isModelFile = (path: string) =>
-    path.endsWith(".json") && folders.some((folder) => path.startsWith(`${folder}/`) && !path.slice(folder.length + 1).includes("/"));
-  const headPaths = (await repository.listFiles(headCommit)).filter(isModelFile);
-  const headTexts = await Promise.all(headPaths.map((path) => repository.readFile(path, headCommit)));
+  const { folders, isModelFile } = modelFileFilter(application, sectionPaths);
   const staged = await repository.readStagedFiles(folders);
   return {
     application,
     sectionFolders: sectionPaths,
-    head: Object.fromEntries(headPaths.flatMap((path, index) => (headTexts[index] === undefined ? [] : [[path, headTexts[index]!]]))),
+    head: await modelFilesOfCommit(repository, headCommit, isModelFile),
     staged: Object.fromEntries(Object.entries(staged).filter(([path]) => isModelFile(path))),
   };
+}
+
+/**
+ * #9 B4: the model files of an application in Git commits, read without a checkout: the folder of each
+ * section in the repository, and for each ref the commit it names and the text of its model files; a ref
+ * that names no commit maps to `undefined`.
+ */
+export async function readModelFilesAtRefs(
+  application: Uuid,
+  refs: readonly string[],
+  context: GitActionContext,
+): Promise<GitModelFiles | Action2Error> {
+  const action: GitLogAction = { actionType: "gitAction_log", endpoint: GIT_ENDPOINT_UUID, payload: { application } };
+  const resolved = await resolveDeployment(action, context);
+  if (resolved instanceof Action2Error) {
+    return resolved;
+  }
+  try {
+    const opened = await openRepository(action, resolved);
+    if (opened instanceof Action2Error) {
+      return opened;
+    }
+    const { repository, description } = opened;
+    const { isModelFile } = modelFileFilter(application, description.sectionPaths);
+    const commits: GitModelFiles["commits"] = {};
+    for (const ref of refs) {
+      // a ref that names nothing reads as no commit; any other failure stops the read
+      const oid = (await repository.log({ ref, depth: 1 }))[0]?.oid;
+      commits[ref] = oid ? { oid, files: await modelFilesOfCommit(repository, oid, isModelFile) } : undefined;
+    }
+    return { sectionFolders: description.sectionPaths, commits };
+  } catch (error) {
+    return gitActionError(repositoryErrorReason(error) ?? "gitFailure", error instanceof Error ? error.message : String(error));
+  }
 }
 
 /**

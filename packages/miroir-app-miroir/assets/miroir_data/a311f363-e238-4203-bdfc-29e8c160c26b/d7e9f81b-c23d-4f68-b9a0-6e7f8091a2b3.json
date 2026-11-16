@@ -247,7 +247,21 @@
                   {
                     "name": "V1-Baseline",
                     "modelStructureMigration": [],
-                    "modelCUDMigration": []
+                    "modelCUDMigration": [],
+                    "frozenCollections": [
+                      "entities",
+                      "storedQueries",
+                      "reports",
+                      "menus",
+                      "endpoints",
+                      "runners",
+                      "themes",
+                      "transformerDefinitions",
+                      "mlSchemas",
+                      "tests",
+                      "blobs",
+                      "testConfigurations"
+                    ]
                   }
                 ],
                 "ignoreAttributes": [
@@ -690,7 +704,21 @@
                   {
                     "name": "V1-Create",
                     "modelStructureMigration": [],
-                    "modelCUDMigration": []
+                    "modelCUDMigration": [],
+                    "frozenCollections": [
+                      "entities",
+                      "storedQueries",
+                      "reports",
+                      "menus",
+                      "endpoints",
+                      "runners",
+                      "themes",
+                      "transformerDefinitions",
+                      "mlSchemas",
+                      "tests",
+                      "blobs",
+                      "testConfigurations"
+                    ]
                   }
                 ],
                 "ignoreAttributes": [
@@ -1259,6 +1287,20 @@
                           "mlSchema"
                         ]
                       }
+                    ],
+                    "frozenCollections": [
+                      "entities",
+                      "storedQueries",
+                      "reports",
+                      "menus",
+                      "endpoints",
+                      "runners",
+                      "themes",
+                      "transformerDefinitions",
+                      "mlSchemas",
+                      "tests",
+                      "blobs",
+                      "testConfigurations"
                     ]
                   }
                 ],
@@ -1647,6 +1689,20 @@
                         "entityUuid": "d3139a6d-0486-4ec8-bded-2a83a3c3cee4",
                         "name": "Country"
                       }
+                    ],
+                    "frozenCollections": [
+                      "entities",
+                      "storedQueries",
+                      "reports",
+                      "menus",
+                      "endpoints",
+                      "runners",
+                      "themes",
+                      "transformerDefinitions",
+                      "mlSchemas",
+                      "tests",
+                      "blobs",
+                      "testConfigurations"
                     ]
                   }
                 ],
@@ -2533,6 +2589,20 @@
                         "name": "Publisher",
                         "targetName": "Publishers"
                       }
+                    ],
+                    "frozenCollections": [
+                      "entities",
+                      "storedQueries",
+                      "reports",
+                      "menus",
+                      "endpoints",
+                      "runners",
+                      "themes",
+                      "transformerDefinitions",
+                      "mlSchemas",
+                      "tests",
+                      "blobs",
+                      "testConfigurations"
                     ]
                   }
                 ],
@@ -2921,7 +2991,21 @@
                   {
                     "name": "V2-Same",
                     "modelStructureMigration": [],
-                    "modelCUDMigration": []
+                    "modelCUDMigration": [],
+                    "frozenCollections": [
+                      "entities",
+                      "storedQueries",
+                      "reports",
+                      "menus",
+                      "endpoints",
+                      "runners",
+                      "themes",
+                      "transformerDefinitions",
+                      "mlSchemas",
+                      "tests",
+                      "blobs",
+                      "testConfigurations"
+                    ]
                   }
                 ],
                 "ignoreAttributes": [

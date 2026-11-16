@@ -34,6 +34,7 @@ import {
   entityApplicationForAdmin,
   entityDeployment,
 } from "miroir-app-admin";
+import type { DeploymentRole } from "./versioning/versioningInterfaces.js";
 import { buildTestbedApplicationAccessGrantInstance } from "./authentication/TestbedAccessGrant.js";
 import {
   domainEndpointVersionV1,
@@ -139,6 +140,14 @@ export type CreateDeploymentCompositeActionOptions = {
   skipCreateStore?: boolean;
   /** The labels of the Admin rows, instead of the ones made from the application's name. */
   labels?: { adminApplication?: AdminRowLabels; deployment?: AdminRowLabels };
+  /**
+   * #9: the role of the new deployment, written on its Deployment row (absent: `authoring`). A following
+   * deployment is created at a version: with `installVersion`, the sequence ends with
+   * `installApplicationVersion`, which rewrites the model of the opened stores to that version's.
+   */
+  role?: DeploymentRole;
+  /** #9: the name of the Application Version a following deployment is created at. */
+  installVersion?: string;
 };
 
 /** Labels of an Admin row: `defaultLabel` and `description` are optional. */
@@ -163,6 +172,7 @@ export function deploymentRow(
   selfApplication: Uuid,
   configuration: StoreUnitConfiguration,
   labels: AdminRowLabels,
+  role?: DeploymentRole,
 ): Deployment {
   return {
     uuid: deployment,
@@ -172,6 +182,7 @@ export function deploymentRow(
     defaultLabel: labels.defaultLabel ?? labels.name,
     ...(labels.description ? { description: labels.description } : {}),
     selfApplication,
+    ...(role ? { role } : {}),
     configuration,
   } as Deployment;
 }
@@ -247,6 +258,7 @@ export function createDeploymentCompositeAction(
             defaultLabel: `The deployment of application ${applicationName}`,
             description: `The description of deployment of application ${applicationName}`,
           },
+          options?.role,
         ),
       ],
     },
@@ -293,6 +305,18 @@ export function createDeploymentCompositeAction(
         deploymentUuid: newDeploymentUuid,
         configuration: newDeploymentConfiguration,
       },
+    });
+  }
+
+  if (options?.installVersion !== undefined) {
+    if (options.role !== "following") {
+      throw new Error("createDeploymentCompositeAction: only a following deployment is created at a version");
+    }
+    actionSequence.push({
+      actionType: "installApplicationVersion",
+      actionLabel: "installApplicationVersion for " + applicationName,
+      endpoint: "7947ae40-eb34-4149-887b-15a9021e714e",
+      payload: { application: applicationUuid, version: options.installVersion },
     });
   }
 

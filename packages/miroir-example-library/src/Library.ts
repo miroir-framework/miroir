@@ -132,6 +132,7 @@ export const defaultLibraryAppModel: MetaModel = {
   testConfigurationVersions: [],
   applicationVersionCrossTestConfigurationVersion: [],
   evolutionTraceRecords: [],
+  migrations: [],
   storedQueries: [],
   mlSchemas: [],
   applicationVersions: [],

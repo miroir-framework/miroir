@@ -79,6 +79,7 @@ export const defaultSpotifyAppModel: MetaModel = {
   testConfigurationVersions: [],
   applicationVersionCrossTestConfigurationVersion: [],
   evolutionTraceRecords: [],
+  migrations: [],
   storedQueries: [querySpotifyGetPlaylist as QueryWithExtractorCombinerTransformer],
   mlSchemas: [],
   applicationVersions: [],

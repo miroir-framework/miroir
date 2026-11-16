@@ -19,6 +19,7 @@ import {
   entityHistoricalTestConfigurationVersion,
   entityHistoricalTestVersion,
   entityEvolutionTraceRecord,
+  entityMigration,
   entityReport,
   entityRunner,
   entitySelfApplication,
@@ -256,6 +257,7 @@ export const metaModelEntityList: readonly MetaModelEntityListEntry[] = [
   { entity: entityHistoricalTestVersion as Entity, section: "modelVersion" },
   { entity: entityApplicationVersionCrossTestVersion as Entity, section: "modelVersion" },
   { entity: entityEvolutionTraceRecord as Entity, section: "modelVersion", collection: "evolutionTraceRecords" },
+  { entity: entityMigration as Entity, section: "modelVersion", collection: "migrations" },
   { entity: entityBundleSizeMeasurement as Entity, section: "devData" },
   { entity: entityPageLoadMeasurement as Entity, section: "devData" },
 ];

@@ -336,3 +336,13 @@ export function isGitAction(action: unknown): action is GitAction {
   const actionType = (action as { actionType?: unknown } | undefined)?.actionType;
   return typeof actionType === "string" && (GIT_ACTION_TYPES as readonly string[]).includes(actionType);
 }
+
+/**
+ * #9 B4: the model files of an application in Git commits (`readGitModelFiles`): the folder of each section
+ * in the repository, repository-relative, and for each ref asked the commit it names with the text of its
+ * model files by path (`undefined` when the ref names no commit).
+ */
+export type GitModelFiles = {
+  sectionFolders: Partial<Record<ApplicationSection, string>>;
+  commits: Record<string, { oid: string; files: Record<string, string> } | undefined>;
+};

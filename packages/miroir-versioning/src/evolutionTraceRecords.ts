@@ -20,13 +20,15 @@ import {
 } from "@miroir-framework/core";
 import { entityEvolutionTraceRecord } from "@miroir-framework/core/meta-model";
 
+import { followingDeploymentRefusal } from "./deploymentRole.js";
+
 const MODEL_ENDPOINT_UUID = "7947ae40-eb34-4149-887b-15a9021e714e";
 const INSTANCE_ENDPOINT_UUID = "ed520de4-55a9-4550-ac50-b1b713b72a89";
 
 const applicationLocks = new Map<string, Promise<unknown>>();
 
-/** Runs `run` after every earlier run for the same application has finished. */
-async function withApplicationLock<T>(application: string, run: () => Promise<T>): Promise<T> {
+/** Runs `run` after every earlier run with the same key (an application uuid) has finished. */
+export async function withApplicationLock<T>(application: string, run: () => Promise<T>): Promise<T> {
   const previous = applicationLocks.get(application) ?? Promise.resolve();
   const current = previous.then(run, run);
   const settled = current.catch(() => undefined);
@@ -40,28 +42,33 @@ async function withApplicationLock<T>(application: string, run: () => Promise<T>
   }
 }
 
-/** The record Entity, created in the application's model when absent, as the freeze does for its own. */
-async function ensureRecordEntity(
+/**
+ * A meta-model Entity the package writes rows of (the record Entity, the Migration Entity), created in the
+ * application's model when absent, as the freeze does for the history Entities.
+ */
+export async function ensureApplicationEntity(
   host: DomainControllerActionHost,
   application: string,
   applicationDeploymentMap: ApplicationDeploymentMap,
+  entity: Entity,
+  actionLabel: string,
 ): Promise<Action2Error | undefined> {
   const modelEnvironment = host.asDomainControllerInterface().currentModelEnvironment(application, applicationDeploymentMap);
-  if (modelEnvironment.currentModel.entities.some((entity) => entity.uuid === EVOLUTION_TRACE_RECORD_ENTITY_UUID)) {
+  if (modelEnvironment.currentModel.entities.some((present) => present.uuid === entity.uuid)) {
     return undefined;
   }
   const created = await host.handleModelAction(
     {
       actionType: "createEntity",
-      actionLabel: "appendEvolutionTraceRecordEnsureEntity",
+      actionLabel,
       endpoint: MODEL_ENDPOINT_UUID,
-      payload: { application, transactional: false, entities: [entityEvolutionTraceRecord as Entity] },
+      payload: { application, transactional: false, entities: [entity] },
     },
     applicationDeploymentMap,
     modelEnvironment,
   );
   return created instanceof Action2Error
-    ? new Action2Error("FailedToHandleAction", "appendEvolutionTraceRecord could not create its Entity", [], created)
+    ? new Action2Error("FailedToHandleAction", `${actionLabel}: could not create the ${entity.name} Entity`, [], created)
     : undefined;
 }
 
@@ -111,8 +118,19 @@ export const handleAction_appendEvolutionTraceRecord: ActionImplementationHandle
 ): Promise<Action2ReturnType> => {
   const payload = action.payload as AppendEvolutionTraceRecordPayload;
   const { applicationDeploymentMap } = context;
+  // #9: a following deployment records nothing in the chain it shares
+  const following = await followingDeploymentRefusal(host, "appendEvolutionTraceRecord", payload.application, applicationDeploymentMap);
+  if (following) {
+    return following;
+  }
   return withApplicationLock(payload.application, async () => {
-    const ensureFailure = await ensureRecordEntity(host, payload.application, applicationDeploymentMap);
+    const ensureFailure = await ensureApplicationEntity(
+      host,
+      payload.application,
+      applicationDeploymentMap,
+      entityEvolutionTraceRecord as Entity,
+      "appendEvolutionTraceRecordEnsureEntity",
+    );
     if (ensureFailure) {
       return ensureFailure;
     }
