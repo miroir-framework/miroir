@@ -15,7 +15,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Prerequisite: [`../9-FEATURE-create-migrations-for-model-and-data-updates/`](../9-FEATURE-create-migrations-for-model-and-data-updates/) ✅
 Working branch: `claude/745-replay-traced-model-actions`
 
-**Resume note:** plan written and reviewed (one adversarial review, answered); waiting for the user's review before Slice 0.
+**Resume note:** decisions accepted by the user (2026-11-16); plan reviewed twice; Slice 0 next.
 
 ---
 
@@ -48,7 +48,7 @@ This plan does **not** cover: Git follower migration runs beyond the provisional
 
 ## Locked implementation defaults
 
-From the analysis decision record. Deviations go into the slice's Realization.
+From the analysis decision record, accepted by the user on 2026-11-16 (D3 tentatively). Deviations go into the slice's Realization.
 
 | Decision | Choice | Serves |
 |---|---|---|
@@ -105,7 +105,7 @@ From the analysis decision record. Deviations go into the slice's Realization.
 - Run the versioning suites listed above on `test-filesystem` at the branch base; record pass/fail per file.
 - Write `createEntityStrict.integ.test.ts` with its cases asserting **today's** behaviour on each profile available here (filesystem, IndexedDB, SQL): `createEntity` on an Entity whose storage exists (written by a first `createEntity`, then the row deleted with `deleteInstance`) succeeds, and its instances are kept (filesystem, IndexedDB) or lost (SQL). These assertions flip in Slice 4.
 - List, from `scripts/nonreg-manifest.json`, the steps whose files call `createEntity` on stores possibly left by an earlier test (a grep over `tests/` for `createEntity` plus the `resetModel` users), as the watch list for Slice 4.
-- Servers: start the local PostgreSQL 16 (`pg_ctlcluster 16 main start`, a `miroir` role, `MIROIR_POSTGRES_PASSWORD` exported) and record the `test-sql` baseline. MongoDB: try `mongodb-memory-server` (it downloads a `mongod` binary); if the network refuses it, MongoDB stays unproven here and the PR says so (the user is asked to sign off on that gap before Slice 4).
+- Servers: start the local PostgreSQL 16 (`pg_ctlcluster 16 main start`, a `miroir` role, `MIROIR_POSTGRES_PASSWORD` exported) and record the `test-sql` baseline. MongoDB: try `mongodb-memory-server` (it downloads a `mongod` binary); if the network refuses it, MongoDB stays unproven here and the PR says so (accepted by the user).
 - Test hygiene for D4: the migration run tests use a fixed `EditionC9` uuid in the persistent `.miroir/test-filesystem` stores. Their `beforeAll` drops that Entity (and its storage) when a previous aborted test left it, before anything else.
 - A helper `writeFollowingMigration(folder, row)` writes a Migration file into the following deployment's own `modelVersion` folder on disk, standing in for the import of #746 (a following deployment refuses `modelVersion` writes through Miroir, `DomainController.ts` lines 291–292).
 
