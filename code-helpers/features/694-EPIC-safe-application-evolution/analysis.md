@@ -240,8 +240,9 @@ How D2-d worked (superseded on 2026-11-16, kept for the record):
 
 How D2-a works for `versioned-internal`:
 - A Migration is one ordered list of steps. Its model steps are the traced model Actions between the two versions, in trace order. An Entity row update from the Entity editor becomes the `alterEntityAttribute` that changes the storage, followed by the update of the row (D12).
-- The designer places data steps in the list: a step that fills an attribute goes after the Action that adds it; a step that reads an attribute goes before the Action that removes it. No phases are named.
+- The designer places data steps in the list: a step that fills an attribute goes after the Action that adds it; a step that reads an attribute goes before the Action that removes it. No phases are named. Generation therefore writes each added and each removed attribute as its own step, even when one Entity row update or one `alterEntityAttribute` did both: a copy from the old attribute to the new one (a rename, section 5.3) then has a place between the add and the remove.
 - The model Actions create, alter and drop storage, so no reconciliation runs. A drop is a traced `dropEntity` or a `removeColumns`, classified not backward-compatible (D1).
+- A replayed `alterEntityAttribute` changes only the columns it names. On SQL it runs `sync({ alter: true })` today, which also drops the columns the model lacks: after a rollback that kept a later version's column (D6), replaying an earlier Migration would drop that column and its values. Item 7 has to restrict the alter to the named columns.
 - The runner checks that the deployment is at `from`, copies the Migration into the state record before its first step, runs and records one step at a time with tracing suppressed, and resumes at the first step not recorded. Every step is repeatable.
 
 `versioned-git`: Git changes the model files, so a replay of model Actions does not apply as is. D13 holds the question.
@@ -472,7 +473,7 @@ Both run on Library, in the filesystem nonreg tier, as MiroirTests tagged `files
 | Edit outside Miroir | change a Report file by hand: freeze refused with the difference; re-baseline; freeze passes | same, at Git commit; re-baseline marker committed (D11) |
 | Failure | stop the runner after its first step, and again after a data write but before that step's record; each time, run again: it resumes and ends in the same state | same |
 
-A third run of E1, on PostgreSQL, checks D2: the replayed model Actions add the columns, the restore keeps them, and a second run does not empty any table.
+A third run of E1, on PostgreSQL, checks D2: the replayed model Actions add the columns, the restore keeps them, and a second run does not empty any table. It also covers two versions, each adding an attribute, then a restore of the first and a new run of the first Migration: the column of the second version must keep its values.
 
 ---
 
