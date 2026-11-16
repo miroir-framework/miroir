@@ -318,6 +318,12 @@ A review of B1 to B4, read without running anything, found these; the fixed ones
 
 ---
 
+### Fixed after the PR review (Greptile on #740)
+
+- **A re-baseline was missed when the traces were off at a version.** Git: `recordsAdded` looked for a `rebaseline` record only with the traces on at both commits; it now looks among the records `to` adds first. `versioned-internal`: without the markers of both versions, the `rebaseline` records naming a version between `from` and `to` (the versions `to` chains back through, `previousVersion`) refuse too. Test B3.2 (second case).
+- **A branch named as a version was read as its tag.** The versions are read as `refs/tags/<name>`; test B4 (a branch `9.9.9` is neither the `to` nor the `from` version).
+- **A version with missing history rows read as Entities removed.** Both versions are checked as the install checks one (`versionIncomplete`); test B3.6.
+
 ## Part C — Runner
 
 ### Slice C1 — A Migration run on a following deployment (tracer)

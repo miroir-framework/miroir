@@ -175,6 +175,25 @@ describe("#9 part B: generateMigration in versioned-git", () => {
     expect(migration.changes.map((change: { attribute?: string }) => change.attribute)).toEqual(["edition11", "edition12"]);
   }, 60000);
 
+  it("B4: a branch named as a version is not its tag", async () => {
+    expectOk(await gitAction(context, "gitAction_createBranch", { name: "9.9.9", startPoint: "1.0.0" }));
+    try {
+      // `to` not tagged: the model of HEAD, whatever the branch of that name holds
+      expectOk(await generate("1.0.0", "9.9.9"));
+      const migration = migrationFiles()
+        .map((file) => readModelFile(`modelVersion/${MIGRATION_ENTITY}/${file}`))
+        .find((row) => row.from === "1.0.0" && row.to === "9.9.9")!;
+      expect(migration.description).toContain("its model is the one of HEAD");
+      expect(migration.changes.length).toBeGreaterThan(0);
+      // `from` must be a tag
+      const result = await generate("9.9.9", "1.1.0");
+      expect(result instanceof Action2Error, JSON.stringify(result)).toBe(true);
+      expect((result as Action2Error).errorMessage).toContain("no tag 9.9.9");
+    } finally {
+      expectOk(await gitAction(context, "gitAction_deleteBranch", { name: "9.9.9" }));
+    }
+  }, 60000);
+
   it("B4: an unknown tag is refused", async () => {
     const result = await generate("0.9.0", "1.1.0");
     expect(result instanceof Action2Error, JSON.stringify(result)).toBe(true);

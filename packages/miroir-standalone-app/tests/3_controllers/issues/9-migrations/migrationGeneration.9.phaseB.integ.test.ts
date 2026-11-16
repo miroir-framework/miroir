@@ -23,11 +23,14 @@ import {
   MODEL_ENDPOINT,
   openVersioningTestContext,
   APP_FOR_TEST_DEPLOYMENT,
+  SELF_APPLICATION_VERSION_ENTITY,
   storedAppForTestRows,
   type VersioningTestContext,
 } from "../../versioning/versioningTestSetup.js";
 
 const MIGRATION_ENTITY = "b5c1f0e5-3d31-419b-9a6b-21dd598fc3fe";
+const ENTITY_VERSION_ENTITY = "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd";
+const CROSS_ENTITY_VERSION_ENTITY = "8bec933d-6287-4de7-8a88-5c24216de9f4";
 const EVOLUTION_TRACE_RECORD_ENTITY = "854c47bd-af74-4305-bdea-aa6bddfa8899";
 const SELF_APPLICATION_ENTITY = "a659d350-dd97-4da9-91de-524fa01745dc";
 
@@ -286,6 +289,47 @@ describe("#9 part B: generateMigration", () => {
 
     expect(refusalReason(refused), JSON.stringify(refused)).toBe("migrationAcrossRebaseline");
     expect(await storedMigration(from, to)).toBeUndefined();
+  }, 60000);
+
+  it("B3.2: a re-baseline after a from version frozen with the traces off still refuses the generation", async () => {
+    const from = `9B32b-1.0.0-${run}`;
+    const to = `9B32b-1.1.0-${run}`;
+    await setAppForTestTraces(false);
+    try {
+      expectOk(await freezeAppForTest(context.domainController, from), "freeze from, traces off");
+    } finally {
+      await setAppForTestTraces(true);
+    }
+    expectOk(await modelAction({ actionType: "rebaselineEvolutionTraces", payload: { application: APP_FOR_TEST, versionName: `9B32b-rebaseline-${run}` } }), "re-baseline");
+    expectOk(await freezeAppForTest(context.domainController, to), "freeze to");
+
+    const refused = await generate(from, to);
+
+    expect(refusalReason(refused), JSON.stringify(refused)).toBe("migrationAcrossRebaseline");
+    expect(await storedMigration(from, to)).toBeUndefined();
+  }, 60000);
+
+  it("B3.6: a version whose Cross rows name an EntityVersion it does not hold is refused, not read as a removal", async () => {
+    const from = `9B36-1.0.0-${run}`;
+    const to = `9B36-1.1.0-${run}`;
+    expectOk(await freezeAppForTest(context.domainController, from), "freeze from");
+    expectOk(await freezeAppForTest(context.domainController, to), "freeze to");
+    const fromVersion = (await storedAppForTestRows(context, "modelVersion", SELF_APPLICATION_VERSION_ENTITY)).find((row) => row.name === from)!;
+    const cross = (await storedAppForTestRows(context, "modelVersion", CROSS_ENTITY_VERSION_ENTITY)).find(
+      (row) => (row as { applicationVersion?: string }).applicationVersion === fromVersion.uuid,
+    ) as { entityVersion: string };
+    const entityVersion = (await storedAppForTestRows(context, "modelVersion", ENTITY_VERSION_ENTITY)).find((row) => row.uuid === cross.entityVersion)!;
+    const store = (context.serverDomainController as any).persistenceStoreLocalOrRemote
+      .getLocalPersistenceStoreControllerManager()
+      .getPersistenceStoreController(APP_FOR_TEST_DEPLOYMENT);
+    expectOk(await store.deleteInstance("modelVersion", entityVersion), "delete an EntityVersion of from");
+    try {
+      const refused = await generate(from, to);
+      expect(refusalReason(refused), JSON.stringify(refused)).toBe("versionIncomplete");
+      expect(await storedMigration(from, to)).toBeUndefined();
+    } finally {
+      expectOk(await store.upsertInstance("modelVersion", entityVersion), "restore the EntityVersion");
+    }
   }, 60000);
 
   it("B3.3: with the traces off, the Migration comes from the two versions", async () => {

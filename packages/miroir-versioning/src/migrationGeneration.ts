@@ -35,7 +35,7 @@ import { comparedCollections, differencesText, EVOLUTION_TRACES_DISAGREE, summar
 import { ensureApplicationEntity, withApplicationLock } from "./evolutionTraceRecords.js";
 import { metaModelEntityUuids } from "./freezeApplicationVersion.js";
 import { diffModelStates, sameJson } from "./modelStateDiff.js";
-import { frozenStateOf, liveModelState, modelStateFromFiles, replayCommitRecords, type ModelState } from "./modelStates.js";
+import { frozenCollectionsOf, frozenStateOf, liveModelState, modelStateFromFiles, replayCommitRecords, type ModelState } from "./modelStates.js";
 
 const INSTANCE_ENDPOINT_UUID = "ed520de4-55a9-4550-ac50-b1b713b72a89";
 const DOMAIN_ENDPOINT_UUID = "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5";
@@ -278,9 +278,6 @@ function recordsBetween(
 function recordsAdded(application: string, fromState: ModelState, toState: ModelState, from: string, to: string): RecordsBetween {
   const tracesOn = (state: ModelState) =>
     isEvolutionTraceOn(state.applications.find((row) => row.uuid === application) as EvolutionTraceSwitchInput | undefined);
-  if (!tracesOn(fromState) || !tracesOn(toState)) {
-    return { none: `the traces are off at ${!tracesOn(fromState) ? from : to}` };
-  }
   const chainOf = (state: ModelState) =>
     (state.evolutionTraceRecords as EvolutionTraceRecordRow[])
       .filter((record) => record.application === application)
@@ -289,12 +286,24 @@ function recordsAdded(application: string, fromState: ModelState, toState: Model
   const toUuids = new Set(chainOf(toState).map((record) => record.uuid));
   const known = new Set(fromChain.map((record) => record.uuid));
   const added = chainOf(toState).filter((record) => !known.has(record.uuid));
+  // a re-baseline committed between the two refuses generation, whether the traces are on or off at either end
+  const correction = added.find((record) => record.kind === "rebaseline");
+  if (correction) {
+    return { rebaseline: correction };
+  }
+  if (!tracesOn(fromState) || !tracesOn(toState)) {
+    return { none: `the traces are off at ${!tracesOn(fromState) ? from : to}` };
+  }
   const last = fromChain.at(-1);
   if (fromChain.some((record) => !toUuids.has(record.uuid)) || (last !== undefined && added.length > 0 && added[0].previousTrace !== last.uuid)) {
     return { none: `the chain of records of ${to} does not continue the one of ${from}` };
   }
-  const rebaseline = added.find((record) => record.kind === "rebaseline");
-  return rebaseline ? { rebaseline } : { records: added };
+  return { records: added };
+}
+
+/** The Git ref of the tag of a version. */
+export function tagRef(version: string): string {
+  return `refs/tags/${version}`;
 }
 
 /** The two versions of a Migration, the records between them, and what the draft says of where they come from. */
@@ -320,13 +329,37 @@ function frozenVersionStates(live: ModelState, payload: GenerateMigrationActionP
       `generateMigration: ${payload.application} has no Application Version named ${!fromVersion ? payload.from : payload.to}`,
     );
   }
+  // a version whose Cross rows name rows it does not hold would read as Entities removed (as in the install)
+  const incomplete = [fromVersion, toVersion].flatMap((version) =>
+    frozenCollectionsOf(live, version.uuid)
+      .filter(({ missingVersionRows }) => missingVersionRows.length > 0)
+      .map(({ collection, missingVersionRows }) => `${version.name}, ${collection}: ${missingVersionRows.join(", ")}`),
+  );
+  if (incomplete.length > 0) {
+    return refusal(`generateMigration: versions of ${payload.application} name rows they do not hold (${incomplete.join("; ")})`, "versionIncomplete");
+  }
   const fromState = frozenStateOf(live, fromVersion.uuid);
   const toState = frozenStateOf(live, toVersion.uuid);
   if (fromState instanceof Action2Error || toState instanceof Action2Error) {
     return fromState instanceof Action2Error ? fromState : (toState as Action2Error);
   }
-  const records = recordsBetween(payload.application, live.evolutionTraceRecords as EvolutionTraceRecordRow[], fromVersion.uuid, toVersion.uuid);
-  return { fromState, toState, between: records };
+  const chainRecords = live.evolutionTraceRecords as EvolutionTraceRecordRow[];
+  const records = recordsBetween(payload.application, chainRecords, fromVersion.uuid, toVersion.uuid);
+  if ("rebaseline" in records) {
+    return { fromState, toState, between: records };
+  }
+  // without markers of both versions (traces off at a freeze), a re-baseline of a version between them, or
+  // of `to`, still refuses: the versions after `from` are those `to` chains back through (`previousVersion`)
+  const versionsAfterFrom = new Set<string>();
+  const byUuid = new Map(live.applicationVersions.map((row) => [row.uuid, row as { uuid: string; previousVersion?: string }]));
+  for (let version = byUuid.get(toVersion.uuid); version && version.uuid !== fromVersion.uuid && !versionsAfterFrom.has(version.uuid); ) {
+    versionsAfterFrom.add(version.uuid);
+    version = version.previousVersion ? byUuid.get(version.previousVersion) : undefined;
+  }
+  const correction = chainRecords.find(
+    (record) => record.application === payload.application && record.kind === "rebaseline" && record.version !== undefined && versionsAfterFrom.has(record.version),
+  );
+  return { fromState, toState, between: correction ? { rebaseline: correction } : records };
 }
 
 /**
@@ -340,7 +373,9 @@ async function gitVersionStates(
   applicationDeploymentMap: ApplicationDeploymentMap,
 ): Promise<VersionStates | Action2Error> {
   const { application } = payload;
-  const read = await host.readGitModelFiles(application, [payload.from, payload.to, "HEAD"], applicationDeploymentMap);
+  // a version is a tag: a branch of the same name is not one
+  const [fromRef, toRef] = [tagRef(payload.from), tagRef(payload.to)];
+  const read = await host.readGitModelFiles(application, [fromRef, toRef, "HEAD"], applicationDeploymentMap);
   if (read instanceof Action2Error) {
     return new Action2Error("FailedToHandleAction", `generateMigration could not read the Git commits of ${application}`, [], read);
   }
@@ -352,10 +387,10 @@ async function gitVersionStates(
       { section: migrationSection },
     );
   }
-  const fromCommit = read.commits[payload.from];
+  const fromCommit = read.commits[fromRef];
   // before `to` is tagged, its model is the one of HEAD: the commits so far, not the work tree's edits
-  const toTagged = read.commits[payload.to] !== undefined;
-  const toCommit = read.commits[payload.to] ?? read.commits.HEAD;
+  const toTagged = read.commits[toRef] !== undefined;
+  const toCommit = read.commits[toRef] ?? read.commits.HEAD;
   if (!fromCommit || !toCommit) {
     return new Action2Error(
       "FailedToHandleAction",
