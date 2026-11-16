@@ -62,6 +62,7 @@ const followingMap = {
 const run = Date.now();
 const VERSION_1_0 = `9C-1.0.0-${run}`;
 const VERSION_1_1 = `9C-1.1.0-${run}`;
+const VERSION_1_2 = `9C-1.2.0-${run}`;
 const MOTTO = "mottoC9";
 
 /** An Entity appForTest gains in 1.1.0. */
@@ -83,6 +84,39 @@ const EDITION_INSTANCE = { uuid: "9c000003-0000-4000-8000-000000000001", parentU
 let context: VersioningTestContext;
 let followingFolder: string;
 let migration: MigrationRow;
+
+/** A step of `updateInstance`s in the following deployment's data, one per `[Entity uuid, instance uuid]`. */
+function writeStep(uuid: string, name: string, writes: [string, string][], backwardCompatible = true) {
+  return {
+    uuid,
+    name,
+    backwardCompatible,
+    repeatable: true,
+    action: {
+      actionType: "compositeActionSequence",
+      actionLabel: name,
+      endpoint: DOMAIN_ENDPOINT,
+      payload: {
+        actionSequence: writes.map(([parentUuid, instanceUuid]) => ({
+          actionType: "updateInstance",
+          actionLabel: `write ${instanceUuid}`,
+          endpoint: INSTANCE_ENDPOINT,
+          payload: {
+            application: APP_FOR_TEST,
+            applicationSection: "data",
+            parentUuid,
+            objects: [{ uuid: instanceUuid, parentUuid, name: `instance ${instanceUuid}` }],
+          },
+        })),
+      },
+    },
+  };
+}
+
+/** The data folder of an Entity uuid in the following deployment. */
+function followingDataFolder(entityUuid: string): string {
+  return path.join(resolveRepoRoot(), followingFolder, "data", entityUuid);
+}
 
 function host(): DomainController {
   return context.domainController as DomainController;
@@ -330,5 +364,92 @@ describe("#9 part C: runMigration", () => {
     expect(await storedRows(context, APP_FOR_TEST_DEPLOYMENT, "modelVersion", EVOLUTION_TRACE_RECORD_ENTITY_UUID)).toEqual(recordsBefore);
 
     expect(refusalReason(await runMigration(migration.uuid))).toBe("migrationNotAtFrom");
+  }, 120000);
+
+  it("C2: a stopped run resumes from its copy of the Migration, at the first step not recorded", async () => {
+    expectOk(await freezeAppForTest(context.domainController, VERSION_1_2), "freeze 1.2.0");
+    const [E1, E2, F1, F2, Z] = [1, 2, 3, 4, 9].map((n) => `9c00000${n}-0000-4000-8000-0000000000c2`);
+    // folders of no Entity of the model, each blocked by a file in its place until the test puts a folder there
+    const [BLOCKED_E, BLOCKED_F] = ["9c0000b1-0000-4000-8000-000000000001", "9c0000b2-0000-4000-8000-000000000001"];
+    const second: MigrationRow = {
+      uuid: "9c000004-0000-4000-8000-000000000001",
+      parentName: "Migration",
+      parentUuid: MIGRATION_ENTITY,
+      name: `${VERSION_1_1} → ${VERSION_1_2}`,
+      application: APP_FOR_TEST,
+      from: VERSION_1_1,
+      to: VERSION_1_2,
+      source: "manual",
+      changes: [],
+      expand: [
+        writeStep("9c000005-0000-4000-8000-000000000001", "expand one", [[edition.uuid, E1]]),
+        writeStep("9c000005-0000-4000-8000-000000000002", "expand two", [[BLOCKED_E, E2]]),
+      ],
+      // a repeatable step whose first write lands and whose second fails
+      fill: [writeStep("9c000005-0000-4000-8000-000000000003", "fill", [[edition.uuid, F1], [BLOCKED_F, F2]])],
+      // left empty, as generation leaves a contract step (D4)
+      contract: [writeStep("9c000005-0000-4000-8000-000000000004", "drop nothing", [], false)],
+      // set wrong by hand: the contract step is not backward-compatible
+      backwardCompatible: true,
+    } as unknown as MigrationRow;
+    expectOk(
+      await authoringAction({
+        actionType: "createInstance",
+        endpoint: INSTANCE_ENDPOINT,
+        payload: { application: APP_FOR_TEST, applicationSection: "modelVersion", parentUuid: MIGRATION_ENTITY, objects: [second] },
+      }),
+      "the second Migration",
+    );
+    for (const blocked of [BLOCKED_E, BLOCKED_F]) {
+      fs.writeFileSync(followingDataFolder(blocked), "a file where a folder is written");
+    }
+    // the store takes each entry of its data folder for an Entity: a folder in place of the file takes the writes
+    const unblock = (blocked: string) => {
+      fs.rmSync(followingDataFolder(blocked));
+      fs.mkdirSync(followingDataFolder(blocked));
+    };
+
+    // 1. stopped at the second expand step
+    const stopped = await runMigration(second.uuid);
+    expect(refusalReason(stopped), JSON.stringify(stopped)).toBe("migrationStepFailed");
+    const afterStop = await deploymentState();
+    expect(afterStop?.version).toBe(VERSION_1_1);
+    expect(afterStop?.run?.stepsDone).toEqual([second.expand[0].uuid]);
+    expect((afterStop?.run?.migration as MigrationRow).backwardCompatible, "recomputed by the run").toBe(false);
+
+    // another Migration waits for the run in progress
+    expect(refusalReason(await runMigration(migration.uuid))).toBe("migrationRunInProgress");
+
+    // the Migration's file changed on disk (the following deployment refuses that write): the run keeps its copy
+    const sharedModelVersion = (
+      (await storedRows(context, ADMIN_DEPLOYMENT, "data", entityDeployment.uuid)).find((row) => row.uuid === APP_FOR_TEST_DEPLOYMENT) as unknown as {
+        configuration: { modelVersion: { directory: string } };
+      }
+    ).configuration.modelVersion.directory;
+    const onDisk = path.join(resolveRepoRoot(), sharedModelVersion, MIGRATION_ENTITY, `${second.uuid}.json`);
+    expect(fs.existsSync(onDisk), onDisk).toBe(true);
+    fs.writeFileSync(onDisk, fs.readFileSync(onDisk, "utf8").replaceAll(E2, Z));
+
+    // 2. resumed, stopped inside the fill step after its first write
+    unblock(BLOCKED_E);
+    const stoppedInFill = await runMigration(second.uuid);
+    expect(refusalReason(stoppedInFill), JSON.stringify(stoppedInFill)).toBe("migrationStepFailed");
+    expect((await deploymentState())?.run?.stepsDone).toEqual([second.expand[0].uuid, second.expand[1].uuid, "jump"]);
+    expect(fs.existsSync(path.join(followingDataFolder(edition.uuid), `${F1}.json`)), "the fill step's first write landed").toBe(true);
+
+    // 3. resumed to the end: the whole fill step again, then the empty contract step
+    unblock(BLOCKED_F);
+    expectOk(await runMigration(second.uuid), "the resumed run");
+
+    const ended = await deploymentState();
+    expect(ended).toMatchObject({ version: VERSION_1_2 });
+    expect(ended?.run).toBeUndefined();
+    expect(ended?.applied?.map((applied) => applied.migration)).toEqual([migration.uuid, second.uuid]);
+    // the data of an uninterrupted run: the copy's steps, not the edited file's
+    expect((await storedRows(context, FOLLOWING_DEPLOYMENT, "data", edition.uuid)).map((row) => row.uuid).sort()).toEqual(
+      [EDITION_INSTANCE.uuid, E1, F1].sort(),
+    );
+    expect(fs.readdirSync(followingDataFolder(BLOCKED_E))).toEqual([`${E2}.json`]);
+    expect(fs.readdirSync(followingDataFolder(BLOCKED_F))).toEqual([`${F2}.json`]);
   }, 120000);
 });

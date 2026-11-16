@@ -352,7 +352,7 @@ A review of B1 to B4, read without running anything, found these; the fixed ones
 
 ### Slice C2 — A stopped run resumes
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal.** A run stopped part way resumes and ends where an uninterrupted run ends (G3, epic section 9's failure row).
 
@@ -368,7 +368,11 @@ A review of B1 to B4, read without running anything, found these; the fixed ones
 
 **Validation.** The file; scoped nonreg `smoke,actions,external`.
 
-**Realization.** _(on completion)_
+**Realization.** No new code: C1's handler already resumes a run in progress from its copy (`runToDo`) and skips the steps in `stepsDone`; the test covers it. The four RED cases are one test (C2) over a second Migration, 1.1.0 to 1.2.0, created by hand: two expand steps, one repeatable fill step of two writes, and an empty contract step marked not backward-compatible while the row says the opposite.
+- **The failing precondition.** The filesystem store takes each entry of its data folder for an Entity folder. The test puts a file where the folder of an Entity unknown to the model would be: a write there fails (`ENOTDIR`), and replacing the file with an empty folder lets the next write land. A directory in place of an instance file was tried first; it breaks the model reload of the jump.
+- **Checked.** Stop 1 in the second expand step (`stepsDone` = the first, the copy's `backwardCompatible` recomputed to `false`); a run of another Migration refused with `migrationRunInProgress`; the Migration's file edited on disk in the shared `modelVersion` folder; stop 2 in the fill step, after its first write landed, with `stepsDone` = both expand steps and the jump; the end: version 1.2.0, `applied` holding both Migrations, no `run`, and the data written by the copy's steps, not the edited file's.
+- **Validation.** The file (C1, C2). The scoped nonreg is left to the full nonreg before PR C.
+
 
 ### Slice C3 — Runner refusals
 
