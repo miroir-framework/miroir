@@ -388,6 +388,42 @@ function lstatOrUndefined(absolute: string): fs.Stats | undefined {
   }
 }
 
+/**
+ * The filesystem a status reads the work tree of `root` with, over `base`. isomorphic-git takes a work-tree
+ * file for its index entry when their stats agree, and compares their times in whole seconds: a file
+ * rewritten with the same size in the second the index was written keeps the stats of its entry, and its
+ * change goes unseen (racy git, https://git-scm.com/docs/racy-git). As git does, a file written in or after
+ * the second of the index's last write is hashed again: its stats are given with no ctime, which no entry
+ * agrees with.
+ */
+async function racyCleanFs(base: FsClient, root: string): Promise<FsClient> {
+  const gitdir = gitdirLayout(root)?.gitdir;
+  const index = gitdir ? await fs.promises.stat(path.join(gitdir, "index")).catch(() => undefined) : undefined;
+  if (!gitdir || !index) {
+    return base;
+  }
+  const indexSecond = Math.floor(index.mtimeMs / 1000);
+  const promises = (base as PromiseFsClient).promises;
+  const inWorkTree = (target: string) => {
+    const relative = path.relative(gitdir, path.resolve(target));
+    return relative.startsWith("..") || path.isAbsolute(relative);
+  };
+  return {
+    promises: {
+      ...promises,
+      lstat: async (target: string, ...rest: unknown[]) => {
+        const stats: fs.Stats = await (promises.lstat as (...args: unknown[]) => Promise<fs.Stats>)(target, ...rest);
+        const racy = !stats.isDirectory() && Math.floor(stats.mtimeMs / 1000) >= indexSecond && inWorkTree(target);
+        return racy
+          ? new Proxy(stats, {
+              get: (stat, property) => (property === "ctimeMs" ? 0 : property === "ctime" ? new Date(0) : Reflect.get(stat, property, stat)),
+            })
+          : stats;
+      },
+    },
+  };
+}
+
 async function resolveOrUndefined(repository: GitDir, ref: string): Promise<string | undefined> {
   try {
     return await git.resolveRef({ ...repository, ref });
@@ -450,7 +486,12 @@ class IsomorphicGitRepository implements GitRepositoryInterface {
   async status(filepaths?: string[]): Promise<GitFileStatus[]> {
     // refresh: false, reading the status never writes the index: isomorphic-git's refresh of its stat cache
     // records the work tree's file mode even with core.filemode false, which stages a mode change (#689)
-    const rows = await git.statusMatrix({ ...this.repository, filepaths, refresh: false });
+    const rows = await git.statusMatrix({
+      ...this.repository,
+      fs: await racyCleanFs(this.repository.fs, this.root),
+      filepaths,
+      refresh: false,
+    });
     return rows
       .map((row) => statusFromMatrixRow(row as [string, number, number, number]))
       .filter((status): status is GitFileStatus => status !== undefined);

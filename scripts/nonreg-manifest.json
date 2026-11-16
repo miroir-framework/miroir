@@ -2543,7 +2543,6 @@
       "tier": "default",
       "title": "#9 part A — a following deployment: created at an earlier version (installApplicationVersion, DeploymentState row), its role fixed at creation, its model and modelVersion writes refused unless a migration run sends them, its data writable",
       "requires": "none",
-      "parallel": false,
       "argv": [
         "bash",
         "-c",
@@ -2556,7 +2555,6 @@
       "tier": "default",
       "title": "#9 part B — generateMigration: a draft Migration between two frozen versions (classified changes, fill and contract steps, agreement with the traces, refusals) and, in versioned-git, between a tag and HEAD as a work tree file",
       "requires": "none",
-      "parallel": false,
       "argv": [
         "bash",
         "-c",
@@ -2569,7 +2567,6 @@
       "tier": "default",
       "title": "#9 part C — runMigration on a following deployment: expand, the jump to the to version, fill and contract, each step recorded in the DeploymentState row; a stopped run resumes from its copy of the Migration; refusals; in versioned-git, the Migration read at its tag and the jump a checkout of that tag",
       "requires": "none",
-      "parallel": false,
       "argv": [
         "bash",
         "-c",

@@ -25,6 +25,7 @@ import {
 } from "./gitTestSetup.js";
 
 const NEW_BOOK = "679a0001-0000-4000-8000-000000000001";
+const RACY_BOOK = "679a0001-0000-4000-8000-000000000002";
 
 let context: GitTestContext;
 let loaderCallsAfterStartup = -1;
@@ -93,6 +94,25 @@ describe("gitAction_status (#679 slice 1)", () => {
     const notes = status.files.find((file) => file.path === "NOTES.md");
     expect(notes).toMatchObject({ change: "added", inApplication: false });
     expect(context.loaderCalls()).toBe(1);
+  });
+
+  it("lists a file rewritten with the same size in the second its stage wrote the index (racy git)", async () => {
+    const relativePath = `data/${BOOK_ENTITY}/${RACY_BOOK}.json`;
+    const file = path.join(context.libraryRoot, relativePath);
+    const book = (name: string) => JSON.stringify({ uuid: RACY_BOOK, parentName: "Book", parentUuid: BOOK_ENTITY, name });
+    // at the start of a second, so that the stage and the rewrite fall in the same one
+    await new Promise((resolve) => setTimeout(resolve, 1000 - (Date.now() % 1000)));
+    fs.writeFileSync(file, book("Racy git, staged"));
+    expectOk(await gitAction(context, "gitAction_stage", { paths: [relativePath] }));
+    fs.writeFileSync(file, book("Racy git, edited"));
+    const second = (target: string) => Math.floor(fs.statSync(target).mtimeMs / 1000);
+
+    const status = expectOk<GitStatusResult>(await gitAction(context, "gitAction_status"));
+
+    expect({
+      sameSecond: second(file) === second(path.join(context.libraryRoot, ".git", "index")),
+      racy: status.files.find((changed) => changed.path === relativePath),
+    }).toMatchObject({ sameSecond: true, racy: { change: "added", staged: true, unstaged: true } });
   });
 });
 
