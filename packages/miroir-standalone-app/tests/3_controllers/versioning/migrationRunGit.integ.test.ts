@@ -121,7 +121,7 @@ async function cloneHead(): Promise<string | undefined> {
 }
 
 async function tagCommit(tag: string): Promise<string | undefined> {
-  return (await (await createGitRepositoryFactory().open(cloneRoot)).log({ ref: tag, depth: 1 }))[0]?.oid;
+  return (await (await createGitRepositoryFactory().open(cloneRoot)).log({ ref: `refs/tags/${tag}`, depth: 1 }))[0]?.oid;
 }
 
 /** A following deployment of Library on the clone, its data outside it, installed at `version`. */
@@ -262,9 +262,15 @@ describe("#9 C4: runMigration in versioned-git", () => {
     expect(readJson(dataRoot, `${BOOK_ENTITY}/${BOOK_UBIK}.json`)[EDITION]).toBe("draft");
     expect(await cloneHead()).toBe(await tagCommit("1.0.0"));
 
-    // the edit discarded: the run resumes at the jump and ends
+    // the edit discarded, and a branch named as the version, still at 1.0.0: the run checks the tag out
     fs.writeFileSync(bookFile, bookText);
-    expectOk(await runMigration(migration.uuid));
+    const repository = await createGitRepositoryFactory().open(cloneRoot);
+    await repository.createBranch("1.1.0", `refs/tags/1.0.0`);
+    try {
+      expectOk(await runMigration(migration.uuid));
+    } finally {
+      await repository.deleteBranch("1.1.0");
+    }
 
     expect(await cloneHead()).toBe(await tagCommit("1.1.0"));
     const ended = await deploymentState();

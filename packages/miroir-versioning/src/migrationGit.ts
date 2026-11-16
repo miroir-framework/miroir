@@ -18,7 +18,7 @@ import {
 import { entityMigration } from "@miroir-framework/core/meta-model";
 
 import { refusal } from "./deploymentRole.js";
-import type { MigrationRow } from "./migrationGeneration.js";
+import { type MigrationRow, tagRef } from "./migrationGeneration.js";
 import type { ModelState } from "./modelStates.js";
 
 /** Whether the live model says the application keeps its versions as Git tags. */
@@ -54,7 +54,8 @@ export async function checkedOutVersion(
   applicationDeploymentMap: ApplicationDeploymentMap,
   label: string,
 ): Promise<string | Action2Error> {
-  const log = await gitLog(host, application, applicationDeploymentMap, version);
+  // the tag, not a branch of the same name
+  const log = await gitLog(host, application, applicationDeploymentMap, tagRef(version));
   if (log instanceof Action2Error) {
     return new Action2Error("FailedToHandleAction", `${label}: could not read the tag ${version} in the repository of ${application}`, [], log);
   }
@@ -83,7 +84,7 @@ export async function migrationAtItsTag(
   if (log instanceof Action2Error) {
     return new Action2Error("FailedToHandleAction", `runMigration could not read the Git tags of ${application}`, [], log);
   }
-  const read = await host.readGitModelFiles(application, log.branches.tags, applicationDeploymentMap);
+  const read = await host.readGitModelFiles(application, log.branches.tags.map(tagRef), applicationDeploymentMap);
   if (read instanceof Action2Error) {
     return new Action2Error("FailedToHandleAction", `runMigration could not read the Git commits of ${application}`, [], read);
   }
@@ -93,7 +94,7 @@ export async function migrationAtItsTag(
   }
   const path = `${folder === "" ? "" : `${folder}/`}${entityMigration.uuid}/${migrationUuid}.json`;
   for (const tag of log.branches.tags) {
-    const text = read.commits[tag]?.files[path];
+    const text = read.commits[tagRef(tag)]?.files[path];
     if (text === undefined) {
       continue;
     }
@@ -110,14 +111,17 @@ export async function migrationAtItsTag(
   return undefined;
 }
 
-/** The jump of a run on a `versioned-git` deployment: the checkout of the tag `to`; its commit. */
+/**
+ * The jump of a run on a `versioned-git` deployment: the checkout of the tag `to` (as `refs/tags/<to>`: a
+ * bare name is a local branch first); its commit.
+ */
 export async function checkoutVersion(
   host: DomainControllerActionHost,
   application: string,
   to: string,
   applicationDeploymentMap: ApplicationDeploymentMap,
 ): Promise<string | Action2Error> {
-  const action: GitCheckoutAction = { actionType: "gitAction_checkout", endpoint: GIT_ENDPOINT_UUID, payload: { application, ref: to } };
+  const action: GitCheckoutAction = { actionType: "gitAction_checkout", endpoint: GIT_ENDPOINT_UUID, payload: { application, ref: tagRef(to) } };
   const checkedOut = await host.handleGitAction(action, applicationDeploymentMap);
   if (checkedOut instanceof Action2Error) {
     return checkedOut;

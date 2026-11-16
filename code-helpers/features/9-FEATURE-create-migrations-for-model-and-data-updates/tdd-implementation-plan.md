@@ -467,3 +467,9 @@ Full nonreg before these fixes: 138 of 140; the two failures (`unit-301-agent-to
 - **Cleanup:** the five files moved (`git mv`) from `issues/9-migrations/` to `tests/3_controllers/versioning/`.
 - **Tracer narrative** (epic section 5.1): C1 is that day on `versioned-internal` (freeze, change, freeze, generate, complete the fill step, run on the following deployment), C4 on `versioned-git` (tag, change, commit, generate, commit the Migration, tag, run on the clone).
 
+
+### Fixed after the PR review (Greptile on #742)
+
+- **A step with a `transactionalInstanceAction`** would be recorded as done while its write waited in the local cache for a commit no step makes, then was dropped by the reload of the jump. The run now refuses such a Migration (`migrationStepsInvalid`) before writing anything. Test: C5, Migration SIXTH (red before the fix).
+- **Tags in the run:** the checkout of the jump, the HEAD checks and the reading of the Migration at its tag now name `refs/tags/<version>`, as the generation does. With isomorphic-git, a bare name that is both a tag and a branch already resolved to the tag, so the C4 test with a branch `1.1.0` left at 1.0.0 passed before the change too. It now guards the explicit form.
+- **Plain CRUD REST routes** write through `PersistenceStoreController` and skip every `handleInstanceAction` check, the #9 ones included. This predates #9; deferred to #743.

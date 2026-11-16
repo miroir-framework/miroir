@@ -73,11 +73,12 @@ const VERSION_1_1 = `9C-1.1.0-${run}`;
 const VERSION_1_2 = `9C-1.2.0-${run}`;
 const MOTTO = "mottoC9";
 /** The Migrations C2, C3 and C5 write by hand. */
-const [SECOND_MIGRATION, THIRD_MIGRATION, FOURTH_MIGRATION, FIFTH_MIGRATION] = [
+const [SECOND_MIGRATION, THIRD_MIGRATION, FOURTH_MIGRATION, FIFTH_MIGRATION, SIXTH_MIGRATION] = [
   "9c000004-0000-4000-8000-000000000001",
   "9c000006-0000-4000-8000-000000000001",
   "9c00000a-0000-4000-8000-000000000001",
   "9c00000a-0000-4000-8000-000000000002",
+  "9c00000a-0000-4000-8000-000000000003",
 ];
 
 /** An Entity appForTest gains in 1.1.0. */
@@ -328,7 +329,7 @@ afterAll(async () => {
     payload: { application: APP_FOR_TEST, applicationSection: "model", objects: [{ ...publisher, mlSchema: { ...publisher.mlSchema, definition } }] },
   });
   const migrations = (await storedRows(context, APP_FOR_TEST_DEPLOYMENT, "modelVersion", MIGRATION_ENTITY)).filter((row) =>
-    [migration?.uuid, SECOND_MIGRATION, THIRD_MIGRATION, FOURTH_MIGRATION, FIFTH_MIGRATION].includes(row.uuid),
+    [migration?.uuid, SECOND_MIGRATION, THIRD_MIGRATION, FOURTH_MIGRATION, FIFTH_MIGRATION, SIXTH_MIGRATION].includes(row.uuid),
   );
   if (migrations.length > 0) {
     await authoringAction({
@@ -547,7 +548,7 @@ describe("#9 part C: runMigration", () => {
     }
   }, 120000);
 
-  it("C5: a model action in a nested sequence of a step is stored, outside the transaction, before the step is recorded; steps with one uuid are refused", async () => {
+  it("C5: a model action in a nested sequence of a step is stored, outside the transaction, before the step is recorded; steps with one uuid, or with a transactional instance action, are refused", async () => {
     const stepEntity = { ...edition, uuid: "9c00000b-0000-4000-8000-000000000001", name: "StepEntityC9" } as unknown as Entity;
     const manual = (uuid: string, contract: unknown[]) =>
       ({
@@ -592,7 +593,38 @@ describe("#9 part C: runMigration", () => {
       },
     };
     const duplicated = manual(FIFTH_MIGRATION, [nested, { ...nested, name: "the same uuid again" }]);
-    for (const row of [manual(FOURTH_MIGRATION, [nested]), duplicated]) {
+    // its write would wait in the local cache for a commit no step makes
+    const pending = manual(SIXTH_MIGRATION, [
+      {
+        uuid: "9c00000c-0000-4000-8000-000000000002",
+        name: "a pending write",
+        backwardCompatible: true,
+        repeatable: true,
+        action: {
+          actionType: "compositeActionSequence",
+          actionLabel: "pending",
+          endpoint: DOMAIN_ENDPOINT,
+          payload: {
+            actionSequence: [
+              {
+                actionType: "transactionalInstanceAction",
+                actionLabel: "pending",
+                endpoint: DOMAIN_ENDPOINT,
+                payload: {
+                  application: APP_FOR_TEST,
+                  instanceAction: {
+                    actionType: "createInstance",
+                    endpoint: INSTANCE_ENDPOINT,
+                    payload: { application: APP_FOR_TEST, applicationSection: "data", parentUuid: MIGRATION_ENTITY, objects: [] },
+                  },
+                },
+              },
+            ],
+          },
+        },
+      },
+    ]);
+    for (const row of [manual(FOURTH_MIGRATION, [nested]), duplicated, pending]) {
       expectOk(
         await authoringAction({
           actionType: "createInstance",
@@ -604,6 +636,7 @@ describe("#9 part C: runMigration", () => {
     }
     const statesBefore = await storedRows(context, ADMIN_DEPLOYMENT, "data", DEPLOYMENT_STATE_ENTITY_UUID);
     expect(refusalReason(await runMigration(FIFTH_MIGRATION))).toBe(MIGRATION_RUN_REFUSALS.migrationStepsInvalid);
+    expect(refusalReason(await runMigration(SIXTH_MIGRATION))).toBe(MIGRATION_RUN_REFUSALS.migrationStepsInvalid);
     expect(await storedRows(context, ADMIN_DEPLOYMENT, "data", DEPLOYMENT_STATE_ENTITY_UUID)).toEqual(statesBefore);
 
     expectOk(await runMigration(FOURTH_MIGRATION), "the run");

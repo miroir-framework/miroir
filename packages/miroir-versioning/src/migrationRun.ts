@@ -181,6 +181,14 @@ async function runToDo(
       MIGRATION_RUN_REFUSALS.migrationStepsInvalid,
     );
   }
+  // a transactional instance action waits in the local cache until a commit no step does: its writes would
+  // be recorded as done, then dropped by the reload of the jump
+  if (steps.some((step) => stepActions(step.action as StepAction).some((action) => action.actionType === "transactionalInstanceAction"))) {
+    return refusal(
+      "runMigration: a step holds a transactionalInstanceAction, whose writes wait for a commit no step makes; use createInstance, updateInstance or deleteInstance",
+      MIGRATION_RUN_REFUSALS.migrationStepsInvalid,
+    );
+  }
   if (git) {
     // the model of a versioned-git deployment is its checkout: a model write would block the jump, or the next one
     const writing = steps.filter((step) => stepActions(step.action as StepAction).some(writesModel));
