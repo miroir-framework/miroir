@@ -5,7 +5,7 @@
  * Not reachable through MiroirTest: the tests create a second deployment of an application with its own
  * application deployment map, copy its stores on disk, and read the stores of the emulated server.
  * ```bash
- * MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- 9-migrations/followingDeployment
+ * MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- 3_controllers/versioning/followingDeployment
  * ```
  */
 import * as fs from "fs";
@@ -30,7 +30,7 @@ import { adminSelfApplication, deployment_Admin, entityDeployment } from "@miroi
 import { AGREEMENT_COLLECTIONS, frozenModelState, HISTORY_ENTITIES, liveModelState, type ModelState } from "@miroir-framework/versioning";
 import { entityCountry, entityPublisher } from "miroir-fixture-appForTest";
 
-import { resolveRepoRoot } from "../../../helpers/integrationTestProfiles.js";
+import { resolveRepoRoot } from "../../helpers/integrationTestProfiles.js";
 import {
   APP_FOR_TEST,
   APP_FOR_TEST_DEPLOYMENT,
@@ -48,7 +48,7 @@ import {
   SELF_APPLICATION_VERSION_ENTITY,
   storedRows,
   type VersioningTestContext,
-} from "../../versioning/versioningTestSetup.js";
+} from "./versioningTestSetup.js";
 
 const FOLLOWING_DEPLOYMENT = "9a000001-0000-4000-8000-000000000001";
 const ADMIN_DEPLOYMENT = deployment_Admin.uuid;

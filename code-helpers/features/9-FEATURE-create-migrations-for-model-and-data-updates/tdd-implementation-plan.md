@@ -44,10 +44,10 @@ Out (analysis section 2): detecting and correcting a model and storage divergenc
 | B3 | B | Refusals and the diff fallback | ✅ | same file |
 | B4 | B | `versioned-git`: from the tag to `HEAD` | ✅ | `migrationGenerationGit.9.phaseB.integ.test.ts` |
 | C1 | C | A Migration run on a following deployment (tracer) | ✅ | `migrationRun.9.phaseC.integ.test.ts` |
-| C2 | C | A stopped run resumes | ⬜ | same file |
-| C3 | C | Runner refusals | ⬜ | same file |
-| C4 | C | `versioned-git`: the jump is a checkout of the tag | ⬜ | `migrationRunGit.9.phaseC.integ.test.ts` |
-| Z | C | MiroirTest scenario, nonreg steps, docs, cleanup, AC | ⬜ | nonreg steps + `action.scenario.migration` |
+| C2 | C | A stopped run resumes | ✅ | same file |
+| C3 | C | Runner refusals | ✅ | same file |
+| C4 | C | `versioned-git`: the jump is a checkout of the tag | ✅ | `migrationRunGit.9.phaseC.integ.test.ts` |
+| Z | C | MiroirTest scenario, nonreg steps, docs, cleanup, AC | ✅ | nonreg steps + `action.scenario.migration` |
 
 Each part ends with a full `npm run nonreg:filesystem -- --runner shared` and its PR.
 
@@ -98,7 +98,7 @@ Slice Z adds one MiroirTest scenario that runs the whole path as an `actionTest`
 
 | Purpose | Command |
 |---|---|
-| Part tests | `MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- 9-migrations/<file>` |
+| Part tests | `MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- 3_controllers/versioning/<file>` |
 | Versioning unit tests | `npm run test -w @miroir-framework/versioning` |
 | Schema rebuild | `npm run build -w miroir-app-miroir && npm run build -w miroir-app-admin && npm run devBuild -w @miroir-framework/core` |
 | Rebuild what the standalone-app tests import (their `dist`) | `npm run build -w @miroir-framework/versioning -w miroir-localcache-redux -w miroir-localcache-zustand` (those the slice touched) |
@@ -107,7 +107,7 @@ Slice Z adds one MiroirTest scenario that runs the whole path as an `actionTest`
 | Scoped nonreg | `npm run nonreg:filesystem -- --runner shared --scope smoke,<scopes>` |
 | Full nonreg (end of each part, slice Z) | `npm run nonreg:filesystem -- --runner shared` |
 
-Test files live in `packages/miroir-standalone-app/tests/3_controllers/issues/9-migrations/` until slice Z moves them to feature-named suites.
+Test files lived in `packages/miroir-standalone-app/tests/3_controllers/issues/9-migrations/` (the names above) until slice Z moved them to `tests/3_controllers/versioning/`: `followingDeployment`, `migrationGeneration`, `migrationGenerationGit`, `migrationRun`, `migrationRunGit` (`.integ.test.ts`).
 
 ---
 
@@ -419,7 +419,7 @@ A review of B1 to B4, read without running anything, found these; the fixed ones
 
 ### Slice Z — MiroirTest scenario, nonreg steps, docs, cleanup, AC
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 - MiroirTest `action.scenario.migration` (appForTest, filesystem, tag `versioning`): freeze, change, freeze, generate, assert the draft; the run on a following deployment stays in the vitest suite (it needs a second deployment).
 - Nonreg step `integ-9-migration-run` with scopes (`actions`, `external`, `runners`), tier `default`, filesystem.
@@ -447,4 +447,10 @@ A review of B1 to B4, read without running anything, found these; the fixed ones
 
 **Validation.** Full `npm run nonreg:filesystem -- --runner shared`; the pre-push gate of `AGENTS.md`; PR C with `Closes #9`.
 
-**Realization.** _(on completion)_
+**Realization.**
+- **MiroirTest** `action.scenario.migration` (`9c5a0001-9e2b-4c1d-8f3a-5b6c7d8e9f01`, appForTest, tags `integ`, `versioning`, `model`, issue 9): freeze `9-1.0.0`, a transactional `createEntity` and its commit, freeze `9-1.1.0`, `generateMigration`, then a storage query of the Migrations in `modelVersion`. Three assertions: one draft from `diff` for appForTest, its one change an `addEntity` of the new Entity (supported, backward-compatible), the draft backward-compatible. Exported from `miroir-app-miroir` (`miroirTest_action_scenario_migration`); like `action.scenario.externalServiceSync`, it is in no registry list, `testMiroir --suites` finds it in the deployment. Checked to fail with a wrong expected count.
+- **Nonreg steps:** `integ-9-migration-run` (`actions`, `external`, `runners`; runs `migrationRun` and `migrationRunGit`) and `integ-action.scenario.migration` (`actions`); the two #9 steps of parts A and B point to the moved files.
+- **Docs:** `docs/reference/versioning.md`, section *Migrations and deployment roles* (roles, install, the Migration Entity, generation, the run, resuming, Git); `docs/reference/data-architecture-deployments.md`, *Deployment `role` and `DeploymentState`*.
+- **Cleanup:** the five files moved (`git mv`) from `issues/9-migrations/` to `tests/3_controllers/versioning/`.
+- **Tracer narrative** (epic section 5.1): C1 is that day on `versioned-internal` (freeze, change, freeze, generate, complete the fill step, run on the following deployment), C4 on `versioned-git` (tag, change, commit, generate, commit the Migration, tag, run on the clone).
+

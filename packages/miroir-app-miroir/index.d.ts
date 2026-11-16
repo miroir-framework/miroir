@@ -299,6 +299,7 @@ export declare const miroirTest_action_domainController_dataCrud_noParentUuid: a
 export declare const miroirTest_action_domainController_modelUndoRedo: any;
 export declare const miroirTest_action_domainController_freezeApplicationVersion: any;
 export declare const miroirTest_action_scenario_evolutionTrace: any;
+export declare const miroirTest_action_scenario_migration: any;
 export declare const miroirTest_tr_syncExternalServiceSchema: any;
 export declare const miroirTest_action_scenario_externalServiceSync: any;
 export declare const miroirTest_runner_createEntity: any;

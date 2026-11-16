@@ -23,7 +23,7 @@ import { adminSelfApplication, deployment_Admin, entityDeployment } from "@miroi
 import { createGitRepositoryFactory } from "@miroir-framework/git-isomorphic";
 import { MIGRATION_RUN_REFUSALS, type MigrationRow } from "@miroir-framework/versioning";
 
-import { resolveRepoRoot } from "../../../helpers/integrationTestProfiles.js";
+import { resolveRepoRoot } from "../../helpers/integrationTestProfiles.js";
 import {
   applicationDeploymentMap,
   BOOK_ENTITY,
@@ -39,7 +39,7 @@ import {
   openGitTestContext,
   TEST_AUTHOR,
   type GitTestContext,
-} from "../../git/gitTestSetup.js";
+} from "../git/gitTestSetup.js";
 
 const MODEL_ENDPOINT = "7947ae40-eb34-4149-887b-15a9021e714e";
 const INSTANCE_ENDPOINT = "ed520de4-55a9-4550-ac50-b1b713b72a89";

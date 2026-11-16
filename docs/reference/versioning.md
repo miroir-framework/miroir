@@ -15,6 +15,7 @@ For the product vision (bundles, use cases, mapping from Git concepts), see [Bun
 - A versioned application (internal or Git) can also keep **evolution traces**: one record per commit of its model, in `modelVersion`. See [Evolution traces](#evolution-traces).
 - The model of an application can be read at any point of its history (live, at a frozen version, at a Git commit), diffed, and rebuilt from a version and the trace records since. See [Model states](#model-states).
 - Ordinary model actions (`createEntity`, `renameEntity`, `alterEntityAttribute`, `dropEntity`, …) change live Entities only. They never create, update or delete history rows.
+- A **following** deployment of an application is created at a version and moves from version to version by running **Migrations**, which carry its data along (#9). See [Migrations and deployment roles](#migrations-and-deployment-roles).
 - The code that freezes and records evolution traces is the package `@miroir-framework/versioning`, outside core. A process loads it on first use, only when its `versioning` process capability is on (the default). See [The versioning package](#the-versioning-package).
 
 ---
@@ -100,6 +101,54 @@ A frozen state does not hold what a freeze does not keep: `parentDefinitionVersi
 
 - **Diff:** `diffModelStates(previous, next)` matches the rows of each `model` collection by uuid and lists, per collection that differs, the rows added and removed and the rows changed with the attributes that differ (`uuid`, `parentUuid`, `parentName`, `parentDefinitionVersionUuid` and, but on Entities, `conceptLevel` are not compared). `entityAttributes` names, per Entity, the `mlSchema` attributes added, removed and changed. `modelCudMigrationCandidates(diff)` turns its Entities into `createEntity`, `dropEntity`, `renameEntity` and `alterEntityAttribute` candidates.
 - **Replay:** `replayEvolutionTraceRecords(frozenState, records)` applies to a frozen state the `commit` records that follow the marker of its Application Version (`version`, or `rebaseline` naming it), in sequence order: a model Action becomes the instance writes of `ModelEntityActionTransformer`, and an instance write replaces (as the stores do on an update), adds or removes the row of its collection. A record whose commit stopped part way (`complete: false`) replays the Actions it holds. With traces on since the freeze, the result equals the live model on the snapshotted collections. It answers an `Action2Error` when the chain has no marker for the version, or restarts (`rebaseline`) after it.
+
+---
+
+## Migrations and deployment roles
+
+A Migration takes the model and the data of a deployment from one version of its application to the next (#9). Designs: [`code-helpers/features/9-FEATURE-create-migrations-for-model-and-data-updates/analysis.md`](../../code-helpers/features/9-FEATURE-create-migrations-for-model-and-data-updates/analysis.md).
+
+### Deployment roles
+
+- **`role`** on the Admin Deployment row: `authoring` (absent means authoring) or `following`. It is chosen when the deployment is created and never changes: a write of the Deployment row that changes it is refused (`deploymentRoleFixed`), and so is a transaction that holds such a write, before anything is written.
+- An **authoring** deployment is where the model is edited, frozen and tagged, and where Migrations are written.
+- A **following** deployment serves a version of the model. Its `model` and `modelVersion` sections refuse every write (`deploymentFollows`) but those of a migration run; its data is writable. It records no evolution traces. `freezeApplicationVersion`, `rebaselineEvolutionTraces`, `appendEvolutionTraceRecord` and `generateMigration` refuse on it.
+- **Creating a following deployment:** `createDeploymentCompositeAction(…, { role: "following", installVersion })` ends with `installApplicationVersion { application, version }` (ModelEndpoint). On a `versioned-internal` application it rewrites the deployment's model to the frozen version; on a `versioned-git` one the deployment is a clone of the repository, which must already be checked out at the tag (`versionNotCheckedOut` otherwise). In both modes it writes the deployment's state row with that `version` (and `gitCommit` with Git). A deployment that has a state row is installed already (`deploymentInstalled`).
+- **DeploymentState** (Admin Entity `14e696c6-c9ef-4d50-b2d6-1fd561b315f6`, `data` section, one row per following deployment, keyed by its Deployment uuid): `version`, `gitCommit` (Git), `applied` (the Migrations run, with `from`, `to` and `finishedAt`) and, while a run is in progress, `run`.
+
+### The Migration Entity
+
+`Migration` (`b5c1f0e5-3d31-419b-9a6b-21dd598fc3fe`) is a meta-model Entity whose rows are in the application's `modelVersion` section (the `migrations` collection of a model state). A row holds:
+
+- `application`, `from` and `to` (version names: the name of a SelfApplicationVersion, or a Git tag), `source` (`traces`, `diff` or `manual`), `description`;
+- `changes`: the structure changes between the two versions, each with `kind` (`addEntity`, `removeEntity`, `renameEntity`, `changeIdAttribute`, `addAttribute`, `removeAttribute`, `changeAttribute`), `entity`, `attribute`, `backwardCompatible` and `supported` (a renamed Entity or a changed `idAttribute` cannot be run: `supported: false`);
+- four phases of steps, run in this order: `expand`, the **jump** of the model to `to` (no step of the row), `fill`, `contract`. A step is `{ uuid, name, backwardCompatible, repeatable, action }`, where `action` is a `compositeActionSequence`;
+- `backwardCompatible`: whether the `from` version can still run on the data once the Migration ran (every change and every step say so).
+
+### Generating a Migration
+
+`generateMigration { application, from, to, replace? }` (ModelEndpoint, `requiredCapability: versioning`, run in the persistence process of an authoring deployment) writes a draft Migration into `modelVersion`:
+
+- `versioned-internal`: the model states of the two frozen versions; `versioned-git`: the model of the tag `from`, and of the tag `to` or, before `to` is tagged, of `HEAD` (the description says so). The Migration file is then committed before the tag `to` is made.
+- With trace records between the two versions, it replays them on `from` and checks the result is `to` (`evolutionTracesDisagree` otherwise) and writes `source: traces`; without records (traces off), `source: diff` and a note.
+- An added attribute gets an empty `fill` step, a removal an empty `contract` step (#733 brings the Actions to fill them); the designer completes the steps by hand.
+- Refusals: `migrationExists` (a Migration between the two versions exists; `replace: true` rewrites it, keeping its uuid), `migrationAcrossRebaseline` (a `rebaseline` record between them: write that Migration by hand), `versionAmbiguous`, `migrationSectionMissing` (Git, no `modelVersion` folder), `deploymentFollows`.
+
+### Running a Migration
+
+`runMigration { application, migration }` (ModelEndpoint, `requiredCapability: versioning`) runs in the persistence process, under a lock per deployment shared with `installApplicationVersion`, so two runs never interleave.
+
+1. **Checks:** the deployment is `following` (`deploymentAuthors`); without a run in progress, its state's `version` is the Migration's `from` (`migrationNotAtFrom`) and the Migration holds no unsupported change (`migrationUnsupportedChange`); with a run in progress, it is the same Migration (`migrationRunInProgress`). A client refuses it while its Miroir transaction holds changes (`openMiroirTransaction`), and a process without the `versioning` capability answers `FeatureUnavailable`.
+2. **Find:** `versioned-internal`, the row in `modelVersion` (`migrationNotFound`); `versioned-git`, the Migration file in the commit of the tag that is its `to`, read without a checkout, since the clone at `from` does not hold it yet.
+3. **Copy:** a new run writes `run: { migration, stepsDone: [], startedAt }` in the state row, the Migration copied with `backwardCompatible` recomputed. The run uses that copy until it ends, whatever the `modelVersion` section holds meanwhile.
+4. **Steps:** expand, the jump, fill, contract, each recorded in `stepsDone` once it ran (the jump as `jump`). A step's actions run marked as the run's, which lets them through the gate of the following deployment. The jump is, on `versioned-internal`, the rewrite of the model to the frozen `to` version, and on `versioned-git`, `gitAction_checkout` of the tag `to`, followed by a reload of the model. A failure stops the run with `migrationStepFailed` and the step's uuid (or `jump`).
+5. **End:** `version` becomes `to` (and `gitCommit` the commit of the tag), the run joins `applied`, and `run` is removed.
+
+**Resuming:** running the same Migration again resumes at the first step not in `stepsDone`. A step can stop after some of its writes and before its record, so every step must be repeatable: the rerun runs the whole step again. The step's writes and its record are not one transaction, even on SQL.
+
+**Git:** the checkout of the jump refuses to overwrite a change not committed to a tracked file (`checkoutConflict`), and the Git actions need every section of the deployment in its one repository. The data section of a following `versioned-git` deployment is therefore a folder of the clone that Git ignores (`.gitignore`), so that the run's data writes never block the checkout.
+
+Code: `packages/miroir-versioning/src/migrationGeneration.ts`, `migrationRun.ts`, `migrationGit.ts`, `applicationVersionInstall.ts`, `deploymentRole.ts`. Tests: `packages/miroir-standalone-app/tests/3_controllers/versioning/{followingDeployment,migrationGeneration,migrationGenerationGit,migrationRun,migrationRunGit}.integ.test.ts` and the MiroirTest `action.scenario.migration`.
 
 ---
 

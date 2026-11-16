@@ -162,6 +162,10 @@ Each section (`admin`, `model`, `data`, and optionally `modelVersion` and `devDa
 
 Optional fourth section of versioned-internal deployments, on storage separate from `model`; supported by every backend except `bundled`. Configuration examples, routing rules and the backend matrix are in the [Versioning reference](versioning.md).
 
+### Deployment `role` and `DeploymentState`
+
+The Admin Deployment row carries `role`: `authoring` (the default) or `following`, set at creation and never changed. A following deployment serves one version of its application and changes version only by a Migration run; its `model` and `modelVersion` sections refuse other writes. Its version, the Migrations it ran and the run in progress are in the Admin Entity `DeploymentState` (`14e696c6-c9ef-4d50-b2d6-1fd561b315f6`, Admin `data` section, one row per following deployment). See [Migrations and deployment roles](versioning.md#migrations-and-deployment-roles).
+
 ### `devData` (development data, optional)
 
 Optional section for information about an application that is not needed to deploy or use it (#647): today, the measurements of Miroir's own development. Like `modelVersion`, it has storage separate from `model` and `data`, and every backend supports it except `bundled`, which refuses it.

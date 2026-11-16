@@ -349,6 +349,7 @@ export { default as miroirTest_action_domainController_dataCrud_noParentUuid } f
 export { default as miroirTest_action_domainController_modelUndoRedo } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/c6d8e70a-b12d-4f57-a8c9-5d6e7f8091a2.json" with { type: "json" };
 export { default as miroirTest_action_domainController_freezeApplicationVersion } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/d7e9f81b-c23d-4f68-b9a0-6e7f8091a2b3.json" with { type: "json" };
 export { default as miroirTest_action_scenario_evolutionTrace } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/2427ef3a-3cd1-4b87-afe7-433bb04b25d2.json" with { type: "json" };
+export { default as miroirTest_action_scenario_migration } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/9c5a0001-9e2b-4c1d-8f3a-5b6c7d8e9f01.json" with { type: "json" };
 export { default as miroirTest_tr_syncExternalServiceSchema } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/f4e5dde0-3dba-493b-a208-04494dbbb2f5.json" with { type: "json" };
 export { default as miroirTest_action_scenario_externalServiceSync } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/394242e7-6443-41b8-b061-9bf2bcf06f17.json" with { type: "json" };
 export { default as miroirTest_runner_createEntity } from "./assets/miroir_data/a311f363-e238-4203-bdfc-29e8c160c26b/4b4645f5-a3c1-4563-ac3f-c6e12cc703dc.json" with { type: "json" };

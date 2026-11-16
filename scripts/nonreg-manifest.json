@@ -1481,6 +1481,27 @@
       ]
     },
     {
+      "id": "integ-action.scenario.migration",
+      "scopes": ["actions"],
+      "tier": "default",
+      "title": "MiroirTest integ — action.scenario.migration (actionTest, filesystem): appForTest frozen, an Entity added, frozen again; generateMigration writes one draft Migration whose change is an addEntity (#9)",
+      "requires": "none",
+      "argv": [
+        "npm",
+        "run",
+        "testMiroir",
+        "-w",
+        "miroir-standalone-app",
+        "--",
+        "--profile",
+        "emulatedServer-filesystem",
+        "--suites",
+        "action.scenario.migration",
+        "--mode",
+        "integ"
+      ]
+    },
+    {
       "id": "integ-report.bookDetails",
       "scopes": ["smoke", "ui"],
       "tier": "default",
@@ -2528,7 +2549,7 @@
       "argv": [
         "bash",
         "-c",
-        "MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- 9-migrations/followingDeployment"
+        "MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- 3_controllers/versioning/followingDeployment"
       ]
     },
     {
@@ -2541,7 +2562,20 @@
       "argv": [
         "bash",
         "-c",
-        "MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- 9-migrations/migrationGeneration"
+        "MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- 3_controllers/versioning/migrationGeneration"
+      ]
+    },
+    {
+      "id": "integ-9-migration-run",
+      "scopes": ["actions", "external", "runners"],
+      "tier": "default",
+      "title": "#9 part C — runMigration on a following deployment: expand, the jump to the to version, fill and contract, each step recorded in the DeploymentState row; a stopped run resumes from its copy of the Migration; refusals; in versioned-git, the Migration read at its tag and the jump a checkout of that tag",
+      "requires": "none",
+      "parallel": false,
+      "argv": [
+        "bash",
+        "-c",
+        "MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- 3_controllers/versioning/migrationRun"
       ]
     },
     {

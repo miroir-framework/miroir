@@ -4,7 +4,7 @@
  * Not reachable through MiroirTest: the tests freeze versions, edit the model between them, and read the
  * Migration rows from the stores of the emulated server.
  * ```bash
- * MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- 9-migrations/migrationGeneration
+ * MIROIR_ENV=test-filesystem npm run testByFile -w miroir-standalone-app -- 3_controllers/versioning/migrationGeneration
  * ```
  */
 import { randomUUID } from "node:crypto";
@@ -26,7 +26,7 @@ import {
   SELF_APPLICATION_VERSION_ENTITY,
   storedAppForTestRows,
   type VersioningTestContext,
-} from "../../versioning/versioningTestSetup.js";
+} from "./versioningTestSetup.js";
 
 const MIGRATION_ENTITY = "b5c1f0e5-3d31-419b-9a6b-21dd598fc3fe";
 const ENTITY_VERSION_ENTITY = "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd";

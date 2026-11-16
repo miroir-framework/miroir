@@ -25,7 +25,7 @@ import {
   openGitTestContext,
   TEST_AUTHOR,
   type GitTestContext,
-} from "../../git/gitTestSetup.js";
+} from "../git/gitTestSetup.js";
 
 const MODEL_ENDPOINT = "7947ae40-eb34-4149-887b-15a9021e714e";
 const INSTANCE_ENDPOINT = "ed520de4-55a9-4550-ac50-b1b713b72a89";
