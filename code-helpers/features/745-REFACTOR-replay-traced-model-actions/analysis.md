@@ -34,6 +34,7 @@ Key sources: [`migrationGeneration.ts`](../../../packages/miroir-versioning/src/
 - Restore and rollback, and what they do with storage left by later versions: #709 (section 7).
 - A failed authoring commit that cannot be retried once D4 applies: a follow-up (to file, section 4.4).
 - Committing a step's writes and its record in one SQL transaction: later; D5 detects the gap instead.
+- Refusing instance writes on Entity rows, so that only model Actions write them: #748. Until then, generation turns traced Entity row writes into model Actions (D2), and it keeps doing so for records written before #748.
 - Migrations of Miroir itself: its model lives in its `data` section, and restoring Miroir's own model is an epic non-goal.
 
 ## 3. Decision record
