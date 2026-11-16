@@ -217,6 +217,22 @@ export class IndexedDb {
   }
 
   // #############################################################################
+  /**
+   * #745 D4: the sublevel is registered, or holds a key on disk (an orphan sublevel, left by an Entity row
+   * deleted without its storage, is not registered).
+   */
+  public async subLevelExists(tableName: string): Promise<boolean> {
+    if (this.subLevels.has(tableName)) {
+      return true;
+    }
+    if (!this.db) {
+      return false;
+    }
+    const keys = await (<any>this.db).sublevel(tableName).keys({ limit: 1 }).all();
+    return keys.length > 0;
+  }
+
+  // #############################################################################
   public getSubLevels():string[] {
     return Array.from(this.subLevels.keys());
   }

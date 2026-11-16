@@ -701,8 +701,19 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   // ##############################################################################################
   async clear(): Promise<Action2VoidReturnType> {
     log.info(this.logHeader, "clear", this.getEntityUuids());
+    // #745 D4: the storage of external Entities is theirs; any other storage left after the clear is dropped
+    const kept = [
+      ...(this.dataStoreSection.externalStorageNames?.() ?? []),
+      ...(this.modelStoreSection.externalStorageNames?.() ?? []),
+    ];
     await this.dataStoreSection.clear();
     await this.modelStoreSection.clear();
+    for (const section of [this.dataStoreSection, this.modelStoreSection]) {
+      const dropped = await section.dropUnregisteredStorage?.(kept);
+      if (dropped instanceof Action2Error) {
+        return dropped;
+      }
+    }
     // #703: the model storage of the Entities created on their first save is gone with the rest
     for (const entity of modelEntitiesCreatedOnFirstSave) {
       this.devDataStorage.delete(entity.uuid);

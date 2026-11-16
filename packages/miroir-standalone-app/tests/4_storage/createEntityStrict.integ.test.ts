@@ -3,7 +3,9 @@
  *
  * Under the strict strategy of #694, `createEntity` fails with `entityExists` when the Entity row
  * exists and with `storageExists` when only the storage exists, leaving the storage and its
- * instances as they were and writing no row.
+ * instances as they were and writing no row. `createEntities` checks every Entity before creating
+ * any. External Entities have no storage: their row is upserted. A storage creation that fails
+ * writes no row: `strictEntityCreation.unit.test.ts` in core, since no store fails on demand.
  *
  * Not reachable through MiroirTest: it writes to the store controller directly and checks the
  * store's own storage. Run it per store profile:
@@ -21,6 +23,7 @@ import {
   defaultLevels,
   defaultMiroirModelEnvironment,
   defaultSelfApplicationDeploymentMap,
+  ENTITY_CREATION_REFUSALS,
   MiroirActivityTracker,
   miroirCoreStartup,
   MiroirEventService,
@@ -110,6 +113,8 @@ function noteEntity(uuidSuffix: string, name: string): Entity {
 }
 
 const note = noteEntity("01", "Note745");
+// an Endpoint uuid: the store does not read it, an external Entity's row only names it
+const EXTERNAL_ENDPOINT = "745a0002-0000-4000-8000-000000000001";
 const secondNote = noteEntity("02", "SecondNote745");
 
 function noteInstance(entity: Entity, suffix: string): EntityInstance {
@@ -132,6 +137,15 @@ async function entityRowUuids(): Promise<string[]> {
   const rows = await store.getInstances("model", entityEntity.uuid);
   expectOk(rows, "getInstances of the Entity rows");
   return ((rows as any).returnedDomainElement.instances as EntityInstance[]).map((row) => row.uuid);
+}
+
+/** The physical probe of the store's data section (#745 D4). */
+function storageExists(entity: Entity): Promise<boolean> {
+  return (store as any).dataStoreSection.storageSpaceExists(entity);
+}
+
+function refusalReason(result: unknown): string | undefined {
+  return result instanceof Action2Error ? result.errorContext?.reason : undefined;
 }
 
 async function storedInstanceUuids(entity: Entity): Promise<string[] | Action2Error> {
@@ -189,53 +203,103 @@ describe(`createEntity where the Entity or its storage exists (#745 D4), store $
   }, globalTimeOut);
 
   // ##############################################################################################
-  // Characterization (Slice 0): today's behaviour, before D4.
   it(
-    "today: createEntity where only the storage exists succeeds; the instances are kept, except on SQL",
+    "createEntity where only the storage exists fails with storageExists; the storage and its instances are kept, no row is written",
     async () => {
       await leaveStorageBehind(note);
 
-      expectOk(await store.createEntity(note), "second createEntity");
+      const result = await store.createEntity(note);
 
-      expect(await entityRowUuids()).toContain(note.uuid);
-      const instances = await storedInstanceUuids(note);
-      if (storeType === "sql") {
-        expect(instances).toEqual([]);
-      } else {
-        expect(instances).toEqual([noteInstance(note, "01").uuid]);
-      }
+      expect(refusalReason(result), JSON.stringify(result)).toBe(ENTITY_CREATION_REFUSALS.storageExists);
+      expect(await entityRowUuids()).not.toContain(note.uuid);
+      expect(await storedInstanceUuids(note)).toEqual([noteInstance(note, "01").uuid]);
     },
     globalTimeOut,
   );
 
   // ##############################################################################################
   it(
-    "today: createEntity where the row exists succeeds; the instances are kept, except on SQL",
+    "createEntity where the row exists fails with entityExists; the instances are kept",
     async () => {
       expectOk(await store.createEntity(note), "first createEntity");
       expectOk(await store.upsertInstance("data", noteInstance(note, "01")), "upsertInstance");
 
-      expectOk(await store.createEntity(note), "second createEntity");
+      const result = await store.createEntity(note);
 
-      const instances = await storedInstanceUuids(note);
-      if (storeType === "sql") {
-        expect(instances).toEqual([]);
-      } else {
-        expect(instances).toEqual([noteInstance(note, "01").uuid]);
-      }
+      expect(refusalReason(result), JSON.stringify(result)).toBe(ENTITY_CREATION_REFUSALS.entityExists);
+      expect(await storedInstanceUuids(note)).toEqual([noteInstance(note, "01").uuid]);
     },
     globalTimeOut,
   );
 
   // ##############################################################################################
   it(
-    "today: createEntities of two Entities, the second existing, creates the first",
+    "createEntities of two Entities, the second existing, fails and creates neither",
     async () => {
       expectOk(await store.createEntity(secondNote), "createEntity of the second");
 
-      expectOk(await store.createEntities([note, secondNote]), "createEntities");
+      const result = await store.createEntities([note, secondNote]);
 
-      expect(await entityRowUuids()).toEqual(expect.arrayContaining([note.uuid, secondNote.uuid]));
+      expect(refusalReason(result), JSON.stringify(result)).toBe(ENTITY_CREATION_REFUSALS.entityExists);
+      expect(await entityRowUuids()).not.toContain(note.uuid);
+      expect(await storageExists(note)).toBe(false);
+    },
+    globalTimeOut,
+  );
+
+  // ##############################################################################################
+  it(
+    "an external Entity served by an Endpoint has no storage: created twice, its row is written again",
+    async () => {
+      const external = { ...noteEntity("03", "ExternalNote745"), externalDataSource: { kind: "http", endpoint: EXTERNAL_ENDPOINT } } as Entity;
+
+      expectOk(await store.createEntity(external), "first createEntity");
+      expectOk(await store.createEntity(external), "second createEntity");
+
+      expect(await entityRowUuids()).toContain(external.uuid);
+    },
+    globalTimeOut,
+  );
+
+  // ##############################################################################################
+  it.runIf(storeType === "indexedDb")(
+    "IndexedDB: a sublevel the store did not register, holding a key, is storage that exists",
+    async () => {
+      // written through the store's own Level handle: Level locks its directory
+      const indexedDb = (store as any).dataStoreSection.localUuidIndexedDb;
+      await indexedDb.db.sublevel(note.uuid).put("orphan", { uuid: "orphan" }, { valueEncoding: "json" });
+      expect(indexedDb.getSubLevels()).not.toContain(note.uuid);
+
+      const result = await store.createEntity(note);
+
+      expect(refusalReason(result), JSON.stringify(result)).toBe(ENTITY_CREATION_REFUSALS.storageExists);
+      expect(await entityRowUuids()).not.toContain(note.uuid);
+    },
+    globalTimeOut,
+  );
+
+  // ##############################################################################################
+  it.runIf(storeType === "sql")(
+    "SQL: a reset drops the tables of the schema no Entity registers; the model section's Entity table is still read",
+    async () => {
+      const dataSection = (store as any).dataStoreSection;
+      await dataSection.sequelize.query(`CREATE TABLE "${dataSection.schema}"."${note.name}" (uuid uuid PRIMARY KEY)`);
+      expect(await storageExists(note)).toBe(true);
+      expect(refusalReason(await store.createEntity(note))).toBe(ENTITY_CREATION_REFUSALS.storageExists);
+
+      await resetIntegTestbed({
+        domainController,
+        applicationDeploymentMap,
+        libraryDeploymentUuid: deployment_Library_DO_NO_USE.uuid,
+        librarySelfApplicationUuid: selfApplicationLibrary.uuid,
+        deploymentsToReset: selfApplicationDeploymentConfigurationsTO_REMOVE,
+      });
+
+      expect(await storageExists(note)).toBe(false);
+      // the Entity table of the model section is there again: it reads (an Entity table no section registers
+      // would have been dropped)
+      expect(await entityRowUuids()).not.toContain(note.uuid);
+      expectOk(await store.createEntity(note), "createEntity after the reset");
     },
     globalTimeOut,
   );

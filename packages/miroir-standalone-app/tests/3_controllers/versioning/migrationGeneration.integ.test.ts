@@ -547,8 +547,9 @@ describe("#9 part B, #745: generateMigration", () => {
   it("B4.4: an incomplete record between the two versions refuses the generation; so does a generation for Miroir", async () => {
     const { from, to } = await versionsAround("9B44", () => alterPublisher({ addColumns: [{ name: "incomplete9", definition: optionalString }] }, "Publisher.incomplete9"));
     await alterPublisher({ removeColumns: ["incomplete9"] }, "Publisher without incomplete9");
+    // the record of the add, between the two versions (the record of the remove comes after `to`)
     const record = (await storedAppForTestRows(context, "modelVersion", EVOLUTION_TRACE_RECORD_ENTITY)).find((row) =>
-      JSON.stringify(row).includes('"incomplete9"'),
+      JSON.stringify(row).includes('"name":"incomplete9"'),
     )!;
     expect(record, "the record of the edit").toBeDefined();
     const store = context.serverStores.getPersistenceStoreController(APP_FOR_TEST_DEPLOYMENT)!;

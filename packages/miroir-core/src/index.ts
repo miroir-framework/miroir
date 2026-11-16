@@ -955,6 +955,14 @@ export type {
   EntityExternalDataSourceCarrier,
   ExternalDataSourceLike,
 } from "./1_core/Entity/entityExternalDataSource";
+export {
+  ENTITY_CREATION_REFUSALS,
+  createEntitiesStrictly,
+  entityCreationRefusal,
+  isExternalEntity,
+  readEntityRowUuids,
+} from "./1_core/Entity/strictEntityCreation.js";
+export type { StrictEntityCreationStore } from "./1_core/Entity/strictEntityCreation.js";
 export type { EntityPrimaryKeySource } from "./1_core/Entity/EntityPrimaryKey";
 export {
   applyEntityOnlyRename,

@@ -15,7 +15,10 @@ import {
   PersistenceStoreEntitySectionAbstractInterface,
   PersistenceStoreInstanceSectionAbstractInterface,
   applyEntityOnlyRename,
-  applyMlSchemaColumnChanges
+  applyMlSchemaColumnChanges,
+  createEntitiesStrictly,
+  readEntityRowUuids,
+  type StrictEntityCreationStore,
 } from "@miroir-framework/core";
 import { entityEntity } from "@miroir-framework/core/meta-model";
 import { EntityUuidIndexedSequelizeModel, fromMiroirPresentModelToSequelizeEntityDefinition } from "../utils";
@@ -82,17 +85,33 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
     }
 
     // ##############################################################################################
-    // #220 — createEntity is Entity-only (complete present model on Entity required).
-    async createEntity(entity: Entity): Promise<Action2VoidReturnType> {
-      log.info(
-        this.logHeader,
-        "createEntity input: entity",
-        entity,
-        "sqlEntities",
-        this.dataStore.getEntityUuids()
-      );
+    /** #745 D4: the checks and writes of a strict `createEntity` on this store. */
+    strictEntityCreationStore(): StrictEntityCreationStore {
+      return {
+        storeLabel: this.logHeader,
+        entityRowUuids: () => readEntityRowUuids(this, entityEntity.uuid),
+        storageSpaceExists: this.dataStore.storageSpaceExists?.bind(this.dataStore),
+        createStorageSpace: async (entity) => {
+          try {
+            return await this.dataStore.createStorageSpaceForInstancesOfEntity(entity);
+          } catch (error) {
+            return new Action2Error("FailedToCreateStore", `could not create the table of Entity ${entity.name}: ${(error as Error).message}`);
+          }
+        },
+        writeEntityRow: (entity) => this.writeEntityRow(entity),
+      };
+    }
 
-      await this.dataStore.createStorageSpaceForInstancesOfEntity(entity);
+    // ##############################################################################################
+    // #220 — createEntity is Entity-only (complete present model on Entity required).
+    // #745 D4 — fails when the Entity's row or table exists, before writing anything.
+    async createEntity(entity: Entity): Promise<Action2VoidReturnType> {
+      log.info(this.logHeader, "createEntity input: entity", entity, "sqlEntities", this.dataStore.getEntityUuids());
+      return createEntitiesStrictly(this.strictEntityCreationStore(), [entity]);
+    }
+
+    // ##############################################################################################
+    async writeEntityRow(entity: Entity): Promise<Action2VoidReturnType> {
       if (!this.sqlSchemaTableAccess?.[entityEntity.uuid]) {
         return Promise.resolve(
           new Action2Error(
@@ -123,10 +142,7 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
 
     // ##############################################################################################
     async createEntities(entities: Entity[]): Promise<Action2VoidReturnType> {
-      for (const entity of entities) {
-        await this.createEntity(entity);
-      }
-      return Promise.resolve(ACTION_OK);
+      return createEntitiesStrictly(this.strictEntityCreationStore(), entities);
     }
 
     // ##############################################################################################

@@ -51,6 +51,8 @@ import {
 } from "./versioningTestSetup.js";
 
 const FOLLOWING_DEPLOYMENT = "9a000001-0000-4000-8000-000000000001";
+/** #745: a following deployment whose install meets the storage of an Entity its model lacks. */
+const ORPHAN_DEPLOYMENT = "9a000001-0000-4000-8000-000000000002";
 const ADMIN_DEPLOYMENT = deployment_Admin.uuid;
 const ENTITY_VERSION_ENTITY = "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd";
 const ENTITY_ENTITY = "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad";
@@ -247,6 +249,8 @@ afterAll(async () => {
   for (const [parentUuid, uuid] of [
     [entityDeployment.uuid, FOLLOWING_DEPLOYMENT],
     [DEPLOYMENT_STATE_ENTITY_UUID, FOLLOWING_DEPLOYMENT],
+    [entityDeployment.uuid, ORPHAN_DEPLOYMENT],
+    [DEPLOYMENT_STATE_ENTITY_UUID, ORPHAN_DEPLOYMENT],
   ]) {
     const row = (await storedRows(context, ADMIN_DEPLOYMENT, "data", parentUuid)).find((stored) => stored.uuid === uuid);
     if (row) {
@@ -263,6 +267,7 @@ afterAll(async () => {
   }
   if (followingFolder) {
     fs.rmSync(path.join(resolveRepoRoot(), followingFolder), { recursive: true, force: true });
+    fs.rmSync(path.join(resolveRepoRoot(), `${followingFolder}-orphan`), { recursive: true, force: true });
   }
 }, 60000);
 
@@ -313,6 +318,57 @@ describe("#9 part A: a following deployment", () => {
     expect((await deploymentRowOf(APP_FOR_TEST_DEPLOYMENT))?.role).toBeUndefined();
     expect(deploymentStates.find((row) => row.uuid === APP_FOR_TEST_DEPLOYMENT)).toBeUndefined();
     expect(authoringLive.entities.map((entity) => entity.uuid)).toContain(imprint.uuid);
+  }, 60000);
+
+  it("A1: an install that creates the record Entity, whose storage exists without its row, fails naming that storage (#745 D4)", async () => {
+    const repoRoot = resolveRepoRoot();
+    const authoringConfiguration = (await deploymentRowOf(APP_FOR_TEST_DEPLOYMENT)).configuration as StoreUnitConfiguration & Record<string, any>;
+    const orphanFolder = `${followingFolder}-orphan`;
+    fs.rmSync(path.join(repoRoot, orphanFolder), { recursive: true, force: true });
+    fs.cpSync(path.join(repoRoot, authoringConfiguration.model.directory), path.join(repoRoot, orphanFolder, "model"), { recursive: true });
+    fs.cpSync(path.join(repoRoot, authoringConfiguration.data.directory), path.join(repoRoot, orphanFolder, "data"), { recursive: true });
+    // the model lacks the record Entity row; the storage of its instances is there, with a file in it
+    const entityFolder = path.join(repoRoot, orphanFolder, "model", ENTITY_ENTITY);
+    for (const file of fs.readdirSync(entityFolder)) {
+      if (JSON.parse(fs.readFileSync(path.join(entityFolder, file), "utf8")).uuid === EVOLUTION_TRACE_RECORD_ENTITY_UUID) {
+        fs.rmSync(path.join(entityFolder, file));
+      }
+    }
+    const storage = path.join(repoRoot, orphanFolder, "data", EVOLUTION_TRACE_RECORD_ENTITY_UUID);
+    fs.mkdirSync(storage, { recursive: true });
+    fs.writeFileSync(path.join(storage, "left.json"), "{}");
+    const orphanMap = { ...followingMap, [APP_FOR_TEST]: ORPHAN_DEPLOYMENT };
+
+    const result = await context.domainController.handleAction(
+      createDeploymentCompositeAction(
+        "appForTest",
+        ORPHAN_DEPLOYMENT,
+        APP_FOR_TEST,
+        undefined,
+        {
+          ...authoringConfiguration,
+          model: { emulatedServerType: "filesystem", directory: `${orphanFolder}/model` },
+          data: { emulatedServerType: "filesystem", directory: `${orphanFolder}/data` },
+        } as StoreUnitConfiguration,
+        {
+          skipOpenAdminStore: true,
+          skipCreateStore: true,
+          role: "following",
+          installVersion: VERSION_1_0,
+          labels: { deployment: { name: "AppForTestOrphan9", description: "#745: an install meeting storage left behind" } },
+        },
+      ),
+      orphanMap,
+      appForTestModelEnvironment(context.domainController),
+    );
+
+    // the composite action of the creation reports its failed action as text
+    expect(result instanceof Action2Error, JSON.stringify(result)).toBe(true);
+    expect(JSON.stringify(result)).toContain("storageExists");
+    expect(JSON.stringify(result)).toContain(EVOLUTION_TRACE_RECORD_ENTITY_UUID);
+    expect(fs.readdirSync(storage)).toEqual(["left.json"]);
+    const states = await storedRows(context, ADMIN_DEPLOYMENT, "data", DEPLOYMENT_STATE_ENTITY_UUID);
+    expect(states.map((row) => row.uuid)).not.toContain(ORPHAN_DEPLOYMENT);
   }, 60000);
 
   it("A1: a second install is refused: a following deployment changes version by a migration run", async () => {

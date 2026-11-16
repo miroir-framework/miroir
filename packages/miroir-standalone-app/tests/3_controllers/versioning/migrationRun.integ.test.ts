@@ -21,6 +21,7 @@ import {
   Action2Error,
   createDeploymentCompositeAction,
   DEPLOYMENT_STATE_ENTITY_UUID,
+  ENTITY_CREATION_REFUSALS,
   EVOLUTION_TRACE_RECORD_ENTITY_UUID,
   metaModelEntityList,
   type DeploymentStateRow,
@@ -90,10 +91,11 @@ const [SECOND_MIGRATION, FOURTH_MIGRATION, FIFTH_MIGRATION, SIXTH_MIGRATION] = [
   "9c00000a-0000-4000-8000-000000000002",
   "9c00000a-0000-4000-8000-000000000003",
 ];
-const [SETTLED_MIGRATION, OLD_SHAPE_MIGRATION, RESUMED_MIGRATION] = [
+const [SETTLED_MIGRATION, OLD_SHAPE_MIGRATION, RESUMED_MIGRATION, LEFT_BEHIND_MIGRATION] = [
   "9c00000d-0000-4000-8000-000000000001",
   "9c00000d-0000-4000-8000-000000000002",
   "9c00000d-0000-4000-8000-000000000003",
+  "9c00000d-0000-4000-8000-000000000004",
 ];
 
 /** An Entity appForTest gains in 1.1.0. */
@@ -819,5 +821,40 @@ describe("#9 part C, #745: runMigration", () => {
 
     expect((await storedRows(context, FOLLOWING_DEPLOYMENT, "data", resumedEntity.uuid)).map((row) => row.uuid)).toEqual(["9c000011-0000-4000-8000-000000000004"]);
     expect((await deploymentState())?.applied?.map((applied) => applied.migration)).toContain(RESUMED_MIGRATION);
+  }, 120000);
+
+  it("C6: a createEntity step meets storage left behind: the migration run stops with storageExists, the storage untouched; once the operator removes it, the migration run continues", async () => {
+    const leftBehind = { ...edition, uuid: "9c000012-0000-4000-8000-000000000001", name: "LeftBehindC6" } as unknown as Entity;
+    const createStep = {
+      uuid: "9c000012-0000-4000-8000-000000000002",
+      name: "create Entity LeftBehindC6",
+      kind: "model",
+      backwardCompatible: true,
+      action: { actionType: "createEntity", endpoint: MODEL_ENDPOINT, payload: { application: APP_FOR_TEST, entities: [leftBehind] } },
+    };
+    const leftBehindMigration = manualMigration(LEFT_BEHIND_MIGRATION, VERSION_1_3, VERSION_1_3, [createStep]);
+    await storeMigration(leftBehindMigration);
+    // storage of an Entity the model does not hold, with an instance in it
+    const folder = followingDataFolder(leftBehind.uuid);
+    const leftFile = path.join(folder, "9c000012-0000-4000-8000-000000000003.json");
+    fs.mkdirSync(folder, { recursive: true });
+    const leftContent = JSON.stringify({ uuid: "9c000012-0000-4000-8000-000000000003", parentUuid: leftBehind.uuid, name: "left behind" });
+    fs.writeFileSync(leftFile, leftContent);
+
+    const stopped = await runMigration(LEFT_BEHIND_MIGRATION);
+
+    expect(refusalContext(stopped), JSON.stringify(stopped)).toMatchObject({ step: createStep.uuid, stepName: createStep.name });
+    expect(JSON.stringify(stopped)).toContain(`"reason":"${ENTITY_CREATION_REFUSALS.storageExists}"`);
+    expect(fs.readdirSync(folder)).toEqual([path.basename(leftFile)]);
+    expect(fs.readFileSync(leftFile, "utf8")).toBe(leftContent);
+    expect((await storedRows(context, FOLLOWING_DEPLOYMENT, "model", ENTITY_ENTITY)).map((row) => row.uuid)).not.toContain(leftBehind.uuid);
+    expect((await deploymentState())?.run).toMatchObject({ stepsDone: [], stepStarted: createStep.uuid });
+
+    // the operator removes the storage and settles the step: the migration run creates the Entity
+    fs.rmSync(folder, { recursive: true });
+    expectOk(await settle(createStep.uuid, "notRun"), "settle the createEntity step");
+    expectOk(await runMigration(LEFT_BEHIND_MIGRATION), "the continued migration run");
+    expect((await storedRows(context, FOLLOWING_DEPLOYMENT, "model", ENTITY_ENTITY)).map((row) => row.uuid)).toContain(leftBehind.uuid);
+    expect(fs.readdirSync(folder)).toEqual([]);
   }, 120000);
 });

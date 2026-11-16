@@ -125,6 +125,12 @@ export class FileSystemStoreSection
   }
 
   // #############################################################################################
+  /** #745 D4: the folder of the Entity's instances exists. */
+  storageSpaceExists(entity: Entity): Promise<boolean> {
+    return Promise.resolve(fs.existsSync(path.join(this.directory, entity.uuid)));
+  }
+
+  // #############################################################################################
   dropStorageSpaceForInstancesOfEntity(entityUuid: string): Promise<Action2VoidReturnType> {
     const entityInstancesPath = path.join(this.directory, entityUuid);
     try {

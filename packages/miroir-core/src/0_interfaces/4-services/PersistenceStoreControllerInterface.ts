@@ -87,6 +87,26 @@ export interface StorageSpaceHandlerInterface {
   hasStorageSpaceForInstancesOfEntity?(entity: Entity): Promise<boolean>;
 
   /**
+   * #745 D4: whether the storage of an Entity's instances exists, asked of the storage itself (a folder, a
+   * table, a sublevel holding a key, a collection), whatever Entities the store registered. Used only by
+   * `createEntity`, which fails when it answers true. A store without it refuses `createEntity`.
+   */
+  storageSpaceExists?(entity: Entity): Promise<boolean>;
+
+  /**
+   * #745 D4: the storage of this section's external Entities that lives where a reset could drop it (on SQL,
+   * the tables of this section's schema that an external Entity names). Read before a reset, kept by it.
+   */
+  externalStorageNames?(): string[];
+
+  /**
+   * #745 D4: after a reset, drops the storage the section did not register (on SQL, every table of its schema
+   * not in `kept`): storage left by an Entity row deleted without its storage would make the next
+   * `createEntity` of that Entity fail.
+   */
+  dropUnregisteredStorage?(kept: readonly string[]): Promise<Action2VoidReturnType>;
+
+  /**
    * #647: creates the storage space of an Entity's instances unless it exists, keeping the rows it
    * holds, so that two servers writing the first rows of a devData Entity do not drop each other's.
    * For a store whose `createStorageSpaceForInstancesOfEntity` drops existing storage (SQL).

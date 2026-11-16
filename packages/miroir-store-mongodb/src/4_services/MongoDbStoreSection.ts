@@ -104,6 +104,12 @@ export class MongoDbStoreSection
   }
 
   // ##############################################################################################
+  /** #745 D4: the Entity's collection is registered or exists in the database. */
+  storageSpaceExists(entity: Entity): Promise<boolean> {
+    return this.localUuidMongoDb.collectionExists(entity.uuid);
+  }
+
+  // ##############################################################################################
   async dropStorageSpaceForInstancesOfEntity(entityUuid: string): Promise<Action2VoidReturnType> {
     if (this.localUuidMongoDb.hasCollection(entityUuid)) {
       await this.localUuidMongoDb.removeCollections([entityUuid]);
