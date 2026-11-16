@@ -22,7 +22,7 @@ Key sources: [`migrationGeneration.ts`](../../../packages/miroir-versioning/src/
 
 - **G1 — Move a deployment along the designer's own changes.** In order to get on a test deployment the model the designer built, with the data kept, as an application maintainer, I can run a Migration that replays, in order, the model changes the designer made between two versions, with the data steps placed among them.
 - **G2 — Place data steps where they belong.** In order to copy, fill or clean data at the exact point where the model allows it (after an attribute is added, before one is removed), as an application designer, I can insert a data step between two model steps of a generated Migration.
-- **G3 — Never lose or adopt data silently.** In order to trust a run on a deployment holding data, as an application maintainer, I can count on a run that stops with an error naming what it found, rather than empty, adopt or drop storage it did not expect, run a step twice, or end on a model that is not the target version.
+- **G3 — Fail loudly, never silently.** In order to find a problem when it happens, not later in corrupted data, as an application maintainer, I can rely on a run that stops at the first state it did not expect (existing storage, a step that may have run already, a model that is not the one it expects) with an explicit error naming that state, instead of working around it and carrying on.
 - **G4 — Finish a stopped run.** In order to complete a run that a crash or a failure stopped, as an application maintainer, I can run it again: it continues at the first step it did not start, and when it cannot tell whether a step was done, it stops and lets me say so.
 
 ## 2. Non-goals

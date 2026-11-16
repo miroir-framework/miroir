@@ -23,7 +23,7 @@ Working branch: `claude/745-replay-traced-model-actions`
 
 - G1: a run replays, in order, the model changes the designer made between two versions, with data steps among them (Slices 1, 2).
 - G2: a data step can go between any two model steps; adds and removes are separate (Slice 2).
-- G3: no storage emptied or adopted, no step run twice, no run ending on a model that is not `to` (Slices 3 to 7).
+- G3: a run stops with an explicit error at the first state it did not expect, instead of working around it and carrying on (Slices 3 to 7).
 - G4: a stopped run continues at the first step not started, and an in-doubt step waits for the operator (Slice 5).
 
 This plan does **not** cover: Git follower runs beyond the provisional checkout step (#747), the Migration package (#746), what a hand-written step may hold (#741), column type and nullability changes (follow-up to file), rollback and leftover storage (#709), the retry of a failed authoring commit under D4 (follow-up to file).
