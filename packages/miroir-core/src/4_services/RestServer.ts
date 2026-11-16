@@ -71,6 +71,7 @@ const MODEL_ACTIONS_ROUTED_TO_SERVER: readonly string[] = [
   "rebaselineEvolutionTraces",
   "installApplicationVersion", // #9
   "generateMigration", // #9
+  "runMigration", // #9
 ];
 const instanceWriteActionTypes = [
   "createInstance",

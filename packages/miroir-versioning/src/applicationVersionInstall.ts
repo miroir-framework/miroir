@@ -63,7 +63,7 @@ const KEPT_LIVE_ATTRIBUTES = ["parentDefinitionVersionUuid", "conceptLevel"] as 
 export type ModelStateRewrite = Partial<Record<MetaModelCollection, { created: string[]; updated: string[]; deleted: string[] }>>;
 
 /** The model environment of `application` on the deployment the map names. */
-function modelEnvironmentOf(
+export function modelEnvironmentOf(
   host: DomainControllerActionHost,
   application: string,
   applicationDeploymentMap: ApplicationDeploymentMap,
@@ -79,7 +79,7 @@ function modelEnvironmentOf(
 }
 
 /** Loads the model of `application` from its stores into this process's local cache. */
-function reloadModel(
+export function reloadModel(
   host: DomainControllerActionHost,
   application: string,
   applicationDeploymentMap: ApplicationDeploymentMap,
@@ -372,6 +372,64 @@ export async function writeDeploymentState(
 }
 
 /**
+ * #9: brings the model of a following deployment to the version named `version`: the model read again
+ * from the store, the version's frozen state checked complete, the history Entities ensured, then the
+ * rewrite of the model (`applyModelState`). The installation of a version and the jump of a migration run
+ * share it. `label` names the action in the refusals.
+ */
+export async function bringModelToVersion(
+  host: DomainControllerActionHost,
+  application: string,
+  applicationDeploymentMap: ApplicationDeploymentMap,
+  version: string,
+  modelEnvironment: MiroirModelEnvironment | undefined,
+  label: string,
+): Promise<ModelStateRewrite | Action2Error> {
+  // the model actions of the rewrite read the deployment's model in this process's local cache
+  const loaded = await reloadModel(host, application, applicationDeploymentMap, modelEnvironment);
+  if (loaded instanceof Action2Error) {
+    return loaded;
+  }
+  const current = await liveModelState(host, application, applicationDeploymentMap);
+  if (current instanceof Action2Error) {
+    return current;
+  }
+  const versionRow = current.applicationVersions.find((row) => row.name === version);
+  if (!versionRow) {
+    return new Action2Error("FailedToHandleAction", `${label}: ${application} has no Application Version named ${version}`);
+  }
+  const target = frozenStateOf(current, versionRow.uuid);
+  if (target instanceof Action2Error) {
+    return target;
+  }
+  const frozen = frozenCollectionsOf(current, versionRow.uuid);
+  const incomplete = frozen.filter(({ missingVersionRows }) => missingVersionRows.length > 0);
+  if (incomplete.length > 0) {
+    return refusal(
+      `${label}: version ${version} of ${application} names rows it does not hold (${incomplete
+        .map(({ collection, missingVersionRows }) => `${collection}: ${missingVersionRows.join(", ")}`)
+        .join("; ")})`,
+      "versionIncomplete",
+    );
+  }
+  // the version row names the collections its freeze snapshotted (#9); a version frozen before #9 does
+  // not, and one frozen before #706 has no Cross rows for these collections: they are unknown, not empty
+  const snapshotted = (versionRow as { frozenCollections?: string[] }).frozenCollections;
+  const collections = AGREEMENT_COLLECTIONS.filter(
+    (collection) =>
+      !COLLECTIONS_FROZEN_SINCE_706.includes(collection) ||
+      (snapshotted
+        ? snapshotted.includes(collection)
+        : (frozen.find((entry) => entry.collection === collection)?.crossRows ?? 0) > 0),
+  );
+  const ensured = await ensureVersionHistoryEntities(host, application, applicationDeploymentMap, current, modelEnvironment);
+  if (ensured) {
+    return ensured;
+  }
+  return applyModelState(host, application, applicationDeploymentMap, current, target, modelEnvironment, collections);
+}
+
+/**
  * `installApplicationVersion`: on a following deployment, rewrites the application's model to the version
  * named `version` (read from the `modelVersion` section the deployment shares with its authoring one), then
  * writes the deployment's DeploymentState row with that version.
@@ -387,7 +445,7 @@ export const handleAction_installApplicationVersion: ActionImplementationHandler
     return Promise.resolve(new Action2Error("FailedToHandleAction", `installApplicationVersion: no deployment of ${application}`));
   }
   // the check that the deployment is not installed, the rewrite and the state write are one step
-  return withApplicationLock(`installApplicationVersion:${deploymentUuid}`, () => installApplicationVersion(host, action, context, deploymentUuid));
+  return withApplicationLock(`deployment:${deploymentUuid}`, () => installApplicationVersion(host, action, context, deploymentUuid));
 };
 
 async function installApplicationVersion(
@@ -421,53 +479,8 @@ async function installApplicationVersion(
     );
   }
 
-  // the model actions of the rewrite read the deployment's model in this process's local cache
-  const loaded = await reloadModel(host, application, applicationDeploymentMap, context.modelEnvironment);
-  if (loaded instanceof Action2Error) {
-    return loaded;
-  }
-  const current = await liveModelState(host, application, applicationDeploymentMap);
-  if (current instanceof Action2Error) {
-    return current;
-  }
-  const versionRow = current.applicationVersions.find((row) => row.name === version);
-  if (!versionRow) {
-    return new Action2Error(
-      "FailedToHandleAction",
-      `installApplicationVersion: ${application} has no Application Version named ${version}`,
-    );
-  }
-  const target = frozenStateOf(current, versionRow.uuid);
-  if (target instanceof Action2Error) {
-    return target;
-  }
-  const frozen = frozenCollectionsOf(current, versionRow.uuid);
-  const incomplete = frozen.filter(({ missingVersionRows }) => missingVersionRows.length > 0);
-  if (incomplete.length > 0) {
-    return refusal(
-      `installApplicationVersion: version ${version} of ${application} names rows it does not hold (${incomplete
-        .map(({ collection, missingVersionRows }) => `${collection}: ${missingVersionRows.join(", ")}`)
-        .join("; ")})`,
-      "versionIncomplete",
-    );
-  }
-  // the version row names the collections its freeze snapshotted (#9); a version frozen before #9 does
-  // not, and one frozen before #706 has no Cross rows for these collections: they are unknown, not empty
-  const snapshotted = (versionRow as { frozenCollections?: string[] }).frozenCollections;
-  const collections = AGREEMENT_COLLECTIONS.filter(
-    (collection) =>
-      !COLLECTIONS_FROZEN_SINCE_706.includes(collection) ||
-      (snapshotted
-        ? snapshotted.includes(collection)
-        : (frozen.find((entry) => entry.collection === collection)?.crossRows ?? 0) > 0),
-  );
-
-  const ensured = await ensureVersionHistoryEntities(host, application, applicationDeploymentMap, current, context.modelEnvironment);
-  if (ensured) {
-    return ensured;
-  }
   const installed = await (async (): Promise<Action2Error | undefined> => {
-    const rewritten = await applyModelState(host, application, applicationDeploymentMap, current, target, context.modelEnvironment, collections);
+    const rewritten = await bringModelToVersion(host, application, applicationDeploymentMap, version, context.modelEnvironment, "installApplicationVersion");
     if (rewritten instanceof Action2Error) {
       return rewritten;
     }

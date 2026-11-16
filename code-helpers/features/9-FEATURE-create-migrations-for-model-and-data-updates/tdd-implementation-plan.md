@@ -43,7 +43,7 @@ Out (analysis section 2): detecting and correcting a model and storage divergenc
 | B2 | B | Removals, required attributes, renames: classified and stepped | ✅ | same file |
 | B3 | B | Refusals and the diff fallback | ✅ | same file |
 | B4 | B | `versioned-git`: from the tag to `HEAD` | ✅ | `migrationGenerationGit.9.phaseB.integ.test.ts` |
-| C1 | C | A Migration run on a following deployment (tracer) | ⬜ | `migrationRun.9.phaseC.integ.test.ts` |
+| C1 | C | A Migration run on a following deployment (tracer) | ✅ | `migrationRun.9.phaseC.integ.test.ts` |
 | C2 | C | A stopped run resumes | ⬜ | same file |
 | C3 | C | Runner refusals | ⬜ | same file |
 | C4 | C | `versioned-git`: the jump is a checkout of the tag | ⬜ | `migrationRunGit.9.phaseC.integ.test.ts` |
@@ -328,7 +328,7 @@ A review of B1 to B4, read without running anything, found these; the fixed ones
 
 ### Slice C1 — A Migration run on a following deployment (tracer)
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal.** Epic section 9, E1's apply step: the following deployment at `1.0.0` is migrated to `1.1.0`, its data filled (G2, G4).
 
@@ -346,7 +346,9 @@ A review of B1 to B4, read without running anything, found these; the fixed ones
 
 **Validation.** The file; scoped nonreg `smoke,actions,external,runners`.
 
-**Realization.** _(on completion)_
+**Realization.** `packages/miroir-versioning/src/migrationRun.ts`. `runMigration { application, migration }` is declared on the Model Endpoint and server-routed. The handler runs under a lock per deployment, shared with `installApplicationVersion` (`deployment:<uuid>`), so a run and an install never interleave either. A new run checks the role, the state record's `version` against the Migration's `from`, and the unsupported changes; it writes `run: { migration: <copy, backwardCompatible recomputed>, stepsDone: [], startedAt }`, then runs expand, the jump, fill and contract, recording each in `stepsDone`. A step runs through `host.handleCompositeAction`, the step and the actions of its sequence marked as the run's. The jump is `bringModelToVersion` (refactor checkpoint: extracted from the install, which uses it too), followed by a reload of the model. The end writes `version: to`, appends to `applied` and removes `run`.
+- **Deviations.** (1) The recomputed `backwardCompatible` is held by the run's copy only while it runs; C1 cannot see it after the end, so C2 checks it on a stopped run. (2) The client is not told to reload Admin and the application after a run: the C1 test reads the stores of the server. The client's cache of a following deployment is reloaded by the next `rollback`, as after an install. (3) Some appForTest fixture files are named after another uuid than the row's (Gallimard, Vintage, Owl of Minerva Press); an update writes the row to a second file, so the test checks the filled value by uuid among the rows read.
+- **Validation.** The file (C1); the part A file; core unit tests (3325); versioning unit tests; lint.
 
 ### Slice C2 — A stopped run resumes
 

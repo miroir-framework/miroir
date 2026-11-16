@@ -23979,6 +23979,69 @@ export const miroirFundamentalMlSchema = {
                 "tag": {
                   "value": {
                     "canBeTemplate": false,
+                    "defaultLabel": "Run a Migration",
+                    "description": "#9: runs a Migration on a following deployment: its expand steps, the jump of the model to the Migration's to version, its fill and contract steps, each recorded in the deployment's DeploymentState row so that a stopped run resumes where it stopped. Refused on an authoring deployment, when the deployment is not at the Migration's from version, when the Migration holds an unsupported change, and while another Migration runs."
+                  }
+                },
+                "definition": "runMigration"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+              },
+              "payload": {
+                "type": "object",
+                "definition": {
+                  "application": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": true,
+                        "defaultLabel": "Application",
+                        "foreignKeyParams": {
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                          "targetEntityOrderInstancesBy": "name"
+                        },
+                        "display": {
+                          "editable": false
+                        }
+                      }
+                    }
+                  },
+                  "migration": {
+                    "type": "uuid",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": true,
+                        "defaultLabel": "Migration",
+                        "description": "The uuid of the Migration to run, in the application's modelVersion section"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "tag": {
+              "value": {
+                "display": {
+                  "displayedAttributeValueWhenFolded": "actionLabel"
+                }
+              }
+            },
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false,
                     "defaultLabel": "Append an evolution trace record",
                     "description": "#708: appends one record to the application's evolution trace, in its modelVersion section. Sent by the DomainController that ran a commit, a freeze or a re-baseline."
                   }
@@ -46248,6 +46311,125 @@ export const miroirFundamentalMlSchema = {
                             "canBeTemplate": true,
                             "defaultLabel": "Replace",
                             "description": "Replace the Migration for the two versions when there is one"
+                          }
+                        }
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          "relativePath": "coreTransformerForBuildPlusRuntime"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          {
+            "type": "object",
+            "tag": {
+              "value": {
+                "display": {
+                  "displayedAttributeValueWhenFolded": "actionLabel"
+                },
+                "isTemplate": true
+              }
+            },
+            "definition": {
+              "actionType": {
+                "type": "literal",
+                "tag": {
+                  "value": {
+                    "canBeTemplate": false,
+                    "defaultLabel": "Run a Migration",
+                    "description": "#9: runs a Migration on a following deployment: its expand steps, the jump of the model to the Migration's to version, its fill and contract steps, each recorded in the deployment's DeploymentState row so that a stopped run resumes where it stopped. Refused on an authoring deployment, when the deployment is not at the Migration's from version, when the Migration holds an unsupported change, and while another Migration runs."
+                  }
+                },
+                "definition": "runMigration"
+              },
+              "actionLabel": {
+                "type": "string",
+                "optional": true
+              },
+              "endpoint": {
+                "type": "literal",
+                "definition": "7947ae40-eb34-4149-887b-15a9021e714e"
+              },
+              "payload": {
+                "type": "object",
+                "definition": {
+                  "application": {
+                    "type": "union",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": true,
+                        "defaultLabel": "Application",
+                        "foreignKeyParams": {
+                          "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+                          "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                          "targetEntityOrderInstancesBy": "name"
+                        },
+                        "display": {
+                          "editable": false
+                        },
+                        "isTemplate": true
+                      }
+                    },
+                    "discriminator": [
+                      "transformerType",
+                      "interpolation"
+                    ],
+                    "definition": [
+                      {
+                        "type": "uuid",
+                        "tag": {
+                          "value": {
+                            "canBeTemplate": true,
+                            "defaultLabel": "Application",
+                            "foreignKeyParams": {
+                              "targetApplicationUuid": "55af124e-8c05-4bae-a3ef-0933d41daa92",
+                              "targetEntity": "25d935e7-9e93-42c2-aade-0472b883492b",
+                              "targetEntityOrderInstancesBy": "name"
+                            },
+                            "display": {
+                              "editable": false
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "type": "schemaReference",
+                        "definition": {
+                          "absolutePath": "fe9b7d99-f216-44de-bb6e-60e1a1ebb739",
+                          "relativePath": "coreTransformerForBuildPlusRuntime"
+                        }
+                      }
+                    ]
+                  },
+                  "migration": {
+                    "type": "union",
+                    "tag": {
+                      "value": {
+                        "canBeTemplate": true,
+                        "defaultLabel": "Migration",
+                        "description": "The uuid of the Migration to run, in the application's modelVersion section",
+                        "isTemplate": true
+                      }
+                    },
+                    "discriminator": [
+                      "transformerType",
+                      "interpolation"
+                    ],
+                    "definition": [
+                      {
+                        "type": "uuid",
+                        "tag": {
+                          "value": {
+                            "canBeTemplate": true,
+                            "defaultLabel": "Migration",
+                            "description": "The uuid of the Migration to run, in the application's modelVersion section"
                           }
                         }
                       },

@@ -30,6 +30,7 @@ export const SERVER_ROUTED_MIROIR_ACTION_TYPES: readonly string[] = [
   "installApplicationVersion",
   // #9: the draft Migration is written where the stores are
   "generateMigration",
+  "runMigration",
 ];
 
 export function isServerRoutedMiroirAction(action: unknown): boolean {
