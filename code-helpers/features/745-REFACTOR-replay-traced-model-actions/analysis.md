@@ -13,7 +13,7 @@ Key sources: [`migrationGeneration.ts`](../../../packages/miroir-versioning/src/
 **Document history:**
 - 2026-11-16: first draft.
 - 2026-11-16: adversarial review. Corrected: what `createEntity` does today on IndexedDB, MongoDB and the filesystem (it reuses storage, it does not clear it), the line references, and the test inventory. Added: incomplete trace records refused, Miroir excluded, writes on settings rows not replayed, a required attribute classified unsupported, the order "check, then storage, then row" in the SQL store, the `stepStarted` field and the `settleMigrationStep` action, the in-memory check of the steps against `to` before step 1, the effect of D4 on each caller, and the conflict with rollback (section 7).
-- 2026-11-16: the user's review. D6 decided: a migration run checks the live model against a reference of the version (frozen `from` and `to`), not against digests. G3 restated (fail explicitly and stop); D3 restated with examples; D2 relies on #748 (instance writes on Entity rows refused) instead of converting them; "migration run" defined and used instead of "run".
+- 2026-11-16: the user's review. D3 tentatively accepted, with a note separating its refusals from backward compatibility. D6 decided: a migration run checks the live model against a reference of the version (frozen `from` and `to`), not against digests. G3 restated (fail explicitly and stop); D3 restated with examples; D2 relies on #748 (instance writes on Entity rows refused) instead of converting them; "migration run" defined and used instead of "run".
 
 **Strict strategy (the user, 2026-11-16).** Every decision below follows it: an operation of the versioning epic that meets a state it did not expect fails with an error naming that state. It never repairs, skips, reuses or overwrites silently. A failure leaves what it found as it was, so the operator sees it.
 
@@ -109,7 +109,7 @@ With traces off (`source: diff`), there are no records: the steps come from the 
 
 ### D3. Which model changes does a Migration accept, given what the model Actions can do to a SQL table?
 
-**Status:** Proposed — D3-a. **Serves:** G3.
+**Status:** Accepted, tentatively (the user, 2026-11-16) — D3-a. **Serves:** G3.
 
 **What is at stake.** A Migration step changes the stores only through the model Actions `createEntity`, `alterEntityAttribute`, `renameEntity` and `dropEntity`. On SQL these run `CREATE TABLE`, `ALTER TABLE … ADD COLUMN` / `DROP COLUMN`, `ALTER TABLE … RENAME` and `DROP TABLE`. No model Action changes the type or the nullability of an existing column, or a table's primary key: `alterEntityAttribute` declares an `update` field, and the SQL store ignores it (`sqlDbEntityStoreSectionMixin.ts`, `alterEntityAttribute`; epic section 7.2). A required attribute is a `NOT NULL` column (`allowNull: false`, `miroir-store-postgres/src/utils.ts` line 114), and PostgreSQL refuses to add a `NOT NULL` column without a default to a table that holds rows.
 
@@ -140,6 +140,8 @@ Examples on Library (the attributes as they are today: `Book.year` is an optiona
 | D3-c. Add column changes now | SQL `changeColumn` behind `alterEntityAttribute.update`, and a required attribute generated as "add it nullable, fill it, make it required" | complete | a new Action contract, out of this issue's scope: the follow-up |
 
 The filesystem, IndexedDB and MongoDB stores keep each instance as a JSON document, so these changes need no storage change there. D3-a refuses them on every store anyway: a Migration does not know which store its following deployments use, and existing documents would still hold values of the old type or no value for a required attribute.
+
+**What decides a refusal, and what it does not.** D3-a refuses a change because no model Action can apply it to the stores yet, not because it breaks backward compatibility. Backward compatibility is a separate classification (epic D1). So D3-a accepts `dropEntity` and the removal of `Book.citation`, which are not backward-compatible, and refuses making `Book.year` required, which is not backward-compatible either. The user accepted this discrepancy for now (2026-11-16). The refusals are a limit of today's model Actions: they go away as the model Actions gain the expressivity to apply these changes (column type, nullability, key and reference changes; the follow-up of D3-c). Non-backward-compatible changes are common, and Miroir is meant to accept them once it has the mechanisms to handle them.
 
 ### D4. What does `createEntity` do when the Entity's storage or row already exists?
 
