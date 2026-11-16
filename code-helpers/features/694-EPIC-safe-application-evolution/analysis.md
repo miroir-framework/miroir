@@ -178,7 +178,7 @@ Settings are named by their `versioningMode` value: `versioned-internal` keeps v
 | D2. How do a deployment's model and its storage (tables, collections) reach a target version without losing data? | **Migrations jump the model to the version, between expand and contract data steps. Storage creation is idempotent on every store, reconciliation is add-only, and drops happen only in a contract step** | G3, G5 |
 | D3. How does a designer create a version when the model is in Git? | **A Git tag, created by a new `gitAction_tag`**; freeze stays refused | G1, G8 |
 | D4. Where does Miroir read "the model at state X" from: a frozen version, a Git ref, or the live model? | **One `ModelStateSource`: a frozen version, a Git ref, or the live model** | G2 |
-| D5. Without Git, how does a test environment get the versions and migrations made in the dev environment? | **It points its `modelVersion` section at the same storage, read-only, as a following deployment**; version packages come later (D9) | G3 |
+| D5. Without Git, how does a test environment get the versions and migrations made in the dev environment? | ~~It points its `modelVersion` section at the same storage, read-only, as a following deployment~~ **Revised 2026-11-16: no shared `model` or `modelVersion`; the Migration is imported as a JSON file** (see D5) | G3 |
 | D6. Without Git, how does an operator bring a deployment's model back to a frozen version? | **A new model action rewrites the live model from a version's snapshot**, used for rollback and as the migration jump | G3, G5 |
 | D7. When a Git-backed deployment's data is migrated, where does that data live? | **Outside the Git work tree** | G3, G8 |
 | D8. Do application feature switches belong in this epic? | **Yes, as a separate epic item (11, #712)**, analysed on its own; items 6 to 10 do not depend on it | G6 |
@@ -274,6 +274,8 @@ A process holds one deployment per application: `ApplicationDeploymentMap` maps 
 | D5-c. Read through the dev server | the test environment asks the dev server | always fresh | couples environments at run time |
 
 **Decision:** D5-a for items 7 and 10, D5-b with D9. Item 7 owns the authoring and following roles.
+
+**Revised (2026-11-16, by the user), for `versioned-internal`:** an authoring and a following deployment of the same application share no `model` and no `modelVersion` section. A Migration reaches a following deployment as an imported JSON file holding its definition, for example through a migration Runner; this stands in for reading it from a shared `modelVersion` section. D5-a no longer holds there, and section 5.1, step 5, which has the test deployment read the same `modelVersion` storage, is out of date. What this changes in #9 (the jump reads the frozen `to` version from `modelVersion`, and the #9 tests share that section) is not settled yet.
 
 ### D6. Without Git, how does an operator bring a deployment's model back to a frozen version?
 
