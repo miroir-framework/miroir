@@ -376,7 +376,7 @@ A review of B1 to B4, read without running anything, found these; the fixed ones
 
 ### Slice C3 — Runner refusals
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal.** The runner refuses what it cannot run safely (G2).
 
@@ -388,7 +388,12 @@ A review of B1 to B4, read without running anything, found these; the fixed ones
 
 **Validation.** The file; scoped nonreg `smoke,actions,external`.
 
-**Realization.** _(on completion)_
+**Realization.** The checks were written with C1's handler; C3 tests them on a third Migration (1.2.0, holding a `renameEntity` change with `supported: false`), and checks after each refusal that neither the `DeploymentState` rows nor the following deployment's data changed.
+- `deploymentAuthors`: the run sent with the authoring deployment's map; `migrationUnsupportedChange` names the unsupported changes in `errorContext.changes`.
+- Characterizations, no new code: a pending `createEntity` gives `openMiroirTransaction` (the client's `forwardCapabilityAction`); the `versioning` capability off on the client, then on the server, gives `FeatureUnavailable` with `capability: versioning`.
+- **Refactor checkpoint.** `MIGRATION_RUN_REFUSALS` (exported since C1) is what the tests compare with. Also fixed: the jump reloaded the model before looking at the result of `bringModelToVersion`; a failed jump now returns before the reload. `afterAll` deletes the three Migrations it wrote, so the file runs again on the same store (ran twice).
+- **Validation.** The file (C1 to C3), lint. The scoped nonreg is left to the full nonreg before PR C.
+
 
 ### Slice C4 — `versioned-git`: the jump is a checkout of the tag
 

@@ -25,7 +25,14 @@ import {
   type StoreUnitConfiguration,
 } from "@miroir-framework/core";
 import { adminSelfApplication, deployment_Admin, entityDeployment } from "@miroir-framework/core/admin";
-import { AGREEMENT_COLLECTIONS, frozenModelState, liveModelState, type MigrationRow, type ModelState } from "@miroir-framework/versioning";
+import {
+  AGREEMENT_COLLECTIONS,
+  frozenModelState,
+  liveModelState,
+  MIGRATION_RUN_REFUSALS,
+  type MigrationRow,
+  type ModelState,
+} from "@miroir-framework/versioning";
 import { entityPublisher } from "miroir-fixture-appForTest";
 
 import { resolveRepoRoot } from "../../../helpers/integrationTestProfiles.js";
@@ -43,6 +50,7 @@ import {
   MIROIR_DEPLOYMENT,
   MODEL_ENDPOINT,
   openVersioningTestContext,
+  setCapabilities,
   storedRows,
   type VersioningTestContext,
 } from "../../versioning/versioningTestSetup.js";
@@ -64,6 +72,8 @@ const VERSION_1_0 = `9C-1.0.0-${run}`;
 const VERSION_1_1 = `9C-1.1.0-${run}`;
 const VERSION_1_2 = `9C-1.2.0-${run}`;
 const MOTTO = "mottoC9";
+/** The Migrations C2 and C3 write by hand. */
+const [SECOND_MIGRATION, THIRD_MIGRATION] = ["9c000004-0000-4000-8000-000000000001", "9c000006-0000-4000-8000-000000000001"];
 
 /** An Entity appForTest gains in 1.1.0. */
 const edition = {
@@ -312,6 +322,16 @@ afterAll(async () => {
     endpoint: INSTANCE_ENDPOINT,
     payload: { application: APP_FOR_TEST, applicationSection: "model", objects: [{ ...publisher, mlSchema: { ...publisher.mlSchema, definition } }] },
   });
+  const migrations = (await storedRows(context, APP_FOR_TEST_DEPLOYMENT, "modelVersion", MIGRATION_ENTITY)).filter((row) =>
+    [migration?.uuid, SECOND_MIGRATION, THIRD_MIGRATION].includes(row.uuid),
+  );
+  if (migrations.length > 0) {
+    await authoringAction({
+      actionType: "deleteInstance",
+      endpoint: INSTANCE_ENDPOINT,
+      payload: { application: APP_FOR_TEST, applicationSection: "modelVersion", parentUuid: MIGRATION_ENTITY, objects: migrations },
+    });
+  }
   for (const parentUuid of [entityDeployment.uuid, DEPLOYMENT_STATE_ENTITY_UUID]) {
     const row = (await storedRows(context, ADMIN_DEPLOYMENT, "data", parentUuid)).find((stored) => stored.uuid === FOLLOWING_DEPLOYMENT);
     if (row) {
@@ -339,7 +359,7 @@ describe("#9 part C: runMigration", () => {
     const [first, second] = await Promise.all([runMigration(migration.uuid), runMigration(migration.uuid)]);
 
     expectOk(first, "the first run");
-    expect(refusalReason(second), JSON.stringify(second)).toBe("migrationNotAtFrom");
+    expect(refusalReason(second), JSON.stringify(second)).toBe(MIGRATION_RUN_REFUSALS.migrationNotAtFrom);
 
     // the model is 1.1.0's
     const following = await state(followingMap);
@@ -363,7 +383,7 @@ describe("#9 part C: runMigration", () => {
     // a run is no model change of the application: nothing recorded
     expect(await storedRows(context, APP_FOR_TEST_DEPLOYMENT, "modelVersion", EVOLUTION_TRACE_RECORD_ENTITY_UUID)).toEqual(recordsBefore);
 
-    expect(refusalReason(await runMigration(migration.uuid))).toBe("migrationNotAtFrom");
+    expect(refusalReason(await runMigration(migration.uuid))).toBe(MIGRATION_RUN_REFUSALS.migrationNotAtFrom);
   }, 120000);
 
   it("C2: a stopped run resumes from its copy of the Migration, at the first step not recorded", async () => {
@@ -372,7 +392,7 @@ describe("#9 part C: runMigration", () => {
     // folders of no Entity of the model, each blocked by a file in its place until the test puts a folder there
     const [BLOCKED_E, BLOCKED_F] = ["9c0000b1-0000-4000-8000-000000000001", "9c0000b2-0000-4000-8000-000000000001"];
     const second: MigrationRow = {
-      uuid: "9c000004-0000-4000-8000-000000000001",
+      uuid: SECOND_MIGRATION,
       parentName: "Migration",
       parentUuid: MIGRATION_ENTITY,
       name: `${VERSION_1_1} → ${VERSION_1_2}`,
@@ -411,14 +431,14 @@ describe("#9 part C: runMigration", () => {
 
     // 1. stopped at the second expand step
     const stopped = await runMigration(second.uuid);
-    expect(refusalReason(stopped), JSON.stringify(stopped)).toBe("migrationStepFailed");
+    expect(refusalReason(stopped), JSON.stringify(stopped)).toBe(MIGRATION_RUN_REFUSALS.migrationStepFailed);
     const afterStop = await deploymentState();
     expect(afterStop?.version).toBe(VERSION_1_1);
     expect(afterStop?.run?.stepsDone).toEqual([second.expand[0].uuid]);
     expect((afterStop?.run?.migration as MigrationRow).backwardCompatible, "recomputed by the run").toBe(false);
 
     // another Migration waits for the run in progress
-    expect(refusalReason(await runMigration(migration.uuid))).toBe("migrationRunInProgress");
+    expect(refusalReason(await runMigration(migration.uuid))).toBe(MIGRATION_RUN_REFUSALS.migrationRunInProgress);
 
     // the Migration's file changed on disk (the following deployment refuses that write): the run keeps its copy
     const sharedModelVersion = (
@@ -433,7 +453,7 @@ describe("#9 part C: runMigration", () => {
     // 2. resumed, stopped inside the fill step after its first write
     unblock(BLOCKED_E);
     const stoppedInFill = await runMigration(second.uuid);
-    expect(refusalReason(stoppedInFill), JSON.stringify(stoppedInFill)).toBe("migrationStepFailed");
+    expect(refusalReason(stoppedInFill), JSON.stringify(stoppedInFill)).toBe(MIGRATION_RUN_REFUSALS.migrationStepFailed);
     expect((await deploymentState())?.run?.stepsDone).toEqual([second.expand[0].uuid, second.expand[1].uuid, "jump"]);
     expect(fs.existsSync(path.join(followingDataFolder(edition.uuid), `${F1}.json`)), "the fill step's first write landed").toBe(true);
 
@@ -451,5 +471,74 @@ describe("#9 part C: runMigration", () => {
     );
     expect(fs.readdirSync(followingDataFolder(BLOCKED_E))).toEqual([`${E2}.json`]);
     expect(fs.readdirSync(followingDataFolder(BLOCKED_F))).toEqual([`${F2}.json`]);
+  }, 120000);
+
+  it("C3: refused, nothing written, on an authoring deployment, for an unsupported change, with Miroir changes unsaved, without the versioning capability", async () => {
+    const third: MigrationRow = {
+      uuid: THIRD_MIGRATION,
+      parentName: "Migration",
+      parentUuid: MIGRATION_ENTITY,
+      name: `${VERSION_1_2} → a renamed Publisher`,
+      application: APP_FOR_TEST,
+      from: VERSION_1_2,
+      to: VERSION_1_2,
+      source: "manual",
+      changes: [
+        { kind: "renameEntity", entity: entityPublisher.uuid, entityName: entityPublisher.name, backwardCompatible: false, supported: false },
+      ],
+      expand: [writeStep("9c000007-0000-4000-8000-000000000001", "expand", [[edition.uuid, "9c000008-0000-4000-8000-0000000000c3"]])],
+      fill: [],
+      contract: [],
+      backwardCompatible: false,
+    } as unknown as MigrationRow;
+    expectOk(
+      await authoringAction({
+        actionType: "createInstance",
+        endpoint: INSTANCE_ENDPOINT,
+        payload: { application: APP_FOR_TEST, applicationSection: "modelVersion", parentUuid: MIGRATION_ENTITY, objects: [third] },
+      }),
+      "the third Migration",
+    );
+    const statesBefore = await storedRows(context, ADMIN_DEPLOYMENT, "data", DEPLOYMENT_STATE_ENTITY_UUID);
+    const editionsBefore = await storedRows(context, FOLLOWING_DEPLOYMENT, "data", edition.uuid);
+    const nothingWritten = async () => {
+      expect(await storedRows(context, ADMIN_DEPLOYMENT, "data", DEPLOYMENT_STATE_ENTITY_UUID)).toEqual(statesBefore);
+      expect(await storedRows(context, FOLLOWING_DEPLOYMENT, "data", edition.uuid)).toEqual(editionsBefore);
+    };
+
+    // on the authoring deployment
+    expect(refusalReason(await runMigration(third.uuid, applicationDeploymentMap))).toBe(MIGRATION_RUN_REFUSALS.deploymentAuthors);
+    await nothingWritten();
+
+    // a change no run can make
+    const unsupported = await runMigration(third.uuid);
+    expect(refusalReason(unsupported), JSON.stringify(unsupported)).toBe(MIGRATION_RUN_REFUSALS.migrationUnsupportedChange);
+    expect((unsupported as Action2Error).errorContext?.changes).toEqual([expect.objectContaining({ kind: "renameEntity" })]);
+    await nothingWritten();
+
+    // characterization: unsaved Miroir changes refuse any server-routed versioning action (#696)
+    const pendingEntity = { ...edition, uuid: "9c000009-0000-4000-8000-000000000001", name: "PendingC9" } as unknown as Entity;
+    expectOk(
+      await authoringAction({ actionType: "createEntity", endpoint: MODEL_ENDPOINT, payload: { application: APP_FOR_TEST, entities: [pendingEntity] } }),
+      "a pending createEntity",
+    );
+    try {
+      expect(refusalReason(await runMigration(third.uuid))).toBe("openMiroirTransaction");
+      await nothingWritten();
+    } finally {
+      expectOk(await authoringAction({ actionType: "rollback", endpoint: MODEL_ENDPOINT, payload: { application: APP_FOR_TEST } }), "rollback");
+    }
+
+    // characterization: the versioning capability, on the client and on the server (#696, `requiredCapability`)
+    try {
+      for (const side of ["client", "server"] as const) {
+        setCapabilities(context, { [side]: { versioning: false } });
+        const refused = await runMigration(third.uuid);
+        expect(refused, `${side}: ${JSON.stringify(refused)}`).toMatchObject({ errorType: "FeatureUnavailable", errorContext: { capability: "versioning" } });
+        await nothingWritten();
+      }
+    } finally {
+      setCapabilities(context, {});
+    }
   }, 120000);
 });

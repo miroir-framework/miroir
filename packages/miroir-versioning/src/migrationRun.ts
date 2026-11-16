@@ -190,10 +190,10 @@ async function runMigration(
     }
     if (step === JUMP_STEP) {
       const jumped = await bringModelToVersion(host, application, applicationDeploymentMap, run.migration.to, context.modelEnvironment, "runMigration");
-      const reloaded = await reloadModel(host, application, applicationDeploymentMap, context.modelEnvironment);
       if (jumped instanceof Action2Error) {
         return jumped;
       }
+      const reloaded = await reloadModel(host, application, applicationDeploymentMap, context.modelEnvironment);
       if (reloaded instanceof Action2Error) {
         return reloaded;
       }
