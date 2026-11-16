@@ -12,8 +12,8 @@ Key sources: [`migrationGeneration.ts`](../../../packages/miroir-versioning/src/
 **Status:** decisions proposed, to confirm with the user. Revised once after an adversarial review (see the history).
 **Document history:**
 - 2026-11-16: first draft.
-- 2026-11-16: adversarial review. Corrected: what `createEntity` does today on IndexedDB, MongoDB and the filesystem (it reuses storage, it does not clear it), the line references, and the test inventory. Added: incomplete trace records refused, Miroir excluded, writes on settings rows not replayed, a required attribute classified unsupported, the order "check, then storage, then row" in the SQL store, the `stepStarted` field and the `settleMigrationStep` action, the in-memory check against `toDigest` before step 1, the effect of D4 on each caller, and the conflict with rollback (section 7).
-- 2026-11-16: the user's review. G3 restated (fail explicitly and stop); D3 restated with examples; D2 relies on #748 (instance writes on Entity rows refused) instead of converting them; "migration run" defined and used instead of "run".
+- 2026-11-16: adversarial review. Corrected: what `createEntity` does today on IndexedDB, MongoDB and the filesystem (it reuses storage, it does not clear it), the line references, and the test inventory. Added: incomplete trace records refused, Miroir excluded, writes on settings rows not replayed, a required attribute classified unsupported, the order "check, then storage, then row" in the SQL store, the `stepStarted` field and the `settleMigrationStep` action, the in-memory check of the steps against `to` before step 1, the effect of D4 on each caller, and the conflict with rollback (section 7).
+- 2026-11-16: the user's review. D6 decided: a migration run checks the live model against a reference of the version (frozen `from` and `to`), not against digests. G3 restated (fail explicitly and stop); D3 restated with examples; D2 relies on #748 (instance writes on Entity rows refused) instead of converting them; "migration run" defined and used instead of "run".
 
 **Strict strategy (the user, 2026-11-16).** Every decision below follows it: an operation of the versioning epic that meets a state it did not expect fails with an error naming that state. It never repairs, skips, reuses or overwrites silently. A failure leaves what it found as it was, so the operator sees it.
 
@@ -29,7 +29,7 @@ Key sources: [`migrationGeneration.ts`](../../../packages/miroir-versioning/src/
 ## 2. Non-goals
 
 - `versioned-git` follower migration runs: D13, #747. #9's Git migration run is kept, adapted to the new row shape (D1).
-- Export and import of a Migration as a file: #746. The tests here give the following deployment its own copy of the `modelVersion` rows instead of a shared section.
+- Export and import of a Migration, and of a reference package of a version, as files: #746. The tests here give the following deployment its own copy of the `modelVersion` rows instead of a shared section.
 - What a hand-written step may hold (model Actions refused): #741. D1 gives each step a `kind` that #741 checks.
 - Column type, nullability and key changes on SQL: refused here (D3); the Actions that would apply them are a follow-up (to file).
 - Restore and rollback, and what they do with storage left by later versions: #709 (section 7).
@@ -42,15 +42,15 @@ Key sources: [`migrationGeneration.ts`](../../../packages/miroir-versioning/src/
 
 | Decision | Choice | Serves |
 |---|---|---|
-| D1. What does a Migration row hold? | **One ordered `steps` list; each step has a `kind` (`model` or `data`); no phases, no `repeatable`; digests of the two models** | G1, G2 |
+| D1. What does a Migration row hold? | **One ordered `steps` list; each step has a `kind` (`model` or `data`); no phases, no `repeatable`** | G1, G2 |
 | D2. How does generation turn trace records into model steps? | **One step per model Action, in trace order, adds and removes split; a record holding an instance write on an Entity row is refused (#748's rule); then a replay of the steps checked against `to`** | G1, G2 |
 | D3. Which model changes does a Migration accept, given what the model Actions can do to a SQL table? | **Those a model Action applies to the table; a type, nullability, foreign key, enum or key change, and a required attribute added to an existing Entity, are refused** | G3 |
 | D4. What does `createEntity` do when the Entity's storage or row already exists? | **It fails, on every store, before writing anything** | G3 |
 | D5. How does a migration run make sure no step runs twice? | **A step is recorded as started, then as done; a step started and not done stops the migration run until the operator settles it; a Migration already applied fails** | G3, G4 |
-| D6. How does a migration run check the deployment's model without reading the authoring deployment's `modelVersion` section? | **The Migration holds digests of the `from` and `to` models; the migration run checks the live model and its own replay against them before step 1, and the live model after the last step** | G3 |
+| D6. Against what does a migration run check the deployment's model before and after its steps? | **Accepted (the user): a reference model of the version, the frozen `from` and `to` read from the authoring `modelVersion` section or from a reference package; the live model and the replay of the steps are compared with them before step 1, the live model after the last step** | G3 |
 | D7. How does a replayed `alterEntityAttribute` or `renameEntity` change only what it names on SQL, all or nothing? | **Check first, then change the named columns or the table, then write the Entity row** | G3 |
 
-**Legend.** *Migration run*: the execution of one Migration on one following deployment by `runMigration`, from its checks to the state record naming `to`; when it stops, the next `runMigration` of the same Migration continues the same migration run. *Authoring deployment*: the one the designer edits and freezes. *Following deployment*: a deployment whose model changes only through installs and migration runs (#9). *Trace record*: a `commit` row of the evolution traces, holding the model Actions and model-row writes one commit made, in order. *Model step*: a step generation writes from a model Action. *Data step*: a step the designer writes. *Digest*: a hash of a model's rows, normalized as the agreement check compares them.
+**Legend.** *Migration run*: the execution of one Migration on one following deployment by `runMigration`, from its checks to the state record naming `to`; when it stops, the next `runMigration` of the same Migration continues the same migration run. *Authoring deployment*: the one the designer edits and freezes. *Following deployment*: a deployment whose model changes only through installs and migration runs (#9). *Trace record*: a `commit` row of the evolution traces, holding the model Actions and model-row writes one commit made, in order. *Model step*: a step generation writes from a model Action. *Data step*: a step the designer writes. *Reference*: the frozen model state of a version, read from a `modelVersion` section or from a reference package, that the live model is compared with (D6).
 
 ### D1. What does a Migration row hold?
 
@@ -60,13 +60,13 @@ Key sources: [`migrationGeneration.ts`](../../../packages/miroir-versioning/src/
 
 | Option | Mechanism | Pros | Cons |
 |---|---|---|---|
-| **D1-a. One `steps` list with a `kind`** ★ | `steps: MigrationStep[]`, `MigrationStep = { uuid, name, kind: "model" \| "data", backwardCompatible, action, trace? }`; the row also gets `fromDigest`, `toDigest` and `digestCollections` (D6). `changes` stays (classification). `expand`, `fill`, `contract` and `repeatable` go. | the order is the migration run's order; the runner and #741 tell generated model steps from hand-written ones | the Migration Entity and every reader change (readers: `migrationGeneration.ts`, `migrationRun.ts`, the tests; checked, no UI or asset reads the phases) |
+| **D1-a. One `steps` list with a `kind`** ★ | `steps: MigrationStep[]`, `MigrationStep = { uuid, name, kind: "model" \| "data", backwardCompatible, action, trace? }`; `changes` stays (classification). `expand`, `fill`, `contract` and `repeatable` go. | the order is the migration run's order; the runner and #741 tell generated model steps from hand-written ones | the Migration Entity and every reader change (readers: `migrationGeneration.ts`, `migrationRun.ts`, the tests; checked, no UI or asset reads the phases) |
 | D1-b. One list without a kind | as D1-a, the kind read from the action | smaller row | #741 must then infer what generation wrote, and a hand-written model Action reads as generated |
 | D1-c. Keep the phases, model steps in the middle | `expand`, `model`, `fill`, `contract` | fewer changes | the order problem above stays |
 
 `trace` (optional) names the record and the position of the Action a model step comes from, as evidence. `repeatable` goes because no step runs twice (D5).
 
-**`versioned-git`, until D13.** Git generation writes no replayed Actions. It writes one model step, the checkout of the tag `to` (a `gitAction_checkout`), with `changes` as information. The runner runs that step as #9 ran the jump: checkout, reload, then the `checkedOutVersion` check. This is #9's jump under another name, kept on purpose until #747 decides; Git Migrations get no digests (the checkout is the model). Data steps go before or after the checkout step.
+**`versioned-git`, until D13.** Git generation writes no replayed Actions. It writes one model step, the checkout of the tag `to` (a `gitAction_checkout`), with `changes` as information. The runner runs that step as #9 ran the jump: checkout, reload, then the `checkedOutVersion` check. This is #9's jump under another name, kept on purpose until #747 decides; the checkout is the model, so D6's reference check does not apply. Data steps go before or after the checkout step.
 
 **Old rows.** No Migration row is stored in any asset (checked: no file under `packages/*/assets/**/b5c1f0e5-3d31-419b-9a6b-21dd598fc3fe/`). A row with `expand`, `fill` or `contract`, written by #9 in a store or committed at a Git tag, is refused by the migration run (`migrationStepsInvalid`), not converted (strict). Only test repositories hold such tags today.
 
@@ -189,23 +189,26 @@ D5-a:
 
 The `run` and `applied` attributes of DeploymentState stay `editable: false`: the settlement goes through the action, not through the instance editor.
 
-### D6. How does a migration run check the deployment's model without reading the authoring deployment's `modelVersion` section?
+### D6. Against what does a migration run check the deployment's model before and after its steps?
 
-**Status:** Proposed — D6-a. **Serves:** G3.
+**Status:** Accepted (the user, 2026-11-16) — D6-b, for now. **Serves:** G3.
 
-**What is at stake.** The `DeploymentState` row says a following deployment is at 1.0.0, but someone changed its model by hand, a step was settled wrongly, or the designer edited a model step of the Migration. The replayed Actions then meet a model they were not written for, and the deployment ends with its state saying 1.1.0 and a model that is not 1.1.0. #9 avoided this by rewriting the whole model to the frozen version, which epic D5 now rules out (the migration run must read nothing else from the authoring `modelVersion`).
+**What is at stake.** The `DeploymentState` row says a following deployment is at 1.0.0, but someone changed its model by hand, a step was settled wrongly, or the designer edited a model step of the Migration. The replayed Actions then meet a model they were not written for, and the deployment ends with its state saying 1.1.0 and a model that is not 1.1.0.
 
 | Option | Mechanism | Pros | Cons |
 |---|---|---|---|
-| **D6-a. Digests in the Migration** ★ | below | catches any divergence before the first step; the Migration stays self-contained (#746) | a digest says only "different", not what |
-| D6-b. Full snapshots in the Migration | `from` and `to` model states in the row | says what differs | copies two versions into every Migration |
+| D6-a. Digests in the Migration | hashes of the `from` and `to` models stored in the Migration, compared with the live model | the Migration alone is enough | a digest says only "different", not what |
+| **D6-b. A reference model of the version** ★ | the migration run reads the frozen `from` and `to` versions, from the authoring deployment's `modelVersion` section (read access) or from a reference package of each version, and compares the live model with them | says what differs, with the agreement check's comparison; no new hash | a migration run needs the two references besides the Migration |
 | D6-c. No check | trust the state record | nothing to build | the gap above |
 
-D6-a:
-- Generation stores `digestCollections` (the compared collections both versions snapshotted, so a version frozen before #706 adds no collection it lacks), `fromDigest` and `toDigest`: hashes of the two models over those collections, normalized as the agreement check compares rows (`comparedCollections`, meta-model Entities left out, `conceptLevel` defaulted, the attributes `modelStateDiff.ts` does not compare left out). This is a new function next to `comparedCollections`, sharing its normalization.
-- Before step 1 of a new migration run: the live model's digest must be `fromDigest`, and the migration run's own model steps, replayed in memory on the live model, must give `toDigest`. Either mismatch fails (`migrationModelMismatch`, saying which), before anything is written. This catches an edited model step and a model changed by hand.
-- After the last step, before the version is written: the live model's digest must be `toDigest`; a mismatch fails, the migration run stays recorded, the version unchanged.
-- A Migration without digests (written by hand) is refused (`migrationDigestMissing`) in `versioned-internal`. A hand-written Migration starts from a generated one.
+**Decision (the user, 2026-11-16):** for now, a migration run is possible only after the deployment's actual model has been checked against a reference: the frozen version, read from the authoring deployment's `modelVersion` section, or a reference package of the version, in addition to the Migration (its package or JSON file, #746). This amends epic D5, which said a migration run reads nothing but the Migration.
+
+D6-b:
+- The reference of a version is its frozen model state (`frozenModelState` / `frozenStateOf`, `modelStates.ts`), read from the `modelVersion` section the following deployment can read. A reference package (a frozen version exported as a JSON file) is the other source; its export and import belong with the Migration package (#746). Without a reference for `from` or `to`, the migration run is refused (`migrationReferenceMissing`, naming the version).
+- The comparison is the agreement check's: `diffModelStates` over `comparedCollections` (meta-model Entities left out, `conceptLevel` defaulted, `NOT_COMPARED` attributes left out), over the collections the reference snapshotted (a version frozen before #706 has no Tests, Blobs or TestConfigurations rows, and those are then not compared).
+- Before step 1 of a new migration run: the live model must equal the `from` reference, and the migration run's own model steps, replayed in memory on the live model, must give the `to` reference. Either mismatch refuses (`migrationModelMismatch`), with the differences listed as the agreement check lists them, before anything is written.
+- After the last step, before the version is written: the live model must equal the `to` reference; a mismatch fails, the migration run stays recorded, the version unchanged.
+- Git Migrations are checked by #9's `checkedOutVersion` (the clone is at the tag): the checkout is the model.
 
 ### D7. How does a replayed `alterEntityAttribute` or `renameEntity` change only what it names on SQL, all or nothing?
 

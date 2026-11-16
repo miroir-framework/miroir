@@ -294,7 +294,7 @@ A process holds one deployment per application: `ApplicationDeploymentMap` maps 
 - it has read access to the authoring deployment's `modelVersion` section and takes the Migration from there (D5-a, read-only);
 - it receives the Migration as a JSON file and imports it (D5-b), as a conventional package manager updates a local install to version X, for example through a migration Runner.
 
-Both lead to the same run. A Migration therefore holds everything its run needs (D2): the run must not read anything else from the authoring `modelVersion` section, such as the frozen snapshot of the target version.
+Both lead to the same migration run. Amended the same day (the user, #745 D6): for now, a migration run is possible only after the deployment's actual model has been checked against a reference, the frozen `from` and `to` versions, read from the authoring deployment's `modelVersion` section or from a reference package of each version, in addition to the Migration (its package or JSON file). The model steps still come from the Migration alone: the reference is compared with, never written.
 
 ### D6. Without Git, how does an operator bring a deployment's model back to a frozen version?
 

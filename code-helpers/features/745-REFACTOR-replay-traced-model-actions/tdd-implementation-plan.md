@@ -40,7 +40,7 @@ This plan does **not** cover: Git follower migration runs beyond the provisional
 | 3 | Model changes no model Action can apply to a SQL table are refused | ⬜ | `migrationClassification.unit`, `migrationRun.integ` C3 |
 | 4 | `createEntity` fails on existing storage or row, on every store | ⬜ | new `createEntityStrict.integ` on four profiles; `migrationRun.integ` C6 |
 | 5 | A step runs once: started, done, in doubt, settled | ⬜ | `migrationRun.integ` C2 rewritten, C7 |
-| 6 | The migration run checks the model against the Migration's digests | ⬜ | `migrationRun.integ` C8 |
+| 6 | The migration run checks the model against the reference versions | ⬜ | `migrationRun.integ` C8 |
 | 7 | SQL alter and rename touch only what they name, check first | ⬜ | `entityRowUpdateSqlTable.integ` additions, on `test-sql` |
 | 8 | Nonreg, docs, cleanup, acceptance criteria | ⬜ | full `nonreg:filesystem`, `nonreg:default` on PostgreSQL |
 
@@ -52,12 +52,12 @@ From the analysis decision record. Deviations go into the slice's Realization.
 
 | Decision | Choice | Serves |
 |---|---|---|
-| D1 | One `steps` list, `kind: "model" \| "data"`, optional `trace`; `fromDigest`, `toDigest`, `digestCollections`; no `expand`, `fill`, `contract`, `repeatable`. Git: one model step, the checkout of `to`, no digests. Old rows refused. | G1, G2 |
+| D1 | One `steps` list, `kind: "model" \| "data"`, optional `trace`; no `expand`, `fill`, `contract`, `repeatable`. Git: one model step, the checkout of `to`. Old rows refused. | G1, G2 |
 | D2 | One step per model Action, in trace order; adds and removes of one `alterEntityAttribute` split; empty fill step after each added attribute; records with an instance write on an Entity row, incomplete records and Miroir refused; settings rows listed, not replayed; in-memory replay of the steps checked against `to`; diff source in the fixed order | G1, G2 |
 | D3 | `changeAttribute`, `changeIdAttribute`, and a required attribute added to an existing Entity: `supported: false`; `renameEntity` supported | G3 |
 | D4 | Each store's `createEntity` checks row and storage with a physical probe, fails with `entityExists` / `storageExists` before writing; `createEntities` returns the first error; external Entities exempt; SQL `clear()` drops every table of the schema | G3 |
 | D5 | `run.stepStarted`; any step failure leaves the step in doubt; `migrationStepInDoubt` on the next migration run; `settleMigrationStep { application, step, outcome }`; `migrationAlreadyApplied` | G3, G4 |
-| D6 | Digests normalized as `comparedCollections`; before step 1: live = `fromDigest`, in-memory replay = `toDigest`; after the last step: live = `toDigest`; no digests: refused in `versioned-internal` (Git rows carry none) | G3 |
+| D6 | Accepted by the user: the frozen `from` and `to` versions are the reference, read from the `modelVersion` section the following deployment can read (a reference package comes with #746); compared as the agreement check compares (`diffModelStates` over `comparedCollections`, the collections the reference snapshotted); before step 1: live = `from`, in-memory replay of the steps = `to`; after the last step: live = `to`; no reference: refused. Git: `checkedOutVersion`. | G3 |
 | D7 | SQL `alterEntityAttribute`: check, `addColumn` / `removeColumn` for the named columns, then the row. SQL `renameEntity`: check, rename (result checked), then the row | G3 |
 
 ---
@@ -67,10 +67,10 @@ From the analysis decision record. Deviations go into the slice's Realization.
 | Artefact | Value |
 |---|---|
 | Model Endpoint action | `settleMigrationStep`, declared in the Model Endpoint `7947ae40-eb34-4149-887b-15a9021e714e` (`miroir-app-miroir/assets/miroir_data/3d8da4d4-8f76-4bb4-9212-14869d81c00c/7947ae40-eb34-4149-887b-15a9021e714e.json`), implemented as `handleAction_settleMigrationStep` in `@miroir-framework/versioning` |
-| Migration Entity attributes | `steps`, `fromDigest`, `toDigest`, `digestCollections` (removed: `expand`, `fill`, `contract`) |
+| Migration Entity attributes | `steps` (removed: `expand`, `fill`, `contract`) |
 | DeploymentState attribute | `run.stepStarted` |
 | Change kind | `settingsChange` |
-| Refusal reasons (`MIGRATION_RUN_REFUSALS` and generation) | `migrationIncompleteRecord`, `migrationUnsupportedApplication`, `migrationStepInDoubt`, `migrationAlreadyApplied`, `migrationModelMismatch`, `migrationDigestMissing`, `migrationStepNotInDoubt` |
+| Refusal reasons (`MIGRATION_RUN_REFUSALS` and generation) | `migrationIncompleteRecord`, `migrationUnsupportedApplication`, `migrationStepInDoubt`, `migrationAlreadyApplied`, `migrationModelMismatch`, `migrationReferenceMissing`, `migrationStepNotInDoubt`, `migrationEntityRowWrite` |
 | Store refusals (`errorContext.reason`) | `entityExists`, `storageExists`, `columnExists`, `columnMissing`, `tableExists` |
 | New vitest file | `packages/miroir-standalone-app/tests/4_storage/createEntityStrict.integ.test.ts` (not reachable through MiroirTest: it probes the stores under each profile after writing to them directly) |
 | Nonreg step | `integ-745-create-entity-strict` (scopes `actions`) |
@@ -134,7 +134,7 @@ _(to fill)_
 **Goal:** the Migration has one `steps` list; generation writes the traced model Actions that are already model Actions (`createEntity`, `alterEntityAttribute`, `renameEntity`, `dropEntity`) as model steps; the migration run executes them in order with the data steps, without `bringModelToVersion`. Git generation writes the checkout step, and the Git migration run runs it.
 
 **RED:**
-- `migrationRun.integ.test.ts` C1, rewritten. appForTest's traces are turned on before 1.0.0 is frozen (as `migrationGeneration.integ` lines 85–87 and 117 do) and off again in `afterAll`. 1.1.0 adds `EditionC9` through `createEntity` only (the `mottoC9` row update moves to Slice 2). The draft has `source: "traces"` and `steps` `[createEntity EditionC9]`, its `trace` naming the record; the designer appends a data step creating the first edition and stores the completed Migration. The following deployment is a copy of the authoring `model` and `data` stores taken right after 1.0.0 is frozen, and its own `modelVersion` folder is a copy taken after the completed Migration is stored, with the 1.1.0 `SelfApplicationVersion` file deleted on disk. After the migration run: `EditionC9` exists on the following deployment with its instance, the state is at 1.1.0, and the following deployment's model equals the authoring 1.1.0 model (`ownModel`): the migration run read no frozen version.
+- `migrationRun.integ.test.ts` C1, rewritten. appForTest's traces are turned on before 1.0.0 is frozen (as `migrationGeneration.integ` lines 85–87 and 117 do) and off again in `afterAll`. 1.1.0 adds `EditionC9` through `createEntity` only (the `mottoC9` row update moves to Slice 2). The draft has `source: "traces"` and `steps` `[createEntity EditionC9]`, its `trace` naming the record; the designer appends a data step creating the first edition and stores the completed Migration. The following deployment is a copy of the authoring `model` and `data` stores taken right after 1.0.0 is frozen, and its own `modelVersion` folder is a copy taken after the completed Migration is stored, holding the frozen 1.0.0 and 1.1.0 versions, which are the references (D6). After the migration run: `EditionC9` exists on the following deployment with its instance, the state is at 1.1.0, and the following deployment's model equals the authoring 1.1.0 model (`ownModel`). No `applyModelState` write happens (the reference is read, never written).
 - The other migration run tests (C2, C3, C5) and the generation tests (B1 to B3.6) are ported mechanically to `steps`: phases become one list, hand-written rows are written into the following deployment's folder with `writeFollowingMigration`. C2 keeps #9's resume semantics (a failed step re-run) until Slice 5; B2.3 and B2.4 keep #9's classification until Slice 3.
 - `migrationRunGit.integ.test.ts` C4 and `migrationGenerationGit.integ.test.ts`: the Git draft holds one model step, the checkout of `to`; the migration run moves the clone as before. A row with `fill` committed at a tag is refused (`migrationStepsInvalid`).
 - A migration run of an internal row with `fill` is refused (`migrationStepsInvalid`).
@@ -284,21 +284,22 @@ _(to fill)_
 
 ---
 
-## Slice 6 — The migration run checks the model against the Migration's digests
+## Slice 6 — The migration run checks the model against the reference versions
 
 **Status:** ⬜ pending
 
-**Goal:** D6.
+**Goal:** D6, as the user decided it.
 
-**RED:**
-- `migrationGeneration.integ.test.ts` B5: the draft has `digestCollections`, `fromDigest` and `toDigest`; the digests equal those of the frozen `from` and `to` computed by the same function.
-- `migrationRun.integ.test.ts` C8: a following deployment whose Report was changed by hand before the migration run fails `migrationModelMismatch` (from), nothing written; a Migration whose model step was edited (an attribute renamed in its `addColumns`) fails `migrationModelMismatch` (replay against `to`) before step 1; a Migration without digests fails `migrationDigestMissing`; a data step that writes a model row (allowed until #741) makes the migration run fail at the end check, the version unchanged.
-- A follower installed from a version without `tests` snapshots runs a Migration whose `digestCollections` leave `tests` out.
-- The earlier hand-written rows (C2, C5, C7) take their digests from a generated draft (or `modelDigest`); C5's nested `createEntity` in a data step now fails at the end check (`migrationModelMismatch`, version unchanged) and its expectation changes here. Git rows carry no digests and are not refused for it.
+**RED (`migrationRun.integ.test.ts` C8):**
+- A following deployment whose Report was changed by hand before the migration run: refused (`migrationModelMismatch`), the message naming the Report and the difference, nothing written.
+- A Migration whose model step was edited (an attribute renamed in its `addColumns`): refused before step 1, the in-memory replay differing from the `to` reference.
+- A following deployment whose `modelVersion` copy lacks the `to` version: refused (`migrationReferenceMissing`, naming it).
+- A data step that writes a model row (allowed until #741): the migration run fails at the end check, the version unchanged. C5's nested `createEntity` in a data step now fails there too; its expectation changes here.
+- A follower installed from a version frozen without `tests` snapshots: the `tests` collection is not compared, and the migration run proceeds.
 
-**GREEN:** a `modelDigest(application, state, collections)` next to `comparedCollections`, sharing its normalization; generation stores the digests; the migration run's two checks.
+**GREEN:** the reference read (`frozenModelState` for `from` and `to`, from the following deployment's `modelVersion` rows); a comparison function next to `comparedCollections` that limits the collections to those the reference snapshotted and returns the agreement check's differences; the two checks in the migration run.
 
-**Refactor checkpoint:** `comparedCollections` and the digest share one normalization function.
+**Refactor checkpoint:** the agreement check at freeze and the migration run's check share the comparison function.
 
 **Validation:**
 ```bash
