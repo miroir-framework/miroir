@@ -59,9 +59,18 @@ async function updateModelRow(object: Record<string, unknown>): Promise<void> {
   );
 }
 
-function generate(from: string, to: string) {
+/** Adds an optional string attribute to Book, through the DomainController. */
+async function addBookAttribute(attribute: string): Promise<void> {
+  const book = readModelFile(BOOK_ENTITY_FILE);
+  await updateModelRow({
+    ...book,
+    mlSchema: { ...book.mlSchema, definition: { ...book.mlSchema.definition, [attribute]: { type: "string", optional: true } } },
+  });
+}
+
+function generate(from: string, to: string, replace?: boolean) {
   return context.domainController.handleAction(
-    { actionType: "generateMigration", endpoint: MODEL_ENDPOINT, payload: { application: LIBRARY_APPLICATION, from, to } } as any,
+    { actionType: "generateMigration", endpoint: MODEL_ENDPOINT, payload: { application: LIBRARY_APPLICATION, from, to, ...(replace ? { replace } : {}) } } as any,
     applicationDeploymentMap,
     libraryModelEnvironment(),
   );
@@ -103,13 +112,7 @@ beforeAll(async () => {
 
 describe("#9 part B: generateMigration in versioned-git", () => {
   it("B4: the draft between the tag 1.0.0 and HEAD is a file of the work tree", async () => {
-    await updateModelRow({
-      ...readModelFile(BOOK_ENTITY_FILE),
-      mlSchema: {
-        ...readModelFile(BOOK_ENTITY_FILE).mlSchema,
-        definition: { ...readModelFile(BOOK_ENTITY_FILE).mlSchema.definition, edition9: { type: "string", optional: true } },
-      },
-    });
+    await addBookAttribute("edition9");
     expectOk(await gitAction(context, "gitAction_stage", { all: true }));
     expectOk(await gitAction(context, "gitAction_commit", { message: "#9 B4: Book.edition9", author: TEST_AUTHOR }));
     const before = new Set(migrationFiles());
@@ -132,6 +135,44 @@ describe("#9 part B: generateMigration in versioned-git", () => {
       { kind: "addAttribute", entity: BOOK_ENTITY, entityName: "Book", attribute: "edition9", backwardCompatible: true, supported: true },
     ]);
     expect(migration.fill.map((step: { name: string }) => step.name)).toEqual(["fill Book.edition9"]);
+    expect(migration.description).toContain("its model is the one of HEAD");
+  }, 60000);
+
+  it("B4: once to is tagged, its model is the tag's, not HEAD's", async () => {
+    expectOk(await gitAction(context, "gitAction_tag", { name: "1.1.0", author: TEST_AUTHOR }));
+    await addBookAttribute("edition10");
+    expectOk(await gitAction(context, "gitAction_stage", { all: true }));
+    expectOk(await gitAction(context, "gitAction_commit", { message: "#9 B4: Book.edition10", author: TEST_AUTHOR }));
+
+    expectOk(await generate("1.0.0", "1.1.0", true));
+
+    const migration = migrationFiles()
+      .map((file) => readModelFile(`modelVersion/${MIGRATION_ENTITY}/${file}`))
+      .find((row) => row.from === "1.0.0" && row.to === "1.1.0")!;
+    expect(migration.changes.map((change: { attribute?: string }) => change.attribute)).toEqual(["edition9"]);
+    expect(migration.description).not.toContain("HEAD");
+  }, 60000);
+
+  it("B4: with the traces off at the from tag, the draft comes from the two commits", async () => {
+    const selfApplicationFile = `model/${SELF_APPLICATION_ENTITY}/${LIBRARY_APPLICATION}.json`;
+    await updateModelRow({ ...readModelFile(selfApplicationFile), evolutionTraces: false });
+    expectOk(await gitAction(context, "gitAction_stage", { all: true }));
+    expectOk(await gitAction(context, "gitAction_commit", { message: "#9 B4: traces off", author: TEST_AUTHOR }));
+    expectOk(await gitAction(context, "gitAction_tag", { name: "1.2.0", author: TEST_AUTHOR }));
+    await addBookAttribute("edition11");
+    await updateModelRow({ ...readModelFile(selfApplicationFile), evolutionTraces: true });
+    await addBookAttribute("edition12");
+    expectOk(await gitAction(context, "gitAction_stage", { all: true }));
+    expectOk(await gitAction(context, "gitAction_commit", { message: "#9 B4: traces on again", author: TEST_AUTHOR }));
+
+    expectOk(await generate("1.2.0", "1.3.0"));
+
+    const migration = migrationFiles()
+      .map((file) => readModelFile(`modelVersion/${MIGRATION_ENTITY}/${file}`))
+      .find((row) => row.from === "1.2.0" && row.to === "1.3.0")!;
+    expect(migration.source).toBe("diff");
+    expect(migration.description).toContain("the traces are off at 1.2.0");
+    expect(migration.changes.map((change: { attribute?: string }) => change.attribute)).toEqual(["edition11", "edition12"]);
   }, 60000);
 
   it("B4: an unknown tag is refused", async () => {

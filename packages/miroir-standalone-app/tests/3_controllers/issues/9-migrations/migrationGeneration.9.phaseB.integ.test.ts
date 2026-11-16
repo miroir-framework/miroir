@@ -110,6 +110,8 @@ function refusalReason(result: unknown): string | undefined {
 
 beforeAll(async () => {
   context = await openVersioningTestContext();
+  // every test but B3.3 runs with the traces of appForTest on, whichever runs first
+  await setAppForTestTraces(true);
 }, 120000);
 
 /** A new Entity of appForTest with a `uuid`, `parentUuid` and `name`, created outside a transaction. */

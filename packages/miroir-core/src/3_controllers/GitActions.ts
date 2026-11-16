@@ -640,7 +640,8 @@ export async function readModelFilesAtRefs(
     const { isModelFile } = modelFileFilter(application, description.sectionPaths);
     const commits: GitModelFiles["commits"] = {};
     for (const ref of refs) {
-      const oid = (await repository.log({ ref, depth: 1 }).catch(() => []))[0]?.oid;
+      // a ref that names nothing reads as no commit; any other failure stops the read
+      const oid = (await repository.log({ ref, depth: 1 }))[0]?.oid;
       commits[ref] = oid ? { oid, files: await modelFilesOfCommit(repository, oid, isModelFile) } : undefined;
     }
     return { sectionFolders: description.sectionPaths, commits };

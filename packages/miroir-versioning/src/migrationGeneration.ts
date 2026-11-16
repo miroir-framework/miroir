@@ -32,7 +32,7 @@ import { entityMigration } from "@miroir-framework/core/meta-model";
 
 import { followingDeploymentRefusal, refusal } from "./deploymentRole.js";
 import { comparedCollections, differencesText, EVOLUTION_TRACES_DISAGREE, summarize } from "./evolutionTraceAgreement.js";
-import { ensureApplicationEntity } from "./evolutionTraceRecords.js";
+import { ensureApplicationEntity, withApplicationLock } from "./evolutionTraceRecords.js";
 import { metaModelEntityUuids } from "./freezeApplicationVersion.js";
 import { diffModelStates, sameJson } from "./modelStateDiff.js";
 import { frozenStateOf, liveModelState, modelStateFromFiles, replayCommitRecords, type ModelState } from "./modelStates.js";
@@ -111,12 +111,27 @@ function isOptional(definition: unknown): boolean {
 }
 
 /**
- * Whether an attribute's change keeps the `from` version able to run on migrated data: its type is the same
- * and it does not become required.
+ * An attribute definition without its `tag`, whose display hints have no storage effect; the foreign key
+ * target it names is kept, since it says what the stored value points to.
+ */
+function withoutTag(definition: unknown): unknown {
+  if (!definition || typeof definition !== "object") {
+    return definition;
+  }
+  const { tag, ...rest } = definition as Row;
+  const foreignKeyParams = ((tag as Row | undefined)?.value as Row | undefined)?.foreignKeyParams as Row | undefined;
+  return foreignKeyParams?.targetEntity === undefined ? rest : { ...rest, targetEntity: foreignKeyParams.targetEntity };
+}
+
+/**
+ * Whether an attribute's change keeps the `from` version able to run on migrated data: only an attribute
+ * made optional, its definition otherwise unchanged. A change of type, of a nested definition, of an enum or
+ * of a foreign key target is not.
  */
 function changeKeepsCompatibility(previous: unknown, next: unknown): boolean {
-  const sameType = (previous as Row | undefined)?.type === (next as Row | undefined)?.type;
-  return sameType && (isOptional(next) || !isOptional(previous));
+  const { optional: _before, ...previousRest } = (withoutTag(previous) ?? {}) as Row;
+  const { optional: _after, ...nextRest } = (withoutTag(next) ?? {}) as Row;
+  return sameJson(previousRest, nextRest) && (isOptional(next) || !isOptional(previous));
 }
 
 /**
@@ -160,7 +175,7 @@ export function entityStructureChanges(previous: Row | undefined, next: Row | un
   for (const [attribute, definition] of Object.entries(after)) {
     if (!(attribute in before)) {
       changes.push({ kind: "addAttribute", entity, entityName, attribute, backwardCompatible: isOptional(definition), supported: true });
-    } else if (!sameJson(before[attribute], definition)) {
+    } else if (!sameJson(withoutTag(before[attribute]), withoutTag(definition))) {
       changes.push({
         kind: "changeAttribute",
         entity,
@@ -256,29 +271,49 @@ function recordsBetween(
 
 /**
  * `versioned-git`: the records the `to` commit holds and the `from` one does not. A commit holds the chain
- * up to it, so these are the records appended between the two; none when the traces are off at `to`.
+ * up to it, so these are the records appended between the two when the chain of `to` continues the chain of
+ * `from`. None to read when the traces are off at either commit, or when the chain of `to` does not continue
+ * that of `from` (traces turned on in between, or `to` older than `from`): the diff alone gives the changes.
  */
-function recordsAdded(application: string, fromState: ModelState, toState: ModelState, to: string): RecordsBetween {
-  const selfApplication = toState.applications.find((row) => row.uuid === application) as EvolutionTraceSwitchInput | undefined;
-  if (!isEvolutionTraceOn(selfApplication)) {
-    return { none: `the traces are off at ${to}` };
+function recordsAdded(application: string, fromState: ModelState, toState: ModelState, from: string, to: string): RecordsBetween {
+  const tracesOn = (state: ModelState) =>
+    isEvolutionTraceOn(state.applications.find((row) => row.uuid === application) as EvolutionTraceSwitchInput | undefined);
+  if (!tracesOn(fromState) || !tracesOn(toState)) {
+    return { none: `the traces are off at ${!tracesOn(fromState) ? from : to}` };
   }
-  const known = new Set((fromState.evolutionTraceRecords as EvolutionTraceRecordRow[]).map((record) => record.uuid));
-  const added = (toState.evolutionTraceRecords as EvolutionTraceRecordRow[])
-    .filter((record) => record.application === application && !known.has(record.uuid))
-    .sort((a, b) => a.sequenceNumber - b.sequenceNumber);
+  const chainOf = (state: ModelState) =>
+    (state.evolutionTraceRecords as EvolutionTraceRecordRow[])
+      .filter((record) => record.application === application)
+      .sort((a, b) => a.sequenceNumber - b.sequenceNumber);
+  const fromChain = chainOf(fromState);
+  const toUuids = new Set(chainOf(toState).map((record) => record.uuid));
+  const known = new Set(fromChain.map((record) => record.uuid));
+  const added = chainOf(toState).filter((record) => !known.has(record.uuid));
+  const last = fromChain.at(-1);
+  if (fromChain.some((record) => !toUuids.has(record.uuid)) || (last !== undefined && added.length > 0 && added[0].previousTrace !== last.uuid)) {
+    return { none: `the chain of records of ${to} does not continue the one of ${from}` };
+  }
   const rebaseline = added.find((record) => record.kind === "rebaseline");
   return rebaseline ? { rebaseline } : { records: added };
 }
 
-/** The two versions of a Migration, and the records between them. */
-type VersionStates = { fromState: ModelState; toState: ModelState; between: RecordsBetween };
+/** The two versions of a Migration, the records between them, and what the draft says of where they come from. */
+type VersionStates = { fromState: ModelState; toState: ModelState; between: RecordsBetween; note?: string };
 
 /** `versioned-internal`: the two frozen versions named by the payload. */
 function frozenVersionStates(live: ModelState, payload: GenerateMigrationActionPayload): VersionStates | Action2Error {
-  const versionNamed = (name: string) => live.applicationVersions.find((row) => row.name === name);
-  const fromVersion = versionNamed(payload.from);
-  const toVersion = versionNamed(payload.to);
+  const versionsNamed = (name: string) =>
+    live.applicationVersions.filter((row) => row.name === name && (row as { selfApplication?: string }).selfApplication === payload.application);
+  const ambiguous = [payload.from, payload.to].find((name) => versionsNamed(name).length > 1);
+  if (ambiguous) {
+    return refusal(
+      `generateMigration: ${payload.application} has several Application Versions named ${ambiguous}, on different branches; a Migration names its versions by name`,
+      "versionAmbiguous",
+      { version: ambiguous },
+    );
+  }
+  const [fromVersion] = versionsNamed(payload.from);
+  const [toVersion] = versionsNamed(payload.to);
   if (!fromVersion || !toVersion) {
     return new Action2Error(
       "FailedToHandleAction",
@@ -318,6 +353,8 @@ async function gitVersionStates(
     );
   }
   const fromCommit = read.commits[payload.from];
+  // before `to` is tagged, its model is the one of HEAD: the commits so far, not the work tree's edits
+  const toTagged = read.commits[payload.to] !== undefined;
   const toCommit = read.commits[payload.to] ?? read.commits.HEAD;
   if (!fromCommit || !toCommit) {
     return new Action2Error(
@@ -325,9 +362,23 @@ async function gitVersionStates(
       `generateMigration: the repository of ${application} has no ${!fromCommit ? `tag ${payload.from}` : "commit"}`,
     );
   }
-  const fromState = modelStateFromFiles(application, read.sectionFolders, fromCommit.files);
-  const toState = modelStateFromFiles(application, read.sectionFolders, toCommit.files);
-  return { fromState, toState, between: recordsAdded(application, fromState, toState, read.commits[payload.to] ? payload.to : "HEAD") };
+  let fromState: ModelState;
+  let toState: ModelState;
+  try {
+    fromState = modelStateFromFiles(application, read.sectionFolders, fromCommit.files);
+    toState = modelStateFromFiles(application, read.sectionFolders, toCommit.files);
+  } catch (error) {
+    return new Action2Error("FailedToHandleAction", `generateMigration: a model file of ${application} in Git is not JSON: ${String(error)}`);
+  }
+  const to = toTagged ? payload.to : "HEAD";
+  return {
+    fromState,
+    toState,
+    between: recordsAdded(application, fromState, toState, payload.from, to),
+    note: toTagged
+      ? undefined
+      : `${payload.to} is not tagged yet: its model is the one of HEAD (${toCommit.oid}), without the changes not committed.`,
+  };
 }
 
 /** The Migration row for `payload`, from the two versions and, when there are, the records between them. */
@@ -356,7 +407,7 @@ export function draftMigration(
     backwardCompatible,
     generatedAt: new Date().toISOString(),
     description: [
-      `Draft generated from ${source === "traces" ? "the evolution trace records" : "the two versions (traces were off)"} of ${live.applicationName || payload.application}.`,
+      `Draft generated from ${source === "traces" ? "the two versions, checked against the evolution trace records" : "the two versions"} of ${live.applicationName || payload.application}.`,
       note ?? "",
     ]
       .filter((part) => part !== "")
@@ -364,9 +415,9 @@ export function draftMigration(
   };
 }
 
-/** The Migration of `application` from `from` to `to` among the stored ones. */
-function storedMigration(live: MetaModel, payload: GenerateMigrationActionPayload): { uuid: string } | undefined {
-  return live.migrations.find(
+/** The Migrations of `application` from `from` to `to` among the stored ones. */
+function storedMigrations(live: MetaModel, payload: GenerateMigrationActionPayload): { uuid: string }[] {
+  return live.migrations.filter(
     (row) => row.application === payload.application && row.from === payload.from && row.to === payload.to,
   );
 }
@@ -401,10 +452,18 @@ async function writeMigration(
  * when the traces between the two versions disagree with them (`evolutionTracesDisagree`), and when a
  * Migration for the same versions exists (`migrationExists`, unless `replace`).
  */
-export const handleAction_generateMigration: ActionImplementationHandler = async (host, action, context): Promise<Action2ReturnType> => {
-  const payload = action.payload as GenerateMigrationActionPayload;
+export const handleAction_generateMigration: ActionImplementationHandler = (host, action, context): Promise<Action2ReturnType> =>
+  // the check of the stored Migrations and the write run as one step for the application
+  withApplicationLock(`generateMigration:${(action.payload as GenerateMigrationActionPayload).application}`, () =>
+    generateMigration(host, action.payload as GenerateMigrationActionPayload, context.applicationDeploymentMap),
+  );
+
+async function generateMigration(
+  host: DomainControllerActionHost,
+  payload: GenerateMigrationActionPayload,
+  applicationDeploymentMap: ApplicationDeploymentMap,
+): Promise<Action2ReturnType> {
   const { application } = payload;
-  const { applicationDeploymentMap } = context;
   const following = await followingDeploymentRefusal(host, GENERATE_MIGRATION_ACTION_TYPE, application, applicationDeploymentMap);
   if (following) {
     return following;
@@ -413,7 +472,15 @@ export const handleAction_generateMigration: ActionImplementationHandler = async
   if (live instanceof Action2Error) {
     return live;
   }
-  const existing = storedMigration(live, payload);
+  const stored = storedMigrations(live, payload);
+  if (stored.length > 1) {
+    return refusal(
+      `generateMigration: there are ${stored.length} Migrations from ${payload.from} to ${payload.to} (${stored.map((row) => row.uuid).join(", ")}); keep one`,
+      "migrationExists",
+      { migrations: stored.map((row) => row.uuid) },
+    );
+  }
+  const [existing] = stored;
   if (existing && payload.replace !== true) {
     return refusal(
       `generateMigration: a Migration from ${payload.from} to ${payload.to} exists already (${existing.uuid}); replace it explicitly`,
@@ -456,8 +523,9 @@ export const handleAction_generateMigration: ActionImplementationHandler = async
     }
     source = "traces";
   } else {
-    note = `No trace records: ${between.none}.`;
+    note = `No trace records to check: ${between.none}.`;
   }
+  note = [states.note, note].filter((part) => part !== undefined).join(" ") || undefined;
 
   const ensured = await ensureApplicationEntity(host, application, applicationDeploymentMap, entityMigration as Entity, "generateMigrationEnsureEntity");
   if (ensured) {
@@ -468,4 +536,4 @@ export const handleAction_generateMigration: ActionImplementationHandler = async
   return written instanceof Action2Error
     ? new Action2Error("FailedToHandleAction", `generateMigration could not write the Migration of ${application}`, [], written)
     : ACTION_OK;
-};
+}

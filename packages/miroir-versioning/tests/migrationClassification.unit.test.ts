@@ -63,6 +63,21 @@ describe("Migration change classification (#9 B2)", () => {
     ]);
   });
 
+  it("ignores a change of tag only, and keeps no compatibility for a foreign key or nested definition changed", () => {
+    expect(entityStructureChanges(publisher, publisherWith((d) => ({ ...d, icon: { ...d.icon, tag: { value: { defaultLabel: "Logo" } } } })))).toEqual([]);
+    const next = publisherWith((d) => ({
+      ...d,
+      country: { ...d.country, tag: { value: { ...d.country.tag.value, foreignKeyParams: { targetEntity: "another" } } } },
+      icon: { type: "array", definition: { type: "string" }, optional: true },
+    }));
+    expect(entityStructureChanges(publisher, next)).toEqual([
+      { kind: "changeAttribute", ...about, attribute: "country", backwardCompatible: false, supported: true },
+      { kind: "changeAttribute", ...about, attribute: "icon", backwardCompatible: false, supported: true },
+    ]);
+    const nested = { ...next, mlSchema: { ...next.mlSchema, definition: { ...next.mlSchema.definition, icon: { type: "array", definition: { type: "number" }, optional: true } } } };
+    expect(entityStructureChanges(next, nested).map(({ backwardCompatible }) => backwardCompatible)).toEqual([false]);
+  });
+
   it("flags a renamed Entity and a changed idAttribute as unsupported", () => {
     const changes = entityStructureChanges(publisher, { ...publisher, name: "Editor", idAttribute: "name" });
     expect(changes.map(({ kind, entityName, backwardCompatible, supported }) => ({ kind, entityName, backwardCompatible, supported }))).toEqual([

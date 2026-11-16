@@ -298,6 +298,26 @@ Known gaps, left for later parts or issues:
 
 ---
 
+### Part B — adversarial review
+
+A review of B1 to B4, read without running anything, found these; the fixed ones have tests.
+
+**Fixed.**
+- `versioned-git`: the records were checked from `to` only. Traces off at the `from` tag and turned on later, or a `to` older than `from`, gave `evolutionTracesDisagree`; they now give the diff with a note (`recordsAdded` checks the traces at both commits and that the chain of `to` continues the chain of `from`).
+- A Git read failure other than an unknown ref was read as "no tag"; it now stops the generation. Before `to` is tagged, the draft says it was built from HEAD (with its oid) and leaves out uncommitted edits; once `to` is tagged, the tag is used.
+- Version names were looked up across applications and branches: they are now filtered by application, and a name found on several branches is refused (`versionAmbiguous`).
+- An attribute change kept `backwardCompatible: true` whenever its top-level type was the same: now only making an attribute optional keeps it. A change of `tag` alone is no change, except the foreign key target it names.
+- The check of stored Migrations and the write run under a per-application lock; several Migrations for the same pair are refused.
+- A model file of a commit that is not JSON gives an error instead of an exception.
+- The B2/B3 tests no longer depend on B1 turning the traces on.
+
+**Known gaps.**
+- `idAttribute: ["uuid"]` and `"uuid"` are told apart as an unsupported change.
+- The test files leave frozen versions, Migration rows and a re-baseline record in the `test-filesystem` store of appForTest; names carry a run suffix, so reruns pass.
+- The full `nonreg:filesystem` run before these fixes passed 138 steps; `integ-runner.lendDocument` failed in the shared runner and passed on its legacy re-run (not touched by part B).
+
+---
+
 ## Part C — Runner
 
 ### Slice C1 — A Migration run on a following deployment (tracer)
