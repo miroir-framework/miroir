@@ -417,6 +417,19 @@ A review of B1 to B4, read without running anything, found these; the fixed ones
 - **Validation.** `migrationRunGit.9.phaseC.integ.test.ts` (3 tests, ran twice); the part A, B Git and C files; `gitCheckout` (13); versioning unit tests (186); lint.
 
 
+### Part C — adversarial review
+
+A read-only review of C1 to Z (agent), then fixes, each with a test:
+- **A model action in a step waited in the transaction** (`createEntity` without `transactional`): recorded as done, then dropped by the jump's reload. The run sends the model actions of a step with `transactional: false`. Test C5.
+- **The run's mark was lost in nested sequences**: the resolution of a sequence rebuilt its actions without the symbol-keyed mark, so a model action in a nested sequence met `deploymentFollows`. The DomainController carries the mark from a marked sequence to each of its actions (`carryMigrationRunMark`, both composite paths); the run marks every level. Test C5.
+- **Steps ran with the model environment of the request** (the `from` model after the jump): each step and the jump now read it again.
+- **Git: a clone moved off its version, or a step writing the model,** passed the checks. A new run checks HEAD is at `from` (`versionNotCheckedOut`) and refuses steps that write `model` or `modelVersion` (`migrationStepWritesModel`). Test C4 (third). The Git actions are not gated on a following clone: #741.
+- **Steps sharing a uuid, or one named `jump`**, were skipped silently: refused (`migrationStepsInvalid`). Test C5.
+- **The client kept the old model after a run that stopped past the jump**: it reloads the application after a failed `runMigration` too.
+- **A version name on two branches** took the first row at install and jump: refused (`versionAmbiguous`).
+
+Full nonreg before these fixes: 138 of 140; the two failures (`unit-301-agent-tooling`, `unit-643-package-manifests`) were core's `dist/seed` built before the new MiroirTest, and pass after a rebuild.
+
 ### Slice Z — MiroirTest scenario, nonreg steps, docs, cleanup, AC
 
 **Status:** ✅ DONE

@@ -72,8 +72,13 @@ const VERSION_1_0 = `9C-1.0.0-${run}`;
 const VERSION_1_1 = `9C-1.1.0-${run}`;
 const VERSION_1_2 = `9C-1.2.0-${run}`;
 const MOTTO = "mottoC9";
-/** The Migrations C2 and C3 write by hand. */
-const [SECOND_MIGRATION, THIRD_MIGRATION] = ["9c000004-0000-4000-8000-000000000001", "9c000006-0000-4000-8000-000000000001"];
+/** The Migrations C2, C3 and C5 write by hand. */
+const [SECOND_MIGRATION, THIRD_MIGRATION, FOURTH_MIGRATION, FIFTH_MIGRATION] = [
+  "9c000004-0000-4000-8000-000000000001",
+  "9c000006-0000-4000-8000-000000000001",
+  "9c00000a-0000-4000-8000-000000000001",
+  "9c00000a-0000-4000-8000-000000000002",
+];
 
 /** An Entity appForTest gains in 1.1.0. */
 const edition = {
@@ -323,7 +328,7 @@ afterAll(async () => {
     payload: { application: APP_FOR_TEST, applicationSection: "model", objects: [{ ...publisher, mlSchema: { ...publisher.mlSchema, definition } }] },
   });
   const migrations = (await storedRows(context, APP_FOR_TEST_DEPLOYMENT, "modelVersion", MIGRATION_ENTITY)).filter((row) =>
-    [migration?.uuid, SECOND_MIGRATION, THIRD_MIGRATION].includes(row.uuid),
+    [migration?.uuid, SECOND_MIGRATION, THIRD_MIGRATION, FOURTH_MIGRATION, FIFTH_MIGRATION].includes(row.uuid),
   );
   if (migrations.length > 0) {
     await authoringAction({
@@ -540,5 +545,71 @@ describe("#9 part C: runMigration", () => {
     } finally {
       setCapabilities(context, {});
     }
+  }, 120000);
+
+  it("C5: a model action in a nested sequence of a step is stored, outside the transaction, before the step is recorded; steps with one uuid are refused", async () => {
+    const stepEntity = { ...edition, uuid: "9c00000b-0000-4000-8000-000000000001", name: "StepEntityC9" } as unknown as Entity;
+    const manual = (uuid: string, contract: unknown[]) =>
+      ({
+        uuid,
+        parentName: "Migration",
+        parentUuid: MIGRATION_ENTITY,
+        name: `${VERSION_1_2} again, ${uuid}`,
+        application: APP_FOR_TEST,
+        from: VERSION_1_2,
+        to: VERSION_1_2,
+        source: "manual",
+        changes: [],
+        expand: [],
+        fill: [],
+        contract,
+        backwardCompatible: true,
+      }) as unknown as MigrationRow;
+    const nested = {
+      uuid: "9c00000c-0000-4000-8000-000000000001",
+      name: "create StepEntityC9",
+      backwardCompatible: true,
+      repeatable: false,
+      action: {
+        actionType: "compositeActionSequence",
+        actionLabel: "outer",
+        endpoint: DOMAIN_ENDPOINT,
+        payload: {
+          actionSequence: [
+            {
+              actionType: "compositeActionSequence",
+              actionLabel: "inner",
+              endpoint: DOMAIN_ENDPOINT,
+              payload: {
+                actionSequence: [
+                  // no `transactional`: a model action waits in the transaction by default
+                  { actionType: "createEntity", actionLabel: "StepEntityC9", endpoint: MODEL_ENDPOINT, payload: { application: APP_FOR_TEST, entities: [stepEntity] } },
+                ],
+              },
+            },
+          ],
+        },
+      },
+    };
+    const duplicated = manual(FIFTH_MIGRATION, [nested, { ...nested, name: "the same uuid again" }]);
+    for (const row of [manual(FOURTH_MIGRATION, [nested]), duplicated]) {
+      expectOk(
+        await authoringAction({
+          actionType: "createInstance",
+          endpoint: INSTANCE_ENDPOINT,
+          payload: { application: APP_FOR_TEST, applicationSection: "modelVersion", parentUuid: MIGRATION_ENTITY, objects: [row] },
+        }),
+        `Migration ${row.uuid}`,
+      );
+    }
+    const statesBefore = await storedRows(context, ADMIN_DEPLOYMENT, "data", DEPLOYMENT_STATE_ENTITY_UUID);
+    expect(refusalReason(await runMigration(FIFTH_MIGRATION))).toBe(MIGRATION_RUN_REFUSALS.migrationStepsInvalid);
+    expect(await storedRows(context, ADMIN_DEPLOYMENT, "data", DEPLOYMENT_STATE_ENTITY_UUID)).toEqual(statesBefore);
+
+    expectOk(await runMigration(FOURTH_MIGRATION), "the run");
+
+    const entities = await storedRows(context, FOLLOWING_DEPLOYMENT, "model", "16dbfe28-e1d7-4f20-9ba4-c1a9873202ad");
+    expect(entities.map((row) => row.uuid)).toContain(stepEntity.uuid);
+    expect((await deploymentState())?.applied?.map((applied) => applied.migration)).toContain(FOURTH_MIGRATION);
   }, 120000);
 });

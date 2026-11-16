@@ -395,7 +395,17 @@ export async function bringModelToVersion(
   if (current instanceof Action2Error) {
     return current;
   }
-  const versionRow = current.applicationVersions.find((row) => row.name === version);
+  const named = current.applicationVersions.filter(
+    (row) => row.name === version && ((row as { selfApplication?: string }).selfApplication ?? application) === application,
+  );
+  if (named.length > 1) {
+    return refusal(
+      `${label}: ${application} has several Application Versions named ${version}, on different branches`,
+      "versionAmbiguous",
+      { version },
+    );
+  }
+  const [versionRow] = named;
   if (!versionRow) {
     return new Action2Error("FailedToHandleAction", `${label}: ${application} has no Application Version named ${version}`);
   }

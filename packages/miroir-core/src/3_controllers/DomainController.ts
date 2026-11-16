@@ -138,6 +138,7 @@ import {
   fetchesModelVersion,
   isEvolutionTraceOn,
   isMigrationRun,
+  markMigrationRun,
   isRecordedBySender,
   isRecordedModelChange,
   recordedInstanceWrite,
@@ -3790,7 +3791,17 @@ export class DomainController implements DomainControllerInterface, DomainContro
       }
     }
     const result = await this.forwardServerRoutedAction(domainAction, applicationDeploymentMap);
-    if (result instanceof Action2Error || typeof application !== "string") {
+    if (typeof application !== "string") {
+      return result;
+    }
+    if (result instanceof Action2Error) {
+      // #9: a stopped migration run may have changed the model (its jump) before the step that failed
+      if ((domainAction as { actionType?: string }).actionType === "runMigration") {
+        await this.reloadTouchedDeployments(
+          { status: "ok", returnedDomainElement: { touchedDeployments: [{ application }] } as any },
+          applicationDeploymentMap,
+        );
+      }
       return result;
     }
     const reloaded = await this.reloadTouchedDeployments(
@@ -4815,7 +4826,8 @@ export class DomainController implements DomainControllerInterface, DomainContro
     //   Object.keys(localActionParams),
     // );
 
-    for (const currentAction of sequenceToExecute.payload.actionSequence) {
+    for (const sequenceChild of sequenceToExecute.payload.actionSequence) {
+      const currentAction = carryMigrationRunMark(compositeActionSequence, sequenceChild);
       let actionResult: Action2ReturnType | undefined = undefined;
       try {
         log.debug(
@@ -5870,7 +5882,9 @@ export class DomainController implements DomainControllerInterface, DomainContro
     let lastPayloadResult: Action2ReturnType = ACTION_OK;
 
     // TODO: replace with handleCompositeAction
-    for (const currentAction of resolved.resolvedCompositeActionDefinition.payload.actionSequence) {
+    for (const resolvedChild of resolved.resolvedCompositeActionDefinition.payload.actionSequence) {
+      // the resolution rebuilt the sequence: a migration run's mark goes from the sequence to each action
+      const currentAction = carryMigrationRunMark(compositeActionSequence, resolvedChild);
       log.info(
         "handleCompositeActionTemplate",
         actionLabel,
@@ -5910,7 +5924,7 @@ export class DomainController implements DomainControllerInterface, DomainContro
       const resolvedActionTemplate: any =
         resolvedStep instanceof TransformerFailure
           ? resolvedStep
-          : attachQueryRuntimeTransformers(resolvedStep, runtimeTransformers, localActionParams);
+          : carryMigrationRunMark(currentAction, attachQueryRuntimeTransformers(resolvedStep, runtimeTransformers, localActionParams));
       log.info(
         "handleCompositeActionTemplate compositeInstanceAction",
         currentAction.actionLabel ?? "without step name",
@@ -6634,3 +6648,11 @@ export class DomainController implements DomainControllerInterface, DomainContro
 // ##############################################################################################
 // ##############################################################################################
 // ##############################################################################################
+
+/**
+ * #9: the resolution of an action template builds a new object, which drops the symbol-keyed mark of a
+ * migration run: the resolved action gets it again when the template had it.
+ */
+function carryMigrationRunMark<T>(template: unknown, resolved: T): T {
+  return isMigrationRun(template) && resolved !== null && typeof resolved === "object" ? (markMigrationRun(resolved as object) as T) : resolved;
+}

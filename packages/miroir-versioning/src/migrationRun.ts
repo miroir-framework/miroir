@@ -50,7 +50,31 @@ export const MIGRATION_RUN_REFUSALS = {
   migrationRunInProgress: "migrationRunInProgress",
   migrationUnsupportedChange: "migrationUnsupportedChange",
   migrationStepFailed: "migrationStepFailed",
+  migrationStepsInvalid: "migrationStepsInvalid",
+  migrationStepWritesModel: "migrationStepWritesModel",
+  versionNotCheckedOut: "versionNotCheckedOut",
 } as const;
+
+const MODEL_ENDPOINT_UUID = "7947ae40-eb34-4149-887b-15a9021e714e";
+/** The model actions that wait in the transaction unless they say `transactional: false`. */
+const TRANSACTIONAL_MODEL_ACTIONS: ReadonlySet<string> = new Set(["createEntity", "dropEntity", "renameEntity", "alterEntityAttribute"]);
+
+type StepAction = { actionType?: string; endpoint?: string; payload?: Record<string, unknown> };
+
+/** The actions of a step, those of nested sequences included. */
+function stepActions(action: StepAction): StepAction[] {
+  const sequence = (action.payload?.actionSequence ?? []) as StepAction[];
+  return [action, ...sequence.flatMap((inner) => stepActions(inner))];
+}
+
+/** Whether an action of a step writes the application's model or `modelVersion` section. */
+function writesModel(action: StepAction): boolean {
+  return (
+    (action.endpoint === MODEL_ENDPOINT_UUID && TRANSACTIONAL_MODEL_ACTIONS.has(action.actionType ?? "")) ||
+    action.payload?.applicationSection === "model" ||
+    action.payload?.applicationSection === "modelVersion"
+  );
+}
 
 type RunState = { migration: MigrationRow; stepsDone: string[]; startedAt: string };
 
@@ -64,13 +88,22 @@ function recomputedBackwardCompatible(migration: MigrationRow): boolean {
   return [...migration.changes, ...migration.expand, ...migration.fill, ...migration.contract].every((item) => item.backwardCompatible);
 }
 
-/** `action` and the actions of its sequence, marked as a migration run's (D6). */
-function markedStep(action: CompositeActionSequence): CompositeActionSequence {
-  const sequence = (action.payload?.actionSequence ?? []) as object[];
+/**
+ * `action` and the actions of its sequences, nested ones included, marked as a migration run's (D6). A model
+ * action runs outside the transaction (`transactional: false`): a step's writes are stored before the step
+ * is recorded, and the reload of the jump would drop pending ones.
+ */
+function markedStep<T extends StepAction>(action: T): T {
+  const payload = action.payload ?? {};
+  const sequence = payload.actionSequence as StepAction[] | undefined;
   return markMigrationRun({
     ...action,
-    payload: { ...action.payload, actionSequence: sequence.map((inner) => markMigrationRun(inner)) },
-  } as CompositeActionSequence);
+    payload: {
+      ...payload,
+      ...(sequence ? { actionSequence: sequence.map((inner) => markedStep(inner)) } : {}),
+      ...(action.endpoint === MODEL_ENDPOINT_UUID && TRANSACTIONAL_MODEL_ACTIONS.has(action.actionType ?? "") ? { transactional: false } : {}),
+    },
+  } as T);
 }
 
 /** Runs one step of a Migration on the application's deployment; an error names the step. */
@@ -80,7 +113,7 @@ async function runStep(
   applicationDeploymentMap: ApplicationDeploymentMap,
   modelEnvironment: MiroirModelEnvironment,
 ): Promise<Action2Error | undefined> {
-  const result = await host.handleCompositeAction(markedStep(step.action), applicationDeploymentMap, modelEnvironment, {});
+  const result = await host.handleCompositeAction(markedStep(step.action as StepAction) as CompositeActionSequence, applicationDeploymentMap, modelEnvironment, {});
   return result instanceof Action2Error
     ? new Action2Error("FailedToHandleAction", `runMigration: step "${step.name}" failed`, undefined, result, {
         reason: MIGRATION_RUN_REFUSALS.migrationStepFailed,
@@ -139,6 +172,30 @@ async function runToDo(
       MIGRATION_RUN_REFUSALS.migrationUnsupportedChange,
       { changes: unsupported },
     );
+  }
+  const steps = [...stored.expand, ...stored.fill, ...stored.contract];
+  const uuids = steps.map((step) => step.uuid);
+  if (uuids.some((uuid, index) => uuid === JUMP_STEP || uuids.indexOf(uuid) !== index)) {
+    return refusal(
+      `runMigration: the steps of a Migration need distinct uuids, none of them "${JUMP_STEP}", for a run to record them`,
+      MIGRATION_RUN_REFUSALS.migrationStepsInvalid,
+    );
+  }
+  if (git) {
+    // the model of a versioned-git deployment is its checkout: a model write would block the jump, or the next one
+    const writing = steps.filter((step) => stepActions(step.action as StepAction).some(writesModel));
+    if (writing.length > 0) {
+      return refusal(
+        `runMigration: in versioned-git the model comes from the tag; steps ${writing.map((step) => step.name).join(", ")} write the model`,
+        MIGRATION_RUN_REFUSALS.migrationStepWritesModel,
+        { steps: writing.map((step) => step.uuid) },
+      );
+    }
+    // the clone must still be at the version the state says, whatever was checked out since the last run
+    const atFrom = await checkedOutVersion(host, payload.application, stored.from, applicationDeploymentMap, "runMigration");
+    if (atFrom instanceof Action2Error) {
+      return atFrom;
+    }
   }
   // the copy the run uses until it ends, whatever the modelVersion section holds meanwhile (epic D2)
   return {
@@ -230,12 +287,13 @@ async function runMigration(
       continue;
     }
     if (step === JUMP_STEP) {
-      const failed = await jump(host, application, run.migration.to, git, applicationDeploymentMap, context.modelEnvironment);
+      const failed = await jump(host, application, run.migration.to, git, applicationDeploymentMap, undefined);
       if (failed) {
         return failed;
       }
     } else {
-      const failed = await runStep(host, step, applicationDeploymentMap, modelEnvironmentOf(host, application, applicationDeploymentMap, context.modelEnvironment));
+      // the model environment is read again for each step: the jump and the steps that write the model change it
+      const failed = await runStep(host, step, applicationDeploymentMap, modelEnvironmentOf(host, application, applicationDeploymentMap, undefined));
       if (failed) {
         return failed;
       }

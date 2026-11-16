@@ -281,6 +281,53 @@ describe("#9 C4: runMigration in versioned-git", () => {
     expect(readJson(cloneRoot, bookPath(BOOK_UBIK))[EDITION]).toBeUndefined();
   }, 120000);
 
+  it("C4: refused before anything is written: a step writing the model, a clone moved from the state's version", async () => {
+    // two Migrations from 1.1.0, committed and tagged 1.2.0 in the clone, whose HEAD then moves off 1.1.0
+    const repository = await createGitRepositoryFactory().open(cloneRoot);
+    const fromState = { ...migration, from: "1.1.0", to: "1.2.0", changes: [], fill: [], contract: [] };
+    const modelWriter = {
+      ...fromState,
+      uuid: "9c400004-0000-4000-8000-000000000001",
+      expand: [
+        {
+          uuid: "9c400004-0000-4000-8000-000000000002",
+          name: "rename Book",
+          backwardCompatible: true,
+          repeatable: true,
+          action: {
+            actionType: "compositeActionSequence",
+            actionLabel: "rename Book",
+            endpoint: DOMAIN_ENDPOINT,
+            payload: {
+              actionSequence: [
+                {
+                  actionType: "updateInstance",
+                  actionLabel: "Book row",
+                  endpoint: INSTANCE_ENDPOINT,
+                  payload: { application: LIBRARY_APPLICATION, applicationSection: "model", objects: [readJson(cloneRoot, BOOK_ENTITY_FILE)] },
+                },
+              ],
+            },
+          },
+        },
+      ],
+    };
+    const dataOnly = { ...fromState, uuid: "9c400005-0000-4000-8000-000000000001" };
+    for (const row of [modelWriter, dataOnly]) {
+      fs.writeFileSync(path.join(cloneRoot, "modelVersion", MIGRATION_ENTITY, `${row.uuid}.json`), JSON.stringify(row, undefined, 2));
+    }
+    await repository.stage([`modelVersion/${MIGRATION_ENTITY}/${modelWriter.uuid}.json`, `modelVersion/${MIGRATION_ENTITY}/${dataOnly.uuid}.json`]);
+    await repository.commit("#9 C4: two Migrations from 1.1.0", TEST_AUTHOR);
+    await repository.createTag("1.2.0", { message: "1.2.0", tagger: TEST_AUTHOR });
+    const statesBefore = await adminRows(DEPLOYMENT_STATE_ENTITY_UUID);
+
+    const writing = await runMigration(modelWriter.uuid);
+    expect(refusalReasons(writing), JSON.stringify(writing)).toEqual([MIGRATION_RUN_REFUSALS.migrationStepWritesModel]);
+    const moved = await runMigration(dataOnly.uuid);
+    expect(refusalReasons(moved), JSON.stringify(moved)).toEqual([MIGRATION_RUN_REFUSALS.versionNotCheckedOut]);
+    expect(await adminRows(DEPLOYMENT_STATE_ENTITY_UUID)).toEqual(statesBefore);
+  }, 60000);
+
   it("C4: a Migration no tag holds as its to is not found", async () => {
     const result = await runMigration("9c400002-0000-4000-8000-000000000001");
     expect(refusalReasons(result), JSON.stringify(result)).toEqual([MIGRATION_RUN_REFUSALS.migrationNotFound]);
