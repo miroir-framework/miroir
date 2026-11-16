@@ -16,7 +16,7 @@ Analysis: [`./analysis.md`](./analysis.md) · Issue: https://github.com/miroir-f
 Prerequisite: [`../9-FEATURE-create-migrations-for-model-and-data-updates/`](../9-FEATURE-create-migrations-for-model-and-data-updates/) ✅
 Working branch: `claude/745-replay-traced-model-actions`
 
-**Resume note:** decisions accepted by the user (2026-11-16); plan reviewed three times (the last round checked feasibility against the code, and coverage of the analysis); Slice 0 next.
+**Resume note:** decisions accepted by the user (2026-11-16); plan reviewed three times (the last round checked feasibility against the code, and coverage of the analysis); Slice 0 done; Slice 1 next.
 
 ---
 
@@ -32,8 +32,8 @@ This plan does **not** cover:
 - the Migration package and the reference package of a version (#746);
 - what a hand-written step may hold (#741);
 - refusing instance writes on Entity rows, and the model Action for the Entity fields that change no storage (#748);
-- column type, nullability, key and reference changes (follow-up filed in Slice 0);
-- the retry of a failed authoring commit under D4 (follow-up filed in Slice 0);
+- column type, nullability, key and reference changes (#749, filed in Slice 0);
+- the retry of a failed authoring commit under D4 (#750, filed in Slice 0);
 - rollback and leftover storage (#709);
 - a step and its record committed in one SQL transaction (later, D5-c);
 - Migrations of Miroir itself (refused, D2).
@@ -44,7 +44,7 @@ This plan does **not** cover:
 
 | Slice | Title | Status | Primary proof |
 |---|---|---|---|
-| 0 | Characterize; servers; follow-up issues | ⬜ | versioning suites on the branch base; `createEntityStrict.integ` with today's behaviour |
+| 0 | Characterize; servers; follow-up issues | ✅ | versioning suites on the branch base; `createEntityStrict.integ` with today's behaviour |
 | 1 | Tracer: a migration run executes a traced `createEntity` from a Migration with one ordered step list | ⬜ | `migrationRun.integ` C1 |
 | 2 | Steps in trace order, adds and removes split, Entity row writes refused, steps checked by replay | ⬜ | `migrationGeneration.integ` B4.x |
 | 3 | Changes no model Action can apply are refused; rename and drop replayed | ⬜ | `migrationClassification.unit`, `migrationRun.integ` C3, C9 |
@@ -110,7 +110,7 @@ No issue-scoped test directory is created: the new tests go into feature-named f
 
 ## Slice 0 — Characterize; servers; follow-up issues
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal:** a recorded baseline, the servers the later slices need, and the two follow-up issues the analysis names.
 
@@ -136,7 +136,12 @@ for env in filesystem indexedDb sql mongodb; do MIROIR_ENV=test-$env npm run tes
 ```
 
 ### Realization
-_(to fill)_
+- Baseline on the branch base (`_integration` at 1cfb536): versioning integration tests on `test-filesystem`, 16 files and 88 tests passed; `@miroir-framework/versioning` unit tests, 13 files and 186 tests passed; `entityRowUpdateSqlTable.integ` on `test-sql`, 3 passed.
+- `createEntityStrict.integ.test.ts` written with today's behaviour (3 tests): `createEntity` where only the storage exists, and where the row exists, succeeds; the instances are kept on the filesystem and IndexedDB stores and lost on SQL; `createEntities` with the second Entity existing creates the first. Green on `test-filesystem`, `test-indexedDb` and `test-sql`.
+- PostgreSQL 16/main started; the `postgres` user's password set; the SQL tests run with `MIROIR_POSTGRES_PASSWORD` exported.
+- MongoDB: `mongodb-memory-server` installed outside the repository, but its binary download from `fastdl.mongodb.org` is refused by the session's network policy (proxy 403). MongoDB stays unproven in this issue, as accepted by the user; its code changes are typechecked only.
+- Follow-up issues filed: #749 (column type, nullability, key and reference changes as model Actions, D3-c) and #750 (a retried authoring commit fails once `createEntity` is strict), both sub-issues of #694.
+- Slice 4 watch list (test files calling `createEntity` or `resetModel`): in `miroir-standalone-app/tests`, `applicationVersionFreeze.integ`, `versioningModes.filesystem-seed.integ`, the versioning integration tests, `PersistenceStoreController.integ`, `PkLessExternalEntity.integ`, `entityRowUpdateSqlTable.integ`, `storeSectionClear.31.unit`, `createEntityAndReportFromSpreadsheetAndUpdateMenu.ts`, `seedMiroirModelVersionFromPackageAssets.ts`; in core, `persistenceStoreController.sections.unit`, `persistenceStoreControllerManager.unit`; `FileSystemModelStoreSection.createEntity.unit` in the filesystem store; `LocalCache.createEntity.undo.unit` in the Redux local cache.
 
 ---
 
@@ -224,7 +229,7 @@ _(to fill)_
 **Goal:** D3, and `renameEntity` / `dropEntity` executed by a migration run.
 
 **RED:**
-- `migrationClassification.unit.test.ts`: `changeAttribute` (type, made required, enum, foreign key target), `changeIdAttribute`, and an `addAttribute` that is required on an existing Entity are `supported: false`, each note naming the follow-up issue of Slice 0; an `addAttribute` required on an Entity the Migration creates is supported; `renameEntity` is supported; a `tag`-only change is no change.
+- `migrationClassification.unit.test.ts`: `changeAttribute` (type, made required, enum, foreign key target), `changeIdAttribute`, and an `addAttribute` that is required on an existing Entity are `supported: false`, each note naming #749; an `addAttribute` required on an Entity the Migration creates is supported; `renameEntity` is supported; a `tag`-only change is no change.
 - `migrationGeneration.integ.test.ts` B2.3 (required attribute added to an existing Entity) and B2.4 (`idAttribute` changed, traces off): the changes are `supported: false`.
 - `migrationRun.integ.test.ts` C3: a Migration generated with traces off (`source: diff`) between two versions where `Publisher.name` changes type is refused before step 1 (`migrationUnsupportedChange`), nothing written.
 - `migrationRun.integ.test.ts` C9: a Migration whose steps are a traced `renameEntity` and a traced `dropEntity`: after the migration run, the renamed Entity's instances are kept, the dropped Entity's storage is gone.

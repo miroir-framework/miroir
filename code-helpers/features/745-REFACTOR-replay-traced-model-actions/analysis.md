@@ -31,9 +31,9 @@ Key sources: [`migrationGeneration.ts`](../../../packages/miroir-versioning/src/
 - `versioned-git` follower migration runs: D13, #747. #9's Git migration run is kept, adapted to the new row shape (D1).
 - Export and import of a Migration, and of a reference package of a version, as files: #746. The tests here give the following deployment its own copy of the `modelVersion` rows instead of a shared section.
 - What a hand-written step may hold (model Actions refused): #741. D1 gives each step a `kind` that #741 checks.
-- Column type, nullability and key changes on SQL: refused here (D3); the Actions that would apply them are a follow-up (to file).
+- Column type, nullability and key changes on SQL: refused here (D3); the Actions that would apply them are a follow-up, #749.
 - Restore and rollback, and what they do with storage left by later versions: #709 (section 7).
-- A failed authoring commit that cannot be retried once D4 applies: a follow-up (to file, section 4.4).
+- A failed authoring commit that cannot be retried once D4 applies: a follow-up, #750 (section 4.4).
 - Committing a step's writes and its record in one SQL transaction: later; D5 detects the gap instead.
 - Refusing instance writes on Entity rows, so that only model Actions write them, and the model Action for the Entity fields that change no storage: #748. This analysis relies on that rule (D2) and does not implement it.
 - Migrations of Miroir itself: its model lives in its `data` section, and restoring Miroir's own model is an epic non-goal.
@@ -137,7 +137,7 @@ Examples on Library (the attributes as they are today: `Book.year` is an optiona
 |---|---|---|---|
 | **D3-a. Refuse the changes no model Action can apply to the table** ★ | generation classifies `changeAttribute`, `changeIdAttribute`, and a required attribute added to an existing Entity as `supported: false`, with a note naming the follow-up; it still writes the Migration, so the designer sees the list; `runMigration` refuses it before step 1 (`migrationUnsupportedChange`) | the migration run never ends with a table that does not match the model | a type change or a new required attribute on an existing Entity cannot be migrated until the follow-up |
 | D3-b. As #9 | the Entity row is rewritten, the table left as it is | no new refusal | the table no longer matches the model, found later by a failed write |
-| D3-c. Add column changes now | SQL `changeColumn` behind `alterEntityAttribute.update`, and a required attribute generated as "add it nullable, fill it, make it required" | complete | a new Action contract, out of this issue's scope: the follow-up |
+| D3-c. Add column changes now | SQL `changeColumn` behind `alterEntityAttribute.update`, and a required attribute generated as "add it nullable, fill it, make it required" | complete | a new Action contract, out of this issue's scope: the follow-up #749 |
 
 The filesystem, IndexedDB and MongoDB stores keep each instance as a JSON document, so these changes need no storage change there. D3-a refuses them on every store anyway: a Migration does not know which store its following deployments use, and existing documents would still hold values of the old type or no value for a required attribute.
 
@@ -258,7 +258,7 @@ Each store's behaviour is in D4. The callers that can meet existing storage, and
 
 | Caller | When it meets existing storage | Under D4 |
 |---|---|---|
-| A commit retried after it failed part way (`DomainController.ts` lines 2596–2619) | the retry replays a `createEntity` the failed attempt wrote | fails with `storageExists`; on SQL it drops the table today. The retry path needs its own fix (follow-up to file). |
+| A commit retried after it failed part way (`DomainController.ts` lines 2596–2619) | the retry replays a `createEntity` the failed attempt wrote | fails with `storageExists`; on SQL it drops the table today. The retry path needs its own fix (#750). |
 | `resetModel` then `initModel` / `createEntity` on SQL (`DomainController.ts` ~2206 and ~2344, `Runner_CreateApplication.tsx` line 594) | `clear()` drops only the tables of registered models (`SqlDbStoreSection.ts` lines 80–93); an orphan table survives | fails, naming the orphan table. In scope: the reset (`PersistenceStoreController.clear()`) also drops the tables of the schema that neither section registered and no external Entity names. Not every table of the schema: the `model` and `data` sections of a deployment share one schema (`Environment.ts` lines 174–190), so a data reset must keep the model tables. |
 | `ensureVersionHistoryEntities`, `ensureApplicationEntity` (`applicationVersionInstall.ts` lines 261–290, `evolutionTraceRecords.ts` line 57) | they check the in-memory model only; a row deleted without its storage leaves an orphan | fails, naming the storage: the orphan is a loose end the operator must see |
 | External service schema sync (`syncExternalServiceSchema.ts` lines 706–714, Entities built at lines 853–869) | a re-sync emits `createEntity` again for every operation's external Entity | external Entities are exempt from D4: they have no storage, and their `createEntity` stays an upsert of the row |
