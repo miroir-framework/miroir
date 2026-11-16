@@ -397,7 +397,7 @@ A review of B1 to B4, read without running anything, found these; the fixed ones
 
 ### Slice C4 — `versioned-git`: the jump is a checkout of the tag
 
-**Status:** ⬜ pending
+**Status:** ✅ DONE
 
 **Goal.** E2's apply step: a following Git deployment at tag `1.0.0` reads the Migration at tag `1.1.0` and checks it out (G2, epic section 5.2).
 
@@ -409,7 +409,13 @@ A review of B1 to B4, read without running anything, found these; the fixed ones
 
 **Validation.** The file; the #679 Git nonreg step; full `npm run nonreg:filesystem -- --runner shared` (end of part C).
 
-**Realization.** _(on completion)_
+**Realization.** `packages/miroir-versioning/src/migrationGit.ts`, used by the install and the runner when the live SelfApplication says `versioned-git`.
+- **Install.** `installApplicationVersion` rewrites no model: `checkedOutVersion` reads the log at the tag (`gitAction_log`) and refuses with `versionNotCheckedOut` when HEAD is another commit; the state row gets `version` and `gitCommit`.
+- **Find.** `migrationAtItsTag` lists the tags (`gitAction_log` branches), reads their model files (`readGitModelFiles`) and keeps the Migration file whose `to` is the tag holding it; none gives `migrationNotFound`. Every tag's model files are read: a repository with many tags reads more than it needs (known limit, no file-by-path read on the host).
+- **Jump.** `checkoutVersion`: `gitAction_checkout` of the tag, then the same check of HEAD, then a reload. A failed jump, on either mode, is now `migrationStepFailed` with `step: jump`. The end of the run checks HEAD is still at `to` and writes its commit in `gitCommit`.
+- **Deviation.** The Git actions refuse a deployment whose sections are not all in one repository (`sectionsInSeveralRepositories`), so the data section cannot be outside the clone as analysis D8 put it: the test puts it in a folder of the clone that the clone's `.gitignore` names. The expand step writes there before the jump and the checkout passes; a change not committed to a tracked model file stops the run at the jump (`checkoutConflict`), and the run resumes once it is discarded. #710 keeps the installer side.
+- **Validation.** `migrationRunGit.9.phaseC.integ.test.ts` (3 tests, ran twice); the part A, B Git and C files; `gitCheckout` (13); versioning unit tests (186); lint.
+
 
 ### Slice Z — MiroirTest scenario, nonreg steps, docs, cleanup, AC
 

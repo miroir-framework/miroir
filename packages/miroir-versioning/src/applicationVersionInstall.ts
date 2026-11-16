@@ -39,6 +39,7 @@ import { selectEntitiesToFreeze } from "./applicationVersionFreeze.js";
 import { AGREEMENT_COLLECTIONS } from "./evolutionTraceAgreement.js";
 import { withApplicationLock } from "./evolutionTraceRecords.js";
 import { refusal, storedDeploymentRow, withAdmin } from "./deploymentRole.js";
+import { checkedOutVersion, isGitVersioned } from "./migrationGit.js";
 import { HISTORY_ENTITIES, metaModelEntityUuids } from "./freezeApplicationVersion.js";
 import { frozenCollectionsOf, frozenStateOf, liveModelState, type ModelState } from "./modelStates.js";
 import { sameJson } from "./modelStateDiff.js";
@@ -480,6 +481,17 @@ async function installApplicationVersion(
   }
 
   const installed = await (async (): Promise<Action2Error | undefined> => {
+    // a `versioned-git` deployment is its clone, checked out at the tag of its version (#9 C4)
+    const live = await liveModelState(host, application, applicationDeploymentMap);
+    if (live instanceof Action2Error) {
+      return live;
+    }
+    if (isGitVersioned(live, application)) {
+      const gitCommit = await checkedOutVersion(host, application, version, applicationDeploymentMap, "installApplicationVersion");
+      return gitCommit instanceof Action2Error
+        ? gitCommit
+        : writeDeploymentState(host, { deployment: deploymentUuid, application, version, gitCommit }, applicationDeploymentMap);
+    }
     const rewritten = await bringModelToVersion(host, application, applicationDeploymentMap, version, context.modelEnvironment, "installApplicationVersion");
     if (rewritten instanceof Action2Error) {
       return rewritten;

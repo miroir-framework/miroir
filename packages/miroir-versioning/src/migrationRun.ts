@@ -30,7 +30,8 @@ import {
 import { refusal, storedDeploymentRow } from "./deploymentRole.js";
 import { withApplicationLock } from "./evolutionTraceRecords.js";
 import type { MigrationRow, MigrationStep } from "./migrationGeneration.js";
-import { liveModelState } from "./modelStates.js";
+import { checkedOutVersion, checkoutVersion, isGitVersioned, migrationAtItsTag } from "./migrationGit.js";
+import { liveModelState, type ModelState } from "./modelStates.js";
 
 /** #9: Model Endpoint action that runs a Migration on a following deployment. */
 export const RUN_MIGRATION_ACTION_TYPE = "runMigration" as const;
@@ -88,11 +89,16 @@ async function runStep(
     : undefined;
 }
 
-/** The run to do: a new one from the stored Migration, or the one in progress (resume). */
+/**
+ * The run to do: a new one from the stored Migration, or the one in progress (resume). The Migration of a
+ * `versioned-git` application is the one the commit of its `to` tag holds (D8).
+ */
 async function runToDo(
   host: DomainControllerActionHost,
   payload: RunMigrationActionPayload,
   state: DeploymentStateRow | undefined,
+  live: ModelState,
+  git: boolean,
   applicationDeploymentMap: ApplicationDeploymentMap,
 ): Promise<RunState | Action2Error> {
   const inProgress = state?.run as RunState | undefined;
@@ -105,13 +111,19 @@ async function runToDo(
           { migration: inProgress.migration.uuid },
         );
   }
-  const live = await liveModelState(host, payload.application, applicationDeploymentMap);
-  if (live instanceof Action2Error) {
-    return live;
+  const stored = git
+    ? await migrationAtItsTag(host, payload.application, payload.migration, applicationDeploymentMap)
+    : (live.migrations.find((row) => row.uuid === payload.migration) as MigrationRow | undefined);
+  if (stored instanceof Action2Error) {
+    return stored;
   }
-  const stored = live.migrations.find((row) => row.uuid === payload.migration) as MigrationRow | undefined;
   if (!stored || stored.application !== payload.application) {
-    return refusal(`runMigration: ${payload.application} has no Migration ${payload.migration}`, MIGRATION_RUN_REFUSALS.migrationNotFound);
+    return refusal(
+      git
+        ? `runMigration: no tag of the repository of ${payload.application} holds Migration ${payload.migration} with that tag as its to`
+        : `runMigration: ${payload.application} has no Migration ${payload.migration}`,
+      MIGRATION_RUN_REFUSALS.migrationNotFound,
+    );
   }
   if (state?.version !== stored.from) {
     return refusal(
@@ -134,6 +146,30 @@ async function runToDo(
     stepsDone: [],
     startedAt: new Date().toISOString(),
   };
+}
+
+/**
+ * The jump of the model to the version `to`: the rewrite to the frozen version (`versioned-internal`), or the
+ * checkout of the tag (`versioned-git`), then a reload of the model; a failure names the jump as its step.
+ */
+async function jump(
+  host: DomainControllerActionHost,
+  application: string,
+  to: string,
+  git: boolean,
+  applicationDeploymentMap: ApplicationDeploymentMap,
+  modelEnvironment: MiroirModelEnvironment | undefined,
+): Promise<Action2Error | undefined> {
+  const jumped = git
+    ? await checkoutVersion(host, application, to, applicationDeploymentMap)
+    : await bringModelToVersion(host, application, applicationDeploymentMap, to, modelEnvironment, "runMigration");
+  const reloaded = jumped instanceof Action2Error ? jumped : await reloadModel(host, application, applicationDeploymentMap, modelEnvironment);
+  return reloaded instanceof Action2Error
+    ? new Action2Error("FailedToHandleAction", `runMigration: the jump to ${to} failed`, undefined, reloaded, {
+        reason: MIGRATION_RUN_REFUSALS.migrationStepFailed,
+        step: JUMP_STEP,
+      })
+    : undefined;
 }
 
 function stateOf(state: DeploymentStateRow | undefined, deploymentUuid: string, application: string) {
@@ -169,7 +205,12 @@ async function runMigration(
   if (state instanceof Action2Error) {
     return new Action2Error("FailedToHandleAction", `runMigration: could not read the state of deployment ${deploymentUuid}`, [], state);
   }
-  const run = await runToDo(host, payload, state, applicationDeploymentMap);
+  const live = await liveModelState(host, application, applicationDeploymentMap);
+  if (live instanceof Action2Error) {
+    return live;
+  }
+  const git = isGitVersioned(live, application);
+  const run = await runToDo(host, payload, state, live, git, applicationDeploymentMap);
   if (run instanceof Action2Error) {
     return run;
   }
@@ -189,13 +230,9 @@ async function runMigration(
       continue;
     }
     if (step === JUMP_STEP) {
-      const jumped = await bringModelToVersion(host, application, applicationDeploymentMap, run.migration.to, context.modelEnvironment, "runMigration");
-      if (jumped instanceof Action2Error) {
-        return jumped;
-      }
-      const reloaded = await reloadModel(host, application, applicationDeploymentMap, context.modelEnvironment);
-      if (reloaded instanceof Action2Error) {
-        return reloaded;
+      const failed = await jump(host, application, run.migration.to, git, applicationDeploymentMap, context.modelEnvironment);
+      if (failed) {
+        return failed;
       }
     } else {
       const failed = await runStep(host, step, applicationDeploymentMap, modelEnvironmentOf(host, application, applicationDeploymentMap, context.modelEnvironment));
@@ -210,10 +247,16 @@ async function runMigration(
     }
   }
 
+  // the commit of a `versioned-git` deployment is its checkout of `to`, still there when the run ends
+  const gitCommit = git ? await checkedOutVersion(host, application, run.migration.to, applicationDeploymentMap, "runMigration") : undefined;
+  if (gitCommit instanceof Action2Error) {
+    return gitCommit;
+  }
   const ended = await writeDeploymentState(
     host,
     {
       ...base,
+      ...(gitCommit ? { gitCommit } : {}),
       version: run.migration.to,
       applied: [
         ...base.applied,
