@@ -201,6 +201,14 @@ describe("gitAction_init and repository errors (#679 slice 4)", () => {
     expect(log.branches.head).toBeUndefined();
   });
 
+  it("reads a repository with staged files and no commit yet as such (#753)", async () => {
+    expectOk(await gitAction(context, "gitAction_stage", { all: true }));
+    const status = expectOk<GitStatusResult>(await gitAction(context, "gitAction_status"));
+    expect(status.files.length).toBeGreaterThan(0);
+    expect(status.files.every((file) => file.change === "added" && file.staged)).toBe(true);
+    expect(status.branches.head).toBeUndefined();
+  });
+
   it("keeps an existing repository on a second init", async () => {
     const commit = await initCommittedRepository(context.libraryRoot);
     expectOk<GitInitResult>(await gitAction(context, "gitAction_init"));

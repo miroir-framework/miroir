@@ -21,6 +21,7 @@ import {
   bookPath,
   BOOK_UBIK,
   editUbik,
+  expectGitError,
   expectOk,
   gitAction,
   initCommittedRepository,
@@ -129,5 +130,20 @@ describe("Git actions in a linked worktree (#689)", () => {
     const status = expectOk<GitStatusResult>(await gitAction(context, "gitAction_status"));
     expect(status.files).toEqual([]);
     expect(status.branches.head).toBe(commit.oid);
+  });
+});
+
+describe("A HEAD that names a missing branch (#753)", () => {
+  it("is refused with a gitFailure naming the branch, for reads and writes alike", async () => {
+    // the branch of the worktree's HEAD is gone from the common directory; other branches and the remote remain
+    await git.branch({ fs, gitdir: commonDirectory, ref: "other", checkout: false });
+    await git.deleteRef({ fs, gitdir: commonDirectory, ref: "refs/heads/main" });
+    const statusError = expectGitError(await gitAction(context, "gitAction_status"), "gitFailure");
+    expect(statusError.errorContext?.branch).toBe("main");
+    expect(statusError.errorMessage).toContain("main");
+    expect(fs.realpathSync(String(statusError.errorContext?.root))).toBe(fs.realpathSync(context.libraryRoot));
+    expectGitError(await gitAction(context, "gitAction_log"), "gitFailure");
+    expectGitError(await gitAction(context, "gitAction_stage", { all: true }), "gitFailure");
+    expectGitError(await gitAction(context, "gitAction_checkout", { ref: "other" }), "gitFailure");
   });
 });

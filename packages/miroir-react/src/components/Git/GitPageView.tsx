@@ -86,12 +86,16 @@ function errorText(error: GitRequestError): string {
   return error.errorMessage ?? error.errorType ?? "The Git action failed";
 }
 
-function Loading(props: { state: GitRequestState<unknown> }) {
+function Loading(props: { state: GitRequestState<unknown>; errorTestId?: string }) {
   if (props.state.status === "loading") {
     return <Typography variant="body2">Loading...</Typography>;
   }
   if (props.state.status === "error") {
-    return <Alert severity="error">{errorText(props.state.error)}</Alert>;
+    return (
+      <Alert severity="error" data-testid={props.errorTestId}>
+        {errorText(props.state.error)}
+      </Alert>
+    );
   }
   return null;
 }
@@ -244,7 +248,7 @@ export function GitPageView(props: GitPageViewProps): React.JSX.Element {
         onNotice={setRemoteNotice}
         onOpenSetup={() => changeView("setup")}
       />
-      {status.status !== "ok" && !notARepository && <Loading state={status} />}
+      {status.status !== "ok" && !notARepository && <Loading state={status} errorTestId="git-status-error" />}
       {!notARepository && status.status === "ok" && (
         <GitDetachedBanner
           branches={status.value.branches}

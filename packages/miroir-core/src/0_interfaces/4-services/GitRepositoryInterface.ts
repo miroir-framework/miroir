@@ -69,6 +69,11 @@ export interface GitRepositoryInterface {
   /** Before and after text of one file, by default HEAD against the work tree. */
   diff(path: string, options?: { from?: string; to?: string }): Promise<GitFileDiff>;
   branches(): Promise<GitBranches>;
+  /**
+   * The branch HEAD names, whether or not that branch exists; undefined when HEAD is detached. #753: with
+   * `branches().head` undefined, it tells an unborn branch from a HEAD that names a missing branch.
+   */
+  headBranch(): Promise<string | undefined>;
   /** The text of a file in the work tree, or at `ref`; undefined when absent. */
   readFile(path: string, ref?: string): Promise<string | undefined>;
   /** True when `.gitignore` rules exclude `path` (a file or folder) from the repository. */
