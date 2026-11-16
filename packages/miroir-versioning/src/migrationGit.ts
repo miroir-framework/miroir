@@ -112,8 +112,8 @@ export async function migrationAtItsTag(
 }
 
 /**
- * The jump of a run on a `versioned-git` deployment: the checkout of the tag `to` (as `refs/tags/<to>`: a
- * bare name is a local branch first); its commit.
+ * The jump of a run on a `versioned-git` deployment: the checkout of the tag `to`, named `refs/tags/<to>` as
+ * the generation names it; its commit.
  */
 export async function checkoutVersion(
   host: DomainControllerActionHost,
