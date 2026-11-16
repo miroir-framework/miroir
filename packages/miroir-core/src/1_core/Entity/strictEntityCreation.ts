@@ -75,7 +75,7 @@ function refusal(entity: Entity, reason: string, message: string): Action2Error 
 }
 
 /**
- * Why the Entities cannot be created, or `undefined`: an Entity named twice in the list, an Entity whose row
+ * Why the Entities cannot be created, or `undefined`: an Entity listed twice, two Entities of one name, an Entity whose row
  * exists (`entityExists`), an Entity whose storage exists (`storageExists`), a store without a storage probe.
  * Every Entity is checked before any is created.
  */
@@ -98,15 +98,26 @@ export async function entityCreationRefusal(
   }
   const existingRows = new Set(rowUuids);
   const seen = new Set<string>();
+  const seenNames = new Set<string>();
   for (const entity of stored) {
     if (existingRows.has(entity.uuid) || seen.has(entity.uuid)) {
       return refusal(
         entity,
         ENTITY_CREATION_REFUSALS.entityExists,
-        `createEntity on ${store.storeLabel}: Entity ${entity.name} (${entity.uuid}) exists already${seen.has(entity.uuid) ? ", named twice in one createEntity" : ""}`,
+        `createEntity on ${store.storeLabel}: Entity ${entity.name} (${entity.uuid}) exists already${seen.has(entity.uuid) ? ", listed twice in one createEntity" : ""}`,
+      );
+    }
+    // a store may name the storage of an Entity after its name (a SQL table): two Entities of one name in one
+    // createEntity would get one storage, since neither exists when the storage is probed
+    if (seenNames.has(entity.name)) {
+      return refusal(
+        entity,
+        ENTITY_CREATION_REFUSALS.entityExists,
+        `createEntity on ${store.storeLabel}: another Entity of this createEntity is named ${entity.name}; Entity ${entity.uuid} is not created`,
       );
     }
     seen.add(entity.uuid);
+    seenNames.add(entity.name);
   }
   if (!store.storageSpaceExists) {
     return new Action2Error(

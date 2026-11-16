@@ -213,7 +213,8 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
       if (!isHttpExternalEntity(previousEntity)) {
         // #745 D7: check, rename (its result checked), then write the row
         const { schema } = this.tableOf(previousEntity);
-        const queryInterface = this.sequelize.getQueryInterface();
+        // the table belongs to the data section, which may have its own connection
+        const queryInterface = this.sqlDataStore().sequelize.getQueryInterface();
         if (await queryInterface.tableExists({ tableName: update.payload.targetValue, schema })) {
           return this.tableRefusal(
             "renameEntity",
@@ -264,7 +265,9 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
         return this.upsertInstance(entityEntity.uuid, alteredEntity);
       }
       const table = this.tableOf(previousEntity);
-      const queryInterface = this.sequelize.getQueryInterface();
+      // the table belongs to the data section, which may have its own connection
+      const dataSequelize = this.sqlDataStore().sequelize;
+      const queryInterface = dataSequelize.getQueryInterface();
       let columns: Record<string, unknown>;
       try {
         columns = await queryInterface.describeTable(table);
@@ -301,7 +304,7 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
         );
       }
       try {
-        await this.sequelize.transaction(async (transaction) => {
+        await dataSequelize.transaction(async (transaction) => {
           for (const name of added) {
             const { primaryKey: _primaryKey, ...definition } = alteredColumns[name];
             await queryInterface.addColumn(table, name, definition, { transaction });

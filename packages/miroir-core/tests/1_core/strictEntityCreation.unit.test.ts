@@ -78,10 +78,19 @@ describe.runIf(runThis)("strictEntityCreation (#745 D4)", () => {
     expect(existingStorage.rows.size).toBe(0);
   });
 
-  it("an Entity named twice in one call is refused", async () => {
+  it("an Entity listed twice in one call is refused", async () => {
     const { store, rows } = setStore();
     expect(reason(await createEntitiesStrictly(store, [entity("01"), entity("01")]))).toBe(ENTITY_CREATION_REFUSALS.entityExists);
     expect(rows.size).toBe(0);
+  });
+
+  it("two Entities of one name in one call are refused, before any storage is created", async () => {
+    const { store, rows, storage } = setStore();
+    const refused = await createEntitiesStrictly(store, [entity("01"), entity("02", { name: "E01" })]);
+    expect(reason(refused)).toBe(ENTITY_CREATION_REFUSALS.entityExists);
+    expect((refused as Action2Error).errorContext).toMatchObject({ entity: entity("02").uuid });
+    expect(rows.size).toBe(0);
+    expect(storage.size).toBe(0);
   });
 
   it("external Entities are exempt from both checks, and the store is asked to register them", async () => {
