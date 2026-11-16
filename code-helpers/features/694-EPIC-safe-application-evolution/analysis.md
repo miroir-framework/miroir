@@ -471,13 +471,13 @@ Both run on Library, in the filesystem nonreg tier, as MiroirTests tagged `files
 | Change | add optional `Book.isbn` | same |
 | Version 2 | freeze `1.1.0`; the agreement check passes | commit (agreement check) |
 | Migration | generate `1.0.0` → `1.1.0`: the traced addition of `isbn` and one empty fill step after it, both backward-compatible; the test fills it | open (D13) |
-| Apply | restore `1.0.0`, re-seed the fixture, mark as following, run the migration; check data and state record; run it again and check that nothing changes | checkout `1.0.0`, re-seed, then as D13 decides |
-| Rollback | restore `1.0.0`: allowed, and `isbn` stays in storage | checkout `1.0.0`: allowed |
+| Apply | restore `1.0.0`, re-seed the fixture, mark as following, run the migration; check data and state record; run it again: refused as already applied, nothing changes | checkout `1.0.0`, re-seed, then as D13 decides |
+| Rollback | restore `1.0.0`: allowed, and `isbn` stays in storage. A new run of `1.0.0` → `1.1.0` then meets that column and fails (strict strategy); #709 decides how a rollback treats such storage (#745, section 7) | checkout `1.0.0`: allowed |
 | Breaking change | as author: remove `Book.isbn`, freeze `1.2.0`, generate: the removal step is flagged. Then as follower: apply `1.1.0` → `1.2.0`, and restore `1.1.0`: refused, naming the migration | same with tags |
 | Edit outside Miroir | change a Report file by hand: freeze refused with the difference; re-baseline; freeze passes | same, at Git commit; re-baseline marker committed (D11) |
-| Failure | stop the runner after its first step, and again after a data write but before that step's record; each time, run again: it resumes and ends in the same state | same |
+| Failure | stop the runner after its first step: run again, it resumes at the second step. Stop it inside a step, after a data write: run again, refused, naming the step in doubt; settle the step, run again, it ends in the same state | same |
 
-A third run of E1, on PostgreSQL, checks D2: the replayed model Actions add the columns, the restore keeps them, and a second run does not empty any table. It also covers two versions, each adding an attribute, then a restore of the first and a new run of the first Migration: the column of the second version must keep its values.
+A third run of E1, on PostgreSQL, checks D2: the replayed model Actions add the columns, the restore keeps them, and a second run does not empty any table. Two versions each adding an attribute, then a restore of the first and a new run of the first Migration, waits for #709: under the strict strategy that run meets the kept column and fails (#745, section 7).
 
 ---
 
