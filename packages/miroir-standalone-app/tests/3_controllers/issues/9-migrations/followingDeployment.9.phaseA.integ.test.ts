@@ -273,6 +273,10 @@ describe("#9 part A: a following deployment", () => {
     const authoringLive = await state(applicationDeploymentMap);
     const following = await state(followingMap);
     const frozen = await state(followingMap, versionUuid(following, VERSION_1_0));
+    // the freeze names the collections it snapshotted: an empty one is empty, not unknown
+    expect(following.applicationVersions.find((row) => row.name === VERSION_1_0)?.frozenCollections).toEqual(
+      expect.arrayContaining(["entities", "tests", "blobs", "testConfigurations"]),
+    );
 
     // the model is the version's: Publisher.foundedIn, no Imprint9, no Country.motto
     expect(ownModel(following)).toEqual(ownModel(frozen));
@@ -370,6 +374,45 @@ describe("#9 part A: a following deployment", () => {
     expect(refusalReason(toFollowing), JSON.stringify(toFollowing)).toBe("deploymentRoleFixed");
     expectOk(await updateDeploymentRow({ ...authoring, role: "authoring" } as EntityInstance), "the default role, written");
     expectOk(await updateDeploymentRow(authoring), "the default role, left out again");
+  }, 60000);
+
+  it("A2: a role changed in a transaction is refused at the commit, before anything is written", async () => {
+    const following = await deploymentRowOf(FOLLOWING_DEPLOYMENT);
+    const adminEnvironment = context.domainController.currentModelEnvironment(adminSelfApplication.uuid, followingMap);
+    expectOk(
+      await context.domainController.handleAction(
+        {
+          actionType: "transactionalInstanceAction",
+          endpoint: "1e2ef8e6-7fdf-4e3f-b291-2e6e599fb2b5",
+          payload: {
+            application: adminSelfApplication.uuid,
+            instanceAction: {
+              actionType: "updateInstance",
+              endpoint: INSTANCE_ENDPOINT,
+              payload: { application: adminSelfApplication.uuid, applicationSection: "data", objects: [{ ...following, role: "authoring" }] },
+            },
+          },
+        } as any,
+        followingMap,
+        adminEnvironment,
+      ),
+      "the staged change",
+    );
+    try {
+      const committed = await context.domainController.handleAction(
+        { actionType: "commit", endpoint: MODEL_ENDPOINT, payload: { application: adminSelfApplication.uuid } } as any,
+        followingMap,
+        adminEnvironment,
+      );
+      expect(refusalReason(committed), JSON.stringify(committed)).toBe("deploymentRoleFixed");
+      expect(await deploymentRowOf(FOLLOWING_DEPLOYMENT)).toEqual(following);
+    } finally {
+      await context.domainController.handleAction(
+        { actionType: "rollback", endpoint: MODEL_ENDPOINT, payload: { application: adminSelfApplication.uuid } } as any,
+        followingMap,
+        adminEnvironment,
+      );
+    }
   }, 60000);
 
   it("A3.1: the server refuses a model write a remote client sends to a following deployment; a migration run's write passes", async () => {

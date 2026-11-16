@@ -80,6 +80,25 @@ function normalizeOptionalBranchUuid(branch: string | undefined): string | undef
 
 /** EntityVersion entity UUID (bootstrap metamodel identity). */
 const ENTITY_VERSION_ENTITY_UUID = "54b9c72f-d4f3-4db9-9e0e-0dc840b530bd";
+/**
+ * #9: the model collections a freeze snapshots, written on the version row (`frozenCollections`) so that a
+ * collection with no row in the version reads as empty, not as one an older freeze did not snapshot.
+ */
+export const FROZEN_COLLECTIONS = [
+  "entities",
+  "storedQueries",
+  "reports",
+  "menus",
+  "endpoints",
+  "runners",
+  "themes",
+  "transformerDefinitions",
+  "mlSchemas",
+  "tests",
+  "blobs",
+  "testConfigurations",
+] as const;
+
 /** SelfApplicationVersion Entity UUID. */
 const APPLICATION_VERSION_ENTITY_UUID = "c3f0facf-57d1-4fa8-b3fa-f2c007fdbe24";
 /** ApplicationVersionCrossEntityVersion Entity UUID. */
@@ -676,6 +695,7 @@ export function buildFreezeApplicationVersionPlan(
     branch: input.branchUuid,
     modelStructureMigration: [],
     modelCUDMigration,
+    frozenCollections: [...FROZEN_COLLECTIONS],
     ...(input.description !== undefined ? { description: input.description } : {}),
     ...(previousVersionUuid !== undefined ? { previousVersion: previousVersionUuid } : {}),
   };

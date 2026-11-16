@@ -1646,6 +1646,43 @@ export class DomainController implements DomainControllerInterface, DomainContro
   }
 
   /**
+   * #9: why the replay of a transaction is refused by the role of a deployment, before any of its writes:
+   * a write of a Deployment row that changes its role, and a model or `modelVersion` change of an
+   * application whose deployment is following, whatever application the commit names.
+   */
+  private async transactionRoleRefusal(
+    transaction: readonly { actionType: string; payload: any }[],
+    applicationDeploymentMap: ApplicationDeploymentMap,
+  ): Promise<Action2Error | undefined> {
+    for (const entry of transaction) {
+      if (entry.actionType !== "transactionalInstanceAction") {
+        const refused = FOLLOWING_DEPLOYMENT_REFUSED_MODEL_ACTIONS.includes(entry.actionType)
+          ? await this.followingDeploymentRefusal(entry, applicationDeploymentMap)
+          : undefined;
+        if (refused) {
+          return refused;
+        }
+        continue;
+      }
+      const instanceAction = entry.payload.instanceAction;
+      const actionType = String(instanceAction.actionType);
+      const written = {
+        ...instanceAction,
+        actionType: actionType.includes("_") ? actionType.slice(actionType.lastIndexOf("_") + 1) : actionType,
+      } as InstanceAction;
+      const refused =
+        (await this.deploymentWriteRefusal(written, applicationDeploymentMap)) ??
+        (FOLLOWING_DEPLOYMENT_REFUSED_SECTIONS.includes(instanceAction.payload?.applicationSection ?? "")
+          ? await this.followingDeploymentRefusal(written, applicationDeploymentMap)
+          : undefined);
+      if (refused) {
+        return refused;
+      }
+    }
+    return undefined;
+  }
+
+  /**
    * #9: why an instance write is refused by the role of a deployment, checked in the process that holds the
    * stores: a write of a Deployment row that changes its role (chosen at creation, D6).
    */
@@ -2468,6 +2505,11 @@ export class DomainController implements DomainControllerInterface, DomainContro
           const traceRefusal = this.evolutionTraceRefusal(tracedApplications, applicationDeploymentMap);
           if (traceRefusal) {
             return traceRefusal;
+          }
+          // #9: the replay writes to the stores directly, so the role checks of each write run before it
+          const roleRefusal = await this.transactionRoleRefusal(currentTransactions, applicationDeploymentMap);
+          if (roleRefusal) {
+            return roleRefusal;
           }
           const replayedModelChanges: unknown[] = [];
 

@@ -196,9 +196,15 @@ Fixed after the review of A1 to A3:
 - the install refuses a version whose Cross rows name missing version rows (`versionIncomplete`), and leaves the Blob, Test and TestConfiguration rows alone when the version has no Cross rows for them (frozen before #706); it reloads the model after a failure too;
 - tests: the following deployment is a copy of the authoring one at 1.1.0, so the install of 1.0.0 deletes an Entity row (its storage stays) and removes an attribute; the second install, the payload-only Entity, a `modelVersion` delete, a `dropEntity` and a direct and a transactional `createEntity` and a `commit` are each asserted alone; the Admin rows are deleted after the file.
 
+Fixed after the PR review (Greptile on #739):
+- a commit replays its writes straight to the stores, so a role changed in a transaction, or a model write of another application's following deployment in it, went through: the commit now checks every write of the transaction before replaying any (`transactionRoleRefusal`), whatever application it names;
+- two installs at once could both pass the "not installed" check: the check, the rewrite and the state write run under a lock per deployment;
+- a version with no Blob, Test or TestConfiguration row read as one frozen before #706: a freeze now writes the collections it snapshotted on the version row (`frozenCollections`, a new optional attribute of SelfApplicationVersion), and the install trusts it; versions frozen before #9 keep the Cross-row guess;
+- a failed read of the DeploymentState rows read as "not installed": it now stops the install; only a missing DeploymentState Entity (an Admin store older than #9) reads as no state.
+
 Known gaps, left for later parts or issues:
+- a Postgres store created before #9 has no `frozenCollections` column on its SelfApplicationVersion table, as for `role`;
 - a Postgres Admin store created before #9 has no `role` column, and its upsert drops the attribute: the Deployment Entity needs an `alterEntityAttribute` there (the install still refuses such a deployment, with `deploymentAuthors`);
-- in a process with local stores (the server, Electron), a commit replays the writes of every application of the transaction, and the gate checks the commit's application only;
 - the writes `resetModel` and `initModel` make per Entity are not marked, so a migration run cannot send them; store management (`resetAndInitApplicationDeployment`, bundles) and the Git checkout paths are not gated;
 - the kept records of a failed trace append are keyed by application, which a following deployment shares with its authoring one (#708's queue);
 - an install looks the version up by name over every branch; `DeploymentState` rows are ordinary Admin rows, writable by any client, and stay when a deployment is deleted;

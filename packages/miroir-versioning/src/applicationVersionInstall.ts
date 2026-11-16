@@ -37,6 +37,7 @@ import { entityEvolutionTraceRecord } from "@miroir-framework/core/meta-model";
 
 import { selectEntitiesToFreeze } from "./applicationVersionFreeze.js";
 import { AGREEMENT_COLLECTIONS } from "./evolutionTraceAgreement.js";
+import { withApplicationLock } from "./evolutionTraceRecords.js";
 import { refusal, storedDeploymentRow, withAdmin } from "./deploymentRole.js";
 import { HISTORY_ENTITIES, metaModelEntityUuids } from "./freezeApplicationVersion.js";
 import { frozenCollectionsOf, frozenStateOf, liveModelState, type ModelState } from "./modelStates.js";
@@ -283,21 +284,26 @@ async function ensureVersionHistoryEntities(
     : undefined;
 }
 
-/** The DeploymentState row of `deploymentUuid`, read from the store; `undefined` when it has none. */
+/**
+ * The DeploymentState row of `deploymentUuid`, read from the store; `undefined` when it has none, or when
+ * the Admin model has no DeploymentState Entity yet (Admin stores older than #9). A read that fails is an
+ * error: it never reads as "not installed".
+ */
 export async function storedDeploymentState(
   host: DomainControllerActionHost,
   deploymentUuid: string,
   applicationDeploymentMap: ApplicationDeploymentMap,
-): Promise<DeploymentStateRow | undefined> {
-  const rows = await host.readSectionInstances(
-    adminSelfApplication.uuid,
-    withAdmin(applicationDeploymentMap),
-    "data",
-    DEPLOYMENT_STATE_ENTITY_UUID,
-  );
-  return rows instanceof Action2Error
-    ? undefined
-    : (rows.find((row) => row.uuid === deploymentUuid) as DeploymentStateRow | undefined);
+): Promise<DeploymentStateRow | undefined | Action2Error> {
+  const map = withAdmin(applicationDeploymentMap);
+  const entities = await host.readSectionInstances(adminSelfApplication.uuid, map, "model", ENTITY_ENTITY_UUID);
+  if (entities instanceof Action2Error) {
+    return entities;
+  }
+  if (!entities.some((entity) => entity.uuid === DEPLOYMENT_STATE_ENTITY_UUID)) {
+    return undefined;
+  }
+  const rows = await host.readSectionInstances(adminSelfApplication.uuid, map, "data", DEPLOYMENT_STATE_ENTITY_UUID);
+  return rows instanceof Action2Error ? rows : (rows.find((row) => row.uuid === deploymentUuid) as DeploymentStateRow | undefined);
 }
 
 /** The DeploymentState Entity, created in the Admin model when absent (Admin stores older than #9). */
@@ -337,6 +343,9 @@ export async function writeDeploymentState(
     return new Action2Error("FailedToHandleAction", "could not create the DeploymentState Entity", [], ensured);
   }
   const existing = await storedDeploymentState(host, state.deployment, applicationDeploymentMap);
+  if (existing instanceof Action2Error) {
+    return existing;
+  }
   const row: DeploymentStateRow = {
     uuid: state.deployment,
     parentName: entityDeploymentState.name,
@@ -367,22 +376,37 @@ export async function writeDeploymentState(
  * named `version` (read from the `modelVersion` section the deployment shares with its authoring one), then
  * writes the deployment's DeploymentState row with that version.
  */
-export const handleAction_installApplicationVersion: ActionImplementationHandler = async (
+export const handleAction_installApplicationVersion: ActionImplementationHandler = (
   host,
   action,
   context: ActionImplementationContext,
 ): Promise<Action2ReturnType> => {
+  const { application } = action.payload as InstallApplicationVersionActionPayload;
+  const deploymentUuid = context.applicationDeploymentMap[application];
+  if (!deploymentUuid) {
+    return Promise.resolve(new Action2Error("FailedToHandleAction", `installApplicationVersion: no deployment of ${application}`));
+  }
+  // the check that the deployment is not installed, the rewrite and the state write are one step
+  return withApplicationLock(`installApplicationVersion:${deploymentUuid}`, () => installApplicationVersion(host, action, context, deploymentUuid));
+};
+
+async function installApplicationVersion(
+  host: DomainControllerActionHost,
+  action: { payload: unknown },
+  context: ActionImplementationContext,
+  deploymentUuid: string,
+): Promise<Action2ReturnType> {
   const { application, version } = action.payload as InstallApplicationVersionActionPayload;
   const { applicationDeploymentMap } = context;
-  const deploymentUuid = applicationDeploymentMap[application];
-  if (!deploymentUuid) {
-    return new Action2Error("FailedToHandleAction", `installApplicationVersion: no deployment of ${application}`);
-  }
   const deploymentRow = await storedDeploymentRow(host, deploymentUuid, applicationDeploymentMap);
   if (deploymentRow instanceof Action2Error) {
     return deploymentRow;
   }
-  if (deploymentRoleOf(deploymentRow) === "following" && (await storedDeploymentState(host, deploymentUuid, applicationDeploymentMap))) {
+  const installedState = await storedDeploymentState(host, deploymentUuid, applicationDeploymentMap);
+  if (installedState instanceof Action2Error) {
+    return new Action2Error("FailedToHandleAction", `installApplicationVersion: could not read the state of deployment ${deploymentUuid}`, [], installedState);
+  }
+  if (deploymentRoleOf(deploymentRow) === "following" && installedState) {
     return refusal(
       `installApplicationVersion: deployment ${deploymentUuid} of ${application} is installed already; it changes version by a migration run`,
       "deploymentInstalled",
@@ -427,11 +451,15 @@ export const handleAction_installApplicationVersion: ActionImplementationHandler
       "versionIncomplete",
     );
   }
-  // a version frozen before #706 has no Cross rows for these collections: they are unknown, not empty
+  // the version row names the collections its freeze snapshotted (#9); a version frozen before #9 does
+  // not, and one frozen before #706 has no Cross rows for these collections: they are unknown, not empty
+  const snapshotted = (versionRow as { frozenCollections?: string[] }).frozenCollections;
   const collections = AGREEMENT_COLLECTIONS.filter(
     (collection) =>
       !COLLECTIONS_FROZEN_SINCE_706.includes(collection) ||
-      (frozen.find((entry) => entry.collection === collection)?.crossRows ?? 0) > 0,
+      (snapshotted
+        ? snapshotted.includes(collection)
+        : (frozen.find((entry) => entry.collection === collection)?.crossRows ?? 0) > 0),
   );
 
   const ensured = await ensureVersionHistoryEntities(host, application, applicationDeploymentMap, current, context.modelEnvironment);
@@ -449,7 +477,7 @@ export const handleAction_installApplicationVersion: ActionImplementationHandler
   // the model this process serves is the stored one, rewritten in whole or in part
   const reloaded = await reloadModel(host, application, applicationDeploymentMap, context.modelEnvironment);
   return installed ?? (reloaded instanceof Action2Error ? reloaded : ACTION_OK);
-};
+}
 
 /** The collections a freeze snapshots since #706 only. */
 const COLLECTIONS_FROZEN_SINCE_706: readonly MetaModelCollection[] = ["blobs", "tests", "testConfigurations"];

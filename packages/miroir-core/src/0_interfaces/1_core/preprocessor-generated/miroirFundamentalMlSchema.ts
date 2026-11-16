@@ -11677,6 +11677,23 @@ export const miroirFundamentalMlSchema = {
                 "type": "any"
               }
             }
+          },
+          "frozenCollections": {
+            "type": "array",
+            "optional": true,
+            "tag": {
+              "value": {
+                "id": 14,
+                "defaultLabel": "Frozen collections",
+                "description": "#9: the model collections the freeze snapshotted; a version without it was frozen before #9, and holds no Cross rows for collections frozen since #706 when it predates #706.",
+                "display": {
+                  "editable": false
+                }
+              }
+            },
+            "definition": {
+              "type": "string"
+            }
           }
         }
       },

@@ -27,8 +27,8 @@ const INSTANCE_ENDPOINT_UUID = "ed520de4-55a9-4550-ac50-b1b713b72a89";
 
 const applicationLocks = new Map<string, Promise<unknown>>();
 
-/** Runs `run` after every earlier run for the same application has finished. */
-async function withApplicationLock<T>(application: string, run: () => Promise<T>): Promise<T> {
+/** Runs `run` after every earlier run with the same key (an application uuid) has finished. */
+export async function withApplicationLock<T>(application: string, run: () => Promise<T>): Promise<T> {
   const previous = applicationLocks.get(application) ?? Promise.resolve();
   const current = previous.then(run, run);
   const settled = current.catch(() => undefined);
