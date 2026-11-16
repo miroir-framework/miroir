@@ -13,7 +13,7 @@ import {
   StorageSpaceHandlerInterface,
   Uuid
 } from "@miroir-framework/core";
-import { DataTypes } from "sequelize";
+import { DataTypes, QueryTypes } from "sequelize";
 
 import {
   EntityUuidIndexedSequelizeModel,
@@ -92,20 +92,26 @@ export class SqlDbStoreSection
   async dropUnregisteredStorage(kept: readonly string[]): Promise<Action2VoidReturnType> {
     const registered = new Set(Object.values(this.sqlSchemaTableAccess).map((access) => access.sequelizeModel.tableName));
     try {
-      const [tables] = await this.sequelize.query(
-        `SELECT table_name FROM information_schema.tables WHERE table_schema = :schema AND table_type = 'BASE TABLE'`,
-        { replacements: { schema: this.schema } },
+      // pg_tables: the columns of information_schema are of a domain type the driver returns as arrays
+      const tables: { tablename: string }[] = await this.sequelize.query(
+        `SELECT tablename FROM pg_catalog.pg_tables WHERE schemaname = :schema`,
+        { replacements: { schema: this.schema }, type: QueryTypes.SELECT },
       );
-      const names = (tables as { table_name: string }[]).map((table) => table.table_name);
+      const names = tables.map((table) => table.tablename);
       for (const name of names) {
         if (registered.has(name) || kept.includes(name)) {
           continue;
         }
         log.info(this.logHeader, "dropUnregisteredStorage dropping table", name);
-        await this.sequelize.getQueryInterface().dropTable({ tableName: name, schema: this.schema });
+        const queryGenerator = this.sequelize.getQueryInterface().queryGenerator as {
+          quoteIdentifier(identifier: string): string;
+        };
+        await this.sequelize.query(
+          `DROP TABLE ${queryGenerator.quoteIdentifier(this.schema)}.${queryGenerator.quoteIdentifier(name)}`,
+        );
       }
     } catch (error) {
-      return new Action2Error("FailedToDeleteStore", `could not drop the tables of schema ${this.schema} no Entity registers: ${error}`);
+      return new Action2Error("FailedToDeleteStore", `could not drop the tables of schema ${this.schema} no Entity registers: ${(error as Error).stack ?? error}`);
     }
     return ACTION_OK;
   }

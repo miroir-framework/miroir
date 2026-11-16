@@ -84,13 +84,14 @@ describe.runIf(runThis)("strictEntityCreation (#745 D4)", () => {
     expect(rows.size).toBe(0);
   });
 
-  it("external Entities are exempt from both checks and get no storage", async () => {
+  it("external Entities are exempt from both checks, and the store is asked to register them", async () => {
     const http = entity("03", { externalDataSource: { kind: "http", endpoint: "e" } } as Partial<Entity>);
     const sql = entity("04", { conceptLevel: "External" } as Partial<Entity>);
     const { store, rows, storage } = setStore({ rows: [http.uuid, sql.uuid], storage: [sql.uuid] });
     expect(await createEntitiesStrictly(store, [http, sql])).toEqual(ACTION_OK);
     expect([...rows]).toEqual([http.uuid, sql.uuid]);
-    expect([...storage]).toEqual([sql.uuid]);
+    // the set store records the call; a real store registers an external Entity without creating storage
+    expect([...storage].sort()).toEqual([http.uuid, sql.uuid].sort());
   });
 
   it("a store without a storage probe refuses", async () => {

@@ -99,16 +99,29 @@ export function SqlDbEntityStoreSectionMixin<TBase extends typeof MixedSqlDbInst
       return {
         storeLabel: this.logHeader,
         entityRowUuids: () => readEntityRowUuids(this, entityEntity.uuid),
-        storageSpaceExists: this.dataStore.storageSpaceExists?.bind(this.dataStore),
+        // The model and data sections share one schema. A table the model section registers for this very Entity
+        // (an application keeps its version-history Entities in its model section) is the model's storage, not
+        // storage left behind: the data section uses it as it is, keeping its rows, instead of dropping it.
+        storageSpaceExists: this.dataStore.storageSpaceExists
+          ? async (entity) => !this.modelRegistersTableOf(entity) && (await this.dataStore.storageSpaceExists!(entity))
+          : undefined,
         createStorageSpace: async (entity) => {
           try {
-            return await this.dataStore.createStorageSpaceForInstancesOfEntity(entity);
+            return this.modelRegistersTableOf(entity) && this.dataStore.createStorageSpaceForInstancesOfEntityIfMissing
+              ? await this.dataStore.createStorageSpaceForInstancesOfEntityIfMissing(entity)
+              : await this.dataStore.createStorageSpaceForInstancesOfEntity(entity);
           } catch (error) {
             return new Action2Error("FailedToCreateStore", `could not create the table of Entity ${entity.name}: ${(error as Error).message}`);
           }
         },
         writeEntityRow: (entity) => this.writeEntityRow(entity),
       };
+    }
+
+    // ##############################################################################################
+    /** #745 D4: whether the model section registers the table of this Entity, under its name. */
+    modelRegistersTableOf(entity: Entity): boolean {
+      return this.sqlSchemaTableAccess?.[entity.uuid]?.sequelizeModel.tableName === entity.name;
     }
 
     // ##############################################################################################

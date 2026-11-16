@@ -2,7 +2,8 @@
  * #745 D4: `createEntity` fails on every store when the Entity's row or the storage of its instances already
  * exists, before it writes anything. The stores share the order of the checks through `createEntitiesStrictly`:
  * check every Entity (its row, then its storage), then for each Entity create its storage, then write its row.
- * External Entities have no storage of their own: they are exempt from both checks, and their row is upserted.
+ * External Entities have no storage of their own: they are exempt from both checks, and their row is upserted. The
+ * store still registers them (`createStorageSpace`, which creates no storage for them), so that it reads their source.
  */
 
 import type { Entity } from "../../0_interfaces/1_core/preprocessor-generated/miroirFundamentalType.js";
@@ -33,6 +34,7 @@ export interface StrictEntityCreationStore {
    * then `createEntity` is refused, since it cannot check.
    */
   storageSpaceExists: ((entity: Entity) => Promise<boolean>) | undefined;
+  /** Creates the storage of an Entity's instances; for an external Entity, registers it without creating storage. */
   createStorageSpace(entity: Entity): Promise<Action2VoidReturnType>;
   writeEntityRow(entity: Entity): Promise<Action2VoidReturnType>;
 }
@@ -127,7 +129,7 @@ export async function entityCreationRefusal(
 
 /**
  * Checks every Entity, then creates each: its storage, then its row. A storage creation that fails writes no
- * row. External Entities keep the upsert of their row.
+ * row. External Entities keep the upsert of their row; the store registers them without creating storage.
  */
 export async function createEntitiesStrictly(
   store: StrictEntityCreationStore,
@@ -138,17 +140,16 @@ export async function createEntitiesStrictly(
     return refused;
   }
   for (const entity of entities) {
-    if (!isExternalEntity(entity)) {
-      const created = await store.createStorageSpace(entity);
-      if (created instanceof Action2Error) {
-        return new Action2Error(
-          "FailedToCreateStore",
-          `createEntity on ${store.storeLabel}: could not create the storage of Entity ${entity.name} (${entity.uuid}); its row is not written`,
-          ["createEntity"],
-          created,
-          { entity: entity.uuid, entityName: entity.name },
-        );
-      }
+    // an external Entity is registered, without storage
+    const created = await store.createStorageSpace(entity);
+    if (created instanceof Action2Error) {
+      return new Action2Error(
+        "FailedToCreateStore",
+        `createEntity on ${store.storeLabel}: could not create the storage of Entity ${entity.name} (${entity.uuid}); its row is not written`,
+        ["createEntity"],
+        created,
+        { entity: entity.uuid, entityName: entity.name },
+      );
     }
     const written = await store.writeEntityRow(entity);
     if (written instanceof Action2Error) {

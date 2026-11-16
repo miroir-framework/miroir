@@ -287,6 +287,10 @@ describe(`createEntity where the Entity or its storage exists (#745 D4), store $
       expect(await storageExists(note)).toBe(true);
       expect(refusalReason(await store.createEntity(note))).toBe(ENTITY_CREATION_REFUSALS.storageExists);
 
+      // the clear of a reset drops the orphan table itself (the testbed reset below also recreates the schema)
+      expectOk(await store.clear(), "clear");
+      expect(await storageExists(note)).toBe(false);
+
       await resetIntegTestbed({
         domainController,
         applicationDeploymentMap,
