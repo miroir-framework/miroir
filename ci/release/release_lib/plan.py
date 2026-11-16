@@ -9,6 +9,7 @@ from typing import Any, Callable
 from release_lib.common import ReleaseError, load_json, log_step, run, executable
 from release_lib.semver import SEMVER, increment, parse_semver
 from release_lib.workspace import (
+    RUNTIME_KINDS,
     Workspace,
     find_cycles,
     release_closure,
@@ -34,6 +35,9 @@ class ReleasePlan:
     dev_cycles: tuple[tuple[str, ...], ...] = ()
     distributeable: tuple[str, ...] = ()
     bundle_only: tuple[str, ...] = ()
+    # #751: what --apply will write, shown by the dry run
+    range_rewrites: tuple["RangeRewrite", ...] = ()
+    changed_files: tuple[str, ...] = ()
     worktree_path: str | None = None
     release_plan_path: str | None = None
     tarball_dir: str | None = None
@@ -44,7 +48,73 @@ class ReleasePlan:
             {"index": index, "packages": list(layer)}
             for index, layer in enumerate(self.layers)
         ]
+        data["range_rewrites"] = [rewrite.to_dict() for rewrite in self.range_rewrites]
         return data
+
+
+@dataclass(frozen=True)
+class RangeRewrite:
+    """One internal runtime/peer range that --apply rewrites (#751). `by` names who rewrites it: `lerna` bumps a
+    range that holds a version, keeping its `^` / `~` prefix; the producer pins a `*` or `file:` range, which
+    Lerna leaves alone, to the exact product version (`rewrite_internal_wildcard_ranges`)."""
+
+    package: str
+    kind: str
+    dependency: str
+    old: str
+    new: str
+    by: str
+
+    def to_dict(self) -> dict[str, str]:
+        return {
+            "package": self.package,
+            "kind": self.kind,
+            "dependency": self.dependency,
+            "from": self.old,
+            "to": self.new,
+            "by": self.by,
+        }
+
+
+def is_unversioned_range(value: object) -> bool:
+    """A `*` or `file:` internal range: Lerna cannot bump it, so the producer pins it."""
+    return value == "*" or (isinstance(value, str) and value.startswith("file:"))
+
+
+def planned_range_rewrites(
+    packages: dict[str, Workspace], selected: set[str], product_version: str
+) -> tuple[RangeRewrite, ...]:
+    rewrites: list[RangeRewrite] = []
+    for name in sorted(selected):
+        manifest = load_json(packages[name].path)
+        for kind in RUNTIME_KINDS:
+            dependencies = manifest.get(kind)
+            if not isinstance(dependencies, dict):
+                continue
+            for dependency in sorted(dependencies):
+                value = dependencies[dependency]
+                if dependency not in selected or not isinstance(value, str):
+                    continue
+                if is_unversioned_range(value):
+                    rewrites.append(RangeRewrite(name, kind, dependency, value, product_version, "producer"))
+                    continue
+                prefix = value[0] if value[:1] in ("^", "~") else ""
+                new = prefix + product_version
+                if new != value:
+                    rewrites.append(RangeRewrite(name, kind, dependency, value, new, "lerna"))
+    return tuple(rewrites)
+
+
+def planned_changed_files(
+    repo_root: Path, packages: dict[str, Workspace], selected: set[str]
+) -> tuple[str, ...]:
+    """The tracked files --apply rewrites, as the release commit records them (`RELEASE_COMMIT_PATHS`). Build
+    outputs (release-tarballs/, release-handoff.json, publish-commands.sh) are not listed: no commit holds them."""
+    root_files = [
+        name for name in ("package.json", "lerna.json", "package-lock.json") if (repo_root / name).is_file()
+    ]
+    manifests = sorted(packages[name].path.relative_to(repo_root).as_posix() for name in selected)
+    return (*root_files, *manifests, "release-plan.json")
 
 
 def previous_release_tag(repo_root: Path) -> str:
@@ -58,7 +128,14 @@ def previous_release_tag(repo_root: Path) -> str:
     raise ReleaseError("no reachable SemVer release tag; pass --since <ref>")
 
 
+def assert_ref_exists(repo_root: Path, ref: str) -> None:
+    found = run(["git", "rev-parse", "-q", "--verify", f"{ref}^{{commit}}"], cwd=repo_root, check=False)
+    if found.returncode != 0:
+        raise ReleaseError(f"unknown --since ref {ref!r}: no commit by that name")
+
+
 def lerna_candidates(repo_root: Path, base_ref: str) -> list[str]:
+    assert_ref_exists(repo_root, base_ref)
     log_step(f"asking Lerna which packages changed since {base_ref!r}")
     result = run(
         [executable("npx"), "lerna", "ls", "--since", base_ref, "--json"],
@@ -247,4 +324,6 @@ def build_plan(
         dev_cycles=dev_cycles,
         distributeable=distributeable,
         bundle_only=bundle_only,
+        range_rewrites=planned_range_rewrites(packages, selected, product_version),
+        changed_files=planned_changed_files(repo_root, packages, selected),
     )

@@ -176,8 +176,6 @@ def main(argv: list[str] | None = None) -> int:
             raise ReleaseError("--dry-run cannot be combined with --apply")
         if not args.bump and not args.version:
             raise ReleaseError("--bump or --version is required unless --verify is used")
-        if args.version:
-            assert_version_untagged(REPO_ROOT, args.version)
 
         source_root = REPO_ROOT
         plan = build_plan(
@@ -189,6 +187,8 @@ def main(argv: list[str] | None = None) -> int:
             disable=args.disable,
         )
         print(json.dumps(plan.to_dict(), indent=2))
+        # #751: --bump reaches its version only now; a tagged version fails here, before anything is written
+        assert_version_untagged(source_root, plan.product_version)
         if not args.apply:
             log_step("no --apply: this was a dry run; nothing was written or mutated")
             return 0

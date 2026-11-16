@@ -6,7 +6,7 @@ import time
 from pathlib import Path
 
 from release_lib.common import ReleaseError, dump_json, executable, load_json, log_step, run
-from release_lib.plan import ReleasePlan
+from release_lib.plan import ReleasePlan, is_unversioned_range
 from release_lib.workspace import RUNTIME_KINDS, workspace_packages
 
 # Exact Lerna invocation proven for #227:
@@ -124,8 +124,7 @@ def rewrite_internal_wildcard_ranges(repo_root: Path, plan: ReleasePlan) -> list
             for dependency in list(dependencies):
                 if dependency not in plan.selected:
                     continue
-                value = dependencies[dependency]
-                if value == "*" or (isinstance(value, str) and value.startswith("file:")):
+                if is_unversioned_range(dependencies[dependency]):
                     dependencies[dependency] = plan.product_version
                     changed = True
         if changed:
@@ -151,9 +150,7 @@ def verify_release_ranges(repo_root: Path, plan: ReleasePlan) -> None:
                 if dependency not in plan.selected or dependency not in dependencies:
                     continue
                 value = dependencies[dependency]
-                if value == "*" or (
-                    isinstance(value, str) and value.startswith("file:")
-                ):
+                if is_unversioned_range(value):
                     raise ReleaseError(
                         f"{name} {kind} dependency {dependency} is not releaseable: {value!r}"
                     )
