@@ -24,6 +24,7 @@ import type {
   Entity,
   LoggerOptions,
   MetaModel,
+  PersistenceStoreControllerInterface,
   SelfApplication,
   StoreUnitConfiguration,
 } from "@miroir-framework/core";
@@ -45,7 +46,7 @@ import {
 import { miroirFileSystemStoreSectionStartup } from "@miroir-framework/store-filesystem";
 import { miroirIndexedDbStoreSectionStartup } from "@miroir-framework/store-indexeddb";
 import { miroirMongoDbStoreSectionStartup } from "@miroir-framework/store-mongodb";
-import { miroirPostgresStoreSectionStartup } from "@miroir-framework/store-postgres";
+import { miroirPostgresStoreSectionStartup, SQL_TABLE_REFUSALS } from "@miroir-framework/store-postgres";
 import { deployment_Admin } from "@miroir-framework/core/admin";
 import { defaultMiroirMetaModel, entityEntity } from "@miroir-framework/core/meta-model";
 import {
@@ -129,7 +130,29 @@ const noteEntity: Entity = {
 } as Entity;
 
 let domainController: DomainControllerInterface;
+let persistenceStoreControllerManager: any;
 let rawSql: Sequelize;
+
+/** The Library store controller: the store methods a model Action reaches, called directly. */
+function libraryStore(): PersistenceStoreControllerInterface {
+  return persistenceStoreControllerManager.getPersistenceStoreController(testApplicationDeploymentUuid);
+}
+
+function dataSchema(): string {
+  return (testDeploymentStorageConfiguration.data as { schema: string }).schema;
+}
+
+function refusalReason(result: unknown): string | undefined {
+  return result instanceof Action2Error ? result.errorContext?.reason : undefined;
+}
+
+function alterNote(payload: { addColumns?: { name: string; definition: unknown }[]; removeColumns?: string[] }) {
+  return libraryStore().alterEntityAttribute({
+    actionType: "alterEntityAttribute",
+    endpoint: MODEL_ENDPOINT,
+    payload: { application: testApplicationUuid, entityName: noteEntity.name, entityUuid: noteEntity.uuid, ...payload },
+  } as any);
+}
 
 function libraryModelEnv() {
   return domainController.currentModelEnvironment(testApplicationUuid, applicationDeploymentMap);
@@ -142,6 +165,14 @@ async function run(action: DomainAction, label: string): Promise<void> {
 
 async function commitLibrary(): Promise<void> {
   await run({ actionType: "commit", endpoint: MODEL_ENDPOINT, payload: { application: testApplicationUuid } }, "commit");
+}
+
+async function tableColumns(table: string): Promise<string[]> {
+  const [rows] = await rawSql.query(
+    `SELECT column_name FROM information_schema.columns WHERE table_schema = :schema AND table_name = :table`,
+    { replacements: { schema: dataSchema(), table } },
+  );
+  return (rows as { column_name: string }[]).map((row) => row.column_name).sort();
 }
 
 async function noteColumns(): Promise<string[]> {
@@ -187,7 +218,9 @@ describeSql("a committed Entity row update and the SQL data table (#715)", () =>
       },
       "miroirPlatform",
     );
-    domainController = (await session.initSession()).domainController;
+    const executionEnvironment = await session.initSession();
+    domainController = executionEnvironment.domainController;
+    persistenceStoreControllerManager = executionEnvironment.persistenceStoreControllerManager;
 
     await run(
       createDeploymentCompositeAction(
@@ -308,6 +341,106 @@ describeSql("a committed Entity row update and the SQL data table (#715)", () =>
       await commitLibrary();
 
       expect(await noteColumns()).toContain("pages");
+      // #745 D7: only the named column; isbn, in the Entity row since the case above, gets none
+      expect(await noteColumns()).not.toContain("isbn");
+    },
+    globalTimeOut,
+  );
+
+  // ##############################################################################################
+  // #745 D7: alterEntityAttribute and renameEntity change only what they name, checking first
+  it(
+    "alterEntityAttribute adds only the named column: a column the Entity row does not declare is kept, with its values",
+    async () => {
+      await rawSql.query(`ALTER TABLE "${dataSchema()}"."${noteEntity.name}" ADD COLUMN "kept745" text`);
+      await rawSql.query(
+        `INSERT INTO "${dataSchema()}"."${noteEntity.name}" (uuid, "parentUuid", name, "kept745") VALUES ('745d0001-0000-4000-8000-000000000001', :parent, 'n', 'kept value')`,
+        { replacements: { parent: noteEntity.uuid } },
+      );
+
+      const result = await alterNote({ addColumns: [{ name: "added745", definition: { type: "string", optional: true } }] });
+
+      expect(result instanceof Action2Error, JSON.stringify(result)).toBe(false);
+      expect(await noteColumns()).toEqual(expect.arrayContaining(["added745", "kept745"]));
+      // isbn, declared by the Entity row with no column (above), gets none
+      expect(await noteColumns()).not.toContain("isbn");
+      const [rows] = await rawSql.query(`SELECT "kept745" FROM "${dataSchema()}"."${noteEntity.name}" WHERE uuid = '745d0001-0000-4000-8000-000000000001'`);
+      expect(rows).toEqual([{ kept745: "kept value" }]);
+      expect(await storedNoteAttributes()).toContain("added745");
+    },
+    globalTimeOut,
+  );
+
+  // ##############################################################################################
+  it(
+    "alterEntityAttribute is refused, nothing changed: adding a column that exists (columnExists), removing one that does not (columnMissing); a virtual attribute has no column to check",
+    async () => {
+      const attributesBefore = await storedNoteAttributes();
+      const columnsBefore = await noteColumns();
+
+      const existing = await alterNote({ addColumns: [{ name: "kept745", definition: { type: "string", optional: true } }] });
+      expect(refusalReason(existing), JSON.stringify(existing)).toBe(SQL_TABLE_REFUSALS.columnExists);
+      expect((existing as Action2Error).errorContext).toMatchObject({ column: "kept745", entity: noteEntity.uuid });
+
+      // isbn is declared by the Entity row, without a column
+      const missing = await alterNote({ removeColumns: ["isbn"] });
+      expect(refusalReason(missing), JSON.stringify(missing)).toBe(SQL_TABLE_REFUSALS.columnMissing);
+      expect((missing as Action2Error).errorContext).toMatchObject({ column: "isbn" });
+
+      // a column added with an existing one: neither is added
+      const mixed = await alterNote({
+        addColumns: [
+          { name: "notAdded745", definition: { type: "string", optional: true } },
+          { name: "added745", definition: { type: "string", optional: true } },
+        ],
+      });
+      expect(refusalReason(mixed)).toBe(SQL_TABLE_REFUSALS.columnExists);
+      expect(await noteColumns()).toEqual(columnsBefore);
+      expect(await storedNoteAttributes()).toEqual(attributesBefore);
+
+      // a virtual attribute: added and removed in the Entity row only
+      const virtual = { type: "string", optional: true, tag: { value: { virtualAttribute: { transformerType: "returnValue", value: "v" } } } };
+      const addedVirtual = await alterNote({ addColumns: [{ name: "virtual745", definition: virtual }] });
+      expect(addedVirtual instanceof Action2Error, JSON.stringify(addedVirtual)).toBe(false);
+      expect(await storedNoteAttributes()).toContain("virtual745");
+      const removedVirtual = await alterNote({ removeColumns: ["virtual745"] });
+      expect(removedVirtual instanceof Action2Error, JSON.stringify(removedVirtual)).toBe(false);
+      expect(await noteColumns()).toEqual(columnsBefore);
+    },
+    globalTimeOut,
+  );
+
+  // ##############################################################################################
+  it(
+    "renameEntity to a name whose table exists is refused (tableExists), the row unchanged; a rename keeps the rows",
+    async () => {
+      const taken = "Taken745";
+      await rawSql.query(`CREATE TABLE "${dataSchema()}"."${taken}" (uuid uuid PRIMARY KEY)`);
+      const rename = (targetValue: string) =>
+        libraryStore().renameEntityClean({
+          actionType: "renameEntity",
+          endpoint: MODEL_ENDPOINT,
+          payload: { application: testApplicationUuid, entityName: noteEntity.name, entityUuid: noteEntity.uuid, targetValue },
+        } as any);
+
+      const refused = await rename(taken);
+      expect(refusalReason(refused), JSON.stringify(refused)).toBe(SQL_TABLE_REFUSALS.tableExists);
+      const [names] = await rawSql.query(
+        `SELECT name FROM "${(testDeploymentStorageConfiguration.model as { schema: string }).schema}"."Entity" WHERE uuid = :uuid`,
+        { replacements: { uuid: noteEntity.uuid } },
+      );
+      expect(names).toEqual([{ name: noteEntity.name }]);
+      expect(await tableColumns(noteEntity.name)).toContain("kept745");
+
+      const renamedTo = "Renamed745";
+      const renamed = await rename(renamedTo);
+      expect(renamed instanceof Action2Error, JSON.stringify(renamed)).toBe(false);
+      const [rows] = await rawSql.query(`SELECT uuid FROM "${dataSchema()}"."${renamedTo}"`);
+      expect(rows).toEqual([{ uuid: "745d0001-0000-4000-8000-000000000001" }]);
+      expect(await tableColumns(noteEntity.name)).toEqual([]);
+      // back to its name, for the other cases and the reset
+      expect((await rename(noteEntity.name)) instanceof Action2Error).toBe(false);
+      await rawSql.query(`DROP TABLE "${dataSchema()}"."${taken}"`);
     },
     globalTimeOut,
   );

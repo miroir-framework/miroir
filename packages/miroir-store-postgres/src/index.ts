@@ -18,3 +18,6 @@ export {
 export {
   miroirPostgresStoreSectionStartup,
 } from './startup.js'
+export {
+  SQL_TABLE_REFUSALS,
+} from './4_services/sqlDbEntityStoreSectionMixin.js'
