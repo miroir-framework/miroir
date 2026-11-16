@@ -48,6 +48,7 @@ Key sources: [`applicationVersionFreeze.ts`](../../../packages/miroir-core/src/1
 | **Following deployment** | A test, validation or production deployment. It reads versions and migrations, runs migrations, and never writes to `modelVersion` (D5). |
 | **Trace record** | One Miroir `commit` (one model transaction): the ordered resolved model Actions it ran (Q16, Q28). |
 | **Migration** | An instance of the new `Migration` Entity in `modelVersion`: a `CompositeActionSequence` that moves a deployment from one version to another (Q10). It has expand, jump and contract phases (D2). |
+| **Jump** | The phase of a migration run that brings a deployment's model to the target version, between the expand and the fill steps (D2-d). Without Git it rewrites the model from the version's frozen snapshot (the restore of D6); with Git it checks out the version's tag. The steps around it change data. |
 | **Deployment state record** | A row in Admin data, keyed by Deployment uuid. It records the version the deployment's model and data are at, the migrations applied and the steps done in a running one, and whether the deployment authors or follows (Q22, D5). |
 | **Restore point** | A version that a deployment's model can be brought back to (Q11). It is not a separate concept: every version is one. |
 | **Re-baseline marker** | A record that closes the open traces after the model was corrected outside Miroir or jumped (Q30, D11). |
@@ -107,6 +108,8 @@ Key sources: [`applicationVersionFreeze.ts`](../../../packages/miroir-core/src/1
 ## 5. A designer's day in each setting
 
 Library is the example: `Book` (attributes today: `name`, `year`, `citation`, `author`, `publisher`) gains an optional attribute `isbn`, which is filled from existing data.
+
+Both days are drawn, with what #9 built and where it differs, in [explainer-designer-day-20261116-135500/designer-day.html](explainer-designer-day-20261116-135500/designer-day.html).
 
 ### 5.1 `versioned-internal`, no Git
 

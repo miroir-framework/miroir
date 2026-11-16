@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "dea83dd0-94a6-48ef-b40c-1dd27e92c222",
+  "status": "current",
+  "command": "deliver",
+  "type": "explainer",
+  "input": "/home/user/miroir/code-helpers/features/694-EPIC-safe-application-evolution/explainer-designer-day-20261116-135500/candidate.archify.md",
+  "output": "/home/user/miroir/code-helpers/features/694-EPIC-safe-application-evolution/explainer-designer-day-20261116-135500/designer-day.html",
+  "specification": {
+    "sha256": "5c3d589bd1b7cdbe8b418e7b125fcc58fac4fb29aba4f9ff03c57fd214de0b58",
+    "bytes": 9169
+  },
+  "artifact": {
+    "sha256": "aafa4d2ea14a1b60b982ec8fa53180147464a4766b6fb20f470b48fbb000825f",
+    "bytes": 1358289
+  },
+  "explainer": {
+    "preparedSha256": "483cc59fc3a8761cd4fd136e70aef83bffa2f0d290fc315c4426d2229774a1b1",
+    "dependencies": [
+      {
+        "kind": "repository",
+        "id": "epic-day",
+        "path": "code-helpers/features/694-EPIC-safe-application-evolution/analysis.md",
+        "revision": "f26ece5f62d8f1862b1f3bd676568215f293246e",
+        "sha256": "3c1fafe351a254b1100dff0cfa054f50fdff8499e715efbf19cd3ad73b0c8554",
+        "bytes": 49202
+      },
+      {
+        "kind": "repository",
+        "id": "epic-d2",
+        "path": "code-helpers/features/694-EPIC-safe-application-evolution/analysis.md",
+        "revision": "f26ece5f62d8f1862b1f3bd676568215f293246e",
+        "sha256": "3c1fafe351a254b1100dff0cfa054f50fdff8499e715efbf19cd3ad73b0c8554",
+        "bytes": 49202
+      },
+      {
+        "kind": "repository",
+        "id": "epic-d7",
+        "path": "code-helpers/features/694-EPIC-safe-application-evolution/analysis.md",
+        "revision": "f26ece5f62d8f1862b1f3bd676568215f293246e",
+        "sha256": "3c1fafe351a254b1100dff0cfa054f50fdff8499e715efbf19cd3ad73b0c8554",
+        "bytes": 49202
+      },
+      {
+        "kind": "repository",
+        "id": "apply-model",
+        "path": "packages/miroir-versioning/src/applicationVersionInstall.ts",
+        "revision": "f26ece5f62d8f1862b1f3bd676568215f293246e",
+        "sha256": "39e184857b36ac8802bb6cf53086084a6819f550890d263f36ec830a09c93a3b",
+        "bytes": 23649
+      },
+      {
+        "kind": "repository",
+        "id": "bring-model",
+        "path": "packages/miroir-versioning/src/applicationVersionInstall.ts",
+        "revision": "f26ece5f62d8f1862b1f3bd676568215f293246e",
+        "sha256": "39e184857b36ac8802bb6cf53086084a6819f550890d263f36ec830a09c93a3b",
+        "bytes": 23649
+      },
+      {
+        "kind": "repository",
+        "id": "run-jump",
+        "path": "packages/miroir-versioning/src/migrationRun.ts",
+        "revision": "f26ece5f62d8f1862b1f3bd676568215f293246e",
+        "sha256": "a0f709ae284ef9e94eb97c447af6fc394dee58b0b3cf510327cc4124c8c4252a",
+        "bytes": 15762
+      },
+      {
+        "kind": "repository",
+        "id": "git-checkout",
+        "path": "packages/miroir-versioning/src/migrationGit.ts",
+        "revision": "f26ece5f62d8f1862b1f3bd676568215f293246e",
+        "sha256": "696c5d51510020237bed8c76a02a2931c9c52cbd99ca8c312d1e2e0440b1daf8",
+        "bytes": 5417
+      },
+      {
+        "kind": "repository",
+        "id": "gen-check",
+        "path": "packages/miroir-versioning/src/migrationGeneration.ts",
+        "revision": "f26ece5f62d8f1862b1f3bd676568215f293246e",
+        "sha256": "4794ec415aaa2e365bcbb8e7f52020a0d7d42723de68aa38fc6ec58008f67fd9",
+        "bytes": 25989
+      },
+      {
+        "kind": "diagram-spec",
+        "id": "internal-flow",
+        "inline": true,
+        "sha256": "2792fe200bd323a54ca69eba223734a03cfcf06f62022846033f85980eeac03c",
+        "bytes": 1720
+      },
+      {
+        "kind": "diagram-spec",
+        "id": "git-flow",
+        "inline": true,
+        "sha256": "b1241f520d8305f7b406956ee4d55724d500fa6db6eed6aeba84f72905946260",
+        "bytes": 1677
+      }
+    ]
+  }
+}
