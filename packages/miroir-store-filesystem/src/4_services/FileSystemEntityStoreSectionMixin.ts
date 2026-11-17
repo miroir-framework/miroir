@@ -21,6 +21,7 @@ import {
   applyEntityOnlyRename,
   applyMlSchemaColumnChanges,
   createEntitiesStrictly,
+  removeAttributesFromInstances,
   readEntityRowUuids,
   type StrictEntityCreationStore,
 } from "@miroir-framework/core";
@@ -171,6 +172,7 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
 
     // ############################################################################################
     // #220 — Entity-only alter; never dual-write EntityVersion.
+    // #733 — removeColumns also removes the attributes' values from the instances.
     async alterEntityAttribute(update: ModelActionAlterEntityAttribute): Promise<Action2VoidReturnType> {
       log.info(this.logHeader, "alterEntityAttribute", update);
       const currentEntity: Action2EntityInstanceReturnType = await this.getInstance(
@@ -205,6 +207,12 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
             `alterEntityAttribute requires complete Entity.mlSchema (entityUuid ${update.payload.entityUuid})`
           )
         );
+      }
+      // #733: the removed attributes leave the stored instances first, as SQL drops the columns before
+      // it writes the Entity row
+      const removed = await removeAttributesFromInstances(this.dataStore, previousEntity, update.payload.removeColumns);
+      if (removed instanceof Action2Error) {
+        return removed;
       }
       log.info("alterEntityAttribute Entity-only", entityOnly.uuid);
       return this.upsertInstance(entityEntity.uuid, entityOnly);

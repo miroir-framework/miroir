@@ -1952,6 +1952,41 @@
       }
     },
     {
+      "id": "integ-alter-entity-remove-columns",
+      "scopes": ["actions"],
+      "tier": "default",
+      "title": "#733 \u2014 alterEntityAttribute removeColumns removes the attribute's values from the stored instances on every store; a re-add finds no old value",
+      "requires": "storage",
+      "argv": [
+        "npm",
+        "run",
+        "testByFile",
+        "-w",
+        "miroir-standalone-app",
+        "--",
+        "--profile",
+        "{profile}",
+        "alterEntityAttributeRemoveColumns.integ"
+      ],
+      "shared": {
+        "group": "standalone-app-profile",
+        "argv": [
+          "npm",
+          "run",
+          "testByFile",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--profile",
+          "{profile}",
+          "--no-bail"
+        ],
+        "files": [
+          "alterEntityAttributeRemoveColumns.integ"
+        ]
+      }
+    },
+    {
       "id": "appstack-ExtractorPersistenceStoreRunner.integ",
       "scopes": ["core"],
       "tier": "default",
