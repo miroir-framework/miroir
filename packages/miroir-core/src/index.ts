@@ -963,6 +963,8 @@ export {
   readEntityRowUuids,
 } from "./1_core/Entity/strictEntityCreation.js";
 export type { StrictEntityCreationStore } from "./1_core/Entity/strictEntityCreation.js";
+export { removeAttributesFromInstances } from "./1_core/Entity/removeAttributesFromInstances.js";
+export type { InstanceAttributeRemovalStore } from "./1_core/Entity/removeAttributesFromInstances.js";
 export type { EntityPrimaryKeySource } from "./1_core/Entity/EntityPrimaryKey";
 export {
   applyEntityOnlyRename,

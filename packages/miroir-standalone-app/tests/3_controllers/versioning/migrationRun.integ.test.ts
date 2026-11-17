@@ -963,4 +963,47 @@ describe("#9 part C, #745: runMigration", () => {
     }
     await unchanged();
   }, 120000);
+  it("C10 (#733): a replayed removeColumns removes the attribute's values from the instances; a later add of the same name finds none", async () => {
+    const VERSION_1_5 = `9C-1.5.0-${run}`;
+    const VERSION_1_6 = `9C-1.6.0-${run}`;
+    const publisherFiles = () =>
+      fs.readdirSync(followingDataFolder(entityPublisher.uuid)).map((file) => JSON.parse(fs.readFileSync(path.join(followingDataFolder(entityPublisher.uuid), file), "utf8")));
+    const withMotto = () => publisherFiles().filter((row) => MOTTO in row).map((row) => [row.uuid, row[MOTTO]]).sort((a, b) => String(a[0]).localeCompare(String(b[0])));
+    const before = withMotto();
+    expect(before.length, "C1 filled the mottos of the following deployment").toBeGreaterThan(0);
+
+    // 1.5.0: the designer removes Publisher.mottoC9
+    const removeStep = {
+      uuid: "9c000015-0000-4000-8000-000000000002",
+      name: `remove Publisher.${MOTTO}`,
+      kind: "model",
+      backwardCompatible: false,
+      action: { actionType: "alterEntityAttribute", actionLabel: `remove Publisher.${MOTTO}`, endpoint: MODEL_ENDPOINT, payload: { application: APP_FOR_TEST, entityName: entityPublisher.name, entityUuid: entityPublisher.uuid, removeColumns: [MOTTO] } },
+    };
+    expectOk(await modelAction({ ...removeStep.action, actionLabel: undefined }), "remove Publisher.mottoC9");
+    expectOk(await freezeAppForTest(context.domainController, VERSION_1_5), "freeze 1.5.0");
+    await storeMigration(manualMigration("9c000015-0000-4000-8000-000000000001", VERSION_1_3, VERSION_1_5, [removeStep], { backwardCompatible: false }));
+    const removed = await runMigration("9c000015-0000-4000-8000-000000000001");
+    expectOk(removed, "the migration run 1.3.0 -> 1.5.0");
+    expect(await deploymentState()).toMatchObject({ version: VERSION_1_5 });
+    const following = await state(followingMap);
+    const publisherEntity = following.entities.find((entity) => entity.uuid === entityPublisher.uuid) as unknown as Entity;
+    expect(MOTTO in publisherEntity.mlSchema.definition, "the Entity row no longer declares the attribute").toBe(false);
+    expect(withMotto(), "no instance file holds the removed attribute").toEqual([]);
+
+    // 1.6.0: the designer adds Publisher.mottoC9 again, as a number
+    const addStep = {
+      uuid: "9c000016-0000-4000-8000-000000000002",
+      name: `add Publisher.${MOTTO}`,
+      kind: "model",
+      backwardCompatible: true,
+      action: { actionType: "alterEntityAttribute", actionLabel: `add Publisher.${MOTTO}`, endpoint: MODEL_ENDPOINT, payload: { application: APP_FOR_TEST, entityName: entityPublisher.name, entityUuid: entityPublisher.uuid, addColumns: [{ name: MOTTO, definition: { type: "number", optional: true } }] } },
+    };
+    expectOk(await modelAction({ ...addStep.action, actionLabel: undefined }), "add Publisher.mottoC9 as a number");
+    expectOk(await freezeAppForTest(context.domainController, VERSION_1_6), "freeze 1.6.0");
+    await storeMigration(manualMigration("9c000016-0000-4000-8000-000000000001", VERSION_1_5, VERSION_1_6, [addStep]));
+    expectOk(await runMigration("9c000016-0000-4000-8000-000000000001"), "the migration run 1.5.0 -> 1.6.0");
+    const reappeared = (await storedRows(context, FOLLOWING_DEPLOYMENT, "data", entityPublisher.uuid)).filter((row) => MOTTO in row).map((row) => [row.uuid, (row as any)[MOTTO]]).sort((a, b) => String(a[0]).localeCompare(String(b[0])));
+    expect(reappeared, "no old string value comes back under the new number attribute").toEqual([]);
+  }, 180000);
 });
