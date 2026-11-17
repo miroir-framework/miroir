@@ -221,4 +221,20 @@ describe(`alterEntityAttribute removeColumns removes the values from the instanc
     },
     globalTimeOut,
   );
+  // ##############################################################################################
+  it.runIf(storeType !== "sql")(
+    "removing the primary key attribute fails before any write: the Entity row and the instances are kept",
+    async () => {
+      expectOk(await store.createEntity(note), "createEntity");
+      expectOk(await store.upsertInstance("data", noteInstance("01", "a motto")), "upsertInstance");
+
+      const result = await alter({ removeColumns: ["uuid"] });
+
+      expect(result instanceof Action2Error ? result.errorContext?.reason : undefined, JSON.stringify(result)).toBe("primaryKeyAttribute");
+      expect("uuid" in (await storedNoteRow()).mlSchema.definition).toBe(true);
+      const rows = await store.getInstances("data", note.uuid);
+      expect((rows as any).returnedDomainElement.instances).toEqual([expect.objectContaining({ uuid: noteInstance("01").uuid, [MOTTO]: "a motto" })]);
+    },
+    globalTimeOut,
+  );
 });

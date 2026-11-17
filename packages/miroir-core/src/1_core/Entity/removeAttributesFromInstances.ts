@@ -12,6 +12,7 @@ import {
   Domain2ElementFailed,
 } from "../../0_interfaces/2_domain/DomainElement.js";
 import { ACTION_OK } from "../constants.js";
+import { getEntityPrimaryKeyAttributes } from "./EntityPrimaryKey.js";
 import { isExternalEntity } from "./strictEntityCreation.js";
 
 /** What `removeAttributesFromInstances` needs of a data section. */
@@ -23,7 +24,9 @@ export interface InstanceAttributeRemovalStore {
 
 /**
  * Removes `attributes` from every stored instance of `entity` that holds one of them. Only the attributes the
- * Entity row declares are removed (as SQL removes only declared columns). An external Entity, or an Entity whose
+ * Entity row declares are removed (as SQL removes only declared columns). A primary key attribute cannot be
+ * removed: the instances could no longer be written back under their key, so the call fails before any write
+ * (`reason: "primaryKeyAttribute"`). An external Entity, or an Entity whose
  * storage the section does not register, has no stored instance to change. Every instance is read before any is
  * written: a failed read writes nothing. An instance without the attributes is not written, so running the
  * removal again after a failed write finishes it.
@@ -34,7 +37,20 @@ export async function removeAttributesFromInstances(
   attributes: string[] | undefined,
 ): Promise<Action2VoidReturnType> {
   const declared = (attributes ?? []).filter((attribute) => attribute in (entity.mlSchema?.definition ?? {}));
-  if (declared.length === 0 || isExternalEntity(entity) || !dataSection.getEntityUuids().includes(entity.uuid)) {
+  if (declared.length === 0 || isExternalEntity(entity)) {
+    return ACTION_OK;
+  }
+  const primaryKey = declared.filter((attribute) => getEntityPrimaryKeyAttributes(entity).includes(attribute));
+  if (primaryKey.length > 0) {
+    return new Action2Error(
+      "FailedToDeployModule",
+      `alterEntityAttribute: ${primaryKey.join(", ")} is the primary key of ${entity.name} and cannot be removed; nothing is changed`,
+      ["alterEntityAttribute"],
+      undefined,
+      { reason: "primaryKeyAttribute", entity: entity.uuid, attributes: primaryKey },
+    );
+  }
+  if (!dataSection.getEntityUuids().includes(entity.uuid)) {
     return ACTION_OK;
   }
   const read = await dataSection.getInstances(entity.uuid);
