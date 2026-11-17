@@ -3795,7 +3795,7 @@ export class DomainController implements DomainControllerInterface, DomainContro
       return result;
     }
     if (result instanceof Action2Error) {
-      // #9: a stopped migration run may have changed the model (its jump) before the step that failed
+      // #9, #745: a stopped migration run may have changed the model (its model steps) before the step that failed
       if ((domainAction as { actionType?: string }).actionType === "runMigration") {
         await this.reloadTouchedDeployments(
           { status: "ok", returnedDomainElement: { touchedDeployments: [{ application }] } as any },

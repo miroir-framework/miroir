@@ -1,5 +1,7 @@
 # Which actions can a Migration run, compared with what a trace records? {#trace-vs-migration}
 
+> **Describes #9 before #745.** Since #745, a Migration has no jump: its model steps replay the traced model Actions, in one ordered list with the data steps, and a migration run checks the model against the frozen `from` and `to` versions. See [`docs/reference/versioning.md`](../../../../docs/reference/versioning.md#migrations-and-deployment-roles).
+
 A run changes the model only at the **jump**, with the actions a trace records. Its steps exist for **data**, which traces never record. The runner enforces this split only in `versioned-git`, and the rule is written nowhere: that gap is #741.
 
 - Traces record four Entity actions and instance writes on the `model` section, nothing on `data`.[](source:trace-vocab)

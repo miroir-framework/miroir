@@ -19,7 +19,10 @@ import {
   PersistenceStoreEntitySectionAbstractInterface,
   PersistenceStoreInstanceSectionAbstractInterface,
   applyEntityOnlyRename,
-  applyMlSchemaColumnChanges
+  applyMlSchemaColumnChanges,
+  createEntitiesStrictly,
+  readEntityRowUuids,
+  type StrictEntityCreationStore,
 } from "@miroir-framework/core";
 import { FileSystemInstanceStoreSectionMixin, MixedFileSystemInstanceStoreSection, fullName } from "./FileSystemInstanceStoreSectionMixin.js";
 import { FileSystemStoreSection } from "./FileSystemStoreSection.js";
@@ -79,31 +82,27 @@ export function FileSystemDbEntityStoreSectionMixin<TBase extends typeof MixedFi
     }
 
     // #########################################################################################
+    /** #745 D4: the checks and writes of a strict `createEntity` on this store. */
+    strictEntityCreationStore(): StrictEntityCreationStore {
+      return {
+        storeLabel: this.logHeader,
+        entityRowUuids: () => readEntityRowUuids(this, entityEntity.uuid),
+        storageSpaceExists: this.dataStore.storageSpaceExists?.bind(this.dataStore),
+        createStorageSpace: (entity) => this.dataStore.createStorageSpaceForInstancesOfEntity(entity),
+        writeEntityRow: (entity) => this.upsertInstance(entityEntity.uuid, entity),
+      };
+    }
+
+    // #########################################################################################
     // #220 — createEntity is Entity-only (complete present model on Entity required).
+    // #745 D4 — fails when the Entity's row or storage exists, before writing anything.
     async createEntity(entity: Entity): Promise<Action2VoidReturnType> {
-      if (this.dataStore.getEntityUuids().includes(entity.uuid)) {
-        log.warn(
-          this.logHeader,
-          "createEntity",
-          entity.name,
-          "already existing entity",
-          entity.uuid,
-        );
-      } else {
-        await this.dataStore.createStorageSpaceForInstancesOfEntity(entity);
-      }
-      return this.upsertInstance(entityEntity.uuid, entity);
+      return createEntitiesStrictly(this.strictEntityCreationStore(), [entity]);
     }
 
     // ##############################################################################################
     async createEntities(entities: Entity[]): Promise<Action2VoidReturnType> {
-      for (const entity of entities) {
-        const result = await this.createEntity(entity);
-        if (result instanceof Action2Error) {
-          return result;
-        }
-      }
-      return Promise.resolve(ACTION_OK);
+      return createEntitiesStrictly(this.strictEntityCreationStore(), entities);
     }
 
     // #########################################################################################

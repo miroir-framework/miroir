@@ -13,7 +13,7 @@ import {
 } from "./freezeApplicationVersion.js";
 import { handleAction_installApplicationVersion } from "./applicationVersionInstall.js";
 import { handleAction_generateMigration } from "./migrationGeneration.js";
-import { handleAction_runMigration } from "./migrationRun.js";
+import { handleAction_runMigration, handleAction_settleMigrationStep } from "./migrationRun.js";
 
 /** The action implementations of the package, by the `inMemoryImplementationFunctionName` of their Endpoint action. */
 export const actionImplementations: Record<string, ActionImplementationHandler> = {
@@ -24,6 +24,7 @@ export const actionImplementations: Record<string, ActionImplementationHandler> 
   handleAction_installApplicationVersion, // #9
   handleAction_generateMigration, // #9
   handleAction_runMigration, // #9
+  handleAction_settleMigrationStep, // #745
 };
 
 export {
@@ -37,6 +38,7 @@ export * from "./applicationVersionInstall.js";
 export * from "./deploymentRole.js";
 export * from "./migrationGeneration.js";
 export * from "./migrationRun.js";
+export * from "./migrationSteps.js";
 export * from "./evolutionTraceAgreement.js";
 export * from "./evolutionTraceRecords.js";
 export * from "./modelStates.js";

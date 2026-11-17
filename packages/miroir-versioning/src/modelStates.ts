@@ -304,7 +304,7 @@ export function modelStateFromFiles(
 }
 
 /** The model Actions a record holds; its other Actions are instance writes. */
-const REPLAYED_MODEL_ACTION_TYPES: ReadonlySet<string> = new Set(["createEntity", "alterEntityAttribute", "renameEntity", "dropEntity"]);
+export const REPLAYED_MODEL_ACTION_TYPES: ReadonlySet<string> = new Set(["createEntity", "alterEntityAttribute", "renameEntity", "dropEntity"]);
 
 /** An instance write as a record holds it (`recordedInstanceWrite` of core). */
 type RecordedInstanceWrite = {
@@ -331,10 +331,19 @@ function applyInstanceWrite(state: ModelState, write: RecordedInstanceWrite): Mo
   return next;
 }
 
-/** `state` with the Actions of one record applied, in order; model Actions become instance writes first. */
-function applyRecordActions(state: ModelState, record: EvolutionTraceRecordRow): ModelState | Action2Error {
+/**
+ * #745: `state` with `actions` applied in order, as a store would apply them: a model Action becomes its
+ * instance writes first (`ModelEntityActionTransformer`), an instance write applies as it is. `label` names
+ * where the Actions come from in an error.
+ */
+export function applyModelStateActions(
+  state: ModelState,
+  application: string,
+  actions: readonly unknown[],
+  label: string,
+): ModelState | Action2Error {
   let current = state;
-  for (const action of record.actions ?? []) {
+  for (const action of actions) {
     const actionType = String((action as { actionType?: unknown }).actionType);
     if (!REPLAYED_MODEL_ACTION_TYPES.has(actionType)) {
       current = applyInstanceWrite(current, action as RecordedInstanceWrite);
@@ -342,19 +351,24 @@ function applyRecordActions(state: ModelState, record: EvolutionTraceRecordRow):
     }
     let writes: ReturnType<typeof ModelEntityActionTransformer.modelActionToInstanceAction>;
     try {
-      writes = ModelEntityActionTransformer.modelActionToInstanceAction(record.application, action as ModelAction, current);
+      writes = ModelEntityActionTransformer.modelActionToInstanceAction(application, action as ModelAction, current);
     } catch (error) {
       writes = new TransformerFailure({ queryFailure: "FailedTransformer", failureMessage: String(error) });
     }
     if (writes instanceof TransformerFailure) {
-      return new Action2Error(
-        "FailedToHandleAction",
-        `replayEvolutionTraceRecords could not replay ${actionType} of record ${record.sequenceNumber}: ${writes.failureMessage ?? ""}`,
-      );
+      return new Action2Error("FailedToHandleAction", `could not replay ${actionType} of ${label}: ${writes.failureMessage ?? ""}`);
     }
     current = writes.reduce((replayed, write) => applyInstanceWrite(replayed, write as RecordedInstanceWrite), current);
   }
   return current;
+}
+
+/** `state` with the Actions of one record applied, in order; model Actions become instance writes first. */
+function applyRecordActions(state: ModelState, record: EvolutionTraceRecordRow): ModelState | Action2Error {
+  const replayed = applyModelStateActions(state, record.application, record.actions ?? [], `record ${record.sequenceNumber}`);
+  return replayed instanceof Action2Error
+    ? new Action2Error("FailedToHandleAction", `replayEvolutionTraceRecords ${replayed.errorMessage ?? ""}`)
+    : replayed;
 }
 
 /**

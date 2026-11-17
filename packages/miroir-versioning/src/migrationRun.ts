@@ -1,9 +1,16 @@
 /**
- * #9 part C: the run of a Migration on a following deployment (analysis D8). It runs where the stores are,
+ * #9 part C, #745: the migration run of a Migration on a following deployment. It runs where the stores are,
  * under a lock per deployment: the checks, the copy of the Migration into the deployment's `DeploymentState`
- * row, then the steps in order (expand, the jump of the model to the `to` version, fill, contract), each
- * recorded in `run.stepsDone` once it has run, so that a stopped run resumes at the first step not recorded.
- * At the end, the deployment is at `to` and the Migration is in `applied`.
+ * row, then the steps in the order of the Migration's one list (#745 D1). A `model` step executes one model
+ * Action the designer ran (or, in `versioned-git`, the checkout of the `to` tag), then reloads the model; a
+ * `data` step executes its composite action sequence.
+ *
+ * Strict (#745 D5): each step is recorded as started (`run.stepStarted`) before it executes and as done
+ * (`run.stepsDone`) after. A migration run stopped between two steps continues at the first step not
+ * started; a step recorded as started and not done is in doubt, and stops every later `runMigration`
+ * (`migrationStepInDoubt`) until the operator settles it with `settleMigrationStep`. A Migration already
+ * applied is refused (`migrationAlreadyApplied`). At the end, the deployment is at `to` and the Migration
+ * is in `applied`.
  */
 import {
   Action2Error,
@@ -20,42 +27,57 @@ import {
   type MiroirModelEnvironment,
 } from "@miroir-framework/core";
 
-import {
-  bringModelToVersion,
-  modelEnvironmentOf,
-  reloadModel,
-  storedDeploymentState,
-  writeDeploymentState,
-} from "./applicationVersionInstall.js";
+import { modelEnvironmentOf, reloadModel, storedDeploymentState, writeDeploymentState } from "./applicationVersionInstall.js";
 import { refusal, storedDeploymentRow } from "./deploymentRole.js";
 import { withApplicationLock } from "./evolutionTraceRecords.js";
-import type { MigrationRow, MigrationStep } from "./migrationGeneration.js";
+import { migrationBackwardCompatible, type MigrationRow } from "./migrationGeneration.js";
 import { checkedOutVersion, checkoutVersion, isGitVersioned, migrationAtItsTag } from "./migrationGit.js";
-import { liveModelState, type ModelState } from "./modelStates.js";
+import {
+  GIT_CHECKOUT_ACTION_TYPE,
+  INSTANCE_WRITE_ACTION_TYPES,
+  MODEL_ENDPOINT_UUID,
+  MODEL_STEP_ACTION_TYPES,
+  differencesText,
+  modelStateDifferences,
+  stepsReplayDifferences,
+  type MigrationModelStepAction,
+  type MigrationStep,
+} from "./migrationSteps.js";
+import { frozenCollectionsOf, frozenStateOf, liveModelState, type ModelState } from "./modelStates.js";
 
 /** #9: Model Endpoint action that runs a Migration on a following deployment. */
 export const RUN_MIGRATION_ACTION_TYPE = "runMigration" as const;
 
+/** #745: Model Endpoint action that settles the step a stopped migration run left in doubt. */
+export const SETTLE_MIGRATION_STEP_ACTION_TYPE = "settleMigrationStep" as const;
+
 /** Payload of `runMigration`: the uuid of a Migration in the application's `modelVersion` section. */
 export type RunMigrationActionPayload = { application: string; migration: string };
 
-/** The `stepsDone` entry of the jump, which is no step of the Migration. */
-export const JUMP_STEP = "jump";
+/**
+ * Payload of `settleMigrationStep`: the step in doubt, and what the operator found: `done` (its writes all
+ * landed, or were completed by hand), or `notRun` (none of them landed, or they were undone by hand).
+ */
+export type SettleMigrationStepActionPayload = { application: string; step: string; outcome: "done" | "notRun" };
 
-/** The reasons a run is refused, by name. */
+/** The reasons a migration run, or the settlement of a step, is refused, by name. */
 export const MIGRATION_RUN_REFUSALS = {
   deploymentAuthors: "deploymentAuthors",
+  migrationAlreadyApplied: "migrationAlreadyApplied",
+  migrationModelMismatch: "migrationModelMismatch",
   migrationNotFound: "migrationNotFound",
   migrationNotAtFrom: "migrationNotAtFrom",
+  migrationReferenceMissing: "migrationReferenceMissing",
   migrationRunInProgress: "migrationRunInProgress",
-  migrationUnsupportedChange: "migrationUnsupportedChange",
   migrationStepFailed: "migrationStepFailed",
+  migrationStepInDoubt: "migrationStepInDoubt",
+  migrationStepNotInDoubt: "migrationStepNotInDoubt",
   migrationStepsInvalid: "migrationStepsInvalid",
   migrationStepWritesModel: "migrationStepWritesModel",
+  migrationUnsupportedChange: "migrationUnsupportedChange",
   versionNotCheckedOut: "versionNotCheckedOut",
 } as const;
 
-const MODEL_ENDPOINT_UUID = "7947ae40-eb34-4149-887b-15a9021e714e";
 /** The model actions that wait in the transaction unless they say `transactional: false`. */
 const TRANSACTIONAL_MODEL_ACTIONS: ReadonlySet<string> = new Set(["createEntity", "dropEntity", "renameEntity", "alterEntityAttribute"]);
 
@@ -76,22 +98,105 @@ function writesModel(action: StepAction): boolean {
   );
 }
 
-type RunState = { migration: MigrationRow; stepsDone: string[]; startedAt: string };
+type RunState = { migration: MigrationRow; stepsDone: string[]; stepStarted?: string; startedAt: string };
 
-/** The steps of a Migration in the order a run takes them, the jump between expand and fill. */
-function runOrder(migration: MigrationRow): (MigrationStep | typeof JUMP_STEP)[] {
-  return [...migration.expand, JUMP_STEP, ...migration.fill, ...migration.contract];
-}
-
-/** Whether the Migration lets the `from` version run on its data: every change and every step say so. */
-function recomputedBackwardCompatible(migration: MigrationRow): boolean {
-  return [...migration.changes, ...migration.expand, ...migration.fill, ...migration.contract].every((item) => item.backwardCompatible);
+/** A step named for a person: its name and its uuid. */
+function stepLabel(step: Pick<MigrationStep, "name" | "uuid"> | undefined, uuid: string): string {
+  return step ? `"${step.name}" (${step.uuid})` : uuid;
 }
 
 /**
- * `action` and the actions of its sequences, nested ones included, marked as a migration run's (D6). A model
+ * Why the steps of a Migration cannot be run, or `undefined`: a row in the shape of #9 (`expand`, `fill`,
+ * `contract`), a step that is not a model or data step, two steps with one uuid, a transactional instance
+ * action, a model step holding no model Action. In `versioned-git`, the one model step is the checkout of
+ * `to` (exactly one), and no data step writes the model.
+ */
+function stepsRefusal(migration: MigrationRow, git: boolean): Action2Error | undefined {
+  const row: Record<string, unknown> = { ...migration };
+  if (!Array.isArray(row.steps) || ["expand", "fill", "contract"].some((phase) => phase in row)) {
+    return refusal(
+      `runMigration: Migration ${migration.uuid} has no list of steps, or is in the shape of #9 (expand, fill, contract); generate it again, or write its steps by hand`,
+      MIGRATION_RUN_REFUSALS.migrationStepsInvalid,
+      { migration: migration.uuid },
+    );
+  }
+  const steps = migration.steps;
+  const malformed = steps.find(
+    (step) =>
+      !step ||
+      typeof step.uuid !== "string" ||
+      typeof step.name !== "string" ||
+      (step.kind !== "model" && step.kind !== "data") ||
+      !step.action ||
+      typeof step.action !== "object",
+  );
+  if (malformed !== undefined) {
+    return refusal(
+      `runMigration: a step of Migration ${migration.uuid} has no uuid, name, kind ("model" or "data") or action: ${JSON.stringify(malformed)}`,
+      MIGRATION_RUN_REFUSALS.migrationStepsInvalid,
+    );
+  }
+  const uuids = steps.map((step) => step.uuid);
+  if (uuids.some((uuid, index) => uuids.indexOf(uuid) !== index)) {
+    return refusal(
+      "runMigration: the steps of a Migration need distinct uuids, for a migration run to record them",
+      MIGRATION_RUN_REFUSALS.migrationStepsInvalid,
+    );
+  }
+  // a transactional instance action waits in the local cache until a commit no step does: its writes would
+  // be recorded as done, then dropped by the reload after a model step
+  if (steps.some((step) => stepActions(step.action as StepAction).some((action) => action.actionType === "transactionalInstanceAction"))) {
+    return refusal(
+      "runMigration: a step holds a transactionalInstanceAction, whose writes wait for a commit no step makes; use createInstance, updateInstance or deleteInstance",
+      MIGRATION_RUN_REFUSALS.migrationStepsInvalid,
+    );
+  }
+  const modelSteps = steps.filter((step) => step.kind === "model");
+  if (git) {
+    // the model of a versioned-git deployment is its checkout: any other model write blocks the checkout
+    const writing = [
+      ...modelSteps.filter((step) => (step.action as MigrationModelStepAction).actionType !== GIT_CHECKOUT_ACTION_TYPE),
+      ...steps.filter((step) => step.kind === "data" && stepActions(step.action as StepAction).some(writesModel)),
+    ];
+    if (writing.length > 0) {
+      return refusal(
+        `runMigration: in versioned-git the model comes from the tag; steps ${writing.map((step) => step.name).join(", ")} write the model`,
+        MIGRATION_RUN_REFUSALS.migrationStepWritesModel,
+        { steps: writing.map((step) => step.uuid) },
+      );
+    }
+    // the one checkout, of `to`: without it the migration run would end on a model it did not check out
+    const checkouts = modelSteps.map((step) => (step.action as MigrationModelStepAction).payload?.version);
+    if (checkouts.length !== 1 || checkouts[0] !== migration.to) {
+      return refusal(
+        `runMigration: in versioned-git a Migration has one model step, the checkout of its to (${migration.to}); Migration ${migration.uuid} checks out ${checkouts.length === 0 ? "nothing" : checkouts.map(String).join(", ")}`,
+        MIGRATION_RUN_REFUSALS.migrationStepsInvalid,
+        { migration: migration.uuid },
+      );
+    }
+    return undefined;
+  }
+  const notModel = modelSteps.find((step) => {
+    const action = step.action as MigrationModelStepAction;
+    return !(
+      MODEL_STEP_ACTION_TYPES.has(action.actionType) ||
+      (INSTANCE_WRITE_ACTION_TYPES.has(action.actionType) && (action.payload?.applicationSection ?? "model") === "model")
+    );
+  });
+  if (notModel) {
+    return refusal(
+      `runMigration: model step ${stepLabel(notModel, notModel.uuid)} holds ${String((notModel.action as StepAction).actionType)}, which is no model Action nor a write of a model row`,
+      MIGRATION_RUN_REFUSALS.migrationStepsInvalid,
+      { step: notModel.uuid },
+    );
+  }
+  return undefined;
+}
+
+/**
+ * `action` and the actions of its sequences, nested ones included, marked as a migration run's. A model
  * action runs outside the transaction (`transactional: false`): a step's writes are stored before the step
- * is recorded, and the reload of the jump would drop pending ones.
+ * is recorded, and the reload after a model step would drop pending ones.
  */
 function markedStep<T extends StepAction>(action: T): T {
   const payload = action.payload ?? {};
@@ -106,25 +211,127 @@ function markedStep<T extends StepAction>(action: T): T {
   } as T);
 }
 
-/** Runs one step of a Migration on the application's deployment; an error names the step. */
-async function runStep(
+/**
+ * Executes one step on the application's deployment. A model step executes its model Action (or its
+ * instance write of a model row, or the Git checkout), then reloads the model; a data step executes its
+ * composite action sequence. An error names the step.
+ */
+async function executeStep(
   host: DomainControllerActionHost,
+  application: string,
   step: MigrationStep,
+  git: boolean,
   applicationDeploymentMap: ApplicationDeploymentMap,
-  modelEnvironment: MiroirModelEnvironment,
 ): Promise<Action2Error | undefined> {
-  const result = await host.handleCompositeAction(markedStep(step.action as StepAction) as CompositeActionSequence, applicationDeploymentMap, modelEnvironment, {});
+  // the model environment is read again for each step: the model steps change it
+  const modelEnvironment: MiroirModelEnvironment = modelEnvironmentOf(host, application, applicationDeploymentMap, undefined);
+  let result: Action2ReturnType | string | undefined;
+  if (step.kind === "data") {
+    result = await host.handleCompositeAction(markedStep(step.action as StepAction) as CompositeActionSequence, applicationDeploymentMap, modelEnvironment, {});
+  } else {
+    const action = step.action as MigrationModelStepAction;
+    if (git) {
+      result = await checkoutVersion(host, application, String(action.payload.version), applicationDeploymentMap);
+    } else if (MODEL_STEP_ACTION_TYPES.has(action.actionType)) {
+      result = await host.handleModelAction(
+        markMigrationRun({ ...action, payload: { ...action.payload, application, transactional: false } }) as any,
+        applicationDeploymentMap,
+        modelEnvironment,
+      );
+    } else {
+      result = await host.handleInstanceAction(
+        markMigrationRun({ ...action, payload: { ...action.payload, application } }) as any,
+        applicationDeploymentMap,
+      );
+    }
+    if (!(result instanceof Action2Error)) {
+      result = await reloadModel(host, application, applicationDeploymentMap, undefined);
+    }
+  }
   return result instanceof Action2Error
-    ? new Action2Error("FailedToHandleAction", `runMigration: step "${step.name}" failed`, undefined, result, {
+    ? new Action2Error("FailedToHandleAction", `runMigration: step ${stepLabel(step, step.uuid)} failed`, undefined, result, {
         reason: MIGRATION_RUN_REFUSALS.migrationStepFailed,
         step: step.uuid,
+        stepName: step.name,
       })
     : undefined;
 }
 
 /**
- * The run to do: a new one from the stored Migration, or the one in progress (resume). The Migration of a
- * `versioned-git` application is the one the commit of its `to` tag holds (D8).
+ * #745 D6: the reference of the version named `name`: its frozen model state, read from the `modelVersion`
+ * rows the deployment reads. Refused (`migrationReferenceMissing`) when no version row has that name, when
+ * several have it, or when its Cross rows name version rows that are missing.
+ */
+function referenceState(live: ModelState, application: string, name: string): ModelState | Action2Error {
+  const named = live.applicationVersions.filter(
+    (row) => row.name === name && ((row as { selfApplication?: string }).selfApplication ?? application) === application,
+  );
+  const missing = (why: string) =>
+    refusal(
+      `runMigration: no reference for version ${name} of ${application}: ${why}; a migration run checks the model against the frozen versions it goes from and to`,
+      MIGRATION_RUN_REFUSALS.migrationReferenceMissing,
+      { version: name },
+    );
+  if (named.length !== 1) {
+    return missing(named.length === 0 ? "the modelVersion section holds no Application Version of that name" : "several Application Versions have that name");
+  }
+  const incomplete = frozenCollectionsOf(live, named[0].uuid).filter(({ missingVersionRows }) => missingVersionRows.length > 0);
+  if (incomplete.length > 0) {
+    return missing(`its Cross rows name rows it does not hold (${incomplete.map(({ collection }) => collection).join(", ")})`);
+  }
+  return frozenStateOf(live, named[0].uuid);
+}
+
+/** #745 D6: the refusal of a model that differs from a reference, the differences listed, or `undefined`. */
+function mismatchRefusal(
+  differences: ReturnType<typeof modelStateDifferences> | Action2Error,
+  what: string,
+  context: Record<string, unknown>,
+): Action2Error | undefined {
+  if (differences instanceof Action2Error) {
+    return new Action2Error("FailedToHandleAction", `runMigration: ${what}: could not replay the steps`, [], differences, {
+      reason: MIGRATION_RUN_REFUSALS.migrationModelMismatch,
+      ...context,
+    });
+  }
+  return differences
+    ? refusal(`runMigration: ${what}: ${differencesText(differences)}`, MIGRATION_RUN_REFUSALS.migrationModelMismatch, {
+        ...context,
+        differences,
+      })
+    : undefined;
+}
+
+/**
+ * #745 D6, before step 1 of a new migration run: the live model must be the `from` version, and the model
+ * steps, replayed in memory on it, must give the `to` version.
+ */
+function referenceRefusal(live: ModelState, migration: MigrationRow): Action2Error | undefined {
+  const fromReference = referenceState(live, migration.application, migration.from);
+  if (fromReference instanceof Action2Error) {
+    return fromReference;
+  }
+  const toReference = referenceState(live, migration.application, migration.to);
+  if (toReference instanceof Action2Error) {
+    return toReference;
+  }
+  return (
+    mismatchRefusal(
+      modelStateDifferences(migration.application, live, fromReference),
+      `the model of the deployment is not version ${migration.from}, the Migration's from`,
+      { version: migration.from, check: "from" },
+    ) ??
+    mismatchRefusal(
+      stepsReplayDifferences(migration.application, live, toReference, migration.steps),
+      `the steps of Migration ${migration.uuid}, replayed on version ${migration.from}, do not give version ${migration.to}`,
+      { version: migration.to, check: "steps" },
+    )
+  );
+}
+
+/**
+ * The migration run to do: a new one from the stored Migration, or the one in progress (continued). The
+ * Migration of a `versioned-git` application is the one the commit of its `to` tag holds (#9 D8).
  */
 async function runToDo(
   host: DomainControllerActionHost,
@@ -134,15 +341,36 @@ async function runToDo(
   git: boolean,
   applicationDeploymentMap: ApplicationDeploymentMap,
 ): Promise<RunState | Action2Error> {
+  // an applied Migration is refused first, whatever migration run is in progress
+  if ((state?.applied ?? []).some((applied) => applied.migration === payload.migration)) {
+    return refusal(
+      `runMigration: Migration ${payload.migration} is already applied on this deployment`,
+      MIGRATION_RUN_REFUSALS.migrationAlreadyApplied,
+      { migration: payload.migration },
+    );
+  }
   const inProgress = state?.run as RunState | undefined;
   if (inProgress) {
-    return inProgress.migration.uuid === payload.migration
-      ? inProgress
-      : refusal(
-          `runMigration: Migration ${inProgress.migration.uuid} is running on this deployment; run it again to resume it before any other`,
-          MIGRATION_RUN_REFUSALS.migrationRunInProgress,
-          { migration: inProgress.migration.uuid },
-        );
+    if (inProgress.migration.uuid !== payload.migration) {
+      return refusal(
+        `runMigration: Migration ${inProgress.migration.uuid} is running on this deployment; run it again to continue it before any other`,
+        MIGRATION_RUN_REFUSALS.migrationRunInProgress,
+        { migration: inProgress.migration.uuid },
+      );
+    }
+    const invalid = stepsRefusal(inProgress.migration, git);
+    if (invalid) {
+      return invalid;
+    }
+    if (inProgress.stepStarted !== undefined) {
+      const step = inProgress.migration.steps.find((candidate) => candidate.uuid === inProgress.stepStarted);
+      return refusal(
+        `runMigration: step ${stepLabel(step, inProgress.stepStarted)} of Migration ${inProgress.migration.uuid} started and was not recorded as done: some of its writes may have landed. Check the deployment, then settle the step with settleMigrationStep (outcome "done" or "notRun")`,
+        MIGRATION_RUN_REFUSALS.migrationStepInDoubt,
+        { migration: inProgress.migration.uuid, step: inProgress.stepStarted, stepName: step?.name },
+      );
+    }
+    return inProgress;
   }
   const stored = git
     ? await migrationAtItsTag(host, payload.application, payload.migration, applicationDeploymentMap)
@@ -165,76 +393,37 @@ async function runToDo(
       { version: state?.version, from: stored.from },
     );
   }
-  const unsupported = stored.changes.filter((change) => !change.supported);
+  const unsupported = (stored.changes ?? []).filter((change) => !change.supported);
   if (unsupported.length > 0) {
     return refusal(
-      `runMigration: the Migration holds changes a run cannot make (${unsupported.map((change) => `${change.kind} ${change.entityName ?? change.entity}`).join(", ")}); write them by hand outside Miroir`,
+      `runMigration: the Migration holds changes no model Action applies to the stores (${unsupported.map((change) => `${change.kind} ${change.entityName ?? change.entity}${change.attribute ? `.${change.attribute}` : ""}`).join(", ")}); write them by hand outside Miroir`,
       MIGRATION_RUN_REFUSALS.migrationUnsupportedChange,
       { changes: unsupported },
     );
   }
-  const steps = [...stored.expand, ...stored.fill, ...stored.contract];
-  const uuids = steps.map((step) => step.uuid);
-  if (uuids.some((uuid, index) => uuid === JUMP_STEP || uuids.indexOf(uuid) !== index)) {
-    return refusal(
-      `runMigration: the steps of a Migration need distinct uuids, none of them "${JUMP_STEP}", for a run to record them`,
-      MIGRATION_RUN_REFUSALS.migrationStepsInvalid,
-    );
-  }
-  // a transactional instance action waits in the local cache until a commit no step does: its writes would
-  // be recorded as done, then dropped by the reload of the jump
-  if (steps.some((step) => stepActions(step.action as StepAction).some((action) => action.actionType === "transactionalInstanceAction"))) {
-    return refusal(
-      "runMigration: a step holds a transactionalInstanceAction, whose writes wait for a commit no step makes; use createInstance, updateInstance or deleteInstance",
-      MIGRATION_RUN_REFUSALS.migrationStepsInvalid,
-    );
+  const invalid = stepsRefusal(stored, git);
+  if (invalid) {
+    return invalid;
   }
   if (git) {
-    // the model of a versioned-git deployment is its checkout: a model write would block the jump, or the next one
-    const writing = steps.filter((step) => stepActions(step.action as StepAction).some(writesModel));
-    if (writing.length > 0) {
-      return refusal(
-        `runMigration: in versioned-git the model comes from the tag; steps ${writing.map((step) => step.name).join(", ")} write the model`,
-        MIGRATION_RUN_REFUSALS.migrationStepWritesModel,
-        { steps: writing.map((step) => step.uuid) },
-      );
-    }
-    // the clone must still be at the version the state says, whatever was checked out since the last run
+    // the clone must still be at the version the state says, whatever was checked out since
     const atFrom = await checkedOutVersion(host, payload.application, stored.from, applicationDeploymentMap, "runMigration");
     if (atFrom instanceof Action2Error) {
       return atFrom;
     }
+  } else {
+    // #745 D6: the model against the frozen versions, before anything is written
+    const mismatch = referenceRefusal(live, stored);
+    if (mismatch) {
+      return mismatch;
+    }
   }
-  // the copy the run uses until it ends, whatever the modelVersion section holds meanwhile (epic D2)
+  // the copy the migration run uses until it ends, whatever the modelVersion section holds meanwhile (epic D2)
   return {
-    migration: { ...structuredClone(stored), backwardCompatible: recomputedBackwardCompatible(stored) },
+    migration: { ...structuredClone(stored), backwardCompatible: migrationBackwardCompatible(stored.changes ?? [], stored.steps) },
     stepsDone: [],
     startedAt: new Date().toISOString(),
   };
-}
-
-/**
- * The jump of the model to the version `to`: the rewrite to the frozen version (`versioned-internal`), or the
- * checkout of the tag (`versioned-git`), then a reload of the model; a failure names the jump as its step.
- */
-async function jump(
-  host: DomainControllerActionHost,
-  application: string,
-  to: string,
-  git: boolean,
-  applicationDeploymentMap: ApplicationDeploymentMap,
-  modelEnvironment: MiroirModelEnvironment | undefined,
-): Promise<Action2Error | undefined> {
-  const jumped = git
-    ? await checkoutVersion(host, application, to, applicationDeploymentMap)
-    : await bringModelToVersion(host, application, applicationDeploymentMap, to, modelEnvironment, "runMigration");
-  const reloaded = jumped instanceof Action2Error ? jumped : await reloadModel(host, application, applicationDeploymentMap, modelEnvironment);
-  return reloaded instanceof Action2Error
-    ? new Action2Error("FailedToHandleAction", `runMigration: the jump to ${to} failed`, undefined, reloaded, {
-        reason: MIGRATION_RUN_REFUSALS.migrationStepFailed,
-        step: JUMP_STEP,
-      })
-    : undefined;
 }
 
 function stateOf(state: DeploymentStateRow | undefined, deploymentUuid: string, application: string) {
@@ -247,6 +436,27 @@ function stateOf(state: DeploymentStateRow | undefined, deploymentUuid: string, 
   };
 }
 
+/** The refusal of a migration run, or of a settlement, on a deployment that is not following. */
+async function authoringRefusal(
+  host: DomainControllerActionHost,
+  actionType: string,
+  application: string,
+  deploymentUuid: string,
+  applicationDeploymentMap: ApplicationDeploymentMap,
+): Promise<Action2Error | undefined> {
+  const deploymentRow = await storedDeploymentRow(host, deploymentUuid, applicationDeploymentMap);
+  if (deploymentRow instanceof Action2Error) {
+    return deploymentRow;
+  }
+  return deploymentRoleOf(deploymentRow) === "following"
+    ? undefined
+    : refusal(
+        `${actionType}: deployment ${deploymentUuid} of ${application} is an authoring deployment; a Migration runs on a following deployment`,
+        MIGRATION_RUN_REFUSALS.deploymentAuthors,
+        { deployment: deploymentUuid },
+      );
+}
+
 async function runMigration(
   host: DomainControllerActionHost,
   payload: RunMigrationActionPayload,
@@ -255,16 +465,9 @@ async function runMigration(
 ): Promise<Action2ReturnType> {
   const { application } = payload;
   const { applicationDeploymentMap } = context;
-  const deploymentRow = await storedDeploymentRow(host, deploymentUuid, applicationDeploymentMap);
-  if (deploymentRow instanceof Action2Error) {
-    return deploymentRow;
-  }
-  if (deploymentRoleOf(deploymentRow) !== "following") {
-    return refusal(
-      `runMigration: deployment ${deploymentUuid} of ${application} is an authoring deployment; a Migration runs on a following deployment`,
-      MIGRATION_RUN_REFUSALS.deploymentAuthors,
-      { deployment: deploymentUuid },
-    );
+  const authoring = await authoringRefusal(host, RUN_MIGRATION_ACTION_TYPE, application, deploymentUuid, applicationDeploymentMap);
+  if (authoring) {
+    return authoring;
   }
   const state = await storedDeploymentState(host, deploymentUuid, applicationDeploymentMap);
   if (state instanceof Action2Error) {
@@ -280,43 +483,76 @@ async function runMigration(
     return run;
   }
   const base = stateOf(state, deploymentUuid, application);
-  // a copy each time: the written row may be frozen by the local cache
-  const record = (stepsDone: readonly string[]) =>
-    writeDeploymentState(host, { ...base, run: { ...structuredClone(run), stepsDone: [...stepsDone] } }, applicationDeploymentMap);
-  const started = await record(run.stepsDone);
+  // every write of the migration run's state goes through here; a copy each time, the written row may be
+  // frozen by the local cache
+  const recordMigrationRun = (stepsDone: readonly string[], stepStarted?: string) =>
+    writeDeploymentState(
+      host,
+      {
+        ...base,
+        run: {
+          migration: structuredClone(run.migration),
+          stepsDone: [...stepsDone],
+          ...(stepStarted !== undefined ? { stepStarted } : {}),
+          startedAt: run.startedAt,
+        },
+      },
+      applicationDeploymentMap,
+    );
+  const stepsDone = [...run.stepsDone];
+  const started = await recordMigrationRun(stepsDone);
   if (started) {
     return started;
   }
+  // a model Action reads the current model from this process's local cache: it starts from the stores
+  const loaded = await reloadModel(host, application, applicationDeploymentMap, undefined);
+  if (loaded instanceof Action2Error) {
+    return new Action2Error("FailedToHandleAction", `runMigration: could not load the model of ${application}`, [], loaded);
+  }
 
-  const stepsDone = [...run.stepsDone];
-  for (const step of runOrder(run.migration)) {
-    const name = step === JUMP_STEP ? JUMP_STEP : step.uuid;
-    if (stepsDone.includes(name)) {
+  for (const step of run.migration.steps) {
+    if (stepsDone.includes(step.uuid)) {
       continue;
     }
-    if (step === JUMP_STEP) {
-      const failed = await jump(host, application, run.migration.to, git, applicationDeploymentMap, undefined);
-      if (failed) {
-        return failed;
-      }
-    } else {
-      // the model environment is read again for each step: the jump and the steps that write the model change it
-      const failed = await runStep(host, step, applicationDeploymentMap, modelEnvironmentOf(host, application, applicationDeploymentMap, undefined));
-      if (failed) {
-        return failed;
-      }
+    const recordedStart = await recordMigrationRun(stepsDone, step.uuid);
+    if (recordedStart) {
+      return recordedStart;
     }
-    stepsDone.push(name);
-    const recorded = await record(stepsDone);
-    if (recorded) {
-      return recorded;
+    // a failure leaves the step recorded as started: in doubt until settled
+    const failed = await executeStep(host, application, step, git, applicationDeploymentMap);
+    if (failed) {
+      return failed;
+    }
+    stepsDone.push(step.uuid);
+    const recordedDone = await recordMigrationRun(stepsDone);
+    if (recordedDone) {
+      return recordedDone;
     }
   }
 
-  // the commit of a `versioned-git` deployment is its checkout of `to`, still there when the run ends
+  // the commit of a `versioned-git` deployment is its checkout of `to`, still there when the migration run ends
   const gitCommit = git ? await checkedOutVersion(host, application, run.migration.to, applicationDeploymentMap, "runMigration") : undefined;
   if (gitCommit instanceof Action2Error) {
     return gitCommit;
+  }
+  if (!git) {
+    // #745 D6: the model the steps left must be the `to` version; else the migration run stays recorded
+    const ended = await liveModelState(host, application, applicationDeploymentMap);
+    if (ended instanceof Action2Error) {
+      return ended;
+    }
+    const toReference = referenceState(ended, application, run.migration.to);
+    if (toReference instanceof Action2Error) {
+      return toReference;
+    }
+    const mismatch = mismatchRefusal(
+      modelStateDifferences(application, ended, toReference),
+      `after the last step of Migration ${run.migration.uuid}, the model of the deployment is not version ${run.migration.to}; the migration run stays recorded and the version is unchanged`,
+      { version: run.migration.to, check: "to" },
+    );
+    if (mismatch) {
+      return mismatch;
+    }
   }
   const ended = await writeDeploymentState(
     host,
@@ -335,9 +571,10 @@ async function runMigration(
 }
 
 /**
- * `runMigration`: refused on an authoring deployment, when the deployment is not at the Migration's `from`
- * version, when the Migration holds an unsupported change, and while another Migration runs on the
- * deployment. Two runs on one deployment never interleave.
+ * `runMigration`: refused on an authoring deployment, for a Migration already applied, when the deployment
+ * is not at the Migration's `from` version, when the Migration holds an unsupported change, while another
+ * Migration runs on the deployment, and while a step is in doubt. Two migration runs on one deployment never
+ * interleave.
  */
 export const handleAction_runMigration: ActionImplementationHandler = (host, action, context): Promise<Action2ReturnType> => {
   const payload = action.payload as RunMigrationActionPayload;
@@ -346,4 +583,63 @@ export const handleAction_runMigration: ActionImplementationHandler = (host, act
     return Promise.resolve(new Action2Error("FailedToHandleAction", `runMigration: no deployment of ${payload.application}`));
   }
   return withApplicationLock(`deployment:${deploymentUuid}`, () => runMigration(host, payload, context, deploymentUuid));
+};
+
+async function settleMigrationStep(
+  host: DomainControllerActionHost,
+  payload: SettleMigrationStepActionPayload,
+  context: ActionImplementationContext,
+  deploymentUuid: string,
+): Promise<Action2ReturnType> {
+  const { application, step, outcome } = payload;
+  const { applicationDeploymentMap } = context;
+  if (outcome !== "done" && outcome !== "notRun") {
+    return new Action2Error("FailedToHandleAction", `settleMigrationStep: outcome is "done" or "notRun", not ${JSON.stringify(outcome)}`);
+  }
+  const authoring = await authoringRefusal(host, SETTLE_MIGRATION_STEP_ACTION_TYPE, application, deploymentUuid, applicationDeploymentMap);
+  if (authoring) {
+    return authoring;
+  }
+  const state = await storedDeploymentState(host, deploymentUuid, applicationDeploymentMap);
+  if (state instanceof Action2Error) {
+    return new Action2Error("FailedToHandleAction", `settleMigrationStep: could not read the state of deployment ${deploymentUuid}`, [], state);
+  }
+  const run = state?.run as RunState | undefined;
+  if (!run || run.stepStarted !== step) {
+    return refusal(
+      run?.stepStarted
+        ? `settleMigrationStep: step ${step} is not in doubt; the step in doubt is ${run.stepStarted}`
+        : `settleMigrationStep: step ${step} is not in doubt: no step of a migration run on deployment ${deploymentUuid} is`,
+      MIGRATION_RUN_REFUSALS.migrationStepNotInDoubt,
+      { step, stepInDoubt: run?.stepStarted },
+    );
+  }
+  const written = await writeDeploymentState(
+    host,
+    {
+      ...stateOf(state, deploymentUuid, application),
+      run: {
+        migration: run.migration,
+        stepsDone: outcome === "done" ? [...run.stepsDone, step] : [...run.stepsDone],
+        startedAt: run.startedAt,
+      },
+    },
+    applicationDeploymentMap,
+  );
+  return written ?? ACTION_OK;
+}
+
+/**
+ * `settleMigrationStep`: the operator's answer for the step a stopped migration run left in doubt. `done`
+ * records it as done, and the next `runMigration` continues after it; `notRun` clears it, and the next
+ * `runMigration` executes it again. Refused on an authoring deployment, and for a step that is not in
+ * doubt (`migrationStepNotInDoubt`). Runs under the lock of the deployment's migration runs.
+ */
+export const handleAction_settleMigrationStep: ActionImplementationHandler = (host, action, context): Promise<Action2ReturnType> => {
+  const payload = action.payload as SettleMigrationStepActionPayload;
+  const deploymentUuid = context.applicationDeploymentMap[payload.application];
+  if (!deploymentUuid) {
+    return Promise.resolve(new Action2Error("FailedToHandleAction", `settleMigrationStep: no deployment of ${payload.application}`));
+  }
+  return withApplicationLock(`deployment:${deploymentUuid}`, () => settleMigrationStep(host, payload, context, deploymentUuid));
 };

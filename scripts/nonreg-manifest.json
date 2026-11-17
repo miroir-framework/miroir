@@ -1917,6 +1917,41 @@
       }
     },
     {
+      "id": "integ-create-entity-strict",
+      "scopes": ["actions"],
+      "tier": "default",
+      "title": "#745 \u2014 createEntity fails where the Entity's row (entityExists) or storage (storageExists) exists, on every store, writing nothing; a SQL reset drops orphan tables",
+      "requires": "storage",
+      "argv": [
+        "npm",
+        "run",
+        "testByFile",
+        "-w",
+        "miroir-standalone-app",
+        "--",
+        "--profile",
+        "{profile}",
+        "createEntityStrict.integ"
+      ],
+      "shared": {
+        "group": "standalone-app-profile",
+        "argv": [
+          "npm",
+          "run",
+          "testByFile",
+          "-w",
+          "miroir-standalone-app",
+          "--",
+          "--profile",
+          "{profile}",
+          "--no-bail"
+        ],
+        "files": [
+          "createEntityStrict.integ"
+        ]
+      }
+    },
+    {
       "id": "appstack-ExtractorPersistenceStoreRunner.integ",
       "scopes": ["core"],
       "tier": "default",

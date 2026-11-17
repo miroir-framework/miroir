@@ -127,6 +127,12 @@ export class IndexedDbStoreSection
   }
 
   // ##############################################################################################
+  /** #745 D4: the Entity's sublevel is registered or holds a key. */
+  storageSpaceExists(entity: Entity): Promise<boolean> {
+    return this.localUuidIndexedDb.subLevelExists(entity.uuid);
+  }
+
+  // ##############################################################################################
   async dropStorageSpaceForInstancesOfEntity(entityUuid: string): Promise<Action2VoidReturnType> {
     if (this.localUuidIndexedDb.hasSubLevel(entityUuid)) {
       await this.localUuidIndexedDb.removeSubLevels([entityUuid]);

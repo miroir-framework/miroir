@@ -3842,9 +3842,9 @@
               },
               {
                 "step": "click",
-                "label": "open the menu of the last step",
+                "label": "open the menu of the fourth step, createInstance",
                 "target": {
-                  "byTestId": "block-actions:definition.compositeActionSequence.payload.actionSequence.5"
+                  "byTestId": "block-actions:definition.compositeActionSequence.payload.actionSequence.3"
                 }
               },
               {
@@ -3856,27 +3856,27 @@
               },
               {
                 "step": "waitForAttribute",
-                "label": "commit is now the fifth step",
+                "label": "createInstance is now the third step",
                 "target": {
-                  "byTestId": "block:definition.compositeActionSequence.payload.actionSequence.4"
+                  "byTestId": "block:definition.compositeActionSequence.payload.actionSequence.2"
+                },
+                "attribute": "data-action-type",
+                "value": "createInstance"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "the step it passed, commit, is now the fourth",
+                "target": {
+                  "byTestId": "block:definition.compositeActionSequence.payload.actionSequence.3"
                 },
                 "attribute": "data-action-type",
                 "value": "commit"
               },
               {
-                "step": "waitForAttribute",
-                "label": "the step it passed is now last",
-                "target": {
-                  "byTestId": "block:definition.compositeActionSequence.payload.actionSequence.5"
-                },
-                "attribute": "data-action-type",
-                "value": "updateInstance"
-              },
-              {
                 "step": "click",
                 "label": "open the menu of commit",
                 "target": {
-                  "byTestId": "block-actions:definition.compositeActionSequence.payload.actionSequence.4"
+                  "byTestId": "block-actions:definition.compositeActionSequence.payload.actionSequence.3"
                 }
               },
               {
@@ -3896,9 +3896,9 @@
               },
               {
                 "step": "waitForAttribute",
-                "label": "the last step is updateInstance",
+                "label": "updateInstance follows createInstance",
                 "target": {
-                  "byTestId": "block:definition.compositeActionSequence.payload.actionSequence.4"
+                  "byTestId": "block:definition.compositeActionSequence.payload.actionSequence.3"
                 },
                 "attribute": "data-action-type",
                 "value": "updateInstance"

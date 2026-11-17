@@ -13,7 +13,7 @@ import {
   StorageSpaceHandlerInterface,
   Uuid
 } from "@miroir-framework/core";
-import { DataTypes } from "sequelize";
+import { DataTypes, QueryTypes } from "sequelize";
 
 import {
   EntityUuidIndexedSequelizeModel,
@@ -74,6 +74,46 @@ export class SqlDbStoreSection
   /** Attributes of type bigint, read back as BigInt (#48). */
   getBigintAttributesForEntity(entityUuid: string): string[] | undefined {
     return this.sqlSchemaTableAccess[entityUuid]?.bigintAttributes;
+  }
+
+  // ######################################################################################
+  /** #745 D4: the tables of this schema that the external Entities registered here name. */
+  externalStorageNames(): string[] {
+    return Object.values(this.sqlSchemaTableAccess)
+      .filter((access) => access.isExternal && (access.effectiveSchema ?? this.schema) === this.schema)
+      .map((access) => access.sequelizeModel.tableName);
+  }
+
+  // ######################################################################################
+  /**
+   * #745 D4: drops every table of this schema that is neither registered by this section nor in `kept`. Called
+   * after a reset: the model and data sections share one schema, so each keeps what either registered.
+   */
+  async dropUnregisteredStorage(kept: readonly string[]): Promise<Action2VoidReturnType> {
+    const registered = new Set(Object.values(this.sqlSchemaTableAccess).map((access) => access.sequelizeModel.tableName));
+    try {
+      // pg_tables: the columns of information_schema are of a domain type the driver returns as arrays
+      const tables: { tablename: string }[] = await this.sequelize.query(
+        `SELECT tablename FROM pg_catalog.pg_tables WHERE schemaname = :schema`,
+        { replacements: { schema: this.schema }, type: QueryTypes.SELECT },
+      );
+      const names = tables.map((table) => table.tablename);
+      for (const name of names) {
+        if (registered.has(name) || kept.includes(name)) {
+          continue;
+        }
+        log.info(this.logHeader, "dropUnregisteredStorage dropping table", name);
+        const queryGenerator = this.sequelize.getQueryInterface().queryGenerator as {
+          quoteIdentifier(identifier: string): string;
+        };
+        await this.sequelize.query(
+          `DROP TABLE ${queryGenerator.quoteIdentifier(this.schema)}.${queryGenerator.quoteIdentifier(name)}`,
+        );
+      }
+    } catch (error) {
+      return new Action2Error("FailedToDeleteStore", `could not drop the tables of schema ${this.schema} no Entity registers: ${(error as Error).stack ?? error}`);
+    }
+    return ACTION_OK;
   }
 
   // ######################################################################################
@@ -297,6 +337,15 @@ export class SqlDbStoreSection
       this.sqlSchemaTableAccess = { ...this.sqlSchemaTableAccess, [entity.uuid]: access };
     }
     return exists;
+  }
+
+  // ##############################################################################################
+  /**
+   * #745 D4: the Entity's table exists in this schema, registered or not. No side effect: unlike
+   * `hasStorageSpaceForInstancesOfEntity`, it defines no model and registers nothing.
+   */
+  async storageSpaceExists(entity: Entity): Promise<boolean> {
+    return this.sequelize.getQueryInterface().tableExists({ tableName: entity.name, schema: this.schema });
   }
 
   // ##############################################################################################

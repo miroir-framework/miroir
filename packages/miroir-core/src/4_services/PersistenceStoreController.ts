@@ -92,6 +92,11 @@ function lazyStorageEntity(section: ApplicationSection, entityUuid: string): Ent
 }
 
 
+/** #745 D4: the names of the devData Entities, which name their storage. */
+function devDataStorageNames(): string[] {
+  return [...devDataEntityUuids].flatMap((uuid) => getDevDataEntityDefinition(uuid)?.name ?? []);
+}
+
 // #######################################################################################################################
 export interface PersistenceStoreControllerFactoryReturnType {
   localMiroirPersistenceStoreController: PersistenceStoreControllerInterface,
@@ -358,7 +363,11 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
           }
           case "resetModel": {
             log.debug("handleAction resetModel update");
-            await this.clear();
+            // #745: a reset that could not drop the storage it leaves fails
+            const cleared = await this.clear();
+            if (cleared instanceof Action2Error) {
+              return cleared;
+            }
             // await appDataStoreProxy.clear();
             log.trace("handleAction resetModel after dropped entities:", this.getEntityUuids());
             break;
@@ -701,8 +710,22 @@ export class PersistenceStoreController implements PersistenceStoreControllerInt
   // ##############################################################################################
   async clear(): Promise<Action2VoidReturnType> {
     log.info(this.logHeader, "clear", this.getEntityUuids());
+    // #745 D4: any storage left after the clear is dropped, except the storage of external Entities, which is
+    // theirs, and the storage of devData, which a reset keeps (D24 of #647) and a store may keep beside the model
+    // and data sections (on SQL, in the same schema)
+    const kept = [
+      ...(this.dataStoreSection.externalStorageNames?.() ?? []),
+      ...(this.modelStoreSection.externalStorageNames?.() ?? []),
+      ...devDataStorageNames(),
+    ];
     await this.dataStoreSection.clear();
     await this.modelStoreSection.clear();
+    for (const section of [this.dataStoreSection, this.modelStoreSection]) {
+      const dropped = await section.dropUnregisteredStorage?.(kept);
+      if (dropped instanceof Action2Error) {
+        return dropped;
+      }
+    }
     // #703: the model storage of the Entities created on their first save is gone with the rest
     for (const entity of modelEntitiesCreatedOnFirstSave) {
       this.devDataStorage.delete(entity.uuid);

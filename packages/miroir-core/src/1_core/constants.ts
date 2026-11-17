@@ -31,6 +31,8 @@ export const SERVER_ROUTED_MIROIR_ACTION_TYPES: readonly string[] = [
   // #9: the draft Migration is written where the stores are
   "generateMigration",
   "runMigration",
+  // #745: the settlement of a step in doubt writes the deployment state where the stores are
+  "settleMigrationStep",
 ];
 
 export function isServerRoutedMiroirAction(action: unknown): boolean {

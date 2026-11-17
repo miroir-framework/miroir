@@ -116,6 +116,17 @@ export class MongoDb {
   }
 
   // #############################################################################
+  /** #745 D4: the collection is registered, or exists in the database. */
+  public async collectionExists(collectionName: string): Promise<boolean> {
+    if (this.collections.has(collectionName)) {
+      return true;
+    }
+    if (!this.db) {
+      return false;
+    }
+    return (await this.db.listCollections({ name: collectionName }, { nameOnly: true }).toArray()).length > 0;
+  }
+
   public hasCollection(collectionName: string): boolean {
     return this.collections.has(collectionName);
   }

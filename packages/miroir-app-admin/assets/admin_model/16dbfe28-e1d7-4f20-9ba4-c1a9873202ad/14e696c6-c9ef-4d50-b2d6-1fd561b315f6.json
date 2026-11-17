@@ -117,7 +117,7 @@
           "value": {
             "id": 10,
             "defaultLabel": "Run in progress",
-            "description": "The Migration run in progress: a copy of the Migration row, the steps done, and when it started",
+            "description": "The migration run in progress: a copy of the Migration row, the steps done, the step started and not recorded as done (in doubt until settled), and when it started",
             "display": {
               "editable": false
             }
@@ -126,6 +126,7 @@
         "definition": {
           "migration": { "type": "any" },
           "stepsDone": { "type": "array", "definition": { "type": "string" } },
+          "stepStarted": { "type": "string", "optional": true },
           "startedAt": { "type": "string" }
         }
       }

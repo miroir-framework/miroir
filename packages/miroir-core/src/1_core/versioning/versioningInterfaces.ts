@@ -68,6 +68,7 @@ export const VERSIONING_ACTION_IMPLEMENTATION_NAMES: readonly string[] = [
   "handleAction_installApplicationVersion", // #9
   "handleAction_generateMigration", // #9
   "handleAction_runMigration", // #9
+  "handleAction_settleMigrationStep", // #745
 ];
 
 /** #708: the Entity of evolution trace records, stored in an application's `modelVersion` section. */
@@ -139,7 +140,8 @@ export type DeploymentStateRow = {
   version?: string;
   gitCommit?: string;
   applied?: DeploymentStateAppliedMigration[];
-  run?: { migration: unknown; stepsDone: string[]; startedAt: string };
+  /** #745 (D5): `stepStarted` names the step started and not recorded as done: in doubt until settled. */
+  run?: { migration: unknown; stepsDone: string[]; stepStarted?: string; startedAt: string };
 };
 
 export {

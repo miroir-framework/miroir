@@ -7,7 +7,7 @@
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "conceptLevel": "Model",
   "scope": "versioning",
-  "description": "#9: the migration of an application's data from one version of its model to the next: the structure changes found between the two versions, and the steps run on a following deployment (expand, then the jump to the new model, then fill and contract). Stored in the application's modelVersion section.",
+  "description": "#9, #745: the migration of an application's data from one version of its model to the next: the structure changes found between the two versions, and the ordered steps a migration run executes on a following deployment (model steps: the model Actions the designer ran; data steps: the data writes the designer adds between them). Stored in the application's modelVersion section.",
   "viewAttributes": [
     "name",
     "from",
@@ -118,7 +118,8 @@
                 "changeIdAttribute",
                 "addAttribute",
                 "removeAttribute",
-                "changeAttribute"
+                "changeAttribute",
+                "settingsChange"
               ]
             },
             "entity": {
@@ -148,14 +149,14 @@
           "value": {
             "id": 14,
             "defaultLabel": "Changes",
-            "description": "The structure changes between the two versions, classified (information: the jump applies them)",
+            "description": "The structure changes between the two versions, classified; a settings change (the SelfApplication row, its branches) is listed and not replayed",
             "display": {
               "editable": false
             }
           }
         }
       },
-      "expand": {
+      "steps": {
         "type": "array",
         "definition": {
           "type": "object",
@@ -166,88 +167,30 @@
             "name": {
               "type": "string"
             },
-            "backwardCompatible": {
-              "type": "boolean"
+            "kind": {
+              "type": "enum",
+              "definition": [
+                "model",
+                "data"
+              ]
             },
-            "repeatable": {
+            "backwardCompatible": {
               "type": "boolean"
             },
             "action": {
               "type": "any"
+            },
+            "trace": {
+              "type": "uuid",
+              "optional": true
             }
           }
         },
         "tag": {
           "value": {
             "id": 15,
-            "defaultLabel": "Expand steps",
-            "description": "Steps run on the from model, before the jump",
-            "display": {
-              "editable": true
-            }
-          }
-        }
-      },
-      "fill": {
-        "type": "array",
-        "definition": {
-          "type": "object",
-          "definition": {
-            "uuid": {
-              "type": "uuid"
-            },
-            "name": {
-              "type": "string"
-            },
-            "backwardCompatible": {
-              "type": "boolean"
-            },
-            "repeatable": {
-              "type": "boolean"
-            },
-            "action": {
-              "type": "any"
-            }
-          }
-        },
-        "tag": {
-          "value": {
-            "id": 16,
-            "defaultLabel": "Fill steps",
-            "description": "Steps run on the to model, after the jump",
-            "display": {
-              "editable": true
-            }
-          }
-        }
-      },
-      "contract": {
-        "type": "array",
-        "definition": {
-          "type": "object",
-          "definition": {
-            "uuid": {
-              "type": "uuid"
-            },
-            "name": {
-              "type": "string"
-            },
-            "backwardCompatible": {
-              "type": "boolean"
-            },
-            "repeatable": {
-              "type": "boolean"
-            },
-            "action": {
-              "type": "any"
-            }
-          }
-        },
-        "tag": {
-          "value": {
-            "id": 17,
-            "defaultLabel": "Contract steps",
-            "description": "Steps that remove what the to model no longer declares; after them, rolling back needs a restore",
+            "defaultLabel": "Steps",
+            "description": "The steps a migration run executes, in order: a model step is one model Action (or the Git checkout of the to version), a data step a composite action sequence of data writes",
             "display": {
               "editable": true
             }

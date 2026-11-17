@@ -128,13 +128,16 @@ describe("#9 part B: generateMigration in versioned-git", () => {
       to: "1.1.0",
       source: "traces",
       backwardCompatible: true,
-      expand: [],
-      contract: [],
     });
     expect(migration.changes).toEqual([
       { kind: "addAttribute", entity: BOOK_ENTITY, entityName: "Book", attribute: "edition9", backwardCompatible: true, supported: true },
     ]);
-    expect(migration.fill.map((step: { name: string }) => step.name)).toEqual(["fill Book.edition9"]);
+    // #745 D1: the checkout of to, then the fill of the added attribute
+    expect(migration.steps.map((step: { kind: string; name: string }) => [step.kind, step.name])).toEqual([
+      ["model", "checkout 1.1.0"],
+      ["data", "fill Book.edition9"],
+    ]);
+    expect(migration.steps[0].action).toMatchObject({ actionType: "checkoutVersion", payload: { application: LIBRARY_APPLICATION, version: "1.1.0" } });
     expect(migration.description).toContain("its model is the one of HEAD");
   }, 60000);
 

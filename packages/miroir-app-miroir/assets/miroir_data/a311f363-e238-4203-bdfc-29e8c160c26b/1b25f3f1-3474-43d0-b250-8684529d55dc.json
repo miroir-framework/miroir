@@ -877,21 +877,30 @@
               },
               {
                 "step": "waitForAttribute",
-                "label": "third step: createInstance",
+                "label": "third step: commit, right after the Entity is created",
                 "target": {
                   "byTestId": "block:definition.compositeActionSequence.payload.actionSequence.2"
+                },
+                "attribute": "data-action-type",
+                "value": "commit"
+              },
+              {
+                "step": "waitForAttribute",
+                "label": "fourth step: createInstance",
+                "target": {
+                  "byTestId": "block:definition.compositeActionSequence.payload.actionSequence.3"
                 },
                 "attribute": "data-action-type",
                 "value": "createInstance"
               },
               {
                 "step": "waitForAttribute",
-                "label": "last step: commit",
+                "label": "last step: updateInstance",
                 "target": {
                   "byTestId": "block:definition.compositeActionSequence.payload.actionSequence.5"
                 },
                 "attribute": "data-action-type",
-                "value": "commit"
+                "value": "updateInstance"
               }
             ]
           },
