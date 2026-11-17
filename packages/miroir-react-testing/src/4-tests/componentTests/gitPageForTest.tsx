@@ -64,6 +64,8 @@ export interface GitPageForTestProps {
    * deployment it reloaded and a reload failure.
    */
   revertPartialFailure?: boolean;
+  /** #753: HEAD names this branch, which does not exist: every action is refused with `gitFailure`. */
+  missingHeadBranch?: string;
 }
 
 type FixtureFile = GitStatusResult["files"][number];
@@ -166,6 +168,13 @@ export function GitPageForTest(props: GitPageForTestProps) {
       }
     };
     return async (actionType: GitActionType, payload: Record<string, unknown> = {}) => {
+      if (props.missingHeadBranch !== undefined) {
+        return refusal(
+          "gitFailure",
+          `HEAD names the branch ${props.missingHeadBranch}, which does not exist in the Git repository /repo/library.`,
+          { root: "/repo/library", branch: props.missingHeadBranch },
+        );
+      }
       if (!initialized && actionType !== "gitAction_init") {
         return new Action2Error("InvalidAction", "not a repository", undefined, undefined, {
           reason: "notARepository",
@@ -414,6 +423,7 @@ export function GitPageForTest(props: GitPageForTestProps) {
     props.revertReloadFailure,
     props.revertPartialFailure,
     props.remoteTagConflicts,
+    props.missingHeadBranch,
   ]);
   return (
     <Suspense fallback={<span>Loading the Git page...</span>}>

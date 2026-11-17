@@ -5,7 +5,7 @@
   "name": "ui.gitPage",
   "selfApplication": "360fcf1f-f0d4-4f8a-9262-07886e70fa15",
   "branch": "ad1ddc4e-556e-4598-9cff-706a2bde0be7",
-  "description": "Git page: the changes of an application named by Entity and instance, staged and committed from the page, its history with refs, its branches created, checked out and left for a detached HEAD, the files of a commit, the diff of a file, the refusals it explains, its last commit tagged with a version name, its remote fetched, pulled and pushed with the tags with a token asked once and saved, nothing while git is off, and the creation of a repository, and a repository cloned and installed from the clone panel.",
+  "description": "Git page: the changes of an application named by Entity and instance, staged and committed from the page, its history with refs, its branches created, checked out and left for a detached HEAD, the files of a commit, the diff of a file, the refusals it explains, its last commit tagged with a version name, its remote fetched, pulled and pushed with the tags with a token asked once and saved, a HEAD naming a missing branch shown as an error with no write action, nothing while git is off, and the creation of a repository, and a repository cloned and installed from the clone panel.",
   "tags": [
     "ui"
   ],
@@ -2205,6 +2205,85 @@
                 "label": "no remote line",
                 "target": {
                   "byTestId": "git-no-remote"
+                },
+                "present": false,
+                "timeout": 2000
+              }
+            ]
+          },
+          {
+            "miroirTestType": "reactComponentTest",
+            "miroirTestLabel": "GitPage: shows a HEAD that names a missing branch as an error, with no write action (#753)",
+            "componentProps": {
+              "missingHeadBranch": "main"
+            },
+            "steps": [
+              {
+                "step": "expectElement",
+                "label": "the error names the branch",
+                "target": {
+                  "byTestId": "git-status-error"
+                },
+                "containsHtml": "HEAD names the branch main",
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "no Revert all",
+                "target": {
+                  "byTestId": "git-revert-all"
+                },
+                "present": false,
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "no Stage all",
+                "target": {
+                  "byTestId": "git-stage-all"
+                },
+                "present": false,
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "no commit form",
+                "target": {
+                  "byTestId": "git-commit-form"
+                },
+                "present": false,
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "no Fetch",
+                "target": {
+                  "byTestId": "git-fetch"
+                },
+                "present": false,
+                "timeout": 2000
+              },
+              {
+                "step": "click",
+                "label": "open branches",
+                "target": {
+                  "byTestId": "git-tab-branches"
+                }
+              },
+              {
+                "step": "expectElement",
+                "label": "no branch to create",
+                "target": {
+                  "byTestId": "git-create-branch"
+                },
+                "present": false,
+                "timeout": 2000
+              },
+              {
+                "step": "expectElement",
+                "label": "no checkout of another branch",
+                "target": {
+                  "byTestId": "git-checkout-feature"
                 },
                 "present": false,
                 "timeout": 2000

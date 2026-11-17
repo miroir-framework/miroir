@@ -1126,6 +1126,10 @@ class IsomorphicGitRepository implements GitRepositoryInterface {
     };
   }
 
+  async headBranch(): Promise<string | undefined> {
+    return (await git.currentBranch({ ...this.repository, fullname: false, test: false })) ?? undefined;
+  }
+
   async listFiles(ref = "HEAD"): Promise<string[]> {
     const commit = await commitOf(this.repository, ref);
     if (!commit) {

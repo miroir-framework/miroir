@@ -355,7 +355,32 @@ async function openRepository(
       { directory, enclosingRoot: root },
     );
   }
+  const missingBranch = await missingHeadBranch(repository);
+  if (missingBranch !== undefined) {
+    return gitActionError(
+      "gitFailure",
+      `HEAD names the branch ${missingBranch}, which does not exist in the Git repository ${root}. Miroir cannot read the commits or the changes of this repository: check out an existing branch with git, then refresh.`,
+      { directory, root, branch: missingBranch },
+    );
+  }
   return { repository, description: { root, sectionPaths } };
+}
+
+/**
+ * #753: the branch HEAD names when that branch does not exist although the repository has other branches
+ * or tags (a ref removed, a worktree whose common directory the port cannot read); undefined otherwise. A
+ * repository with no ref at all is on an unborn branch, before its first commit, and reads as such.
+ */
+async function missingHeadBranch(repository: GitRepositoryInterface): Promise<string | undefined> {
+  const branch = await repository.headBranch();
+  if (branch === undefined) {
+    return undefined;
+  }
+  const branches = await repository.branches();
+  if (branches.head !== undefined) {
+    return undefined;
+  }
+  return branches.local.length + branches.remote.length + branches.tags.length > 0 ? branch : undefined;
 }
 
 async function describePath(
