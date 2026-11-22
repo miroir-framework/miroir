@@ -34,7 +34,7 @@
     "@miroir-framework/versioning": "*",
     "@testing-library/dom": "10.4.2",
     "@testing-library/react": "16.3.3",
-    "@testing-library/user-event": "14.6.8",
+    "@testing-library/user-event": "14.6.10",
     "cross-fetch": "4.1.0",
     "diff": "9.0.0",
     "loglevelnext": "6.0.0",
@@ -67,7 +67,7 @@
     "formik": "2.4.9",
     "react": "18.3.1",
     "react-dom": "18.3.1",
-    "react-router-dom": "7.18.4",
+    "react-router-dom": "7.18.5",
     "tsup": "9.0.0"
   }
 }
