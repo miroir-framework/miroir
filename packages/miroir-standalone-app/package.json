@@ -92,7 +92,7 @@
     "@vitejs/plugin-react": "6.1.2",
     "babel-loader": "10.1.1",
     "cross-env": "10.1.0",
-    "electron": "44.9.3",
+    "electron": "45.0.0",
     "electron-builder": "26.17.0",
     "eslint-plugin-react-hooks": "7.1.1",
     "happy-dom": "21.0.4",
